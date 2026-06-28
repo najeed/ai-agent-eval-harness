@@ -44,3 +44,27 @@ def test_event_multiple_subscribers():
     assert len(results_a) == 1
     assert len(results_b) == 1
     assert results_a[0].name == CoreEvents.TASK_START
+
+
+def test_async_event_subscription():
+    """Verify that asynchronous event mode offloads execution and completes on flush."""
+    import time
+
+    bus = EventEmitter(run_id="test-async", async_mode=True)
+    events_received = []
+
+    def slow_subscriber(event):
+        time.sleep(0.1)
+        events_received.append(event)
+
+    bus.subscribe(slow_subscriber)
+    bus.emit(CoreEvents.RUN_START, {"run_id": "test-async"})
+
+    # In async mode, the subscriber should not have completed immediately
+    assert len(events_received) == 0
+
+    # Wait for all background tasks to finish
+    bus.flush()
+
+    assert len(events_received) == 1
+    assert events_received[0].name == CoreEvents.RUN_START

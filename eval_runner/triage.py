@@ -7,6 +7,7 @@ Categorizes and explains evaluation failures using a weighted evidence model.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Any
 
 from .taxonomy import FailureCategory, FailureTaxonomy
@@ -60,8 +61,57 @@ SUGGESTION_TEMPLATES = {
 }
 
 
+class TriageContext:
+    """
+    Unified context object containing trajectory and sandbox payloads for triage categorization.
+    """
+
+    def __init__(
+        self, conversation_history: list[dict[str, Any]], task_result: dict[str, Any] | None = None
+    ):
+        self.conversation_history = conversation_history
+        self.task_result = task_result or {}
+
+
+class TriageReport:
+    """
+    Structured triage report conforming to standard validation schemas (e.g. vc.schema.json).
+    """
+
+    def __init__(
+        self,
+        category: str,
+        explanation: str,
+        index: int = -1,
+        confidence: float = 0.0,
+        suggestion: str = "",
+    ):
+        self.category = category
+        self.explanation = explanation
+        self.index = index
+        self.confidence = confidence
+        self.suggestion = suggestion
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "category": self.category,
+            "explanation": self.explanation,
+            "index": self.index,
+            "confidence": self.confidence,
+            "suggestion": self.suggestion,
+        }
+
+
 class TriageEngine:
     """Analyzes evaluation results to categorize failures using Forensic Weighted Evidence."""
+
+    _classifiers: list[Callable[[TriageContext], TriageReport | None]] = []
+
+    @classmethod
+    def register_classifier(cls, classifier: Callable[[TriageContext], TriageReport | None]):
+        """Allows registering custom classification functions/engines (e.g. LLM classifiers)."""
+        if classifier not in cls._classifiers:
+            cls._classifiers.append(classifier)
 
     @staticmethod
     def categorize_failure(task_result: dict[str, Any]) -> str:
@@ -69,6 +119,28 @@ class TriageEngine:
         Refined AgentV v1.6.0 baseline: Delegates classification to the FailureTaxonomy.
         Returns standardized industrial codes (Standardized PBAC).
         """
+        # Run custom/pluggable classifiers (such as LLM triage models) first
+
+        history = task_result.get("conversation_history", [])
+        context = TriageContext(conversation_history=history, task_result=task_result)
+        for classifier in TriageEngine._classifiers:
+            try:
+                report = classifier(context)
+                if report is not None:
+                    # Enrich task_result with custom report metadata
+                    if "diagnostic_report" not in task_result:
+                        task_result["diagnostic_report"] = {}
+                    task_result["diagnostic_report"]["root_cause"] = report.category
+                    task_result["diagnostic_report"]["explanation"] = report.explanation
+                    task_result["diagnostic_report"]["index"] = report.index
+                    task_result["diagnostic_report"]["confidence"] = report.confidence
+                    task_result["diagnostic_report"]["suggestion"] = report.suggestion
+                    return str(report.category).upper()
+            except Exception as e:
+                import logging
+
+                logging.getLogger(__name__).error(f"Error in custom triage classifier: {e}")
+
         # 1. Prefer existing report or explicit tag if available
         if "triage_tag" in task_result:
             return str(task_result["triage_tag"]).upper()

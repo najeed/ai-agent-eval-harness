@@ -292,12 +292,21 @@ class FailureTaxonomy:
         # unless explicitly passed. Using partial dict for compatibility.
         return cls._diagnose(metrics, history, {"events": events})
 
+    _priority_analyzers: list[BaseForensicAnalyzer] = []
+
     @classmethod
-    def register_analyzer(cls, analyzer: BaseForensicAnalyzer):
+    def register_analyzer(cls, analyzer: BaseForensicAnalyzer, priority: bool = False):
         """Registers a specialized forensic analyzer for current diagnostic sessions."""
-        if analyzer not in cls._analyzers:
-            cls._analyzers.append(analyzer)
-            logger.info(f"   [Taxonomy] Registered analyzer: {analyzer.__class__.__name__}")
+        if priority:
+            if analyzer not in cls._priority_analyzers:
+                cls._priority_analyzers.append(analyzer)
+                logger.info(
+                    f"   [Taxonomy] Registered priority analyzer: {analyzer.__class__.__name__}"
+                )
+        else:
+            if analyzer not in cls._analyzers:
+                cls._analyzers.append(analyzer)
+                logger.info(f"   [Taxonomy] Registered analyzer: {analyzer.__class__.__name__}")
 
     @classmethod
     def _diagnose(
@@ -312,6 +321,24 @@ class FailureTaxonomy:
             len(metrics),
             len(history),
         )
+
+        causal_chain = (
+            task_result.get("causal_chain", CausalChain()) if task_result else CausalChain()
+        )
+
+        # 0. Priority Specialized Analyzers (run before baseline core checks)
+        for analyzer in getattr(cls, "_priority_analyzers", []):
+            try:
+                if (result := analyzer.analyze(history, task_result)) is not None:
+                    causal_chain.add(
+                        result,
+                        f"Priority Analyzer {analyzer.__class__.__name__} matched trajectory",
+                    )
+                    return result
+            except Exception as e:
+                logger.error(
+                    f"Error in priority forensic analyzer {analyzer.__class__.__name__}: {e}"
+                )
 
         # 1. Pipeline Checks (Priority order)
         status_success = not task_result or task_result.get("status", "success") == "success"

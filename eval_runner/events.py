@@ -71,16 +71,66 @@ class Event:
         return base
 
 
+def _execute_subscriber_with_context(sub, event, otel_ctx):
+    token = None
+    if otel_ctx is not None:
+        try:
+            from opentelemetry import context as otel_context
+
+            token = otel_context.attach(otel_ctx)
+        except Exception:
+            pass
+    try:
+        import asyncio
+
+        if asyncio.iscoroutinefunction(sub):
+            asyncio.run(sub(event))
+        else:
+            sub(event)
+    except Exception as e:
+        print(f"   [Events] Error in subscriber callback: {e}")
+    finally:
+        if token is not None:
+            try:
+                from opentelemetry import context as otel_context
+
+                otel_context.detach(token)
+            except Exception:
+                pass
+
+
 class EventEmitter:
     """
     Centralized event bus.
     Now supports instantiation for session-scoped isolation.
     """
 
-    def __init__(self, run_id: str | None = None):
+    _executor = None
+
+    @classmethod
+    def get_executor(cls):
+        import concurrent.futures
+
+        if cls._executor is None:
+            cls._executor = concurrent.futures.ThreadPoolExecutor(
+                max_workers=4, thread_name_prefix="agentv_events"
+            )
+        return cls._executor
+
+    def __init__(self, run_id: str | None = None, async_mode: bool | None = None):
+        import os
+        import threading
+
         self.run_id = run_id
         self._subscribers: list[Callable[[Event], None]] = []
         self._keyed_subscribers: dict[str, Callable[[Event], None]] = {}
+        if async_mode is None:
+            # Check env variable first; default to False for backward-compatibility in tests
+            self.async_mode = os.getenv("ASYNC_EVENTS", "false").lower() == "true"
+        else:
+            self.async_mode = async_mode
+        self._pending_futures = []
+        self._lock = threading.Lock()
 
     def subscribe(self, subscriber: Callable[[Event], None], key: str | None = None):
         """Register a new subscriber (e.g., a logging plugin)."""
@@ -99,6 +149,7 @@ class EventEmitter:
 
     def reset(self):
         """Clear all subscribers and notify them to cleanup if possible."""
+        self.flush()
         all_subs = self._subscribers + list(self._keyed_subscribers.values())
         for sub in all_subs:
             try:
@@ -111,6 +162,16 @@ class EventEmitter:
         self._subscribers = []
         self._keyed_subscribers = {}
 
+    def flush(self, timeout: float | None = None):
+        """Block until all currently scheduled async event tasks are complete."""
+        import concurrent.futures
+
+        with self._lock:
+            futures = list(self._pending_futures)
+            self._pending_futures.clear()
+        if futures:
+            concurrent.futures.wait(futures, timeout=timeout)
+
     def emit(self, name: str, data: dict[str, Any], span_context: dict[str, Any] | None = None):
         """Emit an event to all subscribers with optional tracing context."""
         sanitized_data = sanitize_payload(data)
@@ -121,12 +182,95 @@ class EventEmitter:
 
         event = Event(name, sanitized_data, span_context=span_context)
         all_subs = self._subscribers + list(self._keyed_subscribers.values())
+
+        # Capture current OTel context if available
+        otel_ctx = None
+        try:
+            from opentelemetry import context as otel_context
+
+            otel_ctx = otel_context.get_current()
+        except ImportError:
+            pass
+
+        if not self.async_mode:
+            for sub in all_subs:
+                try:
+                    # In sync mode, propagate context natively
+                    token = None
+                    if otel_ctx is not None:
+                        try:
+                            from opentelemetry import context as otel_context
+
+                            token = otel_context.attach(otel_ctx)
+                        except Exception:
+                            pass
+                    try:
+                        sub(event)
+                    finally:
+                        if token is not None:
+                            try:
+                                from opentelemetry import context as otel_context
+
+                                otel_context.detach(token)
+                            except Exception:
+                                pass
+                except Exception as e:
+                    # Core stays stable even if subscribers fail
+                    print(f"   [Events] Error in subscriber for {name}: {e}")
+            return
+
+        # Async dispatching
+        import asyncio
+
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            loop = None
+
+        # Clean completed futures to prevent accumulation leaks
+        with self._lock:
+            self._pending_futures = [f for f in self._pending_futures if not f.done()]
+
         for sub in all_subs:
             try:
-                sub(event)
+                if loop is not None:
+                    if asyncio.iscoroutinefunction(sub):
+
+                        async def wrapped_coro(s=sub):
+                            tok = None
+                            if otel_ctx is not None:
+                                try:
+                                    from opentelemetry import context as otel_context
+
+                                    tok = otel_context.attach(otel_ctx)
+                                except Exception:
+                                    pass
+                            try:
+                                await s(event)
+                            finally:
+                                if tok is not None:
+                                    try:
+                                        from opentelemetry import context as otel_context
+
+                                        otel_context.detach(tok)
+                                    except Exception:
+                                        pass
+
+                        loop.create_task(wrapped_coro())
+                    else:
+                        future = loop.run_in_executor(
+                            None, _execute_subscriber_with_context, sub, event, otel_ctx
+                        )
+                        with self._lock:
+                            self._pending_futures.append(future)
+                else:
+                    future = self.get_executor().submit(
+                        _execute_subscriber_with_context, sub, event, otel_ctx
+                    )
+                    with self._lock:
+                        self._pending_futures.append(future)
             except Exception as e:
-                # Core stays stable even if subscribers fail
-                print(f"   [Events] Error in subscriber for {name}: {e}")
+                print(f"   [Events] Error scheduling subscriber for {name}: {e}")
 
     # --- Lifecycle Management ---
     _global_instance = None

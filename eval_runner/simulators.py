@@ -1,9 +1,91 @@
 import os
 import shlex
 import subprocess
+from abc import ABC, abstractmethod
+from collections.abc import Callable, Coroutine
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
+
+class SimulatorMiddleware(ABC):
+    """
+    Middleware interface to intercept/decorate simulator actions.
+    Useful for introducing simulated latency, rate limiting, logging,
+    or custom routing.
+    """
+
+    @abstractmethod
+    async def process_action(
+        self,
+        simulator: "BaseSimulator",
+        action: str,
+        params: dict[str, Any],
+        next_call: Callable[[], Coroutine[Any, Any, dict[str, Any]]],
+    ) -> dict[str, Any]:
+        pass
+
+
+class BaseJailProvider(ABC):
+    """
+    Interface for terminal execution sandboxes/jails.
+    Defaults to SubprocessJailProvider in Core, can be swapped for containerized providers.
+    """
+
+    @abstractmethod
+    async def execute_command(
+        self, cmd: str, cwd: str, env: dict[str, str], timeout: float
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def cleanup(self, run_id: str) -> None:
+        """Teardown and clean up execution sandbox resources (e.g. Docker containers)
+        associated with the run.
+        """
+        pass
+
+
+class SubprocessJailProvider(BaseJailProvider):
+    """
+    Default Core implementation executing commands via isolated subprocesses.
+    """
+
+    async def execute_command(
+        self, cmd: str, cwd: str, env: dict[str, str], timeout: float
+    ) -> dict[str, Any]:
+        import sys
+
+        is_windows = sys.platform == "win32"
+        try:
+            process = subprocess.run(
+                shlex.split(cmd) if not is_windows else cmd,
+                cwd=cwd,
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+                shell=is_windows,  # nosec B602
+                start_new_session=not is_windows,
+            )
+            return {
+                "status": "success" if process.returncode == 0 else "error",
+                "stdout": process.stdout,
+                "stderr": process.stderr,
+                "returncode": process.returncode,
+                "cwd": cwd,
+            }
+        except subprocess.TimeoutExpired:
+            return {
+                "status": "error",
+                "message": f"Command timed out (Limit: {timeout}s)",
+            }
+        except Exception as e:
+            return {"status": "error", "message": f"Execution Error: {str(e)}"}
+
+    async def cleanup(self, run_id: str) -> None:
+        # Subprocesses are self-terminating, no resources to release in standard core subprocess
+        pass
 
 
 class BaseSimulator:
@@ -14,25 +96,56 @@ class BaseSimulator:
         self.config = config or {}
         # [Turn 2 Hardening] Physical Jail Path
         self.terminal_jail: Any = None
+        self._middlewares: list[SimulatorMiddleware] = []
         # [Industrial Hygiene] Global tracking for test suite cleanup
         if not hasattr(BaseSimulator, "_instances"):
             BaseSimulator._instances = set()
         BaseSimulator._instances.add(self)
 
-    async def execute(self, action: str, params: dict[str, Any]) -> dict[str, Any]:
-        """Dispatches an action to a handler method."""
-        handler_name = f"handle_{action}"
-        handler = getattr(self, handler_name, None)
-        if handler:
-            import inspect
+    def register_middleware(self, middleware: SimulatorMiddleware):
+        """Registers a simulator middleware dynamically."""
+        self._middlewares.append(middleware)
 
-            if inspect.iscoroutinefunction(handler):
-                return await handler(params)
-            return handler(params)
-        return {
-            "status": "error",
-            "message": f"Unknown action: {action} on {self.__class__.__name__}",
-        }
+    async def execute(self, action: str, params: dict[str, Any]) -> dict[str, Any]:
+        """Dispatches an action to a handler method through registered middlewares."""
+
+        async def _core_execute():
+            handler_name = f"handle_{action}"
+            handler = getattr(self, handler_name, None)
+            if handler:
+                import inspect
+
+                if inspect.iscoroutinefunction(handler):
+                    return await handler(params)
+                return handler(params)
+            return {
+                "status": "error",
+                "message": f"Unknown action: {action} on {self.__class__.__name__}",
+            }
+
+        def make_next(index: int) -> Callable[[], Coroutine[Any, Any, dict[str, Any]]]:
+            if index >= len(self._middlewares):
+                return _core_execute
+
+            middleware = self._middlewares[index]
+
+            async def call_next() -> dict[str, Any]:
+                try:
+                    return await middleware.process_action(
+                        self, action, params, make_next(index + 1)
+                    )
+                except Exception as e:
+                    import logging
+
+                    logging.getLogger(__name__).error(
+                        f"[BaseSimulator] Middleware {middleware.__class__.__name__} failed: {e}. "
+                        "Bypassing to next handler."
+                    )
+                    return await make_next(index + 1)()
+
+            return call_next
+
+        return await make_next(0)()
 
     async def cleanup(self):
         """[Turn 5] Explicit cleanup (e.g. closing browser, DB sessions)."""
@@ -724,11 +837,30 @@ class TerminalSimulator(BaseSimulator):
 
     def __init__(self, *args, **kwargs):
         super().__init__({"cwd": "/home/user", "history": []}, *args, **kwargs)
+        self.jail_provider = self.config.get("jail_provider") or SubprocessJailProvider()
+
+    def set_jail_provider(self, provider: BaseJailProvider):
+        """Allows swapping the execution jail provider (e.g. for containerized Docker)."""
+        self.jail_provider = provider
+
+    async def cleanup(self):
+        """Clean up active jail provider resources during simulator teardown."""
+        if hasattr(self, "jail_provider") and self.jail_provider:
+            run_id = self.config.get("run_id") or "default_run"
+            try:
+                await self.jail_provider.cleanup(run_id)
+            except Exception as e:
+                import logging
+
+                logging.getLogger(__name__).error(
+                    f"[TerminalSimulator] Jail provider cleanup failed: {e}"
+                )
+        await super().cleanup()
 
     async def handle_terminal_execute(self, params: dict) -> dict:
         """
-        [Iteration 3: Industrial Subprocess Engine]
         Executes a real shell command within the terminal_jail boundary.
+        Delegates the physical command execution to the pluggable jail_provider.
         """
         from .utils import is_path_safe
 
@@ -755,41 +887,19 @@ class TerminalSimulator(BaseSimulator):
                 return {"status": "success", "message": f"Changed directory to {target_path}"}
             return {"status": "error", "message": "Security Violation: Path traversal blocked."}
 
-        # [Iteration 3: Execution] Real Subprocess with env isolation
+        # [Iteration 3: Execution] Pluggable execution jail with env isolation
         try:
             cwd = self.state.get("cwd", str(jail_path))
             # Industrial Guard: Ensure current state CWD is still within jail
             if not is_path_safe(cwd, jail_path):
                 cwd = str(jail_path)
 
-            # [Iteration 5: Timeout] Standard Industrial Threshold
-            import sys
-
-            is_windows = sys.platform == "win32"
-
-            process = subprocess.run(
-                shlex.split(cmd) if not is_windows else cmd,
+            return await self.jail_provider.execute_command(
+                cmd=cmd,
                 cwd=cwd,
                 env={},  # Extreme Isolation: No host env leakage
-                capture_output=True,
-                text=True,
-                timeout=30,
-                shell=is_windows,  # Windows needs shell for builtins like 'echo'  # nosec B602
-                start_new_session=not is_windows,  # Process Group Isolation
+                timeout=30.0,
             )
-
-            return {
-                "status": "success" if process.returncode == 0 else "error",
-                "stdout": process.stdout,
-                "stderr": process.stderr,
-                "returncode": process.returncode,
-                "cwd": cwd,
-            }
-        except subprocess.TimeoutExpired:
-            return {
-                "status": "error",
-                "message": "Command timed out (Industrial Safety Limit: 30s)",
-            }
         except Exception as e:
             return {"status": "error", "message": f"Execution Error: {str(e)}"}
 
