@@ -785,12 +785,11 @@ async def test_engine_dispatcher_adapter_exception():
 
 @pytest.mark.asyncio
 async def test_engine_dispatcher_span_end_exception():
-    from opentelemetry.trace import Span
 
     from eval_runner.engine import AgentAdapterRegistry
 
     async def mock_adapter(payload, endpoint):
-        return {"status": "success"}
+        return {"status": "success", "action": "test_action"}
 
     AgentAdapterRegistry.register("openapi", mock_adapter, allow_override=True)
 
@@ -802,8 +801,66 @@ async def test_engine_dispatcher_span_end_exception():
 
     turn_ctx = DummyTurnCtx()
 
-    with patch.object(Span, "end", side_effect=Exception("Span end failure")):
+    from unittest.mock import MagicMock
+
+    mock_span = MagicMock()
+    mock_span.is_recording.return_value = True
+
+    mock_tracer = MagicMock()
+    mock_tracer.start_span.return_value = mock_span
+
+    # 1. Test dispatcher success span attributes
+    with (
+        patch("opentelemetry.trace.get_tracer", return_value=mock_tracer),
+        patch("opentelemetry.trace.set_span_in_context"),
+    ):
         res = await AgentAdapterRegistry.call_agent(
             "openapi", "hello", "local", [], turn_ctx=turn_ctx
         )
         assert res["status"] == "success"
+        mock_span.set_attribute.assert_any_call("agentv.action", "test_action")
+
+    # 2. Test dispatcher exception recording and finally block span.end failure
+    async def mock_crashing_adapter(payload, endpoint):
+        raise ValueError("Adapter crash")
+
+    AgentAdapterRegistry.register("openapi", mock_crashing_adapter, allow_override=True)
+    mock_span.end.side_effect = Exception("Span end failure")
+    mock_span.set_status.side_effect = Exception("Set status failure")
+
+    with (
+        patch("opentelemetry.trace.get_tracer", return_value=mock_tracer),
+        patch("opentelemetry.trace.set_span_in_context"),
+    ):
+        with pytest.raises(ValueError, match="Adapter crash"):
+            await AgentAdapterRegistry.call_agent(
+                "openapi", "hello", "local", [], turn_ctx=turn_ctx
+            )
+        mock_span.record_exception.assert_called()
+
+
+@pytest.mark.asyncio
+async def test_runner_finally_span_end_failure():
+    from unittest.mock import MagicMock, patch
+
+    from eval_runner.engine import run_evaluation
+
+    scenario = {"id": "dummy_span_end_scen", "workflow": {"nodes": []}}
+
+    mock_span = MagicMock()
+    mock_span.is_recording.return_value = True
+    mock_span.end.side_effect = Exception("Runner span end crash")
+
+    mock_ctx = MagicMock()
+    mock_ctx.otel_context = MagicMock()
+    mock_ctx.span_context = {}
+    mock_ctx.metadata = {}
+    mock_ctx.seed = None
+    mock_ctx.scenario = scenario
+
+    with (
+        patch("eval_runner.runner.EvaluationContext", return_value=mock_ctx),
+        patch("opentelemetry.trace.get_current_span", return_value=mock_span),
+    ):
+        await run_evaluation(scenario)
+        mock_span.end.assert_called_once()

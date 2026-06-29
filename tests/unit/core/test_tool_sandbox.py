@@ -374,3 +374,30 @@ def test_sandbox_sanitize_value_list():
     res = ToolSandbox._sanitize_value(["ls -la; rm -rf", "ok"])
     assert ";" not in res[0]
     assert res[1] == "ok"
+
+
+def test_sandbox_interceptor_bypassed_make_next():
+    import asyncio
+
+    from eval_runner.tool_sandbox import tool_sandbox_service
+
+    # Interceptor that cannot isolate the call (can_isolate returns False)
+    class BypassedInterceptor:
+        def can_isolate(self, tool_name):
+            return False
+
+        async def isolate_call(self, data, next_h):
+            return {"status": "error", "message": "should not be called"}
+
+    interceptor = BypassedInterceptor()
+    tool_sandbox_service.register_interceptor(interceptor)
+
+    try:
+        # Call should bypass interceptor and proceed to handler
+        async def dummy_handler(d):
+            return {"status": "success"}
+
+        res = asyncio.run(tool_sandbox_service.isolate({"tool_name": "test"}, dummy_handler))
+        assert res["status"] == "success"
+    finally:
+        tool_sandbox_service.reset()

@@ -547,6 +547,12 @@ def test_runs_route_list_runs_first_line_empty_and_rid_parsing(client, console_j
     r_parse_json = '{"event": "run_start", "run_id": "run-scen1-12345"}\n'
     (r_parse_dir / "run.jsonl").write_text(r_parse_json, encoding="utf-8")
 
+    # Format with length 2: run-scenario
+    r_parse_short_dir = runs_dir / "run-scen2"
+    r_parse_short_dir.mkdir(parents=True, exist_ok=True)
+    r_parse_short_json = '{"event": "run_start", "run_id": "run-scen2"}\n'
+    (r_parse_short_dir / "run.jsonl").write_text(r_parse_short_json, encoding="utf-8")
+
     res = client.get("/api/runs")
     assert res.status_code == 200
     runs = res.get_json()["runs"]
@@ -557,6 +563,10 @@ def test_runs_route_list_runs_first_line_empty_and_rid_parsing(client, console_j
     # Verify run-scen1-12345 was parsed and scenario is scen1
     parsed_run = next(r for r in runs if r["run_id"] == "run-scen1-12345")
     assert parsed_run["scenario"] == "scen1"
+
+    # Verify run-scen2 was parsed and scenario is scen2 (Line 100)
+    parsed_short_run = next(r for r in runs if r["run_id"] == "run-scen2")
+    assert parsed_short_run["scenario"] == "scen2"
 
 
 def test_runs_route_stream_tail_generator_branches(console_jail):
@@ -576,13 +586,15 @@ def test_runs_route_stream_tail_generator_branches(console_jail):
     # 2. Test Stream Timeout (Line 245)
     # We patch time.time with 4 values: start_time (0), stream_start (0),
     # and then the loop checks (4000)
-    with patch("time.time", side_effect=[0, 0, 4000, 4000]):
+    with patch("time.time", side_effect=[0, 0, 4000, 4000, 4000]):
         gen2 = tail_file_generator(log_file, run_id)
         # First read yields run_start, next loop iteration will see timeout since
         # time.time() >= 4000
         assert "run_start" in next(gen2)
         err_msg = next(gen2)
         assert "Stream exceeded max connection lifetime" in err_msg
+        with pytest.raises(StopIteration):
+            next(gen2)
 
     # 3. Test Log file deleted during tail (Line 250)
     gen3 = tail_file_generator(log_file, run_id)
@@ -590,6 +602,8 @@ def test_runs_route_stream_tail_generator_branches(console_jail):
     with patch.object(Path, "exists", return_value=False):
         err_msg = next(gen3)
         assert "Log file deleted" in err_msg
+        with pytest.raises(StopIteration):
+            next(gen3)
 
     # 4. Test Log file rotated (Line 257)
     class MockStat:
@@ -599,39 +613,32 @@ def test_runs_route_stream_tail_generator_branches(console_jail):
     gen4 = tail_file_generator(log_file, run_id)
     # Patch stat to return first inode, then return a different inode on second call
     with (
-        patch.object(Path, "stat", side_effect=[MockStat(10), MockStat(10), MockStat(20)]),
+        patch.object(
+            Path,
+            "stat",
+            side_effect=[MockStat(10), MockStat(10), MockStat(20), MockStat(20)],
+        ),
         patch.object(Path, "exists", return_value=True),
     ):
         assert "run_start" in next(gen4)
         err_msg = next(gen4)
         assert "Log file rotated" in err_msg
+        with pytest.raises(StopIteration):
+            next(gen4)
 
     # 5. Test Zombie check (Line 278)
     gen5 = tail_file_generator(log_file, run_id)
     assert "run_start" in next(gen5)
 
     # We patch is_run_alive to return False
-    # To hit line 278, we mock time.sleep to not block and raise an error on 151st loop/idle cycle
-    sleep_count = 0
-
-    def mock_sleep(seconds):
-        nonlocal sleep_count
-        sleep_count += 1
-        if sleep_count > 150:
-            raise StopIteration("Break tail loop")
-
+    # To hit line 278, we mock time.sleep to do nothing so the loop runs 150 cycles quickly
     with (
         patch("eval_runner.console.routes.runs.is_run_alive", return_value=False),
-        patch("time.sleep", side_effect=mock_sleep),
+        patch("time.sleep", return_value=None),
         patch.object(Path, "exists", return_value=True),
     ):
-        # Consume the generator until StopIteration or the aborted event is yielded
-        results = []
-        try:
-            for val in gen5:
-                results.append(val)
-        except StopIteration:
-            pass
+        # Consume the generator fully
+        results = list(gen5)
         assert any("Process thread terminated abruptly" in r for r in results)
 
     # 6. Test break when strategy_end/run_end in line (Line 284)
@@ -644,3 +651,40 @@ def test_runs_route_stream_tail_generator_branches(console_jail):
     assert "run_end" in next(gen6)
     with pytest.raises(StopIteration):
         next(gen6)
+
+
+def test_runs_route_stream_tail_generator_step_b_read(console_jail):
+    from eval_runner.console.routes.runs import tail_file_generator
+
+    run_id = "step_b_run"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    log_file = run_dir / "run.jsonl"
+
+    # Start with empty file
+    log_file.write_text("", encoding="utf-8")
+
+    gen = tail_file_generator(log_file, run_id)
+
+    # First read (nothing in file, starts tailing loop). We mock time.sleep to write to the file!
+    # This simulates a background process writing to the log file during the sleep cycle.
+    written = False
+
+    def mock_sleep(seconds):
+        nonlocal written
+        if not written:
+            log_file.write_text('{"event": "run_end"}\n', encoding="utf-8")
+            written = True
+
+    with (
+        patch("time.sleep", side_effect=mock_sleep),
+        patch.object(Path, "exists", return_value=True),
+    ):
+        # This will sleep, trigger the mock_sleep to write the end event,
+        # then read it in Step B, yield it, and break!
+        res = next(gen)
+        assert "run_end" in res
+
+        # Verify generator terminates
+        with pytest.raises(StopIteration):
+            next(gen)

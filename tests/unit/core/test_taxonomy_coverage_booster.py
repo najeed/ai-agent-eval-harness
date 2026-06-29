@@ -281,3 +281,22 @@ def test_check_agent_legitimate_tool_result():
     }
     res = FailureTaxonomy._check_agent(history, task_res)
     assert res is None
+
+
+def test_priority_analyzer_returns_non_none():
+    from eval_runner.taxonomy import BaseForensicAnalyzer, FailureCategory, FailureTaxonomy
+
+    class CustomPriorityAnalyzer(BaseForensicAnalyzer):
+        def analyze(self, history, task_result=None):
+            return FailureCategory.SECURITY_SANDBOX_ESCAPE
+
+    analyzer = CustomPriorityAnalyzer()
+    FailureTaxonomy.register_analyzer(analyzer, priority=True)
+
+    try:
+        # Diagnose should match this priority analyzer and return
+        # SECURITY_SANDBOX_ESCAPE immediately
+        res = FailureTaxonomy._diagnose([], [])
+        assert res == FailureCategory.SECURITY_SANDBOX_ESCAPE
+    finally:
+        FailureTaxonomy._priority_analyzers.remove(analyzer)

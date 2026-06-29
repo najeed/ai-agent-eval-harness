@@ -197,3 +197,72 @@ async def test_event_scheduling_exception():
         mock_loop.return_value.run_in_executor.side_effect = Exception("Scheduling failed")
         # Should catch scheduling exception gracefully without crashing emit
         bus.emit("fail_schedule", {"val": 1})
+
+
+def test_async_mode_sync_subscriber_otel_detach_exception():
+    from unittest.mock import MagicMock, patch
+
+    from eval_runner.events import EventEmitter
+
+    bus = EventEmitter(async_mode=True)
+
+    # Register a standard synchronous subscriber
+    bus.subscribe(lambda e: None)
+
+    # We patch attach to succeed (returning a token) and detach to fail.
+    # We also run on a custom mock executor to run synchronously inside submit()
+    # to control execution flow and catch exceptions.
+    class SyncExecutor:
+        def submit(self, fn, *args, **kwargs):
+            # Execute synchronously now to run _execute_subscriber_with_context
+            fn(*args, **kwargs)
+            f = MagicMock()
+            f.done.return_value = True
+            return f
+
+    with (
+        patch.object(bus, "get_executor", return_value=SyncExecutor()),
+        patch("opentelemetry.context.attach", return_value="my_token"),
+        patch("opentelemetry.context.detach", side_effect=Exception("Detach failed")),
+    ):
+        # Emit with span_context to trigger the OTel block inside submit
+        bus.emit("test_event", {"val": 1}, span_context={"traceparent": "00-1-2-01"})
+
+
+def test_sync_mode_otel_detach_exception():
+    from unittest.mock import patch
+
+    from eval_runner.events import EventEmitter
+
+    bus = EventEmitter(async_mode=False)
+    bus.subscribe(lambda e: None)
+
+    with (
+        patch("opentelemetry.context.attach", return_value="sync_token"),
+        patch("opentelemetry.context.detach", side_effect=Exception("Sync detach failed")),
+    ):
+        bus.emit("test_event", {"val": 1}, span_context={"traceparent": "00-1-2-01"})
+
+
+@pytest.mark.asyncio
+async def test_async_coro_otel_detach_exception():
+    import asyncio
+    from unittest.mock import patch
+
+    from eval_runner.events import EventEmitter
+
+    bus = EventEmitter(async_mode=True)
+
+    async def dummy_coro(event):
+        pass
+
+    bus.subscribe(dummy_coro)
+
+    with (
+        patch("opentelemetry.context.attach", return_value="coro_token"),
+        patch("opentelemetry.context.detach", side_effect=Exception("Coro detach failed")),
+    ):
+        bus.emit("test_event", {"val": 1}, span_context={"traceparent": "00-1-2-01"})
+        # Allow loop tasks to run
+        await asyncio.sleep(0.01)
+        bus.flush()
