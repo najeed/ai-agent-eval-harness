@@ -210,3 +210,74 @@ def test_protocol_analyzer_direct_call():
         [], {"protocol_sequence_required": ["step_a"], "protocol_sequence": ["step_b"]}
     )
     assert res == FailureCategory.PARITY_PROTOCOL_VIOLATION
+
+
+# --- Coverage booster for taxonomy.py ---
+
+
+def test_priority_analyzer_registration_duplicate():
+    from eval_runner.taxonomy import BaseForensicAnalyzer, FailureTaxonomy
+
+    class DummyPriorityAnalyzer(BaseForensicAnalyzer):
+        def analyze(self, history, task_result=None):
+            return None
+
+    analyzer = DummyPriorityAnalyzer()
+    initial_len = len(FailureTaxonomy._priority_analyzers)
+
+    # Register twice
+    FailureTaxonomy.register_analyzer(analyzer, priority=True)
+    FailureTaxonomy.register_analyzer(analyzer, priority=True)
+
+    assert len(FailureTaxonomy._priority_analyzers) == initial_len + 1
+    # Cleanup
+    FailureTaxonomy._priority_analyzers.remove(analyzer)
+
+
+def test_priority_analyzer_exception_handling():
+    from eval_runner.taxonomy import BaseForensicAnalyzer, FailureTaxonomy
+
+    class CrashingAnalyzer(BaseForensicAnalyzer):
+        def analyze(self, history, task_result=None):
+            raise RuntimeError("Crashed analyze")
+
+    analyzer = CrashingAnalyzer()
+    FailureTaxonomy.register_analyzer(analyzer, priority=True)
+
+    try:
+        # Should catch exceptions from priority analyzers and proceed to standard checks
+        res = FailureTaxonomy._diagnose([], [])
+        assert res == FailureCategory.UNKNOWN_FAILURE
+    finally:
+        FailureTaxonomy._priority_analyzers.remove(analyzer)
+
+
+def test_check_agent_empty_params_and_valid_params():
+    from eval_runner.taxonomy import FailureTaxonomy
+
+    # 1. Test empty params (513->501 branch)
+    history_empty_params = [{"role": "agent", "tool_calls": [{"tool": "my_tool", "arguments": {}}]}]
+    task_res = {"tool_registry": {"my_tool": {"parameters": ["arg1"]}}}
+    res = FailureTaxonomy._check_agent(history_empty_params, task_res)
+    assert res is None
+
+    # 2. Test valid parameters (514->513 branch)
+    history_valid_params = [
+        {"role": "agent", "tool_calls": [{"tool": "my_tool", "arguments": {"arg1": "val1"}}]}
+    ]
+    res2 = FailureTaxonomy._check_agent(history_valid_params, task_res)
+    assert res2 is None
+
+
+def test_check_agent_legitimate_tool_result():
+    from eval_runner.taxonomy import FailureTaxonomy
+
+    # Test when "tool_result" is in content, but it is NOT fabricated (it exists in env_events)
+    history = [{"role": "agent", "content": "Result was: tool_result success"}]
+    task_res = {
+        "tool_registry": {},
+        # Matches content check, so not a fabrication
+        "events": [{"role": "environment", "content": "success"}],
+    }
+    res = FailureTaxonomy._check_agent(history, task_res)
+    assert res is None

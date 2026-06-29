@@ -263,3 +263,83 @@ def test_system_route_ping(client):
     res = client.get("/api/ping")
     assert res.status_code == 200
     assert res.get_json()["status"] == "pong"
+
+
+# --- Coverage booster for system.py ---
+
+
+def test_debugger_state_store_post_event_no_dict_data():
+    from eval_runner.console.routes.system import DebuggerStateStore
+
+    DebuggerStateStore.reset()
+    # 1. No data key
+    DebuggerStateStore.post_event({"event": "test"})
+    # 2. data key is not a dict
+    DebuggerStateStore.post_event({"event": "test", "data": "string_not_dict"})
+    assert len(DebuggerStateStore._events) == 2
+
+
+def test_system_route_list_docs_dir_missing(client):
+    from eval_runner import config
+
+    # Temporarily point PROJECT_ROOT to somewhere where docs-old does not exist
+    with patch.object(config, "PROJECT_ROOT", Path("non_existent_folder_xyz")):
+        res = client.get("/api/docs")
+        assert res.status_code == 200
+        assert res.get_json()["docs"] == []
+
+
+def test_system_route_read_doc_no_extension_fallback(client, console_jail):
+    docs_dir = console_jail["docs"]
+    doc = docs_dir / "my_guide.md"
+    doc.write_text("my guide content", encoding="utf-8")
+
+    # Access filename without .md extension, should fallback to my_guide.md (Lines 167-169)
+    res = client.get("/api/docs/my_guide")
+    assert res.status_code == 200
+    assert res.get_json()["content"] == "my guide content"
+
+
+def test_system_route_cleanup_runs_files_and_plugins(client, console_jail):
+    runs_dir = console_jail["runs"]
+    # 1. Create a directory (should be deleted)
+    (runs_dir / "run_dir_1").mkdir(parents=True, exist_ok=True)
+    # 2. Create a jsonl file (should be link/deleted)
+    (runs_dir / "run_1.jsonl").write_text("{}", encoding="utf-8")
+    # 3. Create a non-json/jsonl file (should be skipped)
+    (runs_dir / "run_2.txt").write_text("{}", encoding="utf-8")
+
+    class CrashingCleanupPlugin:
+        def on_cleanup_runs(self):
+            raise ValueError("Plugin cleanup failed")
+
+    from eval_runner.plugins import manager
+
+    plugin = CrashingCleanupPlugin()
+    manager.plugins.append(plugin)
+
+    try:
+        res = client.post("/api/cleanup-runs")
+        assert res.status_code == 200
+        assert res.get_json()["count"] >= 2
+        assert not (runs_dir / "run_dir_1").exists()
+        assert not (runs_dir / "run_1.jsonl").exists()
+        assert (runs_dir / "run_2.txt").exists()
+    finally:
+        manager.plugins.remove(plugin)
+
+
+def test_system_route_debugger_state_glob_fallback_and_empty_line(client, console_jail):
+    runs_dir = console_jail["runs"]
+    # Place trace file inside a nested sub-directory to force glob fallback (Line 349)
+    nested_dir = runs_dir / "nested_folder" / "glob_run_id"
+    nested_dir.mkdir(parents=True, exist_ok=True)
+
+    # Write empty lines along with a valid trace event to cover empty line checks (Line 356->355)
+    (nested_dir / "run.jsonl").write_text(
+        '\n\n{"event": "run_start", "data": {}}\n\n', encoding="utf-8"
+    )
+
+    res = client.get("/api/debugger/state?run_id=glob_run_id")
+    assert res.status_code == 200
+    assert len(res.get_json()["data"]["timeline"]) == 1

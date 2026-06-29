@@ -646,3 +646,164 @@ def test_failure_corpus_error_handling():
     ):
         failure_corpus.search("test")
         mock_print.assert_any_call("❌ Error searching corpus: Read error")
+
+
+# --- Coverage booster for runner.py and engine.py ---
+
+
+@pytest.mark.asyncio
+async def test_runner_otel_parent_context():
+
+    from eval_runner.runner import DefaultRunner
+
+    scenario = {
+        "id": "test-otel",
+        "span_context": {"traceparent": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"},
+    }
+    runner = DefaultRunner()
+
+    # Mock trace.get_tracer to track start_span
+    mock_tracer = patch("opentelemetry.trace.get_tracer").start()
+    mock_span = mock_tracer.return_value.start_span.return_value
+    mock_span.is_recording.return_value = True
+
+    try:
+        # 1. Test scenario["span_context"] path
+        await runner.run(scenario, attempts=1)
+
+        # 2. Test metadata["traceparent"] path
+        metadata = {"traceparent": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"}
+        await runner.run({"id": "test-otel-meta"}, attempts=1, metadata=metadata)
+    finally:
+        patch.stopall()
+
+
+@pytest.mark.asyncio
+async def test_runner_otel_init_failure():
+    from eval_runner.runner import DefaultRunner
+
+    runner = DefaultRunner()
+
+    # Mock trace.get_tracer to raise an exception
+    with patch("opentelemetry.trace.get_tracer", side_effect=Exception("Tracer failed")):
+        # Should catch telemetry exception and proceed normally
+        res = await runner.run({"id": "test-otel-fail"}, attempts=1)
+        assert isinstance(res, list)
+
+
+@pytest.mark.asyncio
+async def test_runner_post_process_error():
+    from eval_runner.runner import DefaultRunner
+
+    runner = DefaultRunner()
+
+    # Mock calculate_pass_at_k to raise an exception
+    with patch.object(runner, "calculate_pass_at_k", side_effect=ValueError("Post-process crash")):
+        # Should catch post-process failure gracefully
+        res = await runner.run({"id": "test-post-fail"}, attempts=1)
+        assert isinstance(res, list)
+
+
+@pytest.mark.asyncio
+async def test_runner_finally_span_end_exception():
+    from opentelemetry.trace import Span
+
+    from eval_runner.runner import DefaultRunner
+
+    runner = DefaultRunner()
+
+    # Mock Span.end to raise an exception
+    with patch.object(Span, "end", side_effect=Exception("End failed")):
+        res = await runner.run({"id": "test-span-end-fail"}, attempts=1)
+        assert isinstance(res, list)
+
+
+@pytest.mark.asyncio
+async def test_engine_discover_already_discovered():
+    from eval_runner.engine import AgentAdapterRegistry
+
+    # If already discovered, should return early
+    AgentAdapterRegistry._discovered = True
+    # Verify no discovery takes place
+    with patch("eval_runner.config.RegistryManager.get_resolved_registry") as mock_resolved:
+        AgentAdapterRegistry._discover()
+        mock_resolved.assert_not_called()
+    AgentAdapterRegistry._discovered = False
+
+
+@pytest.mark.asyncio
+async def test_engine_dispatcher_otel_carrier():
+
+    from eval_runner.engine import AgentAdapterRegistry
+
+    # Patch propagation.inject to insert traceparent
+    def mock_inject(carrier, context=None):
+        carrier["traceparent"] = "mock-traceparent"
+
+    async def mock_adapter(payload, endpoint):
+        return {"status": "success", "action": "test"}
+
+    AgentAdapterRegistry.register("openapi", mock_adapter, allow_override=True)
+
+    class DummyTurnCtx:
+        turn_number = 1
+        metadata = {}
+        input_payload = {}
+        otel_context = None
+
+    turn_ctx = DummyTurnCtx()
+
+    with patch("opentelemetry.trace.propagation.inject", side_effect=mock_inject, create=True):
+        res = await AgentAdapterRegistry.call_agent(
+            "openapi", "hello", "local", [], turn_ctx=turn_ctx
+        )
+        assert turn_ctx.span_context == {"traceparent": "mock-traceparent"}
+        assert res["status"] == "success"
+
+
+@pytest.mark.asyncio
+async def test_engine_dispatcher_adapter_exception():
+    from eval_runner.engine import AgentAdapterRegistry
+
+    async def mock_adapter_fail(payload, endpoint):
+        raise ValueError("Adapter execution crashed")
+
+    AgentAdapterRegistry.register("openapi", mock_adapter_fail, allow_override=True)
+
+    class DummyTurnCtx:
+        turn_number = 1
+        metadata = {}
+        input_payload = {}
+        otel_context = None
+
+    turn_ctx = DummyTurnCtx()
+
+    # Verify it records exception and propagates/re-raises
+    with pytest.raises(ValueError, match="Adapter execution crashed"):
+        await AgentAdapterRegistry.call_agent("openapi", "hello", "local", [], turn_ctx=turn_ctx)
+
+
+@pytest.mark.asyncio
+async def test_engine_dispatcher_span_end_exception():
+    from opentelemetry.trace import Span
+
+    from eval_runner.engine import AgentAdapterRegistry
+
+    async def mock_adapter(payload, endpoint):
+        return {"status": "success"}
+
+    AgentAdapterRegistry.register("openapi", mock_adapter, allow_override=True)
+
+    class DummyTurnCtx:
+        turn_number = 1
+        metadata = {}
+        input_payload = {}
+        otel_context = None
+
+    turn_ctx = DummyTurnCtx()
+
+    with patch.object(Span, "end", side_effect=Exception("Span end failure")):
+        res = await AgentAdapterRegistry.call_agent(
+            "openapi", "hello", "local", [], turn_ctx=turn_ctx
+        )
+        assert res["status"] == "success"

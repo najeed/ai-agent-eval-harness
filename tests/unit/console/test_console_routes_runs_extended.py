@@ -526,3 +526,121 @@ def test_runs_route_tail_file_generator_inode_rotation_transient_oserror(console
     ):
         with pytest.raises(ValueError, match="Stop loop"):
             next(gen)
+
+
+# --- Coverage booster for runs.py ---
+
+
+def test_runs_route_list_runs_first_line_empty_and_rid_parsing(client, console_jail):
+    runs_dir = console_jail["runs"]
+
+    # 1. Create a run with first line empty (Line 89 branch)
+    r_empty_dir = runs_dir / "r_empty"
+    r_empty_dir.mkdir(parents=True, exist_ok=True)
+    r_empty_json = '\n{"event": "run_start", "run_id": "r_empty"}\n'
+    (r_empty_dir / "run.jsonl").write_text(r_empty_json, encoding="utf-8")
+
+    # 2. Create a run where scenario is missing and parsed from run_id (Lines 96-100)
+    # Format: run-scenario_name-timestamp
+    r_parse_dir = runs_dir / "run-scen1-12345"
+    r_parse_dir.mkdir(parents=True, exist_ok=True)
+    r_parse_json = '{"event": "run_start", "run_id": "run-scen1-12345"}\n'
+    (r_parse_dir / "run.jsonl").write_text(r_parse_json, encoding="utf-8")
+
+    res = client.get("/api/runs")
+    assert res.status_code == 200
+    runs = res.get_json()["runs"]
+
+    # Verify r_empty was skipped (since first line was empty)
+    assert not any(r["run_id"] == "r_empty" for r in runs)
+
+    # Verify run-scen1-12345 was parsed and scenario is scen1
+    parsed_run = next(r for r in runs if r["run_id"] == "run-scen1-12345")
+    assert parsed_run["scenario"] == "scen1"
+
+
+def test_runs_route_stream_tail_generator_branches(console_jail):
+    from eval_runner.console.routes.runs import tail_file_generator
+
+    run_id = "stream_branch_run"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    log_file = run_dir / "run.jsonl"
+
+    # 1. Write file with empty lines (Line 231->230 branch)
+    log_file.write_text('\n\n{"event": "run_start"}\n\n', encoding="utf-8")
+
+    gen1 = tail_file_generator(log_file, run_id)
+    assert "run_start" in next(gen1)
+
+    # 2. Test Stream Timeout (Line 245)
+    # We patch time.time with 4 values: start_time (0), stream_start (0),
+    # and then the loop checks (4000)
+    with patch("time.time", side_effect=[0, 0, 4000, 4000]):
+        gen2 = tail_file_generator(log_file, run_id)
+        # First read yields run_start, next loop iteration will see timeout since
+        # time.time() >= 4000
+        assert "run_start" in next(gen2)
+        err_msg = next(gen2)
+        assert "Stream exceeded max connection lifetime" in err_msg
+
+    # 3. Test Log file deleted during tail (Line 250)
+    gen3 = tail_file_generator(log_file, run_id)
+    assert "run_start" in next(gen3)
+    with patch.object(Path, "exists", return_value=False):
+        err_msg = next(gen3)
+        assert "Log file deleted" in err_msg
+
+    # 4. Test Log file rotated (Line 257)
+    class MockStat:
+        def __init__(self, ino):
+            self.st_ino = ino
+
+    gen4 = tail_file_generator(log_file, run_id)
+    # Patch stat to return first inode, then return a different inode on second call
+    with (
+        patch.object(Path, "stat", side_effect=[MockStat(10), MockStat(10), MockStat(20)]),
+        patch.object(Path, "exists", return_value=True),
+    ):
+        assert "run_start" in next(gen4)
+        err_msg = next(gen4)
+        assert "Log file rotated" in err_msg
+
+    # 5. Test Zombie check (Line 278)
+    gen5 = tail_file_generator(log_file, run_id)
+    assert "run_start" in next(gen5)
+
+    # We patch is_run_alive to return False
+    # To hit line 278, we mock time.sleep to not block and raise an error on 151st loop/idle cycle
+    sleep_count = 0
+
+    def mock_sleep(seconds):
+        nonlocal sleep_count
+        sleep_count += 1
+        if sleep_count > 150:
+            raise StopIteration("Break tail loop")
+
+    with (
+        patch("eval_runner.console.routes.runs.is_run_alive", return_value=False),
+        patch("time.sleep", side_effect=mock_sleep),
+        patch.object(Path, "exists", return_value=True),
+    ):
+        # Consume the generator until StopIteration or the aborted event is yielded
+        results = []
+        try:
+            for val in gen5:
+                results.append(val)
+        except StopIteration:
+            pass
+        assert any("Process thread terminated abruptly" in r for r in results)
+
+    # 6. Test break when strategy_end/run_end in line (Line 284)
+    log_file_end = run_dir / "run_end.jsonl"
+    log_file_end_content = '{"event": "run_start"}\n{"event": "run_end"}\n'
+    log_file_end.write_text(log_file_end_content, encoding="utf-8")
+    gen6 = tail_file_generator(log_file_end, "run_end")
+    assert "run_start" in next(gen6)
+    # The next read should yield run_end and terminate the generator (not raise any error or wait)
+    assert "run_end" in next(gen6)
+    with pytest.raises(StopIteration):
+        next(gen6)

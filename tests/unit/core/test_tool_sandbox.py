@@ -211,3 +211,166 @@ def test_abstract_sandbox_propagate_bus(tmp_path):
     mock_bus.emit.assert_any_call(
         "state_write", {"agent": "agent_a", "path": "test:path", "value": 42}
     )
+
+
+# --- Coverage booster for tool_sandbox.py ---
+
+
+@pytest.mark.asyncio
+async def test_sandbox_cleanup_missing_dir_and_no_jail_cleanup(tmp_path):
+    from eval_runner.tool_sandbox import ToolSandbox
+
+    # 1. Non-existent path for resources cleanup (Line 40->36 branch)
+    scenario = {
+        "id": "cleanup-test",
+        "cleanup_workspace": True,
+        "metadata": {"cleanup_terminal_jail": False},
+    }
+    sandbox = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+    sandbox.resources.register(tmp_path / "non_existent_file_xyz")
+
+    # 2. Cleanup workspace when it does not exist (Line 288->295 branch)
+    # Delete workspace dir first
+    import shutil
+
+    if tmp_path.exists():
+        shutil.rmtree(tmp_path)
+
+    await sandbox.teardown()
+    # Should complete without error and with cleanup_terminal_jail = False (Line 299->exit branch)
+
+
+def test_sandbox_service_interceptor_branches():
+    from eval_runner.tool_sandbox import ToolSandboxInterceptor, tool_sandbox_service
+
+    class DummyInterceptor(ToolSandboxInterceptor):
+        def __init__(self, can_isolate_val=True, raise_recursion=False):
+            self.can_isolate_val = can_isolate_val
+            self.raise_recursion = raise_recursion
+
+        def can_isolate(self, tool_name: str) -> bool:
+            return self.can_isolate_val
+
+        async def isolate_call(self, call_data: dict, next_handler) -> dict:
+            if self.raise_recursion:
+                raise RecursionError("Simulated recursion")
+            return await next_handler(call_data)
+
+    # 1. Test register_interceptor when local_interceptors is not None (Line 358)
+    tool_sandbox_service._local_interceptors.set([])
+    interceptor = DummyInterceptor(can_isolate_val=False)
+    tool_sandbox_service.register_interceptor(interceptor)
+    assert interceptor in tool_sandbox_service._local_interceptors.get()
+    tool_sandbox_service.reset()
+
+    # 2. Test override_interceptor finally block where interceptor not in global (Line 383->exit)
+    async def run_override():
+        async with tool_sandbox_service.override_interceptor(interceptor):
+            # Manually remove from global to trigger the branch in finally
+            tool_sandbox_service._global_interceptors.remove(interceptor)
+
+    import asyncio
+
+    asyncio.run(run_override())
+
+    # 3. Test max depth cycle detection (Line 396)
+    async def run_pipeline():
+        # Inject interceptor that calls isolate on itself/loop
+        class CyclingInterceptor(ToolSandboxInterceptor):
+            def can_isolate(self, t):
+                return True
+
+            async def isolate_call(self, data, next_h):
+                # Force infinite recursion call to next_h
+                return await next_h(data)
+
+        # Call with index/depth starting high or manually trigger recursion
+        # We can test by setting up a recursive list of interceptors
+        # But even simpler: mock the interceptors list to be large, or call make_next directly.
+        # Let's register many interceptors to hit depth > 50
+        for _ in range(55):
+            tool_sandbox_service.register_interceptor(CyclingInterceptor())
+
+        with pytest.raises(RecursionError, match="Max tool sandbox pipeline depth"):
+            await tool_sandbox_service.isolate({"tool_name": "test"}, lambda d: d)
+
+    asyncio.run(run_pipeline())
+    tool_sandbox_service.reset()
+
+    # 4. Test interceptor raising RecursionError/KeyboardInterrupt (Line 409)
+    async def run_raise_recursion():
+        interceptor_err = DummyInterceptor(can_isolate_val=True, raise_recursion=True)
+        async with tool_sandbox_service.override_interceptor(interceptor_err):
+            with pytest.raises(RecursionError, match="Simulated recursion"):
+                await tool_sandbox_service.isolate({"tool_name": "test"}, lambda d: d)
+
+    asyncio.run(run_raise_recursion())
+    tool_sandbox_service.reset()
+
+
+@pytest.mark.asyncio
+async def test_sandbox_execute_missing_branches(tmp_path):
+    from eval_runner.simulators import BaseSimulator
+    from eval_runner.tool_sandbox import ToolSandbox
+
+    class DummyDnaSimulator(BaseSimulator):
+        async def handle_dummy_dna(self, params):
+            return {"status": "success", "dna": {"key1": "val1"}}
+
+    # 1. Test tool not matching simulator prefix (Line 475->474)
+    # 2. Test merging dna from raw result (Line 506)
+    sim = DummyDnaSimulator()
+    scenario = {"id": "dummy-dna", "enabled_shims": ["dummy"]}
+    sandbox = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+    sandbox._simulator_cache = {"dummy": sim}
+
+    # Execute action starting with dummy_ -> hits execute and collects DNA
+    res = await sandbox.execute("dummy_dna", {})
+    assert res.get_secure_metadata()["key1"] == "val1"
+
+    # Execute action not starting with dummy_ -> skips loop (Line 475->474)
+    res_skip = await sandbox.execute("other_tool", {})
+    assert res_skip["status"] == "success"  # fallback success output
+
+
+@pytest.mark.asyncio
+async def test_sandbox_state_changes_and_shared_state_edge_cases(tmp_path):
+    from eval_runner.tool_sandbox import ToolSandbox
+
+    scenario = {
+        "id": "state-edge",
+        "tools": {
+            "test_tool": {
+                # State change with missing/None path (Line 531->528 branch)
+                "state_changes": [{"path": None, "value": 1}]
+            }
+        },
+        "agent_topology": {"agent_a": {"writes": ["*"], "reads": ["*"]}},
+    }
+    sandbox = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+
+    # 1. State change without path
+    await sandbox.execute("test_tool", {})
+
+    # 2. Shared write without path (Line 539->547 branch)
+    await sandbox.execute("test_tool", {"shared_write": {"value": 1}})
+
+    # 3. Shared read without path (Line 549->558 branch)
+    await sandbox.execute("test_tool", {"shared_read": {"value": 1}})
+
+
+def test_sandbox_sanitize_path_vfs_prefix_check():
+    from eval_runner.tool_sandbox import ToolSandbox
+
+    # If path already starts with config.SANDBOX_VFS_PREFIX (Line 631->634 branch)
+    res = ToolSandbox._sanitize_path("vfs:/etc/passwd")
+    assert res == "vfs:/etc/passwd"
+
+
+def test_sandbox_sanitize_value_list():
+    from eval_runner.tool_sandbox import ToolSandbox
+
+    # Test sanitizing a list of strings (Line 782-784)
+    res = ToolSandbox._sanitize_value(["ls -la; rm -rf", "ok"])
+    assert ";" not in res[0]
+    assert res[1] == "ok"

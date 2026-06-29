@@ -339,6 +339,177 @@ async def test_hotswap_and_discovery_guardrails(tmp_path):
         manager.plugins.remove(plugin)
 
 
+# --- Coverage booster for simulators.py ---
+
+
+@pytest.mark.asyncio
+async def test_base_simulator_cleanup_no_instances():
+    from eval_runner.simulators import BaseSimulator
+
+    sim = BaseSimulator()
+    # Delete _instances to trigger 171->exit branch
+    if hasattr(BaseSimulator, "_instances"):
+        delattr(BaseSimulator, "_instances")
+    await sim.cleanup()
+
+
+@pytest.mark.asyncio
+async def test_git_simulator_no_git_exists(tmp_path):
+    from eval_runner.simulators import GitSimulator
+
+    sim = GitSimulator(config={"terminal_jail": str(tmp_path)})
+    # Should return None if .git doesn't exist (242->244 branch)
+    repo = sim._get_repo()
+    assert repo is None
+
+
+@pytest.mark.asyncio
+async def test_database_simulator_db_uri_in_config(tmp_path):
+    from eval_runner.simulators import DatabaseSimulator
+
+    db_path = tmp_path / "custom.db"
+    # Provide Connection string in connection config (462->468 branch)
+    config = {"primary_db": {"connection": f"sqlite:///{str(db_path).replace('\\', '/')}"}}
+    sim = DatabaseSimulator(config=config)
+    # Triggers table provisioning on custom DB path
+    snapshot = await sim.get_snapshot()
+    assert "error" not in snapshot
+
+
+@pytest.mark.asyncio
+async def test_database_simulator_non_select_row_returning_query():
+    from eval_runner.simulators import DatabaseSimulator
+
+    sim = DatabaseSimulator()
+    # PRAGMA returns rows but does not start with SELECT (618->623 branch)
+    res = await sim.handle_database_query({"query": "PRAGMA table_info(users)"})
+    assert res["status"] == "success"
+
+
+@pytest.mark.asyncio
+async def test_database_simulator_delete_untracked_and_multiple_rows():
+    from eval_runner.simulators import DatabaseSimulator
+
+    sim = DatabaseSimulator()
+
+    # Initialize engine first
+    engine = sim._get_engine()
+
+    # 1. Log a DELETE audit entry for untracked row (695->664 branch)
+    # We directly execute query to insert forensic event manually
+    from sqlalchemy import text
+
+    with engine.connect() as conn:
+        conn.execute(
+            text(
+                "INSERT INTO _forensic_audit_log "
+                "(table_name, action, row_identity, old_data) "
+                "VALUES ('users', 'DELETE', '999', 'null')"
+            )
+        )
+
+        # 2. Add multiple rows to the same table (702->704 branch)
+        conn.execute(
+            text(
+                "INSERT INTO _forensic_audit_log "
+                "(table_name, action, row_identity, new_data) "
+                "VALUES ('users', 'INSERT', '1', '{\"username\": \"alice\"}')"
+            )
+        )
+        conn.execute(
+            text(
+                "INSERT INTO _forensic_audit_log "
+                "(table_name, action, row_identity, new_data) "
+                "VALUES ('users', 'INSERT', '2', '{\"username\": \"bob\"}')"
+            )
+        )
+        conn.commit()
+
+    snapshot = await sim.get_snapshot()
+    assert len(snapshot["tables"]["users"]) == 2
+
+
+@pytest.mark.asyncio
+async def test_cloud_simulator_poll_instance_not_found():
+    from eval_runner.simulators import CloudSimulator
+
+    sim = CloudSimulator()
+    sim.state["instances"] = []
+    # Poll non-existent instance (851->855 branch)
+    res = await sim.on_poll("instance_running", {"instance_id": "i-999"})
+    assert res is False
+
+
+@pytest.mark.asyncio
+async def test_terminal_simulator_jail_cleanup_exceptions():
+    from eval_runner.simulators import BaseJailProvider, TerminalSimulator
+
+    # 1. Test when jail_provider is None (871->881 branch)
+    sim = TerminalSimulator()
+    sim.jail_provider = None
+    await sim.cleanup()
+
+    # 2. Test when cleanup raises exception (875-878 branch)
+    class CrashingJailProvider(BaseJailProvider):
+        async def execute_command(self, cmd, cwd, env, timeout):
+            return {}
+
+        async def cleanup(self, run_id):
+            raise ValueError("Cleanup failure")
+
+    sim2 = TerminalSimulator()
+    sim2.set_jail_provider(CrashingJailProvider())
+    await sim2.cleanup()  # should log error but not crash
+
+
+@pytest.mark.asyncio
+async def test_terminal_simulator_cd_absolute_and_execution_exception():
+    from eval_runner.simulators import BaseJailProvider, TerminalSimulator
+
+    sim = TerminalSimulator()
+    # Mock jail path
+    sim.terminal_jail = "/"
+
+    # 1. cd to absolute path (905 branch)
+    # Using a path within jail to pass is_path_safe
+    res = await sim.handle_terminal_execute({"cmd": "cd /"})
+    assert res["status"] == "success"
+
+    # 2. Execute command raises exception (926-927 branch)
+    class ExceptionJailProvider(BaseJailProvider):
+        async def execute_command(self, cmd, cwd, env, timeout):
+            raise RuntimeError("Execution failed")
+
+        async def cleanup(self, run_id):
+            pass
+
+    sim.set_jail_provider(ExceptionJailProvider())
+    res_err = await sim.handle_terminal_execute({"cmd": "ls"})
+    assert "Execution Error" in res_err["message"]
+
+
+@pytest.mark.asyncio
+async def test_browser_simulator_cleanup_no_browser():
+    from eval_runner.simulators import BrowserSimulator
+
+    sim = BrowserSimulator()
+    sim._browser = None
+    sim._playwright = None
+    # cleanup when both are None (1015->1017 and 1017->exit branches)
+    await sim.cleanup()
+
+
+@pytest.mark.asyncio
+async def test_cicd_simulator_poll_build_not_found():
+    from eval_runner.simulators import CICDSimulator
+
+    sim = CICDSimulator()
+    sim.state["builds"] = []
+    # Poll non-existent build (1112->1117 branch)
+    res = await sim.on_poll("build_complete", {"build_id": "b-999"})
+    assert res is False
+
+
 @pytest.mark.asyncio
 async def test_miscellaneous_shims_logic():
     """Verify high-level shims coverage."""

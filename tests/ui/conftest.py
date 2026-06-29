@@ -19,8 +19,13 @@ def dashboard_server():
     env = os.environ.copy()
     env["TRAJECTORY_DIR"] = str(mock_dir)
 
-    # Start streamlit on a non-standard port for testing
-    port = "8505"
+    # Find a free port dynamically to prevent collisions
+    import socket
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("127.0.0.1", 0))
+        port = str(s.getsockname()[1])
+
     cmd = [
         sys.executable,
         "-m",
@@ -35,7 +40,7 @@ def dashboard_server():
 
     process = subprocess.Popen(cmd, env=env)
 
-    # Robust Polling Loop (Industrial v2.1 Hardening)
+    # Robust Polling Loop
     import requests
 
     start_time = time.time()
