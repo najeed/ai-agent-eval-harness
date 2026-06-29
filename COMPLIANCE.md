@@ -34,7 +34,7 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **pypdf** | 6.14.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **python-docx** | 1.2.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **streamlit** | 1.57.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **pandas** | 3.0.4 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **pandas** | 3.0.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **pygments** | 2.20.0 | BSD-2-Clause | [BSD-2-Clause.txt](LICENSES/BSD-2-Clause.txt) |
 | **langchain-core** | 1.4.8 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **pyasn1** | 0.6.3 | BSD-2-Clause | [BSD-2-Clause.txt](LICENSES/BSD-2-Clause.txt) |
@@ -54,8 +54,8 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **cyclecore-pq** | 0.3.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **idna** | 3.18 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **langgraph** | 1.2.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **ag2** | 0.14.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **ruff** | 0.15.20 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **ag2** | 0.13.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **ruff** | 0.15.14 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 
 ## 3. Obligations & Compliance Steps
 To remain compliant with these licenses, the following steps are handled automatically by this repository:
