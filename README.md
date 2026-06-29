@@ -49,7 +49,7 @@ graph TD
 | **Architect** | [Najeed Khan](https://github.com/najeed) |
 | **License** | Apache License 2.0 |
 | **Status** | 🟢 Production-Ready (NIST AI-100-1 Aligned) |
-| **Version** | v1.6.4 (June 2026 Baseline) |
+| **Version** | v1.6.5 (June 2026 Baseline) |
 | **Trust Model** | [Behavioral DNA & VC v3.0.0](docs-old/architecture.md) |
 | **Architecture** | [Identity-Centric Core](docs-old/architecture.md) |
 | **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.4 Spec](docs-old/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
@@ -156,14 +156,14 @@ The harness is organized into the following key components:
 - **Behavioral DNA Telemetry**: High-granularity event bus (4-level: PHASE, SUBTASK, ACTION, STEP) providing a precise "genetic" map of agent decision-making.
 - **Verification Certificate (VC) v3.0.0**: Traces are signed via the **Identity Registry** (Ed25519) and backed by a **Forensic Evidence Ledger** that hashes sidecar artifacts to ensure end-to-end provenance.
 
-### 🌟 What's New in v1.6.2 (May 2026 Update)
+### 🌟 What's New in v1.6.5 (June 2026 Update)
 
-- **Zero-Touch Extension Architecture**: Native support for Python Entry Points (`agentv.extensions`), allowing Enterprise and third-party commands to be registered without modifying Core code.
-- **Unified Functional Dispatcher**: Complete refactor of the CLI engine into a data-driven dispatch model for 100% decoupling.
-- **Lazy-Loading Optimization**: Sub-500ms CLI startup times via intelligent handler deferred loading.
-- **Discovery Engine**: Activation policy ensuring only relevant or explicitly sanctioned shims are active during evaluation.
-- **Seal Hash Protocol**: Cryptographic anchoring of trace history before certification to ensure non-repudiation of the audit process.
-- **AES v1.4 Specification**: Unified metadata schema with `capabilities` and `standards_registry` fields.
+- **Deterministic Quiescence & Timeout Guard**: Added a simulator `quiesce` execution hook wrapped in a strict 5.0-second timeout guard to guarantee that unresponsive test fixtures or simulators cannot hang the evaluation runner.
+- **ShimResultProxy & Memory Partitioning**: Implemented secure dictionary-like wrappers to cleanly isolate internal telemetry DNA and private cryptographic metadata from the guest sandbox environment.
+- **Asynchronous & Thread-Pooled Event Dispatching**: Decoupled turn-by-turn telemetry tracking from the execution thread using background executor dispatching to eliminate latency overhead during real-time evaluations.
+- **Pluggable Jail Providers & Simulator Middleware**: Added modular jail provider and simulator middleware layers to allow clean resource cleanup (`.cleanup()`) and sandboxed execution hook overrides.
+- **Lazy Post-Evaluation Witnessing**: Standardized post-run verification outcomes and witness-audit checks through formalized `BaseWitness` models.
+- **NIST-Aligned Diagnostic Taxonomy**: Expanded the failure category classifications with priority-based forensic analysis and custom triage hooks.
 
 ## 📂 The Global Scenario Corpus
 
@@ -437,7 +437,7 @@ This project follows an **Open Core** model. The open-source capabilities provid
 | **Parallel Engine** | 🔶 Sequential only | ✅ Ray/Local JobQueue Distributed Runs |
 | **Interactive Triage** | 🔶 Heuristic only | ✅ Multi-user Sync & Human Annotation |
 | **Advanced Sandbox** | 🔶 Path/Shell Gating | ✅ Hardened Docker Isolation & Red-Team Probes |
-| **Auth & Governance** | 🔶 Mandatory Authentication | ✅ OIDC SSO, PBAC, Managed Leaderboards |
+| **Auth & Governance** | 🔶 Basic Auth | ✅ OIDC SSO, SCIM provisioning, PBAC, Managed Leaderboards |
 
 **Legend:** ✅ Full Capability • 🔶 Basic/OSS Only • ❌ Enterprise Only
 
