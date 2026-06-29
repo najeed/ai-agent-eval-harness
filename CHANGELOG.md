@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.5] - 2026-06-30
+
+### Pluggable Witness, Quiescence, and Test Coverage Hardening
+*   **Asynchronous Event Dispatching & OTel Context Propagation**: Enabled asynchronous event subscriber execution via a thread pool or task queue in `events.py` to eliminate telemetry-induced turn latency. Implemented parent-child OpenTelemetry context propagation across execution threads and async tasks, and added a `.flush()` method to block until background tasks complete.
+*   **Simulator Middleware & Pluggable Jail Providers**: Introduced a `SimulatorMiddleware` interface and execution pipeline inside `BaseSimulator`. Added the `BaseJailProvider` interface in `simulators.py` with a mandatory `.cleanup(run_id)` method to allow sandbox environment resource teardowns, and updated `TerminalSimulator` to delegate execution to the pluggable `BaseJailProvider` (defaulting to `SubprocessJailProvider`).
+*   **Triage & Failure Taxonomy Hooks**: Standardized triage schemas via `TriageContext` and `TriageReport` in `triage.py`. Exposed failure classifier registries to let extensions register custom/LLM classifiers, and updated `FailureTaxonomy` to allow specialized priority forensic analyzers to execute before core diagnostics.
+*   **Deterministic Quiescence & Timeout Guard**: Added `async def quiesce(self) -> None` hook to `BaseSimulator`. Configured `ToolSandbox` to execute the quiesce hook immediately after simulator tool execution, wrapped in a strict `5.0s` timeout guard (`asyncio.wait_for`) to prevent unresponsive simulators from stalling the runner.
+*   **ShimResultProxy & Memory Partitioning**: Implemented `ShimResultProxy` inheriting from `dict` in `simulators.py` to partition secure metadata (like cryptographic keys or OTel telemetry DNA) from the guest environment, returning only standard status/message fields during dict traversal/inspection.
+*   **Lazy Witness Abstractions**: Standardized post-evaluation audit checks by introducing `BaseWitness` and `VerificationResult` schemas in `triage.py`.
+*   **100% Target Test Coverage Hardening**: Hardened the unit and branch coverage through extensive mock updates and edge case tests.
+
 ## [1.6.4] - 2026-06-13
 
 ### Trend Analyzer & Concurrency Hardening
