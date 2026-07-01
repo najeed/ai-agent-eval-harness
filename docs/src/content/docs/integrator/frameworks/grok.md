@@ -8,10 +8,10 @@ description: Integration guide for xAI Grok adversarial and reasoning models.
 AgentV provides native support for **Grok 4.20** models, known for their adversarial reasoning and multi-agent capabilities.
 
 ## 🚀 Native Protocol
-Use the `grok://` protocol to connect to the xAI API.
+Use the `grok` protocol to connect to the xAI API.
 
 ```bash
-agentv evaluate --run-id <id> --protocol grok --agent grok://grok-4.20-multi-agent
+agentv run --path scenarios/loan_scenario.json --protocol grok --agent grok://grok-4.20-multi-agent
 ```
 
 ### Configuration

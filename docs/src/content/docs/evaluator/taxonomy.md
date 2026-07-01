@@ -20,7 +20,7 @@ Failures are categorized into four primary industrial domains:
 
 ## 📋 The core Enum Registry
 
-The following Enums are the first-class failure codes emitted by the evaluation engine. While documented in **UPPER_CASE**, the raw forensic codes in telemetry are **lower_case**.
+The following Enums are the first-class failure codes emitted by the evaluation engine. All raw forensic codes in telemetry are emitted in standard **UPPER_CASE**.
 
 ### Infrastructure Failures
 - `INFRA_SIMULATOR_EXCEPTION`: Internal 500 error in a World Shim (e.g., Database crash).

@@ -8,10 +8,10 @@ description: Integration guide for Anthropic Claude agents and models.
 AgentV provides first-class support for the Anthropic Claude ecosystem, including the latest **Claude 4.6** models.
 
 ## 🚀 Native Protocol
-Use the `claude://` protocol to connect directly to the Anthropic API.
+Use the `claude` protocol to connect directly to the Anthropic API.
 
 ```bash
-agentv evaluate --run-id <id> --protocol claude --agent claude://claude-4-6-sonnet
+agentv run --path scenarios/loan_scenario.json --protocol claude --agent claude://claude-4-6-sonnet
 ```
 
 ### Configuration

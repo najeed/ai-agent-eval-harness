@@ -42,10 +42,10 @@ For agents with unconventional schemas, you can define custom status mappings di
 ## Execution Guide
 
 ### 1. Target the Endpoint
-Specify the `openapi://` scheme in your evaluation command or scenario definition.
+Specify the `--agent` endpoint and `--protocol` in your evaluation command:
 
 ```bash
-agentv evaluate --path openapi://http://localhost:8080/api/v1/agent
+agentv run --path scenarios/loan_scenario.json --protocol http --agent openapi://http://localhost:8080/api/v1/agent
 ```
 
 ### 2. OAS Discovery (Handshake)

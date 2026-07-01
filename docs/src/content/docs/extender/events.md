@@ -92,8 +92,8 @@ If an evaluation session or test requires waiting for all scheduled asynchronous
 from eval_runner.events import EventEmitter
 
 # Emit event (schedules background tasks)
-EventEmitter.get_instance().emit("CUSTOM_COMPLIANCE_CHECK", {"run_id": "xyz"})
+EventEmitter.get_global().emit("CUSTOM_COMPLIANCE_CHECK", {"run_id": "xyz"})
 
 # Block until all scheduled background tasks complete
-EventEmitter.get_instance().flush(timeout=5.0)
+EventEmitter.get_global().flush(timeout=5.0)
 ```

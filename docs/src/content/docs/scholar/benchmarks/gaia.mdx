@@ -28,7 +28,7 @@ AgentV provides a high-fidelity loader for GAIA, automatically converting the ra
 2.  **Target GAIA**: Run the evaluation using the native URI scheme.
     ```bash
     # Run the 2023 Validation set (Tier 1)
-    agentv evaluate --path gaia://2023_val_t1
+    agentv evaluate --path gaia://2025_val_t1 --agent http://localhost:5001/execute_task
     ```
 3.  **Review Traces**: Use the `agentv console` to replay the GAIA trajectories. Look for "Reasoning Loops" where the agent fails to plan correctly despite having the tools.
 

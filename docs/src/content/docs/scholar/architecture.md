@@ -10,7 +10,7 @@ The Scholar's guide to the AgentV internal architecture provides a detailed look
 AgentV follows a rigorous state machine for every evaluation task. This lifecycle is designed to minimize I/O overhead and maximize forensic auditability.
 
 ```mermaid
-state_chart
+stateDiagram-v2
     [*] --> DISCOVERY: Resolve Scenario ID
     DISCOVERY --> PROVISIONING: Compute Registry Hash
     PROVISIONING --> EXECUTION: Instantiate ToolSandbox

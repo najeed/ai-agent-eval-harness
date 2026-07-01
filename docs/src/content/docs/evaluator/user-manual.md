@@ -9,16 +9,14 @@ This manual is for users who want to run and understand evaluations without divi
 
 ### 🗂️ The Scenario (AES)
 The unit of evaluation. A JSON or YAML file mapping to the **Agent Evaluation Specification**.
-- **`id`**: Unique identifier.
-- **`industry`**: Context (e.g., `telecom`, `finance`).
-- **`dataset`**: (Optional) Path to synthetic CSV/JSONL data. Supports [Path Decoupling](/evaluator/aes-spec/).
-- **`tasks`**: Ordered steps the agent must achieve.
+- **`metadata`**: Scenario identifier and compliance capabilities. Supports [Path Decoupling](/evaluator/aes-spec/).
+- **`workflow`**: DAG containing a series of `nodes` and dependency `edges`.
 
-### ✅ The Task
-A specific step within a scenario.
-- **`description`**: The prompt or instruction sent to the agent.
+### ✅ The Task Node
+A specific step within the workflow DAG.
+- **`task_description`**: The prompt or instruction sent to the agent.
 - **`success_criteria`**: The metrics and thresholds for determination of success.
-- **`required_tools`**: Tools the agent is expected to use (monitored via `tool_call_correctness`).
+- **`expected_outcome`**: (Optional) Standard cryptographic outcome or verifiably expected state.
 
 ---
 
@@ -28,6 +26,7 @@ A specific step within a scenario.
 Run a suite of scenarios across a directory or industry registry.
 ```bash
 agentv evaluate \
+  --path scenarios/loan_scenario.json \
   --run-id <id> \
   --agent http://localhost:5001/execute_task \
   --attempts 3 \
@@ -35,6 +34,7 @@ agentv evaluate \
 
 # SSE Streaming Agent
 agentv evaluate \
+  --path scenarios/loan_scenario.json \
   --agent sse://localhost:5005/stream \
   --industry finance
 ```

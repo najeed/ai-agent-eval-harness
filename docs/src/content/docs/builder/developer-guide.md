@@ -56,6 +56,8 @@ Plugins are the primary extension point for the harness.
 | `on_agent_turn_start`| Intercept and inspect context before the agent speaks. |
 | `on_tool_request` | **Interception**: Return `False` to block a suspicious tool call. |
 | `on_metrics_calculated`| Post-process scores or inject custom logic. |
+| `on_register_commands`| Register custom namespaced CLI commands under `agentv plugin <name>`. |
+| `on_register_simulators`| Inject custom environment World Shims into the simulator cache. |
 | `on_register_console_routes`| Inject custom REST routes and navigation into the [Visual Console](/evaluator/user-manual/). |
 
 ---
@@ -68,11 +70,21 @@ Metrics live in `eval_runner/metrics/` and are registered via the `MetricRegistr
 ```python
 from eval_runner.metrics import MetricRegistry
 
-@MetricRegistry.register("my_industrial_metric")
-def my_metric(criterion, summary):
+@MetricRegistry.register("my_industrial_metric", source="EXTERNAL_PLUGIN")
+def my_metric(criterion: dict, agent_summary: str, turns_taken: int) -> float:
     # Logic to return 0.0 to 1.0
-    return 1.0 if "success" in summary else 0.0
+    if turns_taken > 5:
+        return 0.5
+    return 1.0 if "success" in agent_summary else 0.0
 ```
+
+### Parameter Introspection & Fulfillments
+The core engine evaluates metrics using dynamic dispatch. It inspects your metric function's signature and automatically satisfies requested parameters. Available parameters include:
+*   `criterion` / `eval_context`: The specific assertion metadata.
+*   `agent_summary` / `summary` / `actual`: The agent's final text answer.
+*   `conversation_history` / `history`: Deep-copied list of trajectory turns.
+*   `used_tools` / `actual_tools`: List of tools execution trace.
+*   `turns_taken`: Number of steps executed in this run.
 
 ---
 
@@ -90,3 +102,8 @@ The harness uses an **ED25519 asymmetric signing protocol** for non-repudiable a
 - **Key Storage**: Keys are stored in `.aes/keys/`.
 - **Manifests**: Every run generates a signed `audit_manifest.json`.
 - **Gating**: Use `agentv gate` in the CI/CD pipeline to enforce signature verification.
+
+### WORM Audit Trail Sealing
+For enterprise verification, AgentV writes cryptographic hashes to a Write-Once-Read-Many (WORM) log file named `audit_chain.jsonl` in the run trace directory. 
+*   **Sign-on-turn**: Every tool call and state change appended to the execution trace is immediately signed and chained to the previous turn's hash.
+*   **Interceptors**: Interceptors registered under `TraceVerificationInterceptor` can securely decorate this chain (e.g. logging to external Ledger nodes or cloud vaults) in real-time.

@@ -27,29 +27,24 @@ This guide provides a step-by-step process for adding a new industry to AgentV.
 ## Step 4: Include Synthetic Datasets
 
 Realistic environments require data. If your scenarios require data (e.g., a CSV of customer transactions), you should link them via the `dataset` attribute.
-To generate highly realistic dummy data for your new industry, use the built-in generation script:
 
-```bash
-python scripts/generate_industry_datasets.py --industry YOUR_INDUSTRY
-```
-
-This script creates a `records.csv` with industry-specific schemas (e.g., policy numbers for insurance, flight routes for airlines) and places it directly in your `datasets/` folder for immediate use.
+Place your industry-specific database or transaction CSV/JSON files directly inside your industry's `datasets/` directory (e.g. `industries/YOUR_INDUSTRY/datasets/records.csv`), and reference them in your scenario metadata.
 
 ### Validation
 
 All scenarios are validated at load time against the AES schema. Your scenario **must** include these required fields:
 
 **Scenario level:**
-- `id`, `title`, `description`, `use_case`, `core_function`, `industry`, `tasks`
-- (Optional) `initial_state`, `policies`
+- `metadata`: Contains `id`, `name`, `capabilities`, and `aes_version` (set to `"1.4"`).
+- `workflow`: Contains `nodes` and `edges`.
 
-**Task level** (each item in `tasks`):
-- `task_id`, `description`, `expected_outcome`, `success_criteria`
-- (Optional) `expected_state_changes`
+**Task Node level** (each item in `workflow.nodes`):
+- `id`, `task_description`, `success_criteria`
+- (Optional) `expected_outcome`
 
 Run schema validation locally:
 ```bash
-python -c "from eval_runner.loader import load_scenario; from pathlib import Path; load_scenario(Path('industries/YOUR_INDUSTRY/scenarios/YOUR_SCENARIO.json'))"
+agentv aes validate --path industries/YOUR_INDUSTRY/scenarios/YOUR_SCENARIO.json
 ```
 
 ## Step 5: Verify in Visual Debugger

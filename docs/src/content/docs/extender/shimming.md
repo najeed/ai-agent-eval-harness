@@ -34,24 +34,42 @@ Shims integrate directly with the **Virtual File System (VFS)** to ensure forens
 You can add new shims via the [Plugin System](/extender/plugins/) to keep the core immutable.
 
 ### 1. Define the Simulator
-Create a class that implements the `execute(action, params)` interface.
+Create a class that inherits from `BaseSimulator` and implements the `async def execute(action, params)` interface. Action dispatching is handled automatically via handler methods (e.g. `handle_<action>`).
+
 ```python
-class IndustrialIoTSimulator:
-    def execute(self, action: str, params: dict) -> dict:
+from eval_runner.simulators import BaseSimulator
+
+class IndustrialIoTSimulator(BaseSimulator):
+    async def execute(self, action: str, params: dict) -> dict:
+        # Middleware pipeline triggers automatically.
+        # Delegates internally to handle_<action> methods.
+        return await super().execute(action, params)
+
+    def handle_read_sensor(self, params: dict) -> dict:
         # State logic here
-        return {"status": "success", "state": "active"}
+        self.state["sensor_active"] = True
+        return {"status": "success", "reading": 42}
 ```
 
 ### 2. Register via Plugin Hook
 Override the `on_register_simulators` hook in your plugin.
 ```python
+from eval_runner.plugins import BaseEvalPlugin
+
 class MyShimPlugin(BaseEvalPlugin):
     def on_register_simulators(self, registry: dict):
         registry["industrial_iot"] = IndustrialIoTSimulator()
 ```
 
-### 3. Configure via Hybrid Registry
-Add your shim to the [Cumulative Registry](/extender/api-reference/) (`shim_resources.json`) to decouple URLs and credentials from logic.
+### 3. Registering Middleware
+You can register custom `SimulatorMiddleware` classes on simulator instances to intercept actions (for network latency injection, rate limiting, or logging):
+```python
+sim = IndustrialIoTSimulator()
+sim.register_middleware(LatencySimulationMiddleware())
+```
+
+### 4. Configure via Hybrid Registry
+Add your shim configurations to the [Cumulative Registry](/extender/api-reference/) (`shim_resources.json`) to decouple URLs and credentials from logic.
 
 ---
 

@@ -15,17 +15,18 @@ Your agent should expose a POST endpoint (e.g., `/execute`) that accepts and ret
 **Request Protocol:**
 ```json
 {
-  "task": "Help me with my bill.",
-  "history": [],
-  "metadata": {}
+  "task_description": "Help me with my bill.",
+  "turn": 1,
+  "conversation_history": [],
+  "run_id": "eval_20260701_1234"
 }
 ```
 
 **Completion Protocol:**
 ```json
 {
-  "response": "I can help with that. What is your account number?",
-  "done": false
+  "action": "final_answer",
+  "summary": "I can help with that. What is your account number?"
 }
 ```
 
@@ -40,7 +41,7 @@ AGENT_API_URL=http://localhost:5001/execute
 Run a benchmark using the default HTTP protocol:
 
 ```bash
-agentv evaluate --run-id <id>
+agentv run --path scenarios/loan_approval.json
 ```
 
 ---
@@ -68,19 +69,19 @@ AgentV includes native adapters for the leading agentic frameworks.
 ### AG2 (formerly AutoGen)
 ```bash
 pip install ag2
-agentv evaluate --run-id <id> --protocol ag2 --agent ag2://localhost:8000
+agentv run --path scenarios/loan_approval.json --protocol ag2 --agent ag2://localhost:8000
 ```
 
 ### LangChain / LangGraph
 ```bash
 pip install langchain langgraph
-agentv evaluate --run-id <id> --protocol langgraph --agent langgraph://localhost:8000/graph
+agentv run --path scenarios/loan_approval.json --protocol langgraph --agent langgraph://localhost:8000/graph
 ```
 
 ### CrewAI
 ```bash
 pip install crewai
-agentv evaluate --run-id <id> --protocol crewai
+agentv run --path scenarios/loan_approval.json --protocol crewai
 ```
 
 ---

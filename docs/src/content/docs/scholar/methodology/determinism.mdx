@@ -49,7 +49,7 @@ A critical requirement for research-grade evaluation is the ability to revisit a
 
 2.  **Re-run with Exact Seed**: Use the specific seed from the manifest to replicate the exact failure.
     ```bash
-    agentv evaluate --path industries/finance --seed 12387
+    agentv evaluate --path industries/finance --agent http://localhost:5001/execute_task --seed 12387
     ```
 
 3.  **Analyze Trajectory**: The agent will follow the same reasoning path, allowing you to observe the state drift or planning error in real-time.

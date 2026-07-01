@@ -212,17 +212,27 @@ Plugins can dynamically hook into the **Cryptographic Trace Signing**, **Tool Sa
 Custom plugins can register a `ToolSandboxInterceptor` using `tool_sandbox_service.register_interceptor(...)` inside the `before_evaluation` hook.
 
 ```python
+from collections.abc import Callable, Coroutine
 from eval_runner.plugins import BaseEvalPlugin
 from eval_runner.tool_sandbox import ToolSandboxInterceptor, tool_sandbox_service
 
 class SecurityAuditingInterceptor(ToolSandboxInterceptor):
-    def isolate(self, execute_fn, command, params):
+    def can_isolate(self, tool_name: str) -> bool:
+        # Determine if this interceptor targets the tool
+        return tool_name == "terminal"
+
+    async def isolate_call(
+        self,
+        call_data: dict,
+        next_executor: Callable[[dict], Coroutine[None, None, dict]],
+    ) -> dict:
         # Intercept before execution
-        if command == "terminal" and "rm" in params.get("args", []):
+        arguments = call_data.get("arguments", {})
+        if "rm" in arguments.get("args", []):
             return {"status": "blocked", "message": "Destructive terminal commands are forbidden"}
         
-        # Call original tool execution
-        result = execute_fn(command, params)
+        # Call next executor in the pipeline
+        result = await next_executor(call_data)
         
         # Audit tool result
         result["audited"] = True
@@ -238,21 +248,27 @@ class SecurityGatePlugin(BaseEvalPlugin):
 Custom plugins can register a `TraceVerificationInterceptor` to securely sign metadata or implement a custom cryptographic verifier.
 
 ```python
+from collections.abc import Callable
 from eval_runner.plugins import BaseEvalPlugin
 from eval_runner.verifier import TraceVerificationInterceptor, verification_service
 
 class CustomKmsSigner(TraceVerificationInterceptor):
-    def can_sign(self, manifest, format) -> bool:
+    def can_sign(self, format: str) -> bool:
         return format == "enterprise-hsm"
 
-    def sign(self, manifest, format) -> dict:
+    def sign(self, manifest: dict, next_signer: Callable[[dict], dict]) -> dict:
+        # Preempt/Modify manifest before signing
+        manifest["custom_kms_certified"] = True
+        
         # Call KMS API to sign manifest hash
         signature = call_external_hsm(manifest)
         manifest["provenance_chain"].append({
             "identity": "hsm_signer",
             "signature": signature
         })
-        return manifest
+        
+        # Delegate down the pipeline
+        return next_signer(manifest)
 
 class EnterpriseHsmPlugin(BaseEvalPlugin):
     def before_evaluation(self, context):

@@ -8,10 +8,10 @@ description: Integration guide for local model execution via Ollama.
 AgentV supports local model evaluation via Ollama, enabling private, high-speed benchmarking for open-source models like **Llama 4**.
 
 ## 🚀 Native Protocol
-Use the `ollama://` protocol to connect to a local Ollama instance.
+Use the `ollama` protocol to connect to a local Ollama instance.
 
 ```bash
-agentv evaluate --run-id <id> --protocol ollama --agent ollama://llama4
+agentv run --path scenarios/loan_scenario.json --protocol ollama --agent ollama://llama4
 ```
 
 ### Configuration
@@ -33,7 +33,7 @@ A common research use case is comparing a local model against a cloud baseline (
 
 Use the **Model Wars** protocol:
 ```bash
-agentv evaluate --run-id war-001 --compare agents_inventory.yaml
+agentv run --path scenarios/loan_scenario.json --compare agents_inventory.yaml
 ```
 
 ## ⚠️ Performance Note

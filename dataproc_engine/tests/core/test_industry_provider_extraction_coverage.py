@@ -1,3 +1,5 @@
+from unittest.mock import AsyncMock
+
 import pytest
 
 from dataproc_engine.core.correlator import DataCorrelator
@@ -160,3 +162,143 @@ def test_config_exhaustion():
 
     secrets = ConfigLoader.load_secrets("non-existent-sector")
     assert secrets == {}
+
+
+@pytest.mark.asyncio
+async def test_correlator_extended_branches(tmp_path):
+    """
+    Cover correlator file load exception (60-61), rapidfuzz import failure (98-115),
+    and healthcare energy resiliency (167-170).
+    """
+    from unittest.mock import patch
+
+    from dataproc_engine.core.base_provider import StandardSchema
+
+    # 1. File discovery load exception (60-61)
+    target_dir = tmp_path / "corrupt_data"
+    target_dir.mkdir()
+    corrupt_file = target_dir / "finance_corrupt.csv"
+    corrupt_file.write_text("invalid, csv, header\nvalue,,", encoding="utf-8")
+
+    correlator = DataCorrelator()
+    # Pass a different industry in datasets so that "finance" is loaded from target_dir,
+    # and patch pandas.read_csv to raise an error.
+    with patch("pandas.read_csv", side_effect=Exception("Read error")):
+        res = correlator.correlate({"telecom": []}, target_dir=str(target_dir))
+    assert "finance" not in res  # Load failed, so finance is not added
+
+    # 2. Healthcare energy resiliency mapping (167-170)
+    hc_record = StandardSchema(
+        id="hc1",
+        industry="healthcare",
+        data={"facility_name": "Clinic"},
+        provenance={},
+        checksum="hash",
+    )
+    energy_record = StandardSchema(
+        id="en1",
+        industry="energy",
+        data={"latest_value": 85.0},
+        provenance={},
+        checksum="hash",
+    )
+    res_hc = correlator.correlate({"healthcare": [hc_record], "energy": [energy_record]})
+    assert res_hc["healthcare"][0].data["energy_resiliency_index"] == 85.0
+
+    # 3. Rapidfuzz import failure fallback path (98-115)
+    # Mock python import mapping to raise ImportError for rapidfuzz
+    orig_import = __builtins__["__import__"]
+
+    def mock_import(name, *args, **kwargs):
+        if "rapidfuzz" in name:
+            raise ImportError("Mocked rapidfuzz missing")
+        return orig_import(name, *args, **kwargs)
+
+    with patch("builtins.__import__", side_effect=mock_import):
+        # A. Substring match fallback (105-107)
+        fin_sub = StandardSchema(
+            id="fin_sub",
+            industry="finance",
+            data={"entity_name": "Apple Inc."},
+            provenance={},
+            checksum="hash",
+        )
+        tel_sub = StandardSchema(
+            id="tel_sub",
+            industry="telecom",
+            data={"entity_name": "Apple", "value": 90},
+            provenance={},
+            checksum="hash",
+        )
+        res_sub = correlator.correlate({"finance": [fin_sub], "telecom": [tel_sub]})
+        assert res_sub["finance"][0].data["telecom_footprint_speed"] == 90
+
+        # B. Close match difflib fallback (110-115)
+        # We use names that are close but do not contain each other as substrings
+        # to avoid the substring breakout (line 104) and reach difflib get_close_matches (line 110).
+        fin_record = StandardSchema(
+            id="fin1",
+            industry="finance",
+            data={"entity_name": "Appel Corp"},
+            provenance={},
+            checksum="hash",
+        )
+        telecom_record = StandardSchema(
+            id="tel1",
+            industry="telecom",
+            data={"entity_name": "Apple Inc", "value": 100},
+            provenance={},
+            checksum="hash",
+        )
+        res_fallback = correlator.correlate({"finance": [fin_record], "telecom": [telecom_record]})
+        # Appel Corp matches Apple Inc via difflib get_close_matches
+        assert res_fallback["finance"][0].data["telecom_footprint_speed"] == 100
+
+
+@pytest.mark.asyncio
+async def test_dataset_engine_coverage_hardening():
+    """
+    Cover client submission errors (27-29), registered provider returns (46),
+    suffix lookup (70), unknown industry (75), and validation fails (110-111).
+    """
+    from unittest.mock import MagicMock, patch
+
+    # 1. Already registered provider logic (46)
+    engine = DatasetEngine(config={"llm_strategy": "mock"})
+    mock_provider = MagicMock()
+    engine.register_provider("finance", mock_provider)
+    assert engine.get_provider("finance", {}) == mock_provider
+
+    # 2. Suffix lookup fallback (70)
+    # We mock packages search to return a suffix provider class
+    mock_classes = {"dummy_provider": MagicMock}
+    with patch("eval_runner.discovery.discover_classes_in_package", return_value=mock_classes):
+        provider = engine.get_provider("dummy", {})
+        assert isinstance(provider, MagicMock)
+
+    # 3. Unknown industry provider check (75)
+    with pytest.raises(ValueError, match="Unknown industry"):
+        engine.get_provider("alien_industry", {})
+
+    # 4. DataProc client submission logic (27-29)
+    engine.client = None
+    with pytest.raises(RuntimeError, match="DataProc client not initialized"):
+        engine.run_job("job_spec")
+
+    # Successful run_job
+    mock_client = MagicMock()
+    mock_client.submit_job.return_value = "job_submitted"
+    engine.client = mock_client
+    engine.project_id = "proj1"
+    engine.region = "us-east1"
+    assert engine.run_job("spec") == "job_submitted"
+
+    # 5. Validation failure path (110-111)
+    mock_failing_provider = MagicMock()
+    mock_failing_provider.extract = AsyncMock(return_value=[])
+    mock_failing_provider.transform = AsyncMock(return_value=[])
+    mock_failing_provider.validate = MagicMock(return_value=False)
+
+    engine.register_provider("failed_validation_ind", mock_failing_provider)
+    res = await engine.run_industry_pipeline("failed_validation_ind")
+    assert res is None

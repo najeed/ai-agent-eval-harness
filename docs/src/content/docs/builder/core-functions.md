@@ -36,16 +36,27 @@ While most functions are industry-specific, several recur across domains:
 
 ## 🛠️ Usage in AES Scenarios
 
-In an **AES v1.4** scenario, the `core_function` tag is an **optional metadata field** used to enhance forensic diagnostics:
+In an **AES v1.4** scenario, the `core_function` tag is an **optional metadata field** inside `metadata` used to enhance forensic diagnostics:
 
 ```json
 {
   "metadata": {
+    "id": "fraud-detection-t1",
     "industry": "Finance",
     "use_case": "Retail Banking",
-    "core_function": "Fraud & Security"
+    "core_function": "Fraud & Security",
+    "aes_version": "1.4"
   },
-  "task": "Identify if the transaction at 03:00 UTC is suspicious."
+  "workflow": {
+    "nodes": [
+      {
+        "id": "t1",
+        "task_description": "Identify if the transaction at 03:00 UTC is suspicious.",
+        "success_criteria": [{"metric": "factual_accuracy", "threshold": 1.0}]
+      }
+    ],
+    "edges": []
+  }
 }
 ```
 

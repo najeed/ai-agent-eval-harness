@@ -26,11 +26,11 @@ async def execute(request: dict):
 
 ## 2. Run Evaluation
 
-Use the `langchain://` protocol to connect the harness to your agent service.
+Use the `langchain` protocol to connect the harness to your agent service.
 
 ```bash
-agentv evaluate \
-  --run-id <id> \
+agentv run \
+  --path scenarios/loan_scenario.json \
   --protocol langchain \
   --agent langchain://localhost:8000/execute_task \
   --agent-name "LangChain-Retail-Bot"

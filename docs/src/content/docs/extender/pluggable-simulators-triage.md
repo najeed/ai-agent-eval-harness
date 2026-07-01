@@ -190,34 +190,45 @@ TriageEngine.register_classifier(custom_llm_classifier)
 
 ### Lazy Witnesses (`BaseWitness`)
 
-To run post-evaluation validation assertions on the environment state:
+To run post-evaluation validation assertions on the environment state (e.g. verifying database records or file contents after evaluation runs):
 
 ```python
+import sqlite3
 from eval_runner.triage import BaseWitness, VerificationResult, TriageContext
 
-class FilesystemWitness(BaseWitness):
+class DatabaseStateWitness(BaseWitness):
     async def verify(self, context: TriageContext) -> VerificationResult:
-        # Check physical invariants on disk
-        import os
-        if os.path.exists("/path/to/expected_output"):
-            return VerificationResult(verified=True, explanation="Verification matches.")
-        return VerificationResult(verified=False, explanation="Perjury detected: File missing.")
+        # Check database invariants on disk
+        db_path = context.task_result.get("workspace_dir", "workspace") + "/app.db"
+        try:
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT status FROM orders WHERE id = 101")
+            row = cursor.fetchone()
+            conn.close()
+            
+            if row and row[0] == "completed":
+                return VerificationResult(verified=True, explanation="Order status marked completed correctly.")
+            return VerificationResult(verified=False, explanation="Order status was not updated to completed.")
+        except Exception as e:
+            return VerificationResult(verified=False, explanation=f"Failed to check db: {e}")
 ```
 
 ---
 
 ## 📈 6. Priority Forensic Analyzers
 
-To override or intercept standard core failure diagnostics in the `FailureTaxonomy`, custom analyzers can be registered with a `priority` flag:
+To override or intercept standard core failure diagnostics in the `FailureTaxonomy`, custom analyzers must inherit from `BaseForensicAnalyzer` and be registered with a `priority` flag:
 
 ```python
-from eval_runner.taxonomy import FailureTaxonomy, FailureCategory
+from eval_runner.taxonomy import FailureTaxonomy, FailureCategory, BaseForensicAnalyzer
 
-def audit_trail_analyzer(task_result: dict) -> FailureCategory | None:
-    if "untrusted_kms_cert" in task_result.get("auth_log", ""):
-        return FailureCategory.POLICY_VIOLATION
-    return None
+class AuditTrailAnalyzer(BaseForensicAnalyzer):
+    def analyze(self, history: list[dict], task_result: dict = None) -> FailureCategory | None:
+        if task_result and "untrusted_kms_cert" in task_result.get("auth_log", ""):
+            return FailureCategory.POLICY_VIOLATION
+        return None
 
 # Register with priority flag set to True
-FailureTaxonomy.register_analyzer(audit_trail_analyzer, priority=True)
+FailureTaxonomy.register_analyzer(AuditTrailAnalyzer(), priority=True)
 ```

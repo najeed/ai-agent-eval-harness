@@ -147,7 +147,7 @@ def get_parser(is_help: bool = False):
             engine.AgentAdapterRegistry._discover()
             available_protocols = list(engine.AgentAdapterRegistry._adapters.keys())
         else:
-            available_protocols = ["http", "local", "socket", "autogen", "crewai", "langgraph"]
+            available_protocols = ["http", "local", "socket", "ag2", "crewai", "langgraph"]
     except ImportError:
         available_protocols = ["http", "local", "socket"]
 

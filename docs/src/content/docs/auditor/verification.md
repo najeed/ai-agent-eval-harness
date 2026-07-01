@@ -26,24 +26,24 @@ agentv doctor
 Verify that the harness can communicate with external frameworks using the appropriate protocols.
 
 ### AG2 (formerly AutoGen)
-- **Protocol**: `ag2://`
+- **Protocol**: `ag2`
 - **Verification**:
   ```bash
-  agentv evaluate --run-id <id> --protocol ag2
+  agentv run --path scenarios/loan_scenario.json --protocol ag2
   ```
 
 ### LangChain / LangGraph
-- **Protocol**: `langchain://` / `langgraph://`
+- **Protocol**: `langgraph`
 - **Verification**:
   ```bash
-  agentv evaluate --run-id <id> --protocol langchain
+  agentv run --path scenarios/loan_scenario.json --protocol langgraph
   ```
 
 ### CrewAI
-- **Protocol**: `crewai://`
+- **Protocol**: `crewai`
 - **Verification**:
   ```bash
-  agentv evaluate --run-id <id> --protocol crewai
+  agentv run --path scenarios/loan_scenario.json --protocol crewai
   ```
 
 ---

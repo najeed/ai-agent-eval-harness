@@ -19,16 +19,15 @@ AgentV ships with a production-grade corpus of **5,000+ scenarios** across 45+ i
 
 Each evaluation is defined by an **Agent Evaluation Specification (AES)** file. Key components include:
 
-- **`id`**: Unique identifier (e.g., `telecom-cs-001`).
-- **`industry` & `use_case`**: Contextual categorization for [Industrial Benchmarking](/evaluator/industries/).
-- **`initial_state`**: The starting sandbox state, supporting nested dot-notation.
-- **`tasks`**: An ordered array of steps the agent must accomplish.
+- **`metadata`**: Scenario metadata, including `id`, `name`, `capabilities`, and `aes_version` (e.g., `1.4`).
+- **`workflow`**: Directed Acyclic Graph (DAG) structure containing `nodes` and `edges`.
 
-### Task Components
-Each task within a scenario defines:
-- **`expected_outcome`**: A high-level description of success.
-- **`required_tools`**: The specific APIs the agent is expected to invoke.
-- **`success_criteria`**: An array of metrics (e.g., `state_verification`, `tool_call_correctness`).
+### Task Node Components
+Each node within the workflow DAG defines:
+- **`id`**: Unique step identifier (e.g. `t1`).
+- **`task_description`**: The prompt or instruction text.
+- **`success_criteria`**: An array of metrics and thresholds (e.g., `state_verification`, `tool_call_correctness`).
+- **`expected_outcome`**: (Optional) Standard cryptographic outcome or verifiably expected state.
 
 ---
 
@@ -57,8 +56,7 @@ The harness supports three primary communication modes for agents:
 ### Community Benchmarks
 You can pull and format datasets from global benchmarks on-the-fly using URIs:
 ```bash
-agentv evaluate --run-id <id>
-agentv evaluate --run-id <id>
+agentv run --path gaia://2023_all
 ```
 
 ---

@@ -85,6 +85,94 @@ To enable robust, customizable enterprise key routing and in-flight auditing, Ag
 
 ---
 
+## 5a. Verification Certificate (VC) v3 JSON Schema
+
+The Verification Certificate (`run_manifest.json`) is the core non-repudiability artifact. Its schema conforms to the following structured definition:
+
+```json
+{
+  "run_id": "test_run_123",
+  "trace_file": "run.jsonl",
+  "sha256": "4a7f98e8a93a...",
+  "vc_version": "3.0.0",
+  "governance_ttl": 90,
+  "metadata": {
+    "git_hash": "a1b2c3d4...",
+    "seal_hash": "e5f6a7b8...",
+    "provisioning_hash": "d9e8f7...",
+    "timestamp": "2026-07-01T12:00:00Z"
+  },
+  "evidence_ledger": {
+    "reports/latest_summary.html": "9a8b7c6d...",
+    "plots/trajectory.png": "f1e2d3c4..."
+  },
+  "provenance_chain": [
+    {
+      "identity": "system_id",
+      "signature": "3c8a9f2b1d0...",
+      "timestamp": 1712904000.456,
+      "algorithm": "Ed25519"
+    }
+  ]
+}
+```
+
+*   **`sha256`**: Streaming SHA-256 hash of the `run.jsonl` trace file.
+*   **`evidence_ledger`**: Mapping of sidecar artifact paths to their SHA-256 integrity hashes.
+*   **`metadata.seal_hash`**: The hash computed over the trace history immediately prior to appending the certification event.
+*   **`provenance_chain`**: A list of signatures binding the manifest digest to classical or post-quantum identity keys.
+
+---
+
+## 5b. Seal Hash Protocol & OS-Independent Trace Verification
+
+### The Seal Hash Anchor
+To mathematically bind the certification to the specific execution sequence:
+1. Prior to appending the `verification_certificate_issued` event, the engine reads the current trace history.
+2. It computes a SHA-256 hash of this history (`seal_hash`).
+3. This `seal_hash` is written inside the Verification Certificate metadata.
+4. If any historical event in the trace is modified after certification, the recalculated `seal_hash` will mismatch, invalidating the certificate.
+
+### Binary Trace Integrity
+To prevent cross-platform signature failures caused by line-ending conversion (e.g. Windows `\r\n` vs Linux `\n`), AgentV enforces **binary mode trace writes**:
+*   All trace events are encoded as UTF-8 bytes and appended directly to the physical file without OS-level newline translations.
+*   SHA-256 verification hashes the raw byte stream on disk, ensuring identical hash checksums on Windows, Linux, and macOS.
+
+---
+
+## 5c. Custom Signing Interceptor Development
+
+Developers can customize key routing and audit logging by registering a subclass of `TraceVerificationInterceptor`:
+
+```python
+from eval_runner.verifier import TraceVerificationInterceptor, verification_service
+
+class MyEnterpriseKMSInterceptor(TraceVerificationInterceptor):
+    def can_sign(self, identity_id: str) -> bool:
+        return identity_id.startswith("kms-")
+
+    def sign(self, data: bytes, identity_id: str) -> dict:
+        # Resolve key and sign remotely via KMS API
+        signature = call_kms_sign_api(data, identity_id)
+        return {
+            "identity": identity_id,
+            "signature": signature.hex(),
+            "algorithm": "kms-hsm-hybrid"
+        }
+
+    def can_verify(self, identity_id: str) -> bool:
+        return identity_id.startswith("kms-")
+
+    def verify(self, data: bytes, signature_hex: str, identity_id: str) -> bool:
+        # Call KMS public key verification endpoint
+        return call_kms_verify_api(data, signature_hex, identity_id)
+
+# Register the interceptor in the global Verifier pipeline
+verification_service.register_interceptor(MyEnterpriseKMSInterceptor())
+```
+
+---
+
 ## 6. Operational Gating (CI/CD)
 
 The harness provides a production-grade utility for enforcing trust in automated pipelines.

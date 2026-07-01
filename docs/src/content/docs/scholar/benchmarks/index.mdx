@@ -35,11 +35,11 @@ AgentV abstracts benchmark loading behind the **Unified Benchmark URI Schema**. 
 ### How it works:
 ```bash
 # General syntax
-agentv evaluate --path <benchmark_scheme>://<version>
+agentv evaluate --path <benchmark_scheme>://<version> --agent <agent_url>
 
 # Examples
-agentv evaluate --path gaia://2023_validation
-agentv evaluate --path assistantbench://v1_standard
+agentv evaluate --path gaia://2025_validation --agent http://localhost:5001/execute_task
+agentv evaluate --path assistantbench://v1_standard --agent http://localhost:5001/execute_task
 ```
 
 ### Benefits for Researchers:

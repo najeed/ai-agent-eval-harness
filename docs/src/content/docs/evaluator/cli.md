@@ -11,6 +11,7 @@ The `agentv` CLI is the primary entry point for all evaluation workflows, provid
 Run evaluations on one or more industrial scenarios.
 ```bash
 agentv evaluate \
+  --path scenarios/loan_scenario.json \
   --run-id <id> \
   --agent http://localhost:5001/execute_task \
   --attempts 3 \

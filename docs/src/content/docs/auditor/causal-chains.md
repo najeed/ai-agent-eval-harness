@@ -26,16 +26,24 @@ Every failure report now includes a `causal_chain` field. This is a timestamped 
 {
   "root_cause": "logic_planning_error",
   "terminal_status": "infra_timeout",
-  "causal_chain": {
-    "1712904000.123": {
+  "causal_chain": [
+    {
+      "timestamp": 1712904000.123,
       "trigger": "logic_planning_error",
-      "evidence": "Fuzzy loop detected: agent repeated 'ls -la' 3 times."
+      "evidence": "Fuzzy loop detected: agent repeated 'ls -la' 3 times.",
+      "turn_index": 5,
+      "severity": "medium",
+      "rank": 0
     },
-    "1712904060.456": {
+    {
+      "timestamp": 1712904060.456,
       "trigger": "infra_timeout",
-      "evidence": "Global timeout (300s) reached."
+      "evidence": "Global timeout (300s) reached.",
+      "turn_index": 12,
+      "severity": "high",
+      "rank": 1
     }
-  }
+  ]
 }
 ```
 

@@ -48,9 +48,9 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **urllib3** | 2.7.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **Authlib** | 1.7.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **langchain-openai** | 1.3.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langsmith** | 0.9.4 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langsmith** | 0.9.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **lxml** | 6.1.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **Pillow** | 12.2.0 | HPND | [HPND.txt](LICENSES/HPND.txt) |
+| **Pillow** | 12.3.0 | HPND | [HPND.txt](LICENSES/HPND.txt) |
 | **cyclecore-pq** | 0.3.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **idna** | 3.18 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **langgraph** | 1.2.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
