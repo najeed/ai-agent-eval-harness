@@ -44,7 +44,7 @@ When multiple files define the same capability mapping, the engine resolves the 
 
 ## Lesson 3: The Industrial REST Bridge (OpenAPI)
 
-The `openapi` protocol (v1.6.0+) introduces specialized logic for interacting with professional, non-native agent services.
+The `openapi` protocol (v1.5+) introduces specialized logic for interacting with professional, non-native agent services.
 
 ### 1. OAS Discovery Handshake
 When an `openapi` route is invoked, the adapter attempts to discover the agent's schema by appending `/openapi.json` to the endpoint. This allows for real-time validation of the payload structure.

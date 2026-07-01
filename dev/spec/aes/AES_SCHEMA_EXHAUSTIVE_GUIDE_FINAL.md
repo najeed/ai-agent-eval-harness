@@ -1,4 +1,4 @@
-# AES Schema Masterclass: Industrial Standards & Plumbing (v1.6.0)
+# AES Schema Masterclass: Industrial Standards & Plumbing (v1.4.0)
 **Specification Version:** 1.4.0
 
 Welcome to the definitive guide to the **Agent Evaluation Specification (AES)**. This document is designed to take you from a novice understanding to a master-level grasp of how we define, configure, and audit agentic intelligence using the AgentV harness. It ties abstract schema fields to the physical **Plumbing** in the `.aes/` registry and outlines the **Proposed Governance Architecture** for industrial-grade compliance.
@@ -69,7 +69,7 @@ The AES JSON file is a **Blueprint**, but the actual **Resources** live in the p
     - **Config**: Enum: `Standard`, `Gold`, `Regulatory_Audit`.
 3.  **`standards_registry`**:
     - **Purpose**: This is the most powerful part of the metadata. It maps your test to real-world laws.
-    - **Config**: An array of strings like `["GDPR", "PCI_DSS_V4", "BASEL_III"]`. By listing these, you trigger specialized forensic checks in the harness. As of v1.6.0, the registry supports **60+ industrial standards**, including ISO 42001, NIST AI-RMF, and HIPAA.
+    - **Config**: An array of strings like `["GDPR", "PCI_DSS_V4", "BASEL_III"]`. By listing these, you trigger specialized forensic checks in the harness. As of v1.4.0, the registry supports **60+ industrial standards**, including ISO 42001, NIST AI-RMF, and HIPAA.
 4.  **`agent_topology`**:
     - **Purpose**: Defines what the agent is *allowed* to touch.
     - **Config**: A map of agent names to their `reads` and `writes` (e.g., `agent_1: { "writes": ["ledger_db"] }`). This implements **Permissions-Based Access Control (PBAC)**, ensuring that agents are isolated within leurs specific resource namespaces.
@@ -120,9 +120,8 @@ When conflicts arise between high-level frameworks (`standards_registry`) and ex
     - **Boolean Intersection**: Enabled constraints (`true`) take precedence over disabled ones.
     - **Namespace Shrinkage**: The most specific resource scope wins (e.g., `writes: ["db:audit_log"]` over `writes: ["db:*"]`).
 
-:::important
-If a conflict is logically irreconcilable (e.g., Framework requires data vaulting while Policy requires raw cloud export), the harness will trigger a **Governance Fault** and mark the run as **Inconclusive**.
-:::
+> [!IMPORTANT]
+> If a conflict is logically irreconcilable (e.g., Framework requires data vaulting while Policy requires raw cloud export), the harness will trigger a **Governance Fault** and mark the run as **Inconclusive**.
 
 ### 🏗️ Walkthrough Part 1: Initial Setup
 We are building a **Fintech Underwriting persistence Audit**. We start with the Metadata.
@@ -366,7 +365,6 @@ Putting it all together into a production-grade file.
 }
 ```
 
-:::tip
-**Pro-Tip**: Always run `agentv aes validate your_file.json` after editing. It will catch schema errors before you waste money running a test with an invalid map!
-:::
+> [!TIP]
+> **Pro-Tip**: Always run `agentv aes validate your_file.json` after editing. It will catch schema errors before you waste money running a test with an invalid map!
 
