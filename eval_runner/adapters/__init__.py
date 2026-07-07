@@ -21,7 +21,12 @@ TRACEPARENT_REGEX = re.compile(r"^00-[a-f0-9]{32}-[a-f0-9]{16}-[a-f0-9]{2}$")
 
 
 async def http_adapter(payload: dict, endpoint: str, **kwargs):
-    """Call an agent over HTTP (default)."""
+    """Call an agent over HTTP.
+
+    Pure transport layer — POSTs the payload as-is to the endpoint.
+    The payload is constructed by the engine and contains only what
+    an agent in the wild would receive from a human caller.
+    """
     from .common import SessionManager
 
     session = await SessionManager.get_session()

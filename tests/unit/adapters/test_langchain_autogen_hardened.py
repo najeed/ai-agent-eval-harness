@@ -114,8 +114,11 @@ async def test_registry_call_agent_with_overrides():
 
     # Check that adapter was called with correct args
     args, kwargs = mock_adapter.call_args
-    # Adapter receives a single payload dict and endpoint as keyword
+    # Adapter receives a single payload dict and endpoint as keyword.
+    # The wire payload contains only task_description (no harness-internal fields
+    # like protocol, turn, metadata, or input_payload).
     payload = args[0]
-    assert payload["protocol"] == "test"
     assert payload["task_description"] == '{"input": "x"}'
+    assert "protocol" not in payload, "protocol must not leak onto the wire payload"
+    assert "input_payload" not in payload, "input_payload must not leak onto the wire payload"
     assert kwargs["endpoint"] == "http://t"

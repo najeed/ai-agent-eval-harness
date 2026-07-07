@@ -163,15 +163,32 @@ class AgentAdapterRegistry:
             available = list(cls._adapters.keys())
             raise ValueError(f"Unsupported protocol '{protocol}'. Available: {available}")
 
-        # 2. Forensic Context Preparation
-        payload = {
-            "protocol": protocol,
-            "task_description": message,
-            "history": history,
-            "turn": turn_ctx.turn_number if turn_ctx else 1,
-            "metadata": turn_ctx.metadata if turn_ctx else {},
-            "input_payload": getattr(turn_ctx, "input_payload", {}),
-        }
+        # 2. Wire Payload — only what an agent in the wild would receive from a human caller.
+        # Harness-internal fields (input_payload, metadata, protocol, turn, history)
+        # must NOT cross the network boundary. The agent's wire contract is defined by
+        # the scenario's task_description, not by harness plumbing.
+        # However, for the openapi protocol/adapter, we need to pass input_payload
+        # as the payload body. Alternatively, if a declarative payload_template
+        # is provided in the registry config metadata, render it.
+        metadata = getattr(turn_ctx, "metadata", {}) if turn_ctx else {}
+        payload_template = metadata.get("payload_template")
+
+        if payload_template and isinstance(payload_template, dict):
+            payload = {}
+            for k, v in payload_template.items():
+                if v == "{task_description}":
+                    payload[k] = message
+                elif v == "{input_payload}":
+                    payload[k] = getattr(turn_ctx, "input_payload", {})
+                else:
+                    payload[k] = v
+        elif protocol == "openapi":
+            input_payload = getattr(turn_ctx, "input_payload", {})
+            payload = input_payload if input_payload else {"task_description": message}
+        else:
+            payload = {
+                "task_description": message,
+            }
 
         # Resolve OpenTelemetry child span context
         child_otel_ctx = None

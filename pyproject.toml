@@ -1,6 +1,6 @@
 [project]
 name = "agentv"
-version = "1.6.5"
+version = "1.6.6"
 description = "The Enterprise-Grade Reliability Framework for AI Agents"
 readme = "README.md"
 authors = [
@@ -40,7 +40,7 @@ dependencies = [
     "python-dotenv==1.2.2",
     "Authlib==1.7.2",
     "langchain-openai==1.3.3",
-    "langsmith==0.9.7",
+    "langsmith==0.9.8",
     "lxml==6.1.1",
     "Pillow==12.3.0",
     "cyclecore-pq==0.3.0",

@@ -430,6 +430,12 @@ class SessionManager:
                 history=list(conversation_history),
                 input_payload=node.get("input_payload", {}),
                 span_context=self.session_metadata.get("span_context"),
+                metadata={
+                    **self.session_metadata,
+                    "agent_name": self.metadata.get("agent_name"),
+                    "agent": self.metadata.get("agent"),
+                    "protocol": self.metadata.get("protocol"),
+                },
             )
 
             self.event_bus.emit(CoreEvents.TURN_START, {"turn": turn, "task_id": node_id})

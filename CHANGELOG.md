@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.6] - 2026-07-07
+
+### Agnostic Wire Protocol & Declarative Config Mesh Payload Wiring
+*   **Core Engine Payload Isolation**: Stripped harness-internal context keys (`input_payload`, `metadata`, `protocol`, `turn`, `history`) from crossing the network boundary by default in `engine.py`, aligning the HTTP wire payload to match a clean natural language task prompt (`task_description`).
+*   **Protocol-Aware Payload Building**: Added a special protocol-aware check in `engine.py` to preserve passing `input_payload` as the POST body exclusively for the `openapi` protocol/adapter.
+*   **Deep-Sync of Routing Manifest Overrides**: Updated `session.py` to copy all fields from the resolved registry manifest (`self.session_metadata`) into `TurnContext.metadata`. This allows the engine and adapters to read and react to declarative routing overrides.
+*   **Declarative Payload Templates**: Added support in `engine.py` to dynamically render wire payloads according to a declarative `payload_template` defined in the config mesh (`manifest.json`) metadata. This permits mapping standardized fields to custom schemas (e.g. `input` and `context` required by `agentv-tester`) with zero hardcoded agent logic inside the harness.
+
 ## [1.6.5] - 2026-06-30
 
 ### Pluggable Witness, Quiescence, and Test Coverage Hardening

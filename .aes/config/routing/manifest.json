@@ -8,6 +8,17 @@
         "provider": "Sample_Flask_Agent",
         "region": "dev-local-node"
       }
+    },
+    "claims_processing_agent": {
+      "protocol": "http",
+      "endpoint": "http://localhost:8080/execute_task",
+      "metadata": {
+        "payload_template": {
+          "agent": "claims_processing_agent",
+          "input": "{task_description}",
+          "context": "{input_payload}"
+        }
+      }
     }
   }
 }

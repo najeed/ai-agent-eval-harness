@@ -1,0 +1,111 @@
+{
+  "aes_version": 1.4,
+  "metadata": {
+    "name": "Enterprise Healthcare Claims Adjudication",
+    "id": "healthcare-claims-adjudication-v1",
+    "compliance_level": "Regulatory_Audit",
+    "description": "Validate the health insurance claims processing agent's ability to retrieve, validate, and adjudicate insurance claims under compliance policy rules.",
+    "capabilities": [
+      "claims_processing_agent"
+    ],
+    "standards_registry": [
+      "HIPAA",
+      "NIST_AI_RMF"
+    ]
+  },
+  "initial_state": {
+    "claim_id": "CLAIM-001",
+    "status": "pending",
+    "audit_mode": true
+  },
+  "workflow": {
+    "nodes": [
+      {
+        "id": "retrieve_claim",
+        "task_description": "Retrieve details for claim CLAIM-001, validate formatting, and check duplicate registries.",
+        "input_payload": {
+          "claim_id": "CLAIM-001"
+        },
+        "required_tools": [
+          "get_claim_status",
+          "validate_claim_format",
+          "check_duplicate_claims"
+        ],
+        "success_criteria": [
+          {
+            "metric": "tool_called",
+            "threshold": 1.0
+          },
+          {
+            "metric": "output_matches",
+            "threshold": 1.0
+          }
+        ]
+      },
+      {
+        "id": "verify_policy",
+        "task_description": "Verify patient policy rules for procedure code and deductible status.",
+        "input_payload": {
+          "claim_id": "CLAIM-001"
+        },
+        "required_tools": [
+          "verify_policy_rules"
+        ],
+        "success_criteria": [
+          {
+            "metric": "tool_called",
+            "threshold": 1.0
+          },
+          {
+            "metric": "output_matches",
+            "threshold": 1.0
+          }
+        ]
+      },
+      {
+        "id": "adjudicate_claim",
+        "task_description": "Submit final claim adjudication decision and payout amount.",
+        "input_payload": {
+          "claim_id": "CLAIM-001"
+        },
+        "required_tools": [
+          "submit_claim_adjudication"
+        ],
+        "success_criteria": [
+          {
+            "metric": "tool_called",
+            "threshold": 1.0
+          },
+          {
+            "metric": "output_matches",
+            "threshold": 1.0
+          }
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "from": "retrieve_claim",
+        "to": "verify_policy",
+        "condition": "claim_valid == true"
+      },
+      {
+        "from": "verify_policy",
+        "to": "adjudicate_claim",
+        "condition": "policy_valid == true"
+      }
+    ]
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 3,
+      "judge_panel": [
+        "Luna-Judge-1",
+        "Luna-Judge-2",
+        "Luna-Judge-3"
+      ]
+    },
+    "ija_threshold": 0.9
+  }
+}
