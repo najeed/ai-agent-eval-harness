@@ -30,7 +30,7 @@ cryptography==49.0.0
 opentelemetry-api==1.43.0
 opentelemetry-sdk==1.43.0
 google-genai==2.11.0
-GitPython==3.1.50
+GitPython==3.1.51
 psutil==7.2.2
 
 # --- Document Processing ---
@@ -43,8 +43,8 @@ python-dotenv==1.2.2
 # --- Security Patches ---
 urllib3==2.7.0
 Authlib==1.7.2
-langchain-openai==1.3.4
-langsmith==0.10.1
+langchain-openai==1.3.5
+langsmith==0.10.2
 lxml==6.1.1
 Pillow==12.3.0
 idna==3.18
