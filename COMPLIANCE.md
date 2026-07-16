@@ -28,9 +28,9 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **datasets** | 5.0.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **PyJWT** | 2.13.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **cryptography** | 49.0.0 | Apache 2.0 / BSD | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **opentelemetry-api** | 1.43.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **opentelemetry-sdk** | 1.43.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **google-genai** | 2.12.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **opentelemetry-api** | 1.44.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **opentelemetry-sdk** | 1.44.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **google-genai** | 2.12.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **pypdf** | 6.14.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **python-docx** | 1.2.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **python-dotenv** | 1.2.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
@@ -39,7 +39,7 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **pydantic** | 2.13.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **pyarrow** | 24.0.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **httpx** | 0.28.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **GitPython** | 3.1.51 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **GitPython** | 3.1.52 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **urllib3** | 2.7.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **Authlib** | 1.7.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **langchain-openai** | 1.3.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |

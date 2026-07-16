@@ -18,14 +18,14 @@ starlette>=1.3.1
 pandas>=3.0.3
 pygments>=2.20.0
 langchain-core>=1.4.9
-langchain==1.3.13
+langchain==1.3.14
 langgraph==1.2.9
 # crewai==1.15.2    # crewai doesn't support the latest dependencies as of July 2026.
 ag2==0.14.0
 pyasn1>=0.6.4
 
 # --- Code Quality & Security ---
-ruff==0.15.21
+ruff==0.15.22
 black>=26.5.1
 flake8>=7.3.0
 isort>=8.0.1

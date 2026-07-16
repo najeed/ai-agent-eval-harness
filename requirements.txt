@@ -27,10 +27,10 @@ PyJWT==2.13.0
 cryptography==49.0.0
 
 # --- Observability & SDKs ---
-opentelemetry-api==1.43.0
-opentelemetry-sdk==1.43.0
-google-genai==2.12.0
-GitPython==3.1.51
+opentelemetry-api==1.44.0
+opentelemetry-sdk==1.44.0
+google-genai==2.12.1
+GitPython==3.1.52
 psutil==7.2.2
 
 # --- Document Processing ---
