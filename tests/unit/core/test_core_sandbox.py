@@ -203,11 +203,11 @@ async def test_sandbox_execute_shim_routing(base_scenario, tmp_path):
     sandbox = ToolSandbox(base_scenario, workspace_root=tmp_path)
 
     mock_sim = AsyncMock()
-    mock_sim.execute.return_value = {"shim": "response"}
+    mock_sim.execute.return_value = {"status": "success", "payload": {"shim": "response"}}
     sandbox._simulator_cache = {"db": mock_sim}
 
     res = await sandbox.execute("db_query", {"query": "SELECT *"})
-    assert res == {"shim": "response"}
+    assert res == {"status": "success", "payload": {"shim": "response"}}
     mock_sim.execute.assert_awaited_with("db_query", {"query": "SELECT *"})
 
 
