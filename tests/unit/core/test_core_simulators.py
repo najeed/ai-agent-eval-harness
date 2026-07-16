@@ -140,7 +140,7 @@ async def test_database_simulator_logic(tmp_path):
     # Query existing
     res = await db.execute("database_query", {"query": "SELECT * FROM users"})
     assert res["status"] == "success"
-    assert len(res["rows"]) >= 1
+    assert len(res["payload"]["rows"]) >= 1
 
     # Insert
     await db.execute(
@@ -311,7 +311,7 @@ async def test_hotswap_and_discovery_guardrails(tmp_path):
             pass
 
         async def execute(self, action, params):
-            return {"status": "success", "msg": "custom-ok"}
+            return {"status": "success", "payload": {"msg": "custom-ok"}}
 
     class CustomPlugin(BaseEvalPlugin):
         def on_register_simulators(self, registry):
@@ -333,7 +333,7 @@ async def test_hotswap_and_discovery_guardrails(tmp_path):
             sandbox = ToolSandbox(scen, workspace_root=tmp_path)
             res = await sandbox.execute("custom_action", {})
             assert res["status"] == "success"
-            assert res["msg"] == "custom-ok"
+            assert res["payload"]["msg"] == "custom-ok"
 
     finally:
         manager.plugins.remove(plugin)

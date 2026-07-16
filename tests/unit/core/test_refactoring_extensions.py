@@ -137,16 +137,21 @@ def test_shim_result_proxy():
     raw_result = {
         "status": "success",
         "message": "Executed successfully",
-        "custom_key": "data",
+        "payload": {"custom_key": "data"},
         "dna": "sec_dna_123",
     }
     metadata = {"signing_key": "sec_key"}
     proxy = ShimResultProxy(raw_result, metadata=metadata)
 
-    # All raw result keys are transparently accessible (backward-compatible dict view)
+    # All root result keys in allowlist are transparently accessible (backward-compatible dict view)
     assert proxy["status"] == "success"
     assert proxy["message"] == "Executed successfully"
-    assert proxy["custom_key"] == "data"  # simulator-specific keys pass through
+    assert (
+        proxy["payload"]["custom_key"] == "data"
+    )  # simulator-specific keys pass through inside payload
+
+    # Custom keys at the root level are stripped from the dict view
+    assert "custom_key" not in proxy
 
     # Telemetry and sensitive internal keys are stripped from standard dict view
     assert "dna" not in proxy

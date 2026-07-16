@@ -93,15 +93,24 @@ class ShimResultProxy(dict):
     Result wrapper proxy that shields internal metadata (like signing keys or raw telemetry DNA)
     from direct guest execution contexts. Inherits from dict for backward compatibility.
 
-    All raw result keys are passed through transparently to the guest payload, except for
-    internal telemetry keys (such as `dna`) which are stripped to preserve the security boundary.
-    The secure metadata is accessible only via `get_secure_metadata()`.
+    Only guest-facing keys defined in the AES schema are allowed through. Telemetry/DNA
+    metadata is stripped and must be retrieved via the secure side-channel `get_secure_metadata()`.
     """
 
-    _SENSITIVE_KEYS: frozenset[str] = frozenset({"dna"})
+    _GUEST_KEYS: frozenset[str] = frozenset(
+        {
+            "status",
+            "message",
+            "stdout",
+            "stderr",
+            "returncode",
+            "cwd",
+            "payload",  # The namespace containing all dynamic guest data
+        }
+    )
 
     def __init__(self, result: dict[str, Any], metadata: dict[str, Any] | None = None):
-        guest_payload = {k: v for k, v in result.items() if k not in self._SENSITIVE_KEYS}
+        guest_payload = {k: v for k, v in result.items() if k in self._GUEST_KEYS}
         super().__init__(guest_payload)
         self._secure_metadata = metadata or {}
 
@@ -385,7 +394,10 @@ class ApiSimulator(BaseSimulator):
             # Standard Industry Mock behavior (Turn 1/2)
             path = params.get("path", "/")
             result = self.state["endpoints"].get(path, {"error": "Not Found (MOCK_MODE)"})
-            return {"status": "success" if "error" not in result else "error", "data": result}
+            return {
+                "status": "success" if "error" not in result else "error",
+                "payload": {"data": result},
+            }
 
         request_kwargs = {
             "method": method,
@@ -413,9 +425,11 @@ class ApiSimulator(BaseSimulator):
 
                 return {
                     "status": "success" if response.is_success else "error",
-                    "data": response.json()
-                    if "application/json" in response.headers.get("Content-Type", "")
-                    else response.text,
+                    "payload": {
+                        "data": response.json()
+                        if "application/json" in response.headers.get("Content-Type", "")
+                        else response.text
+                    },
                     "dna": dna,
                 }
         except Exception as e:
@@ -624,7 +638,7 @@ class DatabaseSimulator(BaseSimulator):
                         )
 
                     conn.commit()
-                    return {"status": "success", "rows": rows}
+                    return {"status": "success", "payload": {"rows": rows}}
 
                 conn.commit()
 

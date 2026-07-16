@@ -5,6 +5,7 @@ evidence ledger tracking, and governance TTL enforcement.
 """
 
 import json
+from datetime import UTC
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -265,22 +266,66 @@ def test_verify_trace_legacy_rejection():
 
 
 def test_verify_trace_missing_provenance(caplog):
-    """Verify that empty provenance chain fails verification."""
+    """Verify that empty provenance chain fails verification.
+    The manifest is constructed with a fresh timestamp (1 day old) so it is
+    always within the 90-day governance TTL. This isolates the test to the
+    provenance-chain check — the actual code path under test.
+    """
+    from datetime import datetime, timedelta
+    from unittest.mock import patch
+
     run_dir = config.RUN_LOG_DIR / "no_prov_run"
     run_dir.mkdir(exist_ok=True)
     trace_path = run_dir / "run.jsonl"
     trace_path.write_text("{}")
+
+    # Always 1 day old — within TTL, never stale.
+    fresh_timestamp = (datetime.now(tz=UTC) - timedelta(days=1)).isoformat()
     manifest = {
         "vc_version": "3.0.0",
         "sha256": TraceVerifier.compute_signature(trace_path),
-        "timestamp": "2026-04-15T12:00:00.000+0000",
+        "timestamp": fresh_timestamp,
         "provenance_chain": [],
         "evidence_ledger": {},
     }
     manifest_path = run_dir / "run_manifest.json"
     manifest_path.write_text(json.dumps(manifest))
-    assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
+
+    # Freeze time to 1 day after the manifest timestamp so the 90-day governance
+    # TTL check passes, allowing execution to reach the provenance chain check.
+    frozen_now = datetime(2026, 4, 16, 12, 0, 0, tzinfo=UTC)
+    with patch("eval_runner.verifier.datetime") as mock_dt:
+        mock_dt.fromisoformat.side_effect = datetime.fromisoformat
+        mock_dt.now.return_value = frozen_now
+        assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
     assert "No provenance chain found" in caplog.text
+
+
+def test_verify_trace_forged_ed25519_signature(caplog):
+    """Verify that a well-formed provenance chain with a bad ED25519 signature fails.
+    This is distinct from test_verifier_tamper_detection (which fails at the SHA-256
+    hash check, step 1) and test_verify_trace_missing_provenance (empty chain, step 4a).
+    Here the trace is unmodified, the chain node is structurally valid, but the signature
+    bytes do not correspond to the manifest — exercising the cryptographic rejection
+    path at verifier.py:L613 (public_key.verify raises, caught at L645).
+    """
+    run_id = "run-forged-sig"
+    vault_dir, trace_path = setup_vault(run_id)
+    trace_path.write_text("authentic trace content")
+    # Produce a legitimate manifest so SHA-256, TTL, and ledger checks all pass.
+    TraceVerifier.sign_trace(str(trace_path), run_id=run_id, identity_id="system_id")
+    manifest_path = vault_dir / "run_manifest.json"
+    with open(manifest_path) as f:
+        manifest = json.load(f)
+    # Corrupt every ED25519 signature in the chain with a valid-length but wrong hex string.
+    # The verifier will call public_key.verify() which will raise, returning False.
+    corrupted_sig = "ff" * 64  # 64 bytes of 0xFF — structurally valid hex, cryptographically wrong
+    for node in manifest["provenance_chain"]:
+        if node.get("algorithm", "ED25519") == "ED25519":
+            node["signature"] = corrupted_sig
+    manifest_path.write_text(json.dumps(manifest))
+    assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
+    assert "Verification Failure" in caplog.text
 
 
 def test_v3_forensic_tier1_always_included():

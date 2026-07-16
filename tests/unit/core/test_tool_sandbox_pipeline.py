@@ -73,7 +73,9 @@ async def test_sandbox_pipeline_no_interceptors(tmp_path):
             "get_status": {
                 "output": {
                     "status": "success",
-                    "data": "running",
+                    "payload": {
+                        "data": "running",
+                    },
                 }
             }
         },
@@ -82,7 +84,7 @@ async def test_sandbox_pipeline_no_interceptors(tmp_path):
 
     result = await sandbox.execute("get_status", {"foo": "bar"})
     assert result["status"] == "success"
-    assert result["data"] == "running"
+    assert result["payload"]["data"] == "running"
 
 
 @pytest.mark.asyncio
@@ -121,7 +123,9 @@ async def test_sandbox_pipeline_auditing(tmp_path):
             "standard_tool": {
                 "output": {
                     "status": "success",
-                    "data": "original_data",
+                    "payload": {
+                        "data": "original_data",
+                    },
                 }
             }
         },
@@ -137,7 +141,7 @@ async def test_sandbox_pipeline_auditing(tmp_path):
     assert auditor.calls == ["standard_tool"]
     # Verify parameter injection and output augmentation
     assert result["status"] == "success"
-    assert result["data"] == "original_data"
+    assert result["payload"]["data"] == "original_data"
     assert result["audited"] is True
 
 
