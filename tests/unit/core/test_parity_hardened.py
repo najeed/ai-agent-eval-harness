@@ -32,7 +32,7 @@ async def test_verify_state_parity_parallel(scenario):
     mock_db = AsyncMock()
 
     async def slow_db():
-        await asyncio.sleep(0.2)
+        await asyncio.sleep(0.5)
         return {"active": True}
 
     mock_db.get_snapshot.side_effect = slow_db
@@ -40,7 +40,7 @@ async def test_verify_state_parity_parallel(scenario):
     mock_git = AsyncMock()
 
     async def slow_git():
-        await asyncio.sleep(0.2)
+        await asyncio.sleep(0.5)
         return {"branch": "main"}
 
     mock_git.get_snapshot.side_effect = slow_git
@@ -59,8 +59,10 @@ async def test_verify_state_parity_parallel(scenario):
     end = time.time()
 
     assert success is True
-    # If sequential, total time >= 0.4s. If parallel, total time ~ 0.2s.
-    assert (end - start) < 0.35, f"Execution was too slow ({end - start:.2f}s), likely sequential."
+    # Sequential would take >= 1.0s (2 x 0.5s). Parallel takes ~0.5s.
+    # Threshold of 0.75s gives generous headroom for CI/coverage overhead
+    # while still clearly distinguishing sequential from concurrent execution.
+    assert (end - start) < 0.75, f"Execution was too slow ({end - start:.2f}s), likely sequential."
     assert mock_db.get_snapshot.call_count == 1
     assert mock_git.get_snapshot.call_count == 1
 
