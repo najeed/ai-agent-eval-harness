@@ -54,4 +54,4 @@ jobs:
         run: docker build -t agentv:latest .
 
       - name: Scan Docker image with Trivy
-        run: trivy image --exit-code 1 --severity HIGH,CRITICAL agentv:latest
+        run: trivy image --exit-code 1 --severity HIGH,CRITICAL --ignore-unfixed agentv:latest

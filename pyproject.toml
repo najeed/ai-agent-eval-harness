@@ -65,7 +65,7 @@ coverage = "eval_runner.coverage_plugin:CoveragePlugin"
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "dataproc_engine/tests"]
-addopts = "-ra"
+addopts = "-ra --dist loadfile"
 python_files = ["test_*.py"]
 pythonpath = ["."]
 asyncio_mode = "auto"

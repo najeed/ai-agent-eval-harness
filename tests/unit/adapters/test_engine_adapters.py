@@ -8,7 +8,7 @@ from eval_runner.engine import AgentAdapterRegistry
 
 @pytest.mark.asyncio
 async def test_registry_discovery():
-    AgentAdapterRegistry._discovered = False
+    AgentAdapterRegistry.reset()
     AgentAdapterRegistry._discover()
     assert "http" in AgentAdapterRegistry._adapters
     assert "local" in AgentAdapterRegistry._adapters
@@ -18,7 +18,7 @@ async def test_registry_discovery():
 @pytest.mark.asyncio
 async def test_call_agent_protocol_selection():
     payload = {"test": "data"}
-    AgentAdapterRegistry._discovered = False
+    AgentAdapterRegistry.reset()
     AgentAdapterRegistry._discover()
 
     # Target the dictionary values directly to be sure
@@ -34,7 +34,7 @@ async def test_call_agent_protocol_selection():
 @pytest.mark.asyncio
 async def test_call_agent_env_fallback():
     payload = {"test": "data"}
-    AgentAdapterRegistry._discovered = False
+    AgentAdapterRegistry.reset()
     AgentAdapterRegistry._discover()
 
     with patch.dict(os.environ, {"AGENT_LOCAL_CMD": "python mock_agent.py"}):

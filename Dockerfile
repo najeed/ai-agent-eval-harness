@@ -1,6 +1,9 @@
 # Use a slim Python image for a smaller footprint
 FROM python:3.12-slim
 
+# Upgrade OS packages to apply security patches
+RUN apt-get update && apt-get upgrade -y && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Set the working directory in the container
 WORKDIR /app
 
