@@ -300,3 +300,26 @@ def test_priority_analyzer_returns_non_none():
         assert res == FailureCategory.SECURITY_SANDBOX_ESCAPE
     finally:
         FailureTaxonomy._priority_analyzers.remove(analyzer)
+
+
+def test_enterprise_taxonomy_categories_and_triage():
+    from eval_runner.triage import SUGGESTION_TEMPLATES
+
+    # Verify presence in FailureCategory and CATEGORIES list
+    assert FailureCategory.POLICY_KNOWLEDGE_STALENESS in FailureCategory
+    assert FailureCategory.LOGIC_OBJECTIVE_MISALIGNMENT in FailureCategory
+    assert FailureCategory.SECURITY_IDENTITY_HITL_FAILURE in FailureCategory
+
+    assert "policy_knowledge_staleness" in FailureTaxonomy.CATEGORIES
+    assert "logic_objective_misalignment" in FailureTaxonomy.CATEGORIES
+    assert "security_identity_hitl_failure" in FailureTaxonomy.CATEGORIES
+
+    # Verify suggestion templates format cleanly
+    format_args = {"index": 2, "evidence": "stale", "tool": "rag_search"}
+    s1 = SUGGESTION_TEMPLATES[FailureCategory.POLICY_KNOWLEDGE_STALENESS].format(**format_args)
+    s2 = SUGGESTION_TEMPLATES[FailureCategory.LOGIC_OBJECTIVE_MISALIGNMENT].format(**format_args)
+    s3 = SUGGESTION_TEMPLATES[FailureCategory.SECURITY_IDENTITY_HITL_FAILURE].format(**format_args)
+
+    assert "Knowledge base or RAG retrieval index stale" in s1
+    assert "reward gaming or specification misalignment" in s2
+    assert "Human-in-the-loop authorization" in s3

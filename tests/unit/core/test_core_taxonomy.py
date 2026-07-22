@@ -20,6 +20,12 @@ importlib.reload(taxonomy)
 def test_failure_category_behavior():
     assert str(FailureCategory.SUCCESS) == "success"
     assert FailureCategory.INFRA_OOM.value == "infra_oom"
+    assert str(FailureCategory.POLICY_KNOWLEDGE_STALENESS) == "policy_knowledge_staleness"
+    assert FailureCategory.POLICY_KNOWLEDGE_STALENESS.value == "policy_knowledge_staleness"
+    assert str(FailureCategory.LOGIC_OBJECTIVE_MISALIGNMENT) == "logic_objective_misalignment"
+    assert FailureCategory.LOGIC_OBJECTIVE_MISALIGNMENT.value == "logic_objective_misalignment"
+    assert str(FailureCategory.SECURITY_IDENTITY_HITL_FAILURE) == "security_identity_hitl_failure"
+    assert FailureCategory.SECURITY_IDENTITY_HITL_FAILURE.value == "security_identity_hitl_failure"
 
 
 @pytest.mark.parametrize(

@@ -43,16 +43,19 @@ class FailureCategory(StrEnum):
     LOGIC_STATE_STALL = auto()
     LOGIC_UNCERTAINTY = auto()
     LOGIC_ABANDONMENT = auto()
+    LOGIC_OBJECTIVE_MISALIGNMENT = auto()
 
     # --- POLICY ---
     POLICY_VIOLATION = auto()
     POLICY_HALLUCINATION = auto()
     POLICY_DACON_LEAK = auto()
+    POLICY_KNOWLEDGE_STALENESS = auto()
 
     # --- SECURITY ---
     SECURITY_PII_LEAK = auto()
     SECURITY_UNAUTHORIZED_ACCESS = auto()
     SECURITY_SANDBOX_ESCAPE = auto()
+    SECURITY_IDENTITY_HITL_FAILURE = auto()
 
     # --- FORENSIC PARITY ---
     PARITY_STATE_DIVERGENCE = auto()

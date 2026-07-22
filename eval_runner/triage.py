@@ -30,6 +30,18 @@ SUGGESTION_TEMPLATES = {
     FailureCategory.POLICY_VIOLATION: (
         "Review the agent's safety filters or policy constraints at turn {index}."
     ),
+    FailureCategory.POLICY_KNOWLEDGE_STALENESS: (
+        "Knowledge base or RAG retrieval index stale; update vector store and "
+        "knowledge cutoff references."
+    ),
+    FailureCategory.LOGIC_OBJECTIVE_MISALIGNMENT: (
+        "Agent completed task with reward gaming or specification misalignment; "
+        "refine objective function."
+    ),
+    FailureCategory.SECURITY_IDENTITY_HITL_FAILURE: (
+        "Human-in-the-loop authorization or identity verification failed; "
+        "verify HITL approval tokens."
+    ),
     FailureCategory.SECURITY_PII_LEAK: (
         "Check evaluation guardrails and input sanitization near turn {index}."
     ),

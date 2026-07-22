@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.7] - 2026-07-22
+
+### Core Enum Expansion & Enterprise Failure Taxonomy Alignment
+*   **Expanded `FailureCategory` StrEnum**: Expanded `FailureCategory(StrEnum)` in `eval_runner/taxonomy.py` with native core support for `POLICY_KNOWLEDGE_STALENESS`, `LOGIC_OBJECTIVE_MISALIGNMENT`, and `SECURITY_IDENTITY_HITL_FAILURE` failure codes.
+*   **Forensic Triage Engine Suggestions**: Updated `eval_runner/triage.py` with diagnostic suggestion templates in `SUGGESTION_TEMPLATES` for knowledge staleness, objective misalignment (specification gaming), and HITL authorization failures.
+*   **100% Test Coverage Hardening**: Updated `tests/unit/core/test_core_taxonomy.py` and `tests/unit/core/test_taxonomy_coverage_booster.py` with complete behavior, string value, and triage template tests, achieving 100.00% statement and branch test coverage on `eval_runner/taxonomy.py`.
+*   **Documentation & Specification Sync**: Updated `docs/src/content/docs/spec/taxonomy.md` and `docs/src/content/docs/evaluator/taxonomy.md` reference tables and lists across Logic, Policy, and Security domains.
+
 ## [1.6.6] - 2026-07-07
 
 ### Agnostic Wire Protocol & Declarative Config Mesh Payload Wiring
