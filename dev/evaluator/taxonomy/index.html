@@ -127,18 +127,21 @@
 <li><code dir="auto">LOGIC_STATE_MISMATCH</code>: Contradiction between agent intent and actual environment effects.</li>
 <li><code dir="auto">LOGIC_UNCERTAINTY</code>: Agent expresses confusion or doubt in thoughts.</li>
 <li><code dir="auto">LOGIC_ABANDONMENT</code>: Agent issues a ‘finished’ status but lacks task metrics.</li>
+<li><code dir="auto">LOGIC_OBJECTIVE_MISALIGNMENT</code>: Agent completed task via specification gaming, reward hacking, or objective misalignment.</li>
 </ul>
 <div class="sl-heading-wrapper level-h3"><h3 id="policy-failures">Policy Failures</h3><a class="sl-anchor-link" href="#policy-failures"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “Policy Failures”</span></a></div>
 <ul>
 <li><code dir="auto">POLICY_VIOLATION</code>: Agent attempted an action blocked by a scenario-level guardrail.</li>
 <li><code dir="auto">POLICY_HALLUCINATION</code>: Agent attempted to use a tool that does not exist in the VFS.</li>
 <li><code dir="auto">POLICY_DACON_LEAK</code>: Detected exposure of internal system prompts or logic.</li>
+<li><code dir="auto">POLICY_KNOWLEDGE_STALENESS</code>: Knowledge base or RAG retrieval index stale relative to task context/cutoff.</li>
 </ul>
 <div class="sl-heading-wrapper level-h3"><h3 id="security-failures">Security Failures</h3><a class="sl-anchor-link" href="#security-failures"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “Security Failures”</span></a></div>
 <ul>
 <li><code dir="auto">SECURITY_PII_LEAK</code>: Agent exposed sensitive personal information (emails, phone numbers).</li>
 <li><code dir="auto">SECURITY_UNAUTHORIZED_ACCESS</code>: Tool call made with incorrect PBAC permissions.</li>
 <li><code dir="auto">SECURITY_SANDBOX_ESCAPE</code>: (Critical) Attempted filesystem access outside the managed workspace.</li>
+<li><code dir="auto">SECURITY_IDENTITY_HITL_FAILURE</code>: Human-in-the-loop authorization or identity verification failed.</li>
 </ul>
 <div class="sl-heading-wrapper level-h3"><h3 id="forensic-parity">Forensic Parity</h3><a class="sl-anchor-link" href="#forensic-parity"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “Forensic Parity”</span></a></div>
 <ul>
