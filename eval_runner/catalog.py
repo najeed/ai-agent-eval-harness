@@ -315,7 +315,8 @@ class ScenarioCatalog:
         with self._lock:
             if not self.scenarios and ScenarioCatalog._initialized:
                 self.load_index()
-            return [str(s.get("id") or s.get("title")) for s in self.scenarios]
+            scenarios = self.scenarios if isinstance(self.scenarios, list) else []
+            return [str(s.get("id") or s.get("title")) for s in scenarios if isinstance(s, dict)]
 
     def get_absolute_path(self, identifier: str) -> Path | None:
         """Resolves scenario ID to absolute path."""
@@ -324,8 +325,9 @@ class ScenarioCatalog:
                 # Fast-path: Load disk cache without scanning filesystem
                 self.load_index()
 
-            for s in self.scenarios:
-                if s.get("id") == identifier:
+            scenarios = self.scenarios if isinstance(self.scenarios, list) else []
+            for s in scenarios:
+                if isinstance(s, dict) and s.get("id") == identifier:
                     base_join = self.root_dir / s["path"]
                     if not base_join.exists():
                         return None

@@ -80,11 +80,15 @@ def test_project_root_files_are_ignored(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "AES_CONFIG_DIR", tmp_path)
 
     # 3. Resolve
-    registry = config.RegistryManager.get_resolved_registry()
+    try:
+        config.RegistryManager.reload()
+        registry = config.RegistryManager.get_resolved_registry()
 
-    # 4. Assert root file is NOT in the registry
-    shims = registry.get("shims", {})
-    assert "api" not in shims or "legacy" not in shims["api"]["resources"]
+        # 4. Assert root file is NOT in the registry
+        shims = registry.get("shims", {})
+        assert "api" not in shims or "legacy" not in shims["api"]["resources"]
+    finally:
+        config.RegistryManager.reload()
 
 
 def test_local_overlay_precedence(tmp_path, monkeypatch):

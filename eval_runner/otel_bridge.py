@@ -1,8 +1,11 @@
+import logging
 import os
 import sys
 
 from .events import CoreEvents, Event
 from .plugins import BaseEvalPlugin
+
+logger = logging.getLogger(__name__)
 
 
 class OTelTelemetryBridge(BaseEvalPlugin):
@@ -32,17 +35,26 @@ class OTelTelemetryBridge(BaseEvalPlugin):
 
         try:
             from opentelemetry import trace
-            from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+            from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
+                OTLPSpanExporter,  # type: ignore[import-not-found]
+            )
             from opentelemetry.sdk.resources import Resource
             from opentelemetry.sdk.trace import TracerProvider
             from opentelemetry.sdk.trace.export import BatchSpanProcessor
+        except ImportError as err:
+            sys.stderr.write(
+                f"   [OTel Bridge] Required OTel packages missing for OTLP exporter: {err}. "
+                "Install via 'pip install opentelemetry-exporter-otlp-proto-grpc'.\n"
+            )
+            return
 
+        try:
             try:
                 provider = trace.get_tracer_provider()
                 if hasattr(provider, "shutdown"):
                     return
-            except Exception:
-                pass
+            except Exception as _e:
+                logger.debug("Tracer provider check skipped: %s", _e, exc_info=True)
 
             resource = Resource.create(attributes={"service.name": service_name})
             provider = TracerProvider(resource=resource)
@@ -92,5 +104,5 @@ class OTelTelemetryBridge(BaseEvalPlugin):
                             "error.traceback": ev_data.get("traceback", ""),
                         },
                     )
-        except Exception:
-            pass
+        except Exception as _e:
+            logger.debug("OTel handle_event skipped: %s", _e, exc_info=True)

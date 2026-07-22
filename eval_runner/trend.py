@@ -48,7 +48,8 @@ class RunTrendAnalyzer:
 
             slope, _ = linear_regression(x_values, y_values)
             return float(slope)
-        except Exception:
+        except Exception as _e:
+            logger.debug("Linear regression fallback activated: %s", _e, exc_info=True)
             # Fallback manual OLS slope calculation (e.g. if statistics.linear_regression fails)
             n = len(x_values)
             mean_x = sum(x_values) / n
@@ -95,8 +96,8 @@ class RunTrendAnalyzer:
                     try:
                         with open(manifest_path, encoding="utf-8") as f:
                             manifest_data = json.load(f)
-                    except Exception:
-                        pass
+                    except Exception as _e:
+                        logger.debug("Manifest parse skipped: %s", _e, exc_info=True)
 
                 resolved_agent = (
                     manifest_data.get("metadata", {}).get("agent_name")

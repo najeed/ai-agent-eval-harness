@@ -7,6 +7,7 @@ Core evaluation engine.
 Updated for universal extensibility via registries, hooks, and typed contexts.
 """
 
+import logging  # noqa: E402
 import sys  # noqa: E402
 from collections.abc import Callable  # noqa: E402
 from typing import Any  # noqa: E402
@@ -14,6 +15,8 @@ from typing import Any  # noqa: E402
 from eval_runner import plugins  # noqa: E402
 
 from . import config  # noqa: E402
+
+logger = logging.getLogger(__name__)
 
 # Security Guardrails
 MAX_ENGINE_ATTEMPTS = config.MAX_ENGINE_ATTEMPTS
@@ -217,8 +220,8 @@ class AgentAdapterRegistry:
                 payload["span_context"] = {"traceparent": carrier["traceparent"]}
                 if turn_ctx:
                     object.__setattr__(turn_ctx, "span_context", payload["span_context"])
-        except Exception:
-            pass
+        except Exception as _e:
+            logger.debug("Span context injection skipped: %s", _e, exc_info=True)
 
         # 3. Execution (with Industrial Protection)
         try:
@@ -231,16 +234,16 @@ class AgentAdapterRegistry:
                 try:
                     span.record_exception(e)
                     span.set_status(trace.StatusCode.ERROR)
-                except Exception:
-                    pass
+                except Exception as _ex:
+                    logger.debug("Span status recording failed: %s", _ex, exc_info=True)
             sys.stderr.write(f"      [Dispatcher Error] {protocol} failed: {str(e)}\n")
             raise
         finally:
             if span and span.is_recording():
                 try:
                     span.end()
-                except Exception:
-                    pass
+                except Exception as _ex2:
+                    logger.debug("Span end failed: %s", _ex2, exc_info=True)
 
 
 async def run_evaluation(

@@ -8,12 +8,15 @@ Supports multi-attempt (pass@k) loops and plugin interception.
 """
 
 import asyncio  # noqa: E402
+import logging  # noqa: E402
 from abc import ABC, abstractmethod  # noqa: E402
 from pathlib import Path  # noqa: E402
 from typing import Any  # noqa: E402
 
 from . import events, plugins  # noqa: E402
 from .context import EvaluationContext  # noqa: E402
+
+logger = logging.getLogger(__name__)
 
 # from .events import CoreEvents, EventEmitter # Removed to avoid confusion
 
@@ -207,8 +210,8 @@ class DefaultRunner(BaseRunner):
                         if "pass_at_k" in locals():
                             span.set_attribute("agentv.pass_at_k", locals()["pass_at_k"])
                         span.end()
-                except Exception:
-                    pass
+                except Exception as _e:
+                    logger.debug("OTel span cleanup skipped: %s", _e, exc_info=True)
 
     def _is_attempt_successful(self, attempt_res: list[dict[str, Any]]) -> bool:
         """Helper to determine if an attempt (sequence of tasks) was fully successful."""

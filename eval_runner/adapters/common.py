@@ -55,8 +55,8 @@ class SessionManager:
                     res = connector.close()
                     if asyncio.iscoroutine(res):
                         await res
-                except Exception:
-                    pass
+                except Exception as _e:
+                    logger.debug("Connector close skipped: %s", _e, exc_info=True)
         cls._session = None
         cls._lock = asyncio.Lock()
 
@@ -134,7 +134,8 @@ class AESCallbackHandler(BaseCallbackHandler):
             state_str = json.dumps(inputs, sort_keys=True)
             state_hash = hashlib.sha256(state_str.encode()).hexdigest()
             inputs_summary = {k: type(v).__name__ for k, v in inputs.items()}
-        except Exception:
+        except Exception as _e:
+            logger.debug("State hashing skipped: %s", _e, exc_info=True)
             state_hash = "error_hashing"
             inputs_summary = {"error": "serialization_failed"}
 

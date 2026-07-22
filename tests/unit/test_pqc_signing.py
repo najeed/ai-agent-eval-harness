@@ -31,6 +31,11 @@ class TestPQCSigning(unittest.TestCase):
         identity.IdentityService._pqc_client = None
 
     def tearDown(self):
+        # Reset PQC global config to prevent cross-test contamination (xdist)
+        config.PQC_ENABLED = False
+        config.CYCLECORE_API_KEY = ""
+        identity.IdentityService._pqc_client = None
+
         if self.test_trace.exists():
             self.test_trace.unlink()
         if self.vault_dir.exists():

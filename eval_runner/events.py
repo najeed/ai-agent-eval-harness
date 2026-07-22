@@ -8,6 +8,7 @@ Enables "Flight Recorder" patterns where plugins can subscribe to
 state transitions without modifying the main engine loop.
 """
 
+import logging  # noqa: E402
 import re  # noqa: E402
 from collections.abc import Callable  # noqa: E402
 from datetime import datetime  # noqa: E402
@@ -15,6 +16,8 @@ from enum import StrEnum  # noqa: E402
 from typing import Any  # noqa: E402
 
 from pydantic import BaseModel, Field  # noqa: E402
+
+logger = logging.getLogger(__name__)
 
 
 def sanitize_payload(data: dict) -> dict:
@@ -78,8 +81,8 @@ def _execute_subscriber_with_context(sub, event, otel_ctx):
             from opentelemetry import context as otel_context
 
             token = otel_context.attach(otel_ctx)
-        except Exception:
-            pass
+        except Exception as _e:
+            logger.debug("OTel attach skipped: %s", _e, exc_info=True)
     try:
         import asyncio
 
@@ -95,8 +98,8 @@ def _execute_subscriber_with_context(sub, event, otel_ctx):
                 from opentelemetry import context as otel_context
 
                 otel_context.detach(token)
-            except Exception:
-                pass
+            except Exception as _e:
+                logger.debug("OTel detach skipped: %s", _e, exc_info=True)
 
 
 class EventEmitter:
@@ -202,8 +205,8 @@ class EventEmitter:
                             from opentelemetry import context as otel_context
 
                             token = otel_context.attach(otel_ctx)
-                        except Exception:
-                            pass
+                        except Exception as _e:
+                            logger.debug("OTel attach skipped: %s", _e, exc_info=True)
                     try:
                         sub(event)
                     finally:
@@ -212,8 +215,8 @@ class EventEmitter:
                                 from opentelemetry import context as otel_context
 
                                 otel_context.detach(token)
-                            except Exception:
-                                pass
+                            except Exception as _e:
+                                logger.debug("OTel detach skipped: %s", _e, exc_info=True)
                 except Exception as e:
                     # Core stays stable even if subscribers fail
                     print(f"   [Events] Error in subscriber for {name}: {e}")
@@ -243,8 +246,8 @@ class EventEmitter:
                                     from opentelemetry import context as otel_context
 
                                     tok = otel_context.attach(otel_ctx)
-                                except Exception:
-                                    pass
+                                except Exception as _e:
+                                    logger.debug("OTel attach skipped: %s", _e, exc_info=True)
                             try:
                                 await s(event)
                             finally:
@@ -253,8 +256,8 @@ class EventEmitter:
                                         from opentelemetry import context as otel_context
 
                                         otel_context.detach(tok)
-                                    except Exception:
-                                        pass
+                                    except Exception as _e:
+                                        logger.debug("OTel detach skipped: %s", _e, exc_info=True)
 
                         loop.create_task(wrapped_coro())
                     else:

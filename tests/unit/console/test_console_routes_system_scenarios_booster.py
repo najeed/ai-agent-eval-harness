@@ -151,34 +151,37 @@ def test_system_route_info_agent_providers(client):
     catalog = ScenarioCatalog.get_instance()
     catalog.clear_instance()
     catalog = ScenarioCatalog.get_instance()
-    # Force scenarios to empty dict to trigger index load
-    catalog.scenarios = {}
+    # Force scenarios to empty list to trigger index load
+    catalog.scenarios = []
 
-    with (
-        patch("eval_runner.config.GOOGLE_API_KEY", None),
-        patch("eval_runner.config.ANTHROPIC_API_KEY", None),
-        patch("eval_runner.config.OPENAI_API_KEY", "key"),
-        patch("eval_runner.config.AGENT_API_URLS", ["http://localhost:11434"]),
-        patch("eval_runner.catalog.ScenarioCatalog.load_index") as mock_load_index,
-        patch("eval_runner.plugins.manager.plugins", []),
-    ):
-        res = client.get("/api/info")
-        assert res.status_code == 200
-        mock_load_index.assert_called_once()
-        assert res.get_json()["agent_endpoint"] == "GPT (OpenAI)"
+    try:
+        with (
+            patch("eval_runner.config.GOOGLE_API_KEY", None),
+            patch("eval_runner.config.ANTHROPIC_API_KEY", None),
+            patch("eval_runner.config.OPENAI_API_KEY", "key"),
+            patch("eval_runner.config.AGENT_API_URLS", ["http://localhost:11434"]),
+            patch("eval_runner.catalog.ScenarioCatalog.load_index") as mock_load_index,
+            patch("eval_runner.plugins.manager.plugins", []),
+        ):
+            res = client.get("/api/info")
+            assert res.status_code == 200
+            mock_load_index.assert_called_once()
+            assert res.get_json()["agent_endpoint"] == "GPT (OpenAI)"
 
-    # Test Ollama specific block specifically (Lines 214-215)
-    catalog.scenarios = {"dummy": {}}
-    with (
-        patch("eval_runner.config.GOOGLE_API_KEY", None),
-        patch("eval_runner.config.ANTHROPIC_API_KEY", None),
-        patch("eval_runner.config.OPENAI_API_KEY", None),
-        patch("eval_runner.config.AGENT_API_URLS", ["http://127.0.0.1:11434"]),
-        patch("eval_runner.plugins.manager.plugins", []),
-    ):
-        res2 = client.get("/api/info")
-        assert res2.status_code == 200
-        assert res2.get_json()["agent_endpoint"] == "Llama (Ollama)"
+        # Test Ollama specific block specifically (Lines 214-215)
+        catalog.scenarios = [{"id": "dummy"}]
+        with (
+            patch("eval_runner.config.GOOGLE_API_KEY", None),
+            patch("eval_runner.config.ANTHROPIC_API_KEY", None),
+            patch("eval_runner.config.OPENAI_API_KEY", None),
+            patch("eval_runner.config.AGENT_API_URLS", ["http://127.0.0.1:11434"]),
+            patch("eval_runner.plugins.manager.plugins", []),
+        ):
+            res2 = client.get("/api/info")
+            assert res2.status_code == 200
+            assert res2.get_json()["agent_endpoint"] == "Llama (Ollama)"
+    finally:
+        catalog.scenarios = []
 
     # Test relpath ValueError branch (Lines 235-237) and general exception branch (Lines 239-240)
     with patch("os.path.relpath", side_effect=ValueError("Cannot resolve relative path")):

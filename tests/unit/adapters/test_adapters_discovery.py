@@ -10,6 +10,8 @@ def test_adapter_discovery():
     # Use a permissive mock to allow core protocol registration for verification
     from unittest.mock import patch
 
+    from eval_runner import config
+
     try:
         with patch(
             "eval_runner.config.RegistryManager.get_resolved_registry",
@@ -20,6 +22,7 @@ def test_adapter_discovery():
             assert "local" in AgentAdapterRegistry._adapters
             assert "socket" in AgentAdapterRegistry._adapters
     finally:
+        config.RegistryManager.reload()
         AgentAdapterRegistry.reset()
 
 

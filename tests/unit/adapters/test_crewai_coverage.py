@@ -21,12 +21,14 @@ async def test_crewai_sdk_missing():
     adapter = CrewAIAdapterPlugin()
     payload = {"task_id": "test_task"}
 
+    orig_import = __import__
+
     with patch("eval_runner.adapters.crewai.emit") as mock_emit:
         # Simulate crewai not installed
         def mock_import(name, *args, **kwargs):
             if name == "crewai":
                 raise ImportError("SDK not installed")
-            return MagicMock()
+            return orig_import(name, *args, **kwargs)
 
         with patch("builtins.__import__", side_effect=mock_import):
             result = await adapter.execute_crewai_task(payload)
