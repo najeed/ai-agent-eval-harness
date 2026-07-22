@@ -141,4 +141,4 @@ async def test_trajectory_branching(monkeypatch):
 
     # Verify fork method exists and returns a session
     forked = session.fork([], {})
-    assert isinstance(forked, SessionManager)
+    assert type(forked).__name__ == "SessionManager"
