@@ -1,0 +1,157 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AES Metadata Definition",
+  "type": "object",
+  "required": [
+    "name",
+    "id",
+    "compliance_level"
+  ],
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "compliance_level": {
+      "type": "string",
+      "enum": [
+        "Standard",
+        "Gold",
+        "Regulatory_Audit"
+      ]
+    },
+    "standards_registry": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "3GPP_5G",
+          "BASEL_III",
+          "CCPA",
+          "CIS_BENCHMARKS",
+          "COBIT",
+          "COSO_ERM",
+          "DCAT",
+          "DICOM",
+          "DUBLIN_CORE",
+          "ESG_GRI",
+          "ESG_ISSB",
+          "ESG_SASB",
+          "EU_AI_ACT",
+          "FEDRAMP",
+          "FIPS_140_3",
+          "FISMA",
+          "GDPR",
+          "GLBA",
+          "HIPAA",
+          "HITECH",
+          "HL7_FHIR_V4",
+          "ICD_10",
+          "ICD_11",
+          "IEC_61850",
+          "IEC_62351",
+          "IEC_62443",
+          "IEEE_1547",
+          "IETF_RFC",
+          "ISA_95",
+          "ISO_11179",
+          "ISO_14001",
+          "ISO_19790",
+          "ISO_20022",
+          "ISO_23894",
+          "ISO_27001",
+          "ISO_27701",
+          "ISO_31000",
+          "ISO_42001",
+          "ISO_45001",
+          "ISO_50001",
+          "ISO_9001",
+          "ISO_9594",
+          "LGPD",
+          "MIFID_II",
+          "NERC_CIP",
+          "NIST_AI_RMF",
+          "NIST_CSF",
+          "OAUTH_2",
+          "OECD_AI_PRINCIPLES",
+          "OIDC",
+          "OPC_UA",
+          "PCI_DSS_V4",
+          "PIPEDA",
+          "PSD2",
+          "SAML_V2",
+          "SOC_2",
+          "SOX",
+          "SWIFT_MT103",
+          "UNESCO_AI_ETHICS",
+          "W3C_OWL",
+          "W3C_RDF",
+          "W3C_XML",
+          "X_509",
+          "std-1"
+        ]
+      }
+    },
+    "agent_topology": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "writes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "reads": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "policies": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
+    "provisioning_hash": {
+      "type": "string",
+      "description": "SHA-256 hash of the resolved shim_resources.json used for this run."
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Required infrastructure capabilities for routing (v1.4 upgrade)"
+    },
+    "description": {
+      "type": "string"
+    },
+    "complexity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "agent": {
+      "type": "object",
+      "properties": {
+        "protocol": {
+          "type": "string"
+        },
+        "endpoint": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+aes_version: 1.4
+metadata:
+  name: "Base Interaction Benchmark"
+  id: "base-interaction-v1"
+  compliance_level: "Standard"
+  description: "A simple baseline scenario for testing agent connectivity and response quality."
+  capabilities:
+    - "default_http_agent"
+
+initial_state:
+  connection_status: "pending"
+  shared_key: "0xABC123"
+
+workflow:
+  nodes:
+    - id: "start"
+      task_description: "Say hello to the evaluator and confirm connection."
+      success_criteria:
+        - metric: "output_matches"
+          threshold: 1.0
+
+  edges: []
+
+evaluation:
+  consensus:
+    strategy: "Majority_Vote"
+    min_judges: 1
+    judge_panel: ["Luna-1"]

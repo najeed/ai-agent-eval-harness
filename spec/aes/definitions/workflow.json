@@ -1,0 +1,115 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AES Workflow Definition",
+  "type": "object",
+  "description": "The State-Machine DAG defining agentic transitions.",
+  "required": [
+    "nodes",
+    "edges"
+  ],
+  "properties": {
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "task_description"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "task_description": {
+            "type": "string"
+          },
+          "required_tools": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of shim tools required to complete this task (v1.4 upgrade)"
+          },
+          "success_criteria": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "metric",
+                "threshold"
+              ],
+              "properties": {
+                "metric": {
+                  "type": "string"
+                },
+                "threshold": {
+                  "type": "number"
+                }
+              }
+            },
+            "description": "Quantitative metrics for task success (v1.4 upgrade)"
+          },
+          "state_hygiene": {
+            "type": "object",
+            "description": "Assertions to check BEFORE this node can execute."
+          },
+          "expected_outcome": {
+            "type": "array",
+            "description": "Authoritative assertion list (both Message and State parity).",
+            "items": {
+              "type": "object",
+              "properties": {
+                "target": {
+                  "type": "string",
+                  "description": "Assertion target (e.g., 'message', 'shim:loan_db')."
+                },
+                "property": {
+                  "type": "string",
+                  "description": "JSONPath or query to retrieve value."
+                },
+                "expected": {
+                  "description": "The expected value."
+                },
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "exact",
+                    "regex",
+                    "numerical_tolerance"
+                  ],
+                  "default": "exact"
+                }
+              },
+              "required": [
+                "target",
+                "expected"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "from",
+          "to"
+        ],
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "condition": {
+            "type": "string",
+            "description": "Logical condition to trigger the transition."
+          }
+        }
+      }
+    }
+  }
+}
