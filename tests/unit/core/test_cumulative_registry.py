@@ -7,7 +7,17 @@ Ensures that the Core baseline is preserved and overlays are merged correctly.
 
 import json
 
+import pytest
+
 from eval_runner import config
+
+
+@pytest.fixture(autouse=True)
+def _reset_registry_cache():
+    """Ensure RegistryManager cache is cleanly reloaded before and after every test."""
+    config.RegistryManager.reload()
+    yield
+    config.RegistryManager.reload()
 
 
 def test_internal_baseline_loading():

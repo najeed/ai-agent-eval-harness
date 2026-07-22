@@ -29,7 +29,7 @@ cryptography==49.0.0
 # --- Observability & SDKs ---
 opentelemetry-api==1.44.0
 opentelemetry-sdk==1.44.0
-google-genai==2.13.0
+google-genai==2.14.0
 GitPython==3.1.54
 psutil==7.2.2
 
