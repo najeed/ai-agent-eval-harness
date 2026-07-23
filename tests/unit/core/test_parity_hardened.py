@@ -28,21 +28,29 @@ def scenario():
 
 @pytest.mark.asyncio
 async def test_verify_state_parity_parallel(scenario):
-    # Setup slow mocks to prove parallelization
-    mock_db = AsyncMock()
+    active_count = 0
+    max_active_count = 0
 
     async def slow_db():
-        await asyncio.sleep(0.5)
+        nonlocal active_count, max_active_count
+        active_count += 1
+        max_active_count = max(max_active_count, active_count)
+        await asyncio.sleep(0.1)
+        active_count -= 1
         return {"active": True}
 
+    mock_db = AsyncMock()
     mock_db.get_snapshot.side_effect = slow_db
 
-    mock_git = AsyncMock()
-
     async def slow_git():
-        await asyncio.sleep(0.5)
+        nonlocal active_count, max_active_count
+        active_count += 1
+        max_active_count = max(max_active_count, active_count)
+        await asyncio.sleep(0.1)
+        active_count -= 1
         return {"branch": "main"}
 
+    mock_git = AsyncMock()
     mock_git.get_snapshot.side_effect = slow_git
 
     simulators = {"db": mock_db, "git": mock_git}
@@ -51,18 +59,12 @@ async def test_verify_state_parity_parallel(scenario):
 
     session = SessionManager("test_run", scenario)
 
-    import time
-
-    start = time.time()
     # Execute the parity check logic
     success = await session._verify_state_parity(scenario, mock_sandbox, [])
-    end = time.time()
 
     assert success is True
-    # Sequential would take >= 1.0s (2 x 0.5s). Parallel takes ~0.5s.
-    # Threshold of 0.75s gives generous headroom for CI/coverage overhead
-    # while still clearly distinguishing sequential from concurrent execution.
-    assert (end - start) < 0.75, f"Execution was too slow ({end - start:.2f}s), likely sequential."
+    # Logical proof of concurrency: both tasks must be active on the event loop simultaneously
+    assert max_active_count == 2, "Execution was not concurrent/parallelized."
     assert mock_db.get_snapshot.call_count == 1
     assert mock_git.get_snapshot.call_count == 1
 

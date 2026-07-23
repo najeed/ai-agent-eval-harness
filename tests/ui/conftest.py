@@ -26,19 +26,20 @@ def dashboard_server():
         s.bind(("127.0.0.1", 0))
         port = str(s.getsockname()[1])
 
+    workspace_root = Path(__file__).parent.parent.parent.absolute()
     cmd = [
         sys.executable,
         "-m",
         "streamlit",
         "run",
-        "dashboard/app.py",
+        str(workspace_root / "dashboard" / "app.py"),
         "--server.port",
         port,
         "--server.headless",
         "true",
     ]
 
-    process = subprocess.Popen(cmd, env=env)
+    process = subprocess.Popen(cmd, env=env, cwd=str(workspace_root))
 
     # Robust Polling Loop
     import requests

@@ -68,6 +68,9 @@ def reset_plugins():
     reset()
     MetricRegistry.reset()
     reset_universal_registry()
+    from eval_runner.config import RegistryManager
+
+    RegistryManager.reload()
     try:
         from eval_runner.otel_bridge import OTelTelemetryBridge
 
