@@ -4117,7 +4117,7 @@
 <h3 id="2-security-layer">🔐 2. Security Layer<a class="headerlink" href="#2-security-layer" title="Permanent link">&para;</a></h3>
 <p>To ensure enterprise-grade compliance during industrial signal extraction:
 *   <strong>Autonomous PII Scrubbing</strong>: A regex-based engine in the <code>BaseProvider</code> cleans emails, phone numbers, and sensitive identifiers from raw unstructured text <em>before</em> it reaches the LLM inference tier.
-*   <strong>Immutable Checksums</strong>: All records are now secured with a SHA-256 hash of their content, ensuring data-aware integrity throughout the pipeline.</p>
+*   <strong>Immutable Checksums</strong>: All records are now secured with a SHA3-256 hash of their content, ensuring data-aware integrity throughout the pipeline.</p>
 <h2 id="data-flow-diagram">Data Flow Diagram<a class="headerlink" href="#data-flow-diagram" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>graph TD
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    A[Dataset Engine] --&gt;|Register| D{Provider Instance}

@@ -96,7 +96,7 @@ The **Metric Dispatcher** uses this provenance map to enforce security boundarie
 The "whitelist" is not a static list but a **policy layer** resolved through the cumulative registry.
 
 1.  **Implicit Whitelist**: Any plugin registered in `.aes/config/plugins/registry.json` is automatically considered "Provisioned" and whitelisted.
-2.  **Explicit Whitelist**: Centralized forensic baselines are stored as `.json` or `.yaml` files within the `.aes/config/forensics.d/` directory. These files contain `allowed_plugin_hashes` (SHA-256).
+2.  **Explicit Whitelist**: Centralized forensic baselines are stored as `.json` or `.yaml` files within the `.aes/config/forensics.d/` directory. These files contain `allowed_plugin_hashes` (SHA3-256).
 3.  **Governance Enforcement**: During Trace Certification, the `TraceVerifier` compares the hash of any `EXTERNAL` plugin against these baselines. If a mismatch is found, the **Verification Certificate (VC)** is marked with `compliance_status: "NON_STANDARD_EXTENSION"`.
 
 

@@ -4378,7 +4378,7 @@
 <li><code>ttl</code> (int, optional): Certificate validity in days.</li>
 </ul>
 </li>
-<li><strong>Response</strong>: A complete VC v3 manifest containing the <code>sha256</code> hash and <code>provenance_chain</code>.</li>
+<li><strong>Response</strong>: A complete VC v3 manifest containing the <code>trace_hash</code> hash and <code>provenance_chain</code>.</li>
 <li><strong>Note</strong>: This requires write access to the vault. It generates <code>run_manifest.json</code> in the run directory.</li>
 </ul>
 </li>
@@ -4387,7 +4387,7 @@
 <li><strong>Note</strong>: Unprotected endpoint for industrial deployment gates.</li>
 </ul>
 </li>
-<li><code>GET /v1/verify/&lt;run_id&gt;</code>: Public Verification API for SHA-256 and cryptographic proof check.<ul>
+<li><code>GET /v1/verify/&lt;run_id&gt;</code>: Public Verification API for SHA3-256 and cryptographic proof check.<ul>
 <li><strong>Response</strong>:
     <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">&quot;run_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span>

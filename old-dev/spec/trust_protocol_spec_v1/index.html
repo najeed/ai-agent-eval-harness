@@ -3020,10 +3020,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#a-sha-256-content-hashing" class="md-nav__link">
+  <a href="#a-sha3-256-content-hashing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        A. SHA-256 Content Hashing
+        A. SHA3-256 Content Hashing
       
     </span>
   </a>
@@ -4096,10 +4096,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#a-sha-256-content-hashing" class="md-nav__link">
+  <a href="#a-sha3-256-content-hashing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        A. SHA-256 Content Hashing
+        A. SHA3-256 Content Hashing
       
     </span>
   </a>
@@ -4281,9 +4281,9 @@
 <h1 id="trust-protocol-standard-v160-forensic-baseline">Trust Protocol Standard v1.6.0 (Forensic Baseline)<a class="headerlink" href="#trust-protocol-standard-v160-forensic-baseline" title="Permanent link">&para;</a></h1>
 <p>The Trust Protocol is designed to provide <strong>immutable proof of run integrity</strong> for the AgentV Harness. It employs a "Detached Signature" architecture that separates the bulky execution data (Trace) from the metadata (Verification Certificate v3).</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>graph TD
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    A[Trace File .jsonl] --&gt;|SHA-256| B[Content Hash]
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    A[Trace File .jsonl] --&gt;|SHA3-256| B[Content Hash]
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    B --&gt; C[Manifest v3 Metadata]
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    S[Artifact Sidecars .html/.png] --&gt;|SHA-256| L[Forensic Evidence Ledger]
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    S[Artifact Sidecars .html/.png] --&gt;|SHA3-256| L[Forensic Evidence Ledger]
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    L --&gt; C
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    D[Private Key .pem] --&gt;|Identity Registry Sign| E[Verification Certificate v3]
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    C --&gt; E
@@ -4302,8 +4302,8 @@
 </code></pre></div>
 <h2 id="1-the-multi-layer-forensic-defense">1. The Multi-Layer Forensic Defense<a class="headerlink" href="#1-the-multi-layer-forensic-defense" title="Permanent link">&para;</a></h2>
 <ol>
-<li><strong>Trace Layer (Integrity)</strong>: A SHA-256 hash of the <code>.jsonl</code> trace file ensures core execution has not been altered.</li>
-<li><strong>Evidence Layer (Provenance)</strong>: The <strong>Forensic Evidence Ledger</strong> contains SHA-256 hashes of all sidecar artifacts (reports, plots), preventing report manipulation.</li>
+<li><strong>Trace Layer (Integrity)</strong>: A SHA3-256 hash of the <code>.jsonl</code> trace file ensures core execution has not been altered.</li>
+<li><strong>Evidence Layer (Provenance)</strong>: The <strong>Forensic Evidence Ledger</strong> contains SHA3-256 hashes of all sidecar artifacts (reports, plots), preventing report manipulation.</li>
 <li><strong>Manifest Layer (Authority)</strong>: A signed JSON object (The VC v3) that binds the trace and evidence hashes to an identity via the <strong>Identity Registry</strong>.</li>
 </ol>
 <h3 id="the-forensic-relevance-engine-artifact-filtering">The Forensic Relevance Engine (Artifact Filtering)<a class="headerlink" href="#the-forensic-relevance-engine-artifact-filtering" title="Permanent link">&para;</a></h3>
@@ -4321,9 +4321,9 @@
 </ol>
 <hr />
 <h2 id="2-cryptographic-mechanics">2. Cryptographic Mechanics<a class="headerlink" href="#2-cryptographic-mechanics" title="Permanent link">&para;</a></h2>
-<h3 id="a-sha-256-content-hashing">A. SHA-256 Content Hashing<a class="headerlink" href="#a-sha-256-content-hashing" title="Permanent link">&para;</a></h3>
+<h3 id="a-sha3-256-content-hashing">A. SHA3-256 Content Hashing<a class="headerlink" href="#a-sha3-256-content-hashing" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Mechanism</strong>: The <code>TraceVerifier</code> performs a streaming SHA-256 hash of the trace file on-disk.</li>
+<li><strong>Mechanism</strong>: The <code>TraceVerifier</code> performs a streaming SHA3-256 hash of the trace file on-disk.</li>
 <li><strong>Rationale</strong>: <ul>
 <li><strong>Performance</strong>: Hashing is O(n) and extremely fast, allowing for the verification of multi-gigabyte traces without hitting CPU bottlenecks.</li>
 <li><strong>Content Addressability</strong>: The hash serves as a unique fingerprint. If a single timestamp in the trace is modified, the hash changes, invalidating the entire protocol.</li>
@@ -4351,7 +4351,7 @@
 </ul>
 </li>
 <li><strong>Retrieval</strong>: External systems call the public <code>GET /v1/certificates/&lt;run_id&gt;</code> endpoint to fetch the proof.</li>
-<li><strong>Validation</strong>: The consumer uses the harness's <strong>Identity Registry</strong> to verify the signature and then re-computes the SHA-256 of the trace file to ensure a match.</li>
+<li><strong>Validation</strong>: The consumer uses the harness's <strong>Identity Registry</strong> to verify the signature and then re-computes the SHA3-256 of the trace file to ensure a match.</li>
 </ol>
 <hr />
 <h2 id="4-identity-registry-kms-integration">4. Identity Registry &amp; KMS Integration<a class="headerlink" href="#4-identity-registry-kms-integration" title="Permanent link">&para;</a></h2>
@@ -4431,14 +4431,14 @@ This enables "Zero-Touch" security where the harness remains provider-agnostic w
 <ol>
 <li><strong>Retrieve VC</strong>: <code>GET /v1/certificates/&lt;run_id&gt;</code></li>
 <li><strong>Verify Authority</strong>: Call <code>TraceVerifier.verify_trace</code> using the <strong>Identity Registry</strong>.</li>
-<li><strong>Verify Integrity</strong>: Re-hash the local trace file (<code>sha256sum</code>) and ensure it matches the <code>sha256</code> value inside the verified VC.</li>
+<li><strong>Verify Integrity</strong>: Re-hash the local trace file (<code>sha3_256sum</code>) and ensure it matches the <code>trace_hash</code> value inside the verified VC.</li>
 </ol>
 <hr />
 <h2 id="7-cli-integration-industrial-standard">7. CLI Integration (Industrial Standard)<a class="headerlink" href="#7-cli-integration-industrial-standard" title="Permanent link">&para;</a></h2>
 <p>The Evaluation Harness provides a first-class CLI suite to manage the Trust Protocol workflow:</p>
 <ul>
 <li><strong><code>certify --run-id &lt;id&gt; [--identity system_id] [--status pass]</code></strong>: 
-    Performs a SHA-256 hash of the trace and wraps it in a signed Verification Certificate (VC) v3.0.0. The certificate is autonomously saved to the run vault and store.</li>
+    Performs a SHA3-256 hash of the trace and wraps it in a signed Verification Certificate (VC) v3.0.0. The certificate is autonomously saved to the run vault and store.</li>
 <li><strong><code>verify --run-id &lt;id&gt;</code></strong>: 
     Locally verifies the integrity of a trace file against its manifest (Sidecar) using autonomous artifact resolution.</li>
 <li><strong><code>gate --run-id &lt;id&gt; [--verify-ledger]</code></strong>: 
@@ -4446,7 +4446,7 @@ This enables "Zero-Touch" security where the harness remains provider-agnostic w
 </ul>
 <hr />
 <h2 id="8-summary-of-rationale">8. Summary of Rationale<a class="headerlink" href="#8-summary-of-rationale" title="Permanent link">&para;</a></h2>
-<p>We chose this hybrid approach (SHA-256 + ED25519) to balance <strong>performance</strong> with <strong>unbreakable trust</strong>. By making the key management layer <strong>Pluggable (HMS-Ready)</strong>, we ensure the harness can grow from a local developer tool into a mission-critical component of a zero-trust industrial evaluation pipeline.</p>
+<p>We chose this hybrid approach (SHA3-256 + ED25519) to balance <strong>performance</strong> with <strong>unbreakable trust</strong>. By making the key management layer <strong>Pluggable (HMS-Ready)</strong>, we ensure the harness can grow from a local developer tool into a mission-critical component of a zero-trust industrial evaluation pipeline.</p>
 
 
 

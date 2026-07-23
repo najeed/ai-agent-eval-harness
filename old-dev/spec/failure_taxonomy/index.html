@@ -3935,7 +3935,7 @@
 <h2 id="3-forensic-triage-causal-attribution">3. Forensic Triage &amp; Causal Attribution<a class="headerlink" href="#3-forensic-triage-causal-attribution" title="Permanent link">&para;</a></h2>
 <p>When a failure occurs, the engine performs a stratified analysis by executing all registered analyzers against the <a href="../../docs/src/content/docs/spec/forensic-ledger-schema.md">Forensic Ledger</a>:</p>
 <ol>
-<li><strong>State Layer</strong>: Compares state-delta snapshots (SHA-256) across turns.</li>
+<li><strong>State Layer</strong>: Compares state-delta snapshots (SHA3-256) across turns.</li>
 <li><strong>Telemetry Layer</strong>: Scans hardware resource gradients (CPU/Mem/Disk) for leaks via <code>psutil</code>.</li>
 <li><strong>Audit Layer</strong>: Correlates events into a <strong>Causal Chain</strong>.</li>
 </ol>

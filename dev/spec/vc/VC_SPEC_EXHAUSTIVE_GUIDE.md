@@ -13,13 +13,13 @@ In industrial AI evaluation, a "Result" is only as good as the proof that it has
 
 ---
 
-## Lesson 1: The Integrity Core (SHA-256 & Vaulting)
+## Lesson 1: The Integrity Core (SHA3-256 & Vaulting)
 
-The VC uses **SHA-256** hashing to create a unique fingerprint for every artifact in the session vault.
+The VC uses **SHA3-256** hashing to create a unique fingerprint for every artifact in the session vault.
 
-### 1. The Master Trace Hash (`sha256`)
-The top-level `sha256` property is the hash of the core `run.jsonl` file. 
-> **Verification Protocol**: Any tool verifying the certificate MUST recalculate the hash of the trace file and compare it to this field. A single bit difference in the trace will cause a verification failure.
+### 1. The Master Trace Hash (`trace_hash`)
+The top-level `trace_hash` property is the hash of the core `run.jsonl` file. 
+> **Verification Protocol**: Any tool verifying the certificate MUST recalculate the hash of the trace file and compare it to this field. A single bit difference in the trace will cause a verification failure. The algorithm is defined by `hash_algorithm` (default `sha3_256`).
 
 ### 2. The Trace Context (`harness_version` & `trace_file`)
 To ensure forensic portability, the VC explicitly declares its runtime context:
@@ -29,7 +29,7 @@ To ensure forensic portability, the VC explicitly declares its runtime context:
 ### 3. The Evidence Ledger (`evidence_ledger`)
 Sidecars (Database snapshots, terminal outputs, screenshots) are listed in a map:
 - **Keys**: The relative path within the session vault (e.g., `forensics/db_snapshot.sqlite`).
-- **Values**: The 64-character SHA-256 hex hash of that file.
+- **Values**: The 64-character SHA3-256 hex hash of that file.
 
 ---
 
@@ -76,7 +76,8 @@ Digital certificates are not eternal. The `governance_ttl` (in days) defines the
   "harness_version": "1.5.0",
   "run_id": "audit-fc-2026-001",
   "trace_file": "run.jsonl",
-  "sha256": "8f02...e9a1",
+  "trace_hash": "8f02...e9a1",
+  "hash_algorithm": "sha3_256",
   "compliance": {
     "status": "pass",
     "score": 0.94,
