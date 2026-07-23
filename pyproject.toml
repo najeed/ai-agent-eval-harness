@@ -39,7 +39,7 @@ dependencies = [
     "sqlalchemy==2.0.51",
     "python-dotenv==1.2.2",
     "Authlib==1.7.2",
-    "langchain-openai==1.4.0",
+    "langchain-openai==1.4.1",
     "langsmith==0.10.10",
     "lxml==6.1.1",
     "Pillow==12.3.0",
