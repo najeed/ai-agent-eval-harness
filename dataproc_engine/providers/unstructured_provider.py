@@ -1,5 +1,4 @@
 import datetime
-import hashlib
 import json
 import logging
 import os
@@ -8,6 +7,7 @@ from typing import Any
 import aiohttp
 
 from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, StandardSchema
+from eval_runner.utils import crypto
 
 logger = logging.getLogger("UnstructuredProvider")
 
@@ -159,7 +159,7 @@ class UnstructuredProvider(BaseProvider):
                     logger.info("Simulation mode allowed. Producing simulated document artifact.")
                     return [
                         self.create_simulated_artifact(
-                            id=f"sim-DOC-{hashlib.sha256(path.encode()).hexdigest()[:8]}",
+                            id=f"sim-DOC-{crypto.record_id(path)[:8]}",
                             content="This is a simulated industrial document for testing purposes.",
                             source_url=f"local://simulation/{os.path.basename(path)}",
                             metadata={"type": "text/plain"},
@@ -169,7 +169,7 @@ class UnstructuredProvider(BaseProvider):
 
         # Safety check for hashlib (requires bytes-like object)
         hash_input = content if isinstance(content, str | bytes) else str(content)
-        id_content = f"{self.input_uri}-{hashlib.sha256(hash_input.encode()).hexdigest()[:8]}"
+        id_content = f"{self.input_uri}-{crypto.content_hash(hash_input, length=4)}"
 
         return [
             RawArtifact(
@@ -185,7 +185,7 @@ class UnstructuredProvider(BaseProvider):
         """
         Extract and verify data using LLMManager (Unified Async Path).
         """
-        import hashlib
+        from eval_runner.utils import crypto
 
         results = []
         target_schema = self.config.get(
@@ -213,15 +213,11 @@ class UnstructuredProvider(BaseProvider):
                 if verified:
                     results.append(
                         StandardSchema(
-                            id=hashlib.sha256(f"CC-{raw_data['web_source']}".encode()).hexdigest()[
-                                :16
-                            ],
+                            id=crypto.record_id(f"CC-{raw_data['web_source']}"),
                             industry="unstructured",
                             data=verified,
                             provenance={"source": raw.source_url, "provider": "Common Crawl"},
-                            checksum=hashlib.sha256(
-                                json.dumps(verified, sort_keys=True).encode()
-                            ).hexdigest(),
+                            checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                         )
                     )
             return results
@@ -266,7 +262,7 @@ class UnstructuredProvider(BaseProvider):
             if self._verify_domain_integrity(extracted_data):
                 # Robust data-aware checksum
                 raw_str = json.dumps(extracted_data, sort_keys=True)
-                data_checksum = hashlib.sha256(raw_str.encode()).hexdigest()
+                data_checksum = crypto.checksum(raw_str)
 
                 results.append(
                     StandardSchema(

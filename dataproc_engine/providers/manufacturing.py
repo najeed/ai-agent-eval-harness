@@ -1,9 +1,9 @@
-import hashlib
 import json
 from typing import Any
 
 from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, StandardSchema
 from dataproc_engine.core.logger import StructuredLogger
+from eval_runner.utils import crypto
 
 logger = StructuredLogger("ManufacturingProvider")
 
@@ -94,9 +94,9 @@ class ManufacturingProvider(BaseProvider):
                     }
                     verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
                     if verified:
-                        record_id = hashlib.sha256(
-                            f"IND-{raw_data['country']}-{raw_data['sector']}-{raw_data['year']}".encode()
-                        ).hexdigest()[:16]
+                        record_id = crypto.record_id(
+                            f"IND-{raw_data['country']}-{raw_data['sector']}-{raw_data['year']}"
+                        )
                         results.append(
                             StandardSchema(
                                 id=record_id,
@@ -106,9 +106,7 @@ class ManufacturingProvider(BaseProvider):
                                     "source": raw.source_url,
                                     "provider": "Industrial-Stats-Agency",
                                 },
-                                checksum=hashlib.sha256(
-                                    json.dumps(verified, sort_keys=True).encode()
-                                ).hexdigest(),
+                                checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
             return results
@@ -158,18 +156,14 @@ class ManufacturingProvider(BaseProvider):
 
                 verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
                 if verified:
-                    record_id = hashlib.sha256(
-                        f"ASM-{raw_data['industry_label']}".encode()
-                    ).hexdigest()[:16]
+                    record_id = crypto.record_id(f"ASM-{raw_data['industry_label']}")
                     results.append(
                         StandardSchema(
                             id=record_id,
                             industry="manufacturing",
                             data=verified,
                             provenance={"source": raw.source_url, "provider": "US Census ASM"},
-                            checksum=hashlib.sha256(
-                                json.dumps(verified, sort_keys=True).encode()
-                            ).hexdigest(),
+                            checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                         )
                     )
         return results

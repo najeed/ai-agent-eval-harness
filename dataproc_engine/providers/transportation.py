@@ -1,5 +1,4 @@
 import datetime
-import hashlib
 import json
 from typing import Any
 
@@ -7,6 +6,7 @@ import aiohttp
 
 from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, StandardSchema
 from dataproc_engine.core.logger import StructuredLogger
+from eval_runner.utils import crypto
 
 logger = StructuredLogger("TransportationProvider")
 
@@ -164,13 +164,11 @@ class TransportationProvider(BaseProvider):
                     if verified:
                         results.append(
                             StandardSchema(
-                                id=hashlib.sha256(f"OSM-{data['id']}".encode()).hexdigest()[:16],
+                                id=crypto.record_id(f"OSM-{data['id']}"),
                                 industry="transportation",
                                 data=verified,
                                 provenance={"source": raw.source_url, "provider": "OpenStreetMap"},
-                                checksum=hashlib.sha256(
-                                    json.dumps(verified, sort_keys=True).encode()
-                                ).hexdigest(),
+                                checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
                 continue
@@ -188,15 +186,11 @@ class TransportationProvider(BaseProvider):
                     if verified:
                         results.append(
                             StandardSchema(
-                                id=hashlib.sha256(
-                                    f"EURO-{item['geo']}-{item['time']}".encode()
-                                ).hexdigest()[:16],
+                                id=crypto.record_id(f"EURO-{item['geo']}-{item['time']}"),
                                 industry="transportation",
                                 data=verified,
                                 provenance={"source": raw.source_url, "provider": "Eurostat"},
-                                checksum=hashlib.sha256(
-                                    json.dumps(verified, sort_keys=True).encode()
-                                ).hexdigest(),
+                                checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
                 continue
@@ -215,9 +209,9 @@ class TransportationProvider(BaseProvider):
                 verified_data = self.llm_manager._verify_schema(data, TARGET_SCHEMA, strict=True)
                 if verified_data:
                     unique_str = f"{data['entity']}-{data['period']}"
-                    record_id = hashlib.sha256(unique_str.encode()).hexdigest()[:16]
+                    record_id = crypto.record_id(unique_str)
                     raw_str = json.dumps(verified_data, sort_keys=True)
-                    data_checksum = hashlib.sha256(raw_str.encode()).hexdigest()
+                    data_checksum = crypto.checksum(raw_str)
 
                     results.append(
                         StandardSchema(

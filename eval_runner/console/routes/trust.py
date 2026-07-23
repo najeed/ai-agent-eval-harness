@@ -58,7 +58,8 @@ def execute_industrial_certification(
         "status": "certified",
         "run_id": run_id,
         "manifest": {
-            "sha256": manifest.get("sha256"),
+            "trace_hash": manifest.get("trace_hash") or manifest.get("sha256"),
+            "sha256": manifest.get("trace_hash") or manifest.get("sha256"),
             "manifest_path": str(manifest_path),
             "certified_at": datetime.now().isoformat(),
         },

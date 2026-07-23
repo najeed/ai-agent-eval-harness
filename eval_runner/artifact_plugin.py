@@ -6,7 +6,6 @@ Provides first-class support for Source of Truth bundling and integrity verifica
 """
 
 import base64
-import hashlib
 import json
 import os
 import zipfile
@@ -19,6 +18,7 @@ from cryptography.hazmat.primitives.asymmetric import ed25519
 
 from . import config
 from .plugins import BaseEvalPlugin
+from .utils import crypto
 
 
 class ArtifactPlugin(BaseEvalPlugin):
@@ -66,12 +66,8 @@ class ArtifactPlugin(BaseEvalPlugin):
             )
         return private_key
 
-    def _calculate_sha256(self, file_path: Path) -> str:
-        sha256_hash = hashlib.sha256()
-        with open(file_path, "rb") as f:
-            for byte_block in iter(lambda: f.read(4096), b""):
-                sha256_hash.update(byte_block)
-        return sha256_hash.hexdigest()
+    def _calculate_hash(self, file_path: Path) -> str:
+        return crypto.file_hash(file_path)
 
     def bundle_artifacts(
         self,
@@ -103,7 +99,7 @@ class ArtifactPlugin(BaseEvalPlugin):
                     zipf.write(f_path, arcname=filename)
                     if generate_manifest:
                         manifest["files"].append(
-                            {"name": filename, "sha256": self._calculate_sha256(f_path)}
+                            {"name": filename, "file_hash": self._calculate_hash(f_path)}
                         )
                 else:
                     print(f"⚠️ [ArtifactPlugin] Skipping missing file: {filename}")
@@ -136,7 +132,7 @@ class ArtifactPlugin(BaseEvalPlugin):
 
     def verify_integrity(self, manifest_path: str) -> dict[str, Any]:
         """
-        Verifies all files listed in a manifest against their SHA-256 hashes.
+        Verifies all files listed in a manifest against their SHA3-256 hashes.
         """
         path = Path(manifest_path)
         if not path.exists():
@@ -155,8 +151,9 @@ class ArtifactPlugin(BaseEvalPlugin):
                 is_valid = False
                 continue
 
-            actual_hash = self._calculate_sha256(f_path)
-            if actual_hash == entry["sha256"]:
+            actual_hash = self._calculate_hash(f_path)
+            expected_hash = entry.get("file_hash") or entry.get("sha256")
+            if actual_hash == expected_hash:
                 results.append({"file": entry["name"], "status": "valid"})
             else:
                 results.append({"file": entry["name"], "status": "mismatch"})

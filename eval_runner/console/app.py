@@ -1,4 +1,3 @@
-import hashlib
 import os
 
 import flask
@@ -47,7 +46,9 @@ def create_app():
     # Ensure session persistence (v1.2.3 Stabilization)
     api_key = getattr(config, "DASHBOARD_API_KEY", None)
     if api_key:
-        app.secret_key = hashlib.sha256(api_key.encode()).hexdigest()
+        from ..utils import crypto
+
+        app.secret_key = crypto.checksum(api_key)
     else:
         # Fallback to a random key if no API key is provided, allowing the app to boot
         app.secret_key = os.urandom(24).hex()

@@ -49,7 +49,7 @@ def test_trace_verification_cycle(tmp_path, monkeypatch):
 
     assert manifest["vc_version"] == "3.0.0"
     assert manifest["run_id"] == run_id
-    assert manifest["sha256"] == TraceVerifier.compute_signature(trace_path)
+    assert manifest["trace_hash"] == TraceVerifier.compute_signature(trace_path)
     assert len(manifest["provenance_chain"]) == 1
     assert manifest["provenance_chain"][0]["identity"] == identity_id
 

@@ -1,9 +1,9 @@
-import hashlib
 import json
 from typing import Any
 
 from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, StandardSchema
 from dataproc_engine.core.logger import StructuredLogger
+from eval_runner.utils import crypto
 
 logger = StructuredLogger("HousingProvider")
 
@@ -69,18 +69,16 @@ class HousingProvider(BaseProvider):
                     }
                     verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
                     if verified:
-                        record_id = hashlib.sha256(
-                            f"INFRA-{raw_data['location']}-{raw_data['year']}".encode()
-                        ).hexdigest()[:16]
+                        record_id = crypto.record_id(
+                            f"INFRA-{raw_data['location']}-{raw_data['year']}"
+                        )
                         results.append(
                             StandardSchema(
                                 id=record_id,
                                 industry="housing",
                                 data=verified,
                                 provenance={"source": raw.source_url, "provider": "World Bank"},
-                                checksum=hashlib.sha256(
-                                    json.dumps(verified, sort_keys=True).encode()
-                                ).hexdigest(),
+                                checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
             return results
@@ -102,18 +100,14 @@ class HousingProvider(BaseProvider):
                 }
                 verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
                 if verified:
-                    record_id = hashlib.sha256(
-                        f"HUD-{raw_data['location']}-{raw_data['year']}".encode()
-                    ).hexdigest()[:16]
+                    record_id = crypto.record_id(f"HUD-{raw_data['location']}-{raw_data['year']}")
                     results.append(
                         StandardSchema(
                             id=record_id,
                             industry="housing",
                             data=verified,
                             provenance={"source": raw.source_url, "provider": "HUD"},
-                            checksum=hashlib.sha256(
-                                json.dumps(verified, sort_keys=True).encode()
-                            ).hexdigest(),
+                            checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                         )
                     )
         return results

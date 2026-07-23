@@ -1,6 +1,5 @@
 import asyncio
 import datetime
-import hashlib
 import json
 import os
 from typing import Any
@@ -10,6 +9,7 @@ import pandas as pd
 
 from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, StandardSchema
 from dataproc_engine.core.logger import StructuredLogger
+from eval_runner.utils import crypto
 
 logger = StructuredLogger("HealthcareProvider")
 
@@ -205,9 +205,7 @@ class HealthcareProvider(BaseProvider):
                     else:
                         return None
 
-                content_hash = hashlib.sha256(
-                    json.dumps(content, sort_keys=True).encode()
-                ).hexdigest()[:12]
+                content_hash = crypto.content_hash(json.dumps(content, sort_keys=True), length=6)
 
                 return RawArtifact(
                     id=f"cms-{content_hash}",
@@ -270,15 +268,13 @@ class HealthcareProvider(BaseProvider):
                     if verified:
                         results.append(
                             StandardSchema(
-                                id=hashlib.sha256(
-                                    f"WHO-{raw_data['country']}-{raw_data['year']}".encode()
-                                ).hexdigest()[:16],
+                                id=crypto.record_id(
+                                    f"WHO-{raw_data['country']}-{raw_data['year']}"
+                                ),
                                 industry="healthcare",
                                 data=verified,
                                 provenance={"source": artifact.source_url, "provider": "WHO-GHO"},
-                                checksum=hashlib.sha256(
-                                    json.dumps(verified, sort_keys=True).encode()
-                                ).hexdigest(),
+                                checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
             return results
@@ -309,9 +305,9 @@ class HealthcareProvider(BaseProvider):
                         raw_data, TARGET_SCHEMA, strict=is_strict
                     )
                     if verified:
-                        record_id = hashlib.sha256(
-                            f"{dataset_version}-{row.get('subject_id')}-{row.get('hadm_id')}".encode()
-                        ).hexdigest()[:16]
+                        record_id = crypto.record_id(
+                            f"{dataset_version}-{row.get('subject_id')}-{row.get('hadm_id')}"
+                        )
                         results.append(
                             StandardSchema(
                                 id=record_id,
@@ -321,9 +317,7 @@ class HealthcareProvider(BaseProvider):
                                     "source": artifact.source_url,
                                     "schema": dataset_version,
                                 },
-                                checksum=hashlib.sha256(
-                                    json.dumps(verified, sort_keys=True).encode()
-                                ).hexdigest(),
+                                checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
             return results
@@ -354,7 +348,7 @@ class HealthcareProvider(BaseProvider):
                 )
 
                 # Deterministic ID for cross-dataset record linking
-                record_id = hashlib.sha256(f"{p_id}-{facility_name}".encode()).hexdigest()[:16]
+                record_id = crypto.record_id(f"{p_id}-{facility_name}")
 
                 raw_data = {
                     "facility_name": facility_name,
@@ -377,7 +371,7 @@ class HealthcareProvider(BaseProvider):
                 )
                 if verified_data:
                     raw_str = json.dumps(verified_data, sort_keys=True)
-                    data_checksum = hashlib.sha256(raw_str.encode()).hexdigest()
+                    data_checksum = crypto.checksum(raw_str)
 
                     results.append(
                         StandardSchema(

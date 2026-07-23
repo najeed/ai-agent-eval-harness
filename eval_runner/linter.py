@@ -4,10 +4,11 @@ linter.py
 Automated quality scoring and linting for AES scenarios.
 """
 
-import hashlib
 import json
 from pathlib import Path
 from typing import Any
+
+from .utils import crypto
 
 
 class ScenarioLinter:
@@ -203,7 +204,7 @@ class ScenarioLinter:
                 sig_payload = workflow.get("nodes", [])
 
                 tasks_str = json.dumps(sig_payload, sort_keys=True)
-                signature = hashlib.sha256(tasks_str.encode()).hexdigest()
+                signature = crypto.checksum(tasks_str)
 
                 if signature in hashes:
                     duplicates.append({"original": hashes[signature], "duplicate": str(p)})

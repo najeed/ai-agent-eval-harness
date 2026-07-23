@@ -505,7 +505,7 @@ async def handle_certify(args):
 
         print("✅ Success: Verification Certificate generated.")
         print(f"    - Run ID: {manifest.get('run_id')}")
-        print(f"    - SHA-256: {manifest.get('sha256')}")
+        print(f"    - SHA3-256: {manifest.get('trace_hash') or manifest.get('sha256')}")
         print(f"    - VC Version: {manifest.get('vc_version')}")
 
         chain = manifest.get("provenance_chain", [])

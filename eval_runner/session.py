@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import asyncio
 import copy
-import hashlib
 import json
 import logging
 import os
@@ -31,6 +30,7 @@ from .engine import AgentAdapterRegistry  # noqa: E402
 from .events import CoreEvents, Event, EventEmitter  # noqa: E402
 from .forensics import ForensicCollector  # noqa: E402
 from .tool_sandbox import ToolSandbox  # noqa: E402
+from .utils import crypto  # noqa: E402
 from .utils.path_resolver import PathResolver  # noqa: E402
 
 # Security Guardrails: Fork Bomb Prevention
@@ -743,9 +743,7 @@ class SessionManager:
         self.forensics.snapshot_state(state_after_full, turn + 1000)
 
         # [Forensic Hardening] capture state fingerprint for stall detection
-        self.state_snapshots.append(
-            hashlib.sha256(str(sorted(state_after.items())).encode()).hexdigest()
-        )
+        self.state_snapshots.append(crypto.checksum(str(sorted(state_after.items()))))
 
         # [Forensic Hardening] capture resource telemetry
         self._capture_telemetry()
@@ -839,9 +837,7 @@ class SessionManager:
         )  # Offset for after-state transparency
 
         # [Forensic Hardening] capture state fingerprint for stall detection
-        self.state_snapshots.append(
-            hashlib.sha256(str(sorted(state_after.items())).encode()).hexdigest()
-        )
+        self.state_snapshots.append(crypto.checksum(str(sorted(state_after.items()))))
 
         # [Forensic Hardening] capture resource telemetry
         self._capture_telemetry()

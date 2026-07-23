@@ -1,9 +1,9 @@
-import hashlib
 import json
 from typing import Any
 
 from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, StandardSchema
 from dataproc_engine.core.logger import StructuredLogger
+from eval_runner.utils import crypto
 
 logger = StructuredLogger("EnvironmentProvider")
 
@@ -99,9 +99,9 @@ class EnvironmentProvider(BaseProvider):
 
                 verified = self.llm_manager._verify_schema(data, TARGET_SCHEMA, strict=True)
                 if verified:
-                    record_id = hashlib.sha256(
-                        f"ENV-{data['location']}-{data['timestamp']}-{data['metric']}".encode()
-                    ).hexdigest()[:16]
+                    record_id = crypto.record_id(
+                        f"ENV-{data['location']}-{data['timestamp']}-{data['metric']}"
+                    )
                     results.append(
                         StandardSchema(
                             id=record_id,
@@ -111,9 +111,7 @@ class EnvironmentProvider(BaseProvider):
                                 "source": raw.source_url,
                                 "provider": self.environment_mode.upper(),
                             },
-                            checksum=hashlib.sha256(
-                                json.dumps(verified, sort_keys=True).encode()
-                            ).hexdigest(),
+                            checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                         )
                     )
         return results

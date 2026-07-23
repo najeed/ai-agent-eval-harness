@@ -5,7 +5,6 @@ Advanced publication plugin capturing statistical rigor, cost, and failure taxon
 Supports A/B testing and regression detection.
 """
 
-import hashlib
 import json
 import math
 from datetime import datetime
@@ -16,6 +15,7 @@ import yaml
 from .context import EvaluationContext
 from .plugins import BaseEvalPlugin
 from .taxonomy import FailureTaxonomy
+from .utils import crypto
 
 
 class PublicationPlugin(BaseEvalPlugin):
@@ -110,7 +110,7 @@ class PublicationPlugin(BaseEvalPlugin):
         seed = args.get("seed", 0) or 0
         identifier = context.identifier
         raw = f"{identifier}-{seed}-{datetime.now().strftime('%Y%m%d')}"
-        return hashlib.sha256(raw.encode()).hexdigest()[:12]
+        return crypto.content_hash(raw, length=6)
 
     def _wilson_score_interval(self, p, n):
         if n == 0:

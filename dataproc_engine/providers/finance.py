@@ -1,6 +1,5 @@
 import asyncio
 import datetime
-import hashlib
 import json
 import os
 from typing import Any
@@ -9,6 +8,7 @@ import aiohttp
 
 from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, StandardSchema
 from dataproc_engine.core.logger import StructuredLogger
+from eval_runner.utils import crypto
 
 logger = StructuredLogger("FinanceProvider")
 
@@ -350,15 +350,11 @@ class FinanceProvider(BaseProvider):
                     if verified:
                         results.append(
                             StandardSchema(
-                                id=hashlib.sha256(str(raw_data["account_id"]).encode()).hexdigest()[
-                                    :16
-                                ],
+                                id=crypto.record_id(str(raw_data["account_id"])),
                                 industry="finance",
                                 data=verified,
                                 provenance={"source": raw.source_url, "schema": "UCI-Credit-Risk"},
-                                checksum=hashlib.sha256(
-                                    json.dumps(verified, sort_keys=True).encode()
-                                ).hexdigest(),
+                                checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
                 continue
@@ -389,7 +385,7 @@ class FinanceProvider(BaseProvider):
                 raw_data, target_schema, strict=current_strict
             )
             if verified:
-                record_id = hashlib.sha256(f"{cik}-{raw.timestamp}".encode()).hexdigest()[:16]
+                record_id = crypto.record_id(f"{cik}-{raw.timestamp}")
                 results.append(
                     StandardSchema(
                         id=record_id,
@@ -400,9 +396,7 @@ class FinanceProvider(BaseProvider):
                             "taxonomy": self.taxonomy,
                             "currency": self.currency,
                         },
-                        checksum=hashlib.sha256(
-                            json.dumps(verified, sort_keys=True).encode()
-                        ).hexdigest(),
+                        checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                     )
                 )
         return results

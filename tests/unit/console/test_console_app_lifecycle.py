@@ -1,4 +1,3 @@
-import hashlib
 from unittest.mock import MagicMock, patch
 
 import psutil
@@ -60,7 +59,9 @@ def test_create_app_api_key_present(monkeypatch):
     with patch("eval_runner.plugins.manager.load_plugins"):
         with patch("eval_runner.catalog.ScenarioCatalog.get_instance"):
             app = create_app()
-            expected = hashlib.sha256(b"mysecretapikey").hexdigest()
+            from eval_runner.utils import crypto
+
+            expected = crypto.checksum("mysecretapikey")
             assert app.secret_key == expected
 
 

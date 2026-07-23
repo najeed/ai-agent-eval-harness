@@ -5,18 +5,18 @@ from pathlib import Path
 from eval_runner.artifact_plugin import ArtifactPlugin
 
 
-def test_calculate_sha256(tmp_path):
-    """Test SHA-256 calculation for a sample file."""
+def test_calculate_hash(tmp_path):
+    """Test SHA3-256 calculation for a sample file."""
     f = tmp_path / "test.txt"
     f.write_text("hello world")
 
     plugin = ArtifactPlugin()
-    h = plugin._calculate_sha256(f)
+    h = plugin._calculate_hash(f)
 
-    # Expected SHA-256 for "hello world"
-    import hashlib
+    # Expected SHA3-256 for "hello world"
+    from eval_runner.utils import crypto
 
-    expected = hashlib.sha256(b"hello world").hexdigest()
+    expected = crypto.file_hash(f)
     assert h == expected
 
 
@@ -54,7 +54,7 @@ def test_bundle_artifacts(tmp_path):
         assert manifest["batch_id"] == tmp_path.name
         assert len(manifest["files"]) == 2
         assert manifest["files"][0]["name"] == "file1.txt"
-        assert "sha256" in manifest["files"][0]
+        assert "file_hash" in manifest["files"][0]
 
 
 def test_verify_integrity_valid(tmp_path):

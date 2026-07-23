@@ -1,5 +1,4 @@
 import datetime
-import hashlib
 import json
 from typing import Any
 
@@ -7,6 +6,7 @@ import aiohttp
 
 from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, StandardSchema
 from dataproc_engine.core.logger import StructuredLogger
+from eval_runner.utils import crypto
 
 logger = StructuredLogger("DemographicsProvider")
 
@@ -108,18 +108,16 @@ class DemographicsProvider(BaseProvider):
                     }
                     verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
                     if verified:
-                        record_id = hashlib.sha256(
-                            f"WB-DEM-{raw_data['country']}-{raw_data['year']}".encode()
-                        ).hexdigest()[:16]
+                        record_id = crypto.record_id(
+                            f"WB-DEM-{raw_data['country']}-{raw_data['year']}"
+                        )
                         results.append(
                             StandardSchema(
                                 id=record_id,
                                 industry="demographics",
                                 data=verified,
                                 provenance={"source": raw.source_url, "provider": "World Bank"},
-                                checksum=hashlib.sha256(
-                                    json.dumps(verified, sort_keys=True).encode()
-                                ).hexdigest(),
+                                checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
             return results
@@ -152,18 +150,14 @@ class DemographicsProvider(BaseProvider):
 
                 verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
                 if verified:
-                    record_id = hashlib.sha256(
-                        f"CENSUS-{raw_data['state']}-{raw_data['year']}".encode()
-                    ).hexdigest()[:16]
+                    record_id = crypto.record_id(f"CENSUS-{raw_data['state']}-{raw_data['year']}")
                     results.append(
                         StandardSchema(
                             id=record_id,
                             industry="demographics",
                             data=verified,
                             provenance={"source": raw.source_url, "provider": "US Census"},
-                            checksum=hashlib.sha256(
-                                json.dumps(verified, sort_keys=True).encode()
-                            ).hexdigest(),
+                            checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                         )
                     )
         return results

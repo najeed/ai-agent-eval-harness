@@ -1,6 +1,5 @@
 import asyncio
 import datetime
-import hashlib
 import json
 import os
 from typing import Any
@@ -9,6 +8,7 @@ import aiohttp
 
 from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, StandardSchema
 from dataproc_engine.core.logger import StructuredLogger
+from eval_runner.utils import crypto
 
 logger = StructuredLogger("TelecomProvider")
 
@@ -180,7 +180,7 @@ class TelecomProvider(BaseProvider):
                         return None
 
                     return RawArtifact(
-                        id=f"fcc-stream-{hashlib.sha256(url.encode()).hexdigest()[:8]}",
+                        id=f"fcc-stream-{crypto.record_id(url)[:8]}",
                         source_url=url,
                         content=features,
                         metadata={"type": "geojson", "source": "FCC"},
@@ -248,15 +248,13 @@ class TelecomProvider(BaseProvider):
                     if verified:
                         results.append(
                             StandardSchema(
-                                id=hashlib.sha256(
-                                    f"ITU-{raw_data['country']}-{raw_data['year']}".encode()
-                                ).hexdigest()[:16],
+                                id=crypto.record_id(
+                                    f"ITU-{raw_data['country']}-{raw_data['year']}"
+                                ),
                                 industry="telecom",
                                 data=verified,
                                 provenance={"source": raw.source_url, "provider": "ITU"},
-                                checksum=hashlib.sha256(
-                                    json.dumps(verified, sort_keys=True).encode()
-                                ).hexdigest(),
+                                checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
             return results
@@ -282,18 +280,14 @@ class TelecomProvider(BaseProvider):
                         raw_data, TARGET_SCHEMA, strict=is_strict
                     )
                     if verified:
-                        record_id = hashlib.sha256(
-                            f"OOKLA-{row.get('quadkey')}".encode()
-                        ).hexdigest()[:16]
+                        record_id = crypto.record_id(f"OOKLA-{row.get('quadkey')}")
                         results.append(
                             StandardSchema(
                                 id=record_id,
                                 industry="telecom",
                                 data=verified,
                                 provenance={"source": artifact.source_url, "schema": "Ookla-Tiles"},
-                                checksum=hashlib.sha256(
-                                    json.dumps(verified, sort_keys=True).encode()
-                                ).hexdigest(),
+                                checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
             return results
@@ -313,9 +307,7 @@ class TelecomProvider(BaseProvider):
                 name = self.scrub_pii(row.get("provider_name") or row.get("name") or "Unknown")
 
                 # Deterministic tracking ID
-                record_id = hashlib.sha256(f"{p_id}-{artifact.source_url}".encode()).hexdigest()[
-                    :16
-                ]
+                record_id = crypto.checksum(f"{p_id}-{artifact.source_url}")
 
                 # Defensive Key Mapping (Case-Resilient)
                 def get_field(keys):
@@ -339,7 +331,7 @@ class TelecomProvider(BaseProvider):
                 )
                 if verified_data:
                     raw_str = json.dumps(verified_data, sort_keys=True)
-                    data_checksum = hashlib.sha256(raw_str.encode()).hexdigest()
+                    data_checksum = crypto.checksum(raw_str)
 
                     results.append(
                         StandardSchema(

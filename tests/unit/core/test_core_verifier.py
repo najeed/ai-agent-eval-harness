@@ -257,7 +257,8 @@ def test_verify_trace_legacy_rejection():
     trace_path.write_text("{}")
     legacy_manifest = {
         "vc_version": "1.0.0",
-        "sha256": TraceVerifier.compute_signature(trace_path),
+        "trace_hash": TraceVerifier.compute_signature(trace_path),
+        "hash_algorithm": "sha3_256",
         "run_id": "legacy",
     }
     manifest_path = run_dir / "run_manifest.json"
@@ -283,7 +284,8 @@ def test_verify_trace_missing_provenance(caplog):
     fresh_timestamp = (datetime.now(tz=UTC) - timedelta(days=1)).isoformat()
     manifest = {
         "vc_version": "3.0.0",
-        "sha256": TraceVerifier.compute_signature(trace_path),
+        "trace_hash": TraceVerifier.compute_signature(trace_path),
+        "hash_algorithm": "sha3_256",
         "timestamp": fresh_timestamp,
         "provenance_chain": [],
         "evidence_ledger": {},
@@ -403,7 +405,7 @@ def test_get_certificate_api_helper():
     trace_path.write_text("{}}")
     cert = TraceVerifier.get_certificate(str(trace_path), run_id=run_id)
     assert cert["run_id"] == run_id
-    assert "sha256" in cert
+    assert "trace_hash" in cert
 
 
 def test_verify_trace_manifest_outside_jail():

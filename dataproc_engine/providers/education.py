@@ -1,9 +1,9 @@
-import hashlib
 import json
 from typing import Any
 
 from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, StandardSchema
 from dataproc_engine.core.logger import StructuredLogger
+from eval_runner.utils import crypto
 
 logger = StructuredLogger("EducationProvider")
 
@@ -124,18 +124,16 @@ class EducationProvider(BaseProvider):
                         raw_data, TARGET_SCHEMA, strict=is_strict
                     )
                     if verified:
-                        record_id = hashlib.sha256(
-                            f"UNESCO-{raw_data['region']}-{raw_data['year']}".encode()
-                        ).hexdigest()[:16]
+                        record_id = crypto.record_id(
+                            f"UNESCO-{raw_data['region']}-{raw_data['year']}"
+                        )
                         results.append(
                             StandardSchema(
                                 id=record_id,
                                 industry="education",
                                 data=verified,
                                 provenance={"source": raw.source_url, "provider": "UNESCO"},
-                                checksum=hashlib.sha256(
-                                    json.dumps(verified, sort_keys=True).encode()
-                                ).hexdigest(),
+                                checksum=crypto.record_id(json.dumps(verified, sort_keys=True)),
                             )
                         )
             return results
@@ -157,18 +155,14 @@ class EducationProvider(BaseProvider):
                         raw_data, TARGET_SCHEMA, strict=is_strict
                     )
                     if verified:
-                        record_id = hashlib.sha256(f"MOOC-{row['course_id']}".encode()).hexdigest()[
-                            :16
-                        ]
+                        record_id = crypto.record_id(f"MOOC-{row['course_id']}")
                         results.append(
                             StandardSchema(
                                 id=record_id,
                                 industry="education",
                                 data=verified,
                                 provenance={"source": raw.source_url, "provider": "MOOC-Portal"},
-                                checksum=hashlib.sha256(
-                                    json.dumps(verified, sort_keys=True).encode()
-                                ).hexdigest(),
+                                checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
             return results
@@ -190,18 +184,14 @@ class EducationProvider(BaseProvider):
                         raw_data, TARGET_SCHEMA, strict=is_strict
                     )
                     if verified:
-                        record_id = hashlib.sha256(
-                            f"KAGGLE-{raw_data['dataset_title']}".encode()
-                        ).hexdigest()[:16]
+                        record_id = crypto.record_id(f"KAGGLE-{raw_data['dataset_title']}")
                         results.append(
                             StandardSchema(
                                 id=record_id,
                                 industry="education",
                                 data=verified,
                                 provenance={"source": raw.source_url, "provider": "Kaggle"},
-                                checksum=hashlib.sha256(
-                                    json.dumps(verified, sort_keys=True).encode()
-                                ).hexdigest(),
+                                checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
             return results
@@ -223,18 +213,14 @@ class EducationProvider(BaseProvider):
                     raw_data, TARGET_SCHEMA, strict=is_strict
                 )
                 if verified:
-                    record_id = hashlib.sha256(
-                        f"NCES-{raw_data['education_level']}-2022".encode()
-                    ).hexdigest()[:16]
+                    record_id = crypto.record_id(f"NCES-{raw_data['education_level']}-2022")
                     results.append(
                         StandardSchema(
                             id=record_id,
                             industry="education",
                             data=verified,
                             provenance={"source": raw.source_url, "provider": "NCES"},
-                            checksum=hashlib.sha256(
-                                json.dumps(verified, sort_keys=True).encode()
-                            ).hexdigest(),
+                            checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                         )
                     )
         return results

@@ -5,7 +5,6 @@ Industrial Verification Suite for the v1.3.0 Secret Redaction Engine.
 Ensures that sensitive credentials are masked in traces while preserving forensic hashes.
 """
 
-import hashlib
 import json
 
 from eval_runner import config
@@ -67,13 +66,15 @@ def test_provisioning_hash_integrity(tmp_path, monkeypatch):
     # Manually calculate hash of raw merged registry
     full_registry = config.RegistryManager.get_resolved_registry()
     raw_json = json.dumps(full_registry, sort_keys=True)
-    expected_hash = hashlib.sha256(raw_json.encode()).hexdigest()
+    from eval_runner.utils import crypto
+
+    expected_hash = crypto.checksum(raw_json)
 
     assert sandbox.scenario["metadata"]["provisioning_hash"] == expected_hash
 
     # CRITICAL: Confirm the hash is NOT based on redacted data
     redacted_json = json.dumps(snapshot, sort_keys=True)
-    redacted_hash = hashlib.sha256(redacted_json.encode()).hexdigest()
+    redacted_hash = crypto.checksum(redacted_json)
     assert sandbox.scenario["metadata"]["provisioning_hash"] != redacted_hash
 
 

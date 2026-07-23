@@ -19,6 +19,7 @@ from .base import (
     rmtree_resilient,
     safe_run_async,
 )
+from .crypto import checksum, content_hash, file_hash, record_id, shake256_digest
 from .path_resolver import PathResolver
 
 __all__ = [
@@ -34,4 +35,10 @@ __all__ = [
     "PathResolver",
     "Path",
     "Any",
+    # Crypto utilities (SHA-3 family)
+    "checksum",
+    "content_hash",
+    "file_hash",
+    "record_id",
+    "shake256_digest",
 ]

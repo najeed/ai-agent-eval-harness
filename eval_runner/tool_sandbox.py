@@ -176,14 +176,15 @@ class AbstractSandbox(ABC):
         self._simulator_cache: dict[str, Any] | None = None
 
         # [Turn 2 Hardening] Session-Scoped Terminal Jail
-        import hashlib
         import json
+
+        from .utils import crypto
 
         # [RFC-002 Hybrid Registry] Environmental DNA Snapshot
         # Capture the resolved state of all shims for this run
         full_registry = config.RegistryManager.reload()
         snapshot_json = json.dumps(full_registry, sort_keys=True)
-        self.provisioning_hash = hashlib.sha256(snapshot_json.encode()).hexdigest()
+        self.provisioning_hash = crypto.checksum(snapshot_json)
 
         # [REDACTION] Scrub secrets before injecting into the trace (v1.3.0 Hardening)
         self.provisioning_snapshot = config.RegistryManager.get_sanitized_registry()

@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from . import config, forensics, utils
+from .utils import crypto
 
 logger = logging.getLogger(__name__)
 
@@ -293,8 +294,8 @@ class TraceVerifier:
 
     @staticmethod
     def compute_signature(file_path: Path) -> str:
-        """Computes the SHA-256 hash of a file using the forensics utility."""
-        return forensics.compute_file_hash(file_path)
+        """Computes the SHA3-256 hash of a file using the forensics utility."""
+        return crypto.file_hash(file_path)
 
     @staticmethod
     def generate_key_pair(output_dir: str):
@@ -370,7 +371,7 @@ class TraceVerifier:
         if not p.exists():
             raise FileNotFoundError(f"Trace file not found: {trace_path}")
 
-        sha256_hash = cls.compute_signature(p)
+        cls.compute_signature(p)
 
         # --- [STRICT IDENTITY PROTOCOL] ---
         # 1. Authoritative Identity Basis
@@ -462,8 +463,9 @@ class TraceVerifier:
             logger.warning(f"      [Verifier] Failed to append lifecycle event to trace: {e}")
 
         # 4. Final Authoritative Physical Hash (Post-Event)
-        sha256_hash = cls.compute_signature(p)
-        manifest["sha256"] = sha256_hash
+        trace_hash = cls.compute_signature(p)
+        manifest["trace_hash"] = trace_hash
+        manifest["hash_algorithm"] = "sha3_256"
 
         # 5. Cryptographic Provenance (Hybrid Approach)
         manifest["signing_context"] = {
@@ -560,7 +562,7 @@ class TraceVerifier:
                 return False
 
             # 1. Base Integrity Check
-            expected_hash = manifest.get("sha256")
+            expected_hash = manifest.get("trace_hash") or manifest.get("sha256")
             actual_hash = cls.compute_signature(tp)
             if expected_hash != actual_hash:
                 logger.warning(f"Trace hash mismatch: expected {expected_hash}, got {actual_hash}")

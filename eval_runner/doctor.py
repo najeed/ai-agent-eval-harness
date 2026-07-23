@@ -69,9 +69,9 @@ def check_security_health():
     # We check if a secret key can be derived (used in app.py)
     if dash_key:
         try:
-            import hashlib
+            from .utils import crypto
 
-            derived = hashlib.sha256(dash_key.encode()).hexdigest()
+            derived = crypto.checksum(dash_key)
             if derived:
                 print("  ✔ Session SECRET_KEY derivation is functional")
         except Exception:

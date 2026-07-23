@@ -1,4 +1,3 @@
-import hashlib
 import json
 import logging
 import os
@@ -8,24 +7,19 @@ from pathlib import Path
 from typing import Any
 
 from . import config
+from .utils.crypto import file_hash as _file_hash, shake256_digest as _shake256_digest
 
 logger = logging.getLogger(__name__)
 
 
 def compute_file_hash(file_path: Path) -> str:
-    """Computes SHA-256 hash of a file. (Module Level Utility)"""
-    sha256 = hashlib.sha256()
-    with open(file_path, "rb") as f:
-        while chunk := f.read(8192):
-            sha256.update(chunk)
-    return sha256.hexdigest()
+    """Computes SHA3-256 hash of a file. (Module Level Utility)"""
+    return _file_hash(file_path)
 
 
 def compute_shake256_digest(data: bytes, length: int = 32) -> bytes:
     """Computes SHAKE-256 digest of bytes. Required for ML-DSA-65 (ZES)."""
-    shake = hashlib.shake_256()
-    shake.update(data)
-    return shake.digest(length)
+    return _shake256_digest(data, length=length)
 
 
 def list_diff(old: list, new: list) -> list | dict:
@@ -278,7 +272,7 @@ class ForensicCollector:
         """
         Archives a plugin's source code into the forensic artifact vault.
         Ensures 100% reproducibility of ad-hoc injected code.
-        Returns the SHA-256 hash of the content.
+        Returns the SHA3-256 hash of the content.
         """
         if not path.exists():
             raise FileNotFoundError(f"Plugin source not found: {path}")
@@ -366,7 +360,7 @@ class ForensicCollector:
     def collect(self) -> dict[str, str]:
         """
         Physically gathers all registered artifacts and snapshots into the forensics directory.
-        Returns a ledger (SHA-256 map) for inclusion in the VC v3 manifest.
+        Returns a ledger (SHA3-256 map) for inclusion in the VC v4 manifest.
         """
         if not self._artifacts and not self._state_snapshots:
             return {}
