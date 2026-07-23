@@ -12,7 +12,7 @@ AgentV mandates the **VC v3 forensic standard** for all production-grade evaluat
 - **Identity-based signing**: All traces are signed via the **Identity Registry** (ED25519) to ensure non-repudiation.
 - **Forensic Evidence Ledger**: Every signed run includes a cryptographic ledger that hashes all associated sidecar artifacts (HTML reports, trajectory plots) to prevent side-channel tampering.
 - **Seal Hash Protocol**: To ensure the non-repudiability of the certification process itself, AgentV implements a "Seal Hash" anchor. Before appending the `verification_certificate_issued` event to the trace, the engine computes a hash of the trace history. This hash is embedded within the certificate event, mathematically binding the certification to the specific execution history.
-- **Binary Trace Integrity**: To prevent cross-platform hash mismatches (e.g., Windows CRLF vs. Linux LF), all trace appends are performed in binary mode. This ensures that the physical SHA-256 signature remains consistent regardless of the host operating system.
+- **Binary Trace Integrity**: To prevent cross-platform hash mismatches (e.g., Windows CRLF vs. Linux LF), all trace appends are performed in binary mode. This ensures that the physical SHA3-256 signature remains consistent regardless of the host operating system.
 - **Environmental Provenance**: Every trace is mathematically bound to a **Provisioning Hash** of the registry state at the time of execution.
 - **Hard Gating**: Deployment pipelines are enforced via the `agentv gate` command, which blocks promotion if cryptographic signatures or forensic hashes fail to match the sanctioned baseline.
 

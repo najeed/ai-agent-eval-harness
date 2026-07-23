@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.8] - 2026-07-24
+
+### SHA-3 Cryptographic Standard & Unified Hash Utility Layer
+*   **Unified SHA-3 Family**: Standardized the harness security architecture on the FIPS 202 SHA-3 algorithm family. Content verification and file signature generation leverage SHA3-256, while variable-length identifiers and ZES pre-images utilize SHAKE-256 XOF.
+*   **Centralized Hashing Utility (`crypto.py`)**: Introduced `eval_runner/utils/crypto.py` to route all cryptographic hashing operations through a single, canonical utility layer.
+*   **VC v3.0.0 Schema Update**: Updated `spec/vc/vc.schema.json` and verification pipelines to replace `"sha256"` with `"trace_hash"` and `"hash_algorithm"`.
+*   **Loader & Test Suite Parity**: Upgraded all 12 industry data loaders in `dataproc_engine/providers` to use `crypto.record_id` and `crypto.checksum`, passing 100% of the unified test suites.
+
 ## [1.6.7] - 2026-07-22
 
 ### Core Enum Expansion & Enterprise Failure Taxonomy Alignment

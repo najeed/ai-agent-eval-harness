@@ -29,7 +29,7 @@ AgentV 1.5.0 transitions from a monolithic triage engine to an **Identity-Signed
 
 When a failure occurs, the engine performs a stratified analysis by executing all registered analyzers against the [Forensic Ledger](../../docs/src/content/docs/spec/forensic-ledger-schema.md):
 
-1.  **State Layer**: Compares state-delta snapshots (SHA-256) across turns.
+1.  **State Layer**: Compares state-delta snapshots (SHA3-256) across turns.
 2.  **Telemetry Layer**: Scans hardware resource gradients (CPU/Mem/Disk) for leaks via `psutil`.
 3.  **Audit Layer**: Correlates events into a **Causal Chain**.
 

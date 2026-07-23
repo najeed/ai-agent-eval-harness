@@ -71,7 +71,7 @@ To ensure that an evaluation trace genuinely reflects the intended scenario logi
  
 | Marker | Description |
 | :--- | :--- |
-| **`topology_hash`** | SHA-256 hash of the `scenario.workflow` structure. |
+| **`topology_hash`** | SHA3-256 hash of the `scenario.workflow` structure. |
 | **`tool_dna_hash`** | Hash of the tool definitions available to the agent. |
 | **`fingerprint_v1`** | A cryptographic digest ensuring the behavioral baseline was not tampered with. |
  

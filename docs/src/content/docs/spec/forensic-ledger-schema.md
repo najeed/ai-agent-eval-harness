@@ -76,7 +76,7 @@ In metric dispatch contexts, this field is exposed as `forensic_telemetry` for T
 :::
 
 ### `state_snapshots` (list[str])
-A list of SHA-256 hashes representing the environment state (files, database keys) at the end of each turn.
+A list of SHA3-256 hashes representing the environment state (files, database keys) at the end of each turn.
 - Used by Enterprise analyzers to detect logic-state stalls, hallucinations, and state-action contradictions.
 
 ### `protocol_sequence` (list[str])

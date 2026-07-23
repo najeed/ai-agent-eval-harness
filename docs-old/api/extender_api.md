@@ -126,12 +126,12 @@ These endpoints are unprotected to allow external deployment gates to verify res
         - `score` (float, optional): Normalized evaluation score (0.0 - 1.0).
         - `policy_ref` (string, optional): Reference ID for the governing policy.
         - `ttl` (int, optional): Certificate validity in days.
-    - **Response**: A complete VC v3 manifest containing the `sha256` hash and `provenance_chain`.
+    - **Response**: A complete VC v3 manifest containing the `trace_hash` hash and `provenance_chain`.
     - **Note**: This requires write access to the vault. It generates `run_manifest.json` in the run directory.
 - `GET /v1/certificates/<run_id>`: Public Trust Protocol retrieval of the Verification Certificate (VC).
     - **Response**: The raw VC v3 JSON manifest.
     - **Note**: Unprotected endpoint for industrial deployment gates.
-- `GET /v1/verify/<run_id>`: Public Verification API for SHA-256 and cryptographic proof check.
+- `GET /v1/verify/<run_id>`: Public Verification API for SHA3-256 and cryptographic proof check.
     - **Response**:
         ```json
         {

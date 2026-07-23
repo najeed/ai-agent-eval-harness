@@ -49,7 +49,7 @@ graph TD
 | **Architect** | [Najeed Khan](https://github.com/najeed) |
 | **License** | Apache License 2.0 |
 | **Status** | 🟢 Production-Ready (NIST AI-100-1 Aligned) |
-| **Version** | v1.6.7 (July 2026 Baseline) |
+| **Version** | v1.6.8 (July 2026 Baseline) |
 | **Trust Model** | [Behavioral DNA & VC v3.0.0](docs-old/architecture.md) |
 | **Architecture** | [Identity-Centric Core](docs-old/architecture.md) |
 | **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.4 Spec](docs-old/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
@@ -57,7 +57,7 @@ graph TD
 ### The DNA of Agentic Reliability
 - 🌍 **Environmental DNA**: Immutable snapshots of the execution environment—registry state, tool versions, and resource availability to ensure deterministic state parity.
 - 🧬 **Behavioral DNA**: High-granularity telemetry (Phase → Action → Step) mapping the agent's decision-making process for precise policy adjudication and drift analysis.
-- 🛡️ **Forensic DNA**: Cryptographic anchoring of the entire execution trace using Ed25519 signatures and SHA-256 hashes, ensuring non-repudiable WORM logs for regulatory compliance.
+- 🛡️ **Forensic DNA**: Cryptographic anchoring of the entire execution trace using Ed25519 signatures and SHA3-256 hashes, ensuring non-repudiable WORM logs for regulatory compliance.
 
 ## Table of Contents
 - [Mission](#mission)
@@ -156,8 +156,10 @@ The harness is organized into the following key components:
 - **Behavioral DNA Telemetry**: High-granularity event bus (4-level: PHASE, SUBTASK, ACTION, STEP) providing a precise "genetic" map of agent decision-making.
 - **Verification Certificate (VC) v3.0.0**: Traces are signed via the **Identity Registry** (Ed25519) and backed by a **Forensic Evidence Ledger** that hashes sidecar artifacts to ensure end-to-end provenance.
 
-### 🌟 What's New in v1.6.5 (June 2026 Update)
+### 🌟 What's New in v1.6.8 (July 2026 Update)
 
+- **FIPS-Approved SHA-3 Cryptographic Standard**: Standardized the harness security architecture on the FIPS 202 SHA-3 algorithm family. Content verification and file signature generation leverage SHA3-256, while variable-length identifiers and ZES pre-images utilize SHAKE-256 XOF.
+- **Centralized Hashing Utility (`crypto.py`)**: Introduced `eval_runner/utils/crypto.py` to route all cryptographic hashing operations through a single, canonical utility layer.
 - **Deterministic Quiescence & Timeout Guard**: Added a simulator `quiesce` execution hook wrapped in a strict 5.0-second timeout guard to guarantee that unresponsive test fixtures or simulators cannot hang the evaluation runner.
 - **ShimResultProxy & Memory Partitioning**: Implemented secure dictionary-like wrappers to cleanly isolate internal telemetry DNA and private cryptographic metadata from the guest sandbox environment.
 - **Asynchronous & Thread-Pooled Event Dispatching**: Decoupled turn-by-turn telemetry tracking from the execution thread using background executor dispatching to eliminate latency overhead during real-time evaluations.

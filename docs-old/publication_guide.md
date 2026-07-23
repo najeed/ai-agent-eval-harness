@@ -180,7 +180,7 @@ Every execution creates a unique batch directory in `results/batch_YYYYMMDD_HHMM
 - `aggregated_results.json`: Statistical summary (pass@k, CI 95%, cost, taxonomy).
 - `leaderboard.html` / `pilot_preview.html`: Professional visual report.
 - `publication_artifact_bundle.zip`: The signed package for regulatory submission.
-- `audit_manifest.json`: SHA-256 hashes of all artifacts for auditing.
+- `audit_manifest.json`: SHA3-256 hashes of all artifacts for auditing.
 
 ### Contents of the Signed Artifact Bundle
 The `publication_artifact_bundle.zip` is powered by the core **ArtifactPlugin**. It ensures portability and auditability via the following components:
@@ -188,7 +188,7 @@ The `publication_artifact_bundle.zip` is powered by the core **ArtifactPlugin**.
 1. **`aggregated_results.json`**: The core statistical dataset.
 2. **`leaderboard.html`**: The full visual dashboard for offline viewing.
 3. **`manifest.json`**: The complete mapping of the run batch (scenarios, seeds, run IDs).
-4. **`audit_manifest.json` (External companion)**: Created by the core `ArtifactPlugin`, this file contains SHA-256 integrity hashes for every file in the bundle. 
+4. **`audit_manifest.json` (External companion)**: Created by the core `ArtifactPlugin`, this file contains SHA3-256 integrity hashes for every file in the bundle. 
 
 > [!IMPORTANT]
 > Because this bundling logic is part of the **Zero-Touch Core**, it serves as an immutable "Source of Truth" for regulatory or public disclosures. The Publication Suite simply provides a professional interface to these core compliance hooks.

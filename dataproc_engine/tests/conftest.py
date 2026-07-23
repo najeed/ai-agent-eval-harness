@@ -39,7 +39,7 @@ class IndustryHeuristicMock:
                 "industry": industry,
                 "data": {"signal": 0.85, "status": "stable", "index": i},
                 "metadata": {"source": "heuristic_mock", "version": "v2.0"},
-                "integrity_hash": "sha256_mock_hash",
+                "integrity_hash": "sha3_256_mock_hash",
             }
             if self.failure_mode == "schema_violation":
                 del record["id"]

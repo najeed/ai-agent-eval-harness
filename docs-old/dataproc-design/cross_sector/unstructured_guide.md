@@ -15,7 +15,7 @@ High-fidelity extraction from non-tabular sources (PDF, Doc, Web) using LLM-gate
 - `content_type`: `text`, `image`, or `hybrid`.
 - `metric`: `relevance_score`, `data_density`, or `sentiment`.
 - `value`: Numerical reading.
-- `integrity_hash`: SHA-256 hash of the raw source.
+- `integrity_hash`: SHA3-256 hash of the raw source.
 
 ---
 [**Back to Index**](../index.md) | [**User Manual**](../user_manual.md) | [**Data Veracity**](../data_veracity_report.md)

@@ -146,7 +146,7 @@ Configuration is managed via `config.json` or Environment Variables.
 ## 📊 6. Output & Veracity
 Every record produced by the engine adheres to the `StandardSchema`, including:
 - **Deterministic ID**: Hash-based records for cross-dataset linking.
-- **SHA-256 Integrity**: Every record includes a checksum of its normalized data.
+- **SHA3-256 Integrity**: Every record includes a checksum of its normalized data.
 - **Provenance**: Lineage back to the source URL or local file path.
 
 ---

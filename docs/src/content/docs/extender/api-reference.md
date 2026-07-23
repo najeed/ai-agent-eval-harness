@@ -113,7 +113,7 @@ Industrial Certification Service. Signs the trace zero-copy within the vault.
 Retrieves the [Verification Certificate](/auditor/trust-protocol/) (VC) for a specific run. Unprotected for external deployment gates.
 
 #### `GET /v1/verify/<run_id>`
-Public Verification API for SHA-256 and cryptographic proof check. Performs a live integrity check comparing the `run.jsonl` trace against the issued manifest.
+Public Verification API for SHA3-256 and cryptographic proof check. Performs a live integrity check comparing the `run.jsonl` trace against the issued manifest.
 
 #### `GET /v1/identity/<identity_id>/public_key`
 Resolves the public key for a forensic identity to support multi-party signature verification.

@@ -10,7 +10,7 @@ The **Trust Protocol** establishes a non-repudiable forensic audit trail for AI 
 - **Verification Certificate (VC) v3**: A signed forensic manifest (`run_manifest.json`) containing hashes for the trace AND sidecar artifacts.
 - **Hybrid PQC Signing**: Support for quantum-resistant non-repudiation using ML-DSA-65 signatures (AgentV v1.6.2+).
 - **Zero-Exposure Signing (ZES)**: A privacy-first protocol where only cryptographic digests are sent for PQC signing, keeping raw data local.
-- **Forensic Evidence Ledger**: Part of the VC v3 that lists SHA-256 hashes of all generated artifacts to prevent side-channel tampering.
+- **Forensic Evidence Ledger**: Part of the VC v3 that lists SHA3-256 hashes of all generated artifacts to prevent side-channel tampering.
 - **Identity Normalization**: Automatic renaming of temporary traces (e.g., `tmp_*.jsonl`) to the `run.jsonl` during certification.
 - **NIST AI-100-1 Scoring**: A multi-dimensional `VerificationResult` schema incorporating a Weighted Severity Model (WSM).
 - **Hard Gate**: A CI/CD step (`gate` command) that fails if signatures, evidence hashes, or agent results are compromised.
@@ -65,7 +65,7 @@ The Trust Protocol v3.0.0 implements a **Weighted Severity Model (WSM)** for agg
 
 The `gate` command is designed for use in GitHub Actions, GitLab CI, or Jenkins. It returns a non-zero exit code if verification fails.
 
-### Basic Integrity Gate (SHA-256)
+### Basic Integrity Gate (SHA3-256)
 Verifies that the trace ended in `SUCCESS` and its internal hashes match:
 ```bash
 agentv gate --run-id latest

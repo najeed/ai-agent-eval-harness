@@ -3,9 +3,9 @@ The Trust Protocol is designed to provide **immutable proof of run integrity** f
 
 ```mermaid
 graph TD
-    A[Trace File .jsonl] -->|SHA-256| B[Content Hash]
+    A[Trace File .jsonl] -->|SHA3-256| B[Content Hash]
     B --> C[Manifest v3 Metadata]
-    S[Artifact Sidecars .html/.png] -->|SHA-256| L[Forensic Evidence Ledger]
+    S[Artifact Sidecars .html/.png] -->|SHA3-256| L[Forensic Evidence Ledger]
     L --> C
     D[Private Key .pem] -->|Identity Registry Sign| E[Verification Certificate v3]
     C --> E
@@ -24,8 +24,8 @@ graph TD
 ```
 
 ## 1. The Multi-Layer Forensic Defense
-1.  **Trace Layer (Integrity)**: A SHA-256 hash of the `.jsonl` trace file ensures core execution has not been altered.
-2.  **Evidence Layer (Provenance)**: The **Forensic Evidence Ledger** contains SHA-256 hashes of all sidecar artifacts (reports, plots), preventing report manipulation.
+1.  **Trace Layer (Integrity)**: A SHA3-256 hash of the `.jsonl` trace file ensures core execution has not been altered.
+2.  **Evidence Layer (Provenance)**: The **Forensic Evidence Ledger** contains SHA3-256 hashes of all sidecar artifacts (reports, plots), preventing report manipulation.
 3.  **Manifest Layer (Authority)**: A signed JSON object (The VC v3) that binds the trace and evidence hashes to an identity via the **Identity Registry**.
 
 ### The Forensic Relevance Engine (Artifact Filtering)
@@ -43,8 +43,8 @@ To prevent "Forensic Bloat" while maintaining industrial accountability, the har
 
 ## 2. Cryptographic Mechanics
 
-### A. SHA-256 Content Hashing
-- **Mechanism**: The `TraceVerifier` performs a streaming SHA-256 hash of the trace file on-disk.
+### A. SHA3-256 Content Hashing
+- **Mechanism**: The `TraceVerifier` performs a streaming SHA3-256 hash of the trace file on-disk.
 - **Rationale**: 
     - **Performance**: Hashing is O(n) and extremely fast, allowing for the verification of multi-gigabyte traces without hitting CPU bottlenecks.
     - **Content Addressability**: The hash serves as a unique fingerprint. If a single timestamp in the trace is modified, the hash changes, invalidating the entire protocol.
@@ -66,7 +66,7 @@ To prevent "Forensic Bloat" while maintaining industrial accountability, the har
     *   **Sidecar**: Stored as `run_manifest.json` within the run directory for local reproducibility.
     *   **Authoritative Store**: Stored in `reports/certificates/` for the Trust API.
 4.  **Retrieval**: External systems call the public `GET /v1/certificates/<run_id>` endpoint to fetch the proof.
-5.  **Validation**: The consumer uses the harness's **Identity Registry** to verify the signature and then re-computes the SHA-256 of the trace file to ensure a match.
+5.  **Validation**: The consumer uses the harness's **Identity Registry** to verify the signature and then re-computes the SHA3-256 of the trace file to ensure a match.
 
 ---
 
@@ -131,7 +131,7 @@ The Custom Extensions Gatekeeper (the consumer) must implement the following log
 
 1. **Retrieve VC**: `GET /v1/certificates/<run_id>`
 2. **Verify Authority**: Call `TraceVerifier.verify_trace` using the **Identity Registry**.
-3. **Verify Integrity**: Re-hash the local trace file (`sha256sum`) and ensure it matches the `sha256` value inside the verified VC.
+3. **Verify Integrity**: Re-hash the local trace file (`sha3_256sum`) and ensure it matches the `trace_hash` value inside the verified VC.
 
 ---
 
@@ -140,7 +140,7 @@ The Custom Extensions Gatekeeper (the consumer) must implement the following log
 The Evaluation Harness provides a first-class CLI suite to manage the Trust Protocol workflow:
 
 -   **`certify --run-id <id> [--identity system_id] [--status pass]`**: 
-    Performs a SHA-256 hash of the trace and wraps it in a signed Verification Certificate (VC) v3.0.0. The certificate is autonomously saved to the run vault and store.
+    Performs a SHA3-256 hash of the trace and wraps it in a signed Verification Certificate (VC) v3.0.0. The certificate is autonomously saved to the run vault and store.
 -   **`verify --run-id <id>`**: 
     Locally verifies the integrity of a trace file against its manifest (Sidecar) using autonomous artifact resolution.
 -   **`gate --run-id <id> [--verify-ledger]`**: 
@@ -149,4 +149,4 @@ The Evaluation Harness provides a first-class CLI suite to manage the Trust Prot
 ---
 
 ## 8. Summary of Rationale
-We chose this hybrid approach (SHA-256 + ED25519) to balance **performance** with **unbreakable trust**. By making the key management layer **Pluggable (HMS-Ready)**, we ensure the harness can grow from a local developer tool into a mission-critical component of a zero-trust industrial evaluation pipeline.
+We chose this hybrid approach (SHA3-256 + ED25519) to balance **performance** with **unbreakable trust**. By making the key management layer **Pluggable (HMS-Ready)**, we ensure the harness can grow from a local developer tool into a mission-critical component of a zero-trust industrial evaluation pipeline.

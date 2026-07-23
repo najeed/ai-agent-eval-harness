@@ -56,7 +56,7 @@ agentv certify --run-id <id> [--identity <id>] [--status <s>] [--score <n>]
 - `--score`: Compliance score (0.0-1.0) to embed.
 - `--policy-ref`: Reference to the policy being certified against.
 - `--fingerprint`: Optional hardware/environment fingerprint ID.
-- Generates a `Verification Certificate (VC)` with SHA-256 and Identity-based signing.
+- Generates a `Verification Certificate (VC)` with SHA3-256 and Identity-based signing.
 
 #### `verify` — Integrity Check
 Cryptographic validation of a trace using autonomous artifact resolution.

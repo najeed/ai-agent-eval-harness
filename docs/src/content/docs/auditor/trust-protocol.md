@@ -11,9 +11,9 @@ AgentV uses a tiered approach to ensure that evaluation results are authentic an
 
 ```mermaid
 graph TD
-    A[Trace File .jsonl] -->|SHA-256| B[Content Hash]
+    A[Trace File .jsonl] -->|SHA3-256| B[Content Hash]
     B --> C[Manifest v3 Metadata]
-    S[Artifact Sidecars] -->|SHA-256| L[Evidence Ledger]
+    S[Artifact Sidecars] -->|SHA3-256| L[Evidence Ledger]
     L --> C
     D[Private Key] -->|Identity Sign| E[Verification Certificate v3]
     C --> E
@@ -27,16 +27,16 @@ graph TD
 ```
 
 ### The Multi-Layer Forensic Defense
-1.  **Trace Layer (Integrity)**: A SHA-256 hash of the `.jsonl` trace file ensures core execution has not been altered.
-2.  **Evidence Layer (Provenance)**: The **Forensic Evidence Ledger** contains SHA-256 hashes of all sidecar artifacts (reports, plots), preventing report manipulation.
+1.  **Trace Layer (Integrity)**: A SHA3-256 hash of the `.jsonl` trace file ensures core execution has not been altered.
+2.  **Evidence Layer (Provenance)**: The **Forensic Evidence Ledger** contains SHA3-256 hashes of all sidecar artifacts (reports, plots), preventing report manipulation.
 3.  **Manifest Layer (Authority)**: A signed JSON object (**Verification Certificate v3**) that binds these hashes to an identity via the **Identity Registry**.
 
 ---
 
 ## 2. Cryptographic Mechanics
 
-### SHA-256 Content Hashing
-The `TraceVerifier` performs streaming SHA-256 hashing of the trace file on-disk. This content-addressable signature ensures that if a single timestamp in the trace is modified, the hash changes, invalidating the entire protocol.
+### SHA3-256 Content Hashing
+The `TraceVerifier` performs streaming SHA3-256 hashing of the trace file on-disk. This content-addressable signature ensures that if a single timestamp in the trace is modified, the hash changes, invalidating the entire protocol.
 
 ### Ed25519 Asymmetric Signing
 We use the Ed25519 algorithm to sign the entire manifest.
@@ -93,7 +93,7 @@ The Verification Certificate (`run_manifest.json`) is the core non-repudiability
 {
   "run_id": "test_run_123",
   "trace_file": "run.jsonl",
-  "sha256": "4a7f98e8a93a...",
+  "trace_hash": "4a7f98e8a93a...",
   "vc_version": "3.0.0",
   "governance_ttl": 90,
   "metadata": {
@@ -117,8 +117,8 @@ The Verification Certificate (`run_manifest.json`) is the core non-repudiability
 }
 ```
 
-*   **`sha256`**: Streaming SHA-256 hash of the `run.jsonl` trace file.
-*   **`evidence_ledger`**: Mapping of sidecar artifact paths to their SHA-256 integrity hashes.
+*   **`trace_hash`**: Streaming SHA3-256 hash of the `run.jsonl` trace file.
+*   **`evidence_ledger`**: Mapping of sidecar artifact paths to their SHA3-256 integrity hashes.
 *   **`metadata.seal_hash`**: The hash computed over the trace history immediately prior to appending the certification event.
 *   **`provenance_chain`**: A list of signatures binding the manifest digest to classical or post-quantum identity keys.
 
@@ -129,14 +129,14 @@ The Verification Certificate (`run_manifest.json`) is the core non-repudiability
 ### The Seal Hash Anchor
 To mathematically bind the certification to the specific execution sequence:
 1. Prior to appending the `verification_certificate_issued` event, the engine reads the current trace history.
-2. It computes a SHA-256 hash of this history (`seal_hash`).
+2. It computes a SHA3-256 hash of this history (`seal_hash`).
 3. This `seal_hash` is written inside the Verification Certificate metadata.
 4. If any historical event in the trace is modified after certification, the recalculated `seal_hash` will mismatch, invalidating the certificate.
 
 ### Binary Trace Integrity
 To prevent cross-platform signature failures caused by line-ending conversion (e.g. Windows `\r\n` vs Linux `\n`), AgentV enforces **binary mode trace writes**:
 *   All trace events are encoded as UTF-8 bytes and appended directly to the physical file without OS-level newline translations.
-*   SHA-256 verification hashes the raw byte stream on disk, ensuring identical hash checksums on Windows, Linux, and macOS.
+*   SHA3-256 verification hashes the raw byte stream on disk, ensuring identical hash checksums on Windows, Linux, and macOS.
 
 ---
 

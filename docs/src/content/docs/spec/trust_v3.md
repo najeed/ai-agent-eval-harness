@@ -10,7 +10,7 @@ The Forensic Trust Protocol v3.0.0 (Forensic Standard) extends the base Trust Pr
 The VC v3 manifest follows the [Industrial Forensic JSON Schema](/spec/vc/vc.schema.json).
 
 ## Key Extensions
-- **`evidence_ledger`**: A map of SHA-256 hashes for all physical artifacts (e.g. `terminal.log`, `database.sqlite`).
+- **`evidence_ledger`**: A map of SHA3-256 hashes for all physical artifacts (e.g. `terminal.log`, `database.sqlite`).
 - **`provenance_chain`**: A multi-party signature history allowing Agent, Evaluator, and Auditor to sign the same result.
 - **`compliance`**: Mandatory root object for regulatory scoring (e.g. NIST, SOC2).
 
@@ -32,7 +32,7 @@ To ensure audit-grade forensic stability, the protocol enforces strict identity 
 - **Path Portability**: All evidence ledgers MUST use site-relative paths to the vault root, ensuring manifests are portable across distinct storage backends.
 
 # 4. Cryptographic Requirements
-- **Algorithm**: ED25519 (Asymmetric) / SHA-256 (Hashing).
+- **Algorithm**: ED25519 (Asymmetric) / SHA3-256 (Hashing).
 - **Deterministic Signing**: Signatures MUST be computed by excluding the `provenance_chain` from the payload to allow for multi-party appending without invalidating existing signatures.
 
 # 4. Use Cases

@@ -50,7 +50,7 @@ When you ran `evaluate`, the AgentV engine executed several industrial-grade pro
 
 - **Isolated Routing**: The engine consulted `.aes/config/routing/manifest.json` to map the scenario's requirements to a local simulator.
 - **Event-Driven Observation**: Every tool call and reasoning step was emitted to the [Global Event Bus](/builder/architecture/), allowing the dashboard to mirror the execution in real-time.
-- **Forensic Ledger Creation**: A SHA-256 hash was generated for the trace, binding the results to your local **Identity Registry**.
+- **Forensic Ledger Creation**: A SHA3-256 hash was generated for the trace, binding the results to your local **Identity Registry**.
 
 ## 🚀 Next Steps
 

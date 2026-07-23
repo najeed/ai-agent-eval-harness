@@ -65,7 +65,7 @@ The scoring engine calculates the final `VerificationResult` using a weighted ag
 ## 5. Forensic Hash Chaining (Seal Hash)
 
 AgentV v1.6.0 introduces **Seal Hash Anchoring** to prevent "Certificate Padding" attacks.
-1.  **Anchor**: A SHA-256 hash of the entire trace file is computed before certification.
+1.  **Anchor**: A SHA3-256 hash of the entire trace file is computed before certification.
 2.  **Bind**: This hash is embedded into the `verification_certificate_issued` event.
 3.  **Sign**: The final trace (including the certificate) is physically signed via Ed25519.
 This creates a mathematical chain of custody that proves the history was not modified *between* the final task completion and the auditor's certification.

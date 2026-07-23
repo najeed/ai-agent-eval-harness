@@ -10,7 +10,7 @@ The `dataproc-engine` ensures 100% data fidelity across 16 industrial sectors us
 
 ### 🧪 Coverage Mandate
 *   **Strict Enforcement**: Production release requires 90%+ total project code coverage, focusing on error handlers and fallback recovery paths.
-*   **Deterministic Integrity**: Every extracted record is secured with a SHA-256 hash and immutable ID for lineage tracking.
+*   **Deterministic Integrity**: Every extracted record is secured with a SHA3-256 hash and immutable ID for lineage tracking.
 
 ## 2. Hardened Infrastructure
 *   **Simulation Fallback**: 100% Zero-Input coverage. Guarantees system execution even without API keys or internet access by generating high-fidelity simulated metrics. 

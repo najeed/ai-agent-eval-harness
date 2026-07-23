@@ -6,7 +6,7 @@ The **dataproc-engine** is an enterprise-grade framework designed to generate hi
 
 1.  **Zero-Bundling Architecture**: Guarantees that no PII or restricted commercial records are leaked into the evaluation stream, leveraging high-fidelity simulations where necessary.
 2.  **Industrial Parity**: Achieves high-fidelity statistical match against standard benchmarks (SEC EDGAR, World Bank, etc.).
-3.  **Deterministic Integrity**: Every extracted record is tagged with SHA-256 checksums and immutable IDs for lineage tracking.
+3.  **Deterministic Integrity**: Every extracted record is tagged with SHA3-256 checksums and immutable IDs for lineage tracking.
 4.  **Multi-Tier Fallback**: Intelligent extraction pipeline that scales from Cloud APIs to local LLMs and regex heuristics.
 
 ## 🏗️ Documentation Layout

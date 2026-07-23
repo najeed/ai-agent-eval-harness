@@ -30,7 +30,7 @@ The `BaseProvider` implements a mission-critical resiliency layer:
 ### 🔐 2. Security Layer
 To ensure enterprise-grade compliance during industrial signal extraction:
 *   **Autonomous PII Scrubbing**: A regex-based engine in the `BaseProvider` cleans emails, phone numbers, and sensitive identifiers from raw unstructured text *before* it reaches the LLM inference tier.
-*   **Immutable Checksums**: All records are now secured with a SHA-256 hash of their content, ensuring data-aware integrity throughout the pipeline.
+*   **Immutable Checksums**: All records are now secured with a SHA3-256 hash of their content, ensuring data-aware integrity throughout the pipeline.
 
 ## Data Flow Diagram
 

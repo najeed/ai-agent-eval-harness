@@ -20,7 +20,7 @@ graph TD
         Resiliency[Circuit Breaker / Retry] --> Extract[Async Extraction]
         Extract --> Security[PII Scrubber / Zero-Bundling]
         Security --> Transform[Async Logic / Tiered Fallback]
-        Transform --> Validate[Schema Integrity / SHA-256]
+        Transform --> Validate[Schema Integrity / SHA3-256]
         Validate --> Correlate[Cross-Sector Correlation]
     end
 
