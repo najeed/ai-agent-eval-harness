@@ -57,7 +57,7 @@ The AES JSON file is a **Blueprint**, but the actual **Resources** live in the p
 
 | `agent_topology` | Object | `{ "underwriter": { "writes": ["db:*"] } }` | Defines agent permissions and resource namespaces. |
 | `policies` | Object | `{ "101": { "name": "No PII" } }` | Behavioral constraints and enforcement rules. |
-| `provisioning_hash` | String | SHA-256 | Cryptographic anchor for the infrastructure state. |
+| `provisioning_hash` | String | SHA3-256 | Cryptographic anchor for the infrastructure state. |
 | `capabilities` | Array | `["pii_scanner", "gpu"]` | Infrastructure requirements for the runner environment. |
 
 
@@ -83,7 +83,7 @@ The AES JSON file is a **Blueprint**, but the actual **Resources** live in the p
     - **Purpose**: The "Active Ingredients" of compliance. Defines the ruleset audited by the `CompliancePlugin`.
     - **Config**: A dictionary of objects (e.g., `{"leakage_prevention": {"id": "RULE_101"}}`).
 8.  **`provisioning_hash`**:
-    - **Purpose**: A SHA-256 fingerprint of the **Shim Resources**. It ensures the audit trail is tied to a specific infrastructure state.
+    - **Purpose**: A SHA3-256 fingerprint of the **Shim Resources**. It ensures the audit trail is tied to a specific infrastructure state.
     - **Config**: String (auto-populated by the harness during `agentv certify`). This serves as the **Cryptographic Anchor**, mathematically binding the evaluation trace to the exact versions of tools and simulators used during the run.
 9.  **`capabilities`**:
     - **Purpose**: Infrastructure requirements.
@@ -298,7 +298,7 @@ These are attributes you **don't** write in the spec, but the harness **injects*
 ### Property Table
 | Property | Source | Purpose |
 | :--- | :--- | :--- |
-| `provisioning_hash` | Registry | A SHA-256 fingerprint of the **Environment DNA** (all shim versions and configs). |
+| `provisioning_hash` | Registry | A SHA3-256 fingerprint of the **Environment DNA** (all shim versions and configs). |
 | `environmental_snapshot` | Config | A sanitized "Freeze Frame" of the infrastructure state at T=0. |
 | `trace_signature` | Identity | An ED25519 signature of the entire run manifest. |
 

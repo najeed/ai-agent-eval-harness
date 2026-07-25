@@ -3967,7 +3967,7 @@
 <li><strong>Transform</strong>: Map raw artifacts to the <code>StandardSchema</code> using sector-specific parsers.</li>
 <li><strong>Validate</strong>: Verify semantic integrity (e.g., Financial balance sheet checks, Healthcare schema constraints, Manufacturing productivity bounds).</li>
 <li><strong>Correlate</strong>: Run the <code>Fuzzy Identity Resolution</code> algorithm to link records across the 16 industrial sectors.</li>
-<li><strong>Persist</strong>: Serialize to <code>JSONL</code> or <code>CSV</code> with integrity SHA-256 checksums.</li>
+<li><strong>Persist</strong>: Serialize to <code>JSONL</code> or <code>CSV</code> with integrity SHA3-256 checksums.</li>
 </ol>
 <hr />
 <h2 id="2-universal-source-acquisition-algorithm">🛰️ 2. Universal Source Acquisition Algorithm<a class="headerlink" href="#2-universal-source-acquisition-algorithm" title="Permanent link">&para;</a></h2>
@@ -4030,7 +4030,7 @@
 <ul>
 <li><strong>PII Scrubbing</strong>: Regex-based pattern matching to mask emails, phone numbers, and IP addresses before any LLM processing.</li>
 <li><strong>Zero-Bundling Compliance</strong>: For restricted-license benchmarks (e.g., Clinical Database V2, Industrial Statistics Agency), the engine utilizes <strong>High-Fidelity Simulation</strong> to generate schema-compliant records without redistributing protected data. Users must explicitly provide local paths (BYOD) to unlock real-world data extraction.</li>
-<li><strong>SHA-256 Verification</strong>: A deterministic hash of the final JSON content is generated and stored in <code>record.integrity_hash</code>, ensuring the data is tamper-evident.</li>
+<li><strong>SHA3-256 Verification</strong>: A deterministic hash of the final JSON content is generated and stored in <code>record.integrity_hash</code>, ensuring the data is tamper-evident.</li>
 </ul>
 
 

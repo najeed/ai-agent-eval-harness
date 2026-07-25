@@ -122,7 +122,7 @@
     },
     "provisioning_hash": {
       "type": "string",
-      "description": "SHA-256 hash of the resolved shim_resources.json used for this run."
+      "description": "SHA3-256 hash of the resolved shim_resources.json used for this run."
     },
     "capabilities": {
       "type": "array",

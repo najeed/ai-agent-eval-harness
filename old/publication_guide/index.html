@@ -4782,7 +4782,7 @@
 <li><code>aggregated_results.json</code>: Statistical summary (pass@k, CI 95%, cost, taxonomy).</li>
 <li><code>leaderboard.html</code> / <code>pilot_preview.html</code>: Professional visual report.</li>
 <li><code>publication_artifact_bundle.zip</code>: The signed package for regulatory submission.</li>
-<li><code>audit_manifest.json</code>: SHA-256 hashes of all artifacts for auditing.</li>
+<li><code>audit_manifest.json</code>: SHA3-256 hashes of all artifacts for auditing.</li>
 </ul>
 <h3 id="contents-of-the-signed-artifact-bundle">Contents of the Signed Artifact Bundle<a class="headerlink" href="#contents-of-the-signed-artifact-bundle" title="Permanent link">&para;</a></h3>
 <p>The <code>publication_artifact_bundle.zip</code> is powered by the core <strong>ArtifactPlugin</strong>. It ensures portability and auditability via the following components:</p>
@@ -4790,7 +4790,7 @@
 <li><strong><code>aggregated_results.json</code></strong>: The core statistical dataset.</li>
 <li><strong><code>leaderboard.html</code></strong>: The full visual dashboard for offline viewing.</li>
 <li><strong><code>manifest.json</code></strong>: The complete mapping of the run batch (scenarios, seeds, run IDs).</li>
-<li><strong><code>audit_manifest.json</code> (External companion)</strong>: Created by the core <code>ArtifactPlugin</code>, this file contains SHA-256 integrity hashes for every file in the bundle. </li>
+<li><strong><code>audit_manifest.json</code> (External companion)</strong>: Created by the core <code>ArtifactPlugin</code>, this file contains SHA3-256 integrity hashes for every file in the bundle. </li>
 </ol>
 <blockquote>
 <p>[!IMPORTANT]

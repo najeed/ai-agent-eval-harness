@@ -3884,10 +3884,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#basic-integrity-gate-sha-256" class="md-nav__link">
+  <a href="#basic-integrity-gate-sha3-256" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Basic Integrity Gate (SHA-256)
+        Basic Integrity Gate (SHA3-256)
       
     </span>
   </a>
@@ -3958,7 +3958,7 @@
 <li><strong>Verification Certificate (VC) v3</strong>: A signed forensic manifest (<code>run_manifest.json</code>) containing hashes for the trace AND sidecar artifacts.</li>
 <li><strong>Hybrid PQC Signing</strong>: Support for quantum-resistant non-repudiation using ML-DSA-65 signatures (AgentV v1.6.2+).</li>
 <li><strong>Zero-Exposure Signing (ZES)</strong>: A privacy-first protocol where only cryptographic digests are sent for PQC signing, keeping raw data local.</li>
-<li><strong>Forensic Evidence Ledger</strong>: Part of the VC v3 that lists SHA-256 hashes of all generated artifacts to prevent side-channel tampering.</li>
+<li><strong>Forensic Evidence Ledger</strong>: Part of the VC v3 that lists SHA3-256 hashes of all generated artifacts to prevent side-channel tampering.</li>
 <li><strong>Identity Normalization</strong>: Automatic renaming of temporary traces (e.g., <code>tmp_*.jsonl</code>) to the <code>run.jsonl</code> during certification.</li>
 <li><strong>NIST AI-100-1 Scoring</strong>: A multi-dimensional <code>VerificationResult</code> schema incorporating a Weighted Severity Model (WSM).</li>
 <li><strong>Hard Gate</strong>: A CI/CD step (<code>gate</code> command) that fails if signatures, evidence hashes, or agent results are compromised.</li>
@@ -4037,7 +4037,7 @@ This will produce a <code>run_manifest.json</code> sidecar containing the <stron
 <hr />
 <h2 id="5-cicd-gatekeeping-gate">5. CI/CD Gatekeeping (<code>gate</code>)<a class="headerlink" href="#5-cicd-gatekeeping-gate" title="Permanent link">&para;</a></h2>
 <p>The <code>gate</code> command is designed for use in GitHub Actions, GitLab CI, or Jenkins. It returns a non-zero exit code if verification fails.</p>
-<h3 id="basic-integrity-gate-sha-256">Basic Integrity Gate (SHA-256)<a class="headerlink" href="#basic-integrity-gate-sha-256" title="Permanent link">&para;</a></h3>
+<h3 id="basic-integrity-gate-sha3-256">Basic Integrity Gate (SHA3-256)<a class="headerlink" href="#basic-integrity-gate-sha3-256" title="Permanent link">&para;</a></h3>
 <p>Verifies that the trace ended in <code>SUCCESS</code> and its internal hashes match:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>agentv<span class="w"> </span>gate<span class="w"> </span>--run-id<span class="w"> </span>latest
 </code></pre></div></p>

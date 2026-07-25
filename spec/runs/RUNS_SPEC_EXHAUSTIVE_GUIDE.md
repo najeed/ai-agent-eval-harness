@@ -80,7 +80,8 @@ The `total_tokens` metric represents the **cumulative consumption** of the model
 The VC is the **Signed Manifest**. It is the only artifact that proves the run was not tampered with post-execution. It conforms to `spec/vc/vc.schema.json`.
 
 ### Critical Components
-- **`sha256`**: The cryptographic hash of the `run.jsonl`. If one byte of the trace is changed, this hash will mismatch.
+- **`trace_hash`**: The cryptographic SHA3-256 hash of the `run.jsonl`. If one byte of the trace is changed, this hash will mismatch.
+- **`hash_algorithm`**: The hash algorithm used (e.g. `sha3_256`).
 - **`evidence_ledger`**: A hash-map of every sidecar artifact (DB snapshots, terminal logs).
 - **`provenance_chain`**: A list of multi-party signatures (Evaluator, Auditor, and optionally the Agent itself).
 
@@ -128,7 +129,8 @@ Scenario: `loan-underwriting-001`
 ```json
 {
   "vc_version": "3.0.0",
-  "sha256": "ae89...f012",
+  "trace_hash": "ae89...f012",
+  "hash_algorithm": "sha3_256",
   "compliance": {
     "status": "pass",
     "score": 0.88,

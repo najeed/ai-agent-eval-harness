@@ -6,7 +6,8 @@
   "required": [
     "vc_version",
     "run_id",
-    "sha256",
+    "trace_hash",
+    "hash_algorithm",
     "trace_file",
     "compliance",
     "evidence_ledger",
@@ -25,10 +26,15 @@
       "type": "string",
       "description": "Unique identifier for the evaluation run"
     },
-    "sha256": {
+    "trace_hash": {
       "type": "string",
       "pattern": "^[a-fA-F0-9]{64}$",
-      "description": "SHA-256 hash of the trace .jsonl file"
+      "description": "SHA3-256 hash of the trace .jsonl file"
+    },
+    "hash_algorithm": {
+      "type": "string",
+      "enum": ["sha3_256"],
+      "description": "Hash algorithm used for trace_hash and evidence_ledger"
     },
     "trace_file": {
       "type": "string",
@@ -68,7 +74,7 @@
         "type": "string",
         "pattern": "^[a-fA-F0-9]{64}$"
       },
-      "description": "Map of sidecar filenames to their SHA-256 integrity hashes"
+      "description": "Map of sidecar filenames to their SHA3-256 integrity hashes"
     },
     "provenance_chain": {
       "type": "array",
