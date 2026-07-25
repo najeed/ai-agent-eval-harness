@@ -4710,9 +4710,10 @@
 <p>You can register additional shims without modifying core code via the <code>on_register_simulators</code> plugin hook:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">eval_runner.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvalPlugin</span>
 <a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>
-<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyCustomShimPlugin</span><span class="p">(</span><span class="n">BaseEvalPlugin</span><span class="p">):</span>
-<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">on_register_simulators</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">registry</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>        <span class="n">registry</span><span class="p">[</span><span class="s2">&quot;my_erp_v2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MyERPv2Simulator</span><span class="p">()</span>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyCustomShimPlugin</span><span class="p">(</span><span class="n">BaseEvalPlugin</span><span class="p">):</span>
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">on_register_simulators</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">registry</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>        <span class="n">registry</span><span class="p">[</span><span class="s2">&quot;my_erp_v2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MyERPv2Simulator</span><span class="p">()</span>
 </code></pre></div>
 <p>📖 See <a href="../../../plugins/">plugins.md</a> for the full plugin lifecycle reference.
 📖 See <a href="../06_TRIAGE_ENGINE_AND_VFS/"><code>06_TRIAGE_ENGINE_AND_VFS.md</code></a> for how shims integrate with the VFS triage engine.</p>
