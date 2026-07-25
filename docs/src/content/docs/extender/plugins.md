@@ -31,6 +31,7 @@ Plugins are Python classes that inherit from `eval_runner.plugins.BaseEvalPlugin
 ```python
 from eval_runner.plugins import BaseEvalPlugin
 
+
 class MyCustomPlugin(BaseEvalPlugin):
     def before_evaluation(self, context):
         print(f"Starting evaluation for {context.identifier}!")
@@ -216,6 +217,7 @@ from collections.abc import Callable, Coroutine
 from eval_runner.plugins import BaseEvalPlugin
 from eval_runner.tool_sandbox import ToolSandboxInterceptor, tool_sandbox_service
 
+
 class SecurityAuditingInterceptor(ToolSandboxInterceptor):
     def can_isolate(self, tool_name: str) -> bool:
         # Determine if this interceptor targets the tool
@@ -230,13 +232,14 @@ class SecurityAuditingInterceptor(ToolSandboxInterceptor):
         arguments = call_data.get("arguments", {})
         if "rm" in arguments.get("args", []):
             return {"status": "blocked", "message": "Destructive terminal commands are forbidden"}
-        
+
         # Call next executor in the pipeline
         result = await next_executor(call_data)
-        
+
         # Audit tool result
         result["audited"] = True
         return result
+
 
 class SecurityGatePlugin(BaseEvalPlugin):
     def before_evaluation(self, context):
@@ -252,6 +255,7 @@ from collections.abc import Callable
 from eval_runner.plugins import BaseEvalPlugin
 from eval_runner.verifier import TraceVerificationInterceptor, verification_service
 
+
 class CustomKmsSigner(TraceVerificationInterceptor):
     def can_sign(self, format: str) -> bool:
         return format == "enterprise-hsm"
@@ -259,16 +263,14 @@ class CustomKmsSigner(TraceVerificationInterceptor):
     def sign(self, manifest: dict, next_signer: Callable[[dict], dict]) -> dict:
         # Preempt/Modify manifest before signing
         manifest["custom_kms_certified"] = True
-        
+
         # Call KMS API to sign manifest hash
         signature = call_external_hsm(manifest)
-        manifest["provenance_chain"].append({
-            "identity": "hsm_signer",
-            "signature": signature
-        })
-        
+        manifest["provenance_chain"].append({"identity": "hsm_signer", "signature": signature})
+
         # Delegate down the pipeline
         return next_signer(manifest)
+
 
 class EnterpriseHsmPlugin(BaseEvalPlugin):
     def before_evaluation(self, context):
@@ -282,6 +284,7 @@ Custom plugins can register a `ScenarioMutator` using `mutation_service.register
 from eval_runner.plugins import BaseEvalPlugin
 from eval_runner.mutator import ScenarioMutator, mutation_service
 
+
 class IndustrialScenarioAugmentor(ScenarioMutator):
     def can_mutate(self, mutation_type: str) -> bool:
         return mutation_type == "industrial_perturbation"
@@ -291,6 +294,7 @@ class IndustrialScenarioAugmentor(ScenarioMutator):
         modified_scenario = add_industrial_noise(scenario)
         # Delegate to next mutator in chain
         return next_mutator(modified_scenario, mutation_type)
+
 
 class ScenarioAugmentPlugin(BaseEvalPlugin):
     def before_evaluation(self, context):
@@ -312,13 +316,15 @@ class AdminAnalysisPlugin(BaseEvalPlugin):
             return {"status": "ok", "insights": ["High latency"]}
 
         # Add a link to the Sidebar
-        nav_registry.append({
-            "id": "analysis_tab",
-            "title": "Live Analysis",
-            "path": "/api/plugins/analysis",
-            "icon": "vitals",
-            "type": "component"
-        })
+        nav_registry.append(
+            {
+                "id": "analysis_tab",
+                "title": "Live Analysis",
+                "path": "/api/plugins/analysis",
+                "icon": "vitals",
+                "type": "component",
+            }
+        )
 ```
 
 ---

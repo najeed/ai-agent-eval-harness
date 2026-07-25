@@ -15,22 +15,20 @@ from fastapi import FastAPI
 client = OpenAI()
 app = FastAPI()
 
+
 @app.post("/execute_task")
 async def execute(request: dict):
     # Standard Assistant Lifecycle
     thread = client.beta.threads.create()
     client.beta.threads.messages.create(
-        thread_id=thread.id, 
-        role="user", 
-        content=request["task_description"]
+        thread_id=thread.id, role="user", content=request["task_description"]
     )
-    
+
     run = client.beta.threads.runs.create_and_poll(
-        thread_id=thread.id, 
-        assistant_id="YOUR_ASSISTANT_ID"
+        thread_id=thread.id, assistant_id="YOUR_ASSISTANT_ID"
     )
-    
-    if run.status == 'completed': 
+
+    if run.status == "completed":
         messages = client.beta.threads.messages.list(thread_id=thread.id)
         return {"content": messages.data[0].content[0].text.value}
     else:

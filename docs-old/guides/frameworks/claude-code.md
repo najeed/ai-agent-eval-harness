@@ -12,12 +12,13 @@ from fastapi import FastAPI
 client = anthropic.Anthropic()
 app = FastAPI()
 
+
 @app.post("/execute_task")
 async def execute(request: dict):
     message = client.messages.create(
         model="Claude-4.6-Sonnet",
         max_tokens=1024,
-        messages=[{"role": "user", "content": request["task_description"]}]
+        messages=[{"role": "user", "content": request["task_description"]}],
     )
     return {"content": message.content[0].text}
 ```

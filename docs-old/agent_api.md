@@ -144,6 +144,7 @@ This protocol is ideal for evaluating agents written in languages other than Pyt
 ### Example Agent (Python)
 ```python
 import sys, json
+
 for line in sys.stdin:
     payload = json.loads(line)
     # Process...

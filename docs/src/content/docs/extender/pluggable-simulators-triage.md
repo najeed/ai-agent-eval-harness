@@ -20,6 +20,7 @@ from eval_runner.simulators import SimulatorMiddleware, BaseSimulator
 from typing import Any
 from collections.abc import Callable, Coroutine
 
+
 class LatencySimulationMiddleware(SimulatorMiddleware):
     async def process_action(
         self,
@@ -29,12 +30,13 @@ class LatencySimulationMiddleware(SimulatorMiddleware):
         next_call: Callable[[], Coroutine[Any, Any, dict[str, Any]]],
     ) -> dict[str, Any]:
         import asyncio
+
         # Pre-execution: Simulate network latency
         await asyncio.sleep(0.5)
-        
+
         # Invoke the core handler or next middleware in chain
         result = await next_call()
-        
+
         # Post-execution: Augment response metadata
         result["latency_simulated"] = True
         return result
@@ -61,6 +63,7 @@ All terminal execution simulators delegate physical command execution to a plugg
 from abc import ABC, abstractmethod
 from typing import Any
 
+
 class BaseJailProvider(ABC):
     @abstractmethod
     async def execute_command(
@@ -82,6 +85,7 @@ By default, AgentV Core uses the lightweight `SubprocessJailProvider`. Enterpris
 ```python
 from eval_runner.simulators import TerminalSimulator
 
+
 class DockerJailProvider(BaseJailProvider):
     async def execute_command(self, cmd, cwd, env, timeout):
         # Implementation executing cmd inside a dedicated Docker container...
@@ -90,6 +94,7 @@ class DockerJailProvider(BaseJailProvider):
     async def cleanup(self, run_id):
         # Teardown and remove the container for run_id
         pass
+
 
 # Instantiate and configure
 sim = TerminalSimulator()
@@ -108,6 +113,7 @@ To implement quiescence, override the `quiesce` coroutine on your simulator:
 
 ```python
 from eval_runner.simulators import BaseSimulator
+
 
 class DynamicDatabaseSimulator(BaseSimulator):
     async def quiesce(self) -> None:
@@ -172,6 +178,7 @@ Register a custom classifier callable on the engine class:
 ```python
 from eval_runner.triage import TriageEngine, TriageContext, TriageReport
 
+
 def custom_llm_classifier(context: TriageContext) -> TriageReport | None:
     # Analyze the trajectory logs for failure indicators
     if "db_connection_refused" in context.task_result.get("error_msg", ""):
@@ -180,9 +187,10 @@ def custom_llm_classifier(context: TriageContext) -> TriageReport | None:
             explanation="Database failed to establish connection.",
             index=2,
             confidence=0.95,
-            suggestion="Verify local database container lifecycle."
+            suggestion="Verify local database container lifecycle.",
         )
     return None
+
 
 # Register hook
 TriageEngine.register_classifier(custom_llm_classifier)
@@ -196,6 +204,7 @@ To run post-evaluation validation assertions on the environment state (e.g. veri
 import sqlite3
 from eval_runner.triage import BaseWitness, VerificationResult, TriageContext
 
+
 class DatabaseStateWitness(BaseWitness):
     async def verify(self, context: TriageContext) -> VerificationResult:
         # Check database invariants on disk
@@ -206,10 +215,14 @@ class DatabaseStateWitness(BaseWitness):
             cursor.execute("SELECT status FROM orders WHERE id = 101")
             row = cursor.fetchone()
             conn.close()
-            
+
             if row and row[0] == "completed":
-                return VerificationResult(verified=True, explanation="Order status marked completed correctly.")
-            return VerificationResult(verified=False, explanation="Order status was not updated to completed.")
+                return VerificationResult(
+                    verified=True, explanation="Order status marked completed correctly."
+                )
+            return VerificationResult(
+                verified=False, explanation="Order status was not updated to completed."
+            )
         except Exception as e:
             return VerificationResult(verified=False, explanation=f"Failed to check db: {e}")
 ```
@@ -223,11 +236,13 @@ To override or intercept standard core failure diagnostics in the `FailureTaxono
 ```python
 from eval_runner.taxonomy import FailureTaxonomy, FailureCategory, BaseForensicAnalyzer
 
+
 class AuditTrailAnalyzer(BaseForensicAnalyzer):
     def analyze(self, history: list[dict], task_result: dict = None) -> FailureCategory | None:
         if task_result and "untrusted_kms_cert" in task_result.get("auth_log", ""):
             return FailureCategory.POLICY_VIOLATION
         return None
+
 
 # Register with priority flag set to True
 FailureTaxonomy.register_analyzer(AuditTrailAnalyzer(), priority=True)

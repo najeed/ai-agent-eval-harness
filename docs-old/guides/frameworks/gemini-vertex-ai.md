@@ -22,12 +22,10 @@ from fastapi import FastAPI
 client = genai.Client(vertexai=True, project="your-project", location="us-central1")
 app = FastAPI()
 
+
 @app.post("/execute_task")
 async def execute(request: dict):
-    response = client.models.generate_content(
-        model="gemini-2.5-pro",
-        contents=request["input"]
-    )
+    response = client.models.generate_content(model="gemini-2.5-pro", contents=request["input"])
     return {"content": response.text}
 ```
 

@@ -25,15 +25,15 @@ def register_commands(subparsers):
     Registers custom Enterprise commands.
     """
     enterprise_parser = subparsers.add_parser(
-        "enterprise", 
-        help="Enterprise-specific evaluation tools"
+        "enterprise", help="Enterprise-specific evaluation tools"
     )
-    
+
     # Define arguments as usual
     enterprise_parser.add_argument("--audit", action="store_true")
-    
+
     # MANDATORY: Set the functional dispatcher
     from .handlers import handle_enterprise_audit
+
     enterprise_parser.set_defaults(func=handle_enterprise_audit)
 ```
 

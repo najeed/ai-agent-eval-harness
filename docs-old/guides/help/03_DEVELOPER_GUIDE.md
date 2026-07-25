@@ -25,6 +25,7 @@ To maintain industrial auditability, AgentV follows a **Single Source of Truth (
 Always import the version from the core config:
 ```python
 from eval_runner import config
+
 print(f"Harness Version: {config.VERSION}")
 ```
 
@@ -127,6 +128,7 @@ To add a new provider, create a plugin that implements the `on_discover_adapters
 from eval_runner.plugins import BaseEvalPlugin
 import aiohttp
 
+
 class MyProviderPlugin(BaseEvalPlugin):
     def on_discover_adapters(self, registry):
         # Register the protocol scheme
@@ -139,7 +141,7 @@ class MyProviderPlugin(BaseEvalPlugin):
             return {
                 "status": "success",
                 "output": "Agent response text",
-                "metadata": {"model": "my-model-v1"}
+                "metadata": {"model": "my-model-v1"},
             }
 ```
 
@@ -168,7 +170,7 @@ Plugins can block tools based on safety policies or human-in-the-loop triggers:
 ```python
 def on_tool_request(self, context: TurnContext, tool_name: str, args: dict) -> bool:
     if tool_name == "delete_all" and not args.get("confirmed"):
-        return False # Blocks the call
+        return False  # Blocks the call
     return True
 ```
 
@@ -189,16 +191,19 @@ The Visual Suite uses a **Secure Handoff** architecture and provides integrated 
 from flask import Blueprint, jsonify
 from eval_runner.console.auth import handoff_required
 
+
 class EnterpriseConsolePlugin(BaseEvalPlugin):
     def on_register_console_routes(self, app, nav_registry):
         # 1. Register link with 'type' metadata ('internal' | 'external' | 'plugin')
-        nav_registry.append({
-            "id": "compliance_audit", 
-            "title": "Compliance Audit", 
-            "path": "/api/enterprise/audit", 
-            "icon": "shield",
-            "type": "plugin"
-        })
+        nav_registry.append(
+            {
+                "id": "compliance_audit",
+                "title": "Compliance Audit",
+                "path": "/api/enterprise/audit",
+                "icon": "shield",
+                "type": "plugin",
+            }
+        )
 ```
 
 ### 4.4 Standard Internal Plugins (Standard Library)
@@ -236,6 +241,7 @@ The `EventEmitter` allows you to build observability without touching the core c
 ```python
 from eval_runner.events import EventEmitter, CoreEvents
 
+
 @EventEmitter.on(CoreEvents.TOOL_CALL)
 def audit_logger(payload):
     print(f"Audit: {payload['tool']}({payload['arguments']})")
@@ -262,9 +268,11 @@ Register a new metric:
 ```python
 from eval_runner.metrics import MetricRegistry
 
+
 @MetricRegistry.register("my_score")
 def my_score(criterion, summary):
     return 1.0 if "pass" in summary else 0.0
+
 
 # Ensure the module containing this function is imported in eval_runner/metrics/__init__.py
 ```
@@ -335,13 +343,14 @@ For enterprise/SaaS scenarios, the `AuthManager` can be replaced with a custom p
 ```python
 from .auth_manager import AuthManager, Permission
 
+
 class OktaAuthProvider(AuthManager):
     def authenticate(self, token: str):
         # 1. Verify JWT with Okta
         # 2. Extract 'groups' or 'roles' claims
         return {
             "id": "user@org.com",
-            "permissions": [Permission.SCENARIOS_READ, Permission.EVAL_TRIGGER] 
+            "permissions": [Permission.SCENARIOS_READ, Permission.EVAL_TRIGGER],
         }
 
     def has_permission(self, user: dict, permission_node: str):
@@ -354,7 +363,8 @@ Use the `@require_permission` decorator in `routes.py` with granular nodes:
 
 ```python
 from .auth_manager import Permission
-from .auth_manager import require_permission # Re-imported from manager in routes.py
+from .auth_manager import require_permission  # Re-imported from manager in routes.py
+
 
 @core_bp.route("/admin/settings")
 @require_permission(Permission.SYSTEM_CONFIG)
@@ -467,9 +477,10 @@ Define a function in your extension that adds a subparser to the CLI.
 def register_my_commands(subparsers):
     parser = subparsers.add_parser("my-tool", help="Custom dev tool")
     parser.add_argument("--fast", action="store_true")
-    
+
     # Define the functional dispatcher
     parser.set_defaults(func=my_handler)
+
 
 async def my_handler(args):
     print(f"Running custom tool (Fast={args.fast})")

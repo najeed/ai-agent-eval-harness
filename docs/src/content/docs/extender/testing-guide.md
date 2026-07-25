@@ -79,6 +79,7 @@ Integration tests that run async event loops can pollute the global loop state. 
 import asyncio
 import pytest
 
+
 @pytest.fixture(autouse=True)
 def clean_event_loop():
     yield
@@ -105,6 +106,7 @@ In Windows environments, pending file handles from loggers, databases, or subpro
 # conftest.py
 import gc
 import shutil
+
 
 @pytest.fixture
 def temp_run_dir(tmp_path):
@@ -135,6 +137,7 @@ When testing fallback paths for missing third-party dependencies (like `cyclecor
 ```python
 import builtins
 from unittest.mock import patch
+
 
 def test_fallback_when_dependency_missing():
     orig_import = builtins.__import__

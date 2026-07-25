@@ -39,6 +39,7 @@ Create a class that inherits from `BaseSimulator` and implements the `async def 
 ```python
 from eval_runner.simulators import BaseSimulator
 
+
 class IndustrialIoTSimulator(BaseSimulator):
     async def execute(self, action: str, params: dict) -> dict:
         # Middleware pipeline triggers automatically.
@@ -55,6 +56,7 @@ class IndustrialIoTSimulator(BaseSimulator):
 Override the `on_register_simulators` hook in your plugin.
 ```python
 from eval_runner.plugins import BaseEvalPlugin
+
 
 class MyShimPlugin(BaseEvalPlugin):
     def on_register_simulators(self, registry: dict):

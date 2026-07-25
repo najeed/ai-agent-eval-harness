@@ -38,5 +38,6 @@ Each generator produces a `_provenance` block in the JSON output, proving the da
 To increase the record count, edit the `__main__` block in the generator scripts or call them via the API:
 ```python
 from industries.healthcare.generators.clinical_generator import ClinicalParityGenerator
+
 data = ClinicalParityGenerator().generate(n_samples=5000)
 ```

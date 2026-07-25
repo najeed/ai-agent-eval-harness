@@ -145,6 +145,7 @@ def sample_data():
     """Provide test data."""
     return {"test": "data"}
 
+
 def test_with_fixture(sample_data):
     """Test using fixture data."""
     assert sample_data["test"] == "data"

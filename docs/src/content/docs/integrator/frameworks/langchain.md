@@ -17,6 +17,7 @@ from fastapi import FastAPI
 chat = ChatOpenAI()
 app = FastAPI()
 
+
 @app.post("/execute_task")
 async def execute(request: dict):
     # Process turn

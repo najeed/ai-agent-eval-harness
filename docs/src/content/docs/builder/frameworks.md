@@ -53,6 +53,7 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
+
 @app.post("/execute_task")
 async def execute(request: dict):
     state = {"input": request["input"]}
@@ -67,6 +68,7 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
+
 @app.post("/execute_task")
 async def execute(request: dict):
     # Map input to AG2 initiate_chat
@@ -80,6 +82,7 @@ from crewai import Crew
 from fastapi import FastAPI
 
 app = FastAPI()
+
 
 @app.post("/execute_task")
 async def execute(request: dict):

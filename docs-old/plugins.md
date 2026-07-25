@@ -29,6 +29,7 @@ Plugins are Python classes that inherit from `eval_runner.plugins.BaseEvalPlugin
 from eval_runner.plugins import BaseEvalPlugin
 from abc import abstractmethod
 
+
 class MyCustomPlugin(BaseEvalPlugin):
     # Optional: override specific hooks as needed
     def before_evaluation(self, context):
@@ -100,7 +101,9 @@ Plugins register CLI subcommands via the `on_register_commands` hook. Commands a
 class MyReportPlugin(BaseEvalPlugin):
     def on_register_commands(self, registry):
         # Registers: agentv plugin myreport generate
-        sub = registry.register_command("generate", self.handle_generate, help_text="Generate a report")
+        sub = registry.register_command(
+            "generate", self.handle_generate, help_text="Generate a report"
+        )
         sub.add_argument("--format", default="html")
 
     def handle_generate(self, args):
@@ -267,6 +270,7 @@ Built-in Ecosystem Adapters (2026 Baseline):
 ```python
 from eval_runner.plugins import BaseEvalPlugin
 
+
 class LangGraphAdapterPlugin(BaseEvalPlugin):
     def on_discover_adapters(self, registry):
         registry.register("langgraph", self.execute_langgraph_node)
@@ -290,10 +294,13 @@ Rubrics are stored in `eval_runner/rubrics.py` via the `RubricRegistry`. While y
 ```python
 from eval_runner.rubrics import RubricRegistry
 
+
 class MyCustomJudgePlugin(BaseEvalPlugin):
     def before_evaluation(self, context):
         # Register a domain-specific rubric
-        RubricRegistry.register("my_industry", "Evaluate the agent based on [My Specialized Rules]...")
+        RubricRegistry.register(
+            "my_industry", "Evaluate the agent based on [My Specialized Rules]..."
+        )
 ```
 
 ### 2. Custom Judge Providers

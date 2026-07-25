@@ -110,13 +110,16 @@ This plugin demonstrates the **Interceptor** pattern by redacting sensitive data
 from eval_runner.plugins import BaseEvalPlugin
 import re
 
+
 class PIIMaskingPlugin(BaseEvalPlugin):
     """Refinement of the proposed CompliancePlugin logic."""
 
     def on_tool_result(self, context, tool_name, result):
         """Redact emails from tool results."""
         if isinstance(result, str):
-            sanitized = re.sub(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+", "[REDACTED_EMAIL]", result)
+            sanitized = re.sub(
+                r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+", "[REDACTED_EMAIL]", result
+            )
             return sanitized
         return result
 

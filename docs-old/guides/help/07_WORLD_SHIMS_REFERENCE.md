@@ -270,6 +270,7 @@ You can register additional shims without modifying core code via the `on_regist
 ```python
 from eval_runner.plugins import BaseEvalPlugin
 
+
 class MyCustomShimPlugin(BaseEvalPlugin):
     def on_register_simulators(self, registry: dict):
         registry["my_erp_v2"] = MyERPv2Simulator()

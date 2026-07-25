@@ -102,14 +102,16 @@ class MyCustomDashboardPlugin:
         @app.route("/api/my-plugin/stats")
         def get_stats():
             return {"data": 42}
-            
-        nav_registry.append({
-            "id": "my_plugin",
-            "title": "Custom Stats",
-            "path": "/my-plugin",
-            "icon": "activity",
-            "type": "internal"
-        })
+
+        nav_registry.append(
+            {
+                "id": "my_plugin",
+                "title": "Custom Stats",
+                "path": "/my-plugin",
+                "icon": "activity",
+                "type": "internal",
+            }
+        )
 ```
 
 ---

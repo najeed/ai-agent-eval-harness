@@ -15,12 +15,12 @@ from fastapi import FastAPI
 client = genai.Client(api_key="YOUR_API_KEY")
 app = FastAPI()
 
+
 @app.post("/execute_task")
 async def execute(request: dict):
     # Standardize the prompt for Gemini 2.5
     response = client.models.generate_content(
-        model="gemini-2.5-pro",
-        contents=request["task_description"]
+        model="gemini-2.5-pro", contents=request["task_description"]
     )
     return {"content": response.text}
 ```

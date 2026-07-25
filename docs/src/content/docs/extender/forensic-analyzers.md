@@ -12,6 +12,7 @@ All analyzers must inherit from the `BaseForensicAnalyzer` abstract base class.
 ```python
 from eval_runner.taxonomy import BaseForensicAnalyzer, FailureCategory
 
+
 class DatabaseIntegrityAnalyzer(BaseForensicAnalyzer):
     def analyze(self, history, task_result=None):
         # Your diagnostic logic here
@@ -35,9 +36,11 @@ To activate your analyzer, register it via the `on_diagnose_failure` hook in an 
 ```python
 from eval_runner.plugins import BaseEvalPlugin
 
+
 class MyForensicPlugin(BaseEvalPlugin):
     def on_diagnose_failure(self, taxonomy):
         from .analyzers import DatabaseIntegrityAnalyzer
+
         taxonomy.register_analyzer(DatabaseIntegrityAnalyzer())
 ```
 
@@ -58,20 +61,22 @@ This example detects if an agent claims to have "deleted" a file, but the state 
 import hashlib
 from eval_runner.taxonomy import BaseForensicAnalyzer, FailureCategory
 
+
 class StateActionAnalyzer(BaseForensicAnalyzer):
     def analyze(self, history, task_result=None):
-        if not task_result: return None
-        
+        if not task_result:
+            return None
+
         snapshots = task_result.get("state_snapshots", [])
         # Anchoring logic: Prioritize 'identity' over legacy 'role'
         agent_msgs = [m for m in history if m.get("identity") == "agent_id"]
-        
+
         for msg in agent_msgs:
             if "deleted" in str(msg.get("content", "")).lower():
                 # If everything remained identical across all turns
                 if len(set(snapshots)) == 1:
                     return FailureCategory.LOGIC_STATE_MISMATCH
-        
+
         return None
 ```
 

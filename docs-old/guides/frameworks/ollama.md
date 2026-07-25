@@ -11,11 +11,12 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
+
 @app.post("/execute_task")
 async def execute(request: dict):
     response = requests.post(
         "http://localhost:11434/api/generate",
-        json={"model": "llama4", "prompt": request["task_description"], "stream": False}
+        json={"model": "llama4", "prompt": request["task_description"], "stream": False},
     )
     return {"content": response.json()["response"]}
 ```

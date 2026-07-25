@@ -147,6 +147,7 @@ Developers can customize key routing and audit logging by registering a subclass
 ```python
 from eval_runner.verifier import TraceVerificationInterceptor, verification_service
 
+
 class MyEnterpriseKMSInterceptor(TraceVerificationInterceptor):
     def can_sign(self, identity_id: str) -> bool:
         return identity_id.startswith("kms-")
@@ -157,7 +158,7 @@ class MyEnterpriseKMSInterceptor(TraceVerificationInterceptor):
         return {
             "identity": identity_id,
             "signature": signature.hex(),
-            "algorithm": "kms-hsm-hybrid"
+            "algorithm": "kms-hsm-hybrid",
         }
 
     def can_verify(self, identity_id: str) -> bool:
@@ -166,6 +167,7 @@ class MyEnterpriseKMSInterceptor(TraceVerificationInterceptor):
     def verify(self, data: bytes, signature_hex: str, identity_id: str) -> bool:
         # Call KMS public key verification endpoint
         return call_kms_verify_api(data, signature_hex, identity_id)
+
 
 # Register the interceptor in the global Verifier pipeline
 verification_service.register_interceptor(MyEnterpriseKMSInterceptor())

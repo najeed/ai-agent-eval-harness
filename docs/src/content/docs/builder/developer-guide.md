@@ -70,6 +70,7 @@ Metrics live in `eval_runner/metrics/` and are registered via the `MetricRegistr
 ```python
 from eval_runner.metrics import MetricRegistry
 
+
 @MetricRegistry.register("my_industrial_metric", source="EXTERNAL_PLUGIN")
 def my_metric(criterion: dict, agent_summary: str, turns_taken: int) -> float:
     # Logic to return 0.0 to 1.0

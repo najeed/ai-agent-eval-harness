@@ -36,9 +36,11 @@ Manages agent communication protocols. Plugins can register custom adapters via 
 ```python
 from eval_runner.engine import AgentAdapterRegistry
 
+
 async def my_custom_adapter(payload: dict, endpoint: str):
     # Your communication logic here...
     return {"action": "final_answer", "summary": "Success"}
+
 
 AgentAdapterRegistry.register("my-protocol", my_custom_adapter)
 ```
@@ -88,6 +90,7 @@ A central registry for all evaluation metrics. Metrics are stateless functions t
 **Example:**
 ```python
 from eval_runner.metrics import MetricRegistry
+
 metric_func = MetricRegistry.get("state_verification")
 score = metric_func(expected_changes, actual_state)
 ```

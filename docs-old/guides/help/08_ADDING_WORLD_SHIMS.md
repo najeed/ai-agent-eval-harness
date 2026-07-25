@@ -79,6 +79,7 @@ In your [BaseEvalPlugin](https://github.com/najeed/ai-agent-eval-harness/blob/ma
 ```python
 from eval_runner.plugins import BaseEvalPlugin
 
+
 class MyEcoPlugin(BaseEvalPlugin):
     def on_register_simulators(self, registry: dict):
         # Register your shim instance in the provided registry dict

@@ -15,6 +15,7 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
+
 @app.post("/execute_task")
 async def execute(request: dict):
     # Map the task_description to a CrewAI Task

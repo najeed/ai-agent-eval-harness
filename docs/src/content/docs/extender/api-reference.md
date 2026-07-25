@@ -150,6 +150,7 @@ Manage communication protocols (HTTP, SSE, Local, Socket, etc.).
 - **Standardized Signature**: Adapters must accept `(payload, endpoint=None)`.
 ```python
 from eval_runner.engine import AgentAdapterRegistry
+
 AgentAdapterRegistry.register("my-protocol", my_custom_adapter_func)
 ```
 
@@ -157,6 +158,7 @@ AgentAdapterRegistry.register("my-protocol", my_custom_adapter_func)
 The central registry for all evaluation markers.
 ```python
 from eval_runner.metrics import MetricRegistry
+
 metric_func = MetricRegistry.get("tool_call_correctness")
 score = metric_func(expected_list, actual_list)
 ```

@@ -14,14 +14,27 @@ async def test_dashboard_discovery_on_load(dashboard_server):
 
         await page.goto(dashboard_server)
 
-        # 1. Wait for Streamlit to hydrate (Industrial v2.1 Hardening)
-        await page.wait_for_selector("section[data-testid='stSidebar']", timeout=10000)
+        # 1. Wait for Streamlit to complete its first script run.
+        #
+        # Waiting for section[data-testid='stSidebar'] is insufficient — that
+        # element is injected as a DOM skeleton before the Python script finishes
+        # executing, so the sidebar selectbox may not exist yet (the banner will
+        # still show "Running...").
+        #
+        # The correct sentinel is the selectbox widget itself: it is only present
+        # in the DOM after st.sidebar.selectbox() has been evaluated and rendered.
+        await page.wait_for_selector(
+            "[data-testid='stSelectbox']",
+            timeout=30000,  # 30 s: generous for loaded CI runners
+        )
 
         # 2. Verify Page Title
         await expect(page).to_have_title("AgentV Lab")
 
-        # 3. Verify discovery of mock data
-        await expect(page.get_by_text("Select Evaluation Run")).to_be_visible()
+        # 3. Verify discovery of mock data — the sidebar selectbox label
+        await expect(
+            page.locator("section[data-testid='stSidebar']").get_by_text("Select Evaluation Run")
+        ).to_be_visible()
 
         # 4. Assert on the Success Rate Metric Card
         success_card = page.locator("div[data-testid='stMetric']").filter(has_text="Success Rate")
