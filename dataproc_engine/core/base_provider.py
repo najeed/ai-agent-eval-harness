@@ -47,11 +47,12 @@ class StandardSchema:
         checksum: str = None,
     ) -> "StandardSchema":
         """Factory method for consistent record creation."""
-        import hashlib
         import json
 
-        final_id = record_id or hashlib.sha256(json.dumps(data).encode()).hexdigest()[:16]
-        final_checksum = checksum or hashlib.sha256(json.dumps(data).encode()).hexdigest()
+        from eval_runner.utils import crypto
+
+        final_id = record_id or crypto.record_id(json.dumps(data))
+        final_checksum = checksum or crypto.checksum(json.dumps(data))
 
         return cls(
             id=final_id,

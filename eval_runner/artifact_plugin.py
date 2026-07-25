@@ -152,7 +152,7 @@ class ArtifactPlugin(BaseEvalPlugin):
                 continue
 
             actual_hash = self._calculate_hash(f_path)
-            expected_hash = entry.get("file_hash") or entry.get("sha256")
+            expected_hash = entry.get("file_hash")
             if actual_hash == expected_hash:
                 results.append({"file": entry["name"], "status": "valid"})
             else:

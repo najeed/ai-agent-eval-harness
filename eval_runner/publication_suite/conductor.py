@@ -6,7 +6,6 @@ Orchestrates eval-harness CLI runs and captures Flight Recorder logs.
 """
 
 import argparse
-import hashlib
 import json
 import os
 import shutil
@@ -14,6 +13,8 @@ import subprocess
 from datetime import datetime
 from multiprocessing import Pool
 from pathlib import Path
+
+from ..utils import crypto
 
 
 def run_worker(task):
@@ -93,7 +94,7 @@ class Conductor:
 
     def _generate_fingerprint(self):
         raw = f"{self.args.agent_name}-{self.timestamp}-{self.args.seed or 'none'}"
-        return hashlib.sha256(raw.encode()).hexdigest()[:12]
+        return crypto.content_hash(raw, length=6)
 
     def run(self):
         scenarios = self._get_scenario_subset()

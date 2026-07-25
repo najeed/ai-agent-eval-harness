@@ -1,9 +1,9 @@
-import hashlib
 import json
 from typing import Any
 
 from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, StandardSchema
 from dataproc_engine.core.logger import StructuredLogger
+from eval_runner.utils import crypto
 
 logger = StructuredLogger("DecisionSupportProvider")
 
@@ -65,18 +65,14 @@ class DecisionSupportProvider(BaseProvider):
                 if verified:
                     results.append(
                         StandardSchema(
-                            id=hashlib.sha256(f"RISK-{raw_data['region']}".encode()).hexdigest()[
-                                :16
-                            ],
+                            id=crypto.record_id(f"RISK-{raw_data['region']}"),
                             industry="decision_support",
                             data=verified,
                             provenance={
                                 "source": "Cross-Sector Analysis",
                                 "provider": "DecisionSupportEngine",
                             },
-                            checksum=hashlib.sha256(
-                                json.dumps(verified, sort_keys=True).encode()
-                            ).hexdigest(),
+                            checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                         )
                     )
 

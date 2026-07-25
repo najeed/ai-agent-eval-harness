@@ -28,7 +28,7 @@ agentv certify --run-id <run_id>
 ### 2. The Verification Certificate (VC) v3
 The output is a `run_manifest.json` file containing:
 - **`signature`**: The Ed25519 signature of the evaluation.
-- **`evidence_ledger`**: A SHA-256 manifest of every artifact generated during the run.
+- **`evidence_ledger`**: A SHA3-256 manifest of every artifact generated during the run.
 - **`system_id`**: The public key of the evaluator who conducted the study.
 
 ---

@@ -714,7 +714,7 @@ You MUST adhere to the following rules:
                             )}
                         </div>
                         <div className="p-8 bg-slate-900/50 border-t border-slate-800 flex justify-end gap-4">
-                            <span className="mr-auto self-center text-[10px] font-black text-slate-500 uppercase tracking-widest">SHA-256 Verified Source</span>
+                            <span className="mr-auto self-center text-[10px] font-black text-slate-500 uppercase tracking-widest">SHA3-256 Verified Source</span>
                             <button onClick={() => { setViewingFile(null); setFileContent(''); }} className="px-10 py-4 bg-white text-black font-black rounded-full uppercase tracking-widest text-xs hover:scale-105 transition-all">Close Asset</button>
                         </div>
                     </div>

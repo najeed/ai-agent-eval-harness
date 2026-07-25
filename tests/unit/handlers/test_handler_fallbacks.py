@@ -78,7 +78,12 @@ def test_classify_scenario_helper(monkeypatch):
 async def test_handle_verify_direct(tmp_path):
     """Hits handle_verify branch in cli.py."""
     trace_file = tmp_path / "test.jsonl"
-    trace_file.write_text(json.dumps({"event": "run_start", "metadata": {"sha256": "fake"}}) + "\n")
+    trace_file.write_text(
+        json.dumps(
+            {"event": "run_start", "metadata": {"trace_hash": "fake", "hash_algorithm": "sha3_256"}}
+        )
+        + "\n"
+    )
 
     args = MagicMock()
     args.scenario = str(trace_file)

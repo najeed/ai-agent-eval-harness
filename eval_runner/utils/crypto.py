@@ -14,7 +14,7 @@ changes require a single-file edit and nothing else.
 Design notes:
   - SHA3-256 is structurally immune to length-extension attacks (sponge construction).
   - SHAKE-256 is the required pre-hash XOF for ML-DSA-65 (FIPS 204) Zero-Exposure Signing.
-  - Neither SHA-256 (legacy) nor BLAKE3 (not FIPS-approved) should be used in new code.
+  - BLAKE3 (not FIPS-approved) should not be used in new code.
 """
 
 from __future__ import annotations
@@ -114,7 +114,6 @@ def record_id(data: bytes | str) -> str:
     """
     Generate a compact 16-hex-char record identifier via SHAKE-256.
 
-    Replaces the legacy pattern ``hashlib.sha256(x).hexdigest()[:16]``.
     Using SHAKE-256 XOF is semantically correct: truncating SHA3-256 is not
     equivalent to requesting a shorter output from an XOF.
 
@@ -130,8 +129,6 @@ def record_id(data: bytes | str) -> str:
 def checksum(data: bytes | str) -> str:
     """
     Full 64-hex-char SHA3-256 integrity checksum.
-
-    Replaces the legacy pattern ``hashlib.sha256(x).hexdigest()``.
 
     Args:
         data: Content to checksum.

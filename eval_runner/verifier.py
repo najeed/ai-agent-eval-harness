@@ -288,7 +288,7 @@ verification_service = VerificationService()
 class TraceVerifier:
     """
     Electronic Verification and Certification Engine for evaluation traces.
-    Implements the industrial Trust Protocol (SHA-256 + ED25519).
+    Implements the industrial Trust Protocol (SHA3-256 + ED25519).
     Updated for VC v3 (Forensic Integrity) and IdentityService.
     """
 
@@ -562,7 +562,7 @@ class TraceVerifier:
                 return False
 
             # 1. Base Integrity Check
-            expected_hash = manifest.get("trace_hash") or manifest.get("sha256")
+            expected_hash = manifest.get("trace_hash")
             actual_hash = cls.compute_signature(tp)
             if expected_hash != actual_hash:
                 logger.warning(f"Trace hash mismatch: expected {expected_hash}, got {actual_hash}")

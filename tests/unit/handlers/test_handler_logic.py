@@ -119,7 +119,12 @@ async def test_trust_protocols_pure(mock_config):
     run_dir = tmp_path / run_id
     run_dir.mkdir()
     (run_dir / "run.jsonl").write_text("[]")
-    manifest = {"run_id": run_id, "sha256": "h", "vc_version": "3.0.0"}
+    manifest = {
+        "run_id": run_id,
+        "trace_hash": "h",
+        "hash_algorithm": "sha3_256",
+        "vc_version": "3.0.0",
+    }
     (run_dir / "run_manifest.json").write_text(json.dumps(manifest))
 
     # 1. Verify

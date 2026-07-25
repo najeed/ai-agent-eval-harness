@@ -92,9 +92,9 @@ def test_standard_schema_create_auto_generates_id_and_checksum():
         provenance={"source": "test://source"},
     )
     assert schema.id is not None
-    assert len(schema.id) == 16  # md5 truncated
+    assert len(schema.id) == 16  # shake_128/shake_256 compact hex
     assert schema.checksum is not None
-    assert len(schema.checksum) == 64  # sha256 hex
+    assert len(schema.checksum) == 64  # sha3_256 hex
     assert schema.industry == "finance"
 
 

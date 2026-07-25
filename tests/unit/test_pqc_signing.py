@@ -98,7 +98,8 @@ class TestPQCSigning(unittest.TestCase):
         timestamp = datetime.now().astimezone().isoformat()
         manifest = {
             "vc_version": "3.0.0",
-            "sha256": "abcdef0123456789",
+            "trace_hash": "abcdef0123456789",
+            "hash_algorithm": "sha3_256",
             "timestamp": timestamp,
             "provenance_chain": [
                 {

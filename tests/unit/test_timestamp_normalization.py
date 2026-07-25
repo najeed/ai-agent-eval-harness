@@ -5,7 +5,7 @@ from datetime import datetime
 def test_timestamp_normalization_stability():
     """
     Verify that TraceVerifier.sign_trace produces a stable timestamp
-    with 3 decimal places, preventing SHA-256 drift across serialization.
+    with 3 decimal places, preventing SHA3-256 drift across serialization.
     """
     # 1. Generate a mock manifest via sign_trace (or internal logic)
     now = datetime.now().astimezone()

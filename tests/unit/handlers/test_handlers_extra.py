@@ -191,7 +191,7 @@ async def test_handle_certify_success(mock_env_config):
     with patch("eval_runner.verifier.TraceVerifier.sign_trace") as mock_s:
         mock_s.return_value = {
             "run_id": run_id,
-            "sha256": "123",
+            "trace_hash": "123",
             "vc_version": "3",
             "governance_ttl": 30,
         }

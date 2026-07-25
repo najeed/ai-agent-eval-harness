@@ -6,15 +6,15 @@ integrity of an Open Core evaluation run using the public Certificates API.
 Workflow:
 1. Fetch the Verification Certificate (VC) from the public API.
 2. Verify the VC's asymmetric signature (ED25519) using the harness Public Key.
-3. Verify the local Trace file's content integrity (SHA-256) against the VC.
+3. Verify the local Trace file's content integrity (SHA3-256) against the VC.
 """
 
-import hashlib
 import json
 import os
 
 import requests
 
+from eval_runner.utils import crypto
 from eval_runner.verifier import TraceVerifier
 
 # --- Configuration ---
@@ -69,21 +69,17 @@ def verify_run(run_id, trace_path, public_key_path):
 
     print("[+] Cryptographic Authority Verified.")
 
-    # 3. Verify Content Integrity (SHA-256)
+    # 3. Verify Content Integrity (SHA3-256)
     print(f"[*] Verifying content integrity for: {trace_path}")
 
     if not os.path.exists(trace_path):
         print(f"[!] Error: Local trace file not found at {trace_path}")
         return False
 
-    expected_hash = vc.get("sha256")
+    expected_hash = vc.get("trace_hash")
 
     # Compute local hash
-    sha256 = hashlib.sha256()
-    with open(trace_path, "rb") as f:
-        while chunk := f.read(8192):
-            sha256.update(chunk)
-    actual_hash = sha256.hexdigest()
+    actual_hash = crypto.file_hash(trace_path)
 
     if expected_hash != actual_hash:
         print("[!] INTEGRITY FAILURE: Trace content has been tampered with!")

@@ -67,7 +67,7 @@ def test_trace_verification_cycle(tmp_path, monkeypatch):
     trace_path.write_bytes(trace_content)  # Restore
     with open(manifest_path) as f:
         bad_manifest = json.load(f)
-    bad_manifest["sha256"] = "wrong-hash"
+    bad_manifest["trace_hash"] = "wrong-hash"
     bad_manifest_path = run_dir / "bad_manifest.json"
     with open(bad_manifest_path, "w") as f:
         json.dump(bad_manifest, f)

@@ -62,7 +62,7 @@ def test_certify_run_success(client, console_jail):
     (run_dir / "run.jsonl").write_text('{"event": "run_start"}\n', encoding="utf-8")
 
     with patch("eval_runner.verifier.TraceVerifier.sign_trace") as mock_sign:
-        mock_sign.return_value = {"sha256": "fake_hash"}
+        mock_sign.return_value = {"trace_hash": "fake_hash"}
         res = client.post("/api/v1/certify", json={"run_id": run_id})
         assert res.status_code == 200
         assert res.get_json()["status"] == "certified"
@@ -79,7 +79,12 @@ def test_verify_run_public_compliant(client, console_jail):
     run_dir = console_jail["runs"] / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     (run_dir / "run.jsonl").write_text("trace", encoding="utf-8")
-    manifest = {"compliance_status": "pass", "compliance_score": 1.0, "sha256": "h"}
+    manifest = {
+        "compliance_status": "pass",
+        "compliance_score": 1.0,
+        "trace_hash": "h",
+        "hash_algorithm": "sha3_256",
+    }
     (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
 
     with patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True):
@@ -93,7 +98,11 @@ def test_verify_run_public_non_compliant_score(client, console_jail):
     run_dir = console_jail["runs"] / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     (run_dir / "run.jsonl").write_text("trace", encoding="utf-8")
-    manifest = {"compliance": {"status": "pass", "score": 0.5}, "sha256": "h"}
+    manifest = {
+        "compliance": {"status": "pass", "score": 0.5},
+        "trace_hash": "h",
+        "hash_algorithm": "sha3_256",
+    }
     (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
 
     with patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True):
@@ -140,7 +149,8 @@ def test_verify_run_cryptographic_proof(client, console_jail):
     (run_dir / "run.jsonl").write_text("trace", encoding="utf-8")
     manifest = {
         "compliance": {"status": "pass", "score": 1.0},
-        "sha256": "h",
+        "trace_hash": "h",
+        "hash_algorithm": "sha3_256",
         "provenance_chain": [{"signer": "sys1"}],
     }
     (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")

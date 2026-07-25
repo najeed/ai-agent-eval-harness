@@ -51,7 +51,7 @@ def test_console_app_secret_key_fallback(monkeypatch):
 
 
 def test_create_app_api_key_present(monkeypatch):
-    """When DASHBOARD_API_KEY is set, secret_key is sha256 of the key."""
+    """When DASHBOARD_API_KEY is set, secret_key is sha3_256 checksum of the key."""
     from eval_runner import config
 
     monkeypatch.setattr(config, "DASHBOARD_API_KEY", "mysecretapikey")

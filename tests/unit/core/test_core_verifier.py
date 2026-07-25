@@ -1,6 +1,6 @@
 """
 Consolidated Verifier Test Suite for AgentV Evaluation Harness.
-Verifies cryptographic signing (VC v3.0.0), SHA-256 integrity, forensic vaults,
+Verifies cryptographic signing (VC v3.0.0), SHA3-256 integrity, forensic vaults,
 evidence ledger tracking, and governance TTL enforcement.
 """
 
@@ -305,7 +305,7 @@ def test_verify_trace_missing_provenance(caplog):
 
 def test_verify_trace_forged_ed25519_signature(caplog):
     """Verify that a well-formed provenance chain with a bad ED25519 signature fails.
-    This is distinct from test_verifier_tamper_detection (which fails at the SHA-256
+    This is distinct from test_verifier_tamper_detection (which fails at the SHA3-256
     hash check, step 1) and test_verify_trace_missing_provenance (empty chain, step 4a).
     Here the trace is unmodified, the chain node is structurally valid, but the signature
     bytes do not correspond to the manifest — exercising the cryptographic rejection
@@ -314,7 +314,7 @@ def test_verify_trace_forged_ed25519_signature(caplog):
     run_id = "run-forged-sig"
     vault_dir, trace_path = setup_vault(run_id)
     trace_path.write_text("authentic trace content")
-    # Produce a legitimate manifest so SHA-256, TTL, and ledger checks all pass.
+    # Produce a legitimate manifest so SHA3-256, TTL, and ledger checks all pass.
     TraceVerifier.sign_trace(str(trace_path), run_id=run_id, identity_id="system_id")
     manifest_path = vault_dir / "run_manifest.json"
     with open(manifest_path) as f:

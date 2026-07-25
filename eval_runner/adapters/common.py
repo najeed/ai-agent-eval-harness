@@ -1,6 +1,5 @@
 # eval_runner/adapters/common.py
 import asyncio
-import hashlib
 import json
 import logging
 from typing import Any
@@ -9,6 +8,7 @@ import aiohttp
 
 from .. import config
 from ..events import CoreEvents, emit
+from ..utils import crypto
 
 logger = logging.getLogger(__name__)
 
@@ -132,7 +132,7 @@ class AESCallbackHandler(BaseCallbackHandler):
         # Redacted Summary + State Hash (Audit-ready security)
         try:
             state_str = json.dumps(inputs, sort_keys=True)
-            state_hash = hashlib.sha256(state_str.encode()).hexdigest()
+            state_hash = crypto.checksum(state_str)
             inputs_summary = {k: type(v).__name__ for k, v in inputs.items()}
         except Exception as _e:
             logger.debug("State hashing skipped: %s", _e, exc_info=True)

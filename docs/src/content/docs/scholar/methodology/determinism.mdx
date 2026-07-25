@@ -69,6 +69,6 @@ A critical requirement for research-grade evaluation is the ability to revisit a
 Deterministic seeds only handle stochasticity. To handle **environment drift**, AgentV captures **Environmental DNA** snapshots. This includes:
 - **Registry State**: The exact configuration of world shims and simulators.
 - **Provider Versions**: The version of extraction engines used (e.g., Dataproc v1.5).
-- **Tool Fingerprints**: SHA-256 hashes of all available tool definitions.
+- **Tool Fingerprints**: SHA3-256 hashes of all available tool definitions.
 
 By combining **Deterministic Seeds** with **Environmental DNA**, AgentV achieves "Industrial Parity"—the guarantee that a test run on your local machine will behave exactly like a test run in a secure research lab.

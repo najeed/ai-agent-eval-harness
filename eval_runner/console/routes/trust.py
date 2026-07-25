@@ -58,8 +58,7 @@ def execute_industrial_certification(
         "status": "certified",
         "run_id": run_id,
         "manifest": {
-            "trace_hash": manifest.get("trace_hash") or manifest.get("sha256"),
-            "sha256": manifest.get("trace_hash") or manifest.get("sha256"),
+            "trace_hash": manifest.get("trace_hash"),
             "manifest_path": str(manifest_path),
             "certified_at": datetime.now().isoformat(),
         },
@@ -104,7 +103,7 @@ def verify_run_public(run_id):
 
     try:
         is_valid = TraceVerifier.verify_trace(str(trace_path), str(manifest_path))
-        method = "SHA-256 integrity check"
+        method = "SHA3-256 integrity check"
         with open(manifest_path, encoding="utf-8") as f:
             manifest = json.load(f)
             if manifest.get("provenance_chain"):

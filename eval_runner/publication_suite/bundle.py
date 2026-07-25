@@ -2,7 +2,7 @@
 bundle.py
 
 Regulatory Export Utility.
-Creates a signed ZIP artifact bundle with SHA-256 manifest.
+Creates a signed ZIP artifact bundle with SHA3-256 manifest.
 """
 
 import argparse

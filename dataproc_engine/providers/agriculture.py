@@ -1,5 +1,4 @@
 import datetime
-import hashlib
 import json
 from typing import Any
 
@@ -7,6 +6,7 @@ import aiohttp
 
 from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, StandardSchema
 from dataproc_engine.core.logger import StructuredLogger
+from eval_runner.utils import crypto
 
 logger = StructuredLogger("AgricultureProvider")
 
@@ -229,15 +229,13 @@ class AgricultureProvider(BaseProvider):
                     if verified:
                         results.append(
                             StandardSchema(
-                                id=hashlib.sha256(
-                                    f"FAO-{raw_data['location']}-{raw_data['item']}-{raw_data['year']}".encode()
-                                ).hexdigest()[:16],
+                                id=crypto.record_id(
+                                    f"FAO-{raw_data['location']}-{raw_data['item']}-{raw_data['year']}"
+                                ),
                                 industry="agriculture",
                                 data=verified,
                                 provenance={"source": raw.source_url, "provider": "FAOStat"},
-                                checksum=hashlib.sha256(
-                                    json.dumps(verified, sort_keys=True).encode()
-                                ).hexdigest(),
+                                checksum=crypto.checksum(json.dumps(verified, sort_keys=True)),
                             )
                         )
             return results
@@ -259,9 +257,9 @@ class AgricultureProvider(BaseProvider):
                     unique_str = (
                         f"{item.get('commodity_desc')}-{item.get('year')}-{item.get('state_alpha')}"
                     )
-                    record_id = hashlib.sha256(unique_str.encode()).hexdigest()[:16]
+                    record_id = crypto.record_id(unique_str)
                     raw_str = json.dumps(verified_data, sort_keys=True)
-                    data_checksum = hashlib.sha256(raw_str.encode()).hexdigest()
+                    data_checksum = crypto.checksum(raw_str)
 
                     results.append(
                         StandardSchema(

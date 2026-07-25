@@ -1,6 +1,5 @@
 import asyncio
 import datetime
-import hashlib
 import json
 import os
 from typing import Any
@@ -9,6 +8,7 @@ import aiohttp
 
 from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, StandardSchema
 from dataproc_engine.core.logger import StructuredLogger
+from eval_runner.utils import crypto
 
 logger = StructuredLogger("EcommerceProvider")
 
@@ -36,9 +36,7 @@ class EcommerceProvider(BaseProvider):
             if df is not None:
                 # Tabular format (Olist/UCI)
                 records = df.head(limit).to_dict(orient="records")
-                content_hash = hashlib.sha256(
-                    json.dumps(records, sort_keys=True).encode()
-                ).hexdigest()[:12]
+                content_hash = crypto.content_hash(json.dumps(records, sort_keys=True), length=6)
                 return RawArtifact(
                     id=f"ecom-tabular-{content_hash}",
                     source_url=uri,
@@ -67,7 +65,7 @@ class EcommerceProvider(BaseProvider):
                     lines = None
 
                 if lines:
-                    content_hash = hashlib.sha256("\n".join(lines).encode()).hexdigest()[:12]
+                    content_hash = crypto.content_hash("\n".join(lines), length=6)
                     return RawArtifact(
                         id=f"ecom-stream-{content_hash}",
                         source_url=uri,
@@ -241,9 +239,9 @@ class EcommerceProvider(BaseProvider):
                     unique_id_source = str(
                         data.get("order_id") or data.get("invoice_no") or data.get("review_text")
                     )
-                    record_id = hashlib.sha256(unique_id_source.encode()).hexdigest()[:16]
+                    record_id = crypto.record_id(unique_id_source)
                     raw_str = json.dumps(verified_data, sort_keys=True)
-                    data_checksum = hashlib.sha256(raw_str.encode()).hexdigest()
+                    data_checksum = crypto.checksum(raw_str)
 
                     results.append(
                         StandardSchema(
