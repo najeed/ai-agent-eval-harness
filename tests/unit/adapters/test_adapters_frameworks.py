@@ -91,7 +91,7 @@ async def test_framework_adapters_error_reporting():
     plugin = AutoGenAdapterPlugin()
     with (
         patch("eval_runner.adapters.autogen.config") as mock_cfg,
-        patch.dict("sys.modules", {"autogen": None}),
+        patch.dict("sys.modules", {"autogen": None, "ag2": None}),
     ):
         mock_cfg.AG2_API_URL = None
         res = await plugin.execute_autogen_query({})
