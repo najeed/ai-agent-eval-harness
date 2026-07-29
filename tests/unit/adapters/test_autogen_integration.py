@@ -12,12 +12,9 @@ async def test_ag2_adapter_real_integration():
     """Verify that the adapter works with real AutoGen/AG2 components."""
     # This test requires the real ag2 or autogen package
     try:
-        import ag2 as autogen
+        import autogen
     except ImportError:
-        try:
-            import autogen
-        except ImportError:
-            pytest.skip("Neither 'ag2' nor 'autogen' modules are installed.")
+        pytest.skip("The 'autogen' module is not installed.")
 
     # Setup real autogen agents
     # We mock the actual initiate_chat to avoid needing an LLM

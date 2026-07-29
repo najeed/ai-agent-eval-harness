@@ -169,7 +169,7 @@ async def test_autogen_adapter_fallback():
 
     # Test entry point error handling (fallback path when SDK is missing)
     with (
-        patch.dict("sys.modules", {"autogen": None}),
+        patch.dict("sys.modules", {"autogen": None, "ag2": None}),
         patch("eval_runner.adapters.autogen.config") as mock_cfg,
     ):
         mock_cfg.AG2_API_URL = None
