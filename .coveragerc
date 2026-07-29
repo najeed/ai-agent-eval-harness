@@ -4,6 +4,10 @@ source =
     dataproc_engine
 omit =
     dataproc_engine/tests/*
+    sample_agent/*
+    eval_runner/console/demo_logic.py
+    eval_runner/console/gen_demo_assets.py
+    eval_runner/console/routes/demo.py
     tests/*
     */__init__.py
     */__main__.py
