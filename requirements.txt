@@ -20,7 +20,7 @@ sqlalchemy==2.0.51
 # --- ML / Embeddings (optional, for benchmark loaders) ---
 sentence-transformers==5.6.1
 numpy==2.5.1
-datasets==5.0.0
+datasets==5.0.1
 
 # --- Security & Auth ---
 PyJWT==2.13.0
@@ -44,7 +44,7 @@ python-dotenv==1.2.2
 urllib3==2.7.0
 Authlib==1.7.2
 langchain-openai==1.4.1
-langsmith==0.10.10
+langsmith==0.10.11
 lxml==6.1.1
 Pillow==12.3.0
 idna==3.18

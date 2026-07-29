@@ -25,7 +25,7 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **sentence-transformers** | 5.6.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **numpy** | 2.5.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **sqlalchemy** | 2.0.51 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **datasets** | 5.0.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **datasets** | 5.0.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **PyJWT** | 2.13.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **cryptography** | 49.0.0 | Apache 2.0 / BSD | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **opentelemetry-api** | 1.44.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
@@ -43,7 +43,7 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **urllib3** | 2.7.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **Authlib** | 1.7.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **langchain-openai** | 1.4.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langsmith** | 0.10.10 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langsmith** | 0.10.11 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **lxml** | 6.1.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **Pillow** | 12.3.0 | HPND | [HPND.txt](LICENSES/HPND.txt) |
 | **cyclecore-pq** | 0.3.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
