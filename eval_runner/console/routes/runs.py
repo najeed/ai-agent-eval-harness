@@ -25,19 +25,65 @@ def list_metrics():
     return jsonify({"metrics": MetricRegistry.list_metrics()})
 
 
+def resolve_trace_path(run_id: str) -> Path | None:
+    """Resolves trace path across vaults and direct file conventions."""
+    p = config.RUN_LOG_DIR / run_id / "run.jsonl"
+    if p.exists():
+        return p
+    p = config.RUN_LOG_DIR / f"{run_id}.jsonl"
+    if p.exists():
+        return p
+    p = config.RUN_LOG_DIR / run_id
+    if p.exists():
+        return p
+    return None
+
+
 @run_bp.route("/v1/explain/<run_id>", methods=["GET"])
 @require_permission(Permission.RUNS_READ)
 def explain_run(run_id):
     """Roadmap: Forensic RCA as a service."""
-    # We'll leverage explainer logic here
-    run_dir = config.RUN_LOG_DIR / run_id
-    trace_path = run_dir / "run.jsonl"
-    if not trace_path.exists():
+    trace_path = resolve_trace_path(run_id)
+    temp_path = None
+
+    if not trace_path:
+        # Fallback: extract from master log runs/run.jsonl
+        master_log = config.RUN_LOG_DIR / "run.jsonl"
+        if master_log.exists():
+            filtered_lines = []
+            try:
+                with open(master_log, encoding="utf-8") as f:
+                    for line in f:
+                        line_str = line.strip()
+                        if line_str:
+                            try:
+                                ev = json.loads(line_str)
+                                if ev.get("run_id") == run_id:
+                                    filtered_lines.append(line_str)
+                            except Exception as e:
+                                logger.debug(f"Parsing run line warning: {e}")
+            except Exception as e:
+                logger.warning(f"Error scanning master log: {e}")
+
+            if filtered_lines:
+                temp_path = config.RUN_LOG_DIR / f"temp_explain_{run_id}.jsonl"
+                try:
+                    with open(temp_path, "w", encoding="utf-8") as out:
+                        out.write("\n".join(filtered_lines))
+                    trace_path = temp_path
+                except Exception as e:
+                    if temp_path.exists():
+                        temp_path.unlink()
+                    return jsonify({"error": str(e)}), 500
+
+    if not trace_path:
         return jsonify({"error": "Trace not found"}), 404
 
     try:
         # Invoke the core forensic explainer (RCA Engine)
         analysis = explain_trace(trace_path)
+        if temp_path and temp_path.exists():
+            temp_path.unlink()
 
         return jsonify(
             {
@@ -47,6 +93,8 @@ def explain_run(run_id):
             }
         )
     except Exception as e:
+        if temp_path and temp_path.exists():
+            temp_path.unlink()
         return jsonify({"error": str(e)}), 500
 
 
@@ -126,8 +174,8 @@ def list_runs():
 @require_permission(Permission.RUNS_READ)
 def get_run_status(run_id):
     """Industrial Polling Primitive."""
-    vault_trace = config.RUN_LOG_DIR / run_id / "run.jsonl"
-    if vault_trace.exists():
+    vault_trace = resolve_trace_path(run_id)
+    if vault_trace:
         is_finished = False
         size = 0
         mtime = 0
@@ -178,6 +226,46 @@ def get_run_status(run_id):
                 "has_certificate": has_certificate,
             }
         )
+
+    # Fallback: scan master log runs/run.jsonl for presence of this run_id
+    master_log = config.RUN_LOG_DIR / "run.jsonl"
+    if master_log.exists():
+        is_finished = False
+        has_events = False
+        try:
+            with open(master_log, encoding="utf-8") as f:
+                for line in f:
+                    if f'"{run_id}"' in line:
+                        try:
+                            ev = json.loads(line.strip())
+                            if ev.get("run_id") == run_id:
+                                has_events = True
+                                if ev.get("event") in [
+                                    "run_end",
+                                    "verification_certificate_issued",
+                                ]:
+                                    is_finished = True
+                        except Exception as e:
+                            logger.debug(f"Parsing run line warning: {e}")
+        except Exception as e:
+            logger.warning(f"Error checking run status in master log: {e}")
+
+        if has_events:
+            status = "COMPLETED" if is_finished else "RUNNING"
+            if not is_finished and not is_run_alive(run_id):
+                status = "STALLED"
+
+            cert_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
+            return jsonify(
+                {
+                    "run_id": run_id,
+                    "status": status,
+                    "size": os.path.getsize(master_log),
+                    "mtime": os.path.getmtime(master_log),
+                    "has_certificate": cert_path.exists(),
+                }
+            )
+
     return jsonify({"error": "Run not found"}), 404
 
 
@@ -294,5 +382,47 @@ def tail_file_generator(log_path: Path, run_id: str):
 @require_permission(Permission.RUNS_READ)
 def stream_run_logs(run_id):
     """SSE streaming endpoint for live run traces."""
-    log_path = config.RUN_LOG_DIR / run_id / "run.jsonl"
-    return Response(tail_file_generator(log_path, run_id), mimetype="text/event-stream")
+    log_path = resolve_trace_path(run_id)
+    if log_path:
+        return Response(tail_file_generator(log_path, run_id), mimetype="text/event-stream")
+
+    # Fallback: extract matching events from master log runs/run.jsonl
+    master_log = config.RUN_LOG_DIR / "run.jsonl"
+    if master_log.exists():
+        filtered_lines = []
+        try:
+            with open(master_log, encoding="utf-8") as f:
+                for line in f:
+                    line_str = line.strip()
+                    if line_str:
+                        try:
+                            ev = json.loads(line_str)
+                            if ev.get("run_id") == run_id:
+                                filtered_lines.append(line_str)
+                        except Exception as e:
+                            logger.debug(f"Parsing run line warning: {e}")
+        except Exception as e:
+            logger.warning(f"Error reading master log: {e}")
+
+        if filtered_lines:
+            temp_path = config.RUN_LOG_DIR / f"temp_stream_{run_id}.jsonl"
+            try:
+                with open(temp_path, "w", encoding="utf-8") as out:
+                    out.write("\n".join(filtered_lines))
+            except Exception as e:
+                logger.error(f"Failed to create temp stream file: {e}")
+                return jsonify({"error": "Failed to resolve stream log"}), 500
+
+            def stream_and_cleanup():
+                try:
+                    yield from tail_file_generator(temp_path, run_id)
+                finally:
+                    if temp_path.exists():
+                        try:
+                            temp_path.unlink()
+                        except Exception as e:
+                            logger.warning(f"Failed to clean up temp stream file {temp_path}: {e}")
+
+            return Response(stream_and_cleanup(), mimetype="text/event-stream")
+
+    return jsonify({"error": "Log file not found"}), 404

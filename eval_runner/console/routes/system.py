@@ -384,7 +384,7 @@ def ping():
     return jsonify({"status": "pong", "version": config._get_project_version(), "pid": os.getpid()})
 
 
-@system_bp.route("/ollama-status", methods=["GET"])
+@system_bp.route("/system/ollama-status", methods=["GET"])
 def ollama_status():
     """
     Health check for the Ollama LLM runtime.

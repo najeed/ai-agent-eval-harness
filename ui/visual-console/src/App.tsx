@@ -33,11 +33,9 @@ import { HITLQueue } from './pages/HITLQueue';
 import { AutoTranslate } from './pages/AutoTranslate';
 import { Calibration } from './pages/Calibration';
 import { Benchmarks } from './pages/Benchmarks';
-
-// Import P2 Shell Pages
-import {
-  SpecToEvalImporter, AdversarialMutator, TraceExplain
-} from './pages/ShellPages';
+import { SpecToEvalImporter } from './pages/SpecToEvalImporter';
+import { AdversarialMutator } from './pages/AdversarialMutator';
+import { TraceExplain } from './pages/TraceExplain';
 
 const queryClient = new QueryClient();
 
@@ -285,14 +283,14 @@ const ConsoleLayout: React.FC = () => {
         <div className="h-14 border-b border-slate-900 flex items-center justify-between px-3">
           {sidebarCollapsed ? (
             <img
-              src="/favicon.png"
+              src="/v2/favicon.png"
               alt="AgentV"
               className="w-8 h-8 rounded-lg object-contain"
             />
           ) : (
             <div className="flex items-center gap-2 min-w-0">
               <img
-                src="/logo-premium.png"
+                src="/v2/logo-premium.png"
                 alt="AgentV Console"
                 className="h-8 w-auto object-contain rounded"
               />
