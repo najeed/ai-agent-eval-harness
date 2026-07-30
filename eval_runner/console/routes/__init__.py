@@ -3,7 +3,9 @@ from flask import Blueprint, jsonify, request
 from eval_runner import config as config
 from eval_runner.catalog import ScenarioCatalog as ScenarioCatalog
 
+from .analyze import analyze_bp as analyze_bp
 from .demo import demo_bp as demo_bp, execute_demo_command, get_loan_demo_context
+from .publish import publish_bp as publish_bp
 from .runs import get_verification_certificate, list_metrics, list_runs, run_bp as run_bp
 from .scenarios import (
     get_taxonomy,

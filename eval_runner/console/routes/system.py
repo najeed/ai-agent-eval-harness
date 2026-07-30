@@ -382,3 +382,29 @@ def debugger_state():
 def ping():
     """Public diagnostic check."""
     return jsonify({"status": "pong", "version": config._get_project_version(), "pid": os.getpid()})
+
+
+@system_bp.route("/ollama-status", methods=["GET"])
+def ollama_status():
+    """
+    Health check for the Ollama LLM runtime.
+    Returns {available: bool, endpoint: str} - used by the Auto-Translate screen
+    to gate the upload form on Ollama availability before accepting user input.
+    """
+    import urllib.request
+
+    endpoint = getattr(config, "OLLAMA_BASE_URL", None) or os.environ.get(
+        "OLLAMA_BASE_URL", "http://localhost:11434"
+    )
+
+    try:
+        if not (endpoint.startswith("http://") or endpoint.startswith("https://")):
+            available = False
+        else:
+            req = urllib.request.Request(f"{endpoint}/api/tags", method="GET")
+            with urllib.request.urlopen(req, timeout=2) as resp:  # nosec B310
+                available = resp.status == 200
+    except Exception:
+        available = False
+
+    return jsonify({"available": available, "endpoint": endpoint})

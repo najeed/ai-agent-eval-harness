@@ -10,8 +10,10 @@ from eval_runner.plugins import manager
 from .. import config
 from .auth import auth_bp
 from .routes import (
+    analyze_bp,
     core_bp,
     demo_bp,
+    publish_bp,
     register_core_routes,
     run_bp,
     scenario_bp,
@@ -58,6 +60,8 @@ def create_app():
     app.register_blueprint(system_bp, url_prefix="/api")
     app.register_blueprint(scenario_bp, url_prefix="/api")
     app.register_blueprint(run_bp, url_prefix="/api")
+    app.register_blueprint(analyze_bp, url_prefix="/api")
+    app.register_blueprint(publish_bp, url_prefix="/api")
     app.register_blueprint(trust_bp)
     app.register_blueprint(demo_bp)
     app.register_blueprint(core_bp)
@@ -151,6 +155,20 @@ def create_app():
     print("--- Audit Complete ---\n", flush=True)
 
     # Frontend Catch-all Routes (Define LAST to prevent API masking)
+    @app.route("/v2", defaults={"path": ""})
+    @app.route("/v2/", defaults={"path": ""})
+    @app.route("/v2/<path:path>")
+    def serve_v2(path=""):
+        v2_ui_path = os.path.abspath(config.PROJECT_ROOT / "ui" / "visual-console" / "dist")
+
+        # If the file exists directly in dist or a subfolder, serve it
+        full_path = os.path.join(v2_ui_path, path)
+        if path and os.path.exists(full_path) and os.path.isfile(full_path):
+            return send_from_directory(v2_ui_path, path)
+
+        # Fall back to index.html for SPA routing (v2)
+        return send_from_directory(v2_ui_path, "index.html")
+
     @app.route("/", defaults={"path": ""})
     @app.route("/scenarios")
     @app.route("/reports")

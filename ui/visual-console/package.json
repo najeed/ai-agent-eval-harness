@@ -1,0 +1,35 @@
+{
+  "name": "visual-console",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "@xyflow/react": "12.11.2",
+    "react-router-dom": "7.18.2",
+    "@tanstack/react-query": "5.101.4",
+    "lucide-react": "1.27.0",
+    "tailwindcss": "4.3.3",
+    "cmdk": "1.1.1",
+    "recharts": "3.10.1",
+    "@monaco-editor/react": "4.7.0",
+    "react-diff-viewer-continued": "4.4.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "4.3.3",
+    "@types/node": "^26.1.2",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "^6.0.4",
+    "oxlint": "^1.76.0",
+    "typescript": "~7.0.2",
+    "vite": "^8.1.5"
+  }
+}

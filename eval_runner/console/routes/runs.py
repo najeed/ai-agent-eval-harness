@@ -165,12 +165,17 @@ def get_run_status(run_id):
             # the engine has likely crashed or hung.
             status = "STALLED"
 
+        cert_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
+        vault_manifest = config.RUN_LOG_DIR / run_id / "run_manifest.json"
+        has_certificate = cert_path.exists() or vault_manifest.exists()
+
         return jsonify(
             {
                 "run_id": run_id,
                 "status": status,
                 "size": size,
                 "mtime": mtime,
+                "has_certificate": has_certificate,
             }
         )
     return jsonify({"error": "Run not found"}), 404
