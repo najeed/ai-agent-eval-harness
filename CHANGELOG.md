@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2026-07-31
+
+### The Integrated Visual Console (Native GUI) and Compliance Engine Release
+*   **The Integrated Visual Console (Native GUI)**: Introduced the new official visual interface (`/v2`) serving as the central Verifiable Agent OS dashboard, compiling cleanly into production assets. Key features include:
+    *   *Scenario Library & Canvas Composer* (`ScenarioLibrary.tsx`, `ScenarioComposer.tsx`): Supports canvas-based React Flow visual scenario mapping, nodes configuration, and edge connections with a direct YAML/JSON editor synchronization.
+    *   *Evaluation Runner* (`EvaluationRunner.tsx`): Interactive dispatcher console with sliders for max turns, judge counts, and target selector controls.
+    *   *Live Debugger & State Parity Diff* (`LiveDebugger.tsx`): Real-time SSE streaming logs timeline, visual highlight nodes in React Flow, and side-by-side Git-style state diffs via `ReactDiffViewer` to detect state divergences.
+    *   *Triage Dashboard & AI Diagnostics* (`Triage.tsx`, `TraceExplain.tsx`): Aggregate failure trends classified under Logic, Policy, or Security categories, coupled with interactive AI triage recommendation engines.
+    *   *Real-Time HITL Approvals Queue* (`HITLQueue.tsx`): Async-unblocked reviewer cockpit showing active suspensions, countdown SLA clocks, and required rejection reason audit entries.
+    *   *Spec-to-Eval Importer* (`SpecToEvalImporter.tsx`): Drag-and-drop Markdown requirements translator that converts PRDs to scenarios and loads drafts directly into the Composer.
+    *   *Adversarial Scenario Mutator* (`AdversarialMutator.tsx`): Generates keyboard typos, vagueness ambiguity, and instruction injections on existing scenarios with side-by-side prompt previews.
+    *   *Trust Center & Reports*: Real-time signature validator verification checks and WeasyPrint/ReportLab dual PDF generators.
+*   **Granular PBAC Model & Dynamic Persona Swapping**: Linked a dynamic Role selection dropdown in the Header toolbar supporting 4 roles (System Admin, Compliance Auditor, Scenario Designer, MultiAgentOps Eng.) mapping to granular backend permissions.
+*   **Async HITL Worker Refactor**: Re-engineered `SessionManager._handle_hitl` to suspend runs in a restart-resilient SQLite-backed registry (`hitl.db`) instead of blocking threads or stdin. Added automated test safeguards to bypass review loops during testing suites.
+
 ## [1.6.8] - 2026-07-24
 
 ### SHA-3 Cryptographic Standard & Unified Hash Utility Layer

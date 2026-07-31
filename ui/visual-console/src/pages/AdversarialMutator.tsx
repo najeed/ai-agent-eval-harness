@@ -1,14 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import Editor from '@monaco-editor/react';
-import { Layers, PlayCircle, Save, Check, Sparkles, Copy } from 'lucide-react';
+import ReactDiffViewer from 'react-diff-viewer-continued';
+import { Layers, PlayCircle, Save, Check, Sparkles, Copy, ArrowRight, HelpCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface ScenarioOption {
   id: string;
-  name: string;
+  title?: string;
+  name?: string;
   industry: string;
-  difficulty: string;
-  raw_json?: any;
+  description?: string;
+  metadata?: {
+    id?: string;
+    name?: string;
+    description?: string;
+    compliance_level?: string;
+  };
+  workflow?: {
+    nodes?: Array<{
+      id: string;
+      task_description: string;
+      required_tools?: string[];
+      expected_outcome?: any;
+    }>;
+    edges?: any[];
+  };
 }
 
 export const AdversarialMutator: React.FC = () => {
@@ -37,7 +52,7 @@ export const AdversarialMutator: React.FC = () => {
         }
       }
     } catch (e) {
-      console.error(e);
+      console.error('Error fetching scenarios:', e);
     } finally {
       setLoadingScenarios(false);
     }
@@ -56,23 +71,24 @@ export const AdversarialMutator: React.FC = () => {
     setMutatedJson(null);
     setSaveMsg('');
 
-    // Fetch the scenario raw JSON first if not cached
     const chosen = scenarios.find((s) => s.id === selectedId);
     if (!chosen) return;
 
     try {
-      // Direct raw JSON mutation query
       const res = await fetch('/api/v1/mutate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          raw_json: chosen.raw_json || chosen, // fallback to object structure
+          raw_json: chosen,
           type: mutationType
         })
       });
       const data = await res.json();
       if (res.ok && data.status === 'success') {
         setMutatedJson(data.mutated);
+        window.dispatchEvent(new CustomEvent('agentv-toast', {
+          detail: { message: `Adversarial mutation (${mutationType}) executed.`, type: 'success' }
+        }));
       } else {
         setError(data.message || 'Failed to mutate scenario.');
       }
@@ -89,10 +105,13 @@ export const AdversarialMutator: React.FC = () => {
     setSaveMsg('');
     setError('');
 
-    // Assign a mutated unique ID to prevent namespace collisions
+    // Ensure parent reference is linked to prevent orphaned mutants
     const mutantCopy = {
       ...mutatedJson,
-      id: `${mutatedJson.id || 'scenario'}_mutant_${mutationType}`
+      metadata: {
+        ...(mutatedJson.metadata || {}),
+        parent_scenario_id: selectedId
+      }
     };
 
     try {
@@ -101,12 +120,15 @@ export const AdversarialMutator: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(mutantCopy)
       });
-      const data = await res.json();
       if (res.ok) {
-        setSaveMsg(`Scenario saved to Scenario Library as: ${mutantCopy.id}`);
+        setSaveMsg(`Mutated scenario saved to library: ${mutantCopy.id}`);
+        window.dispatchEvent(new CustomEvent('agentv-toast', {
+          detail: { message: 'Mutated scenario successfully saved!', type: 'success' }
+        }));
         setTimeout(() => navigate('/scenarios'), 1500);
       } else {
-        setError(data.error || 'Failed to save mutated scenario.');
+        const errData = await res.json();
+        setError(errData.error || 'Failed to save mutated scenario.');
       }
     } catch (err: any) {
       setError(err.message || 'Network error saving mutated scenario.');
@@ -122,6 +144,23 @@ export const AdversarialMutator: React.FC = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const getScenarioText = (sc: ScenarioOption | null) => {
+    if (!sc) return '';
+    let text = `Scenario ID: ${sc.metadata?.id || sc.id}\n`;
+    text += `Title: ${sc.metadata?.name || sc.title || ''}\n`;
+    text += `Description: ${sc.metadata?.description || sc.description || ''}\n\n`;
+    
+    if (sc.workflow?.nodes) {
+      sc.workflow.nodes.forEach((n) => {
+        text += `[Node ID: ${n.id}]\n`;
+        text += `Task Description:\n${n.task_description || ''}\n\n`;
+      });
+    }
+    return text;
+  };
+
+  const chosenScenario = scenarios.find((s) => s.id === selectedId) || null;
+
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
       {/* Page Header */}
@@ -132,18 +171,18 @@ export const AdversarialMutator: React.FC = () => {
             <span>Adversarial Scenario Mutator</span>
           </h1>
           <p className="text-xs text-slate-500 mt-1 max-w-2xl">
-            Generate fuzzing mutations, typos, and adversarial prompts for existing scenarios to test agent policy robustness.
+            Test policy stability limits. Mutate workflow prompts with typographical errors, vagueness hedging, or prompt injections.
           </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Side: Mutator configurations Form */}
+        {/* Left column: Controls */}
         <div className="space-y-6 lg:col-span-1">
           <div className="bg-slate-950/40 border border-slate-900 rounded-xl p-5 space-y-4">
             <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-indigo-400" />
-              <span>Mutation Parameters</span>
+              <span>Mutation Settings</span>
             </h3>
 
             {loadingScenarios ? (
@@ -152,32 +191,45 @@ export const AdversarialMutator: React.FC = () => {
               <div className="text-xs text-rose-400 py-4">No scenarios available to mutate. Create a scenario first.</div>
             ) : (
               <form onSubmit={handleMutate} className="space-y-4">
-                <div className="space-y-1">
-                  <label className="text-[9px] text-slate-500 font-bold uppercase">Select Target Scenario</label>
+                <div className="space-y-1.5">
+                  <label className="text-[9px] text-slate-500 font-bold uppercase font-mono">Target Base Scenario</label>
                   <select
                     value={selectedId}
                     onChange={(e) => setSelectedId(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-850 rounded px-2.5 py-1.5 text-xs text-slate-350 focus:outline-none focus:border-indigo-500 cursor-pointer"
+                    className="w-full bg-slate-950 border border-slate-850 rounded px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-indigo-500 cursor-pointer"
                   >
                     {scenarios.map((s) => (
                       <option key={s.id} value={s.id}>
-                        {s.id} ({s.industry})
+                        {s.metadata?.name || s.title || s.id} ({s.id})
                       </option>
                     ))}
                   </select>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-[9px] text-slate-500 font-bold uppercase">Mutation Strategy</label>
+                <div className="space-y-1.5">
+                  <label className="text-[9px] text-slate-500 font-bold uppercase font-mono">Mutation Strategy</label>
                   <select
                     value={mutationType}
                     onChange={(e) => setMutationType(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-850 rounded px-2.5 py-1.5 text-xs text-slate-350 focus:outline-none focus:border-indigo-500 cursor-pointer"
+                    className="w-full bg-slate-950 border border-slate-850 rounded px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-indigo-500 cursor-pointer"
                   >
-                    <option value="typo">typo (simulate user keyboard noise)</option>
-                    <option value="adversarial">adversarial (injection payloads)</option>
-                    <option value="ambiguous">ambiguous (vague request inputs)</option>
+                    <option value="typo">Typo (character errors)</option>
+                    <option value="ambiguity">Ambiguity (hedging/vague statements)</option>
+                    <option value="injection">Injection (prompt override attempts)</option>
                   </select>
+                </div>
+
+                {/* Strategy Descriptions */}
+                <div className="p-3 bg-slate-950/80 border border-slate-850 rounded-lg space-y-1">
+                  <span className="text-[9px] text-slate-500 font-bold uppercase font-mono flex items-center gap-1">
+                    <HelpCircle className="w-3.5 h-3.5 text-indigo-400" />
+                    <span>Strategy Details</span>
+                  </span>
+                  <p className="text-[10px] text-slate-400 leading-relaxed">
+                    {mutationType === 'typo' && 'Injects keyboard slip errors and spelling mutations into the task prompt.'}
+                    {mutationType === 'ambiguity' && 'Appends vague, non-committal hedging clauses requesting permission.'}
+                    {mutationType === 'injection' && 'Appends instructions to bypass prompt systems and override boundaries.'}
+                  </p>
                 </div>
 
                 <button
@@ -193,11 +245,18 @@ export const AdversarialMutator: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Side: Mutated Scenario output in Monaco */}
+        {/* Right column: Comparative Diff & Save action */}
         <div className="lg:col-span-2 bg-slate-950/40 border border-slate-900 rounded-xl p-5 space-y-4 flex flex-col justify-between">
           <div className="space-y-4 flex-1">
             <div className="flex justify-between items-center border-b border-slate-900/60 pb-3">
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider">Mutated Scenario Output</h3>
+              <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1">
+                <span>Scenario State Attribution Diff</span>
+                {mutatedJson && (
+                  <span className="text-[9px] text-slate-500 font-mono flex items-center gap-1 lowercase">
+                    ({selectedId} <ArrowRight className="w-3 h-3" /> {mutatedJson.id})
+                  </span>
+                )}
+              </h3>
               {mutatedJson && (
                 <button
                   onClick={handleCopy}
@@ -216,34 +275,47 @@ export const AdversarialMutator: React.FC = () => {
             )}
 
             {saveMsg && (
-              <div className="p-3 bg-emerald-500/10 border border-emerald-500/25 rounded-lg text-emerald-400 text-xs">
+              <div className="p-3 bg-emerald-500/10 border border-emerald-500/25 rounded-lg text-emerald-400 text-xs font-semibold">
                 {saveMsg}
               </div>
             )}
 
             {mutating ? (
               <div className="h-[360px] flex flex-col justify-center items-center gap-3">
-                <div className="w-6 h-6 border-3 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
-                <span className="text-xs text-slate-500">Injecting typos and fuzzing structures...</span>
+                <div className="w-6 h-6 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
+                <span className="text-xs text-slate-500">Injecting adversarial states...</span>
               </div>
             ) : !mutatedJson ? (
               <div className="h-[360px] border border-dashed border-slate-900 rounded-xl flex items-center justify-center text-xs text-slate-700 italic">
-                Select a scenario and trigger mutations to display outputs.
+                Select parameters and trigger mutator execution to preview comparative state diffs.
               </div>
             ) : (
-              <div className="h-[360px] border border-slate-900 rounded-xl overflow-hidden bg-slate-950">
-                <Editor
-                  height="100%"
-                  defaultLanguage="json"
-                  theme="vs-dark"
-                  value={JSON.stringify(mutatedJson, null, 2)}
-                  options={{
-                    readOnly: true,
-                    minimap: { enabled: false },
-                    fontSize: 11,
-                    lineNumbers: 'on',
-                    scrollBeyondLastLine: false,
-                    automaticLayout: true,
+              <div className="border border-slate-900 rounded-xl overflow-hidden bg-slate-950 text-xs leading-relaxed max-h-[380px] overflow-y-auto">
+                <ReactDiffViewer
+                  oldValue={getScenarioText(chosenScenario)}
+                  newValue={getScenarioText(mutatedJson)}
+                  splitView={true}
+                  leftTitle="Base Scenario"
+                  rightTitle={`Mutated Scenario (${mutationType})`}
+                  useDarkTheme={true}
+                  styles={{
+                    variables: {
+                      dark: {
+                        diffViewerBackground: '#020617',
+                        diffViewerColor: '#cbd5e1',
+                        addedBackground: '#064e3b',
+                        addedColor: '#34d399',
+                        removedBackground: '#7f1d1d',
+                        removedColor: '#f87171',
+                        wordAddedBackground: '#047857',
+                        wordRemovedBackground: '#991b1b',
+                      }
+                    },
+                    line: {
+                      fontSize: '11px',
+                      fontFamily: 'monospace',
+                      lineHeight: '1.4'
+                    }
                   }}
                 />
               </div>
@@ -258,7 +330,7 @@ export const AdversarialMutator: React.FC = () => {
                 className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-500 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5"
               >
                 <Save className="w-4 h-4" />
-                <span>{saving ? 'Saving Mutant Scenario...' : 'Save Mutated Copy as New Scenario'}</span>
+                <span>{saving ? 'Saving Mutant Scenario...' : 'Save Mutated Copy to Scenario Library'}</span>
               </button>
             </div>
           )}

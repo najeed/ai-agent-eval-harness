@@ -11,13 +11,16 @@ from .. import config
 from .auth import auth_bp
 from .routes import (
     analyze_bp,
+    compliance_packs_bp,
     core_bp,
     demo_bp,
+    hitl_bp,
     publish_bp,
     register_core_routes,
     run_bp,
     scenario_bp,
     subscribe_debugger,
+    suites_bp,
     system_bp,
     trust_bp,
 )
@@ -62,6 +65,9 @@ def create_app():
     app.register_blueprint(run_bp, url_prefix="/api")
     app.register_blueprint(analyze_bp, url_prefix="/api")
     app.register_blueprint(publish_bp, url_prefix="/api")
+    app.register_blueprint(suites_bp, url_prefix="/api")
+    app.register_blueprint(compliance_packs_bp, url_prefix="/api")
+    app.register_blueprint(hitl_bp, url_prefix="/api")
     app.register_blueprint(trust_bp)
     app.register_blueprint(demo_bp)
     app.register_blueprint(core_bp)

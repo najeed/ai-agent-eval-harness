@@ -346,3 +346,105 @@ def test_system_route_debugger_state_glob_fallback_and_empty_line(client, consol
     res = client.get("/api/debugger/state?run_id=glob_run_id")
     assert res.status_code == 200
     assert len(res.get_json()["data"]["timeline"]) == 1
+
+
+# ---------------------------------------------------------------------------
+# Missing-branch coverage additions for system.py
+# ---------------------------------------------------------------------------
+
+
+def test_system_route_debugger_loan_narrative(client):
+    """Cover line 73->74: run_end event with run_id starting with 'run-loan'."""
+    from eval_runner.events import CoreEvents
+
+    res = client.post(
+        "/api/debugger/state",
+        json={
+            "event": CoreEvents.RUN_END,
+            "data": {"status": "COMPLETED", "run_id": "run-loan-demo-001"},
+        },
+    )
+    assert res.status_code == 200
+    state = client.get("/api/debugger/state").get_json()
+    msg = state["data"]["summary"]["message"]
+    assert "(Industrial Demo Narrative)" in msg
+
+
+def test_system_route_cleanup_runs_dir_absent(client, monkeypatch):
+    """Cover line 274->286: cleanup_runs when RUN_LOG_DIR does not exist."""
+    from pathlib import Path
+
+    from eval_runner import config
+
+    monkeypatch.setattr(config, "RUN_LOG_DIR", Path("/nonexistent_dir_xyz_aes"))
+    res = client.post("/api/cleanup-runs")
+    assert res.status_code == 200
+    assert res.get_json()["count"] == 0
+
+
+def test_system_route_cleanup_runs_plugin_without_method(client, console_jail):
+    """Cover line 290->288 false branch: plugin with no on_cleanup_runs attribute."""
+    from eval_runner.plugins import manager
+
+    class NoCleanupPlugin:
+        pass
+
+    plugin = NoCleanupPlugin()
+    manager.plugins.append(plugin)
+    try:
+        res = client.post("/api/cleanup-runs")
+        assert res.status_code == 200
+    finally:
+        manager.plugins.remove(plugin)
+
+
+def test_system_route_debugger_state_demo_trace_hydration(client):
+    """Cover 336->363 false branch: get_demo_trace returns a trace, skipping file scan."""
+    demo_events = [{"event": "run_start", "data": {}}]
+    with patch("eval_runner.console.demo_traces.get_demo_trace", return_value=demo_events):
+        res = client.get("/api/debugger/state?run_id=run-loan-demo-hydrate")
+    assert res.status_code == 200
+    body = res.get_json()
+    assert "data" in body
+    assert "timeline" in body["data"]
+
+
+def test_system_route_ollama_status_all_paths(client):
+    """Cover lines 394-410: all three ollama-status sub-paths."""
+
+    # 1. Valid HTTP endpoint — server responds 200
+    class FakeResponse:
+        status = 200
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_):
+            pass
+
+    with patch("urllib.request.urlopen", return_value=FakeResponse()):
+        res = client.get("/api/system/ollama-status")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["available"] is True
+
+    # 2. urlopen raises (server unreachable)
+    with patch("urllib.request.urlopen", side_effect=OSError("connection refused")):
+        res = client.get("/api/system/ollama-status")
+    assert res.status_code == 200
+    assert res.get_json()["available"] is False
+
+    # 3. Endpoint that doesn't start with http/https
+    from eval_runner import config
+
+    with patch.object(config, "OLLAMA_BASE_URL", "grpc://localhost:9000", create=True):
+        res = client.get("/api/system/ollama-status")
+    assert res.status_code == 200
+    assert res.get_json()["available"] is False
+
+
+def test_system_route_read_doc_fallback_not_found(client, console_jail):
+    """Cover 168->171 false branch: no-extension request and .md file doesn't exist."""
+    # Request a filename without extension where no .md file exists either
+    res = client.get("/api/docs/nonexistent_guide_xyz")
+    assert res.status_code == 404

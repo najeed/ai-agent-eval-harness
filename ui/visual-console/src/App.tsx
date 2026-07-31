@@ -36,6 +36,8 @@ import { Benchmarks } from './pages/Benchmarks';
 import { SpecToEvalImporter } from './pages/SpecToEvalImporter';
 import { AdversarialMutator } from './pages/AdversarialMutator';
 import { TraceExplain } from './pages/TraceExplain';
+import { RegressionSuites } from './pages/RegressionSuites';
+import { CompliancePackEditor } from './pages/CompliancePackEditor';
 
 const queryClient = new QueryClient();
 
@@ -223,7 +225,6 @@ const ConsoleLayout: React.FC = () => {
         { name: 'Evaluation Runner', path: '/runner', icon: <Play className="w-4 h-4" /> },
         { name: 'Live Trace Debugger', path: '/debugger', icon: <Activity className="w-4 h-4" /> },
         { name: 'Runs & Reports', path: '/reports', icon: <BarChart2 className="w-4 h-4" /> },
-        { name: 'Trust Center', path: '/trust', icon: <ShieldCheck className="w-4 h-4" /> },
         { name: 'Trace Explain (AI)', path: '/explain', icon: <ChevronRight className="w-3.5 h-3.5" /> },
         { name: 'HITL Queue', path: '/hitl', icon: <ChevronRight className="w-3.5 h-3.5" /> }
       ]
@@ -234,15 +235,23 @@ const ConsoleLayout: React.FC = () => {
         { name: 'Metrics & Leaderboards', path: '/metrics', icon: <ChevronRight className="w-3.5 h-3.5" /> },
         { name: 'Failure Corpus Search', path: '/failures', icon: <ChevronRight className="w-3.5 h-3.5" /> },
         { name: 'Triage Center', path: '/triage', icon: <ChevronRight className="w-3.5 h-3.5" /> },
-        { name: 'Benchmarks', path: '/benchmarks', icon: <ChevronRight className="w-3.5 h-3.5" /> },
-        { name: 'Compliance & Forensics', path: '/compliance', icon: <ChevronRight className="w-3.5 h-3.5" /> }
+        { name: 'Benchmarks', path: '/benchmarks', icon: <ChevronRight className="w-3.5 h-3.5" /> }
       ]
     },
     {
       title: 'Publish & Integrate',
       items: [
-        { name: 'Publication Suite', path: '/publish', icon: <ChevronRight className="w-3.5 h-3.5" /> },
         { name: 'CI/CD Integration', path: '/cicd', icon: <ChevronRight className="w-3.5 h-3.5" /> }
+      ]
+    },
+    {
+      title: 'Audit & Compliance',
+      items: [
+        { name: 'Trust Center', path: '/trust', icon: <ShieldCheck className="w-4 h-4" /> },
+        { name: 'Compliance & Forensics', path: '/compliance', icon: <ChevronRight className="w-3.5 h-3.5" /> },
+        { name: 'Regression Suites', path: '/suites', icon: <FileText className="w-4 h-4" /> },
+        { name: 'Publication Suite', path: '/publish', icon: <ChevronRight className="w-3.5 h-3.5" /> },
+        { name: 'Compliance Pack Editor', path: '/packs', icon: <Settings className="w-4 h-4" /> }
       ]
     },
     {
@@ -478,6 +487,8 @@ export function App() {
               <Route path="/publish" element={<PublicationSuite />} />
               <Route path="/cicd" element={<CICDIntegration />} />
               <Route path="/sync" element={<RegistrySync />} />
+              <Route path="/suites" element={<RegressionSuites />} />
+              <Route path="/packs" element={<CompliancePackEditor />} />
             </Route>
           </Routes>
         </BrowserRouter>

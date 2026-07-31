@@ -90,6 +90,7 @@ def explain_run(run_id):
                 "run_id": run_id,
                 "status": "explained",
                 "analysis": analysis,
+                "sourced_from_master": temp_path is not None,
             }
         )
     except Exception as e:
@@ -224,6 +225,7 @@ def get_run_status(run_id):
                 "size": size,
                 "mtime": mtime,
                 "has_certificate": has_certificate,
+                "sourced_from_master": False,
             }
         )
 
@@ -263,6 +265,7 @@ def get_run_status(run_id):
                     "size": os.path.getsize(master_log),
                     "mtime": os.path.getmtime(master_log),
                     "has_certificate": cert_path.exists(),
+                    "sourced_from_master": True,
                 }
             )
 
@@ -425,4 +428,7 @@ def stream_run_logs(run_id):
 
             return Response(stream_and_cleanup(), mimetype="text/event-stream")
 
-    return jsonify({"error": "Log file not found"}), 404
+    def stream_not_found():
+        yield "data: Execution log file not found\n\n"
+
+    return Response(stream_not_found(), mimetype="text/event-stream")

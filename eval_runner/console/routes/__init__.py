@@ -4,7 +4,9 @@ from eval_runner import config as config
 from eval_runner.catalog import ScenarioCatalog as ScenarioCatalog
 
 from .analyze import analyze_bp as analyze_bp
+from .compliance_packs import compliance_packs_bp as compliance_packs_bp
 from .demo import demo_bp as demo_bp, execute_demo_command, get_loan_demo_context
+from .hitl import hitl_bp as hitl_bp
 from .publish import publish_bp as publish_bp
 from .runs import get_verification_certificate, list_metrics, list_runs, run_bp as run_bp
 from .scenarios import (
@@ -14,6 +16,7 @@ from .scenarios import (
     save_scenario,
     scenario_bp as scenario_bp,
 )
+from .suites import suites_bp as suites_bp
 from .system import (
     DebuggerStateStore as DebuggerStateStore,
     cleanup_runs,

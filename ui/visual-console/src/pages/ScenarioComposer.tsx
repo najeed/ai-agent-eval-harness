@@ -205,28 +205,80 @@ export const ScenarioComposer: React.FC = () => {
           }
         });
     } else {
-      // Default initial canvas node
-      setNodes([
-        {
-          id: 'start_node',
-          type: 'default',
-          position: { x: 100, y: 150 },
-          data: { 
-            label: 'start_node', 
-            task_description: 'Agent should verify user identity',
-            required_tools: [],
-            expected_outcome: []
-          },
-          style: { 
-            background: '#0f172a', 
-            color: '#fff', 
-            border: '1px solid #334155',
-            borderRadius: '8px',
-            fontSize: '11px',
-            width: 160
+      const draft = localStorage.getItem('aes-draft');
+      if (draft) {
+        try {
+          const parsed = JSON.parse(draft);
+          if (parsed.metadata?.id) setScenarioId(parsed.metadata.id);
+          if (parsed.metadata?.name) setTitle(parsed.metadata.name);
+          if (parsed.industry) setIndustry(parsed.industry);
+          if (parsed.metadata?.compliance_level) setComplianceLevel(parsed.metadata.compliance_level);
+          if (parsed.metadata?.description) setDescription(parsed.metadata.description);
+
+          if (parsed.workflow?.nodes) {
+            const flowNodes = parsed.workflow.nodes.map((n: any, idx: number) => ({
+              id: n.id,
+              type: 'default',
+              position: { x: 150 + idx * 220, y: 150 },
+              data: {
+                label: n.id,
+                task_description: n.task_description,
+                required_tools: n.required_tools || [],
+                expected_outcome: n.expected_outcome || []
+              },
+              style: {
+                background: '#0f172a',
+                color: '#fff',
+                border: '1px solid #334155',
+                borderRadius: '8px',
+                fontSize: '11px',
+                width: 160
+              }
+            }));
+            setNodes(flowNodes);
           }
+
+          if (parsed.workflow?.edges) {
+            const flowEdges = parsed.workflow.edges.map((e: any, idx: number) => ({
+              id: `edge-${idx}`,
+              source: e.from,
+              target: e.to,
+              data: { condition: e.condition }
+            }));
+            setEdges(flowEdges);
+          }
+          window.dispatchEvent(new CustomEvent('agentv-toast', {
+            detail: { message: 'Draft scenario loaded from Spec Importer.', type: 'success' }
+          }));
+        } catch (e) {
+          console.warn("Failed to load draft scenario:", e);
+        } finally {
+          localStorage.removeItem('aes-draft');
         }
-      ]);
+      } else {
+        // Default initial canvas node
+        setNodes([
+          {
+            id: 'start_node',
+            type: 'default',
+            position: { x: 100, y: 150 },
+            data: { 
+              label: 'start_node', 
+              task_description: 'Agent should verify user identity',
+              required_tools: [],
+              expected_outcome: []
+            },
+            style: { 
+              background: '#0f172a', 
+              color: '#fff', 
+              border: '1px solid #334155',
+              borderRadius: '8px',
+              fontSize: '11px',
+              width: 160
+            }
+          }
+        ]);
+      }
     }
   }, [scenarioIdParam]);
 

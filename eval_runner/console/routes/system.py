@@ -165,7 +165,7 @@ def read_doc(filename):
     if not target.exists():
         if not filename.endswith(".md"):
             fallback_target = (docs_dir / f"{filename}.md").resolve()
-            if is_path_safe(fallback_target, docs_dir) and fallback_target.exists():
+            if fallback_target.exists():
                 target = fallback_target
 
     if not target.exists():

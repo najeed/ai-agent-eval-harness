@@ -231,6 +231,15 @@ export const TrustCenter: React.FC = () => {
                   </pre>
                 </div>
               )}
+
+              <div className="pt-4 border-t border-slate-800/80">
+                <a
+                  href={`/api/v1/runs/${verifyResult.run_id}/report.pdf`}
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white rounded text-xs font-bold uppercase tracking-wider transition-all"
+                >
+                  Download PDF Compliance Report
+                </a>
+              </div>
             </div>
           )}
         </div>

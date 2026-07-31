@@ -31,6 +31,7 @@ export const LiveDebugger: React.FC = () => {
   const [runId, setRunId] = useState(runIdParam || '');
   const [runsList, setRunsList] = useState<string[]>([]);
   const [status, setStatus] = useState<string>('IDLE');
+  const [sourcedFromMaster, setSourcedFromMaster] = useState<boolean>(false);
   const [events, setEvents] = useState<LogEvent[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<LogEvent[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<LogEvent | null>(null);
@@ -73,9 +74,11 @@ export const LiveDebugger: React.FC = () => {
       if (res.ok) {
         const data = await res.json();
         setStatus(data.status || 'COMPLETED');
+        setSourcedFromMaster(!!data.sourced_from_master);
       }
     } catch (e) {
       setStatus('UNKNOWN');
+      setSourcedFromMaster(false);
     }
   };
 
@@ -97,6 +100,13 @@ export const LiveDebugger: React.FC = () => {
       // Done
     }
   };
+
+  // Auto-expand Explain Panel if query param is set
+  useEffect(() => {
+    if (runId && searchParams.get('explain') === 'true') {
+      handleExplain();
+    }
+  }, [runId, searchParams]);
 
   // Close stream helper
   const closeStream = () => {
@@ -121,9 +131,12 @@ export const LiveDebugger: React.FC = () => {
     }
     
     checkStatus(rid);
-    
-    // Set query param
-    setSearchParams({ run_id: rid });
+    // Set query param preserving explain if it exists
+    const nextParams: Record<string, string> = { run_id: rid };
+    if (searchParams.get('explain') === 'true') {
+      nextParams.explain = 'true';
+    }
+    setSearchParams(nextParams);
 
     // Server-Sent Events stream initialization (only if run is active)
     const streamUrl = `/api/v1/runs/${rid}/stream`;
@@ -163,6 +176,7 @@ export const LiveDebugger: React.FC = () => {
         .then(data => {
           const runStatus = data.status || 'COMPLETED';
           setStatus(runStatus);
+          setSourcedFromMaster(!!data.sourced_from_master);
           
           if (runStatus === 'RUNNING') {
             if (attempt < 5) {
@@ -378,6 +392,13 @@ export const LiveDebugger: React.FC = () => {
             <span>AI Explain Diagnostics</span>
           </button>
         </div>
+
+        {sourcedFromMaster && (
+          <div className="bg-indigo-500/5 border-b border-slate-900 px-6 py-2.5 flex items-center gap-2 text-[10px] text-indigo-400 font-medium leading-relaxed italic shrink-0">
+            <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full shrink-0 animate-pulse" />
+            <span>Notice: Individual vaults/files are not available for this run. Data is retrieved from the master log repository (runs/run.jsonl).</span>
+          </div>
+        )}
 
         {/* ReactFlow Canvas container */}
         <div className="flex-1 h-full bg-slate-950/20 relative">

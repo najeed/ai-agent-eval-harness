@@ -59,7 +59,7 @@ def export_leaderboard_html():
     and returns it as a downloadable file.
     """
     try:
-        from eval_runner.publication_suite.html_builder import HtmlBuilder
+        from eval_runner.publication_suite.html_builder import HTMLBuilder as HtmlBuilder
 
         runs_dir = str(config.RUN_LOG_DIR)
         output_path = config.PROJECT_ROOT / "reports" / "leaderboard.html"

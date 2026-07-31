@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Editor from '@monaco-editor/react';
-import { FileText, PlayCircle, Save, Check, Sparkles, Copy } from 'lucide-react';
+import { FileText, PlayCircle, Edit3, Check, Sparkles, Copy, UploadCloud } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const SpecToEvalImporter: React.FC = () => {
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [markdown, setMarkdown] = useState(
     `# Scenario Specification: Telecommunications Plan Override\n\n` +
     `## Objective\n` +
@@ -18,18 +19,16 @@ export const SpecToEvalImporter: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [scenarioJson, setScenarioJson] = useState<any>(null);
   const [error, setError] = useState('');
-  const [saving, setSaving] = useState(false);
-  const [saveMsg, setSaveMsg] = useState('');
   const [copied, setCopied] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
 
-  const handleImport = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleImport = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!markdown.trim()) return;
 
     setLoading(true);
     setError('');
     setScenarioJson(null);
-    setSaveMsg('');
 
     try {
       const res = await fetch('/api/v1/spec-to-eval', {
@@ -40,6 +39,9 @@ export const SpecToEvalImporter: React.FC = () => {
       const data = await res.json();
       if (res.ok && data.status === 'success') {
         setScenarioJson(data.scenario);
+        window.dispatchEvent(new CustomEvent('agentv-toast', {
+          detail: { message: 'Specification parsed successfully!', type: 'success' }
+        }));
       } else {
         setError(data.message || 'Failed to parse spec to scenario JSON.');
       }
@@ -50,29 +52,11 @@ export const SpecToEvalImporter: React.FC = () => {
     }
   };
 
-  const handleSaveToLibrary = async () => {
+  const handleEditInComposer = () => {
     if (!scenarioJson) return;
-    setSaving(true);
-    setSaveMsg('');
-    setError('');
-    try {
-      const res = await fetch('/api/scenarios', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(scenarioJson)
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setSaveMsg('Scenario added to Scenario Library catalog!');
-        setTimeout(() => navigate('/scenarios'), 1500);
-      } else {
-        setError(data.error || 'Failed to save scenario to catalog.');
-      }
-    } catch (err: any) {
-      setError(err.message || 'Network error saving scenario.');
-    } finally {
-      setSaving(false);
-    }
+    // Set in localStorage to be consumed by ScenarioComposer
+    localStorage.setItem('aes-draft', JSON.stringify(scenarioJson));
+    navigate('/editor');
   };
 
   const handleCopy = () => {
@@ -80,6 +64,52 @@ export const SpecToEvalImporter: React.FC = () => {
     navigator.clipboard.writeText(JSON.stringify(scenarioJson, null, 2));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  // Drag and Drop files handlers
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      handleFile(files[0]);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      handleFile(files[0]);
+    }
+  };
+
+  const handleFile = (file: File) => {
+    if (!file.name.endsWith('.md') && !file.name.endsWith('.txt')) {
+      setError('Invalid file type. Only Markdown (.md) or text files are supported.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target?.result as string;
+      if (text) {
+        setMarkdown(text);
+        setError('');
+        window.dispatchEvent(new CustomEvent('agentv-toast', {
+          detail: { message: `Loaded file: ${file.name}`, type: 'info' }
+        }));
+      }
+    };
+    reader.readAsText(file);
   };
 
   return (
@@ -92,42 +122,77 @@ export const SpecToEvalImporter: React.FC = () => {
             <span>Spec-to-Eval Importer</span>
           </h1>
           <p className="text-xs text-slate-500 mt-1 max-w-2xl">
-            Convert raw Markdown PRDs or text requirements into structured AES JSON scenarios using AI validation schema parsers.
+            Upload raw Markdown specifications or copy requirements text. AI validation parsers will automatically build structured evaluation workflows.
           </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Side: Markdown specifications editor */}
-        <div className="bg-slate-950/40 border border-slate-900 rounded-xl p-5 space-y-4">
-          <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-4 h-4 text-indigo-400" />
-            <span>Markdown Specifications</span>
-          </h3>
+        {/* Left Side: Markdown Specifications input */}
+        <div className="bg-slate-950/40 border border-slate-900 rounded-xl p-5 space-y-4 flex flex-col justify-between">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-indigo-400" />
+                <span>Specification Requirements</span>
+              </h3>
+              
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded text-[10px] font-bold text-slate-400 hover:text-slate-200 transition-all"
+              >
+                <UploadCloud className="w-3.5 h-3.5" />
+                <span>Upload .md file</span>
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".md,.txt"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+            </div>
 
-          <form onSubmit={handleImport} className="space-y-4">
-            <textarea
-              value={markdown}
-              onChange={(e) => setMarkdown(e.target.value)}
-              className="w-full h-[360px] bg-slate-950 border border-slate-850 p-3 rounded-lg text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-mono resize-none leading-relaxed"
-              required
-            />
-            <button
-              type="submit"
-              disabled={loading || !markdown.trim()}
-              className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5"
+            {/* Drag & Drop File Zone */}
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              className={`border border-dashed rounded-xl p-4 transition-all flex flex-col items-center justify-center text-center ${
+                isDragOver
+                  ? 'border-indigo-500 bg-indigo-500/5'
+                  : 'border-slate-850 bg-slate-950/60 hover:border-slate-800'
+              }`}
             >
-              <PlayCircle className="w-4 h-4" />
-              <span>{loading ? 'Converting Specs...' : 'Convert to AES Scenario'}</span>
-            </button>
-          </form>
+              <textarea
+                value={markdown}
+                onChange={(e) => setMarkdown(e.target.value)}
+                placeholder="Paste your markdown specification requirement document here, or drag and drop a markdown file..."
+                className="w-full h-[280px] bg-transparent border-0 resize-none text-xs text-slate-200 focus:outline-none font-mono leading-relaxed"
+                required
+              />
+              <span className="text-[9px] text-slate-650 mt-1 font-mono">
+                Drag-and-drop a markdown document directly into the editor to load.
+              </span>
+            </div>
+          </div>
+
+          <button
+            onClick={() => handleImport()}
+            disabled={loading || !markdown.trim()}
+            className="w-full py-2 mt-4 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5"
+          >
+            <PlayCircle className="w-4 h-4" />
+            <span>{loading ? 'Converting Specs...' : 'Convert to AES Scenario'}</span>
+          </button>
         </div>
 
         {/* Right Side: Generated JSON in Monaco */}
         <div className="bg-slate-950/40 border border-slate-900 rounded-xl p-5 space-y-4 flex flex-col justify-between">
           <div className="space-y-4 flex-1">
             <div className="flex justify-between items-center border-b border-slate-900/60 pb-3">
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider">AES JSON Scenario Output</h3>
+              <h3 className="text-xs font-bold text-white uppercase tracking-wider">Draft AES JSON Scenario</h3>
               {scenarioJson && (
                 <button
                   onClick={handleCopy}
@@ -145,20 +210,14 @@ export const SpecToEvalImporter: React.FC = () => {
               </div>
             )}
 
-            {saveMsg && (
-              <div className="p-3 bg-emerald-500/10 border border-emerald-500/25 rounded-lg text-emerald-400 text-xs">
-                {saveMsg}
-              </div>
-            )}
-
             {loading ? (
               <div className="h-[360px] flex flex-col justify-center items-center gap-3">
-                <div className="w-6 h-6 border-3 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
-                <span className="text-xs text-slate-500">Parsing YAML/Markdown structure...</span>
+                <div className="w-6 h-6 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
+                <span className="text-xs text-slate-500">Executing parser schemas...</span>
               </div>
             ) : !scenarioJson ? (
               <div className="h-[360px] border border-dashed border-slate-900 rounded-xl flex items-center justify-center text-xs text-slate-700 italic">
-                Convert markdown specifications on the left to review scenario JSON.
+                Awaiting specification conversion input.
               </div>
             ) : (
               <div className="h-[360px] border border-slate-900 rounded-xl overflow-hidden bg-slate-950">
@@ -183,12 +242,11 @@ export const SpecToEvalImporter: React.FC = () => {
           {scenarioJson && (
             <div className="border-t border-slate-900/60 pt-4 mt-4">
               <button
-                onClick={handleSaveToLibrary}
-                disabled={saving}
-                className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-500 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5"
+                onClick={handleEditInComposer}
+                className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5"
               >
-                <Save className="w-4 h-4" />
-                <span>{saving ? 'Saving Scenario...' : 'Save to Scenario Library'}</span>
+                <Edit3 className="w-4 h-4" />
+                <span>Edit in Scenario Composer (Unsaved Draft)</span>
               </button>
             </div>
           )}
