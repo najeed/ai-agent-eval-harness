@@ -12,7 +12,7 @@ export const AutoTranslate: React.FC = () => {
 
   // Form states
   const [inputText, setInputText] = useState('');
-  const [targetLang, setTargetLang] = useState('Spanish');
+  const [targetLang, setTargetLang] = useState('English');
   const [translatedText, setTranslatedText] = useState('');
   const [translating, setTranslating] = useState(false);
   const [error, setError] = useState('');
@@ -49,7 +49,7 @@ export const AutoTranslate: React.FC = () => {
       // Direct call to local Ollama API to translate the text!
       const endpoint = status?.endpoint || 'http://localhost:11434';
       const prompt = `Translate the following AI Agent PRD scenario requirements to ${targetLang}. Keep formatting intact:\n\n${inputText}`;
-      
+
       const res = await fetch(`${endpoint}/api/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -151,6 +151,7 @@ export const AutoTranslate: React.FC = () => {
                   onChange={(e) => setTargetLang(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-850 rounded px-2.5 py-1.5 text-xs text-slate-350 focus:outline-none focus:border-indigo-500 cursor-pointer"
                 >
+                  <option value="English">English</option>
                   <option value="Spanish">Spanish (Español)</option>
                   <option value="French">French (Français)</option>
                   <option value="German">German (Deutsch)</option>
