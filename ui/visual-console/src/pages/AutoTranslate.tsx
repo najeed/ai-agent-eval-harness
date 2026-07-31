@@ -4,6 +4,7 @@ import { Cpu, Languages, AlertTriangle, Sparkles, Download } from 'lucide-react'
 interface OllamaStatus {
   available: boolean;
   endpoint: string;
+  models?: string[];
 }
 
 export const AutoTranslate: React.FC = () => {
@@ -13,6 +14,7 @@ export const AutoTranslate: React.FC = () => {
   // Form states
   const [inputText, setInputText] = useState('');
   const [targetLang, setTargetLang] = useState('English');
+  const [selectedModel, setSelectedModel] = useState('llama3');
   const [translatedText, setTranslatedText] = useState('');
   const [translating, setTranslating] = useState(false);
   const [error, setError] = useState('');
@@ -24,6 +26,11 @@ export const AutoTranslate: React.FC = () => {
       const data = await res.json();
       if (res.ok) {
         setStatus(data);
+        if (data.models && data.models.length > 0) {
+          if (!data.models.includes(selectedModel)) {
+            setSelectedModel(data.models[0]);
+          }
+        }
       }
     } catch (e) {
       console.error(e);
@@ -54,7 +61,7 @@ export const AutoTranslate: React.FC = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'llama3', // typical default
+          model: selectedModel, // typical default
           prompt: prompt,
           stream: false
         })
@@ -95,7 +102,7 @@ export const AutoTranslate: React.FC = () => {
           className="p-2 bg-slate-950 border border-slate-900 rounded-lg text-slate-400 hover:text-slate-200 transition-colors"
           title="Re-test Connection"
         >
-          <RefreshCw className="w-4 h-4" />
+          <RefreshCw loading={loading} className="w-4 h-4" />
         </button>
       </div>
 
@@ -156,6 +163,25 @@ export const AutoTranslate: React.FC = () => {
                   <option value="French">French (Français)</option>
                   <option value="German">German (Deutsch)</option>
                   <option value="Japanese">Japanese (日本語)</option>
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[9px] text-slate-500 font-bold uppercase">LLM Model</label>
+                <select
+                  value={selectedModel}
+                  onChange={(e) => setSelectedModel(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-850 rounded px-2.5 py-1.5 text-xs text-slate-350 focus:outline-none focus:border-indigo-500 cursor-pointer font-mono"
+                >
+                  {status?.models && status.models.length > 0 ? (
+                    status.models.map((m) => (
+                      <option key={m} value={m}>
+                        {m}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="llama3">llama3</option>
+                  )}
                 </select>
               </div>
 
@@ -242,8 +268,8 @@ export const AutoTranslate: React.FC = () => {
 };
 
 // Quick helper icon reload
-const RefreshCw: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <svg className={`animate-spin w-4 h-4 ${className}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+const RefreshCw: React.FC<{ className?: string; loading?: boolean }> = ({ className = '', loading = false }) => (
+  <svg className={`${loading ? 'animate-spin' : ''} w-4 h-4 ${className}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89M9 11l3 3L22 4" />
   </svg>
 );

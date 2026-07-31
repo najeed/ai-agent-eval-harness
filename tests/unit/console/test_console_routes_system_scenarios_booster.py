@@ -416,6 +416,9 @@ def test_system_route_ollama_status_all_paths(client):
     class FakeResponse:
         status = 200
 
+        def read(self):
+            return b'{"models": [{"name": "llama3:latest"}, {"name": "mistral"}]}'
+
         def __enter__(self):
             return self
 
@@ -427,12 +430,14 @@ def test_system_route_ollama_status_all_paths(client):
     assert res.status_code == 200
     data = res.get_json()
     assert data["available"] is True
+    assert data["models"] == ["llama3:latest", "mistral"]
 
     # 2. urlopen raises (server unreachable)
     with patch("urllib.request.urlopen", side_effect=OSError("connection refused")):
         res = client.get("/api/system/ollama-status")
     assert res.status_code == 200
     assert res.get_json()["available"] is False
+    assert res.get_json()["models"] == []
 
     # 3. Endpoint that doesn't start with http/https
     from eval_runner import config
@@ -441,6 +446,7 @@ def test_system_route_ollama_status_all_paths(client):
         res = client.get("/api/system/ollama-status")
     assert res.status_code == 200
     assert res.get_json()["available"] is False
+    assert res.get_json()["models"] == []
 
 
 def test_system_route_read_doc_fallback_not_found(client, console_jail):

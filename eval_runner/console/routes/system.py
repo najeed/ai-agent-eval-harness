@@ -388,8 +388,8 @@ def ping():
 def ollama_status():
     """
     Health check for the Ollama LLM runtime.
-    Returns {available: bool, endpoint: str} - used by the Auto-Translate screen
-    to gate the upload form on Ollama availability before accepting user input.
+    Returns {available: bool, endpoint: str, models: list} - used by the Auto-Translate
+    screen to gate the upload form and show available local models.
     """
     import urllib.request
 
@@ -397,14 +397,25 @@ def ollama_status():
         "OLLAMA_BASE_URL", "http://localhost:11434"
     )
 
+    available = False
+    models = []
+
     try:
-        if not (endpoint.startswith("http://") or endpoint.startswith("https://")):
-            available = False
-        else:
+        if endpoint.startswith("http://") or endpoint.startswith("https://"):
             req = urllib.request.Request(f"{endpoint}/api/tags", method="GET")
             with urllib.request.urlopen(req, timeout=2) as resp:  # nosec B310
-                available = resp.status == 200
-    except Exception:
-        available = False
+                if resp.status == 200:
+                    available = True
+                    import json
 
-    return jsonify({"available": available, "endpoint": endpoint})
+                    try:
+                        resp_data = json.loads(resp.read().decode("utf-8"))
+                        models = [
+                            m.get("name") for m in resp_data.get("models", []) if m.get("name")
+                        ]
+                    except Exception:
+                        pass
+    except Exception:
+        pass
+
+    return jsonify({"available": available, "endpoint": endpoint, "models": models})
