@@ -46,7 +46,6 @@ graph TD
 
 | Attribute | Specification |
 | :--- | :--- |
-| **Architect** | [Najeed Khan](https://github.com/najeed) |
 | **License** | Apache License 2.0 |
 | **Status** | 🟢 Production-Ready (NIST AI-100-1 Aligned) |
 | **Version** | v1.7.0 (July 2026 Release) |

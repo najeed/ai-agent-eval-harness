@@ -413,9 +413,9 @@ def ollama_status():
                         models = [
                             m.get("name") for m in resp_data.get("models", []) if m.get("name")
                         ]
-                    except Exception:
-                        pass
-    except Exception:
-        pass
+                    except Exception as e:
+                        logger.debug(f"Ollama models parse error: {e}")
+    except Exception as e:
+        logger.debug(f"Ollama connection error: {e}")
 
     return jsonify({"available": available, "endpoint": endpoint, "models": models})
