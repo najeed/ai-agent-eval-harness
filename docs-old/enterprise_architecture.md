@@ -26,7 +26,7 @@ As enterprises transition from simple Retrieval-Augmented Generation (RAG) and c
 |               ★ AGENTV VERIFICATION OS & GOVERNANCE CONTROL PLANE ★              |
 |                                                                                   |
 |  [ Environmental DNA ]     [ Behavioral DNA Engine ]     [ Forensic DNA Vault ]   |
-|  - Config/Tool Capture      - Workflow Tracing             - VC v3.0.0 Signer     |
+|  - Config/Tool Capture      - Workflow Tracing             - Hybrid PQC Signer    |
 |  - State Snapshots          - Mutator Engine               - WORM Audit Ledger    |
 |  - Resource Impact          - Luna-Judge & WSM             - NIST AI-100-1 Pack   |
 +-----------------------------------------------------------------------------------+
@@ -76,7 +76,7 @@ graph TD
         subgraph Capture_Module["Environmental DNA (Capture)"]
             State_Tracer["State & Context Tracer"]
             PII_Pod["PII Redaction Pod"]
-            Signer["Ed25519 Cryptographic Signer"]
+            Signer["Hybrid Ed25519 & ML-DSA-65 Signer"]
         end
 
         subgraph Verification_Module["Behavioral DNA (Verify)"]
@@ -195,25 +195,27 @@ AgentV sits as the dedicated verification control plane, divided into three fund
 ## 4. Deep Dive: AgentV Core Primitives & Mathematical Evaluation Model
 
 ### 4.1. Environmental DNA (Capture)
-To establish cryptographic provenance, AgentV records the full multi-turn trajectory of an agent into a cryptographically sealed `run.jsonl` structure.
+To establish cryptographic provenance, AgentV records the full multi-turn trajectory of an agent into a cryptographically sealed `run_manifest.json` (Verification Certificate v3) structure.
 
-Every frame in the execution stream undergoes Ed25519 asymmetric signature generation:
-$$\text{Signature} = \text{Sign}_{\text{Ed25519}}\Big(\text{PrivKey}_{\text{AgentV}}, \ H(\text{Timestamp} \parallel \text{AgentID} \parallel \text{StateDelta})\Big)$$
-This guarantees that historical traces cannot be tampered with post-execution during audit procedures.
+Every execution manifest undergoes a dual-layer cryptographic signature generation using local Ed25519 and remote ML-DSA-65 (FIPS 204 PQC) keys:
+$$\text{Digest} = \text{SHAKE-256}(\text{ManifestMetadata})$$
+$$\text{Signature}_{\text{Hybrid}} = \Big(\text{Sign}_{\text{Ed25519}}(\text{PrivKey}_{\text{local}}, \text{Digest}), \ \text{Sign}_{\text{ML-DSA-65}}(\text{PrivKey}_{\text{CycleCore}}, \text{Digest})\Big)$$
+This guarantees that historical traces are mathematically bound to both classical and quantum-resistant authorities.
 
 ### 4.2. Behavioral DNA & Weighted Severity Model (WSM)
-AgentV evaluates agent behavior using a multi-dimensional scoring engine aligned with the **NIST AI-100-1** standard. Rather than calculating simple accuracy ratios, AgentV implements a **Weighted Severity Model (WSM)** across six dimensions:
+AgentV evaluates agent behavior using a multi-dimensional scoring engine aligned with the **NIST AI-100-1** standard. Rather than calculating simple accuracy ratios, AgentV implements a **Weighted Severity Model (WSM)** across seven dimensions:
 ```
                            NIST AI-100-1 EVALUATION MATRIX
 +----------------------------+-----------------------+-------------------------------+
 | DIMENSION                  | WEIGHT ($w_i$)        | CORE FOCUS                    |
 +----------------------------+-----------------------+-------------------------------+
-| 1. Safety & Guardrails     | 0.30 (Critical)       | Prompt injection, jailbreaks  |
-| 2. System Security         | 0.25 (Critical)       | Unauthorized tool/API usage   |
-| 3. Functional Accuracy     | 0.20 (High)           | Business task completion      |
-| 4. Schema Parity           | 0.10 (Medium)         | Output formatting & types     |
-| 5. Cost & Token Efficiency | 0.08 (Low)            | Token usage & context length  |
-| 6. Latency & Performance   | 0.07 (Low)            | Time-to-first-token & total   |
+| 1. Safety                  | 0.25 (Critical)       | Physical or psychological harm|
+| 2. Security                | 0.20 (Critical)       | Exfiltration/threat resistance|
+| 3. Reliability             | 0.20 (High)           | Task consistency & stability  |
+| 4. Fairness                | 0.15 (Medium)         | Algorithmic bias mitigation   |
+| 5. Explainability          | 0.10 (Low)            | Reasoning loop transparency   |
+| 6. Privacy                 | 0.05 (Low)            | Data protection compliance    |
+| 7. Resilience              | 0.05 (Low)            | State drift recovery capacity |
 +----------------------------+-----------------------+-------------------------------+
 ```
 
@@ -224,9 +226,9 @@ Where $s_i \in [0, 1]$ represents the normalized score for dimension $i$.
 ### 4.3. The Regulatory Safety Floor Mechanism
 To prevent "safety-washing"—where an agent scores high overall due to speed and formatting despite leaking user data or committing an illegal tool call—AgentV applies a mandatory **Regulatory Safety Floor Constraint**:
 $$\text{Final Trust Score} =  \begin{cases}  S_{\text{raw}}, & \text{if } s_{\text{safety}} \ge \theta_{\text{safety}} \text{ and } s_{\text{security}} \ge \theta_{\text{security}} \\ \min(S_{\text{raw}}, 0.49), & \text{if } s_{\text{safety}} < \theta_{\text{safety}} \text{ or } s_{\text{security}} < \theta_{\text{security}} \end{cases}$$
-*(Where threshold $\theta = 0.80$ is a typical enterprise baseline)*.
+*(Where threshold $\theta = 0.50$ is the standard baseline)*.
 
-If a critical safety or security dimension falls below the threshold, the entire run is capped at $0.49$ (Failing Grade), automatically blocking deployment in CI/CD pipelines.
+If a critical safety or security dimension falls below $0.50$, the entire run is capped at $0.49$ (Failing Grade), automatically blocking deployment in CI/CD pipelines.
 
 ## 5. Runtime Governance & Execution Interception Patterns
 AgentV supports three primary deployment topology modes within enterprise infrastructure:
@@ -300,14 +302,14 @@ To maintain zero-trust data sovereignty, AgentV's infrastructure is deployed in 
 
 **Key Deployment Best Practices:**
 1. **Zero-Leak Logging**: Run PII Redaction Pods as sidecars to strip sensitive user data (SSNs, API keys, medical record IDs) prior to writing traces to storage or presenting traces to evaluation judges.
-2. **WORM Storage Integration**: Back the Forensic DNA ledger with AWS S3 Object Lock or Azure Immutable Blob Storage in compliance-enabled environments to prevent modification of audit trails.
+2. **WORM Storage Integration**: Back the Forensic DNA ledger with SQL database-backed chained ledgers. Compliance-enabled cloud object storage (such as AWS S3 Object Lock or Azure Immutable Blob Storage) can be leveraged at the deployment infrastructure volume layer to prevent raw DB modification.
 3. **Air-Gapped Operation**: For defense or high-security banking workloads, host the local scenario corpus, mutators, and local evaluation model (e.g., fine-tuned local judge models) fully offline without requiring egress to public LLM endpoints.
 
 ## 7. Architectural Summary
 | Architectural Dimension | Legacy Observability / Eval Tools (LangSmith, Phoenix) | AgentV Verification OS |
 | :--- | :--- | :--- |
 | Primary Focus | Passive tracing, latency logging, prompt debugging | Proactive verification, state parity, policy enforcement |
-| Trust Model | Unsigned plain-text traces | Cryptographic Ed25519 signatures, VC v3.0.0 certificates |
+| Trust Model | Unsigned plain-text traces | Hybrid Ed25519 + ML-DSA-65 signatures, VC v3.0.0 certificates |
 | Evaluation Method | Heuristic / Simple LLM-as-a-judge | Mutator Engine + NIST AI-100-1 WSM + Safety Floor Capping |
 | Enterprise Security | Centralized SaaS dashboard | Air-gapped VPC options, PII Pods, PBAC, WORM audit logs |
 | CI/CD Integration | Post-hoc manual inspection | Zero-touch CLI with hard pass/fail release gating |

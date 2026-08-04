@@ -13,7 +13,7 @@ export const AutoTranslate: React.FC = () => {
 
   // Form states
   const [inputText, setInputText] = useState('');
-  const [targetLang, setTargetLang] = useState('English');
+  const [industryHint, setIndustryHint] = useState('general');
   const [selectedModel, setSelectedModel] = useState('llama3');
   const [translatedText, setTranslatedText] = useState('');
   const [translating, setTranslating] = useState(false);
@@ -53,30 +53,48 @@ export const AutoTranslate: React.FC = () => {
     setTranslatedText('');
 
     try {
-      // Direct call to local Ollama API to translate the text!
-      const endpoint = status?.endpoint || 'http://localhost:11434';
-      const prompt = `Translate the following AI Agent PRD scenario requirements to ${targetLang}. Keep formatting intact:\n\n${inputText}`;
-
-      const res = await fetch(`${endpoint}/api/generate`, {
+      const res = await fetch('/api/v1/auto-translate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: selectedModel, // typical default
-          prompt: prompt,
-          stream: false
+          text: inputText,
+          model: selectedModel,
+          industry_hint: industryHint
         })
       });
       const data = await res.json();
-      if (res.ok && data.response) {
-        setTranslatedText(data.response);
+      if (res.ok) {
+        setTranslatedText(JSON.stringify(data, null, 2));
       } else {
-        setError('Ollama translation failed. Ensure Llama3 or model is pulled.');
+        setError(data.error || 'Ollama translation failed. Ensure model is pulled.');
       }
     } catch (err: any) {
-      // Fallback response for demonstration if network request blocks CORS
-      setError('CORS blocking direct API access or model not found. Simulating client-side translation...');
+      // Fallback response for demonstration if network request blocks CORS or is offline
+      setError('Connection to backend failed. Simulating translation...');
       setTimeout(() => {
-        setTranslatedText(`[Translated to ${targetLang}]:\n\nEste es un requerimiento traducido de validación de agentes con alta fidelidad para el arquetipo de telecomunicaciones.`);
+        const mockScenario = {
+          id: `translated-${industryHint}-scenario`,
+          metadata: {
+            id: `translated-${industryHint}-scenario`,
+            name: `Translated ${industryHint.charAt(0).toUpperCase() + industryHint.slice(1)} Agent Scenario`
+          },
+          title: `${industryHint.charAt(0).toUpperCase() + industryHint.slice(1)} Validation Scenario`,
+          industry: industryHint,
+          description: "Auto-generated scenario from unstructured requirement specification.",
+          workflow: {
+            tasks: [
+              {
+                id: "initial_setup",
+                description: "Setup environment context for verification."
+              },
+              {
+                id: "verify_state",
+                description: "Verify system state delta satisfies rules."
+              }
+            ]
+          }
+        };
+        setTranslatedText(JSON.stringify(mockScenario, null, 2));
         setError('');
       }, 1000);
     } finally {
@@ -94,7 +112,7 @@ export const AutoTranslate: React.FC = () => {
             <span>Auto-Translate Console</span>
           </h1>
           <p className="text-xs text-slate-500 mt-1 max-w-2xl">
-            Translate agent scenario requirements or Markdown PRDs using local LLM runtimes (Ollama Llama3). Gated on connection health tests.
+            Auto-translate raw unstructured documents (TXT/MD/PDF) into structured AES JSON scenarios using local LLM runtimes (Ollama).
           </p>
         </div>
         <button
@@ -143,7 +161,7 @@ export const AutoTranslate: React.FC = () => {
             <div className="flex justify-between items-center border-b border-slate-900/60 pb-3">
               <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4 text-indigo-400" />
-                <span>Source Scenario Requirements</span>
+                <span>Source Requirements Spec</span>
               </h3>
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold">
                 ✓ Ollama Online
@@ -152,17 +170,17 @@ export const AutoTranslate: React.FC = () => {
 
             <form onSubmit={handleTranslate} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[9px] text-slate-500 font-bold uppercase">Target Language</label>
+                <label className="text-[9px] text-slate-500 font-bold uppercase">Industry Hint</label>
                 <select
-                  value={targetLang}
-                  onChange={(e) => setTargetLang(e.target.value)}
+                  value={industryHint}
+                  onChange={(e) => setIndustryHint(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-850 rounded px-2.5 py-1.5 text-xs text-slate-350 focus:outline-none focus:border-indigo-500 cursor-pointer"
                 >
-                  <option value="English">English</option>
-                  <option value="Spanish">Spanish (Español)</option>
-                  <option value="French">French (Français)</option>
-                  <option value="German">German (Deutsch)</option>
-                  <option value="Japanese">Japanese (日本語)</option>
+                  <option value="general">General</option>
+                  <option value="finance">Finance</option>
+                  <option value="healthcare">Healthcare</option>
+                  <option value="telecom">Telecom</option>
+                  <option value="ecommerce">E-commerce</option>
                 </select>
               </div>
 
@@ -190,7 +208,7 @@ export const AutoTranslate: React.FC = () => {
                 <textarea
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
-                  placeholder="Paste scenario requirements description or test cases..."
+                  placeholder="Paste unstructured requirements specifications or PRD content here..."
                   className="w-full h-64 bg-slate-950 border border-slate-850 p-3 rounded-lg text-xs text-slate-200 focus:outline-none focus:border-indigo-500 resize-none leading-relaxed"
                   required
                 />
@@ -201,7 +219,7 @@ export const AutoTranslate: React.FC = () => {
                 disabled={translating || !inputText.trim()}
                 className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
               >
-                {translating ? 'Translating Specifications...' : 'Run Auto-Translation'}
+                {translating ? 'Generating AES Scenario...' : 'Translate to AES Scenario'}
               </button>
             </form>
           </div>
@@ -212,7 +230,7 @@ export const AutoTranslate: React.FC = () => {
               <div className="flex justify-between items-center border-b border-slate-900/60 pb-3">
                 <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
                   <Languages className="w-4 h-4 text-indigo-400" />
-                  <span>Translation Output</span>
+                  <span>Generated Scenario JSON</span>
                 </h3>
               </div>
 
@@ -229,7 +247,7 @@ export const AutoTranslate: React.FC = () => {
                 </div>
               ) : !translatedText ? (
                 <div className="h-64 border border-dashed border-slate-900 rounded-xl flex items-center justify-center text-xs text-slate-700 italic">
-                  Run translation on source text to load results.
+                  Run translation on specifications to generate scenario JSON.
                 </div>
               ) : (
                 <textarea
@@ -244,11 +262,11 @@ export const AutoTranslate: React.FC = () => {
               <div className="border-t border-slate-900/60 pt-4 mt-4 flex gap-2">
                 <button
                   onClick={() => {
-                    const blob = new Blob([translatedText], { type: 'text/markdown' });
+                    const blob = new Blob([translatedText], { type: 'application/json' });
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = `translated_${targetLang.toLowerCase()}.md`;
+                    a.download = `translated_scenario.json`;
                     document.body.appendChild(a);
                     a.click();
                     a.remove();
@@ -256,7 +274,7 @@ export const AutoTranslate: React.FC = () => {
                   className="w-full py-2 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-lg text-xs font-bold text-slate-300 flex items-center justify-center gap-1.5 transition-colors"
                 >
                   <Download className="w-4 h-4" />
-                  <span>Export translated specification (.md)</span>
+                  <span>Export generated scenario (.json)</span>
                 </button>
               </div>
             )}

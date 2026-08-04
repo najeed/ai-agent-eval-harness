@@ -33,8 +33,9 @@ from eval_runner.utils import rmtree_resilient
 
 
 @pytest.fixture(scope="module")
-def runs_jail():
-    tmp_root = Path(tempfile.gettempdir()) / "aes_runs_route_jail"
+def runs_jail(request):
+    worker_id = getattr(request.config, "workerinput", {}).get("workerid", "master")
+    tmp_root = Path(tempfile.gettempdir()) / f"aes_runs_route_jail_{worker_id}"
     root = tmp_root / "root"
     runs = root / "results"
     reports = root / "reports"

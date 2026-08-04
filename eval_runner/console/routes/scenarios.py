@@ -222,3 +222,36 @@ def spec_to_eval():
         return jsonify({"status": "success", "scenario": scenario})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@scenario_bp.route("/v1/auto-translate", methods=["POST"])
+@require_permission(Permission.SCENARIOS_WRITE)
+def auto_translate_spec():
+    """
+    Exposes auto-translation capability via the backend.
+    Calls auto_translate.translate_to_scenario.
+    Avoids client-side CORS issues and keeps the prompt template on the server.
+    """
+    import os
+
+    from eval_runner import config
+    from eval_runner.auto_translate import translate_to_scenario
+
+    data = request.get_json() or {}
+    text = data.get("text", "")
+    model = data.get("model", "llama3")
+
+    if not text:
+        return jsonify({"error": "Missing required field: text"}), 400
+
+    endpoint = getattr(config, "OLLAMA_BASE_URL", None) or os.environ.get(
+        "OLLAMA_BASE_URL", "http://localhost:11434"
+    )
+    api_url = f"{endpoint}/api/generate"
+
+    try:
+        scenario = asyncio.run(translate_to_scenario(text, model=model, api_url=api_url))
+        return jsonify(scenario)
+    except Exception as e:
+        logger.error(f"Auto-translation failed: {e}", exc_info=True)
+        return jsonify({"error": str(e), "message": "Failed to auto-translate specification."}), 500

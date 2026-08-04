@@ -24,9 +24,11 @@ def test_dos_attempt_cap():
 
 
 @pytest.mark.asyncio
-async def test_dos_attempt_cap_clamp():
+async def test_dos_attempt_cap_clamp(monkeypatch, tmp_path):
     """Requesting more than MAX_ENGINE_ATTEMPTS should be clamped."""
-    from eval_runner import engine
+    from eval_runner import config, engine
+
+    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path)
 
     scenario = {
         "id": "dos-test",
@@ -47,9 +49,12 @@ async def test_dos_attempt_cap_clamp():
 # ──────────────────────────────────────────────────────────────────────────────
 
 
-def test_fork_bomb_depth():
+def test_fork_bomb_depth(monkeypatch, tmp_path):
     """SessionManager.fork() must raise at MAX_FORK_DEPTH."""
+    from eval_runner import config
     from eval_runner.session import MAX_FORK_DEPTH, SessionManager
+
+    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path)
 
     # Create a session already at max depth
     scenario = {
@@ -63,10 +68,13 @@ def test_fork_bomb_depth():
 
 
 @pytest.mark.asyncio
-async def test_fork_bomb_breadth(monkeypatch):
+async def test_fork_bomb_breadth(monkeypatch, tmp_path):
     """Branch action with too many branches should be rejected."""
+    from eval_runner import config
     from eval_runner.engine import AgentAdapterRegistry
     from eval_runner.session import MAX_FORK_BREADTH, SessionManager
+
+    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path)
 
     scenario = {
         "id": "fork-breadth",

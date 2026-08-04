@@ -12,8 +12,9 @@ from eval_runner.utils import rmtree_resilient
 
 
 @pytest.fixture(scope="module")
-def console_jail():
-    tmp_root = Path(tempfile.gettempdir()) / "aes_console_sys_jail_extra"
+def console_jail(request):
+    worker_id = getattr(request.config, "workerinput", {}).get("workerid", "master")
+    tmp_root = Path(tempfile.gettempdir()) / f"aes_console_sys_jail_extra_{worker_id}"
     root = tmp_root / "root"
     runs = root / "runs"
     docs = root / "docs-old"
@@ -33,9 +34,12 @@ def console_jail():
 
 @pytest.fixture
 def client(console_jail, monkeypatch):
+    from eval_runner.console.routes.scenarios import scenario_bp
+
     app = Flask(__name__)
     app.secret_key = "test-secret"
     app.register_blueprint(system_bp, url_prefix="/api")
+    app.register_blueprint(scenario_bp, url_prefix="/api")
 
     monkeypatch.setattr(config, "PROJECT_ROOT", console_jail["root"])
     monkeypatch.setattr(config, "RUN_LOG_DIR", console_jail["runs"])
@@ -454,3 +458,35 @@ def test_system_route_read_doc_fallback_not_found(client, console_jail):
     # Request a filename without extension where no .md file exists either
     res = client.get("/api/docs/nonexistent_guide_xyz")
     assert res.status_code == 404
+
+
+def test_system_route_auto_translate_success(client):
+    """Test POST /api/v1/auto-translate succeeds."""
+    mock_scenario = {"id": "scenario-1", "title": "Mock Title"}
+
+    async def mock_translate(*args, **kwargs):
+        return mock_scenario
+
+    with patch("eval_runner.auto_translate.translate_to_scenario", side_effect=mock_translate):
+        res = client.post("/api/v1/auto-translate", json={"text": "raw specs", "model": "m1"})
+        assert res.status_code == 200
+        assert res.get_json() == mock_scenario
+
+
+def test_system_route_auto_translate_missing_text(client):
+    """Test POST /api/v1/auto-translate fails with 400 when text is missing."""
+    res = client.post("/api/v1/auto-translate", json={"model": "m1"})
+    assert res.status_code == 400
+    assert "Missing required field: text" in res.get_json()["error"]
+
+
+def test_system_route_auto_translate_failure(client):
+    """Test POST /api/v1/auto-translate fails with 500 when translate_to_scenario raises."""
+
+    async def mock_translate_fail(*args, **kwargs):
+        raise RuntimeError("Ollama crashed")
+
+    with patch("eval_runner.auto_translate.translate_to_scenario", side_effect=mock_translate_fail):
+        res = client.post("/api/v1/auto-translate", json={"text": "raw specs"})
+        assert res.status_code == 500
+        assert "Ollama crashed" in res.get_json()["error"]
