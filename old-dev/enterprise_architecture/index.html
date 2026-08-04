@@ -4054,7 +4054,7 @@
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>|               ★ AGENTV VERIFICATION OS &amp; GOVERNANCE CONTROL PLANE ★              |
 <a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>|                                                                                   |
 <a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>|  [ Environmental DNA ]     [ Behavioral DNA Engine ]     [ Forensic DNA Vault ]   |
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>|  - Config/Tool Capture      - Workflow Tracing             - VC v3.0.0 Signer     |
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>|  - Config/Tool Capture      - Workflow Tracing             - Hybrid PQC Signer    |
 <a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>|  - State Snapshots          - Mutator Engine               - WORM Audit Ledger    |
 <a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>|  - Resource Impact          - Luna-Judge &amp; WSM             - NIST AI-100-1 Pack   |
 <a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>+-----------------------------------------------------------------------------------+
@@ -4099,7 +4099,7 @@
 <a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>        subgraph Capture_Module[&quot;Environmental DNA (Capture)&quot;]
 <a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>            State_Tracer[&quot;State &amp; Context Tracer&quot;]
 <a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>            PII_Pod[&quot;PII Redaction Pod&quot;]
-<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>            Signer[&quot;Ed25519 Cryptographic Signer&quot;]
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>            Signer[&quot;Hybrid Ed25519 &amp; ML-DSA-65 Signer&quot;]
 <a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>        end
 <a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>
 <a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>        subgraph Verification_Module[&quot;Behavioral DNA (Verify)&quot;]
@@ -4214,23 +4214,25 @@
 </ul>
 <h2 id="4-deep-dive-agentv-core-primitives-mathematical-evaluation-model">4. Deep Dive: AgentV Core Primitives &amp; Mathematical Evaluation Model<a class="headerlink" href="#4-deep-dive-agentv-core-primitives-mathematical-evaluation-model" title="Permanent link">&para;</a></h2>
 <h3 id="41-environmental-dna-capture">4.1. Environmental DNA (Capture)<a class="headerlink" href="#41-environmental-dna-capture" title="Permanent link">&para;</a></h3>
-<p>To establish cryptographic provenance, AgentV records the full multi-turn trajectory of an agent into a cryptographically sealed <code>run.jsonl</code> structure.</p>
-<p>Every frame in the execution stream undergoes Ed25519 asymmetric signature generation:
-$$\text{Signature} = \text{Sign}<em _text_AgentV="\text{AgentV">{\text{Ed25519}}\Big(\text{PrivKey}</em>)\Big)$$
-This guarantees that historical traces cannot be tampered with post-execution during audit procedures.}}, \ H(\text{Timestamp} \parallel \text{AgentID} \parallel \text{StateDelta</p>
+<p>To establish cryptographic provenance, AgentV records the full multi-turn trajectory of an agent into a cryptographically sealed <code>run_manifest.json</code> (Verification Certificate v3) structure.</p>
+<p>Every execution manifest undergoes a dual-layer cryptographic signature generation using local Ed25519 and remote ML-DSA-65 (FIPS 204 PQC) keys:
+$$\text{Digest} = \text{SHAKE-256}(\text{ManifestMetadata})$$
+$$\text{Signature}<em _text_Ed25519="\text{Ed25519">{\text{Hybrid}} = \Big(\text{Sign}</em>}}(\text{PrivKey<em _text_ML-DSA-65="\text{ML-DSA-65">{\text{local}}, \text{Digest}), \ \text{Sign}</em>)\Big)$$
+This guarantees that historical traces are mathematically bound to both classical and quantum-resistant authorities.}}(\text{PrivKey}_{\text{CycleCore}}, \text{Digest</p>
 <h3 id="42-behavioral-dna-weighted-severity-model-wsm">4.2. Behavioral DNA &amp; Weighted Severity Model (WSM)<a class="headerlink" href="#42-behavioral-dna-weighted-severity-model-wsm" title="Permanent link">&para;</a></h3>
-<p>AgentV evaluates agent behavior using a multi-dimensional scoring engine aligned with the <strong>NIST AI-100-1</strong> standard. Rather than calculating simple accuracy ratios, AgentV implements a <strong>Weighted Severity Model (WSM)</strong> across six dimensions:
+<p>AgentV evaluates agent behavior using a multi-dimensional scoring engine aligned with the <strong>NIST AI-100-1</strong> standard. Rather than calculating simple accuracy ratios, AgentV implements a <strong>Weighted Severity Model (WSM)</strong> across seven dimensions:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>                           NIST AI-100-1 EVALUATION MATRIX
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>+----------------------------+-----------------------+-------------------------------+
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>| DIMENSION                  | WEIGHT ($w_i$)        | CORE FOCUS                    |
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>+----------------------------+-----------------------+-------------------------------+
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>| 1. Safety &amp; Guardrails     | 0.30 (Critical)       | Prompt injection, jailbreaks  |
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>| 2. System Security         | 0.25 (Critical)       | Unauthorized tool/API usage   |
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>| 3. Functional Accuracy     | 0.20 (High)           | Business task completion      |
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>| 4. Schema Parity           | 0.10 (Medium)         | Output formatting &amp; types     |
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>| 5. Cost &amp; Token Efficiency | 0.08 (Low)            | Token usage &amp; context length  |
-<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>| 6. Latency &amp; Performance   | 0.07 (Low)            | Time-to-first-token &amp; total   |
-<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>+----------------------------+-----------------------+-------------------------------+
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>| 1. Safety                  | 0.25 (Critical)       | Physical or psychological harm|
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>| 2. Security                | 0.20 (Critical)       | Exfiltration/threat resistance|
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>| 3. Reliability             | 0.20 (High)           | Task consistency &amp; stability  |
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>| 4. Fairness                | 0.15 (Medium)         | Algorithmic bias mitigation   |
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>| 5. Explainability          | 0.10 (Low)            | Reasoning loop transparency   |
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>| 6. Privacy                 | 0.05 (Low)            | Data protection compliance    |
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>| 7. Resilience              | 0.05 (Low)            | State drift recovery capacity |
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>+----------------------------+-----------------------+-------------------------------+
 </code></pre></div></p>
 <p>The preliminary trust score $S_{\text{raw}}$ is computed as:
 $$S_{\text{raw}} = \sum_{i=1}^{N} w_i \cdot s_i \quad \text{where} \quad \sum_{i=1}^{N} w_i = 1.0$$
@@ -4238,8 +4240,8 @@ Where $s_i \in [0, 1]$ represents the normalized score for dimension $i$.</p>
 <h3 id="43-the-regulatory-safety-floor-mechanism">4.3. The Regulatory Safety Floor Mechanism<a class="headerlink" href="#43-the-regulatory-safety-floor-mechanism" title="Permanent link">&para;</a></h3>
 <p>To prevent "safety-washing"—where an agent scores high overall due to speed and formatting despite leaking user data or committing an illegal tool call—AgentV applies a mandatory <strong>Regulatory Safety Floor Constraint</strong>:
 $$\text{Final Trust Score} =  \begin{cases}  S_{\text{raw}}, &amp; \text{if } s_{\text{safety}} \ge \theta_{\text{safety}} \text{ and } s_{\text{security}} \ge \theta_{\text{security}} \ \min(S_{\text{raw}}, 0.49), &amp; \text{if } s_{\text{safety}} &lt; \theta_{\text{safety}} \text{ or } s_{\text{security}} &lt; \theta_{\text{security}} \end{cases}$$
-<em>(Where threshold $\theta = 0.80$ is a typical enterprise baseline)</em>.</p>
-<p>If a critical safety or security dimension falls below the threshold, the entire run is capped at $0.49$ (Failing Grade), automatically blocking deployment in CI/CD pipelines.</p>
+<em>(Where threshold $\theta = 0.50$ is the standard baseline)</em>.</p>
+<p>If a critical safety or security dimension falls below $0.50$, the entire run is capped at $0.49$ (Failing Grade), automatically blocking deployment in CI/CD pipelines.</p>
 <h2 id="5-runtime-governance-execution-interception-patterns">5. Runtime Governance &amp; Execution Interception Patterns<a class="headerlink" href="#5-runtime-governance-execution-interception-patterns" title="Permanent link">&para;</a></h2>
 <p>AgentV supports three primary deployment topology modes within enterprise infrastructure:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>+------------------------------------------------------------------------------------+
@@ -4306,7 +4308,7 @@ $$\text{Final Trust Score} =  \begin{cases}  S_{\text{raw}}, &amp; \text{if } s_
 </code></pre></div></p>
 <p><strong>Key Deployment Best Practices:</strong>
 1. <strong>Zero-Leak Logging</strong>: Run PII Redaction Pods as sidecars to strip sensitive user data (SSNs, API keys, medical record IDs) prior to writing traces to storage or presenting traces to evaluation judges.
-2. <strong>WORM Storage Integration</strong>: Back the Forensic DNA ledger with AWS S3 Object Lock or Azure Immutable Blob Storage in compliance-enabled environments to prevent modification of audit trails.
+2. <strong>WORM Storage Integration</strong>: Back the Forensic DNA ledger with SQL database-backed chained ledgers. Compliance-enabled cloud object storage (such as AWS S3 Object Lock or Azure Immutable Blob Storage) can be leveraged at the deployment infrastructure volume layer to prevent raw DB modification.
 3. <strong>Air-Gapped Operation</strong>: For defense or high-security banking workloads, host the local scenario corpus, mutators, and local evaluation model (e.g., fine-tuned local judge models) fully offline without requiring egress to public LLM endpoints.</p>
 <h2 id="7-architectural-summary">7. Architectural Summary<a class="headerlink" href="#7-architectural-summary" title="Permanent link">&para;</a></h2>
 <table>
@@ -4326,7 +4328,7 @@ $$\text{Final Trust Score} =  \begin{cases}  S_{\text{raw}}, &amp; \text{if } s_
 <tr>
 <td style="text-align: left;">Trust Model</td>
 <td style="text-align: left;">Unsigned plain-text traces</td>
-<td style="text-align: left;">Cryptographic Ed25519 signatures, VC v3.0.0 certificates</td>
+<td style="text-align: left;">Hybrid Ed25519 + ML-DSA-65 signatures, VC v3.0.0 certificates</td>
 </tr>
 <tr>
 <td style="text-align: left;">Evaluation Method</td>
