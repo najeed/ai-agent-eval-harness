@@ -78,6 +78,14 @@ def reset_plugins():
     except ImportError:
         pass
     yield
+    try:
+        manager.reset()
+        AgentAdapterRegistry.reset()
+        reset()
+        MetricRegistry.reset()
+        reset_universal_registry()
+    except Exception:
+        pass
 
 
 @pytest_asyncio.fixture(autouse=True)
