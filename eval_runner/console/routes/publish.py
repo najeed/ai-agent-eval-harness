@@ -277,8 +277,8 @@ def stop_publish_job(job_id: str):
             for child in children:
                 try:
                     child.kill()
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.debug(f"Failed to kill child process: {e}")
             parent.kill()
 
             # Wait for cleanup
@@ -289,8 +289,8 @@ def stop_publish_job(job_id: str):
             if proc:
                 try:
                     proc.kill()
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.debug(f"Failed to kill fallback process: {e}")
 
     job["status"] = "failed"
     job["error"] = "Job aborted by user request."
