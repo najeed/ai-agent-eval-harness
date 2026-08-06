@@ -27,48 +27,51 @@ export const RunsReports: React.FC = () => {
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
 
-  const fetchRuns = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/runs');
-      const data = await res.json();
-      const list: RunItem[] = data.runs || [];
-      
-      // Perform dynamic status resolving for the list
-      const resolvedList = await Promise.all(
-        list.map(async (run) => {
-          try {
-            const statusRes = await fetch(`/api/v1/runs/${run.run_id}`);
-            const statusData = await statusRes.json();
-            const status = statusData.status || 'COMPLETED';
-            const hasCert = !!statusData.has_certificate;
+  const eventSourceRef = React.useRef<EventSource | null>(null);
 
-            let finalStatus = status;
-            if (hasCert) {
-              finalStatus = 'CERTIFIED';
-            } else if (status === 'COMPLETED') {
-              if (run.run_id.toLowerCase().includes('fail') || run.run_id.toLowerCase().includes('error')) {
-                finalStatus = 'FAILED';
-              } else {
-                finalStatus = 'PASSED';
-              }
-            }
-            return { ...run, status: finalStatus };
-          } catch (e) {
-            return { ...run, status: 'UNKNOWN' };
-          }
-        })
-      );
-      setRuns(resolvedList);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
+  const fetchRuns = () => {
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
     }
+
+    setLoading(true);
+    setRuns([]);
+
+    const es = new EventSource('/api/v1/runs/stream-list');
+    eventSourceRef.current = es;
+
+    es.onmessage = (event) => {
+      try {
+        const chunk = JSON.parse(event.data);
+        if (chunk && chunk.length > 0) {
+          setRuns(prev => {
+            const existingIds = new Set(prev.map(r => r.run_id));
+            const filteredChunk = chunk.filter((r: any) => !existingIds.has(r.run_id));
+            return [...prev, ...filteredChunk];
+          });
+        }
+      } catch (e) {
+        console.error('Error parsing runs chunk:', e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    es.onerror = () => {
+      console.log('Incremental runs stream completed.');
+      es.close();
+      eventSourceRef.current = null;
+      setLoading(false);
+    };
   };
 
   useEffect(() => {
     fetchRuns();
+    return () => {
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+      }
+    };
   }, []);
 
   const handleSelectRun = async (run: RunItem) => {

@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.1] - 2026-08-06
+
+### Added
+*   **Thread-Safe Runs Cache Daemon**: Replaced synchronous disk scans with a thread-safe background runs caching manager (`RunsCache`) polling differentially every 1s and serving list/stream queries instantly from memory.
+*   **ZIP Bundle Integrity Verification**: Supported drag-and-drop ZIP bundle verification uploads matching internal files against their SHA3-256 hashes and verifying Ed25519 signatures.
+*   **Live Debugger React Flow Canvas Refinements**: Formatted timeline nodes into wrapped rows (max 4 per row) with automatic canvas fits, click-to-zoom timeline transitions, and direct "Isolate Root Cause" target actions.
+*   **Forensic Timeline Details**: Expanded log event cards to include precise sequence numbers, turn indices, a manual stream reconnect button, and a quick-action "Go to Root Cause Turn" AI drawer trigger.
+*   **Robust Runs Cache Pruning**: Configured runs cache to clean up deleted/pruned traces from memory, preventing missing files from cluttering console selectors.
+
+### Fixed
+*   **Conductor Absolute Imports**: Resolved publication suite python script execution crashes by forcing absolute imports and pre-loading PYTHONPATH in child processes.
+*   **Compliance Pack Publish 404 Gate**: Restructured publish handler to return 404 when publishing unknown compliance pack IDs.
+*   **Fuzzer Catalog ID Resolution**: Fixed programmatic fuzzer mutation crashes by supporting scenario ID catalog lookups.
+*   **Privacy Path Sanitization**: Masked absolute project path targets to relative markers in doctor diagnosis endpoints and job logs.
+*   **Pytest Cache Thread Bypass**: Prevented `RunsCache` from starting its background update loop thread under pytest, avoiding file lock contentions and cross-test cache pollution.
+
 ## [1.7.0] - 2026-07-31
 
 ### The Integrated Visual Console (Native GUI) and Compliance Engine Release

@@ -122,6 +122,11 @@ class ScenarioCatalog:
                         if not isinstance(data, dict):
                             continue
 
+                        # Exclude mock database files and database resources
+                        # (e.g. mock_sec_edgar.json)
+                        if p.name.startswith("mock_") or "mock_" in p.name:
+                            continue
+
                         meta = data.get("metadata", {})
                         if not isinstance(meta, dict):
                             meta = {}
@@ -145,6 +150,11 @@ class ScenarioCatalog:
                                 "title": str(meta.get("name") or data.get("title") or identifier),
                                 "industry": industry,
                                 "difficulty": int(meta.get("difficulty", 1)),
+                                "compliance_level": str(
+                                    meta.get("compliance_level")
+                                    or data.get("compliance_level")
+                                    or "Standard"
+                                ),
                                 "tags": list(meta.get("tags") or []),
                                 "path": path_str,
                                 "mtime": mtime,

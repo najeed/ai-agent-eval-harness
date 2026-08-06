@@ -38,7 +38,8 @@ def main():
     suite_dir = Path(__file__).parent.absolute()
     env = os.environ.copy()
     python_path = env.get("PYTHONPATH", "")
-    env["PYTHONPATH"] = f"{suite_dir}{os.pathsep}{python_path}"
+    project_root = suite_dir.parent.parent.absolute()
+    env["PYTHONPATH"] = f"{project_root}{os.pathsep}{suite_dir}{os.pathsep}{python_path}"
 
     # Identify agents to run
     agents_to_run = []

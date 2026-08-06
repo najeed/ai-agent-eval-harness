@@ -176,6 +176,23 @@ async def test_handle_verify_failures(tmp_path):
 async def test_handle_gate_failures(tmp_path):
     """Exercises gate failures (lines 384-385, 391, 398, 404, 407-408, 421-422,
     441-442, 447-449)."""
+    import pathlib
+
+    # Path.exists resolver helper to avoid StopIteration under xdist
+    orig_exists = pathlib.Path.exists
+
+    def make_exists_mock(sequence):
+        seq = list(sequence)
+
+        def _mock(self):
+            p_str = str(self)
+            if any(k in p_str for k in ("_vc.json", "run_manifest.json", "t.json", "run.jsonl")):
+                if seq:
+                    return seq.pop(0)
+            return orig_exists(self)
+
+        return _mock
+
     # Missing run_id
     assert await evaluation.handle_gate(MagicMock(run_id=None)) == 1
 
@@ -186,7 +203,7 @@ async def test_handle_gate_failures(tmp_path):
     # Sidecar exists (line 398)
     with (
         patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=True),
-        patch("pathlib.Path.exists", side_effect=[False, True, True, True]),
+        patch("pathlib.Path.exists", make_exists_mock([False, True, True, True])),
     ):  # vault NO, sidecar YES, safe YES, vc YES
         with patch("builtins.open", MagicMock()):
             with patch("json.load", return_value={"trace_file": "t.json"}):
@@ -199,7 +216,7 @@ async def test_handle_gate_failures(tmp_path):
     # We need vault_path.exists() to be True so vc_path is set.
     with (
         patch("eval_runner.handlers.evaluation._ensure_path_safe", side_effect=[True, False]),
-        patch("pathlib.Path.exists", side_effect=[True, True]),
+        patch("pathlib.Path.exists", make_exists_mock([True, True])),
     ):  # vault exists
         assert await evaluation.handle_gate(MagicMock(run_id="r")) == 1
 
@@ -207,14 +224,14 @@ async def test_handle_gate_failures(tmp_path):
     # We need vault_path.exists() to be True, then later vc_path.exists() to be False
     with (
         patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=True),
-        patch("pathlib.Path.exists", side_effect=[True, False]),
+        patch("pathlib.Path.exists", make_exists_mock([True, False])),
     ):  # vault exists, vc NOT exists
         assert await evaluation.handle_gate(MagicMock(run_id="r")) == 1
 
     # Trace missing (line 421)
     with (
         patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=True),
-        patch("pathlib.Path.exists", side_effect=[True, True, False]),
+        patch("pathlib.Path.exists", make_exists_mock([True, True, False])),
     ):  # vault YES, safe YES, trace NO
         with patch("builtins.open", MagicMock()):
             with patch("json.load", return_value={"trace_file": "t.json"}):

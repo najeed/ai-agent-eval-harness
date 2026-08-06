@@ -94,4 +94,4 @@ async def test_zero_trust_baseline_enforcement(clean_registry, monkeypatch):
 
     # Baseline expected: All frameworks/providers blocked
     assert "openai" not in registered
-    assert "autogen" not in registered
+    assert "ag2" not in registered

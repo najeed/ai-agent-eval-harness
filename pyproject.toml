@@ -1,6 +1,6 @@
 [project]
 name = "agentv"
-version = "1.7.0"
+version = "1.7.1"
 description = "The Enterprise-Grade Reliability Framework for AI Agents"
 readme = "README.md"
 authors = [
@@ -30,7 +30,7 @@ dependencies = [
     "cryptography==50.0.0",
     "opentelemetry-api==1.44.0",
     "opentelemetry-sdk==1.44.0",
-    "google-genai==2.16.0",
+    "google-genai==2.17.0",
     "pypdf==6.14.2",
     "python-docx==1.2.0",
     "psutil==7.2.2",
@@ -40,7 +40,7 @@ dependencies = [
     "python-dotenv==1.2.2",
     "Authlib==1.7.2",
     "langchain-openai==1.4.1",
-    "langsmith==0.10.15",
+    "langsmith==0.10.16",
     "lxml==6.1.1",
     "Pillow==12.3.0",
     "cyclecore-pq==0.3.0",
@@ -81,10 +81,10 @@ filterwarnings = [
     # google-genai: Python 3.14 _UnionGenericAlias deprecation
     "ignore:.*_UnionGenericAlias.*is deprecated.*:DeprecationWarning:google.*",
     "ignore:.*_UnionGenericAlias.*is deprecated.*:DeprecationWarning",
-    # autogen: jsonschema v4.18+ RefResolver deprecation
+    # ag2: jsonschema v4.18+ RefResolver deprecation
     "ignore:.*jsonschema.RefResolver is deprecated.*:DeprecationWarning:jsonschema.*",
     "ignore:.*jsonschema.RefResolver is deprecated.*:DeprecationWarning",
-    # autogen: jsonschema.__version__ access deprecation
+    # ag2: jsonschema.__version__ access deprecation
     "ignore:.*Accessing jsonschema.__version__ is deprecated.*:DeprecationWarning",
     # Pydantic V1 shim warnings from third-party adapters
     "ignore:.*Pydantic V1 functionality.*:UserWarning",

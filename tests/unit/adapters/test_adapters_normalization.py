@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from eval_runner.adapters.autogen import AutoGenAdapterPlugin
+from eval_runner.adapters.ag2 import AG2AdapterPlugin
 from eval_runner.adapters.claude import ClaudeAdapterPlugin
 from eval_runner.adapters.common import DualNormalizationHub
 from eval_runner.adapters.crewai import CrewAIAdapterPlugin
@@ -125,10 +125,10 @@ async def test_framework_adapters_return_action():
         if res["status"] == "success":
             assert res["action"] == "final_answer"
 
-    plugin = AutoGenAdapterPlugin()
+    plugin = AG2AdapterPlugin()
     with patch("aiohttp.ClientSession.post") as mock_post:
         mock_post.return_value = MockResponse(json_data={"output": "done"})
-        res = await plugin.execute_autogen_query({"message": "hi", "url": "http://autogen"})
+        res = await plugin.execute_ag2_query({"message": "hi", "url": "http://ag2"})
         assert "action" in res
         if res["status"] == "success":
             assert res["action"] == "final_answer"

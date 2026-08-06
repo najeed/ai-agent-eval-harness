@@ -490,3 +490,74 @@ def test_system_route_auto_translate_failure(client):
         res = client.post("/api/v1/auto-translate", json={"text": "raw specs"})
         assert res.status_code == 500
         assert "Ollama crashed" in res.get_json()["error"]
+
+
+def test_scenarios_evaluate_by_id(client, console_jail):
+    """Cover lines 108-109 in scenarios.py evaluate_scenario route."""
+    from eval_runner.catalog import ScenarioCatalog
+
+    cat = ScenarioCatalog.get_instance()
+    scen_dir = console_jail["root"] / "industries" / "generic" / "scenarios"
+    scen_dir.mkdir(parents=True, exist_ok=True)
+    scen_file = scen_dir / "scen_evaluate_id.json"
+    scen_file.write_text('{"id": "scen_evaluate_id", "title": "Scen Title"}', encoding="utf-8")
+
+    cat.scenarios = [
+        {"id": "scen_evaluate_id", "path": "industries/generic/scenarios/scen_evaluate_id.json"}
+    ]
+
+    with patch("eval_runner.loader.load_scenario") as mock_load:
+        mock_load.return_value = {"id": "scen_evaluate_id"}
+        with patch("threading.Thread.start"):  # Don't actually run thread
+            res = client.post("/api/v1/evaluate", json={"path": "scen_evaluate_id"})
+            assert res.status_code == 200
+            assert res.get_json()["status"] == "started"
+
+
+def test_scenarios_evaluate_async_eval_fails(client, console_jail):
+    """Cover lines 144-145: async evaluation failure thread logger error."""
+    from eval_runner.catalog import ScenarioCatalog
+
+    ScenarioCatalog.get_instance()
+    scen_dir = console_jail["root"] / "scenarios"
+    scen_dir.mkdir(parents=True, exist_ok=True)
+    scen_file = scen_dir / "scen_eval_fail.json"
+    scen_file.write_text('{"id": "scen_eval_fail"}', encoding="utf-8")
+
+    import time
+
+    # Mock engine.run_evaluation to raise exception
+    with patch("eval_runner.engine.run_evaluation", side_effect=ValueError("Async engine crash")):
+        with patch("eval_runner.loader.load_scenario", return_value={"id": "scen_eval_fail"}):
+            res = client.post("/api/v1/evaluate", json={"path": str(scen_file)})
+            assert res.status_code == 200
+            # Wait for thread to finish
+            time.sleep(0.5)
+
+
+def test_scenarios_mutate_by_id_success(client, console_jail):
+    """Cover mutate_scenario with scenario_id lookup (lines 182-187)."""
+    from eval_runner.catalog import ScenarioCatalog
+
+    cat = ScenarioCatalog.get_instance()
+    scen_dir = console_jail["root"] / "scenarios"
+    scen_dir.mkdir(parents=True, exist_ok=True)
+    scen_file = scen_dir / "scen_mutate_id.json"
+    scen_file.write_text('{"id": "scen_mutate_id", "title": "Original"}', encoding="utf-8")
+
+    cat.scenarios = [{"id": "scen_mutate_id", "path": "scenarios/scen_mutate_id.json"}]
+
+    with patch(
+        "eval_runner.mutator.mutate_scenario",
+        return_value={"id": "scen_mutate_id", "title": "Mutated"},
+    ):
+        res = client.post("/api/v1/mutate", json={"scenario_id": "scen_mutate_id", "type": "typo"})
+        assert res.status_code == 200
+        assert res.get_json()["mutated"]["title"] == "Mutated"
+
+
+def test_scenarios_mutate_by_id_not_found(client):
+    """Cover mutate_scenario scenario_id 404 (line 185)."""
+    res = client.post("/api/v1/mutate", json={"scenario_id": "nonexistent_mutate_id"})
+    assert res.status_code == 404
+    assert "not found" in res.get_json()["error"]

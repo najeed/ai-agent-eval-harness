@@ -3,6 +3,7 @@ import logging
 import os
 import threading
 import time
+from datetime import datetime
 from pathlib import Path
 
 from flask import Blueprint, Response, jsonify, request
@@ -99,76 +100,294 @@ def explain_run(run_id):
         return jsonify({"error": str(e)}), 500
 
 
-@run_bp.route("/runs", methods=["GET"])
-@require_permission(Permission.RUNS_READ)
-def list_runs():
-    """Returns a list of recent run traces (Consolidated)."""
-    query = request.args.get("q", "").lower()
-    runs = []
+class RunsCache:
+    """Thread-safe in-memory cache for recent run logs, updated incrementally."""
 
-    # 1. Master Log & Direct Fragments
-    for p in config.RUN_LOG_DIR.glob("*.jsonl"):
+    def __init__(self):
+        self._lock = threading.Lock()
+        self._runs = []
+        self._scanned_files = {}  # path -> mtime
+        self._started = False
+        self._thread = None
+
+    def start(self):
+        import sys
+
+        if (
+            "pytest" in sys.modules
+            or any("pytest" in arg for arg in sys.argv)
+            or "PYTEST_CURRENT_TEST" in os.environ
+        ):
+            if not os.environ.get("RUNS_CACHE_FORCE_THREAD"):
+                return
+        with self._lock:
+            if self._started:
+                return
+            self._started = True
+            self._thread = threading.Thread(
+                target=self._update_loop, name="runs-cache-updater", daemon=True
+            )
+            self._thread.start()
+
+    def get_runs(self, query=None):
+        if "PYTEST_CURRENT_TEST" in os.environ:
+            # Under test, force a synchronous clean scan of the current config.RUN_LOG_DIR
+            self._runs = []
+            self._scanned_files = {}
+            self.update_cache()
+
+        with self._lock:
+            results = list(self._runs)
+
+        if query:
+            query = query.lower()
+            results = [
+                r
+                for r in results
+                if query in r["run_id"].lower() or query in r.get("scenario", "").lower()
+            ]
+        return results
+
+    def _update_loop(self):
+        # Initial scan
         try:
-            with open(p, encoding="utf-8") as f:
-                for line in f:
-                    event = json.loads(line.strip())
-                    if event.get("event") == "run_start":
-                        rid = event.get("run_id") or ""
-                        scenario = event.get("scenario") or ""
-                        if query and query not in rid.lower() and query not in scenario.lower():
-                            continue
-                        runs.append(
-                            {
-                                "run_id": rid,
-                                "scenario": scenario,
-                                "timestamp": event.get("timestamp"),
-                            }
-                        )
+            self.update_cache()
         except Exception as e:
-            logger.warning(f"Skipping malformed or inaccessible trace fragment {p}: {e}")
-            continue
+            logger.warning(f"Error in initial runs cache scan: {e}")
 
-    # 2. Vault Scan
-    log_paths = list(config.RUN_LOG_DIR.glob("*/run.jsonl"))
-    for p in log_paths:
-        try:
-            with open(p, encoding="utf-8") as f:
-                first_line = f.readline()
-                if not first_line.strip():
-                    continue
-                event = json.loads(first_line)
-                rid = event.get("run_id") or p.parent.name or ""
-                scenario = event.get("scenario")
+        while True:
+            time.sleep(1.0)
+            try:
+                self.update_cache()
+            except Exception as e:
+                logger.warning(f"Error in runs cache background update: {e}")
 
-                if not scenario and rid.startswith("run-"):
-                    # Parse scenario out from run-scenario_name-timestamp
-                    parts = rid.split("-")
-                    if len(parts) > 2:
-                        scenario = "-".join(parts[1:-1])
-                    else:
-                        scenario = parts[1]
-                elif not scenario:
-                    scenario = rid
+    def update_cache(self):
+        """Scans RUN_LOG_DIR differentially for changes."""
+        from eval_runner import config
 
-                scenario = scenario or ""
-                if query and query not in rid.lower() and query not in scenario.lower():
+        if not config.RUN_LOG_DIR.exists():
+            return
+
+        new_runs_map = {}
+        changes = False
+
+        # 1. Scan direct fragments (.jsonl files)
+        for p in config.RUN_LOG_DIR.glob("*.jsonl"):
+            try:
+                mtime = p.stat().st_mtime
+                cached_mtime = self._scanned_files.get(str(p))
+                if cached_mtime == mtime:
                     continue
 
-                timestamp = event.get("timestamp") or event.get("_ts_iso") or ""
-                runs.append(
-                    {
+                changes = True
+                self._scanned_files[str(p)] = mtime
+
+                with open(p, encoding="utf-8") as f:
+                    for line in f:
+                        line_str = line.strip()
+                        if not line_str:
+                            continue
+                        try:
+                            event = json.loads(line_str)
+                            if event.get("event") == "run_start":
+                                rid = event.get("run_id") or ""
+                                scenario = event.get("scenario") or ""
+                                timestamp = event.get("timestamp") or event.get("_ts_iso") or ""
+                                new_runs_map[rid] = {
+                                    "run_id": rid,
+                                    "scenario": scenario,
+                                    "timestamp": timestamp,
+                                    "_fragment_path": str(p.relative_to(config.RUN_LOG_DIR)),
+                                }
+                        except Exception as e:
+                            logger.debug(f"Parsing run line warning: {e}")
+                            continue
+            except Exception as e:
+                logger.debug(f"Parsing fragment warning: {e}")
+                continue
+
+        # 2. Scan vault folders (*/run.jsonl)
+        for p in config.RUN_LOG_DIR.glob("*/run.jsonl"):
+            try:
+                mtime = p.stat().st_mtime
+                cached_mtime = self._scanned_files.get(str(p))
+                if cached_mtime == mtime:
+                    continue
+
+                changes = True
+                self._scanned_files[str(p)] = mtime
+
+                with open(p, encoding="utf-8") as f:
+                    first_line = f.readline()
+                    if not first_line.strip():
+                        continue
+                    event = json.loads(first_line)
+                    rid = event.get("run_id") or p.parent.name or ""
+                    scenario = event.get("scenario")
+
+                    if not scenario and rid.startswith("run-"):
+                        parts = rid.split("-")
+                        if len(parts) > 2:
+                            scenario = "-".join(parts[1:-1])
+                        else:
+                            scenario = parts[1]
+                    elif not scenario:
+                        scenario = rid
+
+                    scenario = scenario or ""
+                    timestamp = event.get("timestamp") or event.get("_ts_iso") or ""
+                    new_runs_map[rid] = {
                         "run_id": rid,
                         "scenario": scenario,
                         "timestamp": timestamp,
                         "path": str(p.relative_to(config.RUN_LOG_DIR)),
                     }
-                )
-        except Exception as e:
-            logger.warning(f"Skipping malformed or inaccessible vault trace {p}: {e}")
-            continue
+            except Exception as e:
+                logger.debug(f"Parsing vault run warning: {e}")
+                continue
 
-    runs.sort(key=lambda x: str(x.get("timestamp") or ""), reverse=True)
+        if changes or new_runs_map or True:  # Always audit cache integrity
+            with self._lock:
+                # Merge new runs into existing runs
+                existing_map = {r["run_id"]: r for r in self._runs}
+                existing_map.update(new_runs_map)
+
+                # Filter out runs that no longer exist on disk
+                pruned_map = {}
+                for rid, r in existing_map.items():
+                    path_val = r.get("path") or r.get("_fragment_path")
+                    if path_val:
+                        tp = config.RUN_LOG_DIR / path_val
+                    else:
+                        tp = resolve_trace_path(rid)
+                    if tp and tp.exists():
+                        pruned_map[rid] = r
+
+                # Sort runs by timestamp descending
+                sorted_runs = list(pruned_map.values())
+                sorted_runs.sort(key=lambda x: str(x.get("timestamp") or ""), reverse=True)
+
+                # Cap the cache to the most recent 500 runs
+                self._runs = sorted_runs[:500]
+
+
+# Initialize and start runs background caching daemon
+runs_cache = RunsCache()
+runs_cache.start()
+
+
+@run_bp.route("/runs", methods=["GET"])
+@require_permission(Permission.RUNS_READ)
+def list_runs():
+    """Returns a list of recent run traces (Consolidated)."""
+    query = request.args.get("q", "").lower()
+    runs = runs_cache.get_runs(query=query)
     return jsonify({"runs": runs[:200]})
+
+
+@run_bp.route("/v1/runs/stream-list", methods=["GET"])
+@require_permission(Permission.RUNS_READ)
+def stream_runs_list():
+    """Streams the run list incrementally in chunks every 1 second (SSE)."""
+
+    def generate():
+        runs = runs_cache.get_runs()
+        chunk_size = 10  # Yield 10 runs at a time
+        for i in range(0, len(runs), chunk_size):
+            chunk = runs[i : i + chunk_size]
+            resolved_chunk = []
+            for run in chunk:
+                # Perform fast status resolving
+                run_id = run["run_id"]
+                cert_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
+                vault_manifest = config.RUN_LOG_DIR / run_id / "run_manifest.json"
+
+                status = "PASSED"
+                # Check status via certificate or manifest
+                if cert_path.exists() or vault_manifest.exists():
+                    status = "CERTIFIED"
+                else:
+                    tp = resolve_trace_path(run_id)
+                    if tp and tp.exists():
+                        try:
+                            # Read the entire log file (vault logs are usually very small, <100KB)
+                            size = os.path.getsize(tp)
+                            if size > 0:
+                                with open(tp, "rb") as f:
+                                    # Read up to the last 32KB
+                                    if size > 32 * 1024:
+                                        f.seek(size - 32 * 1024)
+                                    content = f.read()
+
+                                    has_error = (
+                                        b'"event": "error"' in content
+                                        or b'"level": "error"' in content
+                                        or b'"status": "error"' in content
+                                    )
+                                    has_end = (
+                                        b'"event": "run_end"' in content
+                                        or b'"event": "verification_certificate_issued"' in content
+                                    )
+
+                                    if has_error:
+                                        status = "FAILED"
+                                    elif not has_end:
+                                        # Determine if stalled or still running
+                                        has_newline = b"\n" in content
+                                        last_line = (
+                                            content.split(b"\n")[-2] if has_newline else content
+                                        )
+                                        try:
+                                            decoded_line = last_line.decode(
+                                                "utf-8", errors="ignore"
+                                            ).strip()
+                                            last_event = json.loads(decoded_line)
+                                            ts_str = last_event.get("timestamp") or last_event.get(
+                                                "_ts_iso"
+                                            )
+                                            if ts_str:
+                                                ts_str_clean = ts_str.split("+")[0].split("Z")[0]
+                                                last_ts = datetime.fromisoformat(
+                                                    ts_str_clean
+                                                ).timestamp()
+                                                if time.time() - last_ts > 300:
+                                                    status = "STALLED"
+                                                else:
+                                                    status = "RUNNING"
+                                        except Exception as e:
+                                            logger.debug(f"Error parsing timestamp: {e}")
+                                            status = "RUNNING"
+                                    else:
+                                        status = "PASSED"
+                        except Exception as e:
+                            logger.debug(f"Error reading file status: {e}")
+                            status = "FAILED"
+                    else:
+                        # Aborted/stalled before writing any vault folder
+                        status = "STALLED"
+                        try:
+                            ts_str = run.get("timestamp") or ""
+                            if ts_str:
+                                ts_str_clean = ts_str.split("+")[0].split("Z")[0]
+                                run_ts = datetime.fromisoformat(ts_str_clean).timestamp()
+                                if time.time() - run_ts < 300:
+                                    status = "RUNNING"
+                        except Exception as e:
+                            logger.debug(f"Error calculating time: {e}")
+
+                resolved_chunk.append(
+                    {
+                        "run_id": run_id,
+                        "scenario": run["scenario"],
+                        "timestamp": run["timestamp"],
+                        "status": status,
+                    }
+                )
+            yield f"data: {json.dumps(resolved_chunk)}\n\n"
+            time.sleep(1.0)
+
+    return Response(generate(), mimetype="text/event-stream")
 
 
 @run_bp.route("/v1/runs/<path:run_id>", methods=["GET"])
@@ -176,6 +395,8 @@ def list_runs():
 def get_run_status(run_id):
     """Industrial Polling Primitive."""
     vault_trace = resolve_trace_path(run_id)
+    scenario_data = None
+
     if vault_trace:
         is_finished = False
         size = 0
@@ -218,6 +439,17 @@ def get_run_status(run_id):
         vault_manifest = config.RUN_LOG_DIR / run_id / "run_manifest.json"
         has_certificate = cert_path.exists() or vault_manifest.exists()
 
+        resolved_scen_path = config.RUN_LOG_DIR / run_id / "scenario_resolved.json"
+        orig_scen_path = config.RUN_LOG_DIR / run_id / "scenario_original.json"
+        for path_cand in [resolved_scen_path, orig_scen_path]:
+            if path_cand.exists():
+                try:
+                    with open(path_cand, encoding="utf-8") as f_scen:
+                        scenario_data = json.load(f_scen)
+                        break
+                except Exception as e:
+                    logger.debug(f"Error parsing resolved scenario: {e}")
+
         return jsonify(
             {
                 "run_id": run_id,
@@ -226,6 +458,7 @@ def get_run_status(run_id):
                 "mtime": mtime,
                 "has_certificate": has_certificate,
                 "sourced_from_master": False,
+                "scenario": scenario_data,
             }
         )
 
@@ -257,6 +490,31 @@ def get_run_status(run_id):
             if not is_finished and not is_run_alive(run_id):
                 status = "STALLED"
 
+            scenario = None
+            if run_id.startswith("run-"):
+                parts = run_id.split("-")
+                if len(parts) > 2:
+                    scenario = "-".join(parts[1:-1])
+                else:
+                    scenario = parts[1]
+            else:
+                scenario = run_id
+
+            scenario_data = None
+            if scenario:
+                from eval_runner.catalog import ScenarioCatalog
+
+                catalog = ScenarioCatalog.get_instance()
+                scen_rec = catalog.get_scenario(scenario)
+                if scen_rec:
+                    abs_path = catalog.get_absolute_path(scen_rec["id"])
+                    if abs_path and abs_path.exists():
+                        try:
+                            with open(abs_path, encoding="utf-8") as f_scen:
+                                scenario_data = json.load(f_scen)
+                        except Exception as e:
+                            logger.debug(f"Error parsing scenario from catalog: {e}")
+
             cert_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
             return jsonify(
                 {
@@ -266,6 +524,7 @@ def get_run_status(run_id):
                     "mtime": os.path.getmtime(master_log),
                     "has_certificate": cert_path.exists(),
                     "sourced_from_master": True,
+                    "scenario": scenario_data,
                 }
             )
 

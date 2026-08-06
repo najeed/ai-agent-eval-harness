@@ -27,7 +27,7 @@ def list_scenarios():
     query = request.args.get("q")
     industry = request.args.get("industry")
     difficulty = request.args.get("difficulty")
-    limit = int(request.args.get("limit", 50))
+    limit = int(request.args.get("limit", 10000))
     page = int(request.args.get("page", 1))
     offset = (page - 1) * limit
 
@@ -173,14 +173,22 @@ def mutate_scenario():
     data = request.json or {}
     mutation_type = data.get("type", "typo")
 
-    # Support raw content or input path
+    # Support raw content, scenario ID, or input path
     raw_content = data.get("raw_json")
+    scenario_id = data.get("scenario_id")
     if raw_content:
         scenario = raw_content
+    elif scenario_id:
+        catalog = ScenarioCatalog.get_instance()
+        abs_path = catalog.get_absolute_path(scenario_id)
+        if not abs_path or not abs_path.exists():
+            return jsonify({"error": f"Scenario {scenario_id} not found"}), 404
+        with open(abs_path, encoding="utf-8") as f:
+            scenario = json.load(f)
     else:
         input_path = data.get("input_path")
         if not input_path or not Path(input_path).exists():
-            return jsonify({"error": "Missing input_path or raw_json"}), 400
+            return jsonify({"error": "Missing input_path, scenario_id or raw_json"}), 400
         with open(input_path, encoding="utf-8") as f:
             scenario = json.load(f)
 

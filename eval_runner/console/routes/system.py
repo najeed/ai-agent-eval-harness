@@ -308,7 +308,7 @@ def get_doctor_audit():
         # Perform basic health checks (Sync wrapper for potential async logic)
         audit = {
             "status": "healthy",
-            "project_root": str(config.PROJECT_ROOT),
+            "project_root": f"./{Path(config.PROJECT_ROOT).name}",
             "plugins_loaded": manager._loaded,
             "catalog_size": len(ScenarioCatalog.get_instance().scenarios),
             "simulator_count": len(get_simulator_registry()),

@@ -290,9 +290,9 @@ class TestEnvironmentHandlers:
             assert "generic" in industries
 
     def test_detect_framework_heuristic_more(self, tmp_dir):
-        # AutoGen by conversable_agent.py
+        # AG2 by conversable_agent.py
         Path("conversable_agent.py").write_text("")
-        assert handlers.detect_framework() == "AutoGen"
+        assert handlers.detect_framework() == "AG2"
         os.remove("conversable_agent.py")
 
         # requirements.txt variants
@@ -300,8 +300,8 @@ class TestEnvironmentHandlers:
         req.write_text("crewai==1.0")
         assert handlers.detect_framework() == "CrewAI"
 
-        req.write_text("pyautogen==0.2")
-        assert handlers.detect_framework() == "AutoGen"
+        req.write_text("ag2==0.2")
+        assert handlers.detect_framework() == "AG2"
 
         req.write_text("langchain==0.1")
         assert handlers.detect_framework() == "LangChain"

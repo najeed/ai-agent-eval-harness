@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from eval_runner.adapters.autogen import AutoGenAdapterPlugin
+from eval_runner.adapters.ag2 import AG2AdapterPlugin
 from eval_runner.adapters.crewai import CrewAIAdapterPlugin
 from eval_runner.adapters.langchain import LangChainAdapterPlugin
 from eval_runner.adapters.langgraph import LangGraphAdapterPlugin
@@ -47,16 +47,16 @@ async def test_langchain_adapter_remote_success():
 
 
 @pytest.mark.asyncio
-async def test_autogen_adapter_remote_success():
-    plugin = AutoGenAdapterPlugin()
+async def test_ag2_adapter_remote_success():
+    plugin = AG2AdapterPlugin()
     with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
         session_instance = MagicMock()
         mock_get_session.return_value = session_instance
-        session_instance.post.return_value = MockResponse(json_data={"output": "autogen_ok"})
-        res = await plugin.execute_autogen_query({"message": "hi", "url": "http://autogen"})
+        session_instance.post.return_value = MockResponse(json_data={"output": "ag2_ok"})
+        res = await plugin.execute_ag2_query({"message": "hi", "url": "http://ag2"})
         assert res["status"] == "success"
         assert res["action"] == "final_answer"
-        assert res["output"] == "autogen_ok"
+        assert res["output"] == "ag2_ok"
 
 
 @pytest.mark.asyncio
@@ -87,13 +87,13 @@ async def test_framework_adapters_error_reporting():
     assert res["status"] == "success"
     assert res["action"] == "final_answer"
 
-    # AutoGen missing URL -> should reach error (no SDK, no config URL)
-    plugin = AutoGenAdapterPlugin()
+    # AG2 missing URL -> should reach error (no SDK, no config URL)
+    plugin = AG2AdapterPlugin()
     with (
-        patch("eval_runner.adapters.autogen.config") as mock_cfg,
-        patch.dict("sys.modules", {"autogen": None, "ag2": None}),
+        patch("eval_runner.adapters.ag2.config") as mock_cfg,
+        patch.dict("sys.modules", {"ag2": None}),
     ):
         mock_cfg.AG2_API_URL = None
-        res = await plugin.execute_autogen_query({})
+        res = await plugin.execute_ag2_query({})
         assert res["status"] == "error"
         assert res["action"] == "error"

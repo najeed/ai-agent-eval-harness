@@ -22,6 +22,8 @@ interface LogEvent {
   result?: string;
   category?: string;
   is_root_cause?: boolean;
+  _seq?: number;
+  turn?: number;
 }
 
 export const LiveDebugger: React.FC = () => {
@@ -42,10 +44,13 @@ export const LiveDebugger: React.FC = () => {
   // React Flow State
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
+  const [activeScenario, setActiveScenario] = useState<any>(null);
+  const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
   
   // AI explain drawer
   const [explainResult, setExplainResult] = useState<string>('');
   const [showExplain, setShowExplain] = useState(false);
+  const [analysisData, setAnalysisData] = useState<any>(null);
 
   // SSE connection resilience (NFR 8.1)
   const [connectionStatus, setConnectionStatus] = useState<'CONNECTED' | 'CONNECTING' | 'RECONNECTING' | 'DISCONNECTED' | 'FINISHED'>('DISCONNECTED');
@@ -75,10 +80,17 @@ export const LiveDebugger: React.FC = () => {
         const data = await res.json();
         setStatus(data.status || 'COMPLETED');
         setSourcedFromMaster(!!data.sourced_from_master);
+        if (data.scenario) {
+          setActiveScenario(data.scenario);
+          updateFlowCanvas(events, data.scenario);
+        } else {
+          setActiveScenario(null);
+        }
       }
     } catch (e) {
       setStatus('UNKNOWN');
       setSourcedFromMaster(false);
+      setActiveScenario(null);
     }
   };
 
@@ -86,18 +98,70 @@ export const LiveDebugger: React.FC = () => {
     if (!runId) return;
     setShowExplain(true);
     setExplainResult('AI Engine analyzing evaluation traces...');
+    setAnalysisData(null);
     try {
       const res = await fetch(`/api/v1/explain/${runId}`);
       const data = await res.json();
       if (res.ok) {
-        setExplainResult(data.analysis || 'Analysis complete. No loop or timeout patterns identified.');
+        let resultText = '';
+        if (data.analysis && typeof data.analysis === 'object') {
+          setAnalysisData(data.analysis);
+          let confStr = 'N/A';
+          if (data.analysis.confidence !== undefined && data.analysis.confidence !== null) {
+            const confVal = Number(data.analysis.confidence);
+            if (!isNaN(confVal)) {
+              if (confVal <= 1.0) {
+                confStr = `${Math.round(confVal * 100)}%`;
+              } else {
+                confStr = `${Math.round(confVal)}%`;
+              }
+            } else {
+              confStr = String(data.analysis.confidence);
+            }
+          }
+          resultText = `Root Cause Analysis:\n\n` +
+            `• Root Cause: ${data.analysis.root_cause || 'Unknown'}\n` +
+            `• Suggestion: ${data.analysis.suggestion || 'N/A'}\n` +
+            `• Confidence: ${confStr}`;
+        } else {
+          resultText = data.analysis || 'Analysis complete. No loop or timeout patterns identified.';
+        }
+        setExplainResult(resultText);
       } else {
         setExplainResult(`Error: ${data.error || 'Failed to explain trace.'}`);
       }
     } catch (e: any) {
       setExplainResult(`Failed to trigger analysis: ${e.message}`);
-    } finally {
-      // Done
+    }
+  };
+
+  const handleIsolateRootCause = async () => {
+    if (!runId) return;
+    let targetIdx = -1;
+    if (analysisData && analysisData.index !== undefined && analysisData.index >= 0) {
+      targetIdx = analysisData.index;
+    } else {
+      try {
+        const res = await fetch(`/api/v1/explain/${runId}`);
+        const data = await res.json();
+        if (res.ok && data.analysis && data.analysis.index !== undefined) {
+          setAnalysisData(data.analysis);
+          targetIdx = data.analysis.index;
+        }
+      } catch (e) {
+        console.error('Failed to isolate root cause via API:', e);
+      }
+    }
+    if (targetIdx < 0) {
+      targetIdx = events.findIndex(e => 
+        e.event === 'error' || 
+        e.category === 'PARITY_STATE_DIVERGENCE' || 
+        e.message?.toLowerCase().includes('error') || 
+        e.message?.toLowerCase().includes('fail')
+      );
+    }
+    if (targetIdx >= 0 && targetIdx < events.length) {
+      setSelectedEvent(events[targetIdx]);
     }
   };
 
@@ -158,7 +222,7 @@ export const LiveDebugger: React.FC = () => {
         }
         setEvents(prev => {
           const updated = [...prev, data];
-          updateFlowCanvas(updated);
+          updateFlowCanvas(updated, activeScenario);
           return updated;
         });
       } catch (e) {
@@ -206,63 +270,143 @@ export const LiveDebugger: React.FC = () => {
   }, [runId]);
 
   // Update ReactFlow nodes based on stream events
-  const updateFlowCanvas = (allEvents: LogEvent[]) => {
-    // Group events by node ID to map execution stages
-    const nodeEvents = allEvents.filter(e => e.node_id || e.task_id);
-    const nodeIds = Array.from(new Set(nodeEvents.map(e => e.node_id || e.task_id || '')));
-    
-    const flowNodes = nodeIds.filter(Boolean).map((id, index) => {
-      const isError = allEvents.some(e => (e.node_id === id || e.task_id === id) && (e.event === 'error' || e.category === 'PARITY_STATE_DIVERGENCE'));
-      const isFinished = allEvents.some(e => (e.node_id === id || e.task_id === id) && e.event === 'maneuver_end');
-      
-      let border = '1px solid #334155';
-      let background = '#0f172a';
-      let statusLabel = 'Pending';
-      if (isError) {
-        border = '1px solid #ef4444';
-        background = '#7f1d1d/40';
-        statusLabel = 'Diverged';
-      } else if (isFinished) {
-        border = '1px solid #10b981';
-        background = '#064e3b/40';
-        statusLabel = 'Completed';
-      } else {
-        border = '1px solid #f59e0b';
-        background = '#78350f/40';
-        statusLabel = 'Running';
-      }
+  const updateFlowCanvas = (allEvents: LogEvent[], scenarioObj?: any) => {
+    const scen = scenarioObj || activeScenario;
+    const workflowNodes = scen?.workflow?.nodes || scen?.workflow?.tasks || [];
+    const workflowEdges = scen?.workflow?.edges || [];
 
-      return {
-        id,
-        type: 'default',
-        position: { x: 100 + index * 200, y: 150 },
-        data: { 
-          label: (
-            <div className="space-y-1">
-              <div className="font-mono font-bold text-[10px] text-slate-200">{id}</div>
-              <div className="text-[9px] text-slate-400 truncate max-w-[120px]">{statusLabel}</div>
-            </div>
-          )
-        },
-        style: { 
-          background, 
-          color: '#fff', 
-          border,
-          borderRadius: '8px',
-          padding: '6px',
-          width: 140
+    let flowNodes = [];
+    const nodesPerRow = 4;
+
+    if (workflowNodes.length > 0) {
+      flowNodes = workflowNodes.map((n: any, index: number) => {
+        const id = n.id;
+        const isError = allEvents.some(e => (e.node_id === id || e.task_id === id) && (e.event === 'error' || e.category === 'PARITY_STATE_DIVERGENCE' || e.message?.toLowerCase().includes('error') || e.message?.toLowerCase().includes('fail')));
+        const isFinished = allEvents.some(e => (e.node_id === id || e.task_id === id) && (e.event === 'maneuver_end' || e.event === 'node_end' || e.result === 'success'));
+        const isStarted = allEvents.some(e => (e.node_id === id || e.task_id === id));
+
+        const isHighlighted = selectedEvent && (id === selectedEvent.node_id || id === selectedEvent.task_id);
+
+        let border = isHighlighted ? '2px solid #818cf8' : '1px solid #334155';
+        let background = '#0f172a';
+        let statusLabel = 'Pending';
+        if (isError) {
+          border = isHighlighted ? '2px solid #f87171' : '1px solid #ef4444';
+          background = '#7f1d1d/40';
+          statusLabel = 'Diverged';
+        } else if (isFinished) {
+          border = isHighlighted ? '2px solid #34d399' : '1px solid #10b981';
+          background = '#064e3b/40';
+          statusLabel = 'Completed';
+        } else if (isStarted) {
+          border = isHighlighted ? '2px solid #fbbf24' : '1px solid #f59e0b';
+          background = '#78350f/40';
+          statusLabel = 'Running';
         }
-      };
-    });
 
-    const flowEdges = [];
-    for (let i = 0; i < flowNodes.length - 1; i++) {
-      flowEdges.push({
-        id: `e-${i}`,
-        source: flowNodes[i].id,
-        target: flowNodes[i + 1].id,
-        animated: true
+        const row = Math.floor(index / nodesPerRow);
+        const col = index % nodesPerRow;
+
+        return {
+          id,
+          type: 'default',
+          position: { x: 80 + col * 250, y: 50 + row * 160 },
+          data: { 
+            label: (
+              <div className="space-y-1">
+                <div className="font-mono font-bold text-[10px] text-slate-200">{id}</div>
+                <div className="text-[9px] text-slate-400 truncate max-w-[120px]" title={n.task_description || n.description}>{statusLabel}</div>
+              </div>
+            )
+          },
+          style: { 
+            background, 
+            color: '#fff', 
+            border,
+            borderRadius: '8px',
+            padding: '6px',
+            width: 160,
+            boxShadow: isHighlighted ? '0 0 15px rgba(99, 102, 241, 0.6)' : 'none',
+            transform: isHighlighted ? 'scale(1.05)' : 'none',
+            transition: 'all 0.3s ease'
+          }
+        };
       });
+    } else {
+      // Fallback: Group events by node ID to map execution stages dynamically
+      const nodeEvents = allEvents.filter(e => e.node_id || e.task_id);
+      const nodeIds = Array.from(new Set(nodeEvents.map(e => e.node_id || e.task_id || '')));
+      
+      flowNodes = nodeIds.filter(Boolean).map((id, index) => {
+        const isError = allEvents.some(e => (e.node_id === id || e.task_id === id) && (e.event === 'error' || e.category === 'PARITY_STATE_DIVERGENCE'));
+        const isFinished = allEvents.some(e => (e.node_id === id || e.task_id === id) && e.event === 'maneuver_end');
+        
+        const isHighlighted = selectedEvent && (id === selectedEvent.node_id || id === selectedEvent.task_id);
+
+        let border = isHighlighted ? '2px solid #818cf8' : '1px solid #334155';
+        let background = '#0f172a';
+        let statusLabel = 'Pending';
+        if (isError) {
+          border = isHighlighted ? '2px solid #f87171' : '1px solid #ef4444';
+          background = '#7f1d1d/40';
+          statusLabel = 'Diverged';
+        } else if (isFinished) {
+          border = isHighlighted ? '2px solid #34d399' : '1px solid #10b981';
+          background = '#064e3b/40';
+          statusLabel = 'Completed';
+        } else {
+          border = isHighlighted ? '2px solid #fbbf24' : '1px solid #f59e0b';
+          background = '#78350f/40';
+          statusLabel = 'Running';
+        }
+
+        const row = Math.floor(index / nodesPerRow);
+        const col = index % nodesPerRow;
+
+        return {
+          id,
+          type: 'default',
+          position: { x: 80 + col * 250, y: 50 + row * 160 },
+          data: { 
+            label: (
+              <div className="space-y-1">
+                <div className="font-mono font-bold text-[10px] text-slate-200">{id}</div>
+                <div className="text-[9px] text-slate-400 truncate max-w-[120px]">{statusLabel}</div>
+              </div>
+            )
+          },
+          style: { 
+            background, 
+            color: '#fff', 
+            border,
+            borderRadius: '8px',
+            padding: '6px',
+            width: 140,
+            boxShadow: isHighlighted ? '0 0 15px rgba(99, 102, 241, 0.6)' : 'none',
+            transform: isHighlighted ? 'scale(1.05)' : 'none',
+            transition: 'all 0.3s ease'
+          }
+        };
+      });
+    }
+
+    let flowEdges = [];
+    if (workflowEdges.length > 0) {
+      flowEdges = workflowEdges.map((e: any, idx: number) => ({
+        id: `e-${idx}`,
+        source: e.from || e.source,
+        target: e.to || e.target,
+        animated: true
+      }));
+    } else {
+      for (let i = 0; i < flowNodes.length - 1; i++) {
+        flowEdges.push({
+          id: `e-${i}`,
+          source: flowNodes[i].id,
+          target: flowNodes[i + 1].id,
+          animated: true
+        });
+      }
     }
 
     setNodes(flowNodes);
@@ -279,6 +423,37 @@ export const LiveDebugger: React.FC = () => {
     });
     setFilteredEvents(filtered);
   }, [events, telemetryLevel]);
+
+  // Dynamically fit view when nodes are updated
+  useEffect(() => {
+    if (reactFlowInstance && nodes.length > 0) {
+      const timer = setTimeout(() => {
+        reactFlowInstance.fitView({ padding: 0.2, duration: 400 });
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [nodes.length, reactFlowInstance]);
+
+  // Focus and zoom on selected node from timeline selection
+  useEffect(() => {
+    if (selectedEvent && reactFlowInstance) {
+      const nodeId = selectedEvent.node_id || selectedEvent.task_id;
+      if (nodeId) {
+        const targetNode = nodes.find(n => n.id === nodeId);
+        if (targetNode) {
+          const { x, y } = targetNode.position;
+          reactFlowInstance.setCenter(x + 80, y + 40, { zoom: 1.5, duration: 600 });
+        }
+      }
+    }
+  }, [selectedEvent, reactFlowInstance, nodes]);
+
+  const hasError = events.some(e => 
+    e.event === 'error' || 
+    e.category === 'PARITY_STATE_DIVERGENCE' || 
+    e.message?.toLowerCase().includes('error') || 
+    e.message?.toLowerCase().includes('fail')
+  );
 
   return (
     <div className="flex h-[calc(100vh-56px)] bg-navy-base text-slate-100 overflow-hidden">
@@ -325,25 +500,38 @@ export const LiveDebugger: React.FC = () => {
             filteredEvents.map((evt, idx) => {
               const isSelected = selectedEvent === evt;
               const isError = evt.event === 'error' || evt.category === 'PARITY_STATE_DIVERGENCE';
+              const eventIndexInMain = events.indexOf(evt);
+              const isRootCauseIndex = analysisData && eventIndexInMain === analysisData.index;
               return (
                 <button
                   key={idx}
                   onClick={() => setSelectedEvent(evt)}
                   className={`w-full text-left p-2.5 rounded-lg border text-xs transition-all flex items-start gap-2.5 ${
                     isSelected 
-                      ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-300' 
-                      : isError 
-                        ? 'bg-red-500/5 border-red-500/20 text-red-400'
-                        : 'bg-slate-950/60 border-slate-900 text-slate-350 hover:bg-slate-900/40'
+                      ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-300 ring-2 ring-indigo-500/50' 
+                      : isRootCauseIndex
+                        ? 'bg-rose-950/40 border-rose-500/50 text-rose-200 ring-1 ring-rose-500/30'
+                        : isError 
+                          ? 'bg-red-500/5 border-red-500/20 text-red-400'
+                          : 'bg-slate-950/60 border-slate-900 text-slate-350 hover:bg-slate-900/40'
                   }`}
                 >
                   <span className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${
-                    isError ? 'bg-red-500' : 'bg-indigo-500'
+                    isRootCauseIndex ? 'bg-rose-500' : isError ? 'bg-red-500' : 'bg-indigo-500'
                   }`} />
                   <div className="space-y-1 min-w-0 flex-1">
                     <div className="flex justify-between items-center text-[10px] text-slate-500 font-mono">
-                      <span className="uppercase font-bold tracking-wider">{evt.event}</span>
-                      <span>{evt.timestamp ? new Date(evt.timestamp).toLocaleTimeString() : ''}</span>
+                      <span className="uppercase font-bold tracking-wider text-indigo-400">
+                        {evt.event} (Seq #{evt._seq}{evt.turn !== undefined ? `, Turn ${evt.turn}` : ''})
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        {isRootCauseIndex && (
+                          <span className="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30 text-[8px] font-bold tracking-wider uppercase animate-pulse shrink-0">
+                            Root Cause Node
+                          </span>
+                        )}
+                        <span>{evt.timestamp ? new Date(evt.timestamp).toLocaleTimeString() : ''}</span>
+                      </div>
                     </div>
                     <p className="font-mono text-[10px] truncate leading-tight">
                       {evt.message || evt.task || evt.step || 'Event trigger'}
@@ -373,24 +561,45 @@ export const LiveDebugger: React.FC = () => {
             </div>
 
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider ml-4">Stream:</span>
-            <span className={`px-2 py-0.5 rounded text-[9px] font-bold border ${
-              connectionStatus === 'CONNECTED' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-              connectionStatus === 'CONNECTING' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20 animate-pulse' :
-              connectionStatus === 'RECONNECTING' ? 'bg-red-500/10 text-red-400 border-red-500/20 animate-pulse' :
-              connectionStatus === 'FINISHED' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20' :
-              'bg-slate-500/10 text-slate-400 border-slate-500/20'
-            }`}>
-              {connectionStatus === 'RECONNECTING' ? `RECONNECTING (${reconnectCount}/5)` : connectionStatus}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className={`px-2 py-0.5 rounded text-[9px] font-bold border ${
+                connectionStatus === 'CONNECTED' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                connectionStatus === 'CONNECTING' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20 animate-pulse' :
+                connectionStatus === 'RECONNECTING' ? 'bg-red-500/10 text-red-400 border-red-500/20 animate-pulse' :
+                connectionStatus === 'FINISHED' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20' :
+                'bg-slate-500/10 text-slate-400 border-slate-500/20'
+              }`}>
+                {connectionStatus === 'RECONNECTING' ? `RECONNECTING (${reconnectCount}/5)` : connectionStatus}
+              </span>
+              {connectionStatus !== 'CONNECTED' && connectionStatus !== 'FINISHED' && (
+                <button
+                  onClick={() => connectStream(runId)}
+                  className="px-2 py-0.5 bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/30 rounded text-[9px] font-mono text-indigo-300 font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                >
+                  Reconnect
+                </button>
+              )}
+            </div>
           </div>
 
-          <button
-            onClick={handleExplain}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-950 border border-slate-900 rounded text-slate-400 hover:text-slate-200 transition-colors font-bold uppercase tracking-wider"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-            <span>AI Explain Diagnostics</span>
-          </button>
+          <div className="flex items-center gap-2">
+            {hasError && (
+              <button
+                onClick={handleIsolateRootCause}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-950/40 border border-rose-900 hover:border-rose-700 rounded text-rose-350 hover:text-rose-200 transition-colors font-bold uppercase tracking-wider cursor-pointer"
+              >
+                <AlertTriangle className="w-3.5 h-3.5 text-rose-500 animate-pulse" />
+                <span>Isolate Root Cause</span>
+              </button>
+            )}
+            <button
+              onClick={handleExplain}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-950 border border-slate-900 rounded text-slate-400 hover:text-slate-200 transition-colors font-bold uppercase tracking-wider"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+              <span>AI Explain Diagnostics</span>
+            </button>
+          </div>
         </div>
 
         {sourcedFromMaster && (
@@ -402,11 +611,27 @@ export const LiveDebugger: React.FC = () => {
 
         {/* ReactFlow Canvas container */}
         <div className="flex-1 h-full bg-slate-950/20 relative">
+          <style>{`
+            .react-flow__controls-button {
+              background: #0f172a !important;
+              border-bottom: 1px solid #1e293b !important;
+              color: #f1f5f9 !important;
+              fill: #f1f5f9 !important;
+            }
+            .react-flow__controls-button:hover {
+              background: #1e293b !important;
+            }
+            .react-flow__controls-button svg {
+              fill: #f1f5f9 !important;
+              stroke: #f1f5f9 !important;
+            }
+          `}</style>
           <ReactFlow
             nodes={nodes}
             edges={edges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
+            onInit={setReactFlowInstance}
             fitView
           >
             <Background color="#334155" gap={16} />
@@ -490,10 +715,33 @@ export const LiveDebugger: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex justify-end pt-4 border-t border-slate-800/60 shrink-0">
+            <div className="flex justify-between items-center pt-4 border-t border-slate-800/60 shrink-0">
+              {((analysisData?.index !== undefined && analysisData.index >= 0) || hasError) ? (
+                <button
+                  onClick={() => {
+                    let targetIdx = analysisData?.index;
+                    if (targetIdx === undefined || targetIdx < 0) {
+                      targetIdx = events.findIndex(e => 
+                        e.event === 'error' || 
+                        e.category === 'PARITY_STATE_DIVERGENCE' || 
+                        e.message?.toLowerCase().includes('error') || 
+                        e.message?.toLowerCase().includes('fail')
+                      );
+                    }
+                    if (targetIdx >= 0 && targetIdx < events.length) {
+                      setSelectedEvent(events[targetIdx]);
+                      setShowExplain(false);
+                    }
+                  }}
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-xs text-white font-bold uppercase tracking-wider rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <AlertTriangle className="w-3.5 h-3.5 animate-pulse" />
+                  <span>Go to Root Cause Turn</span>
+                </button>
+              ) : null}
               <button
                 onClick={() => setShowExplain(false)}
-                className="px-4 py-2 bg-slate-800 rounded-lg hover:bg-slate-700 text-xs text-slate-350 font-bold uppercase tracking-wider"
+                className="px-4 py-2 bg-slate-800 rounded-lg hover:bg-slate-700 text-xs text-slate-350 font-bold uppercase tracking-wider ml-auto"
               >
                 Close Analysis
               </button>

@@ -87,6 +87,29 @@ def list_packs():
             }
         )
 
+    # Discovery of custom user-defined compliance packs
+    standard_ids = {std["id"] for std in standards}
+    for p in PACKS_DIR.glob("*.json"):
+        pack_id = p.stem
+        if pack_id in standard_ids:
+            continue
+        try:
+            with open(p, encoding="utf-8") as f:
+                pack_data = json.load(f)
+                packs.append(
+                    {
+                        "id": pack_id,
+                        "name": pack_data.get("name") or f"Custom Pack {pack_id}",
+                        "description": pack_data.get("description", "User-defined custom checks."),
+                        "category": "Custom Checklists",
+                        "configured": True,
+                        "version": pack_data.get("version", 1),
+                        "checks": pack_data.get("checks", []),
+                    }
+                )
+        except Exception as e:
+            logger.warning(f"Error loading custom pack {pack_id}: {e}")
+
     return jsonify({"packs": packs})
 
 
@@ -156,7 +179,28 @@ def publish_pack(pack_id):
     """Finalizes and registers the published version of a pack."""
     pack_path = PACKS_DIR / f"{pack_id}.json"
     if not pack_path.exists():
-        return jsonify({"error": "Compliance pack not found"}), 404
+        standards = _load_standards()
+        matching_std = next((s for s in standards if s["id"] == pack_id), None)
+        if not matching_std:
+            return jsonify({"error": f"Compliance Pack {pack_id} not found"}), 404
+        name = matching_std["name"]
+        desc = matching_std.get("description", "")
+
+        pack_record = {
+            "id": pack_id,
+            "name": name,
+            "description": desc,
+            "applicable_industries": [],
+            "version": 1,
+            "checks": [],
+            "last_updated": datetime.now(UTC).replace(tzinfo=None).isoformat() + "Z",
+        }
+        try:
+            with open(pack_path, "w", encoding="utf-8") as f:
+                json.dump(pack_record, f, indent=2)
+        except Exception as e:
+            logger.error(f"Failed to auto-create compliance pack {pack_id} on publish: {e}")
+            return jsonify({"error": str(e)}), 500
 
     # Return success confirmation
     return jsonify(

@@ -532,3 +532,74 @@ def test_compliance_packs_test_empty_trace_file(packs_client, packs_jail):
     ):
         res = packs_client.post(f"/api/v1/compliance-packs/STD-G/test?run_id={run_id}")
     assert res.status_code == 200
+
+
+def test_compliance_packs_list_custom_success(packs_client, packs_jail):
+    """Cover lines 96-109: discovery of custom user-defined compliance pack JSON files."""
+    custom_pack = {
+        "name": "My Custom Compliance Pack",
+        "description": "Custom requirements",
+        "version": 2,
+        "checks": [{"type": "wsm_threshold"}],
+    }
+    (packs_jail["packs_dir"] / "custom_pack_123.json").write_text(
+        json.dumps(custom_pack), encoding="utf-8"
+    )
+
+    res = packs_client.get("/api/v1/compliance-packs")
+    assert res.status_code == 200
+    data = res.get_json()
+    # Predefined standards plus one custom pack
+    custom = next((p for p in data["packs"] if p["id"] == "custom_pack_123"), None)
+    assert custom is not None
+    assert custom["name"] == "My Custom Compliance Pack"
+    assert custom["version"] == 2
+    assert custom["configured"] is True
+
+
+def test_compliance_packs_list_custom_corrupt(packs_client, packs_jail):
+    """Cover lines 110-111: loader exception logging when loading a malformed custom pack."""
+    (packs_jail["packs_dir"] / "custom_corrupt.json").write_text("{{corrupt", encoding="utf-8")
+
+    res = packs_client.get("/api/v1/compliance-packs")
+    assert res.status_code == 200
+    # Should not crash, bad JSON skipped and logged
+    data = res.get_json()
+    assert not any(p["id"] == "custom_corrupt" for p in data["packs"])
+
+
+def test_compliance_packs_publish_auto_create(packs_client, packs_jail):
+    """Cover lines 186-200: auto-creation of predefined compliance packs on publish."""
+    # Ensure ISO27001 is a predefined standard but the file does not exist yet
+    pack_file = packs_jail["packs_dir"] / "ISO27001.json"
+    if pack_file.exists():
+        pack_file.unlink()
+
+    with patch(
+        "eval_runner.console.routes.compliance_packs._load_standards",
+        return_value=[{"id": "ISO27001", "name": "ISO 27001 Standard", "description": "desc"}],
+    ):
+        res = packs_client.post("/api/v1/compliance-packs/ISO27001/publish")
+        assert res.status_code == 200
+        assert pack_file.exists()
+
+        # Load and check it was auto-created with the standard details
+        data = json.loads(pack_file.read_text(encoding="utf-8"))
+        assert data["id"] == "ISO27001"
+        assert "ISO 27001" in data["name"]
+
+
+def test_compliance_packs_publish_auto_create_write_error(packs_client, packs_jail):
+    """Cover lines 201-203: write exception handling during auto-creation on publish."""
+    pack_file = packs_jail["packs_dir"] / "ISO27001.json"
+    if pack_file.exists():
+        pack_file.unlink()
+
+    with patch(
+        "eval_runner.console.routes.compliance_packs._load_standards",
+        return_value=[{"id": "ISO27001", "name": "ISO 27001 Standard", "description": "desc"}],
+    ):
+        with patch("builtins.open", side_effect=PermissionError("File locked")):
+            res = packs_client.post("/api/v1/compliance-packs/ISO27001/publish")
+            assert res.status_code == 500
+            assert "File locked" in res.get_json()["error"]

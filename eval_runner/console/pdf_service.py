@@ -17,9 +17,23 @@ logger = logging.getLogger(__name__)
 # Try importing WeasyPrint
 WEASYPRINT_AVAILABLE = False
 try:
-    import weasyprint
+    import os
+    import sys
 
-    WEASYPRINT_AVAILABLE = True
+    # Suppress verbose warnings printed by weasyprint during import
+    null_out = open(os.devnull, "w")
+    old_stdout = sys.stdout
+    old_stderr = sys.stderr
+    sys.stdout = null_out
+    sys.stderr = null_out
+    try:
+        import weasyprint
+
+        WEASYPRINT_AVAILABLE = True
+    finally:
+        sys.stdout = old_stdout
+        sys.stderr = old_stderr
+        null_out.close()
 except (ImportError, OSError) as e:
     logger.warning(
         f"WeasyPrint or its GTK dependencies not available. "

@@ -37,7 +37,7 @@ def test_pm_internal_imports(monkeypatch):
     ]
 
     adapter_modules = [
-        "eval_runner.adapters.autogen",
+        "eval_runner.adapters.ag2",
         "eval_runner.adapters.claude",
         "eval_runner.adapters.crewai",
         "eval_runner.adapters.gemini",
@@ -54,7 +54,7 @@ def test_pm_internal_imports(monkeypatch):
         pm.load_plugins(force=True)
 
     with monkeypatch.context() as m:
-        m.setitem(sys.modules, "eval_runner.adapters.autogen", None)
+        m.setitem(sys.modules, "eval_runner.adapters.ag2", None)
         pm.load_plugins(force=True)
 
 

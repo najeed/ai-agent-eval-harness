@@ -10,6 +10,7 @@ interface ScenarioItem {
   title: string;
   industry: string;
   aes_version: number;
+  compliance_level?: string;
   metadata?: {
     name: string;
     description?: string;
@@ -120,15 +121,21 @@ export const ScenarioLibrary: React.FC = () => {
                        (s.id || '').toLowerCase().includes(search.toLowerCase());
     
     const indMatch = selectedIndustry === 'All' || s.industry === selectedIndustry;
-    // Mock difficulty match
+    // Difficulty match
+    const compLevel = s.compliance_level || s.metadata?.compliance_level || 'Standard';
     const diffMatch = selectedDifficulty === 'All' || 
-                      (selectedDifficulty === 'Standard' && s.metadata?.compliance_level === 'Standard') ||
-                      (selectedDifficulty === 'High' && s.metadata?.compliance_level !== 'Standard');
+                      (selectedDifficulty === 'Standard' && compLevel === 'Standard') ||
+                      (selectedDifficulty === 'High' && compLevel !== 'Standard');
                       
     return titleMatch && indMatch && diffMatch;
   });
 
-  const industries = ['All', ...Array.from(new Set(scenarios.map(s => s.industry))).filter(Boolean)];
+  const industries = [
+    'All',
+    ...Array.from(new Set(scenarios.map(s => s.industry)))
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b))
+  ];
 
   return (
     <div className="flex h-screen bg-navy-base text-slate-100 overflow-hidden">

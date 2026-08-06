@@ -14,7 +14,7 @@ from datetime import datetime
 from multiprocessing import Pool
 from pathlib import Path
 
-from ..utils import crypto
+from eval_runner.utils import crypto
 
 
 def run_worker(task):

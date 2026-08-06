@@ -7,6 +7,7 @@ Covers: _load_suites, list_suites, create_suite, bundle_suite,
 """
 
 import json
+import zipfile
 from io import BytesIO
 from unittest.mock import patch
 
@@ -808,3 +809,141 @@ def test_suites_bundle_empty_trace_first_line(suites_client, suites_jail):
                     ):
                         res = suites_client.post(f"/api/v1/suites/{suite_id}/bundle")
     assert res.status_code == 200
+
+
+def test_suites_verify_zip_missing_manifest(suites_client):
+    """Test verify_bundle with a ZIP that lacks audit_manifest.json."""
+    zip_buf = BytesIO()
+    with zipfile.ZipFile(zip_buf, "w") as z:
+        z.writestr("other.txt", "content")
+    zip_bytes = zip_buf.getvalue()
+
+    res = suites_client.post(
+        "/api/v1/bundles/verify",
+        data={"file": (BytesIO(zip_bytes), "bundle.zip")},
+        content_type="multipart/form-data",
+    )
+    assert res.status_code == 200
+    assert res.get_json()["is_valid"] is False
+    assert "audit_manifest.json not found" in res.get_json()["error"]
+
+
+def test_suites_verify_zip_missing_files(suites_client):
+    """Test verify_bundle with a ZIP where a file listed in manifest is missing."""
+    manifest = {"files": [{"name": "missing.txt", "file_hash": "123"}]}
+    zip_buf = BytesIO()
+    with zipfile.ZipFile(zip_buf, "w") as z:
+        z.writestr("audit_manifest.json", json.dumps(manifest))
+    zip_bytes = zip_buf.getvalue()
+
+    res = suites_client.post(
+        "/api/v1/bundles/verify",
+        data={"file": (BytesIO(zip_bytes), "bundle.zip")},
+        content_type="multipart/form-data",
+    )
+    assert res.status_code == 200
+    assert res.get_json()["is_valid"] is False
+    assert res.get_json()["details"][0]["status"] == "missing"
+
+
+def test_suites_verify_zip_mismatched_hash(suites_client):
+    """Test verify_bundle with a ZIP where a file hash mismatch is detected."""
+    manifest = {"files": [{"name": "file.txt", "file_hash": "wrong_hash"}]}
+    zip_buf = BytesIO()
+    with zipfile.ZipFile(zip_buf, "w") as z:
+        z.writestr("audit_manifest.json", json.dumps(manifest))
+        z.writestr("file.txt", "actual content")
+    zip_bytes = zip_buf.getvalue()
+
+    res = suites_client.post(
+        "/api/v1/bundles/verify",
+        data={"file": (BytesIO(zip_bytes), "bundle.zip")},
+        content_type="multipart/form-data",
+    )
+    assert res.status_code == 200
+    assert res.get_json()["is_valid"] is False
+    assert res.get_json()["details"][0]["status"] == "mismatch"
+
+
+def test_suites_verify_zip_valid_signature_success(suites_client):
+    """Test verify_bundle with correct files, hashes and valid Ed25519 signature."""
+    import base64
+    import hashlib
+
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+
+    # Generate key
+    private_key = ed25519.Ed25519PrivateKey.generate()
+    public_key = private_key.public_key()
+    pub_bytes = public_key.public_bytes(
+        encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw
+    )
+
+    file_content = b"correct content"
+    expected_hash = hashlib.sha3_256(file_content).hexdigest()
+
+    manifest = {"files": [{"name": "file.txt", "file_hash": expected_hash}]}
+
+    # Generate signature on manifest excluding signature/public_key keys
+    manifest_json = json.dumps(manifest, sort_keys=True)
+    sig_bytes = private_key.sign(manifest_json.encode())
+
+    # Add key and signature to manifest
+    manifest["signature_ed25519"] = base64.b64encode(sig_bytes).decode()
+    manifest["public_key"] = base64.b64encode(pub_bytes).decode()
+
+    zip_buf = BytesIO()
+    with zipfile.ZipFile(zip_buf, "w") as z:
+        z.writestr("audit_manifest.json", json.dumps(manifest))
+        z.writestr("file.txt", file_content)
+    zip_bytes = zip_buf.getvalue()
+
+    res = suites_client.post(
+        "/api/v1/bundles/verify",
+        data={"file": (BytesIO(zip_bytes), "bundle.zip")},
+        content_type="multipart/form-data",
+    )
+    assert res.status_code == 200
+    assert res.get_json()["is_valid"] is True
+    assert res.get_json()["details"][0]["status"] == "valid"
+
+
+def test_suites_verify_zip_signature_fail(suites_client):
+    """Test verify_bundle with correct files/hashes but signature validation fails."""
+    import base64
+    import hashlib
+
+    file_content = b"correct content"
+    expected_hash = hashlib.sha3_256(file_content).hexdigest()
+
+    manifest = {
+        "files": [{"name": "file.txt", "file_hash": expected_hash}],
+        "signature_ed25519": base64.b64encode(b"wrong_sig_value").decode(),
+        "public_key": base64.b64encode(b"wrong_pub_key_value").decode(),
+    }
+
+    zip_buf = BytesIO()
+    with zipfile.ZipFile(zip_buf, "w") as z:
+        z.writestr("audit_manifest.json", json.dumps(manifest))
+        z.writestr("file.txt", file_content)
+    zip_bytes = zip_buf.getvalue()
+
+    res = suites_client.post(
+        "/api/v1/bundles/verify",
+        data={"file": (BytesIO(zip_bytes), "bundle.zip")},
+        content_type="multipart/form-data",
+    )
+    assert res.status_code == 200
+    assert res.get_json()["is_valid"] is False
+
+
+def test_suites_verify_zip_corrupt_zip_error(suites_client):
+    """Test verify_bundle with corrupt zip bytes triggers 500 error."""
+    res = suites_client.post(
+        "/api/v1/bundles/verify",
+        data={"file": (BytesIO(b"corrupt-zip-file-data"), "bundle.zip")},
+        content_type="multipart/form-data",
+    )
+    assert res.status_code == 500
+    assert "Failed to parse ZIP bundle" in res.get_json()["message"]

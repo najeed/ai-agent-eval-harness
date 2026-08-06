@@ -251,22 +251,97 @@ def download_suite_bundle(suite_id):
 
 @suites_bp.route("/v1/bundles/verify", methods=["POST"])
 def verify_bundle():
-    """Accepts uploaded audit_manifest.json and verifies cryptographic signature and file hashes."""
+    """Accepts uploaded audit_manifest.json or suite_bundle.zip and verifies signature/hashes."""
+    import io
+    import zipfile
+
     if "file" not in request.files:
-        return jsonify({"error": "No manifest file uploaded"}), 400
+        return jsonify({"error": "No manifest or bundle file uploaded"}), 400
 
     file = request.files["file"]
-    temp_path = SUITES_DIR / f"verify_tmp_{uuid.uuid4().hex}.json"
-    try:
-        file.save(temp_path)
-        plugin = ArtifactPlugin()
-        res = plugin.verify_integrity(str(temp_path))
-        temp_path.unlink()
-        return jsonify(res)
-    except Exception as e:
-        if temp_path.exists():
+    filename = file.filename or ""
+
+    if filename.endswith(".zip"):
+        try:
+            file_bytes = file.read()
+            with zipfile.ZipFile(io.BytesIO(file_bytes)) as z:
+                if "audit_manifest.json" not in z.namelist():
+                    return jsonify(
+                        {
+                            "is_valid": False,
+                            "details": [],
+                            "error": "audit_manifest.json not found inside the ZIP bundle",
+                        }
+                    )
+
+                manifest_data = json.loads(z.read("audit_manifest.json").decode("utf-8"))
+
+                results = []
+                is_valid = True
+
+                for entry in manifest_data.get("files", []):
+                    name = entry["name"]
+                    if name == "audit_manifest.json":
+                        continue
+
+                    if name not in z.namelist():
+                        results.append({"file": name, "status": "missing"})
+                        is_valid = False
+                        continue
+
+                    data = z.read(name)
+                    import hashlib
+
+                    actual_hash = hashlib.sha3_256(data).hexdigest()
+                    expected_hash = entry.get("file_hash")
+
+                    if actual_hash == expected_hash:
+                        results.append({"file": name, "status": "valid"})
+                    else:
+                        results.append({"file": name, "status": "mismatch"})
+                        is_valid = False
+
+                # Verify Signature
+                has_sig = "signature_ed25519" in manifest_data and "public_key" in manifest_data
+                if is_valid and has_sig:
+                    try:
+                        import base64
+
+                        from cryptography.hazmat.primitives.asymmetric import (
+                            ed25519,
+                        )
+
+                        pub_key_bytes = base64.b64decode(manifest_data["public_key"])
+                        sig_bytes = base64.b64decode(manifest_data["signature_ed25519"])
+
+                        verify_manifest = {
+                            k: v
+                            for k, v in manifest_data.items()
+                            if k not in ["signature_ed25519", "public_key"]
+                        }
+                        manifest_json = json.dumps(verify_manifest, sort_keys=True)
+
+                        public_key = ed25519.Ed25519PublicKey.from_public_bytes(pub_key_bytes)
+                        public_key.verify(sig_bytes, manifest_json.encode())
+                    except Exception as e:
+                        logger.error(f"ZIP signature verification failure: {e}")
+                        is_valid = False
+
+                return jsonify({"is_valid": is_valid, "details": results})
+        except Exception as e:
+            return jsonify({"status": "error", "message": f"Failed to parse ZIP bundle: {e}"}), 500
+    else:
+        temp_path = SUITES_DIR / f"verify_tmp_{uuid.uuid4().hex}.json"
+        try:
+            file.save(temp_path)
+            plugin = ArtifactPlugin()
+            res = plugin.verify_integrity(str(temp_path))
             temp_path.unlink()
-        return jsonify({"status": "error", "message": str(e)}), 500
+            return jsonify(res)
+        except Exception as e:
+            if temp_path.exists():
+                temp_path.unlink()
+            return jsonify({"status": "error", "message": str(e)}), 500
 
 
 @suites_bp.route("/v1/runs/<run_id>/report.pdf", methods=["GET"])

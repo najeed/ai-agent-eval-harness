@@ -198,7 +198,11 @@ class SessionManager:
                 logger.info(f"      [Routing] Infrastructure resolved via: {capabilities}")
 
         # [Forensic Sync] Deep-sync resolved routing to scenario metadata for reporting parity
-        self.metadata["protocol"] = self.session_metadata.get("protocol", "http")
+        proto_val = self.session_metadata.get("protocol", "http")
+        if isinstance(proto_val, str):
+            proto_val = proto_val.lower().strip()
+        self.session_metadata["protocol"] = proto_val
+        self.metadata["protocol"] = proto_val
 
         # Resolve default agent if still None
         if not self.session_metadata.get("agent"):

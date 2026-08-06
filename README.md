@@ -48,7 +48,7 @@ graph TD
 | :--- | :--- |
 | **License** | Apache License 2.0 |
 | **Status** | 🟢 Production-Ready (NIST AI-100-1 Aligned) |
-| **Version** | v1.7.0 (July 2026 Release) |
+| **Version** | v1.7.1 (August 2026 Release) |
 | **Trust Model** | [Behavioral DNA & VC v3.0.0](docs-old/architecture.md) |
 | **Architecture** | [Identity-Centric Core](docs-old/architecture.md) |
 | **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.4 Spec](docs-old/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
@@ -154,6 +154,14 @@ The harness is organized into the following key components:
 - **Regulatory Safety Floor**: Prevents "safety-washing" by capping aggregate scores at **0.49 (Fail)** if foundational Safety or Security dimensions are compromised.
 - **Behavioral DNA Telemetry**: High-granularity event bus (4-level: PHASE, SUBTASK, ACTION, STEP) providing a precise "genetic" map of agent decision-making.
 - **Verification Certificate (VC) v3.0.0**: Traces are signed via the **Identity Registry** (Ed25519) and backed by a **Forensic Evidence Ledger** that hashes sidecar artifacts to ensure end-to-end provenance.
+
+### 🌟 What's New in v1.7.1 (August 2026 Release)
+
+- **Thread-Safe Caching & Dynamic SSE Runs**: Replaced synchronous disk scans with a differential `RunsCache` daemon that polls logs every 1s, coupled with real-time SSE streaming for stalling, failing, and certification statuses.
+- **Adversarial Mutator Lookups**: Resolved programmatic fuzzer mutation crashes by supporting scenario ID lookups in the catalog.
+- **Secure ZIP Hashing & Verification**: Enabled drag-and-drop compliance bundle validation matching unpacked file contents against signed SHA3-256 hashes and Ed25519 signatures.
+- **Unified Live Debugger Grid Layout**: Formatted React Flow timeline nodes in wrapped rows, implemented smooth click-to-zoom transitions, and built a dedicated "Isolate Root Cause" action button.
+- **Robust Cache Pruning**: Configured backend run registry cache to clean up deleted/pruned traces from memory, preventing missing files from cluttering console selectors.
 
 ### 🌟 What's New in v1.7.0 (July 2026 Release)
 

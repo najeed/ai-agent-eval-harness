@@ -150,7 +150,7 @@ def start_publish_run():
     }
 
     # Spawn background process
-    suite_dir = Path(__file__).parent.parent / "publication_suite"
+    suite_dir = Path(__file__).parent.parent.parent / "publication_suite"
     cmd = [
         sys.executable,
         str(suite_dir / "publication_suite.py"),
@@ -194,7 +194,20 @@ def get_publish_job(job_id: str):
     if log_path.exists():
         try:
             with open(log_path, encoding="utf-8") as f:
-                log_content = f.read()
+                raw_log = f.read()
+
+            project_root_str = str(config.PROJECT_ROOT)
+            normalized_root = project_root_str.lower().replace("\\", "/")
+
+            lines = []
+            for line in raw_log.splitlines():
+                norm_line = line.replace("\\", "/")
+                idx = norm_line.lower().find(normalized_root)
+                if idx != -1:
+                    orig_root_str = line[idx : idx + len(project_root_str)]
+                    line = line.replace(orig_root_str, ".")
+                lines.append(line)
+            log_content = "\n".join(lines)
         except Exception as e:
             logger.warning(f"Failed to read log file for job {job_id}: {e}")
 

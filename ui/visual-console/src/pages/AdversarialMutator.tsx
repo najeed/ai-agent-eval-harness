@@ -40,6 +40,10 @@ export const AdversarialMutator: React.FC = () => {
   const [saveMsg, setSaveMsg] = useState('');
   const [copied, setCopied] = useState(false);
 
+  // Search & Filter state
+  const [industryFilter, setIndustryFilter] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
+
   const fetchScenarios = async () => {
     setLoadingScenarios(true);
     try {
@@ -47,9 +51,6 @@ export const AdversarialMutator: React.FC = () => {
       const data = await res.json();
       if (res.ok && data.scenarios) {
         setScenarios(data.scenarios);
-        if (data.scenarios.length > 0) {
-          setSelectedId(data.scenarios[0].id);
-        }
       }
     } catch (e) {
       console.error('Error fetching scenarios:', e);
@@ -62,6 +63,32 @@ export const AdversarialMutator: React.FC = () => {
     fetchScenarios();
   }, []);
 
+  const filteredOptions = scenarios.filter((s) => {
+    const indMatch = industryFilter === 'All' || s.industry === industryFilter;
+    const textMatch =
+      !searchTerm ||
+      s.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (s.metadata?.name || s.title || "").toLowerCase().includes(searchTerm.toLowerCase());
+    return indMatch && textMatch;
+  });
+
+  const industries = [
+    'All',
+    ...Array.from(new Set(scenarios.map((s) => s.industry)))
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b)),
+  ];
+
+  useEffect(() => {
+    if (filteredOptions.length > 0) {
+      if (!filteredOptions.some((o) => o.id === selectedId)) {
+        setSelectedId(filteredOptions[0].id);
+      }
+    } else {
+      setSelectedId('');
+    }
+  }, [industryFilter, searchTerm, scenarios]);
+
   const handleMutate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedId) return;
@@ -71,15 +98,12 @@ export const AdversarialMutator: React.FC = () => {
     setMutatedJson(null);
     setSaveMsg('');
 
-    const chosen = scenarios.find((s) => s.id === selectedId);
-    if (!chosen) return;
-
     try {
       const res = await fetch('/api/v1/mutate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          raw_json: chosen,
+          scenario_id: selectedId,
           type: mutationType
         })
       });
@@ -191,14 +215,42 @@ export const AdversarialMutator: React.FC = () => {
               <div className="text-xs text-rose-400 py-4">No scenarios available to mutate. Create a scenario first.</div>
             ) : (
               <form onSubmit={handleMutate} className="space-y-4">
+                <div className="space-y-3 p-3 bg-slate-950/40 border border-slate-900 rounded-lg">
+                  <span className="text-[9px] text-slate-500 font-bold uppercase font-mono">Filters (5000+ available)</span>
+                  
+                  <div className="space-y-1">
+                    <label className="text-[9px] text-slate-400 font-medium">Search Keyword</label>
+                    <input
+                      type="text"
+                      placeholder="Type to filter..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-850 rounded px-2 py-1.5 text-[11px] text-slate-350 focus:outline-none focus:border-indigo-500 font-mono"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[9px] text-slate-400 font-medium">Sector</label>
+                    <select
+                      value={industryFilter}
+                      onChange={(e) => setIndustryFilter(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-850 rounded px-2 py-1.5 text-[11px] text-slate-350 focus:outline-none focus:border-indigo-500 cursor-pointer"
+                    >
+                      {industries.map(ind => (
+                        <option key={ind} value={ind}>{ind === 'All' ? 'All Sectors' : ind.replace(/_/g, ' ')}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
                 <div className="space-y-1.5">
-                  <label className="text-[9px] text-slate-500 font-bold uppercase font-mono">Target Base Scenario</label>
+                  <label className="text-[9px] text-slate-500 font-bold uppercase font-mono">Target Base Scenario ({filteredOptions.length} matching)</label>
                   <select
                     value={selectedId}
                     onChange={(e) => setSelectedId(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-850 rounded px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-indigo-500 cursor-pointer"
+                    className="w-full bg-slate-950 border border-slate-850 rounded px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-indigo-500 cursor-pointer font-mono"
                   >
-                    {scenarios.map((s) => (
+                    {filteredOptions.map((s) => (
                       <option key={s.id} value={s.id}>
                         {s.metadata?.name || s.title || s.id} ({s.id})
                       </option>
