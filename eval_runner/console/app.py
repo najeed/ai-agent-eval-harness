@@ -27,6 +27,8 @@ from .routes import (
 
 # Ensure environment variables are loaded before ANY other configuration usage (R6)
 load_dotenv()
+os.environ["PYTHONUTF8"] = "1"
+os.environ["PYTHONIOENCODING"] = "utf-8"
 
 print(
     f"--- Flask App Initializing (DASHBOARD_API_KEY: {config.DASHBOARD_API_KEY[:4] if config.DASHBOARD_API_KEY else 'None'})",  # noqa: E501

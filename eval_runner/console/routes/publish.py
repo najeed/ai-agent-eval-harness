@@ -40,16 +40,31 @@ def _run_publication_job(job_id, cmd, log_path):
         # Redirect stdout and stderr to log file for user display
         with open(log_path, "w", encoding="utf-8") as log_file:
             proc = subprocess.Popen(
-                cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                bufsize=1,
+                encoding="utf-8",
             )
+            JOBS[job_id]["_proc"] = proc
 
             # Read output stream in real-time
             for line in proc.stdout:
                 log_file.write(line)
                 log_file.flush()
 
-                # Check keywords to update state progress
-                if "Phase 1" in line:
+                # Check keywords or progress counters to update state progress
+                if "Running run" in line or "Completed run" in line or "runs complete" in line:
+                    clean_line = line.strip()
+                    # Extract the x/y part
+                    parts = clean_line.split("]")
+                    if len(parts) > 1:
+                        prog_text = parts[1].strip()
+                        # e.g. "Conducting evaluations (Running run 1/5...)"
+                        # or   "Conducting evaluations (Completed run 1/5...)"
+                        JOBS[job_id]["progress"] = f"Conducting evaluations ({prog_text})"
+                elif "Phase 1" in line:
                     JOBS[job_id]["progress"] = "Conducting evaluation suite..."
                 elif "Phase 2" in line:
                     JOBS[job_id]["progress"] = "Aggregating metrics and scoring..."
@@ -59,6 +74,10 @@ def _run_publication_job(job_id, cmd, log_path):
                     JOBS[job_id]["progress"] = "Generating signed regulatory ZIP bundle..."
 
             proc.wait()
+
+        # Clean up process reference
+        if "_proc" in JOBS[job_id]:
+            del JOBS[job_id]["_proc"]
 
         if proc.returncode == 0:
             # Locate the newly created batch directory under results/
@@ -99,13 +118,16 @@ def _run_publication_job(job_id, cmd, log_path):
                 }
             else:
                 JOBS[job_id]["status"] = "failed"
+                JOBS[job_id]["progress"] = "Publication failed."
                 JOBS[job_id]["error"] = "Process completed, but results batch folder was not found."
         else:
             JOBS[job_id]["status"] = "failed"
+            JOBS[job_id]["progress"] = "Publication failed."
             JOBS[job_id]["error"] = f"Publication script failed with exit code: {proc.returncode}"
     except Exception as e:
         logger.error(f"[Publish Job] Failure executing job {job_id}: {e}")
         JOBS[job_id]["status"] = "failed"
+        JOBS[job_id]["progress"] = "Publication failed."
         JOBS[job_id]["error"] = str(e)
 
 
@@ -121,6 +143,19 @@ def start_publish_run():
     Spawns a publication suite conductor background job and returns {job_id}.
     Inputs include mode, path, agent name, protocol, endpoint, parallel.
     """
+    # Enforce single active job constraint
+    active_jobs = [jid for jid, j in JOBS.items() if j.get("status") in ["queued", "running"]]
+    if active_jobs:
+        return jsonify(
+            {
+                "error": (
+                    "Another publication job is currently running. "
+                    "Please wait for it to complete or stop it before launching a new one."
+                ),
+                "active_job_id": active_jobs[0],
+            }
+        ), 400
+
     body = request.get_json(silent=True) or {}
 
     mode = body.get("mode", "standard")
@@ -153,6 +188,7 @@ def start_publish_run():
     suite_dir = Path(__file__).parent.parent.parent / "publication_suite"
     cmd = [
         sys.executable,
+        "-u",
         str(suite_dir / "publication_suite.py"),
         "--mode",
         mode,
@@ -211,7 +247,59 @@ def get_publish_job(job_id: str):
         except Exception as e:
             logger.warning(f"Failed to read log file for job {job_id}: {e}")
 
-    return jsonify({**job, "logs": log_content})
+    # Filter out non-serializable objects (like the _proc Popen handle)
+    serializable_job = {k: v for k, v in job.items() if not k.startswith("_")}
+    response = jsonify({**serializable_job, "logs": log_content})
+    if job.get("status") in ["completed", "failed"]:
+        response.headers["X-Poll-Stop"] = "true"
+    return response
+
+
+@publish_bp.route("/publish/<job_id>/stop", methods=["POST"])
+@require_permission(Permission.EVAL_TRIGGER)
+def stop_publish_job(job_id: str):
+    """Gracefully terminates a running publication conductor subprocess."""
+    job = JOBS.get(job_id)
+    if not job:
+        return jsonify({"error": f"Job '{job_id}' not found"}), 404
+
+    if job["status"] not in ["queued", "running"]:
+        return jsonify({"message": f"Job is already finished with status '{job['status']}'."}), 200
+
+    proc = job.get("_proc")
+    if proc:
+        try:
+            import psutil
+
+            # Force kill child processes recursively (including parallel scenario tasks)
+            parent = psutil.Process(proc.pid)
+            children = parent.children(recursive=True)
+            for child in children:
+                try:
+                    child.kill()
+                except Exception:
+                    pass
+            parent.kill()
+
+            # Wait for cleanup
+            psutil.wait_procs(children, timeout=3)
+            parent.wait(timeout=3)
+        except Exception as e:
+            logger.warning(f"Process termination cleanup warning: {e}")
+            if proc:
+                try:
+                    proc.kill()
+                except Exception:
+                    pass
+
+    job["status"] = "failed"
+    job["error"] = "Job aborted by user request."
+    job["progress"] = "Job stopped."
+
+    if "_proc" in job:
+        del job["_proc"]
+
+    return jsonify({"status": "stopped", "message": "Job terminated successfully."})
 
 
 @publish_bp.route("/publish/<job_id>/bundle", methods=["GET"])

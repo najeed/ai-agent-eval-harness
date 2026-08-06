@@ -40,30 +40,59 @@ export const PublicationSuite: React.FC = () => {
   const [triggering, setTriggering] = useState(false);
   const [triggerError, setTriggerError] = useState('');
 
-  // Auto-poll job status
-  useEffect(() => {
-    if (!activeJobId) return;
+  // cancelRef is the authoritative polling stop flag.
+  // It is set to true when: abort is clicked, job reaches terminal state, or component unmounts.
+  // We deliberately do NOT set activeJobId=null on terminal states — that would collapse
+  // the monitor panel before the user can read results.
+  const cancelRef = React.useRef(false);
 
-    let timer: any;
+  useEffect(() => {
+    if (!activeJobId) {
+      setJob(null);
+      return;
+    }
+
+    // Reset cancel flag for the new job
+    cancelRef.current = false;
+    let timerId: any = null;
+
     const poll = async () => {
+      if (cancelRef.current) return;
       try {
         const res = await fetch(`/api/publish/${activeJobId}`);
-        const data = await res.json();
-        if (res.ok) {
-          setJob(data);
-          if (data.status === 'completed' || data.status === 'failed') {
-            // Stop polling
-            return;
-          }
+        if (cancelRef.current) return; // Abort fired while request was in-flight
+        if (res.status === 404) {
+          // Job evicted from server — mark cancelled, leave UI intact so user sees result
+          cancelRef.current = true;
+          return;
+        }
+        if (!res.ok) {
+          throw new Error(`HTTP status ${res.status}`);
+        }
+        const data = (await res.json()) as JobStatus;
+        if (cancelRef.current) return;
+        setJob(data);
+        if (data.status === 'completed' || data.status === 'failed') {
+          // Stop polling but keep activeJobId set — panel stays visible
+          cancelRef.current = true;
+          localStorage.removeItem('agentv-active-pub-job');
+          return;
         }
       } catch (e) {
         console.error('Error polling publish job:', e);
       }
-      timer = setTimeout(poll, 2000);
+
+      if (!cancelRef.current) {
+        timerId = setTimeout(poll, 2000);
+      }
     };
 
     poll();
-    return () => clearTimeout(timer);
+
+    return () => {
+      cancelRef.current = true;
+      if (timerId) clearTimeout(timerId);
+    };
   }, [activeJobId]);
 
   const handleStartRun = async (e: React.FormEvent) => {
@@ -90,6 +119,11 @@ export const PublicationSuite: React.FC = () => {
         localStorage.setItem('agentv-active-pub-job', data.job_id);
       } else {
         setTriggerError(data.error || 'Failed to trigger publication conductor run.');
+        if (data.active_job_id) {
+          // Bind the running job so the user is immediately shown the active job monitor and can stop it
+          setActiveJobId(data.active_job_id);
+          localStorage.setItem('agentv-active-pub-job', data.active_job_id);
+        }
       }
     } catch (err: any) {
       setTriggerError(err.message || 'Network error triggering conductor.');
@@ -102,6 +136,26 @@ export const PublicationSuite: React.FC = () => {
     setActiveJobId(null);
     setJob(null);
     localStorage.removeItem('agentv-active-pub-job');
+  };
+
+  const handleStopRun = async () => {
+    if (!activeJobId) return;
+    const jobToStop = activeJobId;
+    // Cancel polling via ref — does NOT collapse the monitor panel.
+    // User can still read the job state. Panel only resets when they start a new run.
+    cancelRef.current = true;
+    localStorage.removeItem('agentv-active-pub-job');
+    setJob(prev => prev ? {
+      ...prev,
+      status: 'failed',
+      progress: 'Job stopped.',
+      error: 'Job aborted by user request.'
+    } : null);
+    try {
+      await fetch(`/api/publish/${jobToStop}/stop`, { method: 'POST' });
+    } catch (e) {
+      console.error('Error stopping publish job:', e);
+    }
   };
 
   return (
@@ -150,22 +204,20 @@ export const PublicationSuite: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setMode('standard')}
-                      className={`py-1.5 rounded text-xs font-bold transition-all border ${
-                        mode === 'standard'
+                      className={`py-1.5 rounded text-xs font-bold transition-all border ${mode === 'standard'
                           ? 'bg-indigo-600 border-indigo-500 text-white'
                           : 'bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-350'
-                      }`}
+                        }`}
                     >
                       Standard Batch
                     </button>
                     <button
                       type="button"
                       onClick={() => setMode('pilot')}
-                      className={`py-1.5 rounded text-xs font-bold transition-all border ${
-                        mode === 'pilot'
+                      className={`py-1.5 rounded text-xs font-bold transition-all border ${mode === 'pilot'
                           ? 'bg-indigo-600 border-indigo-500 text-white'
                           : 'bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-350'
-                      }`}
+                        }`}
                     >
                       Pilot Preview
                     </button>
@@ -271,18 +323,27 @@ export const PublicationSuite: React.FC = () => {
                     <span className="text-[8px] uppercase tracking-wider text-slate-500 font-bold">Monitor Status</span>
                     <h3 className="text-xs font-bold text-slate-200 uppercase font-mono">{job?.status || 'Queued'}</h3>
                   </div>
-                  <span className={`px-2.5 py-1 rounded text-[9px] font-bold uppercase tracking-wider border ${
-                    job?.status === 'completed' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' :
-                    job?.status === 'failed' ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' :
-                    'bg-amber-500/10 border-amber-500/20 text-amber-400 animate-pulse'
-                  }`}>
+                  <span className={`px-2.5 py-1 rounded text-[9px] font-bold uppercase tracking-wider border ${job?.status === 'completed' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' :
+                      job?.status === 'failed' ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' :
+                        'bg-amber-500/10 border-amber-500/20 text-amber-400 animate-pulse'
+                    }`}>
                     {job?.status || 'Pending'}
                   </span>
                 </div>
 
-                <div className="space-y-1">
-                  <span className="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Active Phase</span>
-                  <p className="text-xs font-bold text-white leading-relaxed italic">{job?.progress}</p>
+                <div className="flex justify-between items-center">
+                  <div className="space-y-1">
+                    <span className="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Active Phase</span>
+                    <p className="text-xs font-bold text-white leading-relaxed italic">{job?.progress}</p>
+                  </div>
+                  {(job?.status === 'running' || job?.status === 'queued') && (
+                    <button
+                      onClick={handleStopRun}
+                      className="px-3 py-1.5 bg-rose-950 border border-rose-900/60 hover:bg-rose-900 hover:text-white text-rose-400 text-[10px] font-bold rounded transition-colors"
+                    >
+                      Abort Run
+                    </button>
+                  )}
                 </div>
 
                 {job?.status === 'failed' && job.error && (

@@ -774,11 +774,14 @@ def test_tail_file_generator_terminates_on_strategy_end(tmp_path):
 
 def test_tail_file_generator_inode_stat_error(tmp_path):
     """tail_file_generator: stat().st_ino raises OSError → last_inode = None, no crash."""
+    import errno
+
     log_path = tmp_path / "run.jsonl"
     log_path.write_text('{"event": "run_end"}\n', encoding="utf-8")
 
-    with patch("pathlib.Path.stat", side_effect=OSError("no stat")):
-        events = list(tail_file_generator(log_path, "run-stat-err"))
+    with patch.object(Path, "exists", return_value=True):
+        with patch.object(Path, "stat", side_effect=OSError(errno.ENOENT, "no stat")):
+            events = list(tail_file_generator(log_path, "run-stat-err"))
     # Should still yield something (or at least not crash)
     assert isinstance(events, list)
 
@@ -910,22 +913,23 @@ def test_list_runs_vault_two_part_run_id(runs_jail, runs_client):
 
 def test_tail_file_generator_no_inode_skip_check(tmp_path):
     """Cover 348->358 (400->398): when last_inode is None (stat failed), skip inode check."""
+    import errno
+
     log_path = tmp_path / "run.jsonl"
     log_path.write_text('{"event": "run_end"}\n', encoding="utf-8")
 
-    call_count = 0
+    stat_called = False
 
     def stat_side_effect(*args, **kwargs):
-        nonlocal call_count
-        call_count += 1
-        if call_count == 1:
-            # First call (initial inode read) → raise OSError → last_inode = None
-            raise OSError("no stat")
-        # Subsequent calls should not happen (inode check skipped)
+        nonlocal stat_called
+        if not stat_called:
+            stat_called = True
+            raise OSError(errno.ENOENT, "no stat")
         raise AssertionError("stat called after last_inode set to None")
 
-    with patch.object(Path, "stat", side_effect=stat_side_effect):
-        events = list(tail_file_generator(log_path, "run-no-inode"))
+    with patch.object(Path, "exists", return_value=True):
+        with patch.object(Path, "stat", side_effect=stat_side_effect):
+            events = list(tail_file_generator(log_path, "run-no-inode"))
     assert any("run_end" in e for e in events)
 
 

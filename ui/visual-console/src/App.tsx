@@ -77,13 +77,33 @@ const JobTray: React.FC = () => {
       return;
     }
 
+    let intervalId: any = null;
+
     const fetchStatus = async () => {
       try {
+        const activeIdInStorage = localStorage.getItem('agentv-active-pub-job');
+        if (!activeIdInStorage || activeIdInStorage !== jobId) {
+          if (intervalId) clearInterval(intervalId);
+          return;
+        }
+
         const res = await fetch(`/api/publish/${jobId}`);
+        if (res.status === 404) {
+          localStorage.removeItem('agentv-active-pub-job');
+          if (intervalId) clearInterval(intervalId);
+          setStatus('failed');
+          return;
+        }
         if (res.ok) {
           const data = await res.json();
-          setStatus(data.status);
-          setProgress(data.progress);
+          if (localStorage.getItem('agentv-active-pub-job') === jobId) {
+            setStatus(data.status);
+            setProgress(data.progress);
+            if (data.status === 'completed' || data.status === 'failed') {
+              localStorage.removeItem('agentv-active-pub-job');
+              if (intervalId) clearInterval(intervalId);
+            }
+          }
         }
       } catch (e) {
         console.error(e);
@@ -91,8 +111,10 @@ const JobTray: React.FC = () => {
     };
 
     fetchStatus();
-    const interval = setInterval(fetchStatus, 3000);
-    return () => clearInterval(interval);
+    intervalId = setInterval(fetchStatus, 3000);
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
   }, [jobId]);
 
   if (!jobId) return null;
@@ -104,11 +126,10 @@ const JobTray: React.FC = () => {
         className="p-1.5 bg-slate-950 border border-slate-850 hover:border-slate-700 text-slate-450 hover:text-white rounded-lg transition-all flex items-center justify-center relative"
         title="Active Jobs Status"
       >
-        <Bell className={`w-4 h-4 ${
-          status === 'running' ? 'animate-bounce text-amber-400' :
-          status === 'completed' ? 'text-emerald-400 font-bold' :
-          status === 'failed' ? 'text-rose-400' : 'text-slate-400'
-        }`} />
+        <Bell className={`w-4 h-4 ${status === 'running' ? 'animate-bounce text-amber-400' :
+            status === 'completed' ? 'text-emerald-400 font-bold' :
+              status === 'failed' ? 'text-rose-400' : 'text-slate-400'
+          }`} />
         {status === 'running' && (
           <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-amber-500 rounded-full animate-ping" />
         )}
@@ -118,11 +139,10 @@ const JobTray: React.FC = () => {
         <div className="absolute right-0 mt-2 w-64 bg-slate-950 border border-slate-900 rounded-xl shadow-2xl p-4 z-50 space-y-3 animate-slide-in text-left">
           <div className="flex justify-between items-center border-b border-slate-900 pb-2">
             <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Active Conductor Job</span>
-            <span className={`text-[8px] px-1.5 py-0.5 rounded font-extrabold uppercase ${
-              status === 'completed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-              status === 'failed' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' :
-              'bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse'
-            }`}>
+            <span className={`text-[8px] px-1.5 py-0.5 rounded font-extrabold uppercase ${status === 'completed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                status === 'failed' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' :
+                  'bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse'
+              }`}>
               {status}
             </span>
           </div>
@@ -355,8 +375,8 @@ const ConsoleLayout: React.FC = () => {
                           key={item.name}
                           to={item.path}
                           className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs transition-all ${isActive
-                              ? 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 font-bold'
-                              : 'border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
+                            ? 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 font-bold'
+                            : 'border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
                             }`}
                         >
                           <div className="shrink-0">{item.icon}</div>
@@ -437,9 +457,9 @@ const ConsoleLayout: React.FC = () => {
           <div
             key={t.id}
             className={`p-4 rounded-xl border shadow-2xl backdrop-blur bg-slate-900/90 text-xs text-white max-w-sm pointer-events-auto flex items-start gap-3 transition-all transform duration-300 animate-slide-in ${t.type === 'error' ? 'border-red-500/20 text-red-300' :
-                t.type === 'success' ? 'border-emerald-500/20 text-emerald-300' :
-                  t.type === 'warning' ? 'border-amber-500/20 text-amber-300' :
-                    'border-indigo-500/20 text-indigo-300'
+              t.type === 'success' ? 'border-emerald-500/20 text-emerald-300' :
+                t.type === 'warning' ? 'border-amber-500/20 text-amber-300' :
+                  'border-indigo-500/20 text-indigo-300'
               }`}
           >
             {t.type === 'error' && <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />}
