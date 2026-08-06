@@ -267,14 +267,16 @@ def test_pack(pack_id):
     results = []
     overall_pass = True
 
-    # PQC status check helper
-    status = "COMPLETED"
+    # Determine if this run has a valid PQC verification certificate.
+    # Only treat cert as present if the actual file exists, or if the trace
+    # explicitly records a completed/certified status — NOT by assuming a default.
+    status = ""
     try:
         with open(trace_path, encoding="utf-8") as f:
             first_line = f.readline()
             if first_line:
                 ev = json.loads(first_line)
-                status = ev.get("status", "COMPLETED")
+                status = ev.get("status") or ""
     except Exception as e:
         logger.debug(f"Error reading first trace line: {e}")
 
@@ -332,4 +334,12 @@ def test_pack(pack_id):
     if temp_extracted and temp_path and temp_path.exists():
         temp_path.unlink()
 
-    return jsonify({"checks": results, "overall_pass": overall_pass})
+    return jsonify(
+        {
+            "compliance": "PASS" if overall_pass else "FAIL",
+            "overall_pass": overall_pass,
+            "results": results,
+            # keep legacy 'checks' key for any other clients
+            "checks": results,
+        }
+    )
