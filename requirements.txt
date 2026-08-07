@@ -45,8 +45,8 @@ python-dotenv==1.2.2
 # --- Security Patches ---
 urllib3==2.7.0
 Authlib==1.7.2
-langchain-openai==1.4.1
-langsmith==0.10.16
+langchain-openai==1.4.2
+langsmith==0.10.17
 lxml==6.1.1
 Pillow==12.3.0
 idna==3.18
