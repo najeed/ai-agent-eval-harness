@@ -24,7 +24,7 @@ dependencies = [
     "jsonschema==4.26.0",
     "PyYAML==6.0.3",
     "sentence-transformers==5.7.0",
-    "numpy==2.5.1",
+    "numpy==2.5.2",
     "datasets==5.0.1",
     "PyJWT==2.13.0",
     "cryptography==50.0.0",

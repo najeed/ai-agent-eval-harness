@@ -23,7 +23,7 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **jsonschema** | 4.26.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **PyYAML** | 6.0.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **sentence-transformers** | 5.7.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **numpy** | 2.5.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **numpy** | 2.5.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **sqlalchemy** | 2.0.51 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **datasets** | 5.0.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **PyJWT** | 2.13.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
