@@ -47,9 +47,9 @@ def is_path_safe(target: str | Path, base: str | Path) -> bool:
         raw_target = str(target).replace("\\", "/")
         raw_base = str(base).replace("\\", "/")
 
-        # Detect Windows drive letters (e.g. C:/...) on POSIX platforms
-        if os.name != "nt" and re.match(r"^[a-zA-Z]:", raw_target):
-            raw_target = "/" + re.sub(r"^[a-zA-Z]:", "", raw_target).lstrip("/")
+        # Detect Windows drive letters (e.g. C:/...) or UNC paths (//server/...) on POSIX platforms
+        if os.name != "nt" and re.search(r"(?:^|/)(?:[a-zA-Z]:|//)", raw_target):
+            raw_target = "/" + re.sub(r"^(?:.*/)?(?:[a-zA-Z]:|//+)", "", raw_target).lstrip("/")
 
         target_p = Path(raw_target)
         if not target_p.is_absolute():
