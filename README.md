@@ -186,7 +186,7 @@ The harness is organized into the following key components:
 
 ## 📂 The Global Scenario Corpus
 
-The harness now ships with a massive, validated corpus of **5,000+ scenarios** designed to stress-test agents across every dimension:
+The harness now ships with a validated corpus of **5,000+ scenarios** designed to test agents across various industry workflows and edge cases:
 
 ### 🏛️ Industry-Specific (4,000+ Scenarios)
 Comprehensive coverage for **50+ verticals** including:

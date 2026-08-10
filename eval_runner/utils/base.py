@@ -38,18 +38,26 @@ def is_path_safe(target: str | Path, base: str | Path) -> bool:
     Strict: Opt-in via AEH_STRICT_JAIL=1 to block external temp access.
     """
     import os
+    import re
     import tempfile
 
     try:
-        # 1. Authoritative Anchoring
-        # If target is relative, we anchor it to the project base (PROJECT_ROOT)
-        target_p = Path(target)
+        # 1. Cross-Platform Normalization
+        # Replace backslashes with slashes for cross-platform security analysis
+        raw_target = str(target).replace("\\", "/")
+        raw_base = str(base).replace("\\", "/")
+
+        # Detect Windows drive letters (e.g. C:/...) on POSIX platforms
+        if os.name != "nt" and re.match(r"^[a-zA-Z]:", raw_target):
+            raw_target = "/" + re.sub(r"^[a-zA-Z]:", "", raw_target).lstrip("/")
+
+        target_p = Path(raw_target)
         if not target_p.is_absolute():
-            target_p = Path(base) / target_p
+            target_p = Path(raw_base) / target_p
 
         # 2. Canonical Resolution (Handles symlink traversal attempts)
         target_path = target_p.resolve()
-        base_path = Path(base).resolve()
+        base_path = Path(raw_base).resolve()
         temp_dir = Path(tempfile.gettempdir()).resolve()
 
         # 3. Normalization (Windows Case-Insensitivity & Path Separators)
@@ -63,11 +71,8 @@ def is_path_safe(target: str | Path, base: str | Path) -> bool:
             return True
 
         # Zone B: System Temp (Allowed unless AEH_STRICT_JAIL is set)
-        # CRITICAL: We only allow temp access for absolute paths or if NOT in a nested jail.
         if os.environ.get("AEH_STRICT_JAIL") != "1":
             if target_str == temp_str or target_str.startswith(f"{temp_str}/"):
-                # Goal: Relative paths MUST land in Zone A.
-                # If path lands in Zone B but NOT Zone A, and it was relative, it's an escape.
                 is_relative = not Path(target).is_absolute()
                 if is_relative and not target_str.startswith(f"{base_str}/"):
                     return False
