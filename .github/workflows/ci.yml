@@ -47,7 +47,7 @@ jobs:
         ruff format --check .
 
     - name: Verify Documentation Path Validity
-      run: python scripts/ci/check_doc_paths.py
+      run: python docs/check_doc_paths.py
 
     - name: Install Playwright Browsers
       run: python -m playwright install --with-deps chromium

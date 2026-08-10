@@ -165,7 +165,6 @@ The harness is organized into the following key components:
 - **Adapter Contract Matrix & Retry Policies**: Implemented `tests/contract/test_adapter_contracts.py` verifying connection pooling, exponential backoff retries (429/503 status codes), max retries exception escalation, `AESCallbackHandler` telemetry, and `LangChainAdapterPlugin` execution fallbacks.
 - **Interception Latency SLAs & Concurrency Scaling**: Added `pytest-benchmark` performance tests (`tests/performance/test_interception_benchmarks.py`) testing synchronous interception latency SLAs (<5ms) and 100-session concurrent evaluation scaling.
 - **Chaos Resilience & Failure Injection**: Implemented `tests/chaos/test_chaos_resilience.py` verifying network timeout exception handling, missing trace verification failures, and invariant checks ensuring evaluation failures never silently convert to verification successes.
-- **Documentation Sentinel & Mandatory Coverage Gate**: Created `scripts/ci/check_doc_paths.py` to prevent documentation path drift, configured `--cov-fail-under=85` in `ci.yml` and `.coveragerc`, and renamed marketing hype test files in `dataproc_engine/tests/` to reflect technical behavior.
 
 ### 🌟 What's New in v1.7.1 (August 2026 Release)
 

@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * **Adapter Contract Matrix**: Implemented `tests/contract/test_adapter_contracts.py` verifying connection pooling, exponential backoff retries (429/503 status codes), max retries exception escalation, `AESCallbackHandler` telemetry, and `LangChainAdapterPlugin` execution fallbacks.
 * **Interception Latency & Concurrency Benchmarks**: Added `pytest-benchmark` to `requirements-dev.txt` and implemented `tests/performance/test_interception_benchmarks.py` testing synchronous interception latency SLAs (<5ms) and 100-session concurrent evaluation scaling.
 * **Chaos Resilience & Failure Injection Suite**: Implemented `tests/chaos/test_chaos_resilience.py` verifying network timeout exception handling, missing trace verification failures, and invariant checks ensuring evaluation failures never silently convert to verification successes.
-* **Documentation Sentinel Script**: Created `scripts/ci/check_doc_paths.py` to verify all markdown documentation path references against physical disk files and integrated it into GitHub Actions CI workflow.
+* **Documentation Sentinel Script**: Created `docs/check_doc_paths.py` to verify all markdown documentation path references against physical disk files and integrated it into GitHub Actions CI workflow.
 
 ### Fixed
 * **Documentation & Hype File Relabeling**: Regenerated `TESTING.md` to reflect active codebase structure and commands. Renamed marketing hype test files in `dataproc_engine/tests/` to reflect actual technical behavior (`test_dataproc_parity_benchmarks.py`, `test_signal_veracity_benchmarks.py`, `test_sector_quality_standards.py`).
