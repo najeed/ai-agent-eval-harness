@@ -46,11 +46,14 @@ jobs:
         ruff check .
         ruff format --check .
 
+    - name: Verify Documentation Path Validity
+      run: python scripts/ci/check_doc_paths.py
+
     - name: Install Playwright Browsers
       run: python -m playwright install --with-deps chromium
 
     - name: Test with pytest
-      run: pytest tests/ --ignore=tests/security/ --ignore=tests/ui/ --cov=eval_runner -n auto --tb=short -p no:plugin_gateway
+      run: pytest tests/ --ignore=tests/security/ --ignore=tests/ui/ --cov=eval_runner --cov-fail-under=85 -n auto --tb=short -p no:plugin_gateway
       env:
         OTEL_SDK_DISABLED: true
 

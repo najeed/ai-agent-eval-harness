@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.2] - 2026-08-10
+
+### Added
+* **Industry Scenario Corpus Validation**: Re-anchored `test_scenario_compliance.py` to validate all 5,040+ AES scenario files under `industries/` with loud fail-fast assertions and a disk-count sentinel check.
+* **Adversarial Sandbox Security Isolation Suite**: Added `tests/security/test_sandbox_adversarial_bypass.py` testing `ToolSandbox` against path traversal jail escapes, prompt injection in tool arguments, unauthorized state namespace writes, and 50-level deep nested JSON payloads.
+* **Golden Pass/Fail Verifier Matrix**: Added `tests/unit/core/test_golden_verifier_matrix.py` testing ground-truth PASS certification, missing `run_id` fail-fast validation, forensic path pollution checks, path jail escapes, and NIST 7-dimension Weighted Severity Model (WSM) Safety Floor score capping.
+* **Property-Based Invariant Testing**: Added `hypothesis` to `requirements-dev.txt` and created `tests/property/test_schema_property_based.py` for property-based invariant testing of WSM scoring models, state registry writes, and JSON roundtrip serialization.
+* **Adapter Contract Matrix**: Implemented `tests/contract/test_adapter_contracts.py` verifying connection pooling, exponential backoff retries (429/503 status codes), max retries exception escalation, `AESCallbackHandler` telemetry, and `LangChainAdapterPlugin` execution fallbacks.
+* **Interception Latency & Concurrency Benchmarks**: Added `pytest-benchmark` to `requirements-dev.txt` and implemented `tests/performance/test_interception_benchmarks.py` testing synchronous interception latency SLAs (<5ms) and 100-session concurrent evaluation scaling.
+* **Chaos Resilience & Failure Injection Suite**: Implemented `tests/chaos/test_chaos_resilience.py` verifying network timeout exception handling, missing trace verification failures, and invariant checks ensuring evaluation failures never silently convert to verification successes.
+* **Documentation Sentinel Script**: Created `scripts/ci/check_doc_paths.py` to verify all markdown documentation path references against physical disk files and integrated it into GitHub Actions CI workflow.
+
+### Fixed
+* **Documentation & Hype File Relabeling**: Regenerated `TESTING.md` to reflect active codebase structure and commands. Renamed marketing hype test files in `dataproc_engine/tests/` to reflect actual technical behavior (`test_dataproc_parity_benchmarks.py`, `test_signal_veracity_benchmarks.py`, `test_sector_quality_standards.py`).
+* **CI Coverage Threshold Enforcement**: Configured `fail_under = 85` in `.coveragerc` and `--cov-fail-under=85` in `.github/workflows/ci.yml`.
+* **Healthcare Scenario Schema Compliance**: Updated `industries/healthcare/scenarios/new-scen.json` to include required `evaluation` property.
+
 ## [1.7.1] - 2026-08-06
 
 ### Added

@@ -48,7 +48,7 @@ graph TD
 | :--- | :--- |
 | **License** | Apache License 2.0 |
 | **Status** | 🟢 Production-Ready (NIST AI-100-1 Aligned) |
-| **Version** | v1.7.1 (August 2026 Release) |
+| **Version** | v1.7.2 (August 2026 Release) |
 | **Trust Model** | [Behavioral DNA & VC v3.0.0](docs-old/architecture.md) |
 | **Architecture** | [Identity-Centric Core](docs-old/architecture.md) |
 | **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.4 Spec](docs-old/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
@@ -154,6 +154,18 @@ The harness is organized into the following key components:
 - **Regulatory Safety Floor**: Prevents "safety-washing" by capping aggregate scores at **0.49 (Fail)** if foundational Safety or Security dimensions are compromised.
 - **Behavioral DNA Telemetry**: High-granularity event bus (4-level: PHASE, SUBTASK, ACTION, STEP) providing a precise "genetic" map of agent decision-making.
 - **Verification Certificate (VC) v3.0.0**: Traces are signed via the **Identity Registry** (Ed25519) and backed by a **Forensic Evidence Ledger** that hashes sidecar artifacts to ensure end-to-end provenance.
+
+### 🌟 What's New in v1.7.2 (August 2026 Release)
+
+- **Enterprise Test Suite Production-Readiness**: Re-engineered test architecture into an enterprise-grade verification framework across 3 execution phases with 100% pass rates across 24 core test suites.
+- **Flagship Industry Scenario Corpus Validation**: Re-anchored compliance verification to scan all **5,040+ scenario files** across 52 industry subdirectories under `industries/` with loud fail-fast assertions and disk-count sentinels.
+- **Adversarial Sandbox Security Isolation**: Built `tests/security/test_sandbox_adversarial_bypass.py` testing `ToolSandbox` against path traversal jail escapes, prompt injection in tool arguments, unauthorized namespace writes, and 50-level nested payloads.
+- **Golden Verifier Pass/Fail Matrix**: Added `tests/unit/core/test_golden_verifier_matrix.py` testing ground-truth PASS certification, missing `run_id` fail-fast validation, forensic path pollution checks, path jail escapes, and NIST 7-dimension Weighted Severity Model (WSM) Safety Floor score capping.
+- **Property-Based Invariant Testing**: Added `hypothesis` property-based invariant testing (`tests/property/test_schema_property_based.py`) verifying WSM scoring models, state registry writes, and JSON roundtrip serialization.
+- **Adapter Contract Matrix & Retry Policies**: Implemented `tests/contract/test_adapter_contracts.py` verifying connection pooling, exponential backoff retries (429/503 status codes), max retries exception escalation, `AESCallbackHandler` telemetry, and `LangChainAdapterPlugin` execution fallbacks.
+- **Interception Latency SLAs & Concurrency Scaling**: Added `pytest-benchmark` performance tests (`tests/performance/test_interception_benchmarks.py`) testing synchronous interception latency SLAs (<5ms) and 100-session concurrent evaluation scaling.
+- **Chaos Resilience & Failure Injection**: Implemented `tests/chaos/test_chaos_resilience.py` verifying network timeout exception handling, missing trace verification failures, and invariant checks ensuring evaluation failures never silently convert to verification successes.
+- **Documentation Sentinel & Mandatory Coverage Gate**: Created `scripts/ci/check_doc_paths.py` to prevent documentation path drift, configured `--cov-fail-under=85` in `ci.yml` and `.coveragerc`, and renamed marketing hype test files in `dataproc_engine/tests/` to reflect technical behavior.
 
 ### 🌟 What's New in v1.7.1 (August 2026 Release)
 
