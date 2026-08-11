@@ -155,34 +155,14 @@ The harness is organized into the following key components:
 - **Behavioral DNA Telemetry**: High-granularity event bus (4-level: PHASE, SUBTASK, ACTION, STEP) providing a precise "genetic" map of agent decision-making.
 - **Verification Certificate (VC) v3.0.0**: Traces are signed via the **Identity Registry** (Ed25519) and backed by a **Forensic Evidence Ledger** that hashes sidecar artifacts to ensure end-to-end provenance.
 
-### 🌟 What's New in v1.7.2 (August 2026 Release)
+### 🌟 What's New in the August 2026 Release (v1.7.2)
 
-- **Enterprise Test Suite Production-Readiness**: Re-engineered test architecture into an enterprise-grade verification framework across 3 execution phases with 100% pass rates across 24 core test suites.
-- **Flagship Industry Scenario Corpus Validation**: Re-anchored compliance verification to scan all **5,040+ scenario files** across 52 industry subdirectories under `industries/` with loud fail-fast assertions and disk-count sentinels.
-- **Adversarial Sandbox Security Isolation**: Built `tests/security/test_sandbox_adversarial_bypass.py` testing `ToolSandbox` against path traversal jail escapes, prompt injection in tool arguments, unauthorized namespace writes, and 50-level nested payloads.
-- **Golden Verifier Pass/Fail Matrix**: Added `tests/unit/core/test_golden_verifier_matrix.py` testing ground-truth PASS certification, missing `run_id` fail-fast validation, forensic path pollution checks, path jail escapes, and NIST 7-dimension Weighted Severity Model (WSM) Safety Floor score capping.
-- **Property-Based Invariant Testing**: Added `hypothesis` property-based invariant testing (`tests/property/test_schema_property_based.py`) verifying WSM scoring models, state registry writes, and JSON roundtrip serialization.
-- **Adapter Contract Matrix & Retry Policies**: Implemented `tests/contract/test_adapter_contracts.py` verifying connection pooling, exponential backoff retries (429/503 status codes), max retries exception escalation, `AESCallbackHandler` telemetry, and `LangChainAdapterPlugin` execution fallbacks.
-- **Interception Latency SLAs & Concurrency Scaling**: Added `pytest-benchmark` performance tests (`tests/performance/test_interception_benchmarks.py`) testing synchronous interception latency SLAs (<5ms) and 100-session concurrent evaluation scaling.
-- **Chaos Resilience & Failure Injection**: Implemented `tests/chaos/test_chaos_resilience.py` verifying network timeout exception handling, missing trace verification failures, and invariant checks ensuring evaluation failures never silently convert to verification successes.
+The **v1.7.2 August 2026 Release** presents the AgentV industrial-grade **Verification OS**, featuring full parallelization across 5,000+ scenarios, independent cryptographic verification, hard performance SLA gates, and a native visual console:
 
-### 🌟 What's New in v1.7.1 (August 2026 Release)
-
-- **Thread-Safe Caching & Dynamic SSE Runs**: Replaced synchronous disk scans with a differential `RunsCache` daemon that polls logs every 1s, coupled with real-time SSE streaming for stalling, failing, and certification statuses.
-- **Adversarial Mutator Lookups**: Resolved programmatic fuzzer mutation crashes by supporting scenario ID lookups in the catalog.
-- **Secure ZIP Hashing & Verification**: Enabled drag-and-drop compliance bundle validation matching unpacked file contents against signed SHA3-256 hashes and Ed25519 signatures.
-- **Unified Live Debugger Grid Layout**: Formatted React Flow timeline nodes in wrapped rows, implemented smooth click-to-zoom transitions, and built a dedicated "Isolate Root Cause" action button.
-- **Robust Cache Pruning**: Configured backend run registry cache to clean up deleted/pruned traces from memory, preventing missing files from cluttering console selectors.
-
-### 🌟 What's New in v1.7.0 (July 2026 Release)
-
-- **The Integrated Visual Console (Native GUI)**: Launched the central Verifiable Agent OS dashboard (`/v2`). Built with a modern, high-fidelity dark mode palette, featuring a canvas React Flow scenario builder, execution controller runner, log playback timeline debugger, and side-by-side state diff comparisons.
-- **Granular PBAC Model Swapping**: Added a dynamic Role context header selector supporting four active developer personas (System Admin, Compliance Auditor, Scenario Designer, MultiAgentOps Eng.) with strict permission check gates.
-- **Process-Resilient Async HITL Worker Refactor**: Rebuilt `SessionManager._handle_hitl` to suspend running executions into an SQLite-backed approvals registry (`hitl.db`) instead of blocking threads or stdin, providing a complete restart-resilient manual review queue.
-- **Real-Time review boards**: Configured Server-Sent Events (SSE) log streamers and resolution API triggers inside `HITLQueue.tsx` with timer-based countdowns, rejection reason entries, and double-submit protection.
-- **Spec Importer & Mutator Scaffolds**: Integrated drag-and-drop Markdown specifications translators alongside adversarial edge case prompt generators (typos, vagueness, injections) with side-by-side comparative diff views.
-- **ReportLab & WeasyPrint PDF Engine**: Formulated a resilient compliance PDF generator that falls back to ReportLab layout matrices if local GTK C-libraries are missing.
-- **FIPS-Approved SHA-3 Cryptographic Standard**: Standardized the harness security architecture on FIPS 202 SHA-3 hashes and Ed25519 trace signatures.
+- 🛡️ **Enterprise Verification Assurance Suite**: Full parallelization of the 5,040+ scenario corpus via `pytest-xdist`, strict exception hygiene, and multi-version schema dispatch. Includes an **Independent Cryptographic Oracle** (`IndependentTraceOracle`) with Ed25519 & ML-DSA-65 (PQC) validation, a 7-stage verify-after-tampering matrix, and synchronized TOCTOU barrier race testing.
+- ⚡ **Performance SLA Gates & 1,000 Session Scaling**: Enforces hard interception latency SLA gates (<5ms mean overhead) and validates 1,000 concurrent evaluation sessions with 100% unique run IDs and zero state leakage under contention.
+- 🎛️ **The Integrated Visual Console (Native GUI)**: Central dashboard (`/v2`) featuring a React Flow canvas scenario builder, live timeline log playback debugger, side-by-side state diff visualizers, async restart-resilient HITL review queues (`hitl.db`), and drag-and-drop PRD spec-to-eval translators.
+- 🔒 **Thread-Safe Governance & SHA-3 Security Standard**: Thread-safe differential `RunsCache` daemon with real-time SSE streaming, drag-and-drop ZIP compliance bundle validation, and standardized FIPS-approved SHA-3 hashing with Ed25519 trace signatures.
 
 ## 📂 The Global Scenario Corpus
 

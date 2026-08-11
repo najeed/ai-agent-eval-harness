@@ -36,11 +36,11 @@ dependencies = [
     "psutil==7.2.2",
     "httpx==0.28.1",
     "GitPython==3.1.59",
-    "sqlalchemy==2.0.51",
+    "sqlalchemy==2.0.52",
     "python-dotenv==1.2.2",
     "Authlib==1.7.2",
     "langchain-openai==1.4.3",
-    "langsmith==0.10.17",
+    "langsmith==0.10.18",
     "lxml==6.1.1",
     "Pillow==12.3.0",
     "cyclecore-pq==0.3.0",
@@ -88,6 +88,8 @@ filterwarnings = [
     "ignore:.*Accessing jsonschema.__version__ is deprecated.*:DeprecationWarning",
     # Pydantic V1 shim warnings from third-party adapters
     "ignore:.*Pydantic V1 functionality.*:UserWarning",
+    # PytestBenchmark warnings occur when tests are run in parallel with xdist
+    "ignore::pytest_benchmark.logger.PytestBenchmarkWarning"
 ]
 
 

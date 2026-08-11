@@ -110,6 +110,8 @@ async def test_sandbox_prompt_injection_in_tool_args(base_scenario, tmp_path):
         "\x00\x1b[31mANSI_ESCAPE_INJECTION",
     ]
 
+    initial_state_copy = dict(sandbox.state)
+
     for payload in injection_payloads:
         # Simulate tool execution call with injection payload
         result = await sandbox.execute(
@@ -117,6 +119,18 @@ async def test_sandbox_prompt_injection_in_tool_args(base_scenario, tmp_path):
             params={"input": payload},
         )
         assert isinstance(result, dict)
+
+        # 1. State Immutability: Injected prompt payloads MUST NOT alter internal sandbox state
+        assert sandbox.state == initial_state_copy, (
+            f"Prompt injection payload '{payload}' mutated internal sandbox state!"
+        )
+
+        # 2. Value Neutralization: Verify shell metablocks (e.g. $(...)) are stripped
+        sanitized = ToolSandbox._sanitize_value(payload)
+        if "$(" in payload:
+            assert "$(" not in sanitized, (
+                f"Shell subshell injection '$(' was not sanitized from payload '{payload}'!"
+            )
 
 
 @pytest.mark.asyncio
@@ -138,8 +152,74 @@ async def test_sandbox_deeply_nested_payload_resilience(base_scenario, tmp_path)
         curr["child"] = {"level": i}
         curr = curr["child"]
 
+    oversized_str = "A" * 10000
+    params = {"nested": nested_payload, "oversized": oversized_str}
+
     result = await sandbox.execute(
         tool_name="echo_shim",
-        params={"nested": nested_payload, "oversized": "A" * 10000},
+        params=params,
     )
     assert isinstance(result, dict)
+
+    # 1. Structural Integrity & Recursion Depth: Verify value sanitizer traverses 50 levels safely
+    sanitized_nested = ToolSandbox._sanitize_value(nested_payload)
+    curr_sanitized = sanitized_nested
+    for depth in range(1, 50):
+        assert "child" in curr_sanitized, f"Nested level {depth} missing from sanitized payload!"
+        curr_sanitized = curr_sanitized["child"]
+    assert curr_sanitized["level"] == 49
+
+    # 2. Oversized Payload Integrity: Verify 10,000-char payload is preserved without stack overflow
+    sanitized_oversized = ToolSandbox._sanitize_value(oversized_str)
+    assert len(sanitized_oversized) == 10000
+
+
+@pytest.mark.asyncio
+async def test_sandbox_toctou_race_condition():
+    """
+    Synchronized TOCTOU Race Test:
+    Actor A checks permission -> Barrier pauses Actor A -> Actor B revokes write permission ->
+    Actor A attempts write -> Asserts permission decision is evaluated atomically at write time.
+    """
+    import asyncio
+
+    topology = {
+        "actor_a": {"writes": ["finance:*"]},
+        "actor_b": {"writes": ["*"]},
+    }
+    state_registry = SharedStateRegistry(topology=topology)
+
+    check_event = asyncio.Event()
+    revoke_event = asyncio.Event()
+    results = {}
+
+    async def actor_a_task():
+        # 1. Authorization check: Actor A reads topology permissions (allowed)
+        writes = topology["actor_a"]["writes"]
+        can_write_initially = any(state_registry._match_namespace("finance", p) for p in writes)
+        assert can_write_initially is True
+
+        # Signal barrier that initial check passed
+        check_event.set()
+
+        # Wait for Actor B to modify topology state before executing write
+        await revoke_event.wait()
+
+        # 2. Write Execution: Attempt write after permission revocation
+        write_success = state_registry.write("actor_a", "finance:balance", 50000)
+        results["actor_a_write"] = write_success
+
+    async def actor_b_task():
+        # Wait for Actor A's check signal
+        await check_event.wait()
+
+        # Actor B revokes Actor A's permission in topology
+        topology["actor_a"]["writes"] = []
+        revoke_event.set()
+
+    await asyncio.gather(actor_a_task(), actor_b_task())
+
+    # Assert TOCTOU protection: Write attempt MUST fail after topology revocation
+    assert results["actor_a_write"] is False, (
+        "TOCTOU Race Condition Vulnerability: Actor A executed write after permission revocation!"
+    )

@@ -15,7 +15,7 @@ Werkzeug==3.1.8
 # --- Data & Schemas ---
 jsonschema==4.26.0
 PyYAML==6.0.3
-sqlalchemy==2.0.51
+sqlalchemy==2.0.52
 
 # --- ML / Embeddings (optional, for benchmark loaders) ---
 sentence-transformers==5.7.0
@@ -46,7 +46,7 @@ python-dotenv==1.2.2
 urllib3==2.7.0
 Authlib==1.7.2
 langchain-openai==1.4.3
-langsmith==0.10.17
+langsmith==0.10.18
 lxml==6.1.1
 Pillow==12.3.0
 idna==3.18
