@@ -52,8 +52,27 @@ jobs:
     - name: Install Playwright Browsers
       run: python -m playwright install --with-deps chromium
 
+    - name: Detect scenario changes
+      uses: dorny/paths-filter@v3
+      id: changes
+      with:
+        filters: |
+          scenarios:
+            - 'industries/**'
+            - 'scenarios/**'
+            - 'spec/aes/**'
+            - 'tests/functional/test_scenario_compliance.py'
+
     - name: Test with pytest
-      run: pytest tests/ --ignore=tests/security/ --ignore=tests/ui/ --cov=eval_runner --cov-fail-under=85 -n auto --tb=short -p no:plugin_gateway
+      shell: bash
+      run: |
+        if [ "${{ steps.changes.outputs.scenarios }}" = "true" ] || [ "${{ github.ref }}" = "refs/heads/main" ]; then
+          echo "Scenario changes detected or running on main — running full scenario compliance suite."
+          pytest tests/ --ignore=tests/security/ --ignore=tests/ui/ --cov=eval_runner --cov-fail-under=85 -n auto --tb=short -p no:plugin_gateway
+        else
+          echo "No scenario changes detected — skipping scenario compliance suite."
+          pytest tests/ --ignore=tests/security/ --ignore=tests/ui/ --ignore=tests/functional/test_scenario_compliance.py --cov=eval_runner --cov-fail-under=85 -n auto --tb=short -p no:plugin_gateway
+        fi
       env:
         OTEL_SDK_DISABLED: true
 

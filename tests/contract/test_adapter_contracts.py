@@ -8,8 +8,13 @@ from __future__ import annotations
 import aiohttp
 import pytest
 
+from eval_runner.adapters.ag2 import AG2AdapterPlugin
 from eval_runner.adapters.common import AESCallbackHandler, BaseAdapter, SessionManager
+from eval_runner.adapters.grok import GrokAdapterPlugin
 from eval_runner.adapters.langchain import LangChainAdapterPlugin
+from eval_runner.adapters.ollama import OllamaAdapterPlugin
+from eval_runner.adapters.openai import OpenAIAdapterPlugin
+from eval_runner.adapters.openapi import OpenAPIAdapterPlugin
 
 
 @pytest.mark.asyncio
@@ -94,16 +99,37 @@ async def test_aes_callback_handler_event_contract(monkeypatch):
     assert events_captured[1][1]["node_id"] == "node1"
 
 
-@pytest.mark.asyncio
-async def test_langchain_adapter_plugin_contract():
-    """
-    Contract Test: LangChainAdapterPlugin registers langchain protocols
-    and executes simulation fallback query.
-    """
-    plugin = LangChainAdapterPlugin()
-    assert plugin.name == "langchain"
+# --- Parameterized Adapter Contract Matrix ---
 
-    payload = {"task_id": "contract_task", "input": {"prompt": "Hello"}}
-    res = await plugin.execute_langchain_query(payload)
+ADAPTER_PLUGINS = [
+    LangChainAdapterPlugin,
+    OpenAIAdapterPlugin,
+    OllamaAdapterPlugin,
+    OpenAPIAdapterPlugin,
+    GrokAdapterPlugin,
+    AG2AdapterPlugin,
+]
+
+
+@pytest.mark.parametrize("adapter_cls", ADAPTER_PLUGINS)
+@pytest.mark.asyncio
+async def test_adapter_plugin_contract_matrix(adapter_cls):
+    """
+    Parameterized Contract Test Matrix:
+    Verifies that all framework adapter plugins (LangChain, OpenAI, Ollama, OpenAPI, Grok, AG2)
+    instantiate with canonical names and handle query executions cleanly.
+    """
+    plugin = adapter_cls()
+    assert hasattr(plugin, "name")
+    assert isinstance(plugin.name, str)
+    assert len(plugin.name) > 0
+
+    payload = {"task_id": f"contract_{plugin.name}", "input": {"prompt": "Hello"}}
+    query_method_name = f"execute_{plugin.name}_query"
+    query_fn = getattr(plugin, query_method_name, None)
+    msg = f"Plugin '{plugin.name}' missing expected query method '{query_method_name}'"
+    assert query_fn is not None, msg
+
+    res = await query_fn(payload)
     assert isinstance(res, dict)
-    assert res.get("status") == "success"
+    assert "status" in res

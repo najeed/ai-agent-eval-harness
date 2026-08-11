@@ -66,6 +66,37 @@ def test_property_shared_state_registry_invariants(key: str, val: str | int | bo
 
 @settings(suppress_health_check=[HealthCheck.too_slow], max_examples=50)
 @given(
+    key=st.text(min_size=1, max_size=20),
+    val=st.text(max_size=30),
+)
+def test_property_unauthorized_state_mutation_invariant(key: str, val: str):
+    """
+    High-Value Policy Invariant Property:
+    For any unauthorized agent, attempting to mutate a restricted namespace
+    MUST return False and MUST NOT alter the state value.
+    """
+    topology = {
+        "admin_agent": {"reads": ["*"], "writes": ["admin:*"]},
+        "untrusted_agent": {"reads": ["public:*"], "writes": ["public:*"]},
+    }
+    registry = SharedStateRegistry(topology=topology)
+
+    # Admin sets secret
+    path = f"admin:{key}"
+    registry.write("admin_agent", path, "super_secret")
+
+    # Untrusted agent attempts write
+    success = registry.write("untrusted_agent", path, val)
+
+    # Invariants:
+    # 1. Unauthorized write MUST fail
+    assert success is False
+    # 2. Original state MUST be preserved
+    assert registry.read("admin_agent", path) == "super_secret"
+
+
+@settings(suppress_health_check=[HealthCheck.too_slow], max_examples=50)
+@given(
     data=st.recursive(
         st.one_of(st.booleans(), st.integers(), st.text(max_size=20)),
         lambda children: (

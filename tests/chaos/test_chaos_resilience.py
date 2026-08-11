@@ -1,15 +1,16 @@
 """
-Chaos resilience & failure injection test suite for AgentV evaluation infrastructure.
+Chaos resilience & boundary fault injection test suite for AgentV evaluation infrastructure.
 Enforces the fundamental AgentV invariant: Infrastructure failure or exception
+at LLM adapter boundaries, WORM disk layer, or simulator runtime
 must NEVER silently convert into an evaluation success (PASS).
 """
 
 from __future__ import annotations
 
-import asyncio
-
+import aiohttp
 import pytest
 
+from eval_runner.adapters.common import BaseAdapter
 from eval_runner.tool_sandbox import ToolSandbox
 from eval_runner.verifier import TraceVerifier, VerificationResult
 
@@ -36,10 +37,35 @@ def chaos_scenario():
 
 
 @pytest.mark.asyncio
-async def test_chaos_llm_network_timeout_resilience(chaos_scenario, tmp_path):
+async def test_chaos_llm_adapter_boundary_fault_injection():
     """
-    Chaos Test: Simulated LLM network timeout during tool call
-    must raise exception and not silently pass.
+    Boundary Fault Injection: Injects 500 Internal Error into LLM HTTP transport boundary.
+    Verifies that BaseAdapter.call_with_retry retries and raises original ClientResponseError.
+    """
+    adapter = BaseAdapter(name="chaos_llm_adapter")
+    attempts = 0
+
+    async def faulty_http_boundary():
+        nonlocal attempts
+        attempts += 1
+        raise aiohttp.ClientResponseError(
+            request_info=None, history=(), status=500, message="Chaos 500 Boundary Fault"
+        )
+
+    with pytest.raises(aiohttp.ClientResponseError) as exc_info:
+        await adapter.call_with_retry(
+            faulty_http_boundary, max_attempts=3, base_delay=0.01, retry_codes={500}
+        )
+
+    assert exc_info.value.status == 500
+    assert attempts == 3
+
+
+@pytest.mark.asyncio
+async def test_chaos_simulator_crash_fault_injection(chaos_scenario, tmp_path):
+    """
+    Boundary Fault Injection: Injects a simulated runtime exception into ToolSandbox execution.
+    Verifies sandbox captures error without process crash and returns structured failure.
     """
     sandbox = ToolSandbox(
         scenario=chaos_scenario,
@@ -48,16 +74,22 @@ async def test_chaos_llm_network_timeout_resilience(chaos_scenario, tmp_path):
     )
     await sandbox.setup()
 
-    async def throwing_core_exec(data):
-        raise TimeoutError("Network timeout during LLM interception")
+    async def crash_core(tool_name, params, agent_name=None):
+        raise RuntimeError("Simulated Simulator Process Crash")
 
-    with pytest.raises(asyncio.TimeoutError):
-        await throwing_core_exec({"tool_name": "faulty_tool"})
+    sandbox._execute_core = crash_core
+
+    with pytest.raises(RuntimeError) as exc_info:
+        await sandbox.execute(
+            tool_name="faulty_shim",
+            params={},
+        )
+    assert "Simulated Simulator Process Crash" in str(exc_info.value)
 
 
 def test_chaos_missing_trace_verification_failure(tmp_path, monkeypatch):
     """
-    Chaos Test: Non-existent trace file must raise FileNotFoundError during verification.
+    Boundary Fault Injection: Missing trace file must raise FileNotFoundError.
     """
     project_root = tmp_path / "project"
     run_log_dir = project_root / "runs"
@@ -79,8 +111,8 @@ def test_chaos_missing_trace_verification_failure(tmp_path, monkeypatch):
 
 def test_chaos_evaluation_failure_never_converts_to_success():
     """
-    Chaos Test: Invariant check - VerificationResult with failed metrics or error message
-    is guaranteed to have success=False.
+    Invariant Check: VerificationResult with zero metrics or error
+    is guaranteed to have success=False and aggregate_score=0.0.
     """
     result = VerificationResult(
         success=False,

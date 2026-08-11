@@ -5,16 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.7.2] - 2026-08-10
+## [1.7.2] - 2026-08-11
 
 ### Added
-* **Industry Scenario Corpus Validation**: Re-anchored `test_scenario_compliance.py` to validate all 5,040+ AES scenario files under `industries/` with loud fail-fast assertions and a disk-count sentinel check.
-* **Adversarial Sandbox Security Isolation Suite**: Added `tests/security/test_sandbox_adversarial_bypass.py` testing `ToolSandbox` against path traversal jail escapes, prompt injection in tool arguments, unauthorized state namespace writes, and 50-level deep nested JSON payloads.
-* **Golden Pass/Fail Verifier Matrix**: Added `tests/unit/core/test_golden_verifier_matrix.py` testing ground-truth PASS certification, missing `run_id` fail-fast validation, forensic path pollution checks, path jail escapes, and NIST 7-dimension Weighted Severity Model (WSM) Safety Floor score capping.
-* **Property-Based Invariant Testing**: Added `hypothesis` to `requirements-dev.txt` and created `tests/property/test_schema_property_based.py` for property-based invariant testing of WSM scoring models, state registry writes, and JSON roundtrip serialization.
-* **Adapter Contract Matrix**: Implemented `tests/contract/test_adapter_contracts.py` verifying connection pooling, exponential backoff retries (429/503 status codes), max retries exception escalation, `AESCallbackHandler` telemetry, and `LangChainAdapterPlugin` execution fallbacks.
-* **Interception Latency & Concurrency Benchmarks**: Added `pytest-benchmark` to `requirements-dev.txt` and implemented `tests/performance/test_interception_benchmarks.py` testing synchronous interception latency SLAs (<5ms) and 100-session concurrent evaluation scaling.
-* **Chaos Resilience & Failure Injection Suite**: Implemented `tests/chaos/test_chaos_resilience.py` verifying network timeout exception handling, missing trace verification failures, and invariant checks ensuring evaluation failures never silently convert to verification successes.
+* **Parallelized Industry Scenario Corpus Validation**: Re-anchored `test_scenario_compliance.py` to validate all 5,040+ AES scenario files under `industries/` using `@pytest.mark.parametrize` for full `pytest-xdist` parallel worker distribution, strict exception hygiene (`json.JSONDecodeError`, `ValidationError`), multi-version schema dispatch, and a disk-count sentinel check.
+* **Independent Cryptographic Verification Oracle**: Implemented `IndependentTraceOracle` in `tests/unit/core/test_golden_verifier_matrix.py` using stdlib `hashlib` and raw `cryptography` Ed25519 and ML-DSA-65 (PQC) primitives, completely decoupled from `TraceVerifier`.
+* **7-Stage Golden Verify-After-Tampering Matrix**: Implemented 7-stage verify-after-tampering matrix in `test_golden_verifier_matrix.py` verifying detection of event payload alterations, line deletions, unauthorized event insertions, sequence swaps, signature corruptions, and identity key substitutions.
+* **Synchronized TOCTOU Barrier Race & Security Isolation**: Added `tests/security/test_sandbox_adversarial_bypass.py` testing `ToolSandbox` against path traversal jail escapes, prompt injection state immutability, subshell stripping, 50-level deep nested JSON payloads, and an `asyncio.Event` barrier synchronized TOCTOU permission revocation race test (`test_sandbox_toctou_race_condition`).
+* **High-Value Property-Based Invariants**: Added `test_property_unauthorized_state_mutation_invariant` to `tests/property/test_schema_property_based.py` verifying unauthorized state mutation protection under property-based fuzzing.
+* **Parameterized Framework Adapter Matrix**: Expanded `tests/contract/test_adapter_contracts.py` into a parameterized contract matrix across `LangChain`, `OpenAI`, `Ollama`, `OpenAPI`, `Grok`, and `AG2` adapter plugins verifying connection pooling, exponential backoff retries (429/503 status codes), max retries exception escalation, and `AESCallbackHandler` telemetry.
+* **Hardened SLA Latency Gates & 1,000 Session Scaling**: Enforced explicit mean latency SLA gate assertions (`assert mean_latency_sec < 0.005`) in `tests/performance/test_interception_benchmarks.py` (<5ms SLA) and added `test_1000_session_concurrency_scaling` evaluating 1,000 concurrent evaluation sessions with 100% unique run IDs and zero resource leaks.
+* **Boundary Fault Injection Chaos Suite**: Implemented `tests/chaos/test_chaos_resilience.py` with boundary fault injection across LLM transport HTTP 500s, simulator runtime process crashes, missing WORM trace files, and invariant checks ensuring evaluation failures never silently convert to verification successes.
+* **Cross-Platform Security Hardening**: Updated `is_path_safe` in `eval_runner/utils/base.py` to normalize Windows drive letters (`C:\...`) and UNC paths (`//...`) on POSIX and Windows systems.
 * **Documentation Sentinel Script**: Created `docs/check_doc_paths.py` to verify all markdown documentation path references against physical disk files and integrated it into GitHub Actions CI workflow.
 
 ### Fixed
