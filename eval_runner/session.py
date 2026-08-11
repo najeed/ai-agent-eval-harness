@@ -198,7 +198,11 @@ class SessionManager:
                 logger.info(f"      [Routing] Infrastructure resolved via: {capabilities}")
 
         # [Forensic Sync] Deep-sync resolved routing to scenario metadata for reporting parity
-        self.metadata["protocol"] = self.session_metadata.get("protocol", "http")
+        proto_val = self.session_metadata.get("protocol", "http")
+        if isinstance(proto_val, str):
+            proto_val = proto_val.lower().strip()
+        self.session_metadata["protocol"] = proto_val
+        self.metadata["protocol"] = proto_val
 
         # Resolve default agent if still None
         if not self.session_metadata.get("agent"):
@@ -879,27 +883,47 @@ class SessionManager:
             print(f"      [HITL] CI Mode: Auto-approving task {task_id}")
             return response
 
-        # Standard interactive input
-
-        # Check if we are in a TTY or have a way to get input
         import sys
 
         if sys.stdin.isatty():
-            print(f"\n      [HITL] Agent is requesting intervention for task '{task_id}':")
-            print(f"      > {prompt}")
-            response = input("      Enter response (or 'exit' to abort): ").strip()
-            if response.lower() == "exit":
-                raise InterruptedError("User aborted evaluation.")
-            self.event_bus.emit(CoreEvents.HITL_RESUME, {"task_id": task_id, "response": response})
-            return response
-        else:
-            summary = prompt[:50] + "..." if len(prompt) > 50 else prompt
-            response = (
-                f"[Simulation] Interaction for '{summary}' acknowledged in non-interactive mode."
+            # Interactive terminal: read from stdin directly
+            print(f"\n      [HITL] Human intervention required for task '{task_id}'")
+            print(f"      Prompt: {prompt}")
+            print("      Enter response (or 'exit' to abort): ", end="", flush=True)
+            human_input = input()
+            if human_input.lower() == "exit":
+                raise InterruptedError(f"Human operator aborted task '{task_id}'")
+            self.event_bus.emit(
+                CoreEvents.HITL_RESUME, {"task_id": task_id, "response": human_input}
             )
-            self.event_bus.emit(CoreEvents.HITL_RESUME, {"task_id": task_id, "response": response})
-            print(f"      [HITL] Non-interactive environment: {response}")
-            return response
+            return human_input
+
+        # Non-interactive mode (no TTY): suspend into registry for GUI/API resolution
+        if not sys.stdin.isatty() and "pytest" not in sys.modules:
+            from eval_runner.hitl.pending import global_registry
+
+            approval = global_registry.create(task_id, self.run_id, prompt)
+
+            # Await the approvals queue wait loop (which runs in an executor thread)
+            await approval.wait()
+
+            if approval.action == "reject":
+                self.event_bus.emit(
+                    CoreEvents.HITL_RESUME, {"task_id": task_id, "response": "[REJECTED]"}
+                )
+                raise InterruptedError(
+                    f"Human reviewer rejected task '{task_id}': {approval.response}"
+                )
+
+            self.event_bus.emit(
+                CoreEvents.HITL_RESUME, {"task_id": task_id, "response": approval.response}
+            )
+            return approval.response
+
+        # Non-interactive without GUI (e.g. piped stdin in test): return informative message
+        response = f"Skipped (non-interactive, no TTY): {prompt}"
+        self.event_bus.emit(CoreEvents.HITL_RESUME, {"task_id": task_id, "response": response})
+        return response
 
     def _record_tool_result(self, turn, tool_name, tool_params, result, history, actions, turn_ctx):
         """Unified helper to record tool results across single and short-circuited paths."""

@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from eval_runner.adapters.autogen import AG2AdapterPlugin
+from eval_runner.adapters.ag2 import AG2AdapterPlugin
 from eval_runner.adapters.crewai import CrewAIAdapterPlugin
 from eval_runner.adapters.langchain import LangChainAdapterPlugin
 from eval_runner.adapters.langgraph import LangGraphAdapterPlugin
@@ -53,12 +53,12 @@ async def test_langgraph_v2_telemetry(event_bus):
 
 
 @pytest.mark.asyncio
-async def test_autogen_v1_telemetry(event_bus):
+async def test_ag2_v1_telemetry(event_bus):
     plugin = AG2AdapterPlugin()
     payload = {"agent_id": "assistant_agent", "message": "query"}
 
     with patch.dict("sys.modules", {"ag2": MagicMock()}):
-        result = await plugin.execute_autogen_query(payload)
+        result = await plugin.execute_ag2_query(payload)
 
     assert result["status"] == "success"
     assert result["metadata"]["protocol"] == "v1"
@@ -116,7 +116,6 @@ async def test_missing_sdk_err_reporting(event_bus):
             {
                 "langgraph": None,
                 "ag2": None,
-                "autogen": None,
                 "crewai": None,
                 "langchain": None,
                 "langchain_core": None,
@@ -129,8 +128,8 @@ async def test_missing_sdk_err_reporting(event_bus):
         assert lg_res["status"] == "error"
         assert "not installed" in lg_res["message"]
 
-        # AutoGen (unconfigured fallback)
-        ag_res = await ag_plugin.execute_autogen_query({"agent_id": "test"})
+        # AG2 (unconfigured fallback)
+        ag_res = await ag_plugin.execute_ag2_query({"agent_id": "test"})
         assert ag_res["status"] == "error"
         assert "not installed" in ag_res["message"]
 

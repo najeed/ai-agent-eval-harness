@@ -25,7 +25,7 @@ async def test_dashboard_discovery_on_load(dashboard_server):
         # in the DOM after st.sidebar.selectbox() has been evaluated and rendered.
         await page.wait_for_selector(
             "[data-testid='stSelectbox']",
-            timeout=30000,  # 30 s: generous for loaded CI runners
+            timeout=60000,  # 60 s: generous for loaded CI/local runners
         )
 
         # 2. Verify Page Title

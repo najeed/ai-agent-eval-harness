@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from eval_runner.adapters.autogen import AG2AdapterPlugin
+from eval_runner.adapters.ag2 import AG2AdapterPlugin
 from eval_runner.context import EvaluationContext, TurnContext
 from eval_runner.events import CoreEvents, emit, reset, subscribe
 from eval_runner.verifier import BaseVerifier, VerificationResult
@@ -82,8 +82,8 @@ def test_context_objects_telemetry_fields():
 
 
 @pytest.mark.asyncio
-async def test_autogen_adapter_instrumentation():
-    """Verify AutoGen adapter emits TURN and CHAIN events with context."""
+async def test_ag2_adapter_instrumentation():
+    """Verify AG2 adapter emits TURN and CHAIN events with context."""
 
     original_import = __builtins__["__import__"]
 
@@ -92,14 +92,14 @@ async def test_autogen_adapter_instrumentation():
     span_ctx = {"adapter_trace": "xyz"}
 
     def mock_import(name, *args, **kwargs):
-        if name in ("ag2", "autogen"):
+        if name == "ag2":
             raise ImportError(f"No module named '{name}'")
         return original_import(name, *args, **kwargs)
 
     with patch("eval_runner.events.EventEmitter.emit") as mock_emit:
         with patch("builtins.__import__", side_effect=mock_import):
             try:
-                await adapter.execute_autogen_query(payload, span_context=span_ctx)
+                await adapter.execute_ag2_query(payload, span_context=span_ctx)
             except ImportError:
                 pass
 

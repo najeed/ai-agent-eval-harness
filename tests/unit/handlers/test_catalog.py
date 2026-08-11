@@ -500,3 +500,113 @@ def test_check_for_updates_sync(tmp_path):
         cat.scenarios = [{"path": "s1"}, {"path": "s2"}]
 
         assert cat.check_for_updates() is False
+
+
+def test_catalog_new_magicmock():
+    """Cover line 34-35: __new__ returns a new instance if class name is MagicMock."""
+
+    class MagicMockMeta(type):
+        pass
+
+    MagicMockMeta.__name__ = "MagicMock"
+
+    class MagicMockClass(ScenarioCatalog, metaclass=MagicMockMeta):
+        pass
+
+    inst = ScenarioCatalog.__new__(MagicMockClass)
+    assert isinstance(inst, ScenarioCatalog)
+
+
+def test_catalog_build_index_unsafe_path(tmp_path):
+    """Cover line 109: skipping unsafe paths during index building."""
+    cat = ScenarioCatalog(index_path=str(tmp_path / "index.json"))
+    cat.root_dir = tmp_path
+
+    # We mock is_path_safe to return False
+    with (
+        patch("eval_runner.catalog.Path.exists", return_value=True),
+        patch("eval_runner.utils.is_path_safe", return_value=False),
+        patch("eval_runner.catalog.Path.glob", return_value=[Path("/outside/unsafe.json")]),
+    ):
+        cat.build_index()
+        assert len(cat.scenarios) == 0
+
+
+def test_catalog_rename_permission_error(tmp_path):
+    """Cover lines 190->201: PermissionError handling during index atomic rename."""
+    index_file = tmp_path / "index.json"
+    cat = ScenarioCatalog(index_path=str(index_file))
+    cat.root_dir = tmp_path
+
+    # Make os.rename raise PermissionError every time (all attempts fail)
+    with patch("os.rename", side_effect=PermissionError("Locked file")):
+        with patch("os.path.exists", return_value=True):
+            with patch("os.remove", return_value=None):
+                cat.build_index()
+                # Should not raise exception (caught internally and logged)
+                assert cat.scenarios == []
+
+
+def test_catalog_check_for_updates_mtime_cached(tmp_path):
+    """Cover line 228: check_for_updates returning False when top mtime is cached."""
+    cat = ScenarioCatalog(index_path=str(tmp_path / "index.json"))
+    cat.root_dir = tmp_path
+    cat.manifest["last_top_mtime"] = 100
+
+    with patch("eval_runner.catalog.Path.exists", return_value=True):
+        with patch("eval_runner.catalog.Path.stat") as mock_stat:
+            mock_stat.return_value.st_mtime = 50  # less than cached
+            assert cat.check_for_updates(force=False) is False
+
+
+def test_catalog_load_index_stale_sync(tmp_path):
+    """Cover lines 262->273: load_index triggering build_index when stale."""
+    index_file = tmp_path / "index.json"
+    cat_data = {
+        "scenarios": [{"id": "s1", "path": "scenarios/s1.json", "mtime": 123}],
+        "metadata": {"last_scanned_count": 1, "last_top_mtime": 0},
+    }
+    index_file.write_text(json.dumps(cat_data), encoding="utf-8")
+
+    cat = ScenarioCatalog(index_path=str(index_file))
+    cat.root_dir = tmp_path
+
+    # Mock check_for_updates to return True (stale)
+    with patch.object(cat, "check_for_updates", return_value=True):
+        with patch.object(cat, "build_index") as mock_build:
+            cat.load_index()
+            mock_build.assert_called()
+
+
+def test_catalog_get_absolute_path_traversal(tmp_path):
+    """Cover line 346: get_absolute_path traversal check return None."""
+    cat = ScenarioCatalog(index_path=str(tmp_path / "index.json"))
+    cat.root_dir = tmp_path
+
+    # Add a scenario with a traversal path
+    cat.scenarios = [{"id": "traversal_scen", "path": "../../outside.json"}]
+
+    with patch("eval_runner.catalog.Path.exists", return_value=True):
+        # Even though Path.exists is True, path traversal safety detects
+        # it starts outside project root.
+        assert cat.get_absolute_path("traversal_scen") is None
+
+
+def test_catalog_install_pack_failed_cleanup(tmp_path):
+    """Cover lines 493->494: install_pack failure cleaning up empty directory."""
+    # Setup directories
+    target_dir = tmp_path / "industries" / "finance" / "FINRA" / "latest"
+    target_dir.mkdir(parents=True)
+
+    with patch("eval_runner.config") as mock_cfg:
+        mock_cfg.PROJECT_ROOT = tmp_path
+
+        # Patch download to raise exception to trigger failure
+        with patch(
+            "eval_runner.catalog._download_simulated", side_effect=ValueError("Download failed")
+        ):
+            # Call install_pack which should fail and clean up
+            install_pack("finance-FINRA@latest")
+
+            # Directory should be cleaned up (removed) since it was empty
+            assert not target_dir.exists()

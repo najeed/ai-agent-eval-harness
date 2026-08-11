@@ -176,8 +176,12 @@ async def test_event_async_coroutine_subscriber():
     bus.subscribe(async_sub)
     bus.emit("async_coro_event", {"data": "test"})
 
-    # Wait for the coroutine to complete
-    await asyncio.sleep(0.05)
+    # Wait for the coroutine to complete with a robust polling loop
+    for _ in range(100):
+        if len(received) == 1:
+            break
+        await asyncio.sleep(0.01)
+
     bus.flush()
     assert len(received) == 1
     assert received[0].name == "async_coro_event"

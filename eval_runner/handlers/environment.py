@@ -56,7 +56,7 @@ def list_industries() -> list[str]:
 def detect_framework() -> str:
     """
     Heuristic framework discovery for onboarding standard.
-    Detects LangGraph, CrewAI, AutoGen, and LangChain based on file signals and requirements.
+    Detects LangGraph, CrewAI, AG2, and LangChain based on file signals and requirements.
     """
     cwd = Path.cwd()
 
@@ -66,7 +66,7 @@ def detect_framework() -> str:
     if (cwd / "crew.py").exists() or (cwd / "agents.yaml").exists():
         return "CrewAI"
     if (cwd / "conversable_agent.py").exists():
-        return "AutoGen"
+        return "AG2"
 
     # 2. Requirements.txt Scanning
     req_file = cwd / "requirements.txt"
@@ -77,8 +77,8 @@ def detect_framework() -> str:
                 return "LangGraph"
             if "crewai" in content:
                 return "CrewAI"
-            if "autogen" in content or "pyautogen" in content:
-                return "AutoGen"
+            if "ag2" in content:
+                return "AG2"
             if "langchain" in content:
                 return "LangChain"
         except Exception as e:

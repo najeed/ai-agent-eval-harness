@@ -25,5 +25,8 @@
       }
     ],
     "edges": []
+  },
+  "evaluation": {
+    "metrics": []
   }
 }

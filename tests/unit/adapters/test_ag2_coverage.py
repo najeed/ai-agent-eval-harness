@@ -3,28 +3,28 @@ from unittest.mock import ANY, AsyncMock, MagicMock, patch
 
 import pytest
 
-from eval_runner.adapters.autogen import AG2AdapterPlugin
+from eval_runner.adapters.ag2 import AG2AdapterPlugin
 from eval_runner.events import CoreEvents
 
 
 @pytest.mark.asyncio
-async def test_autogen_on_discover_adapters():
+async def test_ag2_on_discover_adapters():
     adapter = AG2AdapterPlugin()
     registry = MagicMock()
     adapter.on_discover_adapters(registry)
     # Registry should have ag2
-    registry.register.assert_any_call("ag2", adapter.execute_autogen_query)
+    registry.register.assert_any_call("ag2", adapter.execute_ag2_query)
 
 
 @pytest.mark.asyncio
-async def test_autogen_remote_explicit():
+async def test_ag2_remote_explicit():
     adapter = AG2AdapterPlugin()
     # Test with explicit URL in payload
     payload = {"agent_id": "test_agent", "message": "hello", "url": "http://remote-api.com"}
 
     with patch.object(adapter, "_execute_remote_api", new_callable=AsyncMock) as mock_remote:
         mock_remote.return_value = {"status": "success"}
-        result = await adapter.execute_autogen_query(payload)
+        result = await adapter.execute_ag2_query(payload)
         mock_remote.assert_called_once_with(payload, "http://remote-api.com", None)
         assert result == {"status": "success"}
 
@@ -32,42 +32,34 @@ async def test_autogen_remote_explicit():
     payload = {"agent_id": "test_agent", "message": "hello"}
     with patch.object(adapter, "_execute_remote_api", new_callable=AsyncMock) as mock_remote:
         mock_remote.return_value = {"status": "success"}
-        result = await adapter.execute_autogen_query(payload, endpoint="http://endpoint.com")
+        result = await adapter.execute_ag2_query(payload, endpoint="http://endpoint.com")
         mock_remote.assert_called_once_with(payload, "http://endpoint.com", None)
 
 
 @pytest.mark.asyncio
-async def test_autogen_sdk_missing_no_fallback():
+async def test_ag2_sdk_missing_no_fallback():
     adapter = AG2AdapterPlugin()
     payload = {"agent_id": "test_agent", "message": "hello"}
 
     with (
-        patch("eval_runner.adapters.autogen.config", spec=[]),
-        patch("eval_runner.adapters.autogen.emit") as mock_emit,
+        patch("eval_runner.adapters.ag2.config", spec=[]),
+        patch("eval_runner.adapters.ag2.emit") as mock_emit,
     ):
         # Simulate ag2 not installed
-        with patch.dict(sys.modules, {"ag2": None}):
-            # We need to ensure the code that does 'import ag2' fails
-            # In autogen.py:
-            # try:
-            #     import ag2 as autogen
-            #     is_installed = True
+        def mock_import(name, *args, **kwargs):
+            if name == "ag2":
+                raise ImportError(f"No module named '{name}'")
+            return MagicMock()
 
-            # Since it's inside the function, we can patch the import
-            def mock_import(name, *args, **kwargs):
-                if name in ("ag2", "autogen"):
-                    raise ImportError(f"No module named '{name}'")
-                return MagicMock()
-
-            with patch("builtins.__import__", side_effect=mock_import):
-                result = await adapter.execute_autogen_query(payload)
-                assert result["status"] == "error"
-                assert "SDK not installed" in result["message"]
-                mock_emit.assert_any_call(CoreEvents.ERROR, {"message": ANY})
+        with patch("builtins.__import__", side_effect=mock_import):
+            result = await adapter.execute_ag2_query(payload)
+            assert result["status"] == "error"
+            assert "SDK not installed" in result["message"]
+            mock_emit.assert_any_call(CoreEvents.ERROR, {"message": ANY})
 
 
 @pytest.mark.asyncio
-async def test_autogen_sdk_missing_with_fallback():
+async def test_ag2_sdk_missing_with_fallback():
     adapter = AG2AdapterPlugin()
     payload = {"agent_id": "test_agent", "message": "hello"}
 
@@ -76,20 +68,20 @@ async def test_autogen_sdk_missing_with_fallback():
     mock_config.AG2_API_URL = "http://fallback.com"
 
     with (
-        patch("eval_runner.adapters.autogen.config", mock_config),
-        patch("eval_runner.adapters.autogen.emit") as mock_emit,
+        patch("eval_runner.adapters.ag2.config", mock_config),
+        patch("eval_runner.adapters.ag2.emit") as mock_emit,
         patch.object(adapter, "_execute_remote_api", new_callable=AsyncMock) as mock_remote,
     ):
         mock_remote.return_value = {"status": "success", "mode": "remote-fallback"}
 
         # Simulate ag2 not installed
         def mock_import(name, *args, **kwargs):
-            if name in ("ag2", "autogen"):
+            if name == "ag2":
                 raise ImportError(f"No module named '{name}'")
             return MagicMock()
 
         with patch("builtins.__import__", side_effect=mock_import):
-            await adapter.execute_autogen_query(payload)
+            await adapter.execute_ag2_query(payload)
             mock_remote.assert_called_once_with(payload, "http://fallback.com", None)
             mock_emit.assert_any_call(
                 CoreEvents.TURN_START,
@@ -104,12 +96,12 @@ async def test_autogen_sdk_missing_with_fallback():
 
 
 @pytest.mark.asyncio
-async def test_autogen_logic_path_execution():
+async def test_ag2_logic_path_execution():
     adapter = AG2AdapterPlugin()
     payload = {"agent_id": "test_agent", "metadata": {"logic_path": "mock_module:mock_handler"}}
 
-    mock_autogen = MagicMock()
-    mock_autogen.__version__ = "0.2.0"
+    mock_ag2 = MagicMock()
+    mock_ag2.__version__ = "0.2.0"
 
     mock_handler = AsyncMock()
     mock_chat_result = MagicMock()
@@ -120,10 +112,10 @@ async def test_autogen_logic_path_execution():
     mock_module.mock_handler = mock_handler
 
     with (
-        patch.dict(sys.modules, {"ag2": mock_autogen}),
+        patch.dict(sys.modules, {"ag2": mock_ag2}),
         patch("importlib.import_module", return_value=mock_module),
     ):
-        result = await adapter.execute_autogen_query(payload)
+        result = await adapter.execute_ag2_query(payload)
 
         assert result["status"] == "success"
         assert result["output"] == "Final Answer: 42"
@@ -132,17 +124,17 @@ async def test_autogen_logic_path_execution():
 
 
 @pytest.mark.asyncio
-async def test_autogen_simulation_mode():
+async def test_ag2_simulation_mode():
     adapter = AG2AdapterPlugin()
     payload = {"agent_id": "test_agent"}
 
-    mock_autogen = MagicMock()
+    mock_ag2 = MagicMock()
 
     with (
-        patch.dict(sys.modules, {"ag2": mock_autogen}),
-        patch("eval_runner.adapters.autogen.emit") as mock_emit,
+        patch.dict(sys.modules, {"ag2": mock_ag2}),
+        patch("eval_runner.adapters.ag2.emit") as mock_emit,
     ):
-        result = await adapter.execute_autogen_query(payload)
+        result = await adapter.execute_ag2_query(payload)
 
         assert result["status"] == "success"
         assert "Simulation" in result["output"]
@@ -154,20 +146,18 @@ async def test_autogen_simulation_mode():
 
 
 @pytest.mark.asyncio
-async def test_autogen_execute_remote_api_success():
+async def test_ag2_execute_remote_api_success():
     adapter = AG2AdapterPlugin()
     payload = {"agent_id": "remote_agent"}
     url = "http://remote-api.com"
 
     mock_response = MagicMock()
     mock_response.status = 200
-    # Mock json() to return an awaitable
     mock_response.json = MagicMock(
         return_value=AsyncMock(return_value={"output": "Remote Success"})()
     )
     mock_response.raise_for_status = MagicMock(return_value=None)
 
-    # Mock context manager for post
     mock_post_cm = MagicMock()
     mock_post_cm.__aenter__ = AsyncMock(return_value=mock_response)
     mock_post_cm.__aexit__ = AsyncMock(return_value=None)
@@ -177,7 +167,7 @@ async def test_autogen_execute_remote_api_success():
 
     with (
         patch("eval_runner.adapters.common.SessionManager.get_session", return_value=mock_session),
-        patch("eval_runner.adapters.autogen.emit"),
+        patch("eval_runner.adapters.ag2.emit"),
     ):
         result = await adapter._execute_remote_api(payload, url)
 
@@ -187,19 +177,17 @@ async def test_autogen_execute_remote_api_success():
 
 
 @pytest.mark.asyncio
-async def test_autogen_execute_remote_api_failure():
+async def test_ag2_execute_remote_api_failure():
     adapter = AG2AdapterPlugin()
     payload = {"agent_id": "remote_agent"}
     url = "http://remote-api.com"
 
     mock_response = MagicMock()
     mock_response.status = 500
-    # Mock raise_for_status to return something awaitable if needed, or just throw
     mock_response.raise_for_status = MagicMock(
         return_value=AsyncMock(side_effect=Exception("HTTP Error"))()
     )
 
-    # Mock context manager for post
     mock_post_cm = MagicMock()
     mock_post_cm.__aenter__ = AsyncMock(return_value=mock_response)
     mock_post_cm.__aexit__ = AsyncMock(return_value=None)
@@ -209,7 +197,7 @@ async def test_autogen_execute_remote_api_failure():
 
     with (
         patch("eval_runner.adapters.common.SessionManager.get_session", return_value=mock_session),
-        patch("eval_runner.adapters.autogen.emit"),
+        patch("eval_runner.adapters.ag2.emit"),
     ):
         result = await adapter._execute_remote_api(payload, url)
 
@@ -218,13 +206,13 @@ async def test_autogen_execute_remote_api_failure():
 
 
 @pytest.mark.asyncio
-async def test_autogen_simulation_sdk_missing():
+async def test_ag2_simulation_sdk_missing():
     adapter = AG2AdapterPlugin()
     payload = {"agent_id": "test_agent"}
 
-    # Force ImportError for ag2/autogen in simulation
+    # Force ImportError for ag2 in simulation
     def mock_import(name, *args, **kwargs):
-        if name in ("ag2", "autogen"):
+        if name == "ag2":
             raise ImportError(f"No module named '{name}'")
         return MagicMock()
 
@@ -234,14 +222,14 @@ async def test_autogen_simulation_sdk_missing():
 
 
 @pytest.mark.asyncio
-async def test_autogen_exception_handling():
+async def test_ag2_exception_handling():
     adapter = AG2AdapterPlugin()
     payload = {"agent_id": "test_agent"}
 
-    with patch("eval_runner.adapters.autogen.emit") as mock_emit:
+    with patch("eval_runner.adapters.ag2.emit") as mock_emit:
         # Trigger an unexpected exception
         with patch(
-            "eval_runner.adapters.autogen.DualNormalizationHub.normalize_text",
+            "eval_runner.adapters.ag2.DualNormalizationHub.normalize_text",
             side_effect=Exception("Boom"),
         ):
             # We need to get past the SDK check
@@ -252,7 +240,7 @@ async def test_autogen_exception_handling():
                 mock_module = MagicMock()
                 mock_module.f = mock_handler
                 with patch("importlib.import_module", return_value=mock_module):
-                    result = await adapter.execute_autogen_query(payload)
+                    result = await adapter.execute_ag2_query(payload)
                     assert result["status"] == "error"
                     assert "AG2 execution failed: Boom" in result["message"]
                     mock_emit.assert_any_call(CoreEvents.ERROR, {"message": ANY})

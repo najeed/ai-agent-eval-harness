@@ -21,6 +21,7 @@ class Permission:
     INDEX_REFRESH = "index:refresh"
     DEBUG_EVENT = "debugger:event"
     CERTIFY_WRITE = "certify:write"
+    HITL_RESOLVE = "hitl:resolve"
 
     # 3. Admin Nodes (Destructive / Config)
     SCENARIOS_WRITE = "scenarios:write"
@@ -42,6 +43,7 @@ class Permission:
             cls.INDEX_REFRESH,
             cls.DEBUG_EVENT,
             cls.CERTIFY_WRITE,
+            cls.HITL_RESOLVE,
             cls.SCENARIOS_WRITE,
             cls.SCENARIOS_DELETE,
             cls.DEBUG_RESET,

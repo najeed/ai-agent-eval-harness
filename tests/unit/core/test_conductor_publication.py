@@ -44,7 +44,7 @@ def test_conductor_get_scenario_subset(mock_args, tmp_path):
     # Pilot mode
     mock_args.pilot = True
     scenarios = conductor._get_scenario_subset()
-    assert len(scenarios) == 10
+    assert len(scenarios) == 15
 
 
 def test_conductor_run_serial(mock_args, tmp_path):
@@ -91,7 +91,7 @@ def test_run_worker_success(tmp_path):
     task = (scenario_path, "agent", "http", "url", 42, output_dir, "run_0")
 
     # Mock subprocess.run to succeed and create a log file
-    def mock_run(cmd, env, capture_output, text):
+    def mock_run(cmd, env, capture_output, text, **kwargs):
         log_dir = Path(env["RUN_LOG_DIR"])
         log_dir.mkdir(parents=True, exist_ok=True)
         (log_dir / "log.jsonl").write_text('{"event": "test"}')

@@ -12,8 +12,9 @@ from eval_runner.utils import rmtree_resilient
 
 
 @pytest.fixture(scope="module")
-def console_jail():
-    tmp_root = Path(tempfile.gettempdir()) / "aes_console_sys_jail_extra"
+def console_jail(request):
+    worker_id = getattr(request.config, "workerinput", {}).get("workerid", "master")
+    tmp_root = Path(tempfile.gettempdir()) / f"aes_console_sys_jail_extra_{worker_id}"
     root = tmp_root / "root"
     runs = root / "runs"
     docs = root / "docs-old"
@@ -33,9 +34,12 @@ def console_jail():
 
 @pytest.fixture
 def client(console_jail, monkeypatch):
+    from eval_runner.console.routes.scenarios import scenario_bp
+
     app = Flask(__name__)
     app.secret_key = "test-secret"
     app.register_blueprint(system_bp, url_prefix="/api")
+    app.register_blueprint(scenario_bp, url_prefix="/api")
 
     monkeypatch.setattr(config, "PROJECT_ROOT", console_jail["root"])
     monkeypatch.setattr(config, "RUN_LOG_DIR", console_jail["runs"])
@@ -346,3 +350,214 @@ def test_system_route_debugger_state_glob_fallback_and_empty_line(client, consol
     res = client.get("/api/debugger/state?run_id=glob_run_id")
     assert res.status_code == 200
     assert len(res.get_json()["data"]["timeline"]) == 1
+
+
+# ---------------------------------------------------------------------------
+# Missing-branch coverage additions for system.py
+# ---------------------------------------------------------------------------
+
+
+def test_system_route_debugger_loan_narrative(client):
+    """Cover line 73->74: run_end event with run_id starting with 'run-loan'."""
+    from eval_runner.events import CoreEvents
+
+    res = client.post(
+        "/api/debugger/state",
+        json={
+            "event": CoreEvents.RUN_END,
+            "data": {"status": "COMPLETED", "run_id": "run-loan-demo-001"},
+        },
+    )
+    assert res.status_code == 200
+    state = client.get("/api/debugger/state").get_json()
+    msg = state["data"]["summary"]["message"]
+    assert "(Industrial Demo Narrative)" in msg
+
+
+def test_system_route_cleanup_runs_dir_absent(client, monkeypatch):
+    """Cover line 274->286: cleanup_runs when RUN_LOG_DIR does not exist."""
+    from pathlib import Path
+
+    from eval_runner import config
+
+    monkeypatch.setattr(config, "RUN_LOG_DIR", Path("/nonexistent_dir_xyz_aes"))
+    res = client.post("/api/cleanup-runs")
+    assert res.status_code == 200
+    assert res.get_json()["count"] == 0
+
+
+def test_system_route_cleanup_runs_plugin_without_method(client, console_jail):
+    """Cover line 290->288 false branch: plugin with no on_cleanup_runs attribute."""
+    from eval_runner.plugins import manager
+
+    class NoCleanupPlugin:
+        pass
+
+    plugin = NoCleanupPlugin()
+    manager.plugins.append(plugin)
+    try:
+        res = client.post("/api/cleanup-runs")
+        assert res.status_code == 200
+    finally:
+        manager.plugins.remove(plugin)
+
+
+def test_system_route_debugger_state_demo_trace_hydration(client):
+    """Cover 336->363 false branch: get_demo_trace returns a trace, skipping file scan."""
+    demo_events = [{"event": "run_start", "data": {}}]
+    with patch("eval_runner.console.demo_traces.get_demo_trace", return_value=demo_events):
+        res = client.get("/api/debugger/state?run_id=run-loan-demo-hydrate")
+    assert res.status_code == 200
+    body = res.get_json()
+    assert "data" in body
+    assert "timeline" in body["data"]
+
+
+def test_system_route_ollama_status_all_paths(client):
+    """Cover lines 394-410: all three ollama-status sub-paths."""
+
+    # 1. Valid HTTP endpoint — server responds 200
+    class FakeResponse:
+        status = 200
+
+        def read(self):
+            return b'{"models": [{"name": "llama3:latest"}, {"name": "mistral"}]}'
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_):
+            pass
+
+    with patch("urllib.request.urlopen", return_value=FakeResponse()):
+        res = client.get("/api/system/ollama-status")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["available"] is True
+    assert data["models"] == ["llama3:latest", "mistral"]
+
+    # 2. urlopen raises (server unreachable)
+    with patch("urllib.request.urlopen", side_effect=OSError("connection refused")):
+        res = client.get("/api/system/ollama-status")
+    assert res.status_code == 200
+    assert res.get_json()["available"] is False
+    assert res.get_json()["models"] == []
+
+    # 3. Endpoint that doesn't start with http/https
+    from eval_runner import config
+
+    with patch.object(config, "OLLAMA_BASE_URL", "grpc://localhost:9000", create=True):
+        res = client.get("/api/system/ollama-status")
+    assert res.status_code == 200
+    assert res.get_json()["available"] is False
+    assert res.get_json()["models"] == []
+
+
+def test_system_route_read_doc_fallback_not_found(client, console_jail):
+    """Cover 168->171 false branch: no-extension request and .md file doesn't exist."""
+    # Request a filename without extension where no .md file exists either
+    res = client.get("/api/docs/nonexistent_guide_xyz")
+    assert res.status_code == 404
+
+
+def test_system_route_auto_translate_success(client):
+    """Test POST /api/v1/auto-translate succeeds."""
+    mock_scenario = {"id": "scenario-1", "title": "Mock Title"}
+
+    async def mock_translate(*args, **kwargs):
+        return mock_scenario
+
+    with patch("eval_runner.auto_translate.translate_to_scenario", side_effect=mock_translate):
+        res = client.post("/api/v1/auto-translate", json={"text": "raw specs", "model": "m1"})
+        assert res.status_code == 200
+        assert res.get_json() == mock_scenario
+
+
+def test_system_route_auto_translate_missing_text(client):
+    """Test POST /api/v1/auto-translate fails with 400 when text is missing."""
+    res = client.post("/api/v1/auto-translate", json={"model": "m1"})
+    assert res.status_code == 400
+    assert "Missing required field: text" in res.get_json()["error"]
+
+
+def test_system_route_auto_translate_failure(client):
+    """Test POST /api/v1/auto-translate fails with 500 when translate_to_scenario raises."""
+
+    async def mock_translate_fail(*args, **kwargs):
+        raise RuntimeError("Ollama crashed")
+
+    with patch("eval_runner.auto_translate.translate_to_scenario", side_effect=mock_translate_fail):
+        res = client.post("/api/v1/auto-translate", json={"text": "raw specs"})
+        assert res.status_code == 500
+        assert "Ollama crashed" in res.get_json()["error"]
+
+
+def test_scenarios_evaluate_by_id(client, console_jail):
+    """Cover lines 108-109 in scenarios.py evaluate_scenario route."""
+    from eval_runner.catalog import ScenarioCatalog
+
+    cat = ScenarioCatalog.get_instance()
+    scen_dir = console_jail["root"] / "industries" / "generic" / "scenarios"
+    scen_dir.mkdir(parents=True, exist_ok=True)
+    scen_file = scen_dir / "scen_evaluate_id.json"
+    scen_file.write_text('{"id": "scen_evaluate_id", "title": "Scen Title"}', encoding="utf-8")
+
+    cat.scenarios = [
+        {"id": "scen_evaluate_id", "path": "industries/generic/scenarios/scen_evaluate_id.json"}
+    ]
+
+    with patch("eval_runner.loader.load_scenario") as mock_load:
+        mock_load.return_value = {"id": "scen_evaluate_id"}
+        with patch("threading.Thread.start"):  # Don't actually run thread
+            res = client.post("/api/v1/evaluate", json={"path": "scen_evaluate_id"})
+            assert res.status_code == 200
+            assert res.get_json()["status"] == "started"
+
+
+def test_scenarios_evaluate_async_eval_fails(client, console_jail):
+    """Cover lines 144-145: async evaluation failure thread logger error."""
+    from eval_runner.catalog import ScenarioCatalog
+
+    ScenarioCatalog.get_instance()
+    scen_dir = console_jail["root"] / "scenarios"
+    scen_dir.mkdir(parents=True, exist_ok=True)
+    scen_file = scen_dir / "scen_eval_fail.json"
+    scen_file.write_text('{"id": "scen_eval_fail"}', encoding="utf-8")
+
+    import time
+
+    # Mock engine.run_evaluation to raise exception
+    with patch("eval_runner.engine.run_evaluation", side_effect=ValueError("Async engine crash")):
+        with patch("eval_runner.loader.load_scenario", return_value={"id": "scen_eval_fail"}):
+            res = client.post("/api/v1/evaluate", json={"path": str(scen_file)})
+            assert res.status_code == 200
+            # Wait for thread to finish
+            time.sleep(0.5)
+
+
+def test_scenarios_mutate_by_id_success(client, console_jail):
+    """Cover mutate_scenario with scenario_id lookup (lines 182-187)."""
+    from eval_runner.catalog import ScenarioCatalog
+
+    cat = ScenarioCatalog.get_instance()
+    scen_dir = console_jail["root"] / "scenarios"
+    scen_dir.mkdir(parents=True, exist_ok=True)
+    scen_file = scen_dir / "scen_mutate_id.json"
+    scen_file.write_text('{"id": "scen_mutate_id", "title": "Original"}', encoding="utf-8")
+
+    cat.scenarios = [{"id": "scen_mutate_id", "path": "scenarios/scen_mutate_id.json"}]
+
+    with patch(
+        "eval_runner.mutator.mutate_scenario",
+        return_value={"id": "scen_mutate_id", "title": "Mutated"},
+    ):
+        res = client.post("/api/v1/mutate", json={"scenario_id": "scen_mutate_id", "type": "typo"})
+        assert res.status_code == 200
+        assert res.get_json()["mutated"]["title"] == "Mutated"
+
+
+def test_scenarios_mutate_by_id_not_found(client):
+    """Cover mutate_scenario scenario_id 404 (line 185)."""
+    res = client.post("/api/v1/mutate", json={"scenario_id": "nonexistent_mutate_id"})
+    assert res.status_code == 404
+    assert "not found" in res.get_json()["error"]

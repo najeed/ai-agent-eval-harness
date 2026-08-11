@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy-base: #0b0e14;
+  --color-accent-primary: #6366f1; /* Indigo-500 accent to prevent conflict with cyan */
+  --color-accent-live: #06b6d4; /* Cyan-500 for active stream/live indicators */
+  
+  /* 8 distinct semantic states */
+  --color-status-draft: #64748b; /* Slate */
+  --color-status-running: #f59e0b; /* Amber */
+  --color-status-pass: #10b981; /* Emerald */
+  --color-status-fail: #ef4444; /* Red */
+  --color-status-error: #f97316; /* Red-Orange */
+  --color-status-certified: #06b6d4; /* Cyan */
+  --color-status-pending-review: #475569; /* Slate-dark */
+  --color-status-unverified: #991b1b; /* Crimson */
+}
+
+@layer base {
+  body {
+    background-color: var(--color-navy-base);
+    color: #f3f4f6;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  code, pre {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}

@@ -29,31 +29,13 @@ from referencing import Registry, Resource
 # Systemic path resolution
 BASE_DIR = Path(__file__).parent.parent.parent
 SCHEMA_PATH = BASE_DIR / "spec" / "aes" / "aes.schema.json"
-SCENARIOS_ROOT = BASE_DIR / "scenarios"
+SCENARIOS_ROOT = BASE_DIR / "industries"
 
 
 @pytest.fixture(scope="module")
 def scenario_schema():
     """
     Fixture to load and cache the scenario schema for reuse across tests.
-
-    This fixture loads the JSON schema file once and makes it available
-    to all tests in the module. The module scope ensures the schema
-    is only loaded once, improving test performance.
-
-    Args:
-        None
-
-    Returns:
-        dict: The loaded JSON schema for scenario validation
-
-    Raises:
-        FileNotFoundError: If the schema file doesn't exist
-        json.JSONDecodeError: If the schema file contains invalid JSON
-
-    Example:
-        The fixture loads the schema from "schemas/scenario.schema.json"
-        and returns it as a Python dictionary for use in validation tests.
     """
     with open(SCHEMA_PATH, encoding="utf-8") as f:
         return json.loads(f.read())
@@ -61,108 +43,75 @@ def scenario_schema():
 
 def load_all_scenario_files():
     """
-    Generator function to yield paths of all scenario JSON files.
-
-    This function recursively walks through the industries directory
-    and yields the full path of each JSON file found. It's used to
-    systematically validate all scenario files against the schema.
-
-    Args:
-        None
-
-    Yields:
-        str: Full path to each scenario JSON file found
-
-    Example:
-        Yields paths like:
-        "industries/accounting/scenarios/accounts_payable/scenario1.json"
-        "industries/aerospace/scenarios/aircraft_manufacturing/scenario2.json"
+    Generator function to yield paths of all scenario JSON files in industries/.
+    Excludes non-scenario data fixtures (mock_*.json) and pack manifests (pack_manifest.json).
     """
     for root, _, files in os.walk(SCENARIOS_ROOT):
         for file in files:
-            if file.endswith(".json"):
+            if (
+                file.endswith(".json")
+                and file != "pack_manifest.json"
+                and not file.startswith("mock_")
+            ):
                 yield os.path.join(root, file)
 
 
 def test_all_scenarios_are_valid(scenario_schema):
     """
-    Test that all scenario files conform to the defined JSON schema.
-
-    This test validates every JSON file in the industries directory
-    against the scenario schema. It collects all validation errors
-    and reports them comprehensively, ensuring that the entire
-    scenario corpus maintains data integrity and consistency.
-
-    Args:
-        scenario_schema: pytest fixture providing the loaded JSON schema
-
-    Returns:
-        None
-
-    Raises:
-        pytest.fail: If any scenario files fail schema validation
-
-    Example:
-        The test validates files like:
-        - industries/accounting/scenarios/accounts_payable/*.json
-        - industries/aerospace/scenarios/aircraft_manufacturing/*.json
-        - All other scenario files in the industries directory
-
-        If validation fails, it reports specific errors for each file.
+    Test that all scenario files under industries/ conform to valid scenario JSON specs.
+    Fails loudly on any JSON decode error, schema error, or missing scenario files.
     """
     errors = []
     count = 0
-    for path_str in load_all_scenario_files():
+    all_files = list(load_all_scenario_files())
+    total_on_disk = len(all_files)
+
+    def _get_definitions():
+        defs = {}
+        defs_dir = SCHEMA_PATH.parent / "definitions"
+        if defs_dir.exists():
+            for fpath in defs_dir.glob("*.json"):
+                with open(fpath, encoding="utf-8") as f_def:
+                    defs[f"definitions/{fpath.name}"] = json.load(f_def)
+        return defs
+
+    definitions = _get_definitions()
+    registry = Registry()
+    for ref_path, def_schema in definitions.items():
+        registry = registry.with_resource(uri=ref_path, resource=Resource.from_contents(def_schema))
+
+    for path_str in all_files:
         path = Path(path_str)
         try:
             content = path.read_text(encoding="utf-8")
             if not content.strip():
+                errors.append((path_str, "Empty file content"))
                 continue
 
             try:
                 scenario = json.loads(content)
-            except json.JSONDecodeError:
-                # Per requirement: ignore files that are not valid v1.2 scenarios
+            except json.JSONDecodeError as exc:
+                errors.append((path_str, f"JSONDecodeError: {str(exc)}"))
                 continue
 
-            # Content-based filtering: only validate aes_version 1.4
-            if not isinstance(scenario, dict) or scenario.get("aes_version") not in [1.4]:
-                continue
-
-            # Scope Isolation: Only validate fintech scenarios for this stabilization phase
-            if "fintech" not in path_str.lower():
+            if not isinstance(scenario, dict):
+                errors.append((path_str, "Scenario root element is not a JSON object"))
                 continue
 
             count += 1
-
-            # Industrial Fix: Use referencing.Registry instead of deprecated RefResolver
-            def _get_definitions():
-                defs = {}
-                defs_dir = SCHEMA_PATH.parent / "definitions"
-                if defs_dir.exists():
-                    for fpath in defs_dir.glob("*.json"):
-                        with open(fpath) as f_def:
-                            defs[f"definitions/{fpath.name}"] = json.load(f_def)
-                return defs
-
-            definitions = _get_definitions()
-            registry = Registry()
-            for ref_path, def_schema in definitions.items():
-                registry = registry.with_resource(
-                    uri=ref_path, resource=Resource.from_contents(def_schema)
-                )
-
             validate(instance=scenario, schema=scenario_schema, registry=registry)
         except ValidationError as e:
-            errors.append((path_str, str(e)))
+            errors.append((path_str, f"ValidationError: {str(e)}"))
         except Exception as e:
             errors.append((path_str, f"Unexpected error: {str(e)}"))
 
-    print(f"\n[DEBUG] Validated {count} scenario files.")
+    print(f"\n[DEBUG] Validated {count}/{total_on_disk} scenario files across industries/.")
     if errors:
-        print(f"\n[ERROR] Found {len(errors)} validation failure(s):")
-        for p, err in errors:
+        print(f"\n[ERROR] Found {len(errors)} scenario failure(s):")
+        for p, err in errors[:20]:  # Limit print output if many
             print(f"  - File: {p}")
             print(f"    Error: {err}\n")
-        pytest.fail(f"{len(errors)} scenario file(s) failed schema validation")
-    assert count > 0, "No scenario files were found for validation!"
+        pytest.fail(f"{len(errors)} scenario file(s) failed validation under industries/")
+
+    assert total_on_disk > 5000, f"Expected >5000 scenarios on disk, but found {total_on_disk}!"
+    assert count == total_on_disk, f"Validated {count} scenarios, but expected {total_on_disk}!"

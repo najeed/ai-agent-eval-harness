@@ -3,14 +3,14 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from eval_runner.adapters.autogen import AutoGenAdapterPlugin
+from eval_runner.adapters.ag2 import AG2AdapterPlugin
 from eval_runner.adapters.grok import GrokAdapterPlugin
 
 
 @pytest.mark.asyncio
-async def test_autogen_adapter():
-    adapter = AutoGenAdapterPlugin()
-    payload = {"task_description": "test", "url": "http://mock-autogen/execute"}
+async def test_ag2_adapter():
+    adapter = AG2AdapterPlugin()
+    payload = {"task_description": "test", "url": "http://mock-ag2/execute"}
 
     with patch("aiohttp.ClientSession.post") as mock_post:
         mock_response = AsyncMock()
@@ -19,7 +19,7 @@ async def test_autogen_adapter():
         mock_response.json.return_value = {"output": "done"}
         mock_post.return_value.__aenter__.return_value = mock_response
 
-        result = await adapter.execute_autogen_query(payload)
+        result = await adapter.execute_ag2_query(payload)
         assert result["status"] == "success"
         assert result["output"] == "done"
 

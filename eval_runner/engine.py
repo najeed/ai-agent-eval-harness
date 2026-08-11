@@ -161,7 +161,8 @@ class AgentAdapterRegistry:
             cls._discover()
 
         # 1. Resolve Adapter
-        adapter_func = cls._adapters.get(protocol)
+        normalized_proto = protocol.lower().strip() if protocol else ""
+        adapter_func = cls._adapters.get(normalized_proto)
         if not adapter_func:
             available = list(cls._adapters.keys())
             raise ValueError(f"Unsupported protocol '{protocol}'. Available: {available}")

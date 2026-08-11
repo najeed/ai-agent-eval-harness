@@ -5,6 +5,54 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.2] - 2026-08-10
+
+### Added
+* **Industry Scenario Corpus Validation**: Re-anchored `test_scenario_compliance.py` to validate all 5,040+ AES scenario files under `industries/` with loud fail-fast assertions and a disk-count sentinel check.
+* **Adversarial Sandbox Security Isolation Suite**: Added `tests/security/test_sandbox_adversarial_bypass.py` testing `ToolSandbox` against path traversal jail escapes, prompt injection in tool arguments, unauthorized state namespace writes, and 50-level deep nested JSON payloads.
+* **Golden Pass/Fail Verifier Matrix**: Added `tests/unit/core/test_golden_verifier_matrix.py` testing ground-truth PASS certification, missing `run_id` fail-fast validation, forensic path pollution checks, path jail escapes, and NIST 7-dimension Weighted Severity Model (WSM) Safety Floor score capping.
+* **Property-Based Invariant Testing**: Added `hypothesis` to `requirements-dev.txt` and created `tests/property/test_schema_property_based.py` for property-based invariant testing of WSM scoring models, state registry writes, and JSON roundtrip serialization.
+* **Adapter Contract Matrix**: Implemented `tests/contract/test_adapter_contracts.py` verifying connection pooling, exponential backoff retries (429/503 status codes), max retries exception escalation, `AESCallbackHandler` telemetry, and `LangChainAdapterPlugin` execution fallbacks.
+* **Interception Latency & Concurrency Benchmarks**: Added `pytest-benchmark` to `requirements-dev.txt` and implemented `tests/performance/test_interception_benchmarks.py` testing synchronous interception latency SLAs (<5ms) and 100-session concurrent evaluation scaling.
+* **Chaos Resilience & Failure Injection Suite**: Implemented `tests/chaos/test_chaos_resilience.py` verifying network timeout exception handling, missing trace verification failures, and invariant checks ensuring evaluation failures never silently convert to verification successes.
+* **Documentation Sentinel Script**: Created `docs/check_doc_paths.py` to verify all markdown documentation path references against physical disk files and integrated it into GitHub Actions CI workflow.
+
+### Fixed
+* **Documentation & Hype File Relabeling**: Regenerated `TESTING.md` to reflect active codebase structure and commands. Renamed marketing hype test files in `dataproc_engine/tests/` to reflect actual technical behavior (`test_dataproc_parity_benchmarks.py`, `test_signal_veracity_benchmarks.py`, `test_sector_quality_standards.py`).
+* **CI Coverage Threshold Enforcement**: Configured `fail_under = 85` in `.coveragerc` and `--cov-fail-under=85` in `.github/workflows/ci.yml`.
+* **Healthcare Scenario Schema Compliance**: Updated `industries/healthcare/scenarios/new-scen.json` to include required `evaluation` property.
+
+## [1.7.1] - 2026-08-06
+
+### Added
+*   **Thread-Safe Runs Cache Daemon**: Replaced synchronous disk scans with a thread-safe background runs caching manager (`RunsCache`) polling differentially every 1s and serving list/stream queries instantly from memory.
+*   **ZIP Bundle Integrity Verification**: Supported drag-and-drop ZIP bundle verification uploads matching internal files against their SHA3-256 hashes and verifying Ed25519 signatures.
+*   **Live Debugger React Flow Canvas Refinements**: Formatted timeline nodes into wrapped rows (max 4 per row) with automatic canvas fits, click-to-zoom timeline transitions, and direct "Isolate Root Cause" target actions.
+*   **Forensic Timeline Details**: Expanded log event cards to include precise sequence numbers, turn indices, a manual stream reconnect button, and a quick-action "Go to Root Cause Turn" AI drawer trigger.
+*   **Robust Runs Cache Pruning**: Configured runs cache to clean up deleted/pruned traces from memory, preventing missing files from cluttering console selectors.
+
+### Fixed
+*   **Conductor Absolute Imports**: Resolved publication suite python script execution crashes by forcing absolute imports and pre-loading PYTHONPATH in child processes.
+*   **Compliance Pack Publish 404 Gate**: Restructured publish handler to return 404 when publishing unknown compliance pack IDs.
+*   **Fuzzer Catalog ID Resolution**: Fixed programmatic fuzzer mutation crashes by supporting scenario ID catalog lookups.
+*   **Privacy Path Sanitization**: Masked absolute project path targets to relative markers in doctor diagnosis endpoints and job logs.
+*   **Pytest Cache Thread Bypass**: Prevented `RunsCache` from starting its background update loop thread under pytest, avoiding file lock contentions and cross-test cache pollution.
+
+## [1.7.0] - 2026-07-31
+
+### The Integrated Visual Console (Native GUI) and Compliance Engine Release
+*   **The Integrated Visual Console (Native GUI)**: Introduced the new official visual interface (`/v2`) serving as the central Verifiable Agent OS dashboard, compiling cleanly into production assets. Key features include:
+    *   *Scenario Library & Canvas Composer* (`ScenarioLibrary.tsx`, `ScenarioComposer.tsx`): Supports canvas-based React Flow visual scenario mapping, nodes configuration, and edge connections with a direct YAML/JSON editor synchronization.
+    *   *Evaluation Runner* (`EvaluationRunner.tsx`): Interactive dispatcher console with sliders for max turns, judge counts, and target selector controls.
+    *   *Live Debugger & State Parity Diff* (`LiveDebugger.tsx`): Real-time SSE streaming logs timeline, visual highlight nodes in React Flow, and side-by-side Git-style state diffs via `ReactDiffViewer` to detect state divergences.
+    *   *Triage Dashboard & AI Diagnostics* (`Triage.tsx`, `TraceExplain.tsx`): Aggregate failure trends classified under Logic, Policy, or Security categories, coupled with interactive AI triage recommendation engines.
+    *   *Real-Time HITL Approvals Queue* (`HITLQueue.tsx`): Async-unblocked reviewer cockpit showing active suspensions, countdown SLA clocks, and required rejection reason audit entries.
+    *   *Spec-to-Eval Importer* (`SpecToEvalImporter.tsx`): Drag-and-drop Markdown requirements translator that converts PRDs to scenarios and loads drafts directly into the Composer.
+    *   *Adversarial Scenario Mutator* (`AdversarialMutator.tsx`): Generates keyboard typos, vagueness ambiguity, and instruction injections on existing scenarios with side-by-side prompt previews.
+    *   *Trust Center & Reports*: Real-time signature validator verification checks and WeasyPrint/ReportLab dual PDF generators.
+*   **Granular PBAC Model & Dynamic Persona Swapping**: Linked a dynamic Role selection dropdown in the Header toolbar supporting 4 roles (System Admin, Compliance Auditor, Scenario Designer, MultiAgentOps Eng.) mapping to granular backend permissions.
+*   **Async HITL Worker Refactor**: Re-engineered `SessionManager._handle_hitl` to suspend runs in a restart-resilient SQLite-backed registry (`hitl.db`) instead of blocking threads or stdin. Added automated test safeguards to bypass review loops during testing suites.
+
 ## [1.6.8] - 2026-07-24
 
 ### SHA-3 Cryptographic Standard & Unified Hash Utility Layer

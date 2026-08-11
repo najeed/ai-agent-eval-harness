@@ -18,24 +18,26 @@ PyYAML==6.0.3
 sqlalchemy==2.0.51
 
 # --- ML / Embeddings (optional, for benchmark loaders) ---
-sentence-transformers==5.6.1
-numpy==2.5.1
+sentence-transformers==5.7.0
+numpy==2.5.2
 datasets==5.0.1
 
 # --- Security & Auth ---
 PyJWT==2.13.0
-cryptography==49.0.0
+cryptography==50.0.0
 
 # --- Observability & SDKs ---
 opentelemetry-api==1.44.0
 opentelemetry-sdk==1.44.0
-google-genai==2.14.0
-GitPython==3.1.57
+google-genai==2.17.0
+GitPython==3.1.59
 psutil==7.2.2
 
 # --- Document Processing ---
-pypdf==6.14.2
+pypdf==6.15.0
 python-docx==1.2.0
+weasyprint>=69.0
+reportlab>=5.0.0
 
 # --- Environment ---
 python-dotenv==1.2.2
@@ -43,8 +45,8 @@ python-dotenv==1.2.2
 # --- Security Patches ---
 urllib3==2.7.0
 Authlib==1.7.2
-langchain-openai==1.4.1
-langsmith==0.10.12
+langchain-openai==1.4.3
+langsmith==0.10.17
 lxml==6.1.1
 Pillow==12.3.0
 idna==3.18

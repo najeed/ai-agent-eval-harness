@@ -119,7 +119,12 @@ class ArtifactPlugin(BaseEvalPlugin):
             manifest_path = base_path / "audit_manifest.json"
             with open(manifest_path, "w") as f:
                 json.dump(manifest, f, indent=2)
-            print(f"      [ArtifactPlugin] Signed manifest created: {manifest_path}")
+
+            # Append the signed manifest to the compiled ZIP bundle archive
+            with zipfile.ZipFile(zip_path, "a") as zipf:
+                zipf.write(manifest_path, arcname="audit_manifest.json")
+
+            print(f"      [ArtifactPlugin] Signed manifest created and embedded: {manifest_path}")
 
         print(f"      [ArtifactPlugin] Bundle created: {zip_path}")
         return {

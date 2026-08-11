@@ -38,7 +38,12 @@ def main():
     suite_dir = Path(__file__).parent.absolute()
     env = os.environ.copy()
     python_path = env.get("PYTHONPATH", "")
-    env["PYTHONPATH"] = f"{suite_dir}{os.pathsep}{python_path}"
+    project_root = suite_dir.parent.parent.absolute()
+    env["PYTHONPATH"] = f"{project_root}{os.pathsep}{suite_dir}{os.pathsep}{python_path}"
+
+    # Inject UTF-8 IO encoding globally to prevent Unicode errors on Windows console outputs
+    env["PYTHONIOENCODING"] = "utf-8"
+    env["PYTHONUTF8"] = "1"
 
     # Identify agents to run
     agents_to_run = []
@@ -70,6 +75,7 @@ def main():
         print("\nPhase 1: Conducting Evaluations...")
         cmd_conduct = [
             sys.executable,
+            "-u",
             str(suite_dir / "conductor.py"),
             "--path",
             args.path,
@@ -85,6 +91,8 @@ def main():
         if args.mode == "pilot":
             cmd_conduct.append("--pilot")
 
+        # Inject UTF-8 IO encoding to prevent Unicode errors on Windows console outputs
+        env["PYTHONIOENCODING"] = "utf-8"
         subprocess.run(cmd_conduct, check=True, env=env)
 
         # Locate recent batch dir

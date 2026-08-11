@@ -10,18 +10,25 @@ from eval_runner.plugins import manager
 from .. import config
 from .auth import auth_bp
 from .routes import (
+    analyze_bp,
+    compliance_packs_bp,
     core_bp,
     demo_bp,
+    hitl_bp,
+    publish_bp,
     register_core_routes,
     run_bp,
     scenario_bp,
     subscribe_debugger,
+    suites_bp,
     system_bp,
     trust_bp,
 )
 
 # Ensure environment variables are loaded before ANY other configuration usage (R6)
 load_dotenv()
+os.environ["PYTHONUTF8"] = "1"
+os.environ["PYTHONIOENCODING"] = "utf-8"
 
 print(
     f"--- Flask App Initializing (DASHBOARD_API_KEY: {config.DASHBOARD_API_KEY[:4] if config.DASHBOARD_API_KEY else 'None'})",  # noqa: E501
@@ -58,6 +65,11 @@ def create_app():
     app.register_blueprint(system_bp, url_prefix="/api")
     app.register_blueprint(scenario_bp, url_prefix="/api")
     app.register_blueprint(run_bp, url_prefix="/api")
+    app.register_blueprint(analyze_bp, url_prefix="/api")
+    app.register_blueprint(publish_bp, url_prefix="/api")
+    app.register_blueprint(suites_bp, url_prefix="/api")
+    app.register_blueprint(compliance_packs_bp, url_prefix="/api")
+    app.register_blueprint(hitl_bp, url_prefix="/api")
     app.register_blueprint(trust_bp)
     app.register_blueprint(demo_bp)
     app.register_blueprint(core_bp)
@@ -151,6 +163,20 @@ def create_app():
     print("--- Audit Complete ---\n", flush=True)
 
     # Frontend Catch-all Routes (Define LAST to prevent API masking)
+    @app.route("/v2", defaults={"path": ""})
+    @app.route("/v2/", defaults={"path": ""})
+    @app.route("/v2/<path:path>")
+    def serve_v2(path=""):
+        v2_ui_path = os.path.abspath(config.PROJECT_ROOT / "ui" / "visual-console" / "dist")
+
+        # If the file exists directly in dist or a subfolder, serve it
+        full_path = os.path.join(v2_ui_path, path)
+        if path and os.path.exists(full_path) and os.path.isfile(full_path):
+            return send_from_directory(v2_ui_path, path)
+
+        # Fall back to index.html for SPA routing (v2)
+        return send_from_directory(v2_ui_path, "index.html")
+
     @app.route("/", defaults={"path": ""})
     @app.route("/scenarios")
     @app.route("/reports")

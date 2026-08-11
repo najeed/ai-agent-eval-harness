@@ -165,7 +165,7 @@ def read_doc(filename):
     if not target.exists():
         if not filename.endswith(".md"):
             fallback_target = (docs_dir / f"{filename}.md").resolve()
-            if is_path_safe(fallback_target, docs_dir) and fallback_target.exists():
+            if fallback_target.exists():
                 target = fallback_target
 
     if not target.exists():
@@ -308,7 +308,7 @@ def get_doctor_audit():
         # Perform basic health checks (Sync wrapper for potential async logic)
         audit = {
             "status": "healthy",
-            "project_root": str(config.PROJECT_ROOT),
+            "project_root": f"./{Path(config.PROJECT_ROOT).name}",
             "plugins_loaded": manager._loaded,
             "catalog_size": len(ScenarioCatalog.get_instance().scenarios),
             "simulator_count": len(get_simulator_registry()),
@@ -382,3 +382,40 @@ def debugger_state():
 def ping():
     """Public diagnostic check."""
     return jsonify({"status": "pong", "version": config._get_project_version(), "pid": os.getpid()})
+
+
+@system_bp.route("/system/ollama-status", methods=["GET"])
+def ollama_status():
+    """
+    Health check for the Ollama LLM runtime.
+    Returns {available: bool, endpoint: str, models: list} - used by the Auto-Translate
+    screen to gate the upload form and show available local models.
+    """
+    import urllib.request
+
+    endpoint = getattr(config, "OLLAMA_BASE_URL", None) or os.environ.get(
+        "OLLAMA_BASE_URL", "http://localhost:11434"
+    )
+
+    available = False
+    models = []
+
+    try:
+        if endpoint.startswith("http://") or endpoint.startswith("https://"):
+            req = urllib.request.Request(f"{endpoint}/api/tags", method="GET")
+            with urllib.request.urlopen(req, timeout=2) as resp:  # nosec B310
+                if resp.status == 200:
+                    available = True
+                    import json
+
+                    try:
+                        resp_data = json.loads(resp.read().decode("utf-8"))
+                        models = [
+                            m.get("name") for m in resp_data.get("models", []) if m.get("name")
+                        ]
+                    except Exception as e:
+                        logger.debug(f"Ollama models parse error: {e}")
+    except Exception as e:
+        logger.debug(f"Ollama connection error: {e}")
+
+    return jsonify({"available": available, "endpoint": endpoint, "models": models})

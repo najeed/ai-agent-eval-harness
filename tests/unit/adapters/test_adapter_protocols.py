@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from eval_runner.adapters.autogen import AutoGenAdapterPlugin
+from eval_runner.adapters.ag2 import AG2AdapterPlugin
 from eval_runner.adapters.claude import ClaudeAdapterPlugin
 from eval_runner.adapters.gemini import GeminiAdapterPlugin
 from eval_runner.adapters.grok import GrokAdapterPlugin
@@ -159,20 +159,20 @@ def test_adapter_discovery_hooks():
 
 
 @pytest.mark.asyncio
-async def test_autogen_adapter_fallback():
-    """Test AutoGen adapter initialization and execute entry point."""
-    adapter = AutoGenAdapterPlugin()
+async def test_ag2_adapter_fallback():
+    """Test AG2 adapter initialization and execute entry point."""
+    adapter = AG2AdapterPlugin()
     # Test discovery
     reg = MagicMock()
     adapter.on_discover_adapters(reg)
-    reg.register.assert_any_call("ag2", adapter.execute_autogen_query)
+    reg.register.assert_any_call("ag2", adapter.execute_ag2_query)
 
     # Test entry point error handling (fallback path when SDK is missing)
     with (
-        patch.dict("sys.modules", {"autogen": None, "ag2": None}),
-        patch("eval_runner.adapters.autogen.config") as mock_cfg,
+        patch.dict("sys.modules", {"ag2": None}),
+        patch("eval_runner.adapters.ag2.config") as mock_cfg,
     ):
         mock_cfg.AG2_API_URL = None
-        res = await adapter.execute_autogen_query({"message": "hi"})
+        res = await adapter.execute_ag2_query({"message": "hi"})
         assert res["status"] == "error"
         assert "not installed" in res["message"]

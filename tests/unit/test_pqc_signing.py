@@ -1,7 +1,9 @@
 import json
 import sys
+import tempfile
 import unittest
 from datetime import datetime
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 # Mock cyclecore_pq before importing eval_runner
@@ -14,7 +16,11 @@ from eval_runner import config, identity, verifier  # noqa: E402
 
 class TestPQCSigning(unittest.TestCase):
     def setUp(self):
-        # Industrial Requirement: Trace MUST be in the vault folder
+        # Create an isolated temporary directory for RUN_LOG_DIR
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self._orig_run_log_dir = config.RUN_LOG_DIR
+        config.RUN_LOG_DIR = Path(self.temp_dir.name)
+
         self.run_id = "test_run_123"
         self.vault_dir = config.RUN_LOG_DIR / self.run_id
         self.vault_dir.mkdir(parents=True, exist_ok=True)
@@ -36,23 +42,11 @@ class TestPQCSigning(unittest.TestCase):
         config.CYCLECORE_API_KEY = ""
         identity.IdentityService._pqc_client = None
 
-        if self.test_trace.exists():
-            self.test_trace.unlink()
-        if self.vault_dir.exists():
-            # Clean up sidecars
-            sidecar = self.vault_dir / "run_manifest.json"
-            if sidecar.exists():
-                sidecar.unlink()
-            try:
-                # Remove artifacts folder if created by sign_trace
-                forensics_dir = self.vault_dir / "forensics"
-                if forensics_dir.exists():
-                    import shutil
-
-                    shutil.rmtree(forensics_dir)
-                self.vault_dir.rmdir()
-            except OSError:
-                pass
+        try:
+            self.temp_dir.cleanup()
+        except Exception:
+            pass
+        config.RUN_LOG_DIR = self._orig_run_log_dir
 
     @patch("eval_runner.identity.IdentityService.get_private_key")
     def test_hybrid_signing_flow(self, mock_get_priv):

@@ -10,7 +10,7 @@ import warnings
 # --- MONKEYPATCH DEPRECATIONS ---
 # Fix asyncio.iscoroutinefunction deprecation warning in Python 3.14+
 # by pointing it directly to inspect.iscoroutinefunction. This prevents
-# third-party packages (LangChain, AutoGen, Daytona) from raising warnings.
+# third-party packages (LangChain, AG2, Daytona) from raising warnings.
 if not hasattr(asyncio, "_original_iscoroutinefunction"):
     asyncio._original_iscoroutinefunction = asyncio.iscoroutinefunction  # type: ignore[attr-defined]
     asyncio.iscoroutinefunction = inspect.iscoroutinefunction
@@ -23,7 +23,7 @@ from .config import VERSION as __version__  # noqa: F401
 # This ensures a clean, audit-grade experience for Enterprise Trust Workflows.
 warnings.filterwarnings("ignore", message=".*compatible with Python 3.14 or greater.*")
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="google.*")
-warnings.filterwarnings("ignore", category=DeprecationWarning, module="autogen.*")
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="ag2.*")
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="daytona.*")
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="langchain_core.*")
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="langgraph.*")

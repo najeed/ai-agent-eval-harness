@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from eval_runner.adapters.autogen import AG2AdapterPlugin
+from eval_runner.adapters.ag2 import AG2AdapterPlugin
 from eval_runner.adapters.langchain import LangChainAdapterPlugin
 from eval_runner.engine import AgentAdapterRegistry
 
@@ -69,27 +69,27 @@ async def test_langchain_adapter_remote_error():
 
 
 @pytest.mark.asyncio
-async def test_autogen_adapter_sdk_fallback_to_remote():
+async def test_ag2_adapter_sdk_fallback_to_remote():
     plugin = AG2AdapterPlugin()
     # Mock SDK missing, trigger remote fallback
-    with patch.dict("sys.modules", {"ag2": None, "autogen": None}):
+    with patch.dict("sys.modules", {"ag2": None}):
         with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
             session_instance = MagicMock()
             mock_get_session.return_value = session_instance
             session_instance.post.return_value = MockResponse(
                 json_data={"output": "remote_success"}
             )
-            res = await plugin.execute_autogen_query({"message": "hi"}, url="http://autogen-api")
+            res = await plugin.execute_ag2_query({"message": "hi"}, url="http://ag2-api")
             assert res["status"] == "success"
             assert res["output"] == "remote_success"
 
 
 @pytest.mark.asyncio
-async def test_autogen_adapter_missing_all():
+async def test_ag2_adapter_missing_all():
     plugin = AG2AdapterPlugin()
-    with patch.dict("sys.modules", {"ag2": None, "autogen": None}):
+    with patch.dict("sys.modules", {"ag2": None}):
         with patch("eval_runner.config.AG2_API_URL", None):
-            res = await plugin.execute_autogen_query({"message": "hi"})
+            res = await plugin.execute_ag2_query({"message": "hi"})
             assert res["status"] == "error"
             assert "Native execution failed" in res["message"]
 

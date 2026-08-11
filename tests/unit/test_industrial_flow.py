@@ -250,7 +250,7 @@ async def test_handler_environment_expansion(mock_config, monkeypatch):
     (mock_config / "crew.py").unlink()
 
     (mock_config / "conversable_agent.py").write_text("")
-    assert environment.detect_framework() == "AutoGen"
+    assert environment.detect_framework() == "AG2"
     (mock_config / "conversable_agent.py").unlink()
 
     # requirements.txt
@@ -259,8 +259,8 @@ async def test_handler_environment_expansion(mock_config, monkeypatch):
     assert environment.detect_framework() == "LangGraph"
     req.write_text("crewai")
     assert environment.detect_framework() == "CrewAI"
-    req.write_text("pyautogen")
-    assert environment.detect_framework() == "AutoGen"
+    req.write_text("ag2")
+    assert environment.detect_framework() == "AG2"
     req.write_text("langchain")
     assert environment.detect_framework() == "LangChain"
 

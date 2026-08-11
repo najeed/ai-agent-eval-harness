@@ -14,7 +14,7 @@ from datetime import datetime
 from multiprocessing import Pool
 from pathlib import Path
 
-from ..utils import crypto
+from eval_runner.utils import crypto
 
 
 def run_worker(task):
@@ -45,11 +45,13 @@ def run_worker(task):
         env["RUN_LOG_DIR"] = str(worker_log_dir)
         env["RUN_LOG_PER_RUN"] = "true"
         env["RUN_LOG_MASTER"] = "false"  # Only per-run logs for aggregation
+        env["PYTHONIOENCODING"] = "utf-8"
+        env["PYTHONUTF8"] = "1"
 
         if seed is not None:
             env["PYTHONHASHSEED"] = str(seed)
 
-        result = subprocess.run(cmd, env=env, capture_output=True, text=True)
+        result = subprocess.run(cmd, env=env, capture_output=True, text=True, encoding="utf-8")
 
         # Find the generated log file in worker_log_dir
         log_files = list(worker_log_dir.glob("*.jsonl"))
@@ -88,8 +90,6 @@ class Conductor:
     def _get_scenario_subset(self):
         scenario_dir = Path(self.args.path)
         all_scenarios = list(scenario_dir.glob("*.json"))
-        if self.args.pilot:
-            return all_scenarios[:10]
         return all_scenarios
 
     def _generate_fingerprint(self):
@@ -126,8 +126,10 @@ class Conductor:
         results = []
         # serial for pilot to avoid any logging race conditions, parallel otherwise
         if self.args.pilot:
-            for t in tasks:
-                results.append(run_worker(t))
+            for i, t in enumerate(tasks):
+                print(f"   [Pilot] Running run {i + 1}/{len(tasks)}...")
+                res = run_worker(t)
+                results.append(res)
                 print(f"   [Pilot] Completed run {len(results)}/{len(tasks)}...")
         else:
             with Pool(processes=self.args.parallel) as pool:

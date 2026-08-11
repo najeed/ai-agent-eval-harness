@@ -949,3 +949,23 @@ async def test_calculate_metrics_isolation(base_scenario, tmp_path):
         with patch("eval_runner.metrics.MetricRegistry.get_source", return_value="EXTERNAL_PLUGIN"):
             history = [{"role": "user"}]
             await session._calculate_metrics(node, 1, 1, history, AsyncMock(), {"used_tools": []})
+
+
+def test_session_case_insensitive_protocol(base_scenario, tmp_path):
+    base_scenario["metadata"] = {"agent": {"protocol": "HTTP"}}
+    session = SessionManager("test_run_case_insensitive", base_scenario, log_root=tmp_path)
+    assert session.session_metadata["protocol"] == "http"
+    assert session.metadata["protocol"] == "http"
+
+
+@pytest.mark.asyncio
+async def test_adapter_resolution_case_insensitive():
+    from eval_runner.engine import AgentAdapterRegistry
+
+    # Check that HTTP protocol resolves without error by mocking call_agent's adapter func
+    mock_func = AsyncMock(return_value={"action": "completed"})
+    with patch.dict(AgentAdapterRegistry._adapters, {"http": mock_func}):
+        res = await AgentAdapterRegistry.call_agent(
+            protocol="HTTP", endpoint="http://test", message="hello", history=[]
+        )
+        assert res == {"action": "completed"}

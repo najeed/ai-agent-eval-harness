@@ -346,7 +346,7 @@ class PluginManager:
 
         # -- Ecosystem Adapters --
         try:
-            from eval_runner.adapters.autogen import AutoGenAdapterPlugin
+            from eval_runner.adapters.ag2 import AG2AdapterPlugin
             from eval_runner.adapters.claude import ClaudeAdapterPlugin
             from eval_runner.adapters.crewai import CrewAIAdapterPlugin
             from eval_runner.adapters.gemini import GeminiAdapterPlugin
@@ -363,7 +363,7 @@ class PluginManager:
                     ClaudeAdapterPlugin,
                     OllamaAdapterPlugin,
                     GrokAdapterPlugin,
-                    AutoGenAdapterPlugin,
+                    AG2AdapterPlugin,
                     CrewAIAdapterPlugin,
                     LangGraphAdapterPlugin,
                     LangChainAdapterPlugin,
