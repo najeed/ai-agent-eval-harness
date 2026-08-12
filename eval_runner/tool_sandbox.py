@@ -1,21 +1,20 @@
-from __future__ import annotations
-
-"""
-tool_sandbox.py
+"""tool_sandbox.py
 
 Defines the environment in which the agent's tool calls are executed.
 Updated with AbstractSandbox for pluggable implementation and lifecycle hooks.
 """
 
-import contextvars  # noqa: E402
-import threading  # noqa: E402
-from abc import ABC, abstractmethod  # noqa: E402
-from collections.abc import Callable, Coroutine  # noqa: E402
-from contextlib import asynccontextmanager  # noqa: E402
-from pathlib import Path  # noqa: E402
-from typing import Any  # noqa: E402
+from __future__ import annotations
 
-from . import config  # noqa: E402
+import contextvars
+import threading
+from abc import ABC, abstractmethod
+from collections.abc import Callable, Coroutine
+from contextlib import asynccontextmanager
+from pathlib import Path
+from typing import Any
+
+from . import config
 
 
 class ResourceRegistry:
@@ -26,13 +25,11 @@ class ResourceRegistry:
 
     def register(self, path: str | Path):
         """Registers a path for mandatory physical cleanup."""
-
         p = Path(path).absolute()
         self._tracked_paths.add(p)
 
     def cleanup(self):
         """Perform an atomic unlink/rmtree of all registered paths."""
-
         for path in self._tracked_paths:
             try:
                 if path.is_file():
@@ -42,8 +39,6 @@ class ResourceRegistry:
 
                     rmtree_resilient(path)
             except Exception as e:
-                # Log but do not crash during teardown (Industrial Robustness)
-                # In a real system, we'd emit an event here
                 import sys
 
                 sys.stderr.write(
@@ -56,24 +51,20 @@ class SharedStateRegistry:
 
     def __init__(self, topology: dict, event_bus: Any | None = None):
         self.topology = topology
-        self.registry: dict[str, Any] = {}  # Stores namespace:key -> value
+        self.registry: dict[str, Any] = {}
         self.redundant_reads = 0
         self.event_bus = event_bus
 
     def write(self, agent_name: str, path: str, value: Any) -> bool:
         """Writes to a namespace if agent has permission."""
         namespace = path.split(":")[0] if ":" in path else "global"
-
         agent_config = self.topology.get(agent_name, {})
         allowed_writes = agent_config.get("writes", [])
-
         if (
             any(self._match_namespace(namespace, pattern) for pattern in allowed_writes)
             or "*" in allowed_writes
         ):
             self.registry[path] = value
-
-            # Granular Taint tracking: Emit write event
             from . import events
 
             event_data = {"agent": agent_name, "path": path, "value": value}
@@ -81,26 +72,19 @@ class SharedStateRegistry:
                 self.event_bus.emit("state_write", event_data)
             else:
                 events.emit("state_write", event_data)
-
             return True
         return False
 
     def read(self, agent_name: str, path: str) -> Any:
         """Reads from a namespace if agent has permission."""
         namespace = path.split(":")[0] if ":" in path else "global"
-
         agent_config = self.topology.get(agent_name, {})
         allowed_reads = agent_config.get("reads", [])
-
         if (
             any(self._match_namespace(namespace, pattern) for pattern in allowed_reads)
             or "*" in allowed_reads
         ):
-            # Track redundant reads (reading same value multiple times)
-            # This is a metric mentioned in the roadmap
             val = self.registry.get(path)
-
-            # Granular Taint tracking: Emit read event
             from . import events
 
             event_data = {"agent": agent_name, "path": path, "value": val}
@@ -108,7 +92,6 @@ class SharedStateRegistry:
                 self.event_bus.emit("state_read", event_data)
             else:
                 events.emit("state_read", event_data)
-
             return val
         return None
 
@@ -137,62 +120,40 @@ class AbstractSandbox(ABC):
         self.shared_state = SharedStateRegistry(
             scenario.get("agent_topology", {}), event_bus=event_bus
         )
-        self.current_agent = "default_agent"  # Can be updated per turn
+        self.current_agent = "default_agent"
         self.event_bus = event_bus
         self.forensics = forensics
         self.resources = ResourceRegistry()
         self.plugin_manager = plugin_manager
-
-        # [INDUSTRIAL HARDENING] Absolute Session Identity (AgentV v1.6.0)
-        # Prevents 'unknown_run' directory pollution in the root runs/ directory.
         self.run_id = self.scenario.get("run_id")
         if not self.run_id:
-            # Fallback for unit tests only; production runs MUST have a run_id via SessionManager
             import tempfile
 
             from . import utils
 
             self.run_id = utils.generate_id(prefix="transient")
-            self.terminal_jail = jail_root or (
-                Path(tempfile.gettempdir()) / "agentv" / self.run_id / "terminal_jail"
+            self.terminal_jail = (
+                jail_root or Path(tempfile.gettempdir()) / "agentv" / self.run_id / "terminal_jail"
             )
         else:
             self.terminal_jail = (
                 jail_root or (config.RUN_LOG_DIR / self.run_id / "terminal_jail").resolve()
             )
-
-        # Workspace management
         self.identifier = self.scenario.get("id", "default")
-        # [Industrial Isolation] Workspaces MUST be partitioned by run_id to ensure
-        # parallel execution safety and forensic purity.
         base_ws = workspace_root or Path("workspace")
         self.workspace_dir = base_ws / self.run_id
-
-        # Phase 2: Grounding Coverage Tracking
-        # Stores hit counts for 'policies' and 'tools' (KB/Grounding)
         self.grounding_hits: dict[str, dict[str, int]] = {"policies": {}, "tools": {}}
-
-        # Cache for state-aware world simulators
         self._simulator_cache: dict[str, Any] | None = None
-
-        # [Turn 2 Hardening] Session-Scoped Terminal Jail
         import json
 
         from .utils import crypto
 
-        # [RFC-002 Hybrid Registry] Environmental DNA Snapshot
-        # Capture the resolved state of all shims for this run
         full_registry = config.RegistryManager.reload()
         snapshot_json = json.dumps(full_registry, sort_keys=True)
         self.provisioning_hash = crypto.checksum(snapshot_json)
-
-        # [REDACTION] Scrub secrets before injecting into the trace (v1.3.0 Hardening)
         self.provisioning_snapshot = config.RegistryManager.get_sanitized_registry()
-
-        # Inject into scenario for first-class status in run traces (Metadata DNA)
         if "metadata" not in self.scenario:
             self.scenario["metadata"] = {"name": "unnamed", "compliance_level": "Standard"}
-
         self.scenario["metadata"]["provisioning_hash"] = self.provisioning_hash
         self.scenario["environmental_snapshot"] = self.provisioning_snapshot
 
@@ -202,14 +163,9 @@ class AbstractSandbox(ABC):
         from all active shims (simulators).
         """
         full_state = {"world": self.state}
-
-        # Aggregate states from all active simulators
-        # We use get_active_simulators() to ensure we only capture shims
-        # that are within the current Forensic Scope.
         simulators = self.get_active_simulators()
         for shim_name, shim_instance in simulators.items():
             try:
-                # [Forensic Parity] Capture ground truth from the simulator
                 full_state[shim_name] = await shim_instance.get_snapshot()
             except Exception as e:
                 import sys
@@ -218,7 +174,6 @@ class AbstractSandbox(ABC):
                     f"      [Sandbox] Warning: Failed to snapshot shim '{shim_name}': {e}\n"
                 )
                 full_state[shim_name] = {"error": str(e)}
-
         return full_state
 
     async def setup(self):
@@ -226,11 +181,7 @@ class AbstractSandbox(ABC):
         from pathlib import Path
 
         Path(self.workspace_dir).mkdir(parents=True, exist_ok=True)
-        # Ensure the terminal_jail exists physically (Iteration 2 Physical Isolation)
         Path(self.terminal_jail).mkdir(parents=True, exist_ok=True)
-
-        # [Forensic Baseline] Capture initial state before any turn execution
-        # This allows Turn 1 to be a differential snapshot.
         if self.forensics:
             try:
                 initial_state = await self.get_full_state()
@@ -241,7 +192,6 @@ class AbstractSandbox(ABC):
                 sys.stderr.write(
                     f"      [Sandbox] Warning: Failed to capture initial forensic baseline: {e}\n"
                 )
-
         print(f"      [Sandbox] Workspace initialized at: {self.workspace_dir}")
         print(f"      [Sandbox] Terminal Jail provisioned: {self.terminal_jail}")
 
@@ -253,10 +203,7 @@ class AbstractSandbox(ABC):
         from pathlib import Path
 
         p = Path(path)
-        # 1. Mandatory Physical Cleanup (Resource Registry)
         self.resources.register(p)
-
-        # 2. Cryptographic Audit (Forensics) - Optional
         if self.forensics:
             self.forensics.register_artifact(p, alias or p.name)
 
@@ -265,24 +212,17 @@ class AbstractSandbox(ABC):
         import os
         from pathlib import Path
 
-        # 0. Core Hardening (Iteration 6): RELEASE HANDLES FIRST
-        # Explicitly teardown all simulators to release resources (DB handles, etc.)
-        # This prevents WinError 32 during filesystem cleanup.
         if self._simulator_cache:
             for sim in self._simulator_cache.values():
                 try:
                     await sim.cleanup()
-                except Exception:  # noqa: E722
-                    pass
-            print(
-                f"      [Sandbox] All {len(self._simulator_cache)} simulators cleaned up "
-                "(Registry Teardown)."
-            )
+                except Exception as e:
+                    import logging
 
-        # 1. Industrial Resource Cleanup
+                    logging.getLogger(__name__).warning(f"Failed simulator cleanup for {sim}: {e}")
+            sim_count = len(self._simulator_cache)
+            print(f"      [Sandbox] All {sim_count} simulators cleaned up (Registry Teardown).")
         self.resources.cleanup()
-
-        # Only clean up if explicitly requested in scenario metadata or if it's a test run
         metadata = self.scenario.get("metadata", {})
         if metadata.get("cleanup_workspace", self.scenario.get("cleanup_workspace", False)):
             ws_path = Path(self.workspace_dir)
@@ -291,12 +231,9 @@ class AbstractSandbox(ABC):
 
                 rmtree_resilient(ws_path)
                 print("      [Sandbox] Workspace cleaned up.")
-
-        # [Iteration 5: Secure Wipe] Cleanup terminal_jail
         cleanup_jail = metadata.get(
             "cleanup_terminal_jail", os.getenv("CLEANUP_TERMINAL_JAIL", "true").lower() == "true"
         )
-
         if cleanup_jail:
             jail_path = Path(self.terminal_jail)
             if jail_path.exists():
@@ -321,26 +258,24 @@ class ToolSandboxInterceptor(ABC):
 
     @abstractmethod
     async def isolate_call(
-        self,
-        call_data: dict,
-        next_executor: Callable[[dict], Coroutine[None, None, dict]],
+        self, call_data: dict, next_executor: Callable[[dict], Coroutine[None, None, dict]]
     ) -> dict:
         """Applies middleware processing (Preempt, Audit, or Augment tool execution)."""
         pass
 
 
 class ToolSandboxService:
-    """Native Async Pipeline orchestrator for ToolSandboxInterceptor chain."""
+    """Thread-safe context management service for dynamic interceptors."""
 
     def __init__(self):
-        self._lock = threading.RLock()
+
+        self._lock = threading.Lock()
         self._global_interceptors: list[ToolSandboxInterceptor] = []
         self._local_interceptors = contextvars.ContextVar("local_interceptors", default=None)
 
     @property
     def _interceptors(self) -> list[ToolSandboxInterceptor]:
         """Provides contextvars-local copy of registered interceptors to ensure
-
         async task isolation.
         """
         val = self._local_interceptors.get()
@@ -355,7 +290,9 @@ class ToolSandboxService:
         with self._lock:
             self._global_interceptors.insert(0, interceptor)
             val = self._local_interceptors.get()
-            if val is not None:
+            if val is None:
+                self._local_interceptors.set([interceptor])
+            else:
                 val.insert(0, interceptor)
 
     def reset(self):
@@ -372,7 +309,6 @@ class ToolSandboxService:
         """
         with self._lock:
             self._global_interceptors.insert(0, interceptor)
-
         current = self._interceptors
         new_list = [interceptor] + [x for x in current if x is not interceptor]
         token = self._local_interceptors.set(new_list)
@@ -385,9 +321,7 @@ class ToolSandboxService:
                     self._global_interceptors.remove(interceptor)
 
     async def isolate(
-        self,
-        call_data: dict,
-        fallback_executor: Callable[[dict], Coroutine[None, None, dict]],
+        self, call_data: dict, fallback_executor: Callable[[dict], Coroutine[None, None, dict]]
     ) -> dict:
         """Executes the tool call through the interceptor pipeline chain with cycle protection."""
         tool_name = call_data.get("tool_name")
@@ -395,11 +329,9 @@ class ToolSandboxService:
         def make_next(index: int, depth: int) -> Callable[[dict], Coroutine[None, None, dict]]:
             if depth > 50:
                 raise RecursionError("Max tool sandbox pipeline depth exceeded. Cycle detected.")
-
             interceptors_list = self._interceptors
             if index >= len(interceptors_list):
                 return fallback_executor
-
             interceptor = interceptors_list[index]
 
             async def call_next(data: dict) -> dict:
@@ -411,10 +343,9 @@ class ToolSandboxService:
                     except Exception as e:
                         import logging
 
+                        cls_name = interceptor.__class__.__name__
                         logging.error(
-                            f"[ToolSandboxService] Interceptor "
-                            f"'{interceptor.__class__.__name__}' failed: {e}. "
-                            "Gracefully bypassing to next handler."
+                            f"[ToolSandboxService] Interceptor '{cls_name}' failed: {e}. Bypassing."
                         )
                         return await make_next(index + 1, depth + 1)(data)
                 else:
@@ -425,7 +356,6 @@ class ToolSandboxService:
         return await make_next(0, 0)(call_data)
 
 
-# Thread-safe global registry singleton
 tool_sandbox_service = ToolSandboxService()
 
 
@@ -449,9 +379,7 @@ class ToolSandbox(AbstractSandbox):
 
         async def core_executor(data: dict) -> dict:
             return await self._execute_core(
-                tool_name=data["tool_name"],
-                params=data["params"],
-                agent_name=data["agent_name"],
+                tool_name=data["tool_name"], params=data["params"], agent_name=data["agent_name"]
             )
 
         return await tool_sandbox_service.isolate(call_data, core_executor)
@@ -464,21 +392,13 @@ class ToolSandbox(AbstractSandbox):
         Updates the internal state and shared state registry.
         """
         active_agent = agent_name or self.current_agent
-
-        # 1. Identify tool behaviors in the scenario
         all_tool_defs = self.scenario.get("tools", {})
         tool_def = all_tool_defs.get(tool_name, {})
-
-        # 2. Check for Built-in Simulators (v3) - Refactored for Hot-Swap
         if not tool_def:
             active_simulators = self.get_active_simulators()
             for sim_name, simulator in active_simulators.items():
                 if tool_name.startswith(f"{sim_name}_"):
                     raw_result = await simulator.execute(tool_name, params)
-
-                    # Quiesce phase with strict timeout (5.0s).
-                    # Guard with hasattr so third-party shims that don't subclass
-                    # BaseSimulator are silently skipped rather than generating errors.
                     if hasattr(simulator, "quiesce"):
                         try:
                             import asyncio
@@ -488,32 +408,23 @@ class ToolSandbox(AbstractSandbox):
                         except TimeoutError:
                             import logging
 
-                            logging.getLogger(__name__).warning(
-                                f"Quiescence timeout for "
-                                f"{simulator.__class__.__name__}. Proceeding."
-                            )
+                            c_name = simulator.__class__.__name__
+                            logging.getLogger(__name__).warning(f"Quiescence timeout for {c_name}.")
                         except Exception as e:
                             import logging
 
                             logging.getLogger(__name__).error(
                                 f"Error during quiescence for {simulator.__class__.__name__}: {e}"
                             )
-
-                    # Wrap simulator result in ShimResultProxy
                     from .simulators import ShimResultProxy
 
                     secure_metadata = {"dna_hash": self.provisioning_hash}
                     if "dna" in raw_result:
                         secure_metadata.update(raw_result["dna"])
                     return ShimResultProxy(raw_result, metadata=secure_metadata)
-
-        # Record hit for Tool/KB access
         self.grounding_hits["tools"][tool_name] = self.grounding_hits["tools"].get(tool_name, 0) + 1
-
-        # 2. Check for Policy Violations
         policies = self.scenario.get("policies", {})
         if tool_name in policies:
-            # Record hit for Policy enforcement
             self.grounding_hits["policies"][tool_name] = (
                 self.grounding_hits["policies"].get(tool_name, 0) + 1
             )
@@ -523,17 +434,12 @@ class ToolSandbox(AbstractSandbox):
                     "status": "policy_violation",
                     "violation": f"Amount {params.get('amount')} exceeds limit of {limit}",
                 }
-
-        # 3. Apply Local State Changes
         state_changes = tool_def.get("state_changes", [])
         for change in state_changes:
             path = change.get("path")
             value = change.get("value")
             if path:
                 self.state[path] = value
-
-        # 4. Handle Shared State (v2)
-        # Check if params contain shared state interactions
         if "shared_write" in params:
             write_path = params["shared_write"].get("path")
             write_val = params["shared_write"].get("value")
@@ -544,7 +450,6 @@ class ToolSandbox(AbstractSandbox):
                         "status": "error",
                         "message": f"Agent {active_agent} has no write permission for {write_path}",
                     }
-
         if "shared_read" in params:
             read_path = params["shared_read"].get("path")
             if read_path:
@@ -554,21 +459,14 @@ class ToolSandbox(AbstractSandbox):
                         "status": "error",
                         "message": f"Agent {active_agent} has no read permission for {read_path}",
                     }
-
-        # 5. Return Output
         output = tool_def.get("output", {"status": "success", "message": f"Executed {tool_name}"})
-
-        # Notify observers of internal state changes
         from . import events
 
-        # Sandbox Escape Prevention: Chroot/Virtualize paths before emitting
-        # Security: Sanitize both keys AND values; strip shell meta-characters (Audit Point #5)
         safe_state = {}
         for k, v in self.state.items():
             safe_key = self._sanitize_path(k)
             safe_val = self._sanitize_value(v)
             safe_state[safe_key] = safe_val
-
         if self.event_bus:
             self.event_bus.emit(
                 "world_state_change",
@@ -579,7 +477,6 @@ class ToolSandbox(AbstractSandbox):
                 "world_state_change",
                 {"state": safe_state, "shared_state": self.shared_state.registry},
             )
-
         return output
 
     async def get_full_state(self) -> dict[str, Any]:
@@ -592,7 +489,6 @@ class ToolSandbox(AbstractSandbox):
             "shared": self.shared_state.registry.copy(),
             "shims": {},
         }
-
         simulators = self.get_active_simulators()
         for name, sim in simulators.items():
             try:
@@ -603,7 +499,6 @@ class ToolSandbox(AbstractSandbox):
                 sys.stderr.write(
                     f"      [Sandbox] Warning: Failed to snapshot shim '{name}': {e}\n"
                 )
-
         return full_state
 
     @staticmethod
@@ -617,21 +512,14 @@ class ToolSandbox(AbstractSandbox):
 
         from . import config
 
-        # 1. Simple keys (no separators, no traversals) are returned as is
         if not any(x in path for x in ["..", "/", "\\"]):
             return path
-
-        # 2. If traversal is attempted, collapse to basename for maximum safety (Audit Point #5)
         if ".." in path:
-            # Normalize to forward slashes for basename processing
             clean_path = os.path.basename(path.replace("\\", "/"))
             return f"{config.SANDBOX_VFS_PREFIX}{clean_path}"
-
-        # 3. Otherwise, normalize and virtualize nested paths
         clean_path = path.replace("\\", "/").lstrip("/")
         if not clean_path.startswith(config.SANDBOX_VFS_PREFIX):
             clean_path = f"{config.SANDBOX_VFS_PREFIX}{clean_path}"
-
         return clean_path
 
     def _get_scenario_relevant_shims(self) -> set[str]:
@@ -642,32 +530,24 @@ class ToolSandbox(AbstractSandbox):
         relevant = set()
         workflow = self.scenario.get("workflow", {})
         nodes = workflow.get("nodes", [])
-
-        # 1. Discover from Tool Usage (Global and Local)
-        # Dynamically resolve sanctioned shim prefixes from the Global Gate
         from . import config, simulators
 
         global_enabled = config.GLOBAL_ENABLED_SHIMS
         all_registered = set(
             simulators.get_simulator_registry(plugin_manager=self.plugin_manager).keys()
         )
-
         if "*" in global_enabled:
             shim_prefixes = all_registered
         else:
             shim_prefixes = all_registered.intersection(set(global_enabled))
-
         all_tools = set(self.scenario.get("tools", {}).keys())
         for node in nodes:
             all_tools.update(node.get("required_tools", []))
-
         for tool in all_tools:
             if "_" in tool:
                 prefix = tool.split("_", 1)[0]
                 if prefix in shim_prefixes:
                     relevant.add(prefix)
-
-        # 2. Discover from Outcome Contracts
         for node in nodes:
             outcomes = node.get("expected_outcome", [])
             if outcomes:
@@ -679,7 +559,6 @@ class ToolSandbox(AbstractSandbox):
                     if target.startswith("shim:"):
                         shim_id = target.split("shim:", 1)[1].split(".", 1)[0]
                         relevant.add(shim_id)
-
         return relevant
 
     def get_active_simulators(self) -> dict:
@@ -689,71 +568,39 @@ class ToolSandbox(AbstractSandbox):
         """
         if self._simulator_cache is not None:
             return self._simulator_cache
-
         import sys
 
         from . import config, simulators
 
-        # 1. Load the Authoritative Registry (merged baseline + .d extensions)
         resolved_registry = config.RegistryManager.get_resolved_registry()
         shim_configs = resolved_registry.get("shims", {})
-
-        # 2. Get the industrial class mapping
         shim_classes = simulators.get_simulator_registry(plugin_manager=self.plugin_manager)
-
-        # 3. Resolve Activation Policies
         global_enabled = config.GLOBAL_ENABLED_SHIMS
-
-        # [Industrial Hardening] Resolve Activation Strategy
-        # Case 1: If 'enabled_shims' is omitted, use 'Strict Discovery Mode'.
-        # Case 2: If 'enabled_shims' is provided, it acts as an 'Authoritative Whitelist'.
         scenario_enabled = self.scenario.get("enabled_shims")
         relevant_shims = self._get_scenario_relevant_shims()
-
         active_registry = {}
-
-        # Discover across all unique configured shims and supported classes
-        # (Iteration 9: Full Spectrum Discovery)
         all_potential_shims = set(shim_configs.keys()) | set(shim_classes.keys())
-
         for shim_name in all_potential_shims:
             shim_cfg = shim_configs.get(shim_name, {})
-            # If not in configs, we might still have a built-in class
             base_cls = shim_classes.get(shim_name)
-
-            # Priority 1: Master System Filter (Hard Gate)
-            # If a shim is not globally sanctioned, it is never available to the scenario.
             is_globally_enabled = "*" in global_enabled or shim_name in global_enabled
             if not is_globally_enabled:
                 continue
-
-            # Priority 2: Scenario Activation Policy
-            # Only shims that are relevant to the contract or explicitly enabled are activated.
             is_relevant = shim_name in relevant_shims
             if scenario_enabled is None:
-                # Case 1: Strict Discovery Mode (Auto-activate relevant only)
                 should_activate = is_relevant
             else:
-                # Case 2: Explicit Whitelist Mode (Guardrail)
                 should_activate = "*" in scenario_enabled or shim_name in scenario_enabled
-
             if not should_activate:
                 continue
-
-            # Layer 3: Authoritative Type Resolution
             shim_type = shim_cfg.get("type", shim_name)
-
-            # Re-verify class affinity if type was overridden or using built-in
             target_cls = shim_classes.get(shim_type, base_cls)
-
             if target_cls:
                 try:
-                    # [Zero-Touch Injection] Instantiate with registry-provided resources
                     instance = target_cls(config=shim_cfg)
                     instance.terminal_jail = self.terminal_jail
                     instance.sandbox = self
                     active_registry[shim_name] = instance
-
                 except Exception as e:
                     sys.stderr.write(
                         f"      [Sandbox] Error: Failed to instantiate '{shim_name}': {e}\n"
@@ -762,7 +609,6 @@ class ToolSandbox(AbstractSandbox):
                 sys.stderr.write(
                     f"      [Sandbox] Warning: Unknown shim type '{shim_type}' for '{shim_name}'\n"
                 )
-
         self._simulator_cache = active_registry
         return active_registry
 
@@ -772,10 +618,8 @@ class ToolSandbox(AbstractSandbox):
         import re
 
         if isinstance(value, str):
-            # Strip path traversals
-            value = re.sub(r"\.\.[\\/]+", "", value)
+            value = re.sub("\\.\\.[\\\\/]+", "", value)
             value = value.replace("../", "").replace("..\\", "")
-            # Strip shell meta-characters
             for char in config.SHELL_METABLOCKS:
                 value = value.replace(char, "")
         elif isinstance(value, dict):

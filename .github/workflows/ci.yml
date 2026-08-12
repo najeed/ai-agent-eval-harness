@@ -81,6 +81,9 @@ jobs:
       env:
         OTEL_SDK_DISABLED: true
 
+    - name: Mutation testing sentinel
+      run: python tools/ci/run_mutation_tests.py
+
   ui-test:
     runs-on: ubuntu-latest
     steps:
