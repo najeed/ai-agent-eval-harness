@@ -78,9 +78,11 @@ markers = [
     "live: environment-gated integration tests running against CycleCore",
 ]
 filterwarnings = [
-    # google-genai: Python 3.14 _UnionGenericAlias deprecation
+    # google-genai: Python 3.14 _UnionGenericAlias and AiohttpClientSession deprecations
     "ignore:.*_UnionGenericAlias.*is deprecated.*:DeprecationWarning:google.*",
     "ignore:.*_UnionGenericAlias.*is deprecated.*:DeprecationWarning",
+    "ignore:.*Inheritance class AiohttpClientSession from ClientSession is discouraged.*:DeprecationWarning:google.*",
+    "ignore:.*Inheritance class AiohttpClientSession from ClientSession is discouraged.*:DeprecationWarning",
     # ag2: jsonschema v4.18+ RefResolver deprecation
     "ignore:.*jsonschema.RefResolver is deprecated.*:DeprecationWarning:jsonschema.*",
     "ignore:.*jsonschema.RefResolver is deprecated.*:DeprecationWarning",
