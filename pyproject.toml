@@ -131,3 +131,8 @@ quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
+
+[tool.mutmut]
+paths_to_mutate = ["eval_runner/verifier.py", "eval_runner/tool_sandbox.py", "eval_runner/utils/base.py"]
+runner = "pytest -x --assert=plain"
+tests_dir = "tests/"

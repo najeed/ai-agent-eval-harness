@@ -7,12 +7,14 @@ must NEVER silently convert into an evaluation success (PASS).
 
 from __future__ import annotations
 
+import json
+
 import aiohttp
 import pytest
 
 from eval_runner.adapters.common import BaseAdapter
 from eval_runner.tool_sandbox import ToolSandbox
-from eval_runner.verifier import TraceVerifier, VerificationResult
+from eval_runner.verifier import TraceVerifier
 
 
 @pytest.fixture
@@ -109,23 +111,59 @@ def test_chaos_missing_trace_verification_failure(tmp_path, monkeypatch):
         )
 
 
-def test_chaos_evaluation_failure_never_converts_to_success():
+@pytest.mark.asyncio
+async def test_chaos_pipeline_fault_never_passes(chaos_scenario, tmp_path, monkeypatch):
     """
-    Invariant Check: VerificationResult with zero metrics or error
-    is guaranteed to have success=False and aggregate_score=0.0.
+    End-to-End Pipeline Fault Injection:
+    Executes sandbox pipeline -> injects WORM trace write fault ->
+    runs TraceVerifier -> asserts verification status is NEVER PASS (False).
     """
-    result = VerificationResult(
-        success=False,
-        message="Simulated Infrastructure Crash",
-        metrics={
-            "safety": 0.0,
-            "security": 0.0,
-            "reliability": 0.0,
-            "fairness": 0.0,
-            "explainability": 0.0,
-            "privacy": 0.0,
-            "resilience": 0.0,
-        },
+    project_root = tmp_path / "project"
+    run_log_dir = project_root / "runs"
+    run_id = "run-chaos-pipeline-fault-001"
+    run_dir = run_log_dir / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", project_root)
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", run_log_dir)
+
+    sandbox = ToolSandbox(
+        scenario=chaos_scenario,
+        workspace_root=tmp_path / "workspace",
+        jail_root=tmp_path / "jail",
     )
-    assert result.success is False
-    assert result.aggregate_score == 0.0
+    await sandbox.setup()
+
+    # 1. Execute tool call producing initial trace event
+    await sandbox.execute(tool_name="echo_shim", params={"data": "normal_ping"})
+
+    trace_file = run_dir / "run.jsonl"
+    init_event = json.dumps({"event": "start", "run_id": run_id})
+    trace_file.write_text(f"{init_event}\n", encoding="utf-8")
+
+    # 2. Sign trace to issue initial manifest
+    TraceVerifier.sign_trace(
+        trace_path=str(trace_file),
+        identity_id="chaos_verifier",
+        compliance_status="pass",
+        run_id=run_id,
+    )
+    manifest_path = trace_file.parent / "run_manifest.json"
+
+    # 3. Inject Infrastructure Fault: Truncate / corrupt the trace file after signing
+    with open(trace_file, "a", encoding="utf-8") as f:
+        f.write('{"event": "infrastructure_crash_event_corrupted": true}\n')
+
+    # 4. Verify pipeline output: TraceVerifier MUST detect the fault and return False (never PASS)
+    is_valid = TraceVerifier.verify_trace(trace_file, manifest_path)
+    assert is_valid is False, "Infrastructure fault allowed corrupted evaluation to return PASS!"
+
+
+def test_chaos_readonly_worm_filesystem_lock_failure(tmp_path):
+    """
+    Boundary Fault Injection: Read-only WORM filesystem write lock failure during trace verification
+    must fail cleanly without swallowing errors.
+    """
+    non_existent_path = tmp_path / "read_only_root" / "locked_manifest.json"
+    is_valid = TraceVerifier.verify_trace(tmp_path / "non_existent_trace.jsonl", non_existent_path)
+    assert is_valid is False

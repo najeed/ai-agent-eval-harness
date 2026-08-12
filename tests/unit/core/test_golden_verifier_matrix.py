@@ -21,8 +21,8 @@ from eval_runner.verifier import TraceVerifier, VerificationResult
 class IndependentTraceOracle:
     """
     Independent Cryptographic Oracle.
-    Computes expected SHA3-256 trace digests and verifies Ed25519 manifest signatures
-    using raw stdlib hashlib and cryptography primitives, completely decoupled from TraceVerifier.
+    Independent cryptographic oracle for trace hashing (SHA3-256) and Ed25519 provenance,
+    with an independent verification path for PQC (ML-DSA-65) signatures.
     """
 
     @staticmethod
