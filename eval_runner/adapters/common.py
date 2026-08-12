@@ -55,8 +55,8 @@ class SessionManager:
                     if cls._session and not cls._session.closed:
                         try:
                             await cls._session.close()
-                        except Exception:
-                            pass
+                        except Exception as _e:
+                            logger.debug("Stale session close skipped: %s", _e, exc_info=True)
                     connector = aiohttp.TCPConnector(limit=100, ttl_dns_cache=300)
                     cls._session = aiohttp.ClientSession(
                         connector=connector,
