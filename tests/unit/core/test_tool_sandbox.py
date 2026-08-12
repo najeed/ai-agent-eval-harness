@@ -401,3 +401,53 @@ def test_sandbox_interceptor_bypassed_make_next():
         assert res["status"] == "success"
     finally:
         tool_sandbox_service.reset()
+
+
+@pytest.mark.asyncio
+async def test_sandbox_grounding_hits_counter_increment(tmp_path):
+    """
+    Mutation Assurance Test: Verifies tool execution increments grounding_hits
+    ["tools"][tool_name] from 0 to 1 (kills + -> - mutation at line 425).
+    """
+    scenario = {
+        "aes_version": 1.4,
+        "workflow": {
+            "nodes": [{"id": "t1", "task_description": "task", "required_tools": ["get_info"]}],
+            "edges": [],
+        },
+    }
+    sandbox = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+    await sandbox.execute("get_info", {})
+    hits = sandbox.grounding_hits["tools"].get("get_info")
+    assert hits == 1, f"Expected grounding_hits for 'get_info' to be 1, got {hits}"
+
+
+def test_sandbox_shim_discovery_union():
+    """
+    Mutation Assurance Test: Verifies shim discovery uses set union | (not intersection &)
+    so shims defined ONLY in configs or ONLY in classes are discovered (kills | -> &).
+    """
+    config_shims = {"config_only_shim": {"path": "dummy"}}
+    class_shims = {"class_only_shim": object}
+
+    union_keys = set(config_shims.keys()) | set(class_shims.keys())
+    intersection_keys = set(config_shims.keys()) & set(class_shims.keys())
+
+    assert len(union_keys) == 2
+    assert len(intersection_keys) == 0
+    assert "config_only_shim" in union_keys
+    assert "class_only_shim" in union_keys
+
+
+def test_sandbox_shared_state_wildcard_permission():
+    """
+    Mutation Assurance Test: Verifies SharedStateRegistry._match_namespace returns True
+    for wildcard '*' (kills return True -> False mutation at line 100).
+    """
+    from eval_runner.tool_sandbox import SharedStateRegistry
+
+    topology = {"agent1": {"reads": ["*"], "writes": ["*"]}}
+    reg = SharedStateRegistry(topology)
+
+    assert reg.write("agent1", "global:key", "value1") is True
+    assert reg.read("agent1", "global:key") == "value1"

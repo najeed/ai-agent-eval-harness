@@ -5,15 +5,21 @@ Executes real AST-based code mutations against critical verification modules:
   - eval_runner/tool_sandbox.py
   - eval_runner/utils/base.py
 
+Mutation strategy: SURGICAL LINE SUBSTITUTION.
+Rather than using ast.unparse() (which rewrites the entire file, losing comments,
+blank lines, and f-string formatting), this sentinel applies mutations by direct
+targeted string replacement at the exact (lineno, col_offset) AST position.
+This preserves all non-mutated lines byte-for-byte, preventing spurious test
+failures from file-hash mismatches in TraceVerifier-based tests.
+
 Calculates exact mutation score:
-  Mutation Score = (Killed + Timeout) / (Total - Skipped)
+  Mutation Score = (Killed + Timeout) / (Killed + Timeout + Survived)
+
+Incompetent mutants (annotation-only BitOr with no runtime effect under
+`from __future__ import annotations`) are excluded from the denominator.
 
 Outputs complete metrics:
-  - Killed
-  - Survived
-  - Timeout
-  - Skipped
-  - Incompetent
+  - Killed / Survived / Timeout / Skipped / Incompetent
   - Mutation Score (%)
   - Baseline vs Delta
 
@@ -37,122 +43,330 @@ TARGET_MODULES = [
     BASE_DIR / "eval_runner" / "utils" / "base.py",
 ]
 
-TARGET_TESTS = [
+# Per-module test corpora.
+#
+# Only fast, synchronous unit tests qualify — integration/chaos/security tests that
+# spawn subprocesses or do async I/O exceed the timeout budget.
+#
+# Measured wall-clock subprocess times (un-mutated baseline, Windows):
+#   verifier.py corpus  (test_golden_verifier_matrix) : 7.67s
+#   tool_sandbox corpus (test_tool_sandbox)            : 8.84s
+#   base.py corpus      (test_core_utilities)          : 9.46s
+MODULE_TEST_MAP: dict[str, list[str]] = {
+    "verifier.py": [
+        "tests/unit/core/test_golden_verifier_matrix.py",
+    ],
+    "tool_sandbox.py": [
+        "tests/unit/core/test_tool_sandbox.py",
+    ],
+    "base.py": [
+        "tests/unit/core/test_core_utilities.py",
+    ],
+}
+
+# Fallback corpus used for baseline verification and any module not in the map
+BASELINE_TESTS = [
     "tests/unit/core/test_golden_verifier_matrix.py",
     "tests/security/test_sandbox_adversarial_bypass.py",
     "tests/chaos/test_chaos_resilience.py",
 ]
 
-
-class ASTMutator(ast.NodeTransformer):
-    """AST Transformer that generates single-point mutations."""
-
-    def __init__(self, target_node_index: int):
-        self.current_index = 0
-        self.target_node_index = target_node_index
-        self.mutation_description = ""
-
-    def _should_mutate(self, desc: str) -> bool:
-        idx = self.current_index
-        self.current_index += 1
-        if idx == self.target_node_index:
-            self.mutation_description = f"[{idx}] {desc}"
-            return True
-        return False
-
-    def visit_Compare(self, node: ast.Compare) -> ast.Compare:
-        self.generic_visit(node)
-        new_ops = []
-        mutated = False
-        for op in node.ops:
-            if isinstance(op, ast.Eq) and self._should_mutate("Eq (==) -> NotEq (!=)"):
-                new_ops.append(ast.NotEq())
-                mutated = True
-            elif isinstance(op, ast.NotEq) and self._should_mutate("NotEq (!=) -> Eq (==)"):
-                new_ops.append(ast.Eq())
-                mutated = True
-            elif isinstance(op, ast.Lt) and self._should_mutate("Lt (<) -> GtE (>=)"):
-                new_ops.append(ast.GtE())
-                mutated = True
-            elif isinstance(op, ast.GtE) and self._should_mutate("GtE (>=) -> Lt (<)"):
-                new_ops.append(ast.Lt())
-                mutated = True
-            elif isinstance(op, ast.Is) and self._should_mutate("Is -> IsNot"):
-                new_ops.append(ast.IsNot())
-                mutated = True
-            elif isinstance(op, ast.IsNot) and self._should_mutate("IsNot -> Is"):
-                new_ops.append(ast.Is())
-                mutated = True
-            else:
-                new_ops.append(op)
-        if mutated:
-            node.ops = new_ops
-        return node
-
-    def visit_BinOp(self, node: ast.BinOp) -> ast.BinOp:
-        self.generic_visit(node)
-        if isinstance(node.op, ast.Add) and self._should_mutate("Add (+) -> Sub (-)"):
-            node.op = ast.Sub()
-        elif isinstance(node.op, ast.Sub) and self._should_mutate("Sub (-) -> Add (+)"):
-            node.op = ast.Add()
-        elif isinstance(node.op, ast.BitAnd) and self._should_mutate("BitAnd (&) -> BitOr (|)"):
-            node.op = ast.BitOr()
-        elif isinstance(node.op, ast.BitOr) and self._should_mutate("BitOr (|) -> BitAnd (&)"):
-            node.op = ast.BitAnd()
-        return node
-
-    def visit_Constant(self, node: ast.Constant) -> ast.Constant:
-        if isinstance(node.value, bool):
-            if node.value is True and self._should_mutate("True -> False"):
-                node.value = False
-            elif node.value is False and self._should_mutate("False -> True"):
-                node.value = True
-        return node
+# Mutant subprocess timeout, derived from measured wall-clock subprocess times.
+#
+# IMPORTANT: `subprocess.run(timeout=...)` measures wall-clock time including
+# Python startup + import overhead — NOT pytest's self-reported test duration.
+# This codebase has ~4s of startup overhead before any test executes.
+#
+# Timeout = max(wall-clock) * 2.0 = 12.5 * 2.0 = 25.0s (provides 2x headroom).
+# Any value below ~10s fires before tests execute → meaningless 100% from timeouts.
+MUTANT_TIMEOUT_SECONDS = 25.0
 
 
-def count_mutation_points(tree: ast.AST) -> int:
-    """Counts total mutatable nodes in the AST."""
-    mutator = ASTMutator(target_node_index=-1)
-    mutator.visit(tree)
-    return mutator.current_index
+# ---------------------------------------------------------------------------
+# Operator token mappings — the textual representation of each mutation.
+# These are used for surgical string substitution at the exact source position.
+# ---------------------------------------------------------------------------
+
+# Comparison operator text replacements: (original_text, mutated_text)
+_COMPARE_MUTATIONS: dict[type, tuple[str, str]] = {
+    ast.Eq: ("==", "!="),
+    ast.NotEq: ("!=", "=="),
+    ast.Lt: ("<", ">="),
+    ast.GtE: (">=", "<"),
+    ast.Is: ("is", "is not"),
+    ast.IsNot: ("is not", "is"),
+}
+
+# BinOp operator text replacements
+_BINOP_MUTATIONS: dict[type, tuple[str, str]] = {
+    ast.Add: ("+", "-"),
+    ast.Sub: ("-", "+"),
+    ast.BitAnd: ("&", "|"),
+    ast.BitOr: ("|", "&"),
+}
+
+# Boolean constant replacements
+_BOOL_MUTATIONS: dict[bool, tuple[str, str]] = {
+    True: ("True", "False"),
+    False: ("False", "True"),
+}
 
 
-def run_baseline_test_suite() -> bool:
-    """Executes baseline test suite before mutation testing to ensure green state."""
-    cmd = (
-        [sys.executable, "-m", "pytest"]
-        + TARGET_TESTS
-        + ["-q", "--no-header", "-p", "no:plugin_gateway", "-p", "no:cov"]
-    )
-    res = subprocess.run(cmd, cwd=BASE_DIR, capture_output=True, text=True)
-    return res.returncode == 0
-
-
-def evaluate_mutant(target_file: Path, mutant_code: str) -> str:
+def _annotation_line_numbers(tree: ast.AST) -> set[int]:
     """
-    Applies mutant code to file, executes pytest, and restores original file.
+    Return line numbers that belong solely to type annotation context.
+
+    Under `from __future__ import annotations`, annotations are not evaluated
+    at runtime. Mutations in annotation-only positions produce no observable
+    behavior change and are classified as INCOMPETENT (excluded from denominator).
+    """
+    annotation_lines: set[int] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
+            all_args = (
+                node.args.args
+                + node.args.posonlyargs
+                + node.args.kwonlyargs
+                + ([node.args.vararg] if node.args.vararg else [])
+                + ([node.args.kwarg] if node.args.kwarg else [])
+            )
+            for arg in all_args:
+                if arg.annotation:
+                    for n in ast.walk(arg.annotation):
+                        if hasattr(n, "lineno"):
+                            annotation_lines.add(n.lineno)
+            if node.returns:
+                for n in ast.walk(node.returns):
+                    if hasattr(n, "lineno"):
+                        annotation_lines.add(n.lineno)
+        if isinstance(node, ast.AnnAssign):
+            for n in ast.walk(node.annotation):
+                if hasattr(n, "lineno"):
+                    annotation_lines.add(n.lineno)
+    return annotation_lines
+
+
+class MutationPoint:
+    """
+    Describes a single mutation: where it is, what it changes, and whether it
+    is in an annotation-only (incompetent) position.
+    """
+
+    __slots__ = (
+        "index",
+        "lineno",
+        "col_offset",
+        "original",
+        "mutated",
+        "description",
+        "is_incompetent",
+    )
+
+    def __init__(
+        self,
+        index: int,
+        lineno: int,
+        col_offset: int,
+        original: str,
+        mutated: str,
+        description: str,
+        is_incompetent: bool,
+    ):
+        self.index = index
+        self.lineno = lineno
+        self.col_offset = col_offset
+        self.original = original
+        self.mutated = mutated
+        self.description = f"[{index}] {description}"
+        self.is_incompetent = is_incompetent
+
+
+def discover_mutation_points(source: str, annotation_lines: set[int]) -> list[MutationPoint]:
+    """
+    Walk the AST and enumerate every mutatable node as a MutationPoint.
+    Uses col_offset from the AST to locate the exact operator in the source line.
+    """
+    tree = ast.parse(source)
+    points: list[MutationPoint] = []
+    idx = 0
+
+    for node in ast.walk(tree):
+        lineno = getattr(node, "lineno", None)
+        col = getattr(node, "col_offset", 0)
+        in_annotation = lineno is not None and lineno in annotation_lines
+
+        if isinstance(node, ast.Compare):
+            for op in node.ops:
+                op_type = type(op)
+                if op_type in _COMPARE_MUTATIONS:
+                    orig, mut = _COMPARE_MUTATIONS[op_type]
+                    # For multi-operator comparisons the AST doesn't give per-op col_offset.
+                    # Use the node's start col as a best-effort anchor; the surgical
+                    # replacer will find the first occurrence of orig on that line.
+                    desc = f"{op_type.__name__} ({orig}) -> ({mut})"
+                    points.append(MutationPoint(idx, lineno, col, orig, mut, desc, in_annotation))
+                    idx += 1
+
+        elif isinstance(node, ast.BinOp):
+            op_type = type(node.op)
+            if op_type in _BINOP_MUTATIONS:
+                orig, mut = _BINOP_MUTATIONS[op_type]
+                desc = f"{orig} -> {mut}"
+                points.append(MutationPoint(idx, lineno, col, orig, mut, desc, in_annotation))
+                idx += 1
+
+        elif isinstance(node, ast.Constant) and isinstance(node.value, bool):
+            val = node.value
+            orig, mut = _BOOL_MUTATIONS[val]
+            desc = f"{orig} -> {mut}"
+            points.append(MutationPoint(idx, lineno, col, orig, mut, desc, in_annotation))
+            idx += 1
+
+    return points
+
+
+def _apply_surgical_mutation(source_lines: list[str], mp: MutationPoint) -> str | None:
+    """
+    Apply a single mutation by targeted string replacement on the exact source line.
+
+    The original token is searched starting from col_offset on the target line.
+    If the token is not found (e.g., due to multi-line AST reordering), returns
+    None and the mutant is classified as INCOMPETENT.
+
+    This preserves ALL other lines byte-for-byte, avoiding hash-corruption in
+    TraceVerifier-based tests and source-pattern guards.
+    """
+    if mp.lineno is None or mp.lineno > len(source_lines):
+        return None
+
+    line = source_lines[mp.lineno - 1]  # 1-indexed
+
+    # Search from col_offset forward for the original token
+    search_start = mp.col_offset
+    pos = line.find(mp.original, search_start)
+
+    if pos == -1:
+        # Fallback: search from beginning of line (handles multi-op comparisons)
+        pos = line.find(mp.original)
+
+    if pos == -1:
+        return None  # Token not found on expected line → incompetent
+
+    mutated_line = line[:pos] + mp.mutated + line[pos + len(mp.original) :]
+    result_lines = source_lines[: mp.lineno - 1] + [mutated_line] + source_lines[mp.lineno :]
+    return "".join(result_lines)
+
+
+def count_mutation_points(source: str, annotation_lines: set[int]) -> int:
+    """Counts total mutatable nodes."""
+    return len(discover_mutation_points(source, annotation_lines))
+
+
+def _tests_for_module(module_name: str) -> list[str]:
+    """Return the relevant test paths for a given target module filename."""
+    return MODULE_TEST_MAP.get(module_name, BASELINE_TESTS)
+
+
+def evaluate_mutant(target_file: Path, mutant_source: str, tests: list[str]) -> str:
+    """
+    Surgically applies mutant source to the target file, executes pytest against
+    the per-module corpus, then restores the original file byte-for-byte.
+
     Returns status: 'killed', 'survived', 'timeout', or 'incompetent'.
     """
-    original_code = target_file.read_text(encoding="utf-8")
+    original_bytes = target_file.read_bytes()
     try:
-        target_file.write_text(mutant_code, encoding="utf-8")
+        target_file.write_text(mutant_source, encoding="utf-8")
         cmd = (
             [sys.executable, "-m", "pytest"]
-            + TARGET_TESTS
+            + tests
             + ["-q", "--no-header", "-x", "-p", "no:plugin_gateway", "-p", "no:cov"]
         )
         try:
-            res = subprocess.run(cmd, cwd=BASE_DIR, capture_output=True, text=True, timeout=5.0)
-            if res.returncode != 0:
-                return "killed"
-            else:
-                return "survived"
+            res = subprocess.run(
+                cmd,
+                cwd=BASE_DIR,
+                capture_output=True,
+                text=True,
+                timeout=MUTANT_TIMEOUT_SECONDS,
+            )
+            return "killed" if res.returncode != 0 else "survived"
         except subprocess.TimeoutExpired:
             return "timeout"
     except Exception:
         return "incompetent"
     finally:
-        target_file.write_text(original_code, encoding="utf-8")
+        target_file.write_bytes(original_bytes)
+
+
+def verify_sentinel_preconditions() -> None:
+    """
+    Self-validating precondition checks executed before any mutation testing begins.
+
+    Prevents silent failure modes:
+      1. Missing test files referenced in MODULE_TEST_MAP or BASELINE_TESTS.
+      2. Missing target module files.
+      3. Failing un-mutated baseline tests or empty test collections.
+      4. Insufficient timeout headroom (< 1.5x of baseline runtime), preventing
+         false 'timeout' classification of survived mutants.
+    """
+    import time
+
+    print("\n1. Running Self-Validating Sentinel Precondition Checks...")
+
+    # Check target modules existence
+    for target in TARGET_MODULES:
+        if not target.exists():
+            rel = target.relative_to(BASE_DIR)
+            print(f"  [FAIL] Target module missing: {rel}")
+            sys.exit(1)
+
+    # Check test file existence
+    all_test_paths = set(BASELINE_TESTS)
+    for test_list in MODULE_TEST_MAP.values():
+        all_test_paths.update(test_list)
+
+    for test_path in all_test_paths:
+        full_path = BASE_DIR / test_path
+        if not full_path.exists():
+            print(f"  [FAIL] Configured test file missing: {test_path}")
+            sys.exit(1)
+
+    # Verify per-module baseline runtimes and timeout headroom
+    for target in TARGET_MODULES:
+        module_name = target.name
+        tests = _tests_for_module(module_name)
+        cmd = (
+            [sys.executable, "-m", "pytest"]
+            + tests
+            + ["-q", "--no-header", "-p", "no:plugin_gateway", "-p", "no:cov"]
+        )
+        t0 = time.monotonic()
+        res = subprocess.run(cmd, cwd=BASE_DIR, capture_output=True, text=True)
+        elapsed = time.monotonic() - t0
+
+        if res.returncode != 0:
+            print(f"  [FAIL] Baseline test suite for '{module_name}' failed or collected no tests!")
+            print(f"         Command output:\n{res.stdout}\n{res.stderr}")
+            sys.exit(1)
+
+        headroom = MUTANT_TIMEOUT_SECONDS / elapsed if elapsed > 0 else 999.0
+        print(
+            f"   • Module '{module_name}' baseline: {elapsed:.2f}s "
+            f"(Timeout: {MUTANT_TIMEOUT_SECONDS:.1f}s, Headroom: {headroom:.2f}x)"
+        )
+
+        if headroom < 1.5:
+            print(
+                f"  [FAIL] Insufficient timeout headroom for '{module_name}'!\n"
+                f"         Baseline runtime ({elapsed:.2f}s) is too close to "
+                f"timeout ({MUTANT_TIMEOUT_SECONDS:.1f}s).\n"
+                f"         Required headroom is >= 1.5x. Increase MUTANT_TIMEOUT_SECONDS "
+                f"or streamline test corpus."
+            )
+            sys.exit(1)
+
+    print("  [OK] Precondition checks PASSED cleanly.\n")
 
 
 def run_mutation_sentinel() -> None:
@@ -161,56 +375,69 @@ def run_mutation_sentinel() -> None:
     print("=== INDUSTRIAL MUTATION TESTING SENTINEL & ASSURANCE PIPELINE ===")
     print("=" * 80)
 
-    # 1. Baseline Run Verification
-    print("\n1. Verifying Un-Mutated Baseline Test Suite...")
-    baseline_pass = run_baseline_test_suite()
-    if not baseline_pass:
-        print("  [FAIL] Baseline test suite failed! Cannot compute valid mutation score.")
-        sys.exit(1)
-    print("  [OK] Baseline suite PASSED cleanly.\n")
+    # 1. Self-Validating Precondition Verification
+    verify_sentinel_preconditions()
 
-    # 2. Mutation Generation & Testing
+    # 2. Mutation Discovery & Testing
     total_killed = 0
     total_survived = 0
     total_timeout = 0
     total_skipped = 0
     total_incompetent = 0
-
-    mutant_records = []
+    mutant_records: list[dict] = []
 
     print("2. Mutating Verification Modules & Scoring Test Suite...")
     for target in TARGET_MODULES:
         rel_path = target.relative_to(BASE_DIR)
+        module_name = target.name
+        tests = _tests_for_module(module_name)
+
         original_source = target.read_text(encoding="utf-8")
+        source_lines = [line + "\n" for line in original_source.splitlines()]
+        # Preserve original line endings for final write_bytes restore
         try:
             tree = ast.parse(original_source)
         except Exception as exc:
             print(f"  [FAIL] Failed to parse AST for {rel_path}: {exc}")
             sys.exit(1)
 
-        num_points = count_mutation_points(tree)
+        annotation_lines = _annotation_line_numbers(tree)
+        all_points = discover_mutation_points(original_source, annotation_lines)
+        num_points = len(all_points)
         print(f"   • Module: {rel_path} ({num_points} mutation points discovered)")
 
-        # Cap points per file for efficient CI runtime
+        # Sample up to 15 evenly-spaced points for efficient CI runtime
         max_mutants = min(num_points, 15)
         step = max(1, num_points // max_mutants)
-        indices_to_test = range(0, num_points, step)[:max_mutants]
+        sampled = all_points[::step][:max_mutants]
 
-        for idx in indices_to_test:
-            # Re-parse fresh AST
-            fresh_tree = ast.parse(original_source)
-            mutator = ASTMutator(target_node_index=idx)
-            mutated_tree = mutator.visit(fresh_tree)
-            ast.fix_missing_locations(mutated_tree)
-
-            try:
-                mutant_code = ast.unparse(mutated_tree)
-            except Exception:
+        for mp in sampled:
+            # Annotation-only mutations have no runtime effect
+            if mp.is_incompetent:
                 total_incompetent += 1
+                mutant_records.append(
+                    {"module": str(rel_path), "mutation": mp.description, "status": "incompetent"}
+                )
+                print(
+                    f"      {'[INCOMPETENT]':15s} {mp.description}  "
+                    f"(annotation-only, no runtime effect)"
+                )
                 continue
 
-            desc = mutator.mutation_description or f"Mutation at index {idx}"
-            status = evaluate_mutant(target, mutant_code)
+            mutant_source = _apply_surgical_mutation(source_lines, mp)
+            if mutant_source is None:
+                # Token not locatable on expected line — treat as incompetent
+                total_incompetent += 1
+                mutant_records.append(
+                    {"module": str(rel_path), "mutation": mp.description, "status": "incompetent"}
+                )
+                print(
+                    f"      {'[INCOMPETENT]':15s} {mp.description}  "
+                    f"(token not locatable at col {mp.col_offset} on line {mp.lineno})"
+                )
+                continue
+
+            status = evaluate_mutant(target, mutant_source, tests)
 
             if status == "killed":
                 total_killed += 1
@@ -226,23 +453,17 @@ def run_mutation_sentinel() -> None:
                 icon = "[INCOMPETENT]"
 
             mutant_records.append(
-                {
-                    "module": str(rel_path),
-                    "mutation": desc,
-                    "status": status,
-                }
+                {"module": str(rel_path), "mutation": mp.description, "status": status}
             )
-            print(f"      {icon:15s} {desc}")
+            print(f"      {icon:15s} {mp.description}")
 
     # 3. Calculate Mutation Score
+    # Denominator excludes incompetent mutants (annotation-only, no runtime effect).
+    # Formula: (Killed + Timeout) / (Killed + Timeout + Survived)
     total_valid_mutants = total_killed + total_survived + total_timeout + total_incompetent
-    denom = total_valid_mutants - total_skipped
+    denom = total_killed + total_survived + total_timeout
     effective_killed = total_killed + total_timeout
-
-    if denom > 0:
-        mutation_score_pct = (effective_killed / denom) * 100.0
-    else:
-        mutation_score_pct = 100.0
+    mutation_score_pct = (effective_killed / denom * 100.0) if denom > 0 else 100.0
 
     print("\n" + "=" * 80)
     print("=== MUTATION TESTING FINAL SCORECARD ===")
@@ -257,11 +478,11 @@ def run_mutation_sentinel() -> None:
     print(f"  • Mutation Score:          {mutation_score_pct:.2f}% (Target: >=90.00%)")
     print("=" * 80)
 
-    # 4. Generate Diligence Artifact (reports/mutation_scorecard.md)
+    # 4. Generate Diligence Artifact
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     report_md = f"""# Mutation Testing Diligence Scorecard
 
-Enterprise verification assurance scorecard generated by AST mutation analysis.
+Enterprise verification assurance scorecard generated by surgical AST mutation analysis.
 
 ## Summary Metrics
 
@@ -277,6 +498,17 @@ Enterprise verification assurance scorecard generated by AST mutation analysis.
 | **Incompetent Mutants** | **{total_incompetent}** |
 | **Total Mutants Evaluated** | **{total_valid_mutants}** |
 
+## Scoring Note
+
+Mutation strategy: **surgical line substitution** — only the mutated token is changed;
+all other lines are preserved byte-for-byte. This prevents hash-corruption in
+`TraceVerifier`-based tests and source-pattern guards from producing false kills.
+
+Incompetent mutants (annotation-only `|` unions under `from __future__ import annotations`)
+are excluded from the denominator:
+
+> `Score = (Killed + Timeout) / (Killed + Timeout + Survived)`
+
 ## Target Modules Evaluated
 
 1. `eval_runner/verifier.py`
@@ -285,13 +517,16 @@ Enterprise verification assurance scorecard generated by AST mutation analysis.
 
 ## Detailed Mutation Log
 
-| Module | Mutation Mutation Description | Status |
+| Module | Mutation Description | Status |
 | :--- | :--- | :--- |
 """
     for rec in mutant_records:
-        status_str = (
-            "PASSED (Killed)" if rec["status"] in ("killed", "timeout") else "FAILED (Survived)"
-        )
+        if rec["status"] == "incompetent":
+            status_str = "INCOMPETENT (annotation-only or not locatable)"
+        elif rec["status"] in ("killed", "timeout"):
+            status_str = "PASSED (Killed)"
+        else:
+            status_str = "FAILED (Survived)"
         report_md += f"| `{rec['module']}` | `{rec['mutation']}` | {status_str} |\n"
 
     REPORT_PATH.write_text(report_md, encoding="utf-8")
@@ -300,12 +535,12 @@ Enterprise verification assurance scorecard generated by AST mutation analysis.
 
     # 5. Enforce >= 90% Threshold Gate
     if mutation_score_pct < 90.0:
-        msg = f"[FAIL] Mutation score {mutation_score_pct:.2f}% is below required 90.00% threshold!"
-        print(f"\n{msg}")
+        print(
+            f"\n[FAIL] Mutation score {mutation_score_pct:.2f}% is below required 90.00% threshold!"
+        )
         sys.exit(1)
     else:
-        msg = f"[OK] Mutation score {mutation_score_pct:.2f}% meets enterprise gate (>=90.00%)."
-        print(f"\n{msg}")
+        print(f"\n[OK] Mutation score {mutation_score_pct:.2f}% meets enterprise gate (>=90.00%).")
 
 
 if __name__ == "__main__":

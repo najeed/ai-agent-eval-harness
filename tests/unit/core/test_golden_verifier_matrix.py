@@ -305,3 +305,82 @@ def test_verify_after_tampering_stage7_key_substituted(clean_vault_setup):
 
     assert TraceVerifier.verify_trace(trace_file, manifest_path) is False
     assert IndependentTraceOracle.verify_manifest(manifest_path, trace_file) is False
+
+
+def test_verifier_computed_hash_mismatch(clean_vault_setup):
+    """
+    Mutation Assurance Test: Verifies that compute_signature != expected_file_hash returns False
+    (kills != -> == mutation at line 579 in eval_runner/verifier.py).
+    """
+    run_id = clean_vault_setup["run_id"]
+    trace_file = clean_vault_setup["trace_file"]
+
+    manifest = TraceVerifier.sign_trace(
+        trace_path=str(trace_file),
+        identity_id="test_signer",
+        compliance_status="pass",
+        run_id=run_id,
+    )
+    manifest_path = trace_file.parent / "run_manifest.json"
+
+    # Corrupt trace_hash in manifest
+    manifest["trace_hash"] = "0" * 64
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    assert TraceVerifier.verify_trace(trace_file, manifest_path) is False
+
+
+def test_verifier_fresh_manifest_ttl_age(clean_vault_setup):
+    """
+    Mutation Assurance Test: Verifies age calculation datetime.now() - created_at
+    uses subtraction '-' (kills - -> + mutation at line 588 in eval_runner/verifier.py).
+    """
+    run_id = clean_vault_setup["run_id"]
+    trace_file = clean_vault_setup["trace_file"]
+
+    TraceVerifier.sign_trace(
+        trace_path=str(trace_file),
+        identity_id="test_signer",
+        compliance_status="pass",
+        run_id=run_id,
+    )
+    manifest_path = trace_file.parent / "run_manifest.json"
+
+    # A fresh manifest must pass TTL verification
+    assert TraceVerifier.verify_trace(trace_file, manifest_path) is True
+
+
+def test_verifier_nested_key_dir_creation(tmp_path):
+    """
+    Mutation Assurance Test: Verifies generate_key_pair creates nested parent directories
+    using parents=True (kills parents=True -> False mutation at line 313).
+    """
+    nested_dir = tmp_path / "deep" / "nested" / "keys"
+    # Ensure parents do not exist
+    assert not nested_dir.parent.exists()
+
+    TraceVerifier.generate_key_pair(output_dir=str(nested_dir))
+    assert (nested_dir / "private_key.pem").exists()
+    assert (nested_dir / "public_key.pem").exists()
+
+
+def test_verifier_trace_lifecycle_event_appended(clean_vault_setup):
+    """
+    Mutation Assurance Test: Verifies sign_trace appends 'verification_certificate_issued'
+    event to trace file (kills + -> - mutation at line 460 in eval_runner/verifier.py).
+    """
+    run_id = clean_vault_setup["run_id"]
+    trace_file = clean_vault_setup["trace_file"]
+
+    TraceVerifier.sign_trace(
+        trace_path=str(trace_file),
+        identity_id="test_signer",
+        compliance_status="pass",
+        run_id=run_id,
+    )
+
+    trace_content = trace_file.read_text(encoding="utf-8")
+    assert "verification_certificate_issued" in trace_content, (
+        "Expected sign_trace to append 'verification_certificate_issued' event to trace file"
+    )
+    assert "seal_hash" in trace_content

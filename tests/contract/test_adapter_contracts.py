@@ -22,6 +22,28 @@ from eval_runner.adapters.ollama import OllamaAdapterPlugin
 from eval_runner.adapters.openai import OpenAIAdapterPlugin
 from eval_runner.adapters.openapi import OpenAPIAdapterPlugin
 
+# Narrow set of exception types that a well-behaved adapter is permitted to raise
+# when given mock credentials (no live network/API key available).
+# Any exception outside this set indicates a structural defect in the adapter
+# (e.g. AttributeError from missing initialization, ImportError from broken deps).
+_ACCEPTED_ADAPTER_EXCEPTIONS = (
+    aiohttp.ClientResponseError,
+    ValueError,
+    RuntimeError,
+    KeyError,
+    TypeError,
+)
+
+# Canonical set of normalized response status values the adapter contract requires.
+_VALID_RESPONSE_STATUSES = {
+    "success",
+    "error",
+    "processing",
+    "hitl_pause",
+    "final_answer",
+    "completed",
+}
+
 
 @pytest.mark.asyncio
 async def test_session_manager_connection_pooling_contract():
@@ -64,6 +86,46 @@ async def test_base_adapter_exponential_backoff_retry_contract():
 
 
 @pytest.mark.asyncio
+async def test_base_adapter_exponential_backoff_timing_contract(monkeypatch):
+    """
+    Contract Test: BaseAdapter.call_with_retry uses exponential backoff formula
+    base_delay * 2^attempt. Verified by injecting a mock asyncio.sleep and asserting
+    exact delay values — no real sleeps are used.
+    """
+    sleep_calls: list[float] = []
+
+    async def mock_sleep(delay: float) -> None:
+        sleep_calls.append(delay)
+
+    monkeypatch.setattr("eval_runner.adapters.common.asyncio.sleep", mock_sleep)
+
+    adapter = BaseAdapter(name="timing_contract_adapter")
+    attempts = 0
+
+    async def flaky_call():
+        nonlocal attempts
+        attempts += 1
+        if attempts < 3:
+            raise aiohttp.ClientResponseError(
+                request_info=None, history=(), status=503, message="Service Unavailable"
+            )
+        return {"status": "success"}
+
+    result = await adapter.call_with_retry(
+        flaky_call, max_attempts=4, base_delay=1.0, retry_codes={503}
+    )
+
+    assert result["status"] == "success"
+    assert attempts == 3
+    # Formula: base_delay * (2 ** attempt), where attempt increments before sleep.
+    # Retry 1: attempt=1 → delay = 1.0 * 2^1 = 2.0
+    # Retry 2: attempt=2 → delay = 1.0 * 2^2 = 4.0
+    assert len(sleep_calls) == 2
+    assert sleep_calls[0] == pytest.approx(2.0)
+    assert sleep_calls[1] == pytest.approx(4.0)
+
+
+@pytest.mark.asyncio
 async def test_base_adapter_max_retries_exceeded_contract():
     """
     Contract Test: Exceeding max attempts raises original ClientResponseError.
@@ -83,27 +145,38 @@ async def test_base_adapter_max_retries_exceeded_contract():
 
 
 @pytest.mark.asyncio
-async def test_adapter_auth_failure_contract():
+@pytest.mark.parametrize(
+    "status_code,reason",
+    [
+        (401, "Unauthorized API Key"),
+        (403, "Forbidden — insufficient permissions"),
+    ],
+    ids=["401-unauthorized", "403-forbidden"],
+)
+async def test_adapter_auth_failure_contract(status_code: int, reason: str):
     """
-    Contract Test: 401 Unauthorized / 403 Forbidden errors do NOT trigger retries
-    and immediately raise ClientResponseError.
+    Contract Test: 401 Unauthorized and 403 Forbidden errors do NOT trigger retries
+    and immediately raise ClientResponseError after exactly one attempt.
     """
     adapter = BaseAdapter(name="auth_contract_adapter")
     attempts = 0
 
-    async def unauthorized_call():
+    async def auth_rejected_call():
         nonlocal attempts
         attempts += 1
         raise aiohttp.ClientResponseError(
-            request_info=None, history=(), status=401, message="Unauthorized API Key"
+            request_info=None, history=(), status=status_code, message=reason
         )
 
     with pytest.raises(aiohttp.ClientResponseError) as exc_info:
         await adapter.call_with_retry(
-            unauthorized_call, max_attempts=3, base_delay=0.01, retry_codes={503}
+            auth_rejected_call, max_attempts=3, base_delay=0.01, retry_codes={503}
         )
-    assert exc_info.value.status == 401
-    assert attempts == 1
+    assert exc_info.value.status == status_code
+    assert attempts == 1, (
+        f"Auth rejection ({status_code}) triggered retries. "
+        f"Expected exactly 1 attempt, got {attempts}."
+    )
 
 
 @pytest.mark.asyncio
@@ -171,10 +244,18 @@ async def test_adapter_plugin_contract_matrix(adapter_cls):
     """
     Parameterized Contract Test Matrix:
     Verifies that all 10 framework adapter plugins (LangChain, LangGraph, Claude,
-    Gemini, CrewAI, OpenAI, Ollama, OpenAPI, Grok, AG2) instantiate cleanly.
+    Gemini, CrewAI, OpenAI, Ollama, OpenAPI, Grok, AG2) satisfy the adapter interface
+    contract: correct instantiation, named execute method, and normalized response.
+
+    Expected failure modes with mock credentials (no live API keys):
+    - aiohttp.ClientResponseError: auth/network rejection from the SDK transport
+    - ValueError / RuntimeError / KeyError / TypeError: config/parse rejection
+
+    Any other exception type (AttributeError, ImportError, NotImplementedError, etc.)
+    indicates a structural defect in the adapter and fails this test.
     """
     plugin = adapter_cls()
-    assert hasattr(plugin, "name")
+    assert hasattr(plugin, "name"), f"{adapter_cls.__name__} missing 'name' attribute"
     assert isinstance(plugin.name, str)
     assert len(plugin.name) > 0
 
@@ -194,8 +275,21 @@ async def test_adapter_plugin_contract_matrix(adapter_cls):
 
     try:
         res = await query_fn(payload)
-        assert isinstance(res, dict)
-        assert "status" in res
+        assert isinstance(res, dict), (
+            f"Plugin '{plugin.name}' returned {type(res).__name__}, expected dict"
+        )
+        assert "status" in res, f"Plugin '{plugin.name}' response missing required 'status' key"
+        assert res["status"] in _VALID_RESPONSE_STATUSES, (
+            f"Plugin '{plugin.name}' returned non-canonical status: {res['status']!r}. "
+            f"Valid values: {_VALID_RESPONSE_STATUSES}"
+        )
+    except _ACCEPTED_ADAPTER_EXCEPTIONS:
+        # Expected: mock credentials rejected at SDK config or network layer.
+        pass
     except Exception as exc:
-        # Verified fallback if live SDK / network credentials fail gracefully
-        assert isinstance(exc, (ValueError, RuntimeError, KeyError, TypeError, Exception))
+        pytest.fail(
+            f"Plugin '{plugin.name}' raised unexpected exception type "
+            f"'{type(exc).__name__}': {exc!r}. "
+            f"Adapters must only raise one of: "
+            f"{[e.__name__ for e in _ACCEPTED_ADAPTER_EXCEPTIONS]}."
+        )

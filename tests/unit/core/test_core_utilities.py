@@ -136,6 +136,20 @@ def test_path_safety_advanced(tmp_path, monkeypatch):
         assert utils.is_path_safe("file.txt", base) is False
 
 
+def test_path_safety_drive_prefix_non_windows(tmp_path):
+    """
+    Mutation Assurance Test: Verifies drive letter stripping prefix concatenation uses '+'
+    (kills '+' -> '-' mutation at line 46 in eval_runner/utils/base.py).
+    """
+    base = tmp_path / "base"
+    base.mkdir()
+    sub_file = base / "safe.txt"
+    with patch("eval_runner.utils.base.os.name", "posix"):
+        with patch("eval_runner.utils.base.Path.resolve", return_value=sub_file):
+            result = utils.is_path_safe("C:/base/safe.txt", base)
+            assert result is True
+
+
 def test_get_canonical_path_edge():
     # Line 90: Empty input
     assert utils.get_canonical_path("") == ""

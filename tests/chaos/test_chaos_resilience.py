@@ -167,3 +167,58 @@ def test_chaos_readonly_worm_filesystem_lock_failure(tmp_path):
     non_existent_path = tmp_path / "read_only_root" / "locked_manifest.json"
     is_valid = TraceVerifier.verify_trace(tmp_path / "non_existent_trace.jsonl", non_existent_path)
     assert is_valid is False
+
+
+@pytest.mark.asyncio
+async def test_chaos_simulator_crash_never_passes_verification(
+    chaos_scenario, tmp_path, monkeypatch
+):
+    """
+    End-to-End Invariant: Simulator crash MUST NOT produce a verification PASS.
+
+    Pipeline under test:
+      ToolSandbox.execute() raises RuntimeError (simulated crash)
+      → sign_trace() is never called (crash prevents signing)
+      → verify_trace() is called on unsigned trace (no manifest)
+      → returns False
+
+    This closes the full loop from tool-layer failure to verifier gate,
+    establishing that a runtime crash cannot silently produce a valid result.
+    """
+    project_root = tmp_path / "project"
+    run_log_dir = project_root / "runs"
+    run_id = "run-crash-never-pass-001"
+    run_dir = run_log_dir / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", project_root)
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", run_log_dir)
+
+    sandbox = ToolSandbox(
+        scenario=chaos_scenario,
+        workspace_root=tmp_path / "workspace",
+        jail_root=tmp_path / "jail",
+    )
+    await sandbox.setup()
+
+    # Inject a crash into the core execution path
+    async def crash_core(tool_name, params, agent_name=None):
+        raise RuntimeError("Simulated crash: tool executor process died")
+
+    sandbox._execute_core = crash_core
+
+    # The crash propagates — sign_trace is never reached
+    with pytest.raises(RuntimeError, match="Simulated crash"):
+        await sandbox.execute(tool_name="faulty_shim", params={})
+
+    # Write an unsigned trace (no manifest was ever created)
+    trace_file = run_dir / "run.jsonl"
+    trace_file.write_text('{"event": "start", "run_id": "' + run_id + '"}\n', encoding="utf-8")
+    manifest_path = run_dir / "run_manifest.json"
+    # manifest_path intentionally does NOT exist — signing never happened
+
+    # Verifier MUST return False: a crash-interrupted run can never PASS
+    is_valid = TraceVerifier.verify_trace(trace_file, manifest_path)
+    assert is_valid is False, (
+        "INVARIANT VIOLATED: Simulator crash allowed unsigned trace to pass verification!"
+    )
