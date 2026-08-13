@@ -270,8 +270,8 @@ def _tests_for_module(module_name: str) -> list[str]:
 def evaluate_mutant(target_file: Path, mutant_source: str, tests: list[str]) -> str:
     """
     Surgically applies mutant source to the target file, executes pytest against
-    the per-module corpus with bytecode caching disabled (-B and PYTHONDONTWRITEBYTECODE=1),
-    then restores the original file byte-for-byte.
+    the per-module corpus with bytecode caching disabled (-B and PYTHONDONTWRITEBYTECODE=1)
+    and PYTHONPATH prioritized to BASE_DIR, then restores the original file byte-for-byte.
 
     Returns status: 'killed', 'survived', 'timeout', or 'incompetent'.
     """
@@ -280,6 +280,7 @@ def evaluate_mutant(target_file: Path, mutant_source: str, tests: list[str]) -> 
     original_bytes = target_file.read_bytes()
     env = os.environ.copy()
     env["PYTHONDONTWRITEBYTECODE"] = "1"
+    env["PYTHONPATH"] = f"{BASE_DIR}{os.pathsep}{env.get('PYTHONPATH', '')}"
     try:
         target_file.write_text(mutant_source, encoding="utf-8")
         cmd = (
@@ -342,6 +343,7 @@ def verify_sentinel_preconditions() -> None:
     # Verify per-module baseline runtimes and timeout headroom
     env = os.environ.copy()
     env["PYTHONDONTWRITEBYTECODE"] = "1"
+    env["PYTHONPATH"] = f"{BASE_DIR}{os.pathsep}{env.get('PYTHONPATH', '')}"
     for target in TARGET_MODULES:
         module_name = target.name
         tests = _tests_for_module(module_name)
