@@ -106,6 +106,7 @@ jobs:
     - name: Run Mutation Testing Sentinel
       shell: bash
       run: |
+        export PYTHONPATH=.
         if [ "${{ github.ref }}" = "refs/heads/main" ]; then
           echo "Running FULL POPULATION mutation sentinel on main branch..."
           python tools/ci/run_mutation_tests.py --full

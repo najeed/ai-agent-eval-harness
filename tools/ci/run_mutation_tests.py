@@ -283,11 +283,13 @@ def evaluate_mutant(target_file: Path, mutant_source: str, tests: list[str]) -> 
     env["PYTHONPATH"] = f"{BASE_DIR}{os.pathsep}{env.get('PYTHONPATH', '')}"
     try:
         target_file.write_text(mutant_source, encoding="utf-8")
-        cmd = (
-            [sys.executable, "-B", "-m", "pytest"]
-            + tests
-            + ["-q", "--no-header", "-x", "-p", "no:plugin_gateway", "-p", "no:cov"]
+        extra_flags = ["-q", "--no-header", "-x", "-p", "no:plugin_gateway", "-p", "no:cov"]
+        args_str = repr(tests + extra_flags)
+        py_code = (
+            f"import sys; sys.path.insert(0, r'{BASE_DIR}'); "
+            f"import pytest; sys.exit(pytest.main({args_str}))"
         )
+        cmd = [sys.executable, "-B", "-c", py_code]
         try:
             res = subprocess.run(
                 cmd,
@@ -347,11 +349,13 @@ def verify_sentinel_preconditions() -> None:
     for target in TARGET_MODULES:
         module_name = target.name
         tests = _tests_for_module(module_name)
-        cmd = (
-            [sys.executable, "-B", "-m", "pytest"]
-            + tests
-            + ["-q", "--no-header", "-p", "no:plugin_gateway", "-p", "no:cov"]
+        extra_flags = ["-q", "--no-header", "-p", "no:plugin_gateway", "-p", "no:cov"]
+        args_str = repr(tests + extra_flags)
+        py_code = (
+            f"import sys; sys.path.insert(0, r'{BASE_DIR}'); "
+            f"import pytest; sys.exit(pytest.main({args_str}))"
         )
+        cmd = [sys.executable, "-B", "-c", py_code]
         t0 = time.monotonic()
         res = subprocess.run(cmd, cwd=BASE_DIR, capture_output=True, text=True, env=env)
         elapsed = time.monotonic() - t0
