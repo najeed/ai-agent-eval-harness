@@ -111,9 +111,10 @@ def test_path_safety_advanced(tmp_path, monkeypatch):
     base = tmp_path / "base"
     base.mkdir()
 
-    # 1. Authoritative Anchoring (Absolute vs Relative)
+    # 1. Authoritative Anchoring (Absolute vs Relative vs Exact Base)
     assert utils.is_path_safe("sub/file.txt", base) is True
     assert utils.is_path_safe(base / "sub/file.txt", base) is True
+    assert utils.is_path_safe(base, base) is True
 
     # 2. Escape Check (Line 73)
     # A relative path like "../../etc/passwd" becomes "base/../../etc/passwd" -> "/etc/passwd"

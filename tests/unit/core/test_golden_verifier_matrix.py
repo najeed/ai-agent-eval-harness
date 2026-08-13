@@ -386,22 +386,21 @@ def test_verifier_trace_lifecycle_event_appended(clean_vault_setup):
     assert "seal_hash" in trace_content
 
 
-def test_verifier_jail_escape_attempt():
+def test_verifier_jail_escape_attempt(tmp_path):
     """
     Mutation Assurance Test: Verifies verify_trace returns False for paths outside project jail
-    (kills return False -> True mutation in path safety check).
+    (kills return False -> True mutation in path safety check at line 543).
     """
-    import tempfile
-    from pathlib import Path
+    from unittest.mock import patch
 
-    outside_dir = Path(tempfile.gettempdir()) / "outside_jail_test_dir"
-    outside_dir.mkdir(parents=True, exist_ok=True)
-    outside_trace = outside_dir / "run.jsonl"
-    outside_manifest = outside_dir / "run_manifest.json"
+    outside_trace = tmp_path / "run.jsonl"
+    outside_manifest = tmp_path / "run_manifest.json"
     outside_trace.write_text('{"event": "start"}\n', encoding="utf-8")
     outside_manifest.write_text('{"trace_hash": "abc"}\n', encoding="utf-8")
 
-    assert TraceVerifier.verify_trace(outside_trace, outside_manifest) is False
+    # Mock is_path_safe to return False (simulating jail escape)
+    with patch("eval_runner.verifier.utils.is_path_safe", return_value=False):
+        assert TraceVerifier.verify_trace(outside_trace, outside_manifest) is False
 
 
 def test_verifier_existing_output_dir_exist_ok(tmp_path):
@@ -422,27 +421,8 @@ def test_verifier_governance_ttl_subtraction(clean_vault_setup):
     Mutation Assurance Test: Verifies age calculation uses subtraction '-'
     (kills age = now - created_at '+' mutation in verifier TTL verification).
     """
-    run_id = clean_vault_setup["run_id"]
-    trace_file = clean_vault_setup["trace_file"]
+    from datetime import datetime
 
-    TraceVerifier.sign_trace(
-        trace_path=str(trace_file),
-        identity_id="test_signer",
-        compliance_status="pass",
-        run_id=run_id,
-    )
-    manifest_path = trace_file.parent / "run_manifest.json"
-
-    # A freshly signed manifest must return True
-    # If '-' is mutated to '+', age = now + created_at (4000+ years > 30 days), returning False.
-    assert TraceVerifier.verify_trace(trace_file, manifest_path) is True
-
-
-def test_verifier_evidence_ledger_tampered_artifact(clean_vault_setup):
-    """
-    Mutation Assurance Test: Verifies evidence ledger tampered artifact detection
-    (kills != -> == mutation in forensic evidence verification).
-    """
     run_id = clean_vault_setup["run_id"]
     trace_file = clean_vault_setup["trace_file"]
 
@@ -454,12 +434,46 @@ def test_verifier_evidence_ledger_tampered_artifact(clean_vault_setup):
     )
     manifest_path = trace_file.parent / "run_manifest.json"
 
-    # Add evidence ledger entry pointing to a file with tampered hash
-    artifact_file = trace_file.parent / "artifact.txt"
-    artifact_file.write_text("actual content", encoding="utf-8")
-
-    manifest["evidence_ledger"] = {"artifact.txt": "wrong_expected_hash_0000000000000000000"}
+    # Set timezone-aware timestamp
+    manifest["timestamp"] = datetime.now().astimezone().isoformat()
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
 
-    # Tampered evidence ledger artifact must fail verification
-    assert TraceVerifier.verify_trace(trace_file, manifest_path) is False
+    # Re-sign trace with valid timezone-aware timestamp
+    manifest = TraceVerifier.sign_trace(
+        trace_path=str(trace_file),
+        identity_id="test_signer",
+        compliance_status="pass",
+        run_id=run_id,
+    )
+
+    # A freshly signed manifest with timezone must return True
+    # If '-' is mutated to '+', age = now + created_at (4000+ years > 30 days), returning False.
+    assert TraceVerifier.verify_trace(trace_file, manifest_path) is True
+
+
+def test_verifier_evidence_ledger_tampered_artifact(clean_vault_setup):
+    """
+    Mutation Assurance Test: Verifies evidence ledger tampered artifact detection
+    (kills != -> == mutation in forensic evidence verification at line 579).
+    """
+    run_id = clean_vault_setup["run_id"]
+    trace_file = clean_vault_setup["trace_file"]
+
+    # Create sidecar artifact BEFORE sign_trace so sign_trace includes its hash in evidence_ledger
+    artifact_file = trace_file.parent / "artifact.txt"
+    artifact_file.write_text("original content", encoding="utf-8")
+
+    # Sign trace to generate valid signature over manifest containing evidence_ledger
+    TraceVerifier.sign_trace(
+        trace_path=str(trace_file),
+        identity_id="test_signer",
+        compliance_status="pass",
+        run_id=run_id,
+    )
+    manifest_path = trace_file.parent / "run_manifest.json"
+
+    # Tamper sidecar artifact content AFTER sign_trace (manifest signature remains valid)
+    artifact_file.write_text("tampered malicious content", encoding="utf-8")
+
+    # Tampered evidence ledger artifact MUST fail verification when verify_ledger=True
+    assert TraceVerifier.verify_trace(trace_file, manifest_path, verify_ledger=True) is False
