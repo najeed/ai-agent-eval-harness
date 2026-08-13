@@ -32,10 +32,31 @@ class SessionManager:
     @classmethod
     async def get_session(cls) -> aiohttp.ClientSession:
         """Returns the global aiohttp session instance."""
-        if cls._session is None or cls._session.closed:
+        try:
+            current_loop = asyncio.get_running_loop()
+        except RuntimeError:
+            current_loop = None
+
+        session_loop = getattr(cls._session, "_loop", None) if cls._session else None
+        loop_mismatch = (
+            current_loop is not None and session_loop is not None and session_loop != current_loop
+        )
+        is_stale = cls._session is None or cls._session.closed or loop_mismatch
+        if is_stale:
             async with cls._lock:
-                if cls._session is None or cls._session.closed:
-                    # Industrial Setting: High-concurrency connection pooling
+                session_loop = getattr(cls._session, "_loop", None) if cls._session else None
+                loop_mismatch = (
+                    current_loop is not None
+                    and session_loop is not None
+                    and session_loop != current_loop
+                )
+                is_stale = cls._session is None or cls._session.closed or loop_mismatch
+                if is_stale:
+                    if cls._session and not cls._session.closed:
+                        try:
+                            await cls._session.close()
+                        except Exception as _e:
+                            logger.debug("Stale session close skipped: %s", _e, exc_info=True)
                     connector = aiohttp.TCPConnector(limit=100, ttl_dns_cache=300)
                     cls._session = aiohttp.ClientSession(
                         connector=connector,

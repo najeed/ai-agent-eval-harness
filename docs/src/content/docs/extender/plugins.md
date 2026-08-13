@@ -303,29 +303,35 @@ class ScenarioAugmentPlugin(BaseEvalPlugin):
 
 ---
 
-## ⚡ Integrated Console Extension
+## ⚡ Integrated Console & GUI Extension
 
-Plugins can inject custom React views and REST endpoints into the [Harness Console](/extender/api-reference/).
+Plugins can inject custom React micro-frontend views, dynamic navigation routes, and REST endpoints into the native [Visual Console](/extender/gui-extensions/) using the `on_register_console_routes` hook.
 
 ```python
 class AdminAnalysisPlugin(BaseEvalPlugin):
     def on_register_console_routes(self, app, nav_registry):
-        # Register a backend API endpoint
+        # 1. Register backend API endpoint
         @app.route("/api/plugin/analysis/summary")
         def get_summary():
             return {"status": "ok", "insights": ["High latency"]}
 
-        # Add a link to the Sidebar
+        # 2. Add dynamic navigation item to the Visual Console Sidebar
         nav_registry.append(
             {
                 "id": "analysis_tab",
-                "title": "Live Analysis",
-                "path": "/api/plugins/analysis",
-                "icon": "vitals",
-                "type": "component",
+                "name": "Live Analysis",
+                "path": "/analysis",
+                "icon": "Activity",
+                "group": "Analyze",
+                "badge": "LIVE",
+                "tier": "enterprise",
+                "remoteEntry": "/static/plugins/analysis/bundle.js",
+                "required_role": ["System Admin", "MultiAgentOps Eng."],
             }
         )
 ```
+
+👉 **For the complete tutorial on building standalone React micro-frontends with Vite, see the [GUI Extensibility Guide](/extender/gui-extensions/).**
 
 ---
 

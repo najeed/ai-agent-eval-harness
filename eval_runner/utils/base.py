@@ -11,7 +11,6 @@ import time
 from pathlib import Path
 from typing import Any
 
-# Industry Consolidation Table (AES Standard v1.2)
 INDUSTRY_MAPPING = {
     "fintech": "finance",
     "medtech": "healthcare",
@@ -25,7 +24,6 @@ def normalize_industry(industry: str) -> str:
     """Normalizes industry identifier to the AES standard."""
     if not industry:
         return "generic"
-
     clean_industry = str(industry).lower().strip().replace(" ", "_")
     return INDUSTRY_MAPPING.get(clean_industry, clean_industry)
 
@@ -42,45 +40,32 @@ def is_path_safe(target: str | Path, base: str | Path) -> bool:
     import tempfile
 
     try:
-        # 1. Cross-Platform Normalization
-        # Replace backslashes with slashes for cross-platform security analysis
         raw_target = str(target).replace("\\", "/")
         raw_base = str(base).replace("\\", "/")
-
-        # Detect Windows drive letters (e.g. C:/...) or UNC paths (//server/...) on POSIX platforms
-        if os.name != "nt" and re.search(r"(?:^|/)(?:[a-zA-Z]:|//)", raw_target):
-            raw_target = "/" + re.sub(r"^(?:.*/)?(?:[a-zA-Z]:|//+)", "", raw_target).lstrip("/")
-
+        if os.name != "nt" and re.search("(?:^|/)(?:[a-zA-Z]:|//)", raw_target):
+            raw_target = "/" + re.sub("^(?:.*/)?(?:[a-zA-Z]:|//+)", "", raw_target).lstrip("/")
+        is_raw_relative = not Path(raw_target).is_absolute()
         target_p = Path(raw_target)
-        if not target_p.is_absolute():
+        if is_raw_relative:
             target_p = Path(raw_base) / target_p
-
-        # 2. Canonical Resolution (Handles symlink traversal attempts)
         target_path = target_p.resolve()
         base_path = Path(raw_base).resolve()
         temp_dir = Path(tempfile.gettempdir()).resolve()
-
-        # 3. Normalization (Windows Case-Insensitivity & Path Separators)
         target_str = str(target_path).lower().replace("\\", "/").rstrip("/")
         base_str = str(base_path).lower().replace("\\", "/").rstrip("/")
         temp_str = str(temp_dir).lower().replace("\\", "/").rstrip("/")
-
-        # 4. Multi-Zone Jail Check
-        # Zone A: Project Root (Always allowed)
         if target_str == base_str or target_str.startswith(f"{base_str}/"):
             return True
 
-        # Zone B: System Temp (Allowed unless AEH_STRICT_JAIL is set)
+        if is_raw_relative:
+            return False
+
         if os.environ.get("AEH_STRICT_JAIL") != "1":
             if target_str == temp_str or target_str.startswith(f"{temp_str}/"):
-                is_relative = not Path(target).is_absolute()
-                if is_relative and not target_str.startswith(f"{base_str}/"):
-                    return False
                 return True
 
         return False
     except Exception as e:
-        # Fail-closed for any resolution errors (Security Standard)
         import sys
 
         sys.stderr.write(f"   [Utils] CRITICAL: Path resolution error (Fail-Closed): {e}\n")
@@ -114,15 +99,9 @@ def safe_run_async(coro):
     import asyncio
 
     try:
-        # Check if a loop is already running in this thread
         asyncio.get_running_loop()
     except RuntimeError:
-        # No running loop, safe to use standard asyncio.run
         return asyncio.run(coro)
-
-    # If a loop is running, we execute in a separate thread to avoid
-    # 'RuntimeError: Runner.run() cannot be called from a running event loop'.
-    # This is safer than nest_asyncio as it preserves industrial loop isolation.
     from concurrent.futures import ThreadPoolExecutor
 
     with ThreadPoolExecutor(max_workers=1) as executor:
@@ -157,13 +136,11 @@ def rmtree_resilient(path: str | Path, retries: int = 5, delay: float = 0.2):
             if attempt < retries - 1:
                 time.sleep(delay * (attempt + 1))
             else:
-                # Final attempt fallback: try to rename then delete (Windows naming escape)
                 try:
                     temp_name = p.parent / f"{p.name}.deleted.{int(time.time())}"
                     p.rename(temp_name)
                     shutil.rmtree(temp_name, ignore_errors=True)
                 except Exception as e:
-                    # If all else fails, log it to the forensic trail
                     import sys
 
                     sys.stderr.write(
@@ -190,35 +167,27 @@ def deep_diff(d1: Any, d2: Any, path: str = "") -> list[str]:
     Returns a list of human-readable differences.
     Used for Industrial State Parity verification (AES v1.4).
     """
-
     diffs = []
-
     if isinstance(d1, (int, float)) and isinstance(d2, (int, float)):
-        pass  # Allow numeric comparison without type check
+        pass
     elif type(d1) is not type(d2):
         diffs.append(f"{path}: types differ ({type(d1).__name__} vs {type(d2).__name__})")
         return diffs
-
     if isinstance(d1, dict):
         keys1 = set(d1.keys())
         keys2 = set(d2.keys())
-
         for k in keys1 - keys2:
             diffs.append(f"{path}.{k}: key missing in target" if path else f"{k}: key missing")
         for k in keys2 - keys1:
             diffs.append(f"{path}.{k}: key extra in target" if path else f"{k}: key extra")
-
         for k in keys1 & keys2:
             diffs.extend(deep_diff(d1[k], d2[k], f"{path}.{k}" if path else k))
-
     elif isinstance(d1, list | tuple):
         if len(d1) != len(d2):
             diffs.append(f"{path}: lengths differ ({len(d1)} vs {len(d2)})")
         else:
             for i in range(len(d1)):
                 diffs.extend(deep_diff(d1[i], d2[i], f"{path}[{i}]"))
-    else:
-        if d1 != d2:
-            diffs.append(f"{path}: values differ ({d1!r} vs {d2!r})")
-
+    elif d1 != d2:
+        diffs.append(f"{path}: values differ ({d1!r} vs {d2!r})")
     return diffs

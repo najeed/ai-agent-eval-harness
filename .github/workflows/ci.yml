@@ -81,6 +81,40 @@ jobs:
       env:
         OTEL_SDK_DISABLED: true
 
+  mutation-sentinel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v5
+      with:
+        token: ${{ github.token }}
+        persist-credentials: false
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+
+    - name: Run Mutation Testing Sentinel
+      shell: bash
+      run: |
+        export PYTHONPATH=.
+        if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+          echo "Running FULL POPULATION mutation sentinel on main branch..."
+          python tools/ci/run_mutation_tests.py --full
+        else
+          echo "Running SAMPLED mutation sentinel on PR / feature branch..."
+          python tools/ci/run_mutation_tests.py
+        fi
+
   ui-test:
     runs-on: ubuntu-latest
     steps:

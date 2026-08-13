@@ -1,6 +1,6 @@
 [project]
 name = "agentv"
-version = "1.7.2"
+version = "1.7.3"
 description = "The Enterprise-Grade Reliability Framework for AI Agents"
 readme = "README.md"
 authors = [
@@ -30,8 +30,8 @@ dependencies = [
     "cryptography==50.0.0",
     "opentelemetry-api==1.44.0",
     "opentelemetry-sdk==1.44.0",
-    "google-genai==2.17.0",
-    "pypdf==6.15.0",
+    "google-genai==2.18.0",
+    "pypdf==6.16.0",
     "python-docx==1.2.0",
     "psutil==7.2.2",
     "httpx==0.28.1",
@@ -39,7 +39,7 @@ dependencies = [
     "sqlalchemy==2.0.52",
     "python-dotenv==1.2.2",
     "Authlib==1.7.2",
-    "langchain-openai==1.4.3",
+    "langchain-openai==1.5.0",
     "langsmith==0.10.18",
     "lxml==6.1.1",
     "Pillow==12.3.0",
@@ -78,9 +78,11 @@ markers = [
     "live: environment-gated integration tests running against CycleCore",
 ]
 filterwarnings = [
-    # google-genai: Python 3.14 _UnionGenericAlias deprecation
+    # google-genai: Python 3.14 _UnionGenericAlias and AiohttpClientSession deprecations
     "ignore:.*_UnionGenericAlias.*is deprecated.*:DeprecationWarning:google.*",
     "ignore:.*_UnionGenericAlias.*is deprecated.*:DeprecationWarning",
+    "ignore:.*Inheritance class AiohttpClientSession from ClientSession is discouraged.*:DeprecationWarning:google.*",
+    "ignore:.*Inheritance class AiohttpClientSession from ClientSession is discouraged.*:DeprecationWarning",
     # ag2: jsonschema v4.18+ RefResolver deprecation
     "ignore:.*jsonschema.RefResolver is deprecated.*:DeprecationWarning:jsonschema.*",
     "ignore:.*jsonschema.RefResolver is deprecated.*:DeprecationWarning",
@@ -131,3 +133,8 @@ quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
+
+[tool.mutmut]
+paths_to_mutate = ["eval_runner/verifier.py", "eval_runner/tool_sandbox.py", "eval_runner/utils/base.py"]
+runner = "pytest -x --assert=plain"
+tests_dir = "tests/"

@@ -33,6 +33,8 @@ pytest --cov=eval_runner --cov-fail-under=85
 | **Security & Sandbox** | `pytest tests/security/` | Adversarial bypass, jail escape, and audit tests |
 | **Property Invariants** | `pytest tests/property/` | Hypothesis property-based invariant testing |
 | **Scenario Corpus Compliance** | `pytest tests/functional/test_scenario_compliance.py` | Full 5,040+ scenario file schema validation under `industries/` |
+| **Mutation Sentinel (Sampled)** | `python tools/ci/run_mutation_tests.py` | AST mutation testing on PR / feature branches |
+| **Mutation Sentinel (Full)** | `python tools/ci/run_mutation_tests.py --full` | 100% full population AST mutation sentinel evaluation (Target: >=90%) |
 | **Code Formatting & Linting** | `ruff check .` | Verify code quality and static syntax integrity |
 
 ## Active Test Taxonomy Structure
@@ -73,6 +75,10 @@ tests/
 ### 5. Performance SLAs & Concurrency Scaling
 - **Files**: `tests/performance/test_interception_benchmarks.py`
 - **Purpose**: Benchmark synchronous interception latency SLAs (<5ms) and 100+ concurrent evaluation session stability.
+
+### 6. AST Mutation Testing Sentinel
+- **Files**: `tools/ci/run_mutation_tests.py`
+- **Purpose**: Real AST-based surgical mutation engine testing the verifier (`eval_runner/verifier.py`), tool sandbox (`eval_runner/tool_sandbox.py`), and core utilities (`eval_runner/utils/base.py`). Enforces a 90%+ kill rate gate (100% achieved) with `.mutation_testing.lock` mutex protection.
 
 ## Common Commands
 

@@ -593,6 +593,7 @@ class TraceVerifier:
                     return False
             except Exception as e:
                 logger.warning(f"Failed to verify governance TTL: {e}")
+                return False
 
             # 4. Cryptographic Proof (Hybrid/Chain Support)
             chain = manifest.get("provenance_chain", [])

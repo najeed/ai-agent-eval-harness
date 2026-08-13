@@ -9,14 +9,15 @@ We actively maintain and provide security updates for the following versions:
 | Latest  | :white_check_mark: |
 | < Latest| :x:                |
 
-## Industrial Security & Trust (v1.6.2)
+## Industrial Security & Trust (v1.7.3)
 
-The Evaluation Harness v1.6.2 includes advanced **Industrial Security Hardening**, a **Cryptographic Trust Protocol (v3.0.0)**, and **Post-Quantum Cryptographic (PQC) Certification** to guarantee the integrity and non-repudiability of your evaluations.
+The Evaluation Harness v1.7.3 includes advanced **Industrial Security Hardening**, a **Cryptographic Trust Protocol (v3.0.0)**, **Post-Quantum Cryptographic (PQC) Certification**, and **Runtime Micro-Frontend Sandbox Isolation** to guarantee the integrity and non-repudiability of your evaluations and console interfaces.
 
 For detailed technical information on these features, please refer to:
 - **[COMPLIANCE.md](COMPLIANCE.md)**: Deep dive into **NIST AI RMF Alignment**, the **Weighted Severity Model (WSM)**, and our **Hybrid PQC Protocol**.
 - **[Industrial Security Hardening (R1-R3)](docs-old/guides/07_SECURITY_AND_AUTHENTICATION.md#5-industrial-security-hardening-v123)**: Details on SSRF protection, telemetry masking, and operational controls.
 - **[The Trust Protocol](docs-old/guides/07_SECURITY_AND_AUTHENTICATION.md#6-the-trust-protocol-fingerprinting--certification)**: Overview of trace fingerprinting and the public Certification API.
+- **[GUI Extensibility & Micro-Frontends](docs/src/content/docs/extender/gui-extensions.md)**: Architecture for fault-isolated runtime module federation.
 
 ### Core Security Guarantees
 
@@ -33,6 +34,10 @@ For detailed technical information on these features, please refer to:
 
 4. **Hardened Sandboxed Isolation (VFS/Jails)**:
    * Untrusted agent code is executed within structurally isolated sandboxes utilizing **Virtual File Systems (VFS)** and restricted jail environments. This ensures tight path jail enforcement, memory limits, and strict network routing restrictions to prevent jailbreak attempts.
+
+5. **Micro-Frontend Runtime Isolation & CSP Boundaries**:
+   * Dynamic console tabs loaded via runtime module federation execute within browser Content Security Policy (CSP) and CORS boundaries.
+   * Every dynamically imported ESM micro-frontend is isolated inside a React `RemoteErrorBoundary`, ensuring unhandled component exceptions never crash the host application or compromise adjacent session state.
 
 ---
 

@@ -44,8 +44,8 @@ def benchmark_scenario():
 
 def test_interception_pipeline_latency_benchmark(benchmark_scenario, tmp_path, benchmark):
     """
-    Benchmark test: Synchronous interception pipeline execution latency benchmark.
-    Asserts pipeline overhead per call is within low-latency bounds (<5ms).
+    Benchmark test: Synchronous baseline interception pipeline overhead latency benchmark.
+    Asserts baseline interception pipeline overhead per call is within low-latency SLA (<5ms).
     """
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
@@ -115,8 +115,7 @@ async def test_multi_session_concurrency_scaling(benchmark_scenario, tmp_path):
 async def test_1000_session_concurrency_scaling(benchmark_scenario, tmp_path):
     """
     Industrial Concurrency Test:
-    Evaluates state isolation, run ID uniqueness, and memory safety
-    under 1,000 concurrent evaluation sessions.
+    Evaluates 1,000-session concurrency and isolation under parallel evaluation sessions.
     """
     num_sessions = 1000
     run_ids = set()
