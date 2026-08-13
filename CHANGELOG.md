@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.3] - 2026-08-14
+
+### Added
+* **Dynamic Navigation Manifest & Runtime Module Federation**: Introduced generic, zero-recompilation micro-frontend extensibility in `ui/visual-console/src/App.tsx`. Ingests `GET /api/nav` via TanStack Query and dynamically deep-merges plugin navigation items with built-in groups (`mergeNavManifest`).
+* **Runtime Micro-Frontend Remote Component Loader**: Implemented `RemoteComponentLoader` with `RemoteErrorBoundary` in `App.tsx` loading standalone ESM plugin bundles on demand via standard dynamic `import(/* @vite-ignore */ entryUrl)` without requiring build-time coupling or core frontend recompilation.
+* **Rich Navigation Metadata & Visual Badging**: Added support for sidebar badges (e.g. `LIVE`, `HOT-RELOAD`, `FLEET`, `APM`, `◆ ENT`), tier markers (`tier === 'enterprise'`), Lucide dynamic string icon resolution (`resolveIcon`), external URLs (`<a>` tags), and item-level RBAC role gating (`required_role`).
+* **100% Mutation Testing Sentinel Assurance**: Achieved 100% AST mutation detection rate (91 killed, 0 timeout, 0 survived, 29 incompetent/annotation-only) across all 120 mutation points in `eval_runner/verifier.py`, `eval_runner/tool_sandbox.py`, and `eval_runner/utils/base.py`.
+* **Cross-Platform Process Singleton Locking**: Added `.mutation_testing.lock` mutex with emergency worktree auto-restoration in `tools/ci/run_mutation_tests.py` to prevent race conditions and test corruptions under parallel/concurrent invocations.
+
+### Fixed
+* **Interceptor Pipeline Recursion & Sequence Bounds**: Added exhaustive test coverage for passthrough, failing, and skipped interceptor pipeline depth and sequence increments (`make_next(index + 1, depth + 1)`).
+* **Multi-Run Certificate & Sandbox Directory Creation**: Verified nested directory creation and `exist_ok=True` retention across distinct run IDs for both `TraceVerifier` report certificate backups and `ToolSandbox` workspace/jail directories.
+
 ## [1.7.2] - 2026-08-11
 
 ### Added

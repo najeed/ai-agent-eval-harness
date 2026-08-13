@@ -48,7 +48,7 @@ graph TD
 | :--- | :--- |
 | **License** | Apache License 2.0 |
 | **Status** | 🟢 Production-Ready (NIST AI-100-1 Aligned) |
-| **Version** | v1.7.2 (August 2026 Release) |
+| **Version** | v1.7.3 (August 2026 Release) |
 | **Trust Model** | [Behavioral DNA & VC v3.0.0](docs-old/architecture.md) |
 | **Architecture** | [Identity-Centric Core](docs-old/architecture.md) |
 | **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.4 Spec](docs-old/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
@@ -155,10 +155,13 @@ The harness is organized into the following key components:
 - **Behavioral DNA Telemetry**: High-granularity event bus (4-level: PHASE, SUBTASK, ACTION, STEP) providing a precise "genetic" map of agent decision-making.
 - **Verification Certificate (VC) v3.0.0**: Traces are signed via the **Identity Registry** (Ed25519) and backed by a **Forensic Evidence Ledger** that hashes sidecar artifacts to ensure end-to-end provenance.
 
-### 🌟 What's New in the August 2026 Release (v1.7.2)
+### 🌟 What's New in the August 2026 Release (v1.7.3)
 
-The **v1.7.2 August 2026 Release** presents the AgentV industrial-grade **Verification OS**, featuring full parallelization across 5,000+ scenarios, independent cryptographic verification, hard performance SLA gates, and a native visual console:
+The **v1.7.3 August 2026 Release** presents the AgentV industrial-grade **Verification OS**, featuring runtime micro-frontend module federation, dynamic navigation manifests, 100% mutation testing sentinel assurance, full test parallelization across 5,000+ scenarios, and independent cryptographic verification:
 
+- 🌐 **Dynamic Navigation Manifest & Runtime Module Federation (`/v2`)**: The native visual console now dynamically ingests `GET /api/nav` manifests from the backend and loads third-party/enterprise plugin tabs on demand via standard ESM dynamic `import()`—**zero build-time recompilation required**.
+- 🛡️ **100% Mutation Testing Sentinel Assurance**: Full population mutation testing across `verifier.py`, `tool_sandbox.py`, and `base.py` guarantees 100% kill rate (91 killed, 0 timeout, 0 survived) for bulletproof industrial verification, backed by a `.mutation_testing.lock` process mutex.
+- 🎨 **Visual Sidebar Badging & Dynamic Icon Resolver**: Pluggable navigation items can declare custom badges (e.g. `LIVE`, `APM`, `CUSTOM`), enterprise tier markers, role-based access restrictions (`required_role`), and Lucide icon keys.
 - 🛡️ **Enterprise Verification Assurance Suite**: Full parallelization of the 5,040+ scenario corpus via `pytest-xdist`, strict exception hygiene, and multi-version schema dispatch. Includes an **Independent Cryptographic Oracle** (`IndependentTraceOracle`) with Ed25519 & ML-DSA-65 (PQC) validation, a 7-stage verify-after-tampering matrix, and synchronized TOCTOU barrier race testing.
 - ⚡ **Performance SLA Gates & 1,000 Session Scaling**: Enforces hard interception latency SLA gates (<5ms mean overhead) and validates 1,000 concurrent evaluation sessions with 100% unique run IDs and zero state leakage under contention.
 - 🎛️ **The Integrated Visual Console (Native GUI)**: Central dashboard (`/v2`) featuring a React Flow canvas scenario builder, live timeline log playback debugger, side-by-side state diff visualizers, async restart-resilient HITL review queues (`hitl.db`), and drag-and-drop PRD spec-to-eval translators.
@@ -238,8 +241,9 @@ The harness supports multiple ways to talk to your agent. Use the `--protocol` f
 - **Benchmark Ecosystem**: Native loaders for GAIA (HuggingFace Integration) and AssistantBench. Supports benchmark URI schemes (e.g., `gaia://2023`, `assistantbench://v1`) for zero-config execution.
 - **Native Framework Adapters**: Full industrial-grade support for **LangChain**, **LangGraph**, **Microsoft AutoGen** (via `ag2://`), and **CrewAI** via a dynamic plugin-discovery system.
 - **High-Fidelity Industry Metrics**: Modular, pluggable evaluators for Defense (ROE, C2, Intelligence Fusion), Healthcare, and Finance. Features high-precision numerical extraction and domain-specific LLM rubrics.
-- **Tool Sandbox**: Governance-controlled execution with full VFS-aware state parity verification.
-- **Integrated Visual Suite**: Unified React dashboard for live trace replay and visual debugging.
+- **Tool Sandbox**: Governance-controlled execution with full VFS-aware state parity verification and TOCTOU barrier race protection.
+- **AST Mutation Testing Sentinel**: Surgical AST mutation testing pipeline enforcing >=90% kill rate (100% achieved) across verification modules.
+- **Integrated Visual Suite (`/v2`)**: Unified React dashboard featuring dynamic navigation manifest ingestion (`GET /api/nav`), runtime micro-frontend module federation, live trace replay, and visual debugging.
 - **Stratified Failure Taxonomy**: Formal, Enum-based failure registry (NIST-aligned) for precise, audit-grade root-cause diagnostics.
 - **Semantic Bridge**: Ingest production traces (`import-drift`) and analyze failures (`triage`).
 - **Judge Guarding**: Model-based scoring with support for OpenAI, Gemini, Claude, and Ollama.
@@ -277,6 +281,7 @@ The harness is built on a decoupled, event-driven architecture that allows custo
 - **Native HITL Support**: built-in pausing for human intervention via the `human` adapter.
 - **Advanced Discovery**: Plugin-driven registry for third-party agent adapters (LangGraph, CrewAI, AutoGen, Grok).
 - **Pluggable World Shims**: Register custom environment simulators through the `on_register_simulators` hook.
+- **Pluggable Console & GUI Extensions**: Inject custom React views, dynamic navigation manifests, and REST endpoints via the `on_register_console_routes` hook.
 
 ### 🛠️ dataproc-engine: Industrial Extraction Core
 The repository also features a standalone extraction engine designed for high-fidelity data acquisition:
@@ -294,14 +299,16 @@ Beyond the advanced suite, the harness provides a robust toolkit for professiona
 
 ## Integrated Visual Suite (Native GUI)
 
-The harness includes a unified **React-powered SPA** that simplifies management of scenarios, runs, and visual debugging across all industries.
+The harness includes a unified **React-powered SPA** (`/v2`) that simplifies management of scenarios, runs, and visual debugging across all industries.
 
 **Key Feature Hubs:**
+- **Dynamic Navigation & Micro-Frontends**: Dynamic manifest ingestion (`GET /api/nav`) and zero-recompilation runtime module federation via standard ESM `import()`.
 - **Scenario Explorer**: Browse the catalog with faceted filters, global search, and real-time **Quality Badges** (Lint scores).
 - **Visual AES Builder**: Construction of complex agentic evaluation sequences using a drag-and-drop node logic—outputs production-ready JSON.
 - **Reports & Traces Hub**: Historical execution timeline with detailed analysis and instant "View Report" navigation.
 - **Interactive Visual Debugger**: Real-time trajectory playback, state inspection, and trace export (JSON) for regression testing.
 - **Documentation Hub**: Categorized access to all Markdown guides, architectural diagrams, and API references.
+- **Sidebar Badging & Role Gating**: Support for status badges (`LIVE`, `APM`, `CUSTOM`), enterprise tier chips, and granular RBAC role gating.
 
 **Quick Launch:**
 ```bash

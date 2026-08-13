@@ -646,7 +646,7 @@ def test_sandbox_service_pipeline_multi_interceptor():
                 assert res2 == {"status": "ok"}
                 assert history == ["FAILS", "1"]
 
-        # 3. Test Cycle / recursion limit (kills line 352 + -> -)
+        # 3. Test Cycle / recursion limit on passthrough interceptors (kills depth + 1 -> - 1)
         class InterceptorNoop(ToolSandboxInterceptor):
             def can_isolate(self, name):
                 return True
@@ -656,13 +656,13 @@ def test_sandbox_service_pipeline_multi_interceptor():
 
         from eval_runner.tool_sandbox import ToolSandboxService
 
-        service_loop = ToolSandboxService()
+        service_loop_noop = ToolSandboxService()
         for _ in range(55):
-            service_loop.register_interceptor(InterceptorNoop())
+            service_loop_noop.register_interceptor(InterceptorNoop())
         with pytest.raises(RecursionError, match="Max tool sandbox pipeline depth exceeded"):
-            await service_loop.isolate({"tool_name": "t"}, fallback)
+            await service_loop_noop.isolate({"tool_name": "t"}, fallback)
 
-        # Failing interceptors recursion depth (kills line 350 + -> -)
+        # 4. Test Failing interceptors recursion depth (kills line 350 depth + 1 -> - 1)
         class InterceptorFailsSilent(ToolSandboxInterceptor):
             def can_isolate(self, name):
                 return True
@@ -670,7 +670,13 @@ def test_sandbox_service_pipeline_multi_interceptor():
             async def isolate_call(self, data, next_fn):
                 raise RuntimeError("Interceptor crashed")
 
-        # 4. Skipped interceptor sequence progression (kills line 340 index + 1 -> - 1)
+        service_loop_fails = ToolSandboxService()
+        for _ in range(55):
+            service_loop_fails.register_interceptor(InterceptorFailsSilent())
+        with pytest.raises(RecursionError, match="Max tool sandbox pipeline depth exceeded"):
+            await service_loop_fails.isolate({"tool_name": "t"}, fallback)
+
+        # 5. Test Skipped interceptors recursion depth (kills line 352 depth + 1 -> - 1)
         class InterceptorSkipped(ToolSandboxInterceptor):
             def can_isolate(self, name):
                 return False
@@ -678,6 +684,13 @@ def test_sandbox_service_pipeline_multi_interceptor():
             async def isolate_call(self, data, next_fn):
                 return await next_fn(data)
 
+        service_loop_skipped = ToolSandboxService()
+        for _ in range(55):
+            service_loop_skipped.register_interceptor(InterceptorSkipped())
+        with pytest.raises(RecursionError, match="Max tool sandbox pipeline depth exceeded"):
+            await service_loop_skipped.isolate({"tool_name": "t"}, fallback)
+
+        # 6. Skipped interceptor sequence progression (kills line 352 index + 1 -> - 1)
         history.clear()
         i_skip = InterceptorSkipped()
         async with tool_sandbox_service.override_interceptor(i1):
