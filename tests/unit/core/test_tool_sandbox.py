@@ -435,16 +435,17 @@ def test_sandbox_shim_discovery_union(tmp_path):
 
     shims = sandbox.get_active_simulators()
     assert isinstance(shims, dict)
+    assert len(shims) > 0, "Expected non-empty active simulators via set union"
 
 
 def test_sandbox_shared_state_wildcard_permission():
     """
     Mutation Assurance Test: Verifies SharedStateRegistry._match_namespace returns True
-    for wildcard pattern (kills return True -> False mutation in tool_sandbox.py).
+    for exact wildcard '*' (kills return True -> False mutation at line 100 in tool_sandbox.py).
     """
     from eval_runner.tool_sandbox import SharedStateRegistry
 
-    topology = {"agent1": {"reads": ["state:*"], "writes": ["state:*"]}}
+    topology = {"agent1": {"reads": ["*"], "writes": ["*"]}}
     reg = SharedStateRegistry(topology)
 
     assert reg.write("agent1", "state:key1", "value1") is True
