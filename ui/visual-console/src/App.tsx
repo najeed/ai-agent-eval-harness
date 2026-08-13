@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation, Outlet } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import { CommandPalette } from './components/CommandPalette';
 import {
   Home, FileText, Play, Activity, BarChart2, ShieldCheck,
   Settings, BookOpen, ChevronDown, ChevronRight, Menu, HeartPulse,
-  AlertTriangle, CheckCircle2, Server, Bell
+  AlertTriangle, CheckCircle2, Server, Bell, Layers, Cpu, Radio,
+  Terminal, Zap, ExternalLink, Shield, Compass, Sparkles
 } from 'lucide-react';
 import { RBACProvider, useRBAC } from './context/RBACContext';
 import type { UserRole } from './context/RBACContext';
 
-// Import P1 Pages (we will create these next)
+// Import P1 Pages
 import { Settings as SettingsPage } from './pages/Settings';
 import { Docs as DocsPage } from './pages/Docs';
 import { TrustCenter as TrustCenterPage } from './pages/TrustCenter';
@@ -39,19 +40,216 @@ import { TraceExplain } from './pages/TraceExplain';
 import { RegressionSuites } from './pages/RegressionSuites';
 import { CompliancePackEditor } from './pages/CompliancePackEditor';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
-// Nav Item structure
-interface NavItem {
+// Extended Nav Item schema
+export interface NavItem {
+  id?: string;
   name: string;
   path: string;
-  icon: React.ReactNode;
+  icon?: string | React.ReactNode;
+  group?: string;               // Target nav group (e.g., "Operations", "Audit & Compliance", "Build", "System")
+  badge?: string;               // Optional badge chip (e.g., "LIVE", "HOT-RELOAD", "FLEET", "APM", "◆ ENT")
+  tier?: 'core' | 'enterprise'; // Visual delineation marker
+  remoteEntry?: string;         // ESM bundle URL for dynamic micro-frontend mounting
+  required_role?: string[];     // Optional RBAC role gating
 }
 
-interface NavGroup {
+export interface NavGroup {
   title: string;
   items: NavItem[];
 }
+
+/**
+ * Dynamic Icon Resolver: Maps string icon identifiers to Lucide icon elements
+ */
+const resolveIcon = (icon: string | React.ReactNode | undefined): React.ReactNode => {
+  if (React.isValidElement(icon)) return icon;
+  if (typeof icon === 'string') {
+    const key = icon.toLowerCase().replace(/[-_]/g, '');
+    switch (key) {
+      case 'home':
+        return <Home className="w-4 h-4" />;
+      case 'filetext':
+        return <FileText className="w-4 h-4" />;
+      case 'play':
+        return <Play className="w-4 h-4" />;
+      case 'activity':
+        return <Activity className="w-4 h-4" />;
+      case 'barchart':
+      case 'barchart2':
+        return <BarChart2 className="w-4 h-4" />;
+      case 'shieldcheck':
+        return <ShieldCheck className="w-4 h-4" />;
+      case 'shield':
+        return <Shield className="w-4 h-4" />;
+      case 'settings':
+        return <Settings className="w-4 h-4" />;
+      case 'bookopen':
+      case 'docs':
+        return <BookOpen className="w-4 h-4" />;
+      case 'server':
+        return <Server className="w-4 h-4" />;
+      case 'bell':
+        return <Bell className="w-4 h-4" />;
+      case 'heartpulse':
+        return <HeartPulse className="w-4 h-4" />;
+      case 'layers':
+        return <Layers className="w-4 h-4" />;
+      case 'cpu':
+        return <Cpu className="w-4 h-4" />;
+      case 'radio':
+        return <Radio className="w-4 h-4" />;
+      case 'terminal':
+        return <Terminal className="w-4 h-4" />;
+      case 'zap':
+        return <Zap className="w-4 h-4" />;
+      case 'compass':
+        return <Compass className="w-4 h-4" />;
+      case 'sparkles':
+        return <Sparkles className="w-4 h-4" />;
+      default:
+        return <ChevronRight className="w-3.5 h-3.5" />;
+    }
+  }
+  return <ChevronRight className="w-3.5 h-3.5" />;
+};
+
+/**
+ * Merges backend GET /api/nav items with hardcoded fallback base navigation groups.
+ */
+export function mergeNavManifest(
+  baseGroups: NavGroup[],
+  remoteItems: any[] | null | undefined
+): NavGroup[] {
+  if (!remoteItems || !Array.isArray(remoteItems) || remoteItems.length === 0) {
+    return baseGroups;
+  }
+
+  // Deep clone base groups
+  const merged: NavGroup[] = baseGroups.map(g => ({
+    title: g.title,
+    items: [...g.items],
+  }));
+
+  const existingPaths = new Set<string>();
+  merged.forEach(g => g.items.forEach(item => existingPaths.add(item.path)));
+
+  for (const rawItem of remoteItems) {
+    if (!rawItem || typeof rawItem !== 'object') continue;
+    const name = rawItem.name || rawItem.id || 'Plugin Item';
+    const path = rawItem.path || (rawItem.id ? `/${rawItem.id}` : '#');
+    if (existingPaths.has(path)) continue;
+
+    const targetGroupTitle =
+      rawItem.group || (rawItem.tier === 'enterprise' ? 'Enterprise' : 'System');
+
+    const navItem: NavItem = {
+      id: rawItem.id,
+      name,
+      path,
+      icon: resolveIcon(rawItem.icon),
+      badge: rawItem.badge,
+      tier: rawItem.tier,
+      remoteEntry: rawItem.remoteEntry,
+      required_role: Array.isArray(rawItem.required_role)
+        ? rawItem.required_role
+        : undefined,
+    };
+
+    let targetGroup = merged.find(
+      g => g.title.toLowerCase() === targetGroupTitle.toLowerCase()
+    );
+    if (!targetGroup) {
+      targetGroup = { title: targetGroupTitle, items: [] };
+      const systemIdx = merged.findIndex(g => g.title.toLowerCase() === 'system');
+      if (systemIdx !== -1) {
+        merged.splice(systemIdx, 0, targetGroup);
+      } else {
+        merged.push(targetGroup);
+      }
+    }
+    targetGroup.items.push(navItem);
+    existingPaths.add(path);
+  }
+
+  return merged;
+}
+
+interface RemoteErrorState {
+  hasError: boolean;
+  error?: Error;
+}
+
+class RemoteErrorBoundary extends React.Component<
+  { children: React.ReactNode; entryUrl: string },
+  RemoteErrorState
+> {
+  constructor(props: { children: React.ReactNode; entryUrl: string }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error): RemoteErrorState {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error(`[MicroFrontend] Failed to load remote entry: ${this.props.entryUrl}`, error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex h-full min-h-[400px] flex-col items-center justify-center p-8 text-center">
+          <div className="p-6 bg-red-500/10 border border-red-500/20 rounded-2xl max-w-lg shadow-xl backdrop-blur">
+            <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-red-400" />
+            <h3 className="font-bold text-base text-red-300">Failed to Load Micro-Frontend Module</h3>
+            <p className="text-xs text-slate-400 mt-2 font-mono break-all bg-slate-950/60 p-2.5 rounded-lg border border-slate-900">
+              {this.props.entryUrl}
+            </p>
+            <p className="text-[11px] text-red-400/80 mt-2">{this.state.error?.message || 'Module fetch or evaluation failed.'}</p>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+/**
+ * Generic Runtime Micro-Frontend Remote Loader:
+ * Loads dynamic ESM components on demand via standard dynamic import().
+ */
+export const RemoteComponentLoader: React.FC<{ entryUrl: string }> = ({ entryUrl }) => {
+  const Component = useMemo(() => {
+    return React.lazy(() => import(/* @vite-ignore */ entryUrl));
+  }, [entryUrl]);
+
+  return (
+    <RemoteErrorBoundary entryUrl={entryUrl}>
+      <React.Suspense
+        fallback={
+          <div className="flex h-full min-h-[400px] items-center justify-center p-8">
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+              <span className="text-xs font-mono text-slate-400">Loading module...</span>
+            </div>
+          </div>
+        }
+      >
+        <Component />
+      </React.Suspense>
+    </RemoteErrorBoundary>
+  );
+};
 
 const JobTray: React.FC = () => {
   const [jobId, setJobId] = useState<string | null>(null);
@@ -100,18 +298,18 @@ const JobTray: React.FC = () => {
             setStatus(data.status);
             setProgress(data.progress);
             if (data.status === 'completed' || data.status === 'failed') {
-              localStorage.removeItem('agentv-active-pub-job');
               if (intervalId) clearInterval(intervalId);
             }
           }
         }
       } catch (e) {
-        console.error(e);
+        console.error('Job polling error', e);
       }
     };
 
     fetchStatus();
-    intervalId = setInterval(fetchStatus, 3000);
+    intervalId = setInterval(fetchStatus, 1500);
+
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
@@ -120,30 +318,36 @@ const JobTray: React.FC = () => {
   if (!jobId) return null;
 
   return (
-    <div className="relative shrink-0">
+    <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-1.5 bg-slate-950 border border-slate-850 hover:border-slate-700 text-slate-450 hover:text-white rounded-lg transition-all flex items-center justify-center relative"
-        title="Active Jobs Status"
+        className="flex items-center gap-2 px-2.5 py-1 bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-lg text-xs transition-all text-slate-300 font-sans shadow-sm"
       >
-        <Bell className={`w-4 h-4 ${status === 'running' ? 'animate-bounce text-amber-400' :
-            status === 'completed' ? 'text-emerald-400 font-bold' :
-              status === 'failed' ? 'text-rose-400' : 'text-slate-400'
-          }`} />
-        {status === 'running' && (
-          <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-amber-500 rounded-full animate-ping" />
-        )}
+        <span className="relative flex h-2 w-2">
+          {status === 'running' && (
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          )}
+          <span className={`relative inline-flex rounded-full h-2 w-2 ${status === 'completed' ? 'bg-emerald-500' :
+            status === 'failed' ? 'bg-red-500' :
+              'bg-amber-500'
+            }`}></span>
+        </span>
+        <span className="font-semibold text-[11px]">
+          {status === 'completed' ? 'Publication Ready' :
+            status === 'failed' ? 'Job Failed' :
+              'Publishing Pack...'}
+        </span>
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 bg-slate-950 border border-slate-900 rounded-xl shadow-2xl p-4 z-50 space-y-3 animate-slide-in text-left">
-          <div className="flex justify-between items-center border-b border-slate-900 pb-2">
-            <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Active Conductor Job</span>
-            <span className={`text-[8px] px-1.5 py-0.5 rounded font-extrabold uppercase ${status === 'completed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-                status === 'failed' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' :
-                  'bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse'
+        <div className="absolute right-0 mt-2 w-64 p-3 bg-slate-900/95 border border-slate-800 rounded-xl shadow-2xl backdrop-blur z-50 space-y-2.5 animate-in fade-in zoom-in-95 duration-100 font-sans">
+          <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+            <span className="text-xs font-bold text-slate-200">Active Task</span>
+            <span className={`text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded border ${status === 'completed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+              status === 'failed' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                'bg-amber-500/10 text-amber-400 border-amber-500/20'
               }`}>
-              {status}
+              {status || 'running'}
             </span>
           </div>
 
@@ -177,7 +381,21 @@ const ConsoleLayout: React.FC = () => {
     'Run & Verify': true,
     Analyze: false,
     'Publish & Integrate': false,
+    'Audit & Compliance': false,
+    Enterprise: true,
     System: true
+  });
+
+  // Dynamic Manifest Query (TanStack Query)
+  const { data: remoteNav } = useQuery({
+    queryKey: ['console-nav-registry'],
+    queryFn: async () => {
+      const res = await fetch('/api/nav');
+      if (!res.ok) return null;
+      const data = await res.json();
+      return Array.isArray(data) ? data : (data.nav || []);
+    },
+    staleTime: 60_000,
   });
 
   useEffect(() => {
@@ -220,7 +438,7 @@ const ConsoleLayout: React.FC = () => {
     setExpandedGroups(prev => ({ ...prev, [title]: !prev[title] }));
   };
 
-  const navGroups: NavGroup[] = [
+  const baseNavGroups: NavGroup[] = [
     {
       title: 'Overview',
       items: [
@@ -283,12 +501,20 @@ const ConsoleLayout: React.FC = () => {
     }
   ];
 
+  // Merge dynamic plugin groups with core built-in navigation
+  const navGroups = useMemo(() => {
+    return mergeNavManifest(baseNavGroups, remoteNav);
+  }, [remoteNav]);
+
   // Role-based nav access gating
-  const isNavItemRestricted = (path: string): boolean => {
-    if (path === '/settings' && !canAccessSettings) return true;
-    if (path === '/editor' && !canEditScenario) return true;
-    if (path === '/runner' && !canRunEval) return true;
-    if (path === '/trust' && !canSignCert) return true;
+  const isNavItemRestricted = (item: NavItem): boolean => {
+    if (item.required_role && item.required_role.length > 0) {
+      if (!item.required_role.includes(role)) return true;
+    }
+    if (item.path === '/settings' && !canAccessSettings) return true;
+    if (item.path === '/editor' && !canEditScenario) return true;
+    if (item.path === '/runner' && !canRunEval) return true;
+    if (item.path === '/trust' && !canSignCert) return true;
     return false;
   };
 
@@ -340,7 +566,7 @@ const ConsoleLayout: React.FC = () => {
         {/* Navigation Groups */}
         <div className="flex-1 overflow-y-auto p-3 space-y-4">
           {navGroups.map(group => {
-            const isExpanded = expandedGroups[group.title];
+            const isExpanded = expandedGroups[group.title] ?? true;
             return (
               <div key={group.title} className="space-y-1">
                 {/* Group Heading */}
@@ -358,21 +584,52 @@ const ConsoleLayout: React.FC = () => {
                 {(isExpanded || sidebarCollapsed) && (
                   <div className="space-y-0.5">
                     {group.items.map(item => {
-                      const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
-                      const restricted = isNavItemRestricted(item.path);
-                      return restricted ? (
-                        <div
-                          key={item.name}
-                          title={`Restricted: insufficient role permissions`}
-                          className="flex items-center gap-3 px-3 py-2 rounded-lg text-xs border border-transparent text-slate-600 opacity-50 cursor-not-allowed select-none"
-                        >
-                          <div className="shrink-0">{item.icon}</div>
-                          {!sidebarCollapsed && <span className="truncate">{item.name}</span>}
-                          {!sidebarCollapsed && <span className="ml-auto text-[8px] uppercase tracking-wider text-slate-600 font-bold">🔒</span>}
-                        </div>
-                      ) : (
+                      const isActive = location.pathname === item.path || (item.path !== '/' && !item.path.startsWith('http') && location.pathname.startsWith(item.path));
+                      const restricted = isNavItemRestricted(item);
+                      const isExternal = item.path.startsWith('http://') || item.path.startsWith('https://');
+
+                      if (restricted) {
+                        return (
+                          <div
+                            key={item.id || item.name}
+                            title="Restricted: insufficient role permissions"
+                            className="flex items-center gap-3 px-3 py-2 rounded-lg text-xs border border-transparent text-slate-600 opacity-50 cursor-not-allowed select-none"
+                          >
+                            <div className="shrink-0">{item.icon}</div>
+                            {!sidebarCollapsed && <span className="truncate">{item.name}</span>}
+                            {!sidebarCollapsed && <span className="ml-auto text-[8px] uppercase tracking-wider text-slate-600 font-bold">🔒</span>}
+                          </div>
+                        );
+                      }
+
+                      if (isExternal) {
+                        return (
+                          <a
+                            key={item.id || item.path || item.name}
+                            href={item.path}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-3 px-3 py-2 rounded-lg text-xs border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 transition-all"
+                          >
+                            <div className="shrink-0">{item.icon}</div>
+                            {!sidebarCollapsed && <span className="truncate">{item.name}</span>}
+                            {item.badge && !sidebarCollapsed && (
+                              <span className={`ml-auto text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${
+                                item.tier === 'enterprise'
+                                  ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                                  : 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30'
+                              }`}>
+                                {item.badge}
+                              </span>
+                            )}
+                            {!item.badge && !sidebarCollapsed && <ExternalLink className="ml-auto w-3 h-3 text-slate-500" />}
+                          </a>
+                        );
+                      }
+
+                      return (
                         <Link
-                          key={item.name}
+                          key={item.id || item.name}
                           to={item.path}
                           className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs transition-all ${isActive
                             ? 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 font-bold'
@@ -381,6 +638,15 @@ const ConsoleLayout: React.FC = () => {
                         >
                           <div className="shrink-0">{item.icon}</div>
                           {!sidebarCollapsed && <span className="truncate">{item.name}</span>}
+                          {item.badge && !sidebarCollapsed && (
+                            <span className={`ml-auto text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${
+                              item.tier === 'enterprise'
+                                ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                                : 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30'
+                            }`}>
+                              {item.badge}
+                            </span>
+                          )}
                         </Link>
                       );
                     })}
@@ -474,43 +740,81 @@ const ConsoleLayout: React.FC = () => {
   );
 };
 
+function AppRoutes() {
+  const { data: remoteNav } = useQuery({
+    queryKey: ['console-nav-registry'],
+    queryFn: async () => {
+      const res = await fetch('/api/nav');
+      if (!res.ok) return null;
+      const data = await res.json();
+      return Array.isArray(data) ? data : (data.nav || []);
+    },
+    staleTime: 60_000,
+  });
+
+  const remoteRoutes = useMemo(() => {
+    if (!remoteNav || !Array.isArray(remoteNav)) return [];
+    return remoteNav.filter(
+      (item: any) =>
+        item &&
+        item.remoteEntry &&
+        item.path &&
+        !item.path.startsWith('http://') &&
+        !item.path.startsWith('https://')
+    );
+  }, [remoteNav]);
+
+  return (
+    <Routes>
+      <Route element={<ConsoleLayout />}>
+        {/* P1 Main Screens */}
+        <Route path="/" element={<DashboardPage />} />
+        <Route path="/scenarios" element={<ScenarioLibraryPage />} />
+        <Route path="/editor" element={<ScenarioComposerPage />} />
+        <Route path="/runner" element={<EvaluationRunnerPage />} />
+        <Route path="/debugger" element={<LiveDebuggerPage />} />
+        <Route path="/reports" element={<RunsReportsPage />} />
+        <Route path="/trust" element={<TrustCenterPage />} />
+        <Route path="/docs" element={<DocsPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+
+        {/* P2 Shell Screens */}
+        <Route path="/spec-import" element={<SpecToEvalImporter />} />
+        <Route path="/mutator" element={<AdversarialMutator />} />
+        <Route path="/explain" element={<TraceExplain />} />
+        <Route path="/hitl" element={<HITLQueue />} />
+        <Route path="/translate" element={<AutoTranslate />} />
+        <Route path="/calibration" element={<Calibration />} />
+        <Route path="/metrics" element={<MetricsLeaderboard />} />
+        <Route path="/failures" element={<FailureCorpus />} />
+        <Route path="/triage" element={<Triage />} />
+        <Route path="/benchmarks" element={<Benchmarks />} />
+        <Route path="/compliance" element={<ComplianceForensics />} />
+        <Route path="/publish" element={<PublicationSuite />} />
+        <Route path="/cicd" element={<CICDIntegration />} />
+        <Route path="/sync" element={<RegistrySync />} />
+        <Route path="/suites" element={<RegressionSuites />} />
+        <Route path="/packs" element={<CompliancePackEditor />} />
+
+        {/* Dynamic Micro-Frontend Remote Routes */}
+        {remoteRoutes.map((item: any) => (
+          <Route
+            key={item.path}
+            path={item.path.startsWith('/') ? item.path : `/${item.path}`}
+            element={<RemoteComponentLoader entryUrl={item.remoteEntry} />}
+          />
+        ))}
+      </Route>
+    </Routes>
+  );
+}
+
 export function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <RBACProvider>
         <BrowserRouter basename="/v2">
-          <Routes>
-            <Route element={<ConsoleLayout />}>
-              {/* P1 Main Screens */}
-              <Route path="/" element={<DashboardPage />} />
-              <Route path="/scenarios" element={<ScenarioLibraryPage />} />
-              <Route path="/editor" element={<ScenarioComposerPage />} />
-              <Route path="/runner" element={<EvaluationRunnerPage />} />
-              <Route path="/debugger" element={<LiveDebuggerPage />} />
-              <Route path="/reports" element={<RunsReportsPage />} />
-              <Route path="/trust" element={<TrustCenterPage />} />
-              <Route path="/docs" element={<DocsPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-
-              {/* P2 Shell Screens */}
-              <Route path="/spec-import" element={<SpecToEvalImporter />} />
-              <Route path="/mutator" element={<AdversarialMutator />} />
-              <Route path="/explain" element={<TraceExplain />} />
-              <Route path="/hitl" element={<HITLQueue />} />
-              <Route path="/translate" element={<AutoTranslate />} />
-              <Route path="/calibration" element={<Calibration />} />
-              <Route path="/metrics" element={<MetricsLeaderboard />} />
-              <Route path="/failures" element={<FailureCorpus />} />
-              <Route path="/triage" element={<Triage />} />
-              <Route path="/benchmarks" element={<Benchmarks />} />
-              <Route path="/compliance" element={<ComplianceForensics />} />
-              <Route path="/publish" element={<PublicationSuite />} />
-              <Route path="/cicd" element={<CICDIntegration />} />
-              <Route path="/sync" element={<RegistrySync />} />
-              <Route path="/suites" element={<RegressionSuites />} />
-              <Route path="/packs" element={<CompliancePackEditor />} />
-            </Route>
-          </Routes>
+          <AppRoutes />
         </BrowserRouter>
       </RBACProvider>
     </QueryClientProvider>
