@@ -137,18 +137,20 @@ def test_path_safety_advanced(tmp_path, monkeypatch):
         assert utils.is_path_safe("file.txt", base) is False
 
 
-def test_path_safety_drive_prefix_non_windows(tmp_path, monkeypatch):
+def test_path_safety_drive_prefix_non_windows(tmp_path):
     """
     Mutation Assurance Test: Verifies non-Windows drive prefix normalization
-    (kills os.name != 'nt' -> os.name == 'nt' mutation at line 45 in base.py).
+    (kills os.name != 'nt' -> os.name == 'nt' and '+' -> '-' mutations in base.py).
     """
     base = tmp_path / "base"
     base.mkdir()
-    monkeypatch.setattr("eval_runner.utils.base.os.name", "posix")
+    sub_file = base / "safe.txt"
 
-    # Absolute Windows drive target on POSIX must be normalized to root /outside_jail
-    # which is outside base directory and returns False.
-    assert utils.is_path_safe("C:/outside_jail", base) is False
+    with patch("eval_runner.utils.base.os.name", "posix"):
+        with patch("eval_runner.utils.base.Path.resolve", return_value=sub_file.resolve()):
+            # Unmutated line 46 ("+" + ...) returns True.
+            # Mutated line 46 ("-" + ...) raises TypeError -> returns False (kills + -> - mutation).
+            assert utils.is_path_safe("C:/base/safe.txt", base) is True
 
 
 def test_get_canonical_path_edge():

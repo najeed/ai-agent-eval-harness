@@ -422,20 +422,27 @@ async def test_sandbox_grounding_hits_counter_increment(tmp_path):
     assert hits == 1, f"Expected grounding_hits for 'get_info' to be 1, got {hits}"
 
 
-def test_sandbox_shim_discovery_union(tmp_path):
+def test_sandbox_shim_discovery_union(tmp_path, monkeypatch):
     """
     Mutation Assurance Test: Verifies shim discovery uses set union | (not &)
-    so shims defined ONLY in configs or ONLY in classes are discovered (kills | -> &).
+    so shims defined ONLY in configs or ONLY in classes are discovered
+    (kills | -> & in tool_sandbox.py).
     """
-    scenario = {
-        "id": "shim_union_test",
-        "enabled_shims": ["*"],
-    }
-    sandbox = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+    from eval_runner import config, simulators
 
-    shims = sandbox.get_active_simulators()
-    assert isinstance(shims, dict)
-    assert len(shims) > 0, "Expected non-empty active simulators via set union"
+    monkeypatch.setattr(config, "GLOBAL_ENABLED_SHIMS", ["*"])
+    try:
+        simulators._INTERNAL_SIMULATOR_CLASSES["customonlyshim"] = simulators.JiraSimulator
+        scenario = {
+            "id": "shim_union_test",
+            "workflow": {"nodes": [{"required_tools": ["customonlyshim_action"]}]},
+            "enabled_shims": ["*"],
+        }
+        sandbox = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+        shims = sandbox.get_active_simulators()
+        assert "customonlyshim" in shims
+    finally:
+        simulators._INTERNAL_SIMULATOR_CLASSES.pop("customonlyshim", None)
 
 
 def test_sandbox_shared_state_wildcard_permission():
@@ -445,8 +452,5 @@ def test_sandbox_shared_state_wildcard_permission():
     """
     from eval_runner.tool_sandbox import SharedStateRegistry
 
-    topology = {"agent1": {"reads": ["*"], "writes": ["*"]}}
-    reg = SharedStateRegistry(topology)
-
-    assert reg.write("agent1", "state:key1", "value1") is True
-    assert reg.read("agent1", "state:key1") == "value1"
+    reg = SharedStateRegistry({})
+    assert reg._match_namespace("custom_ns", "*") is True

@@ -459,8 +459,9 @@ def test_verifier_evidence_ledger_tampered_artifact(clean_vault_setup):
     run_id = clean_vault_setup["run_id"]
     trace_file = clean_vault_setup["trace_file"]
 
-    # Create sidecar artifact BEFORE sign_trace so sign_trace includes its hash in evidence_ledger
-    artifact_file = trace_file.parent / "artifact.txt"
+    # Create sidecar artifact with run_id prefix BEFORE sign_trace
+    # so ForensicRelevanceEngine includes it
+    artifact_file = trace_file.parent / f"{run_id}_artifact.txt"
     artifact_file.write_text("original content", encoding="utf-8")
 
     # Sign trace to generate valid signature over manifest containing evidence_ledger
@@ -477,3 +478,39 @@ def test_verifier_evidence_ledger_tampered_artifact(clean_vault_setup):
 
     # Tampered evidence ledger artifact MUST fail verification when verify_ledger=True
     assert TraceVerifier.verify_trace(trace_file, manifest_path, verify_ledger=True) is False
+
+
+def test_verifier_pqc_algorithm_branch(clean_vault_setup):
+    """
+    Mutation Assurance Test: Verifies PQC algorithm branch check 'elif algorithm == "ML-DSA-65"'
+    (kills == -> != mutation in verifier signature verification).
+    """
+    from unittest.mock import MagicMock, patch
+
+    run_id = clean_vault_setup["run_id"]
+    trace_file = clean_vault_setup["trace_file"]
+
+    manifest = TraceVerifier.sign_trace(
+        trace_path=str(trace_file),
+        identity_id="test_signer",
+        compliance_status="pass",
+        run_id=run_id,
+    )
+    manifest_path = trace_file.parent / "run_manifest.json"
+
+    # Add ML-DSA-65 signature to provenance_chain
+    manifest["provenance_chain"].append(
+        {
+            "identity_id": "pqc_signer",
+            "algorithm": "ML-DSA-65",
+            "signature": "00" * 32,
+        }
+    )
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    mock_client = MagicMock()
+    mock_client.verify_digest.return_value = False
+
+    # When == is mutated to !=, algorithm ML-DSA-65 skips PQC verification (returns True).
+    with patch("eval_runner.identity.IdentityService.get_pqc_client", return_value=mock_client):
+        assert TraceVerifier.verify_trace(trace_file, manifest_path) is False
