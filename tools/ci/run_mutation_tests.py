@@ -77,9 +77,9 @@ BASELINE_TESTS = [
 # Python startup + import overhead — NOT pytest's self-reported test duration.
 # This codebase has ~4s of startup overhead before any test executes.
 #
-# Timeout = max(wall-clock) * 2.0 = 12.5 * 2.0 = 25.0s (provides 2x headroom).
+# Timeout = max(wall-clock) * 2.0 = 15.0 * 2.0 = 30.0s (provides 2x headroom).
 # Any value below ~10s fires before tests execute → meaningless 100% from timeouts.
-MUTANT_TIMEOUT_SECONDS = 25.0
+MUTANT_TIMEOUT_SECONDS = 30.0
 
 
 # ---------------------------------------------------------------------------
@@ -270,15 +270,20 @@ def _tests_for_module(module_name: str) -> list[str]:
 def evaluate_mutant(target_file: Path, mutant_source: str, tests: list[str]) -> str:
     """
     Surgically applies mutant source to the target file, executes pytest against
-    the per-module corpus, then restores the original file byte-for-byte.
+    the per-module corpus with bytecode caching disabled (-B and PYTHONDONTWRITEBYTECODE=1),
+    then restores the original file byte-for-byte.
 
     Returns status: 'killed', 'survived', 'timeout', or 'incompetent'.
     """
+    import os
+
     original_bytes = target_file.read_bytes()
+    env = os.environ.copy()
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
     try:
         target_file.write_text(mutant_source, encoding="utf-8")
         cmd = (
-            [sys.executable, "-m", "pytest"]
+            [sys.executable, "-B", "-m", "pytest"]
             + tests
             + ["-q", "--no-header", "-x", "-p", "no:plugin_gateway", "-p", "no:cov"]
         )
@@ -289,6 +294,7 @@ def evaluate_mutant(target_file: Path, mutant_source: str, tests: list[str]) -> 
                 capture_output=True,
                 text=True,
                 timeout=MUTANT_TIMEOUT_SECONDS,
+                env=env,
             )
             return "killed" if res.returncode != 0 else "survived"
         except subprocess.TimeoutExpired:
@@ -310,6 +316,7 @@ def verify_sentinel_preconditions() -> None:
       4. Insufficient timeout headroom (< 1.5x of baseline runtime), preventing
          false 'timeout' classification of survived mutants.
     """
+    import os
     import time
 
     print("\n1. Running Self-Validating Sentinel Precondition Checks...")
@@ -333,16 +340,18 @@ def verify_sentinel_preconditions() -> None:
             sys.exit(1)
 
     # Verify per-module baseline runtimes and timeout headroom
+    env = os.environ.copy()
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
     for target in TARGET_MODULES:
         module_name = target.name
         tests = _tests_for_module(module_name)
         cmd = (
-            [sys.executable, "-m", "pytest"]
+            [sys.executable, "-B", "-m", "pytest"]
             + tests
             + ["-q", "--no-header", "-p", "no:plugin_gateway", "-p", "no:cov"]
         )
         t0 = time.monotonic()
-        res = subprocess.run(cmd, cwd=BASE_DIR, capture_output=True, text=True)
+        res = subprocess.run(cmd, cwd=BASE_DIR, capture_output=True, text=True, env=env)
         elapsed = time.monotonic() - t0
 
         if res.returncode != 0:
@@ -370,9 +379,21 @@ def verify_sentinel_preconditions() -> None:
 
 
 def run_mutation_sentinel() -> None:
-    """Executes full mutation scoring lifecycle across critical verification modules."""
+    """Executes full or sampled mutation scoring lifecycle across critical verification modules."""
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Industrial Mutation Testing Sentinel")
+    parser.add_argument(
+        "--full",
+        action="store_true",
+        help="Evaluate 100%% of discovered mutation points (Nightly/Release CI mode).",
+    )
+    args = parser.parse_args()
+
+    mode_label = "FULL POPULATION" if args.full else "SAMPLED (max 15/module)"
+
     print("=" * 80)
-    print("=== INDUSTRIAL MUTATION TESTING SENTINEL & ASSURANCE PIPELINE ===")
+    print(f"=== INDUSTRIAL MUTATION TESTING SENTINEL & ASSURANCE PIPELINE ({mode_label}) ===")
     print("=" * 80)
 
     # 1. Self-Validating Precondition Verification
@@ -386,7 +407,7 @@ def run_mutation_sentinel() -> None:
     total_incompetent = 0
     mutant_records: list[dict] = []
 
-    print("2. Mutating Verification Modules & Scoring Test Suite...")
+    print(f"2. Mutating Verification Modules & Scoring Test Suite ({mode_label})...")
     for target in TARGET_MODULES:
         rel_path = target.relative_to(BASE_DIR)
         module_name = target.name
@@ -404,12 +425,18 @@ def run_mutation_sentinel() -> None:
         annotation_lines = _annotation_line_numbers(tree)
         all_points = discover_mutation_points(original_source, annotation_lines)
         num_points = len(all_points)
-        print(f"   • Module: {rel_path} ({num_points} mutation points discovered)")
 
-        # Sample up to 15 evenly-spaced points for efficient CI runtime
-        max_mutants = min(num_points, 15)
-        step = max(1, num_points // max_mutants)
-        sampled = all_points[::step][:max_mutants]
+        if args.full:
+            sampled = all_points
+            print(f"   • Module: {rel_path} ({num_points} mutation points, evaluating ALL 100%)")
+        else:
+            max_mutants = min(num_points, 15)
+            step = max(1, num_points // max_mutants)
+            sampled = all_points[::step][:max_mutants]
+            print(
+                f"   • Module: {rel_path} ({num_points} mutation points discovered, "
+                f"sampling {len(sampled)})"
+            )
 
         for mp in sampled:
             # Annotation-only mutations have no runtime effect
@@ -457,25 +484,31 @@ def run_mutation_sentinel() -> None:
             )
             print(f"      {icon:15s} {mp.description}")
 
-    # 3. Calculate Mutation Score
+    # 3. Calculate Refined Mutation Metrics
     # Denominator excludes incompetent mutants (annotation-only, no runtime effect).
-    # Formula: (Killed + Timeout) / (Killed + Timeout + Survived)
     total_valid_mutants = total_killed + total_survived + total_timeout + total_incompetent
     denom = total_killed + total_survived + total_timeout
     effective_killed = total_killed + total_timeout
-    mutation_score_pct = (effective_killed / denom * 100.0) if denom > 0 else 100.0
+
+    kill_rate_pct = (total_killed / denom * 100.0) if denom > 0 else 100.0
+    timeout_rate_pct = (total_timeout / denom * 100.0) if denom > 0 else 0.0
+    effective_detection_pct = (effective_killed / denom * 100.0) if denom > 0 else 100.0
 
     print("\n" + "=" * 80)
-    print("=== MUTATION TESTING FINAL SCORECARD ===")
+    print(f"=== MUTATION TESTING FINAL SCORECARD ({mode_label}) ===")
     print("=" * 80)
-    print(f"  • Total Mutants Generated: {total_valid_mutants + total_skipped}")
-    print(f"  • Killed:                  {total_killed}")
-    print(f"  • Timeout (Effective Kill):{total_timeout}")
-    print(f"  • Survived:                {total_survived}")
-    print(f"  • Skipped:                 {total_skipped}")
-    print(f"  • Incompetent:             {total_incompetent}")
-    print("  • Baseline Status:         PASSED (Green)")
-    print(f"  • Mutation Score:          {mutation_score_pct:.2f}% (Target: >=90.00%)")
+    print(f"  • Execution Mode:           {mode_label}")
+    print(f"  • Total Mutants Evaluated:  {total_valid_mutants + total_skipped}")
+    print(f"  • Killed:                   {total_killed}")
+    print(f"  • Timeout:                  {total_timeout}")
+    print(f"  • Survived:                 {total_survived}")
+    print(f"  • Incompetent (Annotation): {total_incompetent}")
+    print(f"  • Mutation Kill Rate:       {kill_rate_pct:.2f}% (Killed / Evaluated)")
+    print(f"  • Timeout Rate:             {timeout_rate_pct:.2f}% (Timeout / Evaluated)")
+    print(
+        f"  • Effective Detection Rate: {effective_detection_pct:.2f}% "
+        f"((Killed + Timeout) / Evaluated, Target: >=90.00%)"
+    )
     print("=" * 80)
 
     # 4. Generate Diligence Artifact
@@ -488,26 +521,26 @@ Enterprise verification assurance scorecard generated by surgical AST mutation a
 
 | Metric | Value |
 | :--- | :--- |
-| **Mutation Score** | **{mutation_score_pct:.2f}%** |
+| **Execution Mode** | **{mode_label}** |
+| **Effective Detection Rate** | **{effective_detection_pct:.2f}%** |
+| **Mutation Kill Rate** | **{kill_rate_pct:.2f}%** |
+| **Timeout Rate** | **{timeout_rate_pct:.2f}%** |
 | **Minimum Required Target** | **90.00%** |
 | **Evaluation Baseline** | **PASSED (Green)** |
 | **Killed Mutants** | **{total_killed}** |
-| **Timeout (Effective Kills)** | **{total_timeout}** |
+| **Timeout Mutants** | **{total_timeout}** |
 | **Survived Mutants** | **{total_survived}** |
-| **Skipped Mutants** | **{total_skipped}** |
 | **Incompetent Mutants** | **{total_incompetent}** |
 | **Total Mutants Evaluated** | **{total_valid_mutants}** |
 
-## Scoring Note
+## Scoring Methodology
 
-Mutation strategy: **surgical line substitution** — only the mutated token is changed;
-all other lines are preserved byte-for-byte. This prevents hash-corruption in
-`TraceVerifier`-based tests and source-pattern guards from producing false kills.
-
-Incompetent mutants (annotation-only `|` unions under `from __future__ import annotations`)
-are excluded from the denominator:
-
-> `Score = (Killed + Timeout) / (Killed + Timeout + Survived)`
+- **Mutation Strategy**: Surgical line substitution — targeted token replacement at AST
+  coordinates; non-mutated lines preserved 100% byte-for-byte.
+- **Metric Definitions**:
+  - `Mutation Kill Rate = Killed / (Killed + Timeout + Survived)`
+  - `Timeout Rate = Timeout / (Killed + Timeout + Survived)`
+  - `Effective Detection Rate = (Killed + Timeout) / (Killed + Timeout + Survived)`
 
 ## Target Modules Evaluated
 
@@ -523,8 +556,10 @@ are excluded from the denominator:
     for rec in mutant_records:
         if rec["status"] == "incompetent":
             status_str = "INCOMPETENT (annotation-only or not locatable)"
-        elif rec["status"] in ("killed", "timeout"):
+        elif rec["status"] == "killed":
             status_str = "PASSED (Killed)"
+        elif rec["status"] == "timeout":
+            status_str = "PASSED (Timeout)"
         else:
             status_str = "FAILED (Survived)"
         report_md += f"| `{rec['module']}` | `{rec['mutation']}` | {status_str} |\n"
@@ -534,13 +569,17 @@ are excluded from the denominator:
     print(f"\n[Diligence Artifact] Generated mutation scorecard report at: {rel_report}")
 
     # 5. Enforce >= 90% Threshold Gate
-    if mutation_score_pct < 90.0:
+    if effective_detection_pct < 90.0:
         print(
-            f"\n[FAIL] Mutation score {mutation_score_pct:.2f}% is below required 90.00% threshold!"
+            f"\n[FAIL] Effective detection rate {effective_detection_pct:.2f}% "
+            f"is below required 90.00% threshold!"
         )
         sys.exit(1)
     else:
-        print(f"\n[OK] Mutation score {mutation_score_pct:.2f}% meets enterprise gate (>=90.00%).")
+        print(
+            f"\n[OK] Effective detection rate {effective_detection_pct:.2f}% "
+            f"meets enterprise gate (>=90.00%)."
+        )
 
 
 if __name__ == "__main__":

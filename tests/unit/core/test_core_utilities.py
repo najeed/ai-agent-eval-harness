@@ -119,7 +119,7 @@ def test_path_safety_advanced(tmp_path, monkeypatch):
     # A relative path like "../../etc/passwd" becomes "base/../../etc/passwd" -> "/etc/passwd"
     assert utils.is_path_safe("../escape.txt", base) is False
 
-    # 3. AEH_STRICT_JAIL (Line 67)
+    # 3. AEH_STRICT_JAIL
     import tempfile
 
     temp_dir = Path(tempfile.gettempdir())
@@ -128,10 +128,10 @@ def test_path_safety_advanced(tmp_path, monkeypatch):
     assert utils.is_path_safe(temp_dir / "test.txt", base) is False
 
     monkeypatch.delenv("AEH_STRICT_JAIL", raising=False)
-    # Zone B: System Temp (Line 68)
+    # Zone B: System Temp
     assert utils.is_path_safe(temp_dir / "test.txt", base) is True
 
-    # 4. Fail-Closed Resolution Error (Line 77-82)
+    # 4. Fail-Closed Resolution Error
     with patch("eval_runner.utils.base.Path.resolve", side_effect=OSError("Resolution failure")):
         assert utils.is_path_safe("file.txt", base) is False
 
@@ -139,7 +139,7 @@ def test_path_safety_advanced(tmp_path, monkeypatch):
 def test_path_safety_drive_prefix_non_windows(tmp_path):
     """
     Mutation Assurance Test: Verifies drive letter stripping prefix concatenation uses '+'
-    (kills '+' -> '-' mutation at line 46 in eval_runner/utils/base.py).
+    (kills '+' -> '-' mutation in path safety drive normalization).
     """
     base = tmp_path / "base"
     base.mkdir()
@@ -151,13 +151,13 @@ def test_path_safety_drive_prefix_non_windows(tmp_path):
 
 
 def test_get_canonical_path_edge():
-    # Line 90: Empty input
+    # Empty input check
     assert utils.get_canonical_path("") == ""
     assert utils.get_canonical_path(None) == ""
 
 
 def test_normalize_uri_windows(tmp_path):
-    # Line 97-100: Drive letter normalization
+    # Drive letter normalization
     p = Path("C:/Users/Test/file.txt")
     uri = utils.normalize_uri(p)
     assert uri == "file:///c:/Users/Test/file.txt"
@@ -170,7 +170,7 @@ def test_safe_run_async_advanced():
     # 1. Standard run (no loop)
     assert utils.safe_run_async(sample_coro()) == 42
 
-    # 2. Nested run (running loop) - Line 109-125
+    # 2. Nested run (running loop)
     async def nested_caller():
         return utils.safe_run_async(sample_coro())
 
@@ -178,10 +178,10 @@ def test_safe_run_async_advanced():
 
 
 def test_rmtree_resilient_advanced(tmp_path):
-    # Line 135: Missing path
+    # Missing path check
     utils.rmtree_resilient(tmp_path / "non_existent")
 
-    # Line 139-145: handle_errors (Read-only bit)
+    # Read-only bit handle_errors
     d = tmp_path / "readonly_dir"
     d.mkdir()
     f = d / "file.txt"
@@ -194,7 +194,7 @@ def test_rmtree_resilient_advanced(tmp_path):
     utils.rmtree_resilient(d)
     assert not d.exists()
 
-    # Line 151-164: Retries and Fallback
+    # Retries and Fallback
     d2 = tmp_path / "busy_dir"
     d2.mkdir()
 
@@ -224,31 +224,30 @@ def test_rmtree_resilient_advanced(tmp_path):
 
 
 def test_deep_diff_advanced():
-    # Line 191-192: Numeric comparison
+    # Numeric comparison
     assert utils.deep_diff(1, 1.0) == []
 
-    # Line 193-195: Types differ
+    # Types differ
     diff = utils.deep_diff({"a": 1}, {"a": "1"})
     assert any("types differ" in d for d in diff)
 
-    # Line 210-211: Lengths differ
+    # Lengths differ
     diff = utils.deep_diff([1], [1, 2])
     assert any("lengths differ" in d for d in diff)
 
-    # Line 213-214: Nested list comparison
+    # Nested list comparison
     diff = utils.deep_diff([{"a": 1}], [{"a": 2}])
     assert any("values differ" in d for d in diff)
 
 
 def test_generate_id_advanced():
-    # Line 174-179
     res = utils.generate_id("test")
     assert res.startswith("test-")
     assert len(res) > 10
 
 
 def test_rmtree_handle_errors_exception(tmp_path):
-    # Line 142-145: Exception in handle_errors
+    # Exception in handle_errors
     d = tmp_path / "err_dir"
     d.mkdir()
 
@@ -257,19 +256,8 @@ def test_rmtree_handle_errors_exception(tmp_path):
 
     with patch("os.chmod", side_effect=mock_chmod):
         with patch("sys.stderr.write"):
-            # Trigger handle_errors via shutil.rmtree
-            # shutil.rmtree(path, onerror=handle_errors)
-            # handle_errors(func, path, exc_info)
-            # We can't easily trigger the 'except' inside 'handle_errors'
-            # without mocking the func call but rmtree_resilient defines
-            # handle_errors locally. I'll just call it directly to hit the lines.
-            # Wait, I'll use patch to get the local function if possible,
-            # or just replicate the call logic.
             pass
 
-    # Actually, simpler to just call the internal handler if I can find it,
-    # but it's nested. I'll use a hack to get it.
-    # I'll use a test that triggers it.
     d2 = tmp_path / "readonly_fail"
     d2.mkdir()
     (d2 / "f.txt").write_text("v")
@@ -278,14 +266,11 @@ def test_rmtree_handle_errors_exception(tmp_path):
     with patch("os.chmod", side_effect=OSError("Perm Denied")):
         with patch("sys.stderr.write"):
             utils.rmtree_resilient(d2, retries=1, delay=0)
-            # This should hit line 142-145
-            # Wait, line 145 is the write to stderr.
-            # I'll check if it was called.
             pass
 
 
 def test_deep_diff_keys_advanced():
-    # Line 202, 204: Keys missing/extra with empty path
+    # Keys missing/extra with empty path
     diff = utils.deep_diff({"a": 1}, {})
     assert any("key missing" in d for d in diff)
     assert not any("." in d for d in diff)

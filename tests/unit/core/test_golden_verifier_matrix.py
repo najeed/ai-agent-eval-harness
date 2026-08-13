@@ -310,7 +310,7 @@ def test_verify_after_tampering_stage7_key_substituted(clean_vault_setup):
 def test_verifier_computed_hash_mismatch(clean_vault_setup):
     """
     Mutation Assurance Test: Verifies that compute_signature != expected_file_hash returns False
-    (kills != -> == mutation at line 579 in eval_runner/verifier.py).
+    (kills != -> == mutation in trace hash verification).
     """
     run_id = clean_vault_setup["run_id"]
     trace_file = clean_vault_setup["trace_file"]
@@ -333,7 +333,7 @@ def test_verifier_computed_hash_mismatch(clean_vault_setup):
 def test_verifier_fresh_manifest_ttl_age(clean_vault_setup):
     """
     Mutation Assurance Test: Verifies age calculation datetime.now() - created_at
-    uses subtraction '-' (kills - -> + mutation at line 588 in eval_runner/verifier.py).
+    uses subtraction '-' (kills - -> + mutation in TTL age calculation).
     """
     run_id = clean_vault_setup["run_id"]
     trace_file = clean_vault_setup["trace_file"]
@@ -353,7 +353,7 @@ def test_verifier_fresh_manifest_ttl_age(clean_vault_setup):
 def test_verifier_nested_key_dir_creation(tmp_path):
     """
     Mutation Assurance Test: Verifies generate_key_pair creates nested parent directories
-    using parents=True (kills parents=True -> False mutation at line 313).
+    using parents=True (kills parents=True -> False mutation in output directory creation).
     """
     nested_dir = tmp_path / "deep" / "nested" / "keys"
     # Ensure parents do not exist
@@ -367,7 +367,7 @@ def test_verifier_nested_key_dir_creation(tmp_path):
 def test_verifier_trace_lifecycle_event_appended(clean_vault_setup):
     """
     Mutation Assurance Test: Verifies sign_trace appends 'verification_certificate_issued'
-    event to trace file (kills + -> - mutation at line 460 in eval_runner/verifier.py).
+    event to trace file (kills + -> - mutation in lifecycle event recording).
     """
     run_id = clean_vault_setup["run_id"]
     trace_file = clean_vault_setup["trace_file"]
@@ -384,3 +384,82 @@ def test_verifier_trace_lifecycle_event_appended(clean_vault_setup):
         "Expected sign_trace to append 'verification_certificate_issued' event to trace file"
     )
     assert "seal_hash" in trace_content
+
+
+def test_verifier_jail_escape_attempt():
+    """
+    Mutation Assurance Test: Verifies verify_trace returns False for paths outside project jail
+    (kills return False -> True mutation in path safety check).
+    """
+    import tempfile
+    from pathlib import Path
+
+    outside_dir = Path(tempfile.gettempdir()) / "outside_jail_test_dir"
+    outside_dir.mkdir(parents=True, exist_ok=True)
+    outside_trace = outside_dir / "run.jsonl"
+    outside_manifest = outside_dir / "run_manifest.json"
+    outside_trace.write_text('{"event": "start"}\n', encoding="utf-8")
+    outside_manifest.write_text('{"trace_hash": "abc"}\n', encoding="utf-8")
+
+    assert TraceVerifier.verify_trace(outside_trace, outside_manifest) is False
+
+
+def test_verifier_existing_output_dir_exist_ok(tmp_path):
+    """
+    Mutation Assurance Test: Verifies generate_key_pair succeeds on an existing directory
+    using exist_ok=True (kills exist_ok=True -> exist_ok=False mutation in key generation).
+    """
+    existing_dir = tmp_path / "existing_keys_dir"
+    existing_dir.mkdir(parents=True, exist_ok=True)
+
+    # Calling generate_key_pair on existing directory requires exist_ok=True
+    TraceVerifier.generate_key_pair(output_dir=str(existing_dir))
+    assert (existing_dir / "private_key.pem").exists()
+
+
+def test_verifier_governance_ttl_subtraction(clean_vault_setup):
+    """
+    Mutation Assurance Test: Verifies age calculation uses subtraction '-'
+    (kills age = now - created_at '+' mutation in verifier TTL verification).
+    """
+    run_id = clean_vault_setup["run_id"]
+    trace_file = clean_vault_setup["trace_file"]
+
+    TraceVerifier.sign_trace(
+        trace_path=str(trace_file),
+        identity_id="test_signer",
+        compliance_status="pass",
+        run_id=run_id,
+    )
+    manifest_path = trace_file.parent / "run_manifest.json"
+
+    # A freshly signed manifest must return True
+    # If '-' is mutated to '+', age = now + created_at (4000+ years > 30 days), returning False.
+    assert TraceVerifier.verify_trace(trace_file, manifest_path) is True
+
+
+def test_verifier_evidence_ledger_tampered_artifact(clean_vault_setup):
+    """
+    Mutation Assurance Test: Verifies evidence ledger tampered artifact detection
+    (kills != -> == mutation in forensic evidence verification).
+    """
+    run_id = clean_vault_setup["run_id"]
+    trace_file = clean_vault_setup["trace_file"]
+
+    manifest = TraceVerifier.sign_trace(
+        trace_path=str(trace_file),
+        identity_id="test_signer",
+        compliance_status="pass",
+        run_id=run_id,
+    )
+    manifest_path = trace_file.parent / "run_manifest.json"
+
+    # Add evidence ledger entry pointing to a file with tampered hash
+    artifact_file = trace_file.parent / "artifact.txt"
+    artifact_file.write_text("actual content", encoding="utf-8")
+
+    manifest["evidence_ledger"] = {"artifact.txt": "wrong_expected_hash_0000000000000000000"}
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    # Tampered evidence ledger artifact must fail verification
+    assert TraceVerifier.verify_trace(trace_file, manifest_path) is False
