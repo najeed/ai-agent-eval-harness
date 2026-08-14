@@ -4,7 +4,7 @@ version = "1.7.3"
 description = "The Enterprise-Grade Reliability Framework for AI Agents"
 readme = "README.md"
 authors = [
-    { name = "Najeed Khan", email = "agentv@agentvos.ai" }
+    { name = "Najeed Khan", email = "agentvos@agentvos.ai" }
 ]
 license = { text = "Apache-2.0" }
 requires-python = ">=3.12"
