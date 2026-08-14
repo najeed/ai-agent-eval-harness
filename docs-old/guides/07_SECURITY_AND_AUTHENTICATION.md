@@ -192,4 +192,4 @@ If you encounter a `401 Unauthorized` error when accessing the Visual Debugger o
 - **Environment Variable**: Run `agentv doctor` to verify that the `DASHBOARD_API_KEY` is correctly detected by the harness.
 - **501 Not Implemented**: If you see this error, it means **no key** is configured. The harness will block all sensitive routes until a key is provided.
 
-For further assistance, contact `agentv@agentvos.ai`.
+For further assistance, contact `agentvos@agentvos.ai`.

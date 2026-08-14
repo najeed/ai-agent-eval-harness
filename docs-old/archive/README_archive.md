@@ -419,7 +419,7 @@ This project follows an **Open Core** model. The open-source capabilities provid
 **Legend:** ✅ Full Capability • 🔶 Basic/OSS Only • ❌ Enterprise Only
 
 **Looking for Production-Grade Reliability?**
-The Enterprise Edition guarantees that you can safely evaluate agents over sensitive datasets without exposing credentials or executing dangerous code, backed by mathematical proof of non-repudiation. Contact `agentv@agentvos.ai`.
+The Enterprise Edition guarantees that you can safely evaluate agents over sensitive datasets without exposing credentials or executing dangerous code, backed by mathematical proof of non-repudiation. Contact `agentvos@agentvos.ai`.
 
 ### License
 The core of this project is licensed under the **Apache License 2.0**. 
