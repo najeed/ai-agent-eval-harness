@@ -688,6 +688,14 @@ def stream_run_logs(run_id):
             return Response(stream_and_cleanup(), mimetype="text/event-stream")
 
     def stream_not_found():
-        yield "data: Execution log file not found\n\n"
+        import json as _json
+
+        payload = _json.dumps(
+            {
+                "event": "not_found",
+                "message": "Execution log file not found. Waiting for trace data.",
+            }
+        )
+        yield f"data: {payload}\n\n"
 
     return Response(stream_not_found(), mimetype="text/event-stream")

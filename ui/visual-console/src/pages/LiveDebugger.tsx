@@ -45,6 +45,10 @@ export const LiveDebugger: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
   const [activeScenario, setActiveScenario] = useState<any>(null);
+  // Ref kept in sync with activeScenario state so SSE onmessage handler
+  // (a one-time imperative bind) can read the current value without a
+  // stale closure — fixes bug #1.
+  const activeScenarioRef = useRef<any>(null);
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
   
   // AI explain drawer
@@ -81,9 +85,11 @@ export const LiveDebugger: React.FC = () => {
         setStatus(data.status || 'COMPLETED');
         setSourcedFromMaster(!!data.sourced_from_master);
         if (data.scenario) {
+          activeScenarioRef.current = data.scenario;
           setActiveScenario(data.scenario);
           updateFlowCanvas(events, data.scenario);
         } else {
+          activeScenarioRef.current = null;
           setActiveScenario(null);
         }
       }
@@ -220,9 +226,20 @@ export const LiveDebugger: React.FC = () => {
           setStatus('STALLED');
           return;
         }
+        // Bug #3: not_found is now a well-formed JSON event emitted by the
+        // backend when no trace file exists yet. Show a clear waiting state
+        // rather than silently failing to parse a bare-text payload.
+        if (data.event === 'not_found') {
+          console.info('[LiveDebugger] Trace not ready yet:', data.message);
+          setConnectionStatus('CONNECTING');
+          return;
+        }
         setEvents(prev => {
           const updated = [...prev, data];
-          updateFlowCanvas(updated, activeScenario);
+          // Bug #1 fix: read activeScenarioRef.current instead of the closed-over
+          // activeScenario state value, which is stale for the lifetime of this
+          // one-time imperative onmessage binding.
+          updateFlowCanvas(updated, activeScenarioRef.current);
           return updated;
         });
       } catch (e) {
@@ -292,15 +309,17 @@ export const LiveDebugger: React.FC = () => {
         let statusLabel = 'Pending';
         if (isError) {
           border = isHighlighted ? '2px solid #f87171' : '1px solid #ef4444';
-          background = '#7f1d1d/40';
+          // Bug #2 fix: '#7f1d1d/40' is Tailwind utility-class syntax, invalid
+          // as a raw CSS inline style; replaced with real rgba() values.
+          background = 'rgba(127,29,29,0.4)';
           statusLabel = 'Diverged';
         } else if (isFinished) {
           border = isHighlighted ? '2px solid #34d399' : '1px solid #10b981';
-          background = '#064e3b/40';
+          background = 'rgba(6,78,59,0.4)';
           statusLabel = 'Completed';
         } else if (isStarted) {
           border = isHighlighted ? '2px solid #fbbf24' : '1px solid #f59e0b';
-          background = '#78350f/40';
+          background = 'rgba(120,53,15,0.4)';
           statusLabel = 'Running';
         }
 
@@ -348,15 +367,15 @@ export const LiveDebugger: React.FC = () => {
         let statusLabel = 'Pending';
         if (isError) {
           border = isHighlighted ? '2px solid #f87171' : '1px solid #ef4444';
-          background = '#7f1d1d/40';
+          background = 'rgba(127,29,29,0.4)';
           statusLabel = 'Diverged';
         } else if (isFinished) {
           border = isHighlighted ? '2px solid #34d399' : '1px solid #10b981';
-          background = '#064e3b/40';
+          background = 'rgba(6,78,59,0.4)';
           statusLabel = 'Completed';
         } else {
           border = isHighlighted ? '2px solid #fbbf24' : '1px solid #f59e0b';
-          background = '#78350f/40';
+          background = 'rgba(120,53,15,0.4)';
           statusLabel = 'Running';
         }
 
@@ -447,6 +466,32 @@ export const LiveDebugger: React.FC = () => {
       }
     }
   }, [selectedEvent, reactFlowInstance, nodes]);
+
+  // Bug #4 fix: patch highlight styles when selectedEvent changes on a
+  // COMPLETED run that has no more incoming SSE messages. updateFlowCanvas
+  // only runs on new SSE arrivals, so clicking the timeline on a finished run
+  // would pan the camera but never re-render the highlight glow/border.
+  // This lightweight effect re-patches node styles without a full rebuild.
+  useEffect(() => {
+    if (!selectedEvent || nodes.length === 0) return;
+    setNodes(prev =>
+      prev.map(n => {
+        const isHighlighted =
+          n.id === selectedEvent.node_id || n.id === selectedEvent.task_id;
+        return {
+          ...n,
+          style: {
+            ...n.style,
+            boxShadow: isHighlighted ? '0 0 15px rgba(99, 102, 241, 0.6)' : 'none',
+            transform: isHighlighted ? 'scale(1.05)' : 'none',
+            border: isHighlighted
+              ? n.style?.border?.replace(/^1px/, '2px').replace(/#334155|#ef4444|#10b981|#f59e0b/, '#818cf8')
+              : n.style?.border?.replace(/^2px/, '1px'),
+          },
+        };
+      })
+    );
+  }, [selectedEvent]);
 
   const hasError = events.some(e => 
     e.event === 'error' || 
