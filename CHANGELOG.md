@@ -5,6 +5,52 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2026-08-17
+
+### Added
+* **Public Extension Families**: Defined standard Python abstract base classes (`abc.ABC`) under `eval_runner.interfaces` and exported via the `agentv_runtime` package:
+  * `ExecutionBackend` (`submit`, `status`, `cancel`, `resume`) for neutral evaluation run orchestration.
+  * `CheckpointStore` (`save`, `load`, `delete`, `list_checkpoints`) for session checkpoint persistence.
+  * `SigningBackend` (`sign_payload`, `verify_signature`) for cryptographic trace sealing.
+  * `ArtifactStore` (`store_artifact`, `get_artifact`, `exists`, `list_artifacts`) for evaluation artifact lifecycle.
+  * `PolicyEvaluator` (`evaluate_policy`, `validate_policy`, `PolicyEvaluationResult`) for modular policy adjudication.
+  * `AuthorizationBackend` (`validate_token`, `check_permission`, `AuthPrincipal`) for access control.
+* **Resolved Runtime Config & ConfigResolver Boundary**: Implemented `ResolvedRuntimeConfig` model with deterministic SHA3-256 hash digest (`config_hash`) for Processing Integrity evidence, and hierarchical `ConfigResolver` merging baseline defaults, file-based configuration (`.aes/config/*.json`), environment variables, and runtime overrides.
+* **Modular `session.py` Subsystem Decomposition**: Refactored monolithic session execution into dedicated, independently testable subsystem managers under `eval_runner/session_components/`:
+  * `TurnStateManager`: Turn sequence tracking, token consumption metrics, and message history.
+  * `ToolExecutionCoordinator`: Sandboxed tool execution, simulator dispatch, and telemetry.
+  * `SessionCheckpointManager`: Durable session state checkpointing via `CheckpointStore`.
+  * `SessionApprovalManager`: Human-in-the-loop (HITL) approval requests, tokens, and pause/resume coordination.
+* **Subsystem Contract Versioning**: Published independent version metadata attributes in package root:
+  * `__runtime_api_version__ = "1.9"`
+  * `__plugin_api_version__ = "1.0"`
+  * `__config_schema_version__ = "1.0"`
+  * `__aes_schema_version__ = "1.4"`
+* **OSS Reference Implementations**: Shipped production reference backends in `eval_runner/reference/`:
+  * `InProcessExecutionBackend`: In-process local execution backend.
+  * `SQLiteCheckpointStore`: Durable SQLite-backed state persistence.
+  * `LocalFileArtifactStore`: Local filesystem artifact storage.
+  * `BasicFieldPolicyEvaluator`: Numeric boundary, required-field, and constraint policy evaluator.
+* **Package Integration (`agentv_runtime`)**: Introduced the `agentv_runtime` package alias and public contracts surface, enabling seamless zero-touch integration by downstream control planes without forking or monkey-patching.
+
+## [1.8.0] - 2026-08-16
+
+### Security
+* **Path Traversal Jail Protection**: Hardened `mutate_scenario` and `spec_to_eval` with `is_path_safe` jail boundary checks, preventing arbitrary file write and overwrite attacks outside configured scenario roots.
+* **Policy Sandbox Numeric Constraint Generalization**: Generalized numeric constraint checks across arbitrary parameter keys and nested structures rather than hardcoded `amount`/`transfer` fields.
+* **Fail-Closed Cryptographic Enforcement**: Enforced strict fail-closed exceptions (`RuntimeError`) on signature corruption or invalid key paths under `AUDIT_LEVEL >= 2`.
+
+### Fixed
+* **Multi-Attempt Report Aggregation**: Corrected reporting plugins to retain and aggregate all evaluation attempts in multi-attempt execution runs without dropping prior attempt telemetry.
+* **Evidence Sealing Order & Provenance Pipeline**: Strictly enforced execution pipeline ordering: `Execute -> Collect -> Seal -> Compute Ledger -> Physical Hash -> Manifest -> Sign`.
+* **Deterministic Trace Fingerprinting**: Eliminated non-deterministic wall-clock `strftime` stamps from core fingerprint hashing algorithms.
+* **HITL Restart Durability & Accurate Remaining Timeouts**: Added persistent `resumption_token`, `resumed_from_db` tracking, auto-migrating SQLite schemas, and accurate remaining timeout calculations across process restarts.
+* **Statistical Bounds & Failure Denominators**: Corrected percentile index calculation at $p=100$ and standardized the failure distribution denominator to total attempts $N_{\text{total}}$.
+* **Simulator Tool Routing**: Fixed tool routing membership checks to prevent dispatching empty or unregistered tool definitions to simulators.
+
+### Added
+* **Golden Verification Corpus (`tests/golden/`)**: Built an immutable 9-suite, 14-test regression verification corpus validating all 12 defect remediations.
+
 ## [1.7.3] - 2026-08-14
 
 ### Added

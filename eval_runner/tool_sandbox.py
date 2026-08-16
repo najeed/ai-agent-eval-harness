@@ -429,11 +429,25 @@ class ToolSandbox(AbstractSandbox):
                 self.grounding_hits["policies"].get(tool_name, 0) + 1
             )
             limit = policies[tool_name].get("max_limit")
-            if limit and params.get("amount", 0) > limit:
-                return {
-                    "status": "policy_violation",
-                    "violation": f"Amount {params.get('amount')} exceeds limit of {limit}",
-                }
+            if limit is not None:
+                constrained_params = policies[tool_name].get("constrained_params")
+                if constrained_params is not None:
+                    for p_key in constrained_params:
+                        val = params.get(p_key)
+                        if isinstance(val, (int, float)) and val > limit:
+                            v_msg = f"Parameter '{p_key}' with value {val} exceeds limit of {limit}"
+                            return {
+                                "status": "policy_violation",
+                                "violation": v_msg,
+                            }
+                else:
+                    for p_key, val in params.items():
+                        if isinstance(val, (int, float)) and val > limit:
+                            v_msg = f"Parameter '{p_key}' with value {val} exceeds limit of {limit}"
+                            return {
+                                "status": "policy_violation",
+                                "violation": v_msg,
+                            }
         state_changes = tool_def.get("state_changes", [])
         for change in state_changes:
             path = change.get("path")

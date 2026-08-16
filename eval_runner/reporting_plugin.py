@@ -63,18 +63,21 @@ class ReportingPlugin(BaseEvalPlugin):
         """Automatically called when evaluation finishes."""
         scenario = context.scenario_data
 
-        # Note: In k-attempt runs, results is a list of lists.
-        # Use the first attempt for the summary report (backwards compat)
-        display_results = results[0] if isinstance(results[0], list) else results
+        # Represent all attempts explicitly without dropping attempts
+        is_multi_attempt = len(results) > 0 and isinstance(results[0], list)
 
-        # 0. Apply Triage
+        # 0. Apply Triage across all attempts
         print("   [ReportingPlugin] Applying triage logic...")
-        triage.TriageEngine.apply_triage(display_results)
+        if is_multi_attempt:
+            for attempt_res in results:
+                triage.TriageEngine.apply_triage(attempt_res)
+        else:
+            triage.TriageEngine.apply_triage(results)
 
-        # 1. Standard Summary Report
+        # 1. Standard Summary Report across all attempts
         print("\n   [ReportingPlugin] Generating summary report...")
         reporter.generate_report(
-            scenario, display_results, export_trajectory=True, metadata=context.metadata
+            scenario, results, export_trajectory=True, metadata=context.metadata
         )
 
         # 2. Reproduction Script (Mock implementation)
@@ -91,9 +94,9 @@ class ReportingPlugin(BaseEvalPlugin):
             loop = asyncio.get_event_loop()
             if loop.is_running():
                 # Already in a loop, create task
-                loop.create_task(self.dispatch_notifications(context, display_results))
+                loop.create_task(self.dispatch_notifications(context, results))
             else:
-                loop.run_until_complete(self.dispatch_notifications(context, display_results))
+                loop.run_until_complete(self.dispatch_notifications(context, results))
 
     def generate_repro_script(self, context: EvaluationContext):
         """Creates a standalone script to reproduce the evaluation."""

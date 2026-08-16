@@ -22,7 +22,9 @@ def test_flight_recorder_refresh_on_run_start(tmp_path):
                         return initial_dir
                     if key == "RUN_LOG_ROTATE_COUNT":
                         return "0"
-                    return default or "true"
+                    if key in ("RUN_LOG_PER_RUN", "RUN_LOG_MASTER"):
+                        return "true"
+                    return default
 
                 mock_getenv.side_effect = getenv_initial
                 plugin = FlightRecorderPlugin()

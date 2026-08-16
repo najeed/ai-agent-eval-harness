@@ -33,7 +33,7 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **google-genai** | 2.18.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **pypdf** | 6.16.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **python-docx** | 1.2.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **python-dotenv** | 1.2.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **python-dotenv** | 1.2.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **psutil** | 7.2.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **click** | 8.3.2 | BSD | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **pydantic** | 2.13.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |

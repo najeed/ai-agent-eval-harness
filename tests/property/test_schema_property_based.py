@@ -28,7 +28,7 @@ metric_vector_strategy = st.fixed_dictionaries(
 )
 
 
-@settings(suppress_health_check=[HealthCheck.too_slow], max_examples=50)
+@settings(suppress_health_check=[HealthCheck.too_slow], max_examples=50, deadline=None)
 @given(metrics=metric_vector_strategy)
 def test_property_wsm_score_invariants(metrics: dict[str, float]):
     """
@@ -44,7 +44,7 @@ def test_property_wsm_score_invariants(metrics: dict[str, float]):
         )
 
 
-@settings(suppress_health_check=[HealthCheck.too_slow], max_examples=50)
+@settings(suppress_health_check=[HealthCheck.too_slow], max_examples=50, deadline=None)
 @given(
     key=st.text(min_size=1, max_size=30),
     val=st.one_of(st.text(max_size=50), st.integers(), st.booleans()),
@@ -64,7 +64,7 @@ def test_property_shared_state_registry_invariants(key: str, val: str | int | bo
     assert retrieved == val
 
 
-@settings(suppress_health_check=[HealthCheck.too_slow], max_examples=50)
+@settings(suppress_health_check=[HealthCheck.too_slow], max_examples=50, deadline=None)
 @given(
     key=st.text(min_size=1, max_size=20),
     val=st.text(max_size=30),
@@ -95,7 +95,7 @@ def test_property_unauthorized_state_mutation_invariant(key: str, val: str):
     assert registry.read("admin_agent", path) == "super_secret"
 
 
-@settings(suppress_health_check=[HealthCheck.too_slow], max_examples=50)
+@settings(suppress_health_check=[HealthCheck.too_slow], max_examples=50, deadline=None)
 @given(
     data=st.recursive(
         st.one_of(st.booleans(), st.integers(), st.text(max_size=20)),

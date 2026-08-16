@@ -29,6 +29,12 @@ from .context import TurnContext  # noqa: E402
 from .engine import AgentAdapterRegistry  # noqa: E402
 from .events import CoreEvents, Event, EventEmitter  # noqa: E402
 from .forensics import ForensicCollector  # noqa: E402
+from .session_components import (  # noqa: E402
+    SessionApprovalManager,
+    SessionCheckpointManager,
+    ToolExecutionCoordinator,
+    TurnStateManager,
+)
 from .tool_sandbox import ToolSandbox  # noqa: E402
 from .utils import crypto  # noqa: E402
 from .utils.path_resolver import PathResolver  # noqa: E402
@@ -98,6 +104,12 @@ class SessionManager:
         self.run_vault.mkdir(parents=True, exist_ok=True)
         with open(self.run_vault / "scenario_original.json", "w", encoding="utf-8") as f:
             json.dump(self.scenario, f, indent=2)
+
+        # Decomposed Session Subsystems
+        self.turn_state_manager = TurnStateManager(max_turns=self.max_turns)
+        self.checkpoint_manager = SessionCheckpointManager(run_id=self.run_id)
+        self.approval_manager = SessionApprovalManager(run_id=self.run_id)
+        self.tool_execution_coordinator = ToolExecutionCoordinator()
 
         # Initialize plugins for this session
         self.plugin_manager.load_plugins()
@@ -240,6 +252,7 @@ class SessionManager:
 
         # [Forensic Hardening] State Snapshot storage
         self.state_snapshots: list[str] = []
+        self._current_turn = 0
 
         # [Forensic Hardening] Resource Telemetry storage
         self.resource_telemetry: list[dict[str, float]] = []
@@ -252,6 +265,18 @@ class SessionManager:
             # Ensures O(1) header writing at session start.
             headers = ["timestamp", "cpu_percent", "rss_mb", "vms_mb", "disk_usage_percent"]
             self.forensics.init_telemetry(headers)
+
+    @property
+    def turn_number(self) -> int:
+        if hasattr(self, "turn_state_manager") and self.turn_state_manager:
+            return self.turn_state_manager.current_turn
+        return getattr(self, "_current_turn", 0)
+
+    @turn_number.setter
+    def turn_number(self, val: int):
+        if hasattr(self, "turn_state_manager") and self.turn_state_manager:
+            self.turn_state_manager.current_turn = val
+        self._current_turn = val
 
     async def execute_tasks(self, attempt_number: int) -> list[dict[str, Any]]:
         from graphlib import CycleError, TopologicalSorter
@@ -424,6 +449,7 @@ class SessionManager:
 
         node_success = False
         for turn in range(1, self.max_turns + 1):
+            self.turn_number = turn
             if config.EVAL_TURN_THROTTLE > 0:
                 await asyncio.sleep(config.EVAL_TURN_THROTTLE)
 

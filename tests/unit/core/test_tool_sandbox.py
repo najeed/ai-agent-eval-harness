@@ -857,3 +857,38 @@ async def test_sandbox_cleanup_workspace_default_false_with_subfiles(tmp_path):
     await sb.teardown()
     assert ws_dir.exists()
     assert f.exists()
+
+
+def test_sandbox_scenario_enabled_shims_none_handling(tmp_path, monkeypatch):
+    """
+    Mutation Assurance Test: Verifies get_active_simulators activates relevant shims when
+    enabled_shims is omitted (None) without raising TypeError or misrouting.
+    (kills is None -> is not None mutation in tool_sandbox.py).
+    """
+    from eval_runner import config, simulators
+
+    class RelevantShim:
+        def __init__(self, **kwargs):
+            pass
+
+    scenario = {
+        "workflow": {
+            "nodes": [
+                {"id": "t1", "task_description": "task", "required_tools": ["my_relevant_tool"]}
+            ],
+            "edges": [],
+        }
+    }
+    sb = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+    monkeypatch.setattr(config, "GLOBAL_ENABLED_SHIMS", ["*"])
+    monkeypatch.setattr(
+        config.RegistryManager,
+        "get_resolved_registry",
+        lambda: {"shims": {"my_relevant": {"type": "mock_rel_cls"}}},
+    )
+    monkeypatch.setattr(
+        simulators, "get_simulator_registry", lambda **kwargs: {"mock_rel_cls": RelevantShim}
+    )
+    monkeypatch.setattr(sb, "_get_scenario_relevant_shims", lambda: {"my_relevant"})
+    shims = sb.get_active_simulators()
+    assert "my_relevant" in shims

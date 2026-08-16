@@ -170,6 +170,8 @@ def get_taxonomy():
 @require_permission(Permission.SCENARIOS_WRITE)
 def mutate_scenario():
     """Roadmap: Programmatic mutation with raw content or file support."""
+    from eval_runner import config, utils
+
     data = request.json or {}
     mutation_type = data.get("type", "typo")
 
@@ -187,8 +189,16 @@ def mutate_scenario():
             scenario = json.load(f)
     else:
         input_path = data.get("input_path")
-        if not input_path or not Path(input_path).exists():
+        if not input_path:
             return jsonify({"error": "Missing input_path, scenario_id or raw_json"}), 400
+
+        # Path Traversal Guard
+        if not utils.is_path_safe(input_path, config.PROJECT_ROOT):
+            return jsonify({"error": "Access denied: input_path outside project root"}), 403
+
+        if not Path(input_path).exists():
+            return jsonify({"error": f"input_path not found: {input_path}"}), 400
+
         with open(input_path, encoding="utf-8") as f:
             scenario = json.load(f)
 
@@ -198,6 +208,9 @@ def mutate_scenario():
         # Optionally save to output path
         output_path = data.get("output_path")
         if output_path:
+            # Path Traversal Guard
+            if not utils.is_path_safe(output_path, config.PROJECT_ROOT):
+                return jsonify({"error": "Access denied: output_path outside project root"}), 403
             mutator.save_mutated_scenario(mutated, Path(output_path))
 
         return jsonify({"status": "success", "mutated": mutated})
@@ -209,13 +222,23 @@ def mutate_scenario():
 @require_permission(Permission.SCENARIOS_WRITE)
 def spec_to_eval():
     """Roadmap: Markdown PRD/Spec to AES JSON conversion."""
+    from eval_runner import config, utils
+
     data = request.json or {}
     markdown_text = data.get("markdown")
 
     if not markdown_text:
         input_path = data.get("input_path")
-        if not input_path or not Path(input_path).exists():
+        if not input_path:
             return jsonify({"error": "Missing markdown text or input_path"}), 400
+
+        # Path Traversal Guard
+        if not utils.is_path_safe(input_path, config.PROJECT_ROOT):
+            return jsonify({"error": "Access denied: input_path outside project root"}), 403
+
+        if not Path(input_path).exists():
+            return jsonify({"error": f"input_path not found: {input_path}"}), 400
+
         with open(input_path, encoding="utf-8") as f:
             markdown_text = f.read()
 
@@ -225,6 +248,9 @@ def spec_to_eval():
 
         output_path = data.get("output_path")
         if output_path:
+            # Path Traversal Guard
+            if not utils.is_path_safe(output_path, config.PROJECT_ROOT):
+                return jsonify({"error": "Access denied: output_path outside project root"}), 403
             spec_parser.save_scenario_json(scenario, Path(output_path))
 
         return jsonify({"status": "success", "scenario": scenario})

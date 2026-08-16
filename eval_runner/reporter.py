@@ -161,9 +161,13 @@ def generate_html_report(
 
     agent_name = (metadata or {}).get("agent_name")
 
+    is_multi_attempt = len(results) > 0 and isinstance(results[0], list)
+    attempts_list = results if is_multi_attempt else [results]
+    all_tasks = [tr for att in attempts_list for tr in att]
+
     # Discovery: If not in metadata, scan results for a discovered name
     if not agent_name:
-        for tr in results:
+        for tr in all_tasks:
             for entry in tr.get("conversation_history", []):
                 if entry.get("role") == "agent" and entry.get("agent_name"):
                     agent_name = entry["agent_name"]
@@ -171,10 +175,10 @@ def generate_html_report(
             if agent_name:
                 break
 
-    total_tasks = len(results)
+    total_tasks = len(all_tasks)
     successful_tasks = sum(
         1
-        for tr in results
+        for tr in all_tasks
         if tr.get("status", "success") == "success"
         and len(tr.get("metrics", [])) > 0
         and all(m["success"] for m in tr.get("metrics", []))
@@ -182,45 +186,56 @@ def generate_html_report(
     success_rate = (successful_tasks / total_tasks * 100) if total_tasks > 0 else 0
 
     tasks_html = ""
-    for tr in results:
-        task_id = tr["task_id"]
-        metrics = tr.get("metrics", [])
-        is_success = (
-            tr.get("status", "success") == "success"
-            and len(metrics) > 0
-            and all(m["success"] for m in metrics)
-        )
-        status_class = "success" if is_success else "failure"
-        status_text = "PASSED" if is_success else f"FAILED [{tr.get('triage_tag', 'UNKNOWN')}]"
-
-        metrics_html = ""
-        for m in metrics:
-            m_status = "pass" if m["success"] else "fail"
-            metrics_html += f"""
-                <div class="metric {m_status}">
-                    <span class="m-name">{m["metric"]}</span>
-                    <span class="m-score">{m["score"]:.2f} / {m["threshold"]:.2f}</span>
+    for att_idx, att in enumerate(attempts_list, 1):
+        if is_multi_attempt:
+            att_len = len(attempts_list)
+            tasks_html += f"""
+                <div style="margin: 20px 0 10px 0; border-bottom: 1px solid var(--sub);
+                            padding-bottom: 5px;">
+                    <h2 style="color: var(--accent); font-size: 1.3rem;">
+                        Attempt {att_idx} of {att_len}
+                    </h2>
                 </div>
             """
+        for tr in att:
+            task_id = tr.get("task_id", "unknown")
+            metrics = tr.get("metrics", [])
+            is_success = (
+                tr.get("status", "success") == "success"
+                and len(metrics) > 0
+                and all(m["success"] for m in metrics)
+            )
+            status_class = "success" if is_success else "failure"
+            status_text = "PASSED" if is_success else f"FAILED [{tr.get('triage_tag', 'UNKNOWN')}]"
 
-        mermaid_code = generate_mermaid_trajectory(tr)
+            metrics_html = ""
+            for m in metrics:
+                m_status = "pass" if m["success"] else "fail"
+                metrics_html += f"""
+                    <div class="metric {m_status}">
+                        <span class="m-name">{m["metric"]}</span>
+                        <span class="m-score">{m["score"]:.2f} / {m["threshold"]:.2f}</span>
+                    </div>
+                """
 
-        tasks_html += f"""
-            <div class="task-card {status_class}">
-                <div class="task-header">
-                    <h3>Task: {task_id}</h3>
-                    <span class="badge {status_class}">{status_text}</span>
-                </div>
-                <div class="metrics-grid">
-                    {metrics_html}
-                </div>
-                <div class="mermaid-container">
-                    <pre class="mermaid">
+            mermaid_code = generate_mermaid_trajectory(tr)
+
+            tasks_html += f"""
+                <div class="task-card {status_class}">
+                    <div class="task-header">
+                        <h3>Task: {task_id}</h3>
+                        <span class="badge {status_class}">{status_text}</span>
+                    </div>
+                    <div class="metrics-grid">
+                        {metrics_html}
+                    </div>
+                    <div class="mermaid-container">
+                        <pre class="mermaid">
 {mermaid_code}
-                    </pre>
+                        </pre>
+                    </div>
                 </div>
-            </div>
-        """
+            """
 
     html_content = f"""
 <!DOCTYPE html>
@@ -382,6 +397,7 @@ def generate_report(
 ):
     """
     Generates and prints a summary report of the evaluation results.
+    Supports both single-attempt and multi-attempt populations.
     """
     print("\n" + "=" * 50)
     print("EVALUATION REPORT")
@@ -408,65 +424,94 @@ def generate_report(
 
     agent_name = (metadata or {}).get("agent_name")
 
+    # Handle multi-attempt vs single-attempt structure
+    is_multi_attempt = len(results) > 0 and isinstance(results[0], list)
+    attempts_list = results if is_multi_attempt else [results]
+
     # Discovery: Scan results if not in metadata
     if not agent_name:
-        for tr in results:
-            for entry in tr.get("conversation_history", []):
-                if entry.get("role") == "agent" and entry.get("agent_name"):
-                    agent_name = entry["agent_name"]
+        for attempt in attempts_list:
+            for tr in attempt:
+                for entry in tr.get("conversation_history", []):
+                    if entry.get("role") == "agent" and entry.get("agent_name"):
+                        agent_name = entry["agent_name"]
+                        break
+                if agent_name:
                     break
             if agent_name:
                 break
 
     print(f"Protocol: {protocol.upper()}")
     print(f"Agent: {agent_name or agent_target}")
+    if is_multi_attempt:
+        print(f"Evaluation Mode: Multi-Attempt (N={len(attempts_list)} attempts)")
     print("-" * 50)
 
-    total_tasks = len(results)
-    successful_tasks = 0
+    total_tasks_run = 0
+    successful_tasks_run = 0
+    successful_attempts = 0
 
-    for task_result in results:
-        task_id = task_result["task_id"]
-        metrics_list = task_result.get("metrics", [])
-        task_is_overall_success = (
-            task_result.get("status", "success") == "success"
-            and len(metrics_list) > 0
-            and all(m["success"] for m in metrics_list)
-        )
+    for attempt_idx, attempt_results in enumerate(attempts_list, 1):
+        if is_multi_attempt:
+            print(f"\n>>> Attempt {attempt_idx}/{len(attempts_list)}:")
 
-        if task_is_overall_success:
-            status = "SUCCESS"
-            successful_tasks += 1
-        else:
-            status = f"FAILURE [{task_result.get('triage_tag', 'UNKNOWN')}]"
-
-        print(f"\nTask: {task_id} [{status}]")
-
-        for metric in metrics_list:
-            metric_status = "PASSED" if metric["success"] else "FAILED"
-            print(
-                f"  {metric_status} Metric: {metric['metric']:<35} "
-                f"| Score: {metric['score']:.2f} "
-                f"| Threshold: {metric['threshold']:.2f}"
+        attempt_success = True
+        for task_result in attempt_results:
+            total_tasks_run += 1
+            task_id = task_result["task_id"]
+            metrics_list = task_result.get("metrics", [])
+            task_is_overall_success = (
+                task_result.get("status", "success") == "success"
+                and len(metrics_list) > 0
+                and all(m["success"] for m in metrics_list)
             )
 
-        # Add Mermaid snippet for failed tasks or if requested
-        if not task_is_overall_success:
-            print("\n  Trajectory Map (Mermaid):")
-            print("  ---")
-            print(generate_mermaid_trajectory(task_result))
-            print("  ---")
+            if task_is_overall_success:
+                status = "SUCCESS"
+                successful_tasks_run += 1
+            else:
+                status = f"FAILURE [{task_result.get('triage_tag', 'UNKNOWN')}]"
+                attempt_success = False
+
+            print(f"\nTask: {task_id} [{status}]")
+
+            for metric in metrics_list:
+                metric_status = "PASSED" if metric["success"] else "FAILED"
+                print(
+                    f"  {metric_status} Metric: {metric['metric']:<35} "
+                    f"| Score: {metric['score']:.2f} "
+                    f"| Threshold: {metric['threshold']:.2f}"
+                )
+
+            # Add Mermaid snippet for failed tasks or if requested
+            if not task_is_overall_success:
+                print("\n  Trajectory Map (Mermaid):")
+                print("  ---")
+                print(generate_mermaid_trajectory(task_result))
+                print("  ---")
+
+        if attempt_success and len(attempt_results) > 0:
+            successful_attempts += 1
 
     print("\n" + "-" * 50)
     print("SUMMARY")
     print("-" * 50)
 
-    success_rate = (successful_tasks / total_tasks) * 100 if total_tasks > 0 else 0
+    task_success_rate = (successful_tasks_run / total_tasks_run * 100) if total_tasks_run > 0 else 0
+    attempt_success_rate = (successful_attempts / len(attempts_list) * 100) if attempts_list else 0
 
-    print(f"Total Tasks: {total_tasks}")
-    print(f"Successful Tasks: {successful_tasks}")
-    print(f"Failed Tasks: {total_tasks - successful_tasks}")
-    print(f"Overall Success Rate: {success_rate:.2f}%")
+    if is_multi_attempt:
+        print(f"Total Attempts (N): {len(attempts_list)}")
+        print(f"Successful Attempts: {successful_attempts}")
+        print(f"Failed Attempts: {len(attempts_list) - successful_attempts}")
+        print(f"Attempt Pass Rate (pass@{len(attempts_list)}): {attempt_success_rate:.2f}%")
+        print(f"Total Task Executions: {total_tasks_run}")
+        print(f"Overall Task Success Rate: {task_success_rate:.2f}%")
+    else:
+        print(f"Total Tasks: {total_tasks_run}")
+        print(f"Successful Tasks: {successful_tasks_run}")
+        print(f"Failed Tasks: {total_tasks_run - successful_tasks_run}")
+        print(f"Overall Success Rate: {task_success_rate:.2f}%")
     print("=" * 50 + "\n")
 
     if export_trajectory:

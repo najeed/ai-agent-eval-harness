@@ -17,6 +17,12 @@ if not hasattr(asyncio, "_original_iscoroutinefunction"):
 
 from .config import VERSION as __version__  # noqa: F401
 
+# Subsystem Contract Versioning
+__runtime_api_version__ = "1.9"
+__plugin_api_version__ = "1.0"
+__config_schema_version__ = "1.0"
+__aes_schema_version__ = "1.4"
+
 # --- INDUSTRIAL NEUTRALITY: VERSION-GATE SUPPRESSION ---
 # Neutralize speculative compatibility warnings from external dependencies (LangChain/Pydantic)
 # that mangle the console output on Python 3.14+ without impacting system stability.

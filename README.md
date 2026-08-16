@@ -10,9 +10,9 @@
 
 **88% of enterprise AI agents fail to reach production.** Not because the model is wrong. Because no one verified that the agent actually did the right thing.
 
-AgentV sits inside the execution loop and verifies state parity, policy adherence, and business outcomes before your agent earns the right to act. Cryptographically signed traces (Ed25519). HIPAA/FINRA/GDPR compliance packs. CI/CD hard gating. NIST AI-100-1 aligned. Built for regulated industries.
+AgentV sits inside the execution loop and verifies state parity, policy adherence, and business outcomes before your agent earns the right to act. Cryptographically signed traces (Ed25519), deterministic policy verification, CI/CD hard gating, NIST AI-100-1 aligned, and built for regulated industries.
 
-*[5,000+ OOTB scenarios] • [50+ verticals] • [Apache 2.0] • [Enterprise Edition available]*
+*[5,000+ OOTB scenarios] • [50+ verticals] • [Apache 2.0] • [AgentV Control Plane available]*
 
 ## Architecture Overview
 
@@ -48,7 +48,7 @@ graph TD
 | :--- | :--- |
 | **License** | Apache License 2.0 |
 | **Status** | 🟢 Production-Ready (NIST AI-100-1 Aligned) |
-| **Version** | v1.7.3 (August 2026 Release) |
+| **Version** | v1.9.0 (August 2026 Release) |
 | **Trust Model** | [Behavioral DNA & VC v3.0.0](docs-old/architecture.md) |
 | **Architecture** | [Identity-Centric Core](docs-old/architecture.md) |
 | **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.4 Spec](docs-old/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
@@ -136,6 +136,7 @@ Embark on a **4-Phase, 18-Milestone Hands-on Curriculum** designed to take you f
 ## Harness Structure
 The harness is organized into the following key components:
 
+-   `/agentv_runtime`: Public Runtime Contracts & Neutral Architecture Seam (`interfaces`, `reference`, `session_components`).
 -   `/dataproc_engine`: High-fidelity industrial data extraction engine (7 Sectors, Gold Standards).
 -   `/industries`: Evaluation assets (5,000+ starter scenarios) categorized by 50+ industries.
 -   `/eval_runner`: Modular Core Engine (Multi-turn loop, Sandbox, Metrics, Simulators, Mutator).
@@ -146,7 +147,7 @@ The harness is organized into the following key components:
 -   `/runs`: Local execution history (Flight Recorder logs).
 -   `/spec/aes`: **Agent Eval Specification (Foundational)** - Benchmark standard v1.4.
 -   `/docs`: Deep-dive guides, architecture, and API specifications.
--   `/tests`: Comprehensive test suite (Unit, Integration, and Red-Teaming).
+-   `/tests`: Comprehensive test suite (Unit, Integration, Golden, Red-Teaming).
 -   `/sample_agent`: Reference implementation for benchmark testing.
 
 - **NIST AI-100-1 Alignment**: Core verification logic developed following **NIST AI RMF principles**, featuring the **Weighted Severity Model (WSM)** for multi-dimensional scoring and forensic **Environmental DNA** snapshots.
@@ -155,17 +156,17 @@ The harness is organized into the following key components:
 - **Behavioral DNA Telemetry**: High-granularity event bus (4-level: PHASE, SUBTASK, ACTION, STEP) providing a precise "genetic" map of agent decision-making.
 - **Verification Certificate (VC) v3.0.0**: Traces are signed via the **Identity Registry** (Ed25519) and backed by a **Forensic Evidence Ledger** that hashes sidecar artifacts to ensure end-to-end provenance.
 
-### 🌟 What's New in the August 2026 Release (v1.7.3)
+### 🌟 What's New in the August 2026 Release (v1.9.0)
 
-The **v1.7.3 August 2026 Release** presents the AgentV industrial-grade **Verification OS**, featuring runtime micro-frontend module federation, dynamic navigation manifests, 100% mutation testing sentinel assurance, full test parallelization across 5,000+ scenarios, and independent cryptographic verification:
+The **v1.9.0 August 2026 Release** establishes the formal neutral architectural seam between the AgentV OS Runtime and the AgentV Control Plane, alongside complete kernel integrity defect remediation (v1.8.0):
 
-- 🌐 **Dynamic Navigation Manifest & Runtime Module Federation (`/v2`)**: The native visual console now dynamically ingests `GET /api/nav` manifests from the backend and loads third-party/enterprise plugin tabs on demand via standard ESM dynamic `import()`—**zero build-time recompilation required**.
-- 🛡️ **100% Mutation Testing Sentinel Assurance**: Full population mutation testing across `verifier.py`, `tool_sandbox.py`, and `base.py` guarantees 100% kill rate (91 killed, 0 timeout, 0 survived) for bulletproof industrial verification, backed by a `.mutation_testing.lock` process mutex.
-- 🎨 **Visual Sidebar Badging & Dynamic Icon Resolver**: Pluggable navigation items can declare custom badges (e.g. `LIVE`, `APM`, `CUSTOM`), enterprise tier markers, role-based access restrictions (`required_role`), and Lucide icon keys.
-- 🛡️ **Enterprise Verification Assurance Suite**: Full parallelization of the 5,040+ scenario corpus via `pytest-xdist`, strict exception hygiene, and multi-version schema dispatch. Includes an **Independent Cryptographic Oracle** (`IndependentTraceOracle`) with Ed25519 & ML-DSA-65 (PQC) validation, a 7-stage verify-after-tampering matrix, and synchronized TOCTOU barrier race testing.
-- ⚡ **Performance SLA Gates & 1,000 Session Scaling**: Enforces hard interception latency SLA gates (<5ms mean overhead) and validates 1,000 concurrent evaluation sessions with 100% unique run IDs and zero state leakage under contention.
-- 🎛️ **The Integrated Visual Console (Native GUI)**: Central dashboard (`/v2`) featuring a React Flow canvas scenario builder, live timeline log playback debugger, side-by-side state diff visualizers, async restart-resilient HITL review queues (`hitl.db`), and drag-and-drop PRD spec-to-eval translators.
-- 🔒 **Thread-Safe Governance & SHA-3 Security Standard**: Thread-safe differential `RunsCache` daemon with real-time SSE streaming, drag-and-drop ZIP compliance bundle validation, and standardized FIPS-approved SHA-3 hashing with Ed25519 trace signatures.
+- 🏛️ **Public Extension Families**: Standardized abstract base classes (`abc.ABC`) under `eval_runner.interfaces` and `agentv_runtime.interfaces` for `ExecutionBackend`, `CheckpointStore`, `SigningBackend`, `ArtifactStore`, `PolicyEvaluator`, and `AuthorizationBackend`.
+- ⚙️ **Resolved Runtime Config & ConfigResolver**: Schema-validated runtime configuration model with deterministic SHA3-256 hash digest (`config_hash`) for Processing Integrity evidence, with hierarchical config-mesh resolution (`OSS baseline` $\rightarrow$ `.aes/config/*.json` $\rightarrow$ `env vars` $\rightarrow$ `runtime overrides`).
+- 🧩 **Modular `session.py` Decomposition**: Monolithic session orchestration decomposed into dedicated, independently testable subsystem managers: `TurnStateManager`, `ToolExecutionCoordinator`, `SessionCheckpointManager`, and `SessionApprovalManager`.
+- 📦 **Subsystem Contract Versioning & `agentv_runtime`**: Independent semantic contract versioning (`__runtime_api_version__`, `__plugin_api_version__`, `__config_schema_version__`, `__aes_schema_version__`) and public packaging surface for clean zero-touch enterprise control plane consumption.
+- 🛠️ **OSS Reference Implementations**: Shipped production reference backends: `InProcessExecutionBackend`, `SQLiteCheckpointStore`, `LocalFileArtifactStore`, and `BasicFieldPolicyEvaluator`.
+- 🛡️ **12-Point Kernel Integrity & Defect Remediation (v1.8.0)**: Closed all 12 verified security and correctness defects, backed by a 14-test **Golden Verification Corpus** (`tests/golden/`).
+- 🌐 **Dynamic Navigation Manifest & Runtime Module Federation (`/v2`)**: The native visual console ingests `GET /api/nav` manifests and loads standalone ESM plugin bundles on demand with zero build-time recompilation.
 
 ## 📂 The Global Scenario Corpus
 
@@ -234,7 +235,7 @@ The harness supports multiple ways to talk to your agent. Use the `--protocol` f
 ## At a Glance
 
 - **Evaluation Specification (AES)**: Standardized YAML/Markdown benchmarks for agents.
-- **20-Shim Enterprise Suite**: Environment simulators for **Git, API, Database, Knowledge Base, Support Desk, Social Media, Vector DB, CI/CD, IoT, Security**, and more (Enterprise Edition supports high-fidelity versions).
+- **20-Shim Enterprise Suite**: Environment simulators for **Git, API, Database, Knowledge Base, Support Desk, Social Media, Vector DB, CI/CD, IoT, Security**, and more (AgentV Control Plane supports high-fidelity versions).
 - **Schema-Driven Core Registry**: Decoupled environmental state management using declarative manifests (`shim_resources.json`) with **Async Simulation Hardening** for non-blocking non-linear evaluations.
 - **PBAC & Operational Governance**: Granular **Permission-Based Access Control** (v1.2.3) and **Operational Throttling** (`EVAL_TURN_THROTTLE`) for regulated enterprise environments.
 - **Zero-Touch Hot-Swap Architecture**: Dynamically register and swap simulators via plugins without core code modifications.
@@ -355,7 +356,7 @@ The platform is built with a **Secure-by-Design** philosophy, complying with ent
 - **Secure Handoff Architecture**: JWT-based authentication for between the core console and enterprise plugins.
 - **Tool Sandboxing**: Path traversal protection and shell-character neutralization for all tool executions.
 - **WORM Logs**: Write-Once-Read-Many immutable flight recorder traces (`run.jsonl`).
-- **Audit Points**: 100% compliance with the 8-point Enterprise Security Audit (DoS caps, Fork Bomb prevention, RCE guards).
+- **Audit Controls**: Defense-in-depth security controls (DoS caps, Fork Bomb prevention, RCE guards, and jail isolation).
 - **Mandatory Authentication**: Protection of all console and bridge routes via the `DASHBOARD_API_KEY`.
 See the [Security and Authentication Guide](docs-old/guides/07_SECURITY_AND_AUTHENTICATION.md) for generation and configuration instructions.
 
@@ -423,9 +424,9 @@ Thanks to all our contributors! 🙌
 
 ## Licensing and Editions
 
-This project follows an **Open Core** model. The open-source capabilities provide a robust verification foundation, while the Enterprise Edition delivers the necessary security, governance, and audit-grade intelligence required for regulated deployments.
+This project follows an **Open Core** model. The open-source AgentV OS Runtime capabilities provide a robust verification foundation, while the AgentV Control Plane delivers the necessary security, governance, and audit-grade intelligence required for regulated deployments.
 
-| Feature Module | Community Edition (OSS) | Enterprise Edition |
+| Feature Module | AgentV OS Runtime (OSS) | AgentV Control Plane |
 | :--- | :--- | :--- |
 | **Core Architecture** | ✅ Eval Engine, Hooks, JSON Schemas | ✅ Enterprise Service Bus Integration |
 | **Industry Benchmark Set** | ✅ 5,000+ Starter Scenarios | ✅ Prioritized Scenario Updates |
@@ -467,7 +468,7 @@ Alternatively, link directly to our high-fidelity SVG asset:
 
 ---
 
-Ready for production-grade verification? The Enterprise Edition delivers WORM audit logs, OIDC SSO, PBAC, HIPAA/FINRA/GDPR compliance packs, and Docker-sandboxed isolation, everything regulated industries need before autonomous agents earn the right to act.
+Ready for production-grade verification? The AgentV Control Plane delivers WORM audit logs, OIDC SSO, PBAC, HIPAA/FINRA/GDPR compliance packs, and Docker-sandboxed isolation, everything regulated industries need before autonomous agents earn the right to act.
 
 👉 Book a 30-minute call: [AgentVOS.ai](https://agentvos.ai)
 

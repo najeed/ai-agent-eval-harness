@@ -112,13 +112,25 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             run_vault_dir = self.log_dir / run_id
             per_run_log_path = run_vault_dir / "run.jsonl"
 
-        # [Iteration 4: Signing] Trace-level integrity
+        # [Iteration 4: Signing] Trace-level integrity (Fail-Closed Cryptography)
         if self._audit_level >= 2 and self._private_key_path:
             try:
                 payload = json.dumps(data, sort_keys=True).encode("utf-8")
                 data["_sig"] = verifier.TraceVerifier.sign_payload(payload, self._private_key_path)
             except Exception as e:
                 data["_sig_error"] = str(e)
+                msg = (
+                    f"   [FlightRecorder] [ERROR] Cryptographic signing failed for "
+                    f"run '{run_id}': {e}\n"
+                )
+                sys.stderr.write(msg)
+                # Fail-closed under AUDIT_LEVEL >= 2
+                if os.getenv("EVAL_SIGNING_FAIL_CLOSED", "true").lower() == "true":
+                    err = (
+                        "CryptographicSigningError: Failed to sign trace event at "
+                        f"AUDIT_LEVEL={self._audit_level}: {e}"
+                    )
+                    raise RuntimeError(err) from e
 
         # Serialize and write
         content = json.dumps(data) + "\n"

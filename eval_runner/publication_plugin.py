@@ -80,7 +80,9 @@ class PublicationPlugin(BaseEvalPlugin):
                 "p95_latency": self._percentile(latencies, 95) if latencies else 0,
                 "avg_cost": sum(costs) / len(costs) if costs else 0,
                 "confidence_interval": self._wilson_score_interval(pass_rate, len(pass_flags)),
-                "failure_distribution": {k: v / len(latencies) for k, v in failure_counts.items()},
+                "failure_distribution": {k: v / len(pass_flags) for k, v in failure_counts.items()}
+                if pass_flags
+                else {},
             },
             "metadata": {
                 "industry": scenario.get("industry"),
@@ -107,9 +109,10 @@ class PublicationPlugin(BaseEvalPlugin):
 
     def _generate_fingerprint(self, context):
         args = context.metadata.get("args", {})
-        seed = args.get("seed", 0) or 0
+        seed = args.get("seed", 0) or context.seed or 0
         identifier = context.identifier
-        raw = f"{identifier}-{seed}-{datetime.now().strftime('%Y%m%d')}"
+        version = context.metadata.get("version", "1.0.0")
+        raw = f"{identifier}-{version}-{seed}"
         return crypto.content_hash(raw, length=6)
 
     def _wilson_score_interval(self, p, n):
@@ -139,7 +142,8 @@ class PublicationPlugin(BaseEvalPlugin):
         if not data:
             return 0
         s = sorted(data)
-        return s[int(len(s) * p / 100)]
+        idx = min(max(0, int(len(s) * p / 100)), len(s) - 1)
+        return s[idx]
 
     def _export_results(self, summary):
         path = Path("results/publication_results.jsonl")

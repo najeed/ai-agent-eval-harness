@@ -302,6 +302,7 @@ class ForensicCollector:
         # All subsequent turns are differential.
         is_full = turn == 0 or not self._last_state
 
+        self.target_dir.mkdir(parents=True, exist_ok=True)
         if is_full:
             snapshot_path = self.target_dir / f"state_turn_{turn:03d}_full.json"
             content = state
@@ -384,6 +385,7 @@ class ForensicCollector:
         # 2. Add snapshots to ledger
         for _, path in self._state_snapshots.items():
             rel_path = f"forensics/{path.name}"
-            ledger[rel_path] = compute_file_hash(path)
+            if path.exists():
+                ledger[rel_path] = compute_file_hash(path)
 
         return ledger

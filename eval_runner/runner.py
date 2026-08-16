@@ -102,7 +102,13 @@ class DefaultRunner(BaseRunner):
         try:
             events.emit(
                 events.CoreEvents.RUN_START,
-                {"run_id": effective_run_id, "scenario": ctx.identifier, "k_attempts": attempts},
+                {
+                    "run_id": effective_run_id,
+                    "scenario": ctx.identifier,
+                    "k_attempts": attempts,
+                    "workflow": ctx.scenario_data.get("workflow"),
+                    "scenario_data": dict(ctx.scenario_data) if ctx.scenario_data else {},
+                },
                 span_context=ctx.span_context,
             )
 

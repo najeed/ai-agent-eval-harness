@@ -40,7 +40,7 @@ weasyprint>=69.0
 reportlab>=5.0.0
 
 # --- Environment ---
-python-dotenv==1.2.2
+python-dotenv==1.2.3
 
 # --- Security Patches ---
 urllib3==2.7.0
