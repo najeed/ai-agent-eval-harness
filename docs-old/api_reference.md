@@ -39,7 +39,7 @@ Triggers an asynchronous evaluation for a specific scenario or path.
 - **Permission**: `EVAL_TRIGGER`
 - **Security**: Protected
 - **Body**: `{"path": "loan-scenario-v1", "max_turns": 10}`
-  - *Note*: `path` acts as an alias. It first resolves against the **Scenario ID** in the catalog index. If no match is found, it expects a **project-relative path** (e.g., `industries/fin/scenarios/loan.json`).
+  - *Note*: `path` acts as an alias. It first resolves against the **Scenario ID** in the catalog index. If no match is found, it expects a **project-relative path** (e.g., `industries/finance/scenarios/loan_approval_risk_check.json`).
 
 ### `POST /api/v1/mutate`
 Roadmap (P0): Programmatic scenario mutation for variance testing.

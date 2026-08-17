@@ -37,7 +37,7 @@ git commit -s -m "Your commit message"
 - **Execution**: Ensure your scenario runs correctly with `agentv evaluate --path <your_path>`. The harness now supports **Path Decoupling**, allowing you to host and run benchmarks from any directory without repository-internal dependencies.
 
 ### 2. The Zero-Touch Core Philosophy
-We strictly adhere to a **Zero-Touch Core** architectural mandate. Pull Requests that modify the core orchestration (`eval_runner/runner.py`, `eval_runner/metrics.py`) to handle edge cases or custom platforms will generally be rejected.
+We strictly adhere to a **Zero-Touch Core** architectural mandate. Pull Requests that modify the core orchestration (`eval_runner/runner.py`, `eval_runner/metrics/core.py`) to handle edge cases or custom platforms will generally be rejected.
 - **Decoupling**: Keep orchestration (Runner), state (Session), and observation (EventEmitter) separated.
 - **Extensibility**: All custom business logic, LLM providers, and bespoke metrics MUST be implemented as a plugin.
 - **Immutability**: `TurnContext` and `EvaluationContext` are frozen data structures. Use `dataclasses.replace()` for updates rather than mutating state directly.

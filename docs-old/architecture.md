@@ -56,11 +56,12 @@ The harness orchestration flows through 8 logical intents, moving from design-ti
 | Intent | Key Modules | Purpose |
 | :--- | :--- | :--- |
 | **Authoring** | `analyzer.py`, `mutator.py` | Scaffold scenarios from code and generate adversarial variants. |
-| **Discovery** | `catalog.py`, `config.py` | Unified Registry and high-performance scenario indexing. |
-| **Execution** | `runner.py`, `session.py` | Orchestrates the eval loop with pass@k and multi-agent support. |
+| **Discovery** | `catalog.py`, `config_resolver.py` | Unified Registry, 4-tier ConfigResolver, and high-performance scenario indexing. |
+| **Execution** | `runner.py`, `session.py`, `session_components/` | Orchestrates the eval loop with decomposed TurnState, ToolExecution, Checkpoints, and HITL Approvals. |
+| **Interfaces** | `agentv_runtime/interfaces.py` | 6 Public Extension Families (`ExecutionBackend`, `CheckpointStore`, `SigningBackend`, `ArtifactStore`, `PolicyEvaluator`, `AuthorizationBackend`). |
 | **Debugging** | `explainer.py`, `triage.py` | Automated root cause isolation and step-by-step trace analysis. |
 | **Reporting** | `reporting_plugin.py` | Generates Premium HTML reports and behavioral DNA heatmaps. |
-| **Trust** | `verifier.py`, `auth_manager.py`, `otel_bridge.py` | Cryptographic signatures (ED25519), PBAC security nodes, and OpenTelemetry mappings. |
+| **Trust** | `verifier.py`, `auth_manager.py`, `otel_bridge.py` | Cryptographic signatures (ED25519), SHA3-256 fingerprinting, PBAC security nodes, and OpenTelemetry mappings. |
 | **CI/CD** | `drift_importer.py` | "Semantic Bridge": Convert production traces to evaluation rigor. |
 | **Control** | `cli.py`, `console/` | Industrial control surface and Visual Debugger backend. |
 

@@ -39,7 +39,7 @@ tests/
 
 ### 2. Integration Tests
 - **Purpose**: Test interactions between multiple components
-- **Location**: `tests/test_*.py` files (integration test functions)
+- **Location**: `tests/integration/` files (integration test functions)
 - **Scope**: Multiple modules working together
 - **Examples**:
   - End-to-end scenario evaluation
@@ -48,7 +48,7 @@ tests/
 
 ### 3. Environment Health Tests
 - **Purpose**: Ensure the local environment and agent are ready
-- **Location**: `tests/test_doctor.py`
+- **Location**: `tests/unit/core/test_core_cli_doctor.py`
 - **Scope**: Python versions, deps, and connectivity
 - **Examples**:
   - Validating scenario structure

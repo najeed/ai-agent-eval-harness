@@ -28,7 +28,7 @@ This guide provides a step-by-step process for adding a new industry to AgentV.
 
 Realistic environments require data. If your scenarios require data (e.g., a CSV of customer transactions), you should link them via the `dataset` attribute.
 
-Place your industry-specific database or transaction CSV/JSON files directly inside your industry's `datasets/` directory (e.g. `industries/YOUR_INDUSTRY/datasets/records.csv`), and reference them in your scenario metadata.
+Place your industry-specific database or transaction CSV/JSON files directly inside your industry's `datasets/` directory (e.g. `industries/<your_industry>/datasets/records.csv`), and reference them in your scenario metadata.
 
 ### Validation
 

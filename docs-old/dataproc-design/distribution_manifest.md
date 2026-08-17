@@ -9,8 +9,8 @@ This manifest defines the distribution policy for the 16-sector dataset fleet. T
 
 | Sector | Dataset Label | License | File Path |
 | :--- | :--- | :--- | :--- |
-| **Finance** | SEC Fundamentals | Public Domain | `industries/finance/datasets/synthetic_parity.jsonl` |
-| **Demogs** | Population Trends | CC BY 4.0 | `industries/demographics/datasets/synthetic_parity.jsonl` |
+| **Finance** | SEC Fundamentals | Public Domain | `industries/finance/datasets/` |
+| **Demogs** | Population Trends | CC BY 4.0 | `industries/demographics/datasets/` |
 | **Housing** | HUD Rental Trends | Public Domain¹ | `industries/housing/datasets/housing_kb.jsonl` |
 | **Enviro** | NOAA Climatology | Public Domain | `industries/environment/datasets/noaa_climatology.jsonl` |
 | **Enviro** | Copernicus Climate | CC BY 4.0² | `industries/environment/datasets/copernicus_climate.jsonl` |

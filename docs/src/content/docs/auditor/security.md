@@ -121,3 +121,19 @@ Credentials are extracted using a decoupled, case-insensitive helper which suppo
 - `apiKey` URL query parameters.
 
 For custom authentication mappings, plugins can subclass `AuthManager` using the [Plugin System](/extender/plugins/).
+
+---
+
+## 🏛️ SOC 2 Type 1 Trust Services Criteria (TSC) Mapping
+
+AgentV incorporates continuous governance controls directly aligned with AICPA SOC 2 Type 1 Trust Services Criteria:
+
+| SOC 2 TSC Category | Control Identifier | AgentV Architectural Control | Verification Artifact |
+| :--- | :--- | :--- | :--- |
+| **Common Criteria 6.1 (Logical Access)** | `CC6.1.1` | Granular PBAC/RBAC validation via `AuthorizationBackend` and `AuthPrincipal`. | Route-level permission gates (`@require_permission`). |
+| **Common Criteria 6.3 (Least Privilege)** | `CC6.3.2` | Workspace isolation, terminal jail sandboxing, and non-root execution boundaries. | `is_path_safe` path safety enforcement. |
+| **Common Criteria 6.6 (Boundary Protection)** | `CC6.6.1` | SSRF IP blocklists, cloud metadata (IMDSv2) access neutralization, and local subnet isolation. | Network security tests in `tests/security/`. |
+| **Common Criteria 6.7 (Data Transmission & Signing)** | `CC6.7.3` | Asymmetric Ed25519 trace signing with SHA3-256 digests and Fail-Closed Cryptography. | Verifiable Credentials (VC v3.0.0) generated via `TraceVerifier`. |
+| **Common Criteria 7.2 (Security Monitoring)** | `CC7.2.1` | Real-time audit logging via `FlightRecorder` with SHA3-256 fingerprinting and telemetry event bus. | Immutable `run.jsonl` trace vaults. |
+| **Common Criteria 8.1 (Change & Config Management)** | `CC8.1.1` | Schema-validated `ResolvedRuntimeConfig` model with deterministic `config_hash`. | Sealed configuration snapshots per evaluation run. |
+

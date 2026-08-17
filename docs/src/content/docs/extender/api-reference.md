@@ -64,7 +64,7 @@ Saves or updates a scenario JSON file in the `industries/` directory.
 Triggers an asynchronous evaluation run using the industrial namespace.
 - **Method**: `POST`
 - **Body**:
-    - `path` (string, **required**): Scenario ID alias (e.g., `loan_risk`) OR a project-relative path (e.g., `industries/fin/scenarios/loan.json`).
+    - `path` (string, **required**): Scenario ID alias (e.g., `loan_risk`) OR a project-relative path (e.g., `industries/finance/scenarios/loan_approval_risk_check.json`).
     - *Note*: `path` acts as an alias. It first resolves against the **Scenario ID** in the catalog index. If no match is found, it expects a project-relative path. Use `agentv list` to verify IDs.
     - `max_turns` (int, optional): Maximum conversation depth (Default: 10).
 - **Response**: `{"status": "started", "run_id": "eval_20240412_..."}`
@@ -165,3 +165,44 @@ score = metric_func(expected_list, actual_list)
 
 ### `loader.load_scenario`
 Authoritative scenario loader supporting local files and **Benchmark URIs** (`gaia://`, `assistantbench://`).
+
+---
+
+## 🏛️ Public Runtime Extension Interface (`agentv_runtime`)
+
+The `agentv_runtime.interfaces` package exposes the authoritative abstract base classes for enterprise and third-party orchestration integration:
+
+```python
+from agentv_runtime.interfaces import (
+    ExecutionBackend,
+    CheckpointStore,
+    SigningBackend,
+    ArtifactStore,
+    PolicyEvaluator,
+    PolicyEvaluationResult,
+    AuthorizationBackend,
+    AuthPrincipal,
+)
+```
+
+See the [Public Extension Families Guide](/extender/extension-families/) for implementation specifications and reference backends.
+
+---
+
+## ⚙️ Configuration Resolution (`ConfigResolver`)
+
+AgentV resolves execution configuration across a deterministic 4-tier hierarchy:
+1. **OSS Baseline Defaults**: Default directories and execution profiles.
+2. **Configuration Files**: `.aes/config/*.d`, `config.json`, or YAML profiles.
+3. **Environment Overrides**: Variables prefixed with `AGENTV_` / `AEH_`.
+4. **Explicit Runtime Overrides**: Parameters supplied programmatically to `ConfigResolver.resolve()`.
+
+```python
+from eval_runner.config_resolver import ConfigResolver, ResolvedRuntimeConfig
+
+resolved_cfg: ResolvedRuntimeConfig = ConfigResolver.resolve(
+    explicit_overrides={"timeout_seconds": 180, "audit_level": 2}
+)
+print("Config Hash (SHA3-256):", resolved_cfg.config_hash)
+```
+
