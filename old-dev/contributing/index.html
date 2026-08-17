@@ -4111,7 +4111,7 @@
 <li><strong>Execution</strong>: Ensure your scenario runs correctly with <code>agentv evaluate --run-id &lt;id&gt;&lt;your_path&gt;</code>. The harness now supports <strong>Path Decoupling</strong>, allowing you to host and run benchmarks from any directory without repository-internal dependencies.</li>
 </ul>
 <h3 id="2-the-zero-touch-core-philosophy">2. The Zero-Touch Core Philosophy<a class="headerlink" href="#2-the-zero-touch-core-philosophy" title="Permanent link">&para;</a></h3>
-<p>We strictly adhere to a <strong>Zero-Touch Core</strong> architectural mandate. Pull Requests that modify the core orchestration (<code>eval_runner/runner.py</code>, <code>eval_runner/metrics.py</code>) to handle edge cases or custom platforms will generally be rejected.
+<p>We strictly adhere to a <strong>Zero-Touch Core</strong> architectural mandate. Pull Requests that modify the core orchestration (<code>eval_runner/runner.py</code>, <code>eval_runner/metrics/core.py</code>) to handle edge cases or custom platforms will generally be rejected.
 - <strong>Decoupling</strong>: Keep orchestration (Runner), state (Session), and observation (EventEmitter) separated.
 - <strong>Extensibility</strong>: All custom business logic, LLM providers, and bespoke metrics MUST be implemented as a plugin.
 - <strong>Immutability</strong>: <code>TurnContext</code> and <code>EvaluationContext</code> are frozen data structures. Use <code>dataclasses.replace()</code> for updates rather than mutating state directly.

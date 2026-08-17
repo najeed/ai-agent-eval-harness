@@ -4091,13 +4091,18 @@
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Discovery</strong></td>
-<td style="text-align: left;"><code>catalog.py</code>, <code>config.py</code></td>
-<td style="text-align: left;">Unified Registry and high-performance scenario indexing.</td>
+<td style="text-align: left;"><code>catalog.py</code>, <code>config_resolver.py</code></td>
+<td style="text-align: left;">Unified Registry, 4-tier ConfigResolver, and high-performance scenario indexing.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Execution</strong></td>
-<td style="text-align: left;"><code>runner.py</code>, <code>session.py</code></td>
-<td style="text-align: left;">Orchestrates the eval loop with pass@k and multi-agent support.</td>
+<td style="text-align: left;"><code>runner.py</code>, <code>session.py</code>, <code>session_components/</code></td>
+<td style="text-align: left;">Orchestrates the eval loop with decomposed TurnState, ToolExecution, Checkpoints, and HITL Approvals.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Interfaces</strong></td>
+<td style="text-align: left;"><code>agentv_runtime/interfaces.py</code></td>
+<td style="text-align: left;">6 Public Extension Families (<code>ExecutionBackend</code>, <code>CheckpointStore</code>, <code>SigningBackend</code>, <code>ArtifactStore</code>, <code>PolicyEvaluator</code>, <code>AuthorizationBackend</code>).</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Debugging</strong></td>
@@ -4112,7 +4117,7 @@
 <tr>
 <td style="text-align: left;"><strong>Trust</strong></td>
 <td style="text-align: left;"><code>verifier.py</code>, <code>auth_manager.py</code>, <code>otel_bridge.py</code></td>
-<td style="text-align: left;">Cryptographic signatures (ED25519), PBAC security nodes, and OpenTelemetry mappings.</td>
+<td style="text-align: left;">Cryptographic signatures (ED25519), SHA3-256 fingerprinting, PBAC security nodes, and OpenTelemetry mappings.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>CI/CD</strong></td>
