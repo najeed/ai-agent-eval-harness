@@ -18,7 +18,7 @@ if not hasattr(asyncio, "_original_iscoroutinefunction"):
 from .config import VERSION as __version__  # noqa: F401
 
 # Subsystem Contract Versioning
-__runtime_api_version__ = "1.9"
+__runtime_api_version__ = "2.0"
 __plugin_api_version__ = "1.0"
 __config_schema_version__ = "1.0"
 __aes_schema_version__ = "1.4"

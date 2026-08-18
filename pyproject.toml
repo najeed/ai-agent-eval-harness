@@ -1,6 +1,6 @@
 [project]
 name = "agentv"
-version = "1.9.0-rc1"
+version = "2.0.0"
 description = "The Enterprise-Grade Reliability Framework for AI Agents"
 readme = "README.md"
 authors = [
@@ -23,7 +23,7 @@ dependencies = [
     "Werkzeug==3.1.8",
     "jsonschema==4.26.0",
     "PyYAML==6.0.3",
-    "sentence-transformers==5.7.0",
+    "sentence-transformers==6.0.0",
     "numpy==2.5.2",
     "datasets==5.0.1",
     "PyJWT==2.13.0",
@@ -39,12 +39,12 @@ dependencies = [
     "sqlalchemy==2.0.52",
     "python-dotenv==1.2.3",
     "Authlib==1.7.2",
-    "langchain-openai==1.5.1",
+    "langchain-openai==1.5.2",
     "langsmith==0.11.0",
     "lxml==6.1.1",
     "Pillow==12.3.0",
     "cyclecore-pq==0.3.0",
-    "idna==3.18",
+    "idna==3.19",
     "weasyprint>=69.0",
     "reportlab>=5.0.0",
 ]
@@ -54,7 +54,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["eval_runner", "dataproc_engine", "industries"]
+packages = ["eval_runner", "dataproc_engine", "industries", "agentv_runtime"]
 
 [tool.setuptools.package-data]
 "*" = ["*.json", "*.jsonl", "*.csv", "*.md", "*.yaml", "*.yml"]

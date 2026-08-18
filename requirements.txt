@@ -18,7 +18,7 @@ PyYAML==6.0.3
 sqlalchemy==2.0.52
 
 # --- ML / Embeddings (optional, for benchmark loaders) ---
-sentence-transformers==5.7.0
+sentence-transformers==6.0.0
 numpy==2.5.2
 datasets==5.0.1
 
@@ -45,8 +45,8 @@ python-dotenv==1.2.3
 # --- Security Patches ---
 urllib3==2.7.0
 Authlib==1.7.2
-langchain-openai==1.5.1
+langchain-openai==1.5.2
 langsmith==0.11.0
 lxml==6.1.1
 Pillow==12.3.0
-idna==3.18
+idna==3.19

@@ -1,6 +1,6 @@
 ---
 title: Plugin Development Guide
-description: Build industrial-grade extensions for the zero-touch AgentV core.
+description: Build industrial-grade extensions for the zero-touch AgentV OS Runtime.
 ---
 
 AgentV is built on a strict **Zero-Touch Core** philosophy. All custom business logic, API integrations, and industry-specific CLI commands are injected via the modular Plugin System.

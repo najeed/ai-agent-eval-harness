@@ -7,7 +7,7 @@ To provide granular diagnostic analysis, every scenario in AgentV is tagged with
 
 ## 📊 High-Level Taxonomy
 
-The AgentV core supports 1,800+ function identifiers across the following major sectors:
+The AgentV library supports 1,800+ function identifiers across the following major sectors:
 
 | Sector | Primary Focus | Key Use Cases |
 | :--- | :--- | :--- |

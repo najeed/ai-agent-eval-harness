@@ -14,7 +14,7 @@ Each subsystem contract publishes an independent version attribute to guarantee 
 ```python
 import eval_runner
 
-assert eval_runner.__runtime_api_version__ == "1.9"
+assert eval_runner.__runtime_api_version__ == "2.0"
 assert eval_runner.__plugin_api_version__ == "1.0"
 assert eval_runner.__config_schema_version__ == "1.0"
 assert eval_runner.__aes_schema_version__ == "1.4"

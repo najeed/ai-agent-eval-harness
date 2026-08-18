@@ -18,8 +18,8 @@ def test_agentv_runtime_metadata_and_exports():
     import agentv_runtime.reference
     import agentv_runtime.session_components
 
-    assert agentv_runtime.__version__ == "1.9.0-rc1"
-    assert agentv_runtime.__runtime_api_version__ == "1.9"
+    assert agentv_runtime.__version__ == "2.0.0"
+    assert agentv_runtime.__runtime_api_version__ == "2.0"
     assert agentv_runtime.__plugin_api_version__ == "1.0"
     assert agentv_runtime.__config_schema_version__ == "1.0"
     assert agentv_runtime.__aes_schema_version__ == "1.4"

@@ -80,7 +80,7 @@ class BaseJailProvider(ABC):
 
 ### Swapping Jail Providers
 
-By default, AgentV Core uses the lightweight `SubprocessJailProvider`. Enterprise extensions can swap this for containerized layers (e.g. Docker or gVisor):
+By default, AgentV OS Runtime uses the lightweight `SubprocessJailProvider`. Enterprise extensions can swap this for containerized layers (e.g. Docker or gVisor):
 
 ```python
 from eval_runner.simulators import TerminalSimulator

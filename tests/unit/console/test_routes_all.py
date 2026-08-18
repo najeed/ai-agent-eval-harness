@@ -13,12 +13,13 @@ from eval_runner.utils import rmtree_resilient
 
 
 @pytest.fixture(scope="module")
-def console_jail():
+def console_jail(request):
     """
     Creates a dedicated, isolated jail for console route testing.
     This fixture avoids global os.environ pollution.
     """
-    tmp_root = Path(tempfile.gettempdir()) / "aes_console_test_jail"
+    worker_id = getattr(request.config, "workerinput", {}).get("workerid", "master")
+    tmp_root = Path(tempfile.gettempdir()) / f"aes_console_test_jail_{worker_id}"
     root = tmp_root / "root"
     runs = root / "runs"
     docs = root / "docs-old"

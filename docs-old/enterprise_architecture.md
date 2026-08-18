@@ -192,7 +192,7 @@ AgentV sits as the dedicated verification control plane, divided into three fund
 - **Role**: Automated building, testing, packaging, and deploying of agent software.
 - **AgentV Integration**: AgentV acts as the **Hard Quality Gate** in the deployment pipeline. A zero-touch CLI call (`agentv run`) executes regression test suites against the global scenario corpus. If an agent fails safety or behavioral thresholds, AgentV returns non-zero exit codes to halt automated canary or production deployments.
 
-## 4. Deep Dive: AgentV Core Primitives & Mathematical Evaluation Model
+## 4. Deep Dive: AgentV OS Runtime Primitives & Mathematical Evaluation Model
 
 ### 4.1. Environmental DNA (Capture)
 To establish cryptographic provenance, AgentV records the full multi-turn trajectory of an agent into a cryptographically sealed `run_manifest.json` (Verification Certificate v3) structure.

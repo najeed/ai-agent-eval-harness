@@ -15,8 +15,9 @@ from eval_runner.utils import rmtree_resilient
 
 
 @pytest.fixture(scope="module")
-def console_jail():
-    tmp_root = Path(tempfile.gettempdir()) / "aes_console_trust_jail"
+def console_jail(request):
+    worker_id = getattr(request.config, "workerinput", {}).get("workerid", "master")
+    tmp_root = Path(tempfile.gettempdir()) / f"aes_console_trust_jail_{worker_id}"
     root = tmp_root / "root"
     runs = root / "runs"
 
