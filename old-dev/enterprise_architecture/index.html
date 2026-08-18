@@ -3899,15 +3899,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-deep-dive-agentv-core-primitives-mathematical-evaluation-model" class="md-nav__link">
+  <a href="#4-deep-dive-agentv-os-runtime-primitives-mathematical-evaluation-model" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Deep Dive: AgentV Core Primitives &amp; Mathematical Evaluation Model
+        4. Deep Dive: AgentV OS Runtime Primitives &amp; Mathematical Evaluation Model
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="4. Deep Dive: AgentV Core Primitives &amp; Mathematical Evaluation Model">
+    <nav class="md-nav" aria-label="4. Deep Dive: AgentV OS Runtime Primitives &amp; Mathematical Evaluation Model">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4212,7 +4212,7 @@
 <li><strong>Role</strong>: Automated building, testing, packaging, and deploying of agent software.</li>
 <li><strong>AgentV Integration</strong>: AgentV acts as the <strong>Hard Quality Gate</strong> in the deployment pipeline. A zero-touch CLI call (<code>agentv run</code>) executes regression test suites against the global scenario corpus. If an agent fails safety or behavioral thresholds, AgentV returns non-zero exit codes to halt automated canary or production deployments.</li>
 </ul>
-<h2 id="4-deep-dive-agentv-core-primitives-mathematical-evaluation-model">4. Deep Dive: AgentV Core Primitives &amp; Mathematical Evaluation Model<a class="headerlink" href="#4-deep-dive-agentv-core-primitives-mathematical-evaluation-model" title="Permanent link">&para;</a></h2>
+<h2 id="4-deep-dive-agentv-os-runtime-primitives-mathematical-evaluation-model">4. Deep Dive: AgentV OS Runtime Primitives &amp; Mathematical Evaluation Model<a class="headerlink" href="#4-deep-dive-agentv-os-runtime-primitives-mathematical-evaluation-model" title="Permanent link">&para;</a></h2>
 <h3 id="41-environmental-dna-capture">4.1. Environmental DNA (Capture)<a class="headerlink" href="#41-environmental-dna-capture" title="Permanent link">&para;</a></h3>
 <p>To establish cryptographic provenance, AgentV records the full multi-turn trajectory of an agent into a cryptographically sealed <code>run_manifest.json</code> (Verification Certificate v3) structure.</p>
 <p>Every execution manifest undergoes a dual-layer cryptographic signature generation using local Ed25519 and remote ML-DSA-65 (FIPS 204 PQC) keys:
