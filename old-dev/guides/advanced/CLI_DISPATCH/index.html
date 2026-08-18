@@ -4018,8 +4018,8 @@
 <h2 id="2-dynamic-command-injection">2. Dynamic Command Injection<a class="headerlink" href="#2-dynamic-command-injection" title="Permanent link">&para;</a></h2>
 <p>Plugins hook into the dispatch lifecycle via the <code>on_register_commands</code> hook.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">on_register_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">registry</span><span class="p">):</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="c1"># This command is automatically registered as &#39;agentv plugin &lt;name&gt; scan&#39;</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">registry</span><span class="o">.</span><span class="n">register_command</span><span class="p">(</span><span class="s2">&quot;scan&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_scan</span><span class="p">)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="c1"># This command is automatically registered as 'agentv plugin &lt;name&gt; scan'</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">registry</span><span class="o">.</span><span class="n">register_command</span><span class="p">(</span><span class="s2">"scan"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_scan</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="handler-protocol">Handler Protocol<a class="headerlink" href="#handler-protocol" title="Permanent link">&para;</a></h3>
 <p>Handlers receive the parsed <code>args</code> namespace and are responsible for execution. The <code>RoutingRegistry</code> provides built-in error handling for common dispatch failures (e.g., missing dependencies).</p>

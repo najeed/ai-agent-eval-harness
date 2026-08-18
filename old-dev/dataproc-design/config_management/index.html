@@ -4081,8 +4081,8 @@
 <h3 id="local-development-env-support">Local Development: <code>.env</code> Support<a class="headerlink" href="#local-development-env-support" title="Permanent link">&para;</a></h3>
 <p>For local runs, the engine will automatically load keys from a <code>.env</code> file in the project root:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># .env file</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">SEC_USER_AGENT</span><span class="o">=</span><span class="s2">&quot;YourName (your.email@example.com)&quot;</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nv">FRED_API_KEY</span><span class="o">=</span><span class="s2">&quot;your_alphanumeric_key_here&quot;</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">SEC_USER_AGENT</span><span class="o">=</span><span class="s2">"YourName (your.email@example.com)"</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nv">FRED_API_KEY</span><span class="o">=</span><span class="s2">"your_alphanumeric_key_here"</span>
 </code></pre></div></p>
 <h2 id="2-hierarchical-configuration">2. Hierarchical Configuration<a class="headerlink" href="#2-hierarchical-configuration" title="Permanent link">&para;</a></h2>
 <p>The <code>DatasetEngine</code> loads a base configuration (e.g., <code>config.yaml</code>) and merges it with industry-specific overrides.</p>
@@ -4100,8 +4100,8 @@
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>        <span class="c1"># Secrets are injected from ENV or .env by the Orchestrator</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fred_api_key&quot;</span><span class="p">)</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">user_agent</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sec_user_agent&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"fred_api_key"</span><span class="p">)</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">user_agent</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"sec_user_agent"</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="4-security-auditing">4. Security Auditing<a class="headerlink" href="#4-security-auditing" title="Permanent link">&para;</a></h2>
 <ul>

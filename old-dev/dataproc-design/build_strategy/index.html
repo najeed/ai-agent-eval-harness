@@ -4068,7 +4068,7 @@ This registers the <code>dataproc-cli</code> in the user's environment and allow
 <p>Add <code>dataproc-engine</code> as an optional dependency (extra) in the root <code>pyproject.toml</code>:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">[project.optional-dependencies]</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">dataproc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="s2">&quot;dataproc-engine @ file://./dataproc_engine&quot;</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="s2">"dataproc-engine @ file://./dataproc_engine"</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="p">]</span>
 </code></pre></div>
 Then the user can run <code>pip install -e ".[dataproc]"</code> to install everything.</p>

@@ -4619,7 +4619,7 @@
 <h3 id="1-generating-a-secure-key">🔐 1. Generating a Secure Key<a class="headerlink" href="#1-generating-a-secure-key" title="Permanent link">&para;</a></h3>
 <p>For production or sensitive environments, you should use a cryptographically strong, random string. You can generate one using <strong>OpenSSL</strong> or <strong>Python</strong> (no install required):</p>
 <p><strong>Using Python (Native &amp; Cross-Platform):</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import secrets; print(secrets.token_hex(32))&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"import secrets; print(secrets.token_hex(32))"</span>
 </code></pre></div></p>
 <p><strong>Using OpenSSL:</strong>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>openssl<span class="w"> </span>rand<span class="w"> </span>-hex<span class="w"> </span><span class="m">32</span>
@@ -4635,19 +4635,19 @@
 </code></pre></div>
 <h4 id="option-b-exporting-environment-variables">Option B: Exporting Environment Variables<a class="headerlink" href="#option-b-exporting-environment-variables" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Windows (PowerShell)</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nv">$env</span>:DASHBOARD_API_KEY<span class="o">=</span><span class="s2">&quot;your_secure_random_key_here&quot;</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nv">$env</span>:DASHBOARD_API_KEY<span class="o">=</span><span class="s2">"your_secure_random_key_here"</span>
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># macOS / Linux</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">DASHBOARD_API_KEY</span><span class="o">=</span><span class="s2">&quot;your_secure_random_key_here&quot;</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">DASHBOARD_API_KEY</span><span class="o">=</span><span class="s2">"your_secure_random_key_here"</span>
 </code></pre></div>
 <hr />
 <h3 id="3-passing-the-key-in-api-requests">📡 3. Passing the Key in API Requests<a class="headerlink" href="#3-passing-the-key-in-api-requests" title="Permanent link">&para;</a></h3>
 <p>All protected routes in the <code>/api/</code> namespace (e.g., <code>/api/evaluate</code>, <code>/api/scenarios</code>, <code>/api/debugger/state</code>) require the key to be passed in the <code>X-AES-API-KEY</code> header.</p>
 <p><strong>Example: Triggering an Evaluation via <code>curl</code></strong></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:5000/api/evaluate<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">     </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">     </span>-H<span class="w"> </span><span class="s2">&quot;X-AES-API-KEY: your_secure_random_key_here&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">     </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;path&quot;: &quot;industries/telecom/scenarios/connectivity_issue.json&quot;}&#39;</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">     </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">     </span>-H<span class="w"> </span><span class="s2">"X-AES-API-KEY: your_secure_random_key_here"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">     </span>-d<span class="w"> </span><span class="s1">'{"path": "industries/telecom/scenarios/connectivity_issue.json"}'</span>
 </code></pre></div>
 <blockquote>
 <p>[!IMPORTANT]

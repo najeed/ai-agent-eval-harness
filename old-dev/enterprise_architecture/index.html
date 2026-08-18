@@ -4080,68 +4080,68 @@
 <h2 id="2-comprehensive-enterprise-infrastructure-stack-diagram">2. Comprehensive Enterprise Infrastructure Stack Diagram<a class="headerlink" href="#2-comprehensive-enterprise-infrastructure-stack-diagram" title="Permanent link">&para;</a></h2>
 <p>The following Mermaid diagram provides a high-level view of the entire enterprise agentic stack, highlighting AgentV's interactions with adjacent components across the control, execution, data, and security planes.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>graph TD
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    subgraph Enterprise_Clients[&quot;1. Enterprise Consumer &amp; Trigger Layer&quot;]
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>        API_GW[&quot;API Gateway / Mesh\n(Kong, Envoy, Apigee)&quot;]
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>        UI_App[&quot;Enterprise Portals &amp; CRMs\n(Salesforce, Custom Web UI)&quot;]
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>        Event_Bus[&quot;Event Brokers\n(Kafka, RabbitMQ)&quot;]
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    subgraph Enterprise_Clients["1. Enterprise Consumer &amp; Trigger Layer"]
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>        API_GW["API Gateway / Mesh\n(Kong, Envoy, Apigee)"]
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>        UI_App["Enterprise Portals &amp; CRMs\n(Salesforce, Custom Web UI)"]
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>        Event_Bus["Event Brokers\n(Kafka, RabbitMQ)"]
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    end
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    subgraph Agent_Frameworks[&quot;2. Agent Execution &amp; Logic Layer&quot;]
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>        LC[&quot;LangGraph / LangChain&quot;]
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>        AG[&quot;AutoGen / CrewAI&quot;]
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>        SK[&quot;Semantic Kernel&quot;]
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>        Custom[&quot;Custom In-House Agents&quot;]
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    subgraph Agent_Frameworks["2. Agent Execution &amp; Logic Layer"]
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>        LC["LangGraph / LangChain"]
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>        AG["AutoGen / CrewAI"]
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>        SK["Semantic Kernel"]
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>        Custom["Custom In-House Agents"]
 <a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    end
 <a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    subgraph AgentV_OS[&quot;3. AgentV Verification OS (Governance &amp; Eval Core)&quot;]
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    subgraph AgentV_OS["3. AgentV Verification OS (Governance &amp; Eval Core)"]
 <a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>        direction TB
 <a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>        subgraph Capture_Module[&quot;Environmental DNA (Capture)&quot;]
-<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>            State_Tracer[&quot;State &amp; Context Tracer&quot;]
-<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>            PII_Pod[&quot;PII Redaction Pod&quot;]
-<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>            Signer[&quot;Hybrid Ed25519 &amp; ML-DSA-65 Signer&quot;]
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>        subgraph Capture_Module["Environmental DNA (Capture)"]
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>            State_Tracer["State &amp; Context Tracer"]
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>            PII_Pod["PII Redaction Pod"]
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>            Signer["Hybrid Ed25519 &amp; ML-DSA-65 Signer"]
 <a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>        end
 <a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>
-<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>        subgraph Verification_Module[&quot;Behavioral DNA (Verify)&quot;]
-<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>            Mutator[&quot;Mutator Engine\n(Edge-case &amp; Attack Injection)&quot;]
-<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>            Corpus[&quot;Global Scenario Corpus\n(5,000+ Scenarios)&quot;]
-<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>            Luna_Judge[&quot;Luna-Judge Engine\n(NIST AI-100-1 WSM)&quot;]
-<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>            Safety_Floor[&quot;Regulatory Safety Floor\n(Score Cap Logic)&quot;]
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>        subgraph Verification_Module["Behavioral DNA (Verify)"]
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>            Mutator["Mutator Engine\n(Edge-case &amp; Attack Injection)"]
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>            Corpus["Global Scenario Corpus\n(5,000+ Scenarios)"]
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>            Luna_Judge["Luna-Judge Engine\n(NIST AI-100-1 WSM)"]
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>            Safety_Floor["Regulatory Safety Floor\n(Score Cap Logic)"]
 <a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>        end
 <a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>
-<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>        subgraph Certify_Module[&quot;Forensic DNA (Certify)&quot;]
-<a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>            VC_Gen[&quot;Verification Certificate (VC v3.0.0)&quot;]
-<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>            WORM[&quot;WORM Audit Vault / Ledger&quot;]
-<a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>            PBAC[&quot;Identity PBAC Engine&quot;]
+<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>        subgraph Certify_Module["Forensic DNA (Certify)"]
+<a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>            VC_Gen["Verification Certificate (VC v3.0.0)"]
+<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>            WORM["WORM Audit Vault / Ledger"]
+<a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>            PBAC["Identity PBAC Engine"]
 <a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>        end
 <a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a>
 <a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a>        Capture_Module --&gt; Verification_Module
 <a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a>        Verification_Module --&gt; Certify_Module
 <a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a>    end
 <a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a>
-<a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a>    subgraph Orchestration[&quot;4. Workflow &amp; State Orchestration Layer&quot;]
-<a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a>        Temporal[&quot;Temporal.io / Prefect&quot;]
-<a id="__codelineno-1-43" name="__codelineno-1-43" href="#__codelineno-1-43"></a>        Airflow[&quot;Apache Airflow / Dagster&quot;]
-<a id="__codelineno-1-44" name="__codelineno-1-44" href="#__codelineno-1-44"></a>        State_Store[&quot;Redis / Postgres State Engine&quot;]
+<a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a>    subgraph Orchestration["4. Workflow &amp; State Orchestration Layer"]
+<a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a>        Temporal["Temporal.io / Prefect"]
+<a id="__codelineno-1-43" name="__codelineno-1-43" href="#__codelineno-1-43"></a>        Airflow["Apache Airflow / Dagster"]
+<a id="__codelineno-1-44" name="__codelineno-1-44" href="#__codelineno-1-44"></a>        State_Store["Redis / Postgres State Engine"]
 <a id="__codelineno-1-45" name="__codelineno-1-45" href="#__codelineno-1-45"></a>    end
 <a id="__codelineno-1-46" name="__codelineno-1-46" href="#__codelineno-1-46"></a>
-<a id="__codelineno-1-47" name="__codelineno-1-47" href="#__codelineno-1-47"></a>    subgraph Model_Providers[&quot;5. Model &amp; Compute Layer&quot;]
-<a id="__codelineno-1-48" name="__codelineno-1-48" href="#__codelineno-1-48"></a>        OAI[&quot;OpenAI (GPT-4o)&quot;]
-<a id="__codelineno-1-49" name="__codelineno-1-49" href="#__codelineno-1-49"></a>        Anthropic[&quot;Anthropic (Claude 3.5 Sonnet)&quot;]
-<a id="__codelineno-1-50" name="__codelineno-1-50" href="#__codelineno-1-50"></a>        Bedrock[&quot;AWS Bedrock / Azure OpenAI&quot;]
-<a id="__codelineno-1-51" name="__codelineno-1-51" href="#__codelineno-1-51"></a>        Local_LLM[&quot;Self-Hosted vLLM / Ollama / TGI&quot;]
+<a id="__codelineno-1-47" name="__codelineno-1-47" href="#__codelineno-1-47"></a>    subgraph Model_Providers["5. Model &amp; Compute Layer"]
+<a id="__codelineno-1-48" name="__codelineno-1-48" href="#__codelineno-1-48"></a>        OAI["OpenAI (GPT-4o)"]
+<a id="__codelineno-1-49" name="__codelineno-1-49" href="#__codelineno-1-49"></a>        Anthropic["Anthropic (Claude 3.5 Sonnet)"]
+<a id="__codelineno-1-50" name="__codelineno-1-50" href="#__codelineno-1-50"></a>        Bedrock["AWS Bedrock / Azure OpenAI"]
+<a id="__codelineno-1-51" name="__codelineno-1-51" href="#__codelineno-1-51"></a>        Local_LLM["Self-Hosted vLLM / Ollama / TGI"]
 <a id="__codelineno-1-52" name="__codelineno-1-52" href="#__codelineno-1-52"></a>    end
 <a id="__codelineno-1-53" name="__codelineno-1-53" href="#__codelineno-1-53"></a>
-<a id="__codelineno-1-54" name="__codelineno-1-54" href="#__codelineno-1-54"></a>    subgraph Governance_DevOps[&quot;6. Release Gating &amp; CI/CD Layer&quot;]
-<a id="__codelineno-1-55" name="__codelineno-1-55" href="#__codelineno-1-55"></a>        GHA[&quot;GitHub Actions / GitLab CI&quot;]
-<a id="__codelineno-1-56" name="__codelineno-1-56" href="#__codelineno-1-56"></a>        Argo[&quot;ArgoCD Deployment Operator&quot;]
-<a id="__codelineno-1-57" name="__codelineno-1-57" href="#__codelineno-1-57"></a>        CLI[&quot;AgentV Zero-Touch CLI&quot;]
+<a id="__codelineno-1-54" name="__codelineno-1-54" href="#__codelineno-1-54"></a>    subgraph Governance_DevOps["6. Release Gating &amp; CI/CD Layer"]
+<a id="__codelineno-1-55" name="__codelineno-1-55" href="#__codelineno-1-55"></a>        GHA["GitHub Actions / GitLab CI"]
+<a id="__codelineno-1-56" name="__codelineno-1-56" href="#__codelineno-1-56"></a>        Argo["ArgoCD Deployment Operator"]
+<a id="__codelineno-1-57" name="__codelineno-1-57" href="#__codelineno-1-57"></a>        CLI["AgentV Zero-Touch CLI"]
 <a id="__codelineno-1-58" name="__codelineno-1-58" href="#__codelineno-1-58"></a>    end
 <a id="__codelineno-1-59" name="__codelineno-1-59" href="#__codelineno-1-59"></a>
-<a id="__codelineno-1-60" name="__codelineno-1-60" href="#__codelineno-1-60"></a>    subgraph Enterprise_Data[&quot;7. Data, Infrastructure &amp; Tooling&quot;]
-<a id="__codelineno-1-61" name="__codelineno-1-61" href="#__codelineno-1-61"></a>        DB[&quot;Enterprise Databases / Vector DBs&quot;]
-<a id="__codelineno-1-62" name="__codelineno-1-62" href="#__codelineno-1-62"></a>        Infra[&quot;Kubernetes / Cloud APIs&quot;]
-<a id="__codelineno-1-63" name="__codelineno-1-63" href="#__codelineno-1-63"></a>        ThirdParty[&quot;SaaS / REST APIs&quot;]
+<a id="__codelineno-1-60" name="__codelineno-1-60" href="#__codelineno-1-60"></a>    subgraph Enterprise_Data["7. Data, Infrastructure &amp; Tooling"]
+<a id="__codelineno-1-61" name="__codelineno-1-61" href="#__codelineno-1-61"></a>        DB["Enterprise Databases / Vector DBs"]
+<a id="__codelineno-1-62" name="__codelineno-1-62" href="#__codelineno-1-62"></a>        Infra["Kubernetes / Cloud APIs"]
+<a id="__codelineno-1-63" name="__codelineno-1-63" href="#__codelineno-1-63"></a>        ThirdParty["SaaS / REST APIs"]
 <a id="__codelineno-1-64" name="__codelineno-1-64" href="#__codelineno-1-64"></a>    end
 <a id="__codelineno-1-65" name="__codelineno-1-65" href="#__codelineno-1-65"></a>
 <a id="__codelineno-1-66" name="__codelineno-1-66" href="#__codelineno-1-66"></a>    %% Interactions &amp; Data Flow

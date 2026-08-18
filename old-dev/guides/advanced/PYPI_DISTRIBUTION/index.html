@@ -4089,8 +4089,8 @@
 <h2 id="step-1-prepare-the-package">Step 1: Prepare the Package<a class="headerlink" href="#step-1-prepare-the-package" title="Permanent link">&para;</a></h2>
 <p>Ensure the <code>version</code> in <code>pyproject.toml</code> is correct for your new release.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">[project]</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;agentv&quot;</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;1.5.0&quot;</span><span class="w"> </span><span class="c1"># Update this</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"agentv"</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"1.5.0"</span><span class="w"> </span><span class="c1"># Update this</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="p">...</span>
 </code></pre></div>
 <p>Run the following command in the project root to ensure a clean build:</p>
@@ -4132,12 +4132,12 @@
 <h3 id="option-a-environment-variables-recommended-for-ci">Option A: Environment Variables (Recommended for CI)<a class="headerlink" href="#option-a-environment-variables-recommended-for-ci" title="Permanent link">&para;</a></h3>
 <p>Twine automatically looks for these variables:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Windows (PowerShell)</span>
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="nv">$env</span>:TWINE_USERNAME<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;__token__&quot;</span>
-<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="nv">$env</span>:TWINE_PASSWORD<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;pypi-your-token-here&quot;</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="nv">$env</span>:TWINE_USERNAME<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"__token__"</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="nv">$env</span>:TWINE_PASSWORD<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"pypi-your-token-here"</span>
 <a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>
 <a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="c1"># Mac/Linux (Bash/Zsh)</span>
-<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="nb">export</span><span class="w"> </span><span class="nv">TWINE_USERNAME</span><span class="o">=</span><span class="s2">&quot;__token__&quot;</span>
-<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="nb">export</span><span class="w"> </span><span class="nv">TWINE_PASSWORD</span><span class="o">=</span><span class="s2">&quot;pypi-your-token-here&quot;</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="nb">export</span><span class="w"> </span><span class="nv">TWINE_USERNAME</span><span class="o">=</span><span class="s2">"__token__"</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="nb">export</span><span class="w"> </span><span class="nv">TWINE_PASSWORD</span><span class="o">=</span><span class="s2">"pypi-your-token-here"</span>
 </code></pre></div></p>
 <h3 id="option-b-the-pypirc-file">Option B: The <code>.pypirc</code> File<a class="headerlink" href="#option-b-the-pypirc-file" title="Permanent link">&para;</a></h3>
 <p>Create a file at <code>%USERPROFILE%\.pypirc</code> (Windows) or <code>~/.pypirc</code> (Mac/Linux):</p>
