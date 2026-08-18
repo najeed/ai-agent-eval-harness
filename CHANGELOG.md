@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-08-19
+
+### Added
+* **Formal SemVer Commitment**: Established strict Semantic Versioning 2.0.0 guarantees across the public contracts surface area. Breaking changes to any public contract boundary require a MAJOR version bump and a minimum 1-minor-version deprecation notice.
+* **Industrial Contract Test Suite (`tests/contracts/`)**: Implemented 38 automated, zero-regression contract tests verifying core architectural guarantees:
+  * `test_aes_schema_contract.py`: AES v1.4 scenario structure, mandatory metadata invariants, node arrays, and schema version pinning.
+  * `test_config_hash_contract.py`: Deterministic SHA3-256 `config_hash` computation, mutation collision resistance, and `ConfigResolver` 4-tier precedence hierarchy.
+  * `test_execution_lifecycle_contract.py`: `ExecutionBackend` 4-method execution lifecycle contract (`submit`, `status`, `cancel`, `resume`) and signature stability.
+  * `test_plugin_discovery_contract.py`: `BaseEvalPlugin` 7 lifecycle hooks, persistent registry serialization, and namespace stability for `agentv_runtime.interfaces` & `agentv_runtime.reference`.
+  * `test_verification_contract.py`: Verification Certificate (VC v3.0.0) schema, NIST AI-100-1 7-Dimension Weighted Severity Model (WSM) scoring weights, SOC 2 CC6.6 safety floors, and SHA3-256 trace signing.
+* **SemVer Compatibility Policy**: Published authoritative SemVer 2.0.0 policy documentation in `docs/src/content/docs/auditor/semver-policy.md`.
+* **Package Integration (`agentv_runtime`)**: Added `agentv_runtime` to `tool.setuptools.packages` in `pyproject.toml` for standard distribution and third-party plugin integration.
+
+### Changed
+* **GA Version Bump**: Promoted AgentV OS Runtime to `v2.0.0` GA across `pyproject.toml`, `agentv_runtime/__init__.py`, and test suites.
+
+### Fixed
+* **Console Test Fixture Isolation**: Hardened `console_jail` fixtures across all console route test modules (`test_routes_all.py`, `test_console_routes_system_scenarios.py`, `test_console_routes_trust.py`) with per-worker isolated directories (`aes_console_test_jail_{worker_id}`), resolving race conditions during parallel `pytest -n auto` execution.
+
 ## [1.9.0] - 2026-08-17
 
 ### Added

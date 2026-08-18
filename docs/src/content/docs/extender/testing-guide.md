@@ -14,6 +14,8 @@ The repository organizes tests strictly by scope and target module to avoid spra
 ```text
 tests/
 ├── conftest.py                 # Global test configuration and cleanup hooks
+├── contracts/                  # Public contract stability and SemVer invariants
+├── golden/                     # Immutable regression verification corpus
 ├── unit/                       # Component-level isolated tests
 │   ├── core/                   # Sandbox, loader, and engine unit tests
 │   └── console/                # API and system route verification
@@ -21,6 +23,7 @@ tests/
 ├── functional/                 # Specific capability and boundary tests
 ├── security/                   # Jailbreaks, path traversals, and PBAC policies
 ├── adapters/                   # LLM/framework adapter verification
+├── property/                   # Hypothesis property-based fuzzing and invariant testing
 └── ui/                         # Console and Streamlit dashboard testing
 ```
 
@@ -28,16 +31,35 @@ tests/
 
 ## 🧪 Test Categories
 
-### 1. Unit Tests
-*   **Focus**: Isolation of individual components (e.g., metric calculations, signal normalization, taxonomy classification).
-*   **Speed**: Must be extremely fast (typically < 100ms per test).
-*   **Isolation**: Do not perform file I/O or network calls. Use mocks/fixtures.
+### 1. Contract Tests (`tests/contracts/`)
+*   **Focus**: Public contract invariants that must not break without a SemVer MAJOR version bump.
+*   **Coverage**:
+    *   `test_aes_schema_contract.py`: AES v1.4 scenario schema and required metadata fields.
+    *   `test_config_hash_contract.py`: Deterministic SHA3-256 `config_hash` computation and precedence hierarchy.
+    *   `test_execution_lifecycle_contract.py`: `ExecutionBackend` 4-method lifecycle (`submit`, `status`, `cancel`, `resume`).
+    *   `test_plugin_discovery_contract.py`: `BaseEvalPlugin` 7 lifecycle hooks and `agentv_runtime` namespace stability.
+    *   `test_verification_contract.py`: VC v3.0.0 schema, NIST 7-dimension WSM weights, and safety floor enforcement.
+*   **Command**: `pytest tests/contracts/ -v`
 
-### 2. Integration Tests
+### 2. Golden Verification Corpus (`tests/golden/`)
+*   **Focus**: Immutable regression test suites validating closed defects and zero-regression behavioral baselines.
+*   **Command**: `pytest tests/golden/ -v`
+
+### 3. Unit Tests (`tests/unit/`)
+*   **Focus**: Isolation of individual components (e.g., metric calculations, signal normalization, taxonomy classification).
+*   **Speed**: Fast execution (< 100ms per test).
+*   **Isolation**: Do not perform external network calls. Use mocks/fixtures.
+
+### 4. Integration Tests (`tests/integration/`)
 *   **Focus**: Multi-component workflows (e.g., full evaluation loops, dynamic provider discovery, database pipelines).
 *   **Dependencies**: Rely on mocked HTTP services, temporary files, and local shim environments.
 
-### 3. Compliance Tests (`test_doctor.py`)
+### 5. AST Mutation Testing Sentinel (`tools/ci/run_mutation_tests.py`)
+*   **Focus**: Verifies test suite efficacy by mutating abstract syntax trees in core verification modules (`verifier.py`, `tool_sandbox.py`, `base.py`).
+*   **Threshold**: Enforces a minimum **90% mutation kill rate** (100% achieved).
+*   **Command**: `python tools/ci/run_mutation_tests.py`
+
+### 6. Compliance Tests (`test_doctor.py`)
 *   **Focus**: Active environment verification, virtual file system verification, and AES schema validity.
 *   **Usage**: Triggered by running `agentv doctor`.
 

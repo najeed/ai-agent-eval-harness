@@ -1,5 +1,5 @@
 ---
-title: SemVer Compatibility Policy (§55.1)
+title: SemVer Compatibility Policy
 description: Formal Semantic Versioning 2.0.0 guarantees, public contract boundaries, and deprecation lifecycle for AgentV v2.0.0.
 ---
 

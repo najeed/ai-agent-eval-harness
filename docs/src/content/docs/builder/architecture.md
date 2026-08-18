@@ -57,10 +57,16 @@ The core is a decoupled, event-driven architecture designed for enterprise hot-s
 3. **AgentAdapterRegistry**: Dynamically discovers and registers agent protocols at runtime.
 4. **ToolSandbox**: Managed execution environment with **Environmental DNA** snapshotting. Exposes pluggable `BaseJailProvider` sandboxing execution layers and a `SimulatorMiddleware` registry.
 5. **Loader & Catalog**: Supports **Path Decoupling**, enabling scenarios to be loaded via Scenario ID or physical path.
-6. **VerificationService (`verifier.py`)**: Central registry for trace signing and verification, supporting hybrid ML-DSA-65 / ED25519 signing with dynamic interceptor hot-swapping.
-7. **ToolSandboxService (`tool_sandbox.py`)**: Context-isolated registry for intercepting, auditing, and filtering tool execution requests.
-8. **MutationService (`mutator.py`)**: Orchestrates the chain of scenario mutator interceptors with concurrency safeguards for adversarial variant generation.
-9. **OTel Telemetry Bridge (`otel_bridge.py`)**: standard observer plugin that maps core event signals (`CoreEvents.TOOL_CALL`, `CoreEvents.RUN_START`, `CoreEvents.ERROR`, etc.) to OpenTelemetry spans, enforcing context-bound parent/child trace context propagation.
+6. **ConfigResolver (`config_resolver.py`)**: 4-tier configuration hierarchy (OSS Baseline Defaults $\rightarrow$ Config Files $\rightarrow$ Env Vars $\rightarrow$ Runtime Overrides) generating a sealed `ResolvedRuntimeConfig` with deterministic SHA3-256 `config_hash`.
+7. **Session Subsystems (`eval_runner/session_components/`)**: Modular decomposition of session orchestration into 4 dedicated managers:
+   * **`TurnStateManager`**: Turn sequence increments, token tracking, and conversation history buffer management.
+   * **`ToolExecutionCoordinator`**: Sandboxed tool execution, parameter extraction, and simulator routing.
+   * **`SessionCheckpointManager`**: Durable session state persistence via `CheckpointStore` for mid-run recovery.
+   * **`SessionApprovalManager`**: Human-in-the-loop (HITL) approval requests, cryptographic tokens, and pause/resume coordination.
+8. **VerificationService (`verifier.py`)**: Central registry for trace signing and verification, supporting hybrid ML-DSA-65 / ED25519 signing with dynamic interceptor hot-swapping.
+9. **ToolSandboxService (`tool_sandbox.py`)**: Context-isolated registry for intercepting, auditing, and filtering tool execution requests.
+10. **MutationService (`mutator.py`)**: Orchestrates the chain of scenario mutator interceptors with concurrency safeguards for adversarial variant generation.
+11. **OTel Telemetry Bridge (`otel_bridge.py`)**: Standard observer plugin that maps core event signals (`CoreEvents.TOOL_CALL`, `CoreEvents.RUN_START`, `CoreEvents.ERROR`, etc.) to OpenTelemetry spans, enforcing context-bound parent/child trace context propagation.
 
 ---
 

@@ -48,7 +48,7 @@ graph TD
 | :--- | :--- |
 | **License** | Apache License 2.0 |
 | **Status** | 🟢 Production-Ready (NIST AI-100-1 Aligned) |
-| **Version** | v1.9.0 (August 2026 Release) |
+| **Version** | v2.0.0 (August 2026 Release) |
 | **Trust Model** | [Behavioral DNA & VC v3.0.0](docs-old/architecture.md) |
 | **Architecture** | [Identity-Centric Core](docs-old/architecture.md) |
 | **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.4 Spec](docs-old/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
@@ -156,16 +156,18 @@ The harness is organized into the following key components:
 - **Behavioral DNA Telemetry**: High-granularity event bus (4-level: PHASE, SUBTASK, ACTION, STEP) providing a precise "genetic" map of agent decision-making.
 - **Verification Certificate (VC) v3.0.0**: Traces are signed via the **Identity Registry** (Ed25519) and backed by a **Forensic Evidence Ledger** that hashes sidecar artifacts to ensure end-to-end provenance.
 
-### 🌟 What's New in the August 2026 Release (v1.9.0)
+### 🌟 What's New in the August 2026 GA Release (v2.0.0)
 
-The **v1.9.0 August 2026 Release** establishes the formal neutral architectural seam between the AgentV OS Runtime and the AgentV Control Plane, alongside complete kernel integrity defect remediation (v1.8.0):
+The **v2.0.0 August 2026 GA Release** formalizes strict Semantic Versioning guarantees across the public API surface area, establishes the neutral architectural seam between the AgentV OS Runtime and the AgentV Control Plane, and introduces an industrial automated contract verification suite:
 
+- 🔒 **Formal SemVer 2.0.0 Commitment**: Strict Semantic Versioning guarantee across all public contracts and extension ABCs, backed by a mandatory 1-minor-version deprecation lifecycle and published [SemVer Policy Documentation](docs/src/content/docs/auditor/semver-policy.md).
+- 🧪 **Automated Contract Test Suite (`tests/contracts/`)**: 38 continuous zero-regression contract tests verifying AES v1.4 scenario structures, deterministic SHA3-256 config hashes, 4-method execution lifecycle, plugin discovery hooks, and VC v3.0.0 certificate chains.
 - 🏛️ **Public Extension Families**: Standardized abstract base classes (`abc.ABC`) under `eval_runner.interfaces` and `agentv_runtime.interfaces` for `ExecutionBackend`, `CheckpointStore`, `SigningBackend`, `ArtifactStore`, `PolicyEvaluator`, and `AuthorizationBackend`.
 - ⚙️ **Resolved Runtime Config & ConfigResolver**: Schema-validated runtime configuration model with deterministic SHA3-256 hash digest (`config_hash`) for Processing Integrity evidence, with hierarchical config-mesh resolution (`OSS baseline` $\rightarrow$ `.aes/config/*.json` $\rightarrow$ `env vars` $\rightarrow$ `runtime overrides`).
-- 🧩 **Modular `session.py` Decomposition**: Monolithic session orchestration decomposed into dedicated, independently testable subsystem managers: `TurnStateManager`, `ToolExecutionCoordinator`, `SessionCheckpointManager`, and `SessionApprovalManager`.
-- 📦 **Subsystem Contract Versioning & `agentv_runtime`**: Independent semantic contract versioning (`__runtime_api_version__`, `__plugin_api_version__`, `__config_schema_version__`, `__aes_schema_version__`) and public packaging surface for clean zero-touch enterprise control plane consumption.
+- 🧩 **Modular Subsystem Decomposition**: Monolithic session orchestration decomposed into dedicated, independently testable subsystem managers: `TurnStateManager`, `ToolExecutionCoordinator`, `SessionCheckpointManager`, and `SessionApprovalManager`.
+- 📦 **Package Distribution (`agentv_runtime`)**: Integrated `agentv_runtime` into standard setuptools package distribution for zero-touch downstream consumption.
 - 🛠️ **OSS Reference Implementations**: Shipped production reference backends: `InProcessExecutionBackend`, `SQLiteCheckpointStore`, `LocalFileArtifactStore`, and `BasicFieldPolicyEvaluator`.
-- 🛡️ **12-Point Kernel Integrity & Defect Remediation (v1.8.0)**: Closed all 12 verified security and correctness defects, backed by a 14-test **Golden Verification Corpus** (`tests/golden/`).
+- 🛡️ **12-Point Kernel Integrity & Defect Remediation**: Full kernel integrity verification backed by an immutable 14-test **Golden Verification Corpus** (`tests/golden/`).
 - 🌐 **Dynamic Navigation Manifest & Runtime Module Federation (`/v2`)**: The native visual console ingests `GET /api/nav` manifests and loads standalone ESM plugin bundles on demand with zero build-time recompilation.
 
 ## 📂 The Global Scenario Corpus
