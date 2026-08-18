@@ -4101,8 +4101,8 @@
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Interfaces</strong></td>
-<td style="text-align: left;"><code>agentv_runtime/interfaces.py</code></td>
-<td style="text-align: left;">6 Public Extension Families (<code>ExecutionBackend</code>, <code>CheckpointStore</code>, <code>SigningBackend</code>, <code>ArtifactStore</code>, <code>PolicyEvaluator</code>, <code>AuthorizationBackend</code>).</td>
+<td style="text-align: left;"><code>agentv_runtime/interfaces.py</code>, <code>agentv_runtime/reference.py</code></td>
+<td style="text-align: left;">6 Public Extension Families (<code>ExecutionBackend</code>, <code>CheckpointStore</code>, <code>SigningBackend</code>, <code>ArtifactStore</code>, <code>PolicyEvaluator</code>, <code>AuthorizationBackend</code>) and Phase 1 storage interfaces (<code>CatalogStore</code>, <code>RunStore</code>, <code>LeaderboardStore</code>).</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Debugging</strong></td>
@@ -4117,7 +4117,7 @@
 <tr>
 <td style="text-align: left;"><strong>Trust</strong></td>
 <td style="text-align: left;"><code>verifier.py</code>, <code>auth_manager.py</code>, <code>otel_bridge.py</code></td>
-<td style="text-align: left;">Cryptographic signatures (ED25519), SHA3-256 fingerprinting, PBAC security nodes, and OpenTelemetry mappings.</td>
+<td style="text-align: left;">Cryptographic signatures (ED25519 &amp; PQC ML-DSA-65 with fail-closed enforcement), SHA3-256 fingerprinting, PBAC security nodes, and OpenTelemetry mappings.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>CI/CD</strong></td>

@@ -3805,15 +3805,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-key-management" class="md-nav__link">
+  <a href="#2-key-management-signing-backends" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Key Management
+        2. Key Management &amp; Signing Backends
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. Key Management">
+    <nav class="md-nav" aria-label="2. Key Management &amp; Signing Backends">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -3821,6 +3821,17 @@
     <span class="md-ellipsis">
       
         Identity Registration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fail-closed-execution-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fail-Closed Execution Policy
       
     </span>
   </a>
@@ -3962,9 +3973,11 @@
 <li><strong>Identity Normalization</strong>: Automatic renaming of temporary traces (e.g., <code>tmp_*.jsonl</code>) to the <code>run.jsonl</code> during certification.</li>
 <li><strong>NIST AI-100-1 Scoring</strong>: A multi-dimensional <code>VerificationResult</code> schema incorporating a Weighted Severity Model (WSM).</li>
 <li><strong>Hard Gate</strong>: A CI/CD step (<code>gate</code> command) that fails if signatures, evidence hashes, or agent results are compromised.</li>
+<li><strong>SigningBackend Extension Family</strong>: Decoupled interface (<code>agentv_runtime.interfaces.SigningBackend</code>) with reference implementations <code>LocalEd25519SigningBackend</code>, <code>PQCSigningBackend</code> (ML-DSA-65 / FIPS 204), and <code>NullSigningBackend</code>.</li>
+<li><strong>Fail-Closed Cryptographic Enforcement</strong>: When <code>EVAL_REQUIRE_SIGNING=true</code> or <code>AUDIT_LEVEL &gt;= 2</code>, missing keys or signing backends immediately fail closed (<code>RuntimeError</code>) to prevent silent unauthenticated evaluations.</li>
 </ul>
 <hr />
-<h2 id="2-key-management">2. Key Management<a class="headerlink" href="#2-key-management" title="Permanent link">&para;</a></h2>
+<h2 id="2-key-management-signing-backends">2. Key Management &amp; Signing Backends<a class="headerlink" href="#2-key-management-signing-backends" title="Permanent link">&para;</a></h2>
 <p>The <code>IdentityService</code> manages identities within the <code>TRUST_ROOT</code> (default: <code>.aes/keys</code>).</p>
 <h3 id="identity-registration">Identity Registration<a class="headerlink" href="#identity-registration" title="Permanent link">&para;</a></h3>
 <p>Keys are organized by identity name (e.g., <code>system_id</code>). Each identity has its own sub-directory containing <code>private_key.pem</code> and <code>public_key.pem</code>.</p>
@@ -3972,6 +3985,8 @@
 <p>[!WARNING]
 Keep your <strong>Private Key</strong> secure. If it is compromised, unverified traces can be signed as "trusted."</p>
 </blockquote>
+<h3 id="fail-closed-execution-policy">Fail-Closed Execution Policy<a class="headerlink" href="#fail-closed-execution-policy" title="Permanent link">&para;</a></h3>
+<p>When <code>EVAL_REQUIRE_SIGNING=true</code> or <code>AUDIT_LEVEL &gt;= 2</code>, the runtime requires an active signing backend and key. Evaluations without cryptographic provenance fail closed with <code>RuntimeError("CryptographicSigningError: Signing is required...")</code>.</p>
 <hr />
 <h3 id="automating-signature-vc-v3">Automating Signature (VC v3)<a class="headerlink" href="#automating-signature-vc-v3" title="Permanent link">&para;</a></h3>
 <p>Evaluation runs can automatically generate a signed VC v3 manifest upon completion:
