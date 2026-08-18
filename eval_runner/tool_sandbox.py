@@ -14,6 +14,9 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
 
+from eval_runner.interfaces.policy import PolicyEvaluator
+from eval_runner.reference.field_policy import BasicFieldPolicyEvaluator
+
 from . import config
 
 
@@ -114,8 +117,10 @@ class AbstractSandbox(ABC):
         plugin_manager: Any | None = None,
         workspace_root: Path | None = None,
         jail_root: Path | None = None,
+        policy_evaluator: PolicyEvaluator | None = None,
     ):
         self.scenario = scenario
+        self.policy_evaluator = policy_evaluator or BasicFieldPolicyEvaluator()
         self.state = scenario.get("initial_state", {}).copy()
         self.shared_state = SharedStateRegistry(
             scenario.get("agent_topology", {}), event_bus=event_bus
@@ -393,8 +398,7 @@ class ToolSandbox(AbstractSandbox):
         """
         active_agent = agent_name or self.current_agent
         all_tool_defs = self.scenario.get("tools", {})
-        tool_def = all_tool_defs.get(tool_name, {})
-        if not tool_def:
+        if tool_name not in all_tool_defs:
             active_simulators = self.get_active_simulators()
             for sim_name, simulator in active_simulators.items():
                 if tool_name.startswith(f"{sim_name}_"):
@@ -422,32 +426,38 @@ class ToolSandbox(AbstractSandbox):
                     if "dna" in raw_result:
                         secure_metadata.update(raw_result["dna"])
                     return ShimResultProxy(raw_result, metadata=secure_metadata)
+            tool_def = {}
+        else:
+            tool_def = all_tool_defs[tool_name]
         self.grounding_hits["tools"][tool_name] = self.grounding_hits["tools"].get(tool_name, 0) + 1
         policies = self.scenario.get("policies", {})
         if tool_name in policies:
             self.grounding_hits["policies"][tool_name] = (
                 self.grounding_hits["policies"].get(tool_name, 0) + 1
             )
-            limit = policies[tool_name].get("max_limit")
-            if limit is not None:
-                constrained_params = policies[tool_name].get("constrained_params")
-                if constrained_params is not None:
-                    for p_key in constrained_params:
-                        val = params.get(p_key)
-                        if isinstance(val, (int, float)) and val > limit:
-                            v_msg = f"Parameter '{p_key}' with value {val} exceeds limit of {limit}"
-                            return {
-                                "status": "policy_violation",
-                                "violation": v_msg,
-                            }
-                else:
-                    for p_key, val in params.items():
-                        if isinstance(val, (int, float)) and val > limit:
-                            v_msg = f"Parameter '{p_key}' with value {val} exceeds limit of {limit}"
-                            return {
-                                "status": "policy_violation",
-                                "violation": v_msg,
-                            }
+            policy_spec = policies[tool_name]
+            eval_result = self.policy_evaluator.evaluate_policy(
+                policy_spec=policy_spec,
+                input_data=params,
+                context={"tool_name": tool_name, "agent": active_agent, "state": self.state},
+            )
+            if not eval_result.allowed:
+                violation_msg = eval_result.reason
+                if eval_result.violations:
+                    v = eval_result.violations[0]
+                    if "message" in v:
+                        violation_msg = v["message"]
+                    elif "field" in v and "limit" in v:
+                        violation_msg = (
+                            f"Parameter '{v['field']}' with value {v.get('value')} "
+                            f"exceeds limit of {v['limit']}"
+                        )
+                return {
+                    "status": "policy_violation",
+                    "violation": violation_msg,
+                    "policy_id": eval_result.policy_id,
+                    "details": eval_result.to_dict(),
+                }
         state_changes = tool_def.get("state_changes", [])
         for change in state_changes:
             path = change.get("path")

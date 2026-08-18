@@ -36,6 +36,6 @@ class AuthorizationBackend(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def check_permission(self, principal: AuthPrincipal, resource: str, action: str) -> bool:
+    def check_permission(self, principal: AuthPrincipal, resource: str, action: str = "") -> bool:
         """Checks if the principal is authorized to perform action on resource."""
         raise NotImplementedError

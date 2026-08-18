@@ -13,6 +13,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from eval_runner.interfaces.artifact import ArtifactStore
+from eval_runner.interfaces.signing import SigningBackend
+from eval_runner.reference.local_artifact import LocalFileArtifactStore
+from eval_runner.reference.signing import LocalEd25519SigningBackend, NullSigningBackend
+
 from .events import CoreEvents, Event
 from .plugins import BaseEvalPlugin
 from .utils import rmtree_resilient
@@ -23,7 +28,11 @@ class FlightRecorderPlugin(BaseEvalPlugin):
 
     _subscribed = False
 
-    def __init__(self):
+    def __init__(
+        self,
+        signing_backend: SigningBackend | None = None,
+        artifact_store: ArtifactStore | None = None,
+    ):
         import eval_runner.config as config
 
         self.log_dir = Path(os.getenv("RUN_LOG_DIR", str(config.RUN_LOG_DIR)))
@@ -43,6 +52,16 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         self._sequence_numbers = {}  # Per-run sequence counters
         self._private_key_path = os.getenv("EVAL_SIGNING_KEY")
         self._audit_level = int(os.getenv("AUDIT_LEVEL", "2"))
+
+        # Interface Wiring: ArtifactStore & SigningBackend
+        self.artifact_store = artifact_store or LocalFileArtifactStore(base_dir=self.log_dir)
+
+        if signing_backend is not None:
+            self.signing_backend = signing_backend
+        elif self._private_key_path:
+            self.signing_backend = LocalEd25519SigningBackend()
+        else:
+            self.signing_backend = NullSigningBackend()
 
         # [Event Duplication Remediation]
         # Only subscribe to the global event bus once (Singleton Pattern)
@@ -75,8 +94,6 @@ class FlightRecorderPlugin(BaseEvalPlugin):
 
     def handle_event(self, event: Event):
         """Callback for EventEmitter."""
-        import eval_runner.verifier as verifier
-
         data = event.to_dict()
         run_id = data.get("run_id", "unknown")
 
@@ -112,11 +129,28 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             run_vault_dir = self.log_dir / run_id
             per_run_log_path = run_vault_dir / "run.jsonl"
 
-        # [Iteration 4: Signing] Trace-level integrity (Fail-Closed Cryptography)
-        if self._audit_level >= 2 and self._private_key_path:
+        # [Fail-Closed on Absence]
+        require_signing = os.getenv("EVAL_REQUIRE_SIGNING", "false").lower() == "true"
+        if (
+            require_signing
+            and not self._private_key_path
+            and isinstance(self.signing_backend, NullSigningBackend)
+        ):
+            err = (
+                "CryptographicSigningError: Signing is mandatory (EVAL_REQUIRE_SIGNING=true), "
+                "but no signing key or backend was provided."
+            )
+            sys.stderr.write(f"   [FlightRecorder] [ERROR] {err}\n")
+            raise RuntimeError(err)
+
+        # [Trace-level integrity (Fail-Closed Cryptography via SigningBackend)]
+        should_sign = (self._audit_level >= 2 and self._private_key_path) or (
+            not isinstance(self.signing_backend, NullSigningBackend) and self._private_key_path
+        )
+        if should_sign:
             try:
                 payload = json.dumps(data, sort_keys=True).encode("utf-8")
-                data["_sig"] = verifier.TraceVerifier.sign_payload(payload, self._private_key_path)
+                data["_sig"] = self.signing_backend.sign_payload(payload, self._private_key_path)
             except Exception as e:
                 data["_sig_error"] = str(e)
                 msg = (

@@ -69,7 +69,7 @@ class SessionManager:
         # [AgentV v1.6.0] Authoritative Metadata Propagation (Ensured mutable)
         self.metadata = dict(metadata or {})
         # Centralized identifier (resolved and normalized in Loader)
-        self.identifier = scenario["id"]
+        self.identifier = scenario.get("id") or scenario.get("metadata", {}).get("name", "unknown")
 
         # [AgentV v1.6.0] Authoritative Metadata Discovery
         self.session_metadata = {
@@ -277,6 +277,34 @@ class SessionManager:
         if hasattr(self, "turn_state_manager") and self.turn_state_manager:
             self.turn_state_manager.current_turn = val
         self._current_turn = val
+
+    def save_checkpoint(
+        self, checkpoint_id: str | None = None, metadata: dict[str, Any] | None = None
+    ) -> str:
+        """Explicitly checkpoints current session state via CheckpointStore interface."""
+        state = {
+            "turn": self.turn_number,
+            "history": getattr(self.turn_state_manager, "history", []),
+            "metadata": self.metadata,
+        }
+        return self.checkpoint_manager.create_checkpoint(
+            state, checkpoint_id=checkpoint_id, metadata=metadata
+        )
+
+    def restore_from_checkpoint(
+        self,
+        checkpoint_data: dict[str, Any] | None = None,
+        resumption_token: str | None = None,
+    ) -> bool:
+        """Restores session state from latest or provided checkpoint."""
+        data = checkpoint_data or self.checkpoint_manager.load_latest_checkpoint()
+        if not data:
+            return False
+        if "turn" in data:
+            self.turn_number = data["turn"]
+        if "history" in data and hasattr(self, "turn_state_manager") and self.turn_state_manager:
+            self.turn_state_manager.history = data["history"]
+        return True
 
     async def execute_tasks(self, attempt_number: int) -> list[dict[str, Any]]:
         from graphlib import CycleError, TopologicalSorter
@@ -926,9 +954,30 @@ class SessionManager:
 
         # Non-interactive mode (no TTY): suspend into registry for GUI/API resolution
         if not sys.stdin.isatty() and "pytest" not in sys.modules:
-            from eval_runner.hitl.pending import global_registry
+            # 1. Snapshot checkpoint before entering approval wait loop
+            hist = (
+                self.turn_state_manager.history
+                if hasattr(self.turn_state_manager, "history")
+                else []
+            )
+            chk_state = {
+                "turn": self.turn_number,
+                "task_id": task_id,
+                "prompt": prompt,
+                "history": hist,
+                "sandbox_state": getattr(self.sandbox, "state", {}),
+            }
+            chk_id = self.checkpoint_manager.create_checkpoint(
+                state=chk_state,
+                metadata={"task_id": task_id, "status": "HITL_PENDING"},
+            )
 
-            approval = global_registry.create(task_id, self.run_id, prompt)
+            # 2. Use self.approval_manager to coordinate approval gate
+            approval = self.approval_manager.request_approval(
+                task_id=task_id,
+                tool_name="human_intervention",
+                params={"prompt": prompt, "checkpoint_id": chk_id},
+            )
 
             # Await the approvals queue wait loop (which runs in an executor thread)
             await approval.wait()
@@ -1268,3 +1317,7 @@ class SessionManager:
                 f.write(",".join(str(v) for v in metrics.values()) + "\n")
         except Exception as e:
             logger.warning(f"   [Session] Telemetry capture failed: {e}")
+
+
+# Public Session alias
+Session = SessionManager

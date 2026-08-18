@@ -170,22 +170,48 @@ Authoritative scenario loader supporting local files and **Benchmark URIs** (`ga
 
 ## 🏛️ Public Runtime Extension Interface (`agentv_runtime`)
 
-The `agentv_runtime.interfaces` package exposes the authoritative abstract base classes for enterprise and third-party orchestration integration:
+The `agentv_runtime.interfaces` and `agentv_runtime.reference` packages expose the authoritative abstract base classes and OSS reference implementations:
 
 ```python
+import agentv_runtime
 from agentv_runtime.interfaces import (
-    ExecutionBackend,
-    CheckpointStore,
-    SigningBackend,
     ArtifactStore,
-    PolicyEvaluator,
-    PolicyEvaluationResult,
     AuthorizationBackend,
     AuthPrincipal,
+    CatalogStore,
+    CheckpointStore,
+    ExecutionBackend,
+    LeaderboardStore,
+    PolicyEvaluator,
+    PolicyEvaluationResult,
+    RunStore,
+    SigningBackend,
 )
+from agentv_runtime.reference import (
+    BasicFieldPolicyEvaluator,
+    InProcessExecutionBackend,
+    LocalEd25519SigningBackend,
+    LocalFileArtifactStore,
+    LocalFileCatalogStore,
+    LocalFileLeaderboardStore,
+    LocalFileRunStore,
+    LocalLeaderboardStore,
+    NullSigningBackend,
+    PQCSigningBackend,
+    SimpleAPIKeyAuthBackend,
+    SQLiteCheckpointStore,
+)
+
+# Authoritative Contract Version Dunders
+assert agentv_runtime.__runtime_api_version__ == "2.0"
+assert agentv_runtime.__plugin_api_version__ == "1.0"
+assert agentv_runtime.__config_schema_version__ == "1.0"
+assert agentv_runtime.__aes_schema_version__ == "1.4"
+assert agentv_runtime.__certificate_schema_version__ == "3.0.0"
+assert agentv_runtime.__event_schema_version__ == "1.0"
 ```
 
-See the [Public Extension Families Guide](/extender/extension-families/) for implementation specifications and reference backends.
+See the [Public Extension Families Guide](/extender/extension-families/) for complete implementation specifications.
 
 ---
 

@@ -8,7 +8,9 @@ The foundation of the harness, designed for framework-agnostic execution and hig
 - **Dynamic Adapter Discovery**: Automatically recognizes and registers agent protocols (`http`, `local`, `openai`, `gemini`, `claude`, `grok`, `ollama`) via the `AgentAdapterRegistry`.
 - **Flight Recorder (`run.jsonl`)**: Captures every state transition, tool call, and agent response in a deterministic, append-only log.
 - **Virtual File System (VFS)**: State-aware sandboxing for tool execution with automated rollback and isolation.
-- **Asymmetric Trust Protocol (ED25519)**: Integrated `Verifier` for **ED25519 asymmetric signatures**, providing non-repudiable audit trails for all execution traces.
+- **Asymmetric Trust Protocol (ED25519 & PQC ML-DSA-65)**: Integrated `Verifier` and `SigningBackend` for **ED25519** and **Post-Quantum ML-DSA-65 (FIPS 204)** asymmetric signatures via Zero-Exposure Signing (ZES), providing non-repudiable audit trails.
+- **Fail-Closed Cryptographic Enforcement**: Evaluations fail closed (`RuntimeError`) when `EVAL_REQUIRE_SIGNING=true` or `AUDIT_LEVEL >= 2` without a valid key/backend.
+- **Public Extension Families & Zero-Touch Hot-Swap (`v2.0.0`)**: 6 core abstract interfaces (`agentv_runtime.interfaces`) and storage interfaces (`CatalogStore`, `RunStore`, `LeaderboardStore`) allowing enterprise control planes to hot-swap backends.
 - **NIST AI-100-1 Trustworthiness Alignment**: Standardized scoring based on the Weighted Severity Model (WSM) across 7 critical AI dimensions (Safety, Security, Reliability, etc.), aligned with **NIST AI RMF principles**.
 - **Regulatory Safety Floor**: Prevents "safety-washing" in regulated environments by capping the aggregate trustworthiness score at **0.49 (Fail)** if foundational Safety or Security dimensions fall below 0.5.
 

@@ -8,21 +8,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0] - 2026-08-19
 
 ### Added
-* **Formal SemVer Commitment**: Established strict Semantic Versioning 2.0.0 guarantees across the public contracts surface area. Breaking changes to any public contract boundary require a MAJOR version bump and a minimum 1-minor-version deprecation notice.
-* **Industrial Contract Test Suite (`tests/contracts/`)**: Implemented 38 automated, zero-regression contract tests verifying core architectural guarantees:
-  * `test_aes_schema_contract.py`: AES v1.4 scenario structure, mandatory metadata invariants, node arrays, and schema version pinning.
-  * `test_config_hash_contract.py`: Deterministic SHA3-256 `config_hash` computation, mutation collision resistance, and `ConfigResolver` 4-tier precedence hierarchy.
-  * `test_execution_lifecycle_contract.py`: `ExecutionBackend` 4-method execution lifecycle contract (`submit`, `status`, `cancel`, `resume`) and signature stability.
-  * `test_plugin_discovery_contract.py`: `BaseEvalPlugin` 7 lifecycle hooks, persistent registry serialization, and namespace stability for `agentv_runtime.interfaces` & `agentv_runtime.reference`.
-  * `test_verification_contract.py`: Verification Certificate (VC v3.0.0) schema, NIST AI-100-1 7-Dimension Weighted Severity Model (WSM) scoring weights, SOC 2 CC6.6 safety floors, and SHA3-256 trace signing.
+* **Runtime Extension Interface Wiring**: Closed the runtime interface seam gap by wiring all 6 Extension Families directly into active execution paths:
+  * `SigningBackend`: Wired into `flight_recorder.py` and `verifier.py` with `LocalEd25519SigningBackend`, `PQCSigningBackend`, and `NullSigningBackend`.
+  * `PolicyEvaluator`: Wired into `tool_sandbox.py` with `BasicFieldPolicyEvaluator`, eliminating parallel duplicate constraint logic.
+  * `AuthorizationBackend`: Wired into `console/auth_manager.py` with `SimpleAPIKeyAuthBackend`.
+  * `ArtifactStore`: Wired into `flight_recorder.py`, `verifier.py`, and forensics with `LocalFileArtifactStore`.
+  * `ExecutionBackend`: Wired into `runner.py`, `session.py`, and `console/routes/scenarios.py` with `InProcessExecutionBackend`.
+  * `CheckpointStore` & `SessionApprovalManager`: Connected into `session.py` with state snapshotting prior to HITL approval waits and execution resumption.
+* **Storage Extension Families**: Added public interfaces and OSS reference implementations:
+  * `CatalogStore` & `LocalFileCatalogStore`: Scenario discovery and lifecycle.
+  * `RunStore` & `LocalFileRunStore`: Run manifest and metadata management.
+  * `LeaderboardStore` & `LocalLeaderboardStore` (aliased as `LocalFileLeaderboardStore`): Statistical aggregation and ranking.
+* **Reference Backends**: Shipped `LocalEd25519SigningBackend`, `NullSigningBackend`, `PQCSigningBackend` (Zero-Exposure Signing with ML-DSA-65 / FIPS 204), `SimpleAPIKeyAuthBackend`, and local storage backends in `eval_runner/reference/` and re-exported via `agentv_runtime/reference`.
+* **Reference Implementations Test Suite (`tests/unit/core/test_reference_implementations.py`)**: Added 16 unit tests achieving 98.08% overall statement coverage and 100% public interface coverage across all reference implementations.
+* **Fail-Closed Cryptographic Enforcement on Key Absence**: Enforced strict `RuntimeError` on missing signing keys when `EVAL_REQUIRE_SIGNING=true` or `AUDIT_LEVEL >= 2`.
+* **Contract Test Suite Expansion (`tests/contracts/`)**: Consolidated and expanded contract test suite to 68 automated contract tests:
+  * `test_interface_wiring_contract.py`: Actively asserts that all 6 Extension Families, store interfaces, and subsystem managers are invoked by runtime paths.
+  * `test_adapter_contracts.py`: Parameterized adapter matrix across all 10 framework adapters.
+  * `test_aes_schema_contract.py`: AES v1.4 scenario structure and metadata invariants.
+  * `test_config_hash_contract.py`: Deterministic SHA3-256 `config_hash` computation and `ConfigResolver` hierarchy.
+  * `test_execution_lifecycle_contract.py`: `ExecutionBackend` 4-method lifecycle contract.
+  * `test_plugin_discovery_contract.py`: `BaseEvalPlugin` 7 lifecycle hooks and namespace stability.
+  * `test_verification_contract.py`: VC v3.0.0 schema, NIST AI-100-1 7-Dimension WSM scoring weights, and SOC 2 CC6.6 safety floors.
+* **Subsystem Contract Versioning**: Published all 6 authoritative contract versions in `eval_runner` and `agentv_runtime`:
+  * `__runtime_api_version__ = "2.0"`
+  * `__plugin_api_version__ = "1.0"`
+  * `__config_schema_version__ = "1.0"`
+  * `__aes_schema_version__ = "1.4"`
+  * `__certificate_schema_version__ = "3.0.0"`
+  * `__event_schema_version__ = "1.0"`
 * **SemVer Compatibility Policy**: Published authoritative SemVer 2.0.0 policy documentation in `docs/src/content/docs/auditor/semver-policy.md`.
-* **Package Integration (`agentv_runtime`)**: Added `agentv_runtime` to `tool.setuptools.packages` in `pyproject.toml` for standard distribution and third-party plugin integration.
-
-### Changed
-* **GA Version Bump**: Promoted AgentV OS Runtime to `v2.0.0` GA across `pyproject.toml`, `agentv_runtime/__init__.py`, and test suites.
 
 ### Fixed
-* **Console Test Fixture Isolation**: Hardened `console_jail` fixtures across all console route test modules (`test_routes_all.py`, `test_console_routes_system_scenarios.py`, `test_console_routes_trust.py`) with per-worker isolated directories (`aes_console_test_jail_{worker_id}`), resolving race conditions during parallel `pytest -n auto` execution.
+* **Tool Definition Truthiness Routing**: Fixed `if tool_name not in all_tool_defs:` in `tool_sandbox.py`, ensuring tools defined as empty dicts (`{}`) execute standard mock behaviors instead of simulator fallbacks.
+* **Console Test Fixture Isolation**: Hardened `console_jail` fixtures across all console route test modules with per-worker isolated directories (`aes_console_test_jail_{worker_id}`).
 
 ## [1.9.0] - 2026-08-17
 

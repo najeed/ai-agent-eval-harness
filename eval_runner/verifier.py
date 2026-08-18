@@ -9,6 +9,8 @@ from pathlib import Path
 from typing import Any
 
 from . import config, forensics, utils
+from .interfaces.signing import SigningBackend
+from .reference.signing import LocalEd25519SigningBackend
 from .utils import crypto
 
 logger = logging.getLogger(__name__)
@@ -333,17 +335,17 @@ class TraceVerifier:
             )
 
     @staticmethod
-    def sign_payload(payload: bytes, private_key_path: str | Path) -> str:
+    def sign_payload(
+        payload: bytes,
+        private_key_path: str | Path,
+        signing_backend: SigningBackend | None = None,
+    ) -> str:
         """
-        Signs a raw payload using an Ed25519 private key.
+        Signs a raw payload using an Ed25519 private key via SigningBackend.
         Used for trace-level forensic integrity.
         """
-        from cryptography.hazmat.primitives import serialization
-
-        with open(private_key_path, "rb") as f:
-            private_key = serialization.load_pem_private_key(f.read(), password=None)
-
-        return private_key.sign(payload).hex()
+        backend = signing_backend or LocalEd25519SigningBackend()
+        return backend.sign_payload(payload, private_key_path)
 
     @classmethod
     def sign_trace(

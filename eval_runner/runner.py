@@ -90,7 +90,7 @@ class DefaultRunner(BaseRunner):
             sys.stderr.write(f"   [Telemetry] Warning: Failed to initialize OTel span: {e}\n")
 
         ctx = EvaluationContext(
-            identifier=scenario["id"],
+            identifier=scenario.get("id") or scenario.get("metadata", {}).get("name", "unknown"),
             scenario_data=copy.deepcopy(scenario),
             run_id=effective_run_id,
             seed=seed,
@@ -236,3 +236,50 @@ class DefaultRunner(BaseRunner):
             return 0.0
         successful = sum(1 for res in all_results if self._is_attempt_successful(res))
         return float(successful) / k
+
+
+def run_scenario(
+    scenario: dict,
+    attempts: int = 1,
+    run_id: str | None = None,
+    seed: int | None = None,
+    metadata: dict | None = None,
+    max_turns: int | None = None,
+) -> list[Any]:
+    """
+    Synchronous entry point that orchestrates evaluation via DefaultRunner.
+    Used by InProcessExecutionBackend and CLI triggers.
+    """
+    runner = DefaultRunner()
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+    if loop.is_running():
+        import concurrent.futures
+
+        with concurrent.futures.ThreadPoolExecutor() as pool:
+            return pool.submit(
+                asyncio.run,
+                runner.run(
+                    scenario=scenario,
+                    attempts=attempts,
+                    run_id=run_id,
+                    seed=seed,
+                    metadata=metadata,
+                    max_turns=max_turns,
+                ),
+            ).result()
+    else:
+        return loop.run_until_complete(
+            runner.run(
+                scenario=scenario,
+                attempts=attempts,
+                run_id=run_id,
+                seed=seed,
+                metadata=metadata,
+                max_turns=max_turns,
+            )
+        )

@@ -1,12 +1,11 @@
 import asyncio
 import json
 import logging
-import threading
 from pathlib import Path
 
 from flask import Blueprint, jsonify, request
 
-from eval_runner import engine, loader, mutator, spec_parser, taxonomy
+from eval_runner import engine, loader, mutator, spec_parser, taxonomy  # noqa: F401
 from eval_runner.catalog import ScenarioCatalog
 
 from ..auth_manager import Permission, require_permission
@@ -131,24 +130,19 @@ def evaluate_scenario():
 
     import time
 
+    from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+
     identifier = Path(path).stem
     run_id = f"run-{identifier}-{time.time_ns()}"
 
-    def run_wrapper(scenario_obj, turns, r_id):
-        try:
-            asyncio.run(
-                engine.run_evaluation(
-                    scenario_obj, max_turns=turns, run_id=r_id, metadata=data.get("metadata")
-                )
-            )
-        except Exception as e:
-            logger.error(f"Async evaluation failed: {e}")
-
-    thread = threading.Thread(
-        target=run_wrapper, args=(scen, data.get("max_turns", 10), run_id), name=f"eval-{run_id}"
+    backend = InProcessExecutionBackend()
+    backend.submit(
+        run_id=run_id,
+        scenario_data=scen,
+        background=True,
+        max_turns=data.get("max_turns", 10),
+        metadata=data.get("metadata"),
     )
-    thread.daemon = True
-    thread.start()
 
     return jsonify(
         {

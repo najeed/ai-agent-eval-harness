@@ -247,3 +247,14 @@ class AuditTrailAnalyzer(BaseForensicAnalyzer):
 # Register with priority flag set to True
 FailureTaxonomy.register_analyzer(AuditTrailAnalyzer(), priority=True)
 ```
+
+---
+
+## 🛡️ 7. Tool Definition Routing & Policy Guardrails
+
+Tool calls in AgentV follow deterministic routing in `ToolSandbox`:
+
+1. **Explicit Scenario Tool Definitions**: If a tool name is declared in the scenario's `tools` matrix (even as an empty mapping `{}`), it executes using the scenario's defined mock responses and parameter returns. It is never routed to external simulator fallback searches.
+2. **Pluggable Policy Evaluation**: Before executing any tool action, `ToolSandbox` evaluates parameters against the configured `PolicyEvaluator` (`BasicFieldPolicyEvaluator` by default). If constraints (`max_limit`, `constrained_params`, or `required_fields`) fail, execution yields a policy violation without engine crashes.
+3. **External Simulator Search**: If a tool is not defined in the scenario, the sandbox searches registered simulators (`TerminalSimulator`, `BrowserSimulator`, etc.) based on prefix and capability mappings.
+

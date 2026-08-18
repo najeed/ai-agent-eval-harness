@@ -1,6 +1,9 @@
 import os
 from abc import ABC, abstractmethod
 
+from eval_runner.interfaces.auth import AuthorizationBackend, AuthPrincipal
+from eval_runner.reference.auth import SimpleAPIKeyAuthBackend
+
 
 class Permission:
     """
@@ -73,12 +76,32 @@ class AuthManager(ABC):
 class StaticKeyProvider(AuthManager):
     """Default OSS provider: Single Master/Root Key maps to explicit granular nodes."""
 
-    def __init__(self, key: str):
+    def __init__(self, key: str, backend: AuthorizationBackend | None = None):
         self.key = key
+        self.backend = backend or SimpleAPIKeyAuthBackend(master_key=key)
         self._jwks_client = None
         self._jwks_url_cached = None
 
     def authenticate(self, credentials: str) -> dict | None:
+        if not credentials:
+            return None
+
+        # Check backend first
+        principal = self.backend.validate_token(credentials)
+        if principal:
+            perms = principal.permissions
+            if "*" in perms:
+                perms = Permission.ADMIN()
+            ptype = principal.metadata.get(
+                "type", "static-root" if principal.principal_id == "root-admin" else "backend-auth"
+            )
+            return {
+                "id": principal.principal_id,
+                "name": principal.metadata.get("name", principal.principal_id),
+                "permissions": perms,
+                "type": ptype,
+            }
+
         if not self.key or credentials != self.key:
             return None
 
@@ -150,8 +173,10 @@ class StaticKeyProvider(AuthManager):
     def has_permission(self, user: dict, permission_node: str) -> bool:
         """Strict PBAC implementation: Verifies granular permissions node."""
         user_perms = user.get("permissions", [])
-        # Equality check (No wildcards or role logic)
-        result = permission_node in user_perms
+        if "*" in user_perms or permission_node in user_perms:
+            return True
+        principal = AuthPrincipal(principal_id=user.get("id", "unknown"), permissions=user_perms)
+        result = self.backend.check_permission(principal, permission_node, "")
         if not result and os.getenv("DEBUG", "false").lower() == "true":
             print(f"   [Auth] [DENIED] Node '{permission_node}' not in user perms: {user_perms}")
         return result

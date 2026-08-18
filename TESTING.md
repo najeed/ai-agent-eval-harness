@@ -28,7 +28,7 @@ pytest --cov=eval_runner --cov-fail-under=85
 | **All Tests** | `pytest` | Run complete test suite |
 | **Unit Core** | `pytest tests/unit/core/` | Core verifier, sandbox, and engine unit tests |
 | **Unit Adapters** | `pytest tests/unit/adapters/` | Unit tests for framework adapters |
-| **Contract Matrix** | `pytest tests/contract/` | Framework adapter protocol & retry contracts |
+| **Contract Matrix** | `pytest tests/contracts/` | Framework adapter protocol & retry contracts |
 | **Performance SLAs** | `pytest tests/performance/` | Latency SLA and multi-session concurrency benchmarks |
 | **Security & Sandbox** | `pytest tests/security/` | Adversarial bypass, jail escape, and audit tests |
 | **Property Invariants** | `pytest tests/property/` | Hypothesis property-based invariant testing |
@@ -46,7 +46,7 @@ tests/
 │   ├── adapters/                   # Unit tests for framework integration wrappers
 │   ├── console/                    # Console API route tests
 │   └── handlers/                   # CLI command handler tests
-├── contract/                       # Protocol contract & exponential backoff tests
+├── contracts/                      # Protocol contracts, schema invariant & retry tests
 ├── performance/                    # Synchronous interception latency SLAs & load tests
 ├── property/                       # Hypothesis property-based invariant tests
 ├── security/                       # Adversarial bypass, jail escape, and audit tests
@@ -69,7 +69,7 @@ tests/
 - **Purpose**: Adversarial testing of `eval_runner/tool_sandbox.py` against path traversal, prompt injection, TOCTOU state races, and deep payload nesting.
 
 ### 4. Adapter Contracts & Infrastructure
-- **Files**: `tests/contract/test_adapter_contracts.py`
+- **Files**: `tests/contracts/test_adapter_contracts.py`
 - **Purpose**: Test `SessionManager` connection pooling, exponential backoff retries, and `AESCallbackHandler` telemetry.
 
 ### 5. Performance SLAs & Concurrency Scaling

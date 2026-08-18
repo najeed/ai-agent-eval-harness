@@ -14,10 +14,12 @@ The **Trust Protocol** establishes a non-repudiable forensic audit trail for AI 
 - **Identity Normalization**: Automatic renaming of temporary traces (e.g., `tmp_*.jsonl`) to the `run.jsonl` during certification.
 - **NIST AI-100-1 Scoring**: A multi-dimensional `VerificationResult` schema incorporating a Weighted Severity Model (WSM).
 - **Hard Gate**: A CI/CD step (`gate` command) that fails if signatures, evidence hashes, or agent results are compromised.
+- **SigningBackend Extension Family**: Decoupled interface (`agentv_runtime.interfaces.SigningBackend`) with reference implementations `LocalEd25519SigningBackend`, `PQCSigningBackend` (ML-DSA-65 / FIPS 204), and `NullSigningBackend`.
+- **Fail-Closed Cryptographic Enforcement**: When `EVAL_REQUIRE_SIGNING=true` or `AUDIT_LEVEL >= 2`, missing keys or signing backends immediately fail closed (`RuntimeError`) to prevent silent unauthenticated evaluations.
 
 ---
 
-## 2. Key Management
+## 2. Key Management & Signing Backends
 
 The `IdentityService` manages identities within the `TRUST_ROOT` (default: `.aes/keys`).
 
@@ -26,6 +28,9 @@ Keys are organized by identity name (e.g., `system_id`). Each identity has its o
 
 > [!WARNING]
 > Keep your **Private Key** secure. If it is compromised, unverified traces can be signed as "trusted."
+
+### Fail-Closed Execution Policy
+When `EVAL_REQUIRE_SIGNING=true` or `AUDIT_LEVEL >= 2`, the runtime requires an active signing backend and key. Evaluations without cryptographic provenance fail closed with `RuntimeError("CryptographicSigningError: Signing is required...")`.
 
 ---
 

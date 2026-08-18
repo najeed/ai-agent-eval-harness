@@ -22,6 +22,8 @@ __runtime_api_version__ = "2.0"
 __plugin_api_version__ = "1.0"
 __config_schema_version__ = "1.0"
 __aes_schema_version__ = "1.4"
+__certificate_schema_version__ = "3.0.0"
+__event_schema_version__ = "1.0"
 
 # --- INDUSTRIAL NEUTRALITY: VERSION-GATE SUPPRESSION ---
 # Neutralize speculative compatibility warnings from external dependencies (LangChain/Pydantic)

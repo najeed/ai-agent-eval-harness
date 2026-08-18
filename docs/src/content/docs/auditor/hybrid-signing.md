@@ -1,50 +1,58 @@
 ---
 title: Hybrid PQC Signing
-description: Industrial-grade quantum-resistant non-repudiation for AI agent evaluations.
+description: Industrial-grade quantum-resistant non-repudiation and fail-closed signing for AI agent evaluations.
 ---
 
 import { Steps, Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 
 # Hybrid Post-Quantum Cryptographic (PQC) Signing
 
-AgentV v1.6.2 introduces support for **Hybrid Post-Quantum Cryptographic (PQC) Signing**. This protocol is designed to protect industrial forensic traces against emerging quantum computing threats while maintaining strict data privacy through the **Zero-Exposure Signing (ZES)** pattern.
-
-This guide is intended for **Auditors**, **Integrators**, and **Evaluators** who need to ensure the long-term non-repudiability of agentic evaluation results.
+AgentV OS Runtime `v2.0.0` provides first-class support for **Hybrid Post-Quantum Cryptographic (PQC) Signing** and **Fail-Closed Cryptographic Enforcement**. This protocol protects industrial forensic traces against quantum computing threats while maintaining strict data privacy through the **Zero-Exposure Signing (ZES)** pattern.
 
 ---
 
 ## 🏗️ Architecture
 
-The hybrid protocol combines classical elliptic curve cryptography with modern lattice-based algorithms, ensuring that the system remains secure even if one of the layers is compromised.
+The hybrid protocol combines classical elliptic curve cryptography with modern lattice-based algorithms:
 
-1.  **Classical Layer**: Ed25519 (SHA-512 + Curve25519) - Used for high-performance, universally compatible signing.
-2.  **Post-Quantum Layer**: ML-DSA-65 (Module-Lattice-based Digital Signature Algorithm) - Aligned with NIST's FIPS 204 standard for quantum resistance.
+1.  **Classical Layer**: Ed25519 (SHA-512 + Curve25519) via `LocalEd25519SigningBackend` for high-performance, universally compatible signing.
+2.  **Post-Quantum Layer**: ML-DSA-65 (Module-Lattice-based Digital Signature Algorithm) via `PQCSigningBackend`, aligned with NIST's **FIPS 204** standard.
 3.  **Hybrid Binding**: Both signatures are mathematically bound to the same **Verification Certificate (VC) v3.0.0** and stored in the `provenance_chain`.
+4.  **Pluggable `SigningBackend` Interface**: Custom KMS, HSM, or PQC backends can be injected directly via `agentv_runtime.interfaces.SigningBackend`.
+
+---
+
+## 🔒 Fail-Closed Cryptographic Enforcement
+
+AgentV enforces strict cryptographic safety gates during evaluation:
+
+> [!IMPORTANT]
+> **Mandatory Signing Rules**: When `EVAL_REQUIRE_SIGNING=true` or `AUDIT_LEVEL >= 2` and no valid signing key or `SigningBackend` is provided, the runtime immediately raises a `RuntimeError` (`"CryptographicSigningError: Signing is mandatory..."`). Silent unauthenticated evaluations are strictly rejected.
 
 ---
 
 ## 🧬 Zero-Exposure Signing (ZES) Protocol
 
-To maintain the privacy of industrial evaluation data, AgentV implements the **Zero-Exposure Signing (ZES)** pattern. This ensures that raw traces, trajectories, and sensitive logs never leave the project's security jail.
+To maintain the privacy of industrial evaluation data, AgentV implements the **Zero-Exposure Signing (ZES)** pattern. Raw traces, trajectories, and sensitive logs never leave the project's security jail.
 
 ### The ZES Flow
 
 <Steps>
 
-1.  **Generate Manifest (VC v3)**
-    The harness assembles the `run_manifest.json` containing the trace hash and forensic evidence ledger.
+1.  **Generate Manifest (VC v3.0.0)**
+    The harness assembles `run_manifest.json` containing the trace hash and forensic evidence ledger.
 
 2.  **Compute SHAKE-256 Digest**
-    The manifest is hashed locally using **SHAKE-256**. This creates a fixed-length (32-byte) cryptographic condensation of the data.
+    The manifest is hashed locally using **SHAKE-256** to create a fixed-length (32-byte) cryptographic digest.
 
-3.  **Secure Transmission**
-    Only the resulting 32-byte digest is transmitted to the PQC provider (CycleCore) along with your API Key. **The raw trace data never leaves your environment.**
+3.  **Zero-Exposure Transmission**
+    Only the resulting 32-byte digest is transmitted to the PQC provider along with the identity configuration. **Raw trace data never leaves your environment.**
 
-4.  **Remote Signing**
+4.  **Remote or Local Lattice Signing**
     The provider signs the digest using the **ML-DSA-65** algorithm and returns the signature hex.
 
 5.  **Seal Certificate**
-    The signature is appended to the `provenance_chain` and the Verification Certificate is sealed for final audit.
+    The signature is appended to `provenance_chain` as an `ML-DSA-65` node and the Verification Certificate is sealed.
 </Steps>
 
 <Aside type="tip">
@@ -53,9 +61,23 @@ ZES ensures that even if the PQC provider is compromised, your proprietary agent
 
 ---
 
-## ⚙️ Configuration (Environment Variables)
+## 💻 Programmatic PQC Signing Backend
 
-Enable and configure Hybrid PQC using the following parameters. You can set these in your `.env` file.
+Extenders and test suites can use `PQCSigningBackend` directly:
+
+```python
+from agentv_runtime.reference import PQCSigningBackend
+
+pqc_backend = PQCSigningBackend()
+sig_hex = pqc_backend.sign_payload(b'{"eval":"success"}', key_identifier="sys_pqc")
+is_valid = pqc_backend.verify_signature(
+    b'{"eval":"success"}', sig_hex, public_key_identifier="sys_pqc"
+)
+```
+
+---
+
+## ⚙️ Configuration (Environment Variables)
 
 <Tabs>
   <TabItem label="Core Setup" icon="setting">
@@ -65,33 +87,17 @@ Enable and configure Hybrid PQC using the following parameters. You can set thes
 | `PQC_ENABLED` | `false` | Set to `true` to activate the hybrid signing pipeline. |
 | `PQC_PROVIDER` | `cyclecore` | The cryptographic provider (e.g., `cyclecore`). |
 | `PQC_STRICT_MODE` | `false` | If `true`, fails evaluation if PQC signing fails. |
+| `EVAL_REQUIRE_SIGNING` | `false` | If `true`, fails closed (`RuntimeError`) if signing key is absent. |
+| `AUDIT_LEVEL` | `1` | Level >= 2 enforces mandatory signing and audit ledgers. |
   </TabItem>
-  <TabItem label="CycleCore Keys" icon="key">
+  <TabItem label="Provider Keys" icon="key">
 
 | Variable | Default | Description |
 | :--- | :--- | :--- |
 | `CYCLECORE_API_KEY` | *(None)* | Your ZES API key (Required for remote signing). |
-| `CYCLECORE_IDENTITY_ID`| `default` | The identity name for the PQC signature. |
+| `PQC_IDENTITY_ID` | `default` | The identity name for the PQC signature. |
   </TabItem>
 </Tabs>
-
----
-
-## 🛠️ Troubleshooting
-
-### Common CycleCore API Errors
-
-| Error Symptom | Potential Cause | Resolution |
-| :--- | :--- | :--- |
-| `Authentication Failure` | Invalid or expired `CYCLECORE_API_KEY`. | Check your environment variables and CycleCore dashboard. |
-| `Rate Limit Exceeded` | Too many concurrent signing requests. | Implement `ADAPTER_RETRY_DELAY` or contact support for higher limits. |
-| `Connection Timeout` | Network/Firewall blocking egress to the PQC provider. | Ensure your host can reach the CycleCore API endpoints. |
-| `ImportError: cyclecore-pq` | The `cyclecore-pq` package is missing. | Run `pip install cyclecore-pq` or check your `pyproject.toml`. |
-
-### Verification Failures
-
-*   **Signature Mismatch**: Ensure the `PQC_IDENTITY_ID` used during signing matches the one configured during verification.
-*   **Hash Inconsistency**: If the local `SHAKE-256` digest differs from the one recorded in the manifest, verification will fail automatically to prevent tampering.
 
 ---
 

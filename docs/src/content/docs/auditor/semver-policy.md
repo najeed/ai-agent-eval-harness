@@ -29,27 +29,39 @@ v MAJOR . MINOR . PATCH
 The following subsystems form the **Sealed Public Contract Surface** of AgentV. Any backward-incompatible change to these surfaces requires a **MAJOR** version bump.
 
 ### 2.1. Extension Families (`agentv_runtime.interfaces`)
-The 6 Abstract Base Classes (ABCs) that define external integration boundaries:
+The Abstract Base Classes (ABCs) that define external integration boundaries:
 - `ExecutionBackend`: `submit()`, `status()`, `cancel()`, `resume()`
-- `CheckpointStore`: `save()`, `load()`, `list_checkpoints()`, `delete()`
-- `SigningBackend`: `sign_payload()`, `verify_payload()`, `get_public_key()`, `supported_algorithms()`
-- `ArtifactStore`: `put()`, `get()`, `exists()`, `get_uri()`
+- `CheckpointStore`: `save()`, `load()`, `delete()`, `list_checkpoints()`
+- `SigningBackend`: `sign_payload()`, `verify_signature()`
+- `ArtifactStore`: `store_artifact()`, `get_artifact()`, `exists()`, `list_artifacts()`
 - `PolicyEvaluator`: `evaluate_policy()`, `validate_policy()`
-- `AuthorizationBackend`: `authorize()`, `validate_token()`
+- `AuthorizationBackend`: `validate_token()`, `check_permission()`
+- `CatalogStore`: `list_scenarios()`, `get_scenario()`, `save_scenario()`, `delete_scenario()`
+- `RunStore`: `get_run()`, `list_runs()`, `save_run_manifest()`, `delete_run()`
+- `LeaderboardStore`: `get_leaderboard()`, `record_run_summary()`
 
-### 2.2. Deterministic Configuration Mesh (`ResolvedRuntimeConfig`)
+### 2.2. Subsystem Contract Version Dunders
+Published in `agentv_runtime` and `eval_runner`:
+- `__runtime_api_version__ = "2.0"`
+- `__plugin_api_version__ = "1.0"`
+- `__config_schema_version__ = "1.0"`
+- `__aes_schema_version__ = "1.4"`
+- `__certificate_schema_version__ = "3.0.0"`
+- `__event_schema_version__ = "1.0"`
+
+### 2.3. Deterministic Configuration Mesh (`ResolvedRuntimeConfig`)
 - The deterministic **SHA3-256 `config_hash`** digest calculation across all runtime parameters.
 - Four-tier configuration precedence resolution (OSS Defaults → File Config → Env Vars → Runtime Overrides).
 
-### 2.3. Agent Evaluation Scenario Schema (`AES v1.4`)
+### 2.4. Agent Evaluation Scenario Schema (`AES v1.4`)
 - Mandatory top-level structure: `aes_version`, `metadata`, `workflow`, `evaluation`.
 - Universal immutable schema registry validation for all `.json` and `.yaml` scenario manifests.
 
-### 2.4. Plugin Discovery & Lifecycle Hook Architecture
+### 2.5. Plugin Discovery & Lifecycle Hook Architecture
 - `PluginManager` dynamic and persistent registration mechanisms.
 - `BaseEvalPlugin` standard lifecycle hooks: `before_evaluation`, `after_evaluation`, `on_register_commands`, `on_discover_adapters`, `on_register_simulators`, `on_discover_metrics`, `on_diagnose_failure`.
 
-### 2.5. Verification Certificate Protocol (`VC v3.0.0`)
+### 2.6. Verification Certificate Protocol (`VC v3.0.0`)
 - NIST AI-100-1 7-Dimension **Weighted Severity Model (WSM)** scoring vector (`safety`, `security`, `reliability`, `fairness`, `explainability`, `privacy`, `resilience`).
 - Cryptographic provenance chain structure and SHA3-256 trace fingerprinting.
 
@@ -76,10 +88,12 @@ graph LR
 
 The contract boundary is protected by an automated, zero-regression test suite located in `tests/contracts/`:
 
+- `test_adapter_contracts.py`: Enforces framework adapter interface stability and metadata consistency.
 - `test_aes_schema_contract.py`: Enforces AES v1.4 scenario structure and version requirements.
-- `test_plugin_discovery_contract.py`: Enforces plugin hooks and `agentv_runtime` namespace integrity.
 - `test_config_hash_contract.py`: Enforces deterministic SHA3-256 config hash stability.
 - `test_execution_lifecycle_contract.py`: Enforces 4-method execution backend lifecycle invariants.
+- `test_interface_wiring_contract.py`: Enforces active runtime calls across all 6 interface families and fail-closed crypto.
+- `test_plugin_discovery_contract.py`: Enforces plugin hooks and `agentv_runtime` namespace integrity.
 - `test_verification_contract.py`: Enforces VC v3.0.0 schemas, NIST 7-dimension weights, and safety floors.
 
 ```bash

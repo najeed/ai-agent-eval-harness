@@ -161,13 +161,15 @@ The harness is organized into the following key components:
 The **v2.0.0 August 2026 GA Release** formalizes strict Semantic Versioning guarantees across the public API surface area, establishes the neutral architectural seam between the AgentV OS Runtime and the AgentV Control Plane, and introduces an industrial automated contract verification suite:
 
 - 🔒 **Formal SemVer 2.0.0 Commitment**: Strict Semantic Versioning guarantee across all public contracts and extension ABCs, backed by a mandatory 1-minor-version deprecation lifecycle and published [SemVer Policy Documentation](docs/src/content/docs/auditor/semver-policy.md).
-- 🧪 **Automated Contract Test Suite (`tests/contracts/`)**: 38 continuous zero-regression contract tests verifying AES v1.4 scenario structures, deterministic SHA3-256 config hashes, 4-method execution lifecycle, plugin discovery hooks, and VC v3.0.0 certificate chains.
-- 🏛️ **Public Extension Families**: Standardized abstract base classes (`abc.ABC`) under `eval_runner.interfaces` and `agentv_runtime.interfaces` for `ExecutionBackend`, `CheckpointStore`, `SigningBackend`, `ArtifactStore`, `PolicyEvaluator`, and `AuthorizationBackend`.
+- 🔌 **Active Runtime Extension Interface Wiring**: All 6 public Extension Families under `agentv_runtime.interfaces` (`ExecutionBackend`, `CheckpointStore`, `SigningBackend`, `ArtifactStore`, `PolicyEvaluator`, and `AuthorizationBackend`) and storage interfaces (`CatalogStore`, `RunStore`, `LeaderboardStore`) are actively invoked across runtime execution paths with zero bypasses.
+- ⚛️ **Hybrid Post-Quantum Cryptographic (PQC) Signing**: First-class quantum-resistant non-repudiation via `PQCSigningBackend` (NIST FIPS 204 ML-DSA-65) and privacy-preserving Zero-Exposure Signing (ZES) over SHAKE-256 local digests.
+- 🛑 **Fail-Closed Cryptographic Enforcement**: Strict fail-closed execution (`RuntimeError`) when signing is mandatory (`EVAL_REQUIRE_SIGNING=true` or `AUDIT_LEVEL >= 2`) and signing keys are absent.
+- 💾 **Durable HITL Checkpoint Persistence**: State snapshotting via `SQLiteCheckpointStore` prior to Human-in-the-Loop approval wait loops and resumable execution via `SessionApprovalManager`.
+- 🛠️ **OSS Reference Implementations**: Complete production reference implementations.
+- 🏷️ **Subsystem Contract Version Dunders**: Authoritative version identifiers.
+- 🧪 **Automated Contract Test Suite (`tests/contracts/`)**: 68 continuous zero-regression contract tests verifying interface wiring, AES v1.4 scenario structures, deterministic SHA3-256 config hashes, 4-method execution lifecycle, plugin discovery hooks, and VC v3.0.0 certificate chains.
 - ⚙️ **Resolved Runtime Config & ConfigResolver**: Schema-validated runtime configuration model with deterministic SHA3-256 hash digest (`config_hash`) for Processing Integrity evidence, with hierarchical config-mesh resolution (`OSS baseline` $\rightarrow$ `.aes/config/*.json` $\rightarrow$ `env vars` $\rightarrow$ `runtime overrides`).
 - 🧩 **Modular Subsystem Decomposition**: Monolithic session orchestration decomposed into dedicated, independently testable subsystem managers: `TurnStateManager`, `ToolExecutionCoordinator`, `SessionCheckpointManager`, and `SessionApprovalManager`.
-- 📦 **Package Distribution (`agentv_runtime`)**: Integrated `agentv_runtime` into standard setuptools package distribution for zero-touch downstream consumption.
-- 🛠️ **OSS Reference Implementations**: Shipped production reference backends: `InProcessExecutionBackend`, `SQLiteCheckpointStore`, `LocalFileArtifactStore`, and `BasicFieldPolicyEvaluator`.
-- 🛡️ **12-Point Kernel Integrity & Defect Remediation**: Full kernel integrity verification backed by an immutable 14-test **Golden Verification Corpus** (`tests/golden/`).
 - 🌐 **Dynamic Navigation Manifest & Runtime Module Federation (`/v2`)**: The native visual console ingests `GET /api/nav` manifests and loads standalone ESM plugin bundles on demand with zero build-time recompilation.
 
 ## 📂 The Global Scenario Corpus
