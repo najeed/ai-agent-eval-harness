@@ -222,3 +222,103 @@ async def test_chaos_simulator_crash_never_passes_verification(
     assert is_valid is False, (
         "INVARIANT VIOLATED: Simulator crash allowed unsigned trace to pass verification!"
     )
+
+
+def test_chaos_hitl_process_death_and_resume_on_resolve(chaos_scenario, tmp_path, monkeypatch):
+    """
+    Chaos Resilience Invariant (§3.1):
+    Process dies mid-HITL wait -> new process reloads approval with resumed_from_db=True ->
+    resolving via /v1/hitl/<id>/resolve MUST automatically trigger
+    InProcessExecutionBackend.resume() and continue run execution.
+    """
+    from unittest.mock import patch
+
+    from flask import Flask
+
+    from eval_runner.console.routes.hitl import hitl_bp
+    from eval_runner.hitl.pending import PendingApprovalRegistry
+    from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+    from eval_runner.reference.sqlite_checkpoint import SQLiteCheckpointStore
+
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
+    monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", tmp_path)
+
+    run_id = "run-chaos-hitl-resume-001"
+    db_file = tmp_path / "hitl.db"
+
+    # 1. First process: Create persistent approval and store durable checkpoint
+    checkpoint_store = SQLiteCheckpointStore(db_path=str(tmp_path / "checkpoints.db"))
+    checkpoint_state = {
+        "turn": 1,
+        "task_id": "step_auth_transfer",
+        "prompt": "Authorize high-value transfer?",
+        "scenario_data": chaos_scenario,
+        "history": [{"role": "user", "content": "Transfer funds"}],
+    }
+    checkpoint_store.save(run_id, "chk_001", checkpoint_state, metadata={"status": "HITL_PENDING"})
+
+    reg1 = PendingApprovalRegistry()
+    reg1.db_path = db_file
+    reg1._init_db()
+    app1 = reg1.create(
+        task_id="step_auth_transfer",
+        run_id=run_id,
+        prompt="Authorize high-value transfer?",
+        timeout_seconds=300,
+    )
+    token = app1.resumption_token
+    app_id = app1.id
+    assert not app1.resumed_from_db
+
+    # 2. Simulate Process Death:
+    # Clear in-process singletons and instantiate fresh registry loading from SQLite
+    InProcessExecutionBackend.clear_instance()
+    InProcessExecutionBackend.get_instance(checkpoint_store=checkpoint_store)
+
+    reg2 = PendingApprovalRegistry()
+    reg2.db_path = db_file
+    reg2._load_from_db()
+    monkeypatch.setattr("eval_runner.console.routes.hitl.global_registry", reg2)
+    monkeypatch.setattr("eval_runner.hitl.pending.global_registry", reg2)
+
+    app_restored = reg2._items.get(app_id)
+    assert app_restored is not None
+    assert app_restored.resumed_from_db is True
+    assert app_restored.resumption_token == token
+
+    # Mock runner.run_scenario to verify execution resumed
+    resumed_executions = []
+
+    def mock_run_scenario(scenario_data, run_id=None, **kwargs):
+        resumed_executions.append((run_id, kwargs.get("resumption_checkpoint")))
+        return {"status": "SUCCESS", "run_id": run_id}
+
+    monkeypatch.setattr("eval_runner.runner.run_scenario", mock_run_scenario)
+
+    # 3. Create Flask client for resolve endpoint
+    app = Flask(__name__)
+    app.secret_key = "chaos_secret"
+    app.register_blueprint(hitl_bp, url_prefix="/api")
+
+    with patch("eval_runner.console.auth_manager.require_permission", lambda _: lambda f: f):
+        client = app.test_client()
+
+        # 4. Resolve approval via standard REST endpoint
+        response = client.post(
+            f"/api/v1/hitl/{app_id}/resolve",
+            json={"action": "approve", "response": "Approved by Chaos Recovery Officer"},
+            content_type="application/json",
+        )
+
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data["resolved"] is True
+        assert data["approval_id"] == app_id
+        assert data["resumed"] is True
+        assert data["run_id"] == run_id
+
+    # 5. Assert that backend.resume() executed and submitted run with checkpoint
+    assert len(resumed_executions) == 1
+    executed_run_id, chk = resumed_executions[0]
+    assert executed_run_id == run_id
+    assert chk["task_id"] == "step_auth_transfer"

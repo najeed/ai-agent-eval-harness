@@ -150,6 +150,81 @@ def test_hitl_resolve_no_session_uses_default_resolved_by(hitl_client):
     assert call_args[0][3] == "root-admin"
 
 
+def test_hitl_resolve_resumed_from_db_auto_resumes(hitl_client):
+    """Verify that resolving an approval with resumed_from_db=True triggers backend.resume()."""
+    mock_appr = MagicMock()
+    mock_appr.id = "appr-resumed-001"
+    mock_appr.resumed_from_db = True
+    mock_appr.run_id = "run-resumed-999"
+    mock_appr.resumption_token = "tok_abc123"
+
+    with patch("eval_runner.console.routes.hitl.global_registry") as mock_reg:
+        mock_reg._items.get.return_value = mock_appr
+        mock_reg.resolve.return_value = True
+        backend_patch = (
+            "eval_runner.reference.inprocess_backend.InProcessExecutionBackend.get_instance"
+        )
+        with patch(backend_patch) as mock_backend_cls:
+            mock_backend = MagicMock()
+            mock_backend_cls.return_value = mock_backend
+
+            res = hitl_client.post(
+                "/api/v1/hitl/appr-resumed-001/resolve",
+                json={"action": "approve", "response": "OK"},
+                content_type="application/json",
+            )
+
+            assert res.status_code == 200
+            data = res.get_json()
+            assert data["resolved"] is True
+            assert data["resumed"] is True
+            assert data["run_id"] == "run-resumed-999"
+            mock_backend.resume.assert_called_once_with(
+                "run-resumed-999", resumption_token="tok_abc123", background=True
+            )
+
+
+def test_hitl_resolve_not_found_in_items(hitl_client):
+    """Verify that resolving returns 404 when item not in _items."""
+    with patch("eval_runner.console.routes.hitl.global_registry") as mock_reg:
+        mock_reg._items.get.return_value = None
+        res = hitl_client.post(
+            "/api/v1/hitl/missing-item/resolve",
+            json={"action": "approve", "response": "OK"},
+            content_type="application/json",
+        )
+        assert res.status_code == 404
+
+
+def test_hitl_resolve_resume_exception_handled(hitl_client):
+    """Verify that exception in backend.resume is caught and logged."""
+    mock_appr = MagicMock()
+    mock_appr.id = "appr-err-001"
+    mock_appr.resumed_from_db = True
+    mock_appr.run_id = "run-err-999"
+    mock_appr.resumption_token = "tok_err"
+
+    with patch("eval_runner.console.routes.hitl.global_registry") as mock_reg:
+        mock_reg._items.get.return_value = mock_appr
+        mock_reg.resolve.return_value = True
+        backend_patch = (
+            "eval_runner.reference.inprocess_backend.InProcessExecutionBackend.get_instance"
+        )
+        with patch(backend_patch) as mock_backend_cls:
+            mock_backend = MagicMock()
+            mock_backend.resume.side_effect = RuntimeError("Resume connection failed")
+            mock_backend_cls.return_value = mock_backend
+
+            res = hitl_client.post(
+                "/api/v1/hitl/appr-err-001/resolve",
+                json={"action": "approve", "response": "OK"},
+                content_type="application/json",
+            )
+            assert res.status_code == 200
+            data = res.get_json()
+            assert data["resumed"] is False
+
+
 # ---------------------------------------------------------------------------
 # GET /hitl/stream (SSE)
 # ---------------------------------------------------------------------------

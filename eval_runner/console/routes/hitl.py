@@ -36,13 +36,49 @@ def resolve_hitl_request(approval_id):
     user = session.get("user") or {}
     resolved_by = user.get("id", "root-admin")
 
+    with global_registry._lock:
+        approval = global_registry._items.get(approval_id)
+
+    if not approval:
+        return jsonify(
+            {"error": f"Pending approval item '{approval_id}' not found or already resolved."}
+        ), 404
+
+    is_resumed_from_db = bool(getattr(approval, "resumed_from_db", False) is True)
+    raw_run_id = getattr(approval, "run_id", None)
+    run_id = str(raw_run_id) if isinstance(raw_run_id, str) else None
+    raw_token = getattr(approval, "resumption_token", None)
+    resumption_token = str(raw_token) if isinstance(raw_token, str) else None
+
     success = global_registry.resolve(approval_id, action, response_val, resolved_by)
     if not success:
         return jsonify(
             {"error": f"Pending approval item '{approval_id}' not found or already resolved."}
         ), 404
 
-    return jsonify({"resolved": True, "approval_id": approval_id})
+    resumed = False
+    if is_resumed_from_db and run_id:
+        try:
+            from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+
+            backend = InProcessExecutionBackend.get_instance()
+            backend.resume(run_id, resumption_token=resumption_token, background=True)
+            resumed = True
+            logger.info(
+                f"[HITL] Automatically resumed background execution for run '{run_id}' "
+                f"after resolving restart-orphaned approval '{approval_id}'"
+            )
+        except Exception as e:
+            logger.warning(f"[HITL] Failed to auto-resume execution for run '{run_id}': {e}")
+
+    return jsonify(
+        {
+            "resolved": True,
+            "approval_id": approval_id,
+            "resumed": resumed,
+            "run_id": run_id,
+        }
+    )
 
 
 @hitl_bp.route("/v1/hitl/stream", methods=["GET"])

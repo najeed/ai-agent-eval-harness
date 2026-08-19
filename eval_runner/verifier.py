@@ -531,6 +531,21 @@ class TraceVerifier:
         except Exception as e:
             logger.warning(f"      [Verifier] Failed to save certificate backup: {e}")
 
+        # 8. Evidence-Vault Immutability Sealing (Active Immutability)
+        try:
+            store.seal(
+                run_id=run_id,
+                metadata={
+                    "certificate_hash": manifest.get("trace_hash", ""),
+                    "vc_version": manifest.get("vc_version", "3.0.0"),
+                    "timestamp": timestamp,
+                    "compliance_status": compliance_status,
+                },
+            )
+            logger.info(f"      [Verifier] Evidence vault sealed for run '{run_id}'")
+        except Exception as e:
+            logger.warning(f"      [Verifier] Failed to seal evidence vault: {e}")
+
         return manifest
 
     @staticmethod

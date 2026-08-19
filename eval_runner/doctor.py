@@ -80,6 +80,52 @@ def check_security_health():
         print("  ⚠ Session Security cannot be verified without an API Key")
 
 
+def check_signing_audit_posture():
+    """Performs an audit of cryptographic trace signing and governance posture."""
+    print("  --- Cryptographic Signing & Audit Posture ---")
+
+    signing_key = os.getenv("EVAL_SIGNING_KEY")
+    signing_key_path = os.getenv("EVAL_SIGNING_KEY_PATH")
+    require_signing = os.getenv("EVAL_REQUIRE_SIGNING", "").lower() in ("true", "1", "yes")
+    audit_level = int(os.getenv("AUDIT_LEVEL", "0") or 0)
+    pqc_enabled = getattr(config, "PQC_ENABLED", False)
+    pqc_strict = getattr(config, "PQC_STRICT_MODE", False)
+
+    # 1. Key Configuration Check
+    configured_key = signing_key_path or signing_key
+    if configured_key:
+        key_desc = (
+            f"Path: {signing_key_path}"
+            if signing_key_path
+            else f"Inline PEM ({len(signing_key)} chars)"
+        )
+        print(f"  ✔ Cryptographic Signing Key configured ({key_desc})")
+    else:
+        if require_signing or audit_level >= 2:
+            print(
+                "  ❌ Fail-Closed Mandate Active: EVAL_REQUIRE_SIGNING=true or "
+                "AUDIT_LEVEL>=2, but no signing key is configured!"
+            )
+        else:
+            print(
+                "  ⚠ Cryptographic signing is not configured — evaluation traces are unsigned. "
+                "Set EVAL_SIGNING_KEY to enable."
+            )
+
+    # 2. Enforcement Posture
+    if require_signing or audit_level >= 2:
+        print(f"  ✔ Enforcement Posture: STRICT / FAIL-CLOSED (Audit Level: {audit_level})")
+    else:
+        print(f"  ℹ Enforcement Posture: STANDARD / PERMISSIVE (Audit Level: {audit_level})")
+
+    # 3. Post-Quantum Cryptography (PQC)
+    if pqc_enabled:
+        strict_str = " (STRICT MODE)" if pqc_strict else ""
+        print(f"  ✔ Hybrid PQC Signing active: ML-DSA-65 / FIPS 204{strict_str}")
+    else:
+        print("  ℹ Post-Quantum Cryptography (PQC) is disabled. Set PQC_ENABLED=true to enable.")
+
+
 def show_registry_report():
     """Displays a detailed report of the resolved shim registry."""
     print("  --- Industrial Registry Audit (v1.3.0) ---")
@@ -134,6 +180,9 @@ async def run_doctor(show_registry: bool = False):
 
     # 3. Security Audit (New v1.2.4 Section)
     check_security_health()
+
+    # 3.1 Cryptographic Signing & Audit Posture
+    check_signing_audit_posture()
 
     # 3.5 Registry Audit (New v1.3.1 Section)
     if show_registry:

@@ -1056,3 +1056,36 @@ def test_override_interceptor_context_manager():
     manifest_empty = {"provenance_chain": []}
     res = verification_service.sign(manifest_empty, format="preempt")
     assert res["provenance_chain"][0]["identity"] == "system_id"
+
+
+def test_sign_trace_seals_artifact_store_and_rejects_subsequent_writes():
+    """
+    Verify that TraceVerifier.sign_trace seals the artifact vault and prevents
+    post-seal mutations.
+    """
+    from eval_runner.reference.local_artifact import LocalFileArtifactStore
+
+    run_id = "run-vault-seal-test"
+    vault_dir, trace_path = setup_vault(run_id)
+    trace_path.write_text('{"event": "start", "run_id": "' + run_id + '"}\n', encoding="utf-8")
+
+    store = LocalFileArtifactStore(base_dir=vault_dir.parent)
+    assert not store.is_sealed(run_id)
+
+    manifest = TraceVerifier.sign_trace(
+        str(trace_path),
+        run_id=run_id,
+        artifact_store=store,
+        compliance_status="pass",
+    )
+
+    assert manifest["vc_version"] == "3.0.0"
+    assert store.is_sealed(run_id) is True
+
+    # Attempting to write a new artifact or overwrite after sealing MUST raise PermissionError
+    with pytest.raises(PermissionError, match="is sealed"):
+        store.store_artifact(
+            run_id=run_id,
+            artifact_name="tampered_data.json",
+            content=b'{"malicious": true}',
+        )

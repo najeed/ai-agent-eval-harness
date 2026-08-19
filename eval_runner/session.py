@@ -32,12 +32,13 @@ from .forensics import ForensicCollector  # noqa: E402
 from .session_components import (  # noqa: E402
     SessionApprovalManager,
     SessionCheckpointManager,
+    SessionMetricsCalculator,
+    SessionStateParityVerifier,
     ToolExecutionCoordinator,
     TurnStateManager,
 )
 from .tool_sandbox import ToolSandbox  # noqa: E402
 from .utils import crypto  # noqa: E402
-from .utils.path_resolver import PathResolver  # noqa: E402
 
 # Security Guardrails: Fork Bomb Prevention
 MAX_FORK_DEPTH = config.MAX_FORK_DEPTH
@@ -137,6 +138,8 @@ class SessionManager:
             },
         )
         self.tool_execution_coordinator = ToolExecutionCoordinator()
+        self.metrics_calculator = SessionMetricsCalculator(session_manager=self)
+        self.state_parity_verifier = SessionStateParityVerifier(session_manager=self)
 
         if resumption_checkpoint:
             self.restore_from_checkpoint(resumption_checkpoint)
@@ -698,128 +701,9 @@ class SessionManager:
     async def _verify_state_parity(self, node: dict, sandbox: Any, history: list) -> bool:
         """
         Authoritative State Parity Verification.
-        Queries simulators/shims for point-in-time snapshots and validates assertions.
-        Includes industrial retry logic for asynchronous state propagation.
+        Delegates to decomposed SessionStateParityVerifier component.
         """
-        assertions = node.get("expected_outcome", [])
-        if not isinstance(assertions, list) or not assertions:
-            return True
-
-        # 1. Industrial Polling Configuration
-        # Respect node-level timeout or default to 30s
-        timeout = float(node.get("timeout", 30))
-        interval = 2.0  # Standard Industrial Interval
-        start_time = asyncio.get_event_loop().time()
-
-        logger.info(
-            f"      [Session] Starting Implicit Verification Phase "
-            f"({len(assertions)} assertions) | Timeout: {timeout}s"
-        )
-
-        shim_ids = list(
-            {
-                a.get("target").split(":", 1)[1].split(".", 1)[0]
-                for a in assertions
-                if str(a.get("target")).startswith("shim:")
-            }
-        )
-
-        import re
-
-        while True:
-            shim_snapshots = await self._get_shim_snapshots(sandbox, shim_ids)
-            all_passed = True
-            failed_reason = None
-
-            for assertion in assertions:
-                target = assertion.get("target", "message")
-                expected = assertion.get("expected")
-                property_path = assertion.get("property")
-                mode = assertion.get("mode", "exact")
-
-                if target.startswith("shim:"):
-                    # [Industrial Resolve] Support combined shim:id.path syntax
-                    raw_target = target.split(":", 1)[1]
-                    if "." in raw_target:
-                        shim_id = raw_target.split(".", 1)[0]
-                        # Use everything after the first dot as the property path extension
-                        property_path_ext = raw_target.split(".", 1)[1]
-                        actual_val = shim_snapshots.get(shim_id)
-                        if property_path:
-                            property_path = f"{property_path_ext}.{property_path}"
-                        else:
-                            property_path = property_path_ext
-                    else:
-                        shim_id = raw_target
-                        actual_val = shim_snapshots.get(shim_id)
-                elif target == "message":
-                    actual_val = self._extract_agent_summary(history)
-                elif target == "state":
-                    actual_val = await sandbox.get_full_state()
-                else:
-                    logger.warning(
-                        f"      [Session] [Parity] Unsupported assertion target: {target}"
-                    )
-                    all_passed = False
-                    failed_reason = f"Unsupported target: {target}"
-                    break
-
-                # Resolve property in snapshot/message using Unified Resolver
-                if property_path:
-                    actual_val = PathResolver.resolve(actual_val, property_path)
-
-                # Comparison Logic
-                match = False
-                if mode == "exact":
-                    match = actual_val == expected
-                elif mode == "regex" or (
-                    isinstance(expected, str) and expected.startswith("regex:")
-                ):
-                    pattern = (
-                        str(expected)[6:] if str(expected).startswith("regex:") else str(expected)
-                    )
-                    match = bool(re.search(pattern, str(actual_val), re.IGNORECASE))
-                elif mode == "numerical_tolerance":
-                    try:
-                        match = abs(float(actual_val) - float(expected)) < 1e-9
-                    except (ValueError, TypeError):
-                        match = False
-                elif mode == "contains":
-                    if isinstance(expected, list):
-                        match = any(str(e).lower() in str(actual_val).lower() for e in expected)
-                    else:
-                        match = str(expected).lower() in str(actual_val).lower()
-
-                if not match:
-                    all_passed = False
-                    failed_reason = (
-                        f"{target}.{property_path or ''} | "
-                        f"Expected: {expected} | Actual: {actual_val}"
-                    )
-                    break  # Optimization: Retry on first failure
-
-            if all_passed:
-                logger.info(f"      [Session] [Parity] All {len(assertions)} assertions PASSED.")
-                return True
-
-            # Check for timeout
-            if asyncio.get_event_loop().time() - start_time > timeout:
-                logger.info(
-                    f"      [Session] [Parity-Audit] TIMEOUT reached. Last failure: {failed_reason}"
-                )
-
-                # [Forensics] Broadcast divergence for auditability & automated triage
-                self.event_bus.emit(
-                    CoreEvents.ADAPTER_DEBUG,
-                    {
-                        "message": f"Parity FAILED after {timeout}s: {failed_reason}",
-                        "category": "PARITY_STATE_DIVERGENCE",
-                        "is_root_cause": True,
-                    },
-                )
-                return False
-
-            await asyncio.sleep(interval)
+        return await self.state_parity_verifier.verify_state_parity(node, sandbox, history)
 
     async def _handle_tool_call(self, turn, agent_response, sandbox, history, actions, turn_ctx):
         tool_name = agent_response["tool_name"]
@@ -1107,215 +991,23 @@ class SessionManager:
         return ""
 
     async def _calculate_metrics(self, node, attempt_number, turns, history, sandbox, actions):
-        node_id = node.get("id")
-        results = {
-            "task_id": node_id,
-            "attempt": attempt_number,
-            "turns_taken": turns,
-            "conversation_history": history,
-            "metrics": [],
-            "protocol_sequence": list(self.protocol_sequence),
-            "state_snapshots": list(self.state_snapshots),
-            "resource_telemetry": list(self.resource_telemetry),
-            "tool_registry": self._extract_tool_registry(),
-        }
-
-        # v1.2 Hardened Metrics: Pre-condition check (State Hygiene)
-        sh = node.get("state_hygiene", {})
-        if sh:
-            self.event_bus.emit(
-                CoreEvents.STEP_START,
-                {"step_name": "state_hygiene_check"},
-                span_context=self.session_metadata.get("span_context"),
-            )
-            from .utils.path_resolver import PathResolver
-
-            hygiene_results = []
-            for rule in sh.get("rules", []):
-                path = rule.get("path")
-                expected = rule.get("expected")
-                op = rule.get("op", "eq")  # eq, exists, not_exists, contains
-
-                # Resolve nested path using Unified Resolver
-                val = PathResolver.resolve(sandbox.state, path)
-
-                success = False
-                if op == "eq":
-                    success = val == expected
-                elif op == "exists":
-                    success = val is not None
-                elif op == "not_exists":
-                    success = val is None
-                elif op == "contains":
-                    success = expected in val if val else False
-
-                hygiene_results.append({"path": path, "op": op, "success": success})
-
-            # Record hygiene as a meta-metric or log it
-            if hygiene_results:
-                results["state_hygiene"] = hygiene_results
-            self.event_bus.emit(
-                CoreEvents.STEP_END,
-                {"step_name": "state_hygiene_check"},
-                span_context=self.session_metadata.get("span_context"),
-            )
-
-        # --- [AES v1.6.0] Forensic Performance Evaluation ---
-        # We exclusively iterate through declared success_criteria.
-        criteria = node.get("success_criteria", [])
-        expected_outcome = node.get("expected_outcome")
-
-        for criterion in criteria:
-            try:
-                m_name = criterion.get("metric")
-                threshold = criterion.get("threshold", 1.0)
-                metric_func = metrics.MetricRegistry.get(m_name)
-
-                if not metric_func:
-                    logger.warning(f"   [Session] Warning: Metric '{m_name}' not found. Skipping.")
-                    continue
-
-                # 1. Prepare Data Context (The "Menu" of available session data)
-                summary = self._extract_agent_summary(history)
-
-                # Dynamic Dispatch Context
-                # [Industrial Hardening] Pure Assertion Model: find the primary message baseline
-                eval_context = criterion.copy()
-                if "expected" not in eval_context and isinstance(expected_outcome, list):
-                    primary_msg = next(
-                        (a["expected"] for a in expected_outcome if a.get("target") == "message"),
-                        None,
-                    )
-                    eval_context["expected"] = primary_msg
-
-                async def _invoke(func, *args, **kwargs):
-                    import inspect
-
-                    if inspect.iscoroutinefunction(func):
-                        return await func(*args, **kwargs)
-                    return func(*args, **kwargs)
-
-                # Dynamic Metric Dispatch (v1.6.0 Decoupled)
-                # Introspects signature to fulfill metric requirements without hardcoding names.
-                import inspect
-
-                sig = inspect.signature(metric_func)
-                params = sig.parameters
-
-                # --- [AES v1.6.0] Unified Trust Hierarchy ---
-                # Hierarchy: CORE > TRUSTED > EXTERNAL (Untrusted)
-                m_source = metrics.MetricRegistry.get_source(m_name)
-                is_core = m_source == "CORE"
-                # Check plugin/shim provenance for trust status
-                provenance = self.plugin_manager.provenance_map.get(m_source, {})
-                is_trusted = is_core or provenance.get("trusted", False)
-
-                # --- [AES v1.6.0] Conditional Deep-Copy Isolation ---
-                # We only copy if the metric requests a mutable parameter and is not core.
-                # This prevents malicious or accidental state mutation by external plugins.
-                def get_isolated(key, data, _params=params, _is_core=is_core):
-                    if key in _params and not _is_core and isinstance(data, (dict, list)):
-                        return copy.deepcopy(data)
-                    return data
-
-                context_map = {
-                    "criterion": eval_context,
-                    "eval_context": eval_context,
-                    "summary": summary,
-                    "agent_summary": summary,
-                    "history": get_isolated("history", history),
-                    "conversation_history": get_isolated("conversation_history", history),
-                    "identifier": self.identifier,
-                    "actual_state": get_isolated("actual_state", sandbox.state),
-                    "sandbox_state": get_isolated("sandbox_state", sandbox.state),
-                    "actual_tools": actions["used_tools"],
-                    "used_tools": actions["used_tools"],
-                    "expected_tools": node.get("required_tools", []),
-                    "required_tools": node.get("required_tools", []),
-                    "expected_changes": node.get("expected_state_changes", []),
-                    "expected_state_changes": node.get("expected_state_changes", []),
-                    "turns_taken": turns,
-                    "max_turns": self.max_turns,
-                    "attempt_number": attempt_number,
-                    # --- [AES v1.6.0] Extensible Industrial Parameters ---
-                    "expected": eval_context.get("expected"),
-                    "actual": summary,
-                    "agent_sequence": [m.get("agent_id") for m in history if m["role"] == "agent"],
-                    "protocol_sequence": list(self.protocol_sequence),
-                    "metadata": self.scenario.get("metadata", {}),
-                    "action_trace": actions,
-                }
-
-                # --- [AES v1.6.0] Trust Gate for System Parameters ---
-                if is_trusted:
-                    context_map["session_metadata"] = self.session_metadata
-                    context_map["forensic_telemetry"] = self.forensics.resource_telemetry
-
-                # 2. Fulfill Dependencies
-                kwargs = {}
-                for p_name in params:
-                    if p_name in context_map:
-                        kwargs[p_name] = context_map[p_name]
-
-                # 3. Execution
-                score = await _invoke(metric_func, **kwargs)
-
-                results["metrics"].append(
-                    {
-                        "metric": m_name,
-                        "score": score,
-                        "threshold": threshold,
-                        "success": score >= threshold,
-                    }
-                )
-                self.event_bus.emit(
-                    CoreEvents.ADAPTER_DEBUG,
-                    {"message": f"[Metric] {m_name}: {score:.2f} (Threshold: {threshold})"},
-                )
-            except Exception as e:
-                print(f"      [Metric Error] {node_id}: {e}")
-
-        return results
+        """
+        Calculates task metrics and evaluates state hygiene pre-conditions.
+        Delegates to decomposed SessionMetricsCalculator component.
+        """
+        return await self.metrics_calculator.calculate_metrics(
+            node, attempt_number, turns, history, sandbox, actions
+        )
 
     def _extract_agent_summary(self, history):
-        agent_msgs = [m for m in history if m["role"] == "agent"]
-        if not agent_msgs:
-            return ""
-        last_content = agent_msgs[-1].get("content", "")
-        if isinstance(last_content, dict):
-            # Try to find a meaningful string across common fields
-            return (
-                last_content.get("summary")
-                or last_content.get("instructions")
-                or last_content.get("message")
-                or last_content.get("content")
-                or ""
-            )
-        return str(last_content)
+        """Extracts the latest agent text summary from conversation history."""
+        return SessionMetricsCalculator.extract_agent_summary(history)
 
     async def _get_shim_snapshots(
         self, sandbox: ToolSandbox, shim_ids: list[str]
     ) -> dict[str, Any]:
         """Queries active simulators for point-in-time state snapshots."""
-        simulators = sandbox.get_active_simulators()
-        shim_snapshots = {}
-        if not shim_ids:
-            return shim_snapshots
-
-        tasks = []
-        valid_ids = []
-        for sid in shim_ids:
-            shim = simulators.get(sid)
-            if shim:
-                tasks.append(shim.get_snapshot())
-                valid_ids.append(sid)
-            else:
-                logger.warning(f"      [Session] [Parity] Unknown shim target: {sid}")
-
-        if tasks:
-            results = await asyncio.gather(*tasks)
-            shim_snapshots = dict(zip(valid_ids, results, strict=True))
-        return shim_snapshots
+        return await self.state_parity_verifier.get_shim_snapshots(sandbox, shim_ids)
 
     def _sanitize_for_history(self, obj: Any) -> Any:
         """Coerces objects (especially Mocks) into plain serializable types for history safety."""

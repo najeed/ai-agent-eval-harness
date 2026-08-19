@@ -6,6 +6,8 @@ Decomposed session components.
 from eval_runner.session_components import (
     SessionApprovalManager,
     SessionCheckpointManager,
+    SessionMetricsCalculator,
+    SessionStateParityVerifier,
     ToolExecutionCoordinator,
     TurnStateManager,
 )
@@ -15,4 +17,6 @@ __all__ = [
     "ToolExecutionCoordinator",
     "SessionCheckpointManager",
     "SessionApprovalManager",
+    "SessionMetricsCalculator",
+    "SessionStateParityVerifier",
 ]

@@ -1,0 +1,207 @@
+"""
+eval_runner.session_components.metrics_calculator
+Calculates evaluation metrics and evaluates state hygiene pre-conditions.
+"""
+
+from __future__ import annotations
+
+import copy
+import inspect
+import logging
+from typing import Any
+
+from eval_runner import metrics
+from eval_runner.events import CoreEvents
+from eval_runner.utils.path_resolver import PathResolver
+
+logger = logging.getLogger(__name__)
+
+
+class SessionMetricsCalculator:
+    """Evaluates task metrics, state hygiene rules, and formats execution summaries."""
+
+    def __init__(self, session_manager: Any):
+        self.session_manager = session_manager
+
+    @staticmethod
+    def extract_agent_summary(history: list[dict[str, Any]]) -> str:
+        """Extracts the latest agent text summary from conversation history."""
+        agent_msgs = [m for m in history if m.get("role") == "agent"]
+        if not agent_msgs:
+            return ""
+        last_content = agent_msgs[-1].get("content", "")
+        if isinstance(last_content, dict):
+            return (
+                last_content.get("summary")
+                or last_content.get("instructions")
+                or last_content.get("message")
+                or last_content.get("content")
+                or ""
+            )
+        return str(last_content)
+
+    async def calculate_metrics(
+        self,
+        node: dict[str, Any],
+        attempt_number: int,
+        turns: int,
+        history: list[dict[str, Any]],
+        sandbox: Any,
+        actions: dict[str, Any],
+    ) -> dict[str, Any]:
+        node_id = node.get("id")
+        sm = self.session_manager
+
+        results: dict[str, Any] = {
+            "task_id": node_id,
+            "attempt": attempt_number,
+            "turns_taken": turns,
+            "conversation_history": history,
+            "metrics": [],
+            "protocol_sequence": list(getattr(sm, "protocol_sequence", [])),
+            "state_snapshots": list(getattr(sm, "state_snapshots", [])),
+            "resource_telemetry": list(getattr(sm, "resource_telemetry", [])),
+            "tool_registry": (
+                sm._extract_tool_registry() if hasattr(sm, "_extract_tool_registry") else {}
+            ),
+        }
+
+        # v1.2 Hardened Metrics: Pre-condition check (State Hygiene)
+        sh = node.get("state_hygiene", {})
+        if sh:
+            if hasattr(sm, "event_bus"):
+                sm.event_bus.emit(
+                    CoreEvents.STEP_START,
+                    {"step_name": "state_hygiene_check"},
+                    span_context=sm.session_metadata.get("span_context"),
+                )
+
+            hygiene_results = []
+            for rule in sh.get("rules", []):
+                path = rule.get("path")
+                expected = rule.get("expected")
+                op = rule.get("op", "eq")
+
+                val = PathResolver.resolve(getattr(sandbox, "state", {}), path)
+
+                success = False
+                if op == "eq":
+                    success = val == expected
+                elif op == "exists":
+                    success = val is not None
+                elif op == "not_exists":
+                    success = val is None
+                elif op == "contains":
+                    success = expected in val if val else False
+
+                hygiene_results.append({"path": path, "op": op, "success": success})
+
+            if hygiene_results:
+                results["state_hygiene"] = hygiene_results
+            if hasattr(sm, "event_bus"):
+                sm.event_bus.emit(
+                    CoreEvents.STEP_END,
+                    {"step_name": "state_hygiene_check"},
+                    span_context=sm.session_metadata.get("span_context"),
+                )
+
+        criteria = node.get("success_criteria", [])
+        expected_outcome = node.get("expected_outcome")
+
+        for criterion in criteria:
+            try:
+                m_name = criterion.get("metric")
+                threshold = criterion.get("threshold", 1.0)
+                metric_func = metrics.MetricRegistry.get(m_name)
+
+                if not metric_func:
+                    logger.warning(f"   [Session] Warning: Metric '{m_name}' not found. Skipping.")
+                    continue
+
+                summary = self.extract_agent_summary(history)
+
+                eval_context = criterion.copy()
+                if "expected" not in eval_context and isinstance(expected_outcome, list):
+                    primary_msg = next(
+                        (a["expected"] for a in expected_outcome if a.get("target") == "message"),
+                        None,
+                    )
+                    eval_context["expected"] = primary_msg
+
+                async def _invoke(func, *args, **kwargs):
+                    if inspect.iscoroutinefunction(func):
+                        return await func(*args, **kwargs)
+                    return func(*args, **kwargs)
+
+                sig = inspect.signature(metric_func)
+                params = sig.parameters
+
+                m_source = metrics.MetricRegistry.get_source(m_name)
+                is_core = m_source == "CORE"
+                provenance = getattr(sm.plugin_manager, "provenance_map", {}).get(m_source, {})
+                is_trusted = is_core or provenance.get("trusted", False)
+
+                def get_isolated(key, data, _params=params, _is_core=is_core):
+                    if key in _params and not _is_core and isinstance(data, (dict, list)):
+                        return copy.deepcopy(data)
+                    return data
+
+                context_map = {
+                    "criterion": eval_context,
+                    "eval_context": eval_context,
+                    "summary": summary,
+                    "agent_summary": summary,
+                    "history": get_isolated("history", history),
+                    "conversation_history": get_isolated("conversation_history", history),
+                    "identifier": getattr(sm, "identifier", "unknown"),
+                    "actual_state": get_isolated("actual_state", getattr(sandbox, "state", {})),
+                    "sandbox_state": get_isolated("sandbox_state", getattr(sandbox, "state", {})),
+                    "actual_tools": actions.get("used_tools", []),
+                    "used_tools": actions.get("used_tools", []),
+                    "expected_tools": node.get("required_tools", []),
+                    "required_tools": node.get("required_tools", []),
+                    "expected_changes": node.get("expected_state_changes", []),
+                    "expected_state_changes": node.get("expected_state_changes", []),
+                    "turns_taken": turns,
+                    "max_turns": getattr(sm, "max_turns", 10),
+                    "attempt_number": attempt_number,
+                    "expected": eval_context.get("expected"),
+                    "actual": summary,
+                    "agent_sequence": [
+                        m.get("agent_id") for m in history if m.get("role") == "agent"
+                    ],
+                    "protocol_sequence": list(getattr(sm, "protocol_sequence", [])),
+                    "metadata": getattr(sm, "scenario", {}).get("metadata", {}),
+                    "action_trace": actions,
+                }
+
+                if is_trusted:
+                    context_map["session_metadata"] = getattr(sm, "session_metadata", {})
+                    context_map["forensic_telemetry"] = getattr(
+                        sm.forensics, "resource_telemetry", []
+                    )
+
+                kwargs = {}
+                for p_name in params:
+                    if p_name in context_map:
+                        kwargs[p_name] = context_map[p_name]
+
+                score = await _invoke(metric_func, **kwargs)
+
+                results["metrics"].append(
+                    {
+                        "metric": m_name,
+                        "score": score,
+                        "threshold": threshold,
+                        "success": score >= threshold,
+                    }
+                )
+                if hasattr(sm, "event_bus"):
+                    sm.event_bus.emit(
+                        CoreEvents.ADAPTER_DEBUG,
+                        {"message": f"[Metric] {m_name}: {score:.2f} (Threshold: {threshold})"},
+                    )
+            except Exception as e:
+                print(f"      [Metric Error] {node_id}: {e}")
+
+        return results
