@@ -41,3 +41,13 @@ class ArtifactStore(ABC):
     def list_artifacts(self, run_id: str) -> list[dict[str, Any]]:
         """Lists all artifacts associated with a run."""
         raise NotImplementedError
+
+    @abstractmethod
+    def seal(self, run_id: str, metadata: dict[str, Any] | None = None) -> None:
+        """Seals the artifact vault for a run, transitioning it to immutable READ_ONLY state."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def is_sealed(self, run_id: str) -> bool:
+        """Returns True if the run artifact vault has been sealed against further mutations."""
+        raise NotImplementedError

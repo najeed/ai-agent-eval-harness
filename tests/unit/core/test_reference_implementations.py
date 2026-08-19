@@ -207,7 +207,7 @@ class TestAuthReferenceImplementation:
         assert backend.check_permission(None, "scenarios", "read") is False
 
         # 4. List keys & Revoke key
-        keys = backend.list_keys()
+        keys = backend.list_keys(mask=False)
         assert "auditor-key-001" in keys
         assert backend.revoke_key("auditor-key-001") is True
         assert backend.revoke_key("non-existent-token") is False
@@ -327,7 +327,8 @@ class TestInProcessExecutionBackend:
         resumed = backend.resume(run_id, resumption_token="tok_abc_123")
         assert resumed is not None
         assert resumed["status"] == "RUNNING"
-        assert backend.resume("non_existent_run_id") is None
+        with pytest.raises(RuntimeError, match="fail-closed"):
+            backend.resume("non_existent_run_id")
 
     def test_inprocess_execution_exception_propagation(self, monkeypatch):
         backend = InProcessExecutionBackend()
@@ -860,6 +861,18 @@ class TestAuthAndCatalogExtraBranches:
         assert p is not None
         assert p.principal_id == "root-admin"
 
+        # 4. Masking and list_principals coverage
+        backend4 = SimpleAPIKeyAuthBackend()
+        masked_keys = backend4.list_keys(mask=True)
+        raw_keys = backend4.list_keys(mask=False)
+        assert len(masked_keys) == 1
+        assert "..." in masked_keys[0]
+        assert raw_keys[0] != masked_keys[0]
+        principals = backend4.list_principals()
+        assert len(principals) == 1
+        assert principals[0]["principal_id"] == "root-admin"
+        assert "key_preview" in principals[0]
+
     def test_inprocess_backend_complete_branches(self, tmp_path):
         import threading
 
@@ -887,8 +900,9 @@ class TestAuthAndCatalogExtraBranches:
         )
         assert backend.status(run_id_aborted)["status"] == "ABORTED"
 
-        # Resume without run and without checkpoint returns None
-        assert backend.resume("non_existent_run_id") is None
+        # Resume without run and without checkpoint raises RuntimeError (fail-closed)
+        with pytest.raises(RuntimeError, match="fail-closed"):
+            backend.resume("non_existent_run_id")
 
         # Resume with active run containing scenario_data and no checkpoint returns active_run
         run_id = "run-active-resume-001"
@@ -917,11 +931,33 @@ class TestAuthAndCatalogExtraBranches:
 
         store = LocalFileArtifactStore(base_dir=tmp_path)
         run_id = "run-seal-001"
+        assert store.is_sealed(run_id) is False
+        assert store.is_sealed("../invalid_escape") is False
         store.store_artifact(run_id, "file.txt", "initial content")
 
         # Line 45: Overwrite False and Append False raises PermissionError
         with pytest.raises(PermissionError):
             store.store_artifact(run_id, "file.txt", "new content", overwrite=False, append=False)
+
+        # Seal artifact store and verify post-seal write rejections
+        store.seal(run_id, metadata={"reason": "audit_complete"})
+        assert store.is_sealed(run_id) is True
+
+        with pytest.raises(PermissionError, match="sealed"):
+            store.store_artifact(run_id, "post_seal.txt", "forbidden")
+
+    def test_local_leaderboard_store_persistence(self, tmp_path):
+        from eval_runner.reference.local_leaderboard import LocalLeaderboardStore
+
+        store = LocalLeaderboardStore(runs_dir=tmp_path)
+        run_id = "run-lead-001"
+        store.record_run_summary(run_id, {"run_id": run_id, "pass_rate": 0.95})
+        summary_path = tmp_path / run_id / "run_summary.json"
+        assert summary_path.exists()
+        assert json.loads(summary_path.read_text(encoding="utf-8"))["pass_rate"] == 0.95
+
+        # Invalid run_id safe handling
+        store.record_run_summary("../invalid_run", {"pass_rate": 0})
 
     def test_local_catalog_store_edge_cases(self, tmp_path):
         from eval_runner.reference.local_catalog import LocalFileCatalogStore

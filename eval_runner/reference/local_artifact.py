@@ -27,6 +27,24 @@ class LocalFileArtifactStore(ArtifactStore):
     def _get_run_dir(self, run_id: str, create: bool = False) -> Path:
         return SafeRunPathResolver.resolve_run_dir(self.base_dir, run_id, create=create)
 
+    def is_sealed(self, run_id: str) -> bool:
+        try:
+            run_dir = self._get_run_dir(run_id, create=False)
+        except (ValueError, PermissionError):
+            return False
+        if not run_dir.exists():
+            return False
+        return (run_dir / ".sealed").exists() or (run_dir / "trace_seal.json").exists()
+
+    def seal(self, run_id: str, metadata: dict[str, Any] | None = None) -> None:
+        run_dir = self._get_run_dir(run_id, create=True)
+        seal_marker = run_dir / ".sealed"
+        seal_data = dict(metadata or {})
+        seal_data.setdefault("sealed", True)
+        seal_data.setdefault("run_id", run_id)
+        with open(seal_marker, "w", encoding="utf-8") as f:
+            json.dump(seal_data, f, indent=2)
+
     def store_artifact(
         self,
         run_id: str,
@@ -38,6 +56,13 @@ class LocalFileArtifactStore(ArtifactStore):
         append: bool = False,
         **kwargs: Any,
     ) -> str:
+        # Check if already sealed (unless writing seal marker or trace_seal.json itself)
+        if self.is_sealed(run_id) and artifact_name not in (".sealed", "trace_seal.json"):
+            raise PermissionError(
+                f"Artifact vault for run '{run_id}' is sealed; "
+                "mutations and new artifacts are prohibited."
+            )
+
         run_dir = self._get_run_dir(run_id, create=True)
         target_path = SafeRunPathResolver.resolve_artifact_path(run_dir, artifact_name)
 

@@ -106,9 +106,18 @@ class ArtifactPlugin(BaseEvalPlugin):
 
         if generate_manifest:
             # Add signature to manifest
+            from eval_runner.reference.signing import LocalEd25519SigningBackend
+
             private_key = self._get_signing_key()
             manifest_json = json.dumps(manifest, sort_keys=True)
-            signature = private_key.sign(manifest_json.encode())
+            priv_pem = private_key.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.PKCS8,
+                encryption_algorithm=serialization.NoEncryption(),
+            )
+            backend = LocalEd25519SigningBackend()
+            sig_hex = backend.sign_payload(manifest_json.encode(), priv_pem)
+            signature = bytes.fromhex(sig_hex)
             manifest["signature_ed25519"] = base64.b64encode(signature).decode()
             manifest["public_key"] = base64.b64encode(
                 private_key.public_key().public_bytes(

@@ -131,18 +131,16 @@ class InProcessExecutionBackend(ExecutionBackend):
                 if not checkpoint and not kwargs.get("force_submit", False):
                     return self._active_runs[run_id]
 
-        if not checkpoint and run_id not in self._active_runs:
-            return None
-
-        scenario_data = (
-            (checkpoint.get("scenario_data") if checkpoint else None)
-            or (
-                self._active_runs.get(run_id, {}).get("scenario_data")
-                if run_id in self._active_runs
-                else None
-            )
-            or {"metadata": {"name": run_id}, "id": run_id, "workflow": [{"id": "resumed_task"}]}
+        scenario_data = (checkpoint.get("scenario_data") if checkpoint else None) or (
+            self._active_runs.get(run_id, {}).get("scenario_data")
+            if run_id in self._active_runs
+            else None
         )
+        if not scenario_data:
+            raise RuntimeError(
+                f"Cannot resume run '{run_id}': checkpoint does not contain required "
+                "scenario state (fail-closed)."
+            )
 
         background = kwargs.pop("background", False)
         return self.submit(

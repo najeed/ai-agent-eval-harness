@@ -35,7 +35,12 @@ class SimpleAPIKeyAuthBackend(AuthorizationBackend):
         elif not static_keys:
             # Generate a secure dynamic bootstrap secret rather than shipping a static default
             self.master_key = secrets.token_urlsafe(32)
-            logger.info("Generated dynamic bootstrap master API key: %s", self.master_key)
+            masked_preview = (
+                f"{self.master_key[:4]}...{self.master_key[-4:]}"
+                if len(self.master_key) >= 8
+                else "***"
+            )
+            logger.info("Generated dynamic bootstrap master API key (masked: %s)", masked_preview)
         else:
             self.master_key = None
 
@@ -75,9 +80,30 @@ class SimpleAPIKeyAuthBackend(AuthorizationBackend):
             return True
         return False
 
-    def list_keys(self) -> list[str]:
-        """Lists all active registered API keys."""
+    def list_keys(self, mask: bool = True) -> list[str]:
+        """
+        Lists all active registered API keys.
+        By default (mask=True), returns masked key previews to prevent secret disclosure.
+        """
+        if mask:
+            return [f"{k[:4]}...{k[-4:]}" if len(k) >= 8 else "***" for k in self._keys]
         return list(self._keys.keys())
+
+    def list_principals(self) -> list[dict[str, Any]]:
+        """Lists metadata of all registered principals without exposing raw secrets."""
+        principals = []
+        for k, v in self._keys.items():
+            preview = f"{k[:4]}...{k[-4:]}" if len(k) >= 8 else "***"
+            principals.append(
+                {
+                    "principal_id": v.get("principal_id", "unknown"),
+                    "roles": v.get("roles", []),
+                    "permissions": v.get("permissions", []),
+                    "metadata": v.get("metadata", {}),
+                    "key_preview": preview,
+                }
+            )
+        return principals
 
     def validate_token(self, token: str) -> AuthPrincipal | None:
         """Validates incoming token against registered keys or master key."""

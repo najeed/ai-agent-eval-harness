@@ -75,6 +75,7 @@ class MockExternalCheckpointStore(CheckpointStore):
 class MockExternalArtifactStore(ArtifactStore):
     def __init__(self):
         self.artifacts = {}
+        self._sealed_runs = set()
 
     def store_artifact(
         self,
@@ -84,6 +85,8 @@ class MockExternalArtifactStore(ArtifactStore):
         content_type: str | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> str:
+        if self.is_sealed(run_id):
+            raise PermissionError(f"Run {run_id} is sealed")
         self.artifacts[f"{run_id}/{artifact_name}"] = content
         return f"s3://mock-bucket/{run_id}/{artifact_name}"
 
@@ -96,6 +99,12 @@ class MockExternalArtifactStore(ArtifactStore):
 
     def list_artifacts(self, run_id: str) -> list[dict[str, Any]]:
         return [{"name": k.split("/")[1]} for k in self.artifacts if k.startswith(f"{run_id}/")]
+
+    def seal(self, run_id: str, metadata: dict[str, Any] | None = None) -> None:
+        self._sealed_runs.add(run_id)
+
+    def is_sealed(self, run_id: str) -> bool:
+        return run_id in self._sealed_runs
 
 
 class MockExternalPolicyEvaluator(PolicyEvaluator):

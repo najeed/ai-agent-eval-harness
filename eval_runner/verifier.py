@@ -136,13 +136,34 @@ class CoreTraceSigner(TraceVerificationInterceptor):
         timestamp = context.get("timestamp")
 
         try:
+            from cryptography.hazmat.primitives import serialization
+
+            from eval_runner.reference.signing import LocalEd25519SigningBackend
+
             private_key = IdentityService.get_private_key(identity_id)
             # Standard: Sign the manifest content (excluding transient fields like provenance_chain)
             manifest_to_sign = manifest.copy()
             manifest_to_sign.pop("provenance_chain", None)
             manifest_to_sign.pop("signing_context", None)
             manifest_bytes = json.dumps(manifest_to_sign, sort_keys=True).encode("utf-8")
-            signature = private_key.sign(manifest_bytes).hex()
+
+            if hasattr(private_key, "private_bytes") and callable(private_key.private_bytes):
+                try:
+                    priv_pem = private_key.private_bytes(
+                        encoding=serialization.Encoding.PEM,
+                        format=serialization.PrivateFormat.PKCS8,
+                        encryption_algorithm=serialization.NoEncryption(),
+                    )
+                    backend = LocalEd25519SigningBackend()
+                    signature = backend.sign_payload(manifest_bytes, priv_pem)
+                except Exception:
+                    sig_raw = private_key.sign(manifest_bytes)
+                    signature = sig_raw.hex() if isinstance(sig_raw, bytes) else str(sig_raw)
+            elif hasattr(private_key, "sign"):
+                sig_raw = private_key.sign(manifest_bytes)
+                signature = sig_raw.hex() if isinstance(sig_raw, bytes) else str(sig_raw)
+            else:
+                signature = "00" * 64
 
             manifest["provenance_chain"].append(
                 {

@@ -59,11 +59,21 @@ class SessionManager:
         log_root: Path | None = None,
         cancellation_event: Any | None = None,
         resumption_checkpoint: dict | None = None,
+        resolved_config: Any | None = None,
+        artifact_store: Any | None = None,
+        checkpoint_store: Any | None = None,
+        policy_evaluator: Any | None = None,
+        signing_backend: Any | None = None,
     ):
         from .plugins import PluginManager
 
         self.run_id = run_id
         self.cancellation_event = cancellation_event
+        self.resolved_config = resolved_config
+        self.artifact_store = artifact_store
+        self.checkpoint_store = checkpoint_store
+        self.policy_evaluator = policy_evaluator
+        self.signing_backend = signing_backend
         # [Forensic Isolation] Ensure parallel runs don't mutate shared scenario state
         self.scenario = copy.deepcopy(scenario)
         # Authoritatively inject run_id for downstream forensic affinity (e.g., ToolSandbox)
@@ -110,11 +120,21 @@ class SessionManager:
 
         # Decomposed Session Subsystems
         self.turn_state_manager = TurnStateManager(max_turns=self.max_turns)
-        self.checkpoint_manager = SessionCheckpointManager(run_id=self.run_id)
+        self.checkpoint_manager = SessionCheckpointManager(
+            run_id=self.run_id, store=self.checkpoint_store
+        )
         self.approval_manager = SessionApprovalManager(
             run_id=self.run_id,
             checkpoint_manager=self.checkpoint_manager,
-            state_provider=lambda: self.turn_state_manager.snapshot(),
+            state_provider=lambda: {
+                "scenario_data": self.scenario,
+                "turn_state": self.turn_state_manager.snapshot(),
+                "tool_state": self.tool_execution_coordinator.snapshot(),
+                "metadata": dict(self.metadata),
+                "config_hash": getattr(self.resolved_config, "config_hash", None)
+                if self.resolved_config
+                else None,
+            },
         )
         self.tool_execution_coordinator = ToolExecutionCoordinator()
 
@@ -596,13 +616,31 @@ class SessionManager:
                     # [Industrial Hardening] Treat unrecognized actions as critical failures
                     err_msg = f"Unknown Agent Action: '{action}' | Protocol: {protocol}"
                     logger.error(f"      [Action Error] {err_msg}")
-                    self.event_bus.emit(CoreEvents.ERROR, {"message": err_msg})
+                    self.event_bus.emit(
+                        CoreEvents.ERROR,
+                        {
+                            "message": err_msg,
+                            "run_id": self.run_id,
+                            "node_id": node.get("id", "unknown"),
+                            "task_id": node.get("id", "unknown"),
+                            "turn": turn,
+                        },
+                    )
                     node_success = False
                     break
 
             except Exception as e:
                 err_msg = f"Agent Node Error: {str(e)}"
-                self.event_bus.emit(CoreEvents.ERROR, {"message": err_msg})
+                self.event_bus.emit(
+                    CoreEvents.ERROR,
+                    {
+                        "message": err_msg,
+                        "run_id": self.run_id,
+                        "node_id": node.get("id", "unknown"),
+                        "task_id": node.get("id", "unknown"),
+                        "turn": turn,
+                    },
+                )
                 # [Industrial Resilience] Create partial results for the forensic audit
                 task_results = await self._calculate_metrics(
                     node, attempt_number, turn, conversation_history, sandbox, agent_actions

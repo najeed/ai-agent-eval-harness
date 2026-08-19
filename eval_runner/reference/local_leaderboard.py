@@ -32,8 +32,19 @@ class LocalLeaderboardStore(LeaderboardStore):
         return rows
 
     def record_run_summary(self, run_id: str, summary: dict[str, Any]) -> None:
-        # Local runs directory contains files automatically indexed during aggregation
-        pass
+        import json
+
+        from eval_runner.utils.safe_path import SafeRunPathResolver
+
+        try:
+            target_dir = SafeRunPathResolver.resolve_run_dir(self.runs_dir, run_id, create=True)
+            summary_file = SafeRunPathResolver.resolve_artifact_path(
+                target_dir, "run_summary.json", allow_subdirs=False
+            )
+            with open(summary_file, "w", encoding="utf-8") as f:
+                json.dump(summary, f, indent=2)
+        except (ValueError, PermissionError):
+            pass
 
 
 # Alias for naming consistency with LocalFileCatalogStore and LocalFileRunStore

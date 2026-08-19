@@ -40,7 +40,16 @@ class BaseRunner(ABC):
 class DefaultRunner(BaseRunner):
     """Standard implementation of the evaluation loop."""
 
-    def __init__(self, run_store: Any | None = None, config_resolver: Any | None = None):
+    def __init__(
+        self,
+        run_store: Any | None = None,
+        config_resolver: Any | None = None,
+        artifact_store: Any | None = None,
+        checkpoint_store: Any | None = None,
+        policy_evaluator: Any | None = None,
+        signing_backend: Any | None = None,
+        execution_backend: Any | None = None,
+    ):
         """Sanity check for required directories and initialize storage / config wiring."""
         Path("scenarios").mkdir(exist_ok=True)
         Path("industries").mkdir(exist_ok=True)
@@ -52,6 +61,11 @@ class DefaultRunner(BaseRunner):
         self.run_store = run_store or LocalFileRunStore()
         self.config_resolver = config_resolver or ConfigResolver
         self.resolved_config = self.config_resolver.resolve()
+        self.artifact_store = artifact_store
+        self.checkpoint_store = checkpoint_store
+        self.policy_evaluator = policy_evaluator
+        self.signing_backend = signing_backend
+        self.execution_backend = execution_backend
 
     async def run(
         self,
@@ -162,6 +176,11 @@ class DefaultRunner(BaseRunner):
                     seed=current_seed,
                     cancellation_event=cancellation_event,
                     resumption_checkpoint=resumption_checkpoint,
+                    resolved_config=self.resolved_config,
+                    artifact_store=self.artifact_store,
+                    checkpoint_store=self.checkpoint_store,
+                    policy_evaluator=self.policy_evaluator,
+                    signing_backend=self.signing_backend,
                 )
                 attempt_results = await session.execute_tasks(k)
 

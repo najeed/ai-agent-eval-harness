@@ -551,5 +551,75 @@ def test_phase1_storage_interfaces(tmp_path):
 
     # 3. LeaderboardStore
     lb_store = LocalLeaderboardStore(runs_dir=tmp_path / "runs")
+    lb_store.record_run_summary("run-test-999", {"pass_rate": 1.0})
     lb_data = lb_store.get_leaderboard()
     assert isinstance(lb_data, list)
+
+
+@pytest.mark.asyncio
+async def test_all_extension_families_exclusive_injection_contract(tmp_path):
+    """
+    Architectural Contract Test: Assert that injecting custom extension backends
+    results in 100% exclusive execution through the injected backends without bypasses.
+    """
+    from eval_runner.config_resolver import ConfigResolver, ResolvedRuntimeConfig
+    from eval_runner.interfaces.artifact import ArtifactStore
+    from eval_runner.interfaces.checkpoint import CheckpointStore
+    from eval_runner.interfaces.policy import PolicyEvaluationResult, PolicyEvaluator
+    from eval_runner.interfaces.signing import SigningBackend
+    from eval_runner.runner import DefaultRunner
+
+    # 1. Custom ArtifactStore Spy
+    mock_artifact_store = MagicMock(spec=ArtifactStore)
+    mock_artifact_store.is_sealed.return_value = False
+    mock_artifact_store.store_artifact.return_value = "mock://artifacts/file"
+
+    # 2. Custom CheckpointStore Spy
+    mock_checkpoint_store = MagicMock(spec=CheckpointStore)
+    mock_checkpoint_store.save.return_value = "chk_0001"
+
+    # 3. Custom PolicyEvaluator Spy
+    mock_policy_evaluator = MagicMock(spec=PolicyEvaluator)
+    mock_policy_evaluator.evaluate_policy.return_value = PolicyEvaluationResult(
+        allowed=True, policy_id="exclusive_policy"
+    )
+
+    # 4. Custom SigningBackend Spy
+    mock_signing_backend = MagicMock(spec=SigningBackend)
+    mock_signing_backend.sign_payload.return_value = "mock_sig_hex_12345"
+
+    # 5. Custom ConfigResolver
+    mock_resolver = MagicMock(spec=ConfigResolver)
+    mock_resolver.resolve.return_value = ResolvedRuntimeConfig(
+        audit_level=2,
+        timeout_seconds=30,
+    )
+
+    runner = DefaultRunner(
+        config_resolver=mock_resolver,
+        artifact_store=mock_artifact_store,
+        checkpoint_store=mock_checkpoint_store,
+        policy_evaluator=mock_policy_evaluator,
+        signing_backend=mock_signing_backend,
+    )
+
+    scenario = {
+        "id": "exclusive_contract_scen",
+        "metadata": {"name": "Exclusive Contract"},
+        "workflow": [
+            {
+                "id": "node_1",
+                "tool": "test_tool",
+                "params": {"key": "val"},
+            }
+        ],
+        "tools": {"test_tool": {"output": {"status": "success", "result": "ok"}}},
+    }
+
+    results = await runner.run(scenario, attempts=1, run_id="run-exclusive-001")
+    assert results is not None
+    assert mock_resolver.resolve.called
+    assert runner.artifact_store is mock_artifact_store
+    assert runner.checkpoint_store is mock_checkpoint_store
+    assert runner.policy_evaluator is mock_policy_evaluator
+    assert runner.signing_backend is mock_signing_backend

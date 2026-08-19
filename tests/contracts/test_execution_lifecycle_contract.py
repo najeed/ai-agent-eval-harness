@@ -89,15 +89,14 @@ class TestExecutionLifecycleContract:
             f"cancel() returned {type(result)}, contract requires bool."
         )
 
-    def test_resume_does_not_raise_on_unknown_run(self):
+    def test_resume_fails_closed_on_unknown_run(self):
         """
-        Contract: resume() on an unknown run_id must not raise — it returns None
-        or a valid state dict.
+        Contract: resume() on an unknown run_id or missing state must fail-closed
+        by raising RuntimeError rather than synthesizing synthetic state.
         """
         backend = InProcessExecutionBackend()
-        result = backend.resume("ghost_run_id", resumption_token="tok_abc")
-        # Acceptable: None or dict. Not acceptable: uncaught exception.
-        assert result is None or isinstance(result, dict)
+        with pytest.raises(RuntimeError, match="fail-closed"):
+            backend.resume("ghost_run_id", resumption_token="tok_abc")
 
     def test_full_lifecycle_submit_status_cancel(self):
         """
