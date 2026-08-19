@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * `LeaderboardStore` & `LocalLeaderboardStore` (aliased as `LocalFileLeaderboardStore`): Wired into `eval_runner/reporter.py` with real JSON summary persistence (`record_run_summary()`).
 * **100.00% Statement Test Coverage**: Maintained 100.00% statement coverage (920/920 statements) across all 24 reference and session component modules.
 * **Centralized Path Safety (`SafeRunPathResolver`)**: Enforced strict jail boundary verification across `ArtifactStore`, `RunStore`, and `CatalogStore`, eliminating directory traversal vulnerability classes.
-* **Reference Backends**: Shipped `LocalEd25519SigningBackend`, `NullSigningBackend`, `PQCSigningBackend` (Zero-Exposure Signing with ML-DSA-65 / FIPS 204), `SimpleAPIKeyAuthBackend`, and local storage backends in `eval_runner/reference/` and re-exported via `agentv_runtime/reference`.
+* **Reference Backends**: Shipped `LocalEd25519SigningBackend`, `NullSigningBackend`, `PQCSigningBackend` (Zero-Exposure Signing with ML-DSA-65 / FIPS 204), `SimpleAPIKeyAuthBackend`, and local storage backends in `eval_runner/reference/` and re-exported via `agentv_runtime/reference.py`.
 * **Fail-Closed Cryptographic Enforcement on Key Absence**: Enforced strict `RuntimeError` on missing signing keys when `EVAL_REQUIRE_SIGNING=true` or `AUDIT_LEVEL >= 2`.
 * **Contract Test Suite Expansion (`tests/contracts/`)**: Consolidated and expanded contract test suite to 75+ automated contract tests:
   * `test_interface_wiring_contract.py`: Actively asserts that all 6 Extension Families, store interfaces, and subsystem managers are invoked by runtime paths.
