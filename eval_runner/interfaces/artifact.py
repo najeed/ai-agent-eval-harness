@@ -22,6 +22,7 @@ class ArtifactStore(ABC):
         content: bytes | str,
         content_type: str | None = None,
         metadata: dict[str, Any] | None = None,
+        **kwargs: Any,
     ) -> str:
         """Stores an artifact and returns its persistent URI / path."""
         raise NotImplementedError

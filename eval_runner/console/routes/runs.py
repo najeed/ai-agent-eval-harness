@@ -528,7 +528,71 @@ def get_run_status(run_id):
                 }
             )
 
+    # Check active execution backend in-memory state before returning 404
+    from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+
+    backend = InProcessExecutionBackend.get_instance()
+    st = backend.status(run_id)
+    if st and st.get("status") != "UNKNOWN":
+        return jsonify(
+            {
+                "run_id": run_id,
+                "status": st.get("status"),
+                "size": 0,
+                "mtime": 0,
+                "has_certificate": False,
+                "sourced_from_master": False,
+                "scenario": st.get("scenario_data"),
+            }
+        )
+
     return jsonify({"error": "Run not found"}), 404
+
+
+@run_bp.route("/v1/runs/<path:run_id>/cancel", methods=["POST"])
+@require_permission(Permission.RUNS_WRITE)
+def cancel_run(run_id):
+    """Cancels an active execution run via ExecutionBackend."""
+    from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+
+    data = request.json or {}
+    reason = data.get("reason", "Cancelled via Console API")
+    backend = InProcessExecutionBackend.get_instance()
+    success = backend.cancel(run_id, reason=reason)
+    if not success:
+        return (
+            jsonify(
+                {
+                    "error": f"Run '{run_id}' is not active or could not be cancelled",
+                    "run_id": run_id,
+                }
+            ),
+            404,
+        )
+    return jsonify({"status": "ABORTED", "run_id": run_id, "reason": reason})
+
+
+@run_bp.route("/v1/runs/<path:run_id>/resume", methods=["POST"])
+@require_permission(Permission.RUNS_WRITE)
+def resume_run(run_id):
+    """Resumes a paused or checkpointed evaluation run via ExecutionBackend."""
+    from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+
+    data = request.json or {}
+    resumption_token = data.get("resumption_token")
+    backend = InProcessExecutionBackend.get_instance()
+    resumed = backend.resume(run_id, resumption_token=resumption_token, background=True)
+    if resumed is None:
+        return (
+            jsonify(
+                {
+                    "error": f"No checkpoint found to resume run '{run_id}'",
+                    "run_id": run_id,
+                }
+            ),
+            404,
+        )
+    return jsonify({"status": "RUNNING", "run_id": run_id, "result": resumed})
 
 
 @run_bp.route("/v1/certificates/<run_id>", methods=["GET"])

@@ -47,6 +47,6 @@ urllib3==2.7.0
 Authlib==1.7.2
 langchain-openai==1.5.2
 langsmith==0.11.0
-lxml==6.1.1
+lxml==6.1.2
 Pillow==12.3.0
 idna==3.19

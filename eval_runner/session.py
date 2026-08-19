@@ -111,7 +111,11 @@ class SessionManager:
         # Decomposed Session Subsystems
         self.turn_state_manager = TurnStateManager(max_turns=self.max_turns)
         self.checkpoint_manager = SessionCheckpointManager(run_id=self.run_id)
-        self.approval_manager = SessionApprovalManager(run_id=self.run_id)
+        self.approval_manager = SessionApprovalManager(
+            run_id=self.run_id,
+            checkpoint_manager=self.checkpoint_manager,
+            state_provider=lambda: self.turn_state_manager.snapshot(),
+        )
         self.tool_execution_coordinator = ToolExecutionCoordinator()
 
         if resumption_checkpoint:

@@ -45,13 +45,14 @@ class ScenarioCatalog:
             cls._instance = None
             cls._initialized = False
 
-    def __init__(self, index_path: str = None):
+    def __init__(self, index_path: str = None, store: Any | None = None):
         """Authoritative singleton initialization guard with attribute safety."""
         # Use a local lock to ensure attribute assignment is atomic on the instance
         if getattr(self, "_attrs_initialized", False):
             return
 
         from eval_runner import config
+        from eval_runner.reference.local_catalog import LocalFileCatalogStore
 
         # Industrial Hardening: Canonicalize root_dir (Resolves Windows C: vs c: issues)
         self.root_dir = Path(config.PROJECT_ROOT).resolve()
@@ -62,6 +63,7 @@ class ScenarioCatalog:
         else:
             self.index_path = self.root_dir / "scenarios" / "index.json"
 
+        self.store = store or LocalFileCatalogStore(base_dir=self.root_dir)
         self.scenarios: list[dict[str, Any]] = []
         self._disk_count = 0
         self._last_sync_check = 0
@@ -69,6 +71,16 @@ class ScenarioCatalog:
 
         self._attrs_initialized = True
         ScenarioCatalog._initialized = True
+
+    def get_scenario_by_id(self, scenario_id: str) -> dict[str, Any] | None:
+        """Retrieves full scenario definition via CatalogStore."""
+        return self.store.get_scenario(scenario_id)
+
+    def save_scenario_to_store(self, scenario_id: str, data: dict[str, Any]) -> str:
+        """Saves a scenario to the persistent catalog store and refreshes index."""
+        result = self.store.save_scenario(scenario_id, data)
+        self.build_index()
+        return result
 
     @classmethod
     def get_instance(cls):

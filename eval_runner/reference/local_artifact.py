@@ -35,18 +35,23 @@ class LocalFileArtifactStore(ArtifactStore):
         content_type: str | None = None,
         metadata: dict[str, Any] | None = None,
         overwrite: bool = True,
+        append: bool = False,
+        **kwargs: Any,
     ) -> str:
         run_dir = self._get_run_dir(run_id, create=True)
         target_path = SafeRunPathResolver.resolve_artifact_path(run_dir, artifact_name)
 
-        if target_path.exists() and not overwrite:
+        if target_path.exists() and not overwrite and not append:
             raise PermissionError(
                 f"Artifact '{artifact_name}' already exists and overwrite is disabled (Sealed)"
             )
 
         target_path.parent.mkdir(parents=True, exist_ok=True)
 
-        mode = "wb" if isinstance(content, bytes) else "w"
+        if append:
+            mode = "ab" if isinstance(content, bytes) else "a"
+        else:
+            mode = "wb" if isinstance(content, bytes) else "w"
         encoding = None if isinstance(content, bytes) else "utf-8"
 
         with open(target_path, mode, encoding=encoding) as f:

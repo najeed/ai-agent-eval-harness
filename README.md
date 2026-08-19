@@ -51,7 +51,7 @@ graph TD
 | **Version** | v2.0.0 (August 2026 Release) |
 | **Trust Model** | [Behavioral DNA & VC v3.0.0](docs-old/architecture.md) |
 | **Architecture** | [Identity-Centric Core](docs-old/architecture.md) |
-| **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.4 Spec](docs-old/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
+| **Quick Links** | [Quickstart](#zero-key-quickstart-get-running-now) • [AES v1.4 Spec](docs-old/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
 
 ### The DNA of Agentic Reliability
 - 🌍 **Environmental DNA**: Immutable snapshots of the execution environment—registry state, tool versions, and resource availability to ensure deterministic state parity.
@@ -59,14 +59,13 @@ graph TD
 - 🛡️ **Forensic DNA**: Cryptographic anchoring of the entire execution trace using Ed25519 signatures and SHA3-256 hashes, ensuring non-repudiable WORM logs for regulatory compliance.
 
 ## Table of Contents
+- [What's New in the August 2026 GA Release (v2.0.0)](#whats-new-in-the-august-2026-ga-release-v200)
 - [Mission](#mission)
 - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
-    - [60-Second Quickstart](#60-second-quickstart-get-running-now)
+    - [Zero-Key Quickstart](#zero-key-quickstart-get-running-now)
     - [Manual Evaluation](#manual-evaluation-running-the-sample-agent)
 - [At a Glance](#at-a-glance)
-- [Zero-Touch Core Architecture](#zero-touch-core-architecture)
-    - [Advanced Utilities](#advanced-utilities)
 - [Integrated Visual Suite (Native GUI)](#integrated-visual-suite-native-gui)
 - [Security and Governance](#security-and-governance-audit-ready)
 - [Troubleshooting](#troubleshooting)
@@ -108,7 +107,7 @@ Embark on a **4-Phase, 18-Milestone Hands-on Curriculum** designed to take you f
 -   **pip**
 
 > [!IMPORTANT]
-> ### 🚀 Zero-Key Quickstart (Get Running Now)
+> ### Zero-Key Quickstart (Get Running Now)
 > The fastest way to see the harness in action - **no API keys or LLM setup required**:
 >
 > ```bash
@@ -156,18 +155,21 @@ The harness is organized into the following key components:
 - **Behavioral DNA Telemetry**: High-granularity event bus (4-level: PHASE, SUBTASK, ACTION, STEP) providing a precise "genetic" map of agent decision-making.
 - **Verification Certificate (VC) v3.0.0**: Traces are signed via the **Identity Registry** (Ed25519) and backed by a **Forensic Evidence Ledger** that hashes sidecar artifacts to ensure end-to-end provenance.
 
-### 🌟 What's New in the August 2026 GA Release (v2.0.0)
+### What's New in the August 2026 GA Release (v2.0.0)
 
-The **v2.0.0 August 2026 GA Release** formalizes strict Semantic Versioning guarantees across the public API surface area, establishes the neutral architectural seam between the AgentV OS Runtime and the AgentV Control Plane, and introduces an industrial automated contract verification suite:
+The **v2.0.0 August 2026 GA Release** formalizes strict Semantic Versioning guarantees across the public API surface area, establishes the neutral architectural seam between the AgentV OS Runtime and downstream control planes, and introduces an industrial automated contract verification suite:
 
 - 🔒 **Formal SemVer 2.0.0 Commitment**: Strict Semantic Versioning guarantee across all public contracts and extension ABCs, backed by a mandatory 1-minor-version deprecation lifecycle and published [SemVer Policy Documentation](docs/src/content/docs/auditor/semver-policy.md).
-- 🔌 **Active Runtime Extension Interface Wiring**: All 6 public Extension Families under `agentv_runtime.interfaces` (`ExecutionBackend`, `CheckpointStore`, `SigningBackend`, `ArtifactStore`, `PolicyEvaluator`, and `AuthorizationBackend`) and storage interfaces (`CatalogStore`, `RunStore`, `LeaderboardStore`) are actively invoked across runtime execution paths with zero bypasses.
+- 🔌 **Active Runtime Extension Interface Wiring**: All 6 public Extension Families under `agentv_runtime.interfaces` (`ExecutionBackend`, `CheckpointStore`, `SigningBackend`, `ArtifactStore`, `PolicyEvaluator`, and `AuthorizationBackend`) and storage interfaces (`CatalogStore`, `RunStore`, `LeaderboardStore`) are actively invoked across runtime execution paths with real caller invocations and zero bypasses.
 - ⚛️ **Hybrid Post-Quantum Cryptographic (PQC) Signing**: First-class quantum-resistant non-repudiation via `PQCSigningBackend` (NIST FIPS 204 ML-DSA-65) and privacy-preserving Zero-Exposure Signing (ZES) over SHAKE-256 local digests.
 - 🛑 **Fail-Closed Cryptographic Enforcement**: Strict fail-closed execution (`RuntimeError`) when signing is mandatory (`EVAL_REQUIRE_SIGNING=true` or `AUDIT_LEVEL >= 2`) and signing keys are absent.
-- 💾 **Durable HITL Checkpoint Persistence**: State snapshotting via `SQLiteCheckpointStore` prior to Human-in-the-Loop approval wait loops and resumable execution via `SessionApprovalManager`.
-- 🛠️ **OSS Reference Implementations**: Complete production reference implementations.
-- 🏷️ **Subsystem Contract Version Dunders**: Authoritative version identifiers.
-- 🧪 **Automated Contract Test Suite (`tests/contracts/`)**: 68 continuous zero-regression contract tests verifying interface wiring, AES v1.4 scenario structures, deterministic SHA3-256 config hashes, 4-method execution lifecycle, plugin discovery hooks, and VC v3.0.0 certificate chains.
+- 💾 **Durable HITL Checkpoint Persistence**: Automatic state snapshotting via `SessionApprovalManager` and `SessionCheckpointManager` prior to Human-in-the-Loop approval wait loops with full execution resumption.
+- ⏯️ **Shared Execution Lifecycle**: Thread-safe `InProcessExecutionBackend` singleton supporting background execution, real-time status polling, cancellation token propagation, and checkpoint resumption over REST (`POST /v1/runs/<run_id>/cancel`, `POST /v1/runs/<run_id>/resume`).
+- 🔒 **Centralized Jail Safety (`SafeRunPathResolver`)**: Strict path isolation across `ArtifactStore`, `RunStore`, and `CatalogStore`, eliminating directory traversal vulnerability classes.
+- 🛠️ **OSS Reference Implementations**: Complete production reference implementations for all extension and storage families in `eval_runner/reference/` and re-exported via `agentv_runtime/reference`.
+- 🏷️ **Subsystem Contract Version Dunders**: Authoritative version identifiers published in `eval_runner` and `agentv_runtime`.
+- 🧪 **Automated Contract Test Suite (`tests/contracts/`)**: 75+ continuous zero-regression contract tests verifying interface wiring, adapter contracts, AES v1.4 scenario structures, deterministic SHA3-256 config hashes, 4-method execution lifecycle, plugin discovery hooks, and VC v3.0.0 certificate chains.
+- 💯 **100% Statement Test Coverage**: 100.00% statement test coverage across all 24 reference and session component modules (878/878 statements).
 - ⚙️ **Resolved Runtime Config & ConfigResolver**: Schema-validated runtime configuration model with deterministic SHA3-256 hash digest (`config_hash`) for Processing Integrity evidence, with hierarchical config-mesh resolution (`OSS baseline` $\rightarrow$ `.aes/config/*.json` $\rightarrow$ `env vars` $\rightarrow$ `runtime overrides`).
 - 🧩 **Modular Subsystem Decomposition**: Monolithic session orchestration decomposed into dedicated, independently testable subsystem managers: `TurnStateManager`, `ToolExecutionCoordinator`, `SessionCheckpointManager`, and `SessionApprovalManager`.
 - 🌐 **Dynamic Navigation Manifest & Runtime Module Federation (`/v2`)**: The native visual console ingests `GET /api/nav` manifests and loads standalone ESM plugin bundles on demand with zero build-time recompilation.

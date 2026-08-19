@@ -25,6 +25,7 @@ class Permission:
     DEBUG_EVENT = "debugger:event"
     CERTIFY_WRITE = "certify:write"
     HITL_RESOLVE = "hitl:resolve"
+    RUNS_WRITE = "runs:write"
 
     # 3. Admin Nodes (Destructive / Config)
     SCENARIOS_WRITE = "scenarios:write"
@@ -47,6 +48,7 @@ class Permission:
             cls.DEBUG_EVENT,
             cls.CERTIFY_WRITE,
             cls.HITL_RESOLVE,
+            cls.RUNS_WRITE,
             cls.SCENARIOS_WRITE,
             cls.SCENARIOS_DELETE,
             cls.DEBUG_RESET,

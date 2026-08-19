@@ -135,7 +135,7 @@ def evaluate_scenario():
     identifier = Path(path).stem
     run_id = f"run-{identifier}-{time.time_ns()}"
 
-    backend = InProcessExecutionBackend()
+    backend = InProcessExecutionBackend.get_instance()
     backend.submit(
         run_id=run_id,
         scenario_data=scen,

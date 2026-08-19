@@ -3,6 +3,8 @@ eval_runner.reference.inprocess_backend
 OSS Reference Implementation: InProcessExecutionBackend
 """
 
+from __future__ import annotations
+
 import threading
 from typing import Any
 
@@ -16,6 +18,23 @@ class InProcessExecutionBackend(ExecutionBackend):
     Executes directly within the current Python process either synchronously or
     asynchronously via thread with real cancellation token propagation and checkpoint resumption.
     """
+
+    _instance: InProcessExecutionBackend | None = None
+    _singleton_lock = threading.Lock()
+
+    @classmethod
+    def get_instance(cls, checkpoint_store: Any | None = None) -> InProcessExecutionBackend:
+        """Returns the shared application singleton execution backend instance."""
+        with cls._singleton_lock:
+            if cls._instance is None:
+                cls._instance = cls(checkpoint_store=checkpoint_store)
+            return cls._instance
+
+    @classmethod
+    def clear_instance(cls) -> None:
+        """Resets singleton instance for test isolation."""
+        with cls._singleton_lock:
+            cls._instance = None
 
     def __init__(self, checkpoint_store: Any | None = None):
         self._active_runs: dict[str, dict[str, Any]] = {}
@@ -125,7 +144,7 @@ class InProcessExecutionBackend(ExecutionBackend):
             or {"metadata": {"name": run_id}, "id": run_id, "workflow": [{"id": "resumed_task"}]}
         )
 
-        background = kwargs.get("background", False)
+        background = kwargs.pop("background", False)
         return self.submit(
             run_id=run_id,
             scenario_data=scenario_data,

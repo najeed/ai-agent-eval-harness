@@ -836,3 +836,207 @@ class TestAuthAndCatalogExtraBranches:
 
         res = ConfigResolver.resolve(config_dir=cfg_dir)
         assert res is not None
+
+    def test_auth_backend_complete_coverage(self, monkeypatch):
+        monkeypatch.delenv("EVAL_MASTER_KEY", raising=False)
+        monkeypatch.delenv("CONSOLE_MASTER_KEY", raising=False)
+
+        # 1. Line 40: master_key=None with static_keys
+        backend = SimpleAPIKeyAuthBackend(
+            static_keys={"k1": {"principal_id": "u1"}}, master_key=None
+        )
+        assert backend.master_key is None
+
+        # 2. Line 74: revoke master key
+        backend2 = SimpleAPIKeyAuthBackend(master_key="secret-master-123")
+        assert backend2.master_key == "secret-master-123"
+        assert backend2.revoke_key("secret-master-123") is True
+        assert backend2.master_key is None
+
+        # 3. Line 99: master_key fallback when not in _keys
+        backend3 = SimpleAPIKeyAuthBackend(master_key="fallback-master-key")
+        del backend3._keys["fallback-master-key"]
+        p = backend3.validate_token("fallback-master-key")
+        assert p is not None
+        assert p.principal_id == "root-admin"
+
+    def test_inprocess_backend_complete_branches(self, tmp_path):
+        import threading
+
+        from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+
+        backend = InProcessExecutionBackend()
+        # Cancel active run with cancellation event set
+        run_id_cancel = "run-cancel-test-001"
+        ev = threading.Event()
+        backend._cancellation_events[run_id_cancel] = ev
+        backend._active_runs[run_id_cancel] = {"run_id": run_id_cancel, "status": "RUNNING"}
+        assert backend.cancel(run_id_cancel, reason="User cancelled") is True
+        assert ev.is_set()
+
+        # Line 86: Complete execution while cancel_ev is set
+        run_id_aborted = "run-aborted-001"
+        ev_aborted = threading.Event()
+        ev_aborted.set()
+        scenario_data = {"id": "scen_aborted", "metadata": {"name": "Aborted Scen"}}
+        backend.submit(
+            run_id=run_id_aborted,
+            scenario_data=scenario_data,
+            background=False,
+            cancellation_event=ev_aborted,
+        )
+        assert backend.status(run_id_aborted)["status"] == "ABORTED"
+
+        # Resume without run and without checkpoint returns None
+        assert backend.resume("non_existent_run_id") is None
+
+        # Resume with active run containing scenario_data and no checkpoint returns active_run
+        run_id = "run-active-resume-001"
+        backend._active_runs[run_id] = {
+            "run_id": run_id,
+            "status": "PAUSED",
+            "scenario_data": {"id": "scen_active", "metadata": {"name": "Active"}},
+        }
+        res = backend.resume(run_id, background=False)
+        assert res is not None
+
+        # Resume with checkpoint dict and background=False
+        run_id_chk = "run-chk-resume-003"
+        chk_dict = {
+            "scenario_data": {"id": "scen_chk", "metadata": {"name": "From Checkpoint"}},
+            "checkpoint_id": "c1",
+        }
+        mock_chk_store = MagicMock()
+        mock_chk_store.load.return_value = chk_dict
+        backend._checkpoint_store = mock_chk_store
+        res_chk = backend.resume(run_id_chk, background=False)
+        assert res_chk is not None
+
+    def test_local_artifact_store_sealed_overwrite(self, tmp_path):
+        from eval_runner.reference.local_artifact import LocalFileArtifactStore
+
+        store = LocalFileArtifactStore(base_dir=tmp_path)
+        run_id = "run-seal-001"
+        store.store_artifact(run_id, "file.txt", "initial content")
+
+        # Line 45: Overwrite False and Append False raises PermissionError
+        with pytest.raises(PermissionError):
+            store.store_artifact(run_id, "file.txt", "new content", overwrite=False, append=False)
+
+    def test_local_catalog_store_edge_cases(self, tmp_path):
+        from eval_runner.reference.local_catalog import LocalFileCatalogStore
+
+        cat = LocalFileCatalogStore(base_dir=tmp_path)
+        scen_dir = tmp_path / "scenarios"
+        scen_dir.mkdir(parents=True, exist_ok=True)
+
+        # Line 42: Hidden files and subdirectories
+        (scen_dir / ".hidden.json").write_text("{}", encoding="utf-8")
+        (scen_dir / "valid.json").write_text('{"id": "valid"}', encoding="utf-8")
+        sub_dir = scen_dir / "subdir"
+        sub_dir.mkdir()
+
+        scenarios = cat.list_scenarios()
+        assert any(s["id"] == "valid" for s in scenarios)
+
+        # Line 53-55: unhandled relative_to exception
+        mock_p = MagicMock()
+        mock_p.is_file.return_value = True
+        mock_p.name = "corrupt.json"
+        mock_p.stem = "corrupt"
+        mock_p.relative_to.side_effect = ValueError("Invalid relative path")
+        with pytest.MonkeyPatch.context() as mp:
+            mp.setattr(Path, "rglob", lambda self, pattern: [mock_p, scen_dir / "valid.json"])
+            scenarios = cat.list_scenarios()
+            assert any(s["id"] == "valid" for s in scenarios)
+
+    def test_local_run_store_complete_coverage(self, tmp_path):
+        import shutil
+
+        from eval_runner.reference.local_run_store import LocalFileRunStore
+
+        log_dir = tmp_path / "run_store_temp"
+        store = LocalFileRunStore(log_dir=log_dir)
+        shutil.rmtree(log_dir)
+
+        # Line 60: list_runs on non-existent log_dir
+        assert store.list_runs() == []
+
+        # Line 34-35: get_run on non-existent run_vault and invalid identifier
+        assert store.get_run("missing_run") is None
+        assert store.get_run("../invalid_escape") is None
+
+        # Line 84-85: delete_run on non-existent run_vault and invalid identifier
+        assert store.delete_run("missing_run") is False
+        assert store.delete_run("../invalid_escape") is False
+
+    def test_signing_backend_pub_key_custom_objects(self):
+        from eval_runner.reference.signing import LocalEd25519SigningBackend
+
+        backend = LocalEd25519SigningBackend()
+
+        class CustomBytes:
+            def __bytes__(self):
+                return b"invalid_pem"
+
+        assert backend.verify_signature(b"data", "sig", CustomBytes()) is False
+        assert backend.verify_signature(b"data", "sig", bytearray(b"invalid_pem")) is False
+        assert backend.verify_signature(b"data", "sig", 12345) is False
+        assert backend.verify_signature(b"data", "sig", Path("non_existent_key_path.pem")) is False
+        assert backend.verify_signature(b"data", "sig", "invalid\x00path") is False
+
+        # Lines 72-73: OSError / ValueError during Path.exists() check
+        mock_p = MagicMock()
+        mock_p.exists.side_effect = OSError("Simulated disk error")
+        with pytest.MonkeyPatch.context() as mp:
+            mp.setattr(Path, "exists", mock_p.exists)
+            assert backend.verify_signature(b"data", "sig", "mock_key_str") is False
+            assert backend.verify_signature(b"data", "sig", Path("mock_key_path")) is False
+
+    def test_approval_manager_state_provider_exception(self):
+        from eval_runner.session_components.approval_manager import SessionApprovalManager
+
+        mock_chk = MagicMock()
+
+        def broken_state():
+            raise RuntimeError("State provider crash")
+
+        mgr = SessionApprovalManager(
+            run_id="run-appr-err-001",
+            checkpoint_manager=mock_chk,
+            state_provider=broken_state,
+        )
+        approval = mgr.request_approval("task_1", "tool_x", {"a": 1})
+        assert approval is not None
+        assert mock_chk.create_checkpoint.called
+
+    def test_safe_path_resolver_edge_cases(self, tmp_path):
+        from eval_runner.utils.safe_path import SafeRunPathResolver
+
+        # Line 24: empty string
+        with pytest.raises(ValueError):
+            SafeRunPathResolver.validate_identifier("")
+
+        # Line 27: Null byte injection
+        with pytest.raises(PermissionError):
+            SafeRunPathResolver.validate_identifier("evil\x00file")
+
+        # Line 39: Drive letters and absolute paths
+        with pytest.raises(PermissionError):
+            SafeRunPathResolver.validate_identifier("C:evil_path")
+
+        with pytest.raises(PermissionError):
+            SafeRunPathResolver.validate_identifier("/root_evil")
+
+        # Lines 53 & 71: Outside base resolution defense-in-depth
+        with pytest.MonkeyPatch.context() as mp:
+            mp.setattr(
+                SafeRunPathResolver,
+                "validate_identifier",
+                lambda name, allow_nested=False: name,
+            )
+            with pytest.raises(PermissionError):
+                SafeRunPathResolver.resolve_run_dir(tmp_path, "..")
+
+            with pytest.raises(PermissionError):
+                SafeRunPathResolver.resolve_artifact_path(tmp_path, "..")

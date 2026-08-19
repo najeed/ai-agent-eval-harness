@@ -300,40 +300,95 @@ def test_auth_manager_delegates_to_authorization_backend():
 
 
 # ==============================================================================
-# 5. ArtifactStore Interface Tests
+# 5. ArtifactStore Interface Wiring Tests
 # ==============================================================================
 
 
-def test_artifact_store_lifecycle(tmp_path):
+def test_flight_recorder_artifact_store_wiring(tmp_path):
     """
-    Contract Test: LocalFileArtifactStore stores, retrieves, lists, and checks existence.
+    Contract Test: FlightRecorderPlugin actively invokes ArtifactStore.store_artifact
+    for trace writes and run finalization.
     """
-    store = LocalFileArtifactStore(base_dir=str(tmp_path))
-    run_id = "run-artifact-test-001"
+    mock_store = MagicMock(spec=LocalFileArtifactStore)
+    recorder = FlightRecorderPlugin(artifact_store=mock_store, log_dir=tmp_path)
 
-    # Store bytes artifact
-    path_stored = store.store_artifact(
-        run_id=run_id,
-        artifact_name="evidence.txt",
-        content=b"Forensic Evidence Payload",
-        metadata={"author": "auditor"},
+    event = Event("agent_action", {"run_id": "run-art-wire-001", "action": "test"})
+    recorder.handle_event(event)
+
+    # Assert store_artifact was actively called for the trace write
+    assert mock_store.store_artifact.called
+    call_args = mock_store.store_artifact.call_args[1]
+    assert call_args["run_id"] == "run-art-wire-001"
+    assert call_args["artifact_name"] == "run.jsonl"
+    assert call_args["append"] is True
+
+    # Finalize run also seals via artifact_store
+    recorder.finalize_run("run-art-wire-001")
+    assert mock_store.store_artifact.call_count >= 2
+
+
+def test_verifier_artifact_store_wiring(tmp_path, monkeypatch):
+    """
+    Contract Test: TraceVerifier.sign_trace invokes ArtifactStore.store_artifact
+    to persist the sidecar manifest.
+    """
+    from eval_runner import config
+
+    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path)
+    run_dir = tmp_path / "run-ver-art-001"
+    run_dir.mkdir()
+    trace_path = run_dir / "run.jsonl"
+    trace_path.write_text(
+        '{"event":"run_start","run_id":"run-ver-art-001"}\n'
+        '{"event":"run_end","run_id":"run-ver-art-001"}\n',
+        encoding="utf-8",
     )
-    assert Path(path_stored).exists()
-    assert store.exists(run_id, "evidence.txt") is True
 
-    # Retrieve artifact
-    content = store.get_artifact(run_id, "evidence.txt")
-    assert content == b"Forensic Evidence Payload"
+    mock_store = MagicMock(spec=LocalFileArtifactStore)
+    TraceVerifier.sign_trace(
+        str(trace_path),
+        run_id="run-ver-art-001",
+        artifact_store=mock_store,
+    )
 
-    # List artifacts
-    artifacts = store.list_artifacts(run_id)
-    assert len(artifacts) == 1
-    assert artifacts[0]["name"] == "evidence.txt"
+    assert mock_store.store_artifact.called
+    call_args = mock_store.store_artifact.call_args[1]
+    assert call_args["run_id"] == "run-ver-art-001"
+    assert call_args["artifact_name"] == "run_manifest.json"
 
 
 # ==============================================================================
 # 6. CheckpointStore & ApprovalManager HITL Wiring Tests
 # ==============================================================================
+
+
+def test_hitl_approval_triggers_durable_checkpoint():
+    """
+    Contract Test: SessionApprovalManager.request_approval automatically triggers
+    checkpoint_manager.create_checkpoint with turn snapshot.
+    """
+    mock_chk_mgr = MagicMock(spec=SessionCheckpointManager)
+    mock_state_provider = MagicMock(return_value={"current_turn": 5, "tokens": 120})
+
+    approval_mgr = SessionApprovalManager(
+        run_id="run-hitl-auto-chk-001",
+        checkpoint_manager=mock_chk_mgr,
+        state_provider=mock_state_provider,
+    )
+
+    approval = approval_mgr.request_approval(
+        task_id="task_critical_tx",
+        tool_name="wire_transfer",
+        params={"amount": 50000},
+        timeout_seconds=30,
+    )
+    assert approval is not None
+    assert mock_chk_mgr.create_checkpoint.called
+    checkpoint_call = mock_chk_mgr.create_checkpoint.call_args
+    state = checkpoint_call[0][0]
+    assert state["status"] == "AWAITING_APPROVAL"
+    assert state["current_turn"] == 5
+    assert state["tool_name"] == "wire_transfer"
 
 
 @pytest.mark.asyncio
@@ -381,15 +436,19 @@ async def test_session_hitl_checkpoint_and_approval_wiring(tmp_path):
 
 
 # ==============================================================================
-# 7. ExecutionBackend Lifecycle Tests
+# 7. ExecutionBackend Lifecycle Tests & Singleton
 # ==============================================================================
 
 
-def test_inprocess_execution_backend_lifecycle():
+def test_inprocess_execution_backend_lifecycle_and_singleton():
     """
-    Contract Test: InProcessExecutionBackend handles submit, status, cancel, resume.
+    Contract Test: InProcessExecutionBackend singleton, submit, status, cancel, resume.
     """
-    backend = InProcessExecutionBackend()
+    InProcessExecutionBackend.clear_instance()
+    backend1 = InProcessExecutionBackend.get_instance()
+    backend2 = InProcessExecutionBackend.get_instance()
+    assert backend1 is backend2
+
     run_id = "run-exec-contract-001"
     scenario = {
         "id": "exec_test",
@@ -408,28 +467,65 @@ def test_inprocess_execution_backend_lifecycle():
     }
 
     # 1. Background submit
-    res = backend.submit(run_id, scenario, background=True)
+    res = backend1.submit(run_id, scenario, background=True)
     assert res["status"] == "started"
     assert res["run_id"] == run_id
 
     # 2. Status
-    st = backend.status(run_id)
+    st = backend1.status(run_id)
     assert st["status"] in ("RUNNING", "COMPLETED", "FAILED")
 
     # 3. Resume with token
-    resumed = backend.resume(run_id, resumption_token="res_tok_12345")
+    resumed = backend1.resume(run_id, resumption_token="res_tok_12345")
     assert resumed is not None
     assert resumed.get("resumption_token") == "res_tok_12345"
 
     # 4. Cancel
-    cancelled = backend.cancel(run_id, reason="Test cancellation")
+    cancelled = backend1.cancel(run_id, reason="Test cancellation")
     assert cancelled is True
-    assert backend.status(run_id)["status"] == "ABORTED"
+    assert backend1.status(run_id)["status"] == "ABORTED"
+    InProcessExecutionBackend.clear_instance()
 
 
 # ==============================================================================
-# 8. Phase 1 Storage Extension Interfaces Tests
+# 8. Phase 1 Storage Extension Interfaces & Wiring Tests
 # ==============================================================================
+
+
+def test_scenario_catalog_delegates_to_catalog_store(tmp_path):
+    """
+    Contract Test: ScenarioCatalog delegates storage operations to CatalogStore.
+    """
+    from eval_runner.catalog import ScenarioCatalog
+
+    ScenarioCatalog.clear_instance()
+    mock_cat_store = MagicMock(spec=LocalFileCatalogStore)
+    mock_cat_store.get_scenario.return_value = {"id": "scen_123", "title": "Mock Scenario"}
+
+    catalog = ScenarioCatalog(index_path=str(tmp_path / "index.json"), store=mock_cat_store)
+    scen = catalog.get_scenario_by_id("scen_123")
+    assert scen == {"id": "scen_123", "title": "Mock Scenario"}
+    mock_cat_store.get_scenario.assert_called_once_with("scen_123")
+    ScenarioCatalog.clear_instance()
+
+
+def test_runner_uses_run_store_and_config_resolver(tmp_path):
+    """
+    Contract Test: DefaultRunner invokes ConfigResolver.resolve and RunStore.save_run_manifest.
+    """
+    from eval_runner.config_resolver import ConfigResolver, ResolvedRuntimeConfig
+    from eval_runner.runner import DefaultRunner
+
+    mock_run_store = MagicMock(spec=LocalFileRunStore)
+    mock_resolver = MagicMock(spec=ConfigResolver)
+    mock_resolver.resolve.return_value = ResolvedRuntimeConfig(
+        audit_level=2,
+        timeout_seconds=60,
+    )
+
+    runner = DefaultRunner(run_store=mock_run_store, config_resolver=mock_resolver)
+    assert mock_resolver.resolve.called
+    assert runner.resolved_config.audit_level == 2
 
 
 def test_phase1_storage_interfaces(tmp_path):

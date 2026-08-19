@@ -40,11 +40,18 @@ class BaseRunner(ABC):
 class DefaultRunner(BaseRunner):
     """Standard implementation of the evaluation loop."""
 
-    def __init__(self):
-        """Sanity check for required directories."""
+    def __init__(self, run_store: Any | None = None, config_resolver: Any | None = None):
+        """Sanity check for required directories and initialize storage / config wiring."""
         Path("scenarios").mkdir(exist_ok=True)
         Path("industries").mkdir(exist_ok=True)
         Path(".aes").mkdir(exist_ok=True)
+
+        from eval_runner.config_resolver import ConfigResolver
+        from eval_runner.reference.local_run_store import LocalFileRunStore
+
+        self.run_store = run_store or LocalFileRunStore()
+        self.config_resolver = config_resolver or ConfigResolver
+        self.resolved_config = self.config_resolver.resolve()
 
     async def run(
         self,
@@ -212,8 +219,20 @@ class DefaultRunner(BaseRunner):
                 span_context=ctx.span_context,
             )
 
-            # Trigger after_evaluation lifecycle hook after terminal events are emitted
-            plugins.manager.trigger("after_evaluation", ctx, all_attempt_results)
+            # Save run manifest to RunStore
+            if self.run_store:
+                try:
+                    manifest_data = {
+                        "run_id": effective_run_id,
+                        "scenario_id": scenario.get("id"),
+                        "attempts": attempts,
+                        "pass_at_k": pass_at_k,
+                        "results": all_attempt_results,
+                        "config_hash": getattr(self.resolved_config, "config_hash", ""),
+                    }
+                    self.run_store.save_run_manifest(effective_run_id, manifest_data)
+                except Exception as e:
+                    logger.debug(f"Failed to save manifest to RunStore: {e}")
 
             return all_attempt_results
         finally:

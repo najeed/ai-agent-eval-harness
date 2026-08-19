@@ -5,24 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] - 2026-08-19
+## [2.0.0] - 2026-08-20
 
 ### Added
-* **Runtime Extension Interface Wiring**: Closed the runtime interface seam gap by wiring all 6 Extension Families directly into active execution paths:
+* **Runtime Extension Interface Wiring**: Closed the runtime interface seam gap by wiring all 6 Extension Families directly into active execution paths with real caller invocations:
   * `SigningBackend`: Wired into `flight_recorder.py` and `verifier.py` with `LocalEd25519SigningBackend`, `PQCSigningBackend`, and `NullSigningBackend`.
   * `PolicyEvaluator`: Wired into `tool_sandbox.py` with `BasicFieldPolicyEvaluator`, eliminating parallel duplicate constraint logic.
   * `AuthorizationBackend`: Wired into `console/auth_manager.py` with `SimpleAPIKeyAuthBackend`.
-  * `ArtifactStore`: Wired into `flight_recorder.py`, `verifier.py`, and forensics with `LocalFileArtifactStore`.
-  * `ExecutionBackend`: Wired into `runner.py`, `session.py`, and `console/routes/scenarios.py` with `InProcessExecutionBackend`.
-  * `CheckpointStore` & `SessionApprovalManager`: Connected into `session.py` with state snapshotting prior to HITL approval waits and execution resumption.
+  * `ArtifactStore`: Wired into `flight_recorder.py` (streaming `run.jsonl` trace writes and finalization `trace_seal.json` seals) and `verifier.py` (`run_manifest.json` sidecar persistence) with `LocalFileArtifactStore`.
+  * `ExecutionBackend`: Implemented thread-safe `InProcessExecutionBackend` singleton (`get_instance()`, `clear_instance()`) wired into `runner.py`, `console/routes/scenarios.py`, and `console/routes/runs.py` (`POST /v1/runs/<run_id>/cancel`, `POST /v1/runs/<run_id>/resume`, and status polling).
+  * `CheckpointStore` & `SessionApprovalManager`: Connected into `session.py` with automatic `SessionCheckpointManager.create_checkpoint()` turn snapshotting before entering approval waits and full execution resumption.
 * **Storage Extension Families**: Added public interfaces and OSS reference implementations:
-  * `CatalogStore` & `LocalFileCatalogStore`: Scenario discovery and lifecycle.
-  * `RunStore` & `LocalFileRunStore`: Run manifest and metadata management.
-  * `LeaderboardStore` & `LocalLeaderboardStore` (aliased as `LocalFileLeaderboardStore`): Statistical aggregation and ranking.
+  * `CatalogStore` & `LocalFileCatalogStore`: Wired into `ScenarioCatalog` (`eval_runner/catalog.py`) for scenario discovery and lifecycle.
+  * `RunStore` & `LocalFileRunStore`: Wired into `DefaultRunner` (`eval_runner/runner.py`) for run manifest persistence and metadata management.
+  * `LeaderboardStore` & `LocalLeaderboardStore` (aliased as `LocalFileLeaderboardStore`): Wired into `eval_runner/reporter.py` for statistical aggregation and ranking.
+* **Centralized Path Safety (`SafeRunPathResolver`)**: Enforced strict jail boundary verification across `ArtifactStore`, `RunStore`, and `CatalogStore`, eliminating directory traversal vulnerability classes.
 * **Reference Backends**: Shipped `LocalEd25519SigningBackend`, `NullSigningBackend`, `PQCSigningBackend` (Zero-Exposure Signing with ML-DSA-65 / FIPS 204), `SimpleAPIKeyAuthBackend`, and local storage backends in `eval_runner/reference/` and re-exported via `agentv_runtime/reference`.
-* **Reference Implementations Test Suite (`tests/unit/core/test_reference_implementations.py`)**: Added 16 unit tests achieving 98.08% overall statement coverage and 100% public interface coverage across all reference implementations.
 * **Fail-Closed Cryptographic Enforcement on Key Absence**: Enforced strict `RuntimeError` on missing signing keys when `EVAL_REQUIRE_SIGNING=true` or `AUDIT_LEVEL >= 2`.
-* **Contract Test Suite Expansion (`tests/contracts/`)**: Consolidated and expanded contract test suite to 68 automated contract tests:
+* **Contract Test Suite Expansion (`tests/contracts/`)**: Consolidated and expanded contract test suite to 75+ automated contract tests:
   * `test_interface_wiring_contract.py`: Actively asserts that all 6 Extension Families, store interfaces, and subsystem managers are invoked by runtime paths.
   * `test_adapter_contracts.py`: Parameterized adapter matrix across all 10 framework adapters.
   * `test_aes_schema_contract.py`: AES v1.4 scenario structure and metadata invariants.

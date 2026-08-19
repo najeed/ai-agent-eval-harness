@@ -11,6 +11,7 @@ import json  # noqa: E402
 import os  # noqa: E402
 from datetime import datetime  # noqa: E402
 from pathlib import Path  # noqa: E402
+from typing import Any  # noqa: E402
 
 from . import config  # noqa: E402
 
@@ -394,6 +395,7 @@ def generate_report(
     export_trajectory: bool = False,
     export_html: bool = True,
     metadata: dict | None = None,
+    leaderboard_store: Any | None = None,
 ):
     """
     Generates and prints a summary report of the evaluation results.
@@ -520,6 +522,28 @@ def generate_report(
     if export_html:
         html_path = generate_html_report(scenario, results, metadata=metadata, standalone=True)
         print(f"[Reporter] HTML report generated: {html_path}")
+
+    # Record summary in LeaderboardStore
+    try:
+        from eval_runner.reference.local_leaderboard import LocalLeaderboardStore
+
+        lb_store = leaderboard_store or LocalLeaderboardStore()
+        summary_record = {
+            "scenario_id": scenario_identifier,
+            "scenario_title": title,
+            "timestamp": datetime.now().astimezone().isoformat(),
+            "attempts": len(attempts_list),
+            "successful_attempts": successful_attempts,
+            "pass_rate": attempt_success_rate,
+            "task_success_rate": task_success_rate,
+        }
+        lb_store.record_run_summary(summary_record)
+    except Exception as e:
+        import sys
+
+        sys.stderr.write(
+            f"   [Reporter] Warning: Failed to record summary to LeaderboardStore: {e}\n"
+        )
 
 
 def cleanup_old_reports(days: int = 7):

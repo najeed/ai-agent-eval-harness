@@ -9,7 +9,9 @@ from pathlib import Path
 from typing import Any
 
 from . import config, forensics, utils
+from .interfaces.artifact import ArtifactStore
 from .interfaces.signing import SigningBackend
+from .reference.local_artifact import LocalFileArtifactStore
 from .reference.signing import LocalEd25519SigningBackend
 from .utils import crypto
 
@@ -359,6 +361,7 @@ class TraceVerifier:
         metadata: dict[str, Any] | None = None,
         behavioral_fingerprint_id: str | None = None,
         run_id: str | None = None,
+        artifact_store: ArtifactStore | None = None,
     ) -> dict[str, Any]:
         """
         Signs a trace file and issues a standardized Verification Certificate (VC) v3.
@@ -481,10 +484,21 @@ class TraceVerifier:
         finally:
             manifest.pop("signing_context", None)
 
-        # 6. Save Sidecar Manifest
-        sidecar_path = p.parent / "run_manifest.json"
-        with open(sidecar_path, "w", encoding="utf-8") as f:
-            json.dump(manifest, f, indent=4)
+        # 6. Save Sidecar Manifest & Certificate via ArtifactStore
+        store = artifact_store or LocalFileArtifactStore()
+        try:
+            store.store_artifact(
+                run_id=run_id,
+                artifact_name="run_manifest.json",
+                content=json.dumps(manifest, indent=4),
+                content_type="application/json",
+                metadata={"status": compliance_status, "vc_version": manifest["vc_version"]},
+            )
+        except Exception as e:
+            logger.warning(f"      [Verifier] Failed to store manifest via artifact_store: {e}")
+            sidecar_path = p.parent / "run_manifest.json"
+            with open(sidecar_path, "w", encoding="utf-8") as f:
+                json.dump(manifest, f, indent=4)
 
         # 7. Authoritative certificate backup
         try:

@@ -6,6 +6,7 @@ This decouples logging from the core engine loop.
 """
 
 import json
+import logging
 import os
 import sys
 import threading
@@ -22,6 +23,8 @@ from .events import CoreEvents, Event
 from .plugins import BaseEvalPlugin
 from .utils import rmtree_resilient
 
+logger = logging.getLogger(__name__)
+
 
 class FlightRecorderPlugin(BaseEvalPlugin):
     """Subscribes to all core events and writes them to run.jsonl files."""
@@ -32,10 +35,15 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         self,
         signing_backend: SigningBackend | None = None,
         artifact_store: ArtifactStore | None = None,
+        log_dir: Path | str | None = None,
     ):
         import eval_runner.config as config
 
-        self.log_dir = Path(os.getenv("RUN_LOG_DIR", str(config.RUN_LOG_DIR)))
+        self.log_dir = (
+            Path(log_dir)
+            if log_dir is not None
+            else Path(os.getenv("RUN_LOG_DIR", str(config.RUN_LOG_DIR)))
+        )
         self.per_run = os.getenv("RUN_LOG_PER_RUN", "true").lower() == "true"
         self.master = os.getenv("RUN_LOG_MASTER", "true").lower() == "true"
 
@@ -95,7 +103,11 @@ class FlightRecorderPlugin(BaseEvalPlugin):
     def handle_event(self, event: Event):
         """Callback for EventEmitter."""
         data = event.to_dict()
-        run_id = data.get("run_id", "unknown")
+        run_id = (
+            data.get("run_id")
+            or (data.get("data", {}).get("run_id") if isinstance(data.get("data"), dict) else None)
+            or "unknown"
+        )
 
         # [Iteration 4: Compliance DNA]
         with self._lock:
@@ -181,7 +193,17 @@ class FlightRecorderPlugin(BaseEvalPlugin):
 
         try:
             if per_run_log_path:
-                _write_buffered(per_run_log_path, content)
+                if run_id and run_id != "unknown" and self.artifact_store:
+                    self.artifact_store.store_artifact(
+                        run_id=run_id,
+                        artifact_name="run.jsonl",
+                        content=content,
+                        content_type="application/x-ndjson",
+                        metadata={"event": data.get("event"), "seq": data.get("seq")},
+                        append=True,
+                    )
+                else:
+                    _write_buffered(per_run_log_path, content)
 
             if self.master:
                 _write_buffered(self.master_log_path, content)
@@ -194,6 +216,18 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         Critical for resolving Windows file-lock races.
         If run_id is provided, only closes handles associated with that run.
         """
+        if run_id and run_id != "unknown" and self.artifact_store:
+            try:
+                self.artifact_store.store_artifact(
+                    run_id=run_id,
+                    artifact_name="trace_seal.json",
+                    content=json.dumps({"status": "finalized", "run_id": run_id}),
+                    content_type="application/json",
+                    overwrite=True,
+                )
+            except Exception as e:
+                logger.debug(f"Artifact store finalize seal error: {e}")
+
         with self._lock:
             # Determine which handles to close
             if run_id and run_id != "unknown":
