@@ -54,6 +54,8 @@ class DefaultRunner(BaseRunner):
         seed: int | None = None,
         metadata: dict | None = None,
         max_turns: int | None = None,
+        cancellation_event: Any | None = None,
+        resumption_checkpoint: dict | None = None,
     ) -> list[Any]:
         import copy
 
@@ -129,6 +131,9 @@ class DefaultRunner(BaseRunner):
                 span_context=ctx.span_context,
             )
             for k in range(1, attempts + 1):
+                if cancellation_event and getattr(cancellation_event, "is_set", lambda: False)():
+                    break
+
                 current_seed = None
                 # [Industrial Determinism] Final Seed = Base Seed + Run Index
                 if ctx.seed is not None:
@@ -144,7 +149,12 @@ class DefaultRunner(BaseRunner):
                     scenario_copy["max_turns"] = max_turns
 
                 session = SessionManager(
-                    effective_run_id, scenario_copy, metadata=ctx.metadata, seed=current_seed
+                    effective_run_id,
+                    scenario_copy,
+                    metadata=ctx.metadata,
+                    seed=current_seed,
+                    cancellation_event=cancellation_event,
+                    resumption_checkpoint=resumption_checkpoint,
                 )
                 attempt_results = await session.execute_tasks(k)
 
@@ -212,23 +222,23 @@ class DefaultRunner(BaseRunner):
                     from opentelemetry import trace
 
                     span = trace.get_current_span(ctx.otel_context)
-                    if span and span.is_recording():
-                        if "pass_at_k" in locals():
-                            span.set_attribute("agentv.pass_at_k", locals()["pass_at_k"])
+                    if span:
                         span.end()
-                except Exception as _e:
-                    logger.debug("OTel span cleanup skipped: %s", _e, exc_info=True)
+                except Exception as e:
+                    import sys
 
-    def _is_attempt_successful(self, attempt_res: list[dict[str, Any]]) -> bool:
-        """Helper to determine if an attempt (sequence of tasks) was fully successful."""
-        if not attempt_res:
+                    sys.stderr.write(f"   [Telemetry] Warning: Failed to clean up OTel span: {e}\n")
+
+    def _is_attempt_successful(self, attempt_results: list[dict]) -> bool:
+        if not attempt_results:
             return False
-        return all(
-            tr.get("status", "success") == "success"
-            and len(tr.get("metrics", [])) > 0
-            and all(m.get("success", False) for m in tr.get("metrics", []))
-            for tr in attempt_res
-        )
+        for res in attempt_results:
+            if res.get("status") != "success":
+                return False
+            for m in res.get("metrics", []):
+                if not m.get("passed", True):
+                    return False
+        return True
 
     def calculate_pass_at_k(self, all_results: list[list[dict[str, Any]]], k: int) -> float:
         """Calculates the pass@k metric (percentage of successful attempts)."""
@@ -245,6 +255,8 @@ def run_scenario(
     seed: int | None = None,
     metadata: dict | None = None,
     max_turns: int | None = None,
+    cancellation_event: Any | None = None,
+    resumption_checkpoint: dict | None = None,
 ) -> list[Any]:
     """
     Synchronous entry point that orchestrates evaluation via DefaultRunner.
@@ -270,6 +282,8 @@ def run_scenario(
                     seed=seed,
                     metadata=metadata,
                     max_turns=max_turns,
+                    cancellation_event=cancellation_event,
+                    resumption_checkpoint=resumption_checkpoint,
                 ),
             ).result()
     else:
@@ -281,5 +295,7 @@ def run_scenario(
                 seed=seed,
                 metadata=metadata,
                 max_turns=max_turns,
+                cancellation_event=cancellation_event,
+                resumption_checkpoint=resumption_checkpoint,
             )
         )

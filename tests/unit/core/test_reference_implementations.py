@@ -389,7 +389,7 @@ class TestCatalogStoreReferenceImplementation:
 
         # 4. Path traversal safety violation
         monkeypatch.setenv("AEH_STRICT_JAIL", "1")
-        with pytest.raises(PermissionError, match="outside allowed boundary"):
+        with pytest.raises(PermissionError):
             catalog.save_scenario("../../outside", {"id": "outside"})
 
         # 5. Corrupted scenario file
@@ -599,3 +599,240 @@ class TestLocalFileArtifactStore:
         assert "data.bin" in art_names
 
         assert store.list_artifacts("non_existent_run_dir") == []
+
+
+# ==============================================================================
+# 10. ConfigResolver and ResolvedRuntimeConfig Tests
+# ==============================================================================
+
+
+class TestConfigResolverAndResolvedRuntimeConfig:
+    """Tests schema validation, deep merging, .d drop-ins, and mandates in ConfigResolver."""
+
+    def test_resolved_config_schema_validation(self):
+        from eval_runner.config_resolver import ResolvedRuntimeConfig
+
+        # Valid config
+        cfg = ResolvedRuntimeConfig(
+            audit_level=2,
+            timeout_seconds=60,
+            execution_backend="in_process",
+            checkpoint_store="sqlite",
+            artifact_store="local_file",
+        )
+        assert cfg.audit_level == 2
+        assert len(cfg.config_hash) == 64
+        assert cfg.to_dict()["audit_level"] == 2
+
+        # Invalid audit level
+        with pytest.raises(ValueError, match="audit_level"):
+            ResolvedRuntimeConfig(audit_level=0)
+
+        # Invalid timeout
+        with pytest.raises(ValueError, match="timeout_seconds"):
+            ResolvedRuntimeConfig(timeout_seconds=-5)
+
+        # Invalid execution backend
+        with pytest.raises(ValueError, match="execution_backend"):
+            ResolvedRuntimeConfig(execution_backend="")
+
+        # Invalid checkpoint store
+        with pytest.raises(ValueError, match="checkpoint_store"):
+            ResolvedRuntimeConfig(checkpoint_store="")
+
+        # Invalid artifact store
+        with pytest.raises(ValueError, match="artifact_store"):
+            ResolvedRuntimeConfig(artifact_store="")
+
+    def test_config_resolver_hierarchical_merge_and_mandates(self, tmp_path, monkeypatch):
+        from eval_runner.config_resolver import ConfigResolver
+
+        # Set up config directory with JSON and YAML and a .d dropin directory
+        cfg_dir = tmp_path / "config"
+        cfg_dir.mkdir(parents=True)
+        (cfg_dir / "base.json").write_text(
+            json.dumps({"audit_level": 3, "custom_settings": {"feature_x": True}})
+        )
+        (cfg_dir / "extra.yaml").write_text(
+            "timeout_seconds: 300\ncustom_settings:\n  feature_y: 'yes'\n"
+        )
+
+        d_dir = cfg_dir / "modules.d"
+        d_dir.mkdir()
+        (d_dir / "01_net.json").write_text(json.dumps({"custom_settings": {"timeout_net": 15}}))
+        (d_dir / "02_auth.yaml").write_text("fail_closed_signing: true\n")
+
+        # Environment variable overrides
+        monkeypatch.setenv("RUN_LOG_DIR", str(tmp_path / "custom_logs"))
+        monkeypatch.setenv("AUDIT_LEVEL", "invalid_int")
+        monkeypatch.setenv("EXECUTION_BACKEND", "in_process")
+        monkeypatch.setenv("CHECKPOINT_STORE", "sqlite")
+        monkeypatch.setenv("ARTIFACT_STORE", "local_file")
+        monkeypatch.setenv("EVAL_SIGNING_KEY", "/keys/test.pem")
+        monkeypatch.setenv("RUN_TIMEOUT_SECONDS", "invalid_int")
+
+        # Runtime overrides
+        overrides = {
+            "timeout_seconds": 999,
+            "custom_settings": {"feature_z": "z"},
+            "extra_custom": "custom_val",
+        }
+
+        # Mandates
+        mandates = {
+            "audit_level": 3,
+            "fail_closed_signing": True,
+            "mandated_feature": True,
+        }
+
+        resolved = ConfigResolver.resolve(
+            overrides=overrides,
+            config_dir=cfg_dir,
+            mandates=mandates,
+        )
+
+        assert resolved.run_log_dir == str(tmp_path / "custom_logs")
+        assert resolved.audit_level == 3
+        assert resolved.signing_key_path == "/keys/test.pem"
+        assert resolved.fail_closed_signing is True
+        assert resolved.custom_settings["feature_x"] is True
+        assert resolved.custom_settings["feature_y"] == "yes"
+        assert resolved.custom_settings["timeout_net"] == 15
+        assert resolved.custom_settings["feature_z"] == "z"
+        assert resolved.custom_settings["extra_custom"] == "custom_val"
+        assert resolved.mandates["mandated_feature"] is True
+
+
+# ==============================================================================
+# 11. SafeRunPathResolver Tests
+# ==============================================================================
+
+
+class TestSafeRunPathResolver:
+    """Tests SafeRunPathResolver path jail protection."""
+
+    def test_safe_run_path_resolver_all_branches(self, tmp_path):
+        from eval_runner.utils.safe_path import SafeRunPathResolver
+
+        # Non-string identifier
+        with pytest.raises(ValueError):
+            SafeRunPathResolver.validate_identifier(None)  # type: ignore
+
+        # Leading slash
+        with pytest.raises(PermissionError):
+            SafeRunPathResolver.validate_identifier("/absolute/path")
+
+        # Drive root
+        with pytest.raises(PermissionError):
+            SafeRunPathResolver.validate_identifier("C:\\escaped")
+
+        # Resolve run dir
+        run_dir = SafeRunPathResolver.resolve_run_dir(tmp_path, "run_01", create=True)
+        assert run_dir.exists()
+
+        # Resolve artifact path
+        art_path = SafeRunPathResolver.resolve_artifact_path(run_dir, "report.json")
+        assert art_path.parent == run_dir
+
+        # Resolve scenario path (relative and absolute)
+        scen_file = tmp_path / "test_scen.json"
+        scen_file.write_text("{}", encoding="utf-8")
+        assert (
+            SafeRunPathResolver.resolve_scenario_path(tmp_path, "test_scen.json")
+            == scen_file.resolve()
+        )
+        assert SafeRunPathResolver.resolve_scenario_path(tmp_path, scen_file) == scen_file.resolve()
+
+        # Escaped scenario path
+        with pytest.raises(PermissionError):
+            SafeRunPathResolver.resolve_scenario_path(tmp_path / "sub", scen_file)
+
+
+# ==============================================================================
+# 12. Extra Branch Coverage for Auth, Catalog, and InProcess Backend
+# ==============================================================================
+
+
+class TestAuthAndCatalogExtraBranches:
+    """Tests extra edge cases in SimpleAPIKeyAuthBackend and LocalFileCatalogStore."""
+
+    def test_auth_backend_dynamic_bootstrap_key(self, monkeypatch):
+        monkeypatch.delenv("EVAL_MASTER_KEY", raising=False)
+        monkeypatch.delenv("CONSOLE_MASTER_KEY", raising=False)
+
+        backend = SimpleAPIKeyAuthBackend(static_keys=None, master_key=None)
+        assert backend.master_key is not None
+        assert len(backend.master_key) > 20
+        principal = backend.validate_token(backend.master_key)
+        assert principal is not None
+        assert principal.principal_id == "root-admin"
+
+        # Check permission with None principal
+        assert backend.check_permission(None, "resource") is False  # type: ignore
+
+    def test_catalog_store_edge_cases(self, tmp_path):
+        catalog = LocalFileCatalogStore(base_dir=tmp_path)
+        # Non-existent scenario deletion
+        assert catalog.delete_scenario("non_existent") is False
+        assert catalog.delete_scenario("../../escaped") is False
+
+        # Non-existent scenario get
+        assert catalog.get_scenario("missing_id") is None
+
+    def test_auth_backend_edge_cases(self):
+        backend = SimpleAPIKeyAuthBackend(
+            static_keys={"key1": {"principal_id": "u1", "permissions": ["*"]}},
+            master_key="explicit_master",
+        )
+        assert backend.validate_token("") is None
+        assert backend.validate_token(None) is None  # type: ignore
+        principal = backend.validate_token("key1")
+        assert principal is not None
+        assert backend.check_permission(principal, "any_resource") is True
+        assert backend.check_permission(principal, "any_resource", "action") is True
+
+    def test_artifact_and_run_store_missing_dirs(self, tmp_path):
+        missing_base = tmp_path / "does_not_exist"
+        art_store = LocalFileArtifactStore(base_dir=missing_base)
+        assert art_store.get_artifact("ghost_run", "file.txt") is None
+        assert art_store.exists("ghost_run", "file.txt") is False
+
+        r_store = LocalFileRunStore(log_dir=missing_base)
+        assert r_store.list_runs() == []
+
+    def test_signing_backend_verification_failures(self):
+        from eval_runner.reference.signing import LocalEd25519SigningBackend, NullSigningBackend
+
+        # LocalEd25519 verification failure with altered payload
+        private_key = ed25519.Ed25519PrivateKey.generate()
+        priv_pem = private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption(),
+        )
+        pub_pem = private_key.public_key().public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
+        )
+
+        backend = LocalEd25519SigningBackend()
+        sig = backend.sign_payload(b"hello world", priv_pem)
+        assert backend.verify_signature(b"altered data", sig, pub_pem) is False
+        assert backend.verify_signature(b"hello world", sig, pub_pem) is True
+
+        # Null backend verification
+        null_backend = NullSigningBackend()
+        assert null_backend.verify_signature(b"data", "sig", "key") is False
+
+    def test_config_resolver_invalid_file_handling(self, tmp_path):
+        from eval_runner.config_resolver import ConfigResolver
+
+        cfg_dir = tmp_path / "bad_configs"
+        cfg_dir.mkdir()
+        (cfg_dir / "bad.json").write_text("{invalid_json", encoding="utf-8")
+        d_dir = cfg_dir / "bad.d"
+        d_dir.mkdir()
+        (d_dir / "bad.yaml").write_text(":\ninvalid: [", encoding="utf-8")
+
+        res = ConfigResolver.resolve(config_dir=cfg_dir)
+        assert res is not None

@@ -3,17 +3,23 @@ eval_runner.reference.auth
 OSS Reference Implementation: SimpleAPIKeyAuthBackend
 """
 
+import logging
 import os
+import secrets
 from typing import Any
 
 from eval_runner.interfaces.auth import AuthorizationBackend, AuthPrincipal
+
+logger = logging.getLogger(__name__)
 
 
 class SimpleAPIKeyAuthBackend(AuthorizationBackend):
     """
     Simple API Key based reference authorization backend.
-    Validates tokens against static keys or environment variables (e.g., MASTER_KEY, API_KEYS)
-    and evaluates granular permission strings or wildcard matching.
+    Validates tokens against static keys or environment variables
+    (EVAL_MASTER_KEY, CONSOLE_MASTER_KEY).
+    If no keys or environment master key are configured, generates
+    a secure random bootstrap token at startup.
     """
 
     def __init__(
@@ -21,10 +27,19 @@ class SimpleAPIKeyAuthBackend(AuthorizationBackend):
         static_keys: dict[str, dict[str, Any]] | None = None,
         master_key: str | None = None,
     ):
-        self.master_key = master_key or os.getenv(
-            "EVAL_MASTER_KEY", os.getenv("CONSOLE_MASTER_KEY", "root-admin-key")
-        )
-        self._keys: dict[str, dict[str, Any]] = static_keys or {}
+        env_master = os.getenv("EVAL_MASTER_KEY", os.getenv("CONSOLE_MASTER_KEY"))
+        if master_key is not None:
+            self.master_key: str | None = master_key if master_key else None
+        elif env_master:
+            self.master_key = env_master
+        elif not static_keys:
+            # Generate a secure dynamic bootstrap secret rather than shipping a static default
+            self.master_key = secrets.token_urlsafe(32)
+            logger.info("Generated dynamic bootstrap master API key: %s", self.master_key)
+        else:
+            self.master_key = None
+
+        self._keys: dict[str, dict[str, Any]] = dict(static_keys or {})
 
         # Ensure master key is registered
         if self.master_key and self.master_key not in self._keys:
@@ -55,6 +70,8 @@ class SimpleAPIKeyAuthBackend(AuthorizationBackend):
         """Revokes a registered API key."""
         if key in self._keys:
             del self._keys[key]
+            if self.master_key == key:
+                self.master_key = None
             return True
         return False
 

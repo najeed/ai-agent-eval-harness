@@ -17,7 +17,7 @@ from eval_runner.interfaces.checkpoint import CheckpointStore
 class SQLiteCheckpointStore(CheckpointStore):
     """
     SQLite-backed reference checkpoint store.
-    Stores durable execution checkpoints across process lifecycles.
+    Stores durable execution checkpoints across process lifecycles with monotonic sequencing.
     """
 
     def __init__(self, db_path: str | None = None):
@@ -41,6 +41,7 @@ class SQLiteCheckpointStore(CheckpointStore):
                         CREATE TABLE IF NOT EXISTS session_checkpoints (
                             run_id TEXT NOT NULL,
                             checkpoint_id TEXT NOT NULL,
+                            turn_number INTEGER NOT NULL DEFAULT 0,
                             state_json TEXT NOT NULL,
                             metadata_json TEXT,
                             created_at TEXT NOT NULL,
@@ -48,6 +49,14 @@ class SQLiteCheckpointStore(CheckpointStore):
                         )
                         """
                     )
+                    # Auto-migration for existing tables without turn_number
+                    try:
+                        conn.execute(
+                            "ALTER TABLE session_checkpoints "
+                            "ADD COLUMN turn_number INTEGER NOT NULL DEFAULT 0"
+                        )
+                    except sqlite3.OperationalError:
+                        pass
             self._initialized = True
 
     def save(
@@ -58,6 +67,7 @@ class SQLiteCheckpointStore(CheckpointStore):
         metadata: dict[str, Any] | None = None,
     ) -> str:
         self._ensure_initialized()
+        turn_number = int(state.get("turn", state.get("turn_number", 0)))
         state_json = json.dumps(state)
         metadata_json = json.dumps(metadata or {})
         now_iso = datetime.now().astimezone().isoformat()
@@ -67,10 +77,10 @@ class SQLiteCheckpointStore(CheckpointStore):
                 conn.execute(
                     """
                     INSERT OR REPLACE INTO session_checkpoints
-                    (run_id, checkpoint_id, state_json, metadata_json, created_at)
-                    VALUES (?, ?, ?, ?, ?)
+                    (run_id, checkpoint_id, turn_number, state_json, metadata_json, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?)
                     """,
-                    (run_id, checkpoint_id, state_json, metadata_json, now_iso),
+                    (run_id, checkpoint_id, turn_number, state_json, metadata_json, now_iso),
                 )
         return f"sqlite://{self.db_path}#{run_id}/{checkpoint_id}"
 
@@ -86,7 +96,9 @@ class SQLiteCheckpointStore(CheckpointStore):
             else:
                 row = conn.execute(
                     "SELECT state_json FROM session_checkpoints "
-                    "WHERE run_id = ? ORDER BY created_at DESC LIMIT 1",
+                    "WHERE run_id = ? "
+                    "ORDER BY turn_number DESC, checkpoint_id DESC, created_at DESC "
+                    "LIMIT 1",
                     (run_id,),
                 ).fetchone()
 
@@ -113,13 +125,15 @@ class SQLiteCheckpointStore(CheckpointStore):
         self._ensure_initialized()
         with closing(self._get_connection()) as conn:
             rows = conn.execute(
-                "SELECT checkpoint_id, metadata_json, created_at FROM session_checkpoints "
-                "WHERE run_id = ? ORDER BY created_at ASC",
+                "SELECT checkpoint_id, turn_number, metadata_json, created_at "
+                "FROM session_checkpoints "
+                "WHERE run_id = ? ORDER BY turn_number ASC, checkpoint_id ASC, created_at ASC",
                 (run_id,),
             ).fetchall()
             return [
                 {
                     "checkpoint_id": r["checkpoint_id"],
+                    "turn_number": r["turn_number"],
                     "metadata": json.loads(r["metadata_json"] or "{}"),
                     "created_at": r["created_at"],
                 }

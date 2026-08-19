@@ -21,6 +21,7 @@ from .base import (
 )
 from .crypto import checksum, content_hash, file_hash, record_id, shake256_digest
 from .path_resolver import PathResolver
+from .safe_path import SafeRunPathResolver
 
 __all__ = [
     "INDUSTRY_MAPPING",
@@ -33,6 +34,7 @@ __all__ = [
     "generate_id",
     "deep_diff",
     "PathResolver",
+    "SafeRunPathResolver",
     "Path",
     "Any",
     # Crypto utilities (SHA-3 family)

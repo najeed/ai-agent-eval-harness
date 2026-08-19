@@ -59,7 +59,11 @@ class TurnStateManager:
 
     def restore(self, state: dict[str, Any]):
         """Restores turn state from a checkpoint."""
-        self.current_turn = state.get("current_turn", 0)
+        self.current_turn = state.get(
+            "current_turn", state.get("turn", state.get("turn_number", 0))
+        )
         self.max_turns = state.get("max_turns", self.max_turns)
         self.total_input_tokens = state.get("total_input_tokens", 0)
         self.total_output_tokens = state.get("total_output_tokens", 0)
+        if "history" in state and isinstance(state["history"], list):
+            self.message_history = list(state["history"])

@@ -57,10 +57,13 @@ class SessionManager:
         metadata: dict | None = None,
         seed: int | None = None,
         log_root: Path | None = None,
+        cancellation_event: Any | None = None,
+        resumption_checkpoint: dict | None = None,
     ):
         from .plugins import PluginManager
 
         self.run_id = run_id
+        self.cancellation_event = cancellation_event
         # [Forensic Isolation] Ensure parallel runs don't mutate shared scenario state
         self.scenario = copy.deepcopy(scenario)
         # Authoritatively inject run_id for downstream forensic affinity (e.g., ToolSandbox)
@@ -110,6 +113,9 @@ class SessionManager:
         self.checkpoint_manager = SessionCheckpointManager(run_id=self.run_id)
         self.approval_manager = SessionApprovalManager(run_id=self.run_id)
         self.tool_execution_coordinator = ToolExecutionCoordinator()
+
+        if resumption_checkpoint:
+            self.restore_from_checkpoint(resumption_checkpoint)
 
         # Initialize plugins for this session
         self.plugin_manager.load_plugins()
@@ -300,10 +306,14 @@ class SessionManager:
         data = checkpoint_data or self.checkpoint_manager.load_latest_checkpoint()
         if not data:
             return False
-        if "turn" in data:
-            self.turn_number = data["turn"]
-        if "history" in data and hasattr(self, "turn_state_manager") and self.turn_state_manager:
-            self.turn_state_manager.history = data["history"]
+        turn = data.get("turn", data.get("current_turn", data.get("turn_number", 0)))
+        self.turn_number = int(turn)
+        if hasattr(self, "turn_state_manager") and self.turn_state_manager:
+            self.turn_state_manager.restore(data.get("turn_state", data))
+        if "metadata" in data and isinstance(data["metadata"], dict):
+            self.session_metadata.update(data["metadata"])
+        if "session_metadata" in data and isinstance(data["session_metadata"], dict):
+            self.session_metadata.update(data["session_metadata"])
         return True
 
     async def execute_tasks(self, attempt_number: int) -> list[dict[str, Any]]:
@@ -325,12 +335,8 @@ class SessionManager:
             workflow = self.scenario.get("workflow", {})
             nodes_data = {node["id"]: node for node in workflow.get("nodes", [])}
 
-            # 1. Build Dependency Graph (Industrial AES v1.4)
-            self.event_bus.emit(
-                CoreEvents.PHASE_START,
-                {"phase": "workflow_sort"},
-                span_context=self.session_metadata.get("span_context"),
-            )
+            # 1. Topologically Sort Execution Graph
+            from graphlib import CycleError, TopologicalSorter
 
             ts = TopologicalSorter()
             for node_id in nodes_data:
@@ -368,6 +374,22 @@ class SessionManager:
                 raise ValueError(err_msg)
 
             for node_id in execution_order:
+                if (
+                    self.cancellation_event
+                    and getattr(self.cancellation_event, "is_set", lambda: False)()
+                ):
+                    all_task_results.append(
+                        {
+                            "task_id": node_id,
+                            "status": "aborted",
+                            "message": "Execution cancelled",
+                            "turns_taken": turns_taken,
+                            "used_tools": [],
+                            "conversation_history": history,
+                        }
+                    )
+                    break
+
                 node = nodes_data.get(node_id)
                 if not node:
                     continue
@@ -476,7 +498,20 @@ class SessionManager:
         conversation_history.append({"role": "user", "content": current_message})
 
         node_success = False
-        for turn in range(1, self.max_turns + 1):
+        start_turn = (
+            self.turn_number + 1 if hasattr(self, "turn_number") and self.turn_number > 0 else 1
+        )
+        for turn in range(start_turn, self.max_turns + 1):
+            if (
+                self.cancellation_event
+                and getattr(self.cancellation_event, "is_set", lambda: False)()
+            ):
+                logger.info(
+                    "   [Session] Run %s aborted at turn %d due to cancellation event.",
+                    self.run_id,
+                    turn,
+                )
+                break
             self.turn_number = turn
             if config.EVAL_TURN_THROTTLE > 0:
                 await asyncio.sleep(config.EVAL_TURN_THROTTLE)

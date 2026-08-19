@@ -10,8 +10,9 @@ from typing import Any
 
 import yaml
 
-from eval_runner import config, utils
+from eval_runner import config
 from eval_runner.interfaces.catalog import CatalogStore
+from eval_runner.utils.safe_path import SafeRunPathResolver
 
 logger = logging.getLogger(__name__)
 
@@ -19,11 +20,11 @@ logger = logging.getLogger(__name__)
 class LocalFileCatalogStore(CatalogStore):
     """
     Local filesystem-backed reference CatalogStore.
-    Reads scenario definitions from SCENARIOS_DIR and industries/ directories.
+    Reads scenario definitions from SCENARIOS_DIR and industries/ directories with path-safety.
     """
 
     def __init__(self, base_dir: str | Path | None = None):
-        self.base_dir = Path(base_dir or config.PROJECT_ROOT)
+        self.base_dir = Path(base_dir or config.PROJECT_ROOT).resolve()
 
     def list_scenarios(self, category: str | None = None) -> list[dict[str, Any]]:
         scenarios = []
@@ -66,6 +67,7 @@ class LocalFileCatalogStore(CatalogStore):
             return None
 
         try:
+            target_path = SafeRunPathResolver.resolve_scenario_path(self.base_dir, target_path)
             with open(target_path, encoding="utf-8") as f:
                 if target_path.suffix in (".yaml", ".yml"):
                     return yaml.safe_load(f)
@@ -75,9 +77,9 @@ class LocalFileCatalogStore(CatalogStore):
             return None
 
     def save_scenario(self, scenario_id: str, scenario_data: dict[str, Any]) -> str:
-        target_path = self.base_dir / "scenarios" / f"{scenario_id}.json"
-        if not utils.is_path_safe(target_path, self.base_dir):
-            raise PermissionError(f"Target path {target_path} is outside allowed boundary")
+        SafeRunPathResolver.validate_identifier(scenario_id, allow_nested=False)
+        target_path = (self.base_dir / "scenarios" / f"{scenario_id}.json").resolve()
+        target_path = SafeRunPathResolver.resolve_scenario_path(self.base_dir, target_path)
 
         target_path.parent.mkdir(parents=True, exist_ok=True)
         with open(target_path, "w", encoding="utf-8") as f:
@@ -85,8 +87,13 @@ class LocalFileCatalogStore(CatalogStore):
         return str(target_path)
 
     def delete_scenario(self, scenario_id: str) -> bool:
-        target_path = self.base_dir / "scenarios" / f"{scenario_id}.json"
-        if target_path.exists() and utils.is_path_safe(target_path, self.base_dir):
-            target_path.unlink()
-            return True
+        try:
+            SafeRunPathResolver.validate_identifier(scenario_id, allow_nested=False)
+            target_path = (self.base_dir / "scenarios" / f"{scenario_id}.json").resolve()
+            target_path = SafeRunPathResolver.resolve_scenario_path(self.base_dir, target_path)
+            if target_path.exists() and target_path.is_file():
+                target_path.unlink()
+                return True
+        except (ValueError, PermissionError):
+            return False
         return False

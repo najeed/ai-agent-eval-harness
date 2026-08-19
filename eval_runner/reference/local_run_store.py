@@ -10,6 +10,7 @@ from typing import Any
 
 from eval_runner import config
 from eval_runner.interfaces.run_store import RunStore
+from eval_runner.utils.safe_path import SafeRunPathResolver
 
 logger = logging.getLogger(__name__)
 
@@ -17,15 +18,22 @@ logger = logging.getLogger(__name__)
 class LocalFileRunStore(RunStore):
     """
     Local filesystem-backed reference RunStore.
-    Manages run vaults and manifests under RUN_LOG_DIR.
+    Manages run vaults and manifests under RUN_LOG_DIR with safe path resolution.
     """
 
     def __init__(self, log_dir: str | Path | None = None):
-        self.log_dir = Path(log_dir or config.RUN_LOG_DIR)
+        self.log_dir = Path(log_dir or config.RUN_LOG_DIR).resolve()
         self.log_dir.mkdir(parents=True, exist_ok=True)
 
+    def _get_run_vault(self, run_id: str, create: bool = False) -> Path:
+        return SafeRunPathResolver.resolve_run_dir(self.log_dir, run_id, create=create)
+
     def get_run(self, run_id: str) -> dict[str, Any] | None:
-        run_vault = self.log_dir / run_id
+        try:
+            run_vault = self._get_run_vault(run_id, create=False)
+        except (ValueError, PermissionError):
+            return None
+
         if not run_vault.exists() or not run_vault.is_dir():
             return None
 
@@ -64,15 +72,18 @@ class LocalFileRunStore(RunStore):
         return runs
 
     def save_run_manifest(self, run_id: str, manifest: dict[str, Any]) -> str:
-        run_vault = self.log_dir / run_id
-        run_vault.mkdir(parents=True, exist_ok=True)
+        run_vault = self._get_run_vault(run_id, create=True)
         target = run_vault / "run_manifest.json"
         with open(target, "w", encoding="utf-8") as f:
             json.dump(manifest, f, indent=2)
         return str(target)
 
     def delete_run(self, run_id: str) -> bool:
-        run_vault = self.log_dir / run_id
+        try:
+            run_vault = self._get_run_vault(run_id, create=False)
+        except (ValueError, PermissionError):
+            return False
+
         if run_vault.exists() and run_vault.is_dir():
             from eval_runner.utils import rmtree_resilient
 
