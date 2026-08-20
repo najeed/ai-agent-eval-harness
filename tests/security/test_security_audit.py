@@ -314,9 +314,10 @@ def test_auth_jwt_generation():
     from eval_runner.console.auth import SECRET_KEY, generate_handoff_token
 
     token = generate_handoff_token()
-    decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+    decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"], audience="agentv-plugin")
 
     assert decoded["sub"] == "admin-user"
+    assert decoded["aud"] == "agentv-plugin"
     assert decoded["scope"] == "console-handoff"
     assert "exp" in decoded
 
