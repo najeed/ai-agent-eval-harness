@@ -529,22 +529,25 @@ def get_run_status(run_id):
             )
 
     # Check active execution backend in-memory state before returning 404
-    from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+    try:
+        from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
 
-    backend = InProcessExecutionBackend.get_instance()
-    st = backend.status(run_id)
-    if st and st.get("status") != "UNKNOWN":
-        return jsonify(
-            {
-                "run_id": run_id,
-                "status": st.get("status"),
-                "size": 0,
-                "mtime": 0,
-                "has_certificate": False,
-                "sourced_from_master": False,
-                "scenario": st.get("scenario_data"),
-            }
-        )
+        backend = InProcessExecutionBackend.get_instance()
+        st = backend.status(run_id)
+        if st and st.get("status") != "UNKNOWN":
+            return jsonify(
+                {
+                    "run_id": run_id,
+                    "status": st.get("status"),
+                    "size": 0,
+                    "mtime": 0,
+                    "has_certificate": False,
+                    "sourced_from_master": False,
+                    "scenario": st.get("scenario_data"),
+                }
+            )
+    except Exception as e:
+        logger.debug(f"Backend status query error: {e}")
 
     return jsonify({"error": "Run not found"}), 404
 

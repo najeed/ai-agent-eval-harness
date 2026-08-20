@@ -287,10 +287,14 @@ def test_chaos_hitl_process_death_and_resume_on_resolve(chaos_scenario, tmp_path
     assert app_restored.resumption_token == token
 
     # Mock runner.run_scenario to verify execution resumed
+    import threading
+
+    executed_event = threading.Event()
     resumed_executions = []
 
     def mock_run_scenario(scenario_data, run_id=None, **kwargs):
         resumed_executions.append((run_id, kwargs.get("resumption_checkpoint")))
+        executed_event.set()
         return {"status": "SUCCESS", "run_id": run_id}
 
     monkeypatch.setattr("eval_runner.runner.run_scenario", mock_run_scenario)
@@ -318,6 +322,7 @@ def test_chaos_hitl_process_death_and_resume_on_resolve(chaos_scenario, tmp_path
         assert data["run_id"] == run_id
 
     # 5. Assert that backend.resume() executed and submitted run with checkpoint
+    assert executed_event.wait(timeout=10.0), "Timed out waiting for background resume thread"
     assert len(resumed_executions) == 1
     executed_run_id, chk = resumed_executions[0]
     assert executed_run_id == run_id

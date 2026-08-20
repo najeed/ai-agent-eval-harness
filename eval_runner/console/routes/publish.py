@@ -27,17 +27,86 @@ logger = logging.getLogger(__name__)
 
 publish_bp = Blueprint("publish", __name__)
 
-# Global in-memory background job tracking
-JOBS = {}
+
+class DurableJobStore:
+    """File-backed durable persistence for long-running publication and verification jobs."""
+
+    @staticmethod
+    def _jobs_dir() -> Path:
+        p = config.PROJECT_ROOT / "results" / "jobs"
+        p.mkdir(parents=True, exist_ok=True)
+        return p
+
+    @classmethod
+    def save(cls, job_id: str, data: dict) -> None:
+        path = cls._jobs_dir() / f"{job_id}.json"
+        # Filter out non-serializable objects
+        clean = {k: v for k, v in data.items() if not k.startswith("_")}
+        try:
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(clean, f, indent=2)
+        except Exception as e:
+            logger.warning(f"Failed to persist job {job_id}: {e}")
+
+    @classmethod
+    def load(cls, job_id: str) -> dict | None:
+        path = cls._jobs_dir() / f"{job_id}.json"
+        if not path.exists():
+            return None
+        try:
+            with open(path, encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            logger.warning(f"Failed to load durable job {job_id}: {e}")
+            return None
+
+    @classmethod
+    def list_active(cls) -> list[str]:
+        active = []
+        for p in cls._jobs_dir().glob("*.json"):
+            try:
+                with open(p, encoding="utf-8") as f:
+                    j = json.load(f)
+                if j.get("status") in ("queued", "running"):
+                    active.append(j.get("job_id", p.stem))
+            except Exception as e:
+                logger.debug(f"Skipping unreadable job {p}: {e}")
+        return active
 
 
-def _run_publication_job(job_id, cmd, log_path):
-    """Background worker thread executing the publication suite script."""
-    JOBS[job_id]["status"] = "running"
-    JOBS[job_id]["progress"] = "Initializing batch conductor..."
+# In-memory runtime cache with durable persistence
+JOBS: dict[str, dict] = {}
+
+
+def _get_job(job_id: str) -> dict | None:
+    if job_id in JOBS:
+        return JOBS[job_id]
+    durable = DurableJobStore.load(job_id)
+    if durable:
+        JOBS[job_id] = durable
+        return durable
+    return None
+
+
+def _update_job(job_id: str, updates: dict) -> None:
+    if job_id not in JOBS:
+        loaded = _get_job(job_id) or {"job_id": job_id}
+        JOBS[job_id] = loaded
+    JOBS[job_id].update(updates)
+    DurableJobStore.save(job_id, JOBS[job_id])
+
+
+def _run_publication_job(
+    job_id: str, cmd: list[str], log_path: Path, batch_dir: Path | None = None
+):
+    """
+    Background worker thread executing the publication suite script
+    with deterministic output binding.
+    """
+
+    _update_job(job_id, {"status": "running", "progress": "Initializing batch conductor..."})
 
     try:
-        # Redirect stdout and stderr to log file for user display
         with open(log_path, "w", encoding="utf-8") as log_file:
             proc = subprocess.Popen(
                 cmd,
@@ -47,50 +116,55 @@ def _run_publication_job(job_id, cmd, log_path):
                 bufsize=1,
                 encoding="utf-8",
             )
-            JOBS[job_id]["_proc"] = proc
+            if job_id in JOBS:
+                JOBS[job_id]["_proc"] = proc
 
-            # Read output stream in real-time
             for line in proc.stdout:
                 log_file.write(line)
                 log_file.flush()
 
-                # Check keywords or progress counters to update state progress
                 if "Running run" in line or "Completed run" in line or "runs complete" in line:
                     clean_line = line.strip()
-                    # Extract the x/y part
                     parts = clean_line.split("]")
                     if len(parts) > 1:
                         prog_text = parts[1].strip()
-                        # e.g. "Conducting evaluations (Running run 1/5...)"
-                        # or   "Conducting evaluations (Completed run 1/5...)"
-                        JOBS[job_id]["progress"] = f"Conducting evaluations ({prog_text})"
+                        _update_job(job_id, {"progress": f"Conducting evaluations ({prog_text})"})
                 elif "Phase 1" in line:
-                    JOBS[job_id]["progress"] = "Conducting evaluation suite..."
+                    _update_job(job_id, {"progress": "Conducting evaluation suite..."})
                 elif "Phase 2" in line:
-                    JOBS[job_id]["progress"] = "Aggregating metrics and scoring..."
+                    _update_job(job_id, {"progress": "Aggregating metrics and scoring..."})
                 elif "Phase 3" in line:
-                    JOBS[job_id]["progress"] = "Building Recharts leaderboards..."
+                    _update_job(job_id, {"progress": "Building Recharts leaderboards..."})
                 elif "Phase 4" in line:
-                    JOBS[job_id]["progress"] = "Generating signed regulatory ZIP bundle..."
+                    _update_job(job_id, {"progress": "Generating signed regulatory ZIP bundle..."})
 
             proc.wait()
 
-        # Clean up process reference
-        if "_proc" in JOBS[job_id]:
+        if job_id in JOBS and "_proc" in JOBS[job_id]:
             del JOBS[job_id]["_proc"]
 
         if proc.returncode == 0:
-            # Locate the newly created batch directory under results/
-            results_path = config.PROJECT_ROOT / "results"
-            batches = sorted(
-                [d for d in results_path.iterdir() if d.is_dir() and d.name.startswith("batch_")],
-                key=lambda x: x.stat().st_mtime,
-                reverse=True,
-            )
+            target_batch_dir = batch_dir
+            if not target_batch_dir or not target_batch_dir.exists():
+                results_path = config.PROJECT_ROOT / "results"
+                batches = (
+                    sorted(
+                        [
+                            d
+                            for d in results_path.iterdir()
+                            if d.is_dir() and d.name.startswith("batch_")
+                        ],
+                        key=lambda x: x.stat().st_mtime,
+                        reverse=True,
+                    )
+                    if results_path.exists()
+                    else []
+                )
+                if batches:
+                    target_batch_dir = batches[0]
 
-            if batches:
-                batch_dir = batches[0]
-                manifest_path = batch_dir / "manifest.json"
+            if target_batch_dir and target_batch_dir.exists():
+                manifest_path = target_batch_dir / "manifest.json"
                 manifest_data = {}
                 if manifest_path.exists():
                     try:
@@ -99,36 +173,62 @@ def _run_publication_job(job_id, cmd, log_path):
                     except Exception as e:
                         logger.warning(f"Failed to read manifest for job {job_id}: {e}")
 
-                zip_path = batch_dir / "publication_artifact_bundle.zip"
-                leaderboard_path = batch_dir / (
-                    "pilot_preview.html" if "pilot" in cmd else "leaderboard.html"
+                zip_path = target_batch_dir / "publication_artifact_bundle.zip"
+                leaderboard_path = target_batch_dir / (
+                    "pilot_preview.html"
+                    if any("pilot" in str(arg).lower() for arg in cmd)
+                    else "leaderboard.html"
                 )
 
-                JOBS[job_id]["status"] = "completed"
-                JOBS[job_id]["progress"] = "Publication completed successfully."
-                JOBS[job_id]["results"] = {
-                    "batch_id": batch_dir.name,
-                    "manifest": manifest_data,
-                    "zip_file": str(zip_path.relative_to(config.PROJECT_ROOT))
-                    if zip_path.exists()
-                    else None,
-                    "leaderboard_html": str(leaderboard_path.relative_to(config.PROJECT_ROOT))
-                    if leaderboard_path.exists()
-                    else None,
-                }
+                _update_job(
+                    job_id,
+                    {
+                        "status": "completed",
+                        "progress": "Publication completed successfully.",
+                        "results": {
+                            "batch_id": target_batch_dir.name,
+                            "manifest": manifest_data,
+                            "zip_file": str(zip_path.relative_to(config.PROJECT_ROOT)).replace(
+                                "\\", "/"
+                            )
+                            if zip_path.exists()
+                            else None,
+                            "leaderboard_html": str(
+                                leaderboard_path.relative_to(config.PROJECT_ROOT)
+                            ).replace("\\", "/")
+                            if leaderboard_path.exists()
+                            else None,
+                        },
+                    },
+                )
             else:
-                JOBS[job_id]["status"] = "failed"
-                JOBS[job_id]["progress"] = "Publication failed."
-                JOBS[job_id]["error"] = "Process completed, but results batch folder was not found."
+                _update_job(
+                    job_id,
+                    {
+                        "status": "failed",
+                        "progress": "Publication failed.",
+                        "error": "Process completed, but results batch folder was not found.",
+                    },
+                )
         else:
-            JOBS[job_id]["status"] = "failed"
-            JOBS[job_id]["progress"] = "Publication failed."
-            JOBS[job_id]["error"] = f"Publication script failed with exit code: {proc.returncode}"
+            _update_job(
+                job_id,
+                {
+                    "status": "failed",
+                    "progress": "Publication failed.",
+                    "error": f"Publication script failed with exit code: {proc.returncode}",
+                },
+            )
     except Exception as e:
         logger.error(f"[Publish Job] Failure executing job {job_id}: {e}")
-        JOBS[job_id]["status"] = "failed"
-        JOBS[job_id]["progress"] = "Publication failed."
-        JOBS[job_id]["error"] = str(e)
+        _update_job(
+            job_id,
+            {
+                "status": "failed",
+                "progress": "Publication failed.",
+                "error": str(e),
+            },
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -140,11 +240,12 @@ def _run_publication_job(job_id, cmd, log_path):
 @require_permission(Permission.EVAL_TRIGGER)
 def start_publish_run():
     """
-    Spawns a publication suite conductor background job and returns {job_id}.
-    Inputs include mode, path, agent name, protocol, endpoint, parallel.
+    Spawns a publication suite conductor background job with durable state
+    and deterministic output binding.
     """
-    # Enforce single active job constraint
-    active_jobs = [jid for jid, j in JOBS.items() if j.get("status") in ["queued", "running"]]
+
+    # Enforce single active job constraint across durable store
+    active_jobs = DurableJobStore.list_active()
     if active_jobs:
         return jsonify(
             {
@@ -166,10 +267,13 @@ def start_publish_run():
     parallel = body.get("parallel", 4)
 
     job_id = f"pub_job_{uuid.uuid4().hex[:12]}"
+    batch_id = f"batch_{job_id}"
+    batch_dir = config.PROJECT_ROOT / "results" / batch_id
+    batch_dir.mkdir(parents=True, exist_ok=True)
 
-    # Setup job tracking
-    JOBS[job_id] = {
+    job_entry = {
         "job_id": job_id,
+        "batch_id": batch_id,
         "status": "queued",
         "progress": "Pending launch...",
         "params": {
@@ -183,8 +287,8 @@ def start_publish_run():
         "results": None,
         "error": None,
     }
+    _update_job(job_id, job_entry)
 
-    # Spawn background process
     suite_dir = Path(__file__).parent.parent.parent / "publication_suite"
     cmd = [
         sys.executable,
@@ -202,29 +306,31 @@ def start_publish_run():
         agent,
         "--parallel",
         str(parallel),
+        "--batch-id",
+        batch_id,
+        "--output-dir",
+        str(batch_dir),
     ]
 
     log_dir = config.PROJECT_ROOT / "results" / "jobs"
     log_dir.mkdir(parents=True, exist_ok=True)
     log_path = log_dir / f"{job_id}.log"
 
-    # Launch execution thread
-    thread = threading.Thread(target=_run_publication_job, args=(job_id, cmd, log_path))
+    thread = threading.Thread(target=_run_publication_job, args=(job_id, cmd, log_path, batch_dir))
     thread.daemon = True
     thread.start()
 
-    return jsonify({"job_id": job_id, "status": "queued"})
+    return jsonify({"job_id": job_id, "batch_id": batch_id, "status": "queued"})
 
 
 @publish_bp.route("/publish/<job_id>", methods=["GET"])
 @require_permission(Permission.RUNS_READ)
 def get_publish_job(job_id: str):
-    """Returns the current status, progress, and results of a publication job."""
-    job = JOBS.get(job_id)
+    """Returns durable status, progress, and results of a publication job."""
+    job = _get_job(job_id)
     if not job:
         return jsonify({"error": f"Job '{job_id}' not found"}), 404
 
-    # Attempt to read log file to return output streams
     log_path = config.PROJECT_ROOT / "results" / "jobs" / f"{job_id}.log"
     log_content = ""
     if log_path.exists():
@@ -247,7 +353,6 @@ def get_publish_job(job_id: str):
         except Exception as e:
             logger.warning(f"Failed to read log file for job {job_id}: {e}")
 
-    # Filter out non-serializable objects (like the _proc Popen handle)
     serializable_job = {k: v for k, v in job.items() if not k.startswith("_")}
     response = jsonify({**serializable_job, "logs": log_content})
     if job.get("status") in ["completed", "failed"]:
@@ -259,7 +364,7 @@ def get_publish_job(job_id: str):
 @require_permission(Permission.EVAL_TRIGGER)
 def stop_publish_job(job_id: str):
     """Gracefully terminates a running publication conductor subprocess."""
-    job = JOBS.get(job_id)
+    job = _get_job(job_id)
     if not job:
         return jsonify({"error": f"Job '{job_id}' not found"}), 404
 
@@ -271,7 +376,6 @@ def stop_publish_job(job_id: str):
         try:
             import psutil
 
-            # Force kill child processes recursively (including parallel scenario tasks)
             parent = psutil.Process(proc.pid)
             children = parent.children(recursive=True)
             for child in children:
@@ -280,8 +384,6 @@ def stop_publish_job(job_id: str):
                 except Exception as e:
                     logger.debug(f"Failed to kill child process: {e}")
             parent.kill()
-
-            # Wait for cleanup
             psutil.wait_procs(children, timeout=3)
             parent.wait(timeout=3)
         except Exception as e:
@@ -292,12 +394,17 @@ def stop_publish_job(job_id: str):
                 except Exception as e:
                     logger.debug(f"Failed to kill fallback process: {e}")
 
-    job["status"] = "failed"
-    job["error"] = "Job aborted by user request."
-    job["progress"] = "Job stopped."
+    _update_job(
+        job_id,
+        {
+            "status": "failed",
+            "error": "Job aborted by user request.",
+            "progress": "Job stopped.",
+        },
+    )
 
-    if "_proc" in job:
-        del job["_proc"]
+    if "_proc" in JOBS.get(job_id, {}):
+        del JOBS[job_id]["_proc"]
 
     return jsonify({"status": "stopped", "message": "Job terminated successfully."})
 
@@ -305,23 +412,37 @@ def stop_publish_job(job_id: str):
 @publish_bp.route("/publish/<job_id>/bundle", methods=["GET"])
 @require_permission(Permission.RUNS_READ)
 def download_job_bundle(job_id: str):
-    """Streams the signed ZIP output artifact created by the job once finished."""
-    job = JOBS.get(job_id)
+    """
+    Streams the signed ZIP output artifact created by the job.
+    Enforces object-level check and records an audit log entry.
+    """
+    job = _get_job(job_id)
     if not job:
         return jsonify({"error": f"Job '{job_id}' not found"}), 404
 
-    if job["status"] != "completed" or not job["results"] or not job["results"].get("zip_file"):
+    if (
+        job.get("status") != "completed"
+        or not job.get("results")
+        or not job["results"].get("zip_file")
+    ):
         return jsonify({"error": "Job bundle is not yet complete or has failed"}), 400
 
     zip_path = config.PROJECT_ROOT / job["results"]["zip_file"]
     if not zip_path.exists():
         return jsonify({"error": "ZIP bundle file was not found on server disk"}), 404
 
+    user_id = request.headers.get("X-User-Id", "session-user")
+    logger.info(
+        f"[AUDIT] Evidence bundle download: job={job_id}, batch={job.get('batch_id')}, "
+        f"user={user_id}, ip={request.remote_addr}"
+    )
+
+    batch_name = (job.get("results") or {}).get("batch_id") or job.get("batch_id") or job_id
     return send_file(
         str(zip_path),
         mimetype="application/zip",
         as_attachment=True,
-        download_name=f"agentv_bundle_{job['results']['batch_id']}.zip",
+        download_name=f"agentv_bundle_{batch_name}.zip",
     )
 
 

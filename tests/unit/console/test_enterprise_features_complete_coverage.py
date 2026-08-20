@@ -1,0 +1,378 @@
+"""
+tests/unit/console/test_enterprise_features_complete_coverage.py
+Comprehensive unit tests covering the enterprise trust model,
+auth API, canonical scenario authoring/validation/readiness, and durable publish routes.
+"""
+
+import json
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+import jwt
+import pytest
+from flask import Flask
+
+from eval_runner import config
+from eval_runner.console.app import create_app
+from eval_runner.console.auth import (
+    generate_handoff_token,
+    get_jwt_secret,
+    handoff_required,
+)
+from eval_runner.console.routes.publish import (
+    JOBS,
+    DurableJobStore,
+    _get_job,
+    _update_job,
+)
+
+
+@pytest.fixture
+def ent_client(tmp_path):
+    scen_dir = tmp_path / "scenarios"
+    scen_dir.mkdir(parents=True, exist_ok=True)
+    sample_scen = {
+        "metadata": {"id": "test_scen_1", "version": "1.0.0"},
+        "workflow": {"nodes": [{"id": "node_1", "task": "run_test"}]},
+        "industry": "finance",
+    }
+    (scen_dir / "test_scen_1.json").write_text(json.dumps(sample_scen), encoding="utf-8")
+
+    runs_dir = tmp_path / "runs"
+    runs_dir.mkdir(parents=True, exist_ok=True)
+
+    with (
+        patch.object(config, "PROJECT_ROOT", tmp_path),
+        patch.object(config, "RUN_LOG_DIR", runs_dir),
+    ):
+        app = create_app()
+        app.secret_key = "test_enterprise_secret_key"
+        with app.test_client() as client:
+            yield client, tmp_path
+
+
+# ===========================================================================
+# 1. AUTH API TESTS
+# ===========================================================================
+
+
+def test_get_jwt_secret_resolution():
+    with patch.object(config, "JWT_SECRET", "custom_secret_from_config", create=True):
+        assert get_jwt_secret() == "custom_secret_from_config"
+
+    with (
+        patch.object(config, "JWT_SECRET", None, create=True),
+        patch.dict("os.environ", {"JWT_SECRET": "env_jwt_secret"}),
+    ):
+        assert get_jwt_secret() == "env_jwt_secret"
+
+    with (
+        patch.object(config, "JWT_SECRET", None, create=True),
+        patch.dict("os.environ", {}, clear=True),
+        patch.object(config, "DASHBOARD_API_KEY", "dash_key_123"),
+    ):
+        assert get_jwt_secret() == "dash_key_123"
+
+    with (
+        patch.object(config, "JWT_SECRET", None, create=True),
+        patch.dict("os.environ", {}, clear=True),
+        patch.object(config, "DASHBOARD_API_KEY", None),
+        patch.object(config, "SERVICE_API_KEY", "svc_key_456"),
+    ):
+        assert get_jwt_secret() == "svc_key_456"
+
+
+def test_handoff_token_and_decorator(ent_client):
+    client, _ = ent_client
+
+    # Generate token
+    res = client.get("/api/auth/handoff?plugin_id=custom-p")
+    assert res.status_code == 200
+    token = res.get_json()["token"]
+    assert res.get_json()["audience"] == "agentv-plugin"
+
+    # Test handoff_required decorator
+    test_app = Flask(__name__)
+
+    @test_app.route("/protected")
+    @handoff_required
+    def protected():
+        return {"status": "ok"}
+
+    with test_app.test_client() as tc:
+        # Missing token
+        r1 = tc.get("/protected")
+        assert r1.status_code == 401
+        assert "Handoff token required" in r1.get_json()["error"]
+
+        # Valid token in query param
+        r2 = tc.get(f"/protected?token={token}")
+        assert r2.status_code == 200
+        assert r2.get_json()["status"] == "ok"
+
+        # Valid token in header
+        r3 = tc.get("/protected", headers={"X-Handoff-Token": token})
+        assert r3.status_code == 200
+
+        # Expired token
+        expired_token = generate_handoff_token(expires_in_seconds=-10)
+        r4 = tc.get(f"/protected?token={expired_token}")
+        assert r4.status_code == 401
+        assert "Token expired" in r4.get_json()["error"]
+
+        # Invalid token signature
+        bad_token = jwt.encode(
+            {"sub": "admin"}, "wrong_key_that_is_long_enough_32_bytes", algorithm="HS256"
+        )
+        r5 = tc.get(f"/protected?token={bad_token}")
+        assert r5.status_code == 401
+        assert "Invalid token" in r5.get_json()["error"]
+
+
+def test_auth_me_scenarios(ent_client):
+    client, _ = ent_client
+
+    # 1. Anonymous with dev mode on (localhost)
+    with patch.object(config, "ENABLE_DEMO", True, create=True):
+        res = client.get("/api/auth/me", environ_base={"REMOTE_ADDR": "127.0.0.1"})
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["authenticated"] is True
+        assert data["user"]["role"] == "System Admin"
+
+    # 2. Anonymous in non-dev mode
+    with (
+        patch.object(config, "ENABLE_DEMO", False, create=True),
+        patch.dict("os.environ", {"DEV_PERSONA_SIMULATOR": "false"}),
+    ):
+        res = client.get("/api/auth/me", environ_base={"REMOTE_ADDR": "192.168.1.50"})
+        assert res.status_code == 200
+        assert res.get_json()["authenticated"] is False
+
+    # 3. Session user with different permission subsets
+    with client.session_transaction() as sess:
+        sess["user"] = {"id": "auditor_1", "permissions": ["certify:write"]}
+    res = client.get("/api/auth/me")
+    assert res.get_json()["user"]["role"] == "Compliance Auditor"
+
+    with client.session_transaction() as sess:
+        sess["user"] = {"id": "designer_1", "permissions": ["scenarios:write"]}
+    res = client.get("/api/auth/me")
+    assert res.get_json()["user"]["role"] == "Scenario Designer"
+
+    with client.session_transaction() as sess:
+        sess["user"] = {"id": "ops_1", "permissions": ["runs:read"]}
+    res = client.get("/api/auth/me")
+    assert res.get_json()["user"]["role"] == "MultiAgentOps Eng."
+
+
+def test_auth_login_and_logout(ent_client):
+    client, _ = ent_client
+
+    # Logout
+    res = client.post("/api/auth/logout")
+    assert res.status_code == 200
+    assert res.get_json()["status"] == "success"
+
+    # Login with missing credentials
+    r_bad = client.post("/api/auth/login", json={})
+    assert r_bad.status_code == 400
+
+    # Login with valid key
+    r_good = client.post("/api/auth/login", json={"key": "test-key-123", "role": "admin"})
+    assert r_good.status_code in (200, 401)
+
+
+# ===========================================================================
+# 2. SCENARIOS API TESTS
+# ===========================================================================
+
+
+def test_get_canonical_scenario_success_and_404(ent_client):
+    client, tmp_path = ent_client
+
+    # Success
+    res = client.get("/api/scenarios/test_scen_1")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["scenario"]["metadata"]["id"] == "test_scen_1"
+    assert data["scenario_hash"].startswith("sha3_256:")
+
+    # 404 Not Found
+    res404 = client.get("/api/scenarios/non_existent_scenario_xyz")
+    assert res404.status_code == 404
+    assert "not found" in res404.get_json()["error"]
+
+
+def test_validate_scenario_schema(ent_client):
+    client, _ = ent_client
+
+    # Validate by ID
+    res = client.post("/api/scenarios/test_scen_1/validate", json={})
+    assert res.status_code == 200
+    assert res.get_json()["valid"] is True
+    assert res.get_json()["status"] == "Validated"
+
+    # Validate invalid inline scenario
+    bad_scen = {"metadata": {}, "workflow": {}}
+    res_bad = client.post("/api/scenarios/test_scen_1/validate", json={"scenario": bad_scen})
+    assert res_bad.status_code == 200
+    assert res_bad.get_json()["valid"] is False
+    assert len(res_bad.get_json()["errors"]) > 0
+
+    # Missing scenario
+    res_empty = client.post("/api/scenarios/non_existent/validate", json={})
+    assert res_empty.status_code == 400
+
+
+def test_check_execution_readiness(ent_client):
+    client, tmp_path = ent_client
+
+    # 1. Successful readiness check
+    payload = {
+        "scenario_id": "test_scen_1",
+        "agent_config": {
+            "protocol": "http_rest",
+            "endpoint": "http://localhost:8000",
+        },
+        "runtime_config": {"max_turns": 10},
+    }
+    res = client.post("/api/scenarios/readiness", json=payload)
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["ready"] is True
+    assert data["manifest"] is not None
+    assert data["manifest"]["scenario_id"] == "test_scen_1"
+
+    # 2. Failed scenario resolution
+    payload_fail = {
+        "scenario_id": "missing_scen_xyz",
+        "agent_config": {"protocol": "custom_grpc"},
+    }
+    res_fail = client.post("/api/scenarios/readiness", json=payload_fail)
+    assert res_fail.status_code == 200
+    assert res_fail.get_json()["ready"] is False
+
+
+def test_save_scenario_with_hash_and_status(ent_client):
+    client, tmp_path = ent_client
+
+    payload = {
+        "id": "new_created_scen",
+        "name": "New Test Scenario",
+        "industry": "finance",
+        "version": "1.1.0",
+        "status": "Validated",
+        "nodes": [{"id": "n1", "task": "evaluate_risk"}],
+    }
+    res = client.post("/api/scenarios", json=payload)
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["scenario_id"] == "new_created_scen"
+    assert data["scenario_hash"].startswith("sha3_256:")
+    assert data["status"] == "success"
+    assert data["lifecycle_status"] == "Validated"
+
+
+# ===========================================================================
+# 3. PUBLISH API & DURABLE JOB STORE TESTS
+# ===========================================================================
+
+
+def test_durable_job_store(tmp_path):
+    with patch.object(config, "PROJECT_ROOT", tmp_path):
+        # Save and Load
+        job_data = {"job_id": "job_dur_1", "status": "running", "progress": "50%"}
+        DurableJobStore.save("job_dur_1", job_data)
+
+        loaded = DurableJobStore.load("job_dur_1")
+        assert loaded == job_data
+        assert DurableJobStore.load("missing_job") is None
+
+        # List active
+        active = DurableJobStore.list_active()
+        assert "job_dur_1" in active
+
+        # Helper functions
+        _update_job("job_dur_1", {"progress": "75%"})
+        assert _get_job("job_dur_1")["progress"] == "75%"
+
+
+def test_publish_bundle_download(ent_client):
+    client, tmp_path = ent_client
+
+    batch_dir = tmp_path / "results" / "batch_bundle_test"
+    batch_dir.mkdir(parents=True, exist_ok=True)
+    zip_path = batch_dir / "publication_artifact_bundle.zip"
+    zip_path.write_bytes(b"PK\x05\x06" + b"\x00" * 18)  # Minimal valid zip structure
+
+    JOBS["job_bundle_ok"] = {
+        "job_id": "job_bundle_ok",
+        "status": "completed",
+        "results": {
+            "batch_id": "batch_bundle_test",
+            "zip_file": str(zip_path.relative_to(tmp_path)).replace("\\", "/"),
+        },
+    }
+
+    # Successful download
+    res = client.get("/api/publish/job_bundle_ok/bundle")
+    assert res.status_code == 200
+
+    # Job not found
+    assert client.get("/api/publish/nonexistent/bundle").status_code == 404
+
+    # Job incomplete
+    JOBS["job_inc"] = {"job_id": "job_inc", "status": "running", "results": None}
+    assert client.get("/api/publish/job_inc/bundle").status_code == 400
+
+
+def test_publish_stop_job(ent_client):
+    client, tmp_path = ent_client
+
+    # 1. Non-existent job
+    assert client.post("/api/publish/non_existent_job/stop").status_code == 404
+
+    # 2. Already finished job
+    JOBS["job_finished"] = {"job_id": "job_finished", "status": "completed"}
+    res_fin = client.post("/api/publish/job_finished/stop")
+    assert res_fin.status_code == 200
+    assert "already finished" in res_fin.get_json()["message"]
+
+    # 3. Running job with mock process
+    mock_p = MagicMock()
+    mock_p.pid = 99999
+    JOBS["job_to_kill"] = {
+        "job_id": "job_to_kill",
+        "status": "running",
+        "_proc": mock_p,
+    }
+    with patch("psutil.Process") as mock_proc_cls:
+        mock_proc_instance = MagicMock()
+        mock_proc_instance.children.return_value = []
+        mock_proc_cls.return_value = mock_proc_instance
+        res_kill = client.post("/api/publish/job_to_kill/stop")
+        assert res_kill.status_code == 200
+        assert res_kill.get_json()["status"] == "stopped"
+        assert JOBS["job_to_kill"]["status"] == "failed"
+
+
+def test_conductor_explicit_batch_and_output_dir(tmp_path):
+    from eval_runner.publication_suite.conductor import Conductor
+
+    # Explicit batch_id
+    args1 = MagicMock(spec=["batch_id", "path"])
+    args1.batch_id = "batch_custom_id_123"
+    args1.output_dir = None
+    args1.path = str(tmp_path)
+    c1 = Conductor(args1)
+    assert c1.base_dir == Path("results") / "batch_custom_id_123"
+
+    # Explicit output_dir
+    custom_out = tmp_path / "custom_out_dir"
+    args2 = MagicMock(spec=["output_dir", "path"])
+    args2.output_dir = str(custom_out)
+    args2.batch_id = None
+    args2.path = str(tmp_path)
+    c2 = Conductor(args2)
+    assert c2.base_dir == custom_out

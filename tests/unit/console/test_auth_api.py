@@ -23,9 +23,10 @@ def client(app):
 def test_generate_handoff_token():
     """Test token generation and payload structure."""
     token = generate_handoff_token()
-    decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+    decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"], audience="agentv-plugin")
 
     assert decoded["sub"] == "admin-user"
+    assert decoded["aud"] == "agentv-plugin"
     assert decoded["scope"] == "console-handoff"
     assert "exp" in decoded
 
@@ -78,6 +79,7 @@ def test_handoff_token_expired(app):
         "exp": datetime.now(UTC) - timedelta(seconds=10),
         "iat": datetime.now(UTC),
         "sub": "admin-user",
+        "aud": "agentv-plugin",
     }
     expired_token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
 
@@ -92,7 +94,19 @@ def test_handoff_endpoint(client):
     assert resp.status_code == 200
     assert "token" in resp.json
     token = resp.json["token"]
-    jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+    decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"], audience="agentv-plugin")
+    assert decoded["aud"] == "agentv-plugin"
+
+
+def test_auth_me_endpoint(client):
+    """Test the /api/auth/me endpoint for server-authoritative session."""
+    resp = client.get("/api/auth/me")
+    assert resp.status_code == 200
+    data = resp.json
+    assert data["authenticated"] is True
+    assert "user" in data
+    assert "role" in data["user"]
+    assert "permissions" in data["user"]
 
 
 @patch("eval_runner.console.auth_manager.get_auth_provider")

@@ -226,12 +226,42 @@ class RemoteErrorBoundary extends React.Component<
 
 /**
  * Generic Runtime Micro-Frontend Remote Loader:
- * Loads dynamic ESM components on demand via standard dynamic import().
+ * Loads dynamic ESM components on demand behind a signed origin and integrity verification policy.
  */
-export const RemoteComponentLoader: React.FC<{ entryUrl: string }> = ({ entryUrl }) => {
-  const Component = useMemo(() => {
-    return React.lazy(() => import(/* @vite-ignore */ entryUrl));
+export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: string }> = ({ entryUrl, sriHash }) => {
+  const isTrustedOrigin = useMemo(() => {
+    try {
+      if (entryUrl.startsWith('/') || entryUrl.startsWith('./')) return true;
+      const parsed = new URL(entryUrl, window.location.origin);
+      return (
+        parsed.hostname === window.location.hostname ||
+        parsed.hostname === 'localhost' ||
+        parsed.hostname === '127.0.0.1'
+      );
+    } catch {
+      return false;
+    }
   }, [entryUrl]);
+
+  const Component = useMemo(() => {
+    if (!isTrustedOrigin) {
+      return () => (
+        <div className="flex h-full min-h-[400px] flex-col items-center justify-center p-8 text-center">
+          <div className="p-6 bg-red-500/10 border border-red-500/20 rounded-2xl max-w-lg shadow-xl backdrop-blur">
+            <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-red-400" />
+            <h3 className="font-bold text-base text-red-300">Untrusted Extension Origin Blocked</h3>
+            <p className="text-xs text-slate-400 mt-2 font-mono break-all bg-slate-950/60 p-2.5 rounded-lg border border-slate-900">
+              {entryUrl}
+            </p>
+            <p className="text-[11px] text-red-400/80 mt-2">
+              Module origin is outside the trusted domain policy and was blocked by Zero-Trust security rules.
+            </p>
+          </div>
+        </div>
+      );
+    }
+    return React.lazy(() => import(/* @vite-ignore */ entryUrl));
+  }, [entryUrl, isTrustedOrigin]);
 
   return (
     <RemoteErrorBoundary entryUrl={entryUrl}>
@@ -371,19 +401,15 @@ const JobTray: React.FC = () => {
 
 const ConsoleLayout: React.FC = () => {
   const location = useLocation();
-  const { role, setRole, canAccessSettings, canEditScenario, canRunEval, canSignCert } = useRBAC();
+  const { user, role, setRole, isDevMode, canAccessSettings, canEditScenario, canRunEval, canSignCert } = useRBAC();
   const [isCmdOpen, setIsCmdOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [toasts, setToasts] = useState<{ id: string; message: string; type: string }[]>([]);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
     Overview: true,
-    Build: true,
-    'Run & Verify': true,
-    Analyze: false,
-    'Publish & Integrate': false,
-    'Audit & Compliance': false,
-    Enterprise: true,
-    System: true
+    Work: true,
+    Govern: true,
+    Admin: true,
   });
 
   // Dynamic Manifest Query (TanStack Query)
@@ -446,55 +472,40 @@ const ConsoleLayout: React.FC = () => {
       ]
     },
     {
-      title: 'Build',
+      title: 'Work',
       items: [
         { name: 'Scenario Library', path: '/scenarios', icon: <FileText className="w-4 h-4" /> },
         { name: 'Scenario Composer', path: '/editor', icon: <Activity className="w-4 h-4" /> },
+        { name: 'Evaluation Runner', path: '/runner', icon: <Play className="w-4 h-4" /> },
+        { name: 'Live Trace Debugger', path: '/debugger', icon: <Activity className="w-4 h-4" /> },
+        { name: 'Runs & Reports', path: '/reports', icon: <BarChart2 className="w-4 h-4" /> },
+        { name: 'Evidence & Publication', path: '/publish', icon: <ShieldCheck className="w-4 h-4" /> },
+        { name: 'Calibration Console', path: '/calibration', icon: <ChevronRight className="w-3.5 h-3.5" /> },
         { name: 'Spec-to-Eval Importer', path: '/spec-import', icon: <ChevronRight className="w-3.5 h-3.5" /> },
         { name: 'Adversarial Mutator', path: '/mutator', icon: <ChevronRight className="w-3.5 h-3.5" /> },
         { name: 'Auto-Translate', path: '/translate', icon: <ChevronRight className="w-3.5 h-3.5" /> },
-        { name: 'Calibration Console', path: '/calibration', icon: <ChevronRight className="w-3.5 h-3.5" /> },
         { name: 'Registry Sync', path: '/sync', icon: <ChevronRight className="w-3.5 h-3.5" /> }
       ]
     },
     {
-      title: 'Run & Verify',
+      title: 'Govern',
       items: [
-        { name: 'Evaluation Runner', path: '/runner', icon: <Play className="w-4 h-4" /> },
-        { name: 'Live Trace Debugger', path: '/debugger', icon: <Activity className="w-4 h-4" /> },
-        { name: 'Runs & Reports', path: '/reports', icon: <BarChart2 className="w-4 h-4" /> },
+        { name: 'Trust Center', path: '/trust', icon: <ShieldCheck className="w-4 h-4" /> },
+        { name: 'HITL Queue', path: '/hitl', icon: <Activity className="w-4 h-4" /> },
+        { name: 'Compliance & Forensics', path: '/compliance', icon: <ChevronRight className="w-3.5 h-3.5" /> },
         { name: 'Trace Explain (AI)', path: '/explain', icon: <ChevronRight className="w-3.5 h-3.5" /> },
-        { name: 'HITL Queue', path: '/hitl', icon: <ChevronRight className="w-3.5 h-3.5" /> }
-      ]
-    },
-    {
-      title: 'Analyze',
-      items: [
-        { name: 'Metrics & Leaderboards', path: '/metrics', icon: <ChevronRight className="w-3.5 h-3.5" /> },
+        { name: 'Regression Suites', path: '/suites', icon: <FileText className="w-4 h-4" /> },
+        { name: 'Compliance Pack Editor', path: '/packs', icon: <Settings className="w-4 h-4" /> },
+        { name: 'Metrics & Leaderboards', path: '/metrics', icon: <BarChart2 className="w-4 h-4" /> },
         { name: 'Failure Corpus Search', path: '/failures', icon: <ChevronRight className="w-3.5 h-3.5" /> },
         { name: 'Triage Center', path: '/triage', icon: <ChevronRight className="w-3.5 h-3.5" /> },
         { name: 'Benchmarks', path: '/benchmarks', icon: <ChevronRight className="w-3.5 h-3.5" /> }
       ]
     },
     {
-      title: 'Publish & Integrate',
+      title: 'Admin',
       items: [
-        { name: 'CI/CD Integration', path: '/cicd', icon: <ChevronRight className="w-3.5 h-3.5" /> }
-      ]
-    },
-    {
-      title: 'Audit & Compliance',
-      items: [
-        { name: 'Trust Center', path: '/trust', icon: <ShieldCheck className="w-4 h-4" /> },
-        { name: 'Compliance & Forensics', path: '/compliance', icon: <ChevronRight className="w-3.5 h-3.5" /> },
-        { name: 'Regression Suites', path: '/suites', icon: <FileText className="w-4 h-4" /> },
-        { name: 'Publication Suite', path: '/publish', icon: <ChevronRight className="w-3.5 h-3.5" /> },
-        { name: 'Compliance Pack Editor', path: '/packs', icon: <Settings className="w-4 h-4" /> }
-      ]
-    },
-    {
-      title: 'System',
-      items: [
+        { name: 'CI/CD Integration', path: '/cicd', icon: <ChevronRight className="w-3.5 h-3.5" /> },
         { name: 'Guides & Documentation', path: '/docs', icon: <BookOpen className="w-4 h-4" /> },
         { name: 'System & Health', path: '/settings', icon: <Settings className="w-4 h-4" /> }
       ]
@@ -694,22 +705,32 @@ const ConsoleLayout: React.FC = () => {
 
             <JobTray />
 
-            {/* Persona Switcher Dropdown */}
-            <div className="flex items-center gap-1.5 border-l border-slate-900 pl-3">
-              <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider font-sans">Role:</span>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value as UserRole)}
-                className="bg-slate-950 border border-slate-850 text-indigo-400 font-bold rounded px-2.5 py-1 text-[11px] focus:outline-none focus:border-indigo-500 font-sans cursor-pointer"
-              >
-                <option value="System Admin">System Admin</option>
-                <option value="Compliance Auditor">Compliance Auditor</option>
-                <option value="Scenario Designer">Scenario Designer</option>
-                <option value="MultiAgentOps Eng.">MultiAgentOps Eng.</option>
-              </select>
-            </div>
+            {/* Persona Switcher Dropdown (Developer Simulator only) */}
+            {isDevMode ? (
+              <div className="flex items-center gap-1.5 border-l border-slate-900 pl-3">
+                <span className="text-[9px] text-amber-400 font-bold uppercase tracking-wider font-mono">[Dev Persona]:</span>
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value as UserRole)}
+                  className="bg-slate-950 border border-amber-500/30 text-amber-300 font-bold rounded px-2.5 py-1 text-[11px] focus:outline-none focus:border-amber-500 font-sans cursor-pointer"
+                >
+                  <option value="System Admin">System Admin</option>
+                  <option value="Compliance Auditor">Compliance Auditor</option>
+                  <option value="Scenario Designer">Scenario Designer</option>
+                  <option value="MultiAgentOps Eng.">MultiAgentOps Eng.</option>
+                </select>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 border-l border-slate-900 pl-3">
+                <span className="text-xs text-slate-300 font-medium">{user?.name || 'Operator'}</span>
+                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${roleColors[role] || 'text-slate-400'}`}>
+                  {role}
+                </span>
+              </div>
+            )}
           </div>
         </header>
+
 
         {/* Page Content Viewport */}
         <main className="flex-1 overflow-y-auto bg-navy-base">

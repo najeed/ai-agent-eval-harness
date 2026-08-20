@@ -6,7 +6,7 @@ import {
 import type { Connection } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { 
-  Save, Trash2, Plus, Upload 
+  Save, Trash2, Plus, Upload, AlertTriangle, ShieldCheck, CheckCircle2 
 } from 'lucide-react';
 import { Editor } from '@monaco-editor/react';
 import { useRBAC } from '../context/RBACContext';
@@ -23,9 +23,15 @@ export const ScenarioComposer: React.FC = () => {
   const scenarioIdParam = searchParams.get('scenario_id');
   const { canEditScenario } = useRBAC();
 
+  // Authoritative full canonical AES document
+  const [rawDoc, setRawDoc] = useState<any>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
   // Core metadata
   const [scenarioId, setScenarioId] = useState('new-scenario');
   const [title, setTitle] = useState('New AES Scenario');
+  const [version, setVersion] = useState('1.0.0');
+  const [lifecycleStatus, setLifecycleStatus] = useState<'Draft' | 'Validated' | 'Approved' | 'Published'>('Draft');
   const [industry, setIndustry] = useState('generic');
   const [complianceLevel, setComplianceLevel] = useState('Standard');
   const [description, setDescription] = useState('Custom evaluation scenario.');
@@ -51,7 +57,7 @@ export const ScenarioComposer: React.FC = () => {
   const [message, setMessage] = useState('');
   const [saving, setSaving] = useState(false);
 
-  // Generate AES JSON structure matching workflow.json schema
+  // Generate AES JSON preserving all canonical document keys without semantic loss
   const getAESJson = () => {
     const workflowNodes = nodes.map((n: any) => ({
       id: n.id,
@@ -66,19 +72,9 @@ export const ScenarioComposer: React.FC = () => {
       condition: e.data?.condition || ''
     }));
 
-    return {
+    // Start with the base canonical document or clean template
+    const base = rawDoc ? { ...rawDoc } : {
       aes_version: 1.4,
-      metadata: {
-        id: scenarioId,
-        name: title,
-        compliance_level: complianceLevel,
-        description
-      },
-      industry,
-      workflow: {
-        nodes: workflowNodes,
-        edges: workflowEdges
-      },
       evaluation: {
         consensus: {
           strategy: 'Majority_Vote',
@@ -87,13 +83,34 @@ export const ScenarioComposer: React.FC = () => {
         }
       }
     };
+
+    base.metadata = {
+      ...(base.metadata || {}),
+      id: scenarioId,
+      name: title,
+      version: version,
+      status: lifecycleStatus,
+      compliance_level: complianceLevel,
+      description
+    };
+    base.industry = industry;
+    base.workflow = {
+      ...(base.workflow || {}),
+      nodes: workflowNodes,
+      edges: workflowEdges
+    };
+
+    return base;
   };
 
   const syncJsonToCanvas = (jsonStr: string) => {
     try {
       const parsed = JSON.parse(jsonStr);
+      setRawDoc(parsed);
       if (parsed.metadata?.id) setScenarioId(parsed.metadata.id);
       if (parsed.metadata?.name) setTitle(parsed.metadata.name);
+      if (parsed.metadata?.version) setVersion(parsed.metadata.version);
+      if (parsed.metadata?.status) setLifecycleStatus(parsed.metadata.status);
       if (parsed.industry) setIndustry(parsed.industry);
       if (parsed.metadata?.compliance_level) setComplianceLevel(parsed.metadata.compliance_level);
       if (parsed.metadata?.description) setDescription(parsed.metadata.description);
@@ -147,33 +164,33 @@ export const ScenarioComposer: React.FC = () => {
     if (viewMode === 'json') {
       setRawJson(JSON.stringify(getAESJson(), null, 2));
     }
-  }, [viewMode, nodes, edges, scenarioId, title, industry, complianceLevel, description]);
+  }, [viewMode, nodes, edges, scenarioId, title, version, lifecycleStatus, industry, complianceLevel, description]);
 
-  // Load existing scenario if param matches
+  // Load canonical scenario document
   useEffect(() => {
     if (scenarioIdParam) {
-      fetch('/api/scenarios')
-        .then(res => res.json())
+      setLoadError(null);
+      fetch(`/api/scenarios/${encodeURIComponent(scenarioIdParam)}`)
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`Canonical scenario '${scenarioIdParam}' not found.`);
+          }
+          return res.json();
+        })
         .then(data => {
-          const list = data.scenarios || [];
-          const found = list.find((s: any) => s.id === scenarioIdParam);
-          if (found) {
-            // Fetch raw detail
-            setScenarioId(found.id);
-            setTitle(found.title);
-            setIndustry(found.industry);
-            setComplianceLevel(found.metadata?.compliance_level || 'Standard');
-            setDescription(found.description || '');
+          const doc = data.scenario;
+          if (doc) {
+            setRawDoc(doc);
+            setScenarioId(doc.metadata?.id || doc.id || scenarioIdParam);
+            setTitle(doc.metadata?.name || doc.title || 'Loaded Scenario');
+            setVersion(doc.metadata?.version || '1.0.0');
+            setLifecycleStatus(doc.metadata?.status || 'Draft');
+            setIndustry(doc.industry || 'generic');
+            setComplianceLevel(doc.metadata?.compliance_level || 'Standard');
+            setDescription(doc.metadata?.description || doc.description || '');
 
-            // Convert nodes & edges to ReactFlow format
-            // Since catalog only has index, we load full contents if possible or simulate nodes mapping
-            // For stability: simulate workflow.nodes if not loaded directly
-            const workflow = found.workflow || {
-              nodes: [{ id: 'start', task_description: found.description || 'Task 1', required_tools: [] }],
-              edges: []
-            };
-
-            const flowNodes = workflow.nodes.map((n: any, idx: number) => ({
+            const workflow = doc.workflow || { nodes: [], edges: [] };
+            const flowNodes = (workflow.nodes || []).map((n: any, idx: number) => ({
               id: n.id,
               type: 'default',
               position: { x: 150 + idx * 220, y: 150 },
@@ -203,12 +220,19 @@ export const ScenarioComposer: React.FC = () => {
             setNodes(flowNodes);
             setEdges(flowEdges);
           }
+        })
+        .catch(err => {
+          setLoadError(err.message);
+          window.dispatchEvent(new CustomEvent('agentv-toast', {
+            detail: { message: `Load Error: ${err.message}`, type: 'error' }
+          }));
         });
     } else {
       const draft = localStorage.getItem('aes-draft');
       if (draft) {
         try {
           const parsed = JSON.parse(draft);
+          setRawDoc(parsed);
           if (parsed.metadata?.id) setScenarioId(parsed.metadata.id);
           if (parsed.metadata?.name) setTitle(parsed.metadata.name);
           if (parsed.industry) setIndustry(parsed.industry);
@@ -281,6 +305,7 @@ export const ScenarioComposer: React.FC = () => {
       }
     }
   }, [scenarioIdParam]);
+
 
   const onConnect = useCallback((params: Connection) => {
     setEdges((eds) => addEdge({ ...params, animated: true }, eds));
@@ -449,7 +474,7 @@ export const ScenarioComposer: React.FC = () => {
             value={scenarioId}
             onChange={(e) => setScenarioId(e.target.value)}
             placeholder="Scenario ID"
-            className="bg-slate-950 border border-slate-800 rounded px-2.5 py-1 w-40 text-slate-200 focus:outline-none focus:border-indigo-500 font-mono font-bold disabled:opacity-60"
+            className="bg-slate-950 border border-slate-800 rounded px-2.5 py-1 w-36 text-slate-200 focus:outline-none focus:border-indigo-500 font-mono font-bold disabled:opacity-60"
           />
           <input 
             type="text"
@@ -457,11 +482,33 @@ export const ScenarioComposer: React.FC = () => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Scenario Name"
-            className="bg-slate-950 border border-slate-800 rounded px-2.5 py-1 w-52 text-slate-200 focus:outline-none disabled:opacity-60"
+            className="bg-slate-950 border border-slate-800 rounded px-2.5 py-1 w-44 text-slate-200 focus:outline-none disabled:opacity-60"
           />
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] text-slate-500 font-mono">v</span>
+            <input 
+              type="text"
+              disabled={!canEditScenario}
+              value={version}
+              onChange={(e) => setVersion(e.target.value)}
+              placeholder="1.0.0"
+              className="bg-slate-950 border border-slate-800 rounded px-1.5 py-1 w-16 text-slate-300 font-mono text-[11px] focus:outline-none disabled:opacity-60 text-center"
+            />
+          </div>
+          <select
+            disabled={!canEditScenario}
+            value={lifecycleStatus}
+            onChange={(e) => setLifecycleStatus(e.target.value as any)}
+            className="bg-slate-950 border border-slate-850 text-indigo-400 font-bold rounded px-2 py-1 text-[11px] focus:outline-none disabled:opacity-60 cursor-pointer"
+          >
+            <option value="Draft">Draft</option>
+            <option value="Validated">Validated</option>
+            <option value="Approved">Approved</option>
+            <option value="Published">Published</option>
+          </select>
           {!canEditScenario && (
             <span className="bg-amber-500/10 border border-amber-500/20 text-amber-400 font-bold px-2 py-0.5 rounded text-[10px] uppercase tracking-wider">
-              Read-Only Mode
+              Read-Only
             </span>
           )}
         </div>
@@ -502,6 +549,16 @@ export const ScenarioComposer: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {loadError && (
+        <div className="bg-red-500/10 border-b border-red-500/20 px-6 py-2 flex items-center justify-between text-xs text-red-300 shrink-0">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
+            <span>{loadError}</span>
+          </div>
+          <span className="text-[10px] text-red-400/80 font-mono">Canonical Document Load Failed</span>
+        </div>
+      )}
 
       {message && (
         <div className="bg-slate-950 border-b border-slate-900 px-6 py-2 text-center text-xs text-indigo-300 italic shrink-0">

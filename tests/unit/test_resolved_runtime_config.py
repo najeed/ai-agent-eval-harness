@@ -17,7 +17,7 @@ def test_resolved_runtime_config_defaults_and_hash():
     )
     assert cfg.audit_level == 2
     assert cfg.execution_backend == "in_process"
-    assert len(cfg.config_hash) == 64  # Valid SHA-256
+    assert len(cfg.config_hash) == 64  # Valid SHA3-256
 
     # Determinism
     cfg2 = ResolvedRuntimeConfig(

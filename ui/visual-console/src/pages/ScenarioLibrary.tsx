@@ -38,7 +38,13 @@ export const ScenarioLibrary: React.FC = () => {
   const fetchScenarios = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/scenarios');
+      const params = new URLSearchParams();
+      if (search.trim()) params.set('q', search.trim());
+      if (selectedIndustry !== 'All') params.set('industry', selectedIndustry);
+      if (selectedDifficulty !== 'All') params.set('difficulty', selectedDifficulty);
+      params.set('limit', '500');
+
+      const res = await fetch(`/api/scenarios?${params.toString()}`);
       const data = await res.json();
       setScenarios(data.scenarios || []);
     } catch (e) {
@@ -55,7 +61,7 @@ export const ScenarioLibrary: React.FC = () => {
       const res = await fetch('/api/scenarios/refresh', { method: 'POST' });
       const data = await res.json();
       if (res.ok) {
-        setMessage(`Success: Indexed ${data.scenarios_loaded} scenarios.`);
+        setMessage(`Success: Indexed ${data.scenario_count || 0} scenarios.`);
         fetchScenarios();
       } else {
         setMessage(`Error: ${data.error}`);
@@ -69,7 +75,8 @@ export const ScenarioLibrary: React.FC = () => {
 
   useEffect(() => {
     fetchScenarios();
-  }, []);
+  }, [search, selectedIndustry, selectedDifficulty]);
+
 
   const toggleSelect = (id: string) => {
     setSelectedIds(prev => 

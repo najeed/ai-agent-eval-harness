@@ -28,6 +28,8 @@ def main():
         help="Path to agents_inventory.yaml for multi-agent benchmark (Default: eval_runner/publication_suite/agents_inventory.yaml)",  # noqa: E501
     )
     parser.add_argument("--parallel", type=int, default=4, help="Worker count")
+    parser.add_argument("--batch-id", help="Explicit batch identifier (deterministic)")
+    parser.add_argument("--output-dir", help="Explicit output directory")
 
     args = parser.parse_args()
 
@@ -90,23 +92,32 @@ def main():
         ]
         if args.mode == "pilot":
             cmd_conduct.append("--pilot")
+        if args.batch_id:
+            cmd_conduct.extend(["--batch-id", args.batch_id])
+        if args.output_dir:
+            cmd_conduct.extend(["--output-dir", args.output_dir])
 
         # Inject UTF-8 IO encoding to prevent Unicode errors on Windows console outputs
         env["PYTHONIOENCODING"] = "utf-8"
         subprocess.run(cmd_conduct, check=True, env=env)
 
-        # Locate recent batch dir
-        results_dir = Path("results")
-        batches = sorted(
-            [d for d in results_dir.iterdir() if d.is_dir()],
-            key=lambda x: x.stat().st_mtime,
-            reverse=True,
-        )
-        if not batches:
-            print(f"Error: No results found for {agent['name']}.")
-            continue
+        if args.output_dir:
+            batch_dir = Path(args.output_dir)
+        elif args.batch_id:
+            batch_dir = Path("results") / args.batch_id
+        else:
+            # Locate recent batch dir fallback
+            results_dir = Path("results")
+            batches = sorted(
+                [d for d in results_dir.iterdir() if d.is_dir() and d.name.startswith("batch_")],
+                key=lambda x: x.stat().st_mtime,
+                reverse=True,
+            )
+            if not batches:
+                print(f"Error: No results found for {agent['name']}.")
+                continue
+            batch_dir = batches[0]
 
-        batch_dir = batches[0]
         batch_dirs.append(batch_dir)
 
         # 2. AGGREGATE

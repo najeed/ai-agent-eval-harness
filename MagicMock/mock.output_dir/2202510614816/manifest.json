@@ -1,0 +1,18 @@
+{
+  "fingerprint": "88fbb31a1651",
+  "timestamp": "20260820_192725",
+  "agent_name": "test-agent",
+  "base_dir": "MagicMock\\mock.output_dir\\2202510614816",
+  "runs": [
+    {
+      "run_id": "run_000",
+      "success": false,
+      "error": "No log file generated"
+    },
+    {
+      "run_id": "run_001",
+      "success": false,
+      "error": "No log file generated"
+    }
+  ]
+}

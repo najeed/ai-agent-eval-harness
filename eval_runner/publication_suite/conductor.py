@@ -84,7 +84,14 @@ class Conductor:
     def __init__(self, args):
         self.args = args
         self.timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.base_dir = Path("results") / f"batch_{self.timestamp}"
+        out_dir = getattr(self.args, "output_dir", None)
+        b_id = getattr(self.args, "batch_id", None)
+        if out_dir and isinstance(out_dir, (str, Path)):
+            self.base_dir = Path(out_dir)
+        elif b_id and isinstance(b_id, str):
+            self.base_dir = Path("results") / b_id
+        else:
+            self.base_dir = Path("results") / f"batch_{self.timestamp}"
         self.base_dir.mkdir(parents=True, exist_ok=True)
 
     def _get_scenario_subset(self):
@@ -165,7 +172,11 @@ if __name__ == "__main__":
     parser.add_argument("--parallel", type=int, default=4, help="Worker count")
     parser.add_argument("--pilot", action="store_true", help="Pilot mode")
     parser.add_argument("--seed", type=int, help="Base seed")
+    parser.add_argument("--batch-id", help="Explicit batch identifier (deterministic)")
+    parser.add_argument("--output-dir", help="Explicit output directory")
 
     args = parser.parse_args()
     conductor = Conductor(args)
+    conductor.run()
+
     conductor.run()

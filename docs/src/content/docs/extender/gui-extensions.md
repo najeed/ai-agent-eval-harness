@@ -45,11 +45,11 @@ export interface NavItem {
   name: string;                 // Display label in the sidebar
   path: string;                 // Route path (e.g. "/fleet") or external URL ("https://...")
   icon?: string;                // Lucide icon name (e.g. "Cpu", "Layers", "Radio", "Terminal")
-  group?: string;               // Target nav group (e.g. "Operations", "Audit & Compliance", "Build")
+  group?: 'Work' | 'Govern' | 'Admin' | string; // Target nav group (Work, Govern, Admin)
   badge?: string;               // Optional badge chip (e.g. "LIVE", "HOT-RELOAD", "FLEET", "CUSTOM")
   tier?: 'core' | 'enterprise'; // Visual tier accent (amber accent for 'enterprise')
   remoteEntry?: string;         // ESM bundle URL for dynamic micro-frontend mounting
-  required_role?: string[];     // Optional RBAC restrictions (e.g. ["System Admin"])
+  required_role?: string[];     // Optional RBAC restrictions checked against server session claims
 }
 ```
 
@@ -97,7 +97,7 @@ class MyFleetExtensionPlugin(BaseEvalPlugin):
                 "name": "Fleet APM",
                 "path": "/fleet",
                 "icon": "Cpu",
-                "group": "Analyze",
+                "group": "Govern",
                 "badge": "LIVE",
                 "tier": "enterprise",
                 "remoteEntry": "/static/my-plugin/fleet-bundle.js",
@@ -179,8 +179,10 @@ export default defineConfig({
 
 ---
 
-## 🔒 Security & Fault Isolation
+## 🔒 Zero-Trust Security & Fault Isolation
 
-1. **Error Boundary Containment**: Remote components are automatically wrapped inside `RemoteErrorBoundary`. If a plugin throws a rendering or network error, only that tab displays a diagnostic card—the host console and sidebar remain completely operational.
-2. **Standard Browser Security**: Remote ESM bundles imported via standard `import()` adhere to strict browser CORS policies and CSP headers.
-3. **Graceful Offline Fallback**: If `/api/nav` is unreachable or the backend is offline, the Visual Console falls back cleanly to the built-in core navigation structure.
+1. **Origin Verification & Safe Remote Loading**: The `RemoteComponentLoader` enforces strict trusted origin boundaries (`localhost`, `127.0.0.1`, current origin) and blocks untrusted third-party hosts before dynamic `import()` execution.
+2. **Server-Authoritative RBAC**: Navigation items gated with `required_role` are evaluated against server-provided identity claims (`GET /api/auth/me`), eliminating client-side spoofing.
+3. **Error Boundary Containment**: Remote components are automatically wrapped inside `RemoteErrorBoundary`. If a plugin throws a rendering or network error, only that tab displays a diagnostic card—the host console and sidebar remain completely operational.
+4. **Graceful Offline Fallback**: If `/api/nav` is unreachable or the backend is offline, the Visual Console falls back cleanly to the built-in core navigation structure.
+
