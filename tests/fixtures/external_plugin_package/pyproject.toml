@@ -13,3 +13,14 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 packages = ["enterprise_extension_plugin"]
+
+[project.entry-points."agentv.extensions"]
+artifact_store = "enterprise_extension_plugin:EnterpriseArtifactStore"
+auth_backend = "enterprise_extension_plugin:EnterpriseAuthBackend"
+catalog_store = "enterprise_extension_plugin:EnterpriseCatalogStore"
+checkpoint_store = "enterprise_extension_plugin:EnterpriseCheckpointStore"
+execution_backend = "enterprise_extension_plugin:EnterpriseExecutionBackend"
+leaderboard_store = "enterprise_extension_plugin:EnterpriseLeaderboardStore"
+policy_evaluator = "enterprise_extension_plugin:EnterprisePolicyEvaluator"
+run_store = "enterprise_extension_plugin:EnterpriseRunStore"
+signing_backend = "enterprise_extension_plugin:EnterpriseSigningBackend"

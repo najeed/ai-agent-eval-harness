@@ -80,6 +80,37 @@ class DefaultRunner(BaseRunner):
                 run_store=self.run_store,
             )
 
+    def set_dependency_graph(
+        self,
+        artifact_store: Any | None = None,
+        checkpoint_store: Any | None = None,
+        policy_evaluator: Any | None = None,
+        signing_backend: Any | None = None,
+        config_resolver: Any | None = None,
+        run_store: Any | None = None,
+        resolved_config: Any | None = None,
+    ) -> None:
+        """Dynamically configures or updates the runner's extension dependency graph."""
+        if artifact_store is not None:
+            self.artifact_store = artifact_store
+        if checkpoint_store is not None:
+            self.checkpoint_store = checkpoint_store
+        if policy_evaluator is not None:
+            self.policy_evaluator = policy_evaluator
+        if signing_backend is not None:
+            self.signing_backend = signing_backend
+        if config_resolver is not None:
+            self.config_resolver = config_resolver
+        if run_store is not None:
+            self.run_store = run_store
+        if resolved_config is not None:
+            from agentv_runtime.config import ResolvedRuntimeConfig
+
+            if isinstance(resolved_config, dict):
+                self.resolved_config = ResolvedRuntimeConfig.from_dict(resolved_config)
+            elif isinstance(resolved_config, ResolvedRuntimeConfig):
+                self.resolved_config = resolved_config
+
     async def run(
         self,
         scenario: dict,
@@ -342,6 +373,15 @@ def run_scenario(
             policy_evaluator=policy_evaluator,
             signing_backend=signing_backend,
             execution_backend=execution_backend,
+        )
+    elif hasattr(runner, "set_dependency_graph"):
+        runner.set_dependency_graph(
+            run_store=run_store,
+            config_resolver=config_resolver,
+            artifact_store=artifact_store,
+            checkpoint_store=checkpoint_store,
+            policy_evaluator=policy_evaluator,
+            signing_backend=signing_backend,
         )
 
     try:

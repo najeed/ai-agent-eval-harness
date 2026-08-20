@@ -161,23 +161,24 @@ class TestExecutionLifecycleContract:
     def test_resume_allows_waiting_for_approval_state(self):
         """
         Contract: resume() is permitted when run is in WAITING_FOR_APPROVAL state.
+        It must not raise a RuntimeError (unlike RUNNING or terminal states) and
+        must update in-memory status to RUNNING with the provided resumption token.
         """
         backend = InProcessExecutionBackend()
         run_id = "waiting_approval_resume_001"
 
+        # Inject minimal in-memory state — no resumption_checkpoint so resume()
+        # takes the early-return path (no durable checkpoint, no force_submit)
+        # and never dispatches real execution or touches the filesystem.
         backend._active_runs[run_id] = {
             "status": "WAITING_FOR_APPROVAL",
             "scenario_data": _STUB_SCENARIO,
-            "resumption_checkpoint": {
-                "scenario_data": _STUB_SCENARIO,
-                "status": "AWAITING_APPROVAL",
-                "current_turn": 3,
-            },
         }
 
-        # Execute resume
-        resumed = backend.resume(run_id, resumption_token="tok_approval", background=False)
+        # resume() must accept WAITING_FOR_APPROVAL without raising
+        resumed = backend.resume(run_id, resumption_token="tok_approval")
         assert resumed is not None
+
         status = backend.status(run_id)
         assert status["resumption_token"] == "tok_approval"
         assert status["status"] in ("COMPLETED", "RUNNING")

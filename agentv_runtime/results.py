@@ -109,12 +109,13 @@ class EvaluationResult(Sequence):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class VerificationResult:
     """
     Structured result object for verifiers aligned with NIST AI-100-1 principles.
     Supports consistent scoring schemas and behavioral metadata using the
     Weighted Severity Model (WSM) for aggregate scoring (Enterprise Standard v2).
+    Immutable dataclass.
     """
 
     WSM_WEIGHTS = {
@@ -146,7 +147,8 @@ class VerificationResult:
 
     def __post_init__(self):
         if self.aggregate_score is None:
-            self.aggregate_score = self._calculate_wsm_score()
+            score = self._calculate_wsm_score()
+            object.__setattr__(self, "aggregate_score", score)
 
     def _calculate_wsm_score(self) -> float:
         """
@@ -167,8 +169,8 @@ class VerificationResult:
             "aggregate_score": self.aggregate_score,
             "success": self.success,
             "message": self.message,
-            "metrics": self.metrics,
-            "metadata": self.metadata,
+            "metrics": dict(self.metrics),
+            "metadata": dict(self.metadata),
             "timestamp": self.timestamp,
         }
 
@@ -185,7 +187,7 @@ class Attestation:
     signing_algorithm: str
     key_id: str
     verifier_version: str = "3.0.0"
-    certificate_schema_version: str = "2.0.0"
+    certificate_schema_version: str = "3.0.0"
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     metadata: dict[str, Any] = field(default_factory=dict)
 

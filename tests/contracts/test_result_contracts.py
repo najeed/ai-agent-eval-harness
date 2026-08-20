@@ -149,9 +149,15 @@ class TestResultContracts:
         )
         assert vr_insecure.aggregate_score <= 0.49
 
+        # Immutability
+        with pytest.raises(dataclasses.FrozenInstanceError):
+            vr_ok.success = False  # type: ignore
+
     def test_attestation_certificate_contract(self):
         """Contract: Attestation and VerificationCertificate schemas
-        are versioned and serializable."""
+        are versioned, aligned with runtime certificate schema version, and serializable."""
+        import agentv_runtime
+
         att = Attestation(
             run_id="run_att_001",
             manifest_hash="sha3_manifest_hash_123",
@@ -161,8 +167,9 @@ class TestResultContracts:
         )
 
         assert isinstance(att, VerificationCertificate)
+        assert att.certificate_schema_version == agentv_runtime.__certificate_schema_version__
         data = att.to_dict()
         assert data["run_id"] == "run_att_001"
         assert data["signing_algorithm"] == "Ed25519"
         assert data["verifier_version"] == "3.0.0"
-        assert data["certificate_schema_version"] == "2.0.0"
+        assert data["certificate_schema_version"] == "3.0.0"

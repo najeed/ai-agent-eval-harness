@@ -212,3 +212,40 @@ class TestZeroTouchExternalPluginCompatibility:
         ext_exec = EnterpriseExecutionBackend()
         res = ext_exec.submit("upgrade_test_run", {"id": "upgrade_scen"})
         assert res["status"] == "submitted"
+
+    def test_package_entry_point_discovery_and_instantiation(self):
+        """
+        Validates that external distribution entry-points defined under
+        'agentv.extensions' in pyproject.toml are discoverable and loadable.
+        """
+        import importlib
+        import tomllib
+
+        pyproject_path = FIXTURE_PKG_PATH.parent / "pyproject.toml"
+        assert pyproject_path.exists()
+        with open(pyproject_path, "rb") as f:
+            data = tomllib.load(f)
+
+        entry_points = data.get("project", {}).get("entry-points", {}).get("agentv.extensions", {})
+        assert len(entry_points) == 9
+
+        expected_interfaces = {
+            "artifact_store": EnterpriseArtifactStore,
+            "auth_backend": EnterpriseAuthBackend,
+            "catalog_store": EnterpriseCatalogStore,
+            "checkpoint_store": EnterpriseCheckpointStore,
+            "execution_backend": EnterpriseExecutionBackend,
+            "leaderboard_store": EnterpriseLeaderboardStore,
+            "policy_evaluator": EnterprisePolicyEvaluator,
+            "run_store": EnterpriseRunStore,
+            "signing_backend": EnterpriseSigningBackend,
+        }
+
+        for ep_name, ep_target in entry_points.items():
+            assert ep_name in expected_interfaces
+            mod_name, cls_name = ep_target.split(":")
+            mod = importlib.import_module(mod_name)
+            cls_obj = getattr(mod, cls_name)
+            assert cls_obj is expected_interfaces[ep_name]
+            instance = cls_obj()
+            assert instance is not None

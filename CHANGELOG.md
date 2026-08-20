@@ -52,6 +52,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * **Zero-Touch External Plugin Verification**: Proven true zero-touch drop-in upgrade compatibility with external fixture package `enterprise_extension_plugin`, verifying pure instantiation, active runner dependency graph execution, and cross-SemVer backward compatibility.
 * **Tool Definition Truthiness Routing**: Fixed `if tool_name not in all_tool_defs:` in `tool_sandbox.py`, ensuring tools defined as empty dicts (`{}`) execute standard mock behaviors instead of simulator fallbacks.
 * **Console Test Fixture Isolation**: Hardened `console_jail` fixtures across all console route test modules with per-worker isolated directories (`aes_console_test_jail_{worker_id}`).
+* **Certificate/Result Schema Version Alignment**: Synchronized `Attestation.certificate_schema_version` default from `"2.0.0"` to `"3.0.0"`, eliminating the internal inconsistency between `agentv_runtime.__certificate_schema_version__ = "3.0.0"` and the object it emits.
+* **Frozen Immutable `VerificationResult`**: Converted `VerificationResult` to `@dataclass(frozen=True)` matching `ExecutionResult` and `EvaluationResult`, using `object.__setattr__` in `__post_init__` for the computed WSM score, preventing mutation after verification decision and certificate binding.
+* **Eliminated Execution-Path Dependency Injection Bypasses**: Closed all bypass seams in `InProcessExecutionBackend._execute()` — the full enterprise dependency graph (`artifact_store`, `checkpoint_store`, `policy_evaluator`, `signing_backend`, `config_resolver`, `run_store`, `execution_backend`) is now passed to `_runner_callable`, injected into `_runner` via `set_dependency_graph()`, and wired through `run_scenario()` for all paths uniformly.
+* **Cold Process Restart Checkpoint Durability**: `InProcessExecutionBackend.status()` now consults the durable `CheckpointStore` on cold reads (when `run_id` is absent from process-local memory), and `resume()` validates checkpoint state from `CheckpointStore` when in-memory state is absent, enforcing state machine guards across full process restarts.
+* **Package Entry-Point Distribution Metadata**: Added `[project.entry-points."agentv.extensions"]` to the external fixture `pyproject.toml`, enabling real `importlib.metadata`-based extension discovery without `sys.path` manipulation.
+* **`DefaultRunner.set_dependency_graph()`**: Added public `set_dependency_graph()` method to `DefaultRunner` and updated `run_scenario()` to call it when a pre-built runner instance is supplied, ensuring injected infrastructure seams are always applied.
+* **Cold-Restart Durability Contract Tests**: Added `tests/contracts/test_cold_restart_durability.py` proving full process restart/resumption solely from persisted `SQLiteCheckpointStore` and that terminal checkpoint states are fail-closed.
+
 
 ## [1.9.0] - 2026-08-17
 

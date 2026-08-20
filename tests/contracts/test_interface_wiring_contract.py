@@ -709,3 +709,33 @@ def test_inprocess_backend_executes_injected_dependency_graph():
 
     assert results is not None
     assert mock_policy.evaluate_policy.called
+
+
+def test_inprocess_backend_passes_dependencies_to_runner_callable():
+    """
+    Contract Test: InProcessExecutionBackend passes the injected dependency graph
+    to custom runner callables, closing all bypass seams.
+    """
+    from unittest.mock import MagicMock
+
+    from eval_runner.interfaces.policy import PolicyEvaluator
+    from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+
+    mock_policy = MagicMock(spec=PolicyEvaluator)
+    captured_kwargs = {}
+
+    def custom_runner(scenario, **kwargs):
+        captured_kwargs.update(kwargs)
+        return {"status": "success", "run_id": kwargs.get("run_id")}
+
+    backend = InProcessExecutionBackend(
+        policy_evaluator=mock_policy,
+        runner_callable=custom_runner,
+    )
+
+    scenario = {"id": "custom_runner_scen"}
+    res = backend.submit("custom_run_123", scenario, background=False)
+
+    assert res["status"] == "success"
+    assert captured_kwargs.get("policy_evaluator") is mock_policy
+    assert captured_kwargs.get("execution_backend") is backend

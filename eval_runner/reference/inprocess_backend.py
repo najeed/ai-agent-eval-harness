@@ -158,14 +158,33 @@ class InProcessExecutionBackend(ExecutionBackend):
                 "resumption_token": effective_token,
             }
 
+        # Wire dependency graph into self._runner if runner instance provided
+        if self._runner and hasattr(self._runner, "set_dependency_graph"):
+            self._runner.set_dependency_graph(
+                artifact_store=self._artifact_store,
+                checkpoint_store=self._checkpoint_store,
+                policy_evaluator=self._policy_evaluator,
+                signing_backend=self._signing_backend,
+                config_resolver=self._config_resolver,
+                run_store=self._run_store,
+            )
+
         def _execute():
             try:
                 if self._runner_callable:
+                    # Provide injected dependency graph as kwargs to custom callable
                     results = self._runner_callable(
                         scenario_data,
                         run_id=run_id,
                         cancellation_event=cancel_ev,
                         resumption_checkpoint=resumption_checkpoint,
+                        artifact_store=self._artifact_store,
+                        checkpoint_store=self._checkpoint_store,
+                        policy_evaluator=self._policy_evaluator,
+                        signing_backend=self._signing_backend,
+                        config_resolver=self._config_resolver,
+                        run_store=self._run_store,
+                        execution_backend=self,
                         **kwargs,
                     )
                 elif self._runner:
@@ -175,6 +194,13 @@ class InProcessExecutionBackend(ExecutionBackend):
                         cancellation_event=cancel_ev,
                         resumption_checkpoint=resumption_checkpoint,
                         runner=self._runner,
+                        artifact_store=self._artifact_store,
+                        checkpoint_store=self._checkpoint_store,
+                        policy_evaluator=self._policy_evaluator,
+                        signing_backend=self._signing_backend,
+                        config_resolver=self._config_resolver,
+                        run_store=self._run_store,
+                        execution_backend=self,
                         **kwargs,
                     )
                 else:
@@ -219,7 +245,18 @@ class InProcessExecutionBackend(ExecutionBackend):
 
     def status(self, run_id: str) -> dict[str, Any]:
         with self._lock:
-            return self._active_runs.get(run_id, {"status": "UNKNOWN"})
+            if run_id in self._active_runs:
+                return self._active_runs[run_id]
+        # Check durable store on cold read
+        cp = self.checkpoint_store.load(run_id)
+        if cp:
+            return {
+                "status": cp.get("status")
+                or (cp.get("session_state") or {}).get("status", "PAUSED"),
+                "run_id": run_id,
+                "checkpoint": cp,
+            }
+        return {"status": "UNKNOWN"}
 
     def cancel(self, run_id: str, reason: str | None = None) -> bool:
         with self._lock:
@@ -240,7 +277,8 @@ class InProcessExecutionBackend(ExecutionBackend):
     ) -> Any:
         """
         Resumes a paused evaluation run using session state and resumption token.
-        Enforces strict execution state machine guards to prevent duplicate execution threads.
+        Enforces strict execution state machine guards to prevent duplicate execution threads,
+        validating durable checkpoint state across cold process restarts.
         """
         checkpoint = self.checkpoint_store.load(run_id)
         if not checkpoint and run_id in self._active_runs:
@@ -249,6 +287,12 @@ class InProcessExecutionBackend(ExecutionBackend):
         with self._lock:
             current_entry = self._active_runs.get(run_id)
             current_status = current_entry.get("status") if current_entry else None
+
+            # If not in active_runs (cold process restart), check durable checkpoint status
+            if current_status is None and checkpoint:
+                current_status = checkpoint.get("status") or (
+                    checkpoint.get("session_state") or {}
+                ).get("status", "PAUSED")
 
             # Execution State Machine Guard
             if not force_recovery:
@@ -264,7 +308,7 @@ class InProcessExecutionBackend(ExecutionBackend):
                         f"Cannot resume run '{run_id}': reached terminal state '{current_status}'."
                     )
 
-                # 3. If run was in active_runs and status is not WAITING_FOR_APPROVAL/PAUSED/UNKNOWN
+                # 3. Reject invalid intermediate execution states
                 if current_status and current_status not in (
                     "WAITING_FOR_APPROVAL",
                     "AWAITING_APPROVAL",
