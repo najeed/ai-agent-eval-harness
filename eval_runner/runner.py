@@ -5,6 +5,7 @@ runner.py
 
 Orchestration logic for evaluation tasks.
 Supports multi-attempt (pass@k) loops and plugin interception.
+Returns first-class EvaluationResult contracts.
 """
 
 import asyncio  # noqa: E402
@@ -13,12 +14,12 @@ from abc import ABC, abstractmethod  # noqa: E402
 from pathlib import Path  # noqa: E402
 from typing import Any  # noqa: E402
 
+from agentv_runtime.results import EvaluationResult  # noqa: E402
+
 from . import events, plugins  # noqa: E402
 from .context import EvaluationContext  # noqa: E402
 
 logger = logging.getLogger(__name__)
-
-# from .events import CoreEvents, EventEmitter # Removed to avoid confusion
 
 
 class BaseRunner(ABC):
@@ -33,7 +34,7 @@ class BaseRunner(ABC):
         seed: int | None = None,
         metadata: dict | None = None,
         max_turns: int | None = None,
-    ) -> list[Any]:
+    ) -> EvaluationResult:
         pass
 
 
@@ -67,6 +68,18 @@ class DefaultRunner(BaseRunner):
         self.signing_backend = signing_backend
         self.execution_backend = execution_backend
 
+        # Wire dependency graph into execution_backend if supported
+        if self.execution_backend and hasattr(self.execution_backend, "set_dependency_graph"):
+            self.execution_backend.set_dependency_graph(
+                runner=self,
+                artifact_store=self.artifact_store,
+                checkpoint_store=self.checkpoint_store,
+                policy_evaluator=self.policy_evaluator,
+                signing_backend=self.signing_backend,
+                config_resolver=self.config_resolver,
+                run_store=self.run_store,
+            )
+
     async def run(
         self,
         scenario: dict,
@@ -77,7 +90,7 @@ class DefaultRunner(BaseRunner):
         max_turns: int | None = None,
         cancellation_event: Any | None = None,
         resumption_checkpoint: dict | None = None,
-    ) -> list[Any]:
+    ) -> EvaluationResult:
         import copy
 
         from .session import SessionManager
@@ -185,8 +198,6 @@ class DefaultRunner(BaseRunner):
                 attempt_results = await session.execute_tasks(k)
 
                 # [Forensic Sync] propagate resolved routing (e.g. Port 8000)
-                # Since ctx.metadata is frozen (MappingProxyType), we use the bypass pattern
-                # to ensure the ReportingPlugin sees the final resolved state.
                 from .context import _freeze_dict
 
                 new_meta = dict(ctx.metadata)
@@ -194,6 +205,7 @@ class DefaultRunner(BaseRunner):
                 object.__setattr__(ctx, "metadata", _freeze_dict(new_meta))
 
                 all_attempt_results.append(attempt_results)
+
             events.emit(
                 events.CoreEvents.PHASE_END,
                 {"phase": "pass_at_k_execution"},
@@ -202,7 +214,7 @@ class DefaultRunner(BaseRunner):
 
             pass_at_k = 0.0
             try:
-                # Cross-attempt aggregation (e.g. consolidation)
+                # Cross-attempt aggregation
                 if attempts > 1:
                     plugins.manager.trigger("on_metrics_calculated", ctx, all_attempt_results)
 
@@ -219,13 +231,15 @@ class DefaultRunner(BaseRunner):
                     {"message": f"Runner Post-Process Error: {e}", "traceback": tb},
                 )
 
+            successful_attempts_count = sum(
+                1 for res in all_attempt_results if self._is_attempt_successful(res)
+            )
+
             events.emit(
                 events.CoreEvents.RUN_END,
                 {
                     "pass_at_k": pass_at_k,
-                    "successful_attempts": sum(
-                        1 for res in all_attempt_results if self._is_attempt_successful(res)
-                    ),
+                    "successful_attempts": successful_attempts_count,
                     "total_attempts": attempts,
                     "metadata": dict(ctx.metadata),
                 },
@@ -238,6 +252,8 @@ class DefaultRunner(BaseRunner):
                 span_context=ctx.span_context,
             )
 
+            cfg_hash = getattr(self.resolved_config, "config_hash", "")
+
             # Save run manifest to RunStore
             if self.run_store:
                 try:
@@ -247,13 +263,22 @@ class DefaultRunner(BaseRunner):
                         "attempts": attempts,
                         "pass_at_k": pass_at_k,
                         "results": all_attempt_results,
-                        "config_hash": getattr(self.resolved_config, "config_hash", ""),
+                        "config_hash": cfg_hash,
                     }
                     self.run_store.save_run_manifest(effective_run_id, manifest_data)
                 except Exception as e:
                     logger.debug(f"Failed to save manifest to RunStore: {e}")
 
-            return all_attempt_results
+            return EvaluationResult(
+                run_id=effective_run_id,
+                scenario_id=str(scenario.get("id", "unknown")),
+                pass_at_k=pass_at_k,
+                successful_attempts=successful_attempts_count,
+                total_attempts=attempts,
+                attempts_results=all_attempt_results,
+                metadata=dict(ctx.metadata),
+                config_hash=cfg_hash,
+            )
         finally:
             if ctx.otel_context:
                 try:
@@ -295,12 +320,30 @@ def run_scenario(
     max_turns: int | None = None,
     cancellation_event: Any | None = None,
     resumption_checkpoint: dict | None = None,
-) -> list[Any]:
+    runner: BaseRunner | None = None,
+    run_store: Any | None = None,
+    config_resolver: Any | None = None,
+    artifact_store: Any | None = None,
+    checkpoint_store: Any | None = None,
+    policy_evaluator: Any | None = None,
+    signing_backend: Any | None = None,
+    execution_backend: Any | None = None,
+) -> EvaluationResult:
     """
     Synchronous entry point that orchestrates evaluation via DefaultRunner.
-    Used by InProcessExecutionBackend and CLI triggers.
+    Used by InProcessExecutionBackend and CLI triggers. Accepts injected dependency graph.
     """
-    runner = DefaultRunner()
+    if runner is None:
+        runner = DefaultRunner(
+            run_store=run_store,
+            config_resolver=config_resolver,
+            artifact_store=artifact_store,
+            checkpoint_store=checkpoint_store,
+            policy_evaluator=policy_evaluator,
+            signing_backend=signing_backend,
+            execution_backend=execution_backend,
+        )
+
     try:
         loop = asyncio.get_event_loop()
     except RuntimeError:

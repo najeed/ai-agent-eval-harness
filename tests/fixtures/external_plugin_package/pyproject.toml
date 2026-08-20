@@ -1,0 +1,15 @@
+[project]
+name = "enterprise_extension_plugin"
+version = "1.0.0"
+description = "Enterprise Extension Plugin testing AgentV Zero-Touch Compatibility"
+requires-python = ">=3.12"
+dependencies = [
+    "agentv>=2.0.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["enterprise_extension_plugin"]

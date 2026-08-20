@@ -127,7 +127,7 @@ def test_inprocess_execution_backend_lifecycle():
     assert backend.cancel("run_sim_1", "Test cancellation") is True
     assert backend.status("run_sim_1")["status"] == "ABORTED"
 
-    # Resume
-    res = backend.resume("run_sim_1", "tok_123")
+    # Resume (with explicit force_recovery protocol for aborted state)
+    res = backend.resume("run_sim_1", "tok_123", force_recovery=True)
     assert res["status"] == "RUNNING"
     assert res["resumption_token"] == "tok_123"

@@ -680,6 +680,8 @@ async def test_runner_otel_parent_context():
 
 @pytest.mark.asyncio
 async def test_runner_otel_init_failure():
+    from collections.abc import Sequence
+
     from eval_runner.runner import DefaultRunner
 
     runner = DefaultRunner()
@@ -688,11 +690,13 @@ async def test_runner_otel_init_failure():
     with patch("opentelemetry.trace.get_tracer", side_effect=Exception("Tracer failed")):
         # Should catch telemetry exception and proceed normally
         res = await runner.run({"id": "test-otel-fail"}, attempts=1)
-        assert isinstance(res, list)
+        assert isinstance(res, Sequence)
 
 
 @pytest.mark.asyncio
 async def test_runner_post_process_error():
+    from collections.abc import Sequence
+
     from eval_runner.runner import DefaultRunner
 
     runner = DefaultRunner()
@@ -701,11 +705,13 @@ async def test_runner_post_process_error():
     with patch.object(runner, "calculate_pass_at_k", side_effect=ValueError("Post-process crash")):
         # Should catch post-process failure gracefully
         res = await runner.run({"id": "test-post-fail"}, attempts=1)
-        assert isinstance(res, list)
+        assert isinstance(res, Sequence)
 
 
 @pytest.mark.asyncio
 async def test_runner_finally_span_end_exception():
+    from collections.abc import Sequence
+
     from opentelemetry.trace import Span
 
     from eval_runner.runner import DefaultRunner
@@ -715,7 +721,7 @@ async def test_runner_finally_span_end_exception():
     # Mock Span.end to raise an exception
     with patch.object(Span, "end", side_effect=Exception("End failed")):
         res = await runner.run({"id": "test-span-end-fail"}, attempts=1)
-        assert isinstance(res, list)
+        assert isinstance(res, Sequence)
 
 
 @pytest.mark.asyncio

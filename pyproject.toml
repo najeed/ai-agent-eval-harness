@@ -23,30 +23,56 @@ dependencies = [
     "Werkzeug==3.1.8",
     "jsonschema==4.26.0",
     "PyYAML==6.0.3",
-    "sentence-transformers==6.0.0",
     "numpy==2.5.2",
-    "datasets==5.0.1",
     "PyJWT==2.13.0",
     "cryptography==50.0.0",
     "opentelemetry-api==1.44.0",
     "opentelemetry-sdk==1.44.0",
-    "google-genai==2.18.1",
-    "pypdf==6.16.1",
-    "python-docx==1.2.0",
     "psutil==7.2.2",
     "httpx==0.28.1",
-    "GitPython==3.1.59",
     "sqlalchemy==2.0.52",
     "python-dotenv==1.2.3",
     "Authlib==1.7.2",
-    "langchain-openai==1.5.2",
-    "langsmith==0.11.0",
-    "lxml==6.1.1",
     "Pillow==12.3.0",
-    "cyclecore-pq==0.3.0",
     "idna==3.19",
+]
+
+[project.optional-dependencies]
+nlp = [
+    "sentence-transformers==6.0.0",
+    "datasets==5.0.1",
+]
+llm = [
+    "google-genai==2.19.0",
+    "langchain-openai==1.6.0",
+    "langsmith==0.11.1",
+]
+docs = [
+    "pypdf==6.16.1",
+    "python-docx==1.2.0",
+    "lxml==6.1.2",
     "weasyprint>=69.0",
     "reportlab>=5.0.0",
+]
+pqc = [
+    "cyclecore-pq==0.3.0",
+]
+vcs = [
+    "GitPython==3.1.59",
+]
+all = [
+    "sentence-transformers==6.0.0",
+    "datasets==5.0.1",
+    "google-genai==2.19.0",
+    "langchain-openai==1.6.0",
+    "langsmith==0.11.1",
+    "pypdf==6.16.1",
+    "python-docx==1.2.0",
+    "lxml==6.1.2",
+    "weasyprint>=69.0",
+    "reportlab>=5.0.0",
+    "cyclecore-pq==0.3.0",
+    "GitPython==3.1.59",
 ]
 
 [build-system]
@@ -94,7 +120,6 @@ filterwarnings = [
     "ignore::pytest_benchmark.logger.PytestBenchmarkWarning"
 ]
 
-
 [tool.ruff]
 # Standardize on industrial 100-character line length (2026 upgrade)
 line-length = 100
@@ -124,7 +149,7 @@ exclude = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["eval_runner", "dataproc_engine"]
+known-first-party = ["eval_runner", "dataproc_engine", "agentv_runtime"]
 section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
 combine-as-imports = true
 

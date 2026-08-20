@@ -475,10 +475,12 @@ def test_inprocess_execution_backend_lifecycle_and_singleton():
     st = backend1.status(run_id)
     assert st["status"] in ("RUNNING", "COMPLETED", "FAILED")
 
-    # 3. Resume with token
-    resumed = backend1.resume(run_id, resumption_token="res_tok_12345")
+    # 3. State-aware resume (transitions when in WAITING_FOR_APPROVAL or with force_recovery)
+    backend1._active_runs[run_id]["status"] = "WAITING_FOR_APPROVAL"
+    backend1._active_runs[run_id]["resumption_checkpoint"] = {"scenario_data": scenario}
+    resumed = backend1.resume(run_id, resumption_token="res_tok_12345", background=True)
     assert resumed is not None
-    assert resumed.get("resumption_token") == "res_tok_12345"
+    assert backend1.status(run_id)["resumption_token"] == "res_tok_12345"
 
     # 4. Cancel
     cancelled = backend1.cancel(run_id, reason="Test cancellation")
@@ -562,6 +564,7 @@ async def test_all_extension_families_exclusive_injection_contract(tmp_path):
     Architectural Contract Test: Assert that injecting custom extension backends
     results in 100% exclusive execution through the injected backends without bypasses.
     """
+    from agentv_runtime.results import EvaluationResult
     from eval_runner.config_resolver import ConfigResolver, ResolvedRuntimeConfig
     from eval_runner.interfaces.artifact import ArtifactStore
     from eval_runner.interfaces.checkpoint import CheckpointStore
@@ -614,12 +617,95 @@ async def test_all_extension_families_exclusive_injection_contract(tmp_path):
             }
         ],
         "tools": {"test_tool": {"output": {"status": "success", "result": "ok"}}},
+        "policies": {"test_tool": {"max_limit": 100}},
     }
 
-    results = await runner.run(scenario, attempts=1, run_id="run-exclusive-001")
-    assert results is not None
+    from unittest.mock import AsyncMock, patch
+
+    def _agent_mock_1(protocol, endpoint, message, history, turn_ctx):
+        if getattr(turn_ctx, "turn_number", 1) == 1:
+            return {
+                "status": "success",
+                "action": "call_tool",
+                "tool_name": "test_tool",
+                "parameters": {"key": "val"},
+            }
+        return {
+            "status": "success",
+            "action": "final_answer",
+            "content": "Exclusive contract test passed.",
+        }
+
+    with patch(
+        "eval_runner.session.AgentAdapterRegistry.call_agent", AsyncMock(side_effect=_agent_mock_1)
+    ):
+        results = await runner.run(scenario, attempts=1, run_id="run-exclusive-001")
+
+    assert isinstance(results, EvaluationResult)
+    assert results.pass_at_k == 1.0
     assert mock_resolver.resolve.called
     assert runner.artifact_store is mock_artifact_store
     assert runner.checkpoint_store is mock_checkpoint_store
     assert runner.policy_evaluator is mock_policy_evaluator
     assert runner.signing_backend is mock_signing_backend
+    assert mock_policy_evaluator.evaluate_policy.called
+
+
+def test_inprocess_backend_executes_injected_dependency_graph():
+    """
+    Contract Test: InProcessExecutionBackend.submit() executes using the injected
+    dependency graph, never bypassing injected enterprise implementations.
+    """
+    from eval_runner.interfaces.artifact import ArtifactStore
+    from eval_runner.interfaces.policy import PolicyEvaluationResult, PolicyEvaluator
+    from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+
+    mock_art = MagicMock(spec=ArtifactStore)
+    mock_art.is_sealed.return_value = False
+    mock_policy = MagicMock(spec=PolicyEvaluator)
+    mock_policy.evaluate_policy.return_value = PolicyEvaluationResult(
+        allowed=True, policy_id="injected_pol"
+    )
+
+    backend = InProcessExecutionBackend(
+        artifact_store=mock_art,
+        policy_evaluator=mock_policy,
+    )
+
+    scenario = {
+        "id": "injected_backend_scen",
+        "metadata": {"name": "Injected Backend Scenario"},
+        "workflow": [
+            {
+                "id": "node_1",
+                "tool": "echo_tool",
+                "params": {"msg": "hello"},
+            }
+        ],
+        "tools": {"echo_tool": {"output": {"status": "success"}}},
+        "policies": {"echo_tool": {"max_limit": 50}},
+    }
+
+    from unittest.mock import AsyncMock, patch
+
+    def _agent_mock_2(protocol, endpoint, message, history, turn_ctx):
+        if getattr(turn_ctx, "turn_number", 1) == 1:
+            return {
+                "status": "success",
+                "action": "call_tool",
+                "tool_name": "echo_tool",
+                "parameters": {"msg": "hello"},
+            }
+        return {
+            "status": "success",
+            "action": "final_answer",
+            "content": "Injected backend test passed.",
+        }
+
+    with patch(
+        "eval_runner.session.AgentAdapterRegistry.call_agent", AsyncMock(side_effect=_agent_mock_2)
+    ):
+        results = backend.submit("injected_run_001", scenario, background=False)
+
+    assert results is not None
+    assert mock_policy.evaluate_policy.called

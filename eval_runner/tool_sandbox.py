@@ -553,7 +553,12 @@ class ToolSandbox(AbstractSandbox):
         """
         relevant = set()
         workflow = self.scenario.get("workflow", {})
-        nodes = workflow.get("nodes", [])
+        if isinstance(workflow, list):
+            nodes = workflow
+        elif isinstance(workflow, dict):
+            nodes = workflow.get("nodes", [])
+        else:
+            nodes = []
         from . import config, simulators
 
         global_enabled = config.GLOBAL_ENABLED_SHIMS

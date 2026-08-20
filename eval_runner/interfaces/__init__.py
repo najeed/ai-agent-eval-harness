@@ -1,17 +1,22 @@
 """
 eval_runner.interfaces
 Public Extension Families for AgentV OS Runtime.
+Re-exported from authoritative agentv_runtime.interfaces.
 """
 
-from .artifact import ArtifactStore
-from .auth import AuthorizationBackend, AuthPrincipal
-from .backend import ExecutionBackend
-from .catalog import CatalogStore
-from .checkpoint import CheckpointStore
-from .leaderboard import LeaderboardStore
-from .policy import PolicyEvaluationResult, PolicyEvaluator
-from .run_store import RunStore
-from .signing import SigningBackend
+from agentv_runtime.interfaces import (
+    ArtifactStore,
+    AuthorizationBackend,
+    AuthPrincipal,
+    CatalogStore,
+    CheckpointStore,
+    ExecutionBackend,
+    LeaderboardStore,
+    PolicyEvaluationResult,
+    PolicyEvaluator,
+    RunStore,
+    SigningBackend,
+)
 
 __all__ = [
     "ExecutionBackend",

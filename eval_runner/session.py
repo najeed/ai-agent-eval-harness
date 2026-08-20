@@ -356,11 +356,26 @@ class SessionManager:
             forensics=self.forensics,
             plugin_manager=self.plugin_manager,
             jail_root=(self.log_root / self.run_id / "terminal_jail").resolve(),
+            policy_evaluator=self.policy_evaluator,
         )
         try:
             await sandbox.setup()
             workflow = self.scenario.get("workflow", {})
-            nodes_data = {node["id"]: node for node in workflow.get("nodes", [])}
+            if isinstance(workflow, list):
+                nodes_data = {
+                    node["id"]: node for node in workflow if isinstance(node, dict) and "id" in node
+                }
+                workflow_edges = []
+            elif isinstance(workflow, dict):
+                nodes_data = {
+                    node["id"]: node
+                    for node in workflow.get("nodes", [])
+                    if isinstance(node, dict) and "id" in node
+                }
+                workflow_edges = workflow.get("edges", [])
+            else:
+                nodes_data = {}
+                workflow_edges = []
 
             # 1. Topologically Sort Execution Graph
             from graphlib import CycleError, TopologicalSorter
@@ -369,7 +384,7 @@ class SessionManager:
             for node_id in nodes_data:
                 ts.add(node_id)
 
-            for edge in workflow.get("edges", []):
+            for edge in workflow_edges:
                 src = edge.get("from")
                 trg = edge.get("to")
                 if src and trg:
@@ -707,7 +722,12 @@ class SessionManager:
 
     async def _handle_tool_call(self, turn, agent_response, sandbox, history, actions, turn_ctx):
         tool_name = agent_response["tool_name"]
-        tool_params = agent_response.get("tool_params", {})
+        tool_params = (
+            agent_response.get("tool_params")
+            or agent_response.get("parameters")
+            or agent_response.get("params")
+            or {}
+        )
 
         # [Industrial Interception] Trigger mutative hook for redirection and shimming
         intercept_result = self.plugin_manager.trigger_interceptor(

@@ -323,8 +323,8 @@ class TestInProcessExecutionBackend:
         assert backend.status(run_id)["status"] == "ABORTED"
         assert backend.cancel("non_existent_run_id") is False
 
-        # Resume
-        resumed = backend.resume(run_id, resumption_token="tok_abc_123")
+        # Resume (requires force_recovery=True when in ABORTED state)
+        resumed = backend.resume(run_id, resumption_token="tok_abc_123", force_recovery=True)
         assert resumed is not None
         assert resumed["status"] == "RUNNING"
         with pytest.raises(RuntimeError, match="fail-closed"):

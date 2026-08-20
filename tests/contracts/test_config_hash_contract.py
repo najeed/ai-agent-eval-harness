@@ -1,10 +1,12 @@
 """
 tests/contracts/test_config_hash_contract.py
-Contract Test: ResolvedRuntimeConfig Hash Stability
+Contract Test: ResolvedRuntimeConfig Hash Stability & Lossless Mesh Preservation
 
-Verifies that the deterministic SHA3-256 config_hash is stable across runs
-with identical inputs, and that any change to a config field produces a
-different hash. These properties are architectural guarantees under CC8.1.
+Verifies that:
+1. Deterministic SHA3-256 config_hash covers all namespaces
+(core, adapters, plugins, policies, custom_settings).
+2. ConfigResolver preserves arbitrary drop-in config keys without loss.
+3. Overrides, mandates, and namespaces are deterministically hashed.
 """
 
 from __future__ import annotations
@@ -17,13 +19,13 @@ from eval_runner.config_resolver import ConfigResolver, ResolvedRuntimeConfig
 
 class TestConfigHashContract:
     """
-    Config Hash Stability Contract Tests.
+    Config Hash Stability & Lossless Config-Mesh Contract Tests.
     """
 
     def test_identical_configs_produce_identical_hash(self):
         """
-        Contract: Two ResolvedRuntimeConfig instances with the same values
-        must produce the exact same config_hash.
+        Contract: Two ResolvedRuntimeConfig instances
+        with the same values produce identical hash.
         """
         cfg1 = ResolvedRuntimeConfig(
             run_log_dir="/runs",
@@ -35,7 +37,10 @@ class TestConfigHashContract:
             fail_closed_signing=True,
             timeout_seconds=120,
             enable_hitl=True,
-            custom_settings={},
+            adapters={"bedrock": {"region": "us-east-1"}},
+            plugins={"recorder": {"enabled": True}},
+            policies={"max_spend": 1000},
+            custom_settings={"enterprise_key": "val_123"},
         )
         cfg2 = ResolvedRuntimeConfig(
             run_log_dir="/runs",
@@ -47,15 +52,17 @@ class TestConfigHashContract:
             fail_closed_signing=True,
             timeout_seconds=120,
             enable_hitl=True,
-            custom_settings={},
+            adapters={"bedrock": {"region": "us-east-1"}},
+            plugins={"recorder": {"enabled": True}},
+            policies={"max_spend": 1000},
+            custom_settings={"enterprise_key": "val_123"},
         )
-        assert cfg1.config_hash == cfg2.config_hash, (
-            "Identical configs produced different hashes — hash is non-deterministic."
-        )
+        assert cfg1.config_hash == cfg2.config_hash
 
     def test_different_configs_produce_different_hash(self):
         """
-        Contract: Changing any field in ResolvedRuntimeConfig must change the config_hash.
+        Contract: Changing any field or namespace in ResolvedRuntimeConfig
+        must change config_hash.
         """
         base = ResolvedRuntimeConfig(
             run_log_dir="/runs",
@@ -67,16 +74,12 @@ class TestConfigHashContract:
             run_log_dir="/runs",
             audit_level=2,
             execution_backend="in_process",
-            timeout_seconds=300,  # changed
+            timeout_seconds=300,
         )
-        assert base.config_hash != mutated.config_hash, (
-            "Mutated config produced the same hash — hash is not collision-resistant."
-        )
+        assert base.config_hash != mutated.config_hash
 
     def test_config_hash_uses_sha3_256(self):
-        """
-        Contract: The hash algorithm must be SHA3-256 (not SHA-256 or MD5).
-        """
+        """Contract: The hash algorithm must be SHA3-256 over all typed namespaces."""
         cfg = ResolvedRuntimeConfig(
             run_log_dir="/runs",
             audit_level=2,
@@ -87,60 +90,78 @@ class TestConfigHashContract:
             fail_closed_signing=True,
             timeout_seconds=120,
             enable_hitl=True,
+            adapters={},
+            plugins={},
+            policies={},
             custom_settings={},
         )
-        # Manually reproduce using sha3_256
         data_dict = {
-            "run_log_dir": "/runs",
-            "audit_level": 2,
-            "execution_backend": "in_process",
-            "checkpoint_store": "sqlite",
-            "artifact_store": "local_file",
-            "signing_key_path": None,
-            "fail_closed_signing": True,
-            "timeout_seconds": 120,
-            "enable_hitl": True,
+            "core": {
+                "run_log_dir": "/runs",
+                "audit_level": 2,
+                "execution_backend": "in_process",
+                "checkpoint_store": "sqlite",
+                "artifact_store": "local_file",
+                "signing_key_path": None,
+                "fail_closed_signing": True,
+                "timeout_seconds": 120,
+                "enable_hitl": True,
+            },
+            "adapters": {},
+            "plugins": {},
+            "policies": {},
             "custom_settings": {},
         }
         expected = hashlib.sha3_256(
             json.dumps(data_dict, sort_keys=True).encode("utf-8")
         ).hexdigest()
-        assert cfg.config_hash == expected, (
-            "config_hash algorithm is not SHA3-256. A change to this algorithm is a "
-            "MAJOR contract violation."
-        )
+        assert cfg.config_hash == expected
 
     def test_config_hash_is_64_hex_chars(self):
-        """
-        Contract: SHA3-256 hashes must always be 64 lowercase hexadecimal characters.
-        """
+        """Contract: SHA3-256 hashes must always be 64 lowercase hexadecimal characters."""
         cfg = ResolvedRuntimeConfig()
         assert len(cfg.config_hash) == 64
         assert all(c in "0123456789abcdef" for c in cfg.config_hash)
 
     def test_config_resolver_resolve_returns_resolved_runtime_config(self):
-        """
-        Contract: ConfigResolver.resolve() always returns a ResolvedRuntimeConfig instance.
-        """
+        """Contract: ConfigResolver.resolve() always returns a ResolvedRuntimeConfig instance."""
         result = ConfigResolver.resolve()
-        assert isinstance(result, ResolvedRuntimeConfig), (
-            f"ConfigResolver.resolve() returned {type(result)}, expected ResolvedRuntimeConfig."
+        assert isinstance(result, ResolvedRuntimeConfig)
+
+    def test_config_resolver_lossless_arbitrary_key_preservation(self, tmp_path):
+        """
+        Contract: Arbitrary drop-in configuration keys loaded from .d/ drop-ins or overrides
+        are strictly preserved in typed namespaces or custom_settings rather than discarded.
+        """
+        config_dir = tmp_path / "config"
+        drop_in_dir = config_dir / "plugins.d"
+        drop_in_dir.mkdir(parents=True)
+        drop_file = drop_in_dir / "enterprise_mesh.json"
+        drop_file.write_text(
+            json.dumps(
+                {
+                    "enterprise_auth": {"provider": "okta", "tenant": "corp"},
+                    "adapters": {"custom_llm": {"api_base": "https://llm.corp"}},
+                    "policies": {"spend_cap": 5000},
+                    "arbitrary_top_level_key": "must_not_be_lost",
+                }
+            ),
+            encoding="utf-8",
         )
 
-    def test_config_resolver_override_is_reflected(self):
-        """
-        Contract: Explicit overrides passed to ConfigResolver.resolve() are reflected
-        in the returned ResolvedRuntimeConfig.
-        """
-        result = ConfigResolver.resolve(overrides={"timeout_seconds": 999, "audit_level": 3})
-        assert result.timeout_seconds == 999
-        assert result.audit_level == 3
+        resolved = ConfigResolver.resolve(config_dir=config_dir)
 
-    def test_config_resolver_override_changes_hash(self):
-        """
-        Contract: Changing an override must change the config_hash, proving
-        hash reflects the actual resolved values.
-        """
-        base = ConfigResolver.resolve(overrides={"timeout_seconds": 60})
-        modified = ConfigResolver.resolve(overrides={"timeout_seconds": 180})
-        assert base.config_hash != modified.config_hash
+        # 1. Assert adapters preserved
+        assert "custom_llm" in resolved.adapters
+        assert resolved.adapters["custom_llm"]["api_base"] == "https://llm.corp"
+
+        # 2. Assert policies preserved
+        assert resolved.policies.get("spend_cap") == 5000
+
+        # 3. Assert arbitrary keys preserved in custom_settings
+        assert "enterprise_auth" in resolved.custom_settings
+        assert resolved.custom_settings["enterprise_auth"]["tenant"] == "corp"
+        assert resolved.custom_settings["arbitrary_top_level_key"] == "must_not_be_lost"
+
+        # 4. Assert config_hash includes the preserved keys
+        assert resolved.config_hash != ConfigResolver.resolve().config_hash

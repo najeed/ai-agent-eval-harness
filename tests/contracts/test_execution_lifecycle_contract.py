@@ -1,15 +1,15 @@
 """
 tests/contracts/test_execution_lifecycle_contract.py
-Contract Test: ExecutionBackend Execution Lifecycle
+Contract Test: ExecutionBackend Execution Lifecycle & State Machine
 
 Validates the 4-method execution lifecycle contract (submit, status, cancel, resume)
-against the reference InProcessExecutionBackend. Any removal or signature change
-to these methods requires a MAJOR semver bump.
+and strict state machine transition rules against InProcessExecutionBackend.
 """
 
 from __future__ import annotations
 
 import inspect
+import threading
 
 import pytest
 
@@ -63,8 +63,6 @@ class TestExecutionLifecycleContract:
         try:
             backend.submit("lifecycle_run_001", _STUB_SCENARIO)
         except Exception:
-            # Allowed: the backend can fail gracefully. What is NOT allowed:
-            # an undefined AttributeError or TypeError from a broken interface.
             pass
 
     def test_status_returns_dict(self):
@@ -105,7 +103,6 @@ class TestExecutionLifecycleContract:
         backend = InProcessExecutionBackend()
         run_id = "full_lifecycle_test_001"
 
-        # Inject a run directly (bypasses actual execution for lifecycle test)
         backend._active_runs[run_id] = {"status": "RUNNING"}
 
         status = backend.status(run_id)
@@ -124,3 +121,63 @@ class TestExecutionLifecycleContract:
         params = list(sig.parameters.keys())
         assert "run_id" in params, "submit() is missing 'run_id' parameter."
         assert "scenario_data" in params, "submit() is missing 'scenario_data' parameter."
+
+    def test_resume_rejects_active_running_execution(self):
+        """
+        Contract: resume() must reject runs currently in RUNNING state to prevent
+        duplicate execution threads.
+        """
+        backend = InProcessExecutionBackend()
+        run_id = "running_dup_guard_001"
+
+        # Create a mock active running thread
+        t = threading.Thread(target=lambda: None)
+        t.start()
+        backend._threads[run_id] = t
+        backend._active_runs[run_id] = {
+            "status": "RUNNING",
+            "scenario_data": _STUB_SCENARIO,
+        }
+
+        with pytest.raises(RuntimeError, match="currently in RUNNING state"):
+            backend.resume(run_id, resumption_token="tok_123")
+
+    def test_resume_rejects_terminal_completed_failed_aborted_states(self):
+        """
+        Contract: resume() must reject runs in terminal states (COMPLETED, FAILED, ABORTED)
+        unless force_recovery=True.
+        """
+        backend = InProcessExecutionBackend()
+
+        for terminal_state in ("COMPLETED", "FAILED", "ABORTED", "CANCELLED"):
+            run_id = f"terminal_guard_{terminal_state}"
+            backend._active_runs[run_id] = {
+                "status": terminal_state,
+                "scenario_data": _STUB_SCENARIO,
+            }
+            with pytest.raises(RuntimeError, match="terminal state"):
+                backend.resume(run_id, resumption_token="tok_term")
+
+    def test_resume_allows_waiting_for_approval_state(self):
+        """
+        Contract: resume() is permitted when run is in WAITING_FOR_APPROVAL state.
+        """
+        backend = InProcessExecutionBackend()
+        run_id = "waiting_approval_resume_001"
+
+        backend._active_runs[run_id] = {
+            "status": "WAITING_FOR_APPROVAL",
+            "scenario_data": _STUB_SCENARIO,
+            "resumption_checkpoint": {
+                "scenario_data": _STUB_SCENARIO,
+                "status": "AWAITING_APPROVAL",
+                "current_turn": 3,
+            },
+        }
+
+        # Execute resume
+        resumed = backend.resume(run_id, resumption_token="tok_approval", background=False)
+        assert resumed is not None
+        status = backend.status(run_id)
+        assert status["resumption_token"] == "tok_approval"
+        assert status["status"] in ("COMPLETED", "RUNNING")
