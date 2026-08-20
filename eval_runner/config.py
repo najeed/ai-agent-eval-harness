@@ -528,8 +528,9 @@ SERVICE_API_KEY = os.getenv("SERVICE_API_KEY", os.getenv("DASHBOARD_API_KEY"))
 
 # Dashboard API Key for sensitive execution.
 # REQUIRED for production. If not set, protected routes will return 501.
-# See: docs-old/guides/07_SECURITY_AND_AUTHENTICATION.md for setup instructions.
+# See: docs-v1-deprecated-reference/guides/07_SECURITY_AND_AUTHENTICATION.md for setup instructions.
 DASHBOARD_API_KEY = os.getenv("DASHBOARD_API_KEY")
+
 
 # --- OIDC / SSO Configuration ---
 OIDC_JWKS_URL = os.getenv("OIDC_JWKS_URL")

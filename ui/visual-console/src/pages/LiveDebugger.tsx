@@ -750,21 +750,38 @@ export const LiveDebugger: React.FC = () => {
                 <p className="text-white font-mono font-bold text-xs uppercase">{selectedEvent.event}</p>
               </div>
 
-              {selectedEvent.category === 'PARITY_STATE_DIVERGENCE' ? (
+              {selectedEvent.category === 'PARITY_STATE_DIVERGENCE' || (selectedEvent as any).expected_state || (selectedEvent as any).divergence ? (
                 <div className="space-y-2">
                   <div className="p-2.5 bg-red-500/5 border border-red-500/10 rounded-lg flex gap-2 text-red-400">
                     <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
                     <div className="space-y-0.5">
                       <h4 className="text-xs font-bold uppercase tracking-wider">State Divergence Detected</h4>
-                      <p className="text-[10px] leading-relaxed">The returned shim state does not match the expectations defined in the AES spec.</p>
+                      <p className="text-[10px] leading-relaxed">The returned runtime state does not match the expectations defined in the execution manifest.</p>
                     </div>
                   </div>
 
-                  {/* Side-by-side Git Diff using react-diff-viewer-continued */}
+                  {/* Side-by-side Diff rendering authentic telemetry evidence */}
                   <div className="border border-slate-850 rounded-lg overflow-hidden bg-slate-950 text-[10px]">
                     <ReactDiffViewer
-                      oldValue={JSON.stringify({ expected: "ok", table: "users" }, null, 2)}
-                      newValue={JSON.stringify({ expected: "ok", table: null }, null, 2)}
+                      oldValue={JSON.stringify(
+                        (selectedEvent as any).expected_state ??
+                        (selectedEvent as any).expected ??
+                        (selectedEvent as any).previous_state ??
+                        (selectedEvent as any).divergence?.expected ??
+                        { expected: selectedEvent.message || "Expected Outcome" },
+                        null,
+                        2
+                      )}
+                      newValue={JSON.stringify(
+                        (selectedEvent as any).actual_state ??
+                        (selectedEvent as any).actual ??
+                        (selectedEvent as any).current_state ??
+                        (selectedEvent as any).divergence?.actual ??
+                        (selectedEvent as any).result ??
+                        selectedEvent,
+                        null,
+                        2
+                      )}
                       splitView={false}
                       useDarkTheme={true}
                       styles={{
@@ -780,6 +797,7 @@ export const LiveDebugger: React.FC = () => {
                     />
                   </div>
                 </div>
+
               ) : (
                 <div className="space-y-2">
                   <span className="text-slate-400 font-semibold">Event Parameters JSON:</span>

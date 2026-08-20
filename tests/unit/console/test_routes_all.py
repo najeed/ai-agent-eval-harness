@@ -22,7 +22,8 @@ def console_jail(request):
     tmp_root = Path(tempfile.gettempdir()) / f"aes_console_test_jail_{worker_id}"
     root = tmp_root / "root"
     runs = root / "runs"
-    docs = root / "docs-old"
+    docs = root / "docs-v1-deprecated-reference"
+
     demo = root / "sample_agent" / "loan_agent_demo"
 
     # Cleanup any previous leaks

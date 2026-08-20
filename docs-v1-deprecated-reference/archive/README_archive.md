@@ -5,7 +5,7 @@
 [![CI](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/najeed/ai-agent-eval-harness/actions)
 [![Full Test Coverage](https://img.shields.io/badge/Full%20Test%20Coverage-86%25-brightgreen.svg)](TESTING.md)
 [![Utility Stack](https://img.shields.io/badge/Utility%20Coverage-92%25-brightgreen.svg)](eval_runner/utils.py)
-[![Works with AgentV](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs-old/assets/badges/works-with-agentv.svg)](https://github.com/najeed/ai-agent-eval-harness)
+[![Works with AgentV](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs-v1-deprecated-reference/assets/badges/works-with-agentv.svg)](https://github.com/najeed/ai-agent-eval-harness)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Industrial Trust Protocol](https://img.shields.io/badge/Trust%20Protocol-VC%20v3.0.0-gold.svg)](../spec/trust_protocol_spec_v1.md)
@@ -45,7 +45,7 @@ You can use the Shields.io service to generate a consistent badge for your proje
 Alternatively, link directly to our high-fidelity SVG asset:
 
 ```markdown
-[![Works with AgentV](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs-old/assets/badges/works-with-agentv.svg)](https://github.com/najeed/ai-agent-eval-harness)
+[![Works with AgentV](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs-v1-deprecated-reference/assets/badges/works-with-agentv.svg)](https://github.com/najeed/ai-agent-eval-harness)
 ```
 
 ## Table of Contents

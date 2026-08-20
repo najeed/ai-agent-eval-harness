@@ -8,14 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0] - 2026-08-20
 
 ### Added
-* **ExecutionManifest Contract**: Defined immutable, frozen [`ExecutionManifest`](file:///c:/Users/najee/OneDrive/Documents/Projects/ai-agent-eval-harness/agentv_runtime/manifest.py) in `agentv_runtime.manifest` with canonical JSON serialization and deterministic SHA3-256 content hashing.
+* **Zero-Trust Micro-Frontend Extension Loader with Cryptographic SRI**: Upgraded `RemoteComponentLoader` to enforce byte-level Subresource Integrity (`SHA-256`, `SHA-384`, `SHA-512`) using `window.crypto.subtle.digest`, ephemeral blob module instantiation, and strict origin policy boundaries.
+* **Evaluation Runner Execution Readiness & Agent Endpoint Binding**: Wired user-configured agent endpoint, protocol, model, and headers directly into the immutable `ExecutionManifest` without defaulting to localhost, with preflight diagnostic probes querying `/api/scenarios/readiness`.
+* **Authoritative Cryptographic Badging in Runs & Reports**: Wired run detail drawer to query `/api/v1/verify/<run_id>`, rendering authentic cryptographic verification badges (`VERIFIED`, `FAILED`, `UNVERIFIED`) based on mathematical proofs.
+* **Lossless Canonical Scenario Composer**: Visual scenario composer operates as a non-destructive patcher over the canonical AES JSON tree, eliminating semantic loss of custom node parameters and edge conditions.
+* **Pure LiveDebugger Telemetry Parity**: Live debugger diff viewer binds directly to authentic runtime telemetry payloads (`expected_state`, `actual_state`, `divergence`), eliminating mock diff simulations.
+* **ExecutionManifest Contract**: Defined immutable, frozen `ExecutionManifest` in `agentv_runtime.manifest` with canonical JSON serialization and deterministic SHA3-256 content hashing.
 * **Server-Authoritative Identity & RBAC**: Implemented `GET /api/auth/me` and `POST /api/auth/logout`, binding permissions strictly to server session claims and isolating developer persona switching to dev mode.
 * **Audience-Bound Handoff Tokens**: Dynamic secret resolution for handoff JWTs with explicit audience validation (`aud="agentv-plugin"`), short expiry, and JTI tracking.
-* **Lossless Canonical Scenario Authoring**: Implemented `GET /api/scenarios/<id>`, `POST /api/scenarios/<id>/validate`, and `POST /api/scenarios/readiness`, preserving all root keys and supporting lifecycle statuses (`Draft`, `Validated`, `Approved`, `Published`).
+* **Lossless Canonical Scenario Authoring**: Implemented `GET /api/scenarios/<id>`, `POST /api/scenarios/<id>/validate`, and `POST /api/scenarios/readiness`, preserving all root keys and supporting lifecycle statuses (`Draft`, `Validated`, `Ready`).
 * **Durable Job Store & Deterministic Output Binding**: File-backed `DurableJobStore` in `results/jobs/{job_id}.json` and explicit `results/batch_{job_id}` directory creation in `conductor.py` and `publication_suite.py`.
 * **Signed Dynamic Extensions & Navigation IA**: Hardened `RemoteComponentLoader` with origin verification; reorganized console navigation into **Work**, **Govern**, and **Admin**.
 * **Runtime Extension Interface Wiring & Authoritative Dependency Injection**: Closed the runtime interface seam gap by wiring all 6 Extension Families directly into active execution paths with real caller invocations and explicit dependency injection:
-
   * `SigningBackend`: Wired into `flight_recorder.py`, `verifier.py`, and `artifact_plugin.py` with `LocalEd25519SigningBackend`, `PQCSigningBackend`, and `NullSigningBackend`, eliminating all direct bypass signing.
   * `PolicyEvaluator`: Wired into `tool_sandbox.py` with `BasicFieldPolicyEvaluator`, eliminating parallel duplicate constraint logic.
   * `AuthorizationBackend`: Wired into `console/auth_manager.py` with `SimpleAPIKeyAuthBackend`, featuring secret masking in `list_keys(mask=True)` and structured `list_principals()`.

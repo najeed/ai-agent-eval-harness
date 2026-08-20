@@ -15,8 +15,9 @@ The Evaluation Harness v1.7.3 includes advanced **Industrial Security Hardening*
 
 For detailed technical information on these features, please refer to:
 - **[COMPLIANCE.md](COMPLIANCE.md)**: Deep dive into **NIST AI RMF Alignment**, the **Weighted Severity Model (WSM)**, and our **Hybrid PQC Protocol**.
-- **[Industrial Security Hardening (R1-R3)](docs-old/guides/07_SECURITY_AND_AUTHENTICATION.md#5-industrial-security-hardening-v123)**: Details on SSRF protection, telemetry masking, and operational controls.
-- **[The Trust Protocol](docs-old/guides/07_SECURITY_AND_AUTHENTICATION.md#6-the-trust-protocol-fingerprinting--certification)**: Overview of trace fingerprinting and the public Certification API.
+- **[Industrial Security Hardening (R1-R3)](docs-v1-deprecated-reference/guides/07_SECURITY_AND_AUTHENTICATION.md#5-industrial-security-hardening-v123)**: Details on SSRF protection, telemetry masking, and operational controls.
+- **[The Trust Protocol](docs-v1-deprecated-reference/guides/07_SECURITY_AND_AUTHENTICATION.md#6-the-trust-protocol-fingerprinting--certification)**: Overview of trace fingerprinting and the public Certification API.
+
 - **[GUI Extensibility & Micro-Frontends](docs/src/content/docs/extender/gui-extensions.md)**: Architecture for fault-isolated runtime module federation.
 
 ### Core Security Guarantees

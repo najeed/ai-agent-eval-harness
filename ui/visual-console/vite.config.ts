@@ -8,8 +8,9 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  base: '/v2/',
+  base: '/',
   server: {
+
     port: 5173,
     proxy: {
       '/api': {

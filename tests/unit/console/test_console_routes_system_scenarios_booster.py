@@ -17,7 +17,7 @@ def console_jail(request):
     tmp_root = Path(tempfile.gettempdir()) / f"aes_console_sys_jail_extra_{worker_id}"
     root = tmp_root / "root"
     runs = root / "runs"
-    docs = root / "docs-old"
+    docs = root / "docs-v1-deprecated-reference"
 
     if tmp_root.exists():
         rmtree_resilient(tmp_root)
@@ -289,7 +289,7 @@ def test_debugger_state_store_post_event_no_dict_data():
 def test_system_route_list_docs_dir_missing(client):
     from eval_runner import config
 
-    # Temporarily point PROJECT_ROOT to somewhere where docs-old does not exist
+    # Temporarily point PROJECT_ROOT to somewhere where docs directory does not exist
     with patch.object(config, "PROJECT_ROOT", Path("non_existent_folder_xyz")):
         res = client.get("/api/docs")
         assert res.status_code == 200

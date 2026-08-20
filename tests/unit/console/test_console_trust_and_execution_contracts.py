@@ -1,7 +1,8 @@
 """
-tests/unit/console/test_enterprise_features_complete_coverage.py
-Comprehensive unit tests covering the enterprise trust model,
-auth API, canonical scenario authoring/validation/readiness, and durable publish routes.
+tests/unit/console/test_console_trust_and_execution_contracts.py
+Comprehensive unit tests covering console trust contracts, session auth,
+canonical scenario authoring/validation/readiness, durable publish routes,
+and agent config propagation.
 """
 
 import json
@@ -32,14 +33,44 @@ def ent_client(tmp_path):
     scen_dir = tmp_path / "scenarios"
     scen_dir.mkdir(parents=True, exist_ok=True)
     sample_scen = {
-        "metadata": {"id": "test_scen_1", "version": "1.0.0"},
-        "workflow": {"nodes": [{"id": "node_1", "task": "run_test"}]},
+        "aes_version": 1.4,
+        "metadata": {
+            "id": "test_scen_1",
+            "version": "1.0.0",
+            "name": "Test Scenario 1",
+            "compliance_level": "Standard",
+        },
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "node_1",
+                    "task_description": "run_test",
+                    "required_tools": [],
+                    "expected_outcome": [],
+                }
+            ],
+            "edges": [],
+        },
+        "evaluation": {
+            "consensus": {
+                "strategy": "Majority_Vote",
+                "min_judges": 1,
+                "judge_panel": ["Luna-1"],
+            }
+        },
         "industry": "finance",
     }
+
     (scen_dir / "test_scen_1.json").write_text(json.dumps(sample_scen), encoding="utf-8")
 
     runs_dir = tmp_path / "runs"
     runs_dir.mkdir(parents=True, exist_ok=True)
+
+    dist_dir = tmp_path / "ui" / "visual-console" / "dist"
+    dist_dir.mkdir(parents=True, exist_ok=True)
+    (dist_dir / "index.html").write_text(
+        "<!DOCTYPE html><html><body>Visual Console</body></html>", encoding="utf-8"
+    )
 
     with (
         patch.object(config, "PROJECT_ROOT", tmp_path),
@@ -376,3 +407,70 @@ def test_conductor_explicit_batch_and_output_dir(tmp_path):
     args2.path = str(tmp_path)
     c2 = Conductor(args2)
     assert c2.base_dir == custom_out
+
+
+def test_evaluate_scenario_propagates_agent_config_to_manifest(ent_client):
+    client, tmp_path = ent_client
+
+    payload = {
+        "path": "scenarios/test_scen_1.json",
+        "max_turns": 15,
+        "agent_config": {
+            "agent_name": "custom_enterprise_agent",
+            "protocol": "grpc_secure",
+            "endpoint": "https://agent.enterprise.corp:9443/v1",
+            "model": "claude-3-7-sonnet",
+        },
+        "runtime_config": {
+            "max_turns": 15,
+            "policy_evaluator": "strict_zero_trust",
+        },
+        "metadata": {
+            "notes": "E2E verification of agent endpoint binding",
+        },
+    }
+
+    res = client.post("/api/v1/evaluate", json=payload)
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["status"] == "started"
+    assert data["run_id"] is not None
+
+    manifest = data["manifest"]
+    assert manifest["agent_config"]["agent_name"] == "custom_enterprise_agent"
+    assert manifest["agent_config"]["protocol"] == "grpc_secure"
+    assert manifest["agent_config"]["endpoint"] == "https://agent.enterprise.corp:9443/v1"
+    assert manifest["agent_config"]["model"] == "claude-3-7-sonnet"
+    assert manifest["runtime_config"]["max_turns"] == 15
+    assert manifest["runtime_config"]["policy_evaluator"] == "strict_zero_trust"
+
+
+def test_nav_registry_and_extension_metadata(ent_client):
+    client, tmp_path = ent_client
+    res = client.get("/api/nav")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert "nav" in data
+    assert isinstance(data["nav"], list)
+
+    # Verify handoff token with explicit plugin_id
+    handoff_res = client.get("/api/auth/handoff?plugin_id=control-plane")
+    assert handoff_res.status_code == 200
+    handoff_data = handoff_res.get_json()
+    assert "token" in handoff_data
+    assert handoff_data["audience"] == "agentv-plugin"
+
+
+def test_primary_console_canonical_and_v2_compatibility(ent_client):
+    """
+    Contract Test: Asserts that visual-console is mounted as the primary UX at '/',
+    '/scenarios', '/reports', '/editor', '/debugger', etc., with '/v2' preserved
+    strictly as a backward-compatible route.
+    """
+    client, _ = ent_client
+
+    # Root and primary SPA routes must return 200 and serve HTML
+    for route in ("/", "/scenarios", "/reports", "/editor", "/debugger", "/runner", "/v2"):
+        res = client.get(route)
+        assert res.status_code == 200
+        assert "text/html" in res.content_type

@@ -272,14 +272,19 @@ def load_scenario(
     if not isinstance(scenario_data["workflow"], dict):
         raise ValueError("Invalid 'workflow' block structure (must be a dictionary).")
 
-    # --- V1.4 COMPLIANCE ENFORCEMENT ---
-    # We no longer support legacy v1.2 or v1.3 signatures.
+    # --- V1.4+ COMPLIANCE ENFORCEMENT ---
     aes_version = scenario_data.get("aes_version")
-    if aes_version != 1.4:
+    ver_str = str(aes_version)
+    if (
+        aes_version not in (1.4, 2.0)
+        and not ver_str.startswith("1.4")
+        and not ver_str.startswith("v1.4")
+        and not ver_str.startswith("2.0")
+    ):
         invalid_ver = aes_version or "missing"
         raise ValueError(
             f"Unsupported AES version: {invalid_ver}. "
-            f"This harness requires v1.4.0 for Forensic Integrity compliance."
+            "This harness requires AES v1.4+ for Forensic Integrity compliance."
         )
 
     # Handle validation with the Universal Immutable Registry (No-Debt Standard)

@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { 
-  ReactFlow, Controls, Background, useNodesState, useEdgesState, addEdge 
+import {
+  ReactFlow, Controls, Background, useNodesState, useEdgesState, addEdge
 } from '@xyflow/react';
 import type { Connection } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { 
-  Save, Trash2, Plus, Upload, AlertTriangle, ShieldCheck, CheckCircle2 
+import {
+  Save, Trash2, Plus, Upload, AlertTriangle
 } from 'lucide-react';
 import { Editor } from '@monaco-editor/react';
 import { useRBAC } from '../context/RBACContext';
@@ -31,7 +31,7 @@ export const ScenarioComposer: React.FC = () => {
   const [scenarioId, setScenarioId] = useState('new-scenario');
   const [title, setTitle] = useState('New AES Scenario');
   const [version, setVersion] = useState('1.0.0');
-  const [lifecycleStatus, setLifecycleStatus] = useState<'Draft' | 'Validated' | 'Approved' | 'Published'>('Draft');
+  const [lifecycleStatus, setLifecycleStatus] = useState<'Draft' | 'Validated' | 'Ready'>('Draft');
   const [industry, setIndustry] = useState('generic');
   const [complianceLevel, setComplianceLevel] = useState('Standard');
   const [description, setDescription] = useState('Custom evaluation scenario.');
@@ -39,41 +39,28 @@ export const ScenarioComposer: React.FC = () => {
   // React Flow State
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
-  
+
   // Selection & Form editing
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [nodeDesc, setNodeDesc] = useState('');
   const [nodeTools, setNodeTools] = useState('');
   const [assertions, setAssertions] = useState<AssertionItem[]>([]);
-  
+
   // JSON/YAML Toggle
   const [viewMode, setViewMode] = useState<'canvas' | 'json'>('canvas');
   const [rawJson, setRawJson] = useState('');
-  
+
   // Spec import modal
   const [showImportModal, setShowImportModal] = useState(false);
   const [importText, setImportText] = useState('');
-  
+
   const [message, setMessage] = useState('');
   const [saving, setSaving] = useState(false);
 
   // Generate AES JSON preserving all canonical document keys without semantic loss
   const getAESJson = () => {
-    const workflowNodes = nodes.map((n: any) => ({
-      id: n.id,
-      task_description: n.data.task_description || '',
-      required_tools: n.data.required_tools || [],
-      expected_outcome: n.data.expected_outcome || []
-    }));
-
-    const workflowEdges = edges.map((e: any) => ({
-      from: e.source,
-      to: e.target,
-      condition: e.data?.condition || ''
-    }));
-
-    // Start with the base canonical document or clean template
-    const base = rawDoc ? { ...rawDoc } : {
+    // Start with a deep copy of the base canonical document or clean template
+    const base = rawDoc ? JSON.parse(JSON.stringify(rawDoc)) : {
       aes_version: 1.4,
       evaluation: {
         consensus: {
@@ -83,6 +70,29 @@ export const ScenarioComposer: React.FC = () => {
         }
       }
     };
+
+    const existingNodesMap = new Map((base.workflow?.nodes || []).map((n: any) => [n.id, n]));
+    const workflowNodes = nodes.map((n: any) => {
+      const existing = existingNodesMap.get(n.id) || (n.data?.rawNode ? { ...n.data.rawNode } : {});
+      return {
+        ...existing,
+        id: n.id,
+        task_description: n.data.task_description !== undefined ? n.data.task_description : existing.task_description || '',
+        required_tools: n.data.required_tools !== undefined ? n.data.required_tools : existing.required_tools || [],
+        expected_outcome: n.data.expected_outcome !== undefined ? n.data.expected_outcome : existing.expected_outcome || [],
+      };
+    });
+
+    const existingEdgesMap = new Map((base.workflow?.edges || []).map((e: any) => [`${e.from}->${e.to}`, e]));
+    const workflowEdges = edges.map((e: any) => {
+      const existing: any = existingEdgesMap.get(`${e.source}->${e.target}`) || {};
+      return {
+        ...existing,
+        from: e.source,
+        to: e.target,
+        condition: e.data?.condition !== undefined ? e.data.condition : existing.condition || '',
+      };
+    });
 
     base.metadata = {
       ...(base.metadata || {}),
@@ -102,6 +112,7 @@ export const ScenarioComposer: React.FC = () => {
 
     return base;
   };
+
 
   const syncJsonToCanvas = (jsonStr: string) => {
     try {
@@ -194,15 +205,15 @@ export const ScenarioComposer: React.FC = () => {
               id: n.id,
               type: 'default',
               position: { x: 150 + idx * 220, y: 150 },
-              data: { 
+              data: {
                 label: n.id,
                 task_description: n.task_description,
                 required_tools: n.required_tools || [],
                 expected_outcome: n.expected_outcome || []
               },
-              style: { 
-                background: '#0f172a', 
-                color: '#fff', 
+              style: {
+                background: '#0f172a',
+                color: '#fff',
                 border: '1px solid #334155',
                 borderRadius: '8px',
                 fontSize: '11px',
@@ -286,15 +297,15 @@ export const ScenarioComposer: React.FC = () => {
             id: 'start_node',
             type: 'default',
             position: { x: 100, y: 150 },
-            data: { 
-              label: 'start_node', 
+            data: {
+              label: 'start_node',
               task_description: 'Agent should verify user identity',
               required_tools: [],
               expected_outcome: []
             },
-            style: { 
-              background: '#0f172a', 
-              color: '#fff', 
+            style: {
+              background: '#0f172a',
+              color: '#fff',
               border: '1px solid #334155',
               borderRadius: '8px',
               fontSize: '11px',
@@ -345,15 +356,15 @@ export const ScenarioComposer: React.FC = () => {
       id: nextId,
       type: 'default',
       position: { x: 200 + nodes.length * 50, y: 200 + (nodes.length % 2) * 50 },
-      data: { 
-        label: nextId, 
+      data: {
+        label: nextId,
         task_description: 'Describe agent goal...',
         required_tools: [],
         expected_outcome: []
       },
-      style: { 
-        background: '#0f172a', 
-        color: '#fff', 
+      style: {
+        background: '#0f172a',
+        color: '#fff',
         border: '1px solid #334155',
         borderRadius: '8px',
         fontSize: '11px',
@@ -374,7 +385,7 @@ export const ScenarioComposer: React.FC = () => {
     if (nodes.length === 0) {
       errors.push('At least one workflow node is required.');
     }
-    
+
     nodes.forEach((n: any) => {
       if (!n.data.task_description?.trim() || n.data.task_description === 'Describe agent goal...') {
         errors.push(`Node [${n.id}] requires a goal description.`);
@@ -433,8 +444,8 @@ export const ScenarioComposer: React.FC = () => {
         setIndustry(parsed.industry || 'generic');
         setComplianceLevel(parsed.metadata?.compliance_level || 'Standard');
         setDescription(parsed.metadata?.description || '');
-        
-        // Load nodes
+
+        // Load nodes preserving raw data
         const parsedNodes = (parsed.workflow?.nodes || []).map((n: any, idx: number) => ({
           id: n.id,
           type: 'default',
@@ -443,12 +454,25 @@ export const ScenarioComposer: React.FC = () => {
             label: n.id,
             task_description: n.task_description,
             required_tools: n.required_tools || [],
-            expected_outcome: n.expected_outcome || []
+            expected_outcome: n.expected_outcome || [],
+            rawNode: n,
           },
           style: { background: '#0f172a', color: '#fff', border: '1px solid #334155', borderRadius: '8px', fontSize: '11px', width: 160 }
         }));
         setNodes(parsedNodes);
-        setEdges([]);
+
+        // Preserve workflow edges from spec if present
+        if (parsed.workflow?.edges && parsed.workflow.edges.length > 0) {
+          const parsedEdges = parsed.workflow.edges.map((e: any, idx: number) => ({
+            id: `edge_${idx}`,
+            source: e.from,
+            target: e.to,
+            data: { condition: e.condition || '' },
+          }));
+          setEdges(parsedEdges);
+        } else {
+          setEdges([]);
+        }
         setShowImportModal(false);
         setMessage('Successfully parsed spec into scenario canvas nodes!');
       } else {
@@ -468,7 +492,7 @@ export const ScenarioComposer: React.FC = () => {
       {/* Top action toolbar */}
       <div className="h-14 border-b border-slate-900 bg-slate-950/20 px-6 flex items-center justify-between shrink-0 text-xs">
         <div className="flex items-center gap-3">
-          <input 
+          <input
             type="text"
             disabled={!canEditScenario}
             value={scenarioId}
@@ -476,7 +500,7 @@ export const ScenarioComposer: React.FC = () => {
             placeholder="Scenario ID"
             className="bg-slate-950 border border-slate-800 rounded px-2.5 py-1 w-36 text-slate-200 focus:outline-none focus:border-indigo-500 font-mono font-bold disabled:opacity-60"
           />
-          <input 
+          <input
             type="text"
             disabled={!canEditScenario}
             value={title}
@@ -486,7 +510,7 @@ export const ScenarioComposer: React.FC = () => {
           />
           <div className="flex items-center gap-1">
             <span className="text-[10px] text-slate-500 font-mono">v</span>
-            <input 
+            <input
               type="text"
               disabled={!canEditScenario}
               value={version}
@@ -503,9 +527,9 @@ export const ScenarioComposer: React.FC = () => {
           >
             <option value="Draft">Draft</option>
             <option value="Validated">Validated</option>
-            <option value="Approved">Approved</option>
-            <option value="Published">Published</option>
+            <option value="Ready">Ready to Run</option>
           </select>
+
           {!canEditScenario && (
             <span className="bg-amber-500/10 border border-amber-500/20 text-amber-400 font-bold px-2 py-0.5 rounded text-[10px] uppercase tracking-wider">
               Read-Only
@@ -516,13 +540,13 @@ export const ScenarioComposer: React.FC = () => {
         <div className="flex items-center gap-3">
           {/* View toggle */}
           <div className="flex bg-slate-950 border border-slate-900 rounded p-0.5 font-semibold">
-            <button 
+            <button
               onClick={() => handleToggleMode('canvas')}
               className={`px-3 py-1 rounded ${viewMode === 'canvas' ? 'bg-slate-900 text-indigo-400 font-bold' : 'text-slate-500'}`}
             >
               Visual Canvas
             </button>
-            <button 
+            <button
               onClick={() => handleToggleMode('json')}
               className={`px-3 py-1 rounded ${viewMode === 'json' ? 'bg-slate-900 text-indigo-400 font-bold' : 'text-slate-500'}`}
             >
@@ -530,7 +554,7 @@ export const ScenarioComposer: React.FC = () => {
             </button>
           </div>
 
-          <button 
+          <button
             onClick={() => canEditScenario && setShowImportModal(true)}
             disabled={!canEditScenario}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-950 border border-slate-900 rounded text-slate-400 hover:text-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-semibold"
@@ -539,7 +563,7 @@ export const ScenarioComposer: React.FC = () => {
             <span>Import Spec</span>
           </button>
 
-          <button 
+          <button
             onClick={handleSaveToCatalog}
             disabled={saving || !canEditScenario}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded font-bold transition-colors"
@@ -607,7 +631,7 @@ export const ScenarioComposer: React.FC = () => {
 
                   <div className="space-y-1">
                     <label className="text-slate-400 font-semibold">Goal Description:</label>
-                    <textarea 
+                    <textarea
                       value={nodeDesc}
                       onChange={(e) => setNodeDesc(e.target.value)}
                       rows={3}
@@ -617,7 +641,7 @@ export const ScenarioComposer: React.FC = () => {
 
                   <div className="space-y-1">
                     <label className="text-slate-400 font-semibold">Required Tools (comma separated):</label>
-                    <input 
+                    <input
                       type="text"
                       value={nodeTools}
                       onChange={(e) => setNodeTools(e.target.value)}
@@ -628,7 +652,7 @@ export const ScenarioComposer: React.FC = () => {
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <label className="text-slate-400 font-semibold">Expected Outcomes (Assertions):</label>
-                      <button 
+                      <button
                         onClick={addAssertion}
                         className="text-[10px] text-indigo-400 hover:text-indigo-300 font-bold"
                       >
@@ -645,11 +669,11 @@ export const ScenarioComposer: React.FC = () => {
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
-                          
+
                           <div className="grid grid-cols-2 gap-2">
                             <div>
                               <span className="text-[9px] text-slate-500 font-bold uppercase">Target</span>
-                              <input 
+                              <input
                                 type="text"
                                 value={a.target}
                                 onChange={(e) => {
@@ -661,7 +685,7 @@ export const ScenarioComposer: React.FC = () => {
                             </div>
                             <div>
                               <span className="text-[9px] text-slate-500 font-bold uppercase">Mode</span>
-                              <select 
+                              <select
                                 value={a.mode}
                                 onChange={(e) => {
                                   const val = e.target.value as any;
@@ -677,7 +701,7 @@ export const ScenarioComposer: React.FC = () => {
 
                           <div>
                             <span className="text-[9px] text-slate-500 font-bold uppercase">Expected Value</span>
-                            <input 
+                            <input
                               type="text"
                               value={a.expected}
                               onChange={(e) => {
@@ -692,7 +716,7 @@ export const ScenarioComposer: React.FC = () => {
                     </div>
                   </div>
 
-                  <button 
+                  <button
                     onClick={saveNodeSettings}
                     className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold transition-all uppercase tracking-wider"
                   >
@@ -707,7 +731,7 @@ export const ScenarioComposer: React.FC = () => {
         ) : (
           /* Monaco Editor split pane */
           <div className="flex-1 h-full bg-[#1e1e1e]">
-            <Editor 
+            <Editor
               height="100%"
               defaultLanguage="json"
               theme="vs-dark"
@@ -718,7 +742,7 @@ export const ScenarioComposer: React.FC = () => {
                   // Re-load metadata if typed directly in editor
                   if (parsed.metadata?.id) setScenarioId(parsed.metadata.id);
                   if (parsed.metadata?.name) setTitle(parsed.metadata.name);
-                } catch (e) {}
+                } catch (e) { }
               }}
               options={{
                 minimap: { enabled: false },
@@ -739,7 +763,7 @@ export const ScenarioComposer: React.FC = () => {
               <Upload className="w-5 h-5 text-indigo-400" />
               <h3 className="text-base font-bold text-white uppercase tracking-wider">Spec-to-Eval Markdown Parser</h3>
             </div>
-            
+
             <p className="text-slate-400 text-xs leading-relaxed">
               Paste your raw Markdown PRD or test description text. The parser will translate it into a structured sequence of AES nodes.
             </p>
@@ -753,13 +777,13 @@ export const ScenarioComposer: React.FC = () => {
             />
 
             <div className="flex justify-end gap-3 pt-2 text-xs shrink-0">
-              <button 
+              <button
                 onClick={() => setShowImportModal(false)}
                 className="px-4 py-2 bg-slate-800 rounded-lg hover:bg-slate-700 text-slate-300 transition-colors"
               >
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={handleImportSpec}
                 className="px-4 py-2 bg-indigo-600 rounded-lg hover:bg-indigo-500 text-white font-bold transition-colors"
               >

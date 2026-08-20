@@ -2,7 +2,7 @@ site_name: AgentV
 site_description: Enterprise-grade reliability framework for AI agents.
 site_author: Najeed Khan
 site_url: https://najeed.github.io/ai-agent-eval-harness/
-docs_dir: docs-old
+docs_dir: docs-v1-deprecated-reference
 
 theme:
   name: material

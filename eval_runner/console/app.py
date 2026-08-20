@@ -2,7 +2,7 @@ import os
 
 import flask
 from dotenv import load_dotenv
-from flask import Flask, send_from_directory
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 
 from eval_runner.plugins import manager
@@ -46,8 +46,10 @@ def create_app():
     else:
         print("   [Industrial Start] Lazy Catalog active for Demo Stability.", flush=True)
 
-    # Set static_folder using the project root for absolute reliability
-    ui_path = os.path.abspath(config.PROJECT_ROOT / "ui" / "visual-debugger")
+    # Set visual-console as primary static_folder with fallback to visual-debugger
+    v2_ui_dist = os.path.abspath(config.PROJECT_ROOT / "ui" / "visual-console" / "dist")
+    fallback_ui = os.path.abspath(config.PROJECT_ROOT / "ui" / "visual-debugger")
+    ui_path = v2_ui_dist if os.path.exists(v2_ui_dist) else fallback_ui
     app = Flask(__name__, static_folder=ui_path, static_url_path="/static")
 
     # Ensure session persistence (v1.2.3 Stabilization)
@@ -162,33 +164,73 @@ def create_app():
         print(f"   [Route] {rule.rule} ({rule.endpoint})", flush=True)
     print("--- Audit Complete ---\n", flush=True)
 
-    # Frontend Catch-all Routes (Define LAST to prevent API masking)
-    @app.route("/v2", defaults={"path": ""})
-    @app.route("/v2/", defaults={"path": ""})
-    @app.route("/v2/<path:path>")
+    # Assets route for visual-console
+    @app.route("/assets/<path:path>")
+    def serve_assets(path):
+        assets_dir = os.path.join(ui_path, "assets")
+        if os.path.exists(assets_dir):
+            return send_from_directory(assets_dir, path)
+        return jsonify({"error": "Asset Not Found"}), 404
+
+    @app.route("/v2/assets/<path:path>")
+    def serve_v2_assets(path):
+        assets_dir = os.path.join(v2_ui_dist, "assets")
+        if os.path.exists(assets_dir):
+            return send_from_directory(assets_dir, path)
+        return jsonify({"error": "Asset Not Found"}), 404
+
+    # Direct static asset files from root
+    @app.route("/favicon.png")
+    @app.route("/logo-premium.png")
+    @app.route("/favicon.svg")
+    @app.route("/icons.svg")
+    def serve_root_icons():
+        filename = flask.request.path.lstrip("/")
+        if os.path.exists(os.path.join(ui_path, filename)):
+            return send_from_directory(ui_path, filename)
+        return jsonify({"error": "Icon Not Found"}), 404
+
+    # Compatibility Route: /v2 serves the new console
+    @app.route("/v2", defaults={"path": ""}, strict_slashes=False)
+    @app.route("/v2/<path:path>", strict_slashes=False)
     def serve_v2(path=""):
-        v2_ui_path = os.path.abspath(config.PROJECT_ROOT / "ui" / "visual-console" / "dist")
+        if path:
+            full_path = os.path.join(v2_ui_dist, path)
+            if os.path.exists(full_path) and os.path.isfile(full_path):
+                return send_from_directory(v2_ui_dist, path)
+        return send_from_directory(v2_ui_dist, "index.html")
 
-        # If the file exists directly in dist or a subfolder, serve it
-        full_path = os.path.join(v2_ui_path, path)
-        if path and os.path.exists(full_path) and os.path.isfile(full_path):
-            return send_from_directory(v2_ui_path, path)
-
-        # Fall back to index.html for SPA routing (v2)
-        return send_from_directory(v2_ui_path, "index.html")
-
-    @app.route("/", defaults={"path": ""})
-    @app.route("/scenarios")
-    @app.route("/reports")
-    @app.route("/editor")
-    @app.route("/debugger")
-    @app.route("/demo")
-    @app.route("/demo/loan")
-    @app.route("/docs")
-    @app.route("/docs/api")
+    # Canonical Primary Console Entrypoints & SPA Navigation
+    @app.route("/", defaults={"path": ""}, strict_slashes=False)
+    @app.route("/scenarios", strict_slashes=False)
+    @app.route("/reports", strict_slashes=False)
+    @app.route("/editor", strict_slashes=False)
+    @app.route("/debugger", strict_slashes=False)
+    @app.route("/runner", strict_slashes=False)
+    @app.route("/trust", strict_slashes=False)
+    @app.route("/settings", strict_slashes=False)
+    @app.route("/spec-import", strict_slashes=False)
+    @app.route("/mutator", strict_slashes=False)
+    @app.route("/explain", strict_slashes=False)
+    @app.route("/hitl", strict_slashes=False)
+    @app.route("/translate", strict_slashes=False)
+    @app.route("/calibration", strict_slashes=False)
+    @app.route("/metrics", strict_slashes=False)
+    @app.route("/failures", strict_slashes=False)
+    @app.route("/triage", strict_slashes=False)
+    @app.route("/benchmarks", strict_slashes=False)
+    @app.route("/compliance", strict_slashes=False)
+    @app.route("/publish", strict_slashes=False)
+    @app.route("/cicd", strict_slashes=False)
+    @app.route("/sync", strict_slashes=False)
+    @app.route("/suites", strict_slashes=False)
+    @app.route("/packs", strict_slashes=False)
+    @app.route("/demo", strict_slashes=False)
+    @app.route("/demo/loan", strict_slashes=False)
+    @app.route("/docs", strict_slashes=False)
+    @app.route("/docs/api", strict_slashes=False)
     def index(path=""):
-        print(f"DEBUG: SPA Navigation - Obtaining industrial route: {flask.request.path}")
-        return send_from_directory(app.static_folder, "index.html")
+        return send_from_directory(ui_path, "index.html")
 
     return app
 

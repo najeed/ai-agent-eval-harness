@@ -371,16 +371,44 @@ def evaluate_scenario():
     identifier = Path(path).stem
     run_id = f"run-{identifier}-{time.time_ns()}"
 
+    meta = data.get("metadata") or {}
+    raw_agent_config = data.get("agent_config") or {}
+
     agent_config = {
-        "agent_name": data.get("agent_name", "default_agent"),
-        "protocol": data.get("protocol", "http_rest"),
-        "endpoint": data.get("endpoint", "http://localhost:8000"),
-        "model": data.get("model", "gpt-4o"),
+        "agent_name": raw_agent_config.get("agent_name")
+        or data.get("agent_name")
+        or meta.get("agent_name")
+        or "default_agent",
+        "protocol": raw_agent_config.get("protocol")
+        or data.get("protocol")
+        or meta.get("protocol")
+        or "http_rest",
+        "endpoint": raw_agent_config.get("endpoint")
+        or data.get("endpoint")
+        or meta.get("agent_url")
+        or meta.get("endpoint")
+        or "http://localhost:8000",
+        "model": raw_agent_config.get("model")
+        or data.get("model")
+        or meta.get("model")
+        or "gpt-4o",
+        **{
+            k: v
+            for k, v in raw_agent_config.items()
+            if k not in ("agent_name", "protocol", "endpoint", "model")
+        },
     }
+
+    raw_runtime_config = data.get("runtime_config") or {}
     runtime_config = {
-        "max_turns": data.get("max_turns", 10),
-        "signing_backend": "ed25519",
-        "policy_evaluator": "standard",
+        "max_turns": raw_runtime_config.get("max_turns") or data.get("max_turns", 10),
+        "signing_backend": raw_runtime_config.get("signing_backend") or "ed25519",
+        "policy_evaluator": raw_runtime_config.get("policy_evaluator") or "standard",
+        **{
+            k: v
+            for k, v in raw_runtime_config.items()
+            if k not in ("max_turns", "signing_backend", "policy_evaluator")
+        },
     }
 
     manifest = ManifestBuilder.build(

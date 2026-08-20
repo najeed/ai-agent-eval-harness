@@ -111,11 +111,18 @@ def get_nav():
     return jsonify({"nav": current_app.config.get("NAV_REGISTRY", [])})
 
 
+def _resolve_legacy_docs_dir() -> Path:
+    d = config.PROJECT_ROOT / "docs-v1-deprecated-reference"
+    if d.exists():
+        return d
+    return config.PROJECT_ROOT / "docs-old"
+
+
 @system_bp.route("/docs", methods=["GET"])
 @require_permission(Permission.DOCS_READ)
 def list_docs():
     """Lists legacy documentation files with industrial categorization."""
-    docs_dir = config.PROJECT_ROOT / "docs-old"
+    docs_dir = _resolve_legacy_docs_dir()
     docs = []
     seen_ids = set()
     if docs_dir.exists():
@@ -156,7 +163,7 @@ def read_doc(filename):
     """Reads a legacy documentation file (with traversal protection)."""
     from eval_runner.utils import is_path_safe
 
-    docs_dir = (config.PROJECT_ROOT / "docs-old").resolve()
+    docs_dir = _resolve_legacy_docs_dir().resolve()
     target = (docs_dir / filename).resolve()
 
     if not is_path_safe(target, docs_dir):

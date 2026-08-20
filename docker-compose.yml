@@ -24,14 +24,17 @@ services:
     networks:
       - lab-network
 
-  dashboard:
-    image: python:3.12-slim
+  console:
+    build:
+      context: .
+      dockerfile: Dockerfile
     working_dir: /app
     volumes:
       - .:/app
-    command: sh -c "pip install streamlit pandas && streamlit run dashboard/app.py --server.port 8501 --server.address 0.0.0.0"
+    command: agentv console --port 5000 --host 0.0.0.0
     ports:
-      - "8501:8501"
+      - "5000:5000"
+      - "5173:5173"
     depends_on:
       - harness
     networks:
@@ -40,3 +43,4 @@ services:
 networks:
   lab-network:
     driver: bridge
+

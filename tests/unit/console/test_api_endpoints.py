@@ -63,11 +63,11 @@ def test_routes_scenarios_industrial_resilience(client, tmp_path, monkeypatch):
 
 
 def test_routes_system_docs_resolution(client, tmp_path, monkeypatch):
-    """Verifies that documentation resolution logic is robust to legacy path structures."""
+    """Verifies that documentation resolution logic is robust to explicit path structures."""
     base = tmp_path.resolve()
     monkeypatch.setattr(config, "PROJECT_ROOT", base)
-    (base / "docs-old").mkdir()
-    (base / "docs-old" / "g.md").write_text("# Doc")
+    (base / "docs-v1-deprecated-reference").mkdir()
+    (base / "docs-v1-deprecated-reference" / "g.md").write_text("# Doc")
 
     assert client.get("/docs").status_code == 200
     assert client.get("/info").status_code == 200

@@ -94,8 +94,12 @@ logs/
 .harden_state
 
 # Sphinx build artifacts
-docs-old/_build/
-docs-old/build/
+docs-v1-deprecated-reference/_build/
+docs-v1-deprecated-reference/build/
+
+# --- Test Artifacts & Output Leaks ---
+MagicMock/
+mock.output_dir/
 
 # --- Temporary artifacts ---
 /jail/

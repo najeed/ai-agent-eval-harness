@@ -78,17 +78,20 @@ export const RunsReports: React.FC = () => {
     setSelectedRun(run);
     setLoadingDetail(true);
     try {
-      const res = await fetch(`/api/v1/certificates/${run.run_id}`);
-      if (res.ok) {
-        const data = await res.json();
-        setSelectedRun(prev => prev ? { ...prev, manifest: data } : null);
-      }
+      const [certRes, verifyRes] = await Promise.all([
+        fetch(`/api/v1/certificates/${run.run_id}`),
+        fetch(`/api/v1/verify/${run.run_id}`),
+      ]);
+      const manifestData = certRes.ok ? await certRes.json() : null;
+      const verifyData = verifyRes.ok ? await verifyRes.json() : null;
+      setSelectedRun(prev => prev ? { ...prev, manifest: manifestData, verification: verifyData } : null);
     } catch (e) {
       console.error('Error fetching manifest details:', e);
     } finally {
       setLoadingDetail(false);
     }
   };
+
 
   const handleCopyId = (id: string) => {
     navigator.clipboard.writeText(id);
@@ -265,16 +268,41 @@ export const RunsReports: React.FC = () => {
 
             {/* Manifest Cryptography and Compliance info */}
             {loadingDetail ? (
-              <div className="py-8 text-center text-slate-500 italic">Reading manifest audit data...</div>
-            ) : selectedRun.manifest ? (
+              <div className="py-8 text-center text-slate-500 italic">Reading verification audit data...</div>
+            ) : selectedRun.manifest || (selectedRun as any).verification ? (
               <div className="space-y-3">
-                <div className="p-3 bg-indigo-500/5 border border-indigo-500/20 rounded-lg flex items-start gap-2.5">
-                  <ShieldCheck className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
-                  <div className="space-y-0.5">
-                    <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-wider">Cryptographic Signature Valid</h4>
-                    <p className="text-slate-400 text-[10px] leading-relaxed">Ed25519 trace hash sealing is mathematically verified.</p>
+                {(selectedRun as any).verification?.verified ? (
+                  <div className="p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-lg flex items-start gap-2.5">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <div className="space-y-0.5">
+                      <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Cryptographically Verified</h4>
+                      <p className="text-slate-400 text-[10px] leading-relaxed">
+                        Ed25519 signature verified against SHA3-256 evidence chain (Verifier v{(selectedRun as any).verification?.verifier_version || '2.0.0'}).
+                      </p>
+                    </div>
                   </div>
-                </div>
+                ) : (selectedRun as any).verification?.verified === false ? (
+                  <div className="p-3 bg-red-500/5 border border-red-500/20 rounded-lg flex items-start gap-2.5">
+                    <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                    <div className="space-y-0.5">
+                      <h4 className="text-xs font-bold text-red-400 uppercase tracking-wider">Verification Failed</h4>
+                      <p className="text-slate-400 text-[10px] leading-relaxed">
+                        {(selectedRun as any).verification?.message || 'Signature mismatch or corrupted run evidence.'}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-3 bg-slate-900 border border-slate-850 rounded-lg flex items-start gap-2.5">
+                    <ShieldCheck className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+                    <div className="space-y-0.5">
+                      <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Unverified Run Artifact</h4>
+                      <p className="text-slate-500 text-[10px] leading-relaxed">
+                        No cryptographic signature or verification certificate registered.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
 
                 <div className="p-3 bg-slate-950/60 border border-slate-850 rounded-lg space-y-2">
                   <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Ledger Evidence</span>

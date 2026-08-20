@@ -226,9 +226,16 @@ class RemoteErrorBoundary extends React.Component<
 
 /**
  * Generic Runtime Micro-Frontend Remote Loader:
- * Loads dynamic ESM components on demand behind a signed origin and integrity verification policy.
+ * Loads dynamic ESM components on demand behind a signed origin and cryptographic SRI verification policy.
  */
 export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: string }> = ({ entryUrl, sriHash }) => {
+  const [loadingState, setLoadingState] = useState<{
+    status: 'idle' | 'verifying' | 'ready' | 'untrusted_origin' | 'sri_failed' | 'load_error';
+    Component?: React.ComponentType<any>;
+    errorMessage?: string;
+    computedDigest?: string;
+  }>({ status: 'idle' });
+
   const isTrustedOrigin = useMemo(() => {
     try {
       if (entryUrl.startsWith('/') || entryUrl.startsWith('./')) return true;
@@ -243,43 +250,164 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
     }
   }, [entryUrl]);
 
-  const Component = useMemo(() => {
-    if (!isTrustedOrigin) {
-      return () => (
-        <div className="flex h-full min-h-[400px] flex-col items-center justify-center p-8 text-center">
-          <div className="p-6 bg-red-500/10 border border-red-500/20 rounded-2xl max-w-lg shadow-xl backdrop-blur">
-            <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-red-400" />
-            <h3 className="font-bold text-base text-red-300">Untrusted Extension Origin Blocked</h3>
-            <p className="text-xs text-slate-400 mt-2 font-mono break-all bg-slate-950/60 p-2.5 rounded-lg border border-slate-900">
-              {entryUrl}
-            </p>
-            <p className="text-[11px] text-red-400/80 mt-2">
-              Module origin is outside the trusted domain policy and was blocked by Zero-Trust security rules.
-            </p>
-          </div>
-        </div>
-      );
+  useEffect(() => {
+    let active = true;
+    let blobUrlToRevoke: string | null = null;
+
+    async function loadAndVerifyModule() {
+      if (!isTrustedOrigin) {
+        if (active) setLoadingState({ status: 'untrusted_origin' });
+        return;
+      }
+
+      try {
+        if (active) setLoadingState({ status: 'verifying' });
+
+        // If SRI hash is provided, enforce byte-level integrity verification
+        if (sriHash) {
+          const res = await fetch(entryUrl);
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status}: Failed to fetch remote module.`);
+          }
+          const buffer = await res.arrayBuffer();
+
+          // Determine hash algorithm (sha256, sha384, sha512)
+          let algo = 'SHA-384';
+          let expectedBase64 = sriHash;
+          if (sriHash.startsWith('sha256-')) {
+            algo = 'SHA-256';
+            expectedBase64 = sriHash.replace('sha256-', '');
+          } else if (sriHash.startsWith('sha384-')) {
+            algo = 'SHA-384';
+            expectedBase64 = sriHash.replace('sha384-', '');
+          } else if (sriHash.startsWith('sha512-')) {
+            algo = 'SHA-512';
+            expectedBase64 = sriHash.replace('sha512-', '');
+          }
+
+          const digestBuffer = await window.crypto.subtle.digest(algo, buffer);
+          const computedBase64 = btoa(String.fromCharCode(...new Uint8Array(digestBuffer)));
+
+          if (computedBase64 !== expectedBase64 && !sriHash.includes(computedBase64)) {
+            const computedSRI = `${algo.toLowerCase().replace('-', '')}-${computedBase64}`;
+            console.error(`[ZeroTrust SRI] Digest mismatch for ${entryUrl}. Expected: ${sriHash}, Computed: ${computedSRI}`);
+            if (active) {
+              setLoadingState({
+                status: 'sri_failed',
+                errorMessage: `Digest mismatch: expected ${sriHash}, got ${computedSRI}`,
+                computedDigest: computedSRI,
+              });
+            }
+            return;
+          }
+
+          // Integrity validated: instantiate via ephemeral Blob URL
+          const blob = new Blob([buffer], { type: 'text/javascript' });
+          blobUrlToRevoke = URL.createObjectURL(blob);
+          const mod = await import(/* @vite-ignore */ blobUrlToRevoke);
+          const ResolvedComp = mod.default || mod[Object.keys(mod)[0]] || mod;
+          if (active) setLoadingState({ status: 'ready', Component: ResolvedComp });
+        } else {
+          // Direct dynamic ESM import for local/trusted origin without SRI pin
+          const mod = await import(/* @vite-ignore */ entryUrl);
+          const ResolvedComp = mod.default || mod[Object.keys(mod)[0]] || mod;
+          if (active) setLoadingState({ status: 'ready', Component: ResolvedComp });
+        }
+      } catch (err: any) {
+        console.error(`[ZeroTrust Loader] Error mounting module ${entryUrl}:`, err);
+        if (active) {
+          setLoadingState({
+            status: 'load_error',
+            errorMessage: err?.message || 'Module evaluation failed.',
+          });
+        }
+      }
     }
-    return React.lazy(() => import(/* @vite-ignore */ entryUrl));
-  }, [entryUrl, isTrustedOrigin]);
+
+    loadAndVerifyModule();
+
+    return () => {
+      active = false;
+      if (blobUrlToRevoke) {
+        URL.revokeObjectURL(blobUrlToRevoke);
+      }
+    };
+  }, [entryUrl, sriHash, isTrustedOrigin]);
+
+  if (loadingState.status === 'untrusted_origin') {
+    return (
+      <div className="flex h-full min-h-[400px] flex-col items-center justify-center p-8 text-center">
+        <div className="p-6 bg-red-500/10 border border-red-500/20 rounded-2xl max-w-lg shadow-xl backdrop-blur">
+          <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-red-400" />
+          <h3 className="font-bold text-base text-red-300">Untrusted Extension Origin Blocked</h3>
+          <p className="text-xs text-slate-400 mt-2 font-mono break-all bg-slate-950/60 p-2.5 rounded-lg border border-slate-900">
+            {entryUrl}
+          </p>
+          <p className="text-[11px] text-red-400/80 mt-2">
+            Module origin is outside the trusted domain policy and was blocked by Zero-Trust security rules.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (loadingState.status === 'sri_failed') {
+    return (
+      <div className="flex h-full min-h-[400px] flex-col items-center justify-center p-8 text-center">
+        <div className="p-6 bg-red-500/10 border border-red-500/30 rounded-2xl max-w-lg shadow-xl backdrop-blur">
+          <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-red-400" />
+          <h3 className="font-bold text-base text-red-300">Subresource Integrity (SRI) Violation</h3>
+          <p className="text-xs text-slate-400 mt-2 font-mono break-all bg-slate-950/60 p-2.5 rounded-lg border border-slate-900">
+            {entryUrl}
+          </p>
+          <div className="mt-3 text-left space-y-1 bg-slate-950/80 p-3 rounded-lg border border-red-500/20 font-mono text-[10px]">
+            <div className="text-red-400">Expected: {sriHash}</div>
+            <div className="text-amber-400">Actual: {loadingState.computedDigest}</div>
+          </div>
+          <p className="text-[11px] text-red-400/80 mt-3">
+            Cryptographic integrity mismatch detected. Execution blocked to prevent tamper attacks.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (loadingState.status === 'load_error') {
+    return (
+      <div className="flex h-full min-h-[400px] flex-col items-center justify-center p-8 text-center">
+        <div className="p-6 bg-red-500/10 border border-red-500/20 rounded-2xl max-w-lg shadow-xl backdrop-blur">
+          <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-red-400" />
+          <h3 className="font-bold text-base text-red-300">Failed to Load Extension Module</h3>
+          <p className="text-xs text-slate-400 mt-2 font-mono break-all bg-slate-950/60 p-2.5 rounded-lg border border-slate-900">
+            {entryUrl}
+          </p>
+          <p className="text-[11px] text-red-400/80 mt-2">{loadingState.errorMessage}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (loadingState.status === 'ready' && loadingState.Component) {
+    const Component = loadingState.Component;
+    return (
+      <RemoteErrorBoundary entryUrl={entryUrl}>
+        <Component />
+      </RemoteErrorBoundary>
+    );
+  }
 
   return (
-    <RemoteErrorBoundary entryUrl={entryUrl}>
-      <React.Suspense
-        fallback={
-          <div className="flex h-full min-h-[400px] items-center justify-center p-8">
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-              <span className="text-xs font-mono text-slate-400">Loading module...</span>
-            </div>
-          </div>
-        }
-      >
-        <Component />
-      </React.Suspense>
-    </RemoteErrorBoundary>
+    <div className="flex h-full min-h-[400px] items-center justify-center p-8">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+        <span className="text-xs font-mono text-slate-400">
+          {sriHash ? 'Verifying cryptographic subresource integrity...' : 'Loading module...'}
+        </span>
+      </div>
+    </div>
   );
 };
+
 
 const JobTray: React.FC = () => {
   const [jobId, setJobId] = useState<string | null>(null);
@@ -549,14 +677,14 @@ const ConsoleLayout: React.FC = () => {
         <div className="h-14 border-b border-slate-900 flex items-center justify-between px-3">
           {sidebarCollapsed ? (
             <img
-              src="/v2/favicon.png"
+              src="/favicon.png"
               alt="AgentV"
               className="w-8 h-8 rounded-lg object-contain"
             />
           ) : (
             <div className="flex items-center gap-2 min-w-0">
               <img
-                src="/v2/logo-premium.png"
+                src="/logo-premium.png"
                 alt="AgentV Console"
                 className="h-8 w-auto object-contain rounded"
               />
@@ -822,19 +950,32 @@ function AppRoutes() {
           <Route
             key={item.path}
             path={item.path.startsWith('/') ? item.path : `/${item.path}`}
-            element={<RemoteComponentLoader entryUrl={item.remoteEntry} />}
+            element={
+              <RemoteComponentLoader
+                entryUrl={item.remoteEntry}
+                sriHash={item.sriHash || item.integrity || item.sri}
+              />
+            }
           />
         ))}
+
       </Route>
     </Routes>
   );
 }
 
+const getConsoleBasename = () => {
+  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/v2')) {
+    return '/v2';
+  }
+  return '';
+};
+
 export function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <RBACProvider>
-        <BrowserRouter basename="/v2">
+        <BrowserRouter basename={getConsoleBasename()}>
           <AppRoutes />
         </BrowserRouter>
       </RBACProvider>
@@ -843,3 +984,4 @@ export function App() {
 }
 
 export default App;
+

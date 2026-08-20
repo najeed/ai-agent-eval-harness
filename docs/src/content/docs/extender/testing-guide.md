@@ -24,7 +24,7 @@ tests/
 ├── security/                   # Jailbreaks, path traversals, and PBAC policies
 ├── adapters/                   # LLM/framework adapter verification
 ├── property/                   # Hypothesis property-based fuzzing and invariant testing
-└── ui/                         # Console and Streamlit dashboard testing
+└── contracts/                  # Public contract invariants and wiring tests
 ```
 
 ---

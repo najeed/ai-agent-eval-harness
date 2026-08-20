@@ -30,7 +30,7 @@ export const EvaluationRunner: React.FC = () => {
 
   // Preflight health state
   const [preflightStatus, setPreflightStatus] = useState<'idle' | 'checking' | 'passed' | 'failed'>('idle');
-  const [doctorAudit, setDoctorAudit] = useState<any>(null);
+  const [readinessData, setReadinessData] = useState<any>(null);
   
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -63,11 +63,29 @@ export const EvaluationRunner: React.FC = () => {
   const triggerPreflight = async () => {
     setPreflightStatus('checking');
     try {
-      const res = await fetch('/api/v1/doctor');
+      const res = await fetch('/api/scenarios/readiness', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scenario_id: selectedScenario,
+          agent_config: {
+            agent_name: 'runner_agent',
+            protocol: protocol.toLowerCase(),
+            endpoint: agentUrl,
+          },
+          runtime_config: {
+            max_turns: parseInt(maxTurns) || 10,
+          },
+        }),
+      });
       if (res.ok) {
         const data = await res.json();
-        setDoctorAudit(data);
-        setPreflightStatus('passed');
+        setReadinessData(data);
+        if (data.ready) {
+          setPreflightStatus('passed');
+        } else {
+          setPreflightStatus('failed');
+        }
       } else {
         setPreflightStatus('failed');
       }
@@ -88,20 +106,32 @@ export const EvaluationRunner: React.FC = () => {
     const scenPath = found ? found.path : `scenarios/${selectedScenario}.json`;
 
     try {
-      // POST evaluate scenario
+      // POST evaluate scenario with explicit agent_config and runtime_config
       const res = await fetch('/api/v1/evaluate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           path: scenPath,
           max_turns: parseInt(maxTurns) || 10,
+          protocol: protocol.toLowerCase(),
+          endpoint: agentUrl,
+          agent_config: {
+            agent_name: 'runner_agent',
+            protocol: protocol.toLowerCase(),
+            endpoint: agentUrl,
+            model: 'gpt-4o',
+          },
+          runtime_config: {
+            max_turns: parseInt(maxTurns) || 10,
+          },
           metadata: {
-            protocol,
+            protocol: protocol.toLowerCase(),
             agent_url: agentUrl,
+            endpoint: agentUrl,
             notes: sessionNotes,
-            agent_platform: 'AgentV-v1.6'
-          }
-        })
+            agent_platform: 'AgentV-v2.0',
+          },
+        }),
       });
 
       const data = await res.json();
@@ -118,6 +148,7 @@ export const EvaluationRunner: React.FC = () => {
       setSubmitting(false);
     }
   };
+
 
   return (
     <div className="p-6 space-y-6">
@@ -232,10 +263,10 @@ export const EvaluationRunner: React.FC = () => {
 
         {/* Right Panel: Preflight Audit */}
         <div className="border border-slate-900 bg-slate-950/20 rounded-xl p-6 space-y-4">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">Harness Preflight Diagnostics</h2>
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">Execution Readiness Preflight</h2>
           
           <p className="text-slate-500 text-[11px] leading-relaxed">
-            Verify active world simulator registry status and SQLite logs connector database health before dispatching agent workflows.
+            Validates scenario specification, agent protocol endpoint, required tools, simulator bindings, and cryptographic signing before dispatching.
           </p>
 
           <div className="space-y-3 pt-2">
@@ -245,47 +276,45 @@ export const EvaluationRunner: React.FC = () => {
                 className="w-full py-2 bg-slate-850 hover:bg-slate-800 border border-slate-800 rounded-lg text-slate-300 font-semibold text-xs transition-colors flex items-center justify-center gap-1.5"
               >
                 <Server className="w-4 h-4 text-indigo-400" />
-                <span>Run Doctor Health Audit</span>
+                <span>Verify Execution Readiness</span>
               </button>
             )}
 
             {preflightStatus === 'checking' && (
               <div className="flex justify-center items-center py-4 gap-2 text-xs text-slate-400">
                 <RefreshCw className="w-4 h-4 text-indigo-400 animate-spin" />
-                <span>Running diagnostic probes...</span>
+                <span>Validating execution readiness probes...</span>
               </div>
             )}
 
-            {preflightStatus === 'passed' && doctorAudit && (
+            {preflightStatus === 'passed' && readinessData && (
               <div className="space-y-3">
                 <div className="p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-lg flex items-start gap-2.5">
                   <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                   <div className="space-y-0.5">
-                    <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Audit Passed</h4>
-                    <p className="text-slate-400 text-[10px] leading-relaxed">Harness engine is active and ready.</p>
+                    <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Ready to Evaluate</h4>
+                    <p className="text-slate-400 text-[10px] leading-relaxed">All execution readiness gates passed.</p>
                   </div>
                 </div>
                 
                 <div className="space-y-1.5 text-xs">
-                  <div className="flex justify-between border-b border-slate-900/60 pb-1.5">
-                    <span className="text-slate-500">Simulators Loaded</span>
-                    <span className="font-semibold text-slate-300">{doctorAudit.simulator_count} Active</span>
-                  </div>
-                  <div className="flex justify-between border-b border-slate-900/60 pb-1.5">
-                    <span className="text-slate-500">Plugins Loaded</span>
-                    <span className="font-semibold text-slate-300">{doctorAudit.plugins_loaded ? 'Yes' : 'No'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Sandbox Target PID</span>
-                    <span className="font-semibold text-slate-300 font-mono">{doctorAudit.pid}</span>
-                  </div>
+                  {(readinessData.checks || []).map((chk: any, idx: number) => (
+                    <div key={idx} className="flex justify-between border-b border-slate-900/60 pb-1.5">
+                      <span className="text-slate-400 font-medium">{chk.name}</span>
+                      <span className={`font-mono text-[10px] font-bold ${
+                        chk.status === 'PASSED' ? 'text-emerald-400' : 'text-amber-400'
+                      }`}>
+                        {chk.status}
+                      </span>
+                    </div>
+                  ))}
                 </div>
 
                 <button
                   onClick={triggerPreflight}
                   className="w-full py-1.5 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-slate-300 rounded text-xs transition-colors"
                 >
-                  Re-Probe Systems
+                  Re-Validate Readiness
                 </button>
               </div>
             )}
@@ -295,20 +324,23 @@ export const EvaluationRunner: React.FC = () => {
                 <div className="p-3 bg-red-500/5 border border-red-500/20 rounded-lg flex items-start gap-2.5">
                   <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
                   <div className="space-y-0.5">
-                    <h4 className="text-xs font-bold text-red-400 uppercase tracking-wider">Audit Failed</h4>
-                    <p className="text-slate-400 text-[10px] leading-relaxed">Could not reach the Flask doctor API.</p>
+                    <h4 className="text-xs font-bold text-red-400 uppercase tracking-wider">Readiness Check Failed</h4>
+                    <p className="text-slate-400 text-[10px] leading-relaxed">
+                      {readinessData?.checks?.find((c: any) => c.status === 'FAILED')?.message || 'One or more execution readiness probes failed.'}
+                    </p>
                   </div>
                 </div>
                 <button
                   onClick={triggerPreflight}
                   className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-xs font-bold transition-colors"
                 >
-                  Retry Probe
+                  Retry Readiness Probes
                 </button>
               </div>
             )}
           </div>
         </div>
+
       </div>
     </div>
   );

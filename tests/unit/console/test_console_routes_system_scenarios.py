@@ -20,7 +20,7 @@ def console_jail(request):
     tmp_root = Path(tempfile.gettempdir()) / f"aes_console_sys_jail_{worker_id}"
     root = tmp_root / "root"
     runs = root / "runs"
-    docs = root / "docs-old"
+    docs = root / "docs-v1-deprecated-reference"
 
     if tmp_root.exists():
         rmtree_resilient(tmp_root)

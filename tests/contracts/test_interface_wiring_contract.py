@@ -739,3 +739,39 @@ def test_inprocess_backend_passes_dependencies_to_runner_callable():
     assert res["status"] == "success"
     assert captured_kwargs.get("policy_evaluator") is mock_policy
     assert captured_kwargs.get("execution_backend") is backend
+
+
+def test_agentv_runtime_metadata_and_exports():
+    """
+    Contract Test: Asserts agentv_runtime module exports, authoritative contract
+    version metadata, and subclass inheritance hierarchies across all public extension families.
+    """
+    import agentv_runtime
+    import agentv_runtime.interfaces
+    import agentv_runtime.reference
+    import agentv_runtime.session_components
+    from eval_runner import config
+
+    assert agentv_runtime.__version__ == config.VERSION
+    assert agentv_runtime.__runtime_api_version__ == "2.0"
+    assert agentv_runtime.__plugin_api_version__ == "1.0"
+    assert agentv_runtime.__config_schema_version__ == "1.0"
+    assert agentv_runtime.__aes_schema_version__ == "1.4"
+    assert issubclass(
+        agentv_runtime.reference.InProcessExecutionBackend,
+        agentv_runtime.interfaces.ExecutionBackend,
+    )
+    assert issubclass(
+        agentv_runtime.reference.SQLiteCheckpointStore, agentv_runtime.interfaces.CheckpointStore
+    )
+    assert issubclass(
+        agentv_runtime.reference.LocalFileArtifactStore, agentv_runtime.interfaces.ArtifactStore
+    )
+    assert issubclass(
+        agentv_runtime.reference.BasicFieldPolicyEvaluator,
+        agentv_runtime.interfaces.PolicyEvaluator,
+    )
+    assert agentv_runtime.session_components.TurnStateManager is not None
+    assert agentv_runtime.session_components.ToolExecutionCoordinator is not None
+    assert agentv_runtime.session_components.SessionCheckpointManager is not None
+    assert agentv_runtime.session_components.SessionApprovalManager is not None

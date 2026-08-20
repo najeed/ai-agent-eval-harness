@@ -15,7 +15,7 @@ DOC_FILES = [
     PROJECT_ROOT / "README.md",
     *list((PROJECT_ROOT / "docs" / "src" / "content" / "docs").rglob("*.md")),
     *list((PROJECT_ROOT / "docs" / "src" / "content" / "docs").rglob("*.mdx")),
-    *list((PROJECT_ROOT / "docs-old").rglob("*.md")),
+    *list((PROJECT_ROOT / "docs-v1-deprecated-reference").rglob("*.md")),
 ]
 
 # Regex pattern matching code blocks referencing project root directories

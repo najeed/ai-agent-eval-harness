@@ -184,7 +184,7 @@ def test_debugger_historical_exception(client, tmp_path):
 
 # --- Docs Branches ---
 def test_docs_github_ignore(client, tmp_path):
-    docs_dir = tmp_path / "docs-old"
+    docs_dir = tmp_path / "docs-v1-deprecated-reference"
     docs_dir.mkdir()
     (docs_dir / ".github").mkdir()
     (docs_dir / ".github" / "hidden.md").write_text("hidden", encoding="utf-8")
@@ -201,7 +201,7 @@ def test_docs_github_ignore(client, tmp_path):
 
 def test_docs_read_success(client, tmp_path):
     # Setup isolated docs
-    docs_dir = tmp_path / "docs-old"
+    docs_dir = tmp_path / "docs-v1-deprecated-reference"
     docs_dir.mkdir()
     target_doc = docs_dir / "some.md"
     target_doc.write_text("hello doc", encoding="utf-8")
@@ -215,7 +215,7 @@ def test_docs_read_success(client, tmp_path):
 def test_read_doc_errors(client, tmp_path):
     """Test read_doc error handling."""
     # Setup isolated docs dir
-    docs_dir = tmp_path / "docs-old"
+    docs_dir = tmp_path / "docs-v1-deprecated-reference"
     docs_dir.mkdir()
 
     with patch("eval_runner.console.routes.config.PROJECT_ROOT", tmp_path):

@@ -49,7 +49,7 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **cyclecore-pq** | 0.3.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **idna** | 3.19 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **weasyprint** | 69.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **reportlab** | 5.0.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **reportlab** | 5.0.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 
 ## 3. Obligations & Compliance Steps
 To remain compliant with these licenses, the following steps are handled automatically by this repository:

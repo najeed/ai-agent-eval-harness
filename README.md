@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/najeed/ai-agent-eval-harness/actions)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Works with AgentV](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs-old/assets/badges/works-with-agentv.svg)](https://github.com/najeed/ai-agent-eval-harness)
+[![Works with AgentV](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs-v1-deprecated-reference/assets/badges/works-with-agentv.svg)](https://github.com/najeed/ai-agent-eval-harness)
 
 ## The Reliability Gap: Why AgentV Exists
 
@@ -49,9 +49,10 @@ graph TD
 | **License** | Apache License 2.0 |
 | **Status** | 🟢 Production-Ready (NIST AI-100-1 Aligned) |
 | **Version** | v2.0.0 (August 2026 Release) |
-| **Trust Model** | [Behavioral DNA & VC v3.0.0](docs-old/architecture.md) |
-| **Architecture** | [Identity-Centric Core](docs-old/architecture.md) |
-| **Quick Links** | [Quickstart](#zero-key-quickstart-get-running-now) • [AES v1.4 Spec](docs-old/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
+| **Trust Model** | [Behavioral DNA & VC v3.0.0](docs/src/content/docs/spec/trust_v3.md) |
+| **Architecture** | [Identity-Centric Core](docs/src/content/docs/builder/architecture.md) |
+| **Quick Links** | [Quickstart](#zero-key-quickstart-get-running-now) • [AES v1.4 Spec](docs/src/content/docs/spec/aes_schema.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
+
 
 ### The DNA of Agentic Reliability
 - 🌍 **Environmental DNA**: Immutable snapshots of the execution environment—registry state, tool versions, and resource availability to ensure deterministic state parity.
@@ -130,7 +131,8 @@ Embark on a **4-Phase, 18-Milestone Hands-on Curriculum** designed to take you f
 > **What it does:** Spawns a deterministic in-process mock agent, executes a telecom troubleshooting evaluation, and generates a rich HTML report in `reports/`. 100% offline-ready.
 
 > [!TIP]
-> **Prefer a visual experience?** After running the quickstart, launch the **Integrated Visual Suite** to replay the trace interactively: `agentv console`. This includes the **Visual AES Builder** for zero-code scenario design. See the [User Manual](docs-old/guides/help/02_USER_MANUAL.md#visual-suite) for details.
+> **Prefer a visual experience?** After running the quickstart, launch the **Integrated Visual Suite** to replay the trace interactively: `agentv console`. This includes the **Visual AES Builder** for zero-code scenario design. See the [Developer Guide](docs/src/content/docs/builder/developer-guide.md) for details.
+
 
 ## Harness Structure
 The harness is organized into the following key components:
@@ -196,7 +198,8 @@ Comprehensive coverage for **50+ verticals** including:
 - **Interactive Complexity**: Multi-turn flows involving conflicting human-in-the-loop (HITL) requirements.
 - **Simulations**: High-fidelity sector labs (e.g., Bank, EHR/HL7, CRM) for testing agents in realistic, isolated environments.
 
-*All scenarios are 100% compliant with the [AES v1.4 Specification](docs-old/guides/04_AES_SPECIFICATION.md).*
+*All scenarios are 100% compliant with the [AES v1.4 Specification](docs/src/content/docs/spec/aes_schema.md).*
+
 
 ### Manual Evaluation (Running the Sample Agent)
 
@@ -276,7 +279,8 @@ The harness supports multiple ways to talk to your agent. Use the `--protocol` f
 - **`aes add-standard`**: Expand the global industrial registry with new standard definitions (ID, Name, Industry, Description).
 - **`init --standard <id>`**: Rapidly scaffold a dedicated, industry-compliant evaluation environment for a specific standard (e.g., `init --standard ISO_20022`).
 
-and more (check [CLI Reference](./docs-old/cli_reference.md) for complete list) ...
+and more (check [CLI Reference](docs/src/content/docs/evaluator/cli-reference.md) for complete list) ...
+
 
 #### Premium UX Tools
 - **Scenario Editor**: A visual interface for constructing real-world AES logic; saves production-ready JSON directly to the catalog.
@@ -368,9 +372,8 @@ The platform is built with a **Secure-by-Design** philosophy, complying with ent
 - **Secure Handoff Architecture**: JWT-based authentication for between the core console and enterprise plugins.
 - **Tool Sandboxing**: Path traversal protection and shell-character neutralization for all tool executions.
 - **WORM Logs**: Write-Once-Read-Many immutable flight recorder traces (`run.jsonl`).
-- **Audit Controls**: Defense-in-depth security controls (DoS caps, Fork Bomb prevention, RCE guards, and jail isolation).
+- **Audit Controls**: Defense-in-depth security controls (DoS caps, Fork Bomb prevention, RCE guards, and jail isolation). See the [Security Guide](docs/src/content/docs/auditor/security.md) for generation and configuration instructions.
 - **Mandatory Authentication**: Protection of all console and bridge routes via the `DASHBOARD_API_KEY`.
-See the [Security and Authentication Guide](docs-old/guides/07_SECURITY_AND_AUTHENTICATION.md) for generation and configuration instructions.
 
 ### 🗄️ Forensic Storage & Vaulting
 AgentV employs a **Strict Industrial Vault** methodology to protect run integrity:
@@ -400,13 +403,12 @@ For researchers needing full isolation or enterprise-grade local dashboards, we 
 ```bash
 docker compose up --build
 ```
-This orchestrates the Flask backend, the React frontend, and the Streamlit analytics dashboard in a secure, isolated network.
+This orchestrates the Flask backend, the React frontend, and the execution engine in a secure, isolated network.
 
 ### Running Lab Mode without Docker
-If you cannot install Docker, run these 3 commands in separate terminals:
+If you cannot install Docker, run these 2 commands in separate terminals:
 1. `python sample_agent/agent_app.py`
 2. `agentv console`
-3. `streamlit run dashboard/app.py` (requires `pip install streamlit`)
 
 ## How to Contribute
 
@@ -425,8 +427,6 @@ Here are ways to get involved:
 - 🧪 Add test scenarios
 - ⚖️ **Zero-CLA**: We use the DCO (Developer Certificate of Origin). Just `git commit -s`.
 - 🏭 [Contribute new industries](https://github.com/najeed/ai-agent-eval-harness/issues/new?template=industry_request.md)
-- 🎯 [Create evaluation scenarios](https://github.com/najeed/ai-agent-eval-harness/issues/new?template=scenario_contribution.md)
-
 ### Contributors
 Thanks to all our contributors! 🙌
 
@@ -475,7 +475,7 @@ You can use the Shields.io service to generate a consistent badge for your proje
 Alternatively, link directly to our high-fidelity SVG asset:
 
 ```markdown
-[![Works with AgentV](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs-old/assets/badges/works-with-agentv.svg)](https://github.com/najeed/ai-agent-eval-harness)
+[![Works with AgentV](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs-v1-deprecated-reference/assets/badges/works-with-agentv.svg)](https://github.com/najeed/ai-agent-eval-harness)
 ```
 
 ---
