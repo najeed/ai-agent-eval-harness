@@ -3,15 +3,15 @@ title: Anthropic Claude
 description: Integration guide for Anthropic Claude agents and models.
 ---
 
-# Anthropic Claude Integration (April 2026)
+# Anthropic Claude Integration (August 2026)
 
-AgentV provides first-class support for the Anthropic Claude ecosystem, including the latest **Claude 4.6** models.
+AgentV provides first-class support for the Anthropic Claude ecosystem, including the latest **Claude Opus 5** models.
 
 ## 🚀 Native Protocol
 Use the `claude` protocol to connect directly to the Anthropic API.
 
 ```bash
-agentv run --path scenarios/loan_scenario.json --protocol claude --agent claude://claude-4-6-sonnet
+agentv run --path scenarios/loan_scenario.json --protocol claude --agent claude://claude-opus-5
 ```
 
 ### Configuration
@@ -22,10 +22,9 @@ ANTHROPIC_API_KEY=sk-ant-xxx
 ```
 
 ## 🛠 Model Support
-As of April 2026, the following models are prioritized in the industrial baseline:
-- `Claude-4.6-Sonnet` (Standard)
-- `claude-4-6-opus` (High-Reasoning)
-- `claude-4-5-haiku` (Fast)
+As of August 2026, the following models are prioritized in the industrial baseline:
+- `claude-opus-5` (Standard Frontier)
+
 
 ## 🏗 Framework Integration
 If you are using Claude with a framework like **Claude Code** or **LangGraph**, see the respective guides:

@@ -3,7 +3,8 @@
 Learn how to conduct multi-agent benchmarking and generate professional leaderboards using the **Publication Suite**.
 
 ## 🎯 Objectives
-- Benchmark multiple agents (e.g., Gemini vs. GPT-5.4-mini) using **Model Wars**.
+- Benchmark multiple agents (e.g., Gemini vs. GPT-5.6) using **Model Wars**.
+
 - Aggregate results into a unified leaderboard.
 - Generate professional reports for executive review.
 

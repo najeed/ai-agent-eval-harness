@@ -1,6 +1,7 @@
 ---
 title: Industrial Core Architecture
-description: Deep dive into the AgentV v1.6.0 internal state machine, guardrails, and forensic engine.
+description: Deep dive into the AgentV v2.0.0 internal state machine, guardrails, and forensic engine.
+
 ---
 
 The Scholar's guide to the AgentV internal architecture provides a detailed look at the mechanisms that ensure deterministic, high-performance evaluation in industrial environments.

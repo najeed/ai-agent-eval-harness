@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] - 2026-08-20
+## [2.0.0] - 2026-08-21
 
 ### Added
 * **3-Pillar Enterprise Verification Information Architecture**: Recomposed the Visual Console navigation hierarchy around three first-class objects: **Scenarios** (`/scenarios`, `/scenarios/compose`, `/suites`), **Runs** (`/runs`, `/reports`, `/debugger`, `/triage`), and **Evidence** (`/evidence/packages`, `/trust`, `/compliance`, `/publish`).
@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * **Two-Tier Status Model & Decision-First Reporting**: Enforced strict separation between process execution status (`RUNNING`, `EXECUTION_COMPLETED`, `EXECUTION_FAILED`, `STALLED`) and verified business outcomes (`VERIFIED`, `NOT_VERIFIED`, `POLICY_BREACH`, `UNVERIFIED`), prioritizing verified decision cards in the GUI run drawer.
 * **Multi-Tenant ExecutionManifest Contract**: Expanded `ExecutionManifest` in `agentv_runtime.manifest` to bind `tenant_id` and `workspace_id` into canonical JSON serialization and deterministic SHA3-256 manifest ID calculation.
 * **Run-Scoped Thread-Safe Visual Debugger Store**: Refactored `DebuggerStateStore` in `eval_runner/console/routes/system.py` to isolate runtime telemetry strictly per `(tenant_id, workspace_id, run_id)` with mutex synchronization and historical trace rehydration from vault logs.
-* **Zero-Trust Micro-Frontend Extension Loader with Cryptographic SRI**: Upgraded `RemoteComponentLoader` to enforce byte-level Subresource Integrity (`SHA-256`, `SHA-384`, `SHA-512`) using `window.crypto.subtle.digest`, ephemeral blob module instantiation, and strict origin policy boundaries.
+* **Zero-Trust Micro-Frontend Extension Loader with Cryptographic SRI**: Upgraded `RemoteComponentLoader` to enforce byte-level Subresource Integrity (FIPS 202 `SHA3-256`, `SHA3-384`, `SHA3-512` and standard W3C SRI digests) using native Keccak-p sponge verification and WebCrypto fallback, ephemeral blob module instantiation, and strict origin policy boundaries.
 * **Fail-Closed Execution Readiness & Preflight Probes**: Wired `/api/scenarios/readiness` to perform live validation of scenario schemas, agent endpoint reachability, and cryptographic sealers without synthetic bypasses.
 * **Authoritative Cryptographic Badging in Runs & Reports**: Wired run detail drawer to query `/api/v1/verify/<run_id>`, rendering authentic cryptographic verification badges based on mathematical proofs.
 * **Lossless Canonical Scenario Composer**: Visual scenario composer operates as a non-destructive patcher over the canonical AES JSON tree, eliminating semantic loss of custom node parameters and edge conditions.

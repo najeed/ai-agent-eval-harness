@@ -25,10 +25,9 @@ class LLMManager:
 
         # 2026 Tier 1 Economic Mapping (Cents per 1k tokens)
         self.pricing = {
-            "gemini-2.5-pro": {"in": 0.35, "out": 1.05},
-            "gemini-2.5-flash": {"in": 0.0075, "out": 0.03},
-            "gpt-5.4-mini": {"in": 0.015, "out": 0.06},
-            "claude-4.6-sonnet": {"in": 0.30, "out": 1.50},
+            "gemini-3.7-flash": {"in": 0.0075, "out": 0.03},
+            "gpt-5.6": {"in": 0.015, "out": 0.06},
+            "claude-opus-5": {"in": 0.30, "out": 1.50},
         }
 
     async def extract_structured_data(
@@ -219,7 +218,7 @@ class LLMManager:
         self, content: str, schema: dict[str, Any], api_key: str
     ) -> dict[str, Any] | None:
         url = "https://api.openai.com/v1/chat/completions"
-        model = self.preferred_model or "gpt-5.4-mini"
+        model = self.preferred_model or "gpt-5.6"
         prompt = self._build_prompt(content, schema)
 
         async with aiohttp.ClientSession() as session:
@@ -242,7 +241,7 @@ class LLMManager:
     async def _call_gemini(
         self, content: str, schema: dict[str, Any], api_key: str
     ) -> dict[str, Any] | None:
-        model = self.preferred_model or "gemini-2.5-flash"
+        model = self.preferred_model or "gemini-3.7-flash"
         url = (
             "https://generativelanguage.googleapis.com/v1/models/"
             f"{model}:generateContent?key={api_key}"
@@ -268,7 +267,8 @@ class LLMManager:
         self, content: str, schema: dict[str, Any], api_key: str
     ) -> dict[str, Any] | None:
         url = "https://api.anthropic.com/v1/messages"
-        model = self.preferred_model or "claude-4.6-sonnet"
+        model = self.preferred_model or "claude-opus-5"
+
         prompt = self._build_prompt(content, schema)
 
         async with aiohttp.ClientSession() as session:

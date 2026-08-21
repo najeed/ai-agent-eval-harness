@@ -284,3 +284,88 @@ async def test_handle_certify_provenance_and_error_handling():
             "run_id": "run_cert",
         }
         assert await evaluation.handle_certify(args) == 0
+
+
+@pytest.mark.asyncio
+async def test_prepare_agent_env_endpoint_and_model():
+    """Verify prepare_agent_env populates environment for local and socket protocols."""
+    args_local = MagicMock(
+        protocol="local", agent_cmd="python my_agent.py", agent_name="local_agent", agent="local"
+    )
+    meta_local = evaluation.prepare_agent_env(args_local)
+    assert meta_local["protocol"] == "local"
+    assert os.environ.get("AGENT_LOCAL_CMD") == "python my_agent.py"
+
+    args_sock = MagicMock(
+        protocol="socket", agent_socket="127.0.0.1:9999", agent_name="sock_agent", agent="sock"
+    )
+    meta_sock = evaluation.prepare_agent_env(args_sock)
+    assert meta_sock["protocol"] == "socket"
+    assert os.environ.get("AGENT_SOCKET_ADDR") == "127.0.0.1:9999"
+
+
+@pytest.mark.asyncio
+async def test_handle_run_and_batch_non_dict_vars_and_non_int_attempts():
+    """Verify handle_run and handle_evaluate handle non-vars args and string attempts gracefully."""
+
+    class NoVarsArgs:
+        scenario = "test_scen"
+        scenarios = ["test_scen"]
+        path = "test_scen"
+        pattern = "*.json"
+        attempts = "invalid_non_int"
+        seed = None
+        run_log_dir = None
+        per_run_logs = None
+        master_log = None
+        protocol = "http"
+        agent = None
+        agent_name = None
+        plugins = None
+        plugin = []
+        format = "json"
+
+    with (
+        patch("eval_runner.loader.load_scenario", return_value={"id": "test_scen"}),
+        patch("eval_runner.loader.load_dataset", return_value=[{"id": "test_scen"}]),
+        patch("eval_runner.engine.run_evaluation", return_value=None),
+    ):
+        assert await evaluation.handle_run(NoVarsArgs()) == 0
+        assert await evaluation.handle_evaluate(NoVarsArgs()) == 0
+
+
+@pytest.mark.asyncio
+async def test_handle_gate_trace_missing_and_exception_handling():
+    """
+    Verify handle_gate handles missing trace file, vc_path not exists, and unexpected exceptions.
+    """
+
+    # 1. vc_path does not exist
+    with (
+        patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=True),
+        patch("pathlib.Path.exists", return_value=False),
+    ):
+        assert await evaluation.handle_gate(MagicMock(run_id="run_missing_vc")) == 1
+
+    # 2. trace file does not exist
+    def exists_vc_only(self):
+        p_str = str(self)
+        if "_vc.json" in p_str or "run_manifest.json" in p_str:
+            return True
+        return False
+
+    with (
+        patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=True),
+        patch("pathlib.Path.exists", exists_vc_only),
+        patch("builtins.open", MagicMock()),
+        patch("json.load", return_value={"trace_file": "missing_run.jsonl"}),
+    ):
+        assert await evaluation.handle_gate(MagicMock(run_id="run_missing_trace")) == 1
+
+    # 3. unexpected exception during gating
+    with (
+        patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=True),
+        patch("pathlib.Path.exists", exists_vc_only),
+        patch("builtins.open", side_effect=RuntimeError("unexpected read error")),
+    ):
+        assert await evaluation.handle_gate(MagicMock(run_id="run_err")) == 1

@@ -435,3 +435,64 @@ def test_normalize_heuristic_non_final_emits_debug_event():
         mock_emit.assert_called_once()
         _, payload = mock_emit.call_args[0]
         assert "Agnostic Mapping" in payload["message"]
+
+
+@pytest.mark.asyncio
+async def test_session_manager_stale_close_and_loop_mismatch():
+    """
+    Verify SessionManager properly closes stale session
+    when loop changes or session is replaced.
+    """
+    session1 = await SessionManager.get_session()
+    assert session1 is not None
+
+    # Simulate loop mismatch
+    session1._loop = "different_loop"
+
+    # Next get_session should detect mismatch, close stale, and create new
+    session2 = await SessionManager.get_session()
+    assert session2 is not None
+    assert session2 is not session1
+
+    await SessionManager.close_all()
+
+
+@pytest.mark.asyncio
+async def test_session_manager_connector_coroutine_close_and_exception():
+    """Verify close_all handles coroutine connector.close and exceptions cleanly."""
+
+    class MockAsyncConnector:
+        async def close(self):
+            pass
+
+    mock_sess = MagicMock(closed=False)
+    mock_sess.close = AsyncMock()
+    mock_sess.connector = MockAsyncConnector()
+
+    SessionManager._session = mock_sess
+    await SessionManager.close_all()
+    assert SessionManager._session is None
+
+    # Test exception on connector close
+    class MockFailingConnector:
+        def close(self):
+            raise RuntimeError("close failed")
+
+    mock_sess2 = MagicMock(closed=False)
+    mock_sess2.close = AsyncMock()
+    mock_sess2.connector = MockFailingConnector()
+
+    SessionManager._session = mock_sess2
+    await SessionManager.close_all()
+    assert SessionManager._session is None
+
+
+@pytest.mark.asyncio
+async def test_base_adapter_non_retry_code():
+    """Verify call_with_retry raises on non-retryable status."""
+    adapter = BaseAdapter("test")
+    mock_func = AsyncMock(
+        side_effect=aiohttp.ClientResponseError(request_info=MagicMock(), history=(), status=400)
+    )
+    with pytest.raises(aiohttp.ClientResponseError):
+        await adapter.call_with_retry(mock_func, max_attempts=1)

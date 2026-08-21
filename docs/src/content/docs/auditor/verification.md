@@ -54,9 +54,10 @@ Verify production readiness for frontier models using live API keys.
 
 | Provider | Protocol | Verification Command |
 | :--- | :--- | :--- |
-| **OpenAI** | `openai://` | `agentv run --protocol openai --agent openai://gpt-5.4-mini` |
-| **Anthropic**| `claude://` | `agentv run --protocol claude --agent claude://claude-4.6-sonnet` |
-| **Google** | `gemini://` | `agentv run --protocol gemini --agent gemini://gemini-2.5-flash` |
+| **OpenAI** | `openai://` | `agentv run --protocol openai --agent openai://gpt-5.6` |
+| **Anthropic**| `claude://` | `agentv run --protocol claude --agent claude://claude-opus-5` |
+| **Google** | `gemini://` | `agentv run --protocol gemini --agent gemini://gemini-3.7-flash` |
+| **Ollama Fleet**| `ollama://` | `agentv run --protocol ollama --agent ollama://deepseek-r1:70b` |
 | **xAI** | `grok://` | `agentv run --protocol grok --agent grok://grok-4.20-multi-agent` |
 
 ---

@@ -239,3 +239,137 @@ async def test_session_telemetry_error_branch(base_scenario, tmp_path):
     session = SessionManager("test_run", base_scenario, log_root=tmp_path)
     with patch("psutil.Process", side_effect=Exception("Fatal Tele")):
         session._capture_telemetry()
+
+
+@pytest.mark.asyncio
+async def test_session_turn_number_and_checkpoint_branches(base_scenario, tmp_path):
+    session = SessionManager("test_run", base_scenario, log_root=tmp_path)
+
+    # 1. Turn number when turn_state_manager is None
+    session.turn_state_manager = None
+    session.turn_number = 5
+    assert session.turn_number == 5
+
+    # 2. Restore from empty checkpoint
+    session.checkpoint_manager.load_latest_checkpoint = MagicMock(return_value=None)
+    assert session.restore_from_checkpoint() is False
+
+    # 3. Restore with metadata and session_metadata
+    chk_data = {
+        "turn": "3",
+        "metadata": {"custom_meta": 123},
+        "session_metadata": {"extra_meta": 456},
+    }
+    assert session.restore_from_checkpoint(chk_data) is True
+    assert session.turn_number == 3
+    assert session.session_metadata["custom_meta"] == 123
+    assert session.session_metadata["extra_meta"] == 456
+
+
+@pytest.mark.asyncio
+async def test_session_execute_tasks_cancellation_branch(base_scenario, tmp_path):
+    import threading
+
+    cancel_evt = threading.Event()
+    cancel_evt.set()
+
+    session = SessionManager(
+        "test_run", base_scenario, log_root=tmp_path, cancellation_event=cancel_evt
+    )
+    session.scenario["workflow"] = {
+        "nodes": [{"id": "node_cancel", "task_description": "task"}],
+    }
+
+    mock_sandbox = AsyncMock()
+    mock_sandbox.setup = AsyncMock()
+    mock_sandbox.teardown = AsyncMock()
+
+    with patch("eval_runner.session.ToolSandbox", return_value=mock_sandbox):
+        results = await session.execute_tasks(1)
+        assert results[0]["status"] == "aborted"
+        assert results[0]["message"] == "Execution cancelled"
+
+
+@pytest.mark.asyncio
+async def test_session_hitl_non_interactive_approval_and_rejection(
+    base_scenario, tmp_path, monkeypatch
+):
+    session = SessionManager("test_run", base_scenario, log_root=tmp_path)
+    monkeypatch.setenv("FORCE_HITL_SUSPEND", "1")
+    monkeypatch.delenv("CI", raising=False)
+
+    class MockApproval:
+        def __init__(self, action, response):
+            self.action = action
+            self.response = response
+
+        async def wait(self):
+            pass
+
+    turn_ctx = MagicMock(task_id="task_1")
+
+    # 1. Non-interactive approve
+    with (
+        patch("sys.stdin.isatty", return_value=False),
+        patch.object(
+            session.approval_manager,
+            "request_approval",
+            return_value=MockApproval("approve", "Approved by reviewer"),
+        ),
+    ):
+        res = await session._handle_hitl(1, {"prompt": "Please confirm transfer"}, [], {}, turn_ctx)
+        assert res == "Approved by reviewer"
+
+    # 2. Non-interactive reject
+    with (
+        patch("sys.stdin.isatty", return_value=False),
+        patch.object(
+            session.approval_manager,
+            "request_approval",
+            return_value=MockApproval("reject", "Violates policy"),
+        ),
+    ):
+        with pytest.raises(InterruptedError, match="Human reviewer rejected"):
+            await session._handle_hitl(1, {"prompt": "Please confirm transfer"}, [], {}, turn_ctx)
+
+
+def test_runner_dependency_graph_and_run_scenario():
+    from agentv_runtime.config import ResolvedRuntimeConfig
+    from eval_runner.runner import DefaultRunner, run_scenario
+
+    runner = DefaultRunner()
+    mock_store = MagicMock()
+    mock_resolver = MagicMock()
+    mock_artifact = MagicMock()
+    mock_chk = MagicMock()
+    mock_policy = MagicMock()
+    mock_signer = MagicMock()
+
+    # Test setting dependency graph with dict and ResolvedRuntimeConfig
+    runner.set_dependency_graph(
+        run_store=mock_store,
+        config_resolver=mock_resolver,
+        artifact_store=mock_artifact,
+        checkpoint_store=mock_chk,
+        policy_evaluator=mock_policy,
+        signing_backend=mock_signer,
+        resolved_config={"timeout_seconds": 60},
+    )
+    assert runner.run_store is mock_store
+    assert runner.artifact_store is mock_artifact
+
+    cfg = ResolvedRuntimeConfig(timeout_seconds=90)
+    runner.set_dependency_graph(resolved_config=cfg)
+    assert runner.resolved_config.timeout_seconds == 90
+
+    # Test run_scenario with custom runner having set_dependency_graph
+    with patch.object(runner, "run", return_value=MagicMock()):
+        with patch("asyncio.get_event_loop") as mock_loop:
+            mock_loop.return_value.is_running.return_value = False
+            mock_loop.return_value.run_until_complete.return_value = MagicMock()
+            res = run_scenario(
+                {"id": "scen_test", "workflow": {"nodes": []}},
+                runner=runner,
+                run_store=mock_store,
+            )
+            assert res is not None

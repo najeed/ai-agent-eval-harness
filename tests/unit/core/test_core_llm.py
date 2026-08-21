@@ -174,7 +174,7 @@ async def test_openai_list_models_no_key():
     p = OpenAIProvider(api_key="")
     models = await p.list_models()
     assert len(models) > 0
-    assert models[0]["id"] == "gpt-5.4-pro"
+    assert models[0]["id"] == "gpt-5.6"
 
 
 @pytest.mark.asyncio
@@ -201,7 +201,7 @@ async def test_anthropic_list_models():
     p = AnthropicProvider()
     models = await p.list_models()
     assert len(models) > 0
-    assert models[0]["id"] == "claude-4-6-sonnet"
+    assert models[0]["id"] == "claude-opus-5"
 
 
 @pytest.mark.asyncio

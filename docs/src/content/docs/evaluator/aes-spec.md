@@ -48,7 +48,8 @@ A high-speed parser that recognizes standard enterprise Markdown patterns:
   - **Bullet Metadata**: `Expected Outcome`, `Tools`, and `Criteria`.
 
 ### 2. LLM Synthesis Fallback
-If the structural parser fails to find tasks, the engine automatically triggers an LLM pass (Gemini 2.5 Flash) to synthesize the scenario from the PRD business logic.
+If the structural parser fails to find tasks, the engine automatically triggers an LLM pass (Gemini 3.7 Flash) to synthesize the scenario from the PRD business logic.
+
 
 ```bash
 [SpecParser] No tasks found via search. Synthesizing from rules...

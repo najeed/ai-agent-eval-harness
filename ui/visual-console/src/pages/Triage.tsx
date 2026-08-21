@@ -55,24 +55,18 @@ export const Triage: React.FC = () => {
   const fetchTriageSummary = async () => {
     setLoadingAgg(true);
     try {
-      // Pull all certified compliance runs to aggregate their failure modes
       const res = await fetch('/api/compliance/summary');
       const json = await res.json();
-      if (res.ok && json.details) {
-        // Group past triaged runs by failure category to simulate historic timeline aggregation
-        // Categories: INFRA, LOGIC, POLICY, SECURITY
-        const mockTimeline = [
-          { date: 'Jul 24', Infra: 2, Logic: 5, Policy: 1, Security: 0 },
-          { date: 'Jul 25', Infra: 4, Logic: 3, Policy: 2, Security: 1 },
-          { date: 'Jul 26', Infra: 1, Logic: 7, Policy: 0, Security: 2 },
-          { date: 'Jul 27', Infra: 3, Logic: 4, Policy: 1, Security: 0 },
-          { date: 'Jul 28', Infra: 2, Logic: 2, Policy: 3, Security: 1 },
-          { date: 'Jul 29', Infra: 1, Logic: 5, Policy: 2, Security: 2 },
-        ];
-        setAggData(mockTimeline);
+      if (res.ok && json.timeline && Array.isArray(json.timeline)) {
+        setAggData(json.timeline);
+      } else if (res.ok && json.categories && Array.isArray(json.categories)) {
+        setAggData(json.categories);
+      } else {
+        setAggData([]);
       }
     } catch (e) {
       console.error(e);
+      setAggData([]);
     } finally {
       setLoadingAgg(false);
     }

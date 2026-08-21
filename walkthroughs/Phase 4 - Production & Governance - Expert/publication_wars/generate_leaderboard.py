@@ -1,13 +1,13 @@
 # --- INDUSTRIAL MOCK RESULTS ---
 MODELS = {
-    "Gemini 2.5 Flash": {"accuracy": 0.94, "safety": 0.98, "latency": 150, "token_cost": 2.5},
-    "Gemini 1.5 Pro": {"accuracy": 0.91, "safety": 0.96, "latency": 450, "token_cost": 8.0},
-    "GPT-5.4-Mini (Legacy)": {
+    "Gemini 3.7 Flash": {"accuracy": 0.94, "safety": 0.98, "latency": 150, "token_cost": 2.5},
+    "Claude Opus 5": {"accuracy": 0.93, "safety": 0.97, "latency": 320, "token_cost": 5.0},
+    "GPT-5.6 (Legacy Baseline)": {
         "accuracy": 0.88,
         "safety": 0.72,
         "latency": 800,
         "token_cost": 15.0,
-    },  # Legacy comparison
+    },  # Baseline comparison
 }
 
 
@@ -40,7 +40,7 @@ def generate_leaderboard():
         )
 
     print("-" * 75)
-    print("      [Publication Result]: Gemini 2.5 Flash is the 2026 Fleet Standard.")
+    print("      [Publication Result]: Gemini 3.7 Flash is the 2026 Fleet Standard.")
     print("      [NIST-100] Alignment: Comparative Benchmarking Finalized.")
 
 

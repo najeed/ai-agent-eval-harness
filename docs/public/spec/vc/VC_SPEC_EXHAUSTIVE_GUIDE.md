@@ -95,10 +95,10 @@ Digital certificates are not eternal. The `governance_ttl` (in days) defines the
       "timestamp": "2026-04-12T03:55:00Z"
     },
     {
-      "identity": "agent-loan-gpt-5.4-mini",
+      "identity": "agent-loan-gpt-5.6",
       "role": "Agent",
       "signature": "887a...11bc",
-      "timestamp": "2026-04-12T03:55:05Z"
+      "timestamp": "2026-08-21T03:55:05Z"
     }
   ],
   "governance_ttl": 365

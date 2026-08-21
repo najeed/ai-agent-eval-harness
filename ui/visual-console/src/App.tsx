@@ -61,6 +61,7 @@ export interface NavItem {
   badge?: string;               // Optional badge chip (e.g., "LIVE", "HOT-RELOAD", "FLEET", "APM", "◆ ENT")
   tier?: 'core' | 'enterprise'; // Visual delineation marker
   remoteEntry?: string;         // ESM bundle URL for dynamic micro-frontend mounting
+  sriHash?: string;             // Subresource integrity digest (FIPS 202 SHA3 / WebCrypto SHA-2)
   required_role?: string[];     // Optional RBAC role gating
 }
 
@@ -161,6 +162,7 @@ export function mergeNavManifest(
       badge: rawItem.badge,
       tier: rawItem.tier,
       remoteEntry: rawItem.remoteEntry,
+      sriHash: rawItem.sriHash || rawItem.integrity || rawItem.sri,
       required_role: Array.isArray(rawItem.required_role)
         ? rawItem.required_role
         : undefined,
@@ -243,6 +245,8 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
   const isTrustedOrigin = useMemo(() => {
     try {
       if (entryUrl.startsWith('/') || entryUrl.startsWith('./')) return true;
+      // Cross-origin extensions are allowed if pinned with cryptographic SRI
+      if (sriHash) return true;
       const parsed = new URL(entryUrl, window.location.origin);
       return (
         parsed.hostname === window.location.hostname ||
@@ -252,7 +256,8 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
     } catch {
       return false;
     }
-  }, [entryUrl]);
+  }, [entryUrl, sriHash]);
+
 
   useEffect(() => {
     let active = true;

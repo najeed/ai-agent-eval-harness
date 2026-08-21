@@ -62,9 +62,9 @@ export const Dashboard: React.FC = () => {
         loadedRuns.slice(0, 10).map((r) => ({
           run_id: r.run_id,
           scenario: r.scenario || r.run_id,
-          timestamp: r.timestamp || new Date().toISOString(),
-          status: r.status || 'COMPLETED',
-          verdict: r.has_certificate ? 'VERIFIED' : 'COMPLETED',
+          timestamp: r.timestamp || 'N/A',
+          status: r.execution_status || r.status || 'UNKNOWN',
+          verdict: r.verification_status || (r.has_certificate ? 'VERIFIED' : r.passed === false ? 'NOT_VERIFIED' : 'UNVERIFIED'),
           has_certificate: !!r.has_certificate,
         }))
       );
@@ -88,7 +88,7 @@ export const Dashboard: React.FC = () => {
           path: selectedScenarioId,
           agent: selectedProfile.endpoint,
           model: selectedProfile.model,
-          protocol: selectedProfile.protocol,
+          protocol: selectedProfile.provider,
           tenant_id: tenantId,
           workspace_id: workspaceId,
           seed: 42,
@@ -340,11 +340,10 @@ export const Dashboard: React.FC = () => {
                   <td className="py-3 font-sans text-slate-300 font-medium">{r.scenario}</td>
                   <td className="py-3">
                     <span
-                      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 w-fit ${
-                        r.has_certificate
-                          ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
-                          : 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-400'
-                      }`}
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 w-fit ${r.has_certificate
+                        ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
+                        : 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-400'
+                        }`}
                     >
                       {r.has_certificate ? <ShieldCheck className="w-3 h-3" /> : <CheckCircle2 className="w-3 h-3" />}
                       {r.has_certificate ? 'VERIFIED' : r.status}

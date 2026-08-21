@@ -36,7 +36,8 @@ Closing the loop between production behavior and evaluation rigor.
 
 First-class, zero-touch support for leading AI agent frameworks.
 - **LangGraph v2 & AutoGen**: Seamless integration for chain-of-thought and graph-based agents.
-- **Google GenAI (April 2026)**: Official support for Gemini 2.5 Flash via the `google-genai` SDK.
+- **Google GenAI (August 2026)**: Official support for Gemini 3.7 Flash via the `google-genai` SDK.
+
 - **OpenTelemetry v1.40.0**: High-fidelity observability baseline for all internal signals and events.
 - **Claude Code & xAI Grok**: Optimized adapters for the latest frontier models.
 - **Ollama**: Local-first evaluation for private or air-gapped environments.

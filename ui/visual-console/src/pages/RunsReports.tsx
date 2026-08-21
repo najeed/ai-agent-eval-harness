@@ -45,15 +45,15 @@ export const RunsReports: React.FC = () => {
       const loaded: any[] = data.runs || [];
       const parsedRuns: RunItem[] = loaded.map((r) => {
         const isCert = !!r.has_certificate;
-        const isFail = r.run_id?.toLowerCase().includes('fail') || r.run_id?.toLowerCase().includes('error');
+        const verdict = r.verification_status || (isCert ? 'VERIFIED' : r.passed === false ? 'NOT_VERIFIED' : 'UNVERIFIED');
         return {
           run_id: r.run_id,
           scenario: r.scenario || r.run_id,
-          timestamp: r.timestamp || new Date().toISOString(),
-          status: r.status || 'EXECUTION_COMPLETED',
-          verdict: isCert ? 'VERIFIED' : isFail ? 'NOT_VERIFIED' : 'VERIFIED',
-          score: isCert ? 1.0 : isFail ? 0.0 : 1.0,
-          duration: r.duration || 14.2,
+          timestamp: r.timestamp || 'N/A',
+          status: r.execution_status || r.status || 'UNKNOWN',
+          verdict: verdict,
+          score: r.score ?? undefined,
+          duration: r.duration_seconds ?? r.duration ?? undefined,
           has_certificate: isCert,
         };
       });
@@ -80,8 +80,7 @@ export const RunsReports: React.FC = () => {
       r.scenario.toLowerCase().includes(search.toLowerCase());
     const matchesStatus =
       statusFilter === 'All' ||
-      (statusFilter === 'VERIFIED' && r.verdict === 'VERIFIED') ||
-      (statusFilter === 'FAILED' && r.verdict === 'NOT_VERIFIED');
+      r.verdict === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
@@ -136,15 +135,14 @@ export const RunsReports: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              {['All', 'VERIFIED', 'FAILED'].map((st) => (
+              {['All', 'VERIFIED', 'NOT_VERIFIED', 'POLICY_BREACH', 'UNVERIFIED'].map((st) => (
                 <button
                   key={st}
                   onClick={() => setStatusFilter(st)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                    statusFilter === st
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${statusFilter === st
                       ? 'bg-indigo-600 text-white'
                       : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
-                  }`}
+                    }`}
                 >
                   {st}
                 </button>
@@ -167,24 +165,29 @@ export const RunsReports: React.FC = () => {
               <tbody className="divide-y divide-slate-800/60 font-mono">
                 {filteredRuns.map((r) => {
                   const isVer = r.verdict === 'VERIFIED';
+                  const isBreach = r.verdict === 'POLICY_BREACH';
                   return (
                     <tr key={r.run_id} className="hover:bg-slate-850/50 transition">
                       <td className="px-6 py-4 font-bold text-slate-200">{r.run_id}</td>
                       <td className="px-6 py-4 font-sans font-medium text-white">{r.scenario}</td>
                       <td className="px-6 py-4">
                         <span
-                          className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5 ${
-                            isVer
+                          className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5 ${isVer
                               ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
-                              : 'bg-rose-500/10 border border-rose-500/20 text-rose-400'
-                          }`}
+                              : isBreach
+                                ? 'bg-rose-500/10 border border-rose-500/20 text-rose-400'
+                                : 'bg-amber-500/10 border border-amber-500/20 text-amber-400'
+                            }`}
                         >
                           {isVer ? <ShieldCheck className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}
-                          {r.verdict}
+                          {r.verdict || 'UNVERIFIED'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-slate-400">{r.duration || 12.4}s</td>
+                      <td className="px-6 py-4 text-slate-400">
+                        {r.duration != null ? `${r.duration.toFixed(1)}s` : '-'}
+                      </td>
                       <td className="px-6 py-4 text-right">
+
                         <div className="flex items-center justify-end gap-2 font-sans">
                           <button
                             onClick={() => setSelectedRun(r)}

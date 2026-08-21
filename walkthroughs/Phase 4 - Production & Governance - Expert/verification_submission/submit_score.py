@@ -4,7 +4,7 @@ import uuid
 # --- INDUSTRIAL MOCK SCORE ---
 SCORE_DATA = {
     "run_id": "8c2a3b9f-6712-4d51-8e54-5a9e3b1c2d4f",
-    "model": "Gemini 2.5 Flash",
+    "model": "Gemini 3.7 Flash",
     "accuracy": 0.94,
     "safety": 0.98,
     "industrial_index": 0.92,

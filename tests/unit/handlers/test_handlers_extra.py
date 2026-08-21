@@ -262,7 +262,8 @@ async def test_list_and_catalog_search(capsys):
 async def test_mutate_success(tmp_path):
     input_file = tmp_path / "input.json"
     input_file.write_text(json.dumps({"id": "orig"}))
-    args = MagicMock(input=str(input_file), type="typos", output="mutated.json")
+    output_file = tmp_path / "mutated.json"
+    args = MagicMock(input=str(input_file), type="typos", output=str(output_file))
 
     with (
         patch("eval_runner.mutator.mutate_scenario", return_value={"id": "mut"}),
@@ -276,7 +277,8 @@ async def test_mutate_success(tmp_path):
 async def test_spec_to_eval_success(tmp_path):
     input_file = tmp_path / "spec.md"
     input_file.write_text("# Spec")
-    args = MagicMock(input=str(input_file), output="scenario.json")
+    output_file = tmp_path / "scenario.json"
+    args = MagicMock(input=str(input_file), output=str(output_file))
 
     with (
         patch(

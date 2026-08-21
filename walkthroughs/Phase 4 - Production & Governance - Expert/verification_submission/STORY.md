@@ -10,7 +10,8 @@ You've completed the evaluation, identified the root causes, and generated the l
 ## 🏆 Your Task
 Run the final submission script `submit_score.py`.
 
-- **Objective**: Formally submit the **Gemini 2.5 Flash** scores to the industrial registry.
+- **Objective**: Formally submit the **Gemini 3.7 Flash** scores to the industrial registry.
+
 - **Verification**: The script will perform a final "NIST-100" audit and issue your certificate via a signed JSON object.
 
 ## 🏗️ Technical Backdrop

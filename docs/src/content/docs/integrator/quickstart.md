@@ -56,7 +56,8 @@ When you ran `evaluate`, the AgentV engine executed several industrial-grade pro
 
 - [**The Scholar Path**](/scholar/): Learn about Deterministic Seeds and Academic Benchmarks.
 - [**The Architect Path**](/builder/architecture/): Deep-dive into Singleton Process Guards and Dynamic CLI Dispatch.
-- [**The Auditor Path**](/auditor/trust-protocol/): Implement the v1.6.0 Trust Protocol for CI/CD gating.
+- [**The Auditor Path**](/auditor/trust-protocol/): Implement the v3.0.0 Trust Protocol for CI/CD gating.
+
 
 :::tip
 **Pro Tip**: Now that your environment is verified, you can swap the mock adapter for a live model by setting your `OPENAI_API_KEY` or `GEMINI_API_KEY` and updating your [Routing Registry](/spec/routing_v1/).

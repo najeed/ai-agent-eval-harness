@@ -107,7 +107,7 @@ class DefaultRunner(BaseRunner):
             from agentv_runtime.config import ResolvedRuntimeConfig
 
             if isinstance(resolved_config, dict):
-                self.resolved_config = ResolvedRuntimeConfig.from_dict(resolved_config)
+                self.resolved_config = ResolvedRuntimeConfig(**resolved_config)
             elif isinstance(resolved_config, ResolvedRuntimeConfig):
                 self.resolved_config = resolved_config
 

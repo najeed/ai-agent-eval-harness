@@ -255,7 +255,8 @@ async def synthesize_tasks_from_prd(markdown_text: str) -> list[dict[str, Any]]:
             print("   [SpecParser] Error: GOOGLE_API_KEY not found in config or environment.")
             return []
 
-        model_name = config.GEMINI_MODEL or "gemini-2.5-flash"
+        model_name = config.GEMINI_MODEL or "gemini-3.7-flash"
+
         provider = GeminiProvider(api_key=api_key, model=model_name)
 
         print(f"   [SpecParser] Initializing Gemini ({model_name}) via Native Provider...")

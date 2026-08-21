@@ -118,10 +118,10 @@ raw_tools = [
 ]
 
 # -----------------------------
-# LLM (Gemini 2.5)
+# LLM (Gemini 3.7)
 # -----------------------------
 llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash", temperature=0, google_api_key=os.environ.get("GOOGLE_API_KEY")
+    model="gemini-3.7-flash", temperature=0, google_api_key=os.environ.get("GOOGLE_API_KEY")
 )
 llm_with_tools = llm.bind_tools(raw_tools)
 
@@ -207,7 +207,7 @@ def run():
 
 @app.route("/", methods=["GET"])
 def health():
-    return jsonify({"status": "ok", "agent": "loan_agent_demo", "model": "gemini-2.5-flash"})
+    return jsonify({"status": "ok", "agent": "loan_agent_demo", "model": "gemini-3.7-flash"})
 
 
 if __name__ == "__main__":

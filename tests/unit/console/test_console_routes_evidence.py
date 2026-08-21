@@ -1,12 +1,13 @@
 """
 tests/unit/console/test_console_routes_evidence.py
 Comprehensive unit test suite achieving 100% coverage on the
-Evidence & Verification Package API routes.
+Evidence & Verification Package API routes with dynamic timestamps.
 """
 
 from __future__ import annotations
 
 import json
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
@@ -49,26 +50,28 @@ def test_get_verification_package_not_found(client):
 def test_get_verification_package_success_with_cert_and_provenance(client, tmp_path):
     runs_dir = tmp_path / "runs"
     reports_dir = tmp_path / "reports"
-    run_id = "run-20260821-test1"
+    run_id = f"run-test-{int(datetime.now(UTC).timestamp())}"
     run_vault = runs_dir / run_id
     run_vault.mkdir(parents=True, exist_ok=True)
 
-    # Write trace events with empty/corrupt line handling
+    now = datetime.now(UTC)
+
+    # Write trace events with empty/corrupt line handling and dynamic timestamps
     trace_file = run_vault / f"{run_id}.jsonl"
     events = [
         {
             "event": "run_start",
-            "timestamp": "2026-08-21T18:00:00Z",
+            "timestamp": now.isoformat(),
             "data": {"scenario": "sec_eval"},
         },
         {
             "event": "assertion_evaluated",
-            "timestamp": "2026-08-21T18:00:05Z",
+            "timestamp": (now + timedelta(seconds=5)).isoformat(),
             "data": {"name": "check1", "passed": True},
         },
         {
             "event": "run_end",
-            "timestamp": "2026-08-21T18:00:10Z",
+            "timestamp": (now + timedelta(seconds=10)).isoformat(),
             "data": {"status": "EXECUTION_COMPLETED", "passed": True, "score": 1.0},
         },
     ]
@@ -107,22 +110,24 @@ def test_get_verification_package_success_with_cert_and_provenance(client, tmp_p
 
 def test_get_verification_package_policy_breach_and_vault_cert(client, tmp_path):
     runs_dir = tmp_path / "runs"
-    run_id = "run-20260821-breach"
+    run_id = f"run-breach-{int(datetime.now(UTC).timestamp())}"
     run_vault = runs_dir / run_id
     run_vault.mkdir(parents=True, exist_ok=True)
+
+    now = datetime.now(UTC)
 
     # Write trace events with policy violation
     trace_file = run_vault / "run.jsonl"
     events = [
-        {"event": "run_start", "timestamp": "2026-08-21T18:00:00Z", "data": {}},
+        {"event": "run_start", "timestamp": now.isoformat(), "data": {}},
         {
             "event": "policy_violation",
-            "timestamp": "2026-08-21T18:00:05Z",
+            "timestamp": (now + timedelta(seconds=5)).isoformat(),
             "data": {"rule": "no_exfil"},
         },
         {
             "event": "run_end",
-            "timestamp": "2026-08-21T18:00:10Z",
+            "timestamp": (now + timedelta(seconds=10)).isoformat(),
             "data": {"status": "EXECUTION_COMPLETED", "passed": False},
         },
     ]
@@ -143,7 +148,7 @@ def test_get_verification_package_policy_breach_and_vault_cert(client, tmp_path)
 
 def test_corrupt_files_in_vault(client, tmp_path):
     runs_dir = tmp_path / "runs"
-    run_id = "run-20260821-corrupt"
+    run_id = f"run-corrupt-{int(datetime.now(UTC).timestamp())}"
     run_vault = runs_dir / run_id
     run_vault.mkdir(parents=True, exist_ok=True)
 
@@ -164,7 +169,7 @@ def test_corrupt_files_in_vault(client, tmp_path):
 
 def test_download_verification_package(client, tmp_path):
     runs_dir = tmp_path / "runs"
-    run_id = "run-20260821-download"
+    run_id = f"run-download-{int(datetime.now(UTC).timestamp())}"
     run_vault = runs_dir / run_id
     run_vault.mkdir(parents=True, exist_ok=True)
 
@@ -198,3 +203,92 @@ def test_list_verification_packages_empty_dir(client, tmp_path, monkeypatch):
     assert res.status_code == 200
     data = res.get_json()
     assert data["packages"] == []
+
+
+def test_verification_package_determinism_and_unsigned_outcome(client, tmp_path):
+    runs_dir = tmp_path / "runs"
+    run_id = f"run-unsigned-{int(datetime.now(UTC).timestamp())}"
+    run_vault = runs_dir / run_id
+    run_vault.mkdir(parents=True, exist_ok=True)
+
+    now = datetime.now(UTC)
+
+    trace_file = run_vault / "run.jsonl"
+    events = [
+        {"event": "run_start", "timestamp": now.isoformat(), "data": {}},
+        {
+            "event": "run_end",
+            "timestamp": (now + timedelta(seconds=10)).isoformat(),
+            "data": {"status": "EXECUTION_COMPLETED", "passed": True, "score": 0.85},
+        },
+    ]
+    trace_file.write_text("\n".join(json.dumps(e) for e in events), encoding="utf-8")
+
+    res1 = client.get(f"/api/v1/evidence/packages/{run_id}")
+    assert res1.status_code == 200
+    pkg1 = res1.get_json()
+    # Without signatures, passed run is marked UNVERIFIED
+    assert pkg1["verdict"]["verified_outcome"] == "UNVERIFIED"
+    assert pkg1["verdict"]["score"] == 0.85
+
+    res2 = client.get(f"/api/v1/evidence/packages/{run_id}")
+    assert res2.status_code == 200
+    pkg2 = res2.get_json()
+
+    # Package hash MUST be 100% deterministic despite different timestamps
+    assert pkg1["package_hash"] == pkg2["package_hash"]
+
+
+def test_verification_package_direct_fragment_without_vault(client, tmp_path):
+    runs_dir = tmp_path / "runs"
+    run_id = f"run-direct-frag-{int(datetime.now(UTC).timestamp())}"
+    trace_file = runs_dir / f"{run_id}.jsonl"
+    now = datetime.now(UTC)
+    events = [
+        {"event": "run_start", "timestamp": now.isoformat(), "data": {}},
+        {
+            "event": "run_end",
+            "timestamp": (now + timedelta(seconds=10)).isoformat(),
+            "data": {"status": "EXECUTION_COMPLETED", "passed": False},
+        },
+    ]
+    trace_file.write_text("\n".join(json.dumps(e) for e in events), encoding="utf-8")
+
+    res = client.get(f"/api/v1/evidence/packages/{run_id}")
+    assert res.status_code == 200
+    pkg = res.get_json()
+    assert pkg["verdict"]["verified_outcome"] == "NOT_VERIFIED"
+    assert pkg["verdict"]["score"] == 0.0
+
+
+def test_verification_package_score_default_verified(client, tmp_path):
+    runs_dir = tmp_path / "runs"
+    reports_dir = tmp_path / "reports"
+    run_id = f"run-default-verified-{int(datetime.now(UTC).timestamp())}"
+    run_vault = runs_dir / run_id
+    run_vault.mkdir(parents=True, exist_ok=True)
+
+    now = datetime.now(UTC)
+
+    trace_file = run_vault / "run.jsonl"
+    events = [
+        {"event": "run_start", "timestamp": now.isoformat(), "data": {}},
+        {
+            "event": "run_end",
+            "timestamp": (now + timedelta(seconds=10)).isoformat(),
+            "data": {"status": "EXECUTION_COMPLETED", "verified": True},
+        },
+    ]
+    trace_file.write_text("\n".join(json.dumps(e) for e in events), encoding="utf-8")
+
+    cert_dir = reports_dir / "certificates"
+    cert_dir.mkdir(parents=True, exist_ok=True)
+    (cert_dir / f"{run_id}_certificate.json").write_text(
+        json.dumps({"signatures": ["sig_test"]}), encoding="utf-8"
+    )
+
+    res = client.get(f"/api/v1/evidence/packages/{run_id}")
+    assert res.status_code == 200
+    pkg = res.get_json()
+    assert pkg["verdict"]["verified_outcome"] == "VERIFIED"
+    assert pkg["verdict"]["score"] == 1.0

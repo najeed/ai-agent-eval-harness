@@ -87,16 +87,95 @@ def get_canonical_scenario(scenario_id: str):
 
 
 def validate_scenario_structure(raw_data: dict[str, Any]) -> tuple[bool, list[str]]:
-    """Strict structural and semantic validation for canonical scenarios."""
+    """
+    Comprehensive AES 1.4 schema and semantic invariant validator.
+    Validates metadata, workflow node uniqueness, DAG acyclicity,
+    tool constraints, assertion definitions, and state invariants.
+    """
     errors: list[str] = []
     if not isinstance(raw_data, dict):
         return False, ["Scenario root must be a JSON object"]
+
+    # 1. Metadata Validation
     meta = raw_data.get("metadata") or {}
-    if not meta.get("id") and not raw_data.get("id"):
-        errors.append("Missing required field 'metadata.id'")
+    scen_id = meta.get("id") or raw_data.get("id")
+    if not scen_id or not isinstance(scen_id, str):
+        errors.append("Missing required string field 'metadata.id'")
+
+    # 2. Workflow Nodes Validation
     workflow = raw_data.get("workflow") or {}
-    if not workflow.get("nodes") and not raw_data.get("nodes"):
-        errors.append("Workflow must contain at least one task node")
+    nodes = workflow.get("nodes") or raw_data.get("nodes") or []
+    if not isinstance(nodes, list) or len(nodes) == 0:
+        errors.append("Workflow must contain at least one task node in 'workflow.nodes'")
+    else:
+        seen_node_ids: set[str] = set()
+        for idx, node in enumerate(nodes):
+            if not isinstance(node, dict):
+                errors.append(f"Node at index {idx} must be an object")
+                continue
+            nid = node.get("id")
+            if not nid or not isinstance(nid, str):
+                errors.append(f"Node at index {idx} missing required string 'id'")
+            elif nid in seen_node_ids:
+                errors.append(f"Duplicate node id '{nid}' in workflow")
+            else:
+                seen_node_ids.add(nid)
+
+            task_desc = (
+                node.get("task_description") or node.get("prompt") or node.get("description")
+            )
+            if not task_desc:
+                errors.append(f"Node '{nid or idx}' missing 'task_description' or prompt")
+
+            # Check tools if specified
+            tools = node.get("required_tools") or []
+            if not isinstance(tools, list):
+                errors.append(f"Node '{nid or idx}' required_tools must be a list")
+
+        # 3. Directed Acyclic Graph (DAG) Topology Validation
+        edges = workflow.get("edges") or raw_data.get("edges") or []
+        if isinstance(edges, list):
+            adj: dict[str, list[str]] = {nid: [] for nid in seen_node_ids}
+            for e_idx, edge in enumerate(edges):
+                if not isinstance(edge, dict):
+                    errors.append(f"Edge at index {e_idx} must be an object")
+                    continue
+                src = edge.get("source") or edge.get("from")
+                tgt = edge.get("target") or edge.get("to")
+                if not src or src not in seen_node_ids:
+                    errors.append(f"Edge {e_idx} references unknown source node '{src}'")
+                if not tgt or tgt not in seen_node_ids:
+                    errors.append(f"Edge {e_idx} references unknown target node '{tgt}'")
+                if src in adj and tgt:
+                    adj[src].append(tgt)
+
+            # Cycle detection (DFS)
+            visited: dict[str, int] = {}  # 0: visiting, 1: visited
+
+            def has_cycle(curr: str) -> bool:
+                visited[curr] = 0
+                for nxt in adj.get(curr, []):
+                    if nxt in visited:
+                        if visited[nxt] == 0:
+                            return True
+                    elif has_cycle(nxt):
+                        return True
+                visited[curr] = 1
+                return False
+
+            for n in seen_node_ids:
+                if n not in visited:
+                    if has_cycle(n):
+                        errors.append("Workflow topology contains a cycle; must be a valid DAG")
+                        break
+
+    # 4. Evaluation & Assertions Invariant Check
+    eval_block = raw_data.get("evaluation") or {}
+    if eval_block and isinstance(eval_block, dict):
+        assertions = eval_block.get("assertions") or []
+        if not isinstance(assertions, list):
+            errors.append("'evaluation.assertions' must be a list if defined")
+
     return len(errors) == 0, errors
 
 
@@ -207,12 +286,13 @@ def check_execution_readiness():
     # 2. Agent Endpoint / Adapter
     proto = agent_config.get("protocol", "http_rest")
     endpoint = agent_config.get("endpoint", "http://localhost:8000")
-    if proto in ("http_rest", "openai", "ollama", "langchain"):
+    if proto in ("http_rest", "openai", "ollama", "langchain", "custom_http"):
         checks.append(
             {
                 "name": "Agent Protocol & Config",
                 "status": "PASSED",
                 "message": f"Targeting {proto} at {endpoint}",
+                "target_status": "CONFIGURED",
             }
         )
     else:
@@ -221,6 +301,7 @@ def check_execution_readiness():
                 "name": "Agent Protocol & Config",
                 "status": "WARNING",
                 "message": f"Custom protocol '{proto}' specified.",
+                "target_status": "CUSTOM",
             }
         )
 
@@ -234,22 +315,26 @@ def check_execution_readiness():
         }
     )
 
-    # 4. Signing Backend & Vault
+    # 4. Signing Backend & Vault (Truthful distinction between persistent and ephemeral keys)
     signing_key = getattr(config, "SIGNING_KEY", None)
     if signing_key:
+        key_snippet = str(signing_key)[:12]
         checks.append(
             {
                 "name": "Cryptographic Sealer",
                 "status": "PASSED",
-                "message": f"Configured Ed25519 signer active ({str(signing_key)[:12]}...)",
+                "signer_type": "SIGNED",
+                "message": f"Configured persistent Ed25519 signer active ({key_snippet}...)",
             }
         )
+
     else:
         checks.append(
             {
                 "name": "Cryptographic Sealer",
-                "status": "PASSED",
-                "message": "Ephemeral Ed25519 trace sealer initialized for execution run.",
+                "status": "WARNING",
+                "signer_type": "EPHEMERAL",
+                "message": "Ephemeral in-memory Ed25519 sealer active (non-production test mode).",
             }
         )
 
@@ -407,11 +492,12 @@ def transition_scenario_lifecycle(scenario_id):
             }
         ), 400
 
+    previous_status = meta.get("status", "Draft")
     meta["status"] = target_status
     meta["transition_history"] = meta.get("transition_history") or []
     meta["transition_history"].append(
         {
-            "from": meta.get("status", "Draft"),
+            "from": previous_status,
             "to": target_status,
             "timestamp": datetime.now(UTC).isoformat(),
             "actor": request.headers.get("X-User-Id", "system"),

@@ -934,7 +934,9 @@ class SessionManager:
             return human_input
 
         # Non-interactive mode (no TTY): suspend into registry for GUI/API resolution
-        if not sys.stdin.isatty() and "pytest" not in sys.modules:
+        if not sys.stdin.isatty() and (
+            "pytest" not in sys.modules or os.environ.get("FORCE_HITL_SUSPEND")
+        ):
             # 1. Snapshot checkpoint before entering approval wait loop
             hist = (
                 self.turn_state_manager.history
@@ -946,8 +948,9 @@ class SessionManager:
                 "task_id": task_id,
                 "prompt": prompt,
                 "history": hist,
-                "sandbox_state": getattr(self.sandbox, "state", {}),
+                "sandbox_state": getattr(getattr(self, "sandbox", None), "state", {}),
             }
+
             chk_id = self.checkpoint_manager.create_checkpoint(
                 state=chk_state,
                 metadata={"task_id": task_id, "status": "HITL_PENDING"},

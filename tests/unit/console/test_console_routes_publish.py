@@ -448,3 +448,101 @@ def test_publish_add_standard_exception(publish_client):
             },
         )
     assert res.status_code == 500
+
+
+def test_publish_stop_job_branches(publish_client):
+    """Verify POST /publish/<job_id>/stop handles not found, finished, and active jobs."""
+    # 1. Not found
+    res = publish_client.post("/api/publish/nonexistent_job/stop")
+    assert res.status_code == 404
+
+    # 2. Already finished
+    JOBS["job_finished"] = {"status": "completed", "job_id": "job_finished"}
+    res = publish_client.post("/api/publish/job_finished/stop")
+    assert res.status_code == 200
+    assert "already finished" in res.get_json()["message"]
+
+    # 3. Active running job with process termination
+    mock_proc = MagicMock()
+    mock_proc.pid = 12345
+    mock_proc.kill = MagicMock()
+    JOBS["job_active"] = {"status": "running", "job_id": "job_active", "_proc": mock_proc}
+
+    mock_child = MagicMock()
+    mock_child.kill = MagicMock()
+    mock_parent = MagicMock()
+    mock_parent.children.return_value = [mock_child]
+    mock_parent.kill = MagicMock()
+
+    with patch("psutil.Process", return_value=mock_parent):
+        with patch("psutil.wait_procs"):
+            res = publish_client.post("/api/publish/job_active/stop")
+            assert res.status_code == 200
+            assert res.get_json()["status"] == "stopped"
+            assert JOBS["job_active"]["status"] == "failed"
+
+
+def test_durable_job_store_branches(tmp_path, monkeypatch):
+    """Verify DurableJobStore error handling on save, load, and list_active."""
+    from eval_runner.console.routes.publish import DurableJobStore
+
+    jobs_dir = tmp_path / "durable_jobs"
+    jobs_dir.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr(DurableJobStore, "_jobs_dir", lambda: jobs_dir)
+
+    # 1. Save and load success
+    DurableJobStore.save("job_durable_1", {"job_id": "job_durable_1", "status": "running"})
+    loaded = DurableJobStore.load("job_durable_1")
+    assert loaded["job_id"] == "job_durable_1"
+
+    # 2. Load non-existent
+    assert DurableJobStore.load("non_existent_durable") is None
+
+    # 3. List active with corrupt JSON file
+    (jobs_dir / "corrupt.json").write_text("INVALID_JSON", encoding="utf-8")
+    active = DurableJobStore.list_active()
+    assert "job_durable_1" in active
+
+
+def test_run_publication_job_progress_line_parsing(publish_jail):
+    """Verify _run_publication_job parses [1/3] Running run and phase lines."""
+    job_id = "job_parsing_test"
+    JOBS[job_id] = {"status": "queued", "progress": "", "results": None, "error": None}
+
+    mock_proc = MagicMock()
+    mock_proc.stdout = iter(
+        [
+            "[1/3] Running run scen_01\n",
+            "[2/3] Completed run scen_01\n",
+            "[3/3] runs complete\n",
+        ]
+    )
+    mock_proc.returncode = 1
+    mock_proc.wait.return_value = None
+
+    log_path = publish_jail["results"] / "parsing_test.log"
+
+    with patch("subprocess.Popen", return_value=mock_proc):
+        _run_publication_job(job_id, ["dummy"], log_path)
+
+    assert JOBS[job_id]["status"] == "failed"
+
+
+def test_get_job_logs_root_path_normalization(publish_client, publish_jail):
+    """Verify GET /publish/<job_id> normalizes project root paths in logs."""
+    job_id = "job_log_norm"
+    jobs_dir = publish_jail["results"] / "jobs"
+    jobs_dir.mkdir(parents=True, exist_ok=True)
+    log_file = jobs_dir / f"{job_id}.log"
+    root_str = str(config.PROJECT_ROOT)
+    log_file.write_text(f"Executed at {root_str}/scenarios/test.json\n", encoding="utf-8")
+
+    JOBS[job_id] = {
+        "job_id": job_id,
+        "status": "completed",
+    }
+
+    res = publish_client.get(f"/api/publish/{job_id}")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert "./scenarios/test.json" in data["logs"]

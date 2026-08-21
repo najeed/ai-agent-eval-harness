@@ -4,6 +4,7 @@ Behavioral test suite for System, Documentation, Diagnostic,
 and Scenario endpoints in the Visual Console.
 """
 
+import json
 import os
 import tempfile
 from pathlib import Path
@@ -457,3 +458,165 @@ def test_scenarios_mutate_by_id_not_found(client):
     res = client.post("/api/v1/mutate", json={"scenario_id": "nonexistent_mutate_id"})
     assert res.status_code == 404
     assert "not found" in res.get_json()["error"]
+
+
+# ---------------------------------------------------------------------------
+# 5. Deep AES Schema & Semantic Invariant Validation Tests
+# ---------------------------------------------------------------------------
+
+
+def test_validate_scenario_structure_branches():
+    from eval_runner.console.routes.scenarios import validate_scenario_structure
+
+    # 1. Non-dict root
+    valid, errs = validate_scenario_structure("not_a_dict")  # type: ignore
+    assert not valid
+    assert "must be a JSON object" in errs[0]
+
+    # 2. Missing metadata.id
+    valid, errs = validate_scenario_structure({"metadata": {}})
+    assert not valid
+    assert any("metadata.id" in e for e in errs)
+
+    # 3. Empty or non-list nodes
+    valid, errs = validate_scenario_structure(
+        {"metadata": {"id": "test_s"}, "workflow": {"nodes": []}}
+    )
+    assert not valid
+    assert any("at least one task node" in e for e in errs)
+
+    # 4. Non-dict node, missing node id, duplicate node id
+    valid, errs = validate_scenario_structure(
+        {
+            "metadata": {"id": "test_s"},
+            "workflow": {
+                "nodes": [
+                    "not_a_dict",
+                    {"prompt": "do task"},
+                    {"id": "node1", "task_description": "task 1"},
+                    {"id": "node1", "task_description": "task 1 dup"},
+                    {"id": "node2"},  # Missing prompt
+                    {"id": "node3", "prompt": "p3", "required_tools": "not_a_list"},
+                ]
+            },
+        }
+    )
+    assert not valid
+    assert any("Node at index 0 must be an object" in e for e in errs)
+    assert any("missing required string 'id'" in e for e in errs)
+    assert any("Duplicate node id 'node1'" in e for e in errs)
+    assert any("missing 'task_description' or prompt" in e for e in errs)
+    assert any("required_tools must be a list" in e for e in errs)
+
+    # 5. Edge validation: non-dict edge, unknown source/target
+    valid, errs = validate_scenario_structure(
+        {
+            "metadata": {"id": "test_s"},
+            "workflow": {
+                "nodes": [
+                    {"id": "n1", "prompt": "p1"},
+                    {"id": "n2", "prompt": "p2"},
+                ],
+                "edges": [
+                    "not_a_dict",
+                    {"source": "unknown_src", "target": "n2"},
+                    {"source": "n1", "target": "unknown_tgt"},
+                ],
+            },
+        }
+    )
+    assert not valid
+    assert any("Edge at index 0 must be an object" in e for e in errs)
+    assert any("unknown source node" in e for e in errs)
+    assert any("unknown target node" in e for e in errs)
+
+    # 6. Cycle detection (A -> B -> A)
+    valid, errs = validate_scenario_structure(
+        {
+            "metadata": {"id": "cyclic_scenario"},
+            "workflow": {
+                "nodes": [
+                    {"id": "nodeA", "prompt": "A"},
+                    {"id": "nodeB", "prompt": "B"},
+                ],
+                "edges": [
+                    {"source": "nodeA", "target": "nodeB"},
+                    {"source": "nodeB", "target": "nodeA"},
+                ],
+            },
+        }
+    )
+    assert not valid
+    assert any("contains a cycle; must be a valid DAG" in e for e in errs)
+
+    # 7. Non-list evaluation.assertions
+    valid, errs = validate_scenario_structure(
+        {
+            "metadata": {"id": "test_eval"},
+            "workflow": {"nodes": [{"id": "n1", "prompt": "p1"}]},
+            "evaluation": {"assertions": "not_a_list"},
+        }
+    )
+    assert not valid
+    assert any("evaluation.assertions' must be a list" in e for e in errs)
+
+    # 8. Fully Valid Complex DAG
+    valid, errs = validate_scenario_structure(
+        {
+            "metadata": {"id": "valid_dag"},
+            "workflow": {
+                "nodes": [
+                    {"id": "start", "prompt": "Start task", "required_tools": ["t1"]},
+                    {"id": "branch1", "task_description": "Branch 1"},
+                    {"id": "branch2", "prompt": "Branch 2"},
+                    {"id": "end", "task_description": "End task"},
+                ],
+                "edges": [
+                    {"source": "start", "target": "branch1"},
+                    {"source": "start", "target": "branch2"},
+                    {"source": "branch1", "target": "end"},
+                    {"source": "branch2", "target": "end"},
+                ],
+            },
+            "evaluation": {"assertions": [{"name": "assert_success", "type": "exact_match"}]},
+        }
+    )
+    assert valid
+    assert len(errs) == 0
+
+
+def test_check_execution_readiness_branches(client, console_jail, monkeypatch):
+    """Verify readiness probes with configured signer key and custom protocols."""
+    from eval_runner import config
+
+    # With configured persistent SIGNING_KEY
+    monkeypatch.setattr(config, "SIGNING_KEY", "ed25519_sk_0123456789abcdef", raising=False)
+
+    scen_data = {
+        "metadata": {"id": "scen_ready_check", "status": "Ready"},
+        "workflow": {"nodes": [{"id": "n1", "prompt": "task 1"}]},
+    }
+    scen_path = console_jail["root"] / "scenarios" / "scen_ready_check.json"
+    scen_path.parent.mkdir(parents=True, exist_ok=True)
+    scen_path.write_text(json.dumps(scen_data), encoding="utf-8")
+
+    res = client.post(
+        "/api/scenarios/readiness",
+        json={
+            "scenario_id": "scen_ready_check",
+            "scenario_data": scen_data,
+            "agent_config": {"protocol": "custom_agent_protocol", "endpoint": "http://custom:9999"},
+        },
+    )
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["ready"] is True
+    checks = {c["name"]: c for c in data["checks"]}
+
+    # Verify persistent SIGNED sealer
+    assert checks["Cryptographic Sealer"]["status"] == "PASSED"
+    assert checks["Cryptographic Sealer"]["signer_type"] == "SIGNED"
+
+    # Verify custom protocol warning
+    assert checks["Agent Protocol & Config"]["status"] == "WARNING"
+    assert checks["Agent Protocol & Config"]["target_status"] == "CUSTOM"

@@ -319,3 +319,84 @@ def test_ollama_status_parse_error_handling(client):
         res = client.get("/api/system/ollama-status")
         assert res.status_code == 200
         assert res.get_json()["available"] is True
+
+
+def test_scenarios_taxonomy_and_refresh_error(client):
+    """Verify taxonomy GET and refresh error handling."""
+    res = client.get("/api/v1/taxonomy")
+    assert res.status_code == 200
+    assert "categories" in res.get_json()
+
+    with patch(
+        "eval_runner.catalog.ScenarioCatalog.get_instance",
+        side_effect=RuntimeError("disk unreadable"),
+    ):
+        res_refresh = client.post("/api/scenarios/refresh")
+        assert res_refresh.status_code == 500
+
+
+def test_scenarios_mutate_endpoints(client, tmp_path):
+    """Verify /v1/mutate endpoint edge cases."""
+    # 1. Missing fields
+    res = client.post("/api/v1/mutate", json={})
+    assert res.status_code == 400
+
+    # 2. Path outside root
+    res = client.post("/api/v1/mutate", json={"input_path": "../../etc/passwd"})
+    assert res.status_code == 403
+
+    # 3. Path non-existent
+    res = client.post("/api/v1/mutate", json={"input_path": str(tmp_path / "non_existent.json")})
+    assert res.status_code == 400
+
+    # 4. Mutate with raw JSON success
+    res = client.post(
+        "/api/v1/mutate",
+        json={"raw_json": {"id": "test_mutate", "title": "Test"}, "type": "typo"},
+    )
+    assert res.status_code == 200
+    assert res.get_json()["status"] == "success"
+
+
+def test_scenarios_spec_to_eval_endpoints(client, tmp_path):
+    """Verify /v1/spec-to-eval endpoint edge cases."""
+    # 1. Missing fields
+    res = client.post("/api/v1/spec-to-eval", json={})
+    assert res.status_code == 400
+
+    # 2. Path outside root
+    res = client.post("/api/v1/spec-to-eval", json={"input_path": "../../etc/shadow"})
+    assert res.status_code == 403
+
+    # 3. Path non-existent
+    res = client.post("/api/v1/spec-to-eval", json={"input_path": str(tmp_path / "missing.md")})
+    assert res.status_code == 400
+
+    # 4. Success with markdown text
+    with patch(
+        "eval_runner.spec_parser.parse_markdown_to_scenario",
+        return_value={"id": "parsed_scen"},
+    ):
+        res = client.post("/api/v1/spec-to-eval", json={"markdown": "# Specification"})
+        assert res.status_code == 200
+        assert res.get_json()["status"] == "success"
+
+
+def test_scenarios_auto_translate_and_evaluate(client):
+    """Verify /v1/auto-translate and /v1/evaluate."""
+    # 1. Auto translate missing text
+    res = client.post("/api/v1/auto-translate", json={})
+    assert res.status_code == 400
+
+    # 2. Auto translate success
+    with patch(
+        "eval_runner.auto_translate.translate_to_scenario",
+        return_value={"id": "translated_scen"},
+    ):
+        res = client.post("/api/v1/auto-translate", json={"text": "Test agent goal"})
+        assert res.status_code == 200
+        assert res.get_json()["id"] == "translated_scen"
+
+    # 3. Evaluate missing path
+    res = client.post("/api/v1/evaluate", json={})
+    assert res.status_code == 400

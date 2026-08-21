@@ -106,10 +106,36 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
         except Exception as err:
             logger.debug("Failed reading certificate for %s: %s", run_id, err)
 
-    package_body = {
+    signatures = cert_data.get("signatures", cert_data.get("provenance_chain", []))
+
+    # Authoritative Verdict Determination:
+    # 1. Policy breach takes absolute precedence
+    # 2. To claim VERIFIED, execution must have passed AND have cryptographic signatures
+    # 3. Passed without cryptographic signatures is UNVERIFIED
+    # 4. Otherwise NOT_VERIFIED
+    if any(e.get("event") == "policy_violation" for e in events):
+        verified_outcome = "POLICY_BREACH"
+    elif data_block.get("passed", False) or data_block.get("verified", False):
+        verified_outcome = "VERIFIED" if len(signatures) > 0 else "UNVERIFIED"
+    else:
+        verified_outcome = "NOT_VERIFIED"
+
+    # Score calculation from authentic assertions
+    assertions = data_block.get("assertions", [])
+    if assertions:
+        passed_count = sum(1 for a in assertions if a.get("passed", False))
+        score = passed_count / len(assertions)
+    elif "score" in data_block:
+        score = float(data_block["score"])
+    elif verified_outcome == "VERIFIED":
+        score = 1.0
+    else:
+        score = 0.0
+
+    # Deterministic canonical core (excluding envelope timestamps)
+    canonical_payload = {
         "format": "agentv_verification_package",
         "package_version": "2.0.0",
-        "created_at": datetime.now(UTC).isoformat(),
         "run_id": run_id,
         "tenant_id": manifest_data.get("tenant_id", "default-tenant"),
         "workspace_id": manifest_data.get("workspace_id", "default-workspace"),
@@ -119,24 +145,28 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
             "execution_status": execution_status,
             "verified_outcome": verified_outcome,
             "duration_seconds": data_block.get("duration", 0),
-            "score": data_block.get("score", 1.0 if verified_outcome == "VERIFIED" else 0.0),
+            "score": score,
         },
         "evidence_manifest": {
             "trace_hash": trace_hash,
             "total_events": len(events),
-            "assertions_evaluated": len(data_block.get("assertions", [])),
+            "assertions_evaluated": len(assertions),
             "artifacts": [
                 {"name": "run.jsonl", "hash": trace_hash, "type": "trace_events"},
             ],
         },
-        "signatures": cert_data.get("signatures", cert_data.get("provenance_chain", [])),
+        "signatures": signatures,
     }
 
-    # Deterministic Package Digest
-    serialized = json.dumps(package_body, sort_keys=True)
-    package_body["package_hash"] = compute_sha3_digest(serialized)
+    # Deterministic package hash over canonical representation
+    serialized_canonical = json.dumps(canonical_payload, sort_keys=True, separators=(",", ":"))
+    package_hash = compute_sha3_digest(serialized_canonical)
 
-    return package_body
+    return {
+        **canonical_payload,
+        "package_hash": package_hash,
+        "package_created_at": datetime.now(UTC).isoformat(),
+    }
 
 
 @evidence_bp.route("/v1/evidence/packages/<run_id>", methods=["GET"])

@@ -12,6 +12,7 @@ import os
 import tempfile
 import threading
 import time
+from datetime import UTC, datetime
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -1116,3 +1117,311 @@ def test_runs_explain_non_existent_run_404(runs_client):
     """Verify 404 when explaining a non-existent run ID."""
     res = runs_client.get("/api/v1/explain/non_existent_run_999")
     assert res.status_code == 404
+
+
+def test_runs_cancel_and_resume_endpoints(runs_client):
+    """Verify POST /v1/runs/<run_id>/cancel and /resume endpoints."""
+    from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+
+    backend = InProcessExecutionBackend.get_instance()
+
+    # Cancel failure (not active)
+    with patch.object(backend, "cancel", return_value=False):
+        res = runs_client.post("/api/v1/runs/run-inactive/cancel", json={"reason": "test"})
+        assert res.status_code == 404
+        assert "not active" in res.get_json()["error"]
+
+    # Cancel success
+    with patch.object(backend, "cancel", return_value=True):
+        res = runs_client.post("/api/v1/runs/run-active/cancel", json={"reason": "test"})
+        assert res.status_code == 200
+        assert res.get_json()["status"] == "ABORTED"
+
+    # Resume failure (no checkpoint)
+    with patch.object(backend, "resume", return_value=None):
+        res = runs_client.post("/api/v1/runs/run-no-chk/resume", json={})
+        assert res.status_code == 404
+        assert "No checkpoint found" in res.get_json()["error"]
+
+    # Resume success
+    with patch.object(backend, "resume", return_value={"resumed": True}):
+        res = runs_client.post(
+            "/api/v1/runs/run-with-chk/resume", json={"resumption_token": "tok1"}
+        )
+        assert res.status_code == 200
+        assert res.get_json()["status"] == "RUNNING"
+
+
+def test_runs_backend_status_fallback_when_trace_missing(runs_client):
+    """Verify GET /v1/runs/<run_id> returns in-memory status if trace file is not on disk."""
+    from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+
+    backend = InProcessExecutionBackend.get_instance()
+
+    with patch("eval_runner.console.routes.runs.resolve_trace_path", return_value=None):
+        st_data = {"status": "RUNNING", "scenario_data": {"id": "s1"}}
+        with patch.object(backend, "status", return_value=st_data):
+            res = runs_client.get("/api/v1/runs/run-in-memory")
+            assert res.status_code == 200
+            data = res.get_json()
+            assert data["status"] == "RUNNING"
+            assert data["scenario"]["id"] == "s1"
+
+
+def test_runs_cache_thread_start_and_update_loop(monkeypatch):
+    """Verify RunsCache starts properly when force thread is enabled."""
+    from eval_runner.console.routes.runs import RunsCache
+
+    cache = RunsCache()
+    monkeypatch.setenv("RUNS_CACHE_FORCE_THREAD", "1")
+    with patch.object(threading.Thread, "start") as mock_start:
+        cache.start()
+        assert cache._started is True
+        mock_start.assert_called_once()
+
+
+def test_runs_stream_list_sse(runs_client, runs_jail):
+    """Verify GET /v1/runs/stream-list streams run list in chunks."""
+    from eval_runner.console.routes.runs import runs_cache
+
+    now_iso = datetime.now(UTC).isoformat()
+    with patch.object(
+        runs_cache,
+        "get_runs",
+        return_value=[
+            {"run_id": "stream_run_1", "scenario": "scen_1", "timestamp": now_iso},
+            {"run_id": "stream_run_2", "scenario": "scen_2", "timestamp": now_iso},
+        ],
+    ):
+        with patch("time.sleep", return_value=None):
+            res = runs_client.get("/api/v1/runs/stream-list")
+            assert res.status_code == 200
+            assert "text/event-stream" in res.headers.get("Content-Type", "")
+            data_chunks = res.get_data(as_text=True)
+            assert "stream_run_1" in data_chunks
+
+
+def test_runs_cache_update_cache_direct_and_vaults(runs_jail, monkeypatch):
+    """Verify RunsCache scans fragments, vaults, and query filtering."""
+    from eval_runner.console.routes.runs import RunsCache
+
+    monkeypatch.setattr(config, "RUN_LOG_DIR", runs_jail["runs"])
+    cache = RunsCache()
+    # 1. Direct fragment
+    frag = runs_jail["runs"] / "frag_1.jsonl"
+    t0 = datetime.now(UTC).isoformat()
+    frag_event = {
+        "event": "run_start",
+        "run_id": "run-frag-1",
+        "scenario": "scen_frag",
+        "timestamp": t0,
+    }
+    frag.write_text(json.dumps(frag_event) + "\n", encoding="utf-8")
+
+    # 2. Vault run
+    vault_dir = runs_jail["runs"] / "run-vault-1"
+    vault_dir.mkdir(exist_ok=True)
+    vault_event = {
+        "event": "run_start",
+        "run_id": "run-vault-1",
+        "scenario": "scen_vault",
+        "timestamp": t0,
+    }
+    (vault_dir / "run.jsonl").write_text(json.dumps(vault_event) + "\n", encoding="utf-8")
+
+    cache.update_cache()
+    runs = cache.get_runs()
+    rids = [r["run_id"] for r in runs]
+    assert "run-frag-1" in rids
+    assert "run-vault-1" in rids
+
+    # Query filter
+    filtered = cache.get_runs(query="run-vault-1")
+    assert len(filtered) == 1
+    assert filtered[0]["run_id"] == "run-vault-1"
+
+
+def test_runs_stream_list_sse_status_resolution(runs_client, runs_jail):
+    """Verify GET /v1/runs/stream-list resolves certified, failed, and running statuses."""
+    from eval_runner.console.routes.runs import runs_cache
+
+    t0 = datetime.now(UTC)
+    r1_dir = runs_jail["runs"] / "run-certified-stream"
+    r1_dir.mkdir(exist_ok=True)
+    (r1_dir / "run_manifest.json").write_text("{}", encoding="utf-8")
+    (r1_dir / "run.jsonl").write_text(json.dumps({"event": "run_start"}) + "\n", encoding="utf-8")
+
+    # Large log file (> 32KB) with error
+    r2_dir = runs_jail["runs"] / "run-failed-stream"
+    r2_dir.mkdir(exist_ok=True)
+    padding = json.dumps({"event": "step", "data": "x" * 1024}) + "\n"
+    r2_lines = (
+        padding * 35
+        + json.dumps({"event": "run_start"})
+        + "\n"
+        + json.dumps({"event": "error", "message": "fail"})
+        + "\n"
+    )
+    (r2_dir / "run.jsonl").write_text(r2_lines, encoding="utf-8")
+
+    r3_dir = runs_jail["runs"] / "run-running-stream"
+    r3_dir.mkdir(exist_ok=True)
+    (r3_dir / "run.jsonl").write_text(
+        json.dumps({"event": "run_start", "timestamp": t0.isoformat()}) + "\n",
+        encoding="utf-8",
+    )
+
+    r4_dir = runs_jail["runs"] / "run-passed-stream"
+    r4_dir.mkdir(exist_ok=True)
+    (r4_dir / "run.jsonl").write_text(
+        json.dumps({"event": "run_start"}) + "\n" + json.dumps({"event": "run_end"}) + "\n",
+        encoding="utf-8",
+    )
+
+    with patch.object(
+        runs_cache,
+        "get_runs",
+        return_value=[
+            {"run_id": "run-certified-stream", "scenario": "s1", "timestamp": t0.isoformat()},
+            {"run_id": "run-failed-stream", "scenario": "s2", "timestamp": t0.isoformat()},
+            {"run_id": "run-running-stream", "scenario": "s3", "timestamp": t0.isoformat()},
+            {"run_id": "run-passed-stream", "scenario": "s4", "timestamp": t0.isoformat()},
+        ],
+    ):
+        with patch("time.sleep", return_value=None):
+            res = runs_client.get("/api/v1/runs/stream-list")
+            assert res.status_code == 200
+            assert "text/event-stream" in res.headers.get("Content-Type", "")
+            data_chunks = res.get_data(as_text=True)
+            assert "run-certified-stream" in data_chunks
+            assert "run-failed-stream" in data_chunks
+            assert "run-passed-stream" in data_chunks
+
+
+def test_runs_master_log_stream_and_not_found(runs_client, runs_jail, tmp_path):
+    """Verify stream_run_logs fallback to master log and not found SSE response."""
+    # 1. Not found stream
+    res_404 = runs_client.get("/api/v1/runs/nonexistent-run-stream/stream")
+    assert res_404.status_code == 200
+    assert "not_found" in res_404.get_data(as_text=True)
+
+    # 2. Master log stream
+    master_log = runs_jail["runs"] / "run.jsonl"
+    t0 = datetime.now(UTC).isoformat()
+    lines = [
+        json.dumps({"event": "run_start", "run_id": "run-master-stream-1", "timestamp": t0}),
+        json.dumps({"event": "run_end", "run_id": "run-master-stream-1", "timestamp": t0}),
+    ]
+    master_log.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    res_master = runs_client.get("/api/v1/runs/run-master-stream-1/stream")
+    assert res_master.status_code == 200
+    assert "run-master-stream-1" in res_master.get_data(as_text=True)
+
+    # 3. get_run master log with scenario catalog resolution
+    scen_file = tmp_path / "scen_1.json"
+    scen_file.write_text(json.dumps({"id": "scen_1", "title": "Scen 1"}), encoding="utf-8")
+
+    with patch("eval_runner.catalog.ScenarioCatalog.get_instance") as mock_cat:
+        mock_cat.return_value.get_scenario.return_value = {"id": "scen_1"}
+        mock_cat.return_value.get_absolute_path.return_value = scen_file
+        res_get_master = runs_client.get("/api/v1/runs/run-master-stream-1")
+        assert res_get_master.status_code == 200
+        assert res_get_master.get_json()["sourced_from_master"] is True
+        assert res_get_master.get_json()["scenario"]["title"] == "Scen 1"
+
+
+def test_runs_tail_generator_safeguards_and_corrupt_trace(runs_jail, runs_client):
+    """
+    Verify tail_file_generator deleted, rotated, and timeout safeguards,
+    plus corrupt trace handling.
+    """
+
+    # 1. Corrupted trace file
+    r_corrupt = runs_jail["runs"] / "run-corrupt-trace"
+    r_corrupt.mkdir(exist_ok=True)
+    (r_corrupt / "run.jsonl").write_text(
+        '{"event": "run_start"}\n{CORRUPT_JSON_LINE\n{"event": "run_end"}\n',
+        encoding="utf-8",
+    )
+    res_corrupt = runs_client.get("/api/v1/runs/run-corrupt-trace")
+    assert res_corrupt.status_code == 200
+
+    # 2. Tail generator: deleted file (mock exists for Windows file lock compatibility)
+    tail_file = runs_jail["runs"] / "tail_deleted_test.jsonl"
+    tail_file.write_text('{"event": "run_start"}\n', encoding="utf-8")
+
+    gen = tail_file_generator(tail_file, "run-tail-del")
+    first_item = next(gen)
+    assert "run_start" in first_item
+
+    with patch.object(Path, "exists", return_value=False):
+        del_event = next(gen)
+        assert "Log file deleted" in del_event
+
+    # 3. Tail generator: stream timeout
+    tail_timeout_file = runs_jail["runs"] / "tail_timeout_test.jsonl"
+    tail_timeout_file.write_text('{"event": "run_start"}\n', encoding="utf-8")
+
+    current_t = time.time()
+    gen_timeout = tail_file_generator(tail_timeout_file, "run-tail-to")
+    next(gen_timeout)  # catch-up
+
+    with patch("time.time", return_value=current_t + 10000.0):
+        to_event = next(gen_timeout)
+        assert "Stream exceeded max connection lifetime" in to_event
+
+    # 4. Tail generator: rotated file (different inode)
+    tail_rot_file = runs_jail["runs"] / "tail_rot_test.jsonl"
+    tail_rot_file.write_text('{"event": "run_start"}\n', encoding="utf-8")
+    gen_rot = tail_file_generator(tail_rot_file, "run-tail-rot")
+    next(gen_rot)
+
+    mock_stat = MagicMock()
+    mock_stat.st_ino = 999999999
+    with patch.object(Path, "stat", return_value=mock_stat):
+        rot_event = next(gen_rot)
+        assert "Log file rotated" in rot_event
+
+    # 5. Tail generator: zombie check
+    tail_zombie_file = runs_jail["runs"] / "tail_zombie_test.jsonl"
+    tail_zombie_file.write_text('{"event": "run_start"}\n', encoding="utf-8")
+    gen_zombie = tail_file_generator(tail_zombie_file, "run-tail-zombie")
+    next(gen_zombie)
+
+    with patch("eval_runner.console.routes.runs.is_run_alive", return_value=False):
+        with patch("time.sleep", return_value=None):
+            for _ in range(160):
+                z_event = next(gen_zombie)
+                if "Process thread terminated abruptly" in z_event:
+                    break
+            assert "Process thread terminated abruptly" in z_event
+
+
+def test_runs_active_runner_fallback(runs_client):
+    """Verify get_run falls back to active InProcessExecutionBackend when file not found on disk."""
+    mock_backend = MagicMock()
+    mock_backend.status.return_value = {
+        "status": "RUNNING",
+        "scenario_data": {"title": "Active in memory"},
+    }
+    with patch(
+        "eval_runner.reference.inprocess_backend.InProcessExecutionBackend.get_instance",
+        return_value=mock_backend,
+    ):
+        res = runs_client.get("/api/v1/runs/run-in-flight-001")
+        assert res.status_code == 200
+        assert res.get_json()["status"] == "RUNNING"
+
+
+def test_runs_cache_update_loop_error_resilience():
+    """Verify RunsCache._update_loop recovers from exceptions."""
+    from eval_runner.console.routes.runs import RunsCache
+
+    cache = RunsCache()
+    with patch.object(cache, "update_cache", side_effect=[Exception("scan error"), StopIteration]):
+        with patch("time.sleep", side_effect=StopIteration):
+            try:
+                cache._update_loop()
+            except StopIteration:
+                pass

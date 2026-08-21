@@ -53,7 +53,7 @@ graph LR
 1. **Target Connection Profile**: Select from pre-configured 2026 frontier models or connect internal agent services:
    - **OpenAI**: `gpt-5.6` (Production endpoint)
    - **Anthropic**: `claude-opus-5` (Anthropic protocol)
-   - **Google GenAI**: `gemini-3.1-pro-preview` (Gemini API)
+   - **Google GenAI**: `gemini-3.7-flash` (Gemini API)
    - **Local Fleet**: `deepseek-r1:70b` / `llama-3.3` (Ollama localhost)
    - **Custom Enterprise Agent**: Internal agent orchestrators exposing REST / Agent Protocol endpoints.
 2. **Scenario Selection**: Pick single scenarios or multi-scenario regression suites.
@@ -80,9 +80,12 @@ Selecting any run opens the **7-Tab Forensic Inspection Screen**:
 
 ---
 
-## 🛡️ Enterprise Security Boundaries
+## 🛡️ Enterprise Security & Truth-First Governance Boundaries
 
-- **Default-Deny RBAC**: Session context initializes strictly to `Viewer` with fail-closed `<ProtectedRoute />` route guards. Persona simulation is restricted strictly to local dev mode.
-- **Signed Extension Manifests**: Remote micro-frontend extensions loaded via `GET /api/nav` must provide a signed manifest schema and mandatory Subresource Integrity digest (`SHA-384`/`SHA-512`) verified via WebCrypto before execution.
-- **Single-File Verification Packages**: Conforms to NIST 2026 AI evaluation auditability standards with deterministic SHA3-256 package hashing.
+- **Runtime-Authoritative Truth Model**: The Visual Console strictly renders authentic telemetry and evaluation verdicts emitted by the backend runtime. No synthetic fallback data, mock assertion results, or manufactured durations are permitted in production views. Missing telemetry renders explicit `NO ASSERTION EVIDENCE RECORDED` / `UNVERIFIED` badges.
+- **Default-Deny PBAC/RBAC**: Session context initializes strictly to `Viewer` with fail-closed `<ProtectedRoute />` route guards. Server-side permission gates enforce granular capability controls across scenarios, runs, certificates, and settings.
+- **Signed Extension Manifests & FIPS 202 SHA3 SRI Engine**: Remote micro-frontend extensions loaded via `GET /api/nav` must provide a signed manifest schema and mandatory Subresource Integrity digest (`sha3-256-`, `sha3-384-`, `sha3-512-`, or `sha384-`). Digests are cryptographically validated in the browser using AgentV's native Keccak engine before dynamic ESM module instantiation.
+- **Deterministic Verification Packages (`.agentv-package.json`)**: Single-file, self-contained audit packages conforming to NIST SP 800-218 and EU AI Act requirements. Package digests (`sha3_256:...`) are calculated deterministically across canonicalized scenario, manifest, telemetry, assertion, and signature sets, separating envelope timestamps to guarantee 100% digest reproducibility. Package version remains strictly standardized at `2.0.0`.
+- **Comprehensive AES 1.4 Schema & Semantic Invariant Validator**: Scenario imports and lifecycle transitions are validated for structural completeness, node uniqueness, tool schemas, and directed acyclic graph (DAG) acyclicity via depth-first cycle detection.
+- **Cryptographic Attestation & Readiness Probes**: Readiness checks distinguish between configured persistent Ed25519 signing keys (`SIGNED`), temporary in-memory sealers (`EPHEMERAL`), and unsigned configurations (`UNSIGNED`).
 

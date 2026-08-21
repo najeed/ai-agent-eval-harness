@@ -34,13 +34,13 @@
       "customer_support": [
         {
           "rank": 1,
-          "agent": "Claude-4.6-Sonnet-Adapter",
+          "agent": "Claude-Opus-5-Adapter",
           "score": 94.2,
           "latency": "1.2s"
         },
         {
           "rank": 2,
-          "agent": "GPT-5.4-mini-Adapter",
+          "agent": "GPT-5.6-Adapter",
           "score": 93.8,
           "latency": "0.9s"
         }

@@ -108,8 +108,7 @@ class OpenAIProvider(LLMProvider):
     async def list_models(self) -> list:
         """Lists available models in OpenAI."""
         future_models = [
-            {"id": "gpt-5.4-pro", "name": "GPT-5.4 Pro"},
-            {"id": "gpt-5.4-mini", "name": "GPT-5.4 Mini"},
+            {"id": "gpt-5.6", "name": "GPT-5.6 (Production)"},
         ]
         if not self.api_key:
             return future_models
@@ -172,12 +171,9 @@ class AnthropicProvider(LLMProvider):
                 raise Exception(f"Anthropic request failed: {e}")  # noqa: B904
 
     async def list_models(self) -> list:
-        """Lists available models for Anthropic (future series)."""
+        """Lists available models for Anthropic."""
         return [
-            {"id": "claude-4-6-sonnet", "name": "Claude 4.6 Sonnet"},
-            {"id": "claude-4-6-opus", "name": "Claude 4.6 Opus"},
-            {"id": "claude-4-5-haiku", "name": "Claude 4.5 Haiku"},
-            {"id": "claude-3-5-sonnet-20240620", "name": "Claude 3.5 Sonnet"},
+            {"id": "claude-opus-5", "name": "Claude Opus 5"},
         ]
 
 
