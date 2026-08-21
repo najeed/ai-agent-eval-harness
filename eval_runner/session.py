@@ -27,7 +27,13 @@ logger = logging.getLogger(__name__)
 from . import config, events, metrics  # noqa: E402
 from .context import TurnContext  # noqa: E402
 from .engine import AgentAdapterRegistry  # noqa: E402
-from .events import CoreEvents, Event, EventEmitter  # noqa: E402
+from .events import (  # noqa: E402
+    CoreEvents,
+    Event,
+    EventEmitter,
+    ExecutionEdgeType,
+    ExecutionNodeStatus,
+)
 from .forensics import ForensicCollector  # noqa: E402
 from .session_components import (  # noqa: E402
     SessionApprovalManager,
@@ -415,7 +421,8 @@ class SessionManager:
                 sys.stderr.flush()
                 raise ValueError(err_msg)
 
-            for node_id in execution_order:
+            last_execution_id: str | None = None
+            for idx, node_id in enumerate(execution_order):
                 if (
                     self.cancellation_event
                     and getattr(self.cancellation_event, "is_set", lambda: False)()
@@ -436,16 +443,80 @@ class SessionManager:
                 if not node:
                     continue
 
+                exec_id = f"{node_id}_att{attempt_number}_seq{idx}"
+                # Emit observed execution edge from prior node if exists
+                if last_execution_id:
+                    edge_type = (
+                        ExecutionEdgeType.RETRY
+                        if attempt_number > 1
+                        else ExecutionEdgeType.SEQUENTIAL
+                    )
+                    self.event_bus.emit(
+                        CoreEvents.EXECUTION_GRAPH_EDGE,
+                        {
+                            "run_id": self.run_id,
+                            "source_execution_id": last_execution_id,
+                            "target_execution_id": exec_id,
+                            "edge_type": edge_type,
+                        },
+                    )
+
+                # Emit Running Node
+                self.event_bus.emit(
+                    CoreEvents.EXECUTION_GRAPH_NODE,
+                    {
+                        "run_id": self.run_id,
+                        "scenario_node_id": node_id,
+                        "execution_node_id": exec_id,
+                        "parent_execution_id": last_execution_id,
+                        "label": node.get("task_description") or node_id,
+                        "status": ExecutionNodeStatus.RUNNING,
+                        "attempt": attempt_number,
+                    },
+                )
+
+                start_node_time = time.time()
                 task_res = await self._execute_node(
                     node, attempt_number, turns_taken, sandbox, history, actions
                 )
+                node_dur_ms = round((time.time() - start_node_time) * 1000, 2)
 
                 if task_res.get("status") == "success":
                     turns_taken += 1
                     all_task_results.append(task_res)
+                    self.event_bus.emit(
+                        CoreEvents.EXECUTION_GRAPH_NODE,
+                        {
+                            "run_id": self.run_id,
+                            "scenario_node_id": node_id,
+                            "execution_node_id": exec_id,
+                            "parent_execution_id": last_execution_id,
+                            "label": node.get("task_description") or node_id,
+                            "status": ExecutionNodeStatus.COMPLETED,
+                            "attempt": attempt_number,
+                            "duration_ms": node_dur_ms,
+                            "evidence_refs": [f"turn_{turns_taken}"],
+                        },
+                    )
+                    last_execution_id = exec_id
                 else:
                     print(f"      [Node Failure] {node_id}: {task_res.get('message')}")
                     all_task_results.append(task_res)
+                    self.event_bus.emit(
+                        CoreEvents.EXECUTION_GRAPH_NODE,
+                        {
+                            "run_id": self.run_id,
+                            "scenario_node_id": node_id,
+                            "execution_node_id": exec_id,
+                            "parent_execution_id": last_execution_id,
+                            "label": node.get("task_description") or node_id,
+                            "status": ExecutionNodeStatus.FAILED,
+                            "attempt": attempt_number,
+                            "duration_ms": node_dur_ms,
+                            "failure_class": task_res.get("triage_tag", "NODE_EXECUTION_FAILURE"),
+                            "failure_reason": task_res.get("message", "Task constraint failed."),
+                        },
+                    )
                     break
 
             # 🚀 All nodes executed. Global history is now fully captured in 'history'.

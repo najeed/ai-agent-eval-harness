@@ -70,6 +70,35 @@ The `spec-to-eval` service uses a combination of hierarchical section splitting 
 ### 3. LLM Fallback Triggers
 If the heuristic parser cannot identify structured nodes, it triggers **Gemini-powered Synthesis**. Ensure `GOOGLE_API_KEY` is configured in your environment for high-fidelity fallback.
 
+### `GET /api/v1/runs/<run_id>/verify`
+**Priority: P0**
+Server-authoritative cryptographic verification endpoint. Evaluates Merkle root integrity, trace hashes, and Ed25519/ML-DSA digital signatures directly from disk.
+- **Response**:
+  - `verification_status` (`VERIFIED` | `FAILED_VERIFICATION` | `UNVERIFIED` | `NOT_FOUND`)
+  - `is_valid` (boolean)
+  - `algorithm` (e.g. `Ed25519`, `ML-DSA-65`)
+  - `is_pqc` (boolean)
+  - `failure_reason` (string, optional)
+
+### `GET /api/v1/runs/<run_id>/stream`
+**Priority: P0**
+Real-time SSE event streaming for live execution traces.
+- **Headers / Query Params**:
+  - `Last-Event-ID` or `?last_event_id=N`: Replays historical trace events from sequence `N + 1` before tailing live events.
+- **Payload Structure**:
+  - `id: <sequence>`
+  - `data: {"event": "execution_graph_node" | "execution_graph_edge" | "run_start" | ..., ...}`
+
+### `POST /api/scenarios/readiness`
+**Priority: P0**
+Preflight readiness gate evaluating scenario structure and environment attestation.
+- **Response**:
+  - `ready` (boolean)
+  - `is_executable` (boolean - workflow valid)
+  - `is_verifiable` (boolean - signed with persistent cryptographic sealer)
+  - `preflight_fingerprint` (SHA3-256 hash over scenario, model, and parameters)
+  - `checks` (array of individual probe statuses: `PASSED`, `WARNING`, `FAILED`)
+
 ---
 
 ## 📂 Core Management APIs
@@ -77,8 +106,10 @@ If the heuristic parser cannot identify structured nodes, it triggers **Gemini-p
 ### `GET /api/scenarios`
 Faceted search across the global scenario catalog.
 
+### `POST /api/scenarios`
+Persist canonical AES scenarios with optimistic concurrency.
+- **Body**: Includes `expected_revision_hash` to reject concurrent overwrite conflicts (HTTP 409 Conflict).
+
 ### `GET /api/info`
 Consolidated system health, engine versioning, and telemetry.
 
-### `GET /api/v1/verify/<run_id>` (Public)
-Public integrity audit for signed traces.

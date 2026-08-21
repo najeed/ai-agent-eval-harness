@@ -60,6 +60,31 @@ export const EvaluationRunner: React.FC = () => {
     fetchData();
   }, []);
 
+  // Reset preflight status on parameter modification to prevent stale execution
+  const onScenarioChange = (id: string) => {
+    setSelectedScenario(id);
+    setPreflightStatus('idle');
+    setReadinessData(null);
+  };
+
+  const onProtocolChange = (p: string) => {
+    setProtocol(p);
+    setPreflightStatus('idle');
+    setReadinessData(null);
+  };
+
+  const onAgentUrlChange = (url: string) => {
+    setAgentUrl(url);
+    setPreflightStatus('idle');
+    setReadinessData(null);
+  };
+
+  const onMaxTurnsChange = (turns: string) => {
+    setMaxTurns(turns);
+    setPreflightStatus('idle');
+    setReadinessData(null);
+  };
+
   const triggerPreflight = async () => {
     setPreflightStatus('checking');
     try {
@@ -69,7 +94,6 @@ export const EvaluationRunner: React.FC = () => {
         body: JSON.stringify({
           scenario_id: selectedScenario,
           agent_config: {
-            agent_name: 'runner_agent',
             protocol: protocol.toLowerCase(),
             endpoint: agentUrl,
           },
@@ -96,7 +120,7 @@ export const EvaluationRunner: React.FC = () => {
 
   const handleLaunch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedScenario) return;
+    if (!selectedScenario || preflightStatus !== 'passed') return;
 
     setSubmitting(true);
     setErrorMsg('');
@@ -106,7 +130,6 @@ export const EvaluationRunner: React.FC = () => {
     const scenPath = found ? found.path : `scenarios/${selectedScenario}.json`;
 
     try {
-      // POST evaluate scenario with explicit agent_config and runtime_config
       const res = await fetch('/api/v1/evaluate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -116,25 +139,21 @@ export const EvaluationRunner: React.FC = () => {
           protocol: protocol.toLowerCase(),
           endpoint: agentUrl,
           agent_config: {
-            agent_name: 'runner_agent',
             protocol: protocol.toLowerCase(),
             endpoint: agentUrl,
-            model: 'gpt-4o',
           },
           runtime_config: {
             max_turns: parseInt(maxTurns) || 10,
           },
           metadata: {
-            protocol: protocol.toLowerCase(),
-            agent_url: agentUrl,
-            endpoint: agentUrl,
-            notes: sessionNotes,
-            agent_platform: 'AgentV-v2.0',
+            notes: sessionNotes || undefined,
+            preflight_fingerprint: readinessData?.preflight_fingerprint,
           },
         }),
       });
 
       const data = await res.json();
+
 
       if (res.ok && data.run_id) {
         // Successfully launched. Navigate directly into live debugger!
@@ -169,7 +188,7 @@ export const EvaluationRunner: React.FC = () => {
               <label className="text-xs text-slate-400">Target Scenario:</label>
               <select
                 value={selectedScenario}
-                onChange={(e) => setSelectedScenario(e.target.value)}
+                onChange={(e) => onScenarioChange(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-mono"
               >
                 {scenarios.map(s => (
@@ -186,7 +205,7 @@ export const EvaluationRunner: React.FC = () => {
               <label className="text-xs text-slate-400">Execution Protocol:</label>
               <select
                 value={protocol}
-                onChange={(e) => setProtocol(e.target.value)}
+                onChange={(e) => onProtocolChange(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-xs text-slate-350 focus:outline-none focus:border-indigo-500"
               >
                 <option value="HTTP">HTTP Server</option>
@@ -202,7 +221,7 @@ export const EvaluationRunner: React.FC = () => {
                 min="1"
                 max="100"
                 value={maxTurns}
-                onChange={(e) => setMaxTurns(e.target.value)}
+                onChange={(e) => onMaxTurnsChange(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-800 rounded px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
               />
             </div>
@@ -213,11 +232,12 @@ export const EvaluationRunner: React.FC = () => {
                 type="text"
                 required
                 value={agentUrl}
-                onChange={(e) => setAgentUrl(e.target.value)}
+                onChange={(e) => onAgentUrlChange(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-800 rounded px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-mono"
               />
             </div>
           </div>
+
 
           <div className="space-y-1.5">
             <label className="text-xs text-slate-400">Evaluation Metadata Tags:</label>

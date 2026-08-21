@@ -630,7 +630,7 @@ def is_run_alive(run_id: str) -> bool:
     return any(t.name == f"eval-{run_id}" for t in threading.enumerate())
 
 
-def tail_file_generator(log_path: Path, run_id: str):
+def tail_file_generator(log_path: Path, run_id: str, last_event_id: int = 0):
     # 1. Wait for log creation with a 10s safety threshold
     timeout = 10.0
     start_time = time.time()
@@ -649,13 +649,17 @@ def tail_file_generator(log_path: Path, run_id: str):
     # Track overall stream lifetime to prevent dead socket accumulation (Tab Safety)
     stream_start = time.time()
     max_lifetime_seconds = 3600  # 1-hour hard stop to reclaim sockets
+    seq_id = 0
 
-    # 2. Open and Stream
+    # 2. Open and Stream with Catch-up Replay
     with open(log_path, encoding="utf-8") as f:
-        # Step A: Stream all existing historical events (Immediate Catch-Up)
+        # Step A: Stream historical events, skipping events received before last_event_id
         for line in f:
-            if line.strip():
-                yield f"data: {line.strip()}\n\n"
+            stripped = line.strip()
+            if stripped:
+                seq_id += 1
+                if seq_id > last_event_id:
+                    yield f"id: {seq_id}\ndata: {stripped}\n\n"
                 if '"event": "run_end"' in line or '"event": "strategy_end"' in line:
                     return
 
@@ -705,7 +709,10 @@ def tail_file_generator(log_path: Path, run_id: str):
                 continue
 
             idle_cycles = 0
-            yield f"data: {line.strip()}\n\n"
+            stripped = line.strip()
+            if stripped:
+                seq_id += 1
+                yield f"id: {seq_id}\ndata: {stripped}\n\n"
 
             if '"event": "run_end"' in line or '"event": "strategy_end"' in line:
                 break
@@ -714,10 +721,28 @@ def tail_file_generator(log_path: Path, run_id: str):
 @run_bp.route("/v1/runs/<path:run_id>/stream", methods=["GET"])
 @require_permission(Permission.RUNS_READ)
 def stream_run_logs(run_id):
-    """SSE streaming endpoint for live run traces."""
+    """SSE streaming endpoint for live run traces with Last-Event-ID replay support."""
+    last_id_str = (
+        request.headers.get("Last-Event-ID")
+        or request.args.get("last_event_id")
+        or request.args.get("since")
+    )
+    try:
+        last_event_id = int(last_id_str) if last_id_str is not None else 0
+    except (ValueError, TypeError):
+        last_event_id = 0
+
     log_path = resolve_trace_path(run_id)
     if log_path:
-        return Response(tail_file_generator(log_path, run_id), mimetype="text/event-stream")
+        return Response(
+            tail_file_generator(log_path, run_id, last_event_id=last_event_id),
+            mimetype="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "X-Accel-Buffering": "no",
+                "Connection": "keep-alive",
+            },
+        )
 
     # Fallback: extract matching events from master log runs/run.jsonl
     master_log = config.RUN_LOG_DIR / "run.jsonl"
@@ -748,7 +773,7 @@ def stream_run_logs(run_id):
 
             def stream_and_cleanup():
                 try:
-                    yield from tail_file_generator(temp_path, run_id)
+                    yield from tail_file_generator(temp_path, run_id, last_event_id=last_event_id)
                 finally:
                     if temp_path.exists():
                         try:
@@ -756,7 +781,15 @@ def stream_run_logs(run_id):
                         except Exception as e:
                             logger.warning(f"Failed to clean up temp stream file {temp_path}: {e}")
 
-            return Response(stream_and_cleanup(), mimetype="text/event-stream")
+            return Response(
+                stream_and_cleanup(),
+                mimetype="text/event-stream",
+                headers={
+                    "Cache-Control": "no-cache",
+                    "X-Accel-Buffering": "no",
+                    "Connection": "keep-alive",
+                },
+            )
 
     def stream_not_found():
         import json as _json
@@ -770,3 +803,15 @@ def stream_run_logs(run_id):
         yield f"data: {payload}\n\n"
 
     return Response(stream_not_found(), mimetype="text/event-stream")
+
+
+@run_bp.route("/v1/runs/<path:run_id>/verify", methods=["GET", "POST"])
+@require_permission(Permission.RUNS_READ)
+def verify_run(run_id):
+    """Server-Authoritative Cryptographic Verification Endpoint."""
+    from eval_runner.verifier import TraceVerifier
+
+    run_dir = config.RUN_LOG_DIR / run_id
+    res = TraceVerifier.verify_run_directory(run_dir)
+    status_code = 404 if res.get("verification_status") == "NOT_FOUND" else 200
+    return jsonify(res), status_code

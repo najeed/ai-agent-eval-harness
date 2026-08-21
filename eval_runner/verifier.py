@@ -702,3 +702,83 @@ class TraceVerifier:
 
             logger.error(f"Verification Failure:\n{traceback.format_exc()}")
             return False
+
+    @classmethod
+    def verify_run_directory(cls, run_dir: Path | str) -> dict[str, Any]:
+        """
+        Authoritative Server-Side Verification for an entire run directory.
+        Checks trace integrity, certificate validity, signatures, and summary.
+        """
+        p = Path(run_dir)
+        tp = p / "run.jsonl"
+        mp = p / "run_manifest.json"
+        cp = p / "certificate.json"
+        if not cp.exists():
+            cp = config.REPORTS_DIR / "certificates" / f"{p.name}_vc.json"
+
+        if not p.exists():
+            return {
+                "run_id": p.name,
+                "verification_status": "NOT_FOUND",
+                "is_valid": False,
+                "has_certificate": False,
+                "has_signature": False,
+                "failure_reason": "Run directory does not exist",
+            }
+
+        target_manifest = mp if mp.exists() else cp if cp.exists() else None
+        if not target_manifest or not target_manifest.exists():
+            return {
+                "run_id": p.name,
+                "verification_status": "UNVERIFIED",
+                "is_valid": False,
+                "has_certificate": False,
+                "has_signature": False,
+                "failure_reason": (
+                    "No persistent cryptographic manifest or certificate found for this run."
+                ),
+            }
+
+        if not tp.exists():
+            return {
+                "run_id": p.name,
+                "verification_status": "FAILED_VERIFICATION",
+                "is_valid": False,
+                "has_certificate": True,
+                "has_signature": False,
+                "failure_reason": "Execution trace (run.jsonl) is missing from run directory.",
+            }
+
+        try:
+            with open(target_manifest, encoding="utf-8") as f:
+                mdata = json.load(f)
+
+            is_valid = cls.verify_trace(str(tp), str(target_manifest), verify_ledger=False)
+            has_sig = bool(mdata.get("signature") or mdata.get("signatures"))
+            algorithm = mdata.get("algorithm") or mdata.get("crypto_suite", "Ed25519")
+            pqc = bool("ml-dsa" in str(algorithm).lower() or "pqc" in str(algorithm).lower())
+
+            status = "VERIFIED" if is_valid else "FAILED_VERIFICATION"
+            return {
+                "run_id": p.name,
+                "verification_status": status,
+                "is_valid": is_valid,
+                "has_certificate": True,
+                "has_signature": has_sig,
+                "algorithm": algorithm,
+                "is_pqc": pqc,
+                "trace_hash": mdata.get("trace_hash"),
+                "timestamp": mdata.get("timestamp"),
+                "failure_reason": None
+                if is_valid
+                else "Trace content hash mismatch or signature verification failed.",
+            }
+        except Exception as e:
+            return {
+                "run_id": p.name,
+                "verification_status": "FAILED_VERIFICATION",
+                "is_valid": False,
+                "has_certificate": True,
+                "has_signature": False,
+                "failure_reason": f"Verification error: {str(e)}",
+            }

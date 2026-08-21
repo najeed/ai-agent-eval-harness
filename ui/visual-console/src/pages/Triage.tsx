@@ -73,10 +73,8 @@ export const Triage: React.FC = () => {
   };
 
   const [availableRuns, setAvailableRuns] = useState<{ run_id: string; scenario?: string }[]>([]);
-  const [loadingRuns, setLoadingRuns] = useState(false);
 
   const fetchAvailableRuns = async () => {
-    setLoadingRuns(true);
     try {
       const res = await fetch('/api/runs');
       if (res.ok) {
@@ -85,10 +83,9 @@ export const Triage: React.FC = () => {
       }
     } catch (e) {
       console.warn('Could not load runs for triage dropdown:', e);
-    } finally {
-      setLoadingRuns(false);
     }
   };
+
 
   useEffect(() => {
     fetchTriageSummary();

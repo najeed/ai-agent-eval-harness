@@ -348,6 +348,64 @@ class CoreEvents:
     ROUTING_RESOLVED = "routing_resolved"
     ADAPTER_DEBUG = "adapter_debug"
 
+    # Canonical Execution Graph Events (v2.0.0 Architecture)
+    GRAPH_UPDATE = "graph_update"
+    EXECUTION_GRAPH_NODE = "execution_graph_node"
+    EXECUTION_GRAPH_EDGE = "execution_graph_edge"
+
+
+class ExecutionEdgeType(StrEnum):
+    """Authoritative edge causality types in the execution graph."""
+
+    SEQUENTIAL = "sequential"
+    CONDITIONAL = "conditional"
+    PARALLEL = "parallel"
+    RETRY = "retry"
+    CHILD_TASK = "child_task"
+
+
+class ExecutionNodeStatus(StrEnum):
+    """Execution status for graph nodes."""
+
+    PENDING = "pending"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    SKIPPED = "skipped"
+
+
+class ExecutionGraphNode(BaseModel):
+    """Authoritative execution node event emitted by the runtime."""
+
+    run_id: str
+    event_id: int = Field(default_factory=lambda: int(datetime.now().timestamp() * 1000))
+    timestamp: str = Field(default_factory=lambda: datetime.now().astimezone().isoformat())
+    scenario_revision_hash: str | None = None
+    scenario_node_id: str
+    execution_node_id: str
+    parent_execution_id: str | None = None
+    label: str | None = None
+    status: ExecutionNodeStatus = ExecutionNodeStatus.PENDING
+    attempt: int = 1
+    duration_ms: float | None = None
+    tool_identity: str | None = None
+    failure_class: str | None = None
+    failure_reason: str | None = None
+    evidence_refs: list[str] = Field(default_factory=list)
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class ExecutionGraphEdge(BaseModel):
+    """Authoritative execution edge linking nodes in the execution graph."""
+
+    run_id: str
+    event_id: int = Field(default_factory=lambda: int(datetime.now().timestamp() * 1000))
+    source_execution_id: str
+    target_execution_id: str
+    edge_type: ExecutionEdgeType = ExecutionEdgeType.SEQUENTIAL
+    condition: str | None = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
 
 class EventStage(StrEnum):
     """Authoritative Forensic Stages (AES v1.4)."""

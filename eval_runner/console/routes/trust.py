@@ -140,7 +140,9 @@ def get_identity_public_key(identity_id):
     try:
         from cryptography.hazmat.primitives import serialization
 
-        key = identity.IdentityService.get_public_key(identity_id, auto_provision=False)
+        key = identity.IdentityService.get_public_key(identity_id)
+        if key is None:
+            return jsonify({"error": f"Identity {identity_id} not found."}), 404
         pem = key.public_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.SubjectPublicKeyInfo,

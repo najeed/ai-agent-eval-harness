@@ -11,7 +11,7 @@ import {
 import { RBACProvider, useRBAC } from './context/RBACContext';
 import type { UserRole } from './context/RBACContext';
 
-// Import P1 Pages
+// Import P1 Pages (Runtime OSS Core)
 import { Settings as SettingsPage } from './pages/Settings';
 import { Docs as DocsPage } from './pages/Docs';
 import { TrustCenter as TrustCenterPage } from './pages/TrustCenter';
@@ -22,24 +22,17 @@ import { EvaluationRunner as EvaluationRunnerPage } from './pages/EvaluationRunn
 import { LiveDebugger as LiveDebuggerPage } from './pages/LiveDebugger';
 import { RunsReports as RunsReportsPage } from './pages/RunsReports';
 
-// Import P2 Real Pages
-import { MetricsLeaderboard } from './pages/MetricsLeaderboard';
+// Import Diagnostics & Tooling Pages (Runtime OSS Diagnostics)
 import { FailureCorpus } from './pages/FailureCorpus';
 import { Triage } from './pages/Triage';
-import { ComplianceForensics } from './pages/ComplianceForensics';
-import { PublicationSuite } from './pages/PublicationSuite';
-import { CICDIntegration } from './pages/CICDIntegration';
-import { RegistrySync } from './pages/RegistrySync';
-import { HITLQueue } from './pages/HITLQueue';
-import { AutoTranslate } from './pages/AutoTranslate';
-import { Calibration } from './pages/Calibration';
-import { Benchmarks } from './pages/Benchmarks';
 import { SpecToEvalImporter } from './pages/SpecToEvalImporter';
 import { AdversarialMutator } from './pages/AdversarialMutator';
 import { TraceExplain } from './pages/TraceExplain';
-import { RegressionSuites } from './pages/RegressionSuites';
-import { CompliancePackEditor } from './pages/CompliancePackEditor';
+
+// Control Plane Extension Gate
+import { ControlPlaneExtensionGate } from './components/ControlPlaneExtensionGate';
 import { verifySubresourceIntegrity } from './utils/crypto';
+
 
 const queryClient = new QueryClient({
 
@@ -401,126 +394,8 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
   );
 };
 
-
-const JobTray: React.FC = () => {
-  const [jobId, setJobId] = useState<string | null>(null);
-  const [status, setStatus] = useState<string>('');
-  const [progress, setProgress] = useState<string>('');
-  const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    const checkJob = () => {
-      const activeId = localStorage.getItem('agentv-active-pub-job');
-      setJobId(activeId);
-    };
-
-    checkJob();
-    const interval = setInterval(checkJob, 2000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    if (!jobId) {
-      setStatus('');
-      setProgress('');
-      return;
-    }
-
-    let intervalId: any = null;
-
-    const fetchStatus = async () => {
-      try {
-        const activeIdInStorage = localStorage.getItem('agentv-active-pub-job');
-        if (!activeIdInStorage || activeIdInStorage !== jobId) {
-          if (intervalId) clearInterval(intervalId);
-          return;
-        }
-
-        const res = await fetch(`/api/publish/${jobId}`);
-        if (res.status === 404) {
-          localStorage.removeItem('agentv-active-pub-job');
-          if (intervalId) clearInterval(intervalId);
-          setStatus('failed');
-          return;
-        }
-        if (res.ok) {
-          const data = await res.json();
-          if (localStorage.getItem('agentv-active-pub-job') === jobId) {
-            setStatus(data.status);
-            setProgress(data.progress);
-            if (data.status === 'completed' || data.status === 'failed') {
-              if (intervalId) clearInterval(intervalId);
-            }
-          }
-        }
-      } catch (e) {
-        console.error('Job polling error', e);
-      }
-    };
-
-    fetchStatus();
-    intervalId = setInterval(fetchStatus, 1500);
-
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, [jobId]);
-
-  if (!jobId) return null;
-
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-2.5 py-1 bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-lg text-xs transition-all text-slate-300 font-sans shadow-sm"
-      >
-        <span className="relative flex h-2 w-2">
-          {status === 'running' && (
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          )}
-          <span className={`relative inline-flex rounded-full h-2 w-2 ${status === 'completed' ? 'bg-emerald-500' :
-            status === 'failed' ? 'bg-red-500' :
-              'bg-amber-500'
-            }`}></span>
-        </span>
-        <span className="font-semibold text-[11px]">
-          {status === 'completed' ? 'Publication Ready' :
-            status === 'failed' ? 'Job Failed' :
-              'Publishing Pack...'}
-        </span>
-      </button>
-
-      {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 p-3 bg-slate-900/95 border border-slate-800 rounded-xl shadow-2xl backdrop-blur z-50 space-y-2.5 animate-in fade-in zoom-in-95 duration-100 font-sans">
-          <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
-            <span className="text-xs font-bold text-slate-200">Active Task</span>
-            <span className={`text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded border ${status === 'completed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-              status === 'failed' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                'bg-amber-500/10 text-amber-400 border-amber-500/20'
-              }`}>
-              {status || 'running'}
-            </span>
-          </div>
-
-          <div className="space-y-1">
-            <span className="text-[9px] text-slate-500 font-bold uppercase font-mono">Job ID: {jobId.slice(0, 15)}...</span>
-            <p className="text-[10px] text-slate-300 italic leading-snug">{progress || 'Pending...'}</p>
-          </div>
-
-          <Link
-            to="/publish"
-            onClick={() => setIsOpen(false)}
-            className="block text-center py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-[10px] font-bold transition-colors"
-          >
-            Open Job Console
-          </Link>
-        </div>
-      )}
-    </div>
-  );
-};
-
 const ConsoleLayout: React.FC = () => {
+
   const location = useLocation();
   const { user, role, setRole, isDevMode, canAccessSettings, canEditScenario, canRunEval, canSignCert } = useRBAC();
   const [isCmdOpen, setIsCmdOpen] = useState(false);
@@ -597,7 +472,6 @@ const ConsoleLayout: React.FC = () => {
       items: [
         { name: 'Scenario Library', path: '/scenarios', icon: <FileText className="w-4 h-4" /> },
         { name: 'Visual Composer', path: '/editor', icon: <Activity className="w-4 h-4" /> },
-        { name: 'Suites & Benchmarks', path: '/suites', icon: <Layers className="w-4 h-4" /> },
       ],
     },
     {
@@ -614,22 +488,15 @@ const ConsoleLayout: React.FC = () => {
       items: [
         { name: 'Evidence Packages & Certs', path: '/reports?view=packages', icon: <FileText className="w-4 h-4" /> },
         { name: 'Trust Center', path: '/trust', icon: <ShieldCheck className="w-4 h-4" /> },
-        { name: 'Compliance Forensics', path: '/compliance', icon: <Shield className="w-4 h-4" /> },
-        { name: 'Publication Suite', path: '/publish', icon: <Zap className="w-4 h-4" /> },
       ],
     },
     {
-      title: 'Advanced',
+      title: 'Tooling & Diagnostics',
       items: [
         { name: 'Adversarial Mutator', path: '/mutator', icon: <ChevronRight className="w-3.5 h-3.5" /> },
         { name: 'Spec-to-Eval Importer', path: '/spec-import', icon: <ChevronRight className="w-3.5 h-3.5" /> },
-        { name: 'Auto-Translate', path: '/translate', icon: <ChevronRight className="w-3.5 h-3.5" /> },
-        { name: 'Calibration Console', path: '/calibration', icon: <ChevronRight className="w-3.5 h-3.5" /> },
-        { name: 'HITL Queue', path: '/hitl', icon: <Activity className="w-4 h-4" /> },
         { name: 'Trace Explain (AI)', path: '/explain', icon: <ChevronRight className="w-3.5 h-3.5" /> },
         { name: 'Failure Corpus', path: '/failures', icon: <ChevronRight className="w-3.5 h-3.5" /> },
-        { name: 'Metrics Leaderboard', path: '/metrics', icon: <BarChart2 className="w-4 h-4" /> },
-        { name: 'CI/CD Pipelines', path: '/cicd', icon: <ChevronRight className="w-3.5 h-3.5" /> },
         { name: 'Documentation', path: '/docs', icon: <BookOpen className="w-4 h-4" /> },
         { name: 'Settings & Security', path: '/settings', icon: <Settings className="w-4 h-4" /> },
       ],
@@ -651,7 +518,6 @@ const ConsoleLayout: React.FC = () => {
     if (item.path === '/runner' && !canRunEval) return true;
     if (item.path === '/trust' && !canSignCert) return true;
     if (item.path === '/mutator' && !canEditScenario) return true;
-    if (item.path === '/publish' && !canRunEval) return true;
     return false;
   };
 
@@ -751,19 +617,11 @@ const ConsoleLayout: React.FC = () => {
                             href={item.path}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-3 px-3 py-2 rounded-lg text-xs border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 transition-all"
+                            className="flex items-center gap-3 px-3 py-2 rounded-lg text-xs border border-transparent text-slate-400 hover:text-white hover:bg-slate-900/60 transition-all group"
                           >
-                            <div className="shrink-0">{item.icon}</div>
+                            <div className="shrink-0 group-hover:scale-110 transition-transform">{item.icon}</div>
                             {!sidebarCollapsed && <span className="truncate">{item.name}</span>}
-                            {item.badge && !sidebarCollapsed && (
-                              <span className={`ml-auto text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${item.tier === 'enterprise'
-                                ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
-                                : 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30'
-                                }`}>
-                                {item.badge}
-                              </span>
-                            )}
-                            {!item.badge && !sidebarCollapsed && <ExternalLink className="ml-auto w-3 h-3 text-slate-500" />}
+                            {!sidebarCollapsed && <ExternalLink className="w-3 h-3 ml-auto opacity-50" />}
                           </a>
                         );
                       }
@@ -773,17 +631,14 @@ const ConsoleLayout: React.FC = () => {
                           key={item.id || item.name}
                           to={item.path}
                           className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs transition-all ${isActive
-                            ? 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 font-bold'
-                            : 'border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
+                            ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 font-semibold'
+                            : 'text-slate-400 hover:text-white hover:bg-slate-900/60 border border-transparent'
                             }`}
                         >
                           <div className="shrink-0">{item.icon}</div>
                           {!sidebarCollapsed && <span className="truncate">{item.name}</span>}
-                          {item.badge && !sidebarCollapsed && (
-                            <span className={`ml-auto text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${item.tier === 'enterprise'
-                              ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
-                              : 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30'
-                              }`}>
+                          {!sidebarCollapsed && item.badge && (
+                            <span className="ml-auto px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                               {item.badge}
                             </span>
                           )}
@@ -797,51 +652,57 @@ const ConsoleLayout: React.FC = () => {
           })}
         </div>
 
-        {/* Footer info */}
-        {!sidebarCollapsed && (
-          <div className="p-4 border-t border-slate-900/50 space-y-2">
-            <div className={`px-2 py-1.5 rounded-lg border text-[10px] font-bold uppercase tracking-wider text-center ${roleColors[role] || 'text-slate-400'}`}>
-              {role}
-            </div>
-            <div className="flex items-center justify-between text-[10px] text-slate-500">
-              <span className="font-medium">Press ⌘K for actions</span>
-              <span className="flex items-center gap-1">
-                <HeartPulse className="w-3.5 h-3.5 text-emerald-500" /> API Alive
-              </span>
-            </div>
+        {/* Global User Profile Footer */}
+        <div className="p-3 border-t border-slate-900 bg-slate-950/20">
+          <div className="flex items-center justify-between gap-2">
+            {!sidebarCollapsed && (
+              <div className="flex flex-col min-w-0">
+                <span className="text-[11px] font-bold text-slate-300 truncate">{user?.name || 'Local Operator'}</span>
+                <span className="text-[9px] font-mono text-slate-500 truncate">{user?.id || 'dev@local'}</span>
+              </div>
+            )}
+            <span
+              className={`px-2 py-0.5 rounded text-[9px] font-mono uppercase font-bold border shrink-0 ${roleColors[role] || 'text-slate-400'
+                }`}
+            >
+              {sidebarCollapsed ? role[0] : role}
+            </span>
           </div>
-        )}
+        </div>
       </aside>
 
-      {/* Main Panel Viewport */}
+      {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Top Header / Breadcrumbs */}
-        <header className="h-14 border-b border-slate-900 flex items-center justify-between px-6 bg-slate-950/10 shrink-0">
-          <div className="flex items-center gap-2 text-xs text-slate-400">
-            <span className="font-semibold text-slate-300">AgentV Suite</span>
-            <span>/</span>
-            <span className="text-slate-500 capitalize">{location.pathname.replace('/', '') || 'Dashboard'}</span>
-          </div>
-
+        {/* Top Operational Bar */}
+        <header className="h-14 border-b border-slate-900 bg-slate-950/40 flex items-center justify-between px-6 shrink-0">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsCmdOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 bg-slate-950 border border-slate-850 rounded-lg text-slate-500 hover:text-slate-400 text-xs transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900/80 hover:bg-slate-900 border border-slate-800 text-xs text-slate-400 hover:text-white transition-all shadow-inner"
             >
-              <span>Search command...</span>
-              <kbd className="bg-slate-900 px-1.5 py-0.5 rounded text-[9px] font-mono border border-slate-800 text-slate-400">⌘K</kbd>
+              <Terminal className="w-3.5 h-3.5 text-indigo-400" />
+              <span>Search actions...</span>
+              <kbd className="text-[9px] font-mono bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800 text-slate-500">
+                ⌘K
+              </kbd>
             </button>
+          </div>
 
-            <JobTray />
+          <div className="flex items-center gap-3">
+            {/* Quick Status Pill */}
+            <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-mono">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>RUNTIME READY</span>
+            </div>
 
-            {/* Persona Switcher Dropdown (Developer Simulator only) */}
+            {/* Role Switcher in Dev Mode */}
             {isDevMode ? (
-              <div className="flex items-center gap-1.5 border-l border-slate-900 pl-3">
-                <span className="text-[9px] text-amber-400 font-bold uppercase tracking-wider font-mono">[Dev Persona]:</span>
+              <div className="flex items-center gap-2 border-l border-slate-900 pl-3">
+                <span className="text-[10px] text-slate-500 uppercase font-mono font-bold">Role:</span>
                 <select
                   value={role}
-                  onChange={(e) => setRole(e.target.value as UserRole)}
-                  className="bg-slate-950 border border-amber-500/30 text-amber-300 font-bold rounded px-2.5 py-1 text-[11px] focus:outline-none focus:border-amber-500 font-sans cursor-pointer"
+                  onChange={e => setRole(e.target.value as UserRole)}
+                  className="bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-slate-300 font-medium focus:outline-none focus:border-indigo-500 cursor-pointer"
                 >
                   <option value="System Admin">System Admin</option>
                   <option value="Compliance Auditor">Compliance Auditor</option>
@@ -849,7 +710,6 @@ const ConsoleLayout: React.FC = () => {
                   <option value="MultiAgentOps Eng.">MultiAgentOps Eng.</option>
                   <option value="Viewer">Viewer (Read-Only)</option>
                 </select>
-
               </div>
             ) : (
               <div className="flex items-center gap-2 border-l border-slate-900 pl-3">
@@ -919,7 +779,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route element={<ConsoleLayout />}>
-        {/* P1 Main Screens */}
+        {/* Runtime OSS Core Screens */}
         <Route path="/" element={<DashboardPage />} />
         <Route path="/scenarios" element={<ScenarioLibraryPage />} />
         <Route path="/scenarios/compose" element={<ScenarioComposerPage />} />
@@ -934,26 +794,126 @@ function AppRoutes() {
         <Route path="/docs" element={<DocsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
 
-
-        {/* P2 Shell Screens */}
+        {/* Runtime OSS Diagnostics & Tooling */}
         <Route path="/spec-import" element={<SpecToEvalImporter />} />
         <Route path="/mutator" element={<AdversarialMutator />} />
         <Route path="/explain" element={<TraceExplain />} />
-        <Route path="/hitl" element={<HITLQueue />} />
-        <Route path="/translate" element={<AutoTranslate />} />
-        <Route path="/calibration" element={<Calibration />} />
-        <Route path="/metrics" element={<MetricsLeaderboard />} />
         <Route path="/failures" element={<FailureCorpus />} />
         <Route path="/triage" element={<Triage />} />
-        <Route path="/benchmarks" element={<Benchmarks />} />
-        <Route path="/compliance" element={<ComplianceForensics />} />
-        <Route path="/publish" element={<PublicationSuite />} />
-        <Route path="/cicd" element={<CICDIntegration />} />
-        <Route path="/sync" element={<RegistrySync />} />
-        <Route path="/suites" element={<RegressionSuites />} />
-        <Route path="/packs" element={<CompliancePackEditor />} />
 
-        {/* Dynamic Micro-Frontend Remote Routes */}
+        {/* Control Plane Extension Gates (Unmounted Fallbacks) */}
+        <Route
+          path="/hitl"
+          element={
+            <ControlPlaneExtensionGate
+              featureName="Human-in-the-Loop (HITL) Queue"
+              category="Governance & Publishing"
+              description="Real-time human approval gates and intervention orchestration for sensitive agent tool calls."
+            />
+          }
+        />
+        <Route
+          path="/compliance"
+          element={
+            <ControlPlaneExtensionGate
+              featureName="Compliance Forensics"
+              category="Compliance & Audit"
+              description="Automated audit trails and regulatory attestation against NIST AI RMF, EU AI Act, and SOC 2."
+            />
+          }
+        />
+        <Route
+          path="/packs"
+          element={
+            <ControlPlaneExtensionGate
+              featureName="Compliance Pack Editor"
+              category="Compliance & Audit"
+              description="Visual authoring of compliance policies, rule packs, and automated governance constraints."
+            />
+          }
+        />
+        <Route
+          path="/publish"
+          element={
+            <ControlPlaneExtensionGate
+              featureName="Publication & Governance Suite"
+              category="Governance & Publishing"
+              description="Formal multi-tenant report publication, stakeholder sign-offs, and compliance attestation bundles."
+            />
+          }
+        />
+        <Route
+          path="/cicd"
+          element={
+            <ControlPlaneExtensionGate
+              featureName="Managed CI/CD Workflows"
+              category="CI/CD & Workflows"
+              description="Automated pull request gating, headless pipeline integration, and release criteria verification."
+            />
+          }
+        />
+        <Route
+          path="/sync"
+          element={
+            <ControlPlaneExtensionGate
+              featureName="Fleet & Registry Sync"
+              category="Fleet & Policy"
+              description="Centralized multi-cluster scenario syncing, agent catalog federation, and registry mirrors."
+            />
+          }
+        />
+        <Route
+          path="/calibration"
+          element={
+            <ControlPlaneExtensionGate
+              featureName="Model Calibration Console"
+              category="Analytics & Calibration"
+              description="Cross-model alignment benchmarks, temperature sweep calibration, and judge drift diagnostics."
+            />
+          }
+        />
+        <Route
+          path="/benchmarks"
+          element={
+            <ControlPlaneExtensionGate
+              featureName="Enterprise Benchmarks"
+              category="Analytics & Calibration"
+              description="Standardized industry benchmark suites, multi-model leaderboards, and historical progression."
+            />
+          }
+        />
+        <Route
+          path="/metrics"
+          element={
+            <ControlPlaneExtensionGate
+              featureName="Cross-Run Metrics Leaderboard"
+              category="Analytics & Calibration"
+              description="Fleet-wide aggregate metric analytics, agent performance leaderboards, and cost efficiency models."
+            />
+          }
+        />
+        <Route
+          path="/suites"
+          element={
+            <ControlPlaneExtensionGate
+              featureName="Regression Test Suites"
+              category="CI/CD & Workflows"
+              description="Continuous regression testing suites with automated variance tracking and drift alerts."
+            />
+          }
+        />
+        <Route
+          path="/translate"
+          element={
+            <ControlPlaneExtensionGate
+              featureName="Auto-Translate & Protocol Bridge"
+              category="Fleet & Policy"
+              description="Cross-framework translation between LangChain, AutoGen, CrewAI, and native AgentV formats."
+            />
+          }
+        />
+
+        {/* Dynamic Micro-Frontend Remote Routes (When Control Plane Extension Is Mounted) */}
         {remoteRoutes.map((item: any) => (
           <Route
             key={item.path}

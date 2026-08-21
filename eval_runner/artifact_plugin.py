@@ -135,9 +135,11 @@ class ArtifactPlugin(BaseEvalPlugin):
 
             print(f"      [ArtifactPlugin] Signed manifest created and embedded: {manifest_path}")
 
-        print(f"      [ArtifactPlugin] Bundle created: {zip_path}")
+        bundle_hash = self._calculate_hash(zip_path)
+        print(f"      [ArtifactPlugin] Bundle created: {zip_path} (Hash: {bundle_hash[:16]}...)")
         return {
             "bundle_path": str(zip_path),
+            "bundle_hash": bundle_hash,
             "manifest_path": (
                 str(base_path / "audit_manifest.json") if generate_manifest else None
             ),
@@ -152,8 +154,15 @@ class ArtifactPlugin(BaseEvalPlugin):
         if not path.exists():
             return {"status": "error", "message": "Manifest not found"}
 
-        with open(path) as f:
-            manifest = json.load(f)
+        if zipfile.is_zipfile(path):
+            with zipfile.ZipFile(path, "r") as zf:
+                if "audit_manifest.json" not in zf.namelist():
+                    return {"status": "error", "message": "No audit_manifest.json in bundle"}
+                with zf.open("audit_manifest.json") as f:
+                    manifest = json.loads(f.read().decode("utf-8"))
+        else:
+            with open(path, encoding="utf-8") as f:
+                manifest = json.load(f)
 
         results = []
         is_valid = True

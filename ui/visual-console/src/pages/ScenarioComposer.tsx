@@ -400,6 +400,16 @@ export const ScenarioComposer: React.FC = () => {
       setMessage('Error: Read-Only Mode. Designer privileges required to save scenarios.');
       return;
     }
+
+    if (viewMode === 'json') {
+      try {
+        syncJsonToCanvas(rawJson);
+      } catch (e: any) {
+        setMessage(`JSON Syntax Error: ${e.message}`);
+        return;
+      }
+    }
+
     const errs = validateScenario();
     if (errs.length > 0) {
       setMessage(`Validation Failed: ${errs.join(' | ')}`);
@@ -410,6 +420,11 @@ export const ScenarioComposer: React.FC = () => {
     setMessage('');
     try {
       const payload = getAESJson();
+      // Attach expected revision hash for optimistic concurrency
+      if (rawDoc?.metadata?.content_hash) {
+        payload.expected_revision_hash = rawDoc.metadata.content_hash;
+      }
+
       const res = await fetch('/api/scenarios', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -417,7 +432,10 @@ export const ScenarioComposer: React.FC = () => {
       });
       const data = await res.json();
       if (res.ok) {
-        setMessage(`Success: Scenario saved successfully to catalog.`);
+        if (rawDoc) {
+          rawDoc.metadata = { ...(rawDoc.metadata || {}), content_hash: data.scenario_hash };
+        }
+        setMessage(`Success: Scenario saved successfully (Hash: ${data.scenario_hash?.slice(0, 12) || 'OK'}).`);
       } else {
         setMessage(`Error: ${data.error || 'Failed to save.'}`);
       }
@@ -427,6 +445,7 @@ export const ScenarioComposer: React.FC = () => {
       setSaving(false);
     }
   };
+
 
   const handleImportSpec = async () => {
     if (!importText.trim()) return;
@@ -710,14 +729,16 @@ export const ScenarioComposer: React.FC = () => {
                                 }}
                                 className="w-full bg-slate-900 border border-slate-800 rounded px-1.5 py-1 text-[10px] text-slate-300"
                               >
-                                <option value="exact">Exact</option>
-                                <option value="regex">Regex</option>
+                                <option value="exact">Exact Match</option>
+                                <option value="regex">Regex Pattern</option>
+                                <option value="numerical_tolerance">Numerical Tolerance (±)</option>
+                                <option value="json_schema">JSON Schema Match</option>
                               </select>
                             </div>
                           </div>
 
                           <div>
-                            <span className="text-[9px] text-slate-500 font-bold uppercase">Expected Value</span>
+                            <span className="text-[9px] text-slate-500 font-bold uppercase">Expected Value / Range</span>
                             <input
                               type="text"
                               value={a.expected}
@@ -754,9 +775,10 @@ export const ScenarioComposer: React.FC = () => {
               theme="vs-dark"
               value={rawJson}
               onChange={(val) => {
+                const text = val || '';
+                setRawJson(text);
                 try {
-                  const parsed = JSON.parse(val || '{}');
-                  // Re-load metadata if typed directly in editor
+                  const parsed = JSON.parse(text);
                   if (parsed.metadata?.id) setScenarioId(parsed.metadata.id);
                   if (parsed.metadata?.name) setTitle(parsed.metadata.name);
                 } catch (e) { }
@@ -770,6 +792,7 @@ export const ScenarioComposer: React.FC = () => {
             />
           </div>
         )}
+
       </div>
 
       {/* Markdown Import Modal */}

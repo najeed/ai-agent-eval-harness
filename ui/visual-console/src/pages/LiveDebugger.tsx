@@ -191,6 +191,10 @@ export const LiveDebugger: React.FC = () => {
     }
   }, [runId, searchParams]);
 
+  // Persistent Node Positions Cache to prevent coordinate jitter during telemetry stream
+  const nodePositionsRef = useRef<Map<string, { x: number; y: number }>>(new Map());
+  const lastEventIdRef = useRef<number>(0);
+
   // Close stream helper
   const closeStream = () => {
     if (eventSourceRef.current) {
@@ -199,7 +203,7 @@ export const LiveDebugger: React.FC = () => {
     }
   };
 
-  // Connect to SSE stream with auto-reconnect backoff (NFR 8.1)
+  // Connect to SSE stream with auto-reconnect backoff (NFR 8.1) and Last-Event-ID catch-up replay
   const connectStream = (rid: string, attempt = 0) => {
     closeStream();
     if (attempt === 0) {
@@ -207,6 +211,8 @@ export const LiveDebugger: React.FC = () => {
       setSelectedEvent(null);
       setNodes([]);
       setEdges([]);
+      nodePositionsRef.current.clear();
+      lastEventIdRef.current = 0;
       setReconnectCount(0);
       setConnectionStatus('CONNECTING');
     } else {
@@ -223,8 +229,9 @@ export const LiveDebugger: React.FC = () => {
     }
     setSearchParams(nextParams);
 
-    // Server-Sent Events stream initialization (only if run is active)
-    const streamUrl = `/api/v1/runs/${rid}/stream`;
+    // Server-Sent Events stream initialization with catchup cursor
+    const lastId = lastEventIdRef.current;
+    const streamUrl = `/api/v1/runs/${rid}/stream${lastId > 0 ? `?last_event_id=${lastId}` : ''}`;
     const source = new EventSource(streamUrl);
     eventSourceRef.current = source;
 
@@ -236,18 +243,15 @@ export const LiveDebugger: React.FC = () => {
 
     source.onmessage = (event) => {
       try {
+        if (event.lastEventId) {
+          lastEventIdRef.current = parseInt(event.lastEventId, 10) || lastEventIdRef.current;
+        }
         const data: LogEvent = JSON.parse(event.data);
-        // Control-plane events: update connection/run state but do not
-        // append to the trace log. Graph derivation is reactive — the
-        // useEffect([events, activeScenario, selectedEvent]) below will
-        // re-run automatically whenever any of its inputs change.
         if (data.event === 'timeout') {
           setStatus('STALLED');
           return;
         }
         if (data.event === 'not_found') {
-          // Backend now emits structured JSON for the no-trace-yet path.
-          // Surface a waiting state rather than silently discarding.
           console.info('[LiveDebugger] Trace not ready yet:', data.message);
           setConnectionStatus('CONNECTING');
           return;
@@ -271,7 +275,7 @@ export const LiveDebugger: React.FC = () => {
           }
         }
 
-        // Pure append — graph derivation happens in the reactive effect.
+        // Append to events stream
         setEvents(prev => [...prev, data]);
       } catch (e) {
         console.error('Failed to parse SSE event data:', e);
@@ -282,18 +286,11 @@ export const LiveDebugger: React.FC = () => {
       console.warn('SSE stream encountered error or finished. Reconnecting/Closing.');
       closeStream();
 
-      // Reconnect decision: only collapse to FINISHED on a confirmed terminal
-      // status. Previously only 'RUNNING' triggered a retry, which meant
-      // STALLED/UNKNOWN/404 silently set FINISHED with no manual affordance.
-      // Terminal statuses are those the runtime sets when a run will never
-      // produce more events.
       const TERMINAL_STATUSES = new Set(['COMPLETED', 'FAILED', 'ABORTED', 'ERROR']);
 
       fetch(`/api/v1/runs/${rid}`)
         .then(res => {
           if (!res.ok) {
-            // 404 / server error — the run entry may not exist yet on a
-            // freshly-started run. Treat as non-terminal and backoff-retry.
             throw new Error(`Status check returned ${res.status}`);
           }
           return res.json();
@@ -306,24 +303,20 @@ export const LiveDebugger: React.FC = () => {
           if (TERMINAL_STATUSES.has(runStatus)) {
             setConnectionStatus('FINISHED');
           } else {
-            // RUNNING, STALLED, UNKNOWN — all warrant a reconnect attempt.
-            if (attempt < 5) {
-              const backoffTime = Math.pow(2, attempt) * 1000;
+            if (attempt < 8) {
+              const backoffTime = Math.min(10000, Math.pow(2, attempt) * 1000);
               setReconnectCount(attempt + 1);
               setTimeout(() => {
                 connectStream(rid, attempt + 1);
               }, backoffTime);
             } else {
-              // Exhausted retries — surface DISCONNECTED with manual reconnect affordance.
               setConnectionStatus('DISCONNECTED');
             }
           }
         })
         .catch(() => {
-          // Network error or non-OK status check: backoff and retry rather
-          // than silently going to DISCONNECTED immediately.
-          if (attempt < 5) {
-            const backoffTime = Math.pow(2, attempt) * 1000;
+          if (attempt < 8) {
+            const backoffTime = Math.min(10000, Math.pow(2, attempt) * 1000);
             setReconnectCount(attempt + 1);
             setTimeout(() => connectStream(rid, attempt + 1), backoffTime);
           } else {
@@ -340,20 +333,122 @@ export const LiveDebugger: React.FC = () => {
     return () => closeStream();
   }, [runId]);
 
-  // Pure graph builder — no side effects, no React state reads.
-  // Receives all inputs explicitly so it can be called from a reactive
-  // useEffect without any closure dependencies on component state.
+  // Authoritative Graph Builder
   const buildTraceGraph = (
     allEvents: LogEvent[],
     scen: any,
     selection: LogEvent | null
   ): { flowNodes: any[]; flowEdges: any[] } => {
+    const nodesPerRow = 4;
+    const positions = nodePositionsRef.current;
+
+    // 1. Check for Authoritative Execution Graph events from Runtime
+    const graphNodeEvents = allEvents.filter(e => e.event === 'execution_graph_node' || (e as any).execution_node_id);
+    const graphEdgeEvents = allEvents.filter(e => e.event === 'execution_graph_edge');
+
+    if (graphNodeEvents.length > 0) {
+      // Map authoritative execution nodes
+      const executionNodesMap = new Map<string, any>();
+      for (const ev of graphNodeEvents) {
+        const anyEv = ev as any;
+        const execId = anyEv.execution_node_id || anyEv.node_id || anyEv.task_id;
+        if (execId) {
+          executionNodesMap.set(execId, { ...executionNodesMap.get(execId), ...anyEv });
+        }
+      }
+
+      const execNodesList = Array.from(executionNodesMap.values());
+      const flowNodes = execNodesList.map((n, index) => {
+        const id = n.execution_node_id || n.node_id || n.task_id;
+        const isError = n.status === 'failed' || n.status === 'FAILED' || n.failure_reason;
+        const isFinished = n.status === 'completed' || n.status === 'COMPLETED';
+        const isStarted = n.status === 'running' || n.status === 'RUNNING';
+        const isHighlighted = selection && (id === (selection as any).execution_node_id || id === selection.node_id || id === selection.task_id);
+
+        let border = isHighlighted ? '2px solid #818cf8' : '1px solid #334155';
+        let background = '#0f172a';
+        let statusLabel = n.status || 'Pending';
+        if (isError) {
+          border = isHighlighted ? '2px solid #f87171' : '1px solid #ef4444';
+          background = 'rgba(127,29,29,0.4)';
+          statusLabel = n.failure_class || 'Failed';
+        } else if (isFinished) {
+          border = isHighlighted ? '2px solid #34d399' : '1px solid #10b981';
+          background = 'rgba(6,78,59,0.4)';
+          statusLabel = 'Completed';
+        } else if (isStarted) {
+          border = isHighlighted ? '2px solid #fbbf24' : '1px solid #f59e0b';
+          background = 'rgba(120,53,15,0.4)';
+          statusLabel = 'Running';
+        }
+
+        // Layout once, preserve manual drag coordinates
+        let pos = positions.get(id);
+        if (!pos) {
+          const row = Math.floor(index / nodesPerRow);
+          const col = index % nodesPerRow;
+          pos = { x: 80 + col * 260, y: 50 + row * 170 };
+          positions.set(id, pos);
+        }
+
+        return {
+          id,
+          type: 'default',
+          position: pos,
+          data: {
+            label: (
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono font-bold text-[10px] text-slate-200">{n.scenario_node_id || id}</span>
+                  {n.attempt && n.attempt > 1 && (
+                    <span className="px-1 py-0.2 bg-amber-500/20 text-amber-300 text-[8px] rounded font-mono">att#{n.attempt}</span>
+                  )}
+                </div>
+                <div className="text-[9px] text-slate-400 truncate max-w-[130px]" title={n.label || n.task_description}>
+                  {statusLabel}
+                </div>
+                {n.duration_ms && (
+                  <div className="text-[8px] text-slate-500 font-mono">{(n.duration_ms / 1000).toFixed(2)}s</div>
+                )}
+              </div>
+            )
+          },
+          style: {
+            background,
+            color: '#fff',
+            border,
+            borderRadius: '8px',
+            padding: '8px',
+            width: 170,
+            boxShadow: isHighlighted ? '0 0 15px rgba(99, 102, 241, 0.7), inset 0 0 0 1px rgba(129, 140, 248, 0.5)' : 'none',
+            transition: 'box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease'
+          }
+        };
+      });
+
+      const nodeIdSet = new Set(flowNodes.map(n => n.id));
+      const flowEdges = graphEdgeEvents
+        .map((e: any, idx: number) => ({
+          id: `exec-edge-${idx}`,
+          source: e.source_execution_id || e.source,
+          target: e.target_execution_id || e.target,
+          label: e.edge_type === 'retry' ? 'retry' : e.edge_type === 'conditional' ? 'if' : undefined,
+          animated: true,
+          style: {
+            stroke: e.edge_type === 'retry' ? '#f59e0b' : '#6366f1',
+            strokeWidth: 2,
+          }
+        }))
+        .filter(e => nodeIdSet.has(e.source) && nodeIdSet.has(e.target));
+
+      return { flowNodes, flowEdges };
+    }
+
+    // 2. Scenario-declared workflow fallback
     const workflowNodes = scen?.workflow?.nodes || scen?.workflow?.tasks || [];
     const workflowEdges = scen?.workflow?.edges || [];
 
     let flowNodes = [];
-    const nodesPerRow = 4;
-
     if (workflowNodes.length > 0) {
       flowNodes = workflowNodes.map((n: any, index: number) => {
         const id = n.id;
@@ -379,13 +474,18 @@ export const LiveDebugger: React.FC = () => {
           statusLabel = 'Running';
         }
 
-        const row = Math.floor(index / nodesPerRow);
-        const col = index % nodesPerRow;
+        let pos = positions.get(id);
+        if (!pos) {
+          const row = Math.floor(index / nodesPerRow);
+          const col = index % nodesPerRow;
+          pos = { x: 80 + col * 260, y: 50 + row * 170 };
+          positions.set(id, pos);
+        }
 
         return {
           id,
           type: 'default',
-          position: { x: 80 + col * 250, y: 50 + row * 160 },
+          position: pos,
           data: {
             label: (
               <div className="space-y-1">
@@ -406,66 +506,10 @@ export const LiveDebugger: React.FC = () => {
           }
         };
       });
-    } else {
-      // Fallback: Group events by node ID to map execution stages dynamically
-      const nodeEvents = allEvents.filter(e => e.node_id || e.task_id);
-      const nodeIds = Array.from(new Set(nodeEvents.map(e => e.node_id || e.task_id || '')));
-      
-      flowNodes = nodeIds.filter(Boolean).map((id, index) => {
-        const isError = allEvents.some(e => (e.node_id === id || e.task_id === id) && (e.event === 'error' || e.category === 'PARITY_STATE_DIVERGENCE'));
-        const isFinished = allEvents.some(e => (e.node_id === id || e.task_id === id) && e.event === 'maneuver_end');
-        const isHighlighted = selection && (id === selection.node_id || id === selection.task_id);
-
-        let border = isHighlighted ? '2px solid #818cf8' : '1px solid #334155';
-        let background = '#0f172a';
-        let statusLabel = 'Pending';
-        if (isError) {
-          border = isHighlighted ? '2px solid #f87171' : '1px solid #ef4444';
-          background = 'rgba(127,29,29,0.4)';
-          statusLabel = 'Diverged';
-        } else if (isFinished) {
-          border = isHighlighted ? '2px solid #34d399' : '1px solid #10b981';
-          background = 'rgba(6,78,59,0.4)';
-          statusLabel = 'Completed';
-        } else {
-          border = isHighlighted ? '2px solid #fbbf24' : '1px solid #f59e0b';
-          background = 'rgba(120,53,15,0.4)';
-          statusLabel = 'Running';
-        }
-
-        const row = Math.floor(index / nodesPerRow);
-        const col = index % nodesPerRow;
-
-        return {
-          id,
-          type: 'default',
-          position: { x: 80 + col * 250, y: 50 + row * 160 },
-          data: {
-            label: (
-              <div className="space-y-1">
-                <div className="font-mono font-bold text-[10px] text-slate-200">{id}</div>
-                <div className="text-[9px] text-slate-400 truncate max-w-[120px]">{statusLabel}</div>
-              </div>
-            )
-          },
-          style: {
-            background,
-            color: '#fff',
-            border,
-            borderRadius: '8px',
-            padding: '6px',
-            width: 140,
-            boxShadow: isHighlighted ? '0 0 15px rgba(99, 102, 241, 0.7), inset 0 0 0 1px rgba(129, 140, 248, 0.5)' : 'none',
-            transition: 'box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease'
-          }
-        };
-      });
     }
 
     let flowEdges: any[] = [];
     if (workflowEdges.length > 0) {
-      // Scenario-defined topology — enforce that both source and target endpoints
-      // exist in the flowNodes array being rendered to prevent dangling edge curves.
       const nodeIdSet = new Set(flowNodes.map((n: any) => n.id));
       flowEdges = workflowEdges
         .map((e: any, idx: number) => ({
@@ -474,32 +518,25 @@ export const LiveDebugger: React.FC = () => {
           target: e.to || e.target,
           animated: true
         }))
-        .filter((e: any) => {
-          const valid = nodeIdSet.has(e.source) && nodeIdSet.has(e.target);
-          if (!valid) {
-            console.warn('[LiveDebugger] Dropping edge with unresolved endpoint:', e);
-          }
-          return valid;
-        });
+        .filter((e: any) => nodeIdSet.has(e.source) && nodeIdSet.has(e.target));
     }
-    // If no scenario edges are available (dynamic discovery fallback), we
-    // intentionally do NOT fabricate sequential edges from event order.
-    // Synthetic linear topology silently misrepresents non-linear DAGs.
-    // Nodes will render without edges until a scenario-defined topology
-    // is available.
 
     return { flowNodes, flowEdges };
   };
 
-  // Single reactive graph derivation effect — the sole owner of setNodes/setEdges.
-  // Runs whenever events accumulate, the scenario loads, or the selection changes.
-  // This replaces: imperative updateFlowCanvas() calls inside onmessage, inside
-  // checkStatus, and the separate style-patch useEffect for selection highlighting.
+  // Node Drag Position Saver to ensure layout state persistence
+  const handleNodeDragStop = (_: any, node: any) => {
+    if (node && node.id && node.position) {
+      nodePositionsRef.current.set(node.id, { x: node.position.x, y: node.position.y });
+    }
+  };
+
   useEffect(() => {
     const { flowNodes, flowEdges } = buildTraceGraph(events, activeScenario, selectedEvent);
     setNodes(flowNodes);
     setEdges(flowEdges);
   }, [events, activeScenario, selectedEvent]);
+
 
   // Filter events by selected telemetry level
   useEffect(() => {
@@ -729,9 +766,11 @@ export const LiveDebugger: React.FC = () => {
             edges={edges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
+            onNodeDragStop={handleNodeDragStop}
             onInit={setReactFlowInstance}
             fitView
           >
+
             <Background color="#334155" gap={16} />
             <Controls />
           </ReactFlow>

@@ -1,4 +1,5 @@
 import asyncio
+import hashlib
 import json
 import logging
 from pathlib import Path
@@ -6,6 +7,8 @@ from typing import Any
 
 from flask import Blueprint, jsonify, request
 
+import eval_runner
+from agentv_runtime.manifest import compute_scenario_hash
 from eval_runner import engine, loader, mutator, spec_parser, taxonomy  # noqa: F401
 from eval_runner.catalog import ScenarioCatalog
 
@@ -128,7 +131,10 @@ def validate_scenario_structure(raw_data: dict[str, Any]) -> tuple[bool, list[st
                 seen_node_ids.add(nid)
 
             task_desc = (
-                node.get("task_description") or node.get("prompt") or node.get("description")
+                node.get("task_description")
+                or node.get("prompt")
+                or node.get("description")
+                or node.get("task")
             )
             if not task_desc:
                 errors.append(f"Node '{nid or idx}' missing 'task_description' or prompt")
@@ -385,6 +391,22 @@ def check_execution_readiness():
         )
 
     all_passed = all(c["status"] in ("PASSED", "WARNING") for c in checks)
+    is_verifiable = (
+        all_passed and signing_key is not None and all(c["status"] == "PASSED" for c in checks)
+    )
+
+    # Compute deterministic preflight fingerprint
+    fingerprint_raw = {
+        "scenario_id": scen_id,
+        "scen_hash": compute_scenario_hash(scen_data) if scen_data else None,
+        "endpoint": agent_config.get("endpoint"),
+        "protocol": agent_config.get("protocol"),
+        "max_turns": runtime_config.get("max_turns", 10),
+    }
+    preflight_fingerprint = hashlib.sha3_256(
+        json.dumps(fingerprint_raw, sort_keys=True).encode("utf-8")
+    ).hexdigest()
+
     manifest = None
     if scen_data and all_passed:
         manifest = ManifestBuilder.build(
@@ -399,6 +421,14 @@ def check_execution_readiness():
     return jsonify(
         {
             "ready": all_passed,
+            "is_executable": all_passed,
+            "is_verifiable": is_verifiable,
+            "tier": "VERIFIABLE"
+            if is_verifiable
+            else "EXECUTABLE_ONLY"
+            if all_passed
+            else "BLOCKED",
+            "preflight_fingerprint": preflight_fingerprint,
             "checks": checks,
             "manifest": manifest,
         }
@@ -409,8 +439,8 @@ def check_execution_readiness():
 @require_permission(Permission.SCENARIOS_WRITE)
 def save_scenario():
     """
-    Industrial persistence for canonical scenarios with revision/status support
-    and content hashing.
+    Industrial persistence for canonical scenarios with revision/status support,
+    optimistic concurrency, and content hashing.
     """
     import re
     from datetime import UTC, datetime
@@ -433,9 +463,9 @@ def save_scenario():
     # Server-authoritative status validation
     requested_status = data.get("status") or meta.get("status") or "Draft"
     valid, issues = validate_scenario_structure(data)
-    if requested_status == "Ready" and not valid:
+    if requested_status in ("Ready", "Validated") and not valid:
         meta["status"] = "Draft"
-        meta["status_warning"] = f"Demoted from Ready to Draft: {'; '.join(issues)}"
+        meta["status_warning"] = f"Demoted from {requested_status} to Draft: {'; '.join(issues)}"
     else:
         meta["status"] = requested_status
 
@@ -451,6 +481,28 @@ def save_scenario():
     save_dir.mkdir(parents=True, exist_ok=True)
 
     save_path = save_dir / f"{scen_id}.json"
+
+    # Optimistic concurrency check
+    expected_rev = data.get("expected_revision_hash") or meta.get("expected_revision_hash")
+    if expected_rev and save_path.exists():
+        try:
+            with open(save_path, encoding="utf-8") as f_ex:
+                ex_data = json.load(f_ex)
+                curr_hash = compute_scenario_hash(ex_data)
+                if curr_hash != expected_rev:
+                    return (
+                        jsonify(
+                            {
+                                "error": "Revision conflict: Scenario modified concurrently.",
+                                "current_hash": curr_hash,
+                                "expected_hash": expected_rev,
+                            }
+                        ),
+                        409,
+                    )
+        except Exception as e:
+            logger.debug(f"Concurrency check bypass on read failure: {e}")
+
     try:
         with open(save_path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
@@ -598,7 +650,7 @@ def evaluate_scenario():
             return jsonify({"error": msg, "message": msg}), 404
 
     try:
-        scen = loader.load_scenario(path)
+        scen = eval_runner.loader.load_scenario(path)
     except Exception as e:
         logger.error(f"Scenario load failed: {e}")
         return jsonify({"error": f"Failed to load scenario: {str(e)}", "message": str(e)}), 500
@@ -680,7 +732,7 @@ def evaluate_scenario():
 @require_permission(Permission.SCENARIOS_READ)
 def get_taxonomy():
     """Roadmap: Display the official AEH failure taxonomy."""
-    return jsonify({"categories": taxonomy.CATEGORIES})
+    return jsonify({"categories": eval_runner.taxonomy.CATEGORIES})
 
 
 @scenario_bp.route("/v1/mutate", methods=["POST"])
@@ -720,7 +772,7 @@ def mutate_scenario():
             scenario = json.load(f)
 
     try:
-        mutated = mutator.mutate_scenario(scenario, mutation_type)
+        mutated = eval_runner.mutator.mutate_scenario(scenario, mutation_type)
 
         # Optionally save to output path
         output_path = data.get("output_path")
@@ -728,7 +780,7 @@ def mutate_scenario():
             # Path Traversal Guard
             if not utils.is_path_safe(output_path, config.PROJECT_ROOT):
                 return jsonify({"error": "Access denied: output_path outside project root"}), 403
-            mutator.save_mutated_scenario(mutated, Path(output_path))
+            eval_runner.mutator.save_mutated_scenario(mutated, Path(output_path))
 
         return jsonify({"status": "success", "mutated": mutated})
     except Exception as e:
@@ -761,14 +813,14 @@ def spec_to_eval():
 
     try:
         # Wrap async call for Flask compatibility
-        scenario = asyncio.run(spec_parser.parse_markdown_to_scenario(markdown_text))
+        scenario = asyncio.run(eval_runner.spec_parser.parse_markdown_to_scenario(markdown_text))
 
         output_path = data.get("output_path")
         if output_path:
             # Path Traversal Guard
             if not utils.is_path_safe(output_path, config.PROJECT_ROOT):
                 return jsonify({"error": "Access denied: output_path outside project root"}), 403
-            spec_parser.save_scenario_json(scenario, Path(output_path))
+            eval_runner.spec_parser.save_scenario_json(scenario, Path(output_path))
 
         return jsonify({"status": "success", "scenario": scenario})
     except Exception as e:

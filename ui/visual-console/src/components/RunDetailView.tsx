@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ShieldCheck,
   AlertTriangle,
@@ -12,7 +12,9 @@ import {
   Lock,
   Layers,
   HelpCircle,
+  Loader2,
 } from 'lucide-react';
+
 
 export interface RunDetailData {
   run_id: string;
@@ -68,17 +70,37 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
     'summary' | 'verification' | 'evidence' | 'trace' | 'state' | 'policy' | 'artifacts'
   >('summary');
 
-  // Strict Authoritative Verdict Resolution: Never Fabricate
-  const verdict = run.verdict || 'UNVERIFIED';
+  const [auditResult, setAuditResult] = useState<any>(null);
+  const [auditLoading, setAuditLoading] = useState(false);
+
+  useEffect(() => {
+    if (!run?.run_id) return;
+    setAuditLoading(true);
+    fetch(`/api/v1/runs/${run.run_id}/verify`)
+      .then(res => res.json())
+      .then(data => setAuditResult(data))
+      .catch(e => console.error('Authoritative verification fetch failed:', e))
+      .finally(() => setAuditLoading(false));
+  }, [run?.run_id]);
+
+  // Strict Authoritative Verdict Resolution: Never Fabricate or Infer from Field Existence
+  const verdict = auditResult?.verification_status || run.verdict || 'UNVERIFIED';
   const isVerified = verdict === 'VERIFIED';
   const isBreach = verdict === 'POLICY_BREACH';
-  const isNotVerified = verdict === 'NOT_VERIFIED';
+  const isNotVerified = verdict === 'FAILED_VERIFICATION' || verdict === 'NOT_VERIFIED';
 
   const downloadPackageUrl = `/api/v1/evidence/packages/${run.run_id}?download=true`;
 
-  const signerStatus = run.signature?.algorithm
-    ? `${run.signature.algorithm} Valid (${run.signature.key_id?.slice(0, 10) || 'Active'})`
+  const signerStatus = auditResult
+    ? auditResult.is_valid
+      ? `${auditResult.algorithm || 'Ed25519'} Verified (Merkle Root Sealed)`
+      : auditResult.has_certificate
+      ? `Verification Failed: ${auditResult.failure_reason || 'Tampered'}`
+      : 'UNSIGNED (No Cryptographic Proof)'
+    : run.signature?.algorithm
+    ? `${run.signature.algorithm} (${run.signature.key_id?.slice(0, 10) || 'Active'})`
     : 'UNSIGNED (No Cryptographic Proof)';
+
 
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col h-full min-h-[650px]">
@@ -115,7 +137,9 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
                   : 'bg-amber-950/50 border-amber-500/40 text-amber-300 shadow-amber-500/10'
               }`}
             >
-              {isVerified ? (
+              {auditLoading ? (
+                <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
+              ) : isVerified ? (
                 <ShieldCheck className="w-6 h-6 text-emerald-400" />
               ) : isBreach || isNotVerified ? (
                 <AlertTriangle className="w-6 h-6 text-rose-400" />
@@ -126,9 +150,12 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
                 <div className="text-[10px] uppercase font-mono tracking-wider text-slate-400">
                   Verification Verdict
                 </div>
-                <div className="text-sm font-black tracking-wide">{verdict}</div>
+                <div className="text-sm font-black tracking-wide">
+                  {auditLoading ? 'Verifying...' : verdict}
+                </div>
               </div>
             </div>
+
 
             <a
               href={downloadPackageUrl}
