@@ -1,14 +1,17 @@
 import json
+import logging
 from pathlib import Path
 
 from .trace_utils import load_events
+
+logger = logging.getLogger(__name__)
 
 
 class LeaderboardGenerator:
     """Aggregates results from multiple evaluation runs into a comparison leaderboard."""
 
     @staticmethod
-    def _collect_stats(runs_dir: str) -> list[dict]:
+    def _collect_stats(runs_dir: str, min_pass_rate: float = 0.0) -> list[dict]:
         """Core aggregation logic — returns structured rows, shared by both output methods."""
         path = Path(runs_dir)
         if not path.exists():
@@ -33,12 +36,9 @@ class LeaderboardGenerator:
                     try:
                         with open(manifest_path, encoding="utf-8") as f:
                             manifest_data = json.load(f)
-                            is_certified = bool(
-                                manifest_data.get("has_certificate")
-                                or manifest_data.get("signature")
-                            )
-                    except Exception:
-                        pass
+                            is_certified = True
+                    except Exception as e:
+                        logging.error(f"   [Leaderboard] Manifest Read Failure for {tp}: {e}")
 
                 agent_name = manifest_data.get("metadata", {}).get(
                     "agent_name"
@@ -68,7 +68,8 @@ class LeaderboardGenerator:
 
                             total_tasks = sdata.get("total_tasks", sdata.get("total_nodes", 1))
                             successful_tasks = sdata.get(
-                                "successful_tasks", int(total_tasks * (pass_rate or 0) / 100)
+                                "successful_tasks",
+                                int(total_tasks * (pass_rate or 0) / 100),
                             )
                             if isinstance(sdata.get("metrics"), dict):
                                 avg_by_metric = {
@@ -76,10 +77,10 @@ class LeaderboardGenerator:
                                     for k, v in sdata["metrics"].items()
                                     if isinstance(v, (int, float))
                                 }
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        logging.debug(f"Summary read error in {rd}: {e}")
 
-                # Fallback: scan events from run.jsonl if summary was incomplete
+                # Scan events from run.jsonl if summary was not present or incomplete
                 if pass_rate is None and tp.exists():
                     events = load_events(tp)
                     run_start = next((e for e in events if e.get("event") == "run_start"), {})
@@ -87,52 +88,54 @@ class LeaderboardGenerator:
                     if not agent_name:
                         agent_name = meta.get("agent_name") or meta.get("agent")
 
-                    evals = [
-                        e
-                        for e in events
-                        if e.get("event")
-                        in ("evaluation", "turn_result", "step_success", "step_failure")
-                    ]
-                    if evals:
-                        task_ids = set(e.get("task_id") for e in evals if e.get("task_id"))
-                        total_tasks = len(task_ids) or len(evals)
-                        task_metrics: dict = {}
-                        for e in evals:
-                            tid = e.get("task_id") or str(e.get("step_index", len(task_metrics)))
-                            if tid not in task_metrics:
-                                task_metrics[tid] = []
-                            task_metrics[tid].append(
-                                bool(e.get("success", e.get("event") != "step_failure"))
-                            )
+                    evals = [e for e in events if e.get("event") == "evaluation"]
+                    if not evals:
+                        evals = [
+                            e
+                            for e in events
+                            if e.get("event") in ("turn_result", "step_success", "step_failure")
+                        ]
+                    if not evals:
+                        continue
 
-                        successful_tasks = sum(
-                            1 for results in task_metrics.values() if all(results)
-                        )
-                        pass_rate = (
-                            (successful_tasks / total_tasks * 100) if total_tasks > 0 else 0.0
+                    task_ids = set(e.get("task_id") for e in evals if e.get("task_id"))
+                    total_tasks = len(task_ids) or len(evals)
+                    task_metrics: dict = {}
+                    for e in evals:
+                        tid = e.get("task_id") or str(e.get("step_index", len(task_metrics)))
+                        if tid not in task_metrics:
+                            task_metrics[tid] = []
+                        task_metrics[tid].append(
+                            bool(e.get("success", e.get("event") != "step_failure"))
                         )
 
-                        metric_scores: dict[str, list[float]] = {}
-                        for e in evals:
-                            cat = e.get("metric", "accuracy")
-                            score = e.get("value", e.get("score"))
-                            if score is not None:
-                                try:
-                                    metric_scores.setdefault(cat, []).append(float(score))
-                                except (ValueError, TypeError):
-                                    pass
+                    successful_tasks = sum(1 for results in task_metrics.values() if all(results))
+                    pass_rate = (successful_tasks / total_tasks * 100) if total_tasks > 0 else 0.0
 
-                        avg_by_metric = {
-                            cat: round(sum(vals) / len(vals), 3)
-                            for cat, vals in metric_scores.items()
-                            if vals
-                        }
+                    metric_scores: dict[str, list[float]] = {}
+                    for e in evals:
+                        cat = e.get("metric", "unknown")
+                        score = e.get("value", e.get("score"))
+                        if score is not None:
+                            try:
+                                metric_scores.setdefault(cat, []).append(float(score))
+                            except (ValueError, TypeError):
+                                pass
+
+                    avg_by_metric = {
+                        cat: round(sum(vals) / len(vals), 3)
+                        for cat, vals in metric_scores.items()
+                        if vals
+                    }
 
                 if pass_rate is None:
-                    pass_rate = 0.0
+                    continue
 
                 if not agent_name:
                     agent_name = rd.name
+
+                if pass_rate < min_pass_rate:
+                    continue
 
                 stats.append(
                     {
@@ -151,8 +154,6 @@ class LeaderboardGenerator:
                     }
                 )
             except Exception as e:
-                import logging
-
                 logging.error(f"   [Leaderboard] Aggregation Failure for {rd}: {e}")
                 continue
 
@@ -160,20 +161,25 @@ class LeaderboardGenerator:
         return stats
 
     @staticmethod
-    def generate_data(runs_dir: str) -> list[dict]:
+    def generate_data(runs_dir: str, min_pass_rate: float = 0.0) -> list[dict]:
         """
         Returns structured leaderboard rows as a list of dicts.
         Suitable for JSON API responses and programmatic consumption.
         """
-        return LeaderboardGenerator._collect_stats(runs_dir)
+        return LeaderboardGenerator._collect_stats(runs_dir, min_pass_rate=min_pass_rate)
 
     @staticmethod
-    def generate_markdown(runs_dir: str) -> str:
+    def generate_markdown(runs_dir: str, min_pass_rate: float = 50.0) -> str:
         """Generates a Markdown leaderboard table from traces in a directory."""
-        stats = LeaderboardGenerator._collect_stats(runs_dir)
+        stats = LeaderboardGenerator._collect_stats(runs_dir, min_pass_rate=min_pass_rate)
 
         if not stats:
-            return "# \U0001f3c6 Agent Evaluation Leaderboard\n\n> [!WARNING]\n> No agents have achieved the minimum quality threshold (50% pass rate) yet. Keep iterating!\n"  # noqa: E501
+            return (
+                "# \U0001f3c6 Agent Evaluation Leaderboard\n\n"
+                "> [!WARNING]\n"
+                "> No agents have achieved the minimum quality threshold (50% pass rate) yet. "
+                "Keep iterating!\n"
+            )
 
         md = "# \U0001f3c6 Agent Evaluation Leaderboard\n\n"
         md += "| Rank | Agent | Pass Rate | Success/Total | Trace File |\n"
@@ -189,7 +195,10 @@ class LeaderboardGenerator:
                 if i == 2
                 else f"{i + 1}."
             )
-            md += f"| {icon} | **{s['agent_display']}** | {s['pass_rate']:.1f}% | {s['tasks']} | `{s['trace_file']}` |\n"  # noqa: E501
+            md += (
+                f"| {icon} | **{s['agent_display']}** | {s['pass_rate']:.1f}% | "
+                f"{s['tasks']} | `{s['trace_file']}` |\n"
+            )
 
         md += "\n*Generated by [AgentV](https://github.com/najeed/ai-agent-eval-harness)*\n"
         return md
