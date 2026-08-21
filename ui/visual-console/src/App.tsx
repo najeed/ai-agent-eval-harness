@@ -723,7 +723,10 @@ const ConsoleLayout: React.FC = () => {
                 {(isExpanded || sidebarCollapsed) && (
                   <div className="space-y-0.5">
                     {group.items.map(item => {
-                      const isActive = location.pathname === item.path || (item.path !== '/' && !item.path.startsWith('http') && location.pathname.startsWith(item.path));
+                      const currentUrl = location.pathname + location.search;
+                      const isActive = item.path.includes('?')
+                        ? currentUrl === item.path
+                        : location.pathname === item.path && (!location.search || !location.search.includes('view='));
                       const restricted = isNavItemRestricted(item);
                       const isExternal = item.path.startsWith('http://') || item.path.startsWith('https://');
 

@@ -23,9 +23,9 @@ interface RunItem {
 }
 
 export const RunsReports: React.FC = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const runIdParam = searchParams.get('run_id');
-
+  const activeView = searchParams.get('view') === 'packages' ? 'packages' : 'history';
 
   const [runs, setRuns] = useState<RunItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,6 +36,17 @@ export const RunsReports: React.FC = () => {
 
   // Active selected run for canonical inspection
   const [selectedRun, setSelectedRun] = useState<RunItem | null>(null);
+
+  const setViewMode = (mode: 'history' | 'packages') => {
+    const nextParams = new URLSearchParams(searchParams);
+    if (mode === 'packages') {
+      nextParams.set('view', 'packages');
+    } else {
+      nextParams.delete('view');
+    }
+    setSearchParams(nextParams);
+  };
+
 
   const fetchRuns = async () => {
     setLoading(true);
@@ -101,16 +112,49 @@ export const RunsReports: React.FC = () => {
         </div>
       ) : (
         <div className="space-y-6">
-          {/* Header */}
+          {/* Header & View Mode Switcher */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-white tracking-tight">Runs & Verification Evidence</h1>
-              <p className="text-xs text-slate-400">
-                Authoritative execution history, state transition verdicts, and downloadable Verification Packages.
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl font-bold text-white tracking-tight">
+                  {activeView === 'packages' ? 'Evidence Packages & Verification' : 'Active & History Runs'}
+                </h1>
+                <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-indigo-500/10 border border-indigo-500/30 text-indigo-300">
+                  {activeView === 'packages' ? 'Audit & Artifacts' : 'Execution Logs'}
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 mt-1">
+                {activeView === 'packages'
+                  ? 'Authoritative cryptographic audit bundles, ML-DSA-65 / Ed25519 sealed manifests, and offline verification packages.'
+                  : 'Authoritative execution history, state transition verdicts, and continuous evaluation telemetry.'}
               </p>
             </div>
 
             <div className="flex items-center gap-3">
+              {/* Tab Selector */}
+              <div className="flex bg-slate-950 border border-slate-800 rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode('history')}
+                  className={`px-3 py-1.5 rounded-md text-xs font-semibold transition ${
+                    activeView === 'history'
+                      ? 'bg-slate-800 text-white shadow-sm'
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  Active & History
+                </button>
+                <button
+                  onClick={() => setViewMode('packages')}
+                  className={`px-3 py-1.5 rounded-md text-xs font-semibold transition ${
+                    activeView === 'packages'
+                      ? 'bg-indigo-600 text-white shadow-sm'
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  Evidence Packages
+                </button>
+              </div>
+
               <button
                 onClick={fetchRuns}
                 className="px-3.5 py-2 rounded-lg bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 text-xs font-semibold flex items-center gap-2 transition"
@@ -120,6 +164,7 @@ export const RunsReports: React.FC = () => {
               </button>
             </div>
           </div>
+
 
           {/* Search & Filter Bar */}
           <div className="flex flex-col sm:flex-row items-center gap-3 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
