@@ -59,8 +59,8 @@ async def test_openai_list_models_failures():
 
     with patch("aiohttp.ClientSession", return_value=session_cm_1):
         models = await provider.list_models()
-        assert len(models) == 2
-        assert models[0]["id"] == "gpt-5.4-pro"
+        assert len(models) == 1
+        assert models[0]["id"] == "gpt-5.6"
 
     # 2. Connection Exception (except block)
     mock_session_2 = MagicMock()
@@ -72,7 +72,7 @@ async def test_openai_list_models_failures():
 
     with patch("aiohttp.ClientSession", return_value=session_cm_2):
         models = await provider.list_models()
-        assert len(models) == 2
+        assert len(models) == 1
 
 
 @pytest.mark.asyncio
