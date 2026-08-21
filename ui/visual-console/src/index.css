@@ -27,3 +27,35 @@
     font-family: 'JetBrains Mono', monospace;
   }
 }
+
+/* ReactFlow Canvas Controls Dark Theme */
+.react-flow__controls {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6) !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  border: 1px solid #334155 !important;
+  background-color: #0f172a !important;
+}
+
+.react-flow__controls-button {
+  background-color: #0f172a !important;
+  border-bottom: 1px solid #1e293b !important;
+  fill: #94a3b8 !important;
+  color: #94a3b8 !important;
+  transition: all 0.15s ease-in-out !important;
+}
+
+.react-flow__controls-button:last-child {
+  border-bottom: none !important;
+}
+
+.react-flow__controls-button:hover {
+  background-color: #1e293b !important;
+  fill: #f8fafc !important;
+  color: #f8fafc !important;
+}
+
+.react-flow__controls-button svg {
+  fill: currentColor !important;
+}
+

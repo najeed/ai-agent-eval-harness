@@ -386,7 +386,15 @@ def get_run_report_pdf(run_id):
         logger.warning(f"Explain trace warning: {e}")
         analysis = {"root_cause": "Unknown", "suggestion": "N/A", "confidence": 0.5}
 
+    summary_path = trace_path.parent / "summary.json"
+    manifest_path = trace_path.parent / "run_manifest.json"
+    cert_path = trace_path.parent / "certificate.json"
+
+    scenario_name = run_id
+    passed = None
+    has_cert = cert_path.exists()
     status = "COMPLETED"
+    pqc_enabled = False
     timestamp = datetime.now(UTC).replace(tzinfo=None).isoformat() + "Z"
     try:
         with open(trace_path, encoding="utf-8") as f:
@@ -397,10 +405,50 @@ def get_run_report_pdf(run_id):
     except Exception as e:
         logger.debug(f"Error reading first trace line: {e}")
 
+    if summary_path.exists():
+        try:
+            with open(summary_path, encoding="utf-8") as f:
+                sdata = json.load(f)
+                scenario_name = sdata.get("scenario") or sdata.get("scenario_id") or scenario_name
+                if "passed" in sdata:
+                    passed = bool(sdata["passed"])
+                elif "success" in sdata:
+                    passed = bool(sdata["success"])
+                if sdata.get("verification_status"):
+                    status = sdata["verification_status"]
+                elif passed is True:
+                    status = "VERIFIED" if has_cert else "PASSED"
+                elif passed is False:
+                    status = "FAILED"
+        except Exception as e:
+            logger.debug(f"Error reading summary.json: {e}")
+
+    if manifest_path.exists():
+        try:
+            with open(manifest_path, encoding="utf-8") as f:
+                mdata = json.load(f)
+                scenario_name = (
+                    mdata.get("scenario")
+                    or mdata.get("metadata", {}).get("scenario_name")
+                    or scenario_name
+                )
+                if (
+                    "pqc" in str(mdata.get("crypto_suite", "")).lower()
+                    or "ml-dsa" in str(mdata.get("algorithm", "")).lower()
+                ):
+                    pqc_enabled = True
+                if mdata.get("has_certificate"):
+                    has_cert = True
+        except Exception as e:
+            logger.debug(f"Error reading manifest: {e}")
+
     run_data = {
         "run_id": run_id,
-        "scenario": run_id,
+        "scenario": scenario_name,
         "status": status,
+        "passed": passed,
+        "has_certificate": has_cert,
+        "pqc_enabled": pqc_enabled,
         "timestamp": timestamp,
         "analysis": analysis,
     }

@@ -94,8 +94,22 @@ export const RBACProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
   };
 
-  const perms = useMemo(() => new Set(user?.permissions || []), [user]);
-  const isAdmin = activeRole === 'System Admin' || perms.has('*') || perms.has('system:config');
+  const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
+    'System Admin': ['*'],
+    'Compliance Auditor': ['runs:read', 'scenarios:read', 'certify:write', 'hitl:resolve', 'reports:read', 'trust:read'],
+    'Scenario Designer': ['scenarios:read', 'scenarios:write', 'eval:trigger', 'runs:read'],
+    'MultiAgentOps Eng.': ['runs:read', 'eval:trigger', 'hitl:resolve', 'scenarios:read'],
+    'Viewer': ['runs:read', 'scenarios:read'],
+  };
+
+  const perms = useMemo(() => {
+    if (isDevMode) {
+      return new Set(ROLE_PERMISSIONS[activeRole] || ['runs:read', 'scenarios:read']);
+    }
+    return new Set(user?.permissions || []);
+  }, [user, activeRole, isDevMode]);
+
+  const isAdmin = activeRole === 'System Admin' || (!isDevMode && (perms.has('*') || perms.has('system:config')));
 
   const hasPermission = (permission: string): boolean => {
     if (isAdmin) return true;
@@ -124,6 +138,7 @@ export const RBACProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return <RBACContext.Provider value={value}>{children}</RBACContext.Provider>;
 };
+
 
 export const useRBAC = () => {
   const context = useContext(RBACContext);

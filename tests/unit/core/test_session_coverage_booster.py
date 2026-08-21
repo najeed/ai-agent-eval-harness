@@ -363,13 +363,13 @@ def test_runner_dependency_graph_and_run_scenario():
     assert runner.resolved_config.timeout_seconds == 90
 
     # Test run_scenario with custom runner having set_dependency_graph
-    with patch.object(runner, "run", return_value=MagicMock()):
-        with patch("asyncio.get_event_loop") as mock_loop:
-            mock_loop.return_value.is_running.return_value = False
-            mock_loop.return_value.run_until_complete.return_value = MagicMock()
-            res = run_scenario(
-                {"id": "scen_test", "workflow": {"nodes": []}},
-                runner=runner,
-                run_store=mock_store,
-            )
-            assert res is not None
+    async def fake_run(*args, **kwargs):
+        return MagicMock()
+
+    with patch.object(runner, "run", side_effect=fake_run):
+        res = run_scenario(
+            {"id": "scen_test", "workflow": {"nodes": []}},
+            runner=runner,
+            run_store=mock_store,
+        )
+        assert res is not None

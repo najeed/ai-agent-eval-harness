@@ -612,7 +612,7 @@ const ConsoleLayout: React.FC = () => {
     {
       title: 'Evidence',
       items: [
-        { name: 'Verification & Packages', path: '/reports', icon: <FileText className="w-4 h-4" /> },
+        { name: 'Evidence Packages & Certs', path: '/reports?view=packages', icon: <FileText className="w-4 h-4" /> },
         { name: 'Trust Center', path: '/trust', icon: <ShieldCheck className="w-4 h-4" /> },
         { name: 'Compliance Forensics', path: '/compliance', icon: <Shield className="w-4 h-4" /> },
         { name: 'Publication Suite', path: '/publish', icon: <Zap className="w-4 h-4" /> },
@@ -650,6 +650,8 @@ const ConsoleLayout: React.FC = () => {
     if (item.path === '/editor' && !canEditScenario) return true;
     if (item.path === '/runner' && !canRunEval) return true;
     if (item.path === '/trust' && !canSignCert) return true;
+    if (item.path === '/mutator' && !canEditScenario) return true;
+    if (item.path === '/publish' && !canRunEval) return true;
     return false;
   };
 
@@ -658,9 +660,11 @@ const ConsoleLayout: React.FC = () => {
     'Compliance Auditor': 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
     'Scenario Designer': 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
     'MultiAgentOps Eng.': 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+    'Viewer': 'text-slate-400 bg-slate-500/10 border-slate-500/20',
   };
 
   return (
+
     <div className="flex h-screen w-screen overflow-hidden bg-navy-base font-sans antialiased text-slate-200">
       <CommandPalette isOpen={isCmdOpen} setIsOpen={setIsCmdOpen} />
 
@@ -840,7 +844,9 @@ const ConsoleLayout: React.FC = () => {
                   <option value="Compliance Auditor">Compliance Auditor</option>
                   <option value="Scenario Designer">Scenario Designer</option>
                   <option value="MultiAgentOps Eng.">MultiAgentOps Eng.</option>
+                  <option value="Viewer">Viewer (Read-Only)</option>
                 </select>
+
               </div>
             ) : (
               <div className="flex items-center gap-2 border-l border-slate-900 pl-3">

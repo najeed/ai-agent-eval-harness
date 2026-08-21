@@ -134,17 +134,24 @@ export const RunsReports: React.FC = () => {
               />
             </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              {['All', 'VERIFIED', 'NOT_VERIFIED', 'POLICY_BREACH', 'UNVERIFIED'].map((st) => (
+            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+              {[
+                { key: 'All', label: 'All' },
+                { key: 'VERIFIED', label: 'Verified' },
+                { key: 'NOT_VERIFIED', label: 'Failed Verification' },
+                { key: 'POLICY_BREACH', label: 'Policy Breach' },
+                { key: 'UNVERIFIED', label: 'Unverified (No Cert)' },
+              ].map((st) => (
                 <button
-                  key={st}
-                  onClick={() => setStatusFilter(st)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${statusFilter === st
-                      ? 'bg-indigo-600 text-white'
+                  key={st.key}
+                  onClick={() => setStatusFilter(st.key)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                    statusFilter === st.key
+                      ? 'bg-indigo-600 text-white shadow-sm'
                       : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
-                    }`}
+                  }`}
                 >
-                  {st}
+                  {st.label}
                 </button>
               ))}
             </div>
@@ -152,67 +159,85 @@ export const RunsReports: React.FC = () => {
 
           {/* Master Runs Table */}
           <div className="bg-slate-900/80 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-950/80 border-b border-slate-800 text-[10px] text-slate-500 uppercase tracking-wider font-mono">
-                <tr>
-                  <th className="px-6 py-3.5 font-semibold">Run ID</th>
-                  <th className="px-6 py-3.5 font-semibold">Scenario Target</th>
-                  <th className="px-6 py-3.5 font-semibold">Verification Verdict</th>
-                  <th className="px-6 py-3.5 font-semibold">Duration</th>
-                  <th className="px-6 py-3.5 font-semibold text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60 font-mono">
-                {filteredRuns.map((r) => {
-                  const isVer = r.verdict === 'VERIFIED';
-                  const isBreach = r.verdict === 'POLICY_BREACH';
-                  return (
-                    <tr key={r.run_id} className="hover:bg-slate-850/50 transition">
-                      <td className="px-6 py-4 font-bold text-slate-200">{r.run_id}</td>
-                      <td className="px-6 py-4 font-sans font-medium text-white">{r.scenario}</td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5 ${isVer
-                              ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
-                              : isBreach
-                                ? 'bg-rose-500/10 border border-rose-500/20 text-rose-400'
-                                : 'bg-amber-500/10 border border-amber-500/20 text-amber-400'
-                            }`}
-                        >
-                          {isVer ? <ShieldCheck className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}
-                          {r.verdict || 'UNVERIFIED'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-slate-400">
-                        {r.duration != null ? `${r.duration.toFixed(1)}s` : '-'}
-                      </td>
-                      <td className="px-6 py-4 text-right">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs text-slate-300 min-w-[800px]">
+                <thead className="bg-slate-950/80 border-b border-slate-800 text-[10px] text-slate-500 uppercase tracking-wider font-mono">
+                  <tr>
+                    <th className="px-6 py-3.5 font-semibold w-56">Run ID</th>
+                    <th className="px-6 py-3.5 font-semibold min-w-[200px]">Scenario Target</th>
+                    <th className="px-6 py-3.5 font-semibold whitespace-nowrap">Verification Verdict</th>
+                    <th className="px-6 py-3.5 font-semibold whitespace-nowrap">Duration</th>
+                    <th className="px-6 py-3.5 font-semibold text-right min-w-[260px] whitespace-nowrap">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60 font-mono">
+                  {filteredRuns.map((r) => {
+                    const isVer = r.verdict === 'VERIFIED';
+                    const isBreach = r.verdict === 'POLICY_BREACH';
+                    const isFailed = r.verdict === 'NOT_VERIFIED';
+                    const verdictLabel = isVer
+                      ? 'Verified'
+                      : isBreach
+                        ? 'Policy Breach'
+                        : isFailed
+                          ? 'Failed Verification'
+                          : 'Unverified';
 
-                        <div className="flex items-center justify-end gap-2 font-sans">
-                          <button
-                            onClick={() => setSelectedRun(r)}
-                            className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition"
+                    return (
+                      <tr key={r.run_id} className="hover:bg-slate-850/50 transition">
+                        <td className="px-6 py-4 font-bold text-slate-200 max-w-[220px] truncate" title={r.run_id}>
+                          {r.run_id}
+                        </td>
+                        <td className="px-6 py-4 font-sans font-medium text-white max-w-[260px] truncate" title={r.scenario}>
+                          {r.scenario}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
+                            className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5 ${
+                              isVer
+                                ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
+                                : isBreach
+                                  ? 'bg-rose-500/10 border border-rose-500/20 text-rose-400'
+                                  : isFailed
+                                    ? 'bg-red-500/10 border border-red-500/20 text-red-400'
+                                    : 'bg-amber-500/10 border border-amber-500/20 text-amber-400'
+                            }`}
                           >
-                            <Eye className="w-3.5 h-3.5 text-indigo-400" />
-                            Inspect 7-Tab Detail
-                          </button>
-                          <a
-                            href={`/api/v1/evidence/packages/${r.run_id}?download=true`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-3 py-1.5 rounded-lg bg-indigo-950/60 hover:bg-indigo-900 border border-indigo-500/30 text-indigo-300 text-xs font-semibold flex items-center gap-1.5 transition"
-                          >
-                            <Download className="w-3.5 h-3.5" />
-                            Package
-                          </a>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                            {isVer ? <ShieldCheck className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}
+                            {verdictLabel}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-slate-400 whitespace-nowrap">
+                          {r.duration != null ? `${r.duration.toFixed(1)}s` : '-'}
+                        </td>
+                        <td className="px-6 py-4 text-right whitespace-nowrap min-w-[260px]">
+                          <div className="flex items-center justify-end gap-2 font-sans">
+                            <button
+                              onClick={() => setSelectedRun(r)}
+                              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition"
+                            >
+                              <Eye className="w-3.5 h-3.5 text-indigo-400" />
+                              Inspect 7-Tab Detail
+                            </button>
+                            <a
+                              href={`/api/v1/evidence/packages/${r.run_id}?download=true`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-1.5 rounded-lg bg-indigo-950/60 hover:bg-indigo-900 border border-indigo-500/30 text-indigo-300 text-xs font-semibold flex items-center gap-1.5 transition"
+                            >
+                              <Download className="w-3.5 h-3.5" />
+                              Package
+                            </a>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
+
         </div>
       )}
     </div>

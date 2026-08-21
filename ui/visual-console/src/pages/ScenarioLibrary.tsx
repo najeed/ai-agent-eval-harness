@@ -22,6 +22,7 @@ interface ScenarioItem {
 export const ScenarioLibrary: React.FC = () => {
   const navigate = useNavigate();
   const [scenarios, setScenarios] = useState<ScenarioItem[]>([]);
+  const [allIndustries, setAllIndustries] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   
@@ -47,6 +48,14 @@ export const ScenarioLibrary: React.FC = () => {
       const res = await fetch(`/api/scenarios?${params.toString()}`);
       const data = await res.json();
       setScenarios(data.scenarios || []);
+      if (data.all_industries && Array.isArray(data.all_industries) && data.all_industries.length > 0) {
+        setAllIndustries(data.all_industries);
+      } else if (data.scenarios) {
+        setAllIndustries(prev => {
+          const combined = new Set([...prev, ...data.scenarios.map((s: ScenarioItem) => s.industry).filter(Boolean)]);
+          return Array.from(combined).sort((a, b) => a.localeCompare(b));
+        });
+      }
     } catch (e) {
       console.error(e);
     } finally {
@@ -127,22 +136,23 @@ export const ScenarioLibrary: React.FC = () => {
                        (s.metadata?.description || '').toLowerCase().includes(search.toLowerCase()) ||
                        (s.id || '').toLowerCase().includes(search.toLowerCase());
     
-    const indMatch = selectedIndustry === 'All' || s.industry === selectedIndustry;
+    const indMatch = selectedIndustry === 'All' || s.industry?.toLowerCase() === selectedIndustry.toLowerCase();
     // Difficulty match
-    const compLevel = s.compliance_level || s.metadata?.compliance_level || 'Standard';
+    const compLevel = (s.compliance_level || s.metadata?.compliance_level || 'Standard').toLowerCase();
     const diffMatch = selectedDifficulty === 'All' || 
-                      (selectedDifficulty === 'Standard' && compLevel === 'Standard') ||
-                      (selectedDifficulty === 'High' && compLevel !== 'Standard');
+                      (selectedDifficulty === 'Standard' && (compLevel === 'standard' || s.aes_version === 1)) ||
+                      (selectedDifficulty === 'High' && compLevel !== 'standard');
                       
     return titleMatch && indMatch && diffMatch;
   });
 
   const industries = [
     'All',
-    ...Array.from(new Set(scenarios.map(s => s.industry)))
-      .filter(Boolean)
-      .sort((a, b) => a.localeCompare(b))
+    ...(allIndustries.length > 0
+      ? allIndustries
+      : Array.from(new Set(scenarios.map(s => s.industry))).filter(Boolean).sort((a, b) => a.localeCompare(b)))
   ];
+
 
   return (
     <div className="flex h-screen bg-navy-base text-slate-100 overflow-hidden">
@@ -172,8 +182,9 @@ export const ScenarioLibrary: React.FC = () => {
                 >
                   <span className="capitalize">{ind.replace(/_/g, ' ')}</span>
                   <span className="text-[10px] text-slate-600 font-bold">
-                    {ind === 'All' ? scenarios.length : scenarios.filter(s => s.industry === ind).length}
+                    {ind === 'All' ? scenarios.length : scenarios.filter(s => s.industry?.toLowerCase() === ind.toLowerCase()).length || ''}
                   </span>
+
                 </button>
               ))}
             </div>

@@ -39,7 +39,13 @@ def list_scenarios():
         query=query, industry=industry, difficulty=difficulty, limit=limit, offset=offset
     )
     return jsonify(
-        {"scenarios": results, "total_count": len(catalog.scenarios), "page": page, "limit": limit}
+        {
+            "scenarios": results,
+            "total_count": len(catalog.scenarios),
+            "all_industries": catalog.get_all_industries(),
+            "page": page,
+            "limit": limit,
+        }
     )
 
 
@@ -284,23 +290,41 @@ def check_execution_readiness():
         )
 
     # 2. Agent Endpoint / Adapter
-    proto = agent_config.get("protocol", "http_rest")
+    proto = str(agent_config.get("protocol", "http_rest")).lower()
     endpoint = agent_config.get("endpoint", "http://localhost:8000")
-    if proto in ("http_rest", "openai", "ollama", "langchain", "custom_http"):
+    known_protocols = (
+        "http_rest",
+        "http",
+        "rest",
+        "openai",
+        "gemini",
+        "anthropic",
+        "claude",
+        "ollama",
+        "langchain",
+        "custom_http",
+        "grpc",
+        "sse",
+    )
+    if proto in known_protocols:
         checks.append(
             {
                 "name": "Agent Protocol & Config",
                 "status": "PASSED",
-                "message": f"Targeting {proto} at {endpoint}",
+                "message": f"Targeting protocol '{proto}' at {endpoint}",
                 "target_status": "CONFIGURED",
             }
         )
+
     else:
         checks.append(
             {
                 "name": "Agent Protocol & Config",
                 "status": "WARNING",
-                "message": f"Custom protocol '{proto}' specified.",
+                "message": (
+                    f"Custom protocol '{proto}' specified "
+                    "(ensure custom adapter handler is installed)."
+                ),
                 "target_status": "CUSTOM",
             }
         )
@@ -311,7 +335,7 @@ def check_execution_readiness():
         {
             "name": "Simulator Environment",
             "status": "PASSED",
-            "message": f"{sim_count} active domain simulators available.",
+            "message": f"{sim_count} active domain simulators registered and ready.",
         }
     )
 
@@ -334,7 +358,10 @@ def check_execution_readiness():
                 "name": "Cryptographic Sealer",
                 "status": "WARNING",
                 "signer_type": "EPHEMERAL",
-                "message": "Ephemeral in-memory Ed25519 sealer active (non-production test mode).",
+                "message": (
+                    "Ephemeral in-memory Ed25519 sealer active (non-production mode; "
+                    "set SIGNING_KEY for persistent audit sealing)."
+                ),
             }
         )
 

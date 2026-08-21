@@ -72,8 +72,27 @@ export const Triage: React.FC = () => {
     }
   };
 
+  const [availableRuns, setAvailableRuns] = useState<{ run_id: string; scenario?: string }[]>([]);
+  const [loadingRuns, setLoadingRuns] = useState(false);
+
+  const fetchAvailableRuns = async () => {
+    setLoadingRuns(true);
+    try {
+      const res = await fetch('/api/runs');
+      if (res.ok) {
+        const data = await res.json();
+        setAvailableRuns(data.runs || []);
+      }
+    } catch (e) {
+      console.warn('Could not load runs for triage dropdown:', e);
+    } finally {
+      setLoadingRuns(false);
+    }
+  };
+
   useEffect(() => {
     fetchTriageSummary();
+    fetchAvailableRuns();
   }, []);
 
   useEffect(() => {
@@ -113,25 +132,57 @@ export const Triage: React.FC = () => {
               <span>Diagnose Run ID</span>
             </h3>
             <form onSubmit={handleTriageSubmit} className="space-y-3">
-              <div className="space-y-1">
-                <label className="text-[10px] text-slate-500 font-bold uppercase">Run ID Vault Key</label>
-                <input
-                  type="text"
-                  value={runId}
-                  onChange={(e) => setRunId(e.target.value)}
-                  placeholder="e.g. test_run_sse or r1"
-                  className="w-full bg-slate-950 border border-slate-850 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
-                />
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <label className="text-[10px] text-slate-500 font-bold uppercase">Run ID Vault Key</label>
+                  {availableRuns.length > 0 && (
+                    <span className="text-[9px] text-indigo-400 font-mono">{availableRuns.length} available</span>
+                  )}
+                </div>
+
+                {availableRuns.length > 0 ? (
+                  <div className="space-y-1.5">
+                    <select
+                      value={runId}
+                      onChange={(e) => setRunId(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-mono cursor-pointer"
+                    >
+                      <option value="">-- Select Run ID or type below --</option>
+                      {availableRuns.map((r) => (
+                        <option key={r.run_id} value={r.run_id}>
+                          {r.run_id} {r.scenario ? `(${r.scenario})` : ''}
+                        </option>
+                      ))}
+                    </select>
+
+                    <input
+                      type="text"
+                      value={runId}
+                      onChange={(e) => setRunId(e.target.value)}
+                      placeholder="Or paste / type custom Vault Key..."
+                      className="w-full bg-slate-950 border border-slate-850 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-mono text-[11px]"
+                    />
+                  </div>
+                ) : (
+                  <input
+                    type="text"
+                    value={runId}
+                    onChange={(e) => setRunId(e.target.value)}
+                    placeholder="e.g. test_run_sse or r1"
+                    className="w-full bg-slate-950 border border-slate-850 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-mono"
+                  />
+                )}
               </div>
               <button
                 type="submit"
                 disabled={loading || !runId.trim()}
-                className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
+                className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
                 {loading ? 'Running Diagnostics...' : 'Trigger Root-Cause Analysis'}
               </button>
             </form>
           </div>
+
 
           {/* Aggregate bar chart */}
           <div className="bg-slate-950/40 border border-slate-900 rounded-xl p-5 space-y-4">

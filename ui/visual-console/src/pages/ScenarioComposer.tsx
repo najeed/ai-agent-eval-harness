@@ -491,44 +491,60 @@ export const ScenarioComposer: React.FC = () => {
     <div className="flex flex-col h-[calc(100vh-56px)] bg-navy-base text-slate-100 overflow-hidden select-none">
       {/* Top action toolbar */}
       <div className="h-14 border-b border-slate-900 bg-slate-950/20 px-6 flex items-center justify-between shrink-0 text-xs">
-        <div className="flex items-center gap-3">
-          <input
-            type="text"
-            disabled={!canEditScenario}
-            value={scenarioId}
-            onChange={(e) => setScenarioId(e.target.value)}
-            placeholder="Scenario ID"
-            className="bg-slate-950 border border-slate-800 rounded px-2.5 py-1 w-36 text-slate-200 focus:outline-none focus:border-indigo-500 font-mono font-bold disabled:opacity-60"
-          />
-          <input
-            type="text"
-            disabled={!canEditScenario}
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Scenario Name"
-            className="bg-slate-950 border border-slate-800 rounded px-2.5 py-1 w-44 text-slate-200 focus:outline-none disabled:opacity-60"
-          />
-          <div className="flex items-center gap-1">
-            <span className="text-[10px] text-slate-500 font-mono">v</span>
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Scenario ID Field */}
+          <div className="flex items-center gap-1.5 bg-slate-950/80 border border-slate-850 rounded px-2 py-0.5">
+            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">ID:</span>
+            <input
+              type="text"
+              disabled={!canEditScenario}
+              value={scenarioId}
+              onChange={(e) => setScenarioId(e.target.value)}
+              placeholder="scenario_id"
+              className="bg-transparent border-none w-32 text-slate-200 focus:outline-none focus:text-indigo-400 font-mono font-bold text-xs disabled:opacity-60"
+            />
+          </div>
+
+          {/* Scenario Name Field */}
+          <div className="flex items-center gap-1.5 bg-slate-950/80 border border-slate-850 rounded px-2 py-0.5">
+            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Name:</span>
+            <input
+              type="text"
+              disabled={!canEditScenario}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Scenario Name"
+              className="bg-transparent border-none w-40 text-slate-200 focus:outline-none focus:text-white font-medium text-xs disabled:opacity-60"
+            />
+          </div>
+
+          {/* Version Field */}
+          <div className="flex items-center gap-1 bg-slate-950/80 border border-slate-850 rounded px-2 py-0.5">
+            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Ver:</span>
             <input
               type="text"
               disabled={!canEditScenario}
               value={version}
               onChange={(e) => setVersion(e.target.value)}
               placeholder="1.0.0"
-              className="bg-slate-950 border border-slate-800 rounded px-1.5 py-1 w-16 text-slate-300 font-mono text-[11px] focus:outline-none disabled:opacity-60 text-center"
+              className="bg-transparent border-none w-14 text-slate-300 font-mono text-[11px] focus:outline-none disabled:opacity-60 text-center"
             />
           </div>
-          <select
-            disabled={!canEditScenario}
-            value={lifecycleStatus}
-            onChange={(e) => setLifecycleStatus(e.target.value as any)}
-            className="bg-slate-950 border border-slate-850 text-indigo-400 font-bold rounded px-2 py-1 text-[11px] focus:outline-none disabled:opacity-60 cursor-pointer"
-          >
-            <option value="Draft">Draft</option>
-            <option value="Validated">Validated</option>
-            <option value="Ready">Ready to Run</option>
-          </select>
+
+          {/* Status Selector */}
+          <div className="flex items-center gap-1 bg-slate-950/80 border border-slate-850 rounded px-2 py-0.5">
+            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Status:</span>
+            <select
+              disabled={!canEditScenario}
+              value={lifecycleStatus}
+              onChange={(e) => setLifecycleStatus(e.target.value as any)}
+              className="bg-transparent border-none text-indigo-400 font-bold text-[11px] focus:outline-none disabled:opacity-60 cursor-pointer"
+            >
+              <option value="Draft">Draft</option>
+              <option value="Validated">Validated</option>
+              <option value="Ready">Ready to Run</option>
+            </select>
+          </div>
 
           {!canEditScenario && (
             <span className="bg-amber-500/10 border border-amber-500/20 text-amber-400 font-bold px-2 py-0.5 rounded text-[10px] uppercase tracking-wider">
@@ -536,6 +552,7 @@ export const ScenarioComposer: React.FC = () => {
             </span>
           )}
         </div>
+
 
         <div className="flex items-center gap-3">
           {/* View toggle */}

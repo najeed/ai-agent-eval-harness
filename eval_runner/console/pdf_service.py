@@ -69,30 +69,84 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
     # 1. Gather report data
     run_id = run_data.get("run_id", "unknown_run")
     scenario = run_data.get("scenario", "N/A")
-    status = run_data.get("status", "COMPLETED")
+    raw_status = str(
+        run_data.get("status") or run_data.get("execution_status") or "UNKNOWN"
+    ).upper()
+    passed = run_data.get("passed")
+    if passed is False:
+        status = "FAILED"
+    elif passed is True:
+        status = (
+            "VERIFIED"
+            if run_data.get("has_certificate") or run_data.get("is_certified")
+            else "PASSED"
+        )
+    else:
+        status = raw_status
+
     timestamp = run_data.get("timestamp", "")
     if not timestamp:
         timestamp = datetime.now(UTC).replace(tzinfo=None).isoformat() + "Z"
 
     analysis = run_data.get("analysis", {})
-    summary = (
-        analysis.get("summary") or analysis.get("root_cause") or "No failure summary provided."
+    failed_turn = (
+        analysis.get("failed_turn_index") or analysis.get("index") or run_data.get("failed_turn")
     )
-    root_cause = analysis.get("root_cause") or "No identified failure pattern."
-    suggestion = analysis.get("suggestion") or "Review run events in the Visual Debugger."
-    confidence = analysis.get("confidence", 0.0)
-    failed_turn = analysis.get("failed_turn_index") or analysis.get("index")
 
-    # Mock compliance rules evaluation
-    pqc_status = (
-        "QUANTUM_SECURE (ML-DSA-65)"
-        if "certified" in status.lower() or "completed" in status.lower()
-        else "NON_COMPLIANT"
+    if status in ("PASSED", "VERIFIED"):
+        root_cause = "Verified Compliant: No failure patterns detected."
+        summary = (
+            "Execution satisfied all scenario goals, state invariants, and safety constraints."
+        )
+        suggestion = "Ready for production certification and deployment."
+        severity_score = "0.0 / 10.0"
+    else:
+        root_cause = (
+            analysis.get("root_cause")
+            or run_data.get("failure_reason")
+            or "Policy assertion or task constraint failed."
+        )
+        summary = (
+            analysis.get("summary")
+            or "Execution terminated before achieving required verification state."
+        )
+        suggestion = (
+            analysis.get("suggestion")
+            or "Inspect failing turn in the Live Visual Debugger and adjust agent prompt or policy."
+        )
+        confidence = analysis.get("confidence", 0.8)
+        severity_score = f"{round(float(confidence) * 10, 1)} / 10.0"
+
+    # Truthful PQC status evaluation
+    is_pqc = bool(
+        run_data.get("pqc_enabled")
+        or run_data.get("is_pqc")
+        or "ML-DSA" in str(run_data.get("algorithm", ""))
     )
+    if is_pqc:
+        pqc_status = "QUANTUM_SECURE (ML-DSA-65)"
+    elif (
+        run_data.get("has_certificate")
+        or run_data.get("is_certified")
+        or run_data.get("signer_type") == "SIGNED"
+    ):
+        pqc_status = "CLASSICAL (Ed25519)"
+    else:
+        pqc_status = "NON_COMPLIANT (PQC Disabled)"
+
+    has_cert = bool(
+        run_data.get("has_certificate") or run_data.get("is_certified") or status == "VERIFIED"
+    )
+    cert_status = "ISSUED / VALIDATED" if has_cert else "NOT ISSUED (Unverified)"
 
     # 2. Try WeasyPrint if available
     if WEASYPRINT_AVAILABLE:
         try:
+            telemetry_text = (
+                f"Full execution step events and state timelines are recorded. Jump to turn <strong>{failed_turn}</strong> in the Visual Debugger to trace structural discrepancies."
+                if failed_turn is not None
+                else "Full execution step events and state timelines are recorded in the visual trace."
+            )
             html_content = f"""
             <html>
             <head>
@@ -123,8 +177,8 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
                 <h2>2. Compliance Analysis</h2>
                 <table class="meta-table">
                     <tr><th>PQC Status</th><td>{pqc_status}</td></tr>
-                    <tr><th>Weighted Severity Score</th><td>{(confidence * 10).toFixed(1) if hasattr(confidence, "toFixed") else round(confidence * 10, 1)} / 10.0</td></tr>
-                    <tr><th>Verification Certificate</th><td>{"ISSUED / VALIDATED" if "certified" in status.lower() or "completed" in status.lower() else "NOT ISSUED"}</td></tr>
+                    <tr><th>Weighted Severity Score</th><td>{severity_score}</td></tr>
+                    <tr><th>Verification Certificate</th><td>{cert_status}</td></tr>
                 </table>
 
                 <h2>3. Executive Summary</h2>
@@ -135,7 +189,7 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
                 </div>
 
                 <h2>4. Behavioral Telemetry</h2>
-                <p style="font-size: 12px;">Full execution step events and state timelines are recorded. Jump to turn <strong>{failed_turn if failed_turn is not None else "N/A"}</strong> in the Visual Debugger to trace structural discrepancies.</p>
+                <p style="font-size: 12px;">{telemetry_text}</p>
 
                 <div class="footer">
                     Run Hash: {run_id}<br/>
@@ -143,6 +197,7 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
                 </div>
             </body>
             </html>
+
             """
             weasyprint.HTML(string=html_content).write_pdf(str(output_path))
             logger.info(f"WeasyPrint compiled PDF successfully at: {output_path}")
@@ -227,14 +282,10 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
             story.append(Paragraph("2. Compliance Analysis", h2_style))
             compliance_data = [
                 ["PQC Status", pqc_status],
-                ["Weighted Severity Score", f"{round(confidence * 10, 1)} / 10.0"],
-                [
-                    "Verification Certificate",
-                    "ISSUED / VALIDATED"
-                    if "certified" in status.lower() or "completed" in status.lower()
-                    else "NOT ISSUED",
-                ],
+                ["Weighted Severity Score", severity_score],
+                ["Verification Certificate", cert_status],
             ]
+
             t2 = Table(compliance_data, colWidths=[150, 300])
             t2.setStyle(
                 TableStyle(

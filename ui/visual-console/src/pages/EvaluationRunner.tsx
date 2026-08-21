@@ -289,23 +289,48 @@ export const EvaluationRunner: React.FC = () => {
 
             {preflightStatus === 'passed' && readinessData && (
               <div className="space-y-3">
-                <div className="p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-lg flex items-start gap-2.5">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                  <div className="space-y-0.5">
-                    <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Ready to Evaluate</h4>
-                    <p className="text-slate-400 text-[10px] leading-relaxed">All execution readiness gates passed.</p>
+                {readinessData.checks?.some((c: any) => c.status === 'WARNING') ? (
+                  <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg flex items-start gap-2.5">
+                    <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                    <div className="space-y-0.5">
+                      <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider">Ready with Advisory Warnings</h4>
+                      <p className="text-slate-400 text-[10px] leading-relaxed">
+                        Execution gates cleared with non-blocking warnings. Review details below.
+                      </p>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-lg flex items-start gap-2.5">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <div className="space-y-0.5">
+                      <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Ready to Evaluate</h4>
+                      <p className="text-slate-400 text-[10px] leading-relaxed">All execution readiness gates passed.</p>
+                    </div>
+                  </div>
+                )}
                 
-                <div className="space-y-1.5 text-xs">
+                <div className="space-y-2 text-xs divide-y divide-slate-900/60">
                   {(readinessData.checks || []).map((chk: any, idx: number) => (
-                    <div key={idx} className="flex justify-between border-b border-slate-900/60 pb-1.5">
-                      <span className="text-slate-400 font-medium">{chk.name}</span>
-                      <span className={`font-mono text-[10px] font-bold ${
-                        chk.status === 'PASSED' ? 'text-emerald-400' : 'text-amber-400'
-                      }`}>
-                        {chk.status}
-                      </span>
+                    <div key={idx} className="pt-2 first:pt-0 space-y-1">
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-300 font-semibold">{chk.name}</span>
+                        <span className={`font-mono text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                          chk.status === 'PASSED'
+                            ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
+                            : chk.status === 'WARNING'
+                              ? 'text-amber-400 bg-amber-500/10 border border-amber-500/20'
+                              : 'text-red-400 bg-red-500/10 border border-red-500/20'
+                        }`}>
+                          {chk.status}
+                        </span>
+                      </div>
+                      {chk.message && (
+                        <p className={`text-[10px] leading-tight ${
+                          chk.status === 'WARNING' ? 'text-amber-400/90' : 'text-slate-500'
+                        }`}>
+                          {chk.message}
+                        </p>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -318,6 +343,7 @@ export const EvaluationRunner: React.FC = () => {
                 </button>
               </div>
             )}
+
 
             {preflightStatus === 'failed' && (
               <div className="space-y-3">

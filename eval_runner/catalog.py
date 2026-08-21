@@ -313,10 +313,44 @@ class ScenarioCatalog:
             ]
 
         for key, value in filters.items():
-            if value:
-                results = [s for s in results if str(s.get(key)).lower() == str(value).lower()]
+            if value and str(value).lower() != "all":
+                val_str = str(value).lower()
+                if key == "difficulty":
+                    if val_str == "standard":
+                        results = [
+                            s
+                            for s in results
+                            if str(s.get("compliance_level", "")).lower() == "standard"
+                            or s.get("difficulty") == 1
+                        ]
+                    elif val_str == "high":
+                        results = [
+                            s
+                            for s in results
+                            if str(s.get("compliance_level", "")).lower() != "standard"
+                            or (isinstance(s.get("difficulty"), int) and s.get("difficulty") > 1)
+                        ]
+                    else:
+                        results = [
+                            s
+                            for s in results
+                            if str(s.get("difficulty", "")).lower() == val_str
+                            or str(s.get("compliance_level", "")).lower() == val_str
+                        ]
+                elif key == "industry":
+                    results = [s for s in results if s.get("industry", "").lower() == val_str]
+                else:
+                    results = [s for s in results if str(s.get(key)).lower() == val_str]
 
         return results[offset : offset + limit]
+
+    def get_all_industries(self) -> list[str]:
+        """Returns sorted unique list of all industry sectors indexed."""
+        with self._lock:
+            if not self.scenarios and ScenarioCatalog._initialized:
+                self.load_index()
+            industries = {s.get("industry") for s in self.scenarios if s.get("industry")}
+            return sorted(list(industries))
 
     def get_scenario(self, identifier: str) -> dict[str, Any] | None:
         """Returns a single scenario by ID or title (Authoritative)."""
