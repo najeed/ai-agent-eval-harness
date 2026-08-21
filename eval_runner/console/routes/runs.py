@@ -28,14 +28,18 @@ def list_metrics():
 
 def resolve_trace_path(run_id: str) -> Path | None:
     """Resolves trace path across vaults and direct file conventions."""
-    p = config.RUN_LOG_DIR / run_id / "run.jsonl"
-    if p.exists():
+    runs_dir = Path(config.RUN_LOG_DIR)
+    p = runs_dir / run_id / "run.jsonl"
+    if p.is_file():
         return p
-    p = config.RUN_LOG_DIR / f"{run_id}.jsonl"
-    if p.exists():
+    p = runs_dir / run_id / f"{run_id}.jsonl"
+    if p.is_file():
         return p
-    p = config.RUN_LOG_DIR / run_id
-    if p.exists():
+    p = runs_dir / f"{run_id}.jsonl"
+    if p.is_file():
+        return p
+    p = runs_dir / run_id
+    if p.is_file():
         return p
     return None
 

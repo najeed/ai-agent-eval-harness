@@ -14,6 +14,7 @@ from .routes import (
     compliance_packs_bp,
     core_bp,
     demo_bp,
+    evidence_bp,
     hitl_bp,
     publish_bp,
     register_core_routes,
@@ -72,7 +73,9 @@ def create_app():
     app.register_blueprint(suites_bp, url_prefix="/api")
     app.register_blueprint(compliance_packs_bp, url_prefix="/api")
     app.register_blueprint(hitl_bp, url_prefix="/api")
+    app.register_blueprint(evidence_bp, url_prefix="/api")
     app.register_blueprint(trust_bp)
+
     app.register_blueprint(demo_bp)
     app.register_blueprint(core_bp)
     # Mount critical diagnostic shims directly into the Root /v1 namespace

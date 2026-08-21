@@ -1,6 +1,11 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 
-export type UserRole = 'System Admin' | 'Compliance Auditor' | 'Scenario Designer' | 'MultiAgentOps Eng.';
+export type UserRole =
+  | 'System Admin'
+  | 'Compliance Auditor'
+  | 'Scenario Designer'
+  | 'MultiAgentOps Eng.'
+  | 'Viewer';
 
 export interface AuthenticatedUser {
   id: string;
@@ -8,6 +13,7 @@ export interface AuthenticatedUser {
   role: UserRole;
   permissions: string[];
   type?: string;
+  tenant_id?: string;
   workspace_id?: string;
   is_dev_mode?: boolean;
 }
@@ -15,9 +21,12 @@ export interface AuthenticatedUser {
 interface RBACContextType {
   user: AuthenticatedUser | null;
   role: UserRole;
+  isAuthenticated: boolean;
   setRole: (role: UserRole) => void;
   isDevMode: boolean;
   workspaceId: string;
+  tenantId: string;
+  hasPermission: (permission: string) => boolean;
   canEditScenario: boolean;
   canRunEval: boolean;
   canSignCert: boolean;
@@ -31,8 +40,10 @@ const RBACContext = createContext<RBACContextType | undefined>(undefined);
 export const RBACProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthenticatedUser | null>(null);
   const [isDevMode, setIsDevMode] = useState<boolean>(false);
-  const [activeRole, setActiveRole] = useState<UserRole>('System Admin');
+  const [activeRole, setActiveRole] = useState<UserRole>('Viewer'); // Default-deny fail-closed
   const [workspaceId, setWorkspaceId] = useState<string>('ws-default');
+  const [tenantId, setTenantId] = useState<string>('tenant-default');
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   const fetchAuth = async () => {
     try {
@@ -41,15 +52,23 @@ export const RBACProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const data = await res.json();
         if (data.authenticated && data.user) {
           setUser(data.user);
+          setIsAuthenticated(true);
           setIsDevMode(Boolean(data.user.is_dev_mode));
           setWorkspaceId(data.user.workspace_id || 'ws-default');
-          setActiveRole(data.user.role || 'System Admin');
-        } else {
-          setIsDevMode(Boolean(data.is_dev_mode));
+          setTenantId(data.user.tenant_id || 'tenant-default');
+          setActiveRole(data.user.role || 'Viewer');
+          return;
         }
       }
+      // Fail closed
+      setIsAuthenticated(false);
+      setUser(null);
+      setActiveRole('Viewer');
     } catch (err) {
-      console.warn('[RBAC] Failed to fetch server identity:', err);
+      console.warn('[RBAC] Default-deny: Server authentication unreachable. Enforcing Viewer role.', err);
+      setIsAuthenticated(false);
+      setUser(null);
+      setActiveRole('Viewer');
     }
   };
 
@@ -59,40 +78,51 @@ export const RBACProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const setRole = (newRole: UserRole) => {
     if (!isDevMode) {
-      console.warn('[RBAC] Persona switching is disabled in production environments.');
-      window.dispatchEvent(new CustomEvent('agentv-toast', {
-        detail: { message: 'Persona switching is disabled: Identity is server-authoritative.', type: 'warning' }
-      }));
+      console.warn('[RBAC] Persona switching is disabled: Identity is server-authoritative.');
+      window.dispatchEvent(
+        new CustomEvent('agentv-toast', {
+          detail: { message: 'Persona switching is disabled: Identity is server-authoritative.', type: 'warning' },
+        })
+      );
       return;
     }
     setActiveRole(newRole);
-    window.dispatchEvent(new CustomEvent('agentv-toast', {
-      detail: { message: `[Dev Simulator] Active Persona Context switched to: ${newRole}`, type: 'info' }
-    }));
+    window.dispatchEvent(
+      new CustomEvent('agentv-toast', {
+        detail: { message: `[Dev Simulator] Active Persona Context switched to: ${newRole}`, type: 'info' },
+      })
+    );
   };
 
   const perms = useMemo(() => new Set(user?.permissions || []), [user]);
   const isAdmin = activeRole === 'System Admin' || perms.has('*') || perms.has('system:config');
 
-  const value = useMemo(() => ({
-    user,
-    role: activeRole,
-    setRole,
-    isDevMode,
-    workspaceId,
-    canEditScenario: isAdmin || activeRole === 'Scenario Designer' || perms.has('scenarios:write'),
-    canRunEval: isAdmin || activeRole === 'MultiAgentOps Eng.' || activeRole === 'Scenario Designer' || perms.has('eval:trigger'),
-    canSignCert: isAdmin || activeRole === 'Compliance Auditor' || perms.has('certify:write'),
-    canAccessSettings: isAdmin || activeRole === 'MultiAgentOps Eng.' || perms.has('system:config'),
-    canResolveHITL: isAdmin || activeRole === 'Compliance Auditor' || perms.has('hitl:resolve'),
-    refreshAuth: fetchAuth,
-  }), [user, activeRole, isDevMode, workspaceId, perms, isAdmin]);
+  const hasPermission = (permission: string): boolean => {
+    if (isAdmin) return true;
+    return perms.has(permission);
+  };
 
-  return (
-    <RBACContext.Provider value={value}>
-      {children}
-    </RBACContext.Provider>
+  const value = useMemo(
+    () => ({
+      user,
+      role: activeRole,
+      isAuthenticated,
+      setRole,
+      isDevMode,
+      workspaceId,
+      tenantId,
+      hasPermission,
+      canEditScenario: isAdmin || activeRole === 'Scenario Designer' || perms.has('scenarios:write'),
+      canRunEval: isAdmin || activeRole === 'MultiAgentOps Eng.' || activeRole === 'Scenario Designer' || perms.has('eval:trigger'),
+      canSignCert: isAdmin || activeRole === 'Compliance Auditor' || perms.has('certify:write'),
+      canAccessSettings: isAdmin || perms.has('system:config'),
+      canResolveHITL: isAdmin || activeRole === 'Compliance Auditor' || perms.has('hitl:resolve'),
+      refreshAuth: fetchAuth,
+    }),
+    [user, activeRole, isAuthenticated, isDevMode, workspaceId, tenantId, perms, isAdmin]
   );
+
+  return <RBACContext.Provider value={value}>{children}</RBACContext.Provider>;
 };
 
 export const useRBAC = () => {
@@ -102,4 +132,35 @@ export const useRBAC = () => {
   }
   return context;
 };
+
+/**
+ * Route guard component enforcing server-authoritative authorization
+ */
+export const ProtectedRoute: React.FC<{
+  requiredPermissions?: string[];
+  requiredRole?: UserRole[];
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+}> = ({ requiredPermissions = [], requiredRole = [], children, fallback }) => {
+  const { role, hasPermission } = useRBAC();
+
+  const roleAllowed = requiredRole.length === 0 || requiredRole.includes(role);
+  const permsAllowed =
+    requiredPermissions.length === 0 || requiredPermissions.every(p => hasPermission(p));
+
+  if (!roleAllowed || !permsAllowed) {
+    if (fallback) return <>{fallback}</>;
+    return (
+      <div className="p-8 text-center text-slate-400 bg-slate-900/60 rounded-xl border border-slate-800 m-6">
+        <h3 className="text-lg font-semibold text-rose-400 mb-2">Access Denied (403 Forbidden)</h3>
+        <p className="text-sm text-slate-500">
+          Your active role ({role}) does not possess the requisite capabilities for this enterprise view.
+        </p>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+};
+
 

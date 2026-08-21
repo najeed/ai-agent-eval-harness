@@ -39,8 +39,10 @@ import { AdversarialMutator } from './pages/AdversarialMutator';
 import { TraceExplain } from './pages/TraceExplain';
 import { RegressionSuites } from './pages/RegressionSuites';
 import { CompliancePackEditor } from './pages/CompliancePackEditor';
+import { verifySubresourceIntegrity } from './utils/crypto';
 
 const queryClient = new QueryClient({
+
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
@@ -219,15 +221,17 @@ class RemoteErrorBoundary extends React.Component<
           </div>
         </div>
       );
+      return this.props.children;
     }
-    return this.props.children;
   }
 }
 
 /**
  * Generic Runtime Micro-Frontend Remote Loader:
  * Loads dynamic ESM components on demand behind a signed origin and cryptographic SRI verification policy.
+ * Natively enforces FIPS 202 SHA3-256 / SHA3-384 / SHA3-512 with legacy WebCrypto SHA-2 fallback.
  */
+
 export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: string }> = ({ entryUrl, sriHash }) => {
   const [loadingState, setLoadingState] = useState<{
     status: 'idle' | 'verifying' | 'ready' | 'untrusted_origin' | 'sri_failed' | 'load_error';
@@ -271,31 +275,15 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
           }
           const buffer = await res.arrayBuffer();
 
-          // Determine hash algorithm (sha256, sha384, sha512)
-          let algo = 'SHA-384';
-          let expectedBase64 = sriHash;
-          if (sriHash.startsWith('sha256-')) {
-            algo = 'SHA-256';
-            expectedBase64 = sriHash.replace('sha256-', '');
-          } else if (sriHash.startsWith('sha384-')) {
-            algo = 'SHA-384';
-            expectedBase64 = sriHash.replace('sha384-', '');
-          } else if (sriHash.startsWith('sha512-')) {
-            algo = 'SHA-512';
-            expectedBase64 = sriHash.replace('sha512-', '');
-          }
+          const { valid, computed, algorithm } = await verifySubresourceIntegrity(buffer, sriHash);
 
-          const digestBuffer = await window.crypto.subtle.digest(algo, buffer);
-          const computedBase64 = btoa(String.fromCharCode(...new Uint8Array(digestBuffer)));
-
-          if (computedBase64 !== expectedBase64 && !sriHash.includes(computedBase64)) {
-            const computedSRI = `${algo.toLowerCase().replace('-', '')}-${computedBase64}`;
-            console.error(`[ZeroTrust SRI] Digest mismatch for ${entryUrl}. Expected: ${sriHash}, Computed: ${computedSRI}`);
+          if (!valid) {
+            console.error(`[ZeroTrust SRI] ${algorithm} digest mismatch for ${entryUrl}. Expected: ${sriHash}, Computed: ${computed}`);
             if (active) {
               setLoadingState({
                 status: 'sri_failed',
-                errorMessage: `Digest mismatch: expected ${sriHash}, got ${computedSRI}`,
-                computedDigest: computedSRI,
+                errorMessage: `Integrity check failed (${algorithm}): expected ${sriHash}, got ${computed}`,
+                computedDigest: computed,
               });
             }
             return;
@@ -594,50 +582,53 @@ const ConsoleLayout: React.FC = () => {
 
   const baseNavGroups: NavGroup[] = [
     {
-      title: 'Overview',
+      title: 'Workflow',
       items: [
-        { name: 'Dashboard', path: '/', icon: <Home className="w-4 h-4" /> }
-      ]
+        { name: 'New Verification', path: '/', icon: <Home className="w-4 h-4" /> },
+      ],
     },
     {
-      title: 'Work',
+      title: 'Scenarios',
       items: [
         { name: 'Scenario Library', path: '/scenarios', icon: <FileText className="w-4 h-4" /> },
-        { name: 'Scenario Composer', path: '/editor', icon: <Activity className="w-4 h-4" /> },
-        { name: 'Evaluation Runner', path: '/runner', icon: <Play className="w-4 h-4" /> },
-        { name: 'Live Trace Debugger', path: '/debugger', icon: <Activity className="w-4 h-4" /> },
-        { name: 'Runs & Reports', path: '/reports', icon: <BarChart2 className="w-4 h-4" /> },
-        { name: 'Evidence & Publication', path: '/publish', icon: <ShieldCheck className="w-4 h-4" /> },
-        { name: 'Calibration Console', path: '/calibration', icon: <ChevronRight className="w-3.5 h-3.5" /> },
-        { name: 'Spec-to-Eval Importer', path: '/spec-import', icon: <ChevronRight className="w-3.5 h-3.5" /> },
-        { name: 'Adversarial Mutator', path: '/mutator', icon: <ChevronRight className="w-3.5 h-3.5" /> },
-        { name: 'Auto-Translate', path: '/translate', icon: <ChevronRight className="w-3.5 h-3.5" /> },
-        { name: 'Registry Sync', path: '/sync', icon: <ChevronRight className="w-3.5 h-3.5" /> }
-      ]
+        { name: 'Visual Composer', path: '/editor', icon: <Activity className="w-4 h-4" /> },
+        { name: 'Suites & Benchmarks', path: '/suites', icon: <Layers className="w-4 h-4" /> },
+      ],
     },
     {
-      title: 'Govern',
+      title: 'Runs',
       items: [
+        { name: 'Active & History', path: '/reports', icon: <BarChart2 className="w-4 h-4" /> },
+        { name: 'Live Debugger', path: '/debugger', icon: <Play className="w-4 h-4" /> },
+        { name: 'Evaluation Runner', path: '/runner', icon: <Cpu className="w-4 h-4" /> },
+        { name: 'Triage Center', path: '/triage', icon: <AlertTriangle className="w-4 h-4" /> },
+      ],
+    },
+    {
+      title: 'Evidence',
+      items: [
+        { name: 'Verification & Packages', path: '/reports', icon: <FileText className="w-4 h-4" /> },
         { name: 'Trust Center', path: '/trust', icon: <ShieldCheck className="w-4 h-4" /> },
-        { name: 'HITL Queue', path: '/hitl', icon: <Activity className="w-4 h-4" /> },
-        { name: 'Compliance & Forensics', path: '/compliance', icon: <ChevronRight className="w-3.5 h-3.5" /> },
-        { name: 'Trace Explain (AI)', path: '/explain', icon: <ChevronRight className="w-3.5 h-3.5" /> },
-        { name: 'Regression Suites', path: '/suites', icon: <FileText className="w-4 h-4" /> },
-        { name: 'Compliance Pack Editor', path: '/packs', icon: <Settings className="w-4 h-4" /> },
-        { name: 'Metrics & Leaderboards', path: '/metrics', icon: <BarChart2 className="w-4 h-4" /> },
-        { name: 'Failure Corpus Search', path: '/failures', icon: <ChevronRight className="w-3.5 h-3.5" /> },
-        { name: 'Triage Center', path: '/triage', icon: <ChevronRight className="w-3.5 h-3.5" /> },
-        { name: 'Benchmarks', path: '/benchmarks', icon: <ChevronRight className="w-3.5 h-3.5" /> }
-      ]
+        { name: 'Compliance Forensics', path: '/compliance', icon: <Shield className="w-4 h-4" /> },
+        { name: 'Publication Suite', path: '/publish', icon: <Zap className="w-4 h-4" /> },
+      ],
     },
     {
-      title: 'Admin',
+      title: 'Advanced',
       items: [
-        { name: 'CI/CD Integration', path: '/cicd', icon: <ChevronRight className="w-3.5 h-3.5" /> },
-        { name: 'Guides & Documentation', path: '/docs', icon: <BookOpen className="w-4 h-4" /> },
-        { name: 'System & Health', path: '/settings', icon: <Settings className="w-4 h-4" /> }
-      ]
-    }
+        { name: 'Adversarial Mutator', path: '/mutator', icon: <ChevronRight className="w-3.5 h-3.5" /> },
+        { name: 'Spec-to-Eval Importer', path: '/spec-import', icon: <ChevronRight className="w-3.5 h-3.5" /> },
+        { name: 'Auto-Translate', path: '/translate', icon: <ChevronRight className="w-3.5 h-3.5" /> },
+        { name: 'Calibration Console', path: '/calibration', icon: <ChevronRight className="w-3.5 h-3.5" /> },
+        { name: 'HITL Queue', path: '/hitl', icon: <Activity className="w-4 h-4" /> },
+        { name: 'Trace Explain (AI)', path: '/explain', icon: <ChevronRight className="w-3.5 h-3.5" /> },
+        { name: 'Failure Corpus', path: '/failures', icon: <ChevronRight className="w-3.5 h-3.5" /> },
+        { name: 'Metrics Leaderboard', path: '/metrics', icon: <BarChart2 className="w-4 h-4" /> },
+        { name: 'CI/CD Pipelines', path: '/cicd', icon: <ChevronRight className="w-3.5 h-3.5" /> },
+        { name: 'Documentation', path: '/docs', icon: <BookOpen className="w-4 h-4" /> },
+        { name: 'Settings & Security', path: '/settings', icon: <Settings className="w-4 h-4" /> },
+      ],
+    },
   ];
 
   // Merge dynamic plugin groups with core built-in navigation
@@ -753,11 +744,10 @@ const ConsoleLayout: React.FC = () => {
                             <div className="shrink-0">{item.icon}</div>
                             {!sidebarCollapsed && <span className="truncate">{item.name}</span>}
                             {item.badge && !sidebarCollapsed && (
-                              <span className={`ml-auto text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${
-                                item.tier === 'enterprise'
-                                  ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
-                                  : 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30'
-                              }`}>
+                              <span className={`ml-auto text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${item.tier === 'enterprise'
+                                ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                                : 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30'
+                                }`}>
                                 {item.badge}
                               </span>
                             )}
@@ -778,11 +768,10 @@ const ConsoleLayout: React.FC = () => {
                           <div className="shrink-0">{item.icon}</div>
                           {!sidebarCollapsed && <span className="truncate">{item.name}</span>}
                           {item.badge && !sidebarCollapsed && (
-                            <span className={`ml-auto text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${
-                              item.tier === 'enterprise'
-                                ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
-                                : 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30'
-                            }`}>
+                            <span className={`ml-auto text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${item.tier === 'enterprise'
+                              ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                              : 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30'
+                              }`}>
                               {item.badge}
                             </span>
                           )}
@@ -919,13 +908,18 @@ function AppRoutes() {
         {/* P1 Main Screens */}
         <Route path="/" element={<DashboardPage />} />
         <Route path="/scenarios" element={<ScenarioLibraryPage />} />
+        <Route path="/scenarios/compose" element={<ScenarioComposerPage />} />
         <Route path="/editor" element={<ScenarioComposerPage />} />
         <Route path="/runner" element={<EvaluationRunnerPage />} />
         <Route path="/debugger" element={<LiveDebuggerPage />} />
         <Route path="/reports" element={<RunsReportsPage />} />
+        <Route path="/runs" element={<RunsReportsPage />} />
+        <Route path="/evidence" element={<RunsReportsPage />} />
+        <Route path="/evidence/packages" element={<RunsReportsPage />} />
         <Route path="/trust" element={<TrustCenterPage />} />
         <Route path="/docs" element={<DocsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+
 
         {/* P2 Shell Screens */}
         <Route path="/spec-import" element={<SpecToEvalImporter />} />

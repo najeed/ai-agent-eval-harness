@@ -48,17 +48,17 @@ graph TD
 | Attribute | Specification |
 | :--- | :--- |
 | **License** | Apache License 2.0 |
-| **Status** | 🟢 Production-Ready (NIST AI-100-1 Aligned) |
+| **Status** | 🟢 Production-Ready (NIST AI-100-1 & 2026 Audit Ready) |
 | **Version** | v2.0.0 (August 2026 Release) |
 | **Trust Model** | [Behavioral DNA & VC v3.0.0](docs/src/content/docs/spec/trust_v3.md) |
-| **Architecture** | [Identity-Centric Core](docs/src/content/docs/builder/architecture.md) |
+| **Architecture** | [3-Pillar Enterprise Verification OS](docs/src/content/docs/evaluator/visual-suite.md) |
 | **Quick Links** | [Quickstart](#zero-key-quickstart-get-running-now) • [AES v1.4 Spec](docs/src/content/docs/spec/aes_schema.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
 
 
 ### The DNA of Agentic Reliability
 - 🌍 **Environmental DNA**: Immutable snapshots of the execution environment—registry state, tool versions, and resource availability to ensure deterministic state parity.
 - 🧬 **Behavioral DNA**: High-granularity telemetry (Phase → Action → Step) mapping the agent's decision-making process for precise policy adjudication and drift analysis.
-- 🛡️ **Forensic DNA**: Cryptographic anchoring of the entire execution trace using Ed25519 signatures and SHA3-256 hashes, ensuring non-repudiable WORM logs for regulatory compliance.
+- 🛡️ **Forensic DNA**: Cryptographic anchoring of the entire execution trace using Ed25519 signatures, SHA3-256 digests, and single-file `.agentv-package.json` Verification Packages.
 
 ## Table of Contents
 - [What's New in the August 2026 GA Release (v2.0.0)](#whats-new-in-the-august-2026-ga-release-v200)

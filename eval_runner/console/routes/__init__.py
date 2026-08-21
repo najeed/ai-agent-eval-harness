@@ -6,6 +6,7 @@ from eval_runner.catalog import ScenarioCatalog as ScenarioCatalog
 from .analyze import analyze_bp as analyze_bp
 from .compliance_packs import compliance_packs_bp as compliance_packs_bp
 from .demo import demo_bp as demo_bp, execute_demo_command, get_loan_demo_context
+from .evidence import evidence_bp as evidence_bp
 from .hitl import hitl_bp as hitl_bp
 from .publish import publish_bp as publish_bp
 from .runs import get_verification_certificate, list_metrics, list_runs, run_bp as run_bp

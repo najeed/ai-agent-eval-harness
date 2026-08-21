@@ -45,11 +45,11 @@ async def reset_sessions():
         await SessionManager.close_all()
         # Cleanly await any pending background tasks (such as aiohttp's _wait_for_close)
         # to ensure no unawaited coroutine warnings under Python 3.14+
-        await asyncio.sleep(0.05)
+        await asyncio.sleep(0.25)
         loop = asyncio.get_running_loop()
         pending = [t for t in asyncio.all_tasks(loop) if t is not asyncio.current_task(loop)]
         if pending:
-            await asyncio.wait(pending, timeout=0.1)
+            await asyncio.wait(pending, timeout=0.25)
     except Exception:
         pass
 

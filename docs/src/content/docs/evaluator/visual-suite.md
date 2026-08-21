@@ -1,47 +1,88 @@
 ---
-title: Interactive Visual Suite
-description: Unified React dashboard for trajectory analysis, live DNA debugging, and visual scenario construction.
+title: Interactive Visual Console & Verification OS
+description: Enterprise-grade single-page application for deterministic agent assurance, live telemetry, and cryptographic evidence verification.
 ---
 
-The **Interactive Visual Suite** (launched via `agentv console`) is a high-density forensic interface for managing the entire agent evaluation lifecycle.
-
-## 🔍 Visual Debugger & Trajectory Maps
-
-The core of the suite is the **Visual Debugger**, which provides a frame-by-frame reconstruction of agent reasoning.
-- **Node-Based Trajectory**: Visualize agent turns as an interactive React Flow graph.
-- **State Inspection**: Real-time diffing of the [Virtual File System (VFS)](/extender/triage-engine/) at any point in the timeline.
-- **Live DNA Streaming**: When using the `RemoteBridgePlugin`, evaluations stream events directly to the console in real-time.
+The **Visual Console** (launched via `agentv console` or `eval-runner console`) is the enterprise single-page application (SPA) for managing the complete agent assurance lifecycle:
+**Compose → Validate → Run → Verify → Investigate → Issue Evidence**.
 
 ---
 
-## 🎯 Forensic Root Cause Isolation
+## 🧭 3-Pillar Information Architecture
 
-One of the suite's most powerful features is the **"Isolate Root Cause"** engine. 
-- It scans the [Failure Taxonomy](/evaluator/taxonomy/) markers and behavioral telemetry.
-- One-click focus scrolls the trajectory to **"Patient Zero"**—the exact step where the first logic, security, or state divergence occurred.
+The interface organizes all evaluation activities into three first-class objects:
+
+```mermaid
+graph TD
+    A["Level 1: Global App Shell<br/>(Global APM Telemetry, Command Palette, Tenant/RBAC Switcher)"]
+    A --> B["Level 2: Grouped Sidebar Navigation<br/>(Scenarios, Runs, Evidence, Advanced)"]
+    B --> C["Level 3: Deep Context Views & Drawers<br/>(Scenario Composer Tabs, Run Detail Drawer, Cryptographic Certificate Inspector)"]
+```
+
+1. **Scenarios**:
+   - **Scenario Library** (`/scenarios`): Searchable catalog across 5,000+ industry scenarios with readiness probes and tag filtering.
+   - **Visual Composer** (`/editor` or `/scenarios/compose`): Author full assurance contracts visually (intent, preconditions, required tools, topology graph, invariants, success criteria, and lossless raw JSON).
+   - **Suites & Benchmarks** (`/suites`): Manage regression bundles and domain benchmark sets.
+
+2. **Runs**:
+   - **Active & History** (`/reports` or `/runs`): Master execution stream, two-tier status tracking, and comparative execution metrics.
+   - **Live Debugger** (`/debugger`): Real-time OpenTelemetry trace streaming, VFS sandbox inspection, and frame-by-frame trajectory playback.
+   - **Triage Center** (`/triage`): Automated root-cause isolation and failure classification.
+
+3. **Evidence**:
+   - **Verification Packages** (`/api/v1/evidence/packages/<run_id>`): Single-file, self-contained `.agentv-package.json` bundles containing the full scenario, resolved manifest, telemetry digests, assertion outcomes, and cryptographic signatures.
+   - **Trust Center** (`/trust`): Post-quantum cryptographic (PQC) certificate inspection and public key verification.
+   - **Compliance Forensics** (`/compliance`): NIST SP 800-218 and EU AI Act compliance evidence.
+   - **Publication Suite** (`/publish`): Multi-agent report generation and verifiable credentials.
 
 ---
 
-## 🏗️ Visual AES Builder
+## ⚡ Primary Verification Journey
 
-For rapid scenario design, the suite includes a drag-and-drop editor for the **Agent Evaluation Specification (AES)**.
-- **Node Library**: Add task nodes, tool constraints, and success criteria via a GUI.
-- **Instant Validation**: The editor lints the scenario against the latest industrial schema in real-time.
-- **Persistence**: Scenarios saved in the builder are persisted directly to the [`industries/`](/evaluator/industries/) directory.
+The home screen provides a guided 6-stage workflow:
+
+```mermaid
+graph LR
+    W1["1. Connect Target"] --> W2["2. Select Scenario"]
+    W2 --> W3["3. Review Manifest"]
+    W3 --> W4["4. Execute & Stream"]
+    W4 --> W5["5. Verify Proofs"]
+    W5 --> W6["6. Export Package"]
+```
+
+1. **Target Connection Profile**: Select from pre-configured 2026 frontier models or connect internal agent services:
+   - **OpenAI**: `gpt-5.6` (Production endpoint)
+   - **Anthropic**: `claude-opus-5` (Anthropic protocol)
+   - **Google GenAI**: `gemini-3.1-pro-preview` (Gemini API)
+   - **Local Fleet**: `deepseek-r1:70b` / `llama-3.3` (Ollama localhost)
+   - **Custom Enterprise Agent**: Internal agent orchestrators exposing REST / Agent Protocol endpoints.
+2. **Scenario Selection**: Pick single scenarios or multi-scenario regression suites.
+3. **Resolved Manifest Review**: Inspect the read-only preflight matrix (exact scenario hash `sha3_256:...`, target parameters, limits, timeouts, and active evaluators).
+4. **Execution & Live Telemetry**: Execute in an isolated sandbox with live SSE event streaming.
+5. **Evidence-Linked Verification**: Inspect mathematical assertion verdicts, state comparisons, and tool audit trails.
+6. **Export Evidence**: Download the immutable `.agentv-package.json` package or executive PDF report.
 
 ---
 
-## 📊 Industrial Performance Dashboards
+## 🔬 Canonical Run Detail Screen
 
-The suite aggregates batch results into interactive leaderboards:
-- **Head-to-Head Stats**: Comparative pass rates, latency, and cost per agent.
-- **Robustness Radar**: Visualization of success consistency across diverse sectors.
-- **Drift Analytics**: Identification of behavioral shifts between model versions or prompts.
+Selecting any run opens the **7-Tab Forensic Inspection Screen**:
+
+| Tab | Purpose |
+| :--- | :--- |
+| **Summary** | Answers *"Did this agent safely achieve the intended state transition?"* with primary verdict card, execution duration, tokens, and assurance scores. |
+| **Verification & Proofs** | Exact mathematical assertion outcomes, judge consensus verdicts, and Ed25519 cryptographic sealer signatures. |
+| **State & Tool Evidence** | Ground-truth records of all physical tool calls, API parameters, and database mutations. |
+| **Telemetry Trace** | Chronological OpenTelemetry-aligned event stream with step-by-step payloads. |
+| **VFS Sandbox** | Virtual filesystem delta logs and container isolation teardown records. |
+| **Policy & Guardrails** | Active guardrail intercepts, safety boundary checks, and human-in-the-loop (HITL) approvals. |
+| **Artifacts & Package** | Downloadable `.agentv-package.json` Verification Package and PDF compliance summary. |
 
 ---
 
-## 🔌 Extensibility
+## 🛡️ Enterprise Security Boundaries
 
-Developers can extend the Visual Suite using the [Plugin System](/extender/plugins/).
-- **Custom Views**: Inject React components into the dashboard using JIT-Babel hydration.
-- **Custom Routes**: Use the `on_register_console_routes` hook to add proprietary monitoring or administration endpoints.
+- **Default-Deny RBAC**: Session context initializes strictly to `Viewer` with fail-closed `<ProtectedRoute />` route guards. Persona simulation is restricted strictly to local dev mode.
+- **Signed Extension Manifests**: Remote micro-frontend extensions loaded via `GET /api/nav` must provide a signed manifest schema and mandatory Subresource Integrity digest (`SHA-384`/`SHA-512`) verified via WebCrypto before execution.
+- **Single-File Verification Packages**: Conforms to NIST 2026 AI evaluation auditability standards with deterministic SHA3-256 package hashing.
+

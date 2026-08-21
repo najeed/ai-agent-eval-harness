@@ -117,7 +117,10 @@ filterwarnings = [
     # Pydantic V1 shim warnings from third-party adapters
     "ignore:.*Pydantic V1 functionality.*:UserWarning",
     # PytestBenchmark warnings occur when tests are run in parallel with xdist
-    "ignore::pytest_benchmark.logger.PytestBenchmarkWarning"
+    "ignore::pytest_benchmark.logger.PytestBenchmarkWarning",
+    # aiohttp: Python 3.14+ transport connector teardown warning
+    "ignore:.*coroutine '_wait_for_close' was never awaited.*:RuntimeWarning",
+    "ignore:.*coroutine.*_wait_for_close.*was never awaited.*:RuntimeWarning",
 ]
 
 [tool.ruff]
