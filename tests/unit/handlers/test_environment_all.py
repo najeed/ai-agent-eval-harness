@@ -1,7 +1,6 @@
 import json
 import os
 import tempfile
-import unittest
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -405,6 +404,18 @@ class TestEnvironmentHandlers:
             clean_args.query = "q"
             assert await handlers.handle_failures_search(clean_args) == 1
 
+    def test_list_industries_fallback(self):
+        """Verify industry list fallback on registry load failure."""
+        with patch("eval_runner.registry_sync.load_registry", side_effect=Exception("Load error")):
+            industries = handlers.list_industries()
+            assert "finance" in industries
+            assert "generic" in industries
 
-if __name__ == "__main__":
-    unittest.main()
+    def test_detect_framework_req_failure(self, tmp_path, monkeypatch):
+        """Verify framework detection resilience on requirements.txt read error."""
+        monkeypatch.chdir(tmp_path)
+        (tmp_path / "requirements.txt").write_text("some content", encoding="utf-8")
+
+        with patch("pathlib.Path.read_text", side_effect=PermissionError("Locked")):
+            res = handlers.detect_framework()
+            assert res == "Custom"

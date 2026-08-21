@@ -165,3 +165,35 @@ class TestConfigHashContract:
 
         # 4. Assert config_hash includes the preserved keys
         assert resolved.config_hash != ConfigResolver.resolve().config_hash
+
+    def test_execution_manifest_hash_and_serialization(self):
+        """
+        Contract: ExecutionManifest from_dict and compute_manifest_hash produce
+        deterministic SHA3-256 digests over multi-tenant context.
+        """
+        from agentv_runtime.manifest import ExecutionManifest, ManifestBuilder
+
+        scen_data = {
+            "metadata": {"id": "test-scen", "version": "2.1.0"},
+            "workflow": {"nodes": [{"id": "node1"}]},
+        }
+        manifest = ManifestBuilder.build(
+            scenario_data=scen_data,
+            agent_config={"model": "gpt-4o", "endpoint": "http://localhost:8000"},
+            runtime_config={"max_turns": 5},
+            tenant_id="tenant-alpha",
+            workspace_id="ws-beta",
+            created_by="alice",
+            metadata={"tag": "qa"},
+        )
+        manifest_dict = manifest.to_dict()
+        rehydrated = ExecutionManifest.from_dict(manifest_dict)
+
+        assert rehydrated.manifest_id == manifest.manifest_id
+        assert rehydrated.tenant_id == "tenant-alpha"
+        assert rehydrated.workspace_id == "ws-beta"
+        assert rehydrated.agent_config["model"] == "gpt-4o"
+
+        manifest_hash = rehydrated.compute_manifest_hash()
+        assert manifest_hash.startswith("sha3_256:")
+        assert len(manifest_hash.split(":")[1]) == 64

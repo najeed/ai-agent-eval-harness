@@ -329,11 +329,13 @@ def test_run_server_delegates_correctly():
         patch("eval_runner.console.app.manage_pid_file") as mock_pid,
         patch("eval_runner.console.app.create_app", return_value=mock_app) as mock_create,
     ):
-        run_server(host="0.0.0.0", port=8080, debug=True)  # nosec B104
+        test_host = "0.0.0.0"  # nosec B104
+        run_server(host=test_host, port=8080, debug=True)
         mock_pid.assert_called_once()
         mock_create.assert_called_once()
+
         call_kwargs = mock_app.run.call_args[1]
-        assert call_kwargs["host"] == "0.0.0.0"  # nosec B104
+        assert call_kwargs["host"] == test_host
         assert call_kwargs["port"] == 8080
         assert call_kwargs["debug"] is True
         assert call_kwargs["use_reloader"] is True
@@ -352,3 +354,11 @@ def test_run_server_no_debug():
         call_kwargs = mock_app.run.call_args[1]
         assert call_kwargs["use_reloader"] is False
         assert call_kwargs["extra_files"] is None
+
+
+def test_console_app_static_folder_resolution():
+    """Verify create_app resolves static folder correctly."""
+    from eval_runner.console.app import create_app
+
+    app = create_app()
+    assert app.static_folder is not None

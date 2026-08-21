@@ -77,3 +77,22 @@ async def test_aes_validation_with_complexity_level(tmp_path, capsys):
 
     captured = capsys.readouterr()
     assert "✔ complexity.aes.yaml: Valid (AES v1.4)" in captured.out
+
+
+def test_classify_scenario_fallback(monkeypatch):
+    """Verify industry classification fallback when ML dependencies are absent."""
+    import sys
+
+    from eval_runner.handlers import scenarios
+
+    monkeypatch.setitem(sys.modules, "sentence_transformers", None)
+    res = scenarios.classify_scenario({"title": "Loans"})
+    assert res["industry"] == "generic"
+
+
+@pytest.mark.asyncio
+async def test_handle_aes_validate_no_files(tmp_path):
+    """Verify error status when no AES files exist in target path."""
+    args = MockArgs(str(tmp_path))
+    res = await handle_aes_validate(args)
+    assert res == 1

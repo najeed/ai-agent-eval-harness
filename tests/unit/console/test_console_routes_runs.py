@@ -1110,3 +1110,9 @@ def test_get_run_status_master_log_fp_then_false_run_id(runs_jail, runs_client):
                     res = app.test_client().get(f"/api/v1/runs/{rid}")
 
     assert res.status_code == 404
+
+
+def test_runs_explain_non_existent_run_404(runs_client):
+    """Verify 404 when explaining a non-existent run ID."""
+    res = runs_client.get("/api/v1/explain/non_existent_run_999")
+    assert res.status_code == 404

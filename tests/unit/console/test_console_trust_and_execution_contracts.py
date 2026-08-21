@@ -474,3 +474,83 @@ def test_primary_console_canonical_and_v2_compatibility(ent_client):
         res = client.get(route)
         assert res.status_code == 200
         assert "text/html" in res.content_type
+
+
+def test_server_authoritative_lifecycle_transition(ent_client):
+    """
+    Contract Test: Asserts server-authoritative lifecycle state transitions
+    Draft -> Validated -> Ready -> Deprecated with validation verification and audit history.
+    """
+    client, _ = ent_client
+
+    # Transition valid scenario to Validated
+    res = client.post(
+        "/api/scenarios/test_scen_1/transition",
+        json={"target_status": "Validated", "reason": "Passed automated QA"},
+    )
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["lifecycle_status"] == "Validated"
+    assert data["content_hash"].startswith("sha3_256:")
+
+    # Transition to Ready
+    ready_res = client.post(
+        "/api/scenarios/test_scen_1/transition",
+        json={"target_status": "Ready", "reason": "Production verification sign-off"},
+    )
+    assert ready_res.status_code == 200
+    assert ready_res.get_json()["lifecycle_status"] == "Ready"
+
+    # Reject invalid target status
+    invalid_res = client.post(
+        "/api/scenarios/test_scen_1/transition",
+        json={"target_status": "UnknownStatus"},
+    )
+    assert invalid_res.status_code == 400
+
+
+def test_scenario_transition_and_readiness_edge_cases(ent_client):
+    """Verify scenario transition 404, bad ID, demotion, and readiness warnings."""
+    client, _ = ent_client
+
+    # Transition non-existent scenario
+    res = client.post(
+        "/api/scenarios/non_existent_scen_999/transition",
+        json={"target_status": "Ready"},
+    )
+    assert res.status_code == 404
+
+    # Save invalid scenario ID
+    res_bad_id = client.post("/api/scenarios", json={"id": "bad/id/with/slashes!"})
+    assert res_bad_id.status_code == 400
+
+    # Save scenario demotion from Ready to Draft when invalid
+    res_demote = client.post(
+        "/api/scenarios",
+        json={
+            "id": "invalid_ready_scen",
+            "status": "Ready",
+            "metadata": {"id": "invalid_ready_scen"},
+        },
+    )
+    assert res_demote.status_code == 200
+    assert res_demote.get_json()["lifecycle_status"] == "Draft"
+
+    # Readiness with custom protocol
+    res_ready = client.post(
+        "/api/scenarios/readiness",
+        json={
+            "scenario_data": {
+                "metadata": {"id": "demo_scen"},
+                "workflow": {"nodes": [{"id": "n1"}]},
+            },
+            "agent_config": {
+                "protocol": "custom_grpc",
+                "endpoint": "grpc://10.0.0.1:50051",
+            },
+        },
+    )
+    assert res_ready.status_code == 200
+    data = res_ready.get_json()
+    assert data["ready"] is True
+    assert any(c["status"] == "WARNING" for c in data["checks"])

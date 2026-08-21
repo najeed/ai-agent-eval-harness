@@ -86,10 +86,26 @@ def get_canonical_scenario(scenario_id: str):
         return jsonify({"error": f"Failed to read canonical scenario: {e}"}), 500
 
 
+def validate_scenario_structure(raw_data: dict[str, Any]) -> tuple[bool, list[str]]:
+    """Strict structural and semantic validation for canonical scenarios."""
+    errors: list[str] = []
+    if not isinstance(raw_data, dict):
+        return False, ["Scenario root must be a JSON object"]
+    meta = raw_data.get("metadata") or {}
+    if not meta.get("id") and not raw_data.get("id"):
+        errors.append("Missing required field 'metadata.id'")
+    workflow = raw_data.get("workflow") or {}
+    if not workflow.get("nodes") and not raw_data.get("nodes"):
+        errors.append("Workflow must contain at least one task node")
+    return len(errors) == 0, errors
+
+
 @scenario_bp.route("/scenarios/<scenario_id>/validate", methods=["POST"])
 @require_permission(Permission.SCENARIOS_READ)
-def validate_scenario_schema(scenario_id: str):
-    """Validates the canonical AES scenario schema and semantic consistency."""
+def validate_scenario_schema(scenario_id):
+    """
+    Validates canonical scenario schema adherence and returns errors/warnings.
+    """
     from eval_runner import config
 
     catalog = get_catalog()
@@ -110,21 +126,15 @@ def validate_scenario_schema(scenario_id: str):
     if not raw_data:
         return jsonify({"valid": False, "errors": ["Scenario document missing or empty"]}), 400
 
-    errors: list[str] = []
+    valid, errors = validate_scenario_structure(raw_data)
     warnings: list[str] = []
-
-    # AES 1.4+ schema checks
-    if not raw_data.get("metadata", {}).get("id"):
-        errors.append("Missing required field 'metadata.id'")
-    if not raw_data.get("workflow", {}).get("nodes"):
-        warnings.append("Workflow has no task nodes defined")
 
     return jsonify(
         {
-            "valid": len(errors) == 0,
+            "valid": valid,
             "errors": errors,
             "warnings": warnings,
-            "status": "Validated" if len(errors) == 0 else "Invalid",
+            "status": "Validated" if valid else "Invalid",
         }
     )
 
@@ -147,7 +157,7 @@ def check_execution_readiness():
 
     checks: list[dict[str, Any]] = []
 
-    # 1. Scenario Resolution
+    # 1. Scenario Resolution & Validation
     catalog = get_catalog()
     abs_path = catalog.get_absolute_path(scen_id) if scen_id else None
     if scen_id and (not abs_path or not abs_path.exists()):
@@ -167,13 +177,24 @@ def check_execution_readiness():
             checks.append({"name": "Scenario Resolution", "status": "FAILED", "message": str(e)})
 
     if scen_data:
-        checks.append(
-            {
-                "name": "Scenario Specification",
-                "status": "PASSED",
-                "message": "Canonical AES document loaded.",
-            }
-        )
+        # Strict semantic validation
+        valid, issues = validate_scenario_structure(scen_data)
+        if valid:
+            checks.append(
+                {
+                    "name": "Scenario Specification",
+                    "status": "PASSED",
+                    "message": "Canonical AES document loaded and verified.",
+                }
+            )
+        else:
+            checks.append(
+                {
+                    "name": "Scenario Specification",
+                    "status": "WARNING",
+                    "message": f"Validation warnings: {'; '.join(issues[:2])}",
+                }
+            )
     else:
         checks.append(
             {
@@ -214,14 +235,23 @@ def check_execution_readiness():
     )
 
     # 4. Signing Backend & Vault
-    signing_key = getattr(config, "SIGNING_KEY", None) or "ed25519-active"
-    checks.append(
-        {
-            "name": "Cryptographic Sealer",
-            "status": "PASSED",
-            "message": f"Trace seal backend active ({signing_key[:12]}...)",
-        }
-    )
+    signing_key = getattr(config, "SIGNING_KEY", None)
+    if signing_key:
+        checks.append(
+            {
+                "name": "Cryptographic Sealer",
+                "status": "PASSED",
+                "message": f"Configured Ed25519 signer active ({str(signing_key)[:12]}...)",
+            }
+        )
+    else:
+        checks.append(
+            {
+                "name": "Cryptographic Sealer",
+                "status": "PASSED",
+                "message": "Ephemeral Ed25519 trace sealer initialized for execution run.",
+            }
+        )
 
     # 5. Artifact Store Destination
     runs_dir = config.RUN_LOG_DIR
@@ -249,6 +279,8 @@ def check_execution_readiness():
             scenario_data=scen_data,
             agent_config=agent_config,
             runtime_config=runtime_config,
+            tenant_id=data.get("tenant_id", "default"),
+            workspace_id=data.get("workspace_id", "default"),
             created_by=request.headers.get("X-User-Id", "system"),
         ).to_dict()
 
@@ -269,6 +301,7 @@ def save_scenario():
     and content hashing.
     """
     import re
+    from datetime import UTC, datetime
 
     from agentv_runtime.manifest import compute_scenario_hash
     from eval_runner import config
@@ -284,7 +317,19 @@ def save_scenario():
     scen_id = re.sub(r"[^a-zA-Z0-9_\-]", "_", scen_id)
     meta["id"] = scen_id
     meta.setdefault("version", data.get("version", "1.0.0"))
-    meta.setdefault("status", data.get("status", "Draft"))
+
+    # Server-authoritative status validation
+    requested_status = data.get("status") or meta.get("status") or "Draft"
+    valid, issues = validate_scenario_structure(data)
+    if requested_status == "Ready" and not valid:
+        meta["status"] = "Draft"
+        meta["status_warning"] = f"Demoted from Ready to Draft: {'; '.join(issues)}"
+    else:
+        meta["status"] = requested_status
+
+    if valid:
+        meta["validated_at"] = datetime.now(UTC).isoformat()
+        meta["validated_by"] = request.headers.get("X-User-Id", "system")
 
     # Compute content hash
     scen_hash = compute_scenario_hash(data)
@@ -311,6 +356,83 @@ def save_scenario():
             "scenario_hash": scen_hash,
             "version": meta["version"],
             "lifecycle_status": meta["status"],
+        }
+    )
+
+
+@scenario_bp.route("/scenarios/<scenario_id>/transition", methods=["POST"])
+@require_permission(Permission.SCENARIOS_WRITE)
+def transition_scenario_lifecycle(scenario_id):
+    """
+    Server-authoritative state machine transition:
+    Draft -> Validated -> Ready -> Deprecated
+    """
+    from datetime import UTC, datetime
+
+    from agentv_runtime.manifest import compute_scenario_hash
+    from eval_runner import config
+
+    data = request.json or {}
+    target_status = data.get("target_status")
+    allowed_statuses = {"Draft", "Validated", "Ready", "Deprecated"}
+    if target_status not in allowed_statuses:
+        return jsonify({"error": f"Invalid target_status. Must be one of: {allowed_statuses}"}), 400
+
+    catalog = ScenarioCatalog.get_instance()
+    abs_path = catalog.get_absolute_path(scenario_id)
+    if not abs_path or not abs_path.exists():
+        matches = list(
+            config.PROJECT_ROOT.glob(f"industries/**/scenarios/{scenario_id}.json")
+        ) + list(config.PROJECT_ROOT.glob(f"scenarios/**/{scenario_id}.json"))
+        if matches:
+            abs_path = matches[0]
+
+    if not abs_path or not abs_path.exists():
+        return jsonify({"error": f"Scenario {scenario_id} not found"}), 404
+
+    try:
+        with open(abs_path, encoding="utf-8") as f:
+            scen_data = json.load(f)
+    except Exception as e:
+        return jsonify({"error": f"Failed to load scenario: {e}"}), 500
+
+    meta = scen_data.setdefault("metadata", {})
+    valid, issues = validate_scenario_structure(scen_data)
+
+    if target_status in ("Validated", "Ready") and not valid:
+        return jsonify(
+            {
+                "error": f"Cannot transition to {target_status}: Scenario validation failed.",
+                "issues": issues,
+            }
+        ), 400
+
+    meta["status"] = target_status
+    meta["transition_history"] = meta.get("transition_history") or []
+    meta["transition_history"].append(
+        {
+            "from": meta.get("status", "Draft"),
+            "to": target_status,
+            "timestamp": datetime.now(UTC).isoformat(),
+            "actor": request.headers.get("X-User-Id", "system"),
+            "reason": data.get("reason", "Lifecycle transition requested"),
+        }
+    )
+    meta["content_hash"] = compute_scenario_hash(scen_data)
+
+    try:
+        with open(abs_path, "w", encoding="utf-8") as f:
+            json.dump(scen_data, f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        return jsonify({"error": f"Failed to persist scenario transition: {e}"}), 500
+
+    catalog.build_index()
+    return jsonify(
+        {
+            "status": "success",
+            "scenario_id": scenario_id,
+            "lifecycle_status": target_status,
+            "content_hash": meta["content_hash"],
         }
     )
 
@@ -415,6 +537,8 @@ def evaluate_scenario():
         scenario_data=scen,
         agent_config=agent_config,
         runtime_config=runtime_config,
+        tenant_id=data.get("tenant_id", "default"),
+        workspace_id=data.get("workspace_id", "default"),
         created_by=request.headers.get("X-User-Id", "system"),
         metadata=data.get("metadata"),
     )

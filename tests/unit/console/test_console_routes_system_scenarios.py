@@ -1,7 +1,7 @@
 import os
 import tempfile
 from pathlib import Path
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from flask import Flask
@@ -261,3 +261,61 @@ def test_evaluate_scenario_not_found(client, console_jail):
     res = client.post("/api/v1/evaluate", json={"path": "ghost.json"})
     assert res.status_code == 404
     assert "Scenario not found" in res.get_json()["error"]
+
+
+def test_debugger_state_store_run_scoping_and_root_cause():
+    """Verify DebuggerStateStore run-scoping and root-cause heuristics."""
+    from eval_runner.console.routes.system import DebuggerStateStore
+
+    DebuggerStateStore.reset()
+    assert DebuggerStateStore.get_state()["summary"]["message"] == "Waiting for evaluation..."
+
+    DebuggerStateStore.post_event(
+        {"event": "run_start", "data": {"scenario": "scen-1"}},
+        run_id="run-101",
+    )
+    state_101 = DebuggerStateStore.get_state(run_id="run-101")
+    assert state_101["summary"]["scenario"] == "scen-1"
+
+    DebuggerStateStore.reset(run_id="run-101")
+    assert "run-101" not in DebuggerStateStore._run_states
+
+    DebuggerStateStore.post_event(
+        {
+            "event": "policy_violation",
+            "is_root_cause": True,
+            "reason": "Jailbreak detected",
+            "confidence": 0.98,
+        },
+        run_id="run-rc",
+    )
+    rc_state = DebuggerStateStore.get_state(run_id="run-rc")
+    assert "root_cause" in rc_state
+    assert rc_state["root_cause"]["reason"] == "Jailbreak detected"
+    assert rc_state["root_cause"]["confidence"] == 0.98
+
+
+def test_debugger_state_store_reset_latest_run_ordering():
+    """Verify DebuggerStateStore resets latest run ID and promotes next run."""
+    from eval_runner.console.routes.system import DebuggerStateStore
+
+    DebuggerStateStore.reset()
+    DebuggerStateStore.post_event({"event": "turn_1"}, run_id="run-A")
+    DebuggerStateStore.post_event({"event": "turn_2"}, run_id="run-B")
+    assert DebuggerStateStore._latest_run_id == "run-B"
+
+    DebuggerStateStore.reset(run_id="run-B")
+    assert DebuggerStateStore._latest_run_id == "run-A"
+
+
+def test_ollama_status_parse_error_handling(client):
+    """Verify ollama status handles response parsing errors gracefully."""
+    mock_resp = MagicMock()
+    mock_resp.status = 200
+    mock_resp.read.return_value = b"invalid-json-bytes"
+    mock_resp.__enter__.return_value = mock_resp
+
+    with patch("urllib.request.urlopen", return_value=mock_resp):
+        res = client.get("/api/system/ollama-status")
+        assert res.status_code == 200
+        assert res.get_json()["available"] is True

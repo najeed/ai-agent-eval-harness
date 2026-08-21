@@ -3,35 +3,36 @@ title: Visual Console GUI Extensibility & Micro-Frontends
 description: Learn how to build and integrate custom GUI micro-frontends, navigation routes, and sidebar badges into the AgentV Visual Console without modifying core source code.
 ---
 
-AgentV v1.7.3 features **Dynamic Navigation Manifest Ingestion** and **Runtime Module Federation** for the native Visual Console (`/v2`). 
+AgentV v2.0.0 features **Zero-Trust Sandboxed Remote Micro-Frontends** and **Dynamic Navigation Manifest Ingestion** for the canonical Visual Console mounted at `/` (with backward-compatible `/v2` routing). 
 
-This architecture allows Python plugins, third-party libraries, and enterprise extensions to inject custom tabs, sidebar entries, and interactive React micro-frontend views directly into the console **with zero build-time recompilation of the Open Core**.
+This architecture allows Python plugins, third-party libraries, and enterprise control planes to inject custom tabs, sidebar entries, and interactive React micro-frontend views directly into the console **with zero build-time recompilation of the Open Core**, protected by cryptographic Subresource Integrity (`SHA-384`) digests and strict sandbox isolation.
 
 ---
 
 ## 🏛️ Architectural Overview
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│                   Python Backend (Plugin Layer)                  │
-│                                                                  │
-│  1. Plugin defines on_register_console_routes(app, nav_registry) │
-│  2. Registers custom Flask API blueprints                        │
-│  3. Appends NavItem metadata to app.config["NAV_REGISTRY"]       │
-└────────────────────────────────┬─────────────────────────────────┘
-                                 │
-                                 │ GET /api/nav (JSON Manifest)
-                                 ▼
-┌──────────────────────────────────────────────────────────────────┐
-│             Visual Console (Open Core React Frontend)            │
-│                                                                  │
-│  1. Ingests Manifest on mount via TanStack Query (60s staleTime) │
-│  2. Merges dynamic items with fallback built-in groups           │
-│  3. Renders Badges ("LIVE", "APM", "CUSTOM"), Tiers, & Icons     │
-│  4. Mounts remote ESM bundles on demand via React.lazy & import()│
-│  5. Fault-isolated inside RemoteErrorBoundary                    │
-└──────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────┐
+│                     Python Backend (Plugin Layer)                      │
+│                                                                        │
+│  1. Plugin defines on_register_console_routes(app, nav_registry)       │
+│  2. Registers custom Flask API blueprints                              │
+│  3. Appends NavItem metadata (with integrity hash) to nav_registry     │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │
+                                    │ GET /api/nav (JSON Manifest)
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│               Visual Console (Open Core React Frontend)                │
+│                                                                        │
+│  1. Ingests Manifest on mount via TanStack Query                       │
+│  2. Verifies Subresource Integrity (SHA-384 WebCrypto digest)          │
+│  3. Renders Badges ("LIVE", "APM", "CUSTOM"), Tiers, & Icons           │
+│  4. Mounts verified remote bundle inside isolated sandbox / blob URL   │
+│  5. Fault-isolated inside RemoteErrorBoundary                          │
+└────────────────────────────────────────────────────────────────────────┘
 ```
+
 
 ---
 

@@ -4,7 +4,8 @@
 
 [![CI](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/najeed/ai-agent-eval-harness/actions)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Works with AgentV](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs-v1-deprecated-reference/assets/badges/works-with-agentv.svg)](https://github.com/najeed/ai-agent-eval-harness)
+[![Works with AgentV](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs/public/assets/badges/works-with-agentv.svg)](https://github.com/najeed/ai-agent-eval-harness)
+
 
 ## The Reliability Gap: Why AgentV Exists
 
@@ -159,14 +160,17 @@ The harness is organized into the following key components:
 
 ### What's New in the August 2026 GA Release (v2.0.0)
 
-The **v2.0.0 August 2026 GA Release** formalizes strict Semantic Versioning guarantees across the public API surface area, establishes the neutral architectural seam between the AgentV OS Runtime and downstream control planes, and introduces an industrial automated contract verification suite:
+The **v2.0.0 August 2026 GA Release** formalizes strict Semantic Versioning guarantees across the public API surface area, establishes the neutral architectural seam between the AgentV OS Runtime and downstream control planes, introduces the primary Visual Console canonical mount, and provides an industrial automated contract verification suite:
 
+- 🖥️ **Primary Visual Console Mount**: The modern React-based Visual Console (`ui/visual-console`) is now the canonical primary console mounted at `/`, `/scenarios`, `/reports`, `/editor`, `/debugger`, `/runner`, and `/trust`, with `/v2` preserved strictly as a backward-compatible route.
 - 🔒 **Formal SemVer 2.0.0 Commitment**: Strict Semantic Versioning guarantee across all public contracts and extension ABCs, backed by a mandatory 1-minor-version deprecation lifecycle and published [SemVer Policy Documentation](docs/src/content/docs/auditor/semver-policy.md).
-- 📜 **ExecutionManifest Contract**: Defined immutable, frozen [`ExecutionManifest`](agentv_runtime/manifest.py) contract shared across UI preflight, `/v1/evaluate`, backend execution, and cryptographic certificate sealing, hashed via deterministic SHA3-256 canonical JSON serialization.
+- 📜 **Multi-Tenant ExecutionManifest Contract**: Defined immutable, frozen [`ExecutionManifest`](agentv_runtime/manifest.py) contract bound to `tenant_id` and `workspace_id`, shared across UI preflight, `/v1/evaluate`, backend execution, and cryptographic certificate sealing, hashed via deterministic SHA3-256 canonical JSON serialization.
 - 🛡️ **Zero-Trust Enterprise Identity & RBAC**: GUI role derivation strictly driven by server-authoritative session claims (`GET /api/auth/me`), audience-bound delegation tokens (`aud="agentv-plugin"`), dynamic secret resolution, and an isolated developer persona simulator.
-- 📝 **Lossless Canonical Scenario Authoring & Versioning**: Authoritative canonical AES document editing via `GET /api/scenarios/<id>` preserving all root keys, with schema validation (`POST /api/scenarios/<id>/validate`), execution readiness checks (`POST /api/scenarios/readiness`), and revision promotion (`Draft` → `Validated` → `Approved` → `Published`).
+- 🎯 **Fail-Closed Execution Readiness & Server-Authoritative Lifecycle**: Server-authoritative scenario state transitions (`POST /api/scenarios/<id>/transition`) enforcing `Draft` → `Validated` → `Ready` → `Deprecated`, with fail-closed preflight diagnostic probes (`POST /api/scenarios/readiness`) verifying schema integrity, agent endpoint reachability, and cryptographic sealers.
+- 📊 **Two-Tier Status Model & Decision-First Reports**: Strict separation between process execution status (`RUNNING`, `EXECUTION_COMPLETED`, `EXECUTION_FAILED`, `STALLED`) and verified business decisions (`VERIFIED`, `NOT_VERIFIED`, `POLICY_BREACH`, `UNVERIFIED`), prioritizing verified decision cards in console drawers.
+- 🔐 **Zero-Trust Sandboxed Micro-Frontend Protocol**: Dynamic enterprise extensions mount through sandboxed execution environments with byte-level Subresource Integrity (`SHA-384`) verification via WebCrypto `crypto.subtle.digest` and strict origin allowlisting.
+- ⏱️ **Run-Scoped Visual Debugger Store**: Ephemeral and historical timeline state strictly partitioned per `(tenant_id, workspace_id, run_id)` with thread-safe locking and durable trace fallback.
 - 📦 **Durable Evidence & Deterministic Batch Binding**: Long-running conductor jobs persist state to `results/jobs/{job_id}.json` and output deterministically to `results/batch_{job_id}` without filesystem mtime scans, backed by auditable evidence bundle downloads.
-- 🔌 **Signed Dynamic Extensions & Navigation IA**: Zero-Trust origin-gated micro-frontend module loading and consolidated information architecture around user jobs: **Work**, **Govern**, and **Admin**.
 - 🔌 **Active Runtime Extension Interface Wiring**: All 6 public Extension Families under `agentv_runtime.interfaces` (`ExecutionBackend`, `CheckpointStore`, `SigningBackend`, `ArtifactStore`, `PolicyEvaluator`, and `AuthorizationBackend`) and storage interfaces (`CatalogStore`, `RunStore`, `LeaderboardStore`) are actively invoked across runtime execution paths with real caller invocations and zero bypasses.
 - ⚛️ **Hybrid Post-Quantum Cryptographic (PQC) Signing**: First-class quantum-resistant non-repudiation via `PQCSigningBackend` (NIST FIPS 204 ML-DSA-65) and privacy-preserving Zero-Exposure Signing (ZES) over SHAKE-256 local digests.
 - 🛑 **Fail-Closed Cryptographic Enforcement**: Strict fail-closed execution (`RuntimeError`) when signing is mandatory (`EVAL_REQUIRE_SIGNING=true` or `AUDIT_LEVEL >= 2`) and signing keys are absent.
@@ -180,7 +184,6 @@ The **v2.0.0 August 2026 GA Release** formalizes strict Semantic Versioning guar
 - 🔒 **Hard Artifact Sealing & Vault Immutability**: `ArtifactStore` enforces strict immutable state transitions (`seal()`, `is_sealed()`) that reject post-seal mutations, appends, and deletes with `PermissionError`.
 - 🔐 **Hardened Authorization & Secret Masking**: `SimpleAPIKeyAuthBackend` eliminates plaintext key exposure in initialization logs and masks key tokens in `list_keys(mask=True)` and structured `list_principals()`.
 - 🧩 **Modular Subsystem Decomposition**: Monolithic session orchestration decomposed into dedicated, independently testable subsystem managers: `TurnStateManager`, `ToolExecutionCoordinator`, `SessionCheckpointManager`, and `SessionApprovalManager`.
-- 🌐 **Dynamic Navigation Manifest & Runtime Module Federation (`/v2`)**: The native visual console ingests `GET /api/nav` manifests and loads standalone ESM plugin bundles on demand with zero build-time recompilation.
 
 ## 📂 The Global Scenario Corpus
 
@@ -475,7 +478,7 @@ You can use the Shields.io service to generate a consistent badge for your proje
 Alternatively, link directly to our high-fidelity SVG asset:
 
 ```markdown
-[![Works with AgentV](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs-v1-deprecated-reference/assets/badges/works-with-agentv.svg)](https://github.com/najeed/ai-agent-eval-harness)
+[![Works with AgentV](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs/public/assets/badges/works-with-agentv.svg)](https://github.com/najeed/ai-agent-eval-harness)
 ```
 
 ---

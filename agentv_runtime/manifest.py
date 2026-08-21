@@ -48,6 +48,8 @@ class ExecutionManifest:
     scenario_id: str
     scenario_version: str
     scenario_hash: str
+    tenant_id: str = "default"
+    workspace_id: str = "default"
     agent_config: dict[str, Any] = field(default_factory=dict)
     runtime_config: dict[str, Any] = field(default_factory=dict)
     environment: dict[str, Any] = field(default_factory=dict)
@@ -67,6 +69,8 @@ class ExecutionManifest:
             scenario_id=str(data.get("scenario_id", "")),
             scenario_version=str(data.get("scenario_version", "1.0.0")),
             scenario_hash=str(data.get("scenario_hash", "")),
+            tenant_id=str(data.get("tenant_id", "default")),
+            workspace_id=str(data.get("workspace_id", "default")),
             agent_config=dict(data.get("agent_config") or {}),
             runtime_config=dict(data.get("runtime_config") or {}),
             environment=dict(data.get("environment") or {}),
@@ -81,6 +85,8 @@ class ExecutionManifest:
             "scenario_id": self.scenario_id,
             "scenario_version": self.scenario_version,
             "scenario_hash": self.scenario_hash,
+            "tenant_id": self.tenant_id,
+            "workspace_id": self.workspace_id,
             "agent_config": self.agent_config,
             "runtime_config": self.runtime_config,
             "environment": self.environment,
@@ -98,6 +104,8 @@ class ManifestBuilder:
         scenario_data: Mapping[str, Any],
         agent_config: Mapping[str, Any] | None = None,
         runtime_config: Mapping[str, Any] | None = None,
+        tenant_id: str = "default",
+        workspace_id: str = "default",
         created_by: str = "system",
         metadata: Mapping[str, Any] | None = None,
     ) -> ExecutionManifest:
@@ -117,8 +125,8 @@ class ManifestBuilder:
         agent_dict = dict(agent_config or {})
         runtime_dict = dict(runtime_config or {})
         now_iso = datetime.now(UTC).isoformat()
-
-        seed = f"{scen_hash}:{_canonical_json_bytes(agent_dict).hex()}:{now_iso}"
+        agent_hex = _canonical_json_bytes(agent_dict).hex()
+        seed = f"{tenant_id}:{workspace_id}:{scen_hash}:{agent_hex}:{now_iso}"
         manifest_id = f"man_{hashlib.sha3_256(seed.encode('utf-8')).hexdigest()[:16]}"
 
         return ExecutionManifest(
@@ -126,6 +134,8 @@ class ManifestBuilder:
             scenario_id=scen_id,
             scenario_version=scen_version,
             scenario_hash=scen_hash,
+            tenant_id=tenant_id,
+            workspace_id=workspace_id,
             agent_config=agent_dict,
             runtime_config=runtime_dict,
             environment=env,

@@ -1,7 +1,9 @@
 import json
 import logging
 import os
+import threading
 from pathlib import Path
+from typing import Any
 
 from flask import Blueprint, jsonify, request
 
@@ -16,88 +18,142 @@ logger = logging.getLogger(__name__)
 
 
 class DebuggerStateStore:
-    """Ephemeral, in-memory store for the Visual Debugger timeline."""
+    """Run-scoped, thread-safe store for the Visual Debugger timeline with historical fallback."""
 
-    _events = []
-    _last_state = {"message": "Waiting for evaluation..."}
-
-    @classmethod
-    def reset(cls):
-        cls._events = []
-        cls._last_state = {"message": "Waiting for evaluation..."}
+    _run_states: dict[str, dict[str, Any]] = {}
+    _latest_run_id: str | None = None
+    _events: list[dict[str, Any]] = []
+    _last_state: dict[str, Any] = {"message": "Waiting for evaluation..."}
+    _lock = threading.Lock()
 
     @classmethod
-    def post_event(cls, event_data):
-        # Industrial Parity: Flatten 'data' into the main event object
+    def reset(cls, run_id: str | None = None):
+        with cls._lock:
+            if run_id:
+                cls._run_states.pop(run_id, None)
+                if cls._latest_run_id == run_id:
+                    cls._latest_run_id = next(iter(cls._run_states.keys()), None)
+            else:
+                cls._run_states = {}
+                cls._latest_run_id = None
+                cls._events = []
+                cls._last_state = {"message": "Waiting for evaluation..."}
+
+    @classmethod
+    def post_event(cls, event_data: dict[str, Any], run_id: str | None = None) -> dict[str, Any]:
         flat_event = event_data.copy()
         if "data" in flat_event and isinstance(flat_event["data"], dict):
             flat_event.update(flat_event.pop("data"))
 
-        cls._events.append(flat_event)
-        if len(cls._events) > 50:
-            cls._events = cls._events[-50:]
+        effective_run_id = run_id or flat_event.get("run_id") or cls._latest_run_id or "default"
 
-        if event_data.get("event") == "run_start":
-            cls._last_state.update(event_data.get("data", {}))
-        return cls._last_state
+        with cls._lock:
+            cls._latest_run_id = effective_run_id
+            if effective_run_id not in cls._run_states:
+                cls._run_states[effective_run_id] = {
+                    "events": [],
+                    "last_state": dict(cls._last_state),
+                }
+
+            run_record = cls._run_states[effective_run_id]
+            run_record["events"].append(flat_event)
+            if len(run_record["events"]) > 50:
+                run_record["events"] = run_record["events"][-50:]
+
+            cls._events.append(flat_event)
+            if len(cls._events) > 50:
+                cls._events = cls._events[-50:]
+
+            if event_data.get("event") == "run_start":
+                run_record["last_state"].update(event_data.get("data", {}))
+                cls._last_state.update(event_data.get("data", {}))
+
+            return run_record["last_state"]
 
     @classmethod
-    def handle_event(cls, event):
-        """Standard Forensic Event Handler (AgentV v1.6.0)."""
-        # Unwrap object if necessary (for MockEvent compatibility in tests)
+    def handle_event(cls, event: Any, run_id: str | None = None) -> dict[str, Any]:
+        """Standard Forensic Event Handler (AgentV v2.0.0)."""
         if hasattr(event, "items"):
             name = event.get("event")
             data = event.get("data") or {
                 k: v for k, v in event.items() if k not in ["event", "name", "timestamp"]
             }
             timestamp = event.get("timestamp")
+            extracted_run_id = event.get("run_id") or (
+                data.get("run_id") if isinstance(data, dict) else None
+            )
         else:
             name = getattr(event, "name", None)
             data = getattr(event, "data", None)
             timestamp = getattr(event, "timestamp", None)
+            extracted_run_id = getattr(event, "run_id", None) or (
+                data.get("run_id") if isinstance(data, dict) else None
+            )
 
-        # Guard: In case event was just a task status or similar
         if not name and hasattr(event, "get"):
             name = event.get("status")
 
-        # Map turning points to last_state
-        from eval_runner.events import CoreEvents
+        effective_run_id = run_id or extracted_run_id or cls._latest_run_id or "default"
 
-        if name == CoreEvents.TURN_START:
-            cls._last_state["current_agent"] = f"Agent {data.get('agent_name', 'Unknown')}"
-        elif name == CoreEvents.TOOL_CALL:
-            cls._last_state["last_tool"] = data.get("tool")
-        elif name == CoreEvents.RUN_END:
-            cls._last_state["message"] = f"Evaluation complete. Status: {data.get('status')}"
-            run_id = data.get("run_id")
-            if run_id and run_id.startswith("run-loan"):
-                cls._last_state["message"] += " (Industrial Demo Narrative)"
-        elif name == "world_state_change":
-            cls._last_state.update(data)
-        elif name == "run_start":
-            cls._last_state.update(data if data else {})
+        with cls._lock:
+            if effective_run_id not in cls._run_states:
+                cls._run_states[effective_run_id] = {
+                    "events": [],
+                    "last_state": {"message": "Waiting for evaluation..."},
+                }
+            last_state = cls._run_states[effective_run_id]["last_state"]
 
-        return cls.post_event({"event": name, "data": data, "timestamp": timestamp})
+            from eval_runner.events import CoreEvents
+
+            if name == CoreEvents.TURN_START and isinstance(data, dict):
+                last_state["current_agent"] = f"Agent {data.get('agent_name', 'Unknown')}"
+            elif name == CoreEvents.TOOL_CALL and isinstance(data, dict):
+                last_state["last_tool"] = data.get("tool")
+            elif name == CoreEvents.RUN_END and isinstance(data, dict):
+                last_state["message"] = f"Evaluation complete. Status: {data.get('status')}"
+                r_id = data.get("run_id") or effective_run_id
+                if r_id and str(r_id).startswith("run-loan"):
+                    last_state["message"] += " (Industrial Demo Narrative)"
+            elif name == "world_state_change" and isinstance(data, dict):
+                last_state.update(data)
+            elif name == "run_start" and isinstance(data, dict):
+                last_state.update(data)
+
+            # Keep global _last_state synchronized for backward-compatibility
+            cls._last_state.update(last_state)
+
+        return cls.post_event(
+            {"event": name, "data": data, "timestamp": timestamp, "run_id": effective_run_id},
+            run_id=effective_run_id,
+        )
 
     @classmethod
-    def get_state(cls):
-        # Industrial Search: Find explicit root cause in timeline
-        root_cause = next((e for e in cls._events if e.get("is_root_cause")), None)
-        if root_cause:
-            # Add metadata for the UI 'Isolate Root Cause' feature
-            idx = cls._events.index(root_cause)
-            root_cause_meta = {
-                "index": idx,
-                "reason": root_cause.get("reason", "Heuristic policy violation identified"),
-                "confidence": root_cause.get("confidence", 1.0),
-            }
-            return {
-                "summary": cls._last_state,
-                "timeline": cls._events,
-                "root_cause": root_cause_meta,
-            }
+    def get_state(cls, run_id: str | None = None) -> dict[str, Any]:
+        with cls._lock:
+            effective_run_id = run_id
+            if effective_run_id and effective_run_id in cls._run_states:
+                events = cls._run_states[effective_run_id]["events"]
+                last_state = cls._run_states[effective_run_id]["last_state"]
+            else:
+                events = cls._events
+                last_state = cls._last_state
 
-        return {"summary": cls._last_state, "timeline": cls._events}
+            root_cause = next((e for e in events if e.get("is_root_cause")), None)
+            if root_cause:
+                idx = events.index(root_cause)
+                root_cause_meta = {
+                    "index": idx,
+                    "reason": root_cause.get("reason", "Heuristic policy violation identified"),
+                    "confidence": root_cause.get("confidence", 1.0),
+                }
+                return {
+                    "summary": last_state,
+                    "timeline": events,
+                    "root_cause": root_cause_meta,
+                    "run_id": effective_run_id,
+                }
+
+            return {"summary": last_state, "timeline": events, "run_id": effective_run_id}
 
 
 system_bp = Blueprint("system", __name__)
@@ -368,17 +424,20 @@ def debugger_state():
                     return jsonify({"error": msg, "message": msg}), 500
 
         if trace:
-            # Rehydrate DebuggerStateStore with historical timeline
-            DebuggerStateStore.reset()
+            # Rehydrate DebuggerStateStore with historical timeline for this specific run_id
+            DebuggerStateStore.reset(run_id=run_id)
+            for event in trace:
+                DebuggerStateStore.handle_event(event, run_id=run_id)
+
             if run_id.startswith("run-loan"):
-                DebuggerStateStore._last_state["message"] = (
+                state = DebuggerStateStore.get_state(run_id=run_id)
+                state["summary"]["message"] = (
                     "Waiting for evaluation... (Industrial Demo Narrative)"
                 )
+                return jsonify({"data": state})
 
-            for event in trace:
-                DebuggerStateStore.handle_event(event)
+            return jsonify({"data": DebuggerStateStore.get_state(run_id=run_id)})
 
-            return jsonify({"data": DebuggerStateStore.get_state()})
         msg = "Trace file not found"
         return jsonify({"error": msg, "message": msg}), 404
 

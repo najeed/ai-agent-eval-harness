@@ -143,3 +143,21 @@ def test_login_unauthorized(mock_get_provider, client):
     resp = client.post("/api/auth/login", json={"apiKey": "wrong-key"})
     assert resp.status_code == 401
     assert "Invalid API Key" in resp.json["error"]
+
+
+def test_auth_secret_and_token_branches():
+    """Test dynamic JWT secret resolution and handoff token generation."""
+    from eval_runner import config
+    from eval_runner.console.auth import generate_handoff_token, get_jwt_secret
+
+    with patch.object(config, "JWT_SECRET", "custom_secret_123", create=True):
+        assert get_jwt_secret() == "custom_secret_123"
+
+    with (
+        patch.object(config, "JWT_SECRET", None, create=True),
+        patch.dict("os.environ", {"JWT_SECRET": "env_secret_456"}),
+    ):
+        assert get_jwt_secret() == "env_secret_456"
+
+    tok = generate_handoff_token("user-1", "admin", "custom-plugin")
+    assert isinstance(tok, str)

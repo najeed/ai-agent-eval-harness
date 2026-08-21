@@ -1,6 +1,8 @@
-# AgentV — Documentation
+# AgentV — Legacy Documentation (v1 Reference Archive)
 
-Welcome to the official documentation. Start with the Quick Start guide and explore the detailed manuals below.
+> [!WARNING]
+> **DEPRECATED REFERENCE ARCHIVE**: This directory contains historical v1.x documentation retained strictly for backward reference. For the authoritative, current AgentV v2.0.0 documentation and specifications, please refer to the active documentation under [`docs/`](../docs/).
+
 
 ## 🏁 Getting Started
 
