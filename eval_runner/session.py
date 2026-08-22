@@ -422,7 +422,8 @@ class SessionManager:
                 raise ValueError(err_msg)
 
             last_execution_id: str | None = None
-            for idx, node_id in enumerate(execution_order):
+            last_scenario_node_id: str | None = None
+            for node_id in execution_order:
                 if (
                     self.cancellation_event
                     and getattr(self.cancellation_event, "is_set", lambda: False)()
@@ -443,9 +444,9 @@ class SessionManager:
                 if not node:
                     continue
 
-                exec_id = f"{node_id}_att{attempt_number}_seq{idx}"
+                exec_id = f"{node_id}:attempt:{attempt_number}"
                 # Emit observed execution edge from prior node if exists
-                if last_execution_id:
+                if last_execution_id and last_scenario_node_id:
                     edge_type = (
                         ExecutionEdgeType.RETRY
                         if attempt_number > 1
@@ -455,8 +456,8 @@ class SessionManager:
                         CoreEvents.EXECUTION_GRAPH_EDGE,
                         {
                             "run_id": self.run_id,
-                            "source_execution_id": last_execution_id,
-                            "target_execution_id": exec_id,
+                            "from_scenario_node_id": last_scenario_node_id,
+                            "to_scenario_node_id": node_id,
                             "edge_type": edge_type,
                         },
                     )
@@ -467,7 +468,7 @@ class SessionManager:
                     {
                         "run_id": self.run_id,
                         "scenario_node_id": node_id,
-                        "execution_node_id": exec_id,
+                        "execution_instance_id": exec_id,
                         "parent_execution_id": last_execution_id,
                         "label": node.get("task_description") or node_id,
                         "status": ExecutionNodeStatus.RUNNING,
@@ -489,7 +490,7 @@ class SessionManager:
                         {
                             "run_id": self.run_id,
                             "scenario_node_id": node_id,
-                            "execution_node_id": exec_id,
+                            "execution_instance_id": exec_id,
                             "parent_execution_id": last_execution_id,
                             "label": node.get("task_description") or node_id,
                             "status": ExecutionNodeStatus.COMPLETED,
@@ -499,6 +500,7 @@ class SessionManager:
                         },
                     )
                     last_execution_id = exec_id
+                    last_scenario_node_id = node_id
                 else:
                     print(f"      [Node Failure] {node_id}: {task_res.get('message')}")
                     all_task_results.append(task_res)
@@ -507,7 +509,7 @@ class SessionManager:
                         {
                             "run_id": self.run_id,
                             "scenario_node_id": node_id,
-                            "execution_node_id": exec_id,
+                            "execution_instance_id": exec_id,
                             "parent_execution_id": last_execution_id,
                             "label": node.get("task_description") or node_id,
                             "status": ExecutionNodeStatus.FAILED,

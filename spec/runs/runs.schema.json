@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "AgentV Run Trace Specification (v1.5.0)",
+  "title": "AgentV Run Trace Specification",
   "description": "Formal schema for high-fidelity evaluation event streams (run.jsonl).",
   "type": "object",
   "required": [
@@ -263,6 +263,105 @@
           "type": "string"
         }
       }
+    },
+    {
+      "title": "Canonical Execution Graph Node",
+      "description": "Runtime-emitted canonical execution graph node event carrying canonical identity triple.",
+      "properties": {
+        "event": {
+          "const": "execution_graph_node"
+        },
+        "scenario_node_id": {
+          "type": "string",
+          "description": "Stable identity of the scenario node."
+        },
+        "execution_instance_id": {
+          "type": "string",
+          "description": "Unique execution instance identifier for this attempt (e.g. task-1:attempt:1)."
+        },
+        "parent_execution_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Parent execution instance ID for retry/branch lineage tracking."
+        },
+        "label": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "running",
+            "completed",
+            "failed",
+            "error",
+            "aborted",
+            "skipped"
+          ]
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "duration_ms": {
+          "type": "number"
+        },
+        "failure_class": {
+          "type": "string"
+        },
+        "failure_reason": {
+          "type": "string"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "scenario_node_id",
+        "execution_instance_id"
+      ]
+    },
+    {
+      "title": "Canonical Execution Graph Edge",
+      "description": "Runtime-emitted canonical execution graph edge event.",
+      "properties": {
+        "event": {
+          "const": "execution_graph_edge"
+        },
+        "from_scenario_node_id": {
+          "type": "string",
+          "description": "Source scenario_node_id."
+        },
+        "to_scenario_node_id": {
+          "type": "string",
+          "description": "Target scenario_node_id."
+        },
+        "condition": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "edge_type": {
+          "type": "string",
+          "enum": [
+            "sequential",
+            "conditional",
+            "retry",
+            "parallel",
+            "fallback"
+          ]
+        }
+      },
+      "required": [
+        "from_scenario_node_id",
+        "to_scenario_node_id"
+      ]
     }
   ]
 }

@@ -41,8 +41,29 @@ def test_public_identity_resolution(client, tmp_path, monkeypatch):
 
 def test_public_identity_not_found(client, tmp_path, monkeypatch):
     """Verify 404 for non-existent identities."""
-    monkeypatch.setattr(config, "TRUST_ROOT", tmp_path / "keys")
+    # Create the TRUST_ROOT directory so it exists as a real, resolvable path.
+    # Without this, Path.resolve() on a non-existent dir may not normalize
+    # cleanly on Windows, causing is_relative_to() to misclassify the path.
+    keys_dir = tmp_path / "keys"
+    keys_dir.mkdir(parents=True, exist_ok=True)
+
+    monkeypatch.setattr(config, "TRUST_ROOT", keys_dir)
     monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
 
     response = client.get("/v1/identity/missing_identity/public_key")
     assert response.status_code == 404
+
+
+def test_public_identity_exception_handling(client, monkeypatch):
+    """Verify 404 and structured error when key retrieval raises an unexpected exception."""
+    from eval_runner import identity
+
+    def raise_err(*args, **kwargs):
+        raise RuntimeError("Disk read corruption")
+
+    monkeypatch.setattr(identity.IdentityService, "get_public_key", raise_err)
+
+    response = client.get("/v1/identity/corrupt_identity/public_key")
+    assert response.status_code == 404
+    data = response.get_json()
+    assert "error" in data

@@ -8,11 +8,17 @@ import {
   Sparkles, AlertTriangle 
 } from 'lucide-react';
 import ReactDiffViewer from 'react-diff-viewer-continued';
+import dagre from 'dagre';
 
 interface LogEvent {
   event: string;
   timestamp: string;
   run_id?: string;
+  scenario_node_id?: string;
+  execution_instance_id?: string;
+  parent_execution_id?: string | null;
+  from_scenario_node_id?: string;
+  to_scenario_node_id?: string;
   node_id?: string;
   subtask_id?: string;
   task_id?: string;
@@ -24,6 +30,12 @@ interface LogEvent {
   is_root_cause?: boolean;
   _seq?: number;
   turn?: number;
+  status?: string;
+  attempt?: number;
+  duration_ms?: number;
+  failure_class?: string;
+  failure_reason?: string;
+  edge_type?: string;
 }
 
 export const LiveDebugger: React.FC = () => {
@@ -333,195 +345,236 @@ export const LiveDebugger: React.FC = () => {
     return () => closeStream();
   }, [runId]);
 
-  // Authoritative Graph Builder
+  // Canonical Graph Builder (Scenario DAG is primary, telemetry provides state decoration)
   const buildTraceGraph = (
     allEvents: LogEvent[],
     scen: any,
     selection: LogEvent | null
   ): { flowNodes: any[]; flowEdges: any[] } => {
-    const nodesPerRow = 4;
     const positions = nodePositionsRef.current;
 
-    // 1. Check for Authoritative Execution Graph events from Runtime
-    const graphNodeEvents = allEvents.filter(e => e.event === 'execution_graph_node' || (e as any).execution_node_id);
-    const graphEdgeEvents = allEvents.filter(e => e.event === 'execution_graph_edge');
+    // 1. Primary Scenario Workflow Nodes & Edges
+    let workflowNodes = scen?.workflow?.nodes || scen?.workflow?.tasks || [];
+    const workflowEdges = scen?.workflow?.edges || [];
 
-    if (graphNodeEvents.length > 0) {
-      // Map authoritative execution nodes
-      const executionNodesMap = new Map<string, any>();
-      for (const ev of graphNodeEvents) {
-        const anyEv = ev as any;
-        const execId = anyEv.execution_node_id || anyEv.node_id || anyEv.task_id;
-        if (execId) {
-          executionNodesMap.set(execId, { ...executionNodesMap.get(execId), ...anyEv });
+    // Fallback: if scenario definition hasn't loaded yet, infer scenario topology from events
+    if (workflowNodes.length === 0) {
+      const discoveredNodeIds = new Set<string>();
+      for (const ev of allEvents) {
+        const id = ev.scenario_node_id || ev.node_id || ev.task_id;
+        if (id) discoveredNodeIds.add(id);
+      }
+      workflowNodes = Array.from(discoveredNodeIds).map(id => ({ id, task_description: id }));
+    }
+
+    if (workflowNodes.length === 0) {
+      return { flowNodes: [], flowEdges: [] };
+    }
+
+    // 2. Map Telemetry per Scenario Node
+    const flowNodes = workflowNodes.map((n: any) => {
+      const id = String(n.id || n.scenario_node_id || n.task_id);
+      const label = n.task_description || n.description || n.label || id;
+
+      // Find all matching events for this scenario node
+      const matchingEvents = allEvents.filter(
+        e => e.scenario_node_id === id || e.node_id === id || e.task_id === id
+      );
+
+      const graphNodeEvents = matchingEvents.filter(
+        e => e.event === 'execution_graph_node'
+      );
+
+      // Determine Execution Status & Metadata
+      let status = 'pending';
+      let failureClass: string | undefined;
+      let failureReason: string | undefined;
+      let durationMs: number | undefined;
+      let maxAttempt = 1;
+
+      // Extract explicit graph node telemetry if emitted
+      if (graphNodeEvents.length > 0) {
+        const latestEv = graphNodeEvents[graphNodeEvents.length - 1];
+        if (latestEv.status) {
+          status = latestEv.status.toLowerCase();
         }
+        failureClass = latestEv.failure_class;
+        failureReason = latestEv.failure_reason;
+        durationMs = latestEv.duration_ms;
+        const attempts = graphNodeEvents.map(e => e.attempt || 1);
+        maxAttempt = attempts.length > 0 ? Math.max(...attempts) : 1;
       }
 
-      const execNodesList = Array.from(executionNodesMap.values());
-      const flowNodes = execNodesList.map((n, index) => {
-        const id = n.execution_node_id || n.node_id || n.task_id;
-        const isError = n.status === 'failed' || n.status === 'FAILED' || n.failure_reason;
-        const isFinished = n.status === 'completed' || n.status === 'COMPLETED';
-        const isStarted = n.status === 'running' || n.status === 'RUNNING';
-        const isHighlighted = selection && (id === (selection as any).execution_node_id || id === selection.node_id || id === selection.task_id);
+      // Check for error or completed events from standard event stream
+      const hasError = matchingEvents.some(
+        e =>
+          e.event === 'error' ||
+          e.category === 'PARITY_STATE_DIVERGENCE' ||
+          (e.status && e.status.toLowerCase() === 'failed') ||
+          e.message?.toLowerCase().includes('error') ||
+          e.message?.toLowerCase().includes('fail')
+      );
+      const isCompleted = matchingEvents.some(
+        e =>
+          (e.status && e.status.toLowerCase() === 'completed') ||
+          e.event === 'maneuver_end' ||
+          e.event === 'node_end' ||
+          e.result === 'success'
+      );
+      const isRunning = matchingEvents.some(
+        e =>
+          (e.status && e.status.toLowerCase() === 'running') ||
+          e.event === 'node_start' ||
+          e.event === 'maneuver_start'
+      );
 
-        let border = isHighlighted ? '2px solid #818cf8' : '1px solid #334155';
-        let background = '#0f172a';
-        let statusLabel = n.status || 'Pending';
-        if (isError) {
-          border = isHighlighted ? '2px solid #f87171' : '1px solid #ef4444';
-          background = 'rgba(127,29,29,0.4)';
-          statusLabel = n.failure_class || 'Failed';
-        } else if (isFinished) {
-          border = isHighlighted ? '2px solid #34d399' : '1px solid #10b981';
-          background = 'rgba(6,78,59,0.4)';
-          statusLabel = 'Completed';
-        } else if (isStarted) {
-          border = isHighlighted ? '2px solid #fbbf24' : '1px solid #f59e0b';
-          background = 'rgba(120,53,15,0.4)';
-          statusLabel = 'Running';
-        }
+      if (hasError && status !== 'completed') {
+        status = 'failed';
+      } else if (isCompleted && status !== 'failed') {
+        status = 'completed';
+      } else if (isRunning && status === 'pending') {
+        status = 'running';
+      }
 
-        // Layout once, preserve manual drag coordinates
-        let pos = positions.get(id);
-        if (!pos) {
-          const row = Math.floor(index / nodesPerRow);
-          const col = index % nodesPerRow;
-          pos = { x: 80 + col * 260, y: 50 + row * 170 };
-          positions.set(id, pos);
-        }
+      // Selection matching: join on scenario_node_id
+      const selectedId = selection?.scenario_node_id || selection?.node_id || selection?.task_id;
+      const isHighlighted = !!selectedId && selectedId === id;
 
-        return {
-          id,
-          type: 'default',
-          position: pos,
-          data: {
-            label: (
-              <div className="space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono font-bold text-[10px] text-slate-200">{n.scenario_node_id || id}</span>
-                  {n.attempt && n.attempt > 1 && (
-                    <span className="px-1 py-0.2 bg-amber-500/20 text-amber-300 text-[8px] rounded font-mono">att#{n.attempt}</span>
-                  )}
-                </div>
-                <div className="text-[9px] text-slate-400 truncate max-w-[130px]" title={n.label || n.task_description}>
-                  {statusLabel}
-                </div>
-                {n.duration_ms && (
-                  <div className="text-[8px] text-slate-500 font-mono">{(n.duration_ms / 1000).toFixed(2)}s</div>
+      let border = isHighlighted ? '2px solid #818cf8' : '1px solid #334155';
+      let background = '#0f172a';
+      let statusLabel = 'Pending';
+
+      if (status === 'failed' || status === 'error' || status === 'aborted') {
+        border = isHighlighted ? '2px solid #f87171' : '1px solid #ef4444';
+        background = 'rgba(127,29,29,0.4)';
+        statusLabel = failureClass || failureReason || 'Failed';
+      } else if (status === 'completed') {
+        border = isHighlighted ? '2px solid #34d399' : '1px solid #10b981';
+        background = 'rgba(6,78,59,0.4)';
+        statusLabel = 'Completed';
+      } else if (status === 'running') {
+        border = isHighlighted ? '2px solid #fbbf24' : '1px solid #f59e0b';
+        background = 'rgba(120,53,15,0.4)';
+        statusLabel = 'Running';
+      }
+
+      return {
+        id,
+        type: 'default',
+        position: { x: 0, y: 0 },
+        data: {
+          label: (
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="font-mono font-bold text-[10px] text-slate-200">{id}</span>
+                {maxAttempt > 1 && (
+                  <span className="px-1 py-0.2 bg-amber-500/20 text-amber-300 text-[8px] rounded font-mono">
+                    att#{maxAttempt}
+                  </span>
                 )}
               </div>
-            )
-          },
-          style: {
-            background,
-            color: '#fff',
-            border,
-            borderRadius: '8px',
-            padding: '8px',
-            width: 170,
-            boxShadow: isHighlighted ? '0 0 15px rgba(99, 102, 241, 0.7), inset 0 0 0 1px rgba(129, 140, 248, 0.5)' : 'none',
-            transition: 'box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease'
-          }
-        };
-      });
+              <div className="text-[9px] text-slate-400 truncate max-w-[130px]" title={label}>
+                {statusLabel}
+              </div>
+              {durationMs && (
+                <div className="text-[8px] text-slate-500 font-mono">
+                  {(durationMs / 1000).toFixed(2)}s
+                </div>
+              )}
+            </div>
+          )
+        },
+        style: {
+          background,
+          color: '#fff',
+          border,
+          borderRadius: '8px',
+          padding: '8px',
+          width: 170,
+          boxShadow: isHighlighted
+            ? '0 0 15px rgba(99, 102, 241, 0.7), inset 0 0 0 1px rgba(129, 140, 248, 0.5)'
+            : 'none',
+          transition: 'box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease'
+        }
+      };
+    });
 
-      const nodeIdSet = new Set(flowNodes.map(n => n.id));
-      const flowEdges = graphEdgeEvents
-        .map((e: any, idx: number) => ({
-          id: `exec-edge-${idx}`,
-          source: e.source_execution_id || e.source,
-          target: e.target_execution_id || e.target,
+    // 3. Edges: Combine Scenario Workflow Edges + Runtime Execution Graph Edge Telemetry
+    const nodeIdSet = new Set(flowNodes.map((n: any) => n.id));
+    const flowEdgesMap = new Map<string, any>();
+
+    // Initial edges from workflow definition
+    workflowEdges.forEach((e: any) => {
+      const source = e.from || e.source;
+      const target = e.to || e.target;
+      if (nodeIdSet.has(source) && nodeIdSet.has(target)) {
+        const edgeId = `scen-edge-${source}-${target}`;
+        flowEdgesMap.set(edgeId, {
+          id: edgeId,
+          source,
+          target,
+          animated: true,
+          style: { stroke: '#6366f1', strokeWidth: 2 }
+        });
+      }
+    });
+
+    // Decorate with runtime execution_graph_edge events
+    const graphEdgeEvents = allEvents.filter(e => e.event === 'execution_graph_edge');
+    graphEdgeEvents.forEach((e: any) => {
+      const source = e.from_scenario_node_id || e.source_execution_id || e.source;
+      const target = e.to_scenario_node_id || e.target_execution_id || e.target;
+      if (source && target && nodeIdSet.has(source) && nodeIdSet.has(target)) {
+        const edgeId = `exec-edge-${source}-${target}`;
+        flowEdgesMap.set(edgeId, {
+          id: edgeId,
+          source,
+          target,
           label: e.edge_type === 'retry' ? 'retry' : e.edge_type === 'conditional' ? 'if' : undefined,
           animated: true,
           style: {
             stroke: e.edge_type === 'retry' ? '#f59e0b' : '#6366f1',
             strokeWidth: 2,
+            strokeDasharray: e.edge_type === 'retry' ? '5,5' : undefined
           }
-        }))
-        .filter(e => nodeIdSet.has(e.source) && nodeIdSet.has(e.target));
+        });
+      }
+    });
 
-      return { flowNodes, flowEdges };
-    }
+    const flowEdges = Array.from(flowEdgesMap.values());
 
-    // 2. Scenario-declared workflow fallback
-    const workflowNodes = scen?.workflow?.nodes || scen?.workflow?.tasks || [];
-    const workflowEdges = scen?.workflow?.edges || [];
+    // 4. Dagre Topology Layout (Preserves manual user drag coordinates)
+    const dagreGraph = new dagre.graphlib.Graph();
+    dagreGraph.setDefaultEdgeLabel(() => ({}));
+    dagreGraph.setGraph({ rankdir: 'LR', nodesep: 50, ranksep: 80 });
 
-    let flowNodes = [];
-    if (workflowNodes.length > 0) {
-      flowNodes = workflowNodes.map((n: any, index: number) => {
-        const id = n.id;
-        const isError = allEvents.some(e => (e.node_id === id || e.task_id === id) && (e.event === 'error' || e.category === 'PARITY_STATE_DIVERGENCE' || e.message?.toLowerCase().includes('error') || e.message?.toLowerCase().includes('fail')));
-        const isFinished = allEvents.some(e => (e.node_id === id || e.task_id === id) && (e.event === 'maneuver_end' || e.event === 'node_end' || e.result === 'success'));
-        const isStarted = allEvents.some(e => (e.node_id === id || e.task_id === id));
-        const isHighlighted = selection && (id === selection.node_id || id === selection.task_id);
+    const nodeWidth = 180;
+    const nodeHeight = 70;
 
-        let border = isHighlighted ? '2px solid #818cf8' : '1px solid #334155';
-        let background = '#0f172a';
-        let statusLabel = 'Pending';
-        if (isError) {
-          border = isHighlighted ? '2px solid #f87171' : '1px solid #ef4444';
-          background = 'rgba(127,29,29,0.4)';
-          statusLabel = 'Diverged';
-        } else if (isFinished) {
-          border = isHighlighted ? '2px solid #34d399' : '1px solid #10b981';
-          background = 'rgba(6,78,59,0.4)';
-          statusLabel = 'Completed';
-        } else if (isStarted) {
-          border = isHighlighted ? '2px solid #fbbf24' : '1px solid #f59e0b';
-          background = 'rgba(120,53,15,0.4)';
-          statusLabel = 'Running';
-        }
+    flowNodes.forEach((node: any) => {
+      dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+    });
 
-        let pos = positions.get(id);
-        if (!pos) {
-          const row = Math.floor(index / nodesPerRow);
-          const col = index % nodesPerRow;
-          pos = { x: 80 + col * 260, y: 50 + row * 170 };
-          positions.set(id, pos);
-        }
+    flowEdges.forEach((edge: any) => {
+      dagreGraph.setEdge(edge.source, edge.target);
+    });
 
-        return {
-          id,
-          type: 'default',
-          position: pos,
-          data: {
-            label: (
-              <div className="space-y-1">
-                <div className="font-mono font-bold text-[10px] text-slate-200">{id}</div>
-                <div className="text-[9px] text-slate-400 truncate max-w-[120px]" title={n.task_description || n.description}>{statusLabel}</div>
-              </div>
-            )
-          },
-          style: {
-            background,
-            color: '#fff',
-            border,
-            borderRadius: '8px',
-            padding: '6px',
-            width: 160,
-            boxShadow: isHighlighted ? '0 0 15px rgba(99, 102, 241, 0.7), inset 0 0 0 1px rgba(129, 140, 248, 0.5)' : 'none',
-            transition: 'box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease'
-          }
-        };
-      });
-    }
+    dagre.layout(dagreGraph);
 
-    let flowEdges: any[] = [];
-    if (workflowEdges.length > 0) {
-      const nodeIdSet = new Set(flowNodes.map((n: any) => n.id));
-      flowEdges = workflowEdges
-        .map((e: any, idx: number) => ({
-          id: `e-${idx}`,
-          source: e.from || e.source,
-          target: e.to || e.target,
-          animated: true
-        }))
-        .filter((e: any) => nodeIdSet.has(e.source) && nodeIdSet.has(e.target));
-    }
+    const layoutedNodes = flowNodes.map((node: any, index: number) => {
+      const savedPos = positions.get(node.id);
+      if (savedPos) {
+        return { ...node, position: savedPos };
+      }
+      const nodeWithPosition = dagreGraph.node(node.id);
+      const x = nodeWithPosition ? nodeWithPosition.x - nodeWidth / 2 + 80 : 80 + index * 220;
+      const y = nodeWithPosition ? nodeWithPosition.y - nodeHeight / 2 + 50 : 50;
+      const pos = { x, y };
+      positions.set(node.id, pos);
+      return { ...node, position: pos };
+    });
 
-    return { flowNodes, flowEdges };
+    return { flowNodes: layoutedNodes, flowEdges };
   };
 
   // Node Drag Position Saver to ensure layout state persistence
@@ -562,7 +615,7 @@ export const LiveDebugger: React.FC = () => {
   // Focus and zoom on selected node from timeline selection
   useEffect(() => {
     if (selectedEvent && reactFlowInstance) {
-      const nodeId = selectedEvent.node_id || selectedEvent.task_id;
+      const nodeId = selectedEvent.scenario_node_id || selectedEvent.node_id || selectedEvent.task_id;
       if (nodeId) {
         const targetNode = nodes.find(n => n.id === nodeId);
         if (targetNode) {

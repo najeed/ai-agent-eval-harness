@@ -5,7 +5,7 @@ Unit tests for CLI handlers and complex branches (report, replay, run, evaluate,
 Refactored to eliminate "Mock Namespaces" and use real argparse objects.
 """
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -135,10 +135,12 @@ async def test_run_evaluate_complex_branches(tmp_path, monkeypatch):
     )
 
     with (
-        patch("eval_runner.loader.load_dataset", return_value=[{"id": "s1"}]),
+        patch(
+            "eval_runner.handlers.evaluation.loader.load_dataset",
+            return_value=[{"id": "s1", "metadata": {"id": "s1"}}],
+        ),
         patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock) as mock_eval,
         patch("eval_runner.metrics.calculate_consensus_scoring", return_value=1.0),
-        patch("builtins.open", MagicMock()),
     ):
         mock_eval.return_value = [
             {

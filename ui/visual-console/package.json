@@ -10,20 +10,22 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "@xyflow/react": "12.11.2",
-    "react-router-dom": "7.18.2",
-    "@tanstack/react-query": "5.101.4",
-    "lucide-react": "1.27.0",
-    "tailwindcss": "4.3.3",
-    "cmdk": "1.1.1",
-    "recharts": "3.10.1",
     "@monaco-editor/react": "4.7.0",
-    "react-diff-viewer-continued": "4.4.0"
+    "@tanstack/react-query": "5.101.4",
+    "@xyflow/react": "12.11.2",
+    "cmdk": "1.1.1",
+    "dagre": "^0.8.5",
+    "lucide-react": "1.27.0",
+    "react": "19.2.8",
+    "react-diff-viewer-continued": "4.4.0",
+    "react-dom": "19.2.8",
+    "react-router-dom": "7.18.2",
+    "recharts": "3.10.1",
+    "tailwindcss": "4.3.3"
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.3.3",
+    "@types/dagre": "^0.7.54",
     "@types/node": "^26.1.2",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
