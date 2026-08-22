@@ -364,6 +364,16 @@
           "description": "International Sustainability Standards Board."
         }
       ]
+    },
+    "finance": {
+      "description": "Standards related to finance.",
+      "standards": [
+        {
+          "id": "std-1",
+          "name": "New Standard",
+          "description": "No description provided"
+        }
+      ]
     }
   }
 }
