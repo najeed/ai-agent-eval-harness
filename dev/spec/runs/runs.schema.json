@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "AgentV Run Trace Specification (v1.5.0)",
+  "title": "AgentV Run Trace Specification",
   "description": "Formal schema for high-fidelity evaluation event streams (run.jsonl).",
   "type": "object",
   "required": [
