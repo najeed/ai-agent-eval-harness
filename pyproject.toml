@@ -48,7 +48,7 @@ llm = [
     "langsmith==0.11.1",
 ]
 docs = [
-    "pypdf==6.16.1",
+    "pypdf==6.16.2",
     "python-docx==1.2.0",
     "lxml==6.1.2",
     "weasyprint>=69.0",
