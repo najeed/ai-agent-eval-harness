@@ -177,7 +177,10 @@ class CoreTraceSigner(TraceVerificationInterceptor):
                 sig_raw = private_key.sign(manifest_bytes)
                 signature = sig_raw.hex() if isinstance(sig_raw, bytes) else str(sig_raw)
             else:
-                signature = "00" * 64
+                raise CertificationFailedError(
+                    f"Identity '{identity_id}' exposes no usable signing capability "
+                    "(fail-closed: degenerate placeholder signatures are prohibited)"
+                )
 
             manifest["provenance_chain"].append(
                 {
@@ -224,6 +227,10 @@ class CoreTraceSigner(TraceVerificationInterceptor):
                     if config.PQC_STRICT_MODE:
                         raise RuntimeError(f"PQC_STRICT_MODE Violation: {msg}")
 
+        except CertificationFailedError:
+            # Fail-closed: an un-signable identity aborts certification; the
+            # error barrier below must never swallow this into a warning.
+            raise
         except Exception as e:
             logger.warning(f"Could not cryptographically sign trace as '{identity_id}': {e}")
             if config.PQC_STRICT_MODE and "PQC_STRICT_MODE Violation" in str(e):
@@ -1009,6 +1016,18 @@ def verify_trace_certificate(
         if not signature_hex or len(signature_hex) < 32:
             result["errors"].append(
                 f"Signature entry for identity '{identity_id}' is empty or malformed."
+            )
+            continue
+
+        # Fail-closed: reject degenerate all-zero placeholder signatures.
+        # These carry no cryptographic proof (and would bypass verification
+        # entirely against mock/transparent key objects), so they must never
+        # be allowed to certify evidence.
+        normalized_sig = signature_hex.strip().lower()
+        if not normalized_sig or set(normalized_sig) == {"0"}:
+            result["errors"].append(
+                f"Degenerate all-zero signature rejected for identity '{identity_id}' "
+                "(fail-closed: placeholder signatures cannot certify evidence)."
             )
             continue
 

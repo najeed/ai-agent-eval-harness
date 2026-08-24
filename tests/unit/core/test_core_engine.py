@@ -155,7 +155,16 @@ async def test_engine_consistency_score():
         "aes_version": 1.4,
         "id": "test-consistency",
         "metadata": {"name": "test-consistency", "compliance_level": "Standard"},
-        "workflow": {"nodes": [{"id": "task-1", "task_description": "Do something"}], "edges": []},
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "task-1",
+                    "task_description": "Do something",
+                    "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+                }
+            ],
+            "edges": [],
+        },
     }
 
     async def mock_agent(*args):
@@ -353,6 +362,7 @@ async def test_engine_policy_violation():
         "id": "policy-test",
         "metadata": {"name": "policy-test", "compliance_level": "Standard"},
         "industry": "test",
+        "tools": {"apply_refund": {"output": {"status": "success"}}},
         "policies": {"apply_refund": {"max_limit": 50}},
         "workflow": {
             "nodes": [

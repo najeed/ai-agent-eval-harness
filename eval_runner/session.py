@@ -46,6 +46,7 @@ from .session_components import (  # noqa: E402
 )
 from .tool_sandbox import ToolSandbox  # noqa: E402
 from .utils import crypto  # noqa: E402
+from .workflow_interpreter import WorkflowInterpreter  # noqa: E402
 
 # Security Guardrails: Fork Bomb Prevention
 MAX_FORK_DEPTH = config.MAX_FORK_DEPTH
@@ -117,12 +118,14 @@ class SessionManager:
         )
         try:
             self.execution_mode = ExecutionMode(str(mode_raw))
-        except ValueError:
-            logger.warning(
-                "      [Session] Unknown execution_mode '%s'; defaulting to SIMULATED.",
-                mode_raw,
-            )
-            self.execution_mode = ExecutionMode.SIMULATED
+        except ValueError as err:
+            # [A3] Fail-closed: an invalid execution_mode is a run-level
+            # failure. The kernel never silently downgrades to SIMULATED.
+            valid = [m.value for m in ExecutionMode]
+            raise ValueError(
+                f"Invalid execution_mode '{mode_raw}'. Valid modes: {valid}. "
+                "Refusing to fall back to SIMULATED (fail-closed)."
+            ) from err
         self.metadata["execution_mode"] = self.execution_mode.value
 
         # [AgentV v2.0.0] First-class attempt identity
@@ -375,8 +378,6 @@ class SessionManager:
         return True
 
     async def execute_tasks(self, attempt_number: int) -> list[dict[str, Any]]:
-        from .workflow_interpreter import WorkflowInterpreter
-
         all_task_results: list[dict[str, Any]] = []
         global_cumulative_history = []
         node_id = "unknown"
@@ -467,6 +468,7 @@ class SessionManager:
                 if state_before is not None:
                     state_before_map[node_id_local] = copy.deepcopy(state_before)
 
+                policy_cursor = len(getattr(sandbox, "policy_decisions", []))
                 result = await self._execute_node(
                     node_def,
                     attempt_number,
@@ -485,6 +487,25 @@ class SessionManager:
                 result["case_id"] = identity.case_id
                 result["attempt_id"] = identity.attempt_id
                 result["execution_mode"] = identity.execution_mode.value
+
+                # [A4] First-class policy assertions: every sandbox policy
+                # decision taken during this node's execution is attached to
+                # its task result. A denial is gating — a node can never be
+                # reported successful while a policy denied one of its tools.
+                new_policy_decisions = getattr(sandbox, "policy_decisions", [])[policy_cursor:]
+                if new_policy_decisions:
+                    result["policy_checks"] = copy.deepcopy(new_policy_decisions)
+                    denied_ids = [
+                        str(d.get("id"))
+                        for d in new_policy_decisions
+                        if d.get("decision") == "denied"
+                    ]
+                    if denied_ids and result.get("status") == "success":
+                        result["status"] = "failed"
+                        result["message"] = "Policy denial during node execution: " + ", ".join(
+                            denied_ids
+                        )
+
                 if result.get("status") == "success":
                     turns_taken += 1
                 return result

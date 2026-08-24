@@ -17,6 +17,7 @@ from typing import Any
 
 from eval_runner import config
 from eval_runner.interfaces.run_store import RunStore
+from eval_runner.utils import crypto
 from eval_runner.utils.safe_path import SafeRunPathResolver
 
 logger = logging.getLogger(__name__)
@@ -35,10 +36,13 @@ class RunManifestImmutableError(PermissionError):
 
 
 def _canonical_digest(manifest: dict[str, Any]) -> str:
+    """
+    SHA3-256 canonical manifest digest via the unified hash utility layer
+    (FIPS 202 standardization, CHANGELOG v1.6.0). Computed fresh on both the
+    incoming and existing manifests at publication time; never persisted.
+    """
     canonical = json.dumps(manifest, sort_keys=True, default=str).encode("utf-8")
-    import hashlib
-
-    return hashlib.sha256(canonical).hexdigest()
+    return crypto.checksum(canonical)
 
 
 class LocalFileRunStore(RunStore):

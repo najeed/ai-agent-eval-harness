@@ -71,7 +71,11 @@ def test_session_manager_routing_discovery(base_scenario, tmp_path):
 @pytest.mark.asyncio
 async def test_session_execute_tasks_success(base_scenario, tmp_path):
     session = SessionManager("test_run_456", base_scenario, log_root=tmp_path)
-    session.scenario["workflow"]["nodes"][0]["expected_outcome"] = []
+    # [A2] Minimum-oracle rule: every executable node must declare at least
+    # one assertion source; zero-assertion nodes are rejected at compile time.
+    session.scenario["workflow"]["nodes"][0]["success_criteria"] = [
+        {"metric": "task_completion", "threshold": 1.0}
+    ]
 
     mock_agent_response = {"action": "completed", "tool_name": None}
 

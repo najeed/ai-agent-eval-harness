@@ -8,14 +8,21 @@ prevent symmetrical verification bugs.
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 
 import pytest
 
+from agentv_runtime.manifest import compute_scenario_hash
 from eval_runner import config
 from eval_runner.identity import IdentityService
-from eval_runner.verifier import TraceVerifier, VerificationResult
+from eval_runner.verifier import (
+    CertificationFailedError,
+    TraceVerifier,
+    VerificationResult,
+    verify_trace_certificate,
+)
 
 
 class IndependentTraceOracle:
@@ -799,3 +806,472 @@ def test_verifier_valid_trace_with_governance_ttl_assert_true(clean_vault_setup)
     manifest_path = clean_vault_setup["run_dir"] / "verification_manifest.json"
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
     assert TraceVerifier.verify_trace(trace_file, manifest_path) is True
+
+
+# --- Wave-1 Hotfix Regression: WSM scoring authority -----------------------
+
+
+def test_wsm_explicit_aggregate_score_override():
+    """An explicitly provided aggregate_score must be honored verbatim (fail-closed scoring)."""
+    metrics = {dim: 1.0 for dim in VerificationResult.WSM_WEIGHTS}
+    result = VerificationResult(
+        success=True, message="override", metrics=metrics, aggregate_score=0.1234
+    )
+    assert result.aggregate_score == 0.1234
+
+
+def test_wsm_safety_floor_boundaries_and_rounding():
+    """Safety/security floors cap exactly at 0.49; boundary 0.5 is uncapped; score rounds to 4dp."""
+    dims = list(VerificationResult.WSM_WEIGHTS)
+
+    def _metrics(**overrides):
+        m = {d: 1.0 for d in dims}
+        m.update(overrides)
+        return m
+
+    # Below-floor safety caps exactly at 0.49 even with every other dimension maxed.
+    assert VerificationResult(False, "s", metrics=_metrics(safety=0.49)).aggregate_score == 0.49
+    # Below-floor security caps exactly at 0.49.
+    assert VerificationResult(False, "s", metrics=_metrics(security=0.49)).aggregate_score == 0.49
+    # Exactly AT the floor boundary there is no cap: 0.25*0.5 + 0.75 = 0.875.
+    assert VerificationResult(True, "ok", metrics=_metrics(safety=0.5)).aggregate_score == 0.875
+
+    # Aggregate score is rounded to 4 decimal places.
+    flat = {d: 0.0 for d in dims}
+    flat["reliability"] = 0.1111111
+    result = VerificationResult(True, "r", metrics=flat)
+    assert result.aggregate_score == round(0.1111111 * 0.20, 4) == 0.0222
+
+
+# --- Wave-1 Hotfix Regression: fail-closed signer (S2) ----------------------
+
+
+def test_core_signer_unsignable_identity_fails_closed(clean_vault_setup, monkeypatch):
+    """
+    An identity exposing no signing capability must abort certification outright.
+    Degenerate placeholder signatures ('00'*64) are prohibited: no certificate,
+    sidecar, or published artifact may survive an un-signable transaction.
+    """
+
+    class _UnsignableKey:
+        """Resolved identity object with neither private_bytes nor sign."""
+
+    monkeypatch.setattr(
+        "eval_runner.identity.IdentityService.get_private_key",
+        lambda *a, **k: _UnsignableKey(),
+    )
+    run_id = clean_vault_setup["run_id"]
+    trace_file = clean_vault_setup["trace_file"]
+    original_content = trace_file.read_text(encoding="utf-8")
+    sidecar = trace_file.parent / "run_manifest.json"
+
+    with pytest.raises(CertificationFailedError, match="no usable signing capability"):
+        TraceVerifier.sign_trace(str(trace_file), identity_id="ghost_signer", run_id=run_id)
+
+    # Fail-closed: the aborted transaction leaves zero certificate artifacts.
+    assert not sidecar.exists()
+    assert not (config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json").exists()
+    assert trace_file.read_text(encoding="utf-8") == original_content
+
+
+def test_certification_failure_rolls_back_partial_mutation(clean_vault_setup):
+    """
+    A failed post-signature verification stage must roll back the trace append
+    and remove partial artifacts before surfacing CertificationFailedError.
+    """
+    from unittest.mock import patch
+
+    run_id = clean_vault_setup["run_id"]
+    trace_file = clean_vault_setup["trace_file"]
+    original_content = trace_file.read_text(encoding="utf-8")
+
+    with patch.object(TraceVerifier, "verify_trace", return_value=False):
+        with pytest.raises(CertificationFailedError, match="stage 'verify'"):
+            TraceVerifier.sign_trace(str(trace_file), identity_id="signer", run_id=run_id)
+
+    # The trace was truncated back to its exact pre-append content.
+    assert trace_file.read_text(encoding="utf-8") == original_content
+    assert not (trace_file.parent / "run_manifest.json").exists()
+    assert not (config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json").exists()
+
+
+def test_lifecycle_event_never_merged_or_doubled(clean_vault_setup):
+    """
+    The certification event must start on a fresh line whether or not the trace
+    ends with a newline, and must never introduce a doubled blank separator.
+    """
+    run_id = clean_vault_setup["run_id"]
+    trace_file = clean_vault_setup["trace_file"]
+    manifest_path = trace_file.parent / "run_manifest.json"
+    event_marker = '{"event": "verification_certificate_issued"'
+
+    # Case 1: trace WITHOUT trailing newline -> exactly one separator inserted.
+    content = trace_file.read_text(encoding="utf-8")
+    trace_file.write_text(content.rstrip("\n"), encoding="utf-8")
+    TraceVerifier.sign_trace(str(trace_file), identity_id="signer", run_id=run_id)
+    data = trace_file.read_text(encoding="utf-8")
+    idx = data.rindex(event_marker)
+    assert idx > 0
+    assert data[idx - 1] == "\n", "certification event must begin on a fresh line"
+    assert data[idx - 2] != "\n", "certification event must not introduce a doubled newline"
+    assert TraceVerifier.verify_trace(str(trace_file), str(manifest_path)) is True
+
+    # Case 2: newline-terminated trace -> appended directly, still no doubling.
+    TraceVerifier.sign_trace(str(trace_file), identity_id="signer", run_id=run_id)
+    data2 = trace_file.read_text(encoding="utf-8")
+    idx2 = data2.rindex(event_marker)
+    assert data2[idx2 - 1] == "\n"
+    assert data2[idx2 - 2] != "\n"
+
+
+def test_lifecycle_event_on_empty_trace_starts_at_byte_zero(clean_vault_setup):
+    """
+    Certifying a zero-byte vault must append the lifecycle event at byte 0 with
+    no synthetic leading newline (kills needs_newline initializer mutations that
+    are otherwise shadowed by the trailing-byte detection on non-empty traces).
+    """
+    run_id = "run-empty-001"
+    empty_run_dir = clean_vault_setup["run_log_dir"] / run_id
+    empty_run_dir.mkdir(parents=True, exist_ok=True)
+    empty_trace = empty_run_dir / "run.jsonl"
+    empty_trace.write_bytes(b"")
+
+    manifest = TraceVerifier.sign_trace(str(empty_trace), identity_id="signer", run_id=run_id)
+    assert manifest["certification"]["outcome"] == "CERTIFIED"
+
+    raw = empty_trace.read_bytes()
+    assert raw.startswith(b'{"event": "verification_certificate_issued"'), (
+        "certification event must start at byte zero on an empty trace"
+    )
+    assert raw.endswith(b"\n")
+    assert (
+        TraceVerifier.verify_trace(str(empty_trace), str(empty_trace.parent / "run_manifest.json"))
+        is True
+    )
+
+
+# --- Wave-1 Hotfix Regression: verify_trace_certificate + degenerate sigs ---
+
+VC_EVENT_LINE = '{"event": "start"}\n'
+
+
+@pytest.fixture
+def certified_manifest(clean_vault_setup):
+    """A genuinely certified vault: signed manifest plus raw trace bytes."""
+    run_id = clean_vault_setup["run_id"]
+    trace_file = clean_vault_setup["trace_file"]
+    manifest = TraceVerifier.sign_trace(str(trace_file), identity_id="test_signer", run_id=run_id)
+    return {
+        "manifest": manifest,
+        "trace_bytes": trace_file.read_bytes(),
+        **clean_vault_setup,
+    }
+
+
+def test_verify_trace_certificate_happy_path(certified_manifest):
+    """A genuinely certified evidence blob verifies with full attribution."""
+    manifest = certified_manifest["manifest"]
+
+    # Transactional certification metadata must be present and truthful.
+    assert manifest["certification"]["transactional"] is True
+    assert manifest["certification"]["outcome"] == "CERTIFIED"
+
+    result = verify_trace_certificate(
+        certified_manifest["run_id"], certified_manifest["trace_bytes"], manifest
+    )
+    assert result["verified"] is True
+    assert result["manifest_hash_match"] is True
+    assert result["scenario_hash_match"] is False  # no scenario data supplied
+    assert result["signer_identity"] == "test_signer"
+    assert result["algorithm"] == "ED25519"
+    assert result["errors"] == []
+
+
+def test_verify_trace_certificate_hash_mismatch(certified_manifest):
+    """Any byte-level divergence between trace and cert hash must be flagged."""
+    tampered = certified_manifest["trace_bytes"][:-8] + b"tampered"
+    result = verify_trace_certificate(
+        certified_manifest["run_id"], tampered, certified_manifest["manifest"]
+    )
+    assert result["verified"] is False
+    assert result["manifest_hash_match"] is False
+    assert any("Trace hash mismatch" in e for e in result["errors"])
+
+
+def test_verify_trace_certificate_missing_trace_hash(certified_manifest):
+    """A certificate without a trace_hash can never be verified."""
+    stripped = {k: v for k, v in certified_manifest["manifest"].items() if k != "trace_hash"}
+    result = verify_trace_certificate(
+        certified_manifest["run_id"], certified_manifest["trace_bytes"], stripped
+    )
+    assert result["verified"] is False
+    assert result["manifest_hash_match"] is False
+    assert any("does not contain a trace_hash" in e for e in result["errors"])
+
+
+def test_verify_certificate_scenario_hash_match_and_mismatch(certified_manifest):
+    """Scenario binding: matching canonical hash flags a match; any drift flags a mismatch."""
+    scenario = {"scenario_id": "sc-1", "name": "demo", "steps": [{"tool": "search"}]}
+    expected = compute_scenario_hash(scenario)  # 'sha3_256:<hex>' prefixed form
+    with_hash = {**certified_manifest["manifest"], "scenario_hash": expected}
+
+    ok = verify_trace_certificate(
+        certified_manifest["run_id"],
+        certified_manifest["trace_bytes"],
+        with_hash,
+        scenario_data=scenario,
+    )
+    assert ok["scenario_hash_match"] is True
+    # Post-signing payload mutation (the injected scenario_hash) breaks the signature:
+    # integrity binding means verification cannot silently pass.
+    assert ok["verified"] is False
+
+    other = {**scenario, "name": "tampered"}
+    bad = verify_trace_certificate(
+        certified_manifest["run_id"],
+        certified_manifest["trace_bytes"],
+        with_hash,
+        scenario_data=other,
+    )
+    assert bad["scenario_hash_match"] is False
+    assert bad["verified"] is False
+    assert any("Scenario hash mismatch" in e for e in bad["errors"])
+
+
+def test_verify_certificate_rejects_degenerate_all_zero_signature(certified_manifest):
+    """
+    S2b: all-zero placeholder signatures are structurally invalid and must be
+    rejected with an explicit fail-closed error, never treated as proof.
+    """
+    forged = copy.deepcopy(certified_manifest["manifest"])
+    forged["provenance_chain"][0]["signature"] = "00" * 64
+
+    result = verify_trace_certificate(
+        certified_manifest["run_id"], certified_manifest["trace_bytes"], forged
+    )
+    assert result["verified"] is False
+    assert result["signer_identity"] is None
+    assert any(
+        "Degenerate all-zero signature rejected for identity 'test_signer'" in e
+        for e in result["errors"]
+    )
+
+
+def test_degenerate_signature_cannot_bypass_via_transparent_key(certified_manifest, monkeypatch):
+    """
+    S2b rationale: against a transparent/mock key object an all-zero signature
+    would otherwise pass verification silently. The structural rejection guard
+    must fire before any key material is consulted.
+    """
+    from unittest.mock import MagicMock
+
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+
+    transparent_key = MagicMock(spec=Ed25519PublicKey)
+    # verify() on this spec'd mock returns a Mock (no exception) — a naive
+    # verifier would accept the degenerate signature.
+
+    class _TransparentIdentity:
+        def public_key(self):
+            return transparent_key
+
+    monkeypatch.setattr(
+        "eval_runner.identity.IdentityService.get_private_key",
+        lambda *a, **k: _TransparentIdentity(),
+    )
+
+    forged = copy.deepcopy(certified_manifest["manifest"])
+    forged["provenance_chain"][0]["signature"] = "00" * 64
+
+    result = verify_trace_certificate(
+        certified_manifest["run_id"], certified_manifest["trace_bytes"], forged
+    )
+    assert result["verified"] is False
+    assert result["signer_identity"] is None
+    assert any("Degenerate all-zero" in e for e in result["errors"])
+
+
+def test_verify_trace_rejects_empty_provenance_chain(certified_manifest):
+    """
+    A v3 manifest with an empty provenance chain must fail full verification
+    (deep copy: prior ledger contamination in shared dicts must not mask the
+    chain-authority branch).
+    """
+    certified_manifest["run_id"]
+    trace_file = certified_manifest["trace_file"]
+    manifest_path = trace_file.parent / "verification_manifest.json"
+
+    stripped = copy.deepcopy(certified_manifest["manifest"])
+    stripped.pop("certification", None)
+    stripped["provenance_chain"] = []
+    manifest_path.write_text(json.dumps(stripped), encoding="utf-8")
+
+    assert TraceVerifier.verify_trace(trace_file, manifest_path) is False
+
+
+def test_verify_certificate_provenance_chain_defects(certified_manifest):
+    """Empty, malformed, and undersized provenance entries are each rejected."""
+    run_id = certified_manifest["run_id"]
+    trace_bytes = certified_manifest["trace_bytes"]
+    base = certified_manifest["manifest"]
+
+    empty = copy.deepcopy(base)
+    empty["provenance_chain"] = []
+    r1 = verify_trace_certificate(run_id, trace_bytes, empty)
+    assert r1["verified"] is False
+    assert any("no provenance_chain entries" in e for e in r1["errors"])
+
+    malformed = copy.deepcopy(base)
+    malformed["provenance_chain"] = ["not-a-dict"]
+    r2 = verify_trace_certificate(run_id, trace_bytes, malformed)
+    assert r2["verified"] is False
+    assert any("Malformed provenance entry" in e for e in r2["errors"])
+
+    undersized = copy.deepcopy(base)
+    undersized["provenance_chain"][0]["signature"] = "abcd"
+    r3 = verify_trace_certificate(run_id, trace_bytes, undersized)
+    assert r3["verified"] is False
+    assert any("empty or malformed" in e for e in r3["errors"])
+
+
+def test_verify_run_directory_status_matrix(clean_vault_setup):
+    """Every verify_run_directory terminal state reports exact, truthful fields."""
+    project_root = clean_vault_setup["project_root"]
+    run_log_dir = clean_vault_setup["run_log_dir"]
+    run_id = clean_vault_setup["run_id"]
+    run_dir = clean_vault_setup["run_dir"]
+    trace_file = clean_vault_setup["trace_file"]
+
+    # NOT_FOUND: run directory absent.
+    missing = TraceVerifier.verify_run_directory(run_log_dir / "does-not-exist")
+    assert missing["verification_status"] == "NOT_FOUND"
+    assert missing["is_valid"] is False
+    assert missing["has_certificate"] is False
+    assert missing["has_signature"] is False
+    assert missing["failure_reason"] == "Run directory does not exist"
+
+    # UNVERIFIED: directory + trace exist but no certificate anywhere.
+    unverified = TraceVerifier.verify_run_directory(run_dir)
+    assert unverified["verification_status"] == "UNVERIFIED"
+    assert unverified["is_valid"] is False
+    assert unverified["has_certificate"] is False
+    assert unverified["has_signature"] is False
+
+    # FAILED_VERIFICATION: certificate present but execution trace missing.
+    cert_path = run_dir / "run_manifest.json"
+    cert_path.write_text(json.dumps({"vc_version": "3.0.0"}), encoding="utf-8")
+    trace_file.unlink()
+    orphan_cert = TraceVerifier.verify_run_directory(run_dir)
+    assert orphan_cert["verification_status"] == "FAILED_VERIFICATION"
+    assert orphan_cert["is_valid"] is False
+    assert orphan_cert["has_certificate"] is True
+    assert orphan_cert["has_signature"] is False
+    assert "missing" in orphan_cert["failure_reason"].lower()
+
+    # VERIFIED: freshly certified vault passes with full chain validation.
+    trace_file.write_text(VC_EVENT_LINE, encoding="utf-8")
+    TraceVerifier.sign_trace(str(trace_file), identity_id="test_signer", run_id=run_id)
+    verified = TraceVerifier.verify_run_directory(run_dir)
+    assert verified["verification_status"] == "VERIFIED"
+    assert verified["is_valid"] is True
+    assert verified["has_certificate"] is True
+    assert verified["failure_reason"] is None
+
+    # FAILED_VERIFICATION: post-certification trace tampering is detected.
+    with open(trace_file, "ab") as f:
+        f.write(b'{"event": "injected"}\n')
+    tampered = TraceVerifier.verify_run_directory(run_dir)
+    assert tampered["verification_status"] == "FAILED_VERIFICATION"
+    assert tampered["is_valid"] is False
+    assert tampered["failure_reason"]
+
+    # FAILED_VERIFICATION: unreadable certificate surfaces a verification error.
+    cert_path.write_text("{not valid json", encoding="utf-8")
+    corrupt = TraceVerifier.verify_run_directory(run_dir)
+    assert corrupt["verification_status"] == "FAILED_VERIFICATION"
+    assert corrupt["is_valid"] is False
+    assert corrupt["has_certificate"] is True
+    assert "Verification error" in corrupt["failure_reason"]
+
+    assert project_root.exists()  # jail intact throughout
+
+
+def test_verify_trace_only_mode_skips_ledger_check(clean_vault_setup):
+    """trace_only=True must skip forensic ledger validation explicitly."""
+    run_id = clean_vault_setup["run_id"]
+    trace_file = clean_vault_setup["trace_file"]
+
+    artifact = trace_file.parent / f"{run_id}_artifact.txt"
+    artifact.write_text("original content", encoding="utf-8")
+    TraceVerifier.sign_trace(str(trace_file), identity_id="signer", run_id=run_id)
+    manifest_path = trace_file.parent / "run_manifest.json"
+
+    # Tamper the ledger-referenced artifact AFTER certification.
+    artifact.write_text("tampered malicious content", encoding="utf-8")
+
+    assert TraceVerifier.verify_trace(trace_file, manifest_path, verify_ledger=True) is False
+    assert TraceVerifier.verify_trace(trace_file, manifest_path, trace_only=True) is True
+
+
+def test_verify_run_directory_enforces_full_evidence_chain(clean_vault_setup):
+    """
+    verify_run_directory must validate the FULL evidence chain: tampering a
+    ledger-referenced artifact (trace untouched) downgrades the verdict to
+    FAILED_VERIFICATION.
+    """
+    run_id = clean_vault_setup["run_id"]
+    run_dir = clean_vault_setup["run_dir"]
+    trace_file = clean_vault_setup["trace_file"]
+
+    evidence = trace_file.parent / f"{run_id}_artifact.txt"
+    evidence.write_text("original content", encoding="utf-8")
+    TraceVerifier.sign_trace(str(trace_file), identity_id="test_signer", run_id=run_id)
+
+    # Sanity: pristine evidence verifies cleanly.
+    assert TraceVerifier.verify_run_directory(run_dir)["verification_status"] == "VERIFIED"
+
+    # Tamper ONLY the ledger-referenced artifact; execution trace stays intact.
+    evidence.write_text("tampered malicious content", encoding="utf-8")
+
+    res = TraceVerifier.verify_run_directory(run_dir)
+    assert res["verification_status"] == "FAILED_VERIFICATION"
+    assert res["is_valid"] is False
+    assert res["failure_reason"]
+
+
+def test_self_verify_stage_enforces_full_evidence_chain(clean_vault_setup):
+    """
+    The certification transaction's self-verification stage must run with FULL
+    evidence-chain validation: an artifact poisoned between freeze and verify
+    aborts certification (fail-closed), it is never sealed.
+    """
+    from eval_runner.reference.local_artifact import LocalFileArtifactStore
+
+    run_id = clean_vault_setup["run_id"]
+    trace_file = clean_vault_setup["trace_file"]
+
+    evidence = trace_file.parent / f"{run_id}_artifact.txt"
+    evidence.write_text("pristine content", encoding="utf-8")
+
+    class _PoisoningStore(LocalFileArtifactStore):
+        """Mimics storage side-effects that mutate evidence mid-transaction."""
+
+        def __init__(self, poison_path):
+            super().__init__()
+            self._poison_path = poison_path
+
+        def store_artifact(self, run_id, artifact_name, content, **kwargs):
+            result = super().store_artifact(run_id, artifact_name, content, **kwargs)
+            self._poison_path.write_text("post-freeze tampering", encoding="utf-8")
+            return result
+
+    with pytest.raises(CertificationFailedError, match="stage 'verify'"):
+        TraceVerifier.sign_trace(
+            str(trace_file),
+            identity_id="signer",
+            run_id=run_id,
+            artifact_store=_PoisoningStore(evidence),
+        )
+
+    # No certificate may survive the aborted transaction.
+    assert not (config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json").exists()

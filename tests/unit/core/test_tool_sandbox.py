@@ -42,7 +42,8 @@ async def test_sandbox_known_tool(tmp_path):
 
 @pytest.mark.asyncio
 async def test_sandbox_unknown_tool(tmp_path):
-    """Test that an unknown tool returns a default or success message (per current impl)."""
+    """[A1] Fail-closed: an unregistered tool yields a hard UNREGISTERED_TOOL
+    error result — the kernel never synthesizes success for unknown tools."""
     scenario = {
         "aes_version": 1.4,
         "workflow": {
@@ -55,8 +56,10 @@ async def test_sandbox_unknown_tool(tmp_path):
     sandbox = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
 
     result = await sandbox.execute("nonexistent_tool", {})
-    assert result["status"] == "success"  # Default behavior in updated tool_sandbox.py
-    assert "Executed nonexistent_tool" in result["message"]
+    assert result["status"] == "error"
+    assert result["error_code"] == "UNREGISTERED_TOOL"
+    assert result["tool_name"] == "nonexistent_tool"
+    assert "not registered" in result["message"]
 
 
 @pytest.mark.asyncio
@@ -328,9 +331,11 @@ async def test_sandbox_execute_missing_branches(tmp_path):
     res = await sandbox.execute("dummy_dna", {})
     assert res.get_secure_metadata()["key1"] == "val1"
 
-    # Execute action not starting with dummy_ -> skips loop (Line 475->474)
+    # Execute action not starting with dummy_ and not registered -> skips
+    # simulator loop and fails closed with UNREGISTERED_TOOL (A1).
     res_skip = await sandbox.execute("other_tool", {})
-    assert res_skip["status"] == "success"  # fallback success output
+    assert res_skip["status"] == "error"
+    assert res_skip["error_code"] == "UNREGISTERED_TOOL"
 
 
 @pytest.mark.asyncio
@@ -411,6 +416,7 @@ async def test_sandbox_grounding_hits_counter_increment(tmp_path):
     """
     scenario = {
         "aes_version": 1.4,
+        "tools": {"get_info": {"output": {"status": "success", "message": "ok"}}},
         "workflow": {
             "nodes": [{"id": "t1", "task_description": "task", "required_tools": ["get_info"]}],
             "edges": [],

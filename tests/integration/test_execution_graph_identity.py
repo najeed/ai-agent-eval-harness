@@ -296,8 +296,16 @@ async def test_execution_graph_cancellation(tmp_path, monkeypatch):
         "metadata": {"id": "cancel_test"},
         "workflow": {
             "nodes": [
-                {"id": "node-1", "task_description": "First task"},
-                {"id": "node-2", "task_description": "Second task"},
+                {
+                    "id": "node-1",
+                    "task_description": "First task",
+                    "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+                },
+                {
+                    "id": "node-2",
+                    "task_description": "Second task",
+                    "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+                },
             ],
             "edges": [{"from": "node-1", "to": "node-2"}],
         },

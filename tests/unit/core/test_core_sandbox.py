@@ -22,7 +22,8 @@ def base_scenario():
             "my_tool": {
                 "state_changes": [{"path": "new_key", "value": "new_val"}],
                 "output": {"status": "success", "data": "tool_data"},
-            }
+            },
+            "restricted_tool": {"output": {"status": "success"}},
         },
         "policies": {"restricted_tool": {"max_limit": 5}},
         "agent_topology": {"agent_a": {"reads": ["global", "ns:*"], "writes": ["global"]}},

@@ -25,7 +25,7 @@ from eval_runner.workflow_interpreter import WorkflowInterpreter
 def _identity(attempt_number: int = 1) -> ExecutionIdentity:
     return ExecutionIdentity(
         evaluation_run_id="run-test",
-        scenario_version_id="sha256:test",
+        scenario_version_id="sha3_256:test",
         case_id="case",
         attempt_id="att123",
         attempt_number=attempt_number,
@@ -33,6 +33,28 @@ def _identity(attempt_number: int = 1) -> ExecutionIdentity:
 
 
 def _plan(scenario: dict):
+    """
+    Compiles the scenario via the authoritative compiler.
+
+    [A2] The minimum-oracle rule is an evaluation concern; these kernel
+    semantics tests use deliberately bare nodes, so a trivially-satisfiable
+    oracle is injected into any node that lacks one.
+    """
+    import copy as _copy
+
+    scenario = _copy.deepcopy(scenario)
+    workflow = scenario.get("workflow")
+    if isinstance(workflow, dict):
+        nodes = workflow.setdefault("nodes", [])
+    elif isinstance(workflow, list):
+        nodes = workflow
+    else:
+        nodes = []
+    for node in nodes:
+        if isinstance(node, dict) and not any(
+            node.get(key) for key in ("success_criteria", "state_hygiene", "expected_outcome")
+        ):
+            node["success_criteria"] = [{"metric": "task_completion", "threshold": 1.0}]
     return compile_workflow(scenario)
 
 
@@ -79,10 +101,25 @@ def test_compile_rejects_dangling_edge():
 
 
 def test_compile_legacy_list_form_becomes_explicit_chain():
-    plan = compile_workflow({"workflow": [{"id": "a"}, {"id": "b"}, {"id": "c"}]})
+    oracle = [{"metric": "task_completion", "threshold": 1.0}]
+    plan = compile_workflow(
+        {
+            "workflow": [
+                {"id": "a", "success_criteria": oracle},
+                {"id": "b", "success_criteria": oracle},
+                {"id": "c", "success_criteria": oracle},
+            ]
+        }
+    )
     assert plan.legacy_linearized
     assert [e.from_node for e in plan.edges] == ["a", "b"]
     assert [e.to_node for e in plan.edges] == ["b", "c"]
+
+
+def test_compile_rejects_list_form_without_oracles():
+    # [A2] Even legacy list-form workflows enforce the minimum-oracle rule.
+    with pytest.raises(PlanValidationError, match="NO_ASSERTIONS"):
+        compile_workflow({"workflow": [{"id": "a"}, {"id": "b"}]})
 
 
 def test_conditional_edge_without_predicate_is_invalid():
@@ -492,7 +529,7 @@ async def test_step_budget_guard_terminates_runaway_loop():
 async def test_execution_instance_ids_carry_iteration_qualifier():
     scenario = {
         "workflow": {
-            "nodes": [{"id": "n"}, {"id": "m"}],
+            "nodes": [{"id": "n", "max_visitations": 5}, {"id": "m"}],
             "edges": [
                 {
                     "from": "n",
@@ -534,3 +571,98 @@ async def test_execution_instance_ids_carry_iteration_qualifier():
 
 async def _async_ctx(state):
     return {"state": state}
+
+
+# ---------------------------------------------------------------------------
+# [A7] TIMEOUT edge — executable contract (closes per-EdgeType coverage)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_timeout_edge_routes_failure_to_handler():
+    scenario = {
+        "workflow": {
+            "nodes": [{"id": "slow"}, {"id": "timeout_handler"}, {"id": "finalize"}],
+            "edges": [
+                {"id": "e_to", "from": "slow", "to": "timeout_handler", "type": "timeout"},
+                {"from": "timeout_handler", "to": "finalize"},
+            ],
+        },
+        "failure_policy": "fail_fast",
+    }
+    plan = _plan(scenario)
+
+    async def executor(node_ir, exec_id, parent):
+        status = "failure" if node_ir.node_id == "slow" else "success"
+        result = {"task_id": node_ir.node_id, "status": status}
+        if status == "failure":
+            result["failure_class"] = "TIMEOUT"
+        return result
+
+    results, outcome = await _run(plan, executor)
+
+    # NODE_FAILED != WORKFLOW_FAILED: the timeout route reaches a terminal.
+    assert outcome.success
+    assert outcome.status.value == "workflow_completed"
+    executed = [r["task_id"] for r in results]
+    assert executed == ["slow", "timeout_handler", "finalize"]
+
+    transition = outcome.transitions[0]
+    assert transition.edge_type == EdgeType.TIMEOUT.value
+    assert transition.transition_reason == "timeout_route"
+    assert "slow" in outcome.failed_node_ids
+
+
+@pytest.mark.asyncio
+async def test_timeout_edge_with_failing_predicate_is_not_taken():
+    scenario = {
+        "workflow": {
+            "nodes": [{"id": "slow"}, {"id": "guarded_handler"}],
+            "edges": [
+                {
+                    "id": "e_to",
+                    "from": "slow",
+                    "to": "guarded_handler",
+                    "type": "timeout",
+                    "condition": {"op": "eq", "path": "state.armed", "value": True},
+                },
+            ],
+        },
+        "failure_policy": "fail_fast",
+    }
+    plan = _plan(scenario)
+
+    async def executor(node_ir, exec_id, parent):
+        return {"task_id": node_ir.node_id, "status": "failure"}
+
+    # state.armed is False -> the guarded timeout route must NOT fire; the
+    # failure is unhandled and the workflow fails.
+    results, outcome = await _run(plan, executor, state={"armed": False})
+    assert not outcome.success
+    assert outcome.status.value == "workflow_failed"
+    assert all(t.transition_reason != "timeout_route" for t in outcome.transitions)
+
+
+@pytest.mark.asyncio
+async def test_error_edge_takes_priority_over_timeout_edge():
+    scenario = {
+        "workflow": {
+            "nodes": [{"id": "boom"}, {"id": "error_handler"}, {"id": "timeout_handler"}],
+            "edges": [
+                {"from": "boom", "to": "error_handler", "type": "error"},
+                {"from": "boom", "to": "timeout_handler", "type": "timeout"},
+            ],
+        },
+        "failure_policy": "fail_fast",
+    }
+    plan = _plan(scenario)
+
+    async def executor(node_ir, exec_id, parent):
+        return {"task_id": node_ir.node_id, "status": "failure"}
+
+    results, outcome = await _run(plan, executor)
+
+    # Routing precedence: error edges win over timeout edges on plain failure.
+    reasons = [t.transition_reason for t in outcome.transitions]
+    assert "error_handler" in reasons
+    assert "timeout_route" not in reasons

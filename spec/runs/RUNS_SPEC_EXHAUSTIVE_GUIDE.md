@@ -82,7 +82,7 @@ Every execution graph event and task result carries the immutable join model use
 | Field | Type | Scope | Example | Description |
 | :--- | :--- | :--- | :--- | :--- |
 | `evaluation_run_id` | String | Run | `eval-run-9021` | The evaluation run identifier. |
-| `scenario_version_id` | String | Run | `sha256:a1b2c3d4e5f60718` | Content hash binding events to the exact scenario revision. |
+| `scenario_version_id` | String | Run | `sha3_256:9af6e2a58c0b41d795f3d12c8e774ab6f01c33d84be52a7e09cb6614d3e85fa7` | Content hash binding events to the exact scenario revision. Full-length FIPS 202 SHA3-256 (`compute_scenario_hash`, canonical JSON); the `sha3_256:` prefix is mandatory and truncation is prohibited. |
 | `case_id` | String | Run | `payment-refund-flow` | Stable case/scenario identifier. |
 | `attempt_id` | String | Attempt | `9f2c…hex` | First-class attempt identity (UUID). All events of one attempt share it; distinct attempts never collide. |
 | `attempt_number` | Integer | Attempt | `2` | Human-readable attempt ordinal (seed derivation index). |
@@ -109,7 +109,7 @@ Emitted as nodes transition through their lifecycle during test execution:
   "parent_execution_id": null,
   "attempt_id": "9f2c88aa4bd34e7f",
   "evaluation_run_id": "eval-run-9021",
-  "scenario_version_id": "sha256:a1b2c3d4e5f60718",
+  "scenario_version_id": "sha3_256:9af6e2a58c0b41d795f3d12c8e774ab6f01c33d84be52a7e09cb6614d3e85fa7",
   "case_id": "payment-refund-flow",
   "iteration": 1,
   "execution_mode": "simulated",

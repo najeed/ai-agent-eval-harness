@@ -625,6 +625,7 @@ async def test_all_extension_families_exclusive_injection_contract(tmp_path):
                 "id": "node_1",
                 "tool": "test_tool",
                 "params": {"key": "val"},
+                "state_hygiene": {"rules": [{"path": "__unset_probe__", "op": "not_exists"}]},
             }
         ],
         "tools": {"test_tool": {"output": {"status": "success", "result": "ok"}}},
@@ -691,6 +692,7 @@ def test_inprocess_backend_executes_injected_dependency_graph():
                 "id": "node_1",
                 "tool": "echo_tool",
                 "params": {"msg": "hello"},
+                "state_hygiene": {"rules": [{"path": "__unset_probe__", "op": "not_exists"}]},
             }
         ],
         "tools": {"echo_tool": {"output": {"status": "success"}}},

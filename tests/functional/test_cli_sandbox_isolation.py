@@ -106,7 +106,10 @@ def test_cli_calibrate_bridge():
 @pytest.mark.asyncio
 async def test_sandbox_permission_denied():
     # Covers lines 34, 156 (shared_write permission error)
-    scenario = {"agent_topology": {"agent1": {"writes": []}}}  # No permissions
+    scenario = {
+        "tools": {"some_tool": {}},
+        "agent_topology": {"agent1": {"writes": []}},  # No permissions
+    }
     sandbox = tool_sandbox.ToolSandbox(scenario)
     result = await sandbox.execute(
         "some_tool", {"shared_write": {"path": "ns:key", "value": "val"}}, agent_name="agent1"
@@ -119,7 +122,10 @@ async def test_sandbox_permission_denied():
 async def test_sandbox_read_permission_denied():
     # Covers line 166 (shared_read permission error)
     # We need the key to exist in registry first
-    scenario = {"agent_topology": {"admin": {"writes": ["*"]}, "user": {"reads": []}}}
+    scenario = {
+        "tools": {"some_tool": {}},
+        "agent_topology": {"admin": {"writes": ["*"]}, "user": {"reads": []}},
+    }
     sandbox = tool_sandbox.ToolSandbox(scenario)
     sandbox.shared_state.write("admin", "global:secret", "value")
 

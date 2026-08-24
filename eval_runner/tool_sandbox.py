@@ -7,6 +7,7 @@ Updated with AbstractSandbox for pluggable implementation and lifecycle hooks.
 from __future__ import annotations
 
 import contextvars
+import json
 import threading
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Coroutine
@@ -148,6 +149,10 @@ class AbstractSandbox(ABC):
         base_ws = workspace_root or Path("workspace")
         self.workspace_dir = base_ws / self.run_id
         self.grounding_hits: dict[str, dict[str, int]] = {"policies": {}, "tools": {}}
+        # [A4] First-class policy decision ledger. Every sandbox policy
+        # evaluation (allowed AND denied) is recorded as a structured
+        # assertion with id / input-hash / decision / reason / evidence.
+        self.policy_decisions: list[dict[str, Any]] = []
         self._simulator_cache: dict[str, Any] | None = None
         import json
 
@@ -426,7 +431,21 @@ class ToolSandbox(AbstractSandbox):
                     if "dna" in raw_result:
                         secure_metadata.update(raw_result["dna"])
                     return ShimResultProxy(raw_result, metadata=secure_metadata)
-            tool_def = {}
+
+            # [A1] Fail-closed: a tool that is registered neither in the
+            # scenario tools manifest nor among active simulators can never
+            # synthesize success. The kernel returns a hard UNREGISTERED_TOOL
+            # error so upstream verdicts stay truth-authoritative.
+            return {
+                "status": "error",
+                "error_code": "UNREGISTERED_TOOL",
+                "tool_name": tool_name,
+                "message": (
+                    f"Tool '{tool_name}' is not registered in this scenario "
+                    "(tools manifest or active simulators). Refusing to "
+                    "synthesize a successful result (fail-closed)."
+                ),
+            }
         else:
             tool_def = all_tool_defs[tool_name]
         self.grounding_hits["tools"][tool_name] = self.grounding_hits["tools"].get(tool_name, 0) + 1
@@ -441,17 +460,39 @@ class ToolSandbox(AbstractSandbox):
                 input_data=params,
                 context={"tool_name": tool_name, "agent": active_agent, "state": self.state},
             )
+            violation_msg = eval_result.reason
+            if not eval_result.allowed and eval_result.violations:
+                v = eval_result.violations[0]
+                if "message" in v:
+                    violation_msg = v["message"]
+                elif "field" in v and "limit" in v:
+                    violation_msg = (
+                        f"Parameter '{v['field']}' with value {v.get('value')} "
+                        f"exceeds limit of {v['limit']}"
+                    )
+
+            # [A4] Record the decision as a first-class policy assertion with
+            # a deterministic input commitment (SHA3-256 over canonical
+            # tool+params JSON) so verdicts can cite exact evaluated inputs.
+            import hashlib
+
+            input_commitment_src = json.dumps(
+                {"tool": tool_name, "params": params}, sort_keys=True, default=str
+            ).encode("utf-8")
+            self.policy_decisions.append(
+                {
+                    "id": eval_result.policy_id,
+                    "input_hash": f"sha3_256:{hashlib.sha3_256(input_commitment_src).hexdigest()}",
+                    "decision": "allowed" if eval_result.allowed else "denied",
+                    "reason": violation_msg
+                    or ("policy satisfied" if eval_result.allowed else "policy denied"),
+                    "evidence": eval_result.to_dict(),
+                    "tool_name": tool_name,
+                    "agent": active_agent,
+                }
+            )
+
             if not eval_result.allowed:
-                violation_msg = eval_result.reason
-                if eval_result.violations:
-                    v = eval_result.violations[0]
-                    if "message" in v:
-                        violation_msg = v["message"]
-                    elif "field" in v and "limit" in v:
-                        violation_msg = (
-                            f"Parameter '{v['field']}' with value {v.get('value')} "
-                            f"exceeds limit of {v['limit']}"
-                        )
                 return {
                     "status": "policy_violation",
                     "violation": violation_msg,

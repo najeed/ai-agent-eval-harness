@@ -18,6 +18,7 @@ from agentv_runtime.results import EvaluationResult  # noqa: E402
 
 from . import events, plugins  # noqa: E402
 from .context import EvaluationContext  # noqa: E402
+from .execution_ir import WorkflowStatus  # noqa: E402
 from .reproducibility import build_reproducibility_contract, fingerprint  # noqa: E402
 from .statistics import compute_attempt_statistics  # noqa: E402
 
@@ -365,13 +366,48 @@ class DefaultRunner(BaseRunner):
                     sys.stderr.write(f"   [Telemetry] Warning: Failed to clean up OTel span: {e}\n")
 
     def _is_attempt_successful(self, attempt_results: list[dict]) -> bool:
+        """
+        [A5] Verdict-authoritative attempt success for pass@k.
+
+        An attempt succeeds if and only if ALL of the following hold:
+          1. The authoritative kernel verdict is workflow COMPLETED.
+          2. Every evaluation is valid: no evaluation_valid=False row and no
+             EVALUATION_INVALID triage tag anywhere in the attempt.
+          3. No metric row carries an EVALUATION_INVALID status, and no
+             non-informational oracle assertion failed.
+          4. No sandbox policy decision was denied (A4 gating).
+        """
         if not attempt_results:
             return False
-        for res in attempt_results:
-            if res.get("status") != "success":
+
+        # 1. Authoritative workflow verdict must exist and be COMPLETED.
+        verdict_rows = [r for r in attempt_results if isinstance(r.get("workflow_verdict"), dict)]
+        if not verdict_rows:
+            return False
+        for vr in verdict_rows:
+            status = str(vr["workflow_verdict"].get("status", "")).lower()
+            if status != WorkflowStatus.COMPLETED.value:
                 return False
-            for m in res.get("metrics", []):
-                if not m.get("passed", True):
+
+        for res in attempt_results:
+            # 2. Evaluation validity is non-negotiable.
+            if res.get("triage_tag") == "EVALUATION_INVALID":
+                return False
+            if res.get("evaluation_valid") is False:
+                return False
+
+            # 3. Oracle rows: invalid or failed assertions veto the attempt.
+            for m in res.get("metrics") or []:
+                if str(m.get("status", "")).upper() == "EVALUATION_INVALID":
+                    return False
+                if m.get("success") is False and m.get("severity") == "informational":
+                    continue
+                if m.get("success") is False:
+                    return False
+
+            # 4. Policy denials are gating (first-class policy assertions).
+            for pc in res.get("policy_checks") or []:
+                if pc.get("decision") == "denied":
                     return False
         return True
 

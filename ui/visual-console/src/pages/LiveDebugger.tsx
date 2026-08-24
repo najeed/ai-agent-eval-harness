@@ -38,6 +38,228 @@ interface LogEvent {
   edge_type?: string;
 }
 
+// ---------------------------------------------------------------------------
+// [B2] Compositional trace-integrity flags.
+//
+// Each condition is reported independently — detecting one NEVER downgrades or
+// masks another (e.g. a trace recovered from the master log still reports its
+// sequence gaps alongside RECOVERED instead of collapsing into a single state).
+// ---------------------------------------------------------------------------
+
+export interface TraceIntegrityFlags {
+  hasEvents: boolean;
+  recovered: boolean;
+  gaps: boolean;
+  reordered: boolean;
+  missingStart: boolean;
+  missingEnd: boolean;
+  issues: string[];
+}
+
+const MAX_LISTED_GAPS = 5;
+
+export const computeTraceIntegrity = (
+  events: LogEvent[],
+  sourcedFromMaster: boolean
+): TraceIntegrityFlags => {
+  if (!events || events.length === 0) {
+    return {
+      hasEvents: false,
+      recovered: false,
+      gaps: false,
+      reordered: false,
+      missingStart: false,
+      missingEnd: false,
+      issues: ['No events received.'],
+    };
+  }
+
+  const issues: string[] = [];
+  const seqs = events.map(e => Number(e._seq)).filter(n => !Number.isNaN(n));
+
+  let reordered = false;
+  let gaps = false;
+
+  if (seqs.length === 0) {
+    issues.push('Events lack server-assigned _seq identifiers.');
+  } else {
+    const sorted = [...seqs].sort((a, b) => a - b);
+    const uniq = Array.from(new Set(sorted));
+
+    // Arrival-order violation (retransmission/replay artifacts).
+    reordered = seqs.some((v, i) => i > 0 && v < seqs[i - 1]);
+    if (reordered) {
+      issues.push('Events arrived out of monotonic _seq order (client-side reorder buffer applied).');
+    }
+
+    // Coverage holes or duplicate frames — independent of arrival order.
+    gaps =
+      uniq[uniq.length - 1] - uniq[0] + 1 !== uniq.length ||
+      uniq.length !== sorted.length;
+    if (gaps) {
+      const missing: number[] = [];
+      for (let s = uniq[0]; s <= uniq[uniq.length - 1]; s++) {
+        if (!uniq.includes(s)) missing.push(s);
+        if (missing.length > MAX_LISTED_GAPS) {
+          missing.push(-1);
+          break;
+        }
+      }
+      const duplicates = sorted.length - uniq.length;
+      const parts: string[] = [];
+      if (missing.some(m => m >= 0)) {
+        parts.push(
+          `missing _seq ${missing.filter(m => m >= 0).join(', ')}${missing.includes(-1) ? ', …' : ''}`
+        );
+      }
+      if (duplicates > 0) parts.push(`${duplicates} duplicate frame(s)`);
+      issues.push(`Sequence discontinuity detected: ${parts.join('; ')}.`);
+    }
+  }
+
+  const recovered = !!sourcedFromMaster;
+  if (recovered) {
+    issues.push('Trace recovered from master log — per-run stream was incomplete.');
+  }
+
+  const hasStart = events.some(e => e.event === 'run_start');
+  const hasEnd = events.some(e => e.event === 'run_end');
+  const missingStart = !hasStart;
+  const missingEnd = !hasEnd;
+  if (missingEnd) issues.push('Missing terminal run_end event.');
+  else if (missingStart) issues.push('Missing run_start event.');
+
+  return { hasEvents: true, recovered, gaps, reordered, missingStart, missingEnd, issues };
+};
+
+// ---------------------------------------------------------------------------
+// [B4] Typed telemetry taxonomy — the zoom levels select from an explicit
+// event-name taxonomy instead of fragile substring matching.
+// ---------------------------------------------------------------------------
+
+type TelemetryLevel = 'PHASE' | 'SUBTASK' | 'ACTION' | 'STEP';
+
+const TELEMETRY_TAXONOMY: Record<Exclude<TelemetryLevel, 'STEP'>, ReadonlySet<string>> = {
+  PHASE: new Set(['phase_start', 'phase_end']),
+  SUBTASK: new Set([
+    'strategy_start',
+    'strategy_end',
+    'maneuver_start',
+    'maneuver_end',
+    'subtask_start',
+    'subtask_end',
+  ]),
+  ACTION: new Set([
+    'action_start',
+    'action_end',
+    'tool_call',
+    'tool_result',
+    'agent_request',
+    'agent_response',
+    'chain_start',
+    'chain_end',
+    'node_start',
+    'node_end',
+    'adapter_debug',
+  ]),
+};
+
+export const filterEventsByTelemetryLevel = (
+  events: LogEvent[],
+  level: TelemetryLevel
+): LogEvent[] => {
+  if (level === 'STEP') return events;
+  const taxonomy = TELEMETRY_TAXONOMY[level];
+  return events.filter(e => taxonomy.has(e.event));
+};
+
+// ---------------------------------------------------------------------------
+// [B3] Telemetry diagnostics — heuristic status inference is quarantined here.
+//
+// String/status heuristics over generic telemetry NEVER drive the execution
+// graph. They are surfaced exclusively in a clearly-labeled non-authoritative
+// diagnostics panel, and only for nodes lacking authoritative
+// execution_graph_node coverage.
+// ---------------------------------------------------------------------------
+
+export interface NodeDiagnostic {
+  nodeId: string;
+  suspectedStatus: 'failed' | 'completed' | 'running';
+  signals: string[];
+  firstMatchingSeq: number | undefined;
+}
+
+const resolveTelemetryNodeId = (e: LogEvent): string | undefined =>
+  e.scenario_node_id || e.node_id || e.task_id;
+
+export const computeTelemetryDiagnostics = (allEvents: LogEvent[]): NodeDiagnostic[] => {
+  const diagnostics: NodeDiagnostic[] = [];
+  const seen = new Set<string>();
+
+  // Nodes with authoritative canonical coverage are excluded: their status is
+  // already runtime-authoritative and requires no heuristic assistance.
+  const canonicallyCovered = new Set(
+    allEvents
+      .filter(e => e.event === 'execution_graph_node')
+      .map(e => e.scenario_node_id)
+      .filter((id): id is string => !!id)
+  );
+
+  for (const ev of allEvents) {
+    const nodeId = resolveTelemetryNodeId(ev);
+    if (!nodeId || seen.has(nodeId) || canonicallyCovered.has(nodeId)) continue;
+
+    const group = allEvents.filter(
+      e =>
+        e.event !== 'execution_graph_node' &&
+        resolveTelemetryNodeId(e) === nodeId
+    );
+    seen.add(nodeId);
+
+    const signals: string[] = [];
+    let suspectedStatus: NodeDiagnostic['suspectedStatus'] | undefined;
+
+    if (group.some(e =>
+      e.event === 'error' ||
+      e.category === 'PARITY_STATE_DIVERGENCE' ||
+      (e.status && e.status.toLowerCase() === 'failed') ||
+      e.message?.toLowerCase().includes('error') ||
+      e.message?.toLowerCase().includes('fail')
+    )) {
+      suspectedStatus = 'failed';
+      signals.push('error/failure signal in generic telemetry');
+    } else if (group.some(e =>
+      (e.status && e.status.toLowerCase() === 'completed') ||
+      e.event === 'maneuver_end' ||
+      e.event === 'node_end' ||
+      e.result === 'success'
+    )) {
+      suspectedStatus = 'completed';
+      signals.push('completion signal in generic telemetry');
+    } else if (group.some(e =>
+      (e.status && e.status.toLowerCase() === 'running') ||
+      e.event === 'node_start' ||
+      e.event === 'maneuver_start'
+    )) {
+      suspectedStatus = 'running';
+      signals.push('activity signal in generic telemetry');
+    }
+
+    if (suspectedStatus) {
+      const firstMatch = group.find(e => resolveTelemetryNodeId(e) === nodeId);
+      diagnostics.push({
+        nodeId,
+        suspectedStatus,
+        signals,
+        firstMatchingSeq: firstMatch?._seq,
+      });
+    }
+    if (diagnostics.length >= 50) break;
+  }
+
+  return diagnostics;
+};
+
 export const LiveDebugger: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const runIdParam = searchParams.get('run_id');
@@ -52,6 +274,17 @@ export const LiveDebugger: React.FC = () => {
   
   // 4-level Telemetry controls
   const [telemetryLevel, setTelemetryLevel] = useState<'PHASE' | 'SUBTASK' | 'ACTION' | 'STEP'>('STEP');
+
+  // [B1] Topology provenance authority — reported by buildTraceGraph.
+  const [topologyProvenance, setTopologyProvenance] = useState<{
+    source: 'CANONICAL' | 'TOPOLOGY_UNAVAILABLE';
+    scenarioNodeCount: number;
+    runtimeNodeCount: number;
+  }>({ source: 'TOPOLOGY_UNAVAILABLE', scenarioNodeCount: 0, runtimeNodeCount: 0 });
+
+  // [B3] Non-authoritative heuristic findings — rendered ONLY in the
+  // diagnostics panel; never applied to graph node states.
+  const [diagnostics, setDiagnostics] = useState<NodeDiagnostic[]>([]);
 
   // React Flow State
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
@@ -206,53 +439,25 @@ export const LiveDebugger: React.FC = () => {
     }
   };
 
-  // [P0-9] Trace-integrity state derived from the authoritative event stream.
-  const traceIntegrity: {
-    state: 'COMPLETE' | 'PARTIAL' | 'RECOVERED' | 'REORDERED' | 'UNKNOWN';
-    issues: string[];
-  } = (() => {
-    const issues: string[] = [];
-    if (!events || events.length === 0) return { state: 'UNKNOWN', issues: ['No events received.'] };
+  // [P0-9][B2] Trace-integrity state derived from the authoritative event
+  // stream. Compositional flags — no single state downgrade.
+  const traceIntegrity: TraceIntegrityFlags = computeTraceIntegrity(events, sourcedFromMaster);
 
-    const seqs = events.map(e => Number(e._seq)).filter(n => !Number.isNaN(n));
-    let state: 'COMPLETE' | 'PARTIAL' | 'RECOVERED' | 'REORDERED' | 'UNKNOWN' = 'UNKNOWN';
+  const integrityLabel = (() => {
+    if (!traceIntegrity.hasEvents) return 'UNKNOWN';
+    const flags: string[] = [];
+    if (traceIntegrity.recovered) flags.push('RECOVERED');
+    if (traceIntegrity.reordered) flags.push('REORDERED');
+    if (traceIntegrity.gaps) flags.push('PARTIAL');
+    if (traceIntegrity.missingEnd) flags.push('NO_END');
+    return flags.length ? flags.join('+') : 'COMPLETE';
+  })();
 
-    if (seqs.length === 0) {
-      issues.push('Events lack server-assigned _seq identifiers.');
-    } else {
-      const sorted = [...seqs].sort((a, b) => a - b);
-      const hasGaps = sorted[sorted.length - 1] - sorted[0] + 1 !== sorted.length ||
-        new Set(sorted).size !== sorted.length;
-      const inOrder = seqs.every((v, i) => i === 0 || v >= seqs[i - 1]);
-      if (!inOrder) {
-        state = 'REORDERED';
-        issues.push('Events arrived out of monotonic _seq order (client-side reorder buffer applied).');
-      } else if (hasGaps) {
-        state = 'PARTIAL';
-        const missing: number[] = [];
-        for (let s = sorted[0]; s <= sorted[sorted.length - 1]; s++) {
-          if (!sorted.includes(s)) missing.push(s);
-          if (missing.length > 5) { missing.push(-1); break; }
-        }
-        issues.push(`Missing _seq events detected${missing.length ? ': ' + missing.filter(m => m >= 0).join(', ') + (missing.includes(-1) ? ', …' : '') : ''}.`);
-      }
-    }
-
-    if (sourcedFromMaster) {
-      state = 'RECOVERED';
-      issues.push('Trace recovered from master log — per-run stream was incomplete.');
-    }
-
-    const hasStart = events.some(e => e.event === 'run_start');
-    const hasEnd = events.some(e => e.event === 'run_end');
-    if (!hasEnd) {
-      if (state === 'UNKNOWN') state = 'PARTIAL';
-      issues.push("Missing terminal run_end event.");
-    } else if (hasStart && state === 'UNKNOWN') {
-      state = 'COMPLETE';
-    }
-
-    return { state, issues };
+  const integrityTone: 'clean' | 'recovered' | 'warn' | 'unknown' = (() => {
+    if (!traceIntegrity.hasEvents) return 'unknown';
+    if (traceIntegrity.gaps || traceIntegrity.reordered || traceIntegrity.missingEnd) return 'warn';
+    if (traceIntegrity.recovered) return 'recovered';
+    return 'clean';
   })();
 
   // Auto-expand Explain Panel if query param is set
@@ -404,54 +609,75 @@ export const LiveDebugger: React.FC = () => {
     return () => closeStream();
   }, [runId]);
 
-  // Canonical Graph Builder (Scenario DAG is primary, telemetry provides state decoration)
+  // [B1][B3] Canonical Graph Builder — provenance-gated (Runtime-Authoritative
+  // Truth Model).
+  //
+  // Node topology is constructed ONLY from canonical sources:
+  //   1. The scenario workflow definition (design-time DAG), and/or
+  //   2. Authoritative `execution_graph_node` runtime events.
+  // Generic telemetry (tool_call, node_start/end, maneuvers, free-text errors)
+  // can NEVER fabricate topology, and node status derives SOLELY from
+  // execution_graph_node events. Heuristic inference lives exclusively in the
+  // non-authoritative Telemetry Diagnostics panel.
   const buildTraceGraph = (
     allEvents: LogEvent[],
     scen: any,
     selection: LogEvent | null
-  ): { flowNodes: any[]; flowEdges: any[] } => {
+  ): {
+    flowNodes: any[];
+    flowEdges: any[];
+    provenance: 'CANONICAL' | 'TOPOLOGY_UNAVAILABLE';
+    scenarioNodeCount: number;
+    runtimeNodeCount: number;
+  } => {
     const positions = nodePositionsRef.current;
 
-    // 1. Primary Scenario Workflow Nodes & Edges
-    let workflowNodes = scen?.workflow?.nodes || scen?.workflow?.tasks || [];
+    // 1. Canonical sources only.
+    const scenarioNodesRaw = scen?.workflow?.nodes || scen?.workflow?.tasks || [];
     const workflowEdges = scen?.workflow?.edges || [];
 
-    // Fallback: if scenario definition hasn't loaded yet, infer scenario topology from events
-    if (workflowNodes.length === 0) {
-      const discoveredNodeIds = new Set<string>();
-      for (const ev of allEvents) {
-        const id = ev.scenario_node_id || ev.node_id || ev.task_id;
-        if (id) discoveredNodeIds.add(id);
+    const graphNodeEventsAll = allEvents.filter(e => e.event === 'execution_graph_node');
+    const seenRuntimeIds = new Set<string>();
+    const runtimeDiscoveredNodes: any[] = [];
+    for (const ev of graphNodeEventsAll) {
+      const id = ev.scenario_node_id;
+      if (!id || seenRuntimeIds.has(id)) continue;
+      seenRuntimeIds.add(id);
+      const inScenario = scenarioNodesRaw.some(
+        (n: any) => String(n.id || n.scenario_node_id || n.task_id) === id
+      );
+      if (!inScenario) {
+        runtimeDiscoveredNodes.push({ id, task_description: id, __runtime_discovered: true });
       }
-      workflowNodes = Array.from(discoveredNodeIds).map(id => ({ id, task_description: id }));
     }
+
+    const workflowNodes = [...scenarioNodesRaw, ...runtimeDiscoveredNodes];
 
     if (workflowNodes.length === 0) {
-      return { flowNodes: [], flowEdges: [] };
+      return {
+        flowNodes: [],
+        flowEdges: [],
+        provenance: 'TOPOLOGY_UNAVAILABLE',
+        scenarioNodeCount: 0,
+        runtimeNodeCount: 0,
+      };
     }
 
-    // 2. Map Telemetry per Scenario Node
+    // 2. Map authoritative state per canonical node — status comes SOLELY from
+    // execution_graph_node events (B3). No string heuristics.
     const flowNodes = workflowNodes.map((n: any) => {
       const id = String(n.id || n.scenario_node_id || n.task_id);
       const label = n.task_description || n.description || n.label || id;
 
-      // Find all matching events for this scenario node
-      const matchingEvents = allEvents.filter(
-        e => e.scenario_node_id === id || e.node_id === id || e.task_id === id
-      );
+      const graphNodeEvents = graphNodeEventsAll.filter(e => e.scenario_node_id === id);
 
-      const graphNodeEvents = matchingEvents.filter(
-        e => e.event === 'execution_graph_node'
-      );
-
-      // Determine Execution Status & Metadata
       let status = 'pending';
+      let hasCanonicalEvent = false;
       let failureClass: string | undefined;
       let failureReason: string | undefined;
       let durationMs: number | undefined;
       let maxAttempt = 1;
 
-      // Extract explicit graph node telemetry if emitted
       if (graphNodeEvents.length > 0) {
         const latestEv = graphNodeEvents[graphNodeEvents.length - 1];
         if (latestEv.status) {
@@ -462,37 +688,7 @@ export const LiveDebugger: React.FC = () => {
         durationMs = latestEv.duration_ms;
         const attempts = graphNodeEvents.map(e => e.attempt || 1);
         maxAttempt = attempts.length > 0 ? Math.max(...attempts) : 1;
-      }
-
-      // Check for error or completed events from standard event stream
-      const hasError = matchingEvents.some(
-        e =>
-          e.event === 'error' ||
-          e.category === 'PARITY_STATE_DIVERGENCE' ||
-          (e.status && e.status.toLowerCase() === 'failed') ||
-          e.message?.toLowerCase().includes('error') ||
-          e.message?.toLowerCase().includes('fail')
-      );
-      const isCompleted = matchingEvents.some(
-        e =>
-          (e.status && e.status.toLowerCase() === 'completed') ||
-          e.event === 'maneuver_end' ||
-          e.event === 'node_end' ||
-          e.result === 'success'
-      );
-      const isRunning = matchingEvents.some(
-        e =>
-          (e.status && e.status.toLowerCase() === 'running') ||
-          e.event === 'node_start' ||
-          e.event === 'maneuver_start'
-      );
-
-      if (hasError && status !== 'completed') {
-        status = 'failed';
-      } else if (isCompleted && status !== 'failed') {
-        status = 'completed';
-      } else if (isRunning && status === 'pending') {
-        status = 'running';
+        hasCanonicalEvent = true;
       }
 
       // Selection matching: join on scenario_node_id
@@ -535,6 +731,14 @@ export const LiveDebugger: React.FC = () => {
               <div className="text-[9px] text-slate-400 truncate max-w-[130px]" title={label}>
                 {statusLabel}
               </div>
+              {!hasCanonicalEvent && (
+                <div
+                  title="No execution_graph_node event recorded for this node yet — status is PENDING by definition, not inferred."
+                  className="px-1 py-0.2 bg-slate-800/60 text-slate-500 text-[8px] rounded tracking-wider uppercase"
+                >
+                  NO GRAPH EVENT
+                </div>
+              )}
               {durationMs && (
                 <div className="text-[8px] text-slate-500 font-mono">
                   {(durationMs / 1000).toFixed(2)}s
@@ -633,7 +837,13 @@ export const LiveDebugger: React.FC = () => {
       return { ...node, position: pos };
     });
 
-    return { flowNodes: layoutedNodes, flowEdges };
+    return {
+      flowNodes: layoutedNodes,
+      flowEdges,
+      provenance: 'CANONICAL',
+      scenarioNodeCount: scenarioNodesRaw.length,
+      runtimeNodeCount: runtimeDiscoveredNodes.length,
+    };
   };
 
   // Node Drag Position Saver to ensure layout state persistence
@@ -644,21 +854,22 @@ export const LiveDebugger: React.FC = () => {
   };
 
   useEffect(() => {
-    const { flowNodes, flowEdges } = buildTraceGraph(events, activeScenario, selectedEvent);
-    setNodes(flowNodes);
-    setEdges(flowEdges);
+    const result = buildTraceGraph(events, activeScenario, selectedEvent);
+    setNodes(result.flowNodes);
+    setEdges(result.flowEdges);
+    setTopologyProvenance({
+      source: result.provenance,
+      scenarioNodeCount: result.scenarioNodeCount,
+      runtimeNodeCount: result.runtimeNodeCount,
+    });
+    // [B3] Heuristic findings are computed for the diagnostics panel only.
+    setDiagnostics(computeTelemetryDiagnostics(events));
   }, [events, activeScenario, selectedEvent]);
 
 
-  // Filter events by selected telemetry level
+  // [B4] Filter events by selected telemetry level via typed taxonomy
   useEffect(() => {
-    const filtered = events.filter(e => {
-      if (telemetryLevel === 'PHASE') return e.event.includes('phase');
-      if (telemetryLevel === 'SUBTASK') return e.event.includes('subtask') || e.event.includes('maneuver');
-      if (telemetryLevel === 'ACTION') return e.event.includes('tool') || e.event.includes('adapter');
-      return true; // STEP / All events
-    });
-    setFilteredEvents(filtered);
+    setFilteredEvents(filterEventsByTelemetryLevel(events, telemetryLevel));
   }, [events, telemetryLevel]);
 
   // Dynamically fit view when nodes are updated
@@ -802,25 +1013,45 @@ export const LiveDebugger: React.FC = () => {
         {/* Header toolbar */}
         <div className="h-14 border-b border-slate-900 bg-slate-950/20 px-6 flex items-center justify-between shrink-0 text-xs">
           <div className="flex items-center gap-3">
-            {/* [P0-9] Prominent trace-integrity state */}
+            {/* [B1] Topology provenance authority chip */}
             <div
-              title={traceIntegrity.issues.join('\n') || 'Trace integrity verified.'}
+              title={
+                topologyProvenance.source === 'CANONICAL'
+                  ? `Topology reconstructed from canonical sources only: ${topologyProvenance.scenarioNodeCount} scenario node(s), ${topologyProvenance.runtimeNodeCount} runtime-discovered node(s) (execution_graph_node events).`
+                  : 'No canonical workflow definition and no execution_graph_node events were found for this trace. Generic telemetry cannot fabricate topology.'
+              }
               className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border font-mono text-[10px] font-bold uppercase tracking-wider cursor-help ${
-                traceIntegrity.state === 'COMPLETE'
+                topologyProvenance.source === 'CANONICAL'
                   ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-                  : traceIntegrity.state === 'RECOVERED'
-                    ? 'border-violet-500/30 bg-violet-500/10 text-violet-300'
-                    : traceIntegrity.state === 'UNKNOWN'
-                      ? 'border-slate-700 bg-slate-900 text-slate-400'
-                      : 'border-amber-500/30 bg-amber-500/10 text-amber-300'
+                  : 'border-amber-500/40 bg-amber-500/10 text-amber-300 animate-pulse'
               }`}
             >
-              {traceIntegrity.state === 'COMPLETE' ? (
+              {topologyProvenance.source === 'CANONICAL' ? (
                 <CheckCircle2 className="w-3.5 h-3.5" />
               ) : (
                 <AlertTriangle className="w-3.5 h-3.5" />
               )}
-              Trace: {traceIntegrity.state}
+              Topology: {topologyProvenance.source === 'CANONICAL' ? 'CANONICAL' : 'TOPOLOGY_UNAVAILABLE'}
+            </div>
+            {/* [P0-9][B2] Prominent compositional trace-integrity state */}
+            <div
+              title={traceIntegrity.issues.join('\n') || 'Trace integrity verified.'}
+              className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border font-mono text-[10px] font-bold uppercase tracking-wider cursor-help ${
+                integrityTone === 'clean'
+                  ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+                  : integrityTone === 'recovered'
+                    ? 'border-violet-500/30 bg-violet-500/10 text-violet-300'
+                    : integrityTone === 'unknown'
+                      ? 'border-slate-700 bg-slate-900 text-slate-400'
+                      : 'border-amber-500/30 bg-amber-500/10 text-amber-300'
+              }`}
+            >
+              {integrityTone === 'clean' || integrityTone === 'recovered' ? (
+                <CheckCircle2 className="w-3.5 h-3.5" />
+              ) : (
+                <AlertTriangle className="w-3.5 h-3.5" />
+              )}
+              Trace: {integrityLabel}
             </div>
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Runner Status:</span>
             <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider">
@@ -884,6 +1115,23 @@ export const LiveDebugger: React.FC = () => {
 
         {/* ReactFlow Canvas container */}
         <div className="flex-1 h-full bg-slate-950/20 relative">
+          {/* [B1] Explicit TOPOLOGY_UNAVAILABLE state — no synthetic graph is fabricated. */}
+          {topologyProvenance.source === 'TOPOLOGY_UNAVAILABLE' && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+              <div className="max-w-md p-6 border border-amber-500/30 bg-slate-950/95 rounded-xl text-center space-y-2 shadow-2xl">
+                <AlertTriangle className="w-8 h-8 text-amber-400 mx-auto" />
+                <h3 className="font-bold uppercase tracking-wider text-amber-300 text-sm">
+                  TOPOLOGY_UNAVAILABLE
+                </h3>
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  No canonical topology could be reconstructed for this trace.
+                  A graph requires the scenario workflow definition or at least
+                  one authoritative <span className="font-mono text-slate-300">execution_graph_node</span> event.
+                  Generic telemetry cannot fabricate topology (Runtime-Authoritative Truth Model).
+                </p>
+              </div>
+            </div>
+          )}
           <style>{`
             .react-flow__handle {
               opacity: 0 !important;
@@ -919,10 +1167,57 @@ export const LiveDebugger: React.FC = () => {
         </div>
       </div>
 
-      {/* Right Side - State Parity Inspector (Diff Viewer) */}
+      {/* Right Side - Diagnostics + State Parity Inspector */}
       <div className="w-96 border-l border-slate-900 bg-slate-950/30 overflow-y-auto p-5 space-y-4 shrink-0 text-xs flex flex-col justify-between h-full">
         <div className="space-y-4 overflow-y-auto">
           <h3 className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">State Parity Inspector</h3>
+
+          {/* [B3] Non-authoritative telemetry diagnostics — heuristic findings
+              are quarantined here and never drive the execution graph. */}
+          {diagnostics.length > 0 && (
+            <div className="space-y-2 border border-sky-500/20 bg-sky-500/5 rounded-lg p-3">
+              <div className="flex items-center justify-between">
+                <h4 className="font-bold uppercase tracking-wider text-[10px] text-sky-300">
+                  Telemetry Diagnostics
+                </h4>
+                <span className="px-1.5 py-0.5 rounded bg-sky-500/15 text-sky-300 border border-sky-500/30 text-[8px] font-bold tracking-wider uppercase">
+                  TELEMETRY-INFERRED · NON-AUTHORITATIVE
+                </span>
+              </div>
+              <p className="text-[9px] text-slate-500 leading-relaxed">
+                Heuristic signals from generic telemetry. These NEVER alter graph
+                node states — canonical execution_graph_node events remain the sole
+                status authority.
+              </p>
+              {diagnostics.map(d => (
+                <button
+                  key={d.nodeId}
+                  onClick={() => {
+                    const target = events.find(e => e._seq === d.firstMatchingSeq);
+                    if (target) setSelectedEvent(target);
+                  }}
+                  title={d.signals.join('; ')}
+                  className="w-full text-left p-2 rounded bg-slate-950/70 border border-slate-900 hover:border-sky-500/40 transition-colors space-y-1"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono font-bold text-[10px] text-slate-200">{d.nodeId}</span>
+                    <span
+                      className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ${
+                        d.suspectedStatus === 'failed'
+                          ? 'bg-red-500/15 text-red-300 border border-red-500/30'
+                          : d.suspectedStatus === 'completed'
+                            ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
+                            : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                      }`}
+                    >
+                      suspected: {d.suspectedStatus}
+                    </span>
+                  </div>
+                  <p className="text-[9px] text-slate-500 truncate">{d.signals.join('; ')}</p>
+                </button>
+              ))}
+            </div>
+          )}
           
           {selectedEvent ? (
             <div className="space-y-3">

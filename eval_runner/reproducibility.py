@@ -22,8 +22,9 @@ from typing import Any
 
 
 def _canonical_hash(obj: Any) -> str:
+    """Deterministic SHA3-256 content digest (repo-wide hashing standard)."""
     canonical = json.dumps(obj, sort_keys=True, default=str).encode("utf-8")
-    return f"sha256:{hashlib.sha256(canonical).hexdigest()}"
+    return f"sha3_256:{hashlib.sha3_256(canonical).hexdigest()}"
 
 
 def build_reproducibility_contract(

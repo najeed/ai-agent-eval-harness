@@ -653,15 +653,29 @@ def tail_file_generator(log_path: Path, run_id: str, last_event_id: int = 0):
 
     # 2. Open and Stream with Catch-up Replay
     with open(log_path, encoding="utf-8") as f:
-        # Step A: Stream historical events, skipping events received before last_event_id
-        for line in f:
+        # Step A: Stream historical events, skipping events received before last_event_id.
+        # Contract: an unterminated trailing line (mid-write) is NEVER broadcast.
+        # We rewind to its start offset so the tail loop re-reads it once the
+        # writer has flushed the complete JSONL frame.
+        while True:
+            try:
+                pos = f.tell()
+            except OSError:
+                pos = None
+            line = f.readline()
+            if not line:
+                break
+            if not line.endswith("\n"):
+                if pos is not None:
+                    f.seek(pos)
+                break
             stripped = line.strip()
             if stripped:
                 seq_id += 1
                 if seq_id > last_event_id:
                     yield f"id: {seq_id}\ndata: {stripped}\n\n"
-                if '"event": "run_end"' in line or '"event": "strategy_end"' in line:
-                    return
+            if '"event": "run_end"' in line or '"event": "strategy_end"' in line:
+                return
 
         # Step B: Enter tail loop
         idle_cycles = 0
@@ -689,6 +703,10 @@ def tail_file_generator(log_path: Path, run_id: str, last_event_id: int = 0):
                     # Ignore transient file access errors
                     pass
 
+            try:
+                pos = f.tell()
+            except OSError:
+                pos = None
             line = f.readline()
             if not line:
                 time.sleep(0.1)
@@ -706,6 +724,13 @@ def tail_file_generator(log_path: Path, run_id: str, last_event_id: int = 0):
                             '"error": "Process thread terminated abruptly"}\n\n'
                         )
                         break
+                continue
+
+            # Contract: a line not yet terminated by its writer is never
+            # broadcast. Rewind so the complete frame can be re-read intact.
+            if pos is not None and not line.endswith("\n"):
+                f.seek(pos)
+                time.sleep(0.1)
                 continue
 
             idle_cycles = 0
@@ -766,7 +791,9 @@ def stream_run_logs(run_id):
             temp_path = config.RUN_LOG_DIR / f"temp_stream_{run_id}.jsonl"
             try:
                 with open(temp_path, "w", encoding="utf-8") as out:
-                    out.write("\n".join(filtered_lines))
+                    # Trailing newline is mandatory: the stream contract never
+                    # broadcasts an unterminated final line.
+                    out.write("\n".join(filtered_lines) + "\n")
             except Exception as e:
                 logger.error(f"Failed to create temp stream file: {e}")
                 return jsonify({"error": "Failed to resolve stream log"}), 500

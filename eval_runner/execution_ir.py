@@ -20,8 +20,6 @@ Every execution produces the immutable join model:
 from __future__ import annotations
 
 import copy
-import hashlib
-import json
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -101,8 +99,17 @@ class ExecutionIdentity:
 
     @staticmethod
     def scenario_version_hash(scenario: dict[str, Any]) -> str:
-        canonical = json.dumps(scenario, sort_keys=True, default=str).encode("utf-8")
-        return f"sha256:{hashlib.sha256(canonical).hexdigest()[:16]}"
+        """
+        Canonical evidentiary identity of the scenario revision.
+
+        Delegates to the single authoritative implementation
+        (`agentv_runtime.manifest.compute_scenario_hash`) so the runtime never
+        maintains a second hashing dialect: full SHA3-256 digest in
+        ``sha3_256:<hex>`` form, never truncated.
+        """
+        from agentv_runtime.manifest import compute_scenario_hash
+
+        return compute_scenario_hash(scenario)
 
     def execution_instance_id(self, scenario_node_id: str, iteration: int = 1) -> str:
         base = f"{scenario_node_id}:attempt:{self.attempt_number}"
@@ -422,8 +429,196 @@ def _validate_plan(plan: WorkflowPlan) -> None:
         if e.type == EdgeType.CONDITION and e.predicate is None:
             errors.append(f"Edge '{e.edge_id}' of type '{e.type.value}' requires a predicate")
 
+    _validate_plan_semantics(plan, errors, reachable)
+
+    # [A2] Minimum-oracle rule: a node that declares no oracle assertion
+    # source can never yield a truth-authoritative verdict, so it is rejected
+    # at compile time rather than silently passing at runtime.
+    oracle_free: list[str] = []
+    for nid, node in plan.nodes.items():
+        definition = node.definition
+        criteria = definition.get("success_criteria")
+        hygiene = definition.get("state_hygiene")
+        hygiene_rules = hygiene.get("rules") if isinstance(hygiene, dict) else None
+        expected_outcome = definition.get("expected_outcome")
+
+        def _non_empty_list(v: Any) -> bool:
+            return isinstance(v, list) and len(v) > 0
+
+        if not (
+            _non_empty_list(criteria)
+            or _non_empty_list(hygiene_rules)
+            or _non_empty_list(expected_outcome)
+        ):
+            oracle_free.append(nid)
+    if oracle_free:
+        errors.append(
+            "Minimum-oracle rule violated (NO_ASSERTIONS) — nodes declare no "
+            "success_criteria, state_hygiene rules, or expected_outcome: "
+            f"{sorted(oracle_free)}"
+        )
+
     if errors:
         raise PlanValidationError("Invalid workflow plan: " + "; ".join(errors))
+
+
+def _strongly_connected_components(plan: WorkflowPlan) -> list[list[str]]:
+    """
+    Iterative Tarjan SCC over the compiled graph (no recursion limits).
+    Compensation edges are excluded: they are undo-routes, not iteration loops.
+    """
+    idx: dict[str, int] = {}
+    low: dict[str, int] = {}
+    on_stack: set[str] = set()
+    stack: list[str] = []
+    components: list[list[str]] = []
+    counter = 0
+
+    successors = {
+        nid: [e.to_node for e in plan.outgoing(nid) if e.type != EdgeType.COMPENSATION]
+        for nid in plan.nodes
+    }
+
+    for root in plan.nodes:
+        if root in idx:
+            continue
+        idx[root] = low[root] = counter
+        counter += 1
+        stack.append(root)
+        on_stack.add(root)
+        call: list[tuple[str, Any]] = [(root, iter(successors[root]))]
+        while call:
+            v, iterator = call[-1]
+            advanced = False
+            for w in iterator:
+                if w not in idx:
+                    idx[w] = low[w] = counter
+                    counter += 1
+                    stack.append(w)
+                    on_stack.add(w)
+                    call.append((w, iter(successors[w])))
+                    advanced = True
+                    break
+                if w in on_stack:
+                    low[v] = min(low[v], idx[w])
+            if advanced:
+                continue
+            call.pop()
+            if call:
+                parent = call[-1][0]
+                low[parent] = min(low[parent], low[v])
+            if low[v] == idx[v]:
+                component: list[str] = []
+                while True:
+                    w = stack.pop()
+                    on_stack.discard(w)
+                    component.append(w)
+                    if w == v:
+                        break
+                components.append(component)
+    return components
+
+
+def _validate_plan_semantics(plan: WorkflowPlan, errors: list[str], reachable: set[str]) -> None:
+    """
+    [A6] Semantic validation over the normalized graph:
+      1. Default-edge uniqueness per source (an unambiguous fallback).
+      2. Conditional edges require distinct priorities (deterministic,
+         order-independent selection).
+      3. Explicit join cardinality cannot exceed the node's incoming degree.
+      4. Compensation legality: no self-compensation and the compensated node
+         must be reachable from entry (you can only undo what can run).
+      5. Loop nodes (SCC members / self-edges) must declare an explicit
+         max_visitations budget.
+    """
+    outgoing_by_source: dict[str, list[EdgeIR]] = {}
+    for e in plan.edges:
+        outgoing_by_source.setdefault(e.from_node, []).append(e)
+
+    # 1. Default uniqueness.
+    ambiguous_defaults = sorted(
+        nid
+        for nid, outs in outgoing_by_source.items()
+        if sum(1 for e in outs if e.type == EdgeType.DEFAULT) > 1
+    )
+    if ambiguous_defaults:
+        errors.append(
+            f"Ambiguous fallback routing — multiple 'default' edges from nodes {ambiguous_defaults}"
+        )
+
+    # 2. Condition exclusivity via distinct priorities.
+    priority_clashes: list[str] = []
+    for nid, outs in outgoing_by_source.items():
+        seen_priorities: set[int] = set()
+        for e in outs:
+            if e.type != EdgeType.CONDITION:
+                continue
+            if e.priority in seen_priorities:
+                priority_clashes.append(f"{nid} (priority={e.priority})")
+            seen_priorities.add(e.priority)
+    if priority_clashes:
+        errors.append(
+            "Non-exclusive conditional routing — duplicate priorities among "
+            f"'condition' edges make selection order-dependent: {sorted(set(priority_clashes))}"
+        )
+
+    # 3. Join cardinality <= incoming degree.
+    join_violations: list[str] = []
+    for nid, node in plan.nodes.items():
+        threshold = node.join_threshold
+        indegree = len(plan.incoming(nid))
+        if threshold is not None and indegree > 0 and threshold > indegree:
+            join_violations.append(f"{nid} (join_threshold={threshold} > indegree={indegree})")
+    if join_violations:
+        errors.append(f"Join cardinality exceeds incoming degree: {join_violations}")
+
+    # 4. Compensation legality. Failure routing can only originate from a
+    # node that can actually execute, so the compensating SOURCE must be
+    # forward-reachable (via non-compensation edges); self-compensation and
+    # dead-source compensation routes are rejected. Targets are exempt from
+    # reachability: compensate_then_fail semantics legitimately route to
+    # nodes that have not executed yet.
+    forward_reachable = set(plan.entry_node_ids)
+    frontier_fwd = list(forward_reachable)
+    forward_adjacency: dict[str, set[str]] = {}
+    for e in plan.edges:
+        if e.type != EdgeType.COMPENSATION:
+            forward_adjacency.setdefault(e.from_node, set()).add(e.to_node)
+    while frontier_fwd:
+        current = frontier_fwd.pop()
+        for nxt in forward_adjacency.get(current, ()):  # noqa: B007
+            if nxt not in forward_reachable:
+                forward_reachable.add(nxt)
+                frontier_fwd.append(nxt)
+
+    compensation_violations: list[str] = []
+    for e in plan.edges:
+        if e.type != EdgeType.COMPENSATION:
+            continue
+        if e.to_node == e.from_node:
+            compensation_violations.append(f"'{e.edge_id}' self-compensation")
+        elif e.from_node not in forward_reachable:
+            compensation_violations.append(
+                f"'{e.edge_id}' compensation originates from unreachable node '{e.from_node}'"
+            )
+    if compensation_violations:
+        errors.append(f"Illegal compensation edges: {compensation_violations}")
+
+    # 5. Explicit visitation budgets inside loop SCCs.
+    loop_nodes: set[str] = set()
+    for component in _strongly_connected_components(plan):
+        if len(component) > 1:
+            loop_nodes.update(component)
+        elif component[0] in {e.to_node for e in plan.outgoing(component[0])}:
+            loop_nodes.add(component[0])
+    unbounded_loops = sorted(
+        nid for nid in loop_nodes if plan.nodes[nid].definition.get("max_visitations") is None
+    )
+    if unbounded_loops:
+        errors.append(
+            "Loop nodes without explicit visitation budget — declare "
+            f"max_visitations for {unbounded_loops}"
+        )
 
 
 PredicateResolver = Callable[[PredicateIR], tuple[bool, dict[str, Any]]]

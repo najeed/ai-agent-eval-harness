@@ -90,7 +90,16 @@ async def test_runner_orchestration(monkeypatch):
 
     scenario = {
         "id": "test_scenario",
-        "workflow": {"nodes": [{"id": "t1", "task_description": "test task"}], "edges": []},
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "t1",
+                    "task_description": "test task",
+                    "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+                }
+            ],
+            "edges": [],
+        },
     }
 
     runner = DefaultRunner()

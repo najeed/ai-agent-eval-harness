@@ -146,6 +146,7 @@ class TestZeroTouchExternalPluginCompatibility:
                     "id": "task_1",
                     "tool": "enterprise_action",
                     "params": {"amount": 250, "action": "audit_check"},
+                    "state_hygiene": {"rules": [{"path": "__unset_probe__", "op": "not_exists"}]},
                 }
             ],
             "tools": {

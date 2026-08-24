@@ -15,7 +15,16 @@ async def test_hitl_interactive_input():
     scenario = {
         "aes_version": 1.4,
         "id": "test_hitl",
-        "workflow": {"nodes": [{"id": "task1", "task_description": "Do something"}], "edges": []},
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "task1",
+                    "task_description": "Do something",
+                    "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+                }
+            ],
+            "edges": [],
+        },
     }
 
     # Mock agent response with hitl_pause
@@ -53,7 +62,16 @@ async def test_hitl_ci_auto_resume():
     scenario = {
         "aes_version": 1.4,
         "id": "test_hitl_ci",
-        "workflow": {"nodes": [{"id": "task1", "task_description": "test"}], "edges": []},
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "task1",
+                    "task_description": "test",
+                    "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+                }
+            ],
+            "edges": [],
+        },
     }
 
     with (

@@ -10,7 +10,15 @@ from eval_runner.session import SessionManager
 def base_scenario():
     return {
         "id": "test_scenario",
-        "workflow": {"nodes": [{"id": "node_1", "task_description": "test task"}]},
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "node_1",
+                    "task_description": "test task",
+                    "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+                }
+            ]
+        },
         "evaluation": {"metrics": [{"metric": "exact_match", "threshold": 0.5}]},
     }
 
@@ -209,7 +217,18 @@ async def test_calculate_metrics_exhaustive(base_scenario, tmp_path):
 async def test_session_history_duplication_fix(base_scenario, tmp_path):
     session = SessionManager("test_run", base_scenario, log_root=tmp_path)
     session.scenario["workflow"] = {
-        "nodes": [{"id": "n1", "task_description": "t1"}, {"id": "n2", "task_description": "t2"}],
+        "nodes": [
+            {
+                "id": "n1",
+                "task_description": "t1",
+                "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+            },
+            {
+                "id": "n2",
+                "task_description": "t2",
+                "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+            },
+        ],
         "edges": [{"from": "n1", "to": "n2"}],
     }
     session.scenario["evaluation"] = {"metrics": [{"metric": "m1"}]}
@@ -277,7 +296,13 @@ async def test_session_execute_tasks_cancellation_branch(base_scenario, tmp_path
         "test_run", base_scenario, log_root=tmp_path, cancellation_event=cancel_evt
     )
     session.scenario["workflow"] = {
-        "nodes": [{"id": "node_cancel", "task_description": "task"}],
+        "nodes": [
+            {
+                "id": "node_cancel",
+                "task_description": "task",
+                "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+            }
+        ],
     }
 
     mock_sandbox = AsyncMock()
