@@ -14,6 +14,7 @@ import pytest
 from eval_runner import config
 from eval_runner.verifier import (
     BaseVerifier,
+    CertificationFailedError,
     CoreTraceSigner,
     TraceVerificationInterceptor,
     TraceVerifier,
@@ -200,11 +201,24 @@ def test_v3_governance_ttl():
     vault_dir, trace_path = setup_vault(run_id)
     trace_path.write_text("data")
 
-    # Sign with expired TTL
-    TraceVerifier.sign_trace(str(trace_path), run_id=run_id, ttl_days=-1)
-    manifest_path = vault_dir / "run_manifest.json"
+    # Transactional certification is fail-closed: the pipeline
+    # refuses to issue (and self-verify) a certificate that is already expired.
+    with pytest.raises(CertificationFailedError, match="CERTIFICATION_FAILED"):
+        TraceVerifier.sign_trace(str(trace_path), run_id=run_id, ttl_days=-1)
 
-    assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
+    # No certificate may exist after the failed transaction.
+    assert not (vault_dir / "run_manifest.json").exists()
+
+    # A properly certified artifact still verifies while inside its TTL window.
+    _, valid_trace = setup_vault("run-valid-ttl")
+    valid_trace.write_text("data")
+    TraceVerifier.sign_trace(str(valid_trace), run_id="run-valid-ttl")
+    assert (
+        TraceVerifier.verify_trace(
+            str(valid_trace), str(config.RUN_LOG_DIR / "run-valid-ttl" / "run_manifest.json")
+        )
+        is True
+    )
 
 
 def test_v3_forensic_filtering():

@@ -1,6 +1,14 @@
 """
 eval_runner.session_components.state_parity
-Verifies point-in-time state parity across simulators, shims, and sandbox state.
+Transition-based state verification across simulators, shims, and sandbox state.
+
+Verification model (v2 contract):
+
+    precondition -> observed action -> expected transition
+        -> actual transition -> postcondition
+
+Evidence records carry the actual before/after values and the assertion result,
+not merely a final boolean.
 """
 
 from __future__ import annotations
@@ -15,9 +23,11 @@ from eval_runner.utils.path_resolver import PathResolver
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_NUMERICAL_TOLERANCE = 1e-9
+
 
 class SessionStateParityVerifier:
-    """Verifies implicit and explicit state parity assertions with retry logic."""
+    """Verifies implicit and explicit state transition assertions with retry logic."""
 
     def __init__(self, session_manager: Any):
         self.session_manager = session_manager
@@ -62,12 +72,85 @@ class SessionStateParityVerifier:
 
         return shim_snapshots
 
+    @staticmethod
+    def _tolerance_for(node: dict[str, Any], assertion: dict[str, Any]) -> float:
+        raw = assertion.get("tolerance")
+        if raw is None:
+            raw = node.get("verification_tolerance")
+        try:
+            return float(raw) if raw is not None else DEFAULT_NUMERICAL_TOLERANCE
+        except (TypeError, ValueError):
+            return DEFAULT_NUMERICAL_TOLERANCE
+
+    async def _resolve_target(
+        self,
+        assertion: dict[str, Any],
+        sandbox: Any,
+        history: list[dict[str, Any]],
+        shim_snapshots: dict[str, Any],
+    ) -> tuple[Any, str | None]:
+        target = assertion.get("target", "message")
+        property_path = assertion.get("property")
+        sm = self.session_manager
+
+        if target.startswith("shim:"):
+            raw_target = target.split(":", 1)[1]
+            if "." in raw_target:
+                shim_id, ext_path = raw_target.split(".", 1)
+                actual_val = shim_snapshots.get(shim_id)
+                property_path = f"{ext_path}.{property_path}" if property_path else ext_path
+            else:
+                shim_id = raw_target
+                actual_val = shim_snapshots.get(shim_id)
+            return actual_val, property_path
+        if target == "message":
+            actual_val = (
+                sm._extract_agent_summary(history) if hasattr(sm, "_extract_agent_summary") else ""
+            )
+            return actual_val, property_path
+        if target == "state":
+            actual_val = (
+                await sandbox.get_full_state()
+                if hasattr(sandbox, "get_full_state")
+                else getattr(sandbox, "state", {})
+            )
+            return actual_val, property_path
+        return None, "__unsupported__"
+
+    @staticmethod
+    def _match(actual_val: Any, expected: Any, mode: str, tolerance: float) -> bool:
+        if mode == "exact":
+            return actual_val == expected
+        if mode == "regex" or (isinstance(expected, str) and expected.startswith("regex:")):
+            pattern = str(expected)[6:] if str(expected).startswith("regex:") else str(expected)
+            return bool(re.search(pattern, str(actual_val), re.IGNORECASE))
+        if mode == "numerical_tolerance":
+            try:
+                return abs(float(actual_val) - float(expected)) <= abs(tolerance)
+            except (ValueError, TypeError):
+                return False
+        if mode == "contains":
+            if isinstance(expected, list):
+                return any(str(e).lower() in str(actual_val).lower() for e in expected)
+            return str(expected).lower() in str(actual_val).lower()
+        return False
+
     async def verify_state_parity(
-        self, node: dict[str, Any], sandbox: Any, history: list[dict[str, Any]]
-    ) -> bool:
+        self,
+        node: dict[str, Any],
+        sandbox: Any,
+        history: list[dict[str, Any]],
+        state_before: dict[str, Any] | None = None,
+    ) -> tuple[bool, list[dict[str, Any]]]:
+        """
+        Transition-based verification.
+
+        Returns (all_passed, transition_evidence) where each evidence row records
+        the assertion, expected value, before/after observed values and outcome.
+        """
         assertions = node.get("expected_outcome", [])
         if not isinstance(assertions, list) or not assertions:
-            return True
+            return True, []
 
         timeout = float(node.get("timeout", 30))
         interval = 2.0
@@ -91,81 +174,63 @@ class SessionStateParityVerifier:
             shim_snapshots = await self.get_shim_snapshots(sandbox, shim_ids)
             all_passed = True
             failed_reason = None
+            evidence_rows: list[dict[str, Any]] = []
 
             for assertion in assertions:
-                target = assertion.get("target", "message")
                 expected = assertion.get("expected")
-                property_path = assertion.get("property")
                 mode = assertion.get("mode", "exact")
+                tolerance = self._tolerance_for(node, assertion)
 
-                if target.startswith("shim:"):
-                    raw_target = target.split(":", 1)[1]
-                    if "." in raw_target:
-                        shim_id = raw_target.split(".", 1)[0]
-                        property_path_ext = raw_target.split(".", 1)[1]
-                        actual_val = shim_snapshots.get(shim_id)
-                        if property_path:
-                            property_path = f"{property_path_ext}.{property_path}"
-                        else:
-                            property_path = property_path_ext
-                    else:
-                        shim_id = raw_target
-                        actual_val = shim_snapshots.get(shim_id)
-                elif target == "message":
-                    actual_val = (
-                        sm._extract_agent_summary(history)
-                        if hasattr(sm, "_extract_agent_summary")
-                        else ""
-                    )
-                elif target == "state":
-                    actual_val = (
-                        await sandbox.get_full_state()
-                        if hasattr(sandbox, "get_full_state")
-                        else getattr(sandbox, "state", {})
-                    )
-                else:
-                    logger.warning(
-                        f"      [Session] [Parity] Unsupported assertion target: {target}"
-                    )
+                after_val, property_path = await self._resolve_target(
+                    assertion, sandbox, history, shim_snapshots
+                )
+                if property_path == "__unsupported__":
                     all_passed = False
-                    failed_reason = f"Unsupported target: {target}"
+                    failed_reason = f"Unsupported target: {assertion.get('target')}"
+                    evidence_rows.append(
+                        {
+                            "assertion": assertion,
+                            "mode": mode,
+                            "expected": expected,
+                            "actual_before": None,
+                            "actual_after": None,
+                            "passed": False,
+                            "error": failed_reason,
+                        }
+                    )
                     break
 
-                if property_path:
-                    actual_val = PathResolver.resolve(actual_val, property_path)
+                before_val = self._before_value(state_before, assertion, property_path)
+                resolved_after = (
+                    PathResolver.resolve(after_val, property_path)
+                    if property_path and not str(property_path).startswith("__")
+                    else after_val
+                )
+                match = self._match(resolved_after, expected, mode, tolerance)
 
-                match = False
-                if mode == "exact":
-                    match = actual_val == expected
-                elif mode == "regex" or (
-                    isinstance(expected, str) and expected.startswith("regex:")
-                ):
-                    pattern = (
-                        str(expected)[6:] if str(expected).startswith("regex:") else str(expected)
-                    )
-                    match = bool(re.search(pattern, str(actual_val), re.IGNORECASE))
-                elif mode == "numerical_tolerance":
-                    try:
-                        match = abs(float(actual_val) - float(expected)) < 1e-9
-                    except (ValueError, TypeError):
-                        match = False
-                elif mode == "contains":
-                    if isinstance(expected, list):
-                        match = any(str(e).lower() in str(actual_val).lower() for e in expected)
-                    else:
-                        match = str(expected).lower() in str(actual_val).lower()
+                evidence_rows.append(
+                    {
+                        "assertion": assertion,
+                        "mode": mode,
+                        "expected": expected,
+                        "actual_before": before_val,
+                        "actual_after": resolved_after,
+                        "tolerance": tolerance if mode == "numerical_tolerance" else None,
+                        "passed": match,
+                    }
+                )
 
                 if not match:
                     all_passed = False
                     failed_reason = (
-                        f"{target}.{property_path or ''} | "
-                        f"Expected: {expected} | Actual: {actual_val}"
+                        f"{assertion.get('target', 'message')}.{property_path or ''} | "
+                        f"Expected: {expected} | Actual: {resolved_after} "
+                        f"(before: {before_val})"
                     )
-                    break
 
             if all_passed:
                 logger.info(f"      [Session] [Parity] All {len(assertions)} assertions PASSED.")
-                return True
+                return True, evidence_rows
 
             if asyncio.get_event_loop().time() - start_time > timeout:
                 logger.info(
@@ -180,6 +245,25 @@ class SessionStateParityVerifier:
                             "is_root_cause": True,
                         },
                     )
-                return False
+                return False, evidence_rows
 
             await asyncio.sleep(interval)
+
+    @staticmethod
+    def _before_value(
+        state_before: dict[str, Any] | None,
+        assertion: dict[str, Any],
+        property_path: str | None,
+    ) -> Any:
+        """Resolves the precondition value of an assertion target when available."""
+        if state_before is None:
+            return None
+        target = assertion.get("target", "message")
+        if target != "state":
+            return None
+        if not property_path:
+            return state_before
+        try:
+            return PathResolver.resolve(state_before, property_path)
+        except Exception:  # noqa: BLE001 - evidence only
+            return None

@@ -49,6 +49,8 @@ export const ScenarioComposer: React.FC = () => {
   // JSON/YAML Toggle
   const [viewMode, setViewMode] = useState<'canvas' | 'json'>('canvas');
   const [rawJson, setRawJson] = useState('');
+  // P0-1: synchronous JSON syntax error state. When set, Save/Run are blocked.
+  const [jsonParseError, setJsonParseError] = useState<string | null>(null);
 
   // Spec import modal
   const [showImportModal, setShowImportModal] = useState(false);
@@ -115,57 +117,65 @@ export const ScenarioComposer: React.FC = () => {
 
 
   const syncJsonToCanvas = (jsonStr: string) => {
-    try {
-      const parsed = JSON.parse(jsonStr);
-      setRawDoc(parsed);
-      if (parsed.metadata?.id) setScenarioId(parsed.metadata.id);
-      if (parsed.metadata?.name) setTitle(parsed.metadata.name);
-      if (parsed.metadata?.version) setVersion(parsed.metadata.version);
-      if (parsed.metadata?.status) setLifecycleStatus(parsed.metadata.status);
-      if (parsed.industry) setIndustry(parsed.industry);
-      if (parsed.metadata?.compliance_level) setComplianceLevel(parsed.metadata.compliance_level);
-      if (parsed.metadata?.description) setDescription(parsed.metadata.description);
+    // P0-1: no silent catch. Parse failures propagate to the caller so the UI
+    // can block the destructive path explicitly.
+    const parsed = JSON.parse(jsonStr);
+    setRawDoc(parsed);
+    if (parsed.metadata?.id) setScenarioId(parsed.metadata.id);
+    if (parsed.metadata?.name) setTitle(parsed.metadata.name);
+    if (parsed.metadata?.version) setVersion(parsed.metadata.version);
+    if (parsed.metadata?.status) setLifecycleStatus(parsed.metadata.status);
+    if (parsed.industry) setIndustry(parsed.industry);
+    if (parsed.metadata?.compliance_level) setComplianceLevel(parsed.metadata.compliance_level);
+    if (parsed.metadata?.description) setDescription(parsed.metadata.description);
 
-      if (parsed.workflow?.nodes) {
-        const flowNodes = parsed.workflow.nodes.map((n: any, idx: number) => ({
-          id: n.id,
-          type: 'default',
-          position: { x: 150 + idx * 220, y: 150 },
-          data: {
-            label: n.id,
-            task_description: n.task_description,
-            required_tools: n.required_tools || [],
-            expected_outcome: n.expected_outcome || []
-          },
-          style: {
-            background: '#0f172a',
-            color: '#fff',
-            border: '1px solid #334155',
-            borderRadius: '8px',
-            fontSize: '11px',
-            width: 160
-          }
-        }));
-        setNodes(flowNodes);
-      }
-
-      if (parsed.workflow?.edges) {
-        const flowEdges = parsed.workflow.edges.map((e: any, idx: number) => ({
-          id: `edge-${idx}`,
-          source: e.from,
-          target: e.to,
-          data: { condition: e.condition }
-        }));
-        setEdges(flowEdges);
-      }
-    } catch (e) {
-      console.warn("Invalid JSON in editor, skipping canvas sync:", e);
+    if (parsed.workflow?.nodes) {
+      const flowNodes = parsed.workflow.nodes.map((n: any, idx: number) => ({
+        id: n.id,
+        type: 'default',
+        position: { x: 150 + idx * 220, y: 150 },
+        data: {
+          label: n.id,
+          task_description: n.task_description,
+          required_tools: n.required_tools || [],
+          expected_outcome: n.expected_outcome || []
+        },
+        style: {
+          background: '#0f172a',
+          color: '#fff',
+          border: '1px solid #334155',
+          borderRadius: '8px',
+          fontSize: '11px',
+          width: 160
+        }
+      }));
+      setNodes(flowNodes);
     }
+
+    if (parsed.workflow?.edges) {
+      const flowEdges = parsed.workflow.edges.map((e: any, idx: number) => ({
+        id: `edge-${idx}`,
+        source: e.from,
+        target: e.to,
+        data: { condition: e.condition }
+      }));
+      setEdges(flowEdges);
+    }
+    return parsed;
   };
 
   const handleToggleMode = (mode: 'canvas' | 'json') => {
     if (mode === 'canvas' && viewMode === 'json') {
-      syncJsonToCanvas(rawJson);
+      // P0-4/P0-7: refuse the switch (and any canvas projection of invalid or
+      // unsupported JSON) instead of silently degrading it.
+      try {
+        syncJsonToCanvas(rawJson);
+        setJsonParseError(null);
+      } catch (e: any) {
+        setJsonParseError(e?.message || 'Invalid JSON');
+        setMessage(`Cannot project to canvas: ${e?.message}. Fix the JSON first.`);
+        return;
+      }
     }
     setViewMode(mode);
   };
@@ -401,11 +411,21 @@ export const ScenarioComposer: React.FC = () => {
       return;
     }
 
+    // [P0-1] In JSON mode the JSON document is the single authoritative draft.
+    // We never round-trip through React Flow state: parse synchronously and
+    // POST the parsed document directly. This guarantees lossless preservation
+    // of fields the canvas does not model.
+    let authoritativeDoc: any = null;
     if (viewMode === 'json') {
+      if (jsonParseError) {
+        setMessage(`JSON Syntax Error: ${jsonParseError}. Fix the document before saving.`);
+        return;
+      }
       try {
-        syncJsonToCanvas(rawJson);
+        authoritativeDoc = JSON.parse(rawJson);
       } catch (e: any) {
-        setMessage(`JSON Syntax Error: ${e.message}`);
+        setJsonParseError(e?.message || 'Invalid JSON');
+        setMessage(`JSON Syntax Error: ${e?.message}`);
         return;
       }
     }
@@ -419,9 +439,9 @@ export const ScenarioComposer: React.FC = () => {
     setSaving(true);
     setMessage('');
     try {
-      const payload = getAESJson();
+      const payload = viewMode === 'json' ? authoritativeDoc : getAESJson();
       // Attach expected revision hash for optimistic concurrency
-      if (rawDoc?.metadata?.content_hash) {
+      if (rawDoc?.metadata?.content_hash && !payload.expected_revision_hash) {
         payload.expected_revision_hash = rawDoc.metadata.content_hash;
       }
 
@@ -432,8 +452,18 @@ export const ScenarioComposer: React.FC = () => {
       });
       const data = await res.json();
       if (res.ok) {
-        if (rawDoc) {
-          rawDoc.metadata = { ...(rawDoc.metadata || {}), content_hash: data.scenario_hash };
+        // Re-sync canvas FROM the server-echoed canonical document (never
+        // from stale client-side state).
+        const savedDoc = data.scenario || payload;
+        syncJsonToCanvas(JSON.stringify(savedDoc));
+        if (savedDoc?.metadata?.content_hash || data.scenario_hash) {
+          setRawDoc({
+            ...savedDoc,
+            metadata: {
+              ...(savedDoc.metadata || {}),
+              content_hash: savedDoc.metadata?.content_hash || data.scenario_hash,
+            },
+          });
         }
         setMessage(`Success: Scenario saved successfully (Hash: ${data.scenario_hash?.slice(0, 12) || 'OK'}).`);
       } else {
@@ -601,7 +631,8 @@ export const ScenarioComposer: React.FC = () => {
 
           <button
             onClick={handleSaveToCatalog}
-            disabled={saving || !canEditScenario}
+            disabled={saving || !canEditScenario || (viewMode === 'json' && !!jsonParseError)}
+            title={viewMode === 'json' && jsonParseError ? `Cannot save: ${jsonParseError}` : undefined}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded font-bold transition-colors"
           >
             <Save className="w-3.5 h-3.5" />
@@ -611,12 +642,21 @@ export const ScenarioComposer: React.FC = () => {
       </div>
 
       {loadError && (
-        <div className="bg-red-500/10 border-b border-red-500/20 px-6 py-2 flex items-center justify-between text-xs text-red-300 shrink-0">
-          <div className="flex items-center gap-2">
+        <div className="bg-red-500/10 border-b border-red-500/20 px-6 py-2 flex items-center justify-between text-xs text-red-300 shrink-0">          <div className="flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
             <span>{loadError}</span>
           </div>
           <span className="text-[10px] text-red-400/80 font-mono">Canonical Document Load Failed</span>
+        </div>
+      )}
+
+      {jsonParseError && viewMode === 'json' && (
+        <div className="bg-red-500/10 border-b border-red-500/20 px-6 py-2 flex items-center gap-2 text-xs text-red-300 shrink-0">
+          <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
+          <span className="font-mono">JSON Syntax Error: {jsonParseError}</span>
+          <span className="ml-auto text-[10px] text-red-400/80 font-mono">
+            Save &amp; Run blocked until fixed
+          </span>
         </div>
       )}
 
@@ -777,11 +817,14 @@ export const ScenarioComposer: React.FC = () => {
               onChange={(val) => {
                 const text = val || '';
                 setRawJson(text);
+                // P0-1: synchronous parse validation. A syntax error must
+                // block Save/Run and surface inline — never silently degrade.
                 try {
-                  const parsed = JSON.parse(text);
-                  if (parsed.metadata?.id) setScenarioId(parsed.metadata.id);
-                  if (parsed.metadata?.name) setTitle(parsed.metadata.name);
-                } catch (e) { }
+                  JSON.parse(text);
+                  setJsonParseError(null);
+                } catch (e: any) {
+                  setJsonParseError(e?.message || 'Invalid JSON');
+                }
               }}
               options={{
                 minimap: { enabled: false },

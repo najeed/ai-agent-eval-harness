@@ -4,8 +4,8 @@ import {
   ReactFlow, Controls, Background, useNodesState, useEdgesState 
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { 
-  Sparkles, AlertTriangle 
+import {
+  Sparkles, AlertTriangle, CheckCircle2
 } from 'lucide-react';
 import ReactDiffViewer from 'react-diff-viewer-continued';
 import dagre from 'dagre';
@@ -168,10 +168,18 @@ export const LiveDebugger: React.FC = () => {
 
   const handleIsolateRootCause = async () => {
     if (!runId) return;
+    // [P0-11] Strict priority: authoritative flag > heuristic analysis index >
+    // correlated-error heuristic. Whatever route matched is surfaced in the
+    // UI as Confirmed vs Suspected — never collapsed into one label.
     let targetIdx = -1;
-    if (analysisData && analysisData.index !== undefined && analysisData.index >= 0) {
+
+    // 1. Authoritative runtime designation
+    targetIdx = events.findIndex(e => e.is_root_cause === true);
+
+    // 2. Analyzer-provided index (heuristic)
+    if (targetIdx < 0 && analysisData && analysisData.index !== undefined && analysisData.index >= 0) {
       targetIdx = analysisData.index;
-    } else {
+    } else if (targetIdx < 0) {
       try {
         const res = await fetch(`/api/v1/explain/${runId}`);
         const data = await res.json();
@@ -183,11 +191,13 @@ export const LiveDebugger: React.FC = () => {
         console.error('Failed to isolate root cause via API:', e);
       }
     }
+
+    // 3. First-correlated-failure heuristic (explicitly labeled as suspected)
     if (targetIdx < 0) {
-      targetIdx = events.findIndex(e => 
-        e.event === 'error' || 
-        e.category === 'PARITY_STATE_DIVERGENCE' || 
-        e.message?.toLowerCase().includes('error') || 
+      targetIdx = events.findIndex(e =>
+        e.event === 'error' ||
+        e.category === 'PARITY_STATE_DIVERGENCE' ||
+        e.message?.toLowerCase().includes('error') ||
         e.message?.toLowerCase().includes('fail')
       );
     }
@@ -195,6 +205,55 @@ export const LiveDebugger: React.FC = () => {
       setSelectedEvent(events[targetIdx]);
     }
   };
+
+  // [P0-9] Trace-integrity state derived from the authoritative event stream.
+  const traceIntegrity: {
+    state: 'COMPLETE' | 'PARTIAL' | 'RECOVERED' | 'REORDERED' | 'UNKNOWN';
+    issues: string[];
+  } = (() => {
+    const issues: string[] = [];
+    if (!events || events.length === 0) return { state: 'UNKNOWN', issues: ['No events received.'] };
+
+    const seqs = events.map(e => Number(e._seq)).filter(n => !Number.isNaN(n));
+    let state: 'COMPLETE' | 'PARTIAL' | 'RECOVERED' | 'REORDERED' | 'UNKNOWN' = 'UNKNOWN';
+
+    if (seqs.length === 0) {
+      issues.push('Events lack server-assigned _seq identifiers.');
+    } else {
+      const sorted = [...seqs].sort((a, b) => a - b);
+      const hasGaps = sorted[sorted.length - 1] - sorted[0] + 1 !== sorted.length ||
+        new Set(sorted).size !== sorted.length;
+      const inOrder = seqs.every((v, i) => i === 0 || v >= seqs[i - 1]);
+      if (!inOrder) {
+        state = 'REORDERED';
+        issues.push('Events arrived out of monotonic _seq order (client-side reorder buffer applied).');
+      } else if (hasGaps) {
+        state = 'PARTIAL';
+        const missing: number[] = [];
+        for (let s = sorted[0]; s <= sorted[sorted.length - 1]; s++) {
+          if (!sorted.includes(s)) missing.push(s);
+          if (missing.length > 5) { missing.push(-1); break; }
+        }
+        issues.push(`Missing _seq events detected${missing.length ? ': ' + missing.filter(m => m >= 0).join(', ') + (missing.includes(-1) ? ', …' : '') : ''}.`);
+      }
+    }
+
+    if (sourcedFromMaster) {
+      state = 'RECOVERED';
+      issues.push('Trace recovered from master log — per-run stream was incomplete.');
+    }
+
+    const hasStart = events.some(e => e.event === 'run_start');
+    const hasEnd = events.some(e => e.event === 'run_end');
+    if (!hasEnd) {
+      if (state === 'UNKNOWN') state = 'PARTIAL';
+      issues.push("Missing terminal run_end event.");
+    } else if (hasStart && state === 'UNKNOWN') {
+      state = 'COMPLETE';
+    }
+
+    return { state, issues };
+  })();
 
   // Auto-expand Explain Panel if query param is set
   useEffect(() => {
@@ -709,9 +768,19 @@ export const LiveDebugger: React.FC = () => {
                         {evt.event} (Seq #{evt._seq}{evt.turn !== undefined ? `, Turn ${evt.turn}` : ''})
                       </span>
                       <div className="flex items-center gap-1.5">
-                        {isRootCauseIndex && (
-                          <span className="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30 text-[8px] font-bold tracking-wider uppercase animate-pulse shrink-0">
-                            Root Cause Node
+                        {/* [P0-11] RCA confidence labeling: authoritative runtime
+                            designation vs heuristic inference are never collapsed. */}
+                        {evt.is_root_cause === true && (
+                          <span className="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[8px] font-bold tracking-wider uppercase shrink-0">
+                            🔴 Root Cause (Confirmed)
+                          </span>
+                        )}
+                        {!evt.is_root_cause && isRootCauseIndex && (
+                          <span
+                            title="Inferred by the analysis heuristic — not an authoritative runtime designation."
+                            className="px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[8px] font-bold tracking-wider uppercase shrink-0"
+                          >
+                            ⚠ Root Cause (Suspected)
                           </span>
                         )}
                         <span>{evt.timestamp ? new Date(evt.timestamp).toLocaleTimeString() : ''}</span>
@@ -733,6 +802,26 @@ export const LiveDebugger: React.FC = () => {
         {/* Header toolbar */}
         <div className="h-14 border-b border-slate-900 bg-slate-950/20 px-6 flex items-center justify-between shrink-0 text-xs">
           <div className="flex items-center gap-3">
+            {/* [P0-9] Prominent trace-integrity state */}
+            <div
+              title={traceIntegrity.issues.join('\n') || 'Trace integrity verified.'}
+              className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border font-mono text-[10px] font-bold uppercase tracking-wider cursor-help ${
+                traceIntegrity.state === 'COMPLETE'
+                  ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+                  : traceIntegrity.state === 'RECOVERED'
+                    ? 'border-violet-500/30 bg-violet-500/10 text-violet-300'
+                    : traceIntegrity.state === 'UNKNOWN'
+                      ? 'border-slate-700 bg-slate-900 text-slate-400'
+                      : 'border-amber-500/30 bg-amber-500/10 text-amber-300'
+              }`}
+            >
+              {traceIntegrity.state === 'COMPLETE' ? (
+                <CheckCircle2 className="w-3.5 h-3.5" />
+              ) : (
+                <AlertTriangle className="w-3.5 h-3.5" />
+              )}
+              Trace: {traceIntegrity.state}
+            </div>
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Runner Status:</span>
             <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider">
               <span className={`w-2.5 h-2.5 rounded-full ${

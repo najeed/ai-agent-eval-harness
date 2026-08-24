@@ -506,7 +506,9 @@ def generate_report(
         print(f"Total Attempts (N): {len(attempts_list)}")
         print(f"Successful Attempts: {successful_attempts}")
         print(f"Failed Attempts: {len(attempts_list) - successful_attempts}")
-        print(f"Attempt Pass Rate (pass@{len(attempts_list)}): {attempt_success_rate:.2f}%")
+        # [AgentV v2.0.0] Honest semantics: this proportion is the attempt success
+        # rate; pass@k is the unbiased estimator reported by the runner.
+        print(f"Attempt Success Rate: {attempt_success_rate:.2f}%")
         print(f"Total Task Executions: {total_tasks_run}")
         print(f"Overall Task Success Rate: {task_success_rate:.2f}%")
     else:

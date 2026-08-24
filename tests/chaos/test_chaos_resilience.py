@@ -231,8 +231,6 @@ def test_chaos_hitl_process_death_and_resume_on_resolve(chaos_scenario, tmp_path
     resolving via /v1/hitl/<id>/resolve MUST automatically trigger
     InProcessExecutionBackend.resume() and continue run execution.
     """
-    from unittest.mock import patch
-
     from flask import Flask
 
     from eval_runner.console.routes.hitl import hitl_bp
@@ -242,6 +240,10 @@ def test_chaos_hitl_process_death_and_resume_on_resolve(chaos_scenario, tmp_path
 
     monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
     monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", tmp_path)
+    # [Auth] This test targets HITL crash/resume resilience, not authorization.
+    # Use the explicit test-harness bypass seam (deterministic regardless of
+    # module import order, unlike patching the require_permission factory).
+    monkeypatch.setenv("AGENTV_TEST_AUTH_BYPASS", "1")
 
     run_id = "run-chaos-hitl-resume-001"
     db_file = tmp_path / "hitl.db"
@@ -304,22 +306,21 @@ def test_chaos_hitl_process_death_and_resume_on_resolve(chaos_scenario, tmp_path
     app.secret_key = "chaos_secret"
     app.register_blueprint(hitl_bp, url_prefix="/api")
 
-    with patch("eval_runner.console.auth_manager.require_permission", lambda _: lambda f: f):
-        client = app.test_client()
+    client = app.test_client()
 
-        # 4. Resolve approval via standard REST endpoint
-        response = client.post(
-            f"/api/v1/hitl/{app_id}/resolve",
-            json={"action": "approve", "response": "Approved by Chaos Recovery Officer"},
-            content_type="application/json",
-        )
+    # 4. Resolve approval via standard REST endpoint
+    response = client.post(
+        f"/api/v1/hitl/{app_id}/resolve",
+        json={"action": "approve", "response": "Approved by Chaos Recovery Officer"},
+        content_type="application/json",
+    )
 
-        assert response.status_code == 200
-        data = response.get_json()
-        assert data["resolved"] is True
-        assert data["approval_id"] == app_id
-        assert data["resumed"] is True
-        assert data["run_id"] == run_id
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data["resolved"] is True
+    assert data["approval_id"] == app_id
+    assert data["resumed"] is True
+    assert data["run_id"] == run_id
 
     # 5. Assert that backend.resume() executed and submitted run with checkpoint
     assert executed_event.wait(timeout=10.0), "Timed out waiting for background resume thread"

@@ -1,6 +1,13 @@
 """
 eval_runner.session_components.metrics_calculator
-Calculates evaluation metrics and evaluates state hygiene pre-conditions.
+Calculates evaluation metrics and evaluates state hygiene assertions.
+
+Strict Assertion Semantics (v2 contract):
+  - Unknown metric            -> EVALUATION_INVALID (hard failure, never skipped)
+  - Malformed criterion       -> EVALUATION_INVALID
+  - Evaluator exception       -> EVALUATION_INVALID
+  - Required state_hygiene    -> gating: any failed required rule fails the node
+  - severity=informational    -> recorded but non-gating (explicit policy only)
 """
 
 from __future__ import annotations
@@ -15,6 +22,8 @@ from eval_runner.events import CoreEvents
 from eval_runner.utils.path_resolver import PathResolver
 
 logger = logging.getLogger(__name__)
+
+EVALUATION_INVALID = "EVALUATION_INVALID"
 
 
 class SessionMetricsCalculator:
@@ -58,6 +67,8 @@ class SessionMetricsCalculator:
             "turns_taken": turns,
             "conversation_history": history,
             "metrics": [],
+            "evaluation_valid": True,
+            "invalid_reasons": [],
             "protocol_sequence": list(getattr(sm, "protocol_sequence", [])),
             "state_snapshots": list(getattr(sm, "state_snapshots", [])),
             "resource_telemetry": list(getattr(sm, "resource_telemetry", [])),
@@ -66,7 +77,13 @@ class SessionMetricsCalculator:
             ),
         }
 
-        # v1.2 Hardened Metrics: Pre-condition check (State Hygiene)
+        def _invalidate(reason: str) -> None:
+            results["evaluation_valid"] = False
+            results["triage_tag"] = EVALUATION_INVALID
+            if reason not in results["invalid_reasons"]:
+                results["invalid_reasons"].append(reason)
+
+        # v1.2 Hardened Metrics -> v2 Gating State Hygiene assertions
         sh = node.get("state_hygiene", {})
         if sh:
             if hasattr(sm, "event_bus"):
@@ -94,10 +111,29 @@ class SessionMetricsCalculator:
                 elif op == "contains":
                     success = expected in val if val else False
 
-                hygiene_results.append({"path": path, "op": op, "success": success})
+                hygiene_results.append(
+                    {
+                        "path": path,
+                        "op": op,
+                        "expected": expected,
+                        "actual": val,
+                        "success": success,
+                        "severity": rule.get("severity", "required"),
+                    }
+                )
 
             if hygiene_results:
                 results["state_hygiene"] = hygiene_results
+                failed_required = [
+                    r
+                    for r in hygiene_results
+                    if not r["success"] and r["severity"] != "informational"
+                ]
+                if failed_required:
+                    _invalidate(
+                        "Required state_hygiene assertions failed: "
+                        + ", ".join(f"{r['path']} ({r['op']})" for r in failed_required)
+                    )
             if hasattr(sm, "event_bus"):
                 sm.event_bus.emit(
                     CoreEvents.STEP_END,
@@ -108,14 +144,36 @@ class SessionMetricsCalculator:
         criteria = node.get("success_criteria", [])
         expected_outcome = node.get("expected_outcome")
 
+        # Malformed criteria block => the evaluator itself is invalid.
+        if criteria and not isinstance(criteria, list):
+            _invalidate("success_criteria must be a list of criterion objects")
+            criteria = []
+
         for criterion in criteria:
             try:
+                if not isinstance(criterion, dict) or not criterion.get("metric"):
+                    _invalidate(f"Malformed success criterion (missing 'metric'): {criterion!r}")
+                    continue
+
                 m_name = criterion.get("metric")
                 threshold = criterion.get("threshold", 1.0)
                 metric_func = metrics.MetricRegistry.get(m_name)
 
                 if not metric_func:
-                    logger.warning(f"   [Session] Warning: Metric '{m_name}' not found. Skipping.")
+                    _invalidate(
+                        f"Unknown metric '{m_name}' referenced in success_criteria "
+                        f"(threshold={threshold})."
+                    )
+                    results["metrics"].append(
+                        {
+                            "metric": m_name,
+                            "status": EVALUATION_INVALID,
+                            "score": None,
+                            "threshold": threshold,
+                            "success": False,
+                            "reason": f"Metric '{m_name}' is not registered",
+                        }
+                    )
                     continue
 
                 summary = self.extract_agent_summary(history)
@@ -202,6 +260,22 @@ class SessionMetricsCalculator:
                         {"message": f"[Metric] {m_name}: {score:.2f} (Threshold: {threshold})"},
                     )
             except Exception as e:
-                print(f"      [Metric Error] {node_id}: {e}")
+                metric_name = (
+                    criterion.get("metric") if isinstance(criterion, dict) else str(criterion)
+                )
+                _invalidate(f"Evaluator exception while computing metric '{metric_name}': {e}")
+                results["metrics"].append(
+                    {
+                        "metric": metric_name,
+                        "status": EVALUATION_INVALID,
+                        "score": None,
+                        "threshold": criterion.get("threshold", 1.0)
+                        if isinstance(criterion, dict)
+                        else 1.0,
+                        "success": False,
+                        "reason": str(e),
+                    }
+                )
+                logger.error("      [Metric Invalid] %s: %s (%s)", node_id, metric_name, e)
 
         return results

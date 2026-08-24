@@ -266,7 +266,7 @@
     },
     {
       "title": "Canonical Execution Graph Node",
-      "description": "Runtime-emitted canonical execution graph node event carrying canonical identity triple.",
+      "description": "Runtime-emitted canonical execution graph node event carrying canonical identity triple and first-class attempt identity.",
       "properties": {
         "event": {
           "const": "execution_graph_node"
@@ -277,7 +277,7 @@
         },
         "execution_instance_id": {
           "type": "string",
-          "description": "Unique execution instance identifier for this attempt (e.g. task-1:attempt:1)."
+          "description": "Unique execution instance identifier for this attempt (e.g. task-1:attempt:1; loop iterations append '#it<n>')."
         },
         "parent_execution_id": {
           "type": [
@@ -285,6 +285,33 @@
             "null"
           ],
           "description": "Parent execution instance ID for retry/branch lineage tracking."
+        },
+        "attempt_id": {
+          "type": "string",
+          "description": "First-class attempt identifier (immutable join model."
+        },
+        "evaluation_run_id": {
+          "type": "string"
+        },
+        "scenario_version_id": {
+          "type": "string"
+        },
+        "case_id": {
+          "type": "string"
+        },
+        "iteration": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Visitation count of this scenario node within the attempt (loop semantics)."
+        },
+        "execution_mode": {
+          "type": "string",
+          "enum": [
+            "simulated",
+            "record_replay",
+            "live",
+            "hybrid"
+          ]
         },
         "label": {
           "type": "string"
@@ -328,7 +355,7 @@
     },
     {
       "title": "Canonical Execution Graph Edge",
-      "description": "Runtime-emitted canonical execution graph edge event.",
+      "description": "Runtime-emitted canonical execution edge carrying the executable transition evidence: selected edge id, evaluated predicate and transition reason.",
       "properties": {
         "event": {
           "const": "execution_graph_edge"
@@ -347,14 +374,50 @@
             "null"
           ]
         },
+        "selected_edge_id": {
+          "type": "string",
+          "description": "Canonical EdgeIR id of the executed transition."
+        },
+        "transition_reason": {
+          "type": "string",
+          "description": "Why this edge was selected (predicate_matched, default_fallback, retry, compensation, ...)."
+        },
+        "evaluated_predicate": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Evidence record of the predicate evaluation that produced this transition."
+        },
         "edge_type": {
           "type": "string",
           "enum": [
             "sequential",
             "conditional",
+            "condition",
+            "default",
+            "fallback",
+            "error",
+            "timeout",
             "retry",
+            "compensation",
             "parallel",
-            "fallback"
+            "join"
+          ]
+        },
+        "attempt_id": {
+          "type": "string"
+        },
+        "attempt_number": {
+          "type": "integer"
+        },
+        "execution_mode": {
+          "type": "string",
+          "enum": [
+            "simulated",
+            "record_replay",
+            "live",
+            "hybrid"
           ]
         }
       },

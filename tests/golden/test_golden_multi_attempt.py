@@ -54,4 +54,4 @@ def test_golden_multi_attempt_report_aggregation(capsys):
     assert "Total Attempts (N): 3" in captured
     assert "Successful Attempts: 2" in captured
     assert "Failed Attempts: 1" in captured
-    assert "Attempt Pass Rate (pass@3): 66.67%" in captured
+    assert "Attempt Success Rate: 66.67%" in captured

@@ -138,11 +138,25 @@ async def test_session_metrics_calculator_comprehensive():
 
     assert res["task_id"] == "node_1"
     assert "state_hygiene" in res
-    assert len(res["metrics"]) == 2
+    # Strict assertion semantics: unknown/exception-producing
+    # metrics are recorded as EVALUATION_INVALID rows, never silently skipped.
+    assert len(res["metrics"]) == 4
     assert res["metrics"][0]["metric"] == "test_sync_metric"
     assert res["metrics"][0]["success"] is True
     assert res["metrics"][1]["metric"] == "test_async_metric"
     assert res["metrics"][1]["success"] is True
+    assert res["metrics"][2]["metric"] == "unknown_metric_skipped"
+    assert res["metrics"][2]["status"] == "EVALUATION_INVALID"
+    assert res["metrics"][2]["success"] is False
+    assert res["metrics"][3]["metric"] == "test_faulty_metric"
+    assert res["metrics"][3]["status"] == "EVALUATION_INVALID"
+
+    # Required hygiene rule failures gate the node (evaluation invalid)
+    assert res["evaluation_valid"] is False
+    assert res["triage_tag"] == "EVALUATION_INVALID"
+    assert any("state_hygiene" in r for r in res["invalid_reasons"])
+    assert any("unknown_metric_skipped" in r for r in res["invalid_reasons"])
+    assert any("test_faulty_metric" in r for r in res["invalid_reasons"])
 
 
 @pytest.mark.asyncio
@@ -154,7 +168,8 @@ async def test_session_state_parity_verifier_comprehensive():
     verifier = SessionStateParityVerifier(session_manager=mock_sm)
 
     # 1. Empty assertions & empty shim_ids
-    assert await verifier.verify_state_parity({}, None, []) is True
+    passed, _ev = await verifier.verify_state_parity({}, None, [])
+    assert passed is True
     assert await verifier.get_shim_snapshots(MagicMock(), []) == {}
 
     # 2. Coroutine-based get_snapshot and get_state, sync state, and missing shim
@@ -217,7 +232,8 @@ async def test_session_state_parity_verifier_comprehensive():
             {"target": "state", "property": "version", "expected": "1.0", "mode": "exact"},
         ],
     }
-    assert await verifier.verify_state_parity(node_pass, mock_sandbox, []) is True
+    passed, _ev = await verifier.verify_state_parity(node_pass, mock_sandbox, [])
+    assert passed is True
 
     # 4. Numerical tolerance mode (match, mismatch, non-float)
     node_tol = {
@@ -226,7 +242,8 @@ async def test_session_state_parity_verifier_comprehensive():
             {"target": "shim:s1.val", "expected": 42.00000000001, "mode": "numerical_tolerance"},
         ],
     }
-    assert await verifier.verify_state_parity(node_tol, mock_sandbox, []) is True
+    passed, _ev = await verifier.verify_state_parity(node_tol, mock_sandbox, [])
+    assert passed is True
 
     node_tol_fail = {
         "timeout": 0.2,
@@ -234,7 +251,8 @@ async def test_session_state_parity_verifier_comprehensive():
             {"target": "shim:s1.val", "expected": "not_a_number", "mode": "numerical_tolerance"},
         ],
     }
-    assert await verifier.verify_state_parity(node_tol_fail, mock_sandbox, []) is False
+    passed, _ev = await verifier.verify_state_parity(node_tol_fail, mock_sandbox, [])
+    assert passed is False
 
     # 5. Unsupported target and timeout divergence
     node_unsupported = {
@@ -243,7 +261,8 @@ async def test_session_state_parity_verifier_comprehensive():
             {"target": "unsupported_target_type", "expected": 123},
         ],
     }
-    assert await verifier.verify_state_parity(node_unsupported, mock_sandbox, []) is False
+    passed, _ev = await verifier.verify_state_parity(node_unsupported, mock_sandbox, [])
+    assert passed is False
 
 
 @pytest.mark.asyncio

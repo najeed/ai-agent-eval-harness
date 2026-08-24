@@ -1,0 +1,363 @@
+import React, { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import {
+  Plug, FileText, ShieldCheck, PlayCircle, Gavel, Bug, PackageCheck,
+  CheckCircle2, XCircle, AlertTriangle, ArrowRight, RefreshCw,
+} from 'lucide-react';
+
+/**
+ * VerificationWorkflow — the primary product spine (P1-12).
+ *
+ * Connect → Validate → Select/Compose → Preflight → Run → Diagnose → Evidence
+ *
+ * Every status shown here is derived from an authoritative runtime object
+ * (RuntimeHealth / readiness checks / VerificationResult). The UI never
+ * invents verification claims.
+ */
+
+interface RuntimeHealth {
+  status: string;
+  mode: string;
+  version: string;
+  last_heartbeat: string;
+  dependencies: Record<string, string>;
+  signing_backend: string;
+  details: string[];
+}
+
+interface ReadinessCheck {
+  name: string;
+  status: string;
+  tier?: string;
+  message?: string;
+  latency_ms?: number | null;
+}
+
+type StepState = 'pending' | 'active' | 'done' | 'blocked';
+
+const STEPS = [
+  { id: 1, label: 'Connect Agent', icon: <Plug className="w-4 h-4" /> },
+  { id: 2, label: 'Choose Scenario', icon: <FileText className="w-4 h-4" /> },
+  { id: 3, label: 'Preflight', icon: <ShieldCheck className="w-4 h-4" /> },
+  { id: 4, label: 'Run', icon: <PlayCircle className="w-4 h-4" /> },
+  { id: 5, label: 'Verdict', icon: <Gavel className="w-4 h-4" /> },
+  { id: 6, label: 'Diagnose', icon: <Bug className="w-4 h-4" /> },
+  { id: 7, label: 'Evidence', icon: <PackageCheck className="w-4 h-4" /> },
+] as const;
+
+const tierBadge = (tier?: string) => {
+  switch (tier) {
+    case 'VERIFIABLE':
+      return 'bg-teal-500/15 text-teal-300 border-teal-500/30';
+    case 'EXECUTABLE':
+      return 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
+    case 'REACHABLE':
+      return 'bg-blue-500/15 text-blue-300 border-blue-500/30';
+    case 'CONFIGURED':
+      return 'bg-amber-500/15 text-amber-300 border-amber-500/30';
+    default:
+      return 'bg-slate-500/15 text-slate-400 border-slate-500/30';
+  }
+};
+
+export const VerificationWorkflow: React.FC = () => {
+  const [protocol, setProtocol] = useState('http_rest');
+  const [endpoint, setEndpoint] = useState('');
+  const [scenarioId, setScenarioId] = useState('');
+  const [preflightResult, setPreflightResult] = useState<{
+    ready: boolean;
+    checks: ReadinessCheck[];
+  } | null>(null);
+  const [runId, setRunId] = useState('');
+  const verdict: string | null = null;
+
+  // Authoritative runtime health — never render READY without this.
+  const healthQuery = useQuery<RuntimeHealth>({
+    queryKey: ['runtime-health'],
+    queryFn: async () => {
+      const res = await fetch('/api/system/status');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    },
+    retry: 1,
+    refetchInterval: 30_000,
+  });
+
+  const scenariosQuery = useQuery<{ scenarios?: { id: string; name?: string }[] }>({
+    queryKey: ['scenario-list'],
+    queryFn: async () => {
+      const res = await fetch('/api/scenarios');
+      if (!res.ok) return {};
+      return res.json();
+    },
+    staleTime: 60_000,
+  });
+
+  const scenarios: { id: string; name?: string }[] = useMemo(() => {
+    const raw =
+      (scenariosQuery.data as any)?.scenarios ??
+      (scenariosQuery.data as any)?.data ??
+      [];
+    return Array.isArray(raw) ? raw : [];
+  }, [scenariosQuery.data]);
+
+  const healthStatus = healthQuery.isError
+    ? 'UNREACHABLE'
+    : ((healthQuery.data as any)?.status ?? 'UNREACHABLE');
+
+  const stepStates: Record<number, StepState> = {
+    1: endpoint.trim() ? 'done' : 'active',
+    2: scenarioId.trim() ? 'done' : endpoint.trim() ? 'active' : 'pending',
+    3: preflightResult ? (preflightResult.ready ? 'done' : 'blocked') : scenarioId ? 'active' : 'pending',
+    4: runId ? 'done' : preflightResult?.ready ? 'active' : 'blocked',
+    5: verdict ? 'done' : runId ? 'active' : 'blocked',
+    6: verdict === 'NOT_VERIFIED' || verdict === 'POLICY_BREACH' ? 'active' : runId && verdict ? 'done' : 'blocked',
+    7: runId && verdict ? 'active' : 'blocked',
+  };
+
+  const runPreflight = async () => {
+    setPreflightResult(null);
+    try {
+      const res = await fetch('/api/scenarios/readiness', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scenario_id: scenarioId || undefined,
+          agent_config: { protocol, endpoint },
+        }),
+      });
+      const data = await res.json();
+      setPreflightResult({ ready: !!data.ready, checks: data.checks ?? [] });
+    } catch {
+      setPreflightResult({ ready: false, checks: [] });
+    }
+  };
+
+  return (
+    <div className="p-6 max-w-5xl mx-auto space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-xl font-bold text-white">New Verification</h1>
+        <p className="text-xs text-slate-400 mt-1">
+          Connect → Validate → Select → Preflight → Run → Diagnose → Evidence. Steps unlock in
+          order; nothing here claims verification the runtime has not produced.
+        </p>
+      </div>
+
+      {/* Stepper */}
+      <div className="flex items-center gap-1 overflow-x-auto pb-1">
+        {STEPS.map((s, i) => (
+          <React.Fragment key={s.id}>
+            <div
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-[11px] font-semibold shrink-0 ${
+                stepStates[s.id] === 'done'
+                  ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+                  : stepStates[s.id] === 'active'
+                    ? 'border-indigo-500/40 bg-indigo-500/10 text-indigo-300'
+                    : stepStates[Number(s.id)] === 'blocked'
+                      ? 'border-slate-800 bg-slate-900/40 text-slate-600'
+                      : 'border-slate-700 bg-slate-900/40 text-slate-400'
+              }`}
+            >
+              {stepStates[s.id] === 'done' ? (
+                <CheckCircle2 className="w-3.5 h-3.5" />
+              ) : stepStates[s.id] === 'blocked' ? (
+                <XCircle className="w-3.5 h-3.5" />
+              ) : (
+                s.icon
+              )}
+              {s.label}
+            </div>
+            {i < STEPS.length - 1 && <ArrowRight className="w-3 h-3 text-slate-700 shrink-0" />}
+          </React.Fragment>
+        ))}
+      </div>
+
+      {/* Runtime health strip */}
+      <div
+        className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-mono ${
+          healthStatus === 'HEALTHY'
+            ? 'border-emerald-500/20 bg-emerald-500/5 text-emerald-300'
+            : healthStatus === 'DEGRADED'
+              ? 'border-amber-500/20 bg-amber-500/5 text-amber-300'
+              : 'border-red-500/20 bg-red-500/5 text-red-300'
+        }`}
+      >
+        {healthStatus === 'HEALTHY' ? (
+          <CheckCircle2 className="w-3.5 h-3.5" />
+        ) : (
+          <AlertTriangle className="w-3.5 h-3.5" />
+        )}
+        Runtime: {healthStatus}
+        {(healthQuery.data as any)?.signing_backend === 'ephemeral' && (
+          <span className="ml-auto text-[10px] text-amber-400">
+            ephemeral signer — runs will be Executable/Verifiable, not Cryptographically Attested
+          </span>
+        )}
+      </div>
+
+      {/* Step 1: Connect Agent */}
+      <section className="bg-slate-950/50 border border-slate-900 rounded-xl p-5 space-y-3">
+        <h2 className="text-sm font-bold text-white flex items-center gap-2">
+          <Plug className="w-4 h-4 text-indigo-400" /> 1 · Connect Agent
+        </h2>
+        <div className="grid grid-cols-[180px_1fr] gap-3 items-center">
+          <label className="text-[11px] uppercase tracking-wider text-slate-500 font-bold">
+            Protocol
+            <select
+              value={protocol}
+              onChange={e => setProtocol(e.target.value)}
+              className="mt-1 w-full bg-slate-900 border border-slate-800 rounded px-2 py-1.5 text-xs text-slate-200"
+            >
+              <option value="http_rest">http_rest</option>
+              <option value="http">http</option>
+              <option value="sse">sse</option>
+              <option value="ollama">ollama</option>
+              <option value="openai">openai</option>
+              <option value="anthropic">anthropic</option>
+              <option value="gemini">gemini</option>
+            </select>
+          </label>
+          <label className="text-[11px] uppercase tracking-wider text-slate-500 font-bold">
+            Endpoint
+            <input
+              value={endpoint}
+              onChange={e => setEndpoint(e.target.value)}
+              placeholder="https://your-agent.example.com (no implicit default)"
+              className="mt-1 w-full bg-slate-900 border border-slate-800 rounded px-3 py-1.5 text-xs text-slate-200 font-mono"
+            />
+          </label>
+        </div>
+        {!endpoint.trim() && (
+          <p className="text-[11px] text-slate-500">
+            An explicit target is required for non-demo use. There is no implicit localhost target.
+          </p>
+        )}
+      </section>
+
+      {/* Step 2: Choose Scenario */}
+      <section className="bg-slate-950/50 border border-slate-900 rounded-xl p-5 space-y-3">
+        <h2 className="text-sm font-bold text-white flex items-center gap-2">
+          <FileText className="w-4 h-4 text-indigo-400" /> 2 · Choose Scenario
+        </h2>
+        <select
+          value={scenarioId}
+          onChange={e => setScenarioId(e.target.value)}
+          className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-xs text-slate-200 font-mono"
+        >
+          <option value="">— select a scenario —</option>
+          {scenarios.map(s => (
+            <option key={s.id} value={s.id}>
+              {s.name || s.id}
+            </option>
+          ))}
+        </select>
+        <div className="flex items-center justify-between">
+          <Link to="/editor" className="text-[11px] text-indigo-400 hover:text-indigo-300">
+            or compose a new scenario →
+          </Link>
+          {scenarioId && (
+            <span className="text-[10px] font-mono text-slate-500">selected: {scenarioId}</span>
+          )}
+        </div>
+      </section>
+
+      {/* Step 3: Preflight */}
+      <section className="bg-slate-950/50 border border-slate-900 rounded-xl p-5 space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-bold text-white flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-indigo-400" /> 3 · Preflight
+          </h2>
+          <button
+            onClick={runPreflight}
+            disabled={!scenarioId || !endpoint.trim()}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-600 text-white text-xs font-semibold transition-colors"
+          >
+            <RefreshCw className="w-3.5 h-3.5" /> Run preflight
+          </button>
+        </div>
+        {preflightResult && (
+          <ul className="space-y-1.5">
+            {preflightResult.checks.map(c => (
+              <li
+                key={c.name}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-800 text-xs"
+              >
+                {c.status === 'PASSED' ? (
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                ) : c.status === 'FAILED' ? (
+                  <XCircle className="w-3.5 h-3.5 text-red-400 shrink-0" />
+                ) : (
+                  <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                )}
+                <span className="text-slate-300 font-semibold w-44 truncate">{c.name}</span>
+                {c.tier && (
+                  <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold border ${tierBadge(c.tier)}`}>
+                    {c.tier}
+                  </span>
+                )}
+                <span className="text-slate-500 truncate">{c.message}</span>
+                {typeof c.latency_ms === 'number' && (
+                  <span className="ml-auto text-[10px] font-mono text-slate-600">{c.latency_ms}ms</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {/* Steps 4–7: launch + post-run */}
+      <section className="bg-slate-950/50 border border-slate-900 rounded-xl p-5 space-y-4">
+        <h2 className="text-sm font-bold text-white flex items-center gap-2">
+          <PlayCircle className="w-4 h-4 text-indigo-400" /> 4–7 · Run, Verdict, Diagnose, Evidence
+        </h2>
+        {!preflightResult?.ready ? (
+          <p className="text-xs text-slate-500">
+            Locked until all preflight checks pass. A run that cannot produce verification evidence
+            is never equivalent to a verified run.
+          </p>
+        ) : (
+          <>
+            <Link
+              to={`/runner?scenario=${encodeURIComponent(scenarioId)}&protocol=${encodeURIComponent(protocol)}&endpoint=${encodeURIComponent(endpoint)}`}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold"
+            >
+              <PlayCircle className="w-4 h-4" /> Launch evaluation
+            </Link>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+              <input
+                value={runId}
+                onChange={e => setRunId(e.target.value)}
+                placeholder="completed run_id"
+                className="bg-slate-900 border border-slate-800 rounded px-3 py-2 text-xs text-slate-200 font-mono"
+              />
+              <Link
+                to={`/reports?run=${encodeURIComponent(runId)}`}
+                className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-xs font-semibold ${
+                  runId
+                    ? 'border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10'
+                    : 'border-slate-800 text-slate-600 pointer-events-none'
+                }`}
+              >
+                <Gavel className="w-3.5 h-3.5" /> Verdict & report
+              </Link>
+              <Link
+                to={`/debugger?run=${encodeURIComponent(runId)}`}
+                className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-xs font-semibold ${
+                  runId
+                    ? 'border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10'
+                    : 'border-slate-800 text-slate-600 pointer-events-none'
+                }`}
+              >
+                <Bug className="w-3.5 h-3.5" /> Diagnose in debugger
+              </Link>
+            </div>
+          </>
+        )}
+      </section>
+    </div>
+  );
+};
+
+export default VerificationWorkflow;

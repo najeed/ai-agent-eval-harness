@@ -76,7 +76,13 @@ def create_app():
     app.register_blueprint(evidence_bp, url_prefix="/api")
     app.register_blueprint(trust_bp)
 
-    app.register_blueprint(demo_bp)
+    # Demo blueprint is physically absent in production mode (ENABLE_DEMO=false).
+    # This prevents demo routes from appearing in the route map at all.
+    if config.ENABLE_DEMO:
+        app.register_blueprint(demo_bp)
+        print("   [Console] Demo mode active: demo_bp registered.", flush=True)
+    else:
+        print("   [Console] Production mode: demo_bp NOT registered.", flush=True)
     app.register_blueprint(core_bp)
     # Mount critical diagnostic shims directly into the Root /v1 namespace
     # to align with documentation.
@@ -97,6 +103,9 @@ def create_app():
 
         sys.stderr.write(f"   [Trace] Status: {response.status_code}\n")
         sys.stderr.flush()
+        # Surface the current operational mode to all clients
+        mode = "demo" if config.ENABLE_DEMO else "production"
+        response.headers["X-AgentV-Mode"] = mode
         return response
 
     # Hardened API Error Handlers (Prevents "Unexpected token <" regressions)
@@ -204,6 +213,11 @@ def create_app():
         return send_from_directory(v2_ui_dist, "index.html")
 
     # Canonical Primary Console Entrypoints & SPA Navigation
+    # OSS SPA Navigation — only OSS routes are declared here.
+    # Enterprise extension routes (/hitl, /compliance, /packs, /publish, /cicd,
+    # /sync, /calibration, /metrics, /benchmarks, /suites, /translate) are NOT
+    # registered here; they are served dynamically by the extension host when
+    # a Control Plane extension is mounted.
     @app.route("/", defaults={"path": ""}, strict_slashes=False)
     @app.route("/scenarios", strict_slashes=False)
     @app.route("/reports", strict_slashes=False)
@@ -215,25 +229,20 @@ def create_app():
     @app.route("/spec-import", strict_slashes=False)
     @app.route("/mutator", strict_slashes=False)
     @app.route("/explain", strict_slashes=False)
-    @app.route("/hitl", strict_slashes=False)
-    @app.route("/translate", strict_slashes=False)
-    @app.route("/calibration", strict_slashes=False)
-    @app.route("/metrics", strict_slashes=False)
     @app.route("/failures", strict_slashes=False)
     @app.route("/triage", strict_slashes=False)
-    @app.route("/benchmarks", strict_slashes=False)
-    @app.route("/compliance", strict_slashes=False)
-    @app.route("/publish", strict_slashes=False)
-    @app.route("/cicd", strict_slashes=False)
-    @app.route("/sync", strict_slashes=False)
-    @app.route("/suites", strict_slashes=False)
-    @app.route("/packs", strict_slashes=False)
-    @app.route("/demo", strict_slashes=False)
-    @app.route("/demo/loan", strict_slashes=False)
     @app.route("/docs", strict_slashes=False)
     @app.route("/docs/api", strict_slashes=False)
     def index(path=""):
         return send_from_directory(ui_path, "index.html")
+
+    # Demo routes are only registered when ENABLE_DEMO=true
+    if config.ENABLE_DEMO:
+
+        @app.route("/demo", strict_slashes=False)
+        @app.route("/demo/loan", strict_slashes=False)
+        def index_demo(path=""):
+            return send_from_directory(ui_path, "index.html")
 
     return app
 

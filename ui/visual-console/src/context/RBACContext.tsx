@@ -18,11 +18,18 @@ export interface AuthenticatedUser {
   is_dev_mode?: boolean;
 }
 
+/**
+ * RBAC Context — PRESENTATION GATING ONLY.
+ *
+ * Client permissions are UX gating only. All API operations are
+ * server-authorized; the browser role model is never a security boundary.
+ * Identity, dev-mode flag and permissions derive exclusively from the
+ * server (/api/auth/me). There is no client-side persona switching.
+ */
 interface RBACContextType {
   user: AuthenticatedUser | null;
   role: UserRole;
   isAuthenticated: boolean;
-  setRole: (role: UserRole) => void;
   isDevMode: boolean;
   workspaceId: string;
   tenantId: string;
@@ -76,24 +83,6 @@ export const RBACProvider: React.FC<{ children: React.ReactNode }> = ({ children
     fetchAuth();
   }, []);
 
-  const setRole = (newRole: UserRole) => {
-    if (!isDevMode) {
-      console.warn('[RBAC] Persona switching is disabled: Identity is server-authoritative.');
-      window.dispatchEvent(
-        new CustomEvent('agentv-toast', {
-          detail: { message: 'Persona switching is disabled: Identity is server-authoritative.', type: 'warning' },
-        })
-      );
-      return;
-    }
-    setActiveRole(newRole);
-    window.dispatchEvent(
-      new CustomEvent('agentv-toast', {
-        detail: { message: `[Dev Simulator] Active Persona Context switched to: ${newRole}`, type: 'info' },
-      })
-    );
-  };
-
   const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
     'System Admin': ['*'],
     'Compliance Auditor': ['runs:read', 'scenarios:read', 'certify:write', 'hitl:resolve', 'reports:read', 'trust:read'],
@@ -102,11 +91,13 @@ export const RBACProvider: React.FC<{ children: React.ReactNode }> = ({ children
     'Viewer': ['runs:read', 'scenarios:read'],
   };
 
+  // In production (isDevMode === false) permissions derive SOLELY from the
+  // server-provided user.permissions; the local role map is never consulted.
   const perms = useMemo(() => {
-    if (isDevMode) {
-      return new Set(ROLE_PERMISSIONS[activeRole] || ['runs:read', 'scenarios:read']);
+    if (!isDevMode) {
+      return new Set(user?.permissions || []);
     }
-    return new Set(user?.permissions || []);
+    return new Set(ROLE_PERMISSIONS[activeRole] || ['runs:read', 'scenarios:read']);
   }, [user, activeRole, isDevMode]);
 
   const isAdmin = activeRole === 'System Admin' || (!isDevMode && (perms.has('*') || perms.has('system:config')));
@@ -121,7 +112,6 @@ export const RBACProvider: React.FC<{ children: React.ReactNode }> = ({ children
       user,
       role: activeRole,
       isAuthenticated,
-      setRole,
       isDevMode,
       workspaceId,
       tenantId,

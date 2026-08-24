@@ -84,12 +84,17 @@ class IndependentTraceOracle:
 def clean_vault_setup(tmp_path, monkeypatch):
     """
     Sets up an isolated project vault structure for golden matrix verification testing.
+    Includes a provisioned signing identity so certification is fail-closed-capable.
     """
     project_root = tmp_path / "project"
     run_log_dir = project_root / "runs"
+    reports_dir = project_root / "reports"
+    trust_root = project_root / ".aes" / "keys"
     run_id = "run-golden-matrix-001"
     run_dir = run_log_dir / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
+    reports_dir.mkdir(parents=True, exist_ok=True)
+    trust_root.mkdir(parents=True, exist_ok=True)
 
     trace_file = run_dir / "run.jsonl"
     line1 = json.dumps({"event": "start", "run_id": run_id, "turn": 1})
@@ -99,6 +104,13 @@ def clean_vault_setup(tmp_path, monkeypatch):
 
     monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", project_root)
     monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", run_log_dir)
+    monkeypatch.setattr("eval_runner.config.REPORTS_DIR", reports_dir)
+    monkeypatch.setattr("eval_runner.config.TRUST_ROOT", trust_root)
+
+    # Provision system_id keypair: certification must be able to actually sign.
+    from eval_runner.identity import IdentityService
+
+    IdentityService._provision_local_identity("system_id")
 
     return {
         "project_root": project_root,

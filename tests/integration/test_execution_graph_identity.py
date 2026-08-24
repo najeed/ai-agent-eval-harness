@@ -250,11 +250,32 @@ async def test_execution_graph_retry_and_failure(tmp_path, monkeypatch):
     assert "failure_class" in failed_nodes[0]
     assert "failure_reason" in failed_nodes[0]
 
-    # Validate retry edge on attempt 2
-    retry_edges = [e for e in graph_edges if e.get("edge_type") == "retry"]
-    assert len(retry_edges) >= 1
-    assert retry_edges[0]["from_scenario_node_id"] == "step-a"
-    assert retry_edges[0]["to_scenario_node_id"] == "step-b"
+    # First-class attempt identity: each attempt carries its own
+    # immutable attempt_id across every event it emits.
+    attempt_ids_by_attempt: dict[int, set] = {}
+    for n in graph_nodes:
+        attempt_ids_by_attempt.setdefault(n.get("attempt"), set()).add(n.get("attempt_id"))
+    assert 1 in attempt_ids_by_attempt and 2 in attempt_ids_by_attempt
+    assert len(attempt_ids_by_attempt[1]) == 1
+    assert len(attempt_ids_by_attempt[2]) == 1
+    assert attempt_ids_by_attempt[1] != attempt_ids_by_attempt[2]
+
+    # Truthful edge telemetry: edges are emitted only for actual
+    # scenario-declared transitions. The failed attempt-1 produces NO edge to
+    # step-b (no fabricated cross-node/cross-attempt linearization).
+    attempt1_edges = [e for e in graph_edges if e.get("attempt_number") == 1]
+    assert len(attempt1_edges) == 0
+
+    # Attempt 2 succeeds: the declared step-a -> step-b transition is emitted
+    # with full executable-transition evidence.
+    attempt2_edges = [e for e in graph_edges if e.get("attempt_number") == 2]
+    assert len(attempt2_edges) >= 1
+    edge = attempt2_edges[0]
+    assert edge["from_scenario_node_id"] == "step-a"
+    assert edge["to_scenario_node_id"] == "step-b"
+    assert edge["edge_type"] == "sequential"
+    assert "selected_edge_id" in edge
+    assert "transition_reason" in edge
 
 
 @pytest.mark.asyncio

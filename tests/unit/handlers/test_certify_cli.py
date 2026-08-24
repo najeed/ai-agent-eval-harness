@@ -25,6 +25,13 @@ def certify_env(tmp_path, monkeypatch):
     monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", root)
     monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", runs_dir)
     monkeypatch.setattr("eval_runner.config.REPORTS_DIR", reports_dir)
+    monkeypatch.setattr("eval_runner.config.TRUST_ROOT", root / ".aes" / "keys")
+
+    # Certification is fail-closed: provision the signing identity
+    # so the transactional pipeline can actually sign.
+    from eval_runner.identity import IdentityService
+
+    IdentityService._provision_local_identity("system_id")
 
     # Authoritative Eval Artifact
     run_id = "test_certification_run"

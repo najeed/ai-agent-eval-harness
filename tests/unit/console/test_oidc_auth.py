@@ -143,7 +143,10 @@ def test_oidc_jwt_verification_failure():
                 assert user is None
 
 
-def test_require_permission_decorator():
+def test_require_permission_decorator(monkeypatch):
+    # This test exercises the real decorator semantics (401/403/200 paths),
+    # so the suite-wide test-auth bypass must be disabled here.
+    monkeypatch.delenv("AGENTV_TEST_AUTH_BYPASS", raising=False)
     app = Flask(__name__)
     app.config["TESTING"] = True
     app.secret_key = "super-secret-key"
@@ -242,10 +245,10 @@ def test_require_permission_decorator():
         resp = client.get("/test-route", headers={"X-AES-API-KEY": "some-key"})
         assert resp.status_code == 403
 
-    # 10. Local trust mode verification -> 200 (outside is_testing mode)
+    # 10. [P0-5 HARDENED] Local trust is REMOVED: even with ENABLE_DEMO=true,
+    # a credential-less request from localhost must never inherit admin.
     app.config["TESTING"] = False
     with mock.patch("eval_runner.config.ENABLE_DEMO", True):
-        # Refresh client with TESTING=False
         trust_client = app.test_client()
         resp = trust_client.get("/test-route")
-        assert resp.status_code == 200
+        assert resp.status_code == 401

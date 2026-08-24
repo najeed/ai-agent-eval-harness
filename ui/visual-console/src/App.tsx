@@ -9,13 +9,13 @@ import {
   Terminal, Zap, ExternalLink, Shield, Compass, Sparkles
 } from 'lucide-react';
 import { RBACProvider, useRBAC } from './context/RBACContext';
-import type { UserRole } from './context/RBACContext';
 
 // Import P1 Pages (Runtime OSS Core)
 import { Settings as SettingsPage } from './pages/Settings';
 import { Docs as DocsPage } from './pages/Docs';
 import { TrustCenter as TrustCenterPage } from './pages/TrustCenter';
 import { Dashboard as DashboardPage } from './pages/Dashboard';
+import { VerificationWorkflow as VerificationWorkflowPage } from './pages/VerificationWorkflow';
 import { ScenarioLibrary as ScenarioLibraryPage } from './pages/ScenarioLibrary';
 import { ScenarioComposer as ScenarioComposerPage } from './pages/ScenarioComposer';
 import { EvaluationRunner as EvaluationRunnerPage } from './pages/EvaluationRunner';
@@ -29,8 +29,9 @@ import { SpecToEvalImporter } from './pages/SpecToEvalImporter';
 import { AdversarialMutator } from './pages/AdversarialMutator';
 import { TraceExplain } from './pages/TraceExplain';
 
-// Control Plane Extension Gate
-import { ControlPlaneExtensionGate } from './components/ControlPlaneExtensionGate';
+// Extension host: generic load/contract fallback + RuntimeExtension contract
+import { ExtensionLoadError } from './components/ExtensionLoadError';
+import { validateExtensionManifest, EXTENSION_CONTRACT_VERSION } from './types/extension-contract';
 import { verifySubresourceIntegrity } from './utils/crypto';
 
 
@@ -205,19 +206,14 @@ class RemoteErrorBoundary extends React.Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex h-full min-h-[400px] flex-col items-center justify-center p-8 text-center">
-          <div className="p-6 bg-red-500/10 border border-red-500/20 rounded-2xl max-w-lg shadow-xl backdrop-blur">
-            <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-red-400" />
-            <h3 className="font-bold text-base text-red-300">Failed to Load Micro-Frontend Module</h3>
-            <p className="text-xs text-slate-400 mt-2 font-mono break-all bg-slate-950/60 p-2.5 rounded-lg border border-slate-900">
-              {this.props.entryUrl}
-            </p>
-            <p className="text-[11px] text-red-400/80 mt-2">{this.state.error?.message || 'Module fetch or evaluation failed.'}</p>
-          </div>
-        </div>
+        <ExtensionLoadError
+          title="Failed to Load Extension Module"
+          entryUrl={this.props.entryUrl}
+          message={this.state.error?.message || 'Module fetch or evaluation failed.'}
+        />
       );
-      return this.props.children;
     }
+    return this.props.children;
   }
 }
 
@@ -229,10 +225,18 @@ class RemoteErrorBoundary extends React.Component<
 
 export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: string }> = ({ entryUrl, sriHash }) => {
   const [loadingState, setLoadingState] = useState<{
-    status: 'idle' | 'verifying' | 'ready' | 'untrusted_origin' | 'sri_failed' | 'load_error';
+    status:
+      | 'idle'
+      | 'verifying'
+      | 'ready'
+      | 'untrusted_origin'
+      | 'sri_failed'
+      | 'contract_violation'
+      | 'load_error';
     Component?: React.ComponentType<any>;
     errorMessage?: string;
     computedDigest?: string;
+    violations?: string[];
   }>({ status: 'idle' });
 
   const isTrustedOrigin = useMemo(() => {
@@ -291,11 +295,50 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
           const blob = new Blob([buffer], { type: 'text/javascript' });
           blobUrlToRevoke = URL.createObjectURL(blob);
           const mod = await import(/* @vite-ignore */ blobUrlToRevoke);
+
+          // [P1-14] Contract validation: the remote module must export a
+          // RuntimeExtension-conforming manifest BEFORE it may be mounted.
+          const manifestObj = (mod as any)?.manifest;
+          if (!manifestObj) {
+            if (active) {
+              setLoadingState({
+                status: 'contract_violation',
+                violations: [
+                  "Remote module exports no 'manifest' — the runtime cannot establish publisher, capabilities or api_version.",
+                ],
+              });
+            }
+            return;
+          }
+          const violations = validateExtensionManifest(manifestObj, {
+            requireSignature: true,
+          });
+          if (violations.length > 0) {
+            console.error(`[ExtensionHost] Contract violations for ${entryUrl}:`, violations);
+            if (active) {
+              setLoadingState({ status: 'contract_violation', violations });
+            }
+            return;
+          }
+
           const ResolvedComp = mod.default || mod[Object.keys(mod)[0]] || mod;
           if (active) setLoadingState({ status: 'ready', Component: ResolvedComp });
         } else {
           // Direct dynamic ESM import for local/trusted origin without SRI pin
           const mod = await import(/* @vite-ignore */ entryUrl);
+
+          // Same contract gate applies to locally-served extensions.
+          const manifestObj = (mod as any)?.manifest;
+          if (manifestObj) {
+            const violations = validateExtensionManifest(manifestObj, {
+              requireSignature: true,
+            });
+            if (violations.length > 0 && active) {
+              setLoadingState({ status: 'contract_violation', violations });
+              return;
+            }
+          }
+
           const ResolvedComp = mod.default || mod[Object.keys(mod)[0]] || mod;
           if (active) setLoadingState({ status: 'ready', Component: ResolvedComp });
         }
@@ -322,54 +365,46 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
 
   if (loadingState.status === 'untrusted_origin') {
     return (
-      <div className="flex h-full min-h-[400px] flex-col items-center justify-center p-8 text-center">
-        <div className="p-6 bg-red-500/10 border border-red-500/20 rounded-2xl max-w-lg shadow-xl backdrop-blur">
-          <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-red-400" />
-          <h3 className="font-bold text-base text-red-300">Untrusted Extension Origin Blocked</h3>
-          <p className="text-xs text-slate-400 mt-2 font-mono break-all bg-slate-950/60 p-2.5 rounded-lg border border-slate-900">
-            {entryUrl}
-          </p>
-          <p className="text-[11px] text-red-400/80 mt-2">
-            Module origin is outside the trusted domain policy and was blocked by Zero-Trust security rules.
-          </p>
-        </div>
-      </div>
+      <ExtensionLoadError
+        title="Untrusted Extension Origin Blocked"
+        entryUrl={entryUrl}
+        message="Module origin is outside the trusted domain policy and was blocked by Zero-Trust security rules."
+      />
     );
   }
 
   if (loadingState.status === 'sri_failed') {
     return (
-      <div className="flex h-full min-h-[400px] flex-col items-center justify-center p-8 text-center">
-        <div className="p-6 bg-red-500/10 border border-red-500/30 rounded-2xl max-w-lg shadow-xl backdrop-blur">
-          <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-red-400" />
-          <h3 className="font-bold text-base text-red-300">Subresource Integrity (SRI) Violation</h3>
-          <p className="text-xs text-slate-400 mt-2 font-mono break-all bg-slate-950/60 p-2.5 rounded-lg border border-slate-900">
-            {entryUrl}
-          </p>
-          <div className="mt-3 text-left space-y-1 bg-slate-950/80 p-3 rounded-lg border border-red-500/20 font-mono text-[10px]">
-            <div className="text-red-400">Expected: {sriHash}</div>
-            <div className="text-amber-400">Actual: {loadingState.computedDigest}</div>
-          </div>
-          <p className="text-[11px] text-red-400/80 mt-3">
-            Cryptographic integrity mismatch detected. Execution blocked to prevent tamper attacks.
-          </p>
-        </div>
-      </div>
+      <ExtensionLoadError
+        title="Subresource Integrity (SRI) Violation"
+        entryUrl={entryUrl}
+        violations={[
+          `Expected: ${sriHash}`,
+          `Actual: ${loadingState.computedDigest}`,
+        ]}
+        message="Cryptographic integrity mismatch detected. Execution blocked to prevent tamper attacks."
+      />
+    );
+  }
+
+  if (loadingState.status === 'contract_violation') {
+    return (
+      <ExtensionLoadError
+        title={`Extension Contract Violation (api ${EXTENSION_CONTRACT_VERSION})`}
+        entryUrl={entryUrl}
+        violations={loadingState.violations}
+        message="SRI proves bytes, not trust: extensions must present a signed manifest with declared capabilities."
+      />
     );
   }
 
   if (loadingState.status === 'load_error') {
     return (
-      <div className="flex h-full min-h-[400px] flex-col items-center justify-center p-8 text-center">
-        <div className="p-6 bg-red-500/10 border border-red-500/20 rounded-2xl max-w-lg shadow-xl backdrop-blur">
-          <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-red-400" />
-          <h3 className="font-bold text-base text-red-300">Failed to Load Extension Module</h3>
-          <p className="text-xs text-slate-400 mt-2 font-mono break-all bg-slate-950/60 p-2.5 rounded-lg border border-slate-900">
-            {entryUrl}
-          </p>
-          <p className="text-[11px] text-red-400/80 mt-2">{loadingState.errorMessage}</p>
-        </div>
-      </div>
+      <ExtensionLoadError
+        title="Failed to Load Extension Module"
+        entryUrl={entryUrl}
+        message={loadingState.errorMessage}
+      />
     );
   }
 
@@ -397,7 +432,9 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
 const ConsoleLayout: React.FC = () => {
 
   const location = useLocation();
-  const { user, role, setRole, isDevMode, canAccessSettings, canEditScenario, canRunEval, canSignCert } = useRBAC();
+  // [P1-15] RBAC is presentation gating only. The role shown here comes from
+  // the server (/api/auth/me); there is no client-side persona switching.
+  const { user, role, canAccessSettings, canEditScenario, canRunEval, canSignCert } = useRBAC();
   const [isCmdOpen, setIsCmdOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [toasts, setToasts] = useState<{ id: string; message: string; type: string }[]>([]);
@@ -406,6 +443,21 @@ const ConsoleLayout: React.FC = () => {
     Work: true,
     Govern: true,
     Admin: true,
+  });
+
+  // Authoritative RuntimeHealth (P0-1) + operating mode (P0-5).
+  const {
+    data: runtimeHealth,
+    error: healthError,
+  } = useQuery({
+    queryKey: ['runtime-health'],
+    queryFn: async () => {
+      const res = await fetch('/api/system/status');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    },
+    refetchInterval: 30_000,
+    retry: 1,
   });
 
   // Dynamic Manifest Query (TanStack Query)
@@ -689,38 +741,56 @@ const ConsoleLayout: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Quick Status Pill */}
-            <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-mono">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span>RUNTIME READY</span>
-            </div>
-
-            {/* Role Switcher in Dev Mode */}
-            {isDevMode ? (
-              <div className="flex items-center gap-2 border-l border-slate-900 pl-3">
-                <span className="text-[10px] text-slate-500 uppercase font-mono font-bold">Role:</span>
-                <select
-                  value={role}
-                  onChange={e => setRole(e.target.value as UserRole)}
-                  className="bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-slate-300 font-medium focus:outline-none focus:border-indigo-500 cursor-pointer"
+            {/* Authoritative Runtime Health (P0-1): server-derived only.
+                Never render READY without a successful health verification. */}
+            {(() => {
+              const h = runtimeHealth;
+              const status = healthError
+                ? 'UNREACHABLE'
+                : (h?.status as string | undefined) ?? 'UNREACHABLE';
+              const cls =
+                status === 'HEALTHY'
+                  ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+                  : status === 'DEGRADED'
+                    ? 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+                    : 'bg-red-500/10 border-red-500/20 text-red-400';
+              const dotCls =
+                status === 'HEALTHY'
+                  ? 'bg-emerald-400 animate-pulse'
+                  : status === 'DEGRADED'
+                    ? 'bg-amber-400'
+                    : 'bg-red-500';
+              const label =
+                status === 'HEALTHY' ? 'RUNTIME READY' : `RUNTIME ${status}`;
+              const title = [
+                `mode: ${h?.mode ?? 'unknown'}`,
+                `version: ${h?.version ?? '?'}`,
+                `heartbeat: ${h?.last_heartbeat ?? 'never'}`,
+                ...Object.entries(h?.dependencies ?? {}).map(
+                  ([k, v]) => `${k}: ${v}`
+                ),
+                ...(h?.details ?? []),
+              ].join('\n');
+              return (
+                <div
+                  title={title}
+                  className={`flex items-center gap-2 px-2.5 py-1 rounded-full border text-[10px] font-mono cursor-help ${cls}`}
                 >
-                  <option value="System Admin">System Admin</option>
-                  <option value="Compliance Auditor">Compliance Auditor</option>
-                  <option value="Scenario Designer">Scenario Designer</option>
-                  <option value="MultiAgentOps Eng.">MultiAgentOps Eng.</option>
-                  <option value="Viewer">Viewer (Read-Only)</option>
-                </select>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2 border-l border-slate-900 pl-3">
-                <span className="text-xs text-slate-300 font-medium">{user?.name || 'Operator'}</span>
-                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${roleColors[role] || 'text-slate-400'}`}>
-                  {role}
-                </span>
-              </div>
-            )}
+                  <span className={`w-1.5 h-1.5 rounded-full ${dotCls}`} />
+                  <span>{label}</span>
+                </div>
+              );
+            })()}
           </div>
         </header>
+
+        {/* Demo-mode banner (P0-5): production never shows it. */}
+        {runtimeHealth?.mode === 'demo' && (
+          <div className="px-6 py-1.5 bg-amber-500/10 border-b border-amber-500/20 text-[11px] font-mono text-amber-300 flex items-center gap-2">
+            🔬 DEMO MODE — sample data & simulated executions. This is not independent
+            verification of your agent.
+          </div>
+        )}
 
 
         {/* Page Content Viewport */}
@@ -779,8 +849,11 @@ function AppRoutes() {
   return (
     <Routes>
       <Route element={<ConsoleLayout />}>
+        {/* Primary Product Spine (P1-12): Connect → Verify → Diagnose */}
+        <Route path="/" element={<VerificationWorkflowPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+
         {/* Runtime OSS Core Screens */}
-        <Route path="/" element={<DashboardPage />} />
         <Route path="/scenarios" element={<ScenarioLibraryPage />} />
         <Route path="/scenarios/compose" element={<ScenarioComposerPage />} />
         <Route path="/editor" element={<ScenarioComposerPage />} />
@@ -801,119 +874,9 @@ function AppRoutes() {
         <Route path="/failures" element={<FailureCorpus />} />
         <Route path="/triage" element={<Triage />} />
 
-        {/* Control Plane Extension Gates (Unmounted Fallbacks) */}
-        <Route
-          path="/hitl"
-          element={
-            <ControlPlaneExtensionGate
-              featureName="Human-in-the-Loop (HITL) Queue"
-              category="Governance & Publishing"
-              description="Real-time human approval gates and intervention orchestration for sensitive agent tool calls."
-            />
-          }
-        />
-        <Route
-          path="/compliance"
-          element={
-            <ControlPlaneExtensionGate
-              featureName="Compliance Forensics"
-              category="Compliance & Audit"
-              description="Automated audit trails and regulatory attestation against NIST AI RMF, EU AI Act, and SOC 2."
-            />
-          }
-        />
-        <Route
-          path="/packs"
-          element={
-            <ControlPlaneExtensionGate
-              featureName="Compliance Pack Editor"
-              category="Compliance & Audit"
-              description="Visual authoring of compliance policies, rule packs, and automated governance constraints."
-            />
-          }
-        />
-        <Route
-          path="/publish"
-          element={
-            <ControlPlaneExtensionGate
-              featureName="Publication & Governance Suite"
-              category="Governance & Publishing"
-              description="Formal multi-tenant report publication, stakeholder sign-offs, and compliance attestation bundles."
-            />
-          }
-        />
-        <Route
-          path="/cicd"
-          element={
-            <ControlPlaneExtensionGate
-              featureName="Managed CI/CD Workflows"
-              category="CI/CD & Workflows"
-              description="Automated pull request gating, headless pipeline integration, and release criteria verification."
-            />
-          }
-        />
-        <Route
-          path="/sync"
-          element={
-            <ControlPlaneExtensionGate
-              featureName="Fleet & Registry Sync"
-              category="Fleet & Policy"
-              description="Centralized multi-cluster scenario syncing, agent catalog federation, and registry mirrors."
-            />
-          }
-        />
-        <Route
-          path="/calibration"
-          element={
-            <ControlPlaneExtensionGate
-              featureName="Model Calibration Console"
-              category="Analytics & Calibration"
-              description="Cross-model alignment benchmarks, temperature sweep calibration, and judge drift diagnostics."
-            />
-          }
-        />
-        <Route
-          path="/benchmarks"
-          element={
-            <ControlPlaneExtensionGate
-              featureName="Enterprise Benchmarks"
-              category="Analytics & Calibration"
-              description="Standardized industry benchmark suites, multi-model leaderboards, and historical progression."
-            />
-          }
-        />
-        <Route
-          path="/metrics"
-          element={
-            <ControlPlaneExtensionGate
-              featureName="Cross-Run Metrics Leaderboard"
-              category="Analytics & Calibration"
-              description="Fleet-wide aggregate metric analytics, agent performance leaderboards, and cost efficiency models."
-            />
-          }
-        />
-        <Route
-          path="/suites"
-          element={
-            <ControlPlaneExtensionGate
-              featureName="Regression Test Suites"
-              category="CI/CD & Workflows"
-              description="Continuous regression testing suites with automated variance tracking and drift alerts."
-            />
-          }
-        />
-        <Route
-          path="/translate"
-          element={
-            <ControlPlaneExtensionGate
-              featureName="Auto-Translate & Protocol Bridge"
-              category="Fleet & Policy"
-              description="Cross-framework translation between LangChain, AutoGen, CrewAI, and native AgentV formats."
-            />
-          }
-        />
-
-        {/* Dynamic Micro-Frontend Remote Routes (When Control Plane Extension Is Mounted) */}
+        {/* Dynamic Micro-Frontend Remote Routes (Control Plane extensions).
+            Enterprise routes are NOT declared in OSS; they exist only when a
+            signed extension manifest contributes them via /api/nav. */}
         {remoteRoutes.map((item: any) => (
           <Route
             key={item.path}

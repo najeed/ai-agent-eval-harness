@@ -84,41 +84,85 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
     data_block = run_end_event.get("data", {})
 
     execution_status = data_block.get("status", "EXECUTION_COMPLETED")
-    verified_outcome = (
-        "VERIFIED"
-        if data_block.get("passed", False) or data_block.get("verified", False)
-        else "NOT_VERIFIED"
-    )
-    if any(e.get("event") == "policy_violation" for e in events):
-        verified_outcome = "POLICY_BREACH"
 
-    # Certificate & signatures
+    # Load certificate and signature chain
     cert_data: dict[str, Any] = {}
-    cert_path = reports_dir / "certificates" / f"{run_id}_certificate.json"
-    if not cert_path.exists() and vault_dir.is_dir():
-        cert_path = vault_dir / f"{run_id}_certificate.json"
-
-    if cert_path.exists() and is_path_safe(
-        str(cert_path), str(reports_dir) if "reports" in str(cert_path) else str(runs_dir)
-    ):
+    # Authoritative publication paths first (transactional pipeline):
+    #   - reports/certificates/<run_id>_vc.json  (published certificate backup)
+    #   - <vault>/run_manifest.json              (persisted sidecar manifest)
+    # then legacy sidecar names for backward compatibility.
+    cert_candidates = [
+        reports_dir / "certificates" / f"{run_id}_vc.json",
+        vault_dir / "run_manifest.json",
+        reports_dir / "certificates" / f"{run_id}_certificate.json",
+        vault_dir / f"{run_id}_certificate.json",
+    ]
+    for cert_path in cert_candidates:
+        if not cert_path.exists():
+            continue
+        jail = str(reports_dir) if "reports" in str(cert_path) else str(runs_dir)
+        if not is_path_safe(str(cert_path), jail):
+            continue
         try:
             cert_data = json.loads(cert_path.read_text(encoding="utf-8"))
+            break
         except Exception as err:
             logger.debug("Failed reading certificate for %s: %s", run_id, err)
 
-    signatures = cert_data.get("signatures", cert_data.get("provenance_chain", []))
+    signatures = cert_data.get("provenance_chain", cert_data.get("signatures", []))
 
-    # Authoritative Verdict Determination:
-    # 1. Policy breach takes absolute precedence
-    # 2. To claim VERIFIED, execution must have passed AND have cryptographic signatures
-    # 3. Passed without cryptographic signatures is UNVERIFIED
-    # 4. Otherwise NOT_VERIFIED
+    # ---------------------------------------------------------------------------
+    # Authoritative Cryptographic Verification
+    # ---------------------------------------------------------------------------
+    # We call the authoritative signing verifier to determine whether the
+    # signature chain in the certificate is genuinely valid, not merely present.
+    # The verdict VERIFIED can only be assigned when verify_trace returns True.
+    # ---------------------------------------------------------------------------
+    crypto_verification: dict[str, Any] = {
+        "verified": False,
+        "signer_identity": None,
+        "manifest_hash_match": False,
+        "scenario_hash_match": False,
+        "errors": [],
+        "algorithm": None,
+    }
+
+    if cert_data:
+        try:
+            from eval_runner.verifier import verify_trace_certificate
+
+            crypto_verification = verify_trace_certificate(
+                run_id=run_id,
+                trace_bytes=raw_trace_bytes,
+                cert_data=cert_data,
+                scenario_data=scenario_resolved or None,
+            )
+        except ImportError:
+            # verify_trace_certificate not yet available; fall back to conservative check
+            crypto_verification["errors"].append(
+                "verify_trace_certificate not available; signature not verified."
+            )
+        except Exception as err:
+            logger.warning("Cryptographic verification failed for %s: %s", run_id, err)
+            crypto_verification["errors"].append(str(err))
+
+    # Authoritative Verdict — determined by real verification, not artifact presence.
+    # Priority: policy_violation > crypto-verified > unverified > not-verified
     if any(e.get("event") == "policy_violation" for e in events):
         verified_outcome = "POLICY_BREACH"
+    elif (
+        (data_block.get("passed", False) or data_block.get("verified", False))
+        and crypto_verification.get("verified") is True
+        and crypto_verification.get("manifest_hash_match") is True
+    ):
+        verified_outcome = "VERIFIED"
     elif data_block.get("passed", False) or data_block.get("verified", False):
-        verified_outcome = "VERIFIED" if len(signatures) > 0 else "UNVERIFIED"
+        # Execution passed but signature did not verify — report truthfully
+        verified_outcome = "UNVERIFIED"
     else:
         verified_outcome = "NOT_VERIFIED"
+
+    evidence_chain_valid: bool = verified_outcome == "VERIFIED"
 
     # Score calculation from authentic assertions
     assertions = data_block.get("assertions", [])
@@ -147,6 +191,8 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
             "duration_seconds": data_block.get("duration", 0),
             "score": score,
         },
+        "evidence_chain_valid": evidence_chain_valid,
+        "cryptographic_verification": crypto_verification,
         "evidence_manifest": {
             "trace_hash": trace_hash,
             "total_events": len(events),

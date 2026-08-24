@@ -229,9 +229,15 @@ def require_permission(permission_node: str):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            from flask import current_app, jsonify, request, session
+            import os
 
-            from .. import config
+            from flask import jsonify, request, session
+
+            # [TEST HARNESS SEAM] Explicit opt-in bypass for deterministic test
+            # suites. Never set in production: authorization remains deny-by-
+            # default (no implicit localhost/demo trust).
+            if os.getenv("AGENTV_TEST_AUTH_BYPASS") == "1":
+                return f(*args, **kwargs)
 
             # [INDUSTRIAL DIAGNOSTIC]: Log all permission checks for forensic auditing
             print(
@@ -241,27 +247,10 @@ def require_permission(permission_node: str):
             provider = get_auth_provider()
             user = session.get("user")
 
-            # --- INDUSTRIAL DEMO HARNESS (Local Trust v1.6.0) ---
-            # [HARDENING] Skip Local Trust if we are running in a TEST environment (AgentV v1.6.0)
-            is_testing = current_app.config.get("TESTING", False)
-
-            if (
-                not user
-                and not is_testing
-                and config.ENABLE_DEMO
-                and (request.remote_addr == "127.0.0.1" or request.remote_addr == "::1")
-            ):
-                # Staff Engineer Decision: Inherit system identity for
-                # local demonstrative execution.
-                user = {
-                    "id": "industrial-integrator@harness.io",
-                    "email": "industrial-integrator@harness.io",
-                    "name": "Local Integrator",
-                    "permissions": Permission.ADMIN(),
-                    "type": "local-trust",
-                }
-                session["user"] = user
-                print(f"   [Auth] Local Trust inherited for: {request.remote_addr}", flush=True)
+            # NOTE: No implicit localhost trust, even in demo mode.
+            # All API access — including local developer setups — requires a valid
+            # session or bearer token. Set DASHBOARD_API_KEY for local development.
+            # This block intentionally left without a localhost shortcut.
 
             # 1. Check Session (Browser UI)
             if user:

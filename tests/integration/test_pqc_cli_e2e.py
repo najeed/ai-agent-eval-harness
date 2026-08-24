@@ -68,12 +68,19 @@ class TestPQCCLI(unittest.TestCase):
             with (
                 patch("eval_runner.identity.IdentityService.get_private_key") as mock_get_priv,
                 patch("eval_runner.identity.IdentityService.get_pqc_client") as mock_get_client,
+                patch("eval_runner.identity.IdentityService.get_public_key") as mock_get_pub,
                 patch("eval_runner.config.PQC_IDENTITY_ID", "test_id"),
             ):
+                # Certification is transactional and self-verifying,
+                # so the mocked classical signature must be well-formed bytes
+                # and the mocked public key must accept it.
                 mock_priv = MagicMock()
-                mock_priv.sign.return_value.hex.return_value = "classical_sig"
+                mock_priv.sign.return_value = b"\xca\xfe" * 32
                 mock_get_priv.return_value = mock_priv
+                mock_pub = MagicMock()
+                mock_get_pub.return_value = mock_pub
                 mock_client = MagicMock()
+                mock_client.verify_digest.return_value = True
 
                 # --- CASE 1: PQC ENABLED + STRICT ON + SIGNING FAILURE = FAIL CLOSED ---
                 with (

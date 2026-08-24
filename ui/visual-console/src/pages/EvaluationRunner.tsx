@@ -23,9 +23,11 @@ export const EvaluationRunner: React.FC = () => {
   const [selectedScenario, setSelectedScenario] = useState<string>('');
   
   // Config state
-  const [protocol, setProtocol] = useState('HTTP');
+  const [protocol, setProtocol] = useState('http_rest');
   const [maxTurns, setMaxTurns] = useState('10');
-  const [agentUrl, setAgentUrl] = useState('http://localhost:8000/api/agent');
+  // P0-6: no implicit execution target. Non-demo use requires explicit config;
+  // the server must never silently default to a local endpoint either.
+  const [agentUrl, setAgentUrl] = useState('');
   const [sessionNotes, setSessionNotes] = useState('Standard regression run');
 
   // Preflight health state
@@ -58,6 +60,12 @@ export const EvaluationRunner: React.FC = () => {
 
   useEffect(() => {
     fetchData();
+    // Accept explicit target configuration from the workflow spine (?endpoint=…)
+    const ep = searchParams.get('endpoint');
+    const proto = searchParams.get('protocol');
+    if (ep) setAgentUrl(ep);
+    if (proto) setProtocol(proto);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Reset preflight status on parameter modification to prevent stale execution
@@ -86,6 +94,12 @@ export const EvaluationRunner: React.FC = () => {
   };
 
   const triggerPreflight = async () => {
+    // P0-6: an explicit target is mandatory; never probe an implicit default.
+    if (!agentUrl.trim()) {
+      setPreflightStatus('failed');
+      setErrorMsg('Explicit agent endpoint is required (no implicit default target).');
+      return;
+    }
     setPreflightStatus('checking');
     try {
       const res = await fetch('/api/scenarios/readiness', {
@@ -332,16 +346,34 @@ export const EvaluationRunner: React.FC = () => {
                 <div className="space-y-2 text-xs divide-y divide-slate-900/60">
                   {(readinessData.checks || []).map((chk: any, idx: number) => (
                     <div key={idx} className="pt-2 first:pt-0 space-y-1">
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between items-center gap-2">
                         <span className="text-slate-300 font-semibold">{chk.name}</span>
-                        <span className={`font-mono text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                          chk.status === 'PASSED'
-                            ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
-                            : chk.status === 'WARNING'
-                              ? 'text-amber-400 bg-amber-500/10 border border-amber-500/20'
-                              : 'text-red-400 bg-red-500/10 border border-red-500/20'
-                        }`}>
-                          {chk.status}
+                        <span className="flex items-center gap-1.5">
+                          {/* Preflight tier: CONFIGURED < REACHABLE < EXECUTABLE < VERIFIABLE */}
+                          {chk.tier && (
+                            <span
+                              className={`font-mono text-[9px] font-bold px-1.5 py-0.5 rounded border ${
+                                chk.tier === 'VERIFIABLE'
+                                  ? 'text-teal-300 bg-teal-500/10 border-teal-500/30'
+                                  : chk.tier === 'EXECUTABLE'
+                                    ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+                                    : chk.tier === 'REACHABLE'
+                                      ? 'text-blue-400 bg-blue-500/10 border-blue-500/20'
+                                      : 'text-amber-400 bg-amber-500/10 border-amber-500/20'
+                              }`}
+                            >
+                              {chk.tier}
+                            </span>
+                          )}
+                          <span className={`font-mono text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                            chk.status === 'PASSED'
+                              ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
+                              : chk.status === 'WARNING'
+                                ? 'text-amber-400 bg-amber-500/10 border border-amber-500/20'
+                                : 'text-red-400 bg-red-500/10 border border-red-500/20'
+                          }`}>
+                            {chk.status}
+                          </span>
                         </span>
                       </div>
                       {chk.message && (
@@ -354,6 +386,22 @@ export const EvaluationRunner: React.FC = () => {
                     </div>
                   ))}
                 </div>
+
+                {/* P0-7: EXECUTABLE vs VERIFIED distinction. A run that cannot
+                    produce verification evidence is never equivalent to a
+                    verified run. */}
+                {(readinessData.checks || []).some(
+                  (c: any) =>
+                    c.name?.toLowerCase().includes('seal') &&
+                    String(c.message ?? '').toLowerCase().includes('ephemeral')
+                ) && (
+                  <div className="p-3 bg-teal-500/5 border border-teal-500/20 rounded-lg text-[10px] text-teal-200/90 leading-relaxed">
+                    Ephemeral signing detected: this run can be <b>Executable</b> and{' '}
+                    <b>Verifiable</b> but results will NOT be{' '}
+                    <b>Cryptographically Attested</b> audit-grade evidence. Configure a
+                    persistent SIGNING_KEY for attestation.
+                  </div>
+                )}
 
                 <button
                   onClick={triggerPreflight}

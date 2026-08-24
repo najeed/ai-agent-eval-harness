@@ -18,6 +18,8 @@ from agentv_runtime.results import EvaluationResult  # noqa: E402
 
 from . import events, plugins  # noqa: E402
 from .context import EvaluationContext  # noqa: E402
+from .reproducibility import build_reproducibility_contract, fingerprint  # noqa: E402
+from .statistics import compute_attempt_statistics  # noqa: E402
 
 logger = logging.getLogger(__name__)
 
@@ -166,6 +168,22 @@ class DefaultRunner(BaseRunner):
             otel_context=otel_ctx,
         )
 
+        # [AgentV v2.0.0] Explicit execution truth mode
+        execution_mode = (
+            scenario.get("execution_mode")
+            or (metadata or {}).get("execution_mode")
+            or scenario.get("metadata", {}).get("execution_mode")
+            or "simulated"
+        )
+        repro_contract = build_reproducibility_contract(
+            scenario,
+            resolved_config=self.resolved_config,
+            seed=seed,
+            attempts=attempts,
+            execution_mode=str(execution_mode),
+            adapter_metadata=dict(ctx.metadata),
+        )
+
         try:
             events.emit(
                 events.CoreEvents.RUN_START,
@@ -175,6 +193,8 @@ class DefaultRunner(BaseRunner):
                     "k_attempts": attempts,
                     "workflow": ctx.scenario_data.get("workflow"),
                     "scenario_data": dict(ctx.scenario_data) if ctx.scenario_data else {},
+                    "execution_mode": str(execution_mode),
+                    "reproducibility_fingerprint": fingerprint(repro_contract),
                 },
                 span_context=ctx.span_context,
             )
@@ -244,13 +264,21 @@ class DefaultRunner(BaseRunner):
             )
 
             pass_at_k = 0.0
+            attempt_statistics: dict[str, Any] = {}
             try:
                 # Cross-attempt aggregation
                 if attempts > 1:
                     plugins.manager.trigger("on_metrics_calculated", ctx, all_attempt_results)
 
-                # Calculate pass@k
-                pass_at_k = self.calculate_pass_at_k(all_attempt_results, attempts)
+                # [AgentV v2.0.0] Standardized statistics over ACTUALLY EXECUTED
+                # attempts (P0 #8). pass_at_k is the unbiased estimator; the raw
+                # proportion, conjunctive/disjunctive semantics and confidence
+                # are reported separately.
+                stats = compute_attempt_statistics(
+                    all_attempt_results, self._is_attempt_successful, requested_k=attempts
+                )
+                attempt_statistics = stats
+                pass_at_k = stats["pass_at_k"]
             except Exception as e:
                 import traceback
 
@@ -270,8 +298,12 @@ class DefaultRunner(BaseRunner):
                 events.CoreEvents.RUN_END,
                 {
                     "pass_at_k": pass_at_k,
+                    "attempt_success_rate": attempt_statistics.get("attempt_success_rate", 0.0),
+                    "all_pass": attempt_statistics.get("all_pass", False),
+                    "any_pass": attempt_statistics.get("any_pass", False),
                     "successful_attempts": successful_attempts_count,
                     "total_attempts": attempts,
+                    "executed_attempts": len(all_attempt_results),
                     "metadata": dict(ctx.metadata),
                 },
                 span_context=ctx.span_context,
@@ -293,12 +325,20 @@ class DefaultRunner(BaseRunner):
                         "scenario_id": scenario.get("id"),
                         "attempts": attempts,
                         "pass_at_k": pass_at_k,
+                        "attempt_statistics": attempt_statistics,
+                        "execution_mode": str(execution_mode),
+                        "reproducibility": repro_contract,
                         "results": all_attempt_results,
                         "config_hash": cfg_hash,
                     }
                     self.run_store.save_run_manifest(effective_run_id, manifest_data)
                 except Exception as e:
                     logger.debug(f"Failed to save manifest to RunStore: {e}")
+
+            result_metadata = dict(ctx.metadata)
+            result_metadata["execution_mode"] = str(execution_mode)
+            result_metadata["reproducibility"] = repro_contract
+            result_metadata["reproducibility_fingerprint"] = fingerprint(repro_contract)
 
             return EvaluationResult(
                 run_id=effective_run_id,
@@ -307,8 +347,9 @@ class DefaultRunner(BaseRunner):
                 successful_attempts=successful_attempts_count,
                 total_attempts=attempts,
                 attempts_results=all_attempt_results,
-                metadata=dict(ctx.metadata),
+                metadata=result_metadata,
                 config_hash=cfg_hash,
+                statistics=attempt_statistics,
             )
         finally:
             if ctx.otel_context:
@@ -335,11 +376,15 @@ class DefaultRunner(BaseRunner):
         return True
 
     def calculate_pass_at_k(self, all_results: list[list[dict[str, Any]]], k: int) -> float:
-        """Calculates the pass@k metric (percentage of successful attempts)."""
-        if k <= 0:
-            return 0.0
+        """
+        Standard pass@k estimator over ACTUALLY EXECUTED attempts.
+        Prefer `compute_attempt_statistics` for the full semantics contract.
+        """
+        from .statistics import pass_at_k_estimator
+
+        n = len(all_results)
         successful = sum(1 for res in all_results if self._is_attempt_successful(res))
-        return float(successful) / k
+        return pass_at_k_estimator(n, successful, k)
 
 
 def run_scenario(

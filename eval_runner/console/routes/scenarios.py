@@ -2,6 +2,10 @@ import asyncio
 import hashlib
 import json
 import logging
+import socket
+import urllib.error
+import urllib.parse
+import urllib.request
 from pathlib import Path
 from typing import Any
 
@@ -15,6 +19,25 @@ from eval_runner.catalog import ScenarioCatalog
 from ..auth_manager import Permission, require_permission
 
 logger = logging.getLogger(__name__)
+
+# Server-authoritative lifecycle state machine adjacency matrix.
+# Keys are current states; values are the set of legally reachable next states.
+LEGAL_TRANSITIONS: dict[str, set[str]] = {
+    "Draft": {"Validated", "Deprecated"},
+    "Validated": {"Ready", "Draft", "Deprecated"},
+    "Ready": {"Deprecated"},
+    "Deprecated": set(),  # Terminal — no transitions out
+    "Published": {"Deprecated"},
+}
+
+# States from which a mandatory non-empty reason is required
+TRANSITION_REQUIRES_REASON: set[tuple[str, str]] = {
+    ("Ready", "Deprecated"),
+    ("Validated", "Deprecated"),
+    ("Draft", "Deprecated"),
+    ("Published", "Deprecated"),
+    ("Validated", "Draft"),  # Regression requires an explanation
+}
 
 scenario_bp = Blueprint("scenarios", __name__)
 
@@ -191,6 +214,48 @@ def validate_scenario_structure(raw_data: dict[str, Any]) -> tuple[bool, list[st
     return len(errors) == 0, errors
 
 
+@scenario_bp.route("/scenarios/validate", methods=["POST"])
+@require_permission(Permission.SCENARIOS_READ)
+def validate_scenario_body():
+    """
+    Canonical body-only AES validation endpoint.
+    Accepts any scenario JSON payload (no path param required) and returns
+    structured errors and warnings suitable for inline composer display.
+    """
+    raw_data = (request.json or {}).get("scenario") or request.json
+    if not raw_data or not isinstance(raw_data, dict):
+        return jsonify(
+            {"valid": False, "errors": ["Request body must be a JSON scenario object"]}
+        ), 400
+
+    valid, errors = validate_scenario_structure(raw_data)
+
+    # Produce per-node error map for inline canvas annotation
+    node_errors: dict[str, list[str]] = {}
+    field_errors: list[dict[str, str]] = []
+    for err in errors:
+        # Try to associate with a node id if the message references one
+        if "Node '" in err:
+            try:
+                nid = err.split("Node '")[1].split("'")[0]
+                node_errors.setdefault(nid, []).append(err)
+            except IndexError:
+                field_errors.append({"field": "workflow", "message": err})
+        else:
+            field_errors.append({"field": "general", "message": err})
+
+    return jsonify(
+        {
+            "valid": valid,
+            "errors": errors,
+            "node_errors": node_errors,
+            "field_errors": field_errors,
+            "warnings": [],
+            "status": "Validated" if valid else "Invalid",
+        }
+    )
+
+
 @scenario_bp.route("/scenarios/<scenario_id>/validate", methods=["POST"])
 @require_permission(Permission.SCENARIOS_READ)
 def validate_scenario_schema(scenario_id):
@@ -295,57 +360,198 @@ def check_execution_readiness():
             }
         )
 
-    # 2. Agent Endpoint / Adapter
+    # 2. Agent Endpoint / Adapter — real connectivity probe
     proto = str(agent_config.get("protocol", "http_rest")).lower()
     endpoint = agent_config.get("endpoint", "http://localhost:8000")
-    known_protocols = (
+
+    # Provider-API protocols: validate env-var presence + DNS reachability
+    _provider_env_vars: dict[str, tuple[str, str]] = {
+        "openai": ("OPENAI_API_KEY", "api.openai.com"),
+        "gemini": ("GOOGLE_API_KEY", "generativelanguage.googleapis.com"),
+        "anthropic": ("ANTHROPIC_API_KEY", "api.anthropic.com"),
+        "claude": ("ANTHROPIC_API_KEY", "api.anthropic.com"),
+    }
+    # HTTP-style protocols that should be probed via real HTTP HEAD
+    _http_probed_protocols = {
         "http_rest",
         "http",
         "rest",
-        "openai",
-        "gemini",
-        "anthropic",
-        "claude",
         "ollama",
-        "langchain",
         "custom_http",
-        "grpc",
         "sse",
-    )
-    if proto in known_protocols:
-        checks.append(
+        "grpc",
+        "langchain",
+    }
+
+    import os as _os
+    import time as _time
+
+    agent_check: dict[str, Any] = {
+        "name": "Agent Endpoint",
+        "status": "FAILED",
+        "tier": "CONFIGURED",
+        "message": f"Unknown protocol '{proto}'.",
+        "latency_ms": None,
+    }
+
+    if proto in _provider_env_vars:
+        env_var, provider_host = _provider_env_vars[proto]
+        key_present = bool(_os.environ.get(env_var))
+        # DNS resolution check
+        dns_ok = False
+        try:
+            socket.getaddrinfo(provider_host, 443, proto=socket.IPPROTO_TCP)
+            dns_ok = True
+        except OSError:
+            pass
+
+        if key_present and dns_ok:
+            agent_check.update(
+                {
+                    "status": "PASSED",
+                    "tier": "REACHABLE",
+                    "message": (
+                        f"API key ({env_var}) present; provider '{provider_host}' resolves. "
+                        f"Protocol: {proto}."
+                    ),
+                }
+            )
+        elif key_present:
+            agent_check.update(
+                {
+                    "status": "WARNING",
+                    "tier": "CONFIGURED",
+                    "message": (
+                        f"API key ({env_var}) present but provider '{provider_host}' "
+                        "DNS resolution failed (network unreachable?)."
+                    ),
+                }
+            )
+        else:
+            agent_check.update(
+                {
+                    "status": "WARNING",
+                    "tier": "CONFIGURED",
+                    "message": (
+                        f"Protocol '{proto}' recognised but {env_var} is not set. "
+                        "Configure your API key to enable execution."
+                    ),
+                }
+            )
+    elif proto in _http_probed_protocols:
+        # Attempt real HTTP HEAD probe
+        t0 = _time.monotonic()
+        probe_ok = False
+        probe_msg = ""
+        try:
+            # [B310 mitigation] Restrict the user-supplied endpoint to real
+            # HTTP(S) schemes so preflight can never be abused to open
+            # file:, ftp:, or custom-scheme URLs (SSRF / local-file read).
+            endpoint_scheme = urllib.parse.urlparse(str(endpoint)).scheme.lower()
+            if endpoint_scheme not in ("http", "https"):
+                raise urllib.error.URLError(
+                    f"Refused non-HTTP scheme '{endpoint_scheme or '(none)'}' "
+                    "for connectivity probe"
+                )
+            health_url = endpoint.rstrip("/") + "/health"
+            req = urllib.request.Request(health_url, method="HEAD")
+            req.add_header("User-Agent", "AgentV-Preflight/2.0")
+            with urllib.request.urlopen(req, timeout=3) as resp:  # nosec B310 - scheme allowlisted above
+                probe_ok = resp.status < 600
+                probe_msg = f"HTTP {resp.status}"
+        except urllib.error.HTTPError as he:
+            # 4xx/5xx still means the server is reachable
+            probe_ok = True
+            probe_msg = f"HTTP {he.code} (server reachable)"
+        except (urllib.error.URLError, OSError, TimeoutError) as ue:
+            probe_ok = False
+            probe_msg = str(ue)
+        latency_ms = int((_time.monotonic() - t0) * 1000)
+
+        if probe_ok:
+            agent_check.update(
+                {
+                    "status": "PASSED",
+                    "tier": "REACHABLE",
+                    "message": f"Endpoint '{endpoint}' reachable ({probe_msg}). Protocol: {proto}.",
+                    "latency_ms": latency_ms,
+                }
+            )
+        else:
+            agent_check.update(
+                {
+                    "status": "WARNING",
+                    "tier": "CONFIGURED",
+                    "message": (
+                        f"Endpoint '{endpoint}' not reachable ({probe_msg}). "
+                        "Protocol configured; start the agent server to enable execution."
+                    ),
+                    "latency_ms": latency_ms,
+                }
+            )
+    else:
+        agent_check.update(
             {
-                "name": "Agent Protocol & Config",
-                "status": "PASSED",
-                "message": f"Targeting protocol '{proto}' at {endpoint}",
-                "target_status": "CONFIGURED",
+                "status": "WARNING",
+                "tier": "CONFIGURED",
+                "message": (
+                    f"Custom protocol '{proto}' specified. "
+                    "Ensure the custom adapter handler is installed."
+                ),
             }
         )
 
+    checks.append(agent_check)
+
+    # 3. Simulator Registry — truthful per-simulator health
+    sim_registry = get_simulator_registry()
+    sim_count = len(sim_registry)
+    sim_healthy = 0
+    sim_failed_names: list[str] = []
+    for sim_name, sim_obj in sim_registry.items() if isinstance(sim_registry, dict) else []:
+        try:
+            ping = getattr(sim_obj, "health_check", None) or getattr(sim_obj, "ping", None)
+            if callable(ping):
+                ping()
+            sim_healthy += 1
+        except Exception as sim_err:
+            sim_failed_names.append(f"{sim_name}: {sim_err}")
+    if not isinstance(sim_registry, dict):
+        # Registry returned a non-dict (e.g. list/count) — report truthfully
+        sim_healthy = sim_count
+
+    if sim_count == 0:
+        checks.append(
+            {
+                "name": "Simulator Environment",
+                "status": "WARNING",
+                "tier": "CONFIGURED",
+                "message": "No domain simulators registered. Stateless evaluation only.",
+            }
+        )
+    elif sim_failed_names:
+        checks.append(
+            {
+                "name": "Simulator Environment",
+                "status": "WARNING",
+                "tier": "CONFIGURED",
+                "message": (
+                    f"{sim_healthy}/{sim_count} simulators healthy. "
+                    f"Failed: {'; '.join(sim_failed_names[:3])}"
+                ),
+            }
+        )
     else:
         checks.append(
             {
-                "name": "Agent Protocol & Config",
-                "status": "WARNING",
-                "message": (
-                    f"Custom protocol '{proto}' specified "
-                    "(ensure custom adapter handler is installed)."
-                ),
-                "target_status": "CUSTOM",
+                "name": "Simulator Environment",
+                "status": "PASSED",
+                "tier": "EXECUTABLE",
+                "message": f"{sim_count} domain simulators registered and healthy.",
             }
         )
 
-    # 3. Simulator Registry
-    sim_count = len(get_simulator_registry())
-    checks.append(
-        {
-            "name": "Simulator Environment",
-            "status": "PASSED",
-            "message": f"{sim_count} active domain simulators registered and ready.",
-        }
-    )
-
-    # 4. Signing Backend & Vault (Truthful distinction between persistent and ephemeral keys)
+    # 4. Signing Backend & Vault
     signing_key = getattr(config, "SIGNING_KEY", None)
     if signing_key:
         key_snippet = str(signing_key)[:12]
@@ -353,16 +559,17 @@ def check_execution_readiness():
             {
                 "name": "Cryptographic Sealer",
                 "status": "PASSED",
+                "tier": "VERIFIABLE",
                 "signer_type": "SIGNED",
-                "message": f"Configured persistent Ed25519 signer active ({key_snippet}...)",
+                "message": f"Configured persistent Ed25519 signer active ({key_snippet}...).",
             }
         )
-
     else:
         checks.append(
             {
                 "name": "Cryptographic Sealer",
                 "status": "WARNING",
+                "tier": "EXECUTABLE",
                 "signer_type": "EPHEMERAL",
                 "message": (
                     "Ephemeral in-memory Ed25519 sealer active (non-production mode; "
@@ -374,19 +581,35 @@ def check_execution_readiness():
     # 5. Artifact Store Destination
     runs_dir = config.RUN_LOG_DIR
     if runs_dir.exists():
-        checks.append(
-            {
-                "name": "Artifact Store Destination",
-                "status": "PASSED",
-                "message": f"Runs storage ready at {runs_dir.name}/",
-            }
-        )
+        # Writable check
+        try:
+            probe_file = runs_dir / ".preflight_probe"
+            probe_file.write_text("probe", encoding="utf-8")
+            probe_file.unlink()
+            checks.append(
+                {
+                    "name": "Artifact Store",
+                    "status": "PASSED",
+                    "tier": "EXECUTABLE",
+                    "message": f"Artifact store writable at {runs_dir.name}/.",
+                }
+            )
+        except OSError as ose:
+            checks.append(
+                {
+                    "name": "Artifact Store",
+                    "status": "FAILED",
+                    "tier": "CONFIGURED",
+                    "message": f"Artifact store not writable: {ose}",
+                }
+            )
     else:
         checks.append(
             {
-                "name": "Artifact Store Destination",
+                "name": "Artifact Store",
                 "status": "FAILED",
-                "message": "Runs storage directory unavailable.",
+                "tier": "CONFIGURED",
+                "message": "Runs storage directory does not exist.",
             }
         )
 
@@ -572,15 +795,47 @@ def transition_scenario_lifecycle(scenario_id):
         ), 400
 
     previous_status = meta.get("status", "Draft")
+
+    # Enforce legal transition adjacency matrix
+    legal_next = LEGAL_TRANSITIONS.get(previous_status, set())
+    if target_status not in legal_next:
+        return jsonify(
+            {
+                "error": (
+                    f"Illegal lifecycle transition: '{previous_status}' → '{target_status}'. "
+                    f"Legal next states from '{previous_status}': "
+                    f"{sorted(legal_next) if legal_next else ['(none — terminal state)']}"
+                ),
+                "current_status": previous_status,
+                "requested_status": target_status,
+                "legal_transitions": sorted(legal_next),
+            }
+        ), 400
+
+    # Require explicit reason for sensitive regressions and deprecations
+    reason = data.get("reason", "").strip()
+    if (previous_status, target_status) in TRANSITION_REQUIRES_REASON and not reason:
+        return jsonify(
+            {
+                "error": (
+                    f"Transition '{previous_status}' → '{target_status}' requires "
+                    "a non-empty 'reason' field for audit traceability."
+                )
+            }
+        ), 400
+
+    import uuid as _uuid
+
     meta["status"] = target_status
     meta["transition_history"] = meta.get("transition_history") or []
     meta["transition_history"].append(
         {
+            "revision_id": str(_uuid.uuid4()),
             "from": previous_status,
             "to": target_status,
             "timestamp": datetime.now(UTC).isoformat(),
             "actor": request.headers.get("X-User-Id", "system"),
-            "reason": data.get("reason", "Lifecycle transition requested"),
+            "reason": reason or "Lifecycle transition requested",
         }
     )
     meta["content_hash"] = compute_scenario_hash(scen_data)

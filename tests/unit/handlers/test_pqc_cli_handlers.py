@@ -100,6 +100,11 @@ async def test_handle_verify_pqc(pqc_env, monkeypatch):
         str(pqc_env["trace_path"]), run_id=pqc_env["run_id"], identity_id=identity_id
     )
 
+    # The transactional certification pipeline already consulted the PQC
+    # client during its self-verification stage. Reset so this test asserts
+    # only on the handler's own verification pass.
+    mock_client.verify_digest.reset_mock()
+
     # 2. Execute Verify
     args = Namespace(run_id=pqc_env["run_id"], pqc=True)
     result = await evaluation.handle_verify(args)
@@ -125,6 +130,9 @@ async def test_handle_gate_pqc(pqc_env, monkeypatch):
     TraceVerifier.sign_trace(
         str(pqc_env["trace_path"]), run_id=pqc_env["run_id"], identity_id=identity_id
     )
+
+    # Reset pipeline self-verification calls (see test_handle_verify_pqc).
+    mock_client.verify_digest.reset_mock()
 
     # 2. Execute Gate
     args = Namespace(run_id=pqc_env["run_id"], hash=None, verify_ledger=True, pqc=True)

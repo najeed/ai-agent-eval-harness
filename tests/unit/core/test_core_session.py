@@ -94,7 +94,7 @@ async def test_session_execute_tasks_cycle_error(base_scenario, tmp_path):
     base_scenario["workflow"]["nodes"].append({"id": "node_2"})
     base_scenario["workflow"]["edges"] = [
         {"from": "node_1", "to": "node_2"},
-        {"from": "node_2", "to": "node_1"},  # cycle
+        {"from": "node_2", "to": "node_1"},  # pure cycle: no terminal node
     ]
 
     session = SessionManager("test_run_456", base_scenario, log_root=tmp_path)
@@ -102,7 +102,9 @@ async def test_session_execute_tasks_cycle_error(base_scenario, tmp_path):
     results = await session.execute_tasks(1)
     assert len(results) > 0
     assert results[-1]["status"] == "failure"
-    assert "Cyclic dependencies detected" in results[-1]["message"]
+    # A pure cycle has no terminal state; the IR compiler rejects it.
+    assert "Invalid workflow plan" in results[-1]["message"]
+    assert results[-1].get("triage_tag") == "EVALUATION_INVALID"
 
 
 @pytest.mark.asyncio
@@ -113,7 +115,9 @@ async def test_session_execute_tasks_empty_topology(base_scenario, tmp_path):
     results = await session.execute_tasks(1)
     assert len(results) > 0
     assert results[-1]["status"] == "failure"
-    assert "Empty Topology" in results[-1]["message"]
+    # Empty topology is an invalid evaluation, never a silent pass.
+    assert "no executable nodes" in results[-1]["message"]
+    assert results[-1].get("triage_tag") == "EVALUATION_INVALID"
 
 
 # --- Turn Handlers (Tools and Hitl) ---
@@ -278,8 +282,10 @@ async def test_verify_state_parity_success(base_scenario, tmp_path):
 
     history = [{"role": "agent", "content": "ok"}]
 
-    result = await session._verify_state_parity(node, mock_sandbox, history)
+    result, evidence = await session._verify_state_parity(node, mock_sandbox, history)
     assert result is True
+    assert len(evidence) == 3
+    assert all(row["passed"] for row in evidence)
 
 
 @pytest.mark.asyncio
@@ -291,9 +297,10 @@ async def test_verify_state_parity_timeout(base_scenario, tmp_path):
     history = [{"role": "agent", "content": "wrong"}]
 
     with patch("asyncio.sleep", new_callable=AsyncMock):
-        result = await session._verify_state_parity(node, mock_sandbox, history)
+        result, evidence = await session._verify_state_parity(node, mock_sandbox, history)
 
     assert result is False
+    assert all(not row["passed"] for row in evidence)
 
 
 @pytest.mark.asyncio
@@ -303,8 +310,9 @@ async def test_verify_state_parity_unsupported_target(base_scenario, tmp_path):
     mock_sandbox = AsyncMock()
     mock_sandbox.get_active_simulators = MagicMock(return_value={})
 
-    result = await session._verify_state_parity(node, mock_sandbox, [])
+    result, evidence = await session._verify_state_parity(node, mock_sandbox, [])
     assert result is False
+    assert evidence and evidence[0].get("error")
 
 
 # --- Agent Error Handling ---
@@ -368,7 +376,7 @@ async def test_session_state_parity_regex_numerical(base_scenario, tmp_path):
     mock_sandbox.get_full_state.return_value = {"val": "123", "num": 1.0000000001}
     history = [{"role": "agent", "content": "testing 123"}]
 
-    result = await session._verify_state_parity(node, mock_sandbox, history)
+    result, _evidence = await session._verify_state_parity(node, mock_sandbox, history)
     assert result is True
 
 
@@ -630,7 +638,12 @@ async def test_metrics_dispatch_error_and_skip(base_scenario, tmp_path):
 
     with patch("eval_runner.metrics.MetricRegistry.get", side_effect=mock_get):
         res = await session._calculate_metrics(node, 1, 1, [], AsyncMock(), {"used_tools": []})
-        assert len(res["metrics"]) == 0
+        # Strict assertion semantics: unknown metrics and evaluator
+        # exceptions produce EVALUATION_INVALID rows, never silent skips.
+        assert len(res["metrics"]) == 2
+        assert all(m["status"] == "EVALUATION_INVALID" for m in res["metrics"])
+        assert res["evaluation_valid"] is False
+        assert res["triage_tag"] == "EVALUATION_INVALID"
 
 
 def test_sanitize_history_type_error(base_scenario, tmp_path):
@@ -792,14 +805,13 @@ async def test_session_execute_tasks_missing_node(base_scenario, tmp_path):
     base_scenario["workflow"]["edges"] = [{"from": "node_1", "to": "node_missing"}]
     session = SessionManager("test_run", base_scenario, log_root=tmp_path)
     session.scenario["workflow"]["nodes"][0]["expected_outcome"] = []
-    with patch(
-        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
-    ) as mock_agent:
-        mock_agent.return_value = {"action": "completed"}
-        with patch.object(session, "_calculate_metrics", new_callable=AsyncMock) as mock_calc:
-            mock_calc.return_value = {"status": "success", "metrics": []}
-            res = await session.execute_tasks(1)
-            assert len(res) == 2
+    # Dangling edges are an invalid control-flow contract: the IR
+    # compiler rejects the plan fail-fast instead of executing phantom nodes.
+    res = await session.execute_tasks(1)
+    assert len(res) == 1
+    assert res[0]["status"] == "failure"
+    assert "unknown target node" in res[0]["message"]
+    assert res[0].get("triage_tag") == "EVALUATION_INVALID"
 
 
 @pytest.mark.asyncio
@@ -851,7 +863,7 @@ async def test_verify_state_parity_shim_path_variants(base_scenario, tmp_path):
     mock_sandbox.get_active_simulators.return_value["db"].get_snapshot = AsyncMock(
         return_value={"sub": {"val": "ok"}, "val": "ok"}
     )
-    result = await session._verify_state_parity(node, mock_sandbox, [])
+    result, _evidence = await session._verify_state_parity(node, mock_sandbox, [])
     assert result is True
 
 
@@ -874,7 +886,8 @@ async def test_verify_state_parity_contains_and_tolerance(base_scenario, tmp_pat
         ],
         "timeout": 0.1,
     }
-    assert await session._verify_state_parity(node, mock_sandbox, []) is True
+    passed, _ = await session._verify_state_parity(node, mock_sandbox, [])
+    assert passed is True
 
     # Contains str
     node = {
@@ -883,7 +896,8 @@ async def test_verify_state_parity_contains_and_tolerance(base_scenario, tmp_pat
         ],
         "timeout": 0.1,
     }
-    assert await session._verify_state_parity(node, mock_sandbox, []) is True
+    passed, _ = await session._verify_state_parity(node, mock_sandbox, [])
+    assert passed is True
 
     # Numerical tolerance exception branch
     node = {
@@ -892,7 +906,8 @@ async def test_verify_state_parity_contains_and_tolerance(base_scenario, tmp_pat
         ],
         "timeout": 0.1,
     }
-    assert await session._verify_state_parity(node, mock_sandbox, []) is False
+    passed, _ = await session._verify_state_parity(node, mock_sandbox, [])
+    assert passed is False
 
 
 @pytest.mark.asyncio

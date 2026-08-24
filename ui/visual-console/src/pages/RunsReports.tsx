@@ -135,21 +135,19 @@ export const RunsReports: React.FC = () => {
               <div className="flex bg-slate-950 border border-slate-800 rounded-lg p-1">
                 <button
                   onClick={() => setViewMode('history')}
-                  className={`px-3 py-1.5 rounded-md text-xs font-semibold transition ${
-                    activeView === 'history'
+                  className={`px-3 py-1.5 rounded-md text-xs font-semibold transition ${activeView === 'history'
                       ? 'bg-slate-800 text-white shadow-sm'
                       : 'text-slate-400 hover:text-slate-200'
-                  }`}
+                    }`}
                 >
                   Active & History
                 </button>
                 <button
                   onClick={() => setViewMode('packages')}
-                  className={`px-3 py-1.5 rounded-md text-xs font-semibold transition ${
-                    activeView === 'packages'
+                  className={`px-3 py-1.5 rounded-md text-xs font-semibold transition ${activeView === 'packages'
                       ? 'bg-indigo-600 text-white shadow-sm'
                       : 'text-slate-400 hover:text-slate-200'
-                  }`}
+                    }`}
                 >
                   Evidence Packages
                 </button>
@@ -190,11 +188,10 @@ export const RunsReports: React.FC = () => {
                 <button
                   key={st.key}
                   onClick={() => setStatusFilter(st.key)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                    statusFilter === st.key
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${statusFilter === st.key
                       ? 'bg-indigo-600 text-white shadow-sm'
                       : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
-                  }`}
+                    }`}
                 >
                   {st.label}
                 </button>
@@ -238,15 +235,14 @@ export const RunsReports: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
-                            className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5 ${
-                              isVer
+                            className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5 ${isVer
                                 ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
                                 : isBreach
                                   ? 'bg-rose-500/10 border border-rose-500/20 text-rose-400'
                                   : isFailed
                                     ? 'bg-red-500/10 border border-red-500/20 text-red-400'
                                     : 'bg-amber-500/10 border border-amber-500/20 text-amber-400'
-                            }`}
+                              }`}
                           >
                             {isVer ? <ShieldCheck className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}
                             {verdictLabel}
@@ -262,7 +258,7 @@ export const RunsReports: React.FC = () => {
                               className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition"
                             >
                               <Eye className="w-3.5 h-3.5 text-indigo-400" />
-                              Inspect 7-Tab Detail
+                              Inspect Detail
                             </button>
                             <a
                               href={`/api/v1/evidence/packages/${r.run_id}?download=true`}

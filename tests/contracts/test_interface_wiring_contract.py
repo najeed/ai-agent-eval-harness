@@ -330,11 +330,18 @@ def test_flight_recorder_artifact_store_wiring(tmp_path):
 def test_verifier_artifact_store_wiring(tmp_path, monkeypatch):
     """
     Contract Test: TraceVerifier.sign_trace invokes ArtifactStore.store_artifact
-    to persist the sidecar manifest.
+    to persist the sidecar manifest and ArtifactStore.seal to immutabilize the
+    vault — via the transactional certification pipeline.
     """
     from eval_runner import config
+    from eval_runner.identity import IdentityService
 
     monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path)
+    monkeypatch.setattr(config, "REPORTS_DIR", tmp_path / "reports")
+    trust_root = tmp_path / ".aes" / "keys"
+    monkeypatch.setattr(config, "TRUST_ROOT", trust_root)
+    IdentityService._provision_local_identity("system_id")
+
     run_dir = tmp_path / "run-ver-art-001"
     run_dir.mkdir()
     trace_path = run_dir / "run.jsonl"
@@ -345,7 +352,7 @@ def test_verifier_artifact_store_wiring(tmp_path, monkeypatch):
     )
 
     mock_store = MagicMock(spec=LocalFileArtifactStore)
-    TraceVerifier.sign_trace(
+    manifest = TraceVerifier.sign_trace(
         str(trace_path),
         run_id="run-ver-art-001",
         artifact_store=mock_store,
@@ -355,6 +362,10 @@ def test_verifier_artifact_store_wiring(tmp_path, monkeypatch):
     call_args = mock_store.store_artifact.call_args[1]
     assert call_args["run_id"] == "run-ver-art-001"
     assert call_args["artifact_name"] == "run_manifest.json"
+
+    # Transactional pipeline: sealing is part of the guaranteed wiring.
+    assert mock_store.seal.called
+    assert manifest["certification"]["outcome"] == "CERTIFIED"
 
 
 # ==============================================================================

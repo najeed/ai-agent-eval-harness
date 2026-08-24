@@ -481,9 +481,12 @@ async def test_metric_dispatch_failure_mode(dispatch_session, capsys):
     results = await dispatch_session._calculate_metrics(
         node, 1, 1, [], _MockSandbox(), {"used_tools": []}
     )
-    assert len(results["metrics"]) == 0
-    captured = capsys.readouterr()
-    assert "missing 1 required positional argument: 'impossible_param'" in captured.out
+    # Evaluator exceptions produce an EVALUATION_INVALID row
+    # instead of silently disappearing.
+    assert len(results["metrics"]) == 1
+    assert results["metrics"][0]["status"] == "EVALUATION_INVALID"
+    assert "impossible_param" in results["metrics"][0]["reason"]
+    assert results["evaluation_valid"] is False
 
 
 @pytest.mark.asyncio

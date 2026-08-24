@@ -164,8 +164,17 @@ def test_run_verify_api_endpoint(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "runs")
     (tmp_path / "runs").mkdir(parents=True, exist_ok=True)
 
-    with patch("eval_runner.console.auth_manager.require_permission", lambda _: lambda f: f):
-        client = app.test_client()
+    client = app.test_client()
+    # Deterministic auth bypass: stub the runtime provider (the decorator
+    # resolves get_auth_provider at request time, unlike import-time factories).
+    with client.session_transaction() as sess:
+        sess["user"] = {"id": "tester", "roles": ["admin"]}
+    with patch("eval_runner.console.auth_manager.get_auth_provider") as get_provider:
+        provider = MagicMock()
+        provider.has_permission.return_value = True
+        provider.verify_token.return_value = None
+        provider.authenticate.return_value = None
+        get_provider.return_value = provider
 
         # 1. 404 for missing run
         res = client.get("/api/v1/runs/missing_run_id/verify")
@@ -233,8 +242,13 @@ def test_scenario_validation_and_concurrency(tmp_path, monkeypatch):
     app.register_blueprint(scenario_bp, url_prefix="/api")
     monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
 
-    with patch("eval_runner.console.auth_manager.require_permission", lambda _: lambda f: f):
-        client = app.test_client()
+    client = app.test_client()
+    with client.session_transaction() as sess:
+        sess["user"] = {"id": "tester", "roles": ["admin"]}
+    with patch("eval_runner.console.auth_manager.get_auth_provider") as get_provider:
+        provider = MagicMock()
+        provider.has_permission.return_value = True
+        get_provider.return_value = provider
         res_readiness = client.post(
             "/api/scenarios/readiness",
             json={

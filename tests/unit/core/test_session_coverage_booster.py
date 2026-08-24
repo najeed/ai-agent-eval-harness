@@ -111,7 +111,7 @@ async def test_session_state_parity_exhaustive(base_scenario, tmp_path):
     mock_sandbox.get_active_simulators.return_value = {"db": mock_db}
     mock_sandbox.get_full_state = AsyncMock(return_value={"n": 2.0})
 
-    res = await session._verify_state_parity(
+    res, _ev = await session._verify_state_parity(
         node, mock_sandbox, [{"role": "agent", "content": "not_missing"}]
     )
     assert res is False
@@ -131,7 +131,7 @@ async def test_session_state_parity_regex_numerical(base_scenario, tmp_path):
     mock_sandbox.get_active_simulators.return_value = {}
     mock_sandbox.get_full_state = AsyncMock(return_value={"s": "hello world", "v": 1.000000000001})
 
-    res = await session._verify_state_parity(node, mock_sandbox, [])
+    res, _ev = await session._verify_state_parity(node, mock_sandbox, [])
     assert res is True
 
 
@@ -145,11 +145,11 @@ async def test_session_contains_assertion_list(base_scenario, tmp_path):
     mock_sandbox = MagicMock()
     mock_sandbox.get_active_simulators.return_value = {}
 
-    res = await session._verify_state_parity(
+    res, _ev = await session._verify_state_parity(
         node, mock_sandbox, [{"role": "agent", "content": "alpha"}]
     )
     assert res is True
-    res = await session._verify_state_parity(
+    res, _ev = await session._verify_state_parity(
         node, mock_sandbox, [{"role": "agent", "content": "zzz"}]
     )
     assert res is False

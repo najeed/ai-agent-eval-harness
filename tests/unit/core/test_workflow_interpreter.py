@@ -1,0 +1,536 @@
+"""
+Unit tests for the Canonical Execution IR + Workflow Interpreter.
+
+Covers the P0 kernel contract:
+  - real ready-set scheduling (not topological linearization)
+  - typed edge selection with evaluated-predicate evidence
+  - bounded loops, join convergence, parallel fan-out
+  - NODE_FAILED != WORKFLOW_FAILED under graph failure policies
+"""
+
+from __future__ import annotations
+
+import pytest
+
+from eval_runner.execution_ir import (
+    EdgeType,
+    ExecutionIdentity,
+    PlanValidationError,
+    compile_workflow,
+    evaluate_predicate,
+)
+from eval_runner.workflow_interpreter import WorkflowInterpreter
+
+
+def _identity(attempt_number: int = 1) -> ExecutionIdentity:
+    return ExecutionIdentity(
+        evaluation_run_id="run-test",
+        scenario_version_id="sha256:test",
+        case_id="case",
+        attempt_id="att123",
+        attempt_number=attempt_number,
+    )
+
+
+def _plan(scenario: dict):
+    return compile_workflow(scenario)
+
+
+async def _run(plan, executor, state=None, failure_policy=None):
+    async def ctx_provider():
+        return {"state": state or {}}
+
+    interp = WorkflowInterpreter(
+        plan,
+        _identity(),
+        event_bus=None,
+        context_provider=ctx_provider,
+    )
+    return await interp.run(executor)
+
+
+# ---------------------------------------------------------------------------
+# IR compilation
+# ---------------------------------------------------------------------------
+
+
+def test_compile_rejects_unknown_edge_type():
+    with pytest.raises(PlanValidationError, match="Unknown edge type"):
+        compile_workflow(
+            {
+                "workflow": {
+                    "nodes": [{"id": "a"}, {"id": "b"}],
+                    "edges": [{"from": "a", "to": "b", "type": "teleport"}],
+                }
+            }
+        )
+
+
+def test_compile_rejects_dangling_edge():
+    with pytest.raises(PlanValidationError, match="unknown source node"):
+        compile_workflow(
+            {
+                "workflow": {
+                    "nodes": [{"id": "a"}],
+                    "edges": [{"from": "ghost", "to": "a"}],
+                }
+            }
+        )
+
+
+def test_compile_legacy_list_form_becomes_explicit_chain():
+    plan = compile_workflow({"workflow": [{"id": "a"}, {"id": "b"}, {"id": "c"}]})
+    assert plan.legacy_linearized
+    assert [e.from_node for e in plan.edges] == ["a", "b"]
+    assert [e.to_node for e in plan.edges] == ["b", "c"]
+
+
+def test_conditional_edge_without_predicate_is_invalid():
+    with pytest.raises(PlanValidationError, match="requires a predicate"):
+        compile_workflow(
+            {
+                "workflow": {
+                    "nodes": [{"id": "a"}, {"id": "b"}],
+                    "edges": [{"from": "a", "to": "b", "type": "condition"}],
+                }
+            }
+        )
+
+
+def test_predicate_evaluation_operators():
+    from eval_runner.execution_ir import PredicateIR
+
+    ctx = {"state": {"order": {"status": "approved"}, "n": 3}, "tools_used": ["t1"]}
+    assert evaluate_predicate(_p("eq", "state.order.status", "approved"), ctx)[0] is True
+    assert evaluate_predicate(_p("ne", "state.order.status", "denied"), ctx)[0] is True
+    assert evaluate_predicate(_p("gte", "state.n", 3), ctx)[0] is True
+    assert evaluate_predicate(_p("contains", "tools_used", "t1"), ctx)[0] is True
+    compound = PredicateIR(
+        op="compound",
+        logic="all",
+        clauses=(
+            _p("eq", "state.order.status", "approved"),
+            _p("lt", "state.n", 2),
+        ),
+    )
+    passed, observed = evaluate_predicate(compound, ctx)
+    assert passed is False
+    assert isinstance(observed, list)
+    any_compound = PredicateIR(op="compound", logic="any", clauses=compound.clauses)
+    passed_any, _ = evaluate_predicate(any_compound, ctx)
+    assert passed_any is True
+
+
+def _p(op, path, value):
+    from eval_runner.execution_ir import PredicateIR
+
+    return PredicateIR(op=op, path=path, value=value)
+
+
+# ---------------------------------------------------------------------------
+# Branch selection + evidence
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_condition_edge_selected_with_predicate_evidence():
+    scenario = {
+        "workflow": {
+            "nodes": [{"id": "a"}, {"id": "b"}, {"id": "c"}],
+            "edges": [
+                {
+                    "id": "e_ab",
+                    "from": "a",
+                    "to": "b",
+                    "type": "condition",
+                    "condition": {"op": "eq", "path": "state.flag", "value": True},
+                },
+                {"id": "e_ac", "from": "a", "to": "c", "type": "default"},
+            ],
+        }
+    }
+    plan = _plan(scenario)
+
+    async def executor(node_ir, exec_id, parent):
+        return {"task_id": node_ir.node_id, "status": "success"}
+
+    results, outcome = await _run(plan, executor, state={"flag": True})
+
+    assert outcome.success
+    executed = [r["task_id"] for r in results]
+    assert executed == ["a", "b"]  # branch c NOT taken
+    t = outcome.transitions[0]
+    assert t.selected_edge_id == "e_ab"
+    assert t.edge_type == EdgeType.CONDITION.value
+    assert t.transition_reason == "predicate_matched"
+    assert t.evaluated_predicate == {"op": "eq", "path": "state.flag", "value": True}
+    assert outcome.skipped_node_ids == ["c"]
+
+
+@pytest.mark.asyncio
+async def test_default_edge_fallback_when_no_condition_matches():
+    scenario = {
+        "workflow": {
+            "nodes": [{"id": "a"}, {"id": "b"}, {"id": "c"}],
+            "edges": [
+                {
+                    "from": "a",
+                    "to": "b",
+                    "type": "condition",
+                    "condition": {"op": "exists", "path": "state.missing_key"},
+                },
+                {"id": "e_def", "from": "a", "to": "c", "type": "default"},
+            ],
+        }
+    }
+    plan = _plan(scenario)
+
+    async def executor(node_ir, exec_id, parent):
+        return {"task_id": node_ir.node_id, "status": "success"}
+
+    results, outcome = await _run(plan, executor, state={})
+    assert outcome.success
+    assert [r["task_id"] for r in results] == ["a", "c"]
+    assert outcome.transitions[0].transition_reason == "default_fallback"
+    assert outcome.transitions[0].selected_edge_id == "e_def"
+
+
+# ---------------------------------------------------------------------------
+# Loops / retries / joins / parallelism
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_loop_edge_is_bounded_and_terminates():
+    scenario = {
+        "workflow": {
+            "nodes": [
+                {"id": "poll", "max_visitations": 4},
+                {"id": "done"},
+            ],
+            "edges": [
+                {
+                    "from": "poll",
+                    "to": "poll",
+                    "type": "retry",
+                    "condition": {"op": "lt", "path": "state.count", "value": 2},
+                },
+                {
+                    "from": "poll",
+                    "to": "done",
+                    "type": "condition",
+                    "condition": {"op": "gte", "path": "state.count", "value": 2},
+                },
+            ],
+        }
+    }
+    plan = _plan(scenario)
+
+    shared_state = {"count": 0}
+
+    async def executor(node_ir, exec_id, parent):
+        if node_ir.node_id == "poll":
+            shared_state["count"] += 1
+        return {"task_id": node_ir.node_id, "status": "success"}
+
+    results, outcome = await _run(plan, executor, state=shared_state)
+
+    assert outcome.success
+    poll_runs = [r for r in results if r["task_id"] == "poll"]
+    assert len(poll_runs) == 2  # count reaches 2 on second run -> exits to done
+    loop_transitions = [t for t in outcome.transitions if t.transition_reason == "loop_iteration"]
+    exit_transitions = [
+        t
+        for t in outcome.transitions
+        if t.transition_reason == "predicate_matched" and t.selected_edge_id.endswith("->done")
+    ]
+    assert len(loop_transitions) == 1
+    assert len(exit_transitions) >= 1
+
+
+@pytest.mark.asyncio
+async def test_join_waits_for_all_incoming_branches():
+    scenario = {
+        "workflow": {
+            "nodes": [{"id": "a"}, {"id": "b"}, {"id": "c"}, {"id": "d"}],
+            "edges": [
+                {"from": "a", "to": "b", "type": "parallel"},
+                {"from": "a", "to": "c", "type": "parallel"},
+                {"from": "b", "to": "d"},
+                {"from": "c", "to": "d"},
+            ],
+        }
+    }
+    plan = _plan(scenario)
+    order: list[str] = []
+
+    async def executor(node_ir, exec_id, parent):
+        order.append(f"{node_ir.node_id}:{exec_id}")
+        return {"task_id": node_ir.node_id, "status": "success"}
+
+    results, outcome = await _run(plan, executor)
+
+    assert outcome.success
+    d_runs = [r for r in results if r["task_id"] == "d"]
+    assert len(d_runs) == 1  # AND-join: executes once after both branches
+    names = [o.split(":")[0] for o in order]
+    assert names.index("d") > names.index("b")
+    assert names.index("d") > names.index("c")
+    join_edges = [t for t in outcome.transitions if t.edge_type == EdgeType.PARALLEL.value]
+    assert len(join_edges) == 2
+
+
+@pytest.mark.asyncio
+async def test_parallel_fanout_executes_both_branches():
+    scenario = {
+        "workflow": {
+            "nodes": [{"id": "root"}, {"id": "l"}, {"id": "r"}],
+            "edges": [
+                {"from": "root", "to": "l", "type": "parallel"},
+                {"from": "root", "to": "r", "type": "parallel"},
+            ],
+        }
+    }
+    plan = _plan(scenario)
+
+    async def executor(node_ir, exec_id, parent):
+        return {"task_id": node_ir.node_id, "status": "success"}
+
+    results, outcome = await _run(plan, executor)
+    assert sorted(r["task_id"] for r in results) == ["l", "r", "root"]
+    fanout = [t for t in outcome.transitions if t.transition_reason == "parallel_fanout"]
+    assert len(fanout) == 2
+
+
+# ---------------------------------------------------------------------------
+# Failure semantics: NODE_FAILED != WORKFLOW_FAILED
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_error_handler_edge_prevents_workflow_failure():
+    scenario = {
+        "workflow": {
+            "nodes": [{"id": "risky"}, {"id": "handler"}, {"id": "finalize"}],
+            "edges": [
+                {"id": "e_rh", "from": "risky", "to": "handler", "type": "error"},
+                {"from": "handler", "to": "finalize"},
+            ],
+        },
+        "failure_policy": "fail_fast",
+    }
+    plan = _plan(scenario)
+
+    async def executor(node_ir, exec_id, parent):
+        status = "failure" if node_ir.node_id == "risky" else "success"
+        return {"task_id": node_ir.node_id, "status": status}
+
+    results, outcome = await _run(plan, executor)
+
+    # Node failed, but the graph routed through the error handler to a terminal.
+    assert "risky" in outcome.failed_node_ids
+    assert outcome.status.name.startswith("COMPLETED") or outcome.success
+    executed = [r["task_id"] for r in results]
+    assert executed == ["risky", "handler", "finalize"]
+    err_edge = outcome.transitions[0]
+    assert err_edge.edge_type == EdgeType.ERROR.value
+    assert err_edge.transition_reason == "error_handler"
+
+
+@pytest.mark.asyncio
+async def test_unhandled_failure_under_fail_fast_stops_workflow():
+    scenario = {
+        "failure_policy": "fail_fast",
+        "workflow": {
+            "nodes": [{"id": "boom"}, {"id": "never"}],
+            "edges": [{"from": "boom", "to": "never"}],
+        },
+    }
+    plan = _plan(scenario)
+
+    async def executor(node_ir, exec_id, parent):
+        status = "failure" if node_ir.node_id == "boom" else "success"
+        return {"task_id": node_ir.node_id, "status": status}
+
+    results, outcome = await _run(plan, executor)
+    assert not outcome.success
+    assert outcome.status.value == "workflow_failed"
+    assert "boom" in outcome.failed_node_ids
+    assert [r["task_id"] for r in results] == ["boom"]  # never never ran
+
+
+@pytest.mark.asyncio
+async def test_continue_independent_policy_executes_sibling_branch():
+    scenario = {
+        "failure_policy": "continue_independent",
+        "workflow": {
+            "nodes": [{"id": "root"}, {"id": "boom"}, {"id": "sibling"}],
+            "edges": [
+                {"from": "root", "to": "boom", "type": "parallel"},
+                {"from": "root", "to": "sibling", "type": "parallel"},
+            ],
+        },
+    }
+    plan = _plan(scenario)
+
+    async def executor(node_ir, exec_id, parent):
+        status = "failure" if node_ir.node_id == "boom" else "success"
+        return {"task_id": node_ir.node_id, "status": status}
+
+    results, outcome = await _run(plan, executor)
+    executed = [r["task_id"] for r in results]
+    assert "sibling" in executed  # independent sibling branch still executed
+    assert not outcome.success  # but unhandled failure fails the verdict
+    assert outcome.failed_node_ids == ["boom"]
+
+
+@pytest.mark.asyncio
+async def test_fail_fast_policy_halts_sibling_branches():
+    scenario = {
+        "failure_policy": "fail_fast",
+        "workflow": {
+            "nodes": [{"id": "root"}, {"id": "boom"}, {"id": "sibling"}],
+            "edges": [
+                {"from": "root", "to": "boom", "type": "parallel"},
+                {"from": "root", "to": "sibling", "type": "parallel"},
+            ],
+        },
+    }
+    plan = _plan(scenario)
+
+    async def executor(node_ir, exec_id, parent):
+        status = "failure" if node_ir.node_id == "boom" else "success"
+        return {"task_id": node_ir.node_id, "status": status}
+
+    results, outcome = await _run(plan, executor)
+    executed = [r["task_id"] for r in results]
+    assert "sibling" not in executed  # halted before sibling ran
+    assert not outcome.success
+    assert outcome.failed_node_ids == ["boom"]
+
+
+@pytest.mark.asyncio
+async def test_retry_edge_on_failure_until_success():
+    scenario = {
+        "workflow": {
+            "nodes": [{"id": "flaky", "max_visitations": 5}],
+            "edges": [
+                {"id": "e_self", "from": "flaky", "to": "flaky", "type": "retry"},
+            ],
+        }
+    }
+    plan = _plan(scenario)
+    calls = {"n": 0}
+
+    async def executor(node_ir, exec_id, parent):
+        calls["n"] += 1
+        status = "success" if calls["n"] >= 3 else "failure"
+        return {"task_id": node_ir.node_id, "status": status}
+
+    results, outcome = await _run(plan, executor)
+    assert calls["n"] == 3
+    retry_transitions = [t for t in outcome.transitions if t.transition_reason == "retry"]
+    assert len(retry_transitions) == 2
+    assert outcome.success
+
+
+@pytest.mark.asyncio
+async def test_compensation_then_fail_runs_compensation_target():
+    scenario = {
+        "failure_policy": "compensate_then_fail",
+        "workflow": {
+            "nodes": [{"id": "charge"}, {"id": "refund"}],
+            "edges": [{"id": "e_comp", "from": "charge", "to": "refund", "type": "compensation"}],
+        },
+    }
+    plan = _plan(scenario)
+
+    async def executor(node_ir, exec_id, parent):
+        status = "failure" if node_ir.node_id == "charge" else "success"
+        return {"task_id": node_ir.node_id, "status": status}
+
+    results, outcome = await _run(plan, executor)
+    executed = [r["task_id"] for r in results]
+    assert executed == ["charge", "refund"]  # compensation ran despite fail-fast-like policy
+    assert not outcome.success
+    comp = outcome.transitions[0]
+    assert comp.edge_type == EdgeType.COMPENSATION.value
+    assert comp.transition_reason == "compensation"
+
+
+@pytest.mark.asyncio
+async def test_step_budget_guard_terminates_runaway_loop():
+    scenario = {
+        "workflow": {
+            "nodes": [{"id": "loop", "max_visitations": 10**6}],
+            "edges": [
+                {
+                    "from": "loop",
+                    "to": "loop",
+                    "type": "retry",
+                    "condition": {"op": "truthy"},
+                },
+            ],
+        }
+    }
+    plan = _plan(scenario)
+
+    async def executor(node_ir, exec_id, parent):
+        return {"task_id": node_ir.node_id, "status": "success"}
+
+    results, outcome = await _run(plan, executor)
+    assert outcome.status.value == "workflow_failed"
+    assert "Step budget exceeded" in outcome.reason
+
+
+# ---------------------------------------------------------------------------
+# Identity contract
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_execution_instance_ids_carry_iteration_qualifier():
+    scenario = {
+        "workflow": {
+            "nodes": [{"id": "n"}, {"id": "m"}],
+            "edges": [
+                {
+                    "from": "n",
+                    "to": "n",
+                    "type": "retry",
+                    "condition": {"op": "lt", "path": "state.count", "value": 2},
+                },
+                {"from": "n", "to": "m"},
+            ],
+        }
+    }
+    plan = _plan(scenario)
+    visits = {"count": 0}
+
+    async def executor(node_ir, exec_id, parent):
+        if node_ir.node_id == "n":
+            visits["count"] += 1
+        return {"task_id": node_ir.node_id, "status": "success"}
+
+    interp = WorkflowInterpreter(
+        plan,
+        _identity(attempt_number=7),
+        event_bus=None,
+        context_provider=lambda: _async_ctx(visits),
+    )
+    results, outcome = await interp.run(executor)
+
+    n_ids = [
+        rec.execution_instance_id for rec in outcome.node_executions if rec.scenario_node_id == "n"
+    ]
+    m_ids = [
+        rec.execution_instance_id for rec in outcome.node_executions if rec.scenario_node_id == "m"
+    ]
+    # First visitation keeps the legacy-compatible base form; later iterations qualify.
+    assert n_ids == ["n:attempt:7", "n:attempt:7#it2"]
+    assert m_ids == ["m:attempt:7"]
+    assert outcome.success
+
+
+async def _async_ctx(state):
+    return {"state": state}

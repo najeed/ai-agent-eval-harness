@@ -33,6 +33,34 @@ def client(tmp_path, monkeypatch):
         yield c
 
 
+@pytest.fixture
+def crypto_client(tmp_path, monkeypatch):
+    """
+    Client with a fully provisioned certification environment: isolated trust
+    root and a generated system_id keypair so real certificates can be issued.
+    """
+    runs_dir = tmp_path / "runs"
+    reports_dir = tmp_path / "reports"
+    trust_root = tmp_path / ".aes" / "keys"
+    for d in (runs_dir, reports_dir, trust_root):
+        d.mkdir(parents=True, exist_ok=True)
+
+    monkeypatch.setattr(config, "RUN_LOG_DIR", runs_dir)
+    monkeypatch.setattr(config, "REPORTS_DIR", reports_dir)
+    monkeypatch.setattr(config, "TRUST_ROOT", trust_root)
+
+    from eval_runner.identity import IdentityService
+
+    IdentityService._provision_local_identity("system_id")
+
+    app = create_app()
+    app.config["TESTING"] = True
+    with app.test_client() as c:
+        with c.session_transaction() as sess:
+            sess["user"] = {"id": "test-admin", "name": "Admin", "permissions": ["*"]}
+        yield c
+
+
 def test_compute_sha3_digest():
     digest_bytes = compute_sha3_digest(b"test content")
     digest_str = compute_sha3_digest("test content")
@@ -47,9 +75,14 @@ def test_get_verification_package_not_found(client):
     assert "error" in data
 
 
-def test_get_verification_package_success_with_cert_and_provenance(client, tmp_path):
+def test_get_verification_package_success_with_cert_and_provenance(crypto_client, tmp_path):
+    """
+    P0-4: VERIFIED requires genuine cryptographic verification of a certificate
+    produced by the transactional certification pipeline — not merely the
+    presence of signature-shaped JSON.
+    """
     runs_dir = tmp_path / "runs"
-    reports_dir = tmp_path / "reports"
+    tmp_path / "reports"
     run_id = f"run-test-{int(datetime.now(UTC).timestamp())}"
     run_vault = runs_dir / run_id
     run_vault.mkdir(parents=True, exist_ok=True)
@@ -57,7 +90,7 @@ def test_get_verification_package_success_with_cert_and_provenance(client, tmp_p
     now = datetime.now(UTC)
 
     # Write trace events with empty/corrupt line handling and dynamic timestamps
-    trace_file = run_vault / f"{run_id}.jsonl"
+    trace_file = run_vault / "run.jsonl"
     events = [
         {
             "event": "run_start",
@@ -78,34 +111,41 @@ def test_get_verification_package_success_with_cert_and_provenance(client, tmp_p
     raw_lines = "\n".join(json.dumps(e) for e in events) + "\n\n{invalid json line\n"
     trace_file.write_text(raw_lines, encoding="utf-8")
 
-    # Write scenario_resolved and manifest
+    # Scenario document becomes part of the certified evidence ledger
     (run_vault / "scenario_resolved.json").write_text(
         json.dumps({"id": "sec_eval", "title": "Security Eval"}), encoding="utf-8"
     )
-    (run_vault / "run_manifest.json").write_text(
-        json.dumps({"tenant_id": "t-acme", "workspace_id": "ws-sec"}), encoding="utf-8"
-    )
 
-    # Write certificate in reports_dir
-    cert_dir = reports_dir / "certificates"
-    cert_dir.mkdir(parents=True, exist_ok=True)
-    (cert_dir / f"{run_id}_certificate.json").write_text(
-        json.dumps({"signatures": ["sig_ed25519_test"], "provenance_chain": ["p1", "p2"]}),
-        encoding="utf-8",
-    )
+    # Produce a REAL, cryptographically verifiable certificate
+    from eval_runner.verifier import TraceVerifier
+
+    manifest = TraceVerifier.sign_trace(str(trace_file), run_id=run_id)
+    assert manifest["certification"]["outcome"] == "CERTIFIED"
 
     # Query API
-    res = client.get(f"/api/v1/evidence/packages/{run_id}")
+    res = crypto_client.get(f"/api/v1/evidence/packages/{run_id}")
     assert res.status_code == 200
     pkg = res.get_json()
     assert pkg["format"] == "agentv_verification_package"
     assert pkg["package_version"] == "2.0.0"
-    assert pkg["tenant_id"] == "t-acme"
 
     assert pkg["verdict"]["verified_outcome"] == "VERIFIED"
-    assert pkg["signatures"] == ["sig_ed25519_test"]
+    crypto = pkg["cryptographic_verification"]
+    assert crypto["verified"] is True
+    assert crypto["manifest_hash_match"] is True
+    chain = pkg["signatures"]
+    assert isinstance(chain, list) and len(chain) >= 1
+    assert any(n.get("algorithm") == "ED25519" for n in chain)
+    assert pkg["evidence_chain_valid"] is True
     assert "package_hash" in pkg
     assert pkg["package_hash"].startswith("sha3_256:")
+
+    # Tampering with certified evidence must flip the verdict truthfully
+    trace_file.write_text(raw_lines + '{"event":"tampered"}\n', encoding="utf-8")
+    res2 = crypto_client.get(f"/api/v1/evidence/packages/{run_id}")
+    pkg2 = res2.get_json()
+    assert pkg2["verdict"]["verified_outcome"] == "UNVERIFIED"
+    assert pkg2["evidence_chain_valid"] is False
 
 
 def test_get_verification_package_policy_breach_and_vault_cert(client, tmp_path):
@@ -261,9 +301,8 @@ def test_verification_package_direct_fragment_without_vault(client, tmp_path):
     assert pkg["verdict"]["score"] == 0.0
 
 
-def test_verification_package_score_default_verified(client, tmp_path):
+def test_verification_package_score_default_verified(crypto_client, tmp_path):
     runs_dir = tmp_path / "runs"
-    reports_dir = tmp_path / "reports"
     run_id = f"run-default-verified-{int(datetime.now(UTC).timestamp())}"
     run_vault = runs_dir / run_id
     run_vault.mkdir(parents=True, exist_ok=True)
@@ -281,14 +320,53 @@ def test_verification_package_score_default_verified(client, tmp_path):
     ]
     trace_file.write_text("\n".join(json.dumps(e) for e in events), encoding="utf-8")
 
+    from eval_runner.verifier import TraceVerifier
+
+    TraceVerifier.sign_trace(str(trace_file), run_id=run_id)
+
+    res = crypto_client.get(f"/api/v1/evidence/packages/{run_id}")
+    assert res.status_code == 200
+    pkg = res.get_json()
+    assert pkg["verdict"]["verified_outcome"] == "VERIFIED"
+    assert pkg["verdict"]["score"] == 1.0
+
+
+def test_fake_certificate_signature_yields_unverified(client, tmp_path):
+    """
+    P0-4 negative lock: signature-SHAPED JSON without a verifiable chain must
+    never produce VERIFIED. Presence of signatures is not proof.
+    """
+    runs_dir = tmp_path / "runs"
+    reports_dir = tmp_path / "reports"
+    run_id = f"run-fake-cert-{int(datetime.now(UTC).timestamp())}"
+    run_vault = runs_dir / run_id
+    run_vault.mkdir(parents=True, exist_ok=True)
+
+    now = datetime.now(UTC)
+    (run_vault / "run.jsonl").write_text(
+        "\n".join(
+            json.dumps(e)
+            for e in [
+                {"event": "run_start", "timestamp": now.isoformat(), "data": {}},
+                {
+                    "event": "run_end",
+                    "timestamp": (now + timedelta(seconds=5)).isoformat(),
+                    "data": {"status": "EXECUTION_COMPLETED", "passed": True},
+                },
+            ]
+        ),
+        encoding="utf-8",
+    )
+
     cert_dir = reports_dir / "certificates"
     cert_dir.mkdir(parents=True, exist_ok=True)
     (cert_dir / f"{run_id}_certificate.json").write_text(
-        json.dumps({"signatures": ["sig_test"]}), encoding="utf-8"
+        json.dumps({"signatures": ["sig_test"], "provenance_chain": ["p1"]}),
+        encoding="utf-8",
     )
 
     res = client.get(f"/api/v1/evidence/packages/{run_id}")
     assert res.status_code == 200
     pkg = res.get_json()
-    assert pkg["verdict"]["verified_outcome"] == "VERIFIED"
-    assert pkg["verdict"]["score"] == 1.0
+    assert pkg["verdict"]["verified_outcome"] == "UNVERIFIED"
+    assert pkg["evidence_chain_valid"] is False

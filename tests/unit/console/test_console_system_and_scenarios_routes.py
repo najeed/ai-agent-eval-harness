@@ -419,17 +419,27 @@ def test_scenarios_evaluate_by_scenario_id(client, console_jail):
     scen_file = scen_dir / "scen_evaluate_id.json"
     scen_file.write_text('{"id": "scen_evaluate_id", "title": "Scen Title"}', encoding="utf-8")
 
+    # Hermetic: restore singleton state so xdist workers are not polluted.
+    prev_scenarios = cat.scenarios
     cat.scenarios = [
         {"id": "scen_evaluate_id", "path": "industries/generic/scenarios/scen_evaluate_id.json"}
     ]
+    try:
+        from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
 
-    with (
-        patch("eval_runner.loader.load_scenario", return_value={"id": "scen_evaluate_id"}),
-        patch("threading.Thread.start"),
-    ):
-        res = client.post("/api/v1/evaluate", json={"path": "scen_evaluate_id"})
-        assert res.status_code == 200
-        assert res.get_json()["status"] == "started"
+        backend = InProcessExecutionBackend.get_instance()
+        with (
+            patch("eval_runner.loader.load_scenario", return_value={"id": "scen_evaluate_id"}),
+            # The route submits through the InProcessExecutionBackend;
+            # intercept at that boundary so no real dispatch can leak.
+            patch.object(backend, "submit", return_value="queued") as mock_submit,
+        ):
+            res = client.post("/api/v1/evaluate", json={"path": "scen_evaluate_id"})
+            assert res.status_code == 200
+            assert res.get_json()["status"] == "started"
+            assert mock_submit.called
+    finally:
+        cat.scenarios = prev_scenarios
 
 
 def test_scenarios_mutate_by_scenario_id(client, console_jail):
@@ -442,15 +452,20 @@ def test_scenarios_mutate_by_scenario_id(client, console_jail):
     scen_file = scen_dir / "scen_mutate_id.json"
     scen_file.write_text('{"id": "scen_mutate_id", "title": "Original"}', encoding="utf-8")
 
+    prev_scenarios = cat.scenarios
     cat.scenarios = [{"id": "scen_mutate_id", "path": "scenarios/scen_mutate_id.json"}]
-
-    with patch(
-        "eval_runner.mutator.mutate_scenario",
-        return_value={"id": "scen_mutate_id", "title": "Mutated"},
-    ):
-        res = client.post("/api/v1/mutate", json={"scenario_id": "scen_mutate_id", "type": "typo"})
-        assert res.status_code == 200
-        assert res.get_json()["mutated"]["title"] == "Mutated"
+    try:
+        with patch(
+            "eval_runner.mutator.mutate_scenario",
+            return_value={"id": "scen_mutate_id", "title": "Mutated"},
+        ):
+            res = client.post(
+                "/api/v1/mutate", json={"scenario_id": "scen_mutate_id", "type": "typo"}
+            )
+            assert res.status_code == 200
+            assert res.get_json()["mutated"]["title"] == "Mutated"
+    finally:
+        cat.scenarios = prev_scenarios
 
 
 def test_scenarios_mutate_by_id_not_found(client):
@@ -617,6 +632,9 @@ def test_check_execution_readiness_branches(client, console_jail, monkeypatch):
     assert checks["Cryptographic Sealer"]["status"] == "PASSED"
     assert checks["Cryptographic Sealer"]["signer_type"] == "SIGNED"
 
-    # Verify custom protocol warning
-    assert checks["Agent Protocol & Config"]["status"] == "WARNING"
-    assert checks["Agent Protocol & Config"]["target_status"] == "CUSTOM"
+    # Verify custom protocol warning: configured but not proven reachable
+    # (preflight tiers: CONFIGURED < REACHABLE < EXECUTABLE < VERIFIABLE)
+    agent_check = checks["Agent Endpoint"]
+    assert agent_check["status"] == "WARNING"
+    assert agent_check["tier"] == "CONFIGURED"
+    assert "custom_agent_protocol" in agent_check["message"]

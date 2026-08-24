@@ -27,12 +27,13 @@ logger = logging.getLogger(__name__)
 from . import config, events, metrics  # noqa: E402
 from .context import TurnContext  # noqa: E402
 from .engine import AgentAdapterRegistry  # noqa: E402
-from .events import (  # noqa: E402
-    CoreEvents,
-    Event,
-    EventEmitter,
-    ExecutionEdgeType,
-    ExecutionNodeStatus,
+from .events import CoreEvents, Event, EventEmitter  # noqa: E402
+from .execution_ir import (  # noqa: E402
+    ExecutionIdentity,
+    ExecutionMode,
+    PlanValidationError,
+    WorkflowStatus,
+    compile_workflow,
 )
 from .forensics import ForensicCollector  # noqa: E402
 from .session_components import (  # noqa: E402
@@ -104,6 +105,30 @@ class SessionManager:
 
         self.max_turns = int(scenario.get("max_turns", config.EVAL_MAX_TURNS)) or 10
         self.fork_depth = scenario.get("_fork_depth", 0)
+
+        # [AgentV v2.0.0] Explicit execution truth mode:
+        # simulated | record_replay | live | hybrid. Simulation must never
+        # masquerade as live verification.
+        mode_raw = (
+            scenario.get("execution_mode")
+            or self.metadata.get("execution_mode")
+            or scenario.get("metadata", {}).get("execution_mode")
+            or ExecutionMode.SIMULATED.value
+        )
+        try:
+            self.execution_mode = ExecutionMode(str(mode_raw))
+        except ValueError:
+            logger.warning(
+                "      [Session] Unknown execution_mode '%s'; defaulting to SIMULATED.",
+                mode_raw,
+            )
+            self.execution_mode = ExecutionMode.SIMULATED
+        self.metadata["execution_mode"] = self.execution_mode.value
+
+        # [AgentV v2.0.0] First-class attempt identity
+        import uuid as _uuid
+
+        self.attempt_id: str = _uuid.uuid4().hex
 
         # [AgentV v1.6.0] Identifier Tracking
         # Note: Purged global os.environ writes (AES_RUN_ID, AES_IDENTIFIER)
@@ -350,12 +375,12 @@ class SessionManager:
         return True
 
     async def execute_tasks(self, attempt_number: int) -> list[dict[str, Any]]:
-        from graphlib import CycleError, TopologicalSorter
+        from .workflow_interpreter import WorkflowInterpreter
 
-        all_task_results = []
+        all_task_results: list[dict[str, Any]] = []
         global_cumulative_history = []
+        node_id = "unknown"
 
-        # 🚀 Move Sandbox into the forensic recovery block
         sandbox = ToolSandbox(
             self.scenario,
             event_bus=self.event_bus,
@@ -366,173 +391,132 @@ class SessionManager:
         )
         try:
             await sandbox.setup()
-            workflow = self.scenario.get("workflow", {})
-            if isinstance(workflow, list):
-                nodes_data = {
-                    node["id"]: node for node in workflow if isinstance(node, dict) and "id" in node
-                }
-                workflow_edges = []
-            elif isinstance(workflow, dict):
-                nodes_data = {
-                    node["id"]: node
-                    for node in workflow.get("nodes", [])
-                    if isinstance(node, dict) and "id" in node
-                }
-                workflow_edges = workflow.get("edges", [])
-            else:
-                nodes_data = {}
-                workflow_edges = []
 
-            # 1. Topologically Sort Execution Graph
-            from graphlib import CycleError, TopologicalSorter
-
-            ts = TopologicalSorter()
-            for node_id in nodes_data:
-                ts.add(node_id)
-
-            for edge in workflow_edges:
-                src = edge.get("from")
-                trg = edge.get("to")
-                if src and trg:
-                    ts.add(trg, src)
-
-            # 2. Sequential State Initialization
-            turns_taken = 0
-            history = []
-            actions = {"used_tools": []}
-
-            # 🚀 Topological Sorting Complete. Proceeding to execution dispatch.
+            # [AgentV v2.0.0] Canonical Execution IR compilation.
+            # The DAG is the control-flow contract.
             try:
-                execution_order = list(ts.static_order())
-            except CycleError:
-                err_msg = (
-                    f"Industrial Shield Block: Cyclic dependencies detected in "
-                    f"workflow DAG for {self.run_id}."
-                )
-                sys.stderr.write(f"      [Cycle Error] {err_msg}\n")
+                plan = compile_workflow(self.scenario)
+            except PlanValidationError as e:
+                err_msg = f"Execution IR Compilation Failed for {self.run_id}: {e}"
+                sys.stderr.write(f"      [IR Error] {err_msg}\n")
                 sys.stderr.flush()
                 self.event_bus.emit(CoreEvents.ERROR, {"message": err_msg})
-                raise ValueError(err_msg) from None
+                all_task_results.append(
+                    {
+                        "task_id": "workflow_compilation",
+                        "status": "failure",
+                        "triage_tag": "EVALUATION_INVALID",
+                        "message": err_msg,
+                        "metrics": [],
+                        "turns_taken": 0,
+                        "used_tools": [],
+                        "conversation_history": [],
+                    }
+                )
+                return all_task_results
 
-            # Check for empty topology explicitly to fail-fast
-            if not execution_order:
-                err_msg = f"Industrial Fail-Fast (v1.4.0): Empty Topology for Run {self.run_id}."
-                sys.stderr.write(f"      [FATAL] {err_msg}\n")
-                sys.stderr.flush()
-                raise ValueError(err_msg)
+            identity = ExecutionIdentity(
+                evaluation_run_id=self.run_id,
+                scenario_version_id=ExecutionIdentity.scenario_version_hash(self.scenario),
+                case_id=str(self.identifier),
+                attempt_id=self.attempt_id,
+                attempt_number=attempt_number,
+                execution_mode=self.execution_mode,
+            )
+            self.metadata["attempt_id"] = identity.attempt_id
+            self.metadata["scenario_version_id"] = identity.scenario_version_id
 
-            last_execution_id: str | None = None
-            last_scenario_node_id: str | None = None
-            for node_id in execution_order:
+            # Shared trajectory state across nodes within this attempt
+            turns_taken = 0
+            history: list[dict[str, Any]] = []
+            actions: dict[str, Any] = {"used_tools": []}
+            state_before_map: dict[str, dict[str, Any]] = {}
+
+            async def _context_provider() -> dict[str, Any]:
+                state = (
+                    await sandbox.get_full_state()
+                    if hasattr(sandbox, "get_full_state")
+                    else getattr(sandbox, "state", {})
+                )
+                return {"state": state}
+
+            async def _executor(node_ir, exec_id: str, parent_exec_id: str | None):
+                nonlocal turns_taken
+                node_def = node_ir.definition
+                node_id_local = node_ir.node_id
                 if (
                     self.cancellation_event
                     and getattr(self.cancellation_event, "is_set", lambda: False)()
                 ):
-                    all_task_results.append(
-                        {
-                            "task_id": node_id,
-                            "status": "aborted",
-                            "message": "Execution cancelled",
-                            "turns_taken": turns_taken,
-                            "used_tools": [],
-                            "conversation_history": history,
-                        }
+                    return {
+                        "task_id": node_id_local,
+                        "status": "aborted",
+                        "message": "Execution cancelled",
+                        "turns_taken": turns_taken,
+                        "used_tools": [],
+                        "conversation_history": list(history),
+                    }
+                try:
+                    state_before = (
+                        await sandbox.get_full_state()
+                        if hasattr(sandbox, "get_full_state")
+                        else copy.deepcopy(getattr(sandbox, "state", {}))
                     )
-                    break
+                except Exception:  # noqa: BLE001 - evidence capture must not break execution
+                    state_before = None
+                if state_before is not None:
+                    state_before_map[node_id_local] = copy.deepcopy(state_before)
 
-                node = nodes_data.get(node_id)
-                if not node:
-                    continue
-
-                exec_id = f"{node_id}:attempt:{attempt_number}"
-                # Emit observed execution edge from prior node if exists
-                if last_execution_id and last_scenario_node_id:
-                    edge_type = (
-                        ExecutionEdgeType.RETRY
-                        if attempt_number > 1
-                        else ExecutionEdgeType.SEQUENTIAL
-                    )
-                    self.event_bus.emit(
-                        CoreEvents.EXECUTION_GRAPH_EDGE,
-                        {
-                            "run_id": self.run_id,
-                            "from_scenario_node_id": last_scenario_node_id,
-                            "to_scenario_node_id": node_id,
-                            "edge_type": edge_type,
-                        },
-                    )
-
-                # Emit Running Node
-                self.event_bus.emit(
-                    CoreEvents.EXECUTION_GRAPH_NODE,
-                    {
-                        "run_id": self.run_id,
-                        "scenario_node_id": node_id,
-                        "execution_instance_id": exec_id,
-                        "parent_execution_id": last_execution_id,
-                        "label": node.get("task_description") or node_id,
-                        "status": ExecutionNodeStatus.RUNNING,
-                        "attempt": attempt_number,
-                    },
+                result = await self._execute_node(
+                    node_def,
+                    attempt_number,
+                    0,
+                    sandbox,
+                    history,
+                    actions,
+                    state_before=state_before,
                 )
-
-                start_node_time = time.time()
-                task_res = await self._execute_node(
-                    node, attempt_number, turns_taken, sandbox, history, actions
-                )
-                node_dur_ms = round((time.time() - start_node_time) * 1000, 2)
-
-                if task_res.get("status") == "success":
+                # [AgentV v2.0.0] Immutable join model on every task result
+                result["execution_instance_id"] = exec_id
+                result["parent_execution_id"] = parent_exec_id
+                result["scenario_node_id"] = node_id_local
+                result["evaluation_run_id"] = identity.evaluation_run_id
+                result["scenario_version_id"] = identity.scenario_version_id
+                result["case_id"] = identity.case_id
+                result["attempt_id"] = identity.attempt_id
+                result["execution_mode"] = identity.execution_mode.value
+                if result.get("status") == "success":
                     turns_taken += 1
-                    all_task_results.append(task_res)
-                    self.event_bus.emit(
-                        CoreEvents.EXECUTION_GRAPH_NODE,
-                        {
-                            "run_id": self.run_id,
-                            "scenario_node_id": node_id,
-                            "execution_instance_id": exec_id,
-                            "parent_execution_id": last_execution_id,
-                            "label": node.get("task_description") or node_id,
-                            "status": ExecutionNodeStatus.COMPLETED,
-                            "attempt": attempt_number,
-                            "duration_ms": node_dur_ms,
-                            "evidence_refs": [f"turn_{turns_taken}"],
-                        },
-                    )
-                    last_execution_id = exec_id
-                    last_scenario_node_id = node_id
-                else:
-                    print(f"      [Node Failure] {node_id}: {task_res.get('message')}")
-                    all_task_results.append(task_res)
-                    self.event_bus.emit(
-                        CoreEvents.EXECUTION_GRAPH_NODE,
-                        {
-                            "run_id": self.run_id,
-                            "scenario_node_id": node_id,
-                            "execution_instance_id": exec_id,
-                            "parent_execution_id": last_execution_id,
-                            "label": node.get("task_description") or node_id,
-                            "status": ExecutionNodeStatus.FAILED,
-                            "attempt": attempt_number,
-                            "duration_ms": node_dur_ms,
-                            "failure_class": task_res.get("triage_tag", "NODE_EXECUTION_FAILURE"),
-                            "failure_reason": task_res.get("message", "Task constraint failed."),
-                        },
-                    )
-                    break
+                return result
 
-            # 🚀 All nodes executed. Global history is now fully captured in 'history'.
+            interpreter = WorkflowInterpreter(
+                plan,
+                identity,
+                event_bus=_InterpreterEventBridge(self.event_bus),
+                context_provider=_context_provider,
+                should_abort=lambda: bool(
+                    self.cancellation_event
+                    and getattr(self.cancellation_event, "is_set", lambda: False)()
+                ),
+            )
+
+            all_task_results, outcome = await interpreter.run(_executor)
             global_cumulative_history = list(history)
+
             # 🧬 Global Evaluation Pass (Industrial AES v1.6.0)
             # Process metrics defined at the scenario level (e.g. DNA_STABLE)
             global_evaluation = self.scenario.get("evaluation", {})
             global_metrics = global_evaluation.get("metrics", [])
 
+            verdict_payload: dict[str, Any] = {
+                **outcome.to_dict(),
+                "failure_policy": plan.failure_policy.value,
+                "ir_version": plan.ir_version,
+            }
+
             if global_metrics:
                 print(f"      [Session] Running {len(global_metrics)} Global Evaluation Metrics...")
-                # We treat the run summary as a pseudo-node for metric evaluation
                 global_node = {"id": "global_evaluation", "success_criteria": global_metrics}
-
                 global_results = await self._calculate_metrics(
                     global_node,
                     attempt_number,
@@ -545,9 +529,34 @@ class SessionManager:
                         )
                     },
                 )
-                success = all(m.get("success") for m in global_results.get("metrics", []))
+                success = all(
+                    m.get("success", False) for m in global_results.get("metrics", [])
+                ) and global_results.get("evaluation_valid", True)
                 global_results["status"] = "success" if success else "failed"
+                if not success and not global_results.get("evaluation_invalid_reasons"):
+                    global_results.setdefault("message", "Global evaluation metrics failed.")
                 all_task_results.append(global_results)
+                verdict_target = global_results
+            else:
+                verdict_target = (
+                    all_task_results[-1]
+                    if all_task_results
+                    else {
+                        "task_id": "workflow_verdict",
+                        "status": "success" if outcome.success else "failure",
+                        "metrics": [],
+                        "turns_taken": 0,
+                        "used_tools": [],
+                        "conversation_history": [],
+                    }
+                )
+                if not all_task_results:
+                    all_task_results.append(verdict_target)
+
+            # [AgentV v2.0.0] Verification decision tree + workflow verdict
+            verdict_target["workflow_verdict"] = verdict_payload
+            decision = self._build_verification_decision(outcome, all_task_results, identity)
+            verdict_target["verification_decision"] = decision
 
         except Exception as e:
             err_msg = f"Forensic Exception during node execution: {str(e)}"
@@ -562,7 +571,7 @@ class SessionManager:
             # Capture the failure in the forensic report and stop the node sequence.
             all_task_results.append(
                 {
-                    "task_id": node_id if "node_id" in locals() else "unknown",
+                    "task_id": node_id if node_id != "unknown" else "unknown",
                     "status": "failure",
                     "triage_tag": "FATAL_ENGINE_ERROR",
                     "message": err_msg,
@@ -574,11 +583,112 @@ class SessionManager:
                 }
             )
         finally:
-            # [Industrial Resilience] Ensure teardown runs even if topological sort fails
+            # [Industrial Resilience] Ensure teardown runs even if IR compilation fails
             # or if initialization crashes before execution begins.
             await self.teardown(sandbox)
 
         return all_task_results
+
+    @staticmethod
+    def _build_verification_decision(
+        outcome, results: list[dict[str, Any]], identity: ExecutionIdentity
+    ) -> dict[str, Any]:
+        """
+        First-class 'why did this workflow pass/fail' decision tree (P1 #15):
+
+            Scenario -> Preconditions -> Observed execution -> Expected transitions
+                -> Assertions -> Policy checks -> Evidence -> Final decision
+        """
+        assertions: list[dict[str, Any]] = []
+        because: list[str] = []
+        evaluation_valid = True
+
+        for res in results:
+            nid = res.get("task_id") or res.get("scenario_node_id") or "unknown"
+            res.get("status")
+            for m in res.get("metrics", []):
+                row = {
+                    "node": nid,
+                    "metric": m.get("metric"),
+                    "score": m.get("score"),
+                    "threshold": m.get("threshold"),
+                    "passed": bool(m.get("success")),
+                    "source": "success_criteria",
+                }
+                if m.get("status") == "EVALUATION_INVALID":
+                    row["invalid"] = True
+                    row["reason"] = m.get("reason")
+                    evaluation_valid = False
+                assertions.append(row)
+            for h in res.get("state_hygiene", []):
+                assertions.append(
+                    {
+                        "node": nid,
+                        "assertion": f"hygiene:{h.get('path')}({h.get('op')})",
+                        "expected": h.get("expected"),
+                        "actual": h.get("actual"),
+                        "passed": bool(h.get("success")),
+                        "severity": h.get("severity", "required"),
+                        "source": "state_hygiene",
+                    }
+                )
+            for ev in res.get("transition_evidence", []) or []:
+                a = ev.get("assertion", {})
+                assertions.append(
+                    {
+                        "node": nid,
+                        "assertion": f"{a.get('target', 'state')}"
+                        + (f".{a.get('property')}" if a.get("property") else ""),
+                        "mode": ev.get("mode"),
+                        "expected": ev.get("expected"),
+                        "actual_before": ev.get("actual_before"),
+                        "actual_after": ev.get("actual_after"),
+                        "passed": bool(ev.get("passed")),
+                        "source": "expected_outcome",
+                    }
+                )
+
+        failed_assertions = [a for a in assertions if not a["passed"]]
+        invalid_assertions = [a for a in assertions if a.get("invalid")]
+        required_failures = [a for a in failed_assertions if a.get("severity") != "informational"]
+
+        if not evaluation_valid:
+            decision = "EVALUATION_INVALID"
+            because.extend(f"Evaluator invalid: {r.get('reason')}" for r in invalid_assertions)
+        elif outcome.status == WorkflowStatus.COMPLETED and not required_failures:
+            decision = "PASS"
+            because.append(f"Workflow {outcome.status.value}: {outcome.reason}")
+            because.append(f"All {len(assertions)} recorded assertions passed")
+        else:
+            decision = "FAIL"
+            because.append(f"Workflow {outcome.status.value}: {outcome.reason}")
+            for a in required_failures[:20]:
+                src = a.get("source", "assertion")
+                label = a.get("metric") or a.get("assertion") or "unnamed"
+                because.append(f"{src}:{label} failed on node '{a['node']}'")
+
+        evidence_refs = ["run.jsonl"]
+        transitions = [t.to_dict() if hasattr(t, "to_dict") else t for t in outcome.transitions]
+        observed = [n.to_dict() if hasattr(n, "to_dict") else n for n in outcome.node_executions]
+
+        return {
+            "decision": decision,
+            "because": because,
+            "preconditions": [a for a in assertions if a.get("source") == "state_hygiene"],
+            "observed_execution": observed,
+            "expected_transitions": transitions,
+            "assertions": assertions,
+            "policy_checks": [],
+            "evidence_refs": evidence_refs,
+            "identity": {
+                "evaluation_run_id": identity.evaluation_run_id,
+                "scenario_version_id": identity.scenario_version_id,
+                "case_id": identity.case_id,
+                "attempt_id": identity.attempt_id,
+                "attempt_number": identity.attempt_number,
+                "execution_mode": identity.execution_mode.value,
+            },
+        }
 
     async def _execute_node(
         self,
@@ -588,6 +698,7 @@ class SessionManager:
         sandbox: ToolSandbox,
         conversation_history: list[dict],
         agent_actions: dict[str, Any],
+        state_before: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         node_id = node["id"]
         task_description = node.get("task_description", "Processing node...")
@@ -742,8 +853,10 @@ class SessionManager:
 
             self.event_bus.emit(CoreEvents.TURN_END, {"turn": turn, "task_id": node_id})
 
-        # 3. Implicit Verification Phase (Industrial State Parity)
-        parity_success = await self._verify_state_parity(node, sandbox, conversation_history)
+        # 3. Implicit Verification Phase (Transition-Based State Parity, AgentV v2.0.0)
+        parity_success, parity_evidence = await self._verify_state_parity(
+            node, sandbox, conversation_history, state_before=state_before
+        )
         if not parity_success:
             node_success = False
             logger.info(
@@ -754,8 +867,15 @@ class SessionManager:
         task_results = await self._calculate_metrics(
             node, attempt_number, (turn), conversation_history, sandbox, agent_actions
         )
+        # [AgentV v2.0.0] Strict Assertion Semantics:
+        # an invalid evaluator can never yield a successful node.
+        if not task_results.get("evaluation_valid", True):
+            node_success = False
         task_results["status"] = "success" if node_success else "failure"
         task_results["parity_verified"] = parity_success
+        task_results["transition_evidence"] = parity_evidence
+        if not task_results.get("evaluation_valid", True):
+            task_results["triage_tag"] = "EVALUATION_INVALID"
 
         # [Industrial Requirement] Ensure failure context is preserved
         if not node_success and "err_msg" in locals():
@@ -786,12 +906,21 @@ class SessionManager:
         self.event_bus.reset()
         logger.info(f"      [Session] Hardened Teardown complete for run_id: {self.run_id}")
 
-    async def _verify_state_parity(self, node: dict, sandbox: Any, history: list) -> bool:
+    async def _verify_state_parity(
+        self,
+        node: dict,
+        sandbox: Any,
+        history: list,
+        state_before: dict[str, Any] | None = None,
+    ) -> tuple[bool, list[dict[str, Any]]]:
         """
-        Authoritative State Parity Verification.
+        Authoritative Transition-Based State Parity Verification.
         Delegates to decomposed SessionStateParityVerifier component.
+        Returns (passed, transition_evidence).
         """
-        return await self.state_parity_verifier.verify_state_parity(node, sandbox, history)
+        return await self.state_parity_verifier.verify_state_parity(
+            node, sandbox, history, state_before=state_before
+        )
 
     async def _handle_tool_call(self, turn, agent_response, sandbox, history, actions, turn_ctx):
         tool_name = agent_response["tool_name"]
@@ -1186,3 +1315,16 @@ class SessionManager:
 
 # Public Session alias
 Session = SessionManager
+
+
+class _InterpreterEventBridge:
+    """Adapts WorkflowInterpreter emissions onto the session EventEmitter."""
+
+    def __init__(self, bus: Any):
+        self._bus = bus
+
+    def emit(self, name: Any, data: dict[str, Any]) -> None:
+        try:
+            self._bus.emit(name, data)
+        except Exception:  # noqa: BLE001 - telemetry must never break execution
+            logger.debug("Interpreter event emission failed for %s", name, exc_info=True)

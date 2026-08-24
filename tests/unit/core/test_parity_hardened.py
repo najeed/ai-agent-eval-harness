@@ -60,7 +60,7 @@ async def test_verify_state_parity_parallel(scenario):
     session = SessionManager("test_run", scenario)
 
     # Execute the parity check logic
-    success = await session._verify_state_parity(scenario, mock_sandbox, [])
+    success, _evidence = await session._verify_state_parity(scenario, mock_sandbox, [])
 
     assert success is True
     # Logical proof of concurrency: both tasks must be active on the event loop simultaneously
@@ -85,7 +85,7 @@ async def test_verify_state_parity_forensics(scenario):
     session = SessionManager("test_run", scenario)
 
     with patch.object(session.event_bus, "emit") as mock_emit:
-        success = await session._verify_state_parity(scenario, mock_sandbox, [])
+        success, _evidence = await session._verify_state_parity(scenario, mock_sandbox, [])
 
         assert success is False
         # Check if ADAPTER_DEBUG with root_cause was emitted
@@ -111,5 +111,5 @@ async def test_verify_state_parity_missing_shim(scenario):
 
     session = SessionManager("test_run", scenario)
 
-    success = await session._verify_state_parity(scenario, mock_sandbox, [])
+    success, _evidence = await session._verify_state_parity(scenario, mock_sandbox, [])
     assert success is False  # Missing shim should cause failure if target is shim:db

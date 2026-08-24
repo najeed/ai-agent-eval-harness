@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   ShieldCheck,
   AlertTriangle,
@@ -72,6 +73,8 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
 
   const [auditResult, setAuditResult] = useState<any>(null);
   const [auditLoading, setAuditLoading] = useState(false);
+  // Authoritative evidence package (P1-13): the ONLY source for "why".
+  const [evidencePackage, setEvidencePackage] = useState<any>(null);
 
   useEffect(() => {
     if (!run?.run_id) return;
@@ -81,6 +84,11 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
       .then(data => setAuditResult(data))
       .catch(e => console.error('Authoritative verification fetch failed:', e))
       .finally(() => setAuditLoading(false));
+
+    fetch(`/api/v1/evidence/packages/${run.run_id}`)
+      .then(res => (res.ok ? res.json() : null))
+      .then(data => setEvidencePackage(data))
+      .catch(() => setEvidencePackage(null));
   }, [run?.run_id]);
 
   // Strict Authoritative Verdict Resolution: Never Fabricate or Infer from Field Existence
@@ -88,6 +96,28 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
   const isVerified = verdict === 'VERIFIED';
   const isBreach = verdict === 'POLICY_BREACH';
   const isNotVerified = verdict === 'FAILED_VERIFICATION' || verdict === 'NOT_VERIFIED';
+
+  // [P0-2] Every claim below is traceable to the authoritative evidence
+  // package / VerificationResult. The UI never invents verification claims.
+  const crypto = evidencePackage?.cryptographic_verification;
+  const failedAssertions: any[] = (evidencePackage?.verdict?.assertions ?? []).filter(
+    (a: any) => a && a.passed === false
+  );
+  const whyLine: string = isVerified
+    ? `PASS — ${crypto?.verified ? 'signature verified and evidence chain intact' : 'runtime verification decision: PASS'}.`
+    : isBreach
+    ? 'FAIL — authoritative policy_violation event in the certified trace.'
+    : failedAssertions.length > 0
+    ? `FAIL — ${failedAssertions.length} assertion(s) failed. First failure: ${
+        failedAssertions[0].metric ?? failedAssertions[0].assertion ?? 'unnamed'
+      } on node '${failedAssertions[0].node ?? '?'}'.`
+    : crypto && crypto.errors?.length > 0
+    ? `NOT VERIFIED — ${crypto.errors[0]}`
+    : isNotVerified
+    ? 'NOT VERIFIED — runtime verification decision: FAIL.'
+    : 'INCONCLUSIVE — no authoritative verification result available for this run.';
+  const attestationGrade: string =
+    evidencePackage?.evidence_chain_valid === true ? 'Cryptographically Attested' : 'Unattested';
 
   const downloadPackageUrl = `/api/v1/evidence/packages/${run.run_id}?download=true`;
 
@@ -210,13 +240,48 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
                 Did this agent safely achieve the intended state transition without policy violations?
               </div>
               <p className="text-xs text-slate-400 leading-relaxed">
-                {isVerified
-                  ? '✔ Verified: The agent successfully executed required steps, passed 100% of mathematical state assertions, and maintained strict safety guardrail compliance.'
-                  : isBreach
-                  ? '⛔ Policy Breach: Critical safety boundaries or disallowed tool actions were intercepted during execution.'
-                  : isNotVerified
-                  ? '✘ Not Verified: The agent failed state assertions or diverged from expected ground-truth outcomes.'
-                  : '⏳ Unverified: Execution incomplete or missing cryptographic attestation signatures.'}
+                {/* P0-2/P1-13: verdict-first "why", sourced only from the
+                    authoritative evidence package. No UI-fabricated claims. */}
+                {whyLine}
+              </p>
+              {failedAssertions.length > 0 && (
+                <div className="mt-3 space-y-1">
+                  <span className="text-[10px] uppercase font-mono tracking-wider text-rose-400 font-bold">
+                    What failed ({failedAssertions.length})
+                  </span>
+                  <ul className="space-y-1">
+                    {failedAssertions.slice(0, 5).map((a: any, i: number) => (
+                      <li
+                        key={i}
+                        className="text-[11px] font-mono text-rose-300 bg-rose-950/20 border border-rose-500/20 rounded px-2 py-1"
+                      >
+                        ✘ {a.metric ?? a.assertion ?? 'assertion'} on node '
+                        {a.node ?? '?'}'
+                        {a.expected !== undefined && (
+                          <span className="text-slate-500">
+                            {' '}
+                            — expected {JSON.stringify(a.expected)}, actual{' '}
+                            {JSON.stringify(a.actual ?? a.actual_after)}
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                    {failedAssertions.length > 5 && (
+                      <li className="text-[10px] text-slate-500">
+                        +{failedAssertions.length - 5} more in the evidence package
+                      </li>
+                    )}
+                  </ul>
+                  <Link
+                    to={`/debugger?run=${encodeURIComponent(run.run_id)}`}
+                    className="inline-flex items-center gap-1 text-[11px] text-indigo-400 hover:text-indigo-300 mt-1"
+                  >
+                    → Inspect first causal divergence in the Live Debugger
+                  </Link>
+                </div>
+              )}
+              <p className="text-[10px] font-mono text-slate-500 mt-2">
+                Attestation grade: <span className="text-slate-300">{attestationGrade}</span>
               </p>
             </div>
 
