@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "spec/console-api/nav.schema.json",
+  "title": "GET /api/nav",
+  "description": "Locked navigation-registry manifest envelope.",
+  "type": "object",
+  "required": ["nav"],
+  "additionalProperties": false,
+  "properties": {
+    "nav": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "path": { "type": "string" },
+          "icon": { "type": "string" },
+          "type": { "type": "string" },
+          "group": { "type": "string" }
+        }
+      }
+    }
+  }
+}

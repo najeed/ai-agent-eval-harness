@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "spec/console-api/scenarios.schema.json",
+  "title": "GET /api/scenarios",
+  "description": "Locked faceted scenario-listing envelope.",
+  "type": "object",
+  "required": ["scenarios", "total_count", "all_industries", "page", "limit"],
+  "additionalProperties": false,
+  "properties": {
+    "scenarios": { "type": "array" },
+    "total_count": { "type": "integer", "minimum": 0 },
+    "all_industries": { "type": "array", "items": { "type": "string" } },
+    "page": { "type": "integer", "minimum": 1 },
+    "limit": { "type": "integer", "minimum": 1 }
+  }
+}

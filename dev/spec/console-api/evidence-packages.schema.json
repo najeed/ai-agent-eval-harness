@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "spec/console-api/evidence-packages.schema.json",
+  "title": "GET /api/v1/evidence/packages",
+  "description": "Locked verification-package summary listing.",
+  "type": "object",
+  "required": ["packages"],
+  "additionalProperties": false,
+  "properties": {
+    "packages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "run_id",
+          "has_certificate",
+          "has_manifest",
+          "package_url",
+          "download_url"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "run_id": { "type": "string", "pattern": "^run-" },
+          "has_certificate": { "type": "boolean" },
+          "has_manifest": { "type": "boolean" },
+          "package_url": { "type": "string" },
+          "download_url": { "type": "string" }
+        }
+      }
+    }
+  }
+}

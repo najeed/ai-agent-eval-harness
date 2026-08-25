@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "spec/console-api/doctor.schema.json",
+  "title": "GET /v1/doctor",
+  "description": "[C2] Environmental health audit derived from real RuntimeHealth probes. Status reflects actual dependency outcomes and is never an unconditional healthy.",
+  "type": "object",
+  "required": [
+    "status",
+    "mode",
+    "version",
+    "dependencies",
+    "project_root",
+    "plugins_loaded",
+    "catalog_size",
+    "simulator_count",
+    "pid"
+  ],
+  "properties": {
+    "status": { "enum": ["HEALTHY", "DEGRADED", "UNREACHABLE"] },
+    "mode": { "enum": ["demo", "production"] },
+    "version": { "type": "string" },
+    "last_heartbeat": { "type": "string" },
+    "dependencies": {
+      "type": "object",
+      "required": ["signing", "run_vault", "scenario_catalog"]
+    },
+    "signing_backend": { "type": "string" },
+    "details": { "type": "array", "items": { "type": "string" } },
+    "project_root": { "type": "string" },
+    "plugins_loaded": { "type": "boolean" },
+    "catalog_size": { "type": "integer", "minimum": 0 },
+    "simulator_count": { "type": "integer", "minimum": 0 },
+    "pid": { "type": "integer", "minimum": 1 }
+  }
+}

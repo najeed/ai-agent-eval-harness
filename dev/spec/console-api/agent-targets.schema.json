@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "spec/console-api/agent-targets.schema.json",
+  "title": "GET /api/v1/agent-targets",
+  "description": "Locked reusable agent-target listing envelope.",
+  "type": "object",
+  "required": ["schema_version", "targets"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "type": "string" },
+    "targets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": { "type": "string" }
+        }
+      }
+    }
+  }
+}
