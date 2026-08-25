@@ -10,6 +10,12 @@ import {
 } from 'lucide-react';
 import { Editor } from '@monaco-editor/react';
 import { useRBAC } from '../context/RBACContext';
+import {
+  DocumentProjectionError,
+  patchCanonicalDocument,
+  projectToCanvas,
+  type CanvasProjection,
+} from '../lib/aesDocument';
 
 interface AssertionItem {
   target: string;
@@ -17,6 +23,18 @@ interface AssertionItem {
   expected: string;
   mode: 'exact' | 'regex' | 'numerical_tolerance';
 }
+
+// [C3b] Client mirror of the server-authoritative lifecycle state machine
+// (eval_runner.console.routes.scenarios.LEGAL_TRANSITIONS). Used ONLY to
+// enable/disable controls with explanatory reasons — the server transition
+// API remains the sole authority and re-validates every request.
+const LEGAL_TRANSITIONS: Record<string, string[]> = {
+  Draft: ['Validated', 'Deprecated'],
+  Validated: ['Ready', 'Draft', 'Deprecated'],
+  Ready: ['Deprecated'],
+  Deprecated: [],
+  Published: ['Deprecated'],
+};
 
 export const ScenarioComposer: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -31,7 +49,9 @@ export const ScenarioComposer: React.FC = () => {
   const [scenarioId, setScenarioId] = useState('new-scenario');
   const [title, setTitle] = useState('New AES Scenario');
   const [version, setVersion] = useState('1.0.0');
-  const [lifecycleStatus, setLifecycleStatus] = useState<'Draft' | 'Validated' | 'Ready'>('Draft');
+  const [lifecycleStatus, setLifecycleStatus] = useState<
+    'Draft' | 'Validated' | 'Ready' | 'Deprecated'
+  >('Draft');
   const [industry, setIndustry] = useState('generic');
   const [complianceLevel, setComplianceLevel] = useState('Standard');
   const [description, setDescription] = useState('Custom evaluation scenario.');
@@ -58,109 +78,83 @@ export const ScenarioComposer: React.FC = () => {
 
   const [message, setMessage] = useState('');
   const [saving, setSaving] = useState(false);
+  const [transitioning, setTransitioning] = useState(false);
 
-  // Generate AES JSON preserving all canonical document keys without semantic loss
-  const getAESJson = () => {
-    // Start with a deep copy of the base canonical document or clean template
-    const base = rawDoc ? JSON.parse(JSON.stringify(rawDoc)) : {
-      aes_version: 1.4,
-      evaluation: {
-        consensus: {
-          strategy: 'Majority_Vote',
-          min_judges: 1,
-          judge_panel: ['Luna-1']
-        }
-      }
-    };
+  // [C3b] True once the scenario exists in the catalog (loaded by id, or
+  // saved at least once). Lifecycle transitions require a server-side
+  // document; unsaved drafts cannot transition.
+  const isPersistedScenario = !!rawDoc && (!!scenarioIdParam || !!rawDoc.metadata?.content_hash);
 
-    const existingNodesMap = new Map((base.workflow?.nodes || []).map((n: any) => [n.id, n]));
-    const workflowNodes = nodes.map((n: any) => {
-      const existing = existingNodesMap.get(n.id) || (n.data?.rawNode ? { ...n.data.rawNode } : {});
-      return {
-        ...existing,
+  // [P0-3] Generate AES JSON by PATCHING the canonical document — never
+  // reconstructing from canvas state. Unknown fields at every level survive.
+  const getAESJson = () =>
+    patchCanonicalDocument(rawDoc, {
+      metadata: {
+        id: scenarioId,
+        name: title,
+        version: version,
+        status: lifecycleStatus,
+        compliance_level: complianceLevel,
+        description,
+      },
+      industry,
+      nodes: nodes.map((n: any) => ({
         id: n.id,
-        task_description: n.data.task_description !== undefined ? n.data.task_description : existing.task_description || '',
-        required_tools: n.data.required_tools !== undefined ? n.data.required_tools : existing.required_tools || [],
-        expected_outcome: n.data.expected_outcome !== undefined ? n.data.expected_outcome : existing.expected_outcome || [],
-      };
+        task_description: n.data.task_description,
+        required_tools: n.data.required_tools,
+        expected_outcome: n.data.expected_outcome,
+      })),
+      edges: edges.map((e: any) => ({
+        source: e.source,
+        target: e.target,
+        condition: e.data?.condition,
+      })),
     });
-
-    const existingEdgesMap = new Map((base.workflow?.edges || []).map((e: any) => [`${e.from}->${e.to}`, e]));
-    const workflowEdges = edges.map((e: any) => {
-      const existing: any = existingEdgesMap.get(`${e.source}->${e.target}`) || {};
-      return {
-        ...existing,
-        from: e.source,
-        to: e.target,
-        condition: e.data?.condition !== undefined ? e.data.condition : existing.condition || '',
-      };
-    });
-
-    base.metadata = {
-      ...(base.metadata || {}),
-      id: scenarioId,
-      name: title,
-      version: version,
-      status: lifecycleStatus,
-      compliance_level: complianceLevel,
-      description
-    };
-    base.industry = industry;
-    base.workflow = {
-      ...(base.workflow || {}),
-      nodes: workflowNodes,
-      edges: workflowEdges
-    };
-
-    return base;
-  };
 
 
   const syncJsonToCanvas = (jsonStr: string) => {
-    // P0-1: no silent catch. Parse failures propagate to the caller so the UI
-    // can block the destructive path explicitly.
+    // P0-1/P0-4: parse failures AND structurally unrepresentable documents
+    // (duplicate ids, dangling edges, malformed collections) both REFUSE the
+    // projection with explicit reasons — no silent degradation.
     const parsed = JSON.parse(jsonStr);
+    const projection = projectToCanvas(parsed);
     setRawDoc(parsed);
     if (parsed.metadata?.id) setScenarioId(parsed.metadata.id);
     if (parsed.metadata?.name) setTitle(parsed.metadata.name);
     if (parsed.metadata?.version) setVersion(parsed.metadata.version);
-    if (parsed.metadata?.status) setLifecycleStatus(parsed.metadata.status);
+    if (parsed.metadata?.status) setLifecycleStatus(parsed.metadata.status as any);
     if (parsed.industry) setIndustry(parsed.industry);
     if (parsed.metadata?.compliance_level) setComplianceLevel(parsed.metadata.compliance_level);
     if (parsed.metadata?.description) setDescription(parsed.metadata.description);
 
-    if (parsed.workflow?.nodes) {
-      const flowNodes = parsed.workflow.nodes.map((n: any, idx: number) => ({
-        id: n.id,
-        type: 'default',
-        position: { x: 150 + idx * 220, y: 150 },
-        data: {
-          label: n.id,
-          task_description: n.task_description,
-          required_tools: n.required_tools || [],
-          expected_outcome: n.expected_outcome || []
-        },
-        style: {
-          background: '#0f172a',
-          color: '#fff',
-          border: '1px solid #334155',
-          borderRadius: '8px',
-          fontSize: '11px',
-          width: 160
-        }
-      }));
-      setNodes(flowNodes);
-    }
+    const flowNodes = projection.nodes.map((n, idx) => ({
+      id: n.id,
+      type: 'default',
+      position: { x: 150 + idx * 220, y: 150 },
+      data: {
+        label: n.id,
+        task_description: n.task_description,
+        required_tools: n.required_tools || [],
+        expected_outcome: n.expected_outcome || []
+      },
+      style: {
+        background: '#0f172a',
+        color: '#fff',
+        border: '1px solid #334155',
+        borderRadius: '8px',
+        fontSize: '11px',
+        width: 160
+      }
+    }));
+    setNodes(flowNodes);
 
-    if (parsed.workflow?.edges) {
-      const flowEdges = parsed.workflow.edges.map((e: any, idx: number) => ({
-        id: `edge-${idx}`,
-        source: e.from,
-        target: e.to,
-        data: { condition: e.condition }
-      }));
-      setEdges(flowEdges);
-    }
+    const flowEdges = projection.edges.map((e, idx) => ({
+      id: `edge-${idx}`,
+      source: e.source,
+      target: e.target,
+      data: { condition: e.condition }
+    }));
+    setEdges(flowEdges);
     return parsed;
   };
 
@@ -172,8 +166,11 @@ export const ScenarioComposer: React.FC = () => {
         syncJsonToCanvas(rawJson);
         setJsonParseError(null);
       } catch (e: any) {
-        setJsonParseError(e?.message || 'Invalid JSON');
-        setMessage(`Cannot project to canvas: ${e?.message}. Fix the JSON first.`);
+        const detail = e instanceof DocumentProjectionError
+          ? e.reasons.map(r => r.message).join('; ')
+          : e?.message || 'Invalid JSON';
+        setJsonParseError(detail);
+        setMessage(`Cannot project to canvas: ${detail}. Fix the JSON first.`);
         return;
       }
     }
@@ -201,17 +198,31 @@ export const ScenarioComposer: React.FC = () => {
         .then(data => {
           const doc = data.scenario;
           if (doc) {
+            // [P0-4] Catalog documents pass the SAME projection validation as
+            // pasted JSON — an unrepresentable document is refused, not degraded.
+            let projection: CanvasProjection;
+            try {
+              projection = projectToCanvas(doc);
+            } catch (e: any) {
+              const detail = e instanceof DocumentProjectionError
+                ? e.reasons.map(r => r.message).join('; ')
+                : String(e?.message || e);
+              setLoadError(`Scenario cannot be safely edited on canvas: ${detail}`);
+              window.dispatchEvent(new CustomEvent('agentv-toast', {
+                detail: { message: `Load Refused: ${detail}`, type: 'error' }
+              }));
+              return;
+            }
             setRawDoc(doc);
             setScenarioId(doc.metadata?.id || doc.id || scenarioIdParam);
             setTitle(doc.metadata?.name || doc.title || 'Loaded Scenario');
             setVersion(doc.metadata?.version || '1.0.0');
-            setLifecycleStatus(doc.metadata?.status || 'Draft');
+            setLifecycleStatus((doc.metadata?.status || 'Draft') as any);
             setIndustry(doc.industry || 'generic');
             setComplianceLevel(doc.metadata?.compliance_level || 'Standard');
             setDescription(doc.metadata?.description || doc.description || '');
 
-            const workflow = doc.workflow || { nodes: [], edges: [] };
-            const flowNodes = (workflow.nodes || []).map((n: any, idx: number) => ({
+            const flowNodes = projection.nodes.map((n, idx) => ({
               id: n.id,
               type: 'default',
               position: { x: 150 + idx * 220, y: 150 },
@@ -231,10 +242,10 @@ export const ScenarioComposer: React.FC = () => {
               }
             }));
 
-            const flowEdges = (workflow.edges || []).map((e: any, idx: number) => ({
+            const flowEdges = projection.edges.map((e, idx) => ({
               id: `edge-${idx}`,
-              source: e.from,
-              target: e.to,
+              source: e.source,
+              target: e.target,
               data: { condition: e.condition }
             }));
 
@@ -253,6 +264,9 @@ export const ScenarioComposer: React.FC = () => {
       if (draft) {
         try {
           const parsed = JSON.parse(draft);
+          // [P0-4] Drafts from the Spec Importer pass the same projection
+          // validation; unrepresentable drafts are refused, never degraded.
+          const projection = projectToCanvas(parsed);
           setRawDoc(parsed);
           if (parsed.metadata?.id) setScenarioId(parsed.metadata.id);
           if (parsed.metadata?.name) setTitle(parsed.metadata.name);
@@ -260,43 +274,43 @@ export const ScenarioComposer: React.FC = () => {
           if (parsed.metadata?.compliance_level) setComplianceLevel(parsed.metadata.compliance_level);
           if (parsed.metadata?.description) setDescription(parsed.metadata.description);
 
-          if (parsed.workflow?.nodes) {
-            const flowNodes = parsed.workflow.nodes.map((n: any, idx: number) => ({
-              id: n.id,
-              type: 'default',
-              position: { x: 150 + idx * 220, y: 150 },
-              data: {
-                label: n.id,
-                task_description: n.task_description,
-                required_tools: n.required_tools || [],
-                expected_outcome: n.expected_outcome || []
-              },
-              style: {
-                background: '#0f172a',
-                color: '#fff',
-                border: '1px solid #334155',
-                borderRadius: '8px',
-                fontSize: '11px',
-                width: 160
-              }
-            }));
-            setNodes(flowNodes);
-          }
+          setNodes(projection.nodes.map((n, idx) => ({
+            id: n.id,
+            type: 'default',
+            position: { x: 150 + idx * 220, y: 150 },
+            data: {
+              label: n.id,
+              task_description: n.task_description,
+              required_tools: n.required_tools || [],
+              expected_outcome: n.expected_outcome || []
+            },
+            style: {
+              background: '#0f172a',
+              color: '#fff',
+              border: '1px solid #334155',
+              borderRadius: '8px',
+              fontSize: '11px',
+              width: 160
+            }
+          })));
 
-          if (parsed.workflow?.edges) {
-            const flowEdges = parsed.workflow.edges.map((e: any, idx: number) => ({
-              id: `edge-${idx}`,
-              source: e.from,
-              target: e.to,
-              data: { condition: e.condition }
-            }));
-            setEdges(flowEdges);
-          }
+          setEdges(projection.edges.map((e, idx) => ({
+            id: `edge-${idx}`,
+            source: e.source,
+            target: e.target,
+            data: { condition: e.condition }
+          })));
           window.dispatchEvent(new CustomEvent('agentv-toast', {
             detail: { message: 'Draft scenario loaded from Spec Importer.', type: 'success' }
           }));
         } catch (e) {
-          console.warn("Failed to load draft scenario:", e);
+          const detail = e instanceof DocumentProjectionError
+            ? `Draft cannot be safely edited on canvas: ${e.reasons.map(r => r.message).join('; ')}`
+            : 'Failed to load draft scenario.';
+          console.warn(detail, e);
+          window.dispatchEvent(new CustomEvent('agentv-toast', {
+            detail: { message: detail, type: 'error' }
+          }));
         } finally {
           localStorage.removeItem('aes-draft');
         }
@@ -384,6 +398,66 @@ export const ScenarioComposer: React.FC = () => {
     setNodes(nds => [...nds, newNode]);
   };
 
+  // [C3b] Lifecycle transitions go through the server state machine
+  // (POST /api/scenarios/<id>/transition). The server validates legality,
+  // requires audit reasons for sensitive regressions, and appends transition
+  // history — the client never mutates lifecycle status locally.
+  const handleLifecycleTransition = async (target: string) => {
+    if (target === lifecycleStatus) return;
+    if (!isPersistedScenario) {
+      setMessage('Lifecycle transitions require a saved catalog scenario. Save first.');
+      return;
+    }
+    const legal = LEGAL_TRANSITIONS[lifecycleStatus] || [];
+    if (!legal.includes(target)) {
+      setMessage(
+        `Illegal transition: '${lifecycleStatus}' → '${target}'. Legal next states: ${
+          legal.length ? legal.join(', ') : '(none — terminal state)'
+        }.`
+      );
+      return;
+    }
+
+    setTransitioning(true);
+    setMessage('');
+    try {
+      const res = await fetch(
+        `/api/scenarios/${encodeURIComponent(scenarioId)}/transition`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ target_status: target })
+        }
+      );
+      const data = await res.json();
+      if (res.ok && data.status === 'success') {
+        setLifecycleStatus(data.lifecycle_status);
+        if (rawDoc?.metadata) {
+          setRawDoc({
+            ...rawDoc,
+            metadata: {
+              ...rawDoc.metadata,
+              status: data.lifecycle_status,
+              content_hash: data.content_hash ?? rawDoc.metadata.content_hash,
+            },
+          });
+        }
+        setMessage(`Lifecycle transitioned to ${data.lifecycle_status} (server-authoritative).`);
+      } else {
+        const legalFromServer: string[] = data.legal_transitions || [];
+        setMessage(
+          `Transition rejected: ${data.error || 'Unknown error.'}${
+            legalFromServer.length ? ` Legal next states: ${legalFromServer.join(', ')}.` : ''
+          }`
+        );
+      }
+    } catch (e: any) {
+      setMessage(`Transition request failed: ${e.message}`);
+    } finally {
+      setTransitioning(false);
+    }
+  };
+
   const validateScenario = () => {
     const errors: string[] = [];
     if (!scenarioId.trim()) {
@@ -426,6 +500,26 @@ export const ScenarioComposer: React.FC = () => {
       } catch (e: any) {
         setJsonParseError(e?.message || 'Invalid JSON');
         setMessage(`JSON Syntax Error: ${e?.message}`);
+        return;
+      }
+
+      // [C3a] Server-side canonical validation gate. The parsed JSON document
+      // must pass POST /api/scenarios/validate BEFORE it can be saved; local
+      // syntax-checking alone is not sufficient.
+      try {
+        const vRes = await fetch('/api/scenarios/validate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ scenario: authoritativeDoc })
+        });
+        const vData = await vRes.json();
+        if (!vData.valid) {
+          const serverErrors: string[] = vData.errors || ['Validation failed without details.'];
+          setMessage(`Server Validation Failed: ${serverErrors.join(' | ')}`);
+          return;
+        }
+      } catch (e: any) {
+        setMessage(`Validation request failed: ${e.message}`);
         return;
       }
     }
@@ -488,14 +582,16 @@ export const ScenarioComposer: React.FC = () => {
       const data = await res.json();
       if (res.ok && data.scenario) {
         const parsed = data.scenario;
+        // [P0-4] Imported specs pass projection validation like every other path.
+        const projection = projectToCanvas(parsed);
+        setRawDoc(parsed);
         setScenarioId(parsed.metadata?.id || 'imported-scenario');
         setTitle(parsed.metadata?.name || 'Imported AES Scenario');
         setIndustry(parsed.industry || 'generic');
         setComplianceLevel(parsed.metadata?.compliance_level || 'Standard');
         setDescription(parsed.metadata?.description || '');
 
-        // Load nodes preserving raw data
-        const parsedNodes = (parsed.workflow?.nodes || []).map((n: any, idx: number) => ({
+        setNodes(projection.nodes.map((n, idx) => ({
           id: n.id,
           type: 'default',
           position: { x: 100 + idx * 200, y: 150 },
@@ -504,24 +600,16 @@ export const ScenarioComposer: React.FC = () => {
             task_description: n.task_description,
             required_tools: n.required_tools || [],
             expected_outcome: n.expected_outcome || [],
-            rawNode: n,
           },
           style: { background: '#0f172a', color: '#fff', border: '1px solid #334155', borderRadius: '8px', fontSize: '11px', width: 160 }
-        }));
-        setNodes(parsedNodes);
+        })));
 
-        // Preserve workflow edges from spec if present
-        if (parsed.workflow?.edges && parsed.workflow.edges.length > 0) {
-          const parsedEdges = parsed.workflow.edges.map((e: any, idx: number) => ({
-            id: `edge_${idx}`,
-            source: e.from,
-            target: e.to,
-            data: { condition: e.condition || '' },
-          }));
-          setEdges(parsedEdges);
-        } else {
-          setEdges([]);
-        }
+        setEdges(projection.edges.map((e, idx) => ({
+          id: `edge_${idx}`,
+          source: e.source,
+          target: e.target,
+          data: { condition: e.condition || '' },
+        })));
         setShowImportModal(false);
         setMessage('Successfully parsed spec into scenario canvas nodes!');
       } else {
@@ -580,19 +668,43 @@ export const ScenarioComposer: React.FC = () => {
             />
           </div>
 
-          {/* Status Selector */}
+          {/* [C3b] Lifecycle Status Selector — transitions are server-gated.
+              Options not legally reachable from the current state are disabled
+              with the reason surfaced in the tooltip. */}
           <div className="flex items-center gap-1 bg-slate-950/80 border border-slate-850 rounded px-2 py-0.5">
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Status:</span>
-            <select
-              disabled={!canEditScenario}
-              value={lifecycleStatus}
-              onChange={(e) => setLifecycleStatus(e.target.value as any)}
-              className="bg-transparent border-none text-indigo-400 font-bold text-[11px] focus:outline-none disabled:opacity-60 cursor-pointer"
-            >
-              <option value="Draft">Draft</option>
-              <option value="Validated">Validated</option>
-              <option value="Ready">Ready to Run</option>
-            </select>
+            {(() => {
+              const options = ['Draft', 'Validated', 'Ready', 'Deprecated'] as const;
+              const legal = LEGAL_TRANSITIONS[lifecycleStatus] || [];
+              return (
+                <select
+                  disabled={!canEditScenario || transitioning}
+                  value={lifecycleStatus}
+                  onChange={(e) => handleLifecycleTransition(e.target.value)}
+                  title={
+                    !canEditScenario
+                      ? 'Read-only mode.'
+                      : !isPersistedScenario
+                        ? 'Save this scenario to the Catalog before changing lifecycle state.'
+                        : `Legal next states from '${lifecycleStatus}': ${
+                            legal.length ? legal.join(', ') : 'none (terminal state)'
+                          }. Transitions are validated server-side.`
+                  }
+                  className="bg-transparent border-none text-indigo-400 font-bold text-[11px] focus:outline-none disabled:opacity-60 cursor-pointer"
+                >
+                  {options.map((opt) => {
+                    const isCurrent = opt === lifecycleStatus;
+                    const isLegal = legal.includes(opt);
+                    return (
+                      <option key={opt} value={opt} disabled={!isCurrent && !isLegal}>
+                        {opt}
+                        {!isCurrent && !isLegal ? ' (illegal from ' + lifecycleStatus + ')' : ''}
+                      </option>
+                    );
+                  })}
+                </select>
+              );
+            })()}
           </div>
 
           {!canEditScenario && (

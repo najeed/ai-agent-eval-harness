@@ -15,12 +15,27 @@ interface RunItem {
   scenario: string;
   timestamp: string;
   status?: string;
-  verdict?: 'VERIFIED' | 'NOT_VERIFIED' | 'POLICY_BREACH' | 'UNVERIFIED';
+  verdict?: 'VERIFIED' | 'FAILED_VERIFICATION' | 'UNKNOWN';
   score?: number;
   duration?: number;
+  agent?: string;
+  resultStatus?: 'PASS' | 'FAIL';
   has_certificate?: boolean;
   manifest?: any;
 }
+
+const formatStarted = (ts: string | undefined): string => {
+  if (!ts) return '—';
+  const parsed = new Date(ts);
+  if (isNaN(parsed.getTime())) return ts;
+  return parsed.toLocaleString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+};
 
 export const RunsReports: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -54,9 +69,15 @@ export const RunsReports: React.FC = () => {
       const res = await fetch('/api/runs');
       const data = await res.json();
       const loaded: any[] = data.runs || [];
+      // [C1b] The server's verification_status is authoritative (cert trace-hash
+      // vs current-trace compare). The client NEVER infers a verdict from
+      // certificate presence or pass/fail status — absent verdicts are UNKNOWN.
       const parsedRuns: RunItem[] = loaded.map((r) => {
-        const isCert = !!r.has_certificate;
-        const verdict = r.verification_status || (isCert ? 'VERIFIED' : r.passed === false ? 'NOT_VERIFIED' : 'UNVERIFIED');
+        const rawVerdict = r.verification_status;
+        const verdict: RunItem['verdict'] =
+          rawVerdict === 'VERIFIED' || rawVerdict === 'FAILED_VERIFICATION'
+            ? rawVerdict
+            : 'UNKNOWN';
         return {
           run_id: r.run_id,
           scenario: r.scenario || r.run_id,
@@ -65,7 +86,9 @@ export const RunsReports: React.FC = () => {
           verdict: verdict,
           score: r.score ?? undefined,
           duration: r.duration_seconds ?? r.duration ?? undefined,
-          has_certificate: isCert,
+          agent: r.identifier || undefined,
+          resultStatus: r.result_status || undefined,
+          has_certificate: !!r.has_certificate,
         };
       });
       setRuns(parsedRuns);
@@ -181,9 +204,8 @@ export const RunsReports: React.FC = () => {
               {[
                 { key: 'All', label: 'All' },
                 { key: 'VERIFIED', label: 'Verified' },
-                { key: 'NOT_VERIFIED', label: 'Failed Verification' },
-                { key: 'POLICY_BREACH', label: 'Policy Breach' },
-                { key: 'UNVERIFIED', label: 'Unverified (No Cert)' },
+                { key: 'FAILED_VERIFICATION', label: 'Failed Verification' },
+                { key: 'UNKNOWN', label: 'Unknown' },
               ].map((st) => (
                 <button
                   key={st.key}
@@ -205,48 +227,62 @@ export const RunsReports: React.FC = () => {
               <table className="w-full text-left text-xs text-slate-300 min-w-[800px]">
                 <thead className="bg-slate-950/80 border-b border-slate-800 text-[10px] text-slate-500 uppercase tracking-wider font-mono">
                   <tr>
-                    <th className="px-6 py-3.5 font-semibold w-56">Run ID</th>
-                    <th className="px-6 py-3.5 font-semibold min-w-[200px]">Scenario Target</th>
+                    <th className="px-6 py-3.5 font-semibold min-w-[220px]">Scenario</th>
+                    <th className="px-6 py-3.5 font-semibold whitespace-nowrap">Agent</th>
                     <th className="px-6 py-3.5 font-semibold whitespace-nowrap">Verification Verdict</th>
+                    <th className="px-6 py-3.5 font-semibold whitespace-nowrap">Started</th>
                     <th className="px-6 py-3.5 font-semibold whitespace-nowrap">Duration</th>
                     <th className="px-6 py-3.5 font-semibold text-right min-w-[260px] whitespace-nowrap">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60 font-mono">
                   {filteredRuns.map((r) => {
+                    // [C1b] Server-authoritative verdict only — no inference.
                     const isVer = r.verdict === 'VERIFIED';
-                    const isBreach = r.verdict === 'POLICY_BREACH';
-                    const isFailed = r.verdict === 'NOT_VERIFIED';
+                    const isFailed = r.verdict === 'FAILED_VERIFICATION';
                     const verdictLabel = isVer
                       ? 'Verified'
-                      : isBreach
-                        ? 'Policy Breach'
-                        : isFailed
-                          ? 'Failed Verification'
-                          : 'Unverified';
+                      : isFailed
+                        ? 'Failed Verification'
+                        : 'Unknown';
 
                     return (
                       <tr key={r.run_id} className="hover:bg-slate-850/50 transition">
-                        <td className="px-6 py-4 font-bold text-slate-200 max-w-[220px] truncate" title={r.run_id}>
-                          {r.run_id}
+                        <td className="px-6 py-4 font-sans font-medium text-white max-w-[280px]">
+                          <div className="truncate" title={r.scenario}>{r.scenario}</div>
+                          <button
+                            onClick={() => navigator.clipboard?.writeText(r.run_id)}
+                            title="Copy run ID"
+                            className="mt-1 px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-[9px] font-mono text-slate-400 hover:text-indigo-300 align-middle"
+                          >
+                            {r.run_id.length > 14 ? r.run_id.slice(0, 14) + '…' : r.run_id} ⧉
+                          </button>
                         </td>
-                        <td className="px-6 py-4 font-sans font-medium text-white max-w-[260px] truncate" title={r.scenario}>
-                          {r.scenario}
+                        <td className="px-6 py-4 font-sans text-slate-400 max-w-[180px] truncate" title={r.agent || 'Unknown agent'}>
+                          {r.agent || '—'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
+                            title={
+                              isVer
+                                ? 'Certificate trace-hash matches the current trace (server-verified).'
+                                : isFailed
+                                  ? 'Certificate trace-hash does NOT match the current trace.'
+                                  : 'No certificate available, or the server could not verify this run.'
+                            }
                             className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5 ${isVer
                                 ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
-                                : isBreach
-                                  ? 'bg-rose-500/10 border border-rose-500/20 text-rose-400'
-                                  : isFailed
-                                    ? 'bg-red-500/10 border border-red-500/20 text-red-400'
-                                    : 'bg-amber-500/10 border border-amber-500/20 text-amber-400'
+                                : isFailed
+                                  ? 'bg-red-500/10 border border-red-500/20 text-red-400'
+                                  : 'bg-slate-500/10 border border-slate-500/20 text-slate-400'
                               }`}
                           >
                             {isVer ? <ShieldCheck className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}
                             {verdictLabel}
                           </span>
+                        </td>
+                        <td className="px-6 py-4 text-slate-400 whitespace-nowrap" title={r.timestamp}>
+                          {formatStarted(r.timestamp)}
                         </td>
                         <td className="px-6 py-4 text-slate-400 whitespace-nowrap">
                           {r.duration != null ? `${r.duration.toFixed(1)}s` : '-'}

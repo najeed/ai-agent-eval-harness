@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify, request
 from eval_runner import config as config
 from eval_runner.catalog import ScenarioCatalog as ScenarioCatalog
 
+from .agent_targets import agent_targets_bp as agent_targets_bp
 from .analyze import analyze_bp as analyze_bp
 from .compliance_packs import compliance_packs_bp as compliance_packs_bp
 from .demo import demo_bp as demo_bp, execute_demo_command, get_loan_demo_context
@@ -52,18 +53,32 @@ def security_intercept_core_blueprint():
 
 
 def register_core_routes(app, nav_registry):
-    """Consolidated Navigation Registry for the AgentV Console."""
+    """Consolidated Navigation Registry for the AgentV Console.
+
+    [G6] Entries are organized by user job (Verify / Author / Inspect /
+    Audit / System). The ``group`` field is honored by the v2 console when
+    merging this manifest into its base navigation; paths are deduped
+    against built-in entries there.
+    """
     from eval_runner.config import ENABLE_DEMO
 
     items = [
         {"id": "core_heading", "title": "Core Harness", "type": "heading"},
-        {"id": "dashboard", "title": "Dashboard", "path": "/", "icon": "home", "type": "internal"},
+        {
+            "id": "dashboard",
+            "title": "Dashboard",
+            "path": "/",
+            "icon": "home",
+            "type": "internal",
+            "group": "Verify",
+        },
         {
             "id": "scenarios",
             "title": "Scenarios",
             "path": "/scenarios",
             "icon": "file-text",
             "type": "internal",
+            "group": "Author",
         },
         {
             "id": "reports",
@@ -71,6 +86,7 @@ def register_core_routes(app, nav_registry):
             "path": "/reports",
             "icon": "bar-chart-2",
             "type": "internal",
+            "group": "Inspect",
         },
         {
             "id": "editor",
@@ -78,6 +94,7 @@ def register_core_routes(app, nav_registry):
             "path": "/editor",
             "icon": "file-text",
             "type": "internal",
+            "group": "Author",
         },
         {
             "id": "debugger",
@@ -85,6 +102,7 @@ def register_core_routes(app, nav_registry):
             "path": "/debugger",
             "icon": "activity",
             "type": "internal",
+            "group": "Inspect",
         },
         {
             "id": "docs",
@@ -92,6 +110,7 @@ def register_core_routes(app, nav_registry):
             "path": "/docs",
             "icon": "book",
             "type": "internal",
+            "group": "System",
         },
     ]
     if ENABLE_DEMO:
@@ -103,6 +122,7 @@ def register_core_routes(app, nav_registry):
                     "path": "/demo",
                     "icon": "shield-check",
                     "type": "internal",
+                    "group": "Demo",
                 },
                 {
                     "id": "loan_demo",
@@ -110,6 +130,7 @@ def register_core_routes(app, nav_registry):
                     "path": "/demo/loan",
                     "icon": "play",
                     "type": "internal",
+                    "group": "Demo",
                 },
             ]
         )
@@ -121,6 +142,7 @@ def register_core_routes(app, nav_registry):
                 "path": "/docs/api",
                 "icon": "box",
                 "type": "internal",
+                "group": "System",
             },
             {
                 "id": "community",
@@ -128,6 +150,7 @@ def register_core_routes(app, nav_registry):
                 "path": "https://github.com/najeed/ai-agent-eval-harness",
                 "icon": "github",
                 "type": "external",
+                "group": "System",
             },
         ]
     )

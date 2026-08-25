@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Command } from 'cmdk';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Home, FileText, Play, Activity, BarChart2, ShieldCheck, 
+  Home, FileText, Activity, BarChart2, ShieldCheck, 
   Settings, BookOpen, Sparkles, Search
 } from 'lucide-react';
 
@@ -74,7 +74,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, setIsOpe
                 className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer text-sm text-slate-355 hover:bg-indigo-500 hover:text-white transition-colors"
               >
                 <Home className="w-4 h-4 text-indigo-400" />
-                <span>Dashboard Overview</span>
+                <span>New Verification</span>
               </Command.Item>
               <Command.Item 
                 onSelect={() => runCommand(() => navigate('/scenarios'))}
@@ -89,13 +89,6 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, setIsOpe
               >
                 <Sparkles className="w-4 h-4 text-indigo-400" />
                 <span>Scenario Composer (Visual Editor)</span>
-              </Command.Item>
-              <Command.Item 
-                onSelect={() => runCommand(() => navigate('/runner'))}
-                className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer text-sm text-slate-355 hover:bg-indigo-500 hover:text-white transition-colors"
-              >
-                <Play className="w-4 h-4 text-indigo-400" />
-                <span>Evaluation Runner</span>
               </Command.Item>
               <Command.Item 
                 onSelect={() => runCommand(() => navigate('/debugger'))}

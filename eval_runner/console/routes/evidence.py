@@ -16,6 +16,7 @@ from typing import Any
 
 from flask import Blueprint, Response, jsonify, request
 
+from agentv_runtime.versions import VERIFICATION_PACKAGE_VERSION
 from eval_runner import config
 from eval_runner.console.auth_manager import require_permission
 from eval_runner.console.routes.runs import resolve_trace_path
@@ -69,15 +70,41 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
     raw_trace_bytes = trace_path.read_bytes()
     trace_hash = compute_sha3_digest(raw_trace_bytes)
 
-    for line in raw_trace_bytes.decode("utf-8", errors="replace").splitlines():
-        line = line.strip()
-        if line:
-            try:
-                ev = json.loads(line)
-                events.append(ev)
-            except Exception as err:
-                logger.debug("Skipping unparseable trace event line: %s", err)
-                continue
+    # [E1] Parse preserving per-line provenance: (event, raw_line) pairs plus
+    # byte offsets of any UNPARSEABLE lines (E3 corruption detection).
+    events: list[dict[str, Any]] = []
+    events_with_lines: list[tuple[dict[str, Any], str]] = []
+    corrupt_line_offsets: list[int] = []
+    offset = 0
+    for raw_line in raw_trace_bytes.split(b"\n"):
+        line_start_offset = offset
+        offset += len(raw_line) + 1  # account for the split newline
+        text = raw_line.decode("utf-8", errors="replace").strip()
+        if not text:
+            continue
+        try:
+            ev = json.loads(text)
+            events.append(ev)
+            events_with_lines.append((ev, text))
+        except Exception as err:
+            logger.debug("Skipping unparseable trace event line: %s", err)
+            corrupt_line_offsets.append(line_start_offset)
+
+    # [E3] Corruption policy: unparseable trace content means the evidence
+    # stream is not certifiable. The outcome can never be VERIFIED while
+    # corruption is present, and exact byte offsets are reported.
+    if corrupt_line_offsets:
+        integrity_corruption: dict[str, Any] | None = {
+            "status": "EVIDENCE_INVALID",
+            "corrupt_count": len(corrupt_line_offsets),
+            "corrupt_line_byte_offsets": corrupt_line_offsets,
+            "policy": (
+                "Unparseable trace content detected; the evidence stream cannot "
+                "be certified until the trace is intact."
+            ),
+        }
+    else:
+        integrity_corruption = None
 
     # Extract verdicts and run status
     run_end_event = next((e for e in reversed(events) if e.get("event") == "run_end"), {})
@@ -162,7 +189,12 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
     else:
         verified_outcome = "NOT_VERIFIED"
 
-    evidence_chain_valid: bool = verified_outcome == "VERIFIED"
+    # [E3] Corruption blocks certification: an unparseable trace can never
+    # back a VERIFIED package, regardless of signatures.
+    if corrupt_line_offsets:
+        verified_outcome = "EVIDENCE_INVALID"
+
+    evidence_chain_valid: bool = verified_outcome == "VERIFIED" and not corrupt_line_offsets
 
     # Score calculation from authentic assertions
     assertions = data_block.get("assertions", [])
@@ -176,10 +208,29 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
     else:
         score = 0.0
 
+    # [E1] Evidence Graph v1: every assertion linked to its source event
+    # (by _seq + exact-line content hash) or reported UNRESOLVED.
+    from agentv_runtime.evidence_graph import build_evidence_graph
+
+    carrier_seq = next(
+        (
+            e.get("_seq")
+            for e in reversed(events)
+            if e.get("event") == "run_end" and isinstance(e.get("_seq"), int)
+        ),
+        None,
+    )
+    evidence_graph = build_evidence_graph(
+        events_with_lines,
+        assertions,
+        carrier_seq=carrier_seq,
+        artifact_hashes={"run.jsonl": trace_hash},
+    )
+
     # Deterministic canonical core (excluding envelope timestamps)
     canonical_payload = {
         "format": "agentv_verification_package",
-        "package_version": "2.0.0",
+        "package_version": VERIFICATION_PACKAGE_VERSION,
         "run_id": run_id,
         "tenant_id": manifest_data.get("tenant_id", "default-tenant"),
         "workspace_id": manifest_data.get("workspace_id", "default-workspace"),
@@ -201,6 +252,8 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
                 {"name": "run.jsonl", "hash": trace_hash, "type": "trace_events"},
             ],
         },
+        "evidence_graph": evidence_graph,
+        **({"integrity_corruption": integrity_corruption} if integrity_corruption else {}),
         "signatures": signatures,
     }
 

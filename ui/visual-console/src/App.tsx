@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { BrowserRouter, Routes, Route, Link, useLocation, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, useLocation, Outlet, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import { CommandPalette } from './components/CommandPalette';
 import {
@@ -18,7 +18,6 @@ import { Dashboard as DashboardPage } from './pages/Dashboard';
 import { VerificationWorkflow as VerificationWorkflowPage } from './pages/VerificationWorkflow';
 import { ScenarioLibrary as ScenarioLibraryPage } from './pages/ScenarioLibrary';
 import { ScenarioComposer as ScenarioComposerPage } from './pages/ScenarioComposer';
-import { EvaluationRunner as EvaluationRunnerPage } from './pages/EvaluationRunner';
 import { LiveDebugger as LiveDebuggerPage } from './pages/LiveDebugger';
 import { RunsReports as RunsReportsPage } from './pages/RunsReports';
 
@@ -27,11 +26,16 @@ import { FailureCorpus } from './pages/FailureCorpus';
 import { Triage } from './pages/Triage';
 import { SpecToEvalImporter } from './pages/SpecToEvalImporter';
 import { AdversarialMutator } from './pages/AdversarialMutator';
-import { TraceExplain } from './pages/TraceExplain';
 
 // Extension host: generic load/contract fallback + RuntimeExtension contract
 import { ExtensionLoadError } from './components/ExtensionLoadError';
-import { validateExtensionManifest, EXTENSION_CONTRACT_VERSION } from './types/extension-contract';
+import {
+  validateExtensionManifest,
+  EXTENSION_CONTRACT_VERSION,
+  hostApisForTier,
+  READ_ONLY_HOST_APIS,
+  type ExtensionTier,
+} from './types/extension-contract';
 import { verifySubresourceIntegrity } from './utils/crypto';
 
 
@@ -53,7 +57,8 @@ export interface NavItem {
   icon?: string | React.ReactNode;
   group?: string;               // Target nav group (e.g., "Operations", "Audit & Compliance", "Build", "System")
   badge?: string;               // Optional badge chip (e.g., "LIVE", "HOT-RELOAD", "FLEET", "APM", "◆ ENT")
-  tier?: 'core' | 'enterprise'; // Visual delineation marker
+  tier?: 'core' | 'enterprise' | 'local'; // Visual delineation marker
+                                // [D2] 'local': unsigned plugin contribution — flagged in nav and limited to read-only host APIs.
   remoteEntry?: string;         // ESM bundle URL for dynamic micro-frontend mounting
   sriHash?: string;             // Subresource integrity digest (FIPS 202 SHA3 / WebCrypto SHA-2)
   required_role?: string[];     // Optional RBAC role gating
@@ -160,6 +165,13 @@ export function mergeNavManifest(
       required_role: Array.isArray(rawItem.required_role)
         ? rawItem.required_role
         : undefined,
+      // [D2] Unsigned plugin contributions are stamped LOCAL: they render a
+      // visible flag in the nav. Signed contributions must carry their own SRI.
+      ...(rawItem.tier
+        ? { tier: rawItem.tier }
+        : !(rawItem.sriHash || rawItem.integrity || rawItem.sri)
+          ? { tier: 'local' as const }
+          : {}),
     };
 
     let targetGroup = merged.find(
@@ -217,6 +229,43 @@ class RemoteErrorBoundary extends React.Component<
   }
 }
 
+// ---------------------------------------------------------------------------
+// [D2] Extension host API surface. Extensions receive ONLY the APIs their
+// trust tier grants: unsigned/local extensions are restricted to read-only
+// host APIs; there is deliberately no escape hatch client-side.
+// ---------------------------------------------------------------------------
+
+interface ExtensionHostApiInfo {
+  tier: ExtensionTier;
+  allowedApis: readonly string[];
+  /** Tier-gated host-API authorization check (string-typed for forward compat). */
+  can(call: string): boolean;
+}
+
+const ExtensionHostContext = React.createContext<ExtensionHostApiInfo>({
+  tier: 'unsigned-local',
+  allowedApis: READ_ONLY_HOST_APIS,
+  can: () => false,
+});
+
+export const useExtensionHost = (): ExtensionHostApiInfo =>
+  React.useContext(ExtensionHostContext);
+
+const ExtensionHostProvider: React.FC<{ tier: ExtensionTier; children: React.ReactNode }> = ({
+  tier,
+  children,
+}) => {
+  const value = useMemo<ExtensionHostApiInfo>(() => {
+    const allowedApis = hostApisForTier(tier);
+    return {
+      tier,
+      allowedApis,
+      can: (call: string) => (allowedApis as readonly string[]).includes(call),
+    };
+  }, [tier]);
+  return <ExtensionHostContext.Provider value={value}>{children}</ExtensionHostContext.Provider>;
+};
+
 /**
  * Generic Runtime Micro-Frontend Remote Loader:
  * Loads dynamic ESM components on demand behind a signed origin and cryptographic SRI verification policy.
@@ -232,11 +281,14 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
       | 'untrusted_origin'
       | 'sri_failed'
       | 'contract_violation'
+      | 'publisher_failed'
       | 'load_error';
     Component?: React.ComponentType<any>;
     errorMessage?: string;
     computedDigest?: string;
     violations?: string[];
+    publisherReason?: string;
+    tier?: ExtensionTier;
   }>({ status: 'idle' });
 
   const isTrustedOrigin = useMemo(() => {
@@ -269,8 +321,40 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
       try {
         if (active) setLoadingState({ status: 'verifying' });
 
+        // [D2] Trust-tier classification for this entry.
+        const isRemotePinned = !!sriHash;
+
+        // Resolve the trust tier for an already-validated manifest.
+        //   signature present -> server-side publisher verification
+        //   no signature      -> ONLY locally-served modules qualify, as
+        //                        'unsigned-local' (read-only host APIs).
+        async function resolveTier(manifestObj: any): Promise<ExtensionTier> {
+          if (!manifestObj.signature) {
+            if (!isRemotePinned) return 'unsigned-local';
+            throw { kind: 'publisher', reason: 'remote-without-signature' };
+          }
+          try {
+            const res = await fetch('/api/v1/extensions/verify-publisher', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ manifest: manifestObj }),
+            });
+            const data = await res.json();
+            if (res.ok && data.valid) {
+              return manifestObj.tier === 'official' ? 'official' : 'community';
+            }
+            throw { kind: 'publisher', reason: data.reason || 'signature-mismatch' };
+          } catch (err: any) {
+            if (err && err.kind === 'publisher') throw err;
+            // Server unreachable: fail-closed for remote modules; local dev
+            // degrades to the restricted unsigned-local surface.
+            if (!isRemotePinned) return 'unsigned-local';
+            throw { kind: 'publisher', reason: 'verification-unavailable' };
+          }
+        }
+
         // If SRI hash is provided, enforce byte-level integrity verification
-        if (sriHash) {
+        if (isRemotePinned) {
           const res = await fetch(entryUrl);
           if (!res.ok) {
             throw new Error(`HTTP ${res.status}: Failed to fetch remote module.`);
@@ -295,52 +379,42 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
           const blob = new Blob([buffer], { type: 'text/javascript' });
           blobUrlToRevoke = URL.createObjectURL(blob);
           const mod = await import(/* @vite-ignore */ blobUrlToRevoke);
-
-          // [P1-14] Contract validation: the remote module must export a
-          // RuntimeExtension-conforming manifest BEFORE it may be mounted.
           const manifestObj = (mod as any)?.manifest;
-          if (!manifestObj) {
-            if (active) {
-              setLoadingState({
-                status: 'contract_violation',
-                violations: [
-                  "Remote module exports no 'manifest' — the runtime cannot establish publisher, capabilities or api_version.",
-                ],
-              });
-            }
-            return;
-          }
-          const violations = validateExtensionManifest(manifestObj, {
-            requireSignature: true,
-          });
+
+          // [P1-14][D2] MANDATORY manifest + signed publisher for remotes.
+          let violations = !manifestObj
+            ? [
+                "Remote module exports no 'manifest' — the runtime cannot establish publisher, capabilities or api_version.",
+              ]
+            : validateExtensionManifest(manifestObj, { requireSignature: true });
           if (violations.length > 0) {
             console.error(`[ExtensionHost] Contract violations for ${entryUrl}:`, violations);
-            if (active) {
-              setLoadingState({ status: 'contract_violation', violations });
-            }
+            if (active) setLoadingState({ status: 'contract_violation', violations });
             return;
           }
 
+          const tier = await resolveTier(manifestObj);
           const ResolvedComp = mod.default || mod[Object.keys(mod)[0]] || mod;
-          if (active) setLoadingState({ status: 'ready', Component: ResolvedComp });
+          if (active) setLoadingState({ status: 'ready', Component: ResolvedComp, tier });
         } else {
-          // Direct dynamic ESM import for local/trusted origin without SRI pin
+          // Local/trusted-origin ESM without SRI pin. [D2] The manifest is
+          // MANDATORY here too — an anonymous module can never be mounted.
           const mod = await import(/* @vite-ignore */ entryUrl);
-
-          // Same contract gate applies to locally-served extensions.
           const manifestObj = (mod as any)?.manifest;
-          if (manifestObj) {
-            const violations = validateExtensionManifest(manifestObj, {
-              requireSignature: true,
-            });
-            if (violations.length > 0 && active) {
-              setLoadingState({ status: 'contract_violation', violations });
-              return;
-            }
+
+          const violations = !manifestObj
+            ? [
+                "Module exports no 'manifest' — every extension must declare its identity, capabilities and host-API usage (RuntimeExtension contract).",
+              ]
+            : validateExtensionManifest(manifestObj, { requireSignature: false });
+          if (violations.length > 0 && active) {
+            setLoadingState({ status: 'contract_violation', violations });
+            return;
           }
 
+          const tier = await resolveTier(manifestObj);
           const ResolvedComp = mod.default || mod[Object.keys(mod)[0]] || mod;
-          if (active) setLoadingState({ status: 'ready', Component: ResolvedComp });
+          if (active) setLoadingState({ status: 'ready', Component: ResolvedComp, tier });
         }
       } catch (err: any) {
         console.error(`[ZeroTrust Loader] Error mounting module ${entryUrl}:`, err);
@@ -387,6 +461,17 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
     );
   }
 
+  if (loadingState.status === 'publisher_failed') {
+    return (
+      <ExtensionLoadError
+        title="Publisher Verification Failed"
+        entryUrl={entryUrl}
+        violations={[`Reason: ${loadingState.publisherReason}`]}
+        message="The manifest signature could not be verified against the runtime trust root. Unsigned LOCAL extensions are limited to read-only APIs; remote extensions require a verified publisher."
+      />
+    );
+  }
+
   if (loadingState.status === 'contract_violation') {
     return (
       <ExtensionLoadError
@@ -410,10 +495,22 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
 
   if (loadingState.status === 'ready' && loadingState.Component) {
     const Component = loadingState.Component;
+    const tier: ExtensionTier = loadingState.tier ?? 'unsigned-local';
     return (
-      <RemoteErrorBoundary entryUrl={entryUrl}>
-        <Component />
-      </RemoteErrorBoundary>
+      <ExtensionHostProvider tier={tier}>
+        {tier === 'unsigned-local' && (
+          <div className="bg-amber-500/10 border-b border-amber-500/20 px-6 py-2 flex items-center gap-2 text-[10px] text-amber-300 font-medium shrink-0">
+            <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+            <span>
+              LOCAL EXTENSION — unsigned. Mounted with READ-ONLY host APIs only;
+              routes/nav contributions are flagged in navigation.
+            </span>
+          </div>
+        )}
+        <RemoteErrorBoundary entryUrl={entryUrl}>
+          <Component />
+        </RemoteErrorBoundary>
+      </ExtensionHostProvider>
     );
   }
 
@@ -434,15 +531,17 @@ const ConsoleLayout: React.FC = () => {
   const location = useLocation();
   // [P1-15] RBAC is presentation gating only. The role shown here comes from
   // the server (/api/auth/me); there is no client-side persona switching.
-  const { user, role, canAccessSettings, canEditScenario, canRunEval, canSignCert } = useRBAC();
+  const { user, role, canAccessSettings, canEditScenario, canSignCert } = useRBAC();
   const [isCmdOpen, setIsCmdOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [toasts, setToasts] = useState<{ id: string; message: string; type: string }[]>([]);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
-    Overview: true,
-    Work: true,
-    Govern: true,
-    Admin: true,
+    Verify: true,
+    Author: true,
+    Inspect: true,
+    Audit: true,
+    Advanced: false,
+    System: true,
   });
 
   // Authoritative RuntimeHealth (P0-1) + operating mode (P0-5).
@@ -512,43 +611,49 @@ const ConsoleLayout: React.FC = () => {
     setExpandedGroups(prev => ({ ...prev, [title]: !prev[title] }));
   };
 
+  // [G6] Navigation is organized around user jobs, not internal feature
+  // names. Primary jobs are expanded by default; power tools live in the
+  // collapsed "Advanced" group and stay reachable via routes/⌘K.
   const baseNavGroups: NavGroup[] = [
     {
-      title: 'Workflow',
+      title: 'Verify',
       items: [
         { name: 'New Verification', path: '/', icon: <Home className="w-4 h-4" /> },
       ],
     },
     {
-      title: 'Scenarios',
+      title: 'Author',
       items: [
         { name: 'Scenario Library', path: '/scenarios', icon: <FileText className="w-4 h-4" /> },
         { name: 'Visual Composer', path: '/editor', icon: <Activity className="w-4 h-4" /> },
       ],
     },
     {
-      title: 'Runs',
+      title: 'Inspect',
       items: [
-        { name: 'Active & History', path: '/reports', icon: <BarChart2 className="w-4 h-4" /> },
+        { name: 'Runs & History', path: '/reports', icon: <BarChart2 className="w-4 h-4" /> },
         { name: 'Live Debugger', path: '/debugger', icon: <Play className="w-4 h-4" /> },
-        { name: 'Evaluation Runner', path: '/runner', icon: <Cpu className="w-4 h-4" /> },
-        { name: 'Triage Center', path: '/triage', icon: <AlertTriangle className="w-4 h-4" /> },
       ],
     },
     {
-      title: 'Evidence',
+      title: 'Audit',
       items: [
         { name: 'Evidence Packages & Certs', path: '/reports?view=packages', icon: <FileText className="w-4 h-4" /> },
         { name: 'Trust Center', path: '/trust', icon: <ShieldCheck className="w-4 h-4" /> },
       ],
     },
     {
-      title: 'Tooling & Diagnostics',
+      title: 'Advanced',
       items: [
+        { name: 'Triage Center', path: '/triage', icon: <AlertTriangle className="w-4 h-4" /> },
         { name: 'Adversarial Mutator', path: '/mutator', icon: <ChevronRight className="w-3.5 h-3.5" /> },
         { name: 'Spec-to-Eval Importer', path: '/spec-import', icon: <ChevronRight className="w-3.5 h-3.5" /> },
-        { name: 'Trace Explain (AI)', path: '/explain', icon: <ChevronRight className="w-3.5 h-3.5" /> },
         { name: 'Failure Corpus', path: '/failures', icon: <ChevronRight className="w-3.5 h-3.5" /> },
+      ],
+    },
+    {
+      title: 'System',
+      items: [
         { name: 'Documentation', path: '/docs', icon: <BookOpen className="w-4 h-4" /> },
         { name: 'Settings & Security', path: '/settings', icon: <Settings className="w-4 h-4" /> },
       ],
@@ -567,7 +672,6 @@ const ConsoleLayout: React.FC = () => {
     }
     if (item.path === '/settings' && !canAccessSettings) return true;
     if (item.path === '/editor' && !canEditScenario) return true;
-    if (item.path === '/runner' && !canRunEval) return true;
     if (item.path === '/trust' && !canSignCert) return true;
     if (item.path === '/mutator' && !canEditScenario) return true;
     return false;
@@ -692,6 +796,14 @@ const ConsoleLayout: React.FC = () => {
                           {!sidebarCollapsed && item.badge && (
                             <span className="ml-auto px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                               {item.badge}
+                            </span>
+                          )}
+                          {!sidebarCollapsed && !item.badge && item.tier === 'local' && (
+                            <span
+                              title="[D2] Unsigned/local extension: read-only host APIs only."
+                              className="ml-auto px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30"
+                            >
+                              LOCAL
                             </span>
                           )}
                         </Link>
@@ -857,7 +969,10 @@ function AppRoutes() {
         <Route path="/scenarios" element={<ScenarioLibraryPage />} />
         <Route path="/scenarios/compose" element={<ScenarioComposerPage />} />
         <Route path="/editor" element={<ScenarioComposerPage />} />
-        <Route path="/runner" element={<EvaluationRunnerPage />} />
+        {/* [G1] The standalone runner page was folded into the verification
+            workflow's Advanced execution settings drawer. Old /runner links
+            redirect to the primary spine. */}
+        <Route path="/runner" element={<Navigate to="/" replace />} />
         <Route path="/debugger" element={<LiveDebuggerPage />} />
         <Route path="/reports" element={<RunsReportsPage />} />
         <Route path="/runs" element={<RunsReportsPage />} />
@@ -870,7 +985,6 @@ function AppRoutes() {
         {/* Runtime OSS Diagnostics & Tooling */}
         <Route path="/spec-import" element={<SpecToEvalImporter />} />
         <Route path="/mutator" element={<AdversarialMutator />} />
-        <Route path="/explain" element={<TraceExplain />} />
         <Route path="/failures" element={<FailureCorpus />} />
         <Route path="/triage" element={<Triage />} />
 

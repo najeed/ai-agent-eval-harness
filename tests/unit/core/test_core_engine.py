@@ -160,7 +160,7 @@ async def test_engine_consistency_score():
                 {
                     "id": "task-1",
                     "task_description": "Do something",
-                    "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+                    "state_hygiene": {"rules": [{"path": "__unset_probe__", "op": "not_exists"}]},
                 }
             ],
             "edges": [],

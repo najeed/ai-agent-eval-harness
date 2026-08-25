@@ -15,7 +15,7 @@ def base_scenario():
                 {
                     "id": "node_1",
                     "task_description": "test task",
-                    "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+                    "state_hygiene": {"rules": [{"path": "__unset_probe__", "op": "not_exists"}]},
                 }
             ]
         },
@@ -221,12 +221,12 @@ async def test_session_history_duplication_fix(base_scenario, tmp_path):
             {
                 "id": "n1",
                 "task_description": "t1",
-                "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+                "state_hygiene": {"rules": [{"path": "__unset_probe__", "op": "not_exists"}]},
             },
             {
                 "id": "n2",
                 "task_description": "t2",
-                "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+                "state_hygiene": {"rules": [{"path": "__unset_probe__", "op": "not_exists"}]},
             },
         ],
         "edges": [{"from": "n1", "to": "n2"}],
@@ -300,7 +300,7 @@ async def test_session_execute_tasks_cancellation_branch(base_scenario, tmp_path
             {
                 "id": "node_cancel",
                 "task_description": "task",
-                "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+                "state_hygiene": {"rules": [{"path": "__unset_probe__", "op": "not_exists"}]},
             }
         ],
     }

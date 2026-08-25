@@ -1,3 +1,4 @@
+import hmac
 import json
 import logging
 import os
@@ -11,6 +12,7 @@ from flask import Blueprint, Response, jsonify, request
 from eval_runner import config
 from eval_runner.explainer import explain_trace
 from eval_runner.metrics import MetricRegistry
+from eval_runner.utils import crypto
 
 from ..auth_manager import Permission, require_permission
 
@@ -230,6 +232,27 @@ class RunsCache:
                     rid = event.get("run_id") or p.parent.name or ""
                     scenario = event.get("scenario")
 
+                    # [G5] Primary identifiers: agent identity + terminal
+                    # result/duration from the authoritative run_end event.
+                    identifier = event.get("identifier") or ""
+                    duration_seconds = None
+                    result_status = None
+                    if p.stat().st_size < 512 * 1024:
+                        lines = f.readlines()
+                        for ln in reversed(lines):
+                            ln = ln.strip()
+                            if not ln:
+                                continue
+                            try:
+                                last_ev = json.loads(ln)
+                            except Exception:
+                                continue
+                            if last_ev.get("event") == "run_end":
+                                data_block = last_ev.get("data", {})
+                                duration_seconds = data_block.get("duration")
+                                result_status = "PASS" if data_block.get("passed") else "FAIL"
+                            break
+
                     if not scenario and rid.startswith("run-"):
                         parts = rid.split("-")
                         if len(parts) > 2:
@@ -246,6 +269,9 @@ class RunsCache:
                         "scenario": scenario,
                         "timestamp": timestamp,
                         "path": str(p.relative_to(config.RUN_LOG_DIR)),
+                        "identifier": identifier,
+                        "duration_seconds": duration_seconds,
+                        "result_status": result_status,
                     }
             except Exception as e:
                 logger.debug(f"Parsing vault run warning: {e}")
@@ -284,10 +310,66 @@ runs_cache.start()
 @run_bp.route("/runs", methods=["GET"])
 @require_permission(Permission.RUNS_READ)
 def list_runs():
-    """Returns a list of recent run traces (Consolidated)."""
+    """Returns a list of recent run traces (Consolidated).
+
+    [C1a] Every row carries a server-authoritative ``verification_status``
+    computed by comparing the certificate/manifest trace_hash against the
+    CURRENT trace bytes (SHA3-256). Presence of a certificate alone is never
+    treated as proof; unverifiable runs report UNKNOWN.
+    """
     query = request.args.get("q", "").lower()
     runs = runs_cache.get_runs(query=query)
-    return jsonify({"runs": runs[:200]})
+    enriched = []
+    for run in runs[:200]:
+        row = dict(run)
+        row["verification_status"] = _authoritative_verdict(run.get("run_id") or "")
+        enriched.append(row)
+    return jsonify({"runs": enriched})
+
+
+def _authoritative_verdict(run_id: str) -> str:
+    """
+    [C1a] Hash-compare verdict: VERIFIED, FAILED_VERIFICATION, or UNKNOWN.
+
+    UNKNOWN means no certificate/manifest was available or the check could
+    not be performed — the server refuses to fabricate a verdict from file
+    presence or execution status.
+    """
+    if not run_id:
+        return "UNKNOWN"
+
+    tp = resolve_trace_path(run_id)
+    if not tp or not tp.exists():
+        return "UNKNOWN"
+
+    manifest_path: Path | None = None
+    vault_manifest = config.RUN_LOG_DIR / run_id / "run_manifest.json"
+    if vault_manifest.exists():
+        manifest_path = vault_manifest
+    else:
+        cert_backup = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
+        if cert_backup.exists():
+            manifest_path = cert_backup
+    if manifest_path is None:
+        return "UNKNOWN"
+
+    try:
+        with open(manifest_path, encoding="utf-8") as f:
+            manifest = json.load(f)
+        expected = manifest.get("trace_hash")
+        if not isinstance(expected, str) or not expected:
+            return "UNKNOWN"
+        # Tolerate prefixed ('sha3_256:<hex>') and bare digest forms.
+        expected_hex = expected.split(":", 1)[1] if ":" in expected else expected
+        actual_hex = crypto.file_hash(tp)
+        return (
+            "VERIFIED"
+            if hmac.compare_digest(expected_hex.lower(), actual_hex.lower())
+            else "FAILED_VERIFICATION"
+        )
+    except Exception:  # noqa: BLE001 - verdict failures must degrade to UNKNOWN
+        logger.debug("Authoritative verdict check failed for %s", run_id, exc_info=True)
+        return "UNKNOWN"
 
 
 @run_bp.route("/v1/runs/stream-list", methods=["GET"])

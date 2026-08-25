@@ -1,14 +1,15 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { 
-  ReactFlow, Controls, Background, useNodesState, useEdgesState 
+import {
+  ReactFlow, Controls, Background, useNodesState, useEdgesState
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import {
-  Sparkles, AlertTriangle, CheckCircle2
+  Sparkles, AlertTriangle, CheckCircle2, Layers, Crosshair, Maximize2
 } from 'lucide-react';
 import ReactDiffViewer from 'react-diff-viewer-continued';
 import dagre from 'dagre';
+import { computeScenarioHash } from '../lib/aesDocument';
 
 interface LogEvent {
   event: string;
@@ -36,7 +37,130 @@ interface LogEvent {
   failure_class?: string;
   failure_reason?: string;
   edge_type?: string;
+  iteration?: number;
 }
+
+// ---------------------------------------------------------------------------
+// [P0-12] Strict StateComparison contract. A divergence event carries a
+// structured `state_comparison` object (expected / actual / comparison /
+// assertions / source / timestamp) emitted by the runtime parity verifier.
+// The debugger renders ONLY this object. Absence of the payload means NO
+// structured comparison exists — message text is never reparsed into a diff.
+// ---------------------------------------------------------------------------
+
+export interface StateComparisonPayload {
+  expected: unknown;
+  actual: unknown;
+  comparison?: Record<string, unknown>;
+  assertions?: unknown[];
+  source?: string;
+  timestamp?: string;
+}
+
+export const parseStateComparison = (evt: unknown): StateComparisonPayload | null => {
+  if (!evt || typeof evt !== 'object') return null;
+  const sc = (evt as any).state_comparison;
+  if (!sc || typeof sc !== 'object' || Array.isArray(sc)) return null;
+  if (!('expected' in sc) || !('actual' in sc)) return null;
+  return sc as StateComparisonPayload;
+};
+
+// ---------------------------------------------------------------------------
+// [Sprint-6] Forensic execution waterfall — derived purely from authoritative
+// execution_graph_node events: one row per execution_instance_id, parent/child
+// depth via parent_execution_id, retries/iterations labeled, observed
+// durations only. No synthesized timing.
+// ---------------------------------------------------------------------------
+
+export interface WaterfallRow {
+  execId: string;
+  nodeId: string;
+  parentExecutionId: string | null;
+  iteration: number;
+  status: string;
+  durationMs: number | null;
+  startTs: number | null;
+  endTs: number | null;
+  depth: number;
+}
+
+export const buildWaterfall = (
+  allEvents: LogEvent[]
+): { rows: WaterfallRow[]; tMin: number | null; tMax: number | null } => {
+  const byExec = new Map<string, WaterfallRow>();
+  for (const e of allEvents) {
+    if (e.event !== 'execution_graph_node') continue;
+    const nodeId = e.scenario_node_id || e.node_id || '?';
+    const execId = e.execution_instance_id || `${nodeId}#${e.iteration ?? e.attempt ?? 1}`;
+    let row = byExec.get(execId);
+    if (!row) {
+      row = {
+        execId,
+        nodeId,
+        parentExecutionId: e.parent_execution_id ?? null,
+        iteration: e.iteration ?? 1,
+        status: e.status || 'pending',
+        durationMs: typeof e.duration_ms === 'number' ? e.duration_ms : null,
+        startTs: null,
+        endTs: null,
+        depth: 0,
+      };
+      byExec.set(execId, row);
+    }
+    if (e.status) row.status = e.status;
+    if (typeof e.duration_ms === 'number' && e.duration_ms > 0) row.durationMs = e.duration_ms;
+    const ts = Date.parse(e.timestamp || '');
+    if (!Number.isNaN(ts)) {
+      if (e.status === 'running' && row.startTs === null) row.startTs = ts;
+      row.endTs = row.endTs === null ? ts : Math.max(row.endTs, ts);
+      if (row.startTs === null) row.startTs = ts;
+    }
+  }
+
+  const rows = [...byExec.values()];
+  const byId = new Map(rows.map(r => [r.execId, r]));
+  for (const r of rows) {
+    let d = 0;
+    let p = r.parentExecutionId;
+    const seen = new Set<string>([r.execId]);
+    while (p && byId.has(p) && !seen.has(p)) {
+      d += 1;
+      seen.add(p);
+      p = byId.get(p)!.parentExecutionId;
+    }
+    r.depth = d;
+  }
+
+  rows.sort((a, b) =>
+    (a.startTs ?? Infinity) - (b.startTs ?? Infinity) || a.execId.localeCompare(b.execId)
+  );
+
+  const starts = rows.map(r => r.startTs).filter((v): v is number => v !== null);
+  const ends = rows.map(r => r.endTs).filter((v): v is number => v !== null);
+  const tMin = starts.length ? Math.min(...starts) : null;
+  const tMax = ends.length ? Math.max(...ends) : null;
+  return { rows, tMin, tMax };
+};
+
+// ---------------------------------------------------------------------------
+// [P0-10] Gap bookkeeping for the monotonic SSE cursor.
+// ---------------------------------------------------------------------------
+
+export interface SeqGap { from: number; to: number }
+
+export const mergeSeqGap = (existing: SeqGap[], next: SeqGap): SeqGap[] => {
+  const merged = [...existing, next].sort((a, b) => a.from - b.from);
+  const out: SeqGap[] = [];
+  for (const g of merged) {
+    const last = out[out.length - 1];
+    if (last && g.from <= last.to + 1) {
+      last.to = Math.max(last.to, g.to);
+    } else {
+      out.push({ ...g });
+    }
+  }
+  return out.slice(-10); // cap retained ranges; integrity panel shows totals
+};
 
 // ---------------------------------------------------------------------------
 // [B2] Compositional trace-integrity flags.
@@ -261,7 +385,7 @@ export const computeTelemetryDiagnostics = (allEvents: LogEvent[]): NodeDiagnost
 };
 
 export const LiveDebugger: React.FC = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const runIdParam = searchParams.get('run_id');
 
   const [runId, setRunId] = useState(runIdParam || '');
@@ -282,6 +406,13 @@ export const LiveDebugger: React.FC = () => {
     runtimeNodeCount: number;
   }>({ source: 'TOPOLOGY_UNAVAILABLE', scenarioNodeCount: 0, runtimeNodeCount: 0 });
 
+  // [GUI-P0-8] Explicit graph layers. The planned graph (scenario DAG), the
+  // executed graph (execution_graph_edge evidence) and the divergence overlay
+  // (skipped planned nodes / unplanned executions) are DISTINCT views — the
+  // runtime never blends them into one implied truth.
+  type GraphLayerMode = 'planned' | 'executed' | 'divergence';
+  const [layerMode, setLayerMode] = useState<GraphLayerMode>('executed');
+
   // [B3] Non-authoritative heuristic findings — rendered ONLY in the
   // diagnostics panel; never applied to graph node states.
   const [diagnostics, setDiagnostics] = useState<NodeDiagnostic[]>([]);
@@ -297,12 +428,24 @@ export const LiveDebugger: React.FC = () => {
   const [showExplain, setShowExplain] = useState(false);
   const [analysisData, setAnalysisData] = useState<any>(null);
 
-  // SSE connection resilience (NFR 8.1)
+  // [P0-9] Single cancellable stream controller. Exactly one EventSource and
+  // at most one pending retry timer exist per run_id; every async continuation
+  // is stale-guarded against run switches; terminal runs never schedule
+  // retries (explicit FINISHED state).
   const [connectionStatus, setConnectionStatus] = useState<'CONNECTED' | 'CONNECTING' | 'RECONNECTING' | 'DISCONNECTED' | 'FINISHED'>('DISCONNECTED');
   const [reconnectCount, setReconnectCount] = useState(0);
+  const [streamGaps, setStreamGaps] = useState<SeqGap[]>([]);
 
-  // SSE stream reference
-  const eventSourceRef = useRef<EventSource | null>(null);
+  interface StreamCtl {
+    es: EventSource | null;
+    timer: ReturnType<typeof setTimeout> | null;
+    run: string | null;
+    attempt: number;
+  }
+  const streamCtlRef = useRef<StreamCtl>({ es: null, timer: null, run: null, attempt: 0 });
+  // [P0-10] Server-generated monotonic event ids: dedupe set + replay cursor.
+  const seenSeqsRef = useRef<Set<number>>(new Set());
+  const cursorRef = useRef<number>(0);
 
   useEffect(() => {
     // Load runs dropdown
@@ -319,9 +462,12 @@ export const LiveDebugger: React.FC = () => {
 
   // Run status checker — only responsible for status/scenario state.
   // Graph derivation is handled exclusively by the reactive useEffect below.
+  // Every async continuation is stale-guarded: a response for a run the
+  // operator already left can never enter state.
   const checkStatus = async (rid: string) => {
     try {
       const res = await fetch(`/api/v1/runs/${rid}`);
+      if (streamCtlRef.current.run !== rid) return;
       if (res.ok) {
         const data = await res.json();
         setStatus(data.status || 'COMPLETED');
@@ -331,30 +477,33 @@ export const LiveDebugger: React.FC = () => {
         }
       }
     } catch (e) {
+      if (streamCtlRef.current.run !== rid) return;
       setStatus('UNKNOWN');
       setSourcedFromMaster(false);
     }
   };
 
-  // Independent scenario topology fetcher with exponential backoff retry
-  // Decoupled from stream connect to close the race window against session startup
+  // Independent scenario topology fetcher with exponential backoff retry.
+  // Decoupled from stream connect to close the race window against session
+  // startup; stale-guarded against run switches and capped attempts.
   const fetchScenarioWithRetry = async (rid: string, attempt = 0) => {
+    const staleAfterFetch = () => streamCtlRef.current.run !== rid;
     try {
       const res = await fetch(`/api/v1/runs/${rid}`);
-      if (res.ok) {
+      if (!staleAfterFetch() && res.ok) {
         const data = await res.json();
         if (data.scenario) {
           setActiveScenario(data.scenario);
           return;
         }
       }
-      if (attempt < 5) {
-        setTimeout(() => fetchScenarioWithRetry(rid, attempt + 1), 500 * (attempt + 1));
-      }
     } catch (e) {
-      if (attempt < 5) {
-        setTimeout(() => fetchScenarioWithRetry(rid, attempt + 1), 500 * (attempt + 1));
-      }
+      // fall through to retry scheduling
+    }
+    if (!staleAfterFetch() && attempt < 5) {
+      setTimeout(() => {
+        if (streamCtlRef.current.run === rid) fetchScenarioWithRetry(rid, attempt + 1);
+      }, 500 * (attempt + 1));
     }
   };
 
@@ -467,137 +616,182 @@ export const LiveDebugger: React.FC = () => {
     }
   }, [runId, searchParams]);
 
-  // Persistent Node Positions Cache to prevent coordinate jitter during telemetry stream
+  // Persistent Node Positions Cache to prevent coordinate jitter during
+  // telemetry stream. [Sprint-2] Keys are composite:
+  //   `${run_id}::${scenario_hash}::${node_id}`
+  // so changed topology or a different run can never resurrect stale
+  // coordinates for a same-named node.
   const nodePositionsRef = useRef<Map<string, { x: number; y: number }>>(new Map());
-  const lastEventIdRef = useRef<number>(0);
+  const scenarioHash = useMemo(
+    () => computeScenarioHash((activeScenario as any) ?? null),
+    [activeScenario]
+  );
+  const posKey = (nodeId: string) => `${runId}::${scenarioHash}::${nodeId}`;
 
-  // Close stream helper
-  const closeStream = () => {
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-      eventSourceRef.current = null;
+  const teardownStream = () => {
+    const ctl = streamCtlRef.current;
+    if (ctl.timer) {
+      clearTimeout(ctl.timer);
+      ctl.timer = null;
+    }
+    if (ctl.es) {
+      ctl.es.close();
+      ctl.es = null;
     }
   };
 
-  // Connect to SSE stream with auto-reconnect backoff (NFR 8.1) and Last-Event-ID catch-up replay
-  const connectStream = (rid: string, attempt = 0) => {
-    closeStream();
-    if (attempt === 0) {
-      setEvents([]);
-      setSelectedEvent(null);
-      setNodes([]);
-      setEdges([]);
-      nodePositionsRef.current.clear();
-      lastEventIdRef.current = 0;
-      setReconnectCount(0);
-      setConnectionStatus('CONNECTING');
-    } else {
-      setConnectionStatus('RECONNECTING');
+  const resetRunLocalState = () => {
+    setEvents([]);
+    setSelectedEvent(null);
+    setNodes([]);
+    setEdges([]);
+    cursorRef.current = 0;
+    seenSeqsRef.current.clear();
+    setStreamGaps([]);
+    setReconnectCount(0);
+  };
+
+  const scheduleRetry = (rid: string) => {
+    const ctl = streamCtlRef.current;
+    if (ctl.attempt >= 8) {
+      setConnectionStatus('DISCONNECTED');
+      return;
     }
-    
+    const delay = Math.min(10000, Math.pow(2, ctl.attempt) * 1000);
+    ctl.attempt += 1;
+    setReconnectCount(ctl.attempt);
+    setConnectionStatus('RECONNECTING');
+    // At most ONE pending retry timer; it re-validates run identity before
+    // firing, so a stale timer can never reopen a dead run's stream.
+    ctl.timer = setTimeout(() => {
+      if (streamCtlRef.current.run !== rid) return;
+      streamCtlRef.current.timer = null;
+      connectStream(rid);
+    }, delay);
+  };
+
+  const connectStream = (rid: string) => {
+    if (!rid) return;
+    const ctl = streamCtlRef.current;
+    const isNewRun = ctl.run !== rid;
+
+    // Tear down ANY previous connection/timer before touching state: there is
+    // never more than one live EventSource for this component.
+    teardownStream();
+    ctl.es = null;
+    ctl.timer = null;
+    ctl.attempt = 0;
+
+    if (isNewRun) {
+      ctl.run = rid;
+      resetRunLocalState();
+      // [Sprint-2] Prune layout cache entries belonging to other runs.
+      for (const key of Array.from(nodePositionsRef.current.keys())) {
+        if (!key.startsWith(`${rid}::`)) nodePositionsRef.current.delete(key);
+      }
+    }
+    setConnectionStatus('CONNECTING');
+
     checkStatus(rid);
     fetchScenarioWithRetry(rid, 0);
 
-    // Set query param preserving explain if it exists
-    const nextParams: Record<string, string> = { run_id: rid };
-    if (searchParams.get('explain') === 'true') {
-      nextParams.explain = 'true';
-    }
-    setSearchParams(nextParams);
-
-    // Server-Sent Events stream initialization with catchup cursor
-    const lastId = lastEventIdRef.current;
-    const streamUrl = `/api/v1/runs/${rid}/stream${lastId > 0 ? `?last_event_id=${lastId}` : ''}`;
-    const source = new EventSource(streamUrl);
-    eventSourceRef.current = source;
+    // Resume from the monotonic cursor — no URL rewriting inside the stream
+    // lifecycle; the address bar only changes when the operator picks a run.
+    const lastId = cursorRef.current;
+    const source = new EventSource(
+      `/api/v1/runs/${rid}/stream${lastId > 0 ? `?last_event_id=${lastId}` : ''}`
+    );
+    ctl.es = source;
 
     source.onopen = () => {
-      console.log(`SSE connection to ${rid} opened.`);
+      if (streamCtlRef.current.es !== source) return;
       setConnectionStatus('CONNECTED');
       setReconnectCount(0);
     };
 
     source.onmessage = (event) => {
+      // Stale-frame guard: frames from a superseded connection are dropped.
+      if (streamCtlRef.current.run !== rid || streamCtlRef.current.es !== source) return;
+      let data: LogEvent;
       try {
+        data = JSON.parse(event.data);
         if (event.lastEventId) {
-          lastEventIdRef.current = parseInt(event.lastEventId, 10) || lastEventIdRef.current;
+          data._seq = parseInt(event.lastEventId, 10) || data._seq;
         }
-        const data: LogEvent = JSON.parse(event.data);
-        if (data.event === 'timeout') {
-          setStatus('STALLED');
-          return;
-        }
-        if (data.event === 'not_found') {
-          console.info('[LiveDebugger] Trace not ready yet:', data.message);
-          setConnectionStatus('CONNECTING');
-          return;
-        }
-
-        // Hydrate scenario topology directly from canonical event envelope if present
-        if (data.event === 'run_start' || (data as any).name === 'run_start') {
-          const inlineScenario = (data as any).scenario_data || (data as any).scenario_obj;
-          const inlineWorkflow = (data as any).workflow;
-          if (inlineScenario && typeof inlineScenario === 'object' && Object.keys(inlineScenario).length > 0) {
-            setActiveScenario(inlineScenario);
-          } else if (inlineWorkflow && typeof inlineWorkflow === 'object') {
-            setActiveScenario((prev: any) => {
-              if (prev?.workflow?.nodes?.length) return prev;
-              return {
-                id: (data as any).scenario || 'scenario',
-                title: (data as any).scenario || 'Scenario',
-                workflow: inlineWorkflow,
-              };
-            });
-          }
-        }
-
-        // Append to events stream
-        setEvents(prev => [...prev, data]);
       } catch (e) {
         console.error('Failed to parse SSE event data:', e);
+        return;
       }
+      if (data.event === 'timeout') {
+        setStatus('STALLED');
+        return;
+      }
+      if (data.event === 'not_found') {
+        console.info('[LiveDebugger] Trace not ready yet:', data.message);
+        setConnectionStatus('CONNECTING');
+        return;
+      }
+
+      // [P0-10] Dedupe + gap detection BEFORE an event may enter state.
+      const seq = typeof data._seq === 'number' ? data._seq : 0;
+      if (seq > 0) {
+        if (seenSeqsRef.current.has(seq)) return;
+        seenSeqsRef.current.add(seq);
+        const prev = cursorRef.current;
+        if (prev > 0 && seq > prev + 1) {
+          setStreamGaps(g => mergeSeqGap(g, { from: prev + 1, to: seq - 1 }));
+        }
+        if (seq > cursorRef.current) cursorRef.current = seq;
+      }
+
+      // Hydrate scenario topology directly from canonical event envelope if present
+      if (data.event === 'run_start' || (data as any).name === 'run_start') {
+        const inlineScenario = (data as any).scenario_data || (data as any).scenario_obj;
+        const inlineWorkflow = (data as any).workflow;
+        if (inlineScenario && typeof inlineScenario === 'object' && Object.keys(inlineScenario).length > 0) {
+          setActiveScenario(inlineScenario);
+        } else if (inlineWorkflow && typeof inlineWorkflow === 'object') {
+          setActiveScenario((prev: any) => {
+            if (prev?.workflow?.nodes?.length) return prev;
+            return {
+              id: (data as any).scenario || 'scenario',
+              title: (data as any).scenario || 'Scenario',
+              workflow: inlineWorkflow,
+            };
+          });
+        }
+      }
+
+      setEvents(prevEvents => [...prevEvents, data]);
     };
 
     source.onerror = () => {
-      console.warn('SSE stream encountered error or finished. Reconnecting/Closing.');
-      closeStream();
+      if (streamCtlRef.current.run !== rid || streamCtlRef.current.es !== source) return;
+      source.close();
+      streamCtlRef.current.es = null;
 
       const TERMINAL_STATUSES = new Set(['COMPLETED', 'FAILED', 'ABORTED', 'ERROR']);
 
       fetch(`/api/v1/runs/${rid}`)
         .then(res => {
-          if (!res.ok) {
-            throw new Error(`Status check returned ${res.status}`);
-          }
+          if (!res.ok) throw new Error(`Status check returned ${res.status}`);
           return res.json();
         })
         .then(data => {
+          if (streamCtlRef.current.run !== rid) return;
           const runStatus = data.status || 'UNKNOWN';
           setStatus(runStatus);
           setSourcedFromMaster(!!data.sourced_from_master);
 
           if (TERMINAL_STATUSES.has(runStatus)) {
+            // Explicit terminal state: the run is over; no retries are scheduled.
             setConnectionStatus('FINISHED');
           } else {
-            if (attempt < 8) {
-              const backoffTime = Math.min(10000, Math.pow(2, attempt) * 1000);
-              setReconnectCount(attempt + 1);
-              setTimeout(() => {
-                connectStream(rid, attempt + 1);
-              }, backoffTime);
-            } else {
-              setConnectionStatus('DISCONNECTED');
-            }
+            scheduleRetry(rid);
           }
         })
         .catch(() => {
-          if (attempt < 8) {
-            const backoffTime = Math.min(10000, Math.pow(2, attempt) * 1000);
-            setReconnectCount(attempt + 1);
-            setTimeout(() => connectStream(rid, attempt + 1), backoffTime);
-          } else {
-            setConnectionStatus('DISCONNECTED');
-          }
+          if (streamCtlRef.current.run === rid) scheduleRetry(rid);
         });
     };
   };
@@ -606,7 +800,7 @@ export const LiveDebugger: React.FC = () => {
     if (runId) {
       connectStream(runId);
     }
-    return () => closeStream();
+    return () => teardownStream();
   }, [runId]);
 
   // [B1][B3] Canonical Graph Builder — provenance-gated (Runtime-Authoritative
@@ -622,7 +816,9 @@ export const LiveDebugger: React.FC = () => {
   const buildTraceGraph = (
     allEvents: LogEvent[],
     scen: any,
-    selection: LogEvent | null
+    selection: LogEvent | null,
+    mode: GraphLayerMode,
+    isTerminalRun: boolean
   ): {
     flowNodes: any[];
     flowEdges: any[];
@@ -637,6 +833,11 @@ export const LiveDebugger: React.FC = () => {
     const workflowEdges = scen?.workflow?.edges || [];
 
     const graphNodeEventsAll = allEvents.filter(e => e.event === 'execution_graph_node');
+    // [GUI-P0-8] Nodes with authoritative executed coverage — drives the
+    // divergence overlay (planned-but-never-executed detection).
+    const executedNodeIds = new Set<string>(
+      graphNodeEventsAll.map(e => e.scenario_node_id).filter((id): id is string => !!id)
+    );
     const seenRuntimeIds = new Set<string>();
     const runtimeDiscoveredNodes: any[] = [];
     for (const ev of graphNodeEventsAll) {
@@ -713,6 +914,19 @@ export const LiveDebugger: React.FC = () => {
         statusLabel = 'Running';
       }
 
+      // [GUI-P0-8] Divergence overlay: only in divergence layer, only from
+      // canonical evidence. Pending ≠ skipped while the run is live — a
+      // planned node is SKIPPED only once the run reached a terminal state.
+      const isUnplanned = !!(n as any).__runtime_discovered;
+      const isSkipped =
+        mode === 'divergence' && !isUnplanned && isTerminalRun && !executedNodeIds.has(id);
+      if (isSkipped) {
+        border = `${isHighlighted ? '2px' : '1px'} dashed #ef4444`;
+      }
+      if (isUnplanned && mode === 'divergence') {
+        border = `${isHighlighted ? '2px' : '1px'} dashed #f59e0b`;
+      }
+
       return {
         id,
         type: 'default',
@@ -720,7 +934,7 @@ export const LiveDebugger: React.FC = () => {
         data: {
           label: (
             <div className="space-y-1">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-1">
                 <span className="font-mono font-bold text-[10px] text-slate-200">{id}</span>
                 {maxAttempt > 1 && (
                   <span className="px-1 py-0.2 bg-amber-500/20 text-amber-300 text-[8px] rounded font-mono">
@@ -737,6 +951,22 @@ export const LiveDebugger: React.FC = () => {
                   className="px-1 py-0.2 bg-slate-800/60 text-slate-500 text-[8px] rounded tracking-wider uppercase"
                 >
                   NO GRAPH EVENT
+                </div>
+              )}
+              {isSkipped && (
+                <div
+                  title="Planned in the scenario DAG but never executed when the run terminated (execution_graph_node evidence)."
+                  className="px-1 py-0.2 bg-red-500/20 text-red-300 text-[8px] rounded font-bold tracking-wider uppercase"
+                >
+                  SKIPPED
+                </div>
+              )}
+              {isUnplanned && mode === 'divergence' && (
+                <div
+                  title="Executed at runtime but absent from the planned scenario DAG."
+                  className="px-1 py-0.2 bg-amber-500/20 text-amber-300 text-[8px] rounded font-bold tracking-wider uppercase"
+                >
+                  UNPLANNED
                 </div>
               )}
               {durationMs && (
@@ -804,7 +1034,44 @@ export const LiveDebugger: React.FC = () => {
       }
     });
 
-    const flowEdges = Array.from(flowEdgesMap.values());
+    const allEdges = Array.from(flowEdgesMap.values());
+
+    // [GUI-P0-8] Layer semantics:
+    //   planned    — the scenario DAG only (design-time contract)
+    //   executed   — authoritative execution_graph_edge transitions on top of
+    //                a dimmed plan skeleton
+    //   divergence — both layers plus node-level skip/unplanned overlays
+    const flowEdges = allEdges
+      .filter(e => {
+        const plannedEdge = e.id.startsWith('scen-edge-');
+        if (mode === 'planned') return plannedEdge;
+        return true;
+      })
+      .map(e => {
+        const plannedEdge = e.id.startsWith('scen-edge-');
+        if (!plannedEdge) {
+          // Executed transition evidence — emerald in executed/divergence.
+          return {
+            ...e,
+            animated: mode !== 'planned',
+            style: { stroke: '#10b981', strokeWidth: 2 },
+          };
+        }
+        if (mode === 'planned') {
+          return { ...e, animated: true, style: { stroke: '#6366f1', strokeWidth: 2 } };
+        }
+        // Plan skeleton dimmed under executed evidence / divergence overlay.
+        return {
+          ...e,
+          animated: false,
+          style: {
+            stroke: mode === 'divergence' ? '#818cf8' : '#475569',
+            strokeWidth: 1,
+            strokeDasharray: '5,5',
+            opacity: 0.7,
+          },
+        };
+      });
 
     // 4. Dagre Topology Layout (Preserves manual user drag coordinates)
     const dagreGraph = new dagre.graphlib.Graph();
@@ -825,7 +1092,8 @@ export const LiveDebugger: React.FC = () => {
     dagre.layout(dagreGraph);
 
     const layoutedNodes = flowNodes.map((node: any, index: number) => {
-      const savedPos = positions.get(node.id);
+      // [Sprint-2] Composite cache key: run_id :: scenario_hash :: node_id.
+      const savedPos = positions.get(posKey(node.id));
       if (savedPos) {
         return { ...node, position: savedPos };
       }
@@ -833,7 +1101,7 @@ export const LiveDebugger: React.FC = () => {
       const x = nodeWithPosition ? nodeWithPosition.x - nodeWidth / 2 + 80 : 80 + index * 220;
       const y = nodeWithPosition ? nodeWithPosition.y - nodeHeight / 2 + 50 : 50;
       const pos = { x, y };
-      positions.set(node.id, pos);
+      positions.set(posKey(node.id), pos);
       return { ...node, position: pos };
     });
 
@@ -849,12 +1117,15 @@ export const LiveDebugger: React.FC = () => {
   // Node Drag Position Saver to ensure layout state persistence
   const handleNodeDragStop = (_: any, node: any) => {
     if (node && node.id && node.position) {
-      nodePositionsRef.current.set(node.id, { x: node.position.x, y: node.position.y });
+      nodePositionsRef.current.set(posKey(node.id), { x: node.position.x, y: node.position.y });
     }
   };
 
+  const RUN_TERMINAL_STATUSES = new Set(['COMPLETED', 'FAILED', 'ABORTED', 'ERROR']);
+  const isTerminalRun = RUN_TERMINAL_STATUSES.has(status);
+
   useEffect(() => {
-    const result = buildTraceGraph(events, activeScenario, selectedEvent);
+    const result = buildTraceGraph(events, activeScenario, selectedEvent, layerMode, isTerminalRun);
     setNodes(result.flowNodes);
     setEdges(result.flowEdges);
     setTopologyProvenance({
@@ -864,7 +1135,7 @@ export const LiveDebugger: React.FC = () => {
     });
     // [B3] Heuristic findings are computed for the diagnostics panel only.
     setDiagnostics(computeTelemetryDiagnostics(events));
-  }, [events, activeScenario, selectedEvent]);
+  }, [events, activeScenario, selectedEvent, layerMode, isTerminalRun, runId, scenarioHash]);
 
 
   // [B4] Filter events by selected telemetry level via typed taxonomy
@@ -872,42 +1143,60 @@ export const LiveDebugger: React.FC = () => {
     setFilteredEvents(filterEventsByTelemetryLevel(events, telemetryLevel));
   }, [events, telemetryLevel]);
 
-  // Dynamically fit view when nodes are updated
+  // [Sprint-3] Auto-fit fires ONCE per run+scenario (initial load only).
+  // During active investigation the viewport is never moved automatically —
+  // an explicit "Fit graph" button exists in the toolbar.
+  const autoFitKeyRef = useRef<string>('');
   useEffect(() => {
-    if (reactFlowInstance && nodes.length > 0) {
-      const timer = setTimeout(() => {
-        reactFlowInstance.fitView({ padding: 0.2, duration: 400 });
-      }, 50);
-      return () => clearTimeout(timer);
-    }
-  }, [nodes.length, reactFlowInstance]);
+    if (!reactFlowInstance || nodes.length === 0) return;
+    const key = `${runId}::${scenarioHash}`;
+    if (autoFitKeyRef.current === key) return;
+    autoFitKeyRef.current = key;
+    const timer = setTimeout(() => {
+      reactFlowInstance.fitView({ padding: 0.2, duration: 400 });
+    }, 60);
+    return () => clearTimeout(timer);
+  }, [nodes.length, reactFlowInstance, runId, scenarioHash]);
 
-  // Focus and zoom on selected node from timeline selection
-  useEffect(() => {
-    if (selectedEvent && reactFlowInstance) {
-      const nodeId = selectedEvent.scenario_node_id || selectedEvent.node_id || selectedEvent.task_id;
-      if (nodeId) {
-        const targetNode = nodes.find(n => n.id === nodeId);
-        if (targetNode) {
-          const { x, y } = targetNode.position;
-          const currentZoom = reactFlowInstance.getZoom ? reactFlowInstance.getZoom() : 1.0;
-          const targetZoom = Math.min(currentZoom, 1.15);
-          reactFlowInstance.setCenter(x + 80, y + 40, { zoom: targetZoom, duration: 400 });
-        }
-      }
-    }
-  }, [selectedEvent, reactFlowInstance, nodes]);
+  // [Sprint-4] Selection NEVER moves the camera. Recentering happens only on
+  // this explicit operator action.
+  const focusSelectedNode = () => {
+    if (!selectedEvent || !reactFlowInstance) return;
+    const nodeId =
+      selectedEvent.scenario_node_id || selectedEvent.node_id || selectedEvent.task_id;
+    if (!nodeId) return;
+    const targetNode = nodes.find(n => n.id === nodeId);
+    if (!targetNode) return;
+    const { x, y } = targetNode.position;
+    const currentZoom = reactFlowInstance.getZoom ? reactFlowInstance.getZoom() : 1.0;
+    reactFlowInstance.setCenter(x + 80, y + 40, { zoom: Math.min(currentZoom, 1.15), duration: 400 });
+  };
 
   // Selection highlighting is now handled inside buildTraceGraph() via the
   // reactive useEffect([events, activeScenario, selectedEvent]) above.
   // The separate style-patch effect has been removed — it is no longer needed.
 
-  const hasError = events.some(e => 
-    e.event === 'error' || 
-    e.category === 'PARITY_STATE_DIVERGENCE' || 
-    e.message?.toLowerCase().includes('error') || 
+  const hasError = events.some(e =>
+    e.event === 'error' ||
+    e.category === 'PARITY_STATE_DIVERGENCE' ||
+    e.message?.toLowerCase().includes('error') ||
     e.message?.toLowerCase().includes('fail')
   );
+
+  // [Sprint-6] Forensic waterfall derived from authoritative graph-node events.
+  const waterfall = useMemo(() => buildWaterfall(events), [events]);
+  const focusWaterfallRow = (row: WaterfallRow) => {
+    const target = [...events]
+      .reverse()
+      .find(
+        e =>
+          e.event === 'execution_graph_node' &&
+          (e.execution_instance_id === row.execId ||
+            ((e.scenario_node_id || e.node_id) === row.nodeId &&
+              (e.iteration ?? 1) === row.iteration))
+      );
+    if (target) setSelectedEvent(target);
+  };
 
   return (
     <div className="flex h-[calc(100vh-56px)] bg-navy-base text-slate-100 overflow-hidden">
@@ -1005,6 +1294,87 @@ export const LiveDebugger: React.FC = () => {
               );
             })
           )}
+
+          {/* [Sprint-6] Execution waterfall — synchronized forensic timeline
+              built ONLY from authoritative execution_graph_node evidence:
+              parent/child depth, retries/iterations, observed durations and
+              failure boundaries. Nodes without timestamps are listed, never
+              synthesized into the time axis. */}
+          {waterfall.rows.length > 0 && (
+            <details className="border border-slate-900 rounded-lg bg-slate-950/40">
+              <summary className="px-2.5 py-2 text-[9px] font-bold uppercase tracking-wider text-slate-500 cursor-pointer hover:text-slate-400">
+                Execution Waterfall ({waterfall.rows.length})
+                {waterfall.tMin !== null && waterfall.tMax !== null && (
+                  <span className="ml-1 font-mono normal-case text-slate-600">
+                    {((waterfall.tMax - waterfall.tMin) / 1000).toFixed(2)}s span
+                  </span>
+                )}
+              </summary>
+              <div className="px-2.5 pb-2.5 space-y-1 max-h-64 overflow-y-auto">
+                {waterfall.tMin !== null && waterfall.tMax !== null && waterfall.tMax > waterfall.tMin ? (
+                  (() => {
+                    const span = waterfall.tMax - waterfall.tMin;
+                    return waterfall.rows.map(row => {
+                      const start = row.startTs ?? row.endTs!;
+                      const end = row.endTs ?? row.startTs!;
+                      const left = Math.min(((start - waterfall.tMin!) / span) * 100, 97);
+                      const width = Math.max(((end - start) / span) * 100, 1);
+                      const barCls =
+                        row.status === 'completed'
+                          ? 'bg-emerald-500/70'
+                          : row.status === 'failed'
+                            ? 'bg-red-500/80'
+                            : row.status === 'running'
+                              ? 'bg-amber-500/80 animate-pulse'
+                              : 'bg-slate-600';
+                      return (
+                        <button
+                          key={row.execId}
+                          onClick={() => focusWaterfallRow(row)}
+                          title={`${row.nodeId} · ${row.status}${row.durationMs ? ` · ${row.durationMs}ms` : ''}`}
+                          className="w-full flex items-center gap-2 group"
+                        >
+                          <span
+                            className="font-mono text-[8px] text-slate-500 truncate w-24 text-left"
+                            style={{ paddingLeft: `${Math.min(row.depth * 8, 32)}px` }}
+                          >
+                            {row.depth > 0 ? '↳ ' : ''}{row.nodeId}
+                            {row.iteration > 1 || (row.execId.match(/#(\d+)$/)?.[1] ?? '1') !== '1' ? ` ·it${row.iteration}` : ''}
+                          </span>
+                          <span className="relative flex-1 h-3 bg-slate-900/80 rounded overflow-hidden">
+                            <span
+                              className={`absolute h-full rounded ${barCls}`}
+                              style={{ left: `${left}%`, width: `${width}%` }}
+                            />
+                            {row.status === 'failed' && (
+                              <span
+                                className="absolute top-0 bottom-0 w-0.5 bg-red-300"
+                                style={{ left: `${Math.min(left + width, 99)}%` }}
+                                title="Failure boundary"
+                              />
+                            )}
+                          </span>
+                          <span className="font-mono text-[8px] text-slate-500 w-10 text-right">
+                            {row.durationMs != null ? `${(row.durationMs / 1000).toFixed(2)}s` : '—'}
+                          </span>
+                        </button>
+                      );
+                    });
+                  })()
+                ) : (
+                  waterfall.rows.map(row => (
+                    <button
+                      key={row.execId}
+                      onClick={() => focusWaterfallRow(row)}
+                      className="w-full text-left font-mono text-[8px] text-slate-500 hover:text-slate-300 truncate"
+                    >
+                      {row.depth > 0 ? '↳ ' : ''}{row.nodeId} · {row.status} · no timestamps in trace
+                    </button>
+                  ))
+                )}
+              </div>
+            </details>
+          )}
         </div>
       </div>
 
@@ -1053,6 +1423,43 @@ export const LiveDebugger: React.FC = () => {
               )}
               Trace: {integrityLabel}
             </div>
+            {/* [P0-10] Live SSE gap banner — missing server event ids are
+                reported visibly, never silently tolerated. */}
+            {streamGaps.length > 0 && (
+              <div
+                title={`Server stream gaps detected before dedupe/reorder: ${streamGaps
+                  .map(g => `${g.from}–${g.to}`)
+                  .join(', ')}. The trace-integrity panel reflects the authoritative post-replay state.`}
+                className="flex items-center gap-1.5 px-2 py-1 rounded-lg border border-rose-500/40 bg-rose-500/10 text-rose-300 font-mono text-[10px] font-bold uppercase tracking-wider cursor-help animate-pulse"
+              >
+                <AlertTriangle className="w-3.5 h-3.5" />
+                SSE GAP ({streamGaps.length})
+              </div>
+            )}
+            {/* [GUI-P0-8] Explicit graph layer selector */}
+            <div
+              title={
+                layerMode === 'planned'
+                  ? 'Planned layer: the scenario DAG as defined — the design-time control-flow contract.'
+                  : layerMode === 'executed'
+                    ? 'Executed layer: authoritative execution_graph_edge transitions over a dimmed plan skeleton.'
+                    : 'Divergence overlay: planned-vs-executed differences (SKIPPED planned nodes, UNPLANNED executions).'
+              }
+              className="flex bg-slate-950 border border-slate-800 rounded-lg p-0.5 font-mono text-[9px] font-bold uppercase tracking-wider cursor-help"
+            >
+              <Layers className="w-3.5 h-3.5 text-slate-500 self-center ml-1.5 mr-1" />
+              {(['planned', 'executed', 'divergence'] as const).map(l => (
+                <button
+                  key={l}
+                  onClick={() => setLayerMode(l)}
+                  className={`px-2 py-1 rounded-md transition-colors ${
+                    layerMode === l ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  {l}
+                </button>
+              ))}
+            </div>
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Runner Status:</span>
             <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider">
               <span className={`w-2.5 h-2.5 rounded-full ${
@@ -1073,9 +1480,9 @@ export const LiveDebugger: React.FC = () => {
                 connectionStatus === 'FINISHED' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20' :
                 'bg-slate-500/10 text-slate-400 border-slate-500/20'
               }`}>
-                {connectionStatus === 'RECONNECTING' ? `RECONNECTING (${reconnectCount}/5)` : connectionStatus}
+                {connectionStatus === 'RECONNECTING' ? `RECONNECTING (${reconnectCount}/8)` : connectionStatus}
               </span>
-              {connectionStatus !== 'CONNECTED' && connectionStatus !== 'FINISHED' && (
+              {(connectionStatus === 'DISCONNECTED' || connectionStatus === 'RECONNECTING') && (
                 <button
                   onClick={() => connectStream(runId)}
                   className="px-2 py-0.5 bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/30 rounded text-[9px] font-mono text-indigo-300 font-bold uppercase tracking-wider transition-colors cursor-pointer"
@@ -1083,6 +1490,15 @@ export const LiveDebugger: React.FC = () => {
                   Reconnect
                 </button>
               )}
+              {/* [Sprint-3] Explicit fit — auto-fit only ever happens on
+                  initial load of a run+scenario. */}
+              <button
+                title="Fit graph to viewport (explicit)"
+                onClick={() => reactFlowInstance?.fitView?.({ padding: 0.2, duration: 300 })}
+                className="px-2 py-0.5 bg-slate-800/60 hover:bg-slate-800 border border-slate-700 rounded text-[9px] font-mono text-slate-300 font-bold uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1"
+              >
+                <Maximize2 className="w-3 h-3" /> Fit
+              </button>
             </div>
           </div>
 
@@ -1226,62 +1642,92 @@ export const LiveDebugger: React.FC = () => {
                 <p className="text-white font-mono font-bold text-xs uppercase">{selectedEvent.event}</p>
               </div>
 
-              {selectedEvent.category === 'PARITY_STATE_DIVERGENCE' || (selectedEvent as any).expected_state || (selectedEvent as any).divergence ? (
-                <div className="space-y-2">
-                  <div className="p-2.5 bg-red-500/5 border border-red-500/10 rounded-lg flex gap-2 text-red-400">
-                    <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                    <div className="space-y-0.5">
-                      <h4 className="text-xs font-bold uppercase tracking-wider">State Divergence Detected</h4>
-                      <p className="text-[10px] leading-relaxed">The returned runtime state does not match the expectations defined in the execution manifest.</p>
-                    </div>
-                  </div>
-
-                  {/* Side-by-side Diff rendering authentic telemetry evidence */}
-                  <div className="border border-slate-850 rounded-lg overflow-hidden bg-slate-950 text-[10px]">
-                    <ReactDiffViewer
-                      oldValue={JSON.stringify(
-                        (selectedEvent as any).expected_state ??
-                        (selectedEvent as any).expected ??
-                        (selectedEvent as any).previous_state ??
-                        (selectedEvent as any).divergence?.expected ??
-                        { expected: selectedEvent.message || "Expected Outcome" },
-                        null,
-                        2
-                      )}
-                      newValue={JSON.stringify(
-                        (selectedEvent as any).actual_state ??
-                        (selectedEvent as any).actual ??
-                        (selectedEvent as any).current_state ??
-                        (selectedEvent as any).divergence?.actual ??
-                        (selectedEvent as any).result ??
-                        selectedEvent,
-                        null,
-                        2
-                      )}
-                      splitView={false}
-                      useDarkTheme={true}
-                      styles={{
-                        variables: {
-                          dark: {
-                            diffViewerBackground: '#020617',
-                            diffViewerColor: '#cbd5e1',
-                            addedBackground: '#064e3b',
-                            removedBackground: '#7f1d1d'
-                          }
-                        }
-                      }}
-                    />
-                  </div>
-                </div>
-
-              ) : (
-                <div className="space-y-2">
-                  <span className="text-slate-400 font-semibold">Event Parameters JSON:</span>
-                  <pre className="bg-slate-950 p-4 rounded-lg border border-slate-850 text-[10px] text-slate-300 font-mono leading-relaxed overflow-x-auto select-all max-h-[220px]">
-                    {JSON.stringify(selectedEvent, null, 2)}
-                  </pre>
-                </div>
+              {/* [Sprint-4] Explicit focus — selection never moves the camera. */}
+              {(selectedEvent.scenario_node_id || selectedEvent.node_id || selectedEvent.task_id) && (
+                <button
+                  onClick={focusSelectedNode}
+                  title="Center the graph on this event's node (explicit action only)"
+                  className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-indigo-500/40 text-slate-300 hover:text-indigo-300 text-[10px] font-bold uppercase tracking-wider transition-colors"
+                >
+                  <Crosshair className="w-3.5 h-3.5" /> Focus node
+                </button>
               )}
+
+              {(() => {
+                // [P0-12] Strict StateComparison rendering. The diff renders
+                // ONLY from the runtime's structured payload — never guessed
+                // out of message text or arbitrary fallback fields.
+                const sc = parseStateComparison(selectedEvent);
+                const legacyParity =
+                  selectedEvent.category === 'PARITY_STATE_DIVERGENCE' && !sc;
+
+                if (!sc && !legacyParity) return null;
+
+                return (
+                  <div className="space-y-2">
+                    <div className="p-2.5 bg-red-500/5 border border-red-500/10 rounded-lg flex gap-2 text-red-400">
+                      <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                      <div className="space-y-0.5">
+                        <h4 className="text-xs font-bold uppercase tracking-wider">State Divergence Detected</h4>
+                        <p className="text-[10px] leading-relaxed">The returned runtime state does not match the expectations defined in the execution manifest.</p>
+                      </div>
+                    </div>
+
+                    {sc ? (
+                      <>
+                        <div className="border border-slate-850 rounded-lg overflow-hidden bg-slate-950 text-[10px]">
+                          <ReactDiffViewer
+                            oldValue={JSON.stringify(sc.expected, null, 2)}
+                            newValue={JSON.stringify(sc.actual, null, 2)}
+                            splitView={false}
+                            useDarkTheme={true}
+                            styles={{
+                              variables: {
+                                dark: {
+                                  diffViewerBackground: '#020617',
+                                  diffViewerColor: '#cbd5e1',
+                                  addedBackground: '#064e3b',
+                                  removedBackground: '#7f1d1d'
+                                }
+                              }
+                            }}
+                          />
+                        </div>
+                        <div className="p-2.5 bg-slate-950/70 border border-slate-900 rounded-lg space-y-1 font-mono text-[9px] text-slate-400">
+                          {sc.comparison?.['kind'] !== undefined && (
+                            <p><span className="text-slate-500 uppercase tracking-wider">comparison:</span> {String(sc.comparison['kind'])}</p>
+                          )}
+                          {typeof sc.comparison?.['failed_assertion'] === 'string' && (
+                            <p className="break-all"><span className="text-slate-500 uppercase tracking-wider">first failure:</span> <span className="text-red-300">{sc.comparison['failed_assertion'] as string}</span></p>
+                          )}
+                          {Array.isArray(sc.assertions) && (
+                            <p><span className="text-slate-500 uppercase tracking-wider">assertions:</span> {sc.assertions.length}</p>
+                          )}
+                          {sc.source && (
+                            <p><span className="text-slate-500 uppercase tracking-wider">source:</span> {sc.source}</p>
+                          )}
+                          {sc.timestamp && (
+                            <p><span className="text-slate-500 uppercase tracking-wider">timestamp:</span> {sc.timestamp}</p>
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-lg text-[10px] text-amber-300 leading-relaxed">
+                        Structured StateComparison payload is unavailable for this
+                        legacy divergence event; no expected-vs-actual diff is
+                        inferred from message text. Raw event shown below.
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+
+              <div className="space-y-2">
+                <span className="text-slate-400 font-semibold">Event Parameters JSON:</span>
+                <pre className="bg-slate-950 p-4 rounded-lg border border-slate-850 text-[10px] text-slate-300 font-mono leading-relaxed overflow-x-auto select-all max-h-[220px]">
+                  {JSON.stringify(selectedEvent, null, 2)}
+                </pre>
+              </div>
             </div>
           ) : (
             <p className="text-slate-500 italic py-4">Select an event from the timeline feed to inspect detailed environment state parity.</p>

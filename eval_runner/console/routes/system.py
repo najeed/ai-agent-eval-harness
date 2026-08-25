@@ -363,23 +363,106 @@ def cleanup_runs():
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
+def _runtime_health() -> dict[str, Any]:
+    """
+    [C2] Authoritative RuntimeHealth probe (shared by /status and /doctor).
+
+    Performs REAL dependency checks — signing-key persistence, run-vault
+    writability, scenario-catalog resolvability — and derives the overall
+    status from their outcomes. Never returns an unconditional healthy.
+    """
+    from datetime import UTC, datetime
+
+    version = config._get_project_version()
+    mode = "demo" if getattr(config, "ENABLE_DEMO", False) else "production"
+
+    dependencies: dict[str, str] = {}
+    details: list[str] = []
+
+    # Signing backend: ephemeral in-memory signer is NOT audit-grade.
+    signing_backend = "ephemeral"
+    if os.environ.get("EVAL_SIGNING_KEY") or getattr(config, "SIGNING_KEY", None):
+        signing_backend = "persistent"
+    else:
+        details.append(
+            "Signing key not configured (SIGNING_KEY/EVAL_SIGNING_KEY): runs are "
+            "Executable/Verifiable but not Cryptographically Attested."
+        )
+    dependencies["signing"] = "HEALTHY" if signing_backend == "persistent" else "DEGRADED"
+
+    # Run vault writability
+    try:
+        probe = Path(config.RUN_LOG_DIR) / ".health_probe"
+        probe.write_text("ok", encoding="utf-8")
+        probe.unlink(missing_ok=True)
+        dependencies["run_vault"] = "HEALTHY"
+    except Exception as exc:  # noqa: BLE001
+        dependencies["run_vault"] = "FAILED"
+        details.append(f"Run vault not writable: {exc}")
+
+    # Scenario catalog resolvable
+    try:
+        scenarios_root = Path(config.PROJECT_ROOT) / "scenarios"
+        scenarios_root.mkdir(exist_ok=True)
+        dependencies["scenario_catalog"] = "HEALTHY"
+    except Exception as exc:  # noqa: BLE001
+        dependencies["scenario_catalog"] = "FAILED"
+        details.append(f"Scenario catalog unavailable: {exc}")
+
+    failed = [k for k, v in dependencies.items() if v == "FAILED"]
+    degraded = [k for k, v in dependencies.items() if v == "DEGRADED"]
+    if failed:
+        status = "UNREACHABLE"
+    elif degraded:
+        status = "DEGRADED"
+    else:
+        status = "HEALTHY"
+
+    return {
+        "status": status,
+        "mode": mode,
+        "version": version,
+        "last_heartbeat": datetime.now(UTC).isoformat(),
+        "dependencies": dependencies,
+        "signing_backend": signing_backend,
+        "details": details,
+    }
+
+
+@system_bp.route("/status", methods=["GET"])
+def runtime_status():
+    """
+    Authoritative RuntimeHealth.
+
+    The GUI header may render READY only when this object reports HEALTHY.
+    Never derived client-side; never unconditional.
+    """
+    return jsonify(_runtime_health())
+
+
 @system_bp.route("/v1/doctor", methods=["GET"])
 @require_permission(Permission.SCENARIOS_READ)
 def get_doctor_audit():
-    """Roadmap: Environmental health check (AgentV v1.6.0)."""
+    """
+    [C2] Environmental health audit derived from REAL RuntimeHealth probes.
+
+    The status field reflects actual dependency outcomes (signing-key
+    persistence, run-vault writability, catalog resolvability) and is never
+    an unconditional 'healthy'. Legacy diagnostic fields are preserved.
+    """
     try:
-        # Perform basic health checks (Sync wrapper for potential async logic)
+        health = _runtime_health()
         audit = {
-            "status": "healthy",
+            **health,
             "project_root": f"./{Path(config.PROJECT_ROOT).name}",
-            "plugins_loaded": manager._loaded,
+            "plugins_loaded": bool(getattr(manager, "_loaded", False)),
             "catalog_size": len(ScenarioCatalog.get_instance().scenarios),
             "simulator_count": len(get_simulator_registry()),
             "pid": os.getpid(),
         }
         return jsonify(audit)
     except Exception as e:
-        return jsonify({"status": "unhealthy", "error": str(e)}), 500
+        return jsonify({"status": "UNREACHABLE", "error": str(e)}), 500
 
 
 @system_bp.route("/debugger/state", methods=["GET", "POST"])
@@ -448,74 +531,6 @@ def debugger_state():
 def ping():
     """Public diagnostic check."""
     return jsonify({"status": "pong", "version": config._get_project_version(), "pid": os.getpid()})
-
-
-@system_bp.route("/status", methods=["GET"])
-def runtime_status():
-    """
-    Authoritative RuntimeHealth.
-
-    The GUI header may render READY only when this object reports HEALTHY.
-    Never derived client-side; never unconditional.
-    """
-    from datetime import UTC, datetime
-
-    version = config._get_project_version()
-    mode = "demo" if getattr(config, "ENABLE_DEMO", False) else "production"
-
-    dependencies: dict[str, str] = {}
-    details: list[str] = []
-
-    # Signing backend: ephemeral in-memory signer is NOT audit-grade.
-    signing_backend = "ephemeral"
-    if os.environ.get("EVAL_SIGNING_KEY") or getattr(config, "SIGNING_KEY", None):
-        signing_backend = "persistent"
-    else:
-        details.append(
-            "Signing key not configured (SIGNING_KEY/EVAL_SIGNING_KEY): runs are "
-            "Executable/Verifiable but not Cryptographically Attested."
-        )
-    dependencies["signing"] = "HEALTHY" if signing_backend == "persistent" else "DEGRADED"
-
-    # Run vault writability
-    try:
-        probe = Path(config.RUN_LOG_DIR) / ".health_probe"
-        probe.write_text("ok", encoding="utf-8")
-        probe.unlink(missing_ok=True)
-        dependencies["run_vault"] = "HEALTHY"
-    except Exception as exc:  # noqa: BLE001
-        dependencies["run_vault"] = "FAILED"
-        details.append(f"Run vault not writable: {exc}")
-
-    # Scenario catalog resolvable
-    try:
-        scenarios_root = Path(config.PROJECT_ROOT) / "scenarios"
-        scenarios_root.mkdir(exist_ok=True)
-        dependencies["scenario_catalog"] = "HEALTHY"
-    except Exception as exc:  # noqa: BLE001
-        dependencies["scenario_catalog"] = "FAILED"
-        details.append(f"Scenario catalog unavailable: {exc}")
-
-    failed = [k for k, v in dependencies.items() if v == "FAILED"]
-    degraded = [k for k, v in dependencies.items() if v == "DEGRADED"]
-    if failed:
-        status = "UNREACHABLE"
-    elif degraded:
-        status = "DEGRADED"
-    else:
-        status = "HEALTHY"
-
-    return jsonify(
-        {
-            "status": status,
-            "mode": mode,
-            "version": version,
-            "last_heartbeat": datetime.now(UTC).isoformat(),
-            "dependencies": dependencies,
-            "signing_backend": signing_backend,
-            "details": details,
-        }
-    )
 
 
 @system_bp.route("/system/ollama-status", methods=["GET"])

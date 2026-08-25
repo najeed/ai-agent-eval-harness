@@ -27,7 +27,8 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
-EXTENSION_CONTRACT_VERSION = "1.0.0"
+from agentv_runtime.versions import EXTENSION_CONTRACT_VERSION  # [F1] single source
+
 EXTENSION_CONTRACT_STATUS = "stable"  # SemVer-guaranteed public API
 
 
@@ -84,6 +85,19 @@ KNOWN_HOST_APIS = {
     "runtime.evidence.link",
 }
 
+# [D2] Host APIs that only READ host state. Unsigned/local extensions are
+# granted EXACTLY this surface. Mutating APIs must never be added here.
+READ_ONLY_HOST_APIS = frozenset(KNOWN_HOST_APIS)
+
+# [D2] Extension trust tiers. 'unsigned-local' and 'invalid-signature' are
+# restricted to READ_ONLY_HOST_APIS.
+EXTENSION_TIERS = {
+    "official",
+    "community",
+    "unsigned-local",
+    "invalid-signature",
+}
+
 
 @dataclass(frozen=True)
 class ExtensionRoute:
@@ -127,6 +141,8 @@ class RuntimeExtension:
     signature: str = ""  # hex signature over canonical manifest bytes
     lifecycle: ExtensionLifecycle = field(default_factory=ExtensionLifecycle)
     host_apis: list[str] = field(default_factory=list)
+    # [D2] Declared trust tier; verified server-side against the trust root.
+    tier: str | None = None
 
     # ------------------------------------------------------------------
     def to_dict(self) -> dict[str, Any]:
@@ -172,6 +188,7 @@ class RuntimeExtension:
                 signature=str(data.get("signature", "")),
                 lifecycle=lifecycle,
                 host_apis=list(data.get("host_apis", [])),
+                tier=(str(data["tier"]) if data.get("tier") is not None else None),
             )
         except KeyError as err:
             raise ExtensionContractError(f"Missing required manifest field: {err}") from err
@@ -226,6 +243,9 @@ class RuntimeExtension:
             if not route.path.startswith("/"):
                 violations.append(f"Route path must be absolute: {route.path!r}")
 
+        if self.tier is not None and self.tier not in EXTENSION_TIERS:
+            violations.append(f"Unknown trust tier: {self.tier!r}")
+
         return violations
 
 
@@ -250,11 +270,13 @@ def validate_remote_module_exports(module: Any) -> list[str]:
 __all__ = [
     "EXTENSION_CONTRACT_STATUS",
     "EXTENSION_CONTRACT_VERSION",
+    "EXTENSION_TIERS",
     "ExtensionContractError",
     "ExtensionLifecycle",
     "ExtensionRoute",
     "KNOWN_CAPABILITIES",
     "KNOWN_HOST_APIS",
+    "READ_ONLY_HOST_APIS",
     "RuntimeExtension",
     "is_compatible",
     "parse_semver",

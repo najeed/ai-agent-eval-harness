@@ -25,6 +25,9 @@ interface RunItem {
   status: string;
   verdict?: string;
   has_certificate?: boolean;
+  agent?: string;
+  duration?: number;
+  resultStatus?: 'PASS' | 'FAIL';
 }
 
 export const Dashboard: React.FC = () => {
@@ -62,9 +65,16 @@ export const Dashboard: React.FC = () => {
         loadedRuns.slice(0, 10).map((r) => ({
           run_id: r.run_id,
           scenario: r.scenario || r.run_id,
+          agent: r.identifier || undefined,
+          duration: r.duration_seconds ?? undefined,
+          resultStatus: r.result_status || undefined,
           timestamp: r.timestamp || 'N/A',
           status: r.execution_status || r.status || 'UNKNOWN',
-          verdict: r.verification_status || (r.has_certificate ? 'VERIFIED' : r.passed === false ? 'NOT_VERIFIED' : 'UNVERIFIED'),
+          // [C1b] Server verdict is authoritative; no client-side inference.
+          verdict:
+            r.verification_status === 'VERIFIED' || r.verification_status === 'FAILED_VERIFICATION'
+              ? r.verification_status
+              : 'UNKNOWN',
           has_certificate: !!r.has_certificate,
         }))
       );
@@ -336,34 +346,67 @@ export const Dashboard: React.FC = () => {
             <tbody className="divide-y divide-slate-800/50">
               {runs.map((r) => (
                 <tr key={r.run_id} className="hover:bg-slate-850/50 transition">
-                  <td className="py-3 font-bold text-slate-200">{r.run_id}</td>
-                  <td className="py-3 font-sans text-slate-300 font-medium">{r.scenario}</td>
+                  <td className="py-3 font-sans font-semibold text-white max-w-[220px] truncate" title={r.scenario}>
+                    {r.scenario}
+                    <button
+                      onClick={() => navigator.clipboard?.writeText(r.run_id)}
+                      title="Copy run ID"
+                      className="ml-2 px-1 py-0.5 rounded bg-slate-800 border border-slate-700 text-[8px] font-mono text-slate-400 hover:text-indigo-300 align-middle"
+                    >
+                      {r.run_id.length > 14 ? r.run_id.slice(0, 14) + '…' : r.run_id} ⧉
+                    </button>
+                  </td>
+                  <td className="py-3 font-sans text-slate-400">{r.agent || '—'}</td>
                   <td className="py-3">
                     <span
-                      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 w-fit ${r.has_certificate
+                      title={
+                        r.verdict === 'VERIFIED'
+                          ? 'Certificate trace-hash matches the current trace (server-verified).'
+                          : r.verdict === 'FAILED_VERIFICATION'
+                            ? 'Certificate trace-hash does NOT match the current trace.'
+                            : 'No authoritative verification available for this run.'
+                      }
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 w-fit ${r.verdict === 'VERIFIED'
                         ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
-                        : 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-400'
+                        : r.verdict === 'FAILED_VERIFICATION'
+                          ? 'bg-red-500/10 border border-red-500/20 text-red-400'
+                          : 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-400'
                         }`}
                     >
-                      {r.has_certificate ? <ShieldCheck className="w-3 h-3" /> : <CheckCircle2 className="w-3 h-3" />}
-                      {r.has_certificate ? 'VERIFIED' : r.status}
+                      {r.verdict === 'VERIFIED' ? <ShieldCheck className="w-3 h-3" /> : <CheckCircle2 className="w-3 h-3" />}
+                      {r.verdict === 'UNKNOWN' ? r.status : r.verdict}
                     </span>
                   </td>
                   <td className="py-3 text-right">
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center justify-end gap-2 font-sans">
+                      {/* [G4] Post-run CTA chain: view the authoritative result,
+                          diagnose a failure in the live debugger, then export
+                          the immutable evidence package. */}
                       <button
                         onClick={() => navigate(`/reports?run_id=${r.run_id}`)}
-                        className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-sans font-medium transition flex items-center gap-1"
+                        className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-medium transition flex items-center gap-1"
                       >
-                        <Eye className="w-3 h-3" /> Inspect
+                        <Eye className="w-3 h-3" /> View result
+                      </button>
+                      <button
+                        onClick={() => navigate(`/debugger?run_id=${r.run_id}`)}
+                        title="Open this run in the Live Debugger for root-cause inspection."
+                        className={`px-2.5 py-1 rounded text-[11px] font-semibold transition flex items-center gap-1 border ${
+                          r.verdict === 'FAILED_VERIFICATION' || r.resultStatus === 'FAIL'
+                            ? 'bg-red-500/10 hover:bg-red-500/20 border-red-500/30 text-red-300'
+                            : 'bg-slate-800 hover:bg-slate-700 border-transparent text-slate-200'
+                        }`}
+                      >
+                        <Activity className={`w-3 h-3 ${r.verdict === 'FAILED_VERIFICATION' || r.resultStatus === 'FAIL' ? 'text-red-400' : ''}`} />
+                        Inspect failure
                       </button>
                       <a
                         href={`/api/v1/evidence/packages/${r.run_id}?download=true`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-2.5 py-1 rounded bg-indigo-950/60 hover:bg-indigo-900 border border-indigo-500/30 text-indigo-300 text-[11px] font-sans font-semibold transition flex items-center gap-1"
+                        className="px-2.5 py-1 rounded bg-indigo-950/60 hover:bg-indigo-900 border border-indigo-500/30 text-indigo-300 text-[11px] font-semibold transition flex items-center gap-1"
                       >
-                        <Download className="w-3 h-3" /> Package
+                        <Download className="w-3 h-3" /> Evidence
                       </a>
                     </div>
                   </td>

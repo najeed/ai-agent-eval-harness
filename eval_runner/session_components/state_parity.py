@@ -16,6 +16,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import re
+from datetime import datetime
 from typing import Any
 
 from eval_runner.events import CoreEvents
@@ -243,6 +244,22 @@ class SessionStateParityVerifier:
                             "message": f"Parity FAILED after {timeout}s: {failed_reason}",
                             "category": "PARITY_STATE_DIVERGENCE",
                             "is_root_cause": True,
+                            # [Strict StateComparison contract] Structured,
+                            # fallback-free evidence for debugger rendering.
+                            # Consumers must render ONLY these fields; absence
+                            # of this object means no structured comparison
+                            # exists — never guess from message text.
+                            "state_comparison": {
+                                "expected": [row.get("expected") for row in evidence_rows],
+                                "actual": [row.get("actual_after") for row in evidence_rows],
+                                "comparison": {
+                                    "kind": "transition_verification",
+                                    "failed_assertion": failed_reason,
+                                },
+                                "assertions": evidence_rows,
+                                "source": "state_parity.transition_verification",
+                                "timestamp": datetime.now().isoformat(),
+                            },
                         },
                     )
                 return False, evidence_rows

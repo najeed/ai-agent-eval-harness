@@ -164,10 +164,15 @@ def test_mutate_scenario_exception(client):
 
 
 def test_v_doctor_audit(client):
+    """[C2] Doctor status is DERIVED from real dependency probes, never literal."""
     res = client.get("/api/v1/doctor")
     assert res.status_code == 200
-    assert res.get_json()["status"] == "healthy"
-    assert "pid" in res.get_json()
+    body = res.get_json()
+    assert body["status"] in {"HEALTHY", "DEGRADED", "UNREACHABLE"}
+    assert "pid" in body
+    # Truthfulness contract: the verdict is backed by an explicit dependency map.
+    assert isinstance(body.get("dependencies"), dict)
+    assert set(body["dependencies"]).issuperset({"signing", "run_vault", "scenario_catalog"})
 
 
 def test_debugger_state_demo_narrative(client, console_jail):

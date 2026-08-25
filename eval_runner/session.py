@@ -24,6 +24,8 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
+from agentv_runtime.evidence_graph import decision_evidence_root_hash  # noqa: E402
+
 from . import config, events, metrics  # noqa: E402
 from .context import TurnContext  # noqa: E402
 from .engine import AgentAdapterRegistry  # noqa: E402
@@ -508,6 +510,30 @@ class SessionManager:
 
                 if result.get("status") == "success":
                     turns_taken += 1
+
+                # [E4] LIVE/HYBRID reconciliation: independently capture the
+                # post-node world state and reconcile it against the node's
+                # declared expectations using real observations only.
+                if identity.execution_mode in (ExecutionMode.LIVE, ExecutionMode.HYBRID):
+                    from .reconciliation import build_reconciliation_record
+
+                    try:
+                        state_after = (
+                            await sandbox.get_full_state()
+                            if hasattr(sandbox, "get_full_state")
+                            else copy.deepcopy(getattr(sandbox, "state", {}))
+                        )
+                    except Exception:  # noqa: BLE001 - evidence capture must not break execution
+                        state_after = None
+                    result["reconciliation"] = build_reconciliation_record(
+                        node_id=node_id_local,
+                        execution_mode=identity.execution_mode.value,
+                        state_before=state_before,
+                        state_after=state_after,
+                        expected_state_changes=node_def.get("expected_state_changes"),
+                        observations={"used_tools": list(result.get("used_tools") or [])},
+                    )
+
                 return result
 
             interpreter = WorkflowInterpreter(
@@ -699,6 +725,9 @@ class SessionManager:
             "observed_execution": observed,
             "expected_transitions": transitions,
             "assertions": assertions,
+            # [E2] Single-commit root over the assertion set: any change to any
+            # assertion flips this hash, binding the decision to its evidence.
+            "evidence_root_hash": decision_evidence_root_hash(assertions),
             "policy_checks": [],
             "evidence_refs": evidence_refs,
             "identity": {

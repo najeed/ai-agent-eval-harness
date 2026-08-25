@@ -108,7 +108,7 @@ def test_get_verification_package_success_with_cert_and_provenance(crypto_client
             "data": {"status": "EXECUTION_COMPLETED", "passed": True, "score": 1.0},
         },
     ]
-    raw_lines = "\n".join(json.dumps(e) for e in events) + "\n\n{invalid json line\n"
+    raw_lines = "\n".join(json.dumps(e) for e in events) + "\n"
     trace_file.write_text(raw_lines, encoding="utf-8")
 
     # Scenario document becomes part of the certified evidence ledger
@@ -127,7 +127,9 @@ def test_get_verification_package_success_with_cert_and_provenance(crypto_client
     assert res.status_code == 200
     pkg = res.get_json()
     assert pkg["format"] == "agentv_verification_package"
-    assert pkg["package_version"] == "2.0.0"
+    assert pkg["package_version"] == "2.1.0"  # [E1] evidence graph schema
+    assert "evidence_graph" in pkg
+    assert pkg["evidence_graph"]["graph_version"] == "1.0.0"
 
     assert pkg["verdict"]["verified_outcome"] == "VERIFIED"
     crypto = pkg["cryptographic_verification"]
@@ -370,3 +372,44 @@ def test_fake_certificate_signature_yields_unverified(client, tmp_path):
     pkg = res.get_json()
     assert pkg["verdict"]["verified_outcome"] == "UNVERIFIED"
     assert pkg["evidence_chain_valid"] is False
+
+
+def test_package_corruption_policy_blocks_certification(crypto_client):
+    """[E3] Unparseable trace content -> EVIDENCE_INVALID + exact byte offsets."""
+    import json as _json
+    from datetime import UTC, datetime, timedelta
+
+    run_id = f"run-corrupt-{int(datetime.now(UTC).timestamp())}"
+    from eval_runner import config as _cfg
+
+    run_vault = _cfg.RUN_LOG_DIR / run_id
+    run_vault.mkdir(parents=True, exist_ok=True)
+
+    now = datetime.now(UTC)
+    good1 = _json.dumps({"event": "run_start", "timestamp": now.isoformat(), "_seq": 1})
+    corrupt_fragment = "{not valid json{{"
+    good2 = _json.dumps(
+        {
+            "event": "run_end",
+            "timestamp": (now + timedelta(seconds=5)).isoformat(),
+            "_seq": 2,
+            "data": {"passed": True},
+        }
+    )
+    # Layout: line1(offset 0) | line2 corrupt | line3
+    trace = run_vault / "run.jsonl"
+    line1 = (good1 + "\n").encode()
+    line2 = (corrupt_fragment + "\n").encode()
+    line3 = (good2 + "\n").encode()
+    trace.write_bytes(line1 + line2 + line3)
+
+    res = crypto_client.get(f"/api/v1/evidence/packages/{run_id}")
+    assert res.status_code == 200
+    pkg = res.get_json()
+
+    assert pkg["verdict"]["verified_outcome"] == "EVIDENCE_INVALID"
+    assert pkg["evidence_chain_valid"] is False
+    corruption = pkg["integrity_corruption"]
+    assert corruption["status"] == "EVIDENCE_INVALID"
+    assert corruption["corrupt_count"] == 1
+    assert corruption["corrupt_line_byte_offsets"] == [len(line1)]

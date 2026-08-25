@@ -113,3 +113,60 @@ async def test_verify_state_parity_missing_shim(scenario):
 
     success, _evidence = await session._verify_state_parity(scenario, mock_sandbox, [])
     assert success is False  # Missing shim should cause failure if target is shim:db
+
+
+@pytest.mark.asyncio
+async def test_parity_divergence_emits_strict_state_comparison(scenario):
+    """[P0-12] The divergence event carries the strict StateComparison payload.
+
+    Contract: expected / actual / comparison / assertions / source / timestamp.
+    No field may be absent — debugger rendering must never fall back to
+    message-text guessing when this payload exists (and must NOT synthesize a
+    diff when it does not).
+    """
+    mock_db = AsyncMock()
+    mock_db.get_snapshot.return_value = {"active": False}
+
+    simulators = {
+        "db": mock_db,
+        "git": AsyncMock(get_snapshot=AsyncMock(return_value={"branch": "main"})),
+    }
+    mock_sandbox = MagicMock()
+    mock_sandbox.get_active_simulators.return_value = simulators
+
+    session = SessionManager("test_run", scenario)
+
+    with patch.object(session.event_bus, "emit") as mock_emit:
+        success, evidence = await session._verify_state_parity(scenario, mock_sandbox, [])
+
+        assert success is False
+        assert evidence, "transition evidence rows must accompany a divergence"
+
+        debug_emits = [
+            args[0][1]
+            for args in mock_emit.call_args_list
+            if args[0][0] == CoreEvents.ADAPTER_DEBUG
+        ]
+        failure_event = next(
+            (e for e in debug_emits if e.get("category") == "PARITY_STATE_DIVERGENCE"),
+            None,
+        )
+        assert failure_event is not None
+
+        sc = failure_event["state_comparison"]
+        assert set(sc.keys()) >= {
+            "expected",
+            "actual",
+            "comparison",
+            "assertions",
+            "source",
+            "timestamp",
+        }
+        assert sc["source"] == "state_parity.transition_verification"
+        assert isinstance(sc["timestamp"], str) and sc["timestamp"]
+        assert len(sc["assertions"]) == len(evidence)
+        # Expected/actual vectors are aligned per-assertion with the evidence rows.
+        assert len(sc["expected"]) == len(evidence)
+        assert len(sc["actual"]) == len(evidence)
+        assert sc["comparison"]["kind"] == "transition_verification"
+        assert "shim:db.active" in sc["comparison"]["failed_assertion"]

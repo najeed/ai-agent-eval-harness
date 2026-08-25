@@ -8,6 +8,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from agentv_runtime.versions import VC_SCHEMA_VERSION as VC_V3_SCHEMA_VERSION
+
 from . import config, forensics, utils
 from .interfaces.artifact import ArtifactStore
 from .interfaces.signing import SigningBackend
@@ -17,10 +19,8 @@ from .utils import crypto
 
 logger = logging.getLogger(__name__)
 
-# Baseline schema for VC v3.0.0 (Forensic Integrity)
-VC_V3_SCHEMA_VERSION = "3.0.0"
 
-
+# Baseline schema versions for VC (Forensic Integrity) — see agentv_runtime.versions
 class CertificationFailedError(RuntimeError):
     """
     Raised when the transactional certification pipeline fails at any stage.
@@ -404,6 +404,7 @@ class TraceVerifier:
         behavioral_fingerprint_id: str | None = None,
         run_id: str | None = None,
         artifact_store: ArtifactStore | None = None,
+        evidence_root_hash: str | None = None,
     ) -> dict[str, Any]:
         """
         Signs a trace file and issues a standardized Verification Certificate (VC) v3
@@ -529,6 +530,10 @@ class TraceVerifier:
             "metadata": metadata or {},
             "behavioral_fingerprint_id": behavioral_fingerprint_id or "default_v1",
         }
+        if evidence_root_hash:
+            # [E2] Additive field within VC v3.0.0: the certificate commits to
+            # the decision's evidence root hash over its assertion set.
+            manifest["evidence_root_hash"] = evidence_root_hash
         _stage("canonicalize")(lambda: manifest)
 
         # 3. EMIT LIFECYCLE EVENT + HASH (mutation point; rolled back on failure)

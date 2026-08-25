@@ -95,7 +95,7 @@ async def test_runner_orchestration(monkeypatch):
                 {
                     "id": "t1",
                     "task_description": "test task",
-                    "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+                    "state_hygiene": {"rules": [{"path": "__unset_probe__", "op": "not_exists"}]},
                 }
             ],
             "edges": [],

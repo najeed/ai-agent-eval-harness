@@ -29,6 +29,39 @@ export const KNOWN_HOST_APIS = [
 export type ExtensionCapability = (typeof KNOWN_CAPABILITIES)[number];
 export type HostApiName = (typeof KNOWN_HOST_APIS)[number];
 
+/**
+ * [D2] Extension trust tier.
+ *   - 'official': signature verifies against the runtime trust root AND the
+ *     publisher identity is the platform's own.
+ *   - 'community': third-party signature verified against a trust-root key.
+ *   - 'local' / 'unsigned-local': no verifiable signature — restricted to
+ *     READ-ONLY host APIs.
+ */
+export type ExtensionTier = 'official' | 'community' | 'unsigned-local' | 'invalid-signature';
+
+/**
+ * [D2] Host APIs that only READ host state. These are the ONLY APIs granted
+ * to unsigned/local extensions. Any future mutating host API MUST NOT be
+ * added here.
+ */
+export const READ_ONLY_HOST_APIS: readonly HostApiName[] = [
+  'runtime.health.get',
+  'runtime.runs.list',
+  'runtime.runs.get',
+  'runtime.scenarios.list',
+  'runtime.evidence.link',
+];
+
+/** Host APIs reserved for trusted tiers (must be non-read-only calls). */
+export const TRUSTED_HOST_APIS: readonly HostApiName[] = [];
+
+/** [D2] Tier-based host API access policy. */
+export function hostApisForTier(tier: ExtensionTier): readonly HostApiName[] {
+  return tier === 'official' || tier === 'community'
+    ? [...READ_ONLY_HOST_APIS, ...TRUSTED_HOST_APIS]
+    : READ_ONLY_HOST_APIS;
+}
+
 export interface ExtensionRoute {
   path: string;
   label: string;
@@ -60,6 +93,8 @@ export interface RuntimeExtensionManifest {
   signature: string;
   lifecycle: ExtensionLifecycle;
   host_apis: string[];
+  /** [D2] Declared trust tier (verified server-side; advisory client-side). */
+  tier?: ExtensionTier;
 }
 
 export function parseSemver(version: string): [number, number, number] {
@@ -136,6 +171,14 @@ export function validateExtensionManifest(
     if (route.path && !route.path.startsWith('/')) {
       violations.push(`Route path must be absolute: ${route.path}`);
     }
+  }
+  // [D2] Tier, when declared, must be a known enum value.
+  const tier = (m as any).tier;
+  if (
+    tier !== undefined &&
+    !['official', 'community', 'unsigned-local', 'invalid-signature'].includes(tier)
+  ) {
+    violations.push(`Unknown trust tier: ${String(tier)}`);
   }
   return violations;
 }

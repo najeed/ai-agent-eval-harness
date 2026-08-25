@@ -1,10 +1,13 @@
 import json
 import logging
 from datetime import datetime
+from typing import Any
 
 from flask import Blueprint, jsonify, request
 
 from eval_runner import config, identity
+from eval_runner.reference.signing import LocalEd25519SigningBackend
+from eval_runner.utils import crypto
 from eval_runner.verifier import TraceVerifier
 
 from ..auth_manager import Permission, require_permission
@@ -153,3 +156,196 @@ def get_identity_public_key(identity_id):
         return jsonify(
             {"error": f"Identity {identity_id} not found or key resolution failed."}
         ), 404
+
+
+# ---------------------------------------------------------------------------
+# [D1] Extension publisher signing & verification (tier enforcement backend)
+#
+# Signing keys live under the configured TRUST_ROOT (dev trust root:
+# TRUST_ROOT/<identity_id>/private_key.pem, auto-provisioned for developer
+# identities). Signatures cover RuntimeExtension.canonical_bytes() — the
+# deterministic manifest serialization that EXCLUDES the signature field —
+# so verification is exact across runtimes.
+# ---------------------------------------------------------------------------
+
+DEFAULT_DEV_PUBLISHER_IDENTITY = "dev_publisher"
+
+
+def _private_key_pem_bytes(identity_id: str) -> bytes:
+    from cryptography.hazmat.primitives import serialization
+
+    key = identity.IdentityService.get_private_key(identity_id, auto_provision=True)
+    if key is None:
+        raise ValueError(f"No signing identity available for '{identity_id}'")
+    return key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption(),
+    )
+
+
+def _public_key_pem_bytes(identity_id: str) -> bytes | None:
+    from cryptography.hazmat.primitives import serialization
+
+    key = identity.IdentityService.get_public_key(identity_id, auto_provision=False)
+    if key is None:
+        return None
+    return key.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )
+
+
+def _canonical_manifest_bytes(manifest: dict) -> bytes:
+    """
+    [D1] Canonical signing payload over the RAW transmitted manifest dict
+    (every field bound, unknown fields included), excluding 'signature'.
+    Strictly stronger than the dataclass round-trip: from_dict() silently
+    ignores undeclared keys, which would otherwise escape the signature.
+    """
+    payload = {k: v for k, v in manifest.items() if k != "signature"}
+    return json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+
+def _parse_manifest_or_error(manifest: Any, *, require_signature: bool = True):
+    """Returns (RuntimeExtension, None) or (None, (response, status))."""
+    from agentv_runtime.extension_contract import ExtensionContractError, RuntimeExtension
+
+    if not isinstance(manifest, dict):
+        return None, (jsonify({"error": "manifest must be a JSON object"}), 400)
+    try:
+        ext = RuntimeExtension.from_dict(manifest)
+    except ExtensionContractError as e:
+        return None, (jsonify({"error": f"Invalid manifest: {e}"}), 400)
+    violations = ext.validate(require_signature=require_signature)
+    if violations:
+        return None, (
+            jsonify(
+                {
+                    "error": "Manifest violates the extension contract",
+                    "violations": violations,
+                }
+            ),
+            400,
+        )
+    return ext, None
+
+
+@trust_bp.route("/v1/extensions/sign", methods=["POST"])
+@require_permission(Permission.CERTIFY_WRITE)
+def sign_extension_manifest():
+    """
+    Dev trust-root signing: signs a contract-valid manifest with the named
+    (auto-provisioned) publisher identity under TRUST_ROOT and returns the
+    signature to embed in `manifest.signature`.
+    """
+    data = request.json or {}
+    manifest = data.get("manifest")
+    identity_id = str(data.get("identity_id") or DEFAULT_DEV_PUBLISHER_IDENTITY)
+
+    # Signing precedes the signature existing: structural validation only.
+    ext, err = _parse_manifest_or_error(manifest, require_signature=False)
+    if err is not None:
+        return err
+
+    try:
+        pem = _private_key_pem_bytes(identity_id)
+        canonical = _canonical_manifest_bytes(manifest)
+        signature_hex = LocalEd25519SigningBackend().sign_payload(canonical, pem)
+    except Exception as e:
+        logger.error(f"[Extensions] Signing failed for '{identity_id}': {e}")
+        return jsonify({"error": f"Signing failed: {e}"}), 500
+
+    return jsonify(
+        {
+            "status": "success",
+            "identity_id": identity_id,
+            "algorithm": "ed25519",
+            "signature": signature_hex,
+            "canonical_sha3_256": crypto.checksum(canonical),
+        }
+    )
+
+
+@trust_bp.route("/v1/extensions/verify-publisher", methods=["POST"])
+@require_permission(Permission.RUNS_READ)
+def verify_extension_publisher():
+    """
+    Verifies a manifest's Ed25519 signature against the publisher's
+    trust-root public key. Fail-closed: any missing or unresolvable element
+    yields valid=False with an explicit reason and an 'unsigned-local' /
+    'invalid-signature' tier.
+    """
+    data = request.json or {}
+    manifest = data.get("manifest")
+
+    if not isinstance(manifest, dict):
+        return jsonify({"error": "manifest must be a JSON object"}), 400
+
+    tier = "unsigned-local"
+    signature_hex = str(manifest.get("signature") or "")
+    publisher = str(manifest.get("publisher") or "")
+
+    # Structural validation FIRST: a contract-violating manifest is rejected
+    # regardless of what its signature field contains.
+    ext, err = _parse_manifest_or_error(manifest, require_signature=False)
+    if err is not None:
+        resp, code = err
+        body = resp.get_json()
+        return jsonify(
+            {
+                "valid": False,
+                "tier": tier,
+                "reason": "contract-violation",
+                "violations": body.get("violations") or [body.get("error")],
+                "publisher": publisher,
+            }
+        ), code
+
+    if not signature_hex:
+        return jsonify(
+            {
+                "valid": False,
+                "tier": tier,
+                "reason": "missing-signature",
+                "publisher": publisher,
+            }
+        )
+    if not publisher:
+        return jsonify(
+            {
+                "valid": False,
+                "tier": tier,
+                "reason": "missing-publisher",
+                "publisher": publisher,
+            }
+        )
+
+    identity_id = str(data.get("identity_id") or publisher)
+
+    pub_pem = _public_key_pem_bytes(identity_id)
+    if pub_pem is None:
+        return jsonify(
+            {
+                "valid": False,
+                "tier": tier,
+                "reason": "unknown-publisher",
+                "publisher": publisher,
+                "identity_id": identity_id,
+            }
+        )
+
+    valid = LocalEd25519SigningBackend().verify_signature(
+        _canonical_manifest_bytes(manifest), signature_hex, pub_pem
+    )
+
+    return jsonify(
+        {
+            "valid": valid,
+            "tier": "signed-trusted" if valid else "invalid-signature",
+            "reason": "signature-verified" if valid else "signature-mismatch",
+            "publisher": publisher,
+            "identity_id": identity_id,
+            "algorithm": "ed25519",
+        }
+    )

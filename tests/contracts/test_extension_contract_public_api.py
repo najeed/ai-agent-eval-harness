@@ -179,3 +179,71 @@ def test_lifecycle_hooks_round_trip():
 
     route = ext.routes[0]
     assert isinstance(route, ExtensionRoute) and route.required_role == "admin"
+
+
+# ---------------------------------------------------------------------------
+# [D2] Trust tier contract (additive within 1.x)
+# ---------------------------------------------------------------------------
+
+
+def _base_valid_manifest() -> dict:
+    return {
+        "extension_id": "com.acme.fleet",
+        "display_name": "Fleet Analytics",
+        "version": "1.0.0",
+        "api_version": "1.0.0",
+        "capabilities": ["routes", "navigation"],
+        "routes": [{"path": "/fleet", "label": "Fleet"}],
+        "remote_entry": "/static/extensions/fleet.js",
+        "sri_hash": "sha3-256-QUJDRA==",
+        "publisher": "acme",
+        "signature": "00" * 64,
+        "host_apis": ["runtime.runs.list"],
+    }
+
+
+def test_tier_round_trips_losslessly():
+    manifest = {**_base_valid_manifest(), "tier": "community"}
+    ext = RuntimeExtension.from_dict(manifest)
+    assert ext.tier == "community"
+    assert ext.to_dict()["tier"] == "community"
+
+
+def test_tier_defaults_to_none():
+    ext = RuntimeExtension.from_dict(_base_valid_manifest())
+    assert ext.tier is None
+
+
+def test_unknown_tier_rejected():
+    ext = RuntimeExtension.from_dict({**_base_valid_manifest(), "tier": "superuser"})
+    violations = ext.validate()
+    assert any("trust tier" in v for v in violations)
+
+
+def test_all_declared_tiers_accepted():
+    for tier in ("official", "community", "unsigned-local", "invalid-signature"):
+        ext = RuntimeExtension.from_dict({**_base_valid_manifest(), "tier": tier})
+        assert ext.validate() == []
+
+
+def test_read_only_host_api_registry_is_subset():
+    from agentv_runtime.extension_contract import KNOWN_HOST_APIS, READ_ONLY_HOST_APIS
+
+    assert READ_ONLY_HOST_APIS <= KNOWN_HOST_APIS
+
+
+# ---------------------------------------------------------------------------
+# [F1] Single truth-version namespace
+# ---------------------------------------------------------------------------
+
+
+def test_versions_namespace_is_single_source():
+    import eval_runner.execution_ir as ir_mod
+    import eval_runner.verifier as verifier_mod
+    from agentv_runtime import extension_contract as ec, versions as V
+    from eval_runner.console.routes import evidence as ev
+
+    assert ec.EXTENSION_CONTRACT_VERSION == V.EXTENSION_CONTRACT_VERSION == "1.0.0"
+    assert ir_mod.EXECUTION_IR_VERSION == V.EXECUTION_IR_VERSION == "2.0.0"
+    assert verifier_mod.VC_V3_SCHEMA_VERSION == V.VC_SCHEMA_VERSION == "3.0.0"
+    assert ev.VERIFICATION_PACKAGE_VERSION == V.VERIFICATION_PACKAGE_VERSION

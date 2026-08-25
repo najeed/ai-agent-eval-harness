@@ -10,6 +10,7 @@ from eval_runner.plugins import manager
 from .. import config
 from .auth import auth_bp
 from .routes import (
+    agent_targets_bp,
     analyze_bp,
     compliance_packs_bp,
     core_bp,
@@ -74,6 +75,7 @@ def create_app():
     app.register_blueprint(compliance_packs_bp, url_prefix="/api")
     app.register_blueprint(hitl_bp, url_prefix="/api")
     app.register_blueprint(evidence_bp, url_prefix="/api")
+    app.register_blueprint(agent_targets_bp)
     app.register_blueprint(trust_bp)
 
     # Demo blueprint is physically absent in production mode (ENABLE_DEMO=false).
@@ -106,6 +108,40 @@ def create_app():
         # Surface the current operational mode to all clients
         mode = "demo" if config.ENABLE_DEMO else "production"
         response.headers["X-AgentV-Mode"] = mode
+        return response
+
+    # [Extension isolation — feasible slice] Document-level CSP for the
+    # console shell. The allowlist is exact:
+    #   - cdn.jsdelivr.net: Monaco editor assets (@monaco-editor/loader CDN).
+    #   - blob: in script-src/worker-src: the extension host mounts SRI-verified
+    #     remote modules through ephemeral Blob URLs; this is a deliberate,
+    #     documented seam (SRI proves bytes, signed manifests prove trust).
+    # Everything else is locked to self. This does NOT authorize arbitrary
+    # third-party script origins.
+    CONSOLE_CSP = "; ".join(
+        [
+            "default-src 'self'",
+            "script-src 'self' https://cdn.jsdelivr.net blob:",
+            "worker-src 'self' blob:",
+            "connect-src 'self' https://cdn.jsdelivr.net",
+            "style-src 'self' 'unsafe-inline'",
+            "img-src 'self' data: blob:",
+            "font-src 'self' data:",
+            "frame-ancestors 'none'",
+            "base-uri 'self'",
+            "form-action 'self'",
+            "object-src 'none'",
+        ]
+    )
+
+    @app.after_request
+    def security_headers(response):
+        content_type = response.headers.get("Content-Type", "")
+        if content_type.startswith("text/html"):
+            response.headers.setdefault("Content-Security-Policy", CONSOLE_CSP)
+            response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
         return response
 
     # Hardened API Error Handlers (Prevents "Unexpected token <" regressions)
@@ -228,7 +264,6 @@ def create_app():
     @app.route("/settings", strict_slashes=False)
     @app.route("/spec-import", strict_slashes=False)
     @app.route("/mutator", strict_slashes=False)
-    @app.route("/explain", strict_slashes=False)
     @app.route("/failures", strict_slashes=False)
     @app.route("/triage", strict_slashes=False)
     @app.route("/docs", strict_slashes=False)

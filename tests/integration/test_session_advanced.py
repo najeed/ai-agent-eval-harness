@@ -50,7 +50,7 @@ async def test_hitl_pause_resume(monkeypatch):
                         "value": "Done",
                     },
                     "required_tools": [],
-                    "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+                    "state_hygiene": {"rules": [{"path": "__unset_probe__", "op": "not_exists"}]},
                 }
             ],
             "edges": [],
@@ -118,7 +118,7 @@ async def test_trajectory_branching(monkeypatch):
                         "value": "Done",
                     },
                     "required_tools": [],
-                    "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+                    "state_hygiene": {"rules": [{"path": "__unset_probe__", "op": "not_exists"}]},
                 }
             ],
             "edges": [],

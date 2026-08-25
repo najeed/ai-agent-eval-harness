@@ -328,6 +328,11 @@ ALLOW_SYSTEM_IDENTITY_PROVISIONING = (
     os.getenv("ALLOW_SYSTEM_IDENTITY_PROVISIONING", "false").lower() == "true"
 )
 
+# [G3] Reusable Agent Target registry (connect-once, reuse across scenarios).
+AGENT_TARGETS_PATH = Path(
+    os.getenv("AGENT_TARGETS_PATH", str(PROJECT_ROOT / ".aes" / "agent_targets.json"))
+).absolute()
+
 # --- Post-Quantum Cryptography (PQC) ---
 PQC_ENABLED = os.getenv("PQC_ENABLED", "false").lower() == "true"
 PQC_PROVIDER = os.getenv("PQC_PROVIDER", "cyclecore")

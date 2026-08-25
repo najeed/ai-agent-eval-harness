@@ -26,7 +26,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Any
 
-EXECUTION_IR_VERSION = "2.0.0"
+from agentv_runtime.versions import EXECUTION_IR_VERSION  # [F1] single source
 
 DEFAULT_MAX_NODE_VISITATIONS = 3
 DEFAULT_STEP_BUDGET_MULTIPLIER = 8

@@ -1,10 +1,12 @@
 import React, { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
   Plug, FileText, ShieldCheck, PlayCircle, Gavel, Bug, PackageCheck,
   CheckCircle2, XCircle, AlertTriangle, ArrowRight, RefreshCw,
+  SlidersHorizontal, ChevronDown, ChevronRight,
 } from 'lucide-react';
+import { useRBAC } from '../context/RBACContext';
 
 /**
  * VerificationWorkflow — the primary product spine (P1-12).
@@ -62,14 +64,25 @@ const tierBadge = (tier?: string) => {
 };
 
 export const VerificationWorkflow: React.FC = () => {
+  const navigate = useNavigate();
+  const { canRunEval } = useRBAC();
   const [protocol, setProtocol] = useState('http_rest');
   const [endpoint, setEndpoint] = useState('');
   const [scenarioId, setScenarioId] = useState('');
   const [preflightResult, setPreflightResult] = useState<{
     ready: boolean;
     checks: ReadinessCheck[];
+    fingerprint?: string;
   } | null>(null);
   const [runId, setRunId] = useState('');
+
+  // [G1] Advanced execution settings (folded in from the retired standalone
+  // runner page): max turns and evaluation metadata notes.
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [maxTurns, setMaxTurns] = useState('10');
+  const [sessionNotes, setSessionNotes] = useState('Standard regression run');
+  const [launching, setLaunching] = useState(false);
+  const [launchError, setLaunchError] = useState('');
   const verdict: string | null = null;
 
   // Authoritative runtime health — never render READY without this.
@@ -84,7 +97,7 @@ export const VerificationWorkflow: React.FC = () => {
     refetchInterval: 30_000,
   });
 
-  const scenariosQuery = useQuery<{ scenarios?: { id: string; name?: string }[] }>({
+  const scenariosQuery = useQuery<{ scenarios?: { id: string; name?: string; path?: string; title?: string; industry?: string }[] }>({
     queryKey: ['scenario-list'],
     queryFn: async () => {
       const res = await fetch('/api/scenarios');
@@ -94,7 +107,7 @@ export const VerificationWorkflow: React.FC = () => {
     staleTime: 60_000,
   });
 
-  const scenarios: { id: string; name?: string }[] = useMemo(() => {
+  const scenarios: { id: string; name?: string; path?: string; title?: string; industry?: string }[] = useMemo(() => {
     const raw =
       (scenariosQuery.data as any)?.scenarios ??
       (scenariosQuery.data as any)?.data ??
@@ -125,12 +138,61 @@ export const VerificationWorkflow: React.FC = () => {
         body: JSON.stringify({
           scenario_id: scenarioId || undefined,
           agent_config: { protocol, endpoint },
+          runtime_config: { max_turns: parseInt(maxTurns) || 10 },
         }),
       });
       const data = await res.json();
-      setPreflightResult({ ready: !!data.ready, checks: data.checks ?? [] });
+      setPreflightResult({
+        ready: !!data.ready,
+        checks: data.checks ?? [],
+        fingerprint: data.preflight_fingerprint,
+      });
     } catch {
       setPreflightResult({ ready: false, checks: [] });
+    }
+  };
+
+  // Reset preflight when any execution parameter changes — a stale pass
+  // must never authorize a launch against a different configuration.
+  const onParamChange = <T,>(setter: (v: T) => void) => (v: T) => {
+    setter(v);
+    setPreflightResult(null);
+    setLaunchError('');
+  };
+
+  const launchEvaluation = async () => {
+    if (!scenarioId || !endpoint.trim()) return;
+    setLaunching(true);
+    setLaunchError('');
+    const found = scenarios.find(s => s.id === scenarioId);
+    const scenPath = found?.path || `scenarios/${scenarioId}.json`;
+    try {
+      const res = await fetch('/api/v1/evaluate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          path: scenPath,
+          max_turns: parseInt(maxTurns) || 10,
+          protocol,
+          endpoint,
+          agent_config: { protocol, endpoint },
+          runtime_config: { max_turns: parseInt(maxTurns) || 10 },
+          metadata: {
+            notes: sessionNotes || undefined,
+            preflight_fingerprint: preflightResult?.fingerprint,
+          },
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.run_id) {
+        navigate(`/debugger?run_id=${data.run_id}`);
+      } else {
+        setLaunchError(data.error || 'Failed to initialize evaluation.');
+      }
+    } catch (err: any) {
+      setLaunchError(`Evaluation failure: ${err.message}`);
+    } finally {
+      setLaunching(false);
     }
   };
 
@@ -207,7 +269,7 @@ export const VerificationWorkflow: React.FC = () => {
             Protocol
             <select
               value={protocol}
-              onChange={e => setProtocol(e.target.value)}
+              onChange={e => onParamChange(setProtocol)(e.target.value)}
               className="mt-1 w-full bg-slate-900 border border-slate-800 rounded px-2 py-1.5 text-xs text-slate-200"
             >
               <option value="http_rest">http_rest</option>
@@ -223,7 +285,7 @@ export const VerificationWorkflow: React.FC = () => {
             Endpoint
             <input
               value={endpoint}
-              onChange={e => setEndpoint(e.target.value)}
+              onChange={e => onParamChange(setEndpoint)(e.target.value)}
               placeholder="https://your-agent.example.com (no implicit default)"
               className="mt-1 w-full bg-slate-900 border border-slate-800 rounded px-3 py-1.5 text-xs text-slate-200 font-mono"
             />
@@ -243,7 +305,7 @@ export const VerificationWorkflow: React.FC = () => {
         </h2>
         <select
           value={scenarioId}
-          onChange={e => setScenarioId(e.target.value)}
+          onChange={e => onParamChange(setScenarioId)(e.target.value)}
           className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-xs text-slate-200 font-mono"
         >
           <option value="">— select a scenario —</option>
@@ -319,12 +381,74 @@ export const VerificationWorkflow: React.FC = () => {
           </p>
         ) : (
           <>
-            <Link
-              to={`/runner?scenario=${encodeURIComponent(scenarioId)}&protocol=${encodeURIComponent(protocol)}&endpoint=${encodeURIComponent(endpoint)}`}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold"
+            {/* [G1] Advanced execution settings drawer — folded in from the
+                retired standalone runner page. */}
+            <div className="border border-slate-800 rounded-lg overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setShowAdvanced(v => !v)}
+                className="w-full flex items-center gap-2 px-3 py-2 bg-slate-900/60 hover:bg-slate-900 text-slate-300 text-xs font-semibold transition-colors"
+              >
+                <SlidersHorizontal className="w-3.5 h-3.5 text-indigo-400" />
+                Advanced execution settings
+                {showAdvanced ? (
+                  <ChevronDown className="w-3.5 h-3.5 ml-auto text-slate-500" />
+                ) : (
+                  <ChevronRight className="w-3.5 h-3.5 ml-auto text-slate-500" />
+                )}
+              </button>
+              {showAdvanced && (
+                <div className="p-3 space-y-3 bg-slate-950/40">
+                  <label className="block text-[11px] uppercase tracking-wider text-slate-500 font-bold">
+                    Max Execution Turns
+                    <input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={maxTurns}
+                      onChange={e => onParamChange(setMaxTurns)(e.target.value)}
+                      className="mt-1 w-full bg-slate-900 border border-slate-800 rounded px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                    />
+                  </label>
+                  <label className="block text-[11px] uppercase tracking-wider text-slate-500 font-bold">
+                    Evaluation Metadata Notes
+                    <input
+                      type="text"
+                      value={sessionNotes}
+                      onChange={e => setSessionNotes(e.target.value)}
+                      className="mt-1 w-full bg-slate-900 border border-slate-800 rounded px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                    />
+                  </label>
+                  <p className="text-[10px] text-slate-500">
+                    Changing these values invalidates the current preflight result; re-run preflight
+                    before launching.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {launchError && (
+              <div className="p-3 bg-red-500/5 border border-red-500/20 text-red-400 rounded-lg text-xs flex gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>{launchError}</span>
+              </div>
+            )}
+
+            {!canRunEval && (
+              <p className="text-[10px] text-amber-500 font-semibold italic">
+                View-only access: MultiAgentOps Eng or Scenario Designer privileges are required to
+                trigger evaluation runs.
+              </p>
+            )}
+
+            <button
+              onClick={launchEvaluation}
+              disabled={launching || !canRunEval}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-600 text-white text-xs font-bold transition-colors"
             >
-              <PlayCircle className="w-4 h-4" /> Launch evaluation
-            </Link>
+              <PlayCircle className="w-4 h-4" />
+              {launching ? 'Initializing job…' : 'Launch evaluation'}
+            </button>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
               <input
                 value={runId}
