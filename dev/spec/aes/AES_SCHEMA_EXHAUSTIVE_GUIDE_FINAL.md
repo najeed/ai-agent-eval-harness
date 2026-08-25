@@ -72,7 +72,7 @@ The AES JSON file is a **Blueprint**, but the actual **Resources** live in the p
     - **Config**: An array of strings like `["GDPR", "PCI_DSS_V4", "BASEL_III"]`. By listing these, you trigger specialized forensic checks in the harness. As of v1.4.0, the registry supports **60+ industrial standards**, including ISO 42001, NIST AI-RMF, and HIPAA.
 4.  **`agent_topology`**:
     - **Purpose**: Defines what the agent is *allowed* to touch.
-    - **Config**: A map of agent names to their `reads` and `writes` (e.g., `agent_1: { "writes": ["ledger_db"] }`). This implements **Permissions-Based Access Control (PBAC)**, ensuring that agents are isolated within leurs specific resource namespaces.
+    - **Config**: A map of agent names to their `reads` and `writes` (e.g., `agent_1: { "writes": ["ledger_db"] }`). This implements **Permissions-Based Access Control (PBAC)**, ensuring that agents are isolated within their specific resource namespaces.
 5.  **`description` / `complexity`**:
     - **Purpose**: Industrial metadata for scenario catalogs. Enables quick filtering of "High Complexity Fintech" runs.
     - **Config**: Strings and Enums.
@@ -176,12 +176,12 @@ The `workflow` is a **DAG** (Directed Acyclic Graph). It’s a map of steps (Nod
     - **Purpose**: The "Keys" to the room. The agent can *only* use tools listed here for this task.
     - **Config**: Array of tool IDs defined in your `shim_resources.json`. This enables **Task-Level Isolation**, ensuring an agent cannot use sensitive tools (e.g., `bank_write`) in a read-only node.
 3.  **`success_criteria`**:
-    - **Purpose**: Quantitative thresholds for this step (e.g., "Latentcy < 200ms").
+    - **Purpose**: Quantitative thresholds for this step (e.g., "Latency < 200ms").
     - **Config**: Array of objects with `metric` and `threshold`. This allows the engine to perform automated, multi-dimensional grading of task-specific performance.
 4.  **`state_hygiene`**:
     - **Purpose**: A "Pre-flight Check." It ensures the environment hasn't been tampered with *before* the agent starts.
     - **Config**: Object containing assertions (e.g., `database_locked: true`). This implements **Assertions-First Logic**, preventing evaluations from proceeding in a corrupted environment.
-4.  **`expected_outcome`**:
+5.  **`expected_outcome`**:
     - **Purpose**: The "Ground Truth." What should the world look like if the agent wins?
     - **Config**: Can be a `typed_value` (e.g., a specific string) or a `standard_ref` (linking to a shared schema).
 

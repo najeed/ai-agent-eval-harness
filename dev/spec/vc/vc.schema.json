@@ -9,6 +9,7 @@
     "trace_hash",
     "hash_algorithm",
     "trace_file",
+    "execution_mode",
     "compliance",
     "evidence_ledger",
     "provenance_chain"
@@ -33,7 +34,9 @@
     },
     "hash_algorithm": {
       "type": "string",
-      "enum": ["sha3_256"],
+      "enum": [
+        "sha3_256"
+      ],
       "description": "Hash algorithm used for trace_hash and evidence_ledger"
     },
     "trace_file": {
@@ -111,6 +114,21 @@
     "governance_ttl": {
       "type": "integer",
       "description": "Number of days before the certificate expires"
+    },
+    "execution_mode": {
+      "type": "string",
+      "enum": [
+        "simulated",
+        "record_replay",
+        "live",
+        "hybrid",
+        "unknown"
+      ],
+      "description": "Truth mode of the certified run. 'unknown' is stamped for legacy traces that never recorded a mode; such certificates carry provisional=true and are non-authoritative for compliance."
+    },
+    "provisional": {
+      "type": "boolean",
+      "description": "True when execution_mode was not explicitly declared by the operator or could not be determined from the run vault. Provisional certificates must never back audit claims."
     }
   }
 }

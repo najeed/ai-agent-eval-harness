@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentv.dev/spec/agent-targets/agent-targets.schema.json",
+  "title": "AgentV Agent Targets registry v1.0.0 (.aes/agent_targets.json)",
+  "description": "Server-persisted registry of reusable agent connection profiles (connect-once, reuse across scenarios). Secrets are NEVER accepted or persisted; the REST layer rejects any field whose name matches credential patterns.",
+  "type": "object",
+  "required": ["schema_version", "targets"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "targets": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/definitions/target" }
+    }
+  },
+  "definitions": {
+    "target": {
+      "type": "object",
+      "required": ["id", "name", "protocol", "endpoint", "created_at", "updated_at"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$"
+        },
+        "name": { "type": "string", "minLength": 1 },
+        "protocol": {
+          "enum": [
+            "http_rest", "http", "sse", "ollama", "openai", "anthropic",
+            "claude", "gemini", "custom_http", "grpc", "in_process", "local"
+          ]
+        },
+        "endpoint": {
+          "type": "string",
+          "pattern": "^https?://[\\w.-]+",
+          "description": "http/https only. There is no implicit default target."
+        },
+        "model": { "type": "string" },
+        "max_turns": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "timeout_seconds": { "type": "integer", "minimum": 5, "maximum": 600 },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}
