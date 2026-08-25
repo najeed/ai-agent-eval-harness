@@ -25,7 +25,7 @@ interface AssertionItem {
   mode: 'exact' | 'regex' | 'numerical_tolerance';
 }
 
-// [C3b] Client mirror of the server-authoritative lifecycle state machine
+// Client mirror of the server-authoritative lifecycle state machine
 // (eval_runner.console.routes.scenarios.LEGAL_TRANSITIONS). Used ONLY to
 // enable/disable controls with explanatory reasons — the server transition
 // API remains the sole authority and re-validates every request.
@@ -444,8 +444,7 @@ export const ScenarioComposer: React.FC = () => {
     const legal = LEGAL_TRANSITIONS[lifecycleStatus] || [];
     if (!legal.includes(target)) {
       setMessage(
-        `Illegal transition: '${lifecycleStatus}' → '${target}'. Legal next states: ${
-          legal.length ? legal.join(', ') : '(none — terminal state)'
+        `Illegal transition: '${lifecycleStatus}' → '${target}'. Legal next states: ${legal.length ? legal.join(', ') : '(none — terminal state)'
         }.`
       );
       return;
@@ -479,8 +478,7 @@ export const ScenarioComposer: React.FC = () => {
       } else {
         const legalFromServer: string[] = data.legal_transitions || [];
         setMessage(
-          `Transition rejected: ${data.error || 'Unknown error.'}${
-            legalFromServer.length ? ` Legal next states: ${legalFromServer.join(', ')}.` : ''
+          `Transition rejected: ${data.error || 'Unknown error.'}${legalFromServer.length ? ` Legal next states: ${legalFromServer.join(', ')}.` : ''
           }`
         );
       }
@@ -796,9 +794,8 @@ export const ScenarioComposer: React.FC = () => {
                       ? 'Read-only mode.'
                       : !isPersistedScenario
                         ? 'Save this scenario to the Catalog before changing lifecycle state.'
-                        : `Legal next states from '${lifecycleStatus}': ${
-                            legal.length ? legal.join(', ') : 'none (terminal state)'
-                          }. Transitions are validated server-side.`
+                        : `Legal next states from '${lifecycleStatus}': ${legal.length ? legal.join(', ') : 'none (terminal state)'
+                        }. Transitions are validated server-side.`
                   }
                   className="bg-transparent border-none text-indigo-400 font-bold text-[11px] focus:outline-none disabled:opacity-60 cursor-pointer"
                 >
@@ -865,9 +862,9 @@ export const ScenarioComposer: React.FC = () => {
 
       {loadError && (
         <div className="bg-red-500/10 border-b border-red-500/20 px-6 py-2 flex items-center justify-between text-xs text-red-300 shrink-0">          <div className="flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
-            <span>{loadError}</span>
-          </div>
+          <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
+          <span>{loadError}</span>
+        </div>
           <span className="text-[10px] text-red-400/80 font-mono">Canonical Document Load Failed</span>
         </div>
       )}
@@ -966,8 +963,8 @@ export const ScenarioComposer: React.FC = () => {
                           disabled={!canEditScenario}
                           value={
                             selectedEdge.data?.priority === undefined ||
-                            selectedEdge.data?.priority === null ||
-                            Number.isNaN(Number(selectedEdge.data?.priority))
+                              selectedEdge.data?.priority === null ||
+                              Number.isNaN(Number(selectedEdge.data?.priority))
                               ? ''
                               : Number(selectedEdge.data?.priority)
                           }
@@ -1081,7 +1078,7 @@ export const ScenarioComposer: React.FC = () => {
                               >
                                 <option value="exact">Exact Match</option>
                                 <option value="regex">Regex Pattern</option>
-                                <option value="numerical_tolerance">Numerical Tolerance (Â±)</option>
+                                <option value="numerical_tolerance">Numerical Tolerance (±)</option>
                                 <option value="json_schema">JSON Schema Match</option>
                               </select>
                             </div>

@@ -1674,7 +1674,7 @@ export const LiveDebugger: React.FC = () => {
                   Telemetry Diagnostics
                 </h4>
                 <span className="px-1.5 py-0.5 rounded bg-sky-500/15 text-sky-300 border border-sky-500/30 text-[8px] font-bold tracking-wider uppercase">
-                  TELEMETRY-INFERRED Â· NON-AUTHORITATIVE
+                  TELEMETRY-INFERRED · NON-AUTHORITATIVE
                 </span>
               </div>
               <p className="text-[9px] text-slate-500 leading-relaxed">

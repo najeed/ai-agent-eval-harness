@@ -158,7 +158,7 @@ SAMPLE_PACK_DIR = Path(__file__).resolve().parents[3] / "samples" / "packs" / "s
 
 
 def test_install_from_committed_sample_dir(mock_catalog_dir):
-    """[Fabricated-#2 Ã¢â€ â€™ real installer] Directory source with checksums."""
+    """[Fabricated-#2 → real installer] Directory source with checksums."""
     assert install_pack(str(SAMPLE_PACK_DIR)) is True
 
     target = mock_catalog_dir / "industries" / "sample" / "STANDARD" / "1.0.0"

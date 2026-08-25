@@ -170,7 +170,7 @@ def test_redact_strips_userinfo_credentials():
 
 @pytest.mark.asyncio
 async def test_private_repo_without_token_fails_actionable(monkeypatch):
-    """401/403/404 from the forge API with no token â†’ one actionable error."""
+    """401/403/404 from the forge API with no token → one actionable error."""
     import eval_runner.analyzer as az
 
     monkeypatch.setattr(az, "_assert_public_host", lambda h, a: None)

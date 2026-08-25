@@ -341,7 +341,7 @@ async def _resolve_commit_and_privacy(
 
 
 # ---------------------------------------------------------------------------
-# Mode A; tree-streaming (default): list â†’ filter â†’ rank â†’ parallel fetch
+# Mode A; tree-streaming (default): list → filter → rank → parallel fetch
 # ---------------------------------------------------------------------------
 
 

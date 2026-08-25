@@ -270,7 +270,7 @@ export const VerificationWorkflow: React.FC = () => {
       {/* Step 1: Connect Agent */}
       <section className="bg-slate-950/50 border border-slate-900 rounded-xl p-5 space-y-3">
         <h2 className="text-sm font-bold text-white flex items-center gap-2">
-          <Plug className="w-4 h-4 text-indigo-400" /> 1 Â· Connect Agent
+          <Plug className="w-4 h-4 text-indigo-400" /> 1 · Connect Agent
         </h2>
         <div className="grid grid-cols-[180px_1fr] gap-3 items-center">
           <label className="text-[11px] uppercase tracking-wider text-slate-500 font-bold">
