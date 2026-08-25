@@ -34,10 +34,16 @@ def build_reproducibility_contract(
     attempts: int = 1,
     execution_mode: str | None = None,
     adapter_metadata: dict[str, Any] | None = None,
+    evaluator_fingerprint: str | None = None,
+    plugin_provenance: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """
     Builds the immutable reproducibility descriptor for an evaluation run.
     Pure function of its inputs; no ambient state beyond the interpreter version.
+
+    [P1-E] The contract binds the EXACT evaluator implementation too: metric
+    registry fingerprint and plugin provenance — reproducibility without
+    evaluator identity is not reproducibility.
     """
     from . import config as harness_config
 
@@ -45,7 +51,7 @@ def build_reproducibility_contract(
     scenario_meta = scenario.get("metadata", {}) if isinstance(scenario, dict) else {}
 
     contract = {
-        "contract_version": "1.0.0",
+        "contract_version": "1.1.0",
         "executor_version": getattr(harness_config, "VERSION", "unknown"),
         "execution_ir_version": "2.0.0",
         "scenario_version": _canonical_hash(
@@ -57,6 +63,10 @@ def build_reproducibility_contract(
             "endpoint": adapter_meta.get("agent"),
             "adapter_version": adapter_meta.get("adapter_version"),
             "provider_model": adapter_meta.get("model") or scenario_meta.get("model") or None,
+        },
+        "evaluator": {
+            "fingerprint": evaluator_fingerprint,
+            "plugin_provenance": plugin_provenance or {},
         },
         "environment_fingerprint": {
             "python": sys.version.split(" ", 1)[0],
@@ -78,10 +88,32 @@ def build_reproducibility_contract(
     return contract
 
 
+def metric_registry_fingerprint() -> str:
+    """
+    [P1-E] Deterministic digest over the registered evaluator surface
+    (metric names + their provenance sources), so an evaluator-side change
+    invalidates previously published fingerprints.
+    """
+    from . import metrics as _metrics
+
+    try:
+        entries = sorted(
+            (str(m), str(_metrics.MetricRegistry.get_source(m)))
+            for m in (_metrics.MetricRegistry.list_metrics() or [])
+        )
+    except Exception:  # noqa: BLE001 - fingerprinting must never break a run
+        entries = []
+    return _canonical_hash(entries)
+
+
 def fingerprint(contract: dict[str, Any]) -> str:
     """Single stable digest over the full reproducibility contract."""
     core = {k: v for k, v in contract.items() if k != "fingerprint"}
     return _canonical_hash(core)
 
 
-__all__ = ["build_reproducibility_contract", "fingerprint"]
+__all__ = [
+    "build_reproducibility_contract",
+    "fingerprint",
+    "metric_registry_fingerprint",
+]

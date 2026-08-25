@@ -312,7 +312,7 @@ runs_cache.start()
 def list_runs():
     """Returns a list of recent run traces (Consolidated).
 
-    [C1a] Every row carries a server-authoritative ``verification_status``
+    Every row carries a server-authoritative ``verification_status``
     computed by comparing the certificate/manifest trace_hash against the
     CURRENT trace bytes (SHA3-256). Presence of a certificate alone is never
     treated as proof; unverifiable runs report UNKNOWN.
@@ -323,24 +323,38 @@ def list_runs():
     for run in runs[:200]:
         row = dict(run)
         row["verification_status"] = _authoritative_verdict(run.get("run_id") or "")
+        # [Provenance surfacing] Cheap, truthful integrity badge derived from
+        # the SAME evidence the cache already inspected: a terminal run_end
+        # means COMPLETE; vault without terminal event is PARTIAL; fragments
+        # recovered from the master log are RECOVERED.
+        if row.get("result_status"):
+            row["trace_integrity"] = "COMPLETE"
+        elif row.get("_fragment_path"):
+            row["trace_integrity"] = "RECOVERED"
+        else:
+            row["trace_integrity"] = "PARTIAL"
         enriched.append(row)
     return jsonify({"runs": enriched})
 
 
 def _authoritative_verdict(run_id: str) -> str:
     """
-    [C1a] Hash-compare verdict: VERIFIED, FAILED_VERIFICATION, or UNKNOWN.
+    Hash-compare verdict. Full literal set:
 
-    UNKNOWN means no certificate/manifest was available or the check could
-    not be performed — the server refuses to fabricate a verdict from file
-    presence or execution status.
+        VERIFIED | FAILED_VERIFICATION | NOT_EXECUTED | ERROR | UNKNOWN
+
+      NOT_EXECUTED — no trace exists for the run id (nothing to verify).
+      ERROR        — the verification procedure itself failed; truth is
+                     unavailable and must never masquerade as UNKNOWN-by-
+                     absence-of-certificate.
+      UNKNOWN      — trace exists but no certificate could be checked.
     """
     if not run_id:
-        return "UNKNOWN"
+        return "NOT_EXECUTED"
 
     tp = resolve_trace_path(run_id)
     if not tp or not tp.exists():
-        return "UNKNOWN"
+        return "NOT_EXECUTED"
 
     manifest_path: Path | None = None
     vault_manifest = config.RUN_LOG_DIR / run_id / "run_manifest.json"
@@ -367,9 +381,9 @@ def _authoritative_verdict(run_id: str) -> str:
             if hmac.compare_digest(expected_hex.lower(), actual_hex.lower())
             else "FAILED_VERIFICATION"
         )
-    except Exception:  # noqa: BLE001 - verdict failures must degrade to UNKNOWN
+    except Exception:  # noqa: BLE001 - verdict failures degrade to ERROR, not UNKNOWN
         logger.debug("Authoritative verdict check failed for %s", run_id, exc_info=True)
-        return "UNKNOWN"
+        return "ERROR"
 
 
 @run_bp.route("/v1/runs/stream-list", methods=["GET"])

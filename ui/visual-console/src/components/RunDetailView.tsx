@@ -104,18 +104,17 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
     (a: any) => a && a.passed === false
   );
   const whyLine: string = isVerified
-    ? `PASS — ${crypto?.verified ? 'signature verified and evidence chain intact' : 'runtime verification decision: PASS'}.`
+    ? `PASS; ${crypto?.verified ? 'signature verified and evidence chain intact' : 'runtime verification decision: PASS'}.`
     : isBreach
-    ? 'FAIL — authoritative policy_violation event in the certified trace.'
-    : failedAssertions.length > 0
-    ? `FAIL — ${failedAssertions.length} assertion(s) failed. First failure: ${
-        failedAssertions[0].metric ?? failedAssertions[0].assertion ?? 'unnamed'
-      } on node '${failedAssertions[0].node ?? '?'}'.`
-    : crypto && crypto.errors?.length > 0
-    ? `NOT VERIFIED — ${crypto.errors[0]}`
-    : isNotVerified
-    ? 'NOT VERIFIED — runtime verification decision: FAIL.'
-    : 'INCONCLUSIVE — no authoritative verification result available for this run.';
+      ? 'FAIL; authoritative policy_violation event in the certified trace.'
+      : failedAssertions.length > 0
+        ? `FAIL; ${failedAssertions.length} assertion(s) failed. First failure: ${failedAssertions[0].metric ?? failedAssertions[0].assertion ?? 'unnamed'
+        } on node '${failedAssertions[0].node ?? '?'}'.`
+        : crypto && crypto.errors?.length > 0
+          ? `NOT VERIFIED; ${crypto.errors[0]}`
+          : isNotVerified
+            ? 'NOT VERIFIED; runtime verification decision: FAIL.'
+            : 'INCONCLUSIVE; no authoritative verification result available for this run.';
   const attestationGrade: string =
     evidencePackage?.evidence_chain_valid === true ? 'Cryptographically Attested' : 'Unattested';
 
@@ -125,11 +124,11 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
     ? auditResult.is_valid
       ? `${auditResult.algorithm || 'Ed25519'} Verified (Merkle Root Sealed)`
       : auditResult.has_certificate
-      ? `Verification Failed: ${auditResult.failure_reason || 'Tampered'}`
-      : 'UNSIGNED (No Cryptographic Proof)'
+        ? `Verification Failed: ${auditResult.failure_reason || 'Tampered'}`
+        : 'UNSIGNED (No Cryptographic Proof)'
     : run.signature?.algorithm
-    ? `${run.signature.algorithm} (${run.signature.key_id?.slice(0, 10) || 'Active'})`
-    : 'UNSIGNED (No Cryptographic Proof)';
+      ? `${run.signature.algorithm} (${run.signature.key_id?.slice(0, 10) || 'Active'})`
+      : 'UNSIGNED (No Cryptographic Proof)';
 
 
   return (
@@ -157,15 +156,14 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
           {/* Primary Verified Outcome Badge */}
           <div className="flex items-center gap-3">
             <div
-              className={`px-4 py-2.5 rounded-xl border flex items-center gap-2.5 shadow-lg ${
-                isVerified
-                  ? 'bg-emerald-950/50 border-emerald-500/40 text-emerald-300 shadow-emerald-500/10'
-                  : isBreach
+              className={`px-4 py-2.5 rounded-xl border flex items-center gap-2.5 shadow-lg ${isVerified
+                ? 'bg-emerald-950/50 border-emerald-500/40 text-emerald-300 shadow-emerald-500/10'
+                : isBreach
                   ? 'bg-rose-950/50 border-rose-500/40 text-rose-300 shadow-rose-500/10'
                   : isNotVerified
-                  ? 'bg-rose-950/40 border-rose-500/30 text-rose-300'
-                  : 'bg-amber-950/50 border-amber-500/40 text-amber-300 shadow-amber-500/10'
-              }`}
+                    ? 'bg-rose-950/40 border-rose-500/30 text-rose-300'
+                    : 'bg-amber-950/50 border-amber-500/40 text-amber-300 shadow-amber-500/10'
+                }`}
             >
               {auditLoading ? (
                 <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
@@ -213,11 +211,10 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-4 py-2.5 text-xs font-semibold flex items-center gap-2 border-b-2 transition -mb-px whitespace-nowrap ${
-                activeTab === tab.id
-                  ? 'border-indigo-500 text-white bg-slate-900/50'
-                  : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-700'
-              }`}
+              className={`px-4 py-2.5 text-xs font-semibold flex items-center gap-2 border-b-2 transition -mb-px whitespace-nowrap ${activeTab === tab.id
+                ? 'border-indigo-500 text-white bg-slate-900/50'
+                : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-700'
+                }`}
             >
               {tab.icon}
               {tab.label}
@@ -240,8 +237,8 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
                 Did this agent safely achieve the intended state transition without policy violations?
               </div>
               <p className="text-xs text-slate-400 leading-relaxed">
-                {/* P0-2/P1-13: verdict-first "why", sourced only from the
-                    authoritative evidence package. No UI-fabricated claims. */}
+                {/* verdict-first "why", sourced only from the
+                    authoritative evidence package. */}
                 {whyLine}
               </p>
               {failedAssertions.length > 0 && (
@@ -255,12 +252,12 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
                         key={i}
                         className="text-[11px] font-mono text-rose-300 bg-rose-950/20 border border-rose-500/20 rounded px-2 py-1"
                       >
-                        ✘ {a.metric ?? a.assertion ?? 'assertion'} on node '
+                        ✖ {a.metric ?? a.assertion ?? 'assertion'} on node '
                         {a.node ?? '?'}'
                         {a.expected !== undefined && (
                           <span className="text-slate-500">
                             {' '}
-                            — expected {JSON.stringify(a.expected)}, actual{' '}
+                            ; expected {JSON.stringify(a.expected)}, actual{' '}
                             {JSON.stringify(a.actual ?? a.actual_after)}
                           </span>
                         )}
@@ -273,7 +270,7 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
                     )}
                   </ul>
                   <Link
-                    to={`/debugger?run=${encodeURIComponent(run.run_id)}`}
+                    to={`/debugger?run_id=${encodeURIComponent(run.run_id)}`}
                     className="inline-flex items-center gap-1 text-[11px] text-indigo-400 hover:text-indigo-300 mt-1"
                   >
                     → Inspect first causal divergence in the Live Debugger
@@ -342,11 +339,10 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
                       )}
                     </div>
                     <span
-                      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase flex items-center gap-1 ${
-                        a.passed
-                          ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
-                          : 'bg-rose-500/10 border border-rose-500/20 text-rose-400'
-                      }`}
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase flex items-center gap-1 ${a.passed
+                        ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
+                        : 'bg-rose-500/10 border border-rose-500/20 text-rose-400'
+                        }`}
                     >
                       {a.passed ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
                       {a.passed ? 'PASSED' : 'FAILED'}
@@ -510,3 +506,4 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
     </div>
   );
 };
+

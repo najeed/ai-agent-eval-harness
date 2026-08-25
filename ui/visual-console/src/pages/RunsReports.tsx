@@ -15,7 +15,7 @@ interface RunItem {
   scenario: string;
   timestamp: string;
   status?: string;
-  verdict?: 'VERIFIED' | 'FAILED_VERIFICATION' | 'UNKNOWN';
+  verdict?: string;
   score?: number;
   duration?: number;
   agent?: string;
@@ -69,15 +69,13 @@ export const RunsReports: React.FC = () => {
       const res = await fetch('/api/runs');
       const data = await res.json();
       const loaded: any[] = data.runs || [];
-      // [C1b] The server's verification_status is authoritative (cert trace-hash
+      // The server's verification_status is authoritative (cert trace-hash
       // vs current-trace compare). The client NEVER infers a verdict from
-      // certificate presence or pass/fail status — absent verdicts are UNKNOWN.
+      // certificate presence or pass/fail status; absent verdicts are UNKNOWN.
       const parsedRuns: RunItem[] = loaded.map((r) => {
-        const rawVerdict = r.verification_status;
-        const verdict: RunItem['verdict'] =
-          rawVerdict === 'VERIFIED' || rawVerdict === 'FAILED_VERIFICATION'
-            ? rawVerdict
-            : 'UNKNOWN';
+        // Server verdict is authoritative across the FULL literal set:
+        // VERIFIED | FAILED_VERIFICATION | NOT_EXECUTED | ERROR | UNKNOWN.
+        const verdict: string = r.verification_status || 'UNKNOWN';
         return {
           run_id: r.run_id,
           scenario: r.scenario || r.run_id,
@@ -88,6 +86,7 @@ export const RunsReports: React.FC = () => {
           duration: r.duration_seconds ?? r.duration ?? undefined,
           agent: r.identifier || undefined,
           resultStatus: r.result_status || undefined,
+          traceIntegrity: r.trace_integrity || undefined,
           has_certificate: !!r.has_certificate,
         };
       });
@@ -159,8 +158,8 @@ export const RunsReports: React.FC = () => {
                 <button
                   onClick={() => setViewMode('history')}
                   className={`px-3 py-1.5 rounded-md text-xs font-semibold transition ${activeView === 'history'
-                      ? 'bg-slate-800 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-slate-800 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
                     }`}
                 >
                   Active & History
@@ -168,8 +167,8 @@ export const RunsReports: React.FC = () => {
                 <button
                   onClick={() => setViewMode('packages')}
                   className={`px-3 py-1.5 rounded-md text-xs font-semibold transition ${activeView === 'packages'
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-indigo-600 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
                     }`}
                 >
                   Evidence Packages
@@ -211,8 +210,8 @@ export const RunsReports: React.FC = () => {
                   key={st.key}
                   onClick={() => setStatusFilter(st.key)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${statusFilter === st.key
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+                    ? 'bg-indigo-600 text-white shadow-sm'
+                    : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
                     }`}
                 >
                   {st.label}
@@ -237,7 +236,7 @@ export const RunsReports: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60 font-mono">
                   {filteredRuns.map((r) => {
-                    // [C1b] Server-authoritative verdict only — no inference.
+                    //Server-authoritative verdict only, no inference.
                     const isVer = r.verdict === 'VERIFIED';
                     const isFailed = r.verdict === 'FAILED_VERIFICATION';
                     const verdictLabel = isVer
@@ -271,10 +270,10 @@ export const RunsReports: React.FC = () => {
                                   : 'No certificate available, or the server could not verify this run.'
                             }
                             className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5 ${isVer
-                                ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
-                                : isFailed
-                                  ? 'bg-red-500/10 border border-red-500/20 text-red-400'
-                                  : 'bg-slate-500/10 border border-slate-500/20 text-slate-400'
+                              ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
+                              : isFailed
+                                ? 'bg-red-500/10 border border-red-500/20 text-red-400'
+                                : 'bg-slate-500/10 border border-slate-500/20 text-slate-400'
                               }`}
                           >
                             {isVer ? <ShieldCheck className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}
@@ -320,3 +319,4 @@ export const RunsReports: React.FC = () => {
     </div>
   );
 };
+

@@ -33,6 +33,7 @@ from .events import CoreEvents, Event, EventEmitter  # noqa: E402
 from .execution_ir import (  # noqa: E402
     ExecutionIdentity,
     ExecutionMode,
+    NodeVerdict,
     PlanValidationError,
     WorkflowStatus,
     compile_workflow,
@@ -116,8 +117,22 @@ class SessionManager:
             scenario.get("execution_mode")
             or self.metadata.get("execution_mode")
             or scenario.get("metadata", {}).get("execution_mode")
-            or ExecutionMode.SIMULATED.value
         )
+        execution_mode_declared = bool(mode_raw)
+        if not mode_raw:
+            mode_raw = ExecutionMode.SIMULATED.value
+            # Silent SIMULATED default is LOUD: operators get an
+            # unmistakable warning and the certificate will be stamped
+            # provisional=true (non-authoritative for audits).
+            print(
+                "      ⚠⚠  EXECUTION MODE NOT DECLARED — defaulting to "
+                "'simulated'. This run can NEVER be cited as live/replay "
+                "verification. Declare execution_mode explicitly."
+            )
+            logger.warning(
+                "Run %s: execution_mode not declared; defaulting to simulated (provisional).",
+                self.run_id,
+            )
         try:
             self.execution_mode = ExecutionMode(str(mode_raw))
         except ValueError as err:
@@ -128,7 +143,28 @@ class SessionManager:
                 f"Invalid execution_mode '{mode_raw}'. Valid modes: {valid}. "
                 "Refusing to fall back to SIMULATED (fail-closed)."
             ) from err
+
+        # [P0-8] Truth-mode vs adapter consistency. A session that can reach a
+        # real agent endpoint may never be silently labeled SIMULATED: the
+        # operator must declare live/hybrid, or explicitly accept simulated.
+        import os as _os
+
+        _endpoint = self.session_metadata.get("agent")
+        if (
+            _endpoint
+            and self.execution_mode is ExecutionMode.SIMULATED
+            and not config.ENABLE_DEMO
+            and _os.getenv("AES_ALLOW_IMPLICIT_SIMULATED", "").lower() != "1"
+        ):
+            raise ValueError(
+                f"execution_mode conflict: an agent endpoint ('{_endpoint}') is "
+                "configured but execution_mode defaults to 'simulated'. Declare "
+                "execution_mode='live' | 'hybrid' | 'record_replay', or pass "
+                "metadata execution_mode='simulated' explicitly to attest that "
+                "no live verification is claimed."
+            )
         self.metadata["execution_mode"] = self.execution_mode.value
+        self.metadata["execution_mode_declared"] = execution_mode_declared
 
         # [AgentV v2.0.0] First-class attempt identity
         import uuid as _uuid
@@ -429,7 +465,10 @@ class SessionManager:
             self.metadata["attempt_id"] = identity.attempt_id
             self.metadata["scenario_version_id"] = identity.scenario_version_id
 
-            # Shared trajectory state across nodes within this attempt
+            # [P0-6] Execution-instance-scoped evidence. Every before-state
+            # observation is keyed by execution_instance_id — never solely by
+            # scenario node id — so retries/loops/parallel branches preserve
+            # their own immutable precondition evidence.
             turns_taken = 0
             history: list[dict[str, Any]] = []
             actions: dict[str, Any] = {"used_tools": []}
@@ -468,9 +507,8 @@ class SessionManager:
                 except Exception:  # noqa: BLE001 - evidence capture must not break execution
                     state_before = None
                 if state_before is not None:
-                    state_before_map[node_id_local] = copy.deepcopy(state_before)
+                    state_before_map[exec_id] = copy.deepcopy(state_before)
 
-                policy_cursor = len(getattr(sandbox, "policy_decisions", []))
                 result = await self._execute_node(
                     node_def,
                     attempt_number,
@@ -479,6 +517,12 @@ class SessionManager:
                     history,
                     actions,
                     state_before=state_before,
+                    execution_context={
+                        "execution_instance_id": exec_id,
+                        "parent_execution_id": parent_exec_id,
+                        "attempt_id": identity.attempt_id,
+                        "evaluation_run_id": identity.evaluation_run_id,
+                    },
                 )
                 # [AgentV v2.0.0] Immutable join model on every task result
                 result["execution_instance_id"] = exec_id
@@ -489,24 +533,6 @@ class SessionManager:
                 result["case_id"] = identity.case_id
                 result["attempt_id"] = identity.attempt_id
                 result["execution_mode"] = identity.execution_mode.value
-
-                # [A4] First-class policy assertions: every sandbox policy
-                # decision taken during this node's execution is attached to
-                # its task result. A denial is gating — a node can never be
-                # reported successful while a policy denied one of its tools.
-                new_policy_decisions = getattr(sandbox, "policy_decisions", [])[policy_cursor:]
-                if new_policy_decisions:
-                    result["policy_checks"] = copy.deepcopy(new_policy_decisions)
-                    denied_ids = [
-                        str(d.get("id"))
-                        for d in new_policy_decisions
-                        if d.get("decision") == "denied"
-                    ]
-                    if denied_ids and result.get("status") == "success":
-                        result["status"] = "failed"
-                        result["message"] = "Policy denial during node execution: " + ", ".join(
-                            denied_ids
-                        )
 
                 if result.get("status") == "success":
                     turns_taken += 1
@@ -533,6 +559,10 @@ class SessionManager:
                         expected_state_changes=node_def.get("expected_state_changes"),
                         observations={"used_tools": list(result.get("used_tools") or [])},
                     )
+                    # [P0-6] Reconciliation evidence is instance-addressable.
+                    result["reconciliation"]["execution_instance_id"] = exec_id
+                    result["reconciliation"]["attempt_id"] = identity.attempt_id
+                    result["reconciliation"]["scenario_node_id"] = node_id_local
 
                 return result
 
@@ -602,7 +632,31 @@ class SessionManager:
 
             # [AgentV v2.0.0] Verification decision tree + workflow verdict
             verdict_target["workflow_verdict"] = verdict_payload
+
+            # [Category A] Multi-judge consensus — IMPLEMENTED, never ignored.
+            # When evaluation.consensus is declared the runtime executes the
+            # declared panel through the authoritative LLM-judge primitive;
+            # an unprovisionable panel produces an explicit evaluated=false
+            # result (loud, artifact-visible) instead of a silent no-op.
+            consensus_result = await self._evaluate_consensus(
+                global_evaluation or {},
+                global_cumulative_history,
+            )
+            if consensus_result is not None:
+                verdict_payload["consensus"] = consensus_result
+
             decision = self._build_verification_decision(outcome, all_task_results, identity)
+            if consensus_result is not None:
+                decision["consensus"] = consensus_result
+                if consensus_result.get("status") == "INCONCLUSIVE":
+                    # AES guide contract: disagreement below ija_threshold
+                    # must never certify — it flags human review.
+                    decision["decision"] = "INCONCLUSIVE"
+                    decision["because"].append(
+                        "Judge panel disagreement below ija_threshold "
+                        f"(agreement={consensus_result.get('agreement')}) — "
+                        "human review required."
+                    )
             verdict_target["verification_decision"] = decision
 
         except Exception as e:
@@ -635,6 +689,192 @@ class SessionManager:
             await self.teardown(sandbox)
 
         return all_task_results
+
+    @staticmethod
+    def _last_agent_summary(history: list[dict[str, Any]]) -> str:
+        for msg in reversed(history or []):
+            if msg.get("role") != "agent":
+                continue
+            content = msg.get("content", "")
+            if isinstance(content, dict):
+                return str(
+                    content.get("summary") or content.get("content") or content.get("message") or ""
+                )
+            return str(content)
+        return ""
+
+    async def _evaluate_consensus(
+        self,
+        evaluation_cfg: dict[str, Any],
+        history: list[dict[str, Any]],
+    ) -> dict[str, Any] | None:
+        """
+        [Category A] Executable multi-judge consensus.
+
+        Panel entries resolve through the SAME authoritative judge plumbing as
+        ``luna_judge_score`` (LLMProviderFactory + config.JUDGE_PROVIDER /
+        JUDGE_MODEL defaults); a panel entry may also be an explicit
+        {provider, model, temperature} object. Quorum = min_judges
+        successfully-executed judge votes; unprovisionable judges are recorded
+        individually and NEVER replaced by silent fallbacks. An undeclared,
+        unprovisionable, or unknown-strategy consensus is a loud, artifact-
+        visible evaluated=false result — the runtime no-ops nothing silently.
+        """
+        cons = evaluation_cfg.get("consensus") or {}
+        if not isinstance(cons, dict) or not cons:
+            return None
+
+        strategy = str(cons.get("strategy", "Majority_Vote"))
+        min_judges = int(cons.get("min_judges", 1) or 1)
+        ija_threshold = float(cons.get("ija_threshold", 0.0) or 0.0)
+        raw_panel = cons.get("judge_panel") or ["default"]
+
+        expected_message = self._primary_expected_message()
+        agent_summary = self._last_agent_summary(history)
+
+        result: dict[str, Any] = {
+            "strategy": strategy,
+            "min_judges": min_judges,
+            "ija_threshold": ija_threshold,
+            "panel": [p if isinstance(p, str) else p.get("name", str(p)) for p in raw_panel],
+            "votes": [],
+            "evaluated": False,
+            "status": "NOT_EVALUATED",
+        }
+
+        if not expected_message:
+            result["reason"] = (
+                "No expected outcome available to judge against "
+                "(no message-target assertion found)."
+            )
+            print(
+                "      [Consensus] ⚠ NOT EVALUATED — declared consensus has no "
+                "expected message to judge: runtime records evaluated=false."
+            )
+            self.event_bus.emit(
+                CoreEvents.ADAPTER_DEBUG,
+                {
+                    "message": "Consensus declared but NOT evaluated (no expected message).",
+                    "category": "CONSENSUS_NOT_EVALUATED",
+                },
+            )
+            return result
+
+        from .llm_providers import LLMProviderFactory
+
+        votes: list[dict[str, Any]] = []
+        metric_fn = metrics.MetricRegistry.get("luna_judge_score")
+
+        for entry in raw_panel:
+            if isinstance(entry, str):
+                name, jc = entry, {}
+            else:
+                name = str(entry.get("name") or entry.get("provider") or "judge")
+                jc = {
+                    k: v
+                    for k, v in entry.items()
+                    if k
+                    in ("judge_provider", "judge_model", "judge_temperature", "provider", "model")
+                    and v is not None
+                }
+                # Accept shorthand provider/model keys too.
+                if "provider" in jc:
+                    jc["judge_provider"] = jc.pop("provider")
+                if "model" in jc:
+                    jc["judge_model"] = jc.pop("model")
+
+            # Provisioning pre-check: an uncreatable provider can never vote.
+            provider_name = jc.get("judge_provider") or config.JUDGE_PROVIDER
+            try:
+                LLMProviderFactory.create(provider_name)
+            except Exception as e:
+                votes.append({"judge": name, "status": "UNAVAILABLE", "error": str(e)[:200]})
+                continue
+
+            score = await metric_fn(
+                {"expected_outcome": expected_message, **jc},
+                agent_summary,
+                dict(self.session_metadata),
+            )
+            votes.append({"judge": name, "status": "VOTED", "score": round(float(score), 4)})
+
+        result["votes"] = votes
+        executed = [v["score"] for v in votes if v["status"] == "VOTED"]
+
+        if len(executed) < min_judges:
+            result["reason"] = (
+                f"Quorum not met: {len(executed)} judge(s) executed, "
+                f"min_judges={min_judges}. Unavailable judges are never "
+                "replaced by fallbacks."
+            )
+            print(
+                f"      [Consensus] ⚠ NOT EVALUATED — quorum failed "
+                f"({len(executed)}/{min_judges}); recorded as evaluated=false."
+            )
+            self.event_bus.emit(
+                CoreEvents.ADAPTER_DEBUG,
+                {
+                    "message": f"Consensus quorum failed ({len(executed)}/{min_judges}).",
+                    "category": "CONSENSUS_NOT_EVALUATED",
+                },
+            )
+            return result
+
+        result["evaluated"] = True
+        pass_votes = sum(1 for s in executed if s >= 0.5)
+        fail_votes = len(executed) - pass_votes
+        agreement = round(1.0 - (max(executed) - min(executed)), 4)
+
+        if strategy == "Majority_Vote":
+            passed = pass_votes > fail_votes
+            result["verdict"] = "PASS" if passed else "FAIL"
+            result["tally"] = {"pass": pass_votes, "fail": fail_votes}
+        elif strategy == "Absolute_Unanimity":
+            buckets = {round(s, 2) for s in executed}
+            unanimous = len(buckets) == 1 and all(s >= 0.5 for s in executed)
+            result["verdict"] = "PASS" if unanimous else "INCONCLUSIVE"
+            result["tally"] = {"buckets": sorted(buckets)}
+        elif strategy == "Weighted_Average":
+            mean = round(sum(executed) / len(executed), 4)
+            result["verdict"] = "PASS" if mean >= 0.5 else "FAIL"
+            result["mean_score"] = mean
+        else:
+            result["evaluated"] = False
+            result["reason"] = (
+                f"Unknown consensus strategy '{strategy}'. Supported: "
+                "Majority_Vote | Absolute_Unanimity | Weighted_Average."
+            )
+            print(f"      [Consensus] ⚠ Unknown strategy '{strategy}' — NOT EVALUATED.")
+            return result
+
+        result["agreement"] = agreement
+        if ija_threshold and agreement < ija_threshold:
+            result["status"] = "INCONCLUSIVE"
+            result["reason"] = (
+                f"Judge agreement {agreement} < ija_threshold {ija_threshold}: "
+                "certification withheld pending human review."
+            )
+            print(
+                f"      [Consensus] ⚠ INCONCLUSIVE — agreement {agreement} < "
+                f"threshold {ija_threshold}."
+            )
+        else:
+            result["status"] = result["verdict"]
+
+        print(
+            f"      [Consensus] {result['status']} via {strategy} "
+            f"(votes={len(executed)}, agreement={agreement})"
+        )
+        return result
+
+    def _primary_expected_message(self) -> str:
+        """Expected message from the most recent transition evidence, if any."""
+        # Transition evidence lives on task results produced this attempt; the
+        # verifier component keeps none globally, so scan session-level cache.
+        cached = getattr(self, "_last_transition_expectations", None)
+        if cached:
+            return str(cached[-1])
+        return ""
 
     @staticmethod
     def _build_verification_decision(
@@ -725,7 +965,7 @@ class SessionManager:
             "observed_execution": observed,
             "expected_transitions": transitions,
             "assertions": assertions,
-            # [E2] Single-commit root over the assertion set: any change to any
+            # Single-commit root over the assertion set: any change to any
             # assertion flips this hash, binding the decision to its evidence.
             "evidence_root_hash": decision_evidence_root_hash(assertions),
             "policy_checks": [],
@@ -749,10 +989,13 @@ class SessionManager:
         conversation_history: list[dict],
         agent_actions: dict[str, Any],
         state_before: dict[str, Any] | None = None,
+        execution_context: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         node_id = node["id"]
         task_description = node.get("task_description", "Processing node...")
         current_message = task_description
+        execution_context = execution_context or {}
+        policy_cursor = len(getattr(sandbox, "policy_decisions", []))
 
         # 1. Forensic Maneuver Start
         print(f"      [Node Execution] ID: {node_id} | Task: {task_description[:50]}...")
@@ -774,6 +1017,7 @@ class SessionManager:
         conversation_history.append({"role": "user", "content": current_message})
 
         node_success = False
+        hitl_unresolved = False
         start_turn = (
             self.turn_number + 1 if hasattr(self, "turn_number") and self.turn_number > 0 else 1
         )
@@ -852,6 +1096,13 @@ class SessionManager:
                     human_response = await self._handle_hitl(
                         turn, agent_response, conversation_history, agent_actions, turn_ctx
                     )
+                    if getattr(self, "_hitl_unresolved", False):
+                        # [P0-9] CI/automation never fabricates a human decision.
+                        # An unresolved approval is a first-class failure cause.
+                        self._hitl_unresolved = False
+                        node_success = False
+                        hitl_unresolved = True
+                        break
                     conversation_history.append({"role": "human", "content": human_response})
                     current_message = human_response
                 elif action in ["final_answer", "completed"]:
@@ -907,28 +1158,156 @@ class SessionManager:
         parity_success, parity_evidence = await self._verify_state_parity(
             node, sandbox, conversation_history, state_before=state_before
         )
-        if not parity_success:
-            node_success = False
-            logger.info(
-                f"      [Session] [Parity-Audit] Failure: Node {node_id} state parity check failed."
-            )
+
+        # Consensus judges need the scenario's declared expected messages;
+        # collect message-target expectations as they are verified.
+        if not hasattr(self, "_last_transition_expectations"):
+            self._last_transition_expectations = []
+        for _row in parity_evidence or []:
+            _a = _row.get("assertion", {}) or {}
+            if _a.get("target") == "message" and _row.get("expected") is not None:
+                self._last_transition_expectations.append(_row.get("expected"))
+
+        # [P0-6] Transition evidence is instance-addressable and hash-bound:
+        # attempt_id + execution_instance_id + before/after content hashes.
+        exec_id = execution_context.get("execution_instance_id")
+        attempt_id = execution_context.get("attempt_id")
+        if parity_evidence:
+            state_after_for_hash = None
+            try:
+                state_after_for_hash = (
+                    await sandbox.get_full_state()
+                    if hasattr(sandbox, "get_full_state")
+                    else copy.deepcopy(getattr(sandbox, "state", {}))
+                )
+            except Exception:  # noqa: BLE001
+                state_after_for_hash = None
+
+            def _hash_state(v: Any) -> str | None:
+                if v is None:
+                    return None
+                return "sha3_256:" + crypto.checksum(json.dumps(v, sort_keys=True, default=str))
+
+            for i, row in enumerate(parity_evidence):
+                a = row.get("assertion", {}) or {}
+                row["assertion_id"] = f"{node_id}:{i}:{a.get('target', 'message')}" + (
+                    f".{a.get('property')}" if a.get("property") else ""
+                )
+                row["attempt_id"] = attempt_id
+                row["execution_instance_id"] = exec_id
+                row["state_before_hash"] = _hash_state(state_before)
+                row["state_after_hash"] = _hash_state(state_after_for_hash)
 
         # 4. Calculation and Reporting
         task_results = await self._calculate_metrics(
             node, attempt_number, (turn), conversation_history, sandbox, agent_actions
         )
-        # [AgentV v2.0.0] Strict Assertion Semantics:
-        # an invalid evaluator can never yield a successful node.
-        if not task_results.get("evaluation_valid", True):
-            node_success = False
-        task_results["status"] = "success" if node_success else "failure"
+
+        # ------------------------------------------------------------------
+        # [P0-A] THE authoritative NodeVerdict. Nothing downstream may infer
+        # node success from the agent action alone: overall == success only
+        # when every required oracle passed. Typed oracle outcomes:
+        # PASS | FAIL | INVALID | NOT_APPLICABLE.
+        # ------------------------------------------------------------------
+        metric_rows = task_results.get("metrics") or []
+        hygiene_rows = task_results.get("state_hygiene") or []
+        invalid_eval = not task_results.get("evaluation_valid", True)
+
+        def _typed_outcome(row: dict[str, Any]) -> str:
+            if row.get("status") == "EVALUATION_INVALID" or row.get("invalid"):
+                return "INVALID"
+            if row.get("success") is True:
+                return "PASS"
+            if row.get("success") is False:
+                return "FAIL"
+            return "NOT_APPLICABLE"
+
+        oracle_rows: list[tuple[dict[str, Any], str]] = [
+            (r, "success_criteria") for r in metric_rows
+        ] + [(r, "state_hygiene") for r in hygiene_rows]
+        outcomes = [_typed_outcome(r) for r, _ in oracle_rows]
+
+        if invalid_eval or "INVALID" in outcomes:
+            verification = "invalid"
+        elif not outcomes or all(o == "NOT_APPLICABLE" for o in outcomes):
+            verification = "not_applicable"
+        elif all(o == "PASS" for o in outcomes):
+            verification = "pass"
+        else:
+            verification = "fail"
+
+        # [A4] First-class policy assertions: every sandbox policy decision
+        # taken during this node's execution attaches here; a denial gates.
+        new_policy_decisions = getattr(sandbox, "policy_decisions", [])[policy_cursor:]
+        denied_ids = [
+            str(d.get("id")) for d in new_policy_decisions if d.get("decision") == "denied"
+        ]
+        if new_policy_decisions:
+            task_results["policy_checks"] = copy.deepcopy(new_policy_decisions)
+        policy_component = (
+            "denied" if denied_ids else ("pass" if new_policy_decisions else "not_applicable")
+        )
+
+        verdict = NodeVerdict(
+            execution="success" if node_success else "failed",
+            verification=verification,
+            policy=policy_component,
+            parity="pass" if parity_success else "fail",
+            failed_assertion=(
+                {
+                    **{k: v for k, v in first_fail[0].items() if k != "success"},
+                    "source": first_fail[1],
+                }
+                if (
+                    first_fail := next(
+                        ((r, src) for r, src in oracle_rows if _typed_outcome(r) == "FAIL"),
+                        None,
+                    )
+                )
+                else None
+            ),
+        )
+        overall = verdict.overall
+        task_results["node_verdict"] = verdict.to_dict()
+
+        # The workflow-visible status routes on overall — never on raw agent
+        # completion. A failed oracle is VERIFICATION_FAILED with exact
+        # evidence; an invalid evaluator is EVALUATION_INVALID.
+        task_results["status"] = "success" if verdict.success else "failure"
         task_results["parity_verified"] = parity_success
         task_results["transition_evidence"] = parity_evidence
-        if not task_results.get("evaluation_valid", True):
+        if hitl_unresolved:
+            task_results["triage_tag"] = "HITL_UNRESOLVED"
+            task_results["message"] = (
+                "HITL approval unresolved: no human decision was made "
+                "(CI/automation must never auto-approve)."
+            )
+        elif overall == "verification_failed":
+            task_results["triage_tag"] = "VERIFICATION_FAILED"
+            fa = verdict.failed_assertion or {}
+            task_results["message"] = (
+                f"VERIFICATION_FAILED on node '{node_id}': assertion "
+                f"'{fa.get('metric') or fa.get('assertion') or 'unnamed'}' "
+                f"(source={fa.get('source')}) did not pass. "
+                f"Expected: {fa.get('expected')} | Actual: {fa.get('actual')}"
+            )
+        elif overall == "evaluation_invalid":
+            task_results["triage_tag"] = "EVALUATION_INVALID"
+        elif overall == "policy_denied":
+            task_results["triage_tag"] = "POLICY_DENIED"
+            task_results["message"] = "Policy denial during node execution: " + ", ".join(
+                denied_ids
+            )
+        elif overall == "parity_failed":
+            task_results.setdefault(
+                "message", f"State parity verification failed on node '{node_id}'."
+            )
+
+        if invalid_eval:
             task_results["triage_tag"] = "EVALUATION_INVALID"
 
         # [Industrial Requirement] Ensure failure context is preserved
-        if not node_success and "err_msg" in locals():
+        if not verdict.success and "err_msg" in locals() and "message" not in task_results:
             task_results["message"] = locals()["err_msg"]
 
         self.event_bus.emit(CoreEvents.MANEUVER_END, {"node_id": node_id})
@@ -1072,52 +1451,77 @@ class SessionManager:
 
         for call in tool_calls:
             tn = call.get("tool") or call.get("tool_name")
-            tp = call.get("params") or call.get("tool_params") or {}
-
             actions["used_tools"].append(tn)
 
-            # [Industrial Interception] Per-tool mutation support
+        # [P0-10] TRUE parallel tool execution. Independent calls (no declared
+        # dependencies) run concurrently under structured concurrency; results
+        # aggregate deterministically in declaration order. A call that
+        # declares ``depends_on`` is deferred until its producers completed.
+        async def _run_single(idx: int, call: dict[str, Any]) -> None:
+            tn = call.get("tool") or call.get("tool_name")
+            tp = call.get("params") or call.get("tool_params") or {}
+
             intercept_result = self.plugin_manager.trigger_interceptor(
                 "on_tool_request", turn_ctx, tn, tp
             )
 
-            # 1. Handle Blocking
             if intercept_result is False:
-                res = {"status": "blocked", "message": f"Tool {tn} blocked by plugin."}
-                all_tool_results.append(res)
+                all_tool_results[idx] = {
+                    "status": "blocked",
+                    "message": f"Tool {tn} blocked by plugin.",
+                }
                 self.event_bus.emit(
                     CoreEvents.ERROR, {"message": f"Tool call {tn} blocked by plugin."}
                 )
-                continue
+                return
 
-            active_tn = tn
-            active_params = tp
-
-            # 2. Apply Mutations
+            active_tn, active_params = tn, tp
             if isinstance(intercept_result, dict):
                 if "tool_name" in intercept_result:
                     active_tn = intercept_result["tool_name"]
                 if "arguments" in intercept_result:
                     active_params = intercept_result["arguments"]
-
                 if "short_circuit_result" in intercept_result:
                     res = intercept_result["short_circuit_result"]
-                    all_tool_results.append(res)
+                    all_tool_results[idx] = res
                     self.event_bus.emit(
-                        CoreEvents.TOOL_RESULT, {"step": turn, "tool": active_tn, "result": res}
+                        CoreEvents.TOOL_RESULT,
+                        {"step": turn, "tool": active_tn, "result": res},
                     )
-                    continue
+                    return
 
             self.event_bus.emit(
-                CoreEvents.TOOL_CALL, {"step": turn, "tool": active_tn, "arguments": active_params}
+                CoreEvents.TOOL_CALL,
+                {"step": turn, "tool": active_tn, "arguments": active_params},
             )
-
             res = await sandbox.execute(active_tn, active_params)
-            all_tool_results.append(res)
+            all_tool_results[idx] = res
             self.event_bus.emit(
                 CoreEvents.TOOL_RESULT,
                 {"step": turn, "tool": active_tn, "result": res},
             )
+
+        all_tool_results: list[Any] = [None] * len(tool_calls)
+        pending_indices = set(range(len(tool_calls)))
+        completed_indices: set[int] = set()
+        call_ids = [c.get("id") or f"#{i}" for i, c in enumerate(tool_calls)]
+        id_to_idx = {cid: i for i, cid in enumerate(call_ids)}
+
+        while pending_indices:
+            runnable = [
+                i
+                for i in sorted(pending_indices)
+                if all(
+                    id_to_idx.get(d) in completed_indices
+                    for d in (tool_calls[i].get("depends_on") or [])
+                )
+            ]
+            if not runnable:
+                # Dependency deadlock safety: execute remaining serially.
+                runnable = [min(pending_indices)]
+            await asyncio.gather(*(_run_single(i, tool_calls[i]) for i in runnable))
+            pending_indices -= set(runnable)
+            completed_indices |= set(runnable)
 
         state_after = sandbox.state.copy()
 
@@ -1165,9 +1569,14 @@ class SessionManager:
         self.event_bus.emit(CoreEvents.HITL_PAUSE, {"task_id": task_id, "prompt": prompt})
 
         if os.getenv("CI", "").lower() == "true":
-            response = f"Auto-approved (CI-Override): {prompt}"
-            self.event_bus.emit(CoreEvents.HITL_RESUME, {"task_id": task_id, "response": response})
-            print(f"      [HITL] CI Mode: Auto-approving task {task_id}")
+            # A human-gated scenario can never pass without a human decision;
+            # automation produces an explicit HITL_UNRESOLVED failure.
+            self._hitl_unresolved = True
+            response = f"[HITL_UNRESOLVED] No human decision available for: {prompt}"
+            print(
+                f"      [HITL] CI Mode: approval UNRESOLVED for task {task_id} "
+                "(auto-approval is forbidden)"
+            )
             return response
 
         import sys

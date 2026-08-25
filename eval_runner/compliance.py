@@ -54,10 +54,36 @@ class ComplianceService:
 
     def _evaluate_metrics_pack(self, metrics: dict) -> dict:
         """
-        Internal placeholder for behavioral metrics evaluation.
-        In OpenCore, this defaults to a pass-through success state.
+        Behavioral metrics evaluation — FAIL-CLOSED in OSS.
+
+        The previous implementation unconditionally returned ``pass: True`` regardless of input,
+        which made an unscored audit gate read as compliant. Unscored metrics can
+        never imply compliance: with no evaluator wired, the honest verdict
+        is NOT_EVALUATED and the caller's ``compliant`` computation treats it
+        as non-asserting (never silently passing).
         """
-        return {"pass": True, "details": [], "metrics_evaluated": len(metrics)}
+        if not metrics:
+            return {
+                "status": "NOT_EVALUATED",
+                "pass": False,
+                "details": [],
+                "metrics_evaluated": 0,
+                "reason": (
+                    "No behavioral metric evaluator is wired into the OSS "
+                    "runtime; metrics packs are not evaluated here."
+                ),
+            }
+        return {
+            "status": "NOT_EVALUATED",
+            "pass": False,
+            "details": [],
+            "metrics_evaluated": len(metrics),
+            "reason": (
+                "Behavioral metric evaluation is not implemented in the OSS "
+                "runtime; supplied metrics are recorded but NOT scored. "
+                "Compliance claims must not rely on this field."
+            ),
+        }
 
 
 def evaluate_compliance(run_id: str, metrics: dict | None = None) -> dict:
@@ -70,17 +96,34 @@ def evaluate_compliance(run_id: str, metrics: dict | None = None) -> dict:
     pqc_status = service.check_pqc_status(run_id)
 
     # --- [Behavioral Branching Logic] ---
-    compliant = True
-    message = "Compliant with standard trust policy."
+    # Fail-closed: compliance starts as UNSUPPORTED, not True. Only an actual
+    # evaluated proof path may set it to compliant.
+    compliant = False
+    message = (
+        "NOT COMPLIANT: no evaluative proof path succeeded "
+        "(behavioral metrics are not evaluated in OSS; PQC status below)."
+    )
 
-    if config.PQC_STRICT_MODE and not pqc_status["quantum_safe"]:
-        compliant = False
-        message = "NON-COMPLIANT: PQC_STRICT_MODE enabled but manifest lacks quantum-safe proof."
-        logger.error(f"[Compliance] {message}")
+    if config.PQC_STRICT_MODE:
+        if pqc_status["quantum_safe"]:
+            compliant = True
+            message = "Compliant: quantum-safe proof present under PQC_STRICT_MODE."
+        else:
+            message = (
+                "NON-COMPLIANT: PQC_STRICT_MODE enabled but manifest lacks quantum-safe proof."
+            )
+            logger.error(f"[Compliance] {message}")
+    elif pqc_status["quantum_safe"]:
+        compliant = True
+        message = "Compliant with standard trust policy (quantum-safe proof present)."
+
+    metrics_eval = service._evaluate_metrics_pack(metrics)
 
     return {
         "compliant": compliant,
         "message": message,
         "pqc_status": pqc_status,
-        "metrics_eval": service._evaluate_metrics_pack(metrics),
+        "metrics_eval": metrics_eval,
+        # Explicit marker for downstream consumers/auditors.
+        "behavioral_metrics": "not_evaluated_in_oss",
     }

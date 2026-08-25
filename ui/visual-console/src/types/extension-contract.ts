@@ -62,6 +62,15 @@ export function hostApisForTier(tier: ExtensionTier): readonly HostApiName[] {
     : READ_ONLY_HOST_APIS;
 }
 
+/**
+ * [D2] Single authorization predicate used by the extension host context.
+ * A call is granted iff it appears in the tier's allow-list; every name
+ * outside the list — including unknown/future APIs — is denied by default.
+ */
+export function canCallHostApi(tier: ExtensionTier, call: string): boolean {
+  return (hostApisForTier(tier) as readonly string[]).includes(call);
+}
+
 export interface ExtensionRoute {
   path: string;
   label: string;

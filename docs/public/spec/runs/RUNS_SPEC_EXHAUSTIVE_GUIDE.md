@@ -77,6 +77,10 @@ AgentV implements an authoritative, decoupled execution graph architecture. The 
 
 ### First-Class Identity Model (Immutable Join Model)
 
+> **Run-ID uniqueness (2026-08):** auto-generated IDs are
+> `run-<scenario>-<uuid7hex>` — time-ordered and collision-proof. The legacy
+> integer-second truncation allowed concurrent same-scenario collisions and is removed.
+
 Every execution graph event and task result carries the immutable join model used by GUI, artifacts, traces, and CI:
 
 | Field | Type | Scope | Example | Description |
@@ -91,6 +95,8 @@ Every execution graph event and task result carries the immutable join model use
 | `parent_execution_id` | String \| null | Lineage | `fetch-user-record:attempt:2` | Causal predecessor for retry/branch lineage analysis. |
 | `iteration` | Integer | Instance | `3` | Visitation count of this scenario node within the attempt (loop semantics). |
 | `execution_mode` | Enum | Run | `simulated` | Truth mode: `simulated`, `record_replay`, `live`, `hybrid`. Simulation never masquerades as live verification. |
+| `execution_mode_declared` | Boolean | Run | `true` | False when the mode was a silent default (never declared); such runs certify only as provisional. |
+| `branch_generation` | String | Transition | `att123:entry/w3` | Fork-wave lineage of the producing execution; joins consume tokens sharing (lineage, iteration). |
 
 ---
 
@@ -326,3 +332,105 @@ Scoring is aggregated across 7 weighted dimensions:
 
 ### Safety Floor Rule
 If either **Safety** or **Security** scores fall below **0.50**, the aggregate scenario score is hard-capped at **0.49**, triggering a formal audit review regardless of overall reliability.
+
+
+---
+
+## Lesson 6: Execution IR v2.0.0 Semantics (Token Interpreter)
+
+The DAG is the control-flow contract. A deterministic token-based scheduler
+replaces every form of topological linearization.
+
+### Typed edges & transition evidence
+Edges are executable and typed: `condition`, `default`, `error`, `timeout`,
+`retry`, `compensation`, `parallel`, `join`. Every fired edge emits an
+`execution_graph_edge` carrying `selected_edge_id`, `edge_type`,
+`transition_reason`, the evaluated predicate (`evaluated_predicate`),
+`source_execution_id`, `branch_generation` and `attempt_id`.
+
+### True parallel fan-out
+Sibling activations of one wave execute under structured concurrency
+(`asyncio.gather`), pipelined with per-node deadlines; results aggregate
+deterministically in declaration order.
+
+### Generation-scoped join tokens
+Join activation consumes `ExecutionToken`s match-keyed by
+**(branch lineage, producer iteration)**: fork siblings converge; loop
+iteration N can never satisfy a join left half-open by iteration N−1.
+Node-level declaration:
+
+```json
+{ "join": "all" }                      // AND over all incoming (default)
+{ "join": { "mode": "n_of_m", "n": 2 } }
+```
+
+Legacy scalar `join_threshold` compiles to `n_of_m` over ALL incoming edges —
+never “first N by list order”. Declaring `n > indegree` is a plan-validation
+error.
+
+### Authoritative NodeVerdict
+Every node result carries a first-class verdict object:
+
+```json
+{
+  "node_verdict": {
+    "execution": "success",
+    "verification": "fail",
+    "policy": "not_applicable",
+    "parity": "pass",
+    "overall": "verification_failed",
+    "failed_assertion": {
+      "metric": "output_matches", "expected": "approved",
+      "actual": "pending review", "source": "success_criteria"
+    }
+  }
+}
+```
+
+Rules:
+- `overall ∈ success | verification_failed | evaluation_invalid |
+  policy_denied | parity_failed | execution_failed`.
+- The interpreter routes on `overall` ONLY. Agent `final_answer` alone can
+  never produce node success; a failed oracle enters the SAME failure routing
+  as execution failures, with `triage_tag = VERIFICATION_FAILED` and the
+  exact failed assertion in `message`.
+- Oracle outcomes are typed: PASS | FAIL | INVALID | NOT_APPLICABLE.
+- Additional triage literals: `POLICY_DENIED`, `TIMEOUT`,
+  `HITL_UNRESOLVED`.
+
+### Failure routing & interpreter-owned deadlines
+Per-node wall-clock `timeout` (seconds) is enforced by the interpreter via
+`asyncio.wait_for`; expiry produces triage `TIMEOUT` routed through declared
+timeout edges FIRST (plain failures consult them last). Verification,
+policy, and parity failures all flow through error/retry/compensation routes;
+unhandled failures terminate per the graph's `failure_policy`
+(`fail_fast`, `continue_independent`, `compensate_then_fail`, `best_effort`).
+
+### Entry declaration
+Entry nodes are explicit (`workflow.entry_nodes[]` or node `"entry": true`)
+or derived canonically as the UNIQUE zero-indegree source (self-loops and
+compensation edges never count as predecessors). Ambiguous multi-source
+graphs and pure cycles without declaration are plan-validation errors.
+
+### HITL in automation
+The CI auto-approval bypass is REMOVED. An unresolved human gate yields
+triage `HITL_UNRESOLVED` (node failure) — no synthetic approval may ever
+back a production verdict.
+
+### execution_mode truth level
+Undeclared modes default to SIMULATED **loudly**: double warning banner +
+logger warning + `execution_mode_declared=false` on `run_start`; configuring
+a real agent endpoint while implicit-simulated fails fast unless
+`AES_ALLOW_IMPLICIT_SIMULATED=1`. Certificates stamp mode/provisional per
+the VC specification (Lesson 4 there).
+
+---
+
+## Lesson 7: Console API Surface Deltas (2026-08)
+
+| Surface | Delta |
+|---|---|
+| `GET /api/runs` rows | `verification_status` literals now include `NOT_EXECUTED` (no trace exists) and `ERROR` (the verification procedure itself failed) alongside `VERIFIED`, `FAILED_VERIFICATION`, `UNKNOWN`. |
+| `GET /api/runs` rows | New cheap `trace_integrity` badge: `COMPLETE` (terminal event present) / `PARTIAL` (vault without terminal) / `RECOVERED` (fragment from master log). |
+| `POST /v1/evaluate` | Response includes the bound `scenario_hash`; packages bind the five-field chain header (see `spec/agentv-package`). |
+| Run IDs | UUIDv7-suffixed everywhere auto-generated (R-uniqueness above). |

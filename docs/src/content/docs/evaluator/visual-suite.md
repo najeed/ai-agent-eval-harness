@@ -6,90 +6,180 @@ description: Enterprise-grade single-page application for deterministic agent as
 The **Visual Console** (launched via `agentv console` or `eval-runner console`) is the enterprise single-page application (SPA) for managing the complete agent assurance lifecycle:
 **Compose → Validate → Run → Verify → Investigate → Issue Evidence**.
 
+```bash
+agentv console --host 127.0.0.1 --port 5000
+```
+
 ---
 
-## 🧭 3-Pillar Information Architecture
+## 🧭 Information Architecture
 
-The interface organizes all evaluation activities into three first-class objects:
+The interface organizes all evaluation workflows into distinct operational views:
 
 ```mermaid
 graph TD
-    A["Level 1: Global App Shell<br/>(Global APM Telemetry, Command Palette, Tenant/RBAC Switcher)"]
-    A --> B["Level 2: Grouped Sidebar Navigation<br/>(Scenarios, Runs, Evidence, Advanced)"]
-    B --> C["Level 3: Deep Context Views & Drawers<br/>(Scenario Composer Tabs, Run Detail Drawer, Cryptographic Certificate Inspector)"]
+    A["Global App Shell<br/>(APM Telemetry, Command Palette, RBAC Switcher)"]
+    A --> B1["Scenarios<br/>(/scenarios, /scenarios/compose, /suites)"]
+    A --> B2["Runs & Debugging<br/>(/reports, /debugger, /triage, /leaderboard)"]
+    A --> B3["Evidence & Governance<br/>(/trust, /compliance, /publish)"]
+    
+    B1 --> C1["Monaco Canonical Editor & DAG Canvas"]
+    B2 --> C2["Live Debugger & Dagre Topology Overlay"]
+    B3 --> C3["PQC Verification Packages & PDF Reports"]
 ```
-
-1. **Scenarios**:
-   - **Scenario Library** (`/scenarios`): Searchable catalog across 5,000+ industry scenarios with readiness probes and tag filtering.
-   - **Visual Composer** (`/editor` or `/scenarios/compose`): Author full assurance contracts visually (intent, preconditions, required tools, topology graph, invariants, success criteria, and lossless raw JSON).
-   - **Suites & Benchmarks** (`/suites`): Manage regression bundles and domain benchmark sets.
-
-2. **Runs**:
-   - **Active & History** (`/reports` or `/runs`): Master execution stream, two-tier status tracking, and comparative execution metrics.
-   - **Live Debugger** (`/debugger`): Real-time OpenTelemetry trace streaming, VFS sandbox inspection, and frame-by-frame trajectory playback.
-   - **Triage Center** (`/triage`): Automated root-cause isolation and failure classification.
-
-3. **Evidence**:
-   - **Verification Packages** (`/api/v1/evidence/packages/<run_id>`): Single-file, self-contained `.agentv-package.json` bundles containing the full scenario, resolved manifest, telemetry digests, assertion outcomes, and cryptographic signatures.
-   - **Trust Center** (`/trust`): Post-quantum cryptographic (PQC) certificate inspection and public key verification.
-   - **Compliance Forensics** (`/compliance`): NIST SP 800-218 and EU AI Act compliance evidence.
-   - **Publication Suite** (`/publish`): Multi-agent report generation and verifiable credentials.
 
 ---
 
-## ⚡ Primary Verification Journey
+## 1. 🔬 Live Debugger & Canonical Execution Graph
 
-The home screen provides a guided 6-stage workflow:
+The **Live Debugger** (`/debugger`) provides real-time, deterministic inspection of agent reasoning, state transitions, tool invocations, and virtual filesystem mutations.
 
 ```mermaid
 graph LR
-    W1["1. Connect Target"] --> W2["2. Select Scenario"]
-    W2 --> W3["3. Review Manifest"]
-    W3 --> W4["4. Execute & Stream"]
-    W4 --> W5["5. Verify Proofs"]
-    W5 --> W6["6. Export Package"]
+    subgraph "Backend Engine (eval_runner)"
+        DAG["Scenario DAG Topology<br/>(ScenarioNode, ScenarioEdge)"]
+        TEL["OTel Telemetry Stream<br/>(Last-Event-ID Cursor)"]
+    end
+    subgraph "Visual Console Frontend"
+        Dagre["Dagre LR Layout Engine<br/>(Persistent Position Cache)"]
+        Overlay["Topology State Overlay<br/>(Status, Latency, Retries)"]
+        Timeline["Unified Timeline Scrubber<br/>(scenario_node_id Anchor)"]
+    end
+    DAG --> Dagre
+    TEL --> Overlay
+    Dagre --> Overlay
+    Overlay --> Timeline
 ```
 
-1. **Target Connection Profile**: Select from pre-configured 2026 frontier models or connect internal agent services:
-   - **OpenAI**: `gpt-5.6` (Production endpoint)
-   - **Anthropic**: `claude-opus-5` (Anthropic protocol)
-   - **Google GenAI**: `gemini-3.7-flash` (Gemini API)
-   - **Local Fleet**: `deepseek-r1:70b` / `llama-3.3` (Ollama localhost)
-   - **Custom Enterprise Agent**: Internal agent orchestrators exposing REST / Agent Protocol endpoints.
-2. **Scenario Selection**: Pick single scenarios or multi-scenario regression suites.
-3. **Resolved Manifest Review**: Inspect the read-only preflight matrix (exact scenario hash `sha3_256:...`, target parameters, limits, timeouts, and active evaluators).
-4. **Execution & Live Telemetry**: Execute in an isolated sandbox with live SSE event streaming.
-5. **Evidence-Linked Verification**: Inspect mathematical assertion verdicts, state comparisons, and tool audit trails.
-6. **Export Evidence**: Download the immutable `.agentv-package.json` package or executive PDF report.
+### Key Architectural Pillars:
+
+1. **Scenario-Primary Execution Topology**:
+   - The structural graph topology is derived directly from the canonical Scenario DAG (`scenario_node_id`, `from_scenario_node_id`, `to_scenario_node_id`).
+   - OpenTelemetry runtime events dynamically overlay real-time status badges (`success`, `failed`, `running`, `retrying`), latency measurements, and attempt counts without perturbing the underlying graph structure.
+
+2. **Canonical Identity Triple**:
+   - `scenario_node_id`: Stable scenario node identifier acting as the primary join key across backend engine, frontend graph, and timeline.
+   - `execution_instance_id`: Per-attempt unique instance key formatted as `{scenario_node_id}:attempt:{n}`.
+   - `parent_execution_id`: Explicit lineage identifier tracking retry and branching relationships.
+
+3. **Layout Stability & Persistent Coordinate Cache**:
+   - Automatic graph layout is computed using a directed acyclic graph (Dagre `LR` left-to-right) engine.
+   - User drag-and-drop manual position adjustments are cached persistently in `nodePositionsRef`, preventing jarring layout jumps or node snaps during high-frequency live SSE event streaming.
+
+4. **Resilient SSE Streaming with `Last-Event-ID` Catch-Up Replay**:
+   - Telemetry streams over HTTP Server-Sent Events (`GET /api/v1/runs/<run_id>/stream`).
+   - Every event payload includes a monotonically increasing `id`. If a network interruption occurs, the client automatically reconnects with the `Last-Event-ID` header, causing the backend to replay buffered historical events seamlessly without duplicate state emissions or missing frames.
+
+5. **Bidirectional Timeline Synchronization**:
+   - The bottom timeline scrubber displays chronological event slices. Clicking any step in the timeline automatically centers and highlights the corresponding node in the visual graph via its `scenario_node_id`.
 
 ---
 
-## 🔬 Canonical Run Detail Screen
+## 2. 🎨 Visual Composer & Monaco Source of Truth
 
-Selecting any run opens the **7-Tab Forensic Inspection Screen**:
+The **Scenario Composer** (`/scenarios/compose` or `/editor`) offers dual-mode scenario authoring, uniting visual graph-based workflow design with industrial code editing.
 
-| Tab | Purpose |
-| :--- | :--- |
-| **Summary** | Answers *"Did this agent safely achieve the intended state transition?"* with primary verdict card, execution duration, tokens, and assurance scores. |
-| **Verification & Proofs** | Exact mathematical assertion outcomes, judge consensus verdicts, and Ed25519 cryptographic sealer signatures. |
-| **State & Tool Evidence** | Ground-truth records of all physical tool calls, API parameters, and database mutations. |
-| **Telemetry Trace** | Chronological OpenTelemetry-aligned event stream with step-by-step payloads. |
-| **VFS Sandbox** | Virtual filesystem delta logs and container isolation teardown records. |
-| **Policy & Guardrails** | Active guardrail intercepts, safety boundary checks, and human-in-the-loop (HITL) approvals. |
-| **Artifacts & Package** | Downloadable `.agentv-package.json` Verification Package and PDF compliance summary. |
+### Features:
+
+- **Monaco Canonical Source of Truth**:
+  - The embedded Monaco JSON/YAML editor acts as the authoritative document state.
+  - Edits in the visual canvas instantly reflect in the code editor, and syntax changes in Monaco immediately re-render the visual graph via bi-directional AST synchronization.
+- **Typed Scenario Assertions**:
+  - Author structured verification criteria directly within the editor:
+    - `exact`: Deterministic literal string or value matching.
+    - `regex`: Regular expression pattern validation on agent outputs.
+    - `numerical_tolerance`: Threshold validation with absolute and relative delta bounds.
+    - `json_schema`: Full JSON Schema validation against structured payloads.
+- **Conditional Edge Editing**:
+  - Configure branching conditions and decision predicates connecting workflow steps.
+- **Optimistic Concurrency Control**:
+  - Scenario saves enforce document revision hashing (`expected_revision_hash`), preventing accidental overwrites in multi-user environments.
+- **Dark Mode Canvas & Node Dragging**:
+  - Smooth pan/zoom canvas, customized node connectors, and validation error markers.
 
 ---
 
-## 🛡️ Enterprise Security & Truth-First Governance Boundaries
+## 3. ⚡ Evaluation Runner & Preflight Assurance
 
-- **Runtime-Authoritative Truth Model**: The Visual Console strictly renders authentic telemetry, canonical execution topology (`execution_graph_node`, `execution_graph_edge`), and verification verdicts emitted by the backend runtime. No synthetic fallback data, mock assertion results, or manufactured durations are permitted in production views. Missing telemetry renders explicit `NO ASSERTION EVIDENCE RECORDED` / `UNVERIFIED` badges.
-- **Canonical Execution Graph & Layout Stability**: In the Live Debugger, execution node topology is emitted directly by the runtime engine (`sequential`, `conditional`, `parallel`, `retry`, `child_task`). Topological graph state is strictly decoupled from canvas presentation coordinates using a persistent layout cache (`nodePositionsRef`), ensuring manual drag-and-drop node arrangements remain perfectly stable across streaming telemetry updates.
-- **Resilient SSE Streaming with `Last-Event-ID` Catch-Up Replay**: The `/api/v1/runs/<run_id>/stream` endpoint supports monotonic event sequence IDs and durable trace catch-up replay. Disconnected clients reconnect with exponential backoff and resume streaming exactly from the last received cursor without event loss or duplication.
-- **Authoritative Server Verification Contract**: Verification validity, certificate state, and evidence integrity are resolved authoritatively by `/api/v1/runs/<run_id>/verify` calling `TraceVerifier.verify_run_directory()`. The UI never infers verification verdicts from file presence or metadata existence.
-- **Preflight Fingerprinting & Dual-Tier Readiness**: The Evaluation Runner computes a deterministic `preflight_fingerprint` across scenario hash, target endpoint, and execution parameters, automatically invalidating stale preflight states upon input modification. Readiness probes enforce strict separation between **Executable** (workflow structurally valid and executable) and **Verifiable** (cryptographically signed with persistent keys and zero policy warnings).
-- **Monaco Canonical Source of Truth & Optimistic Concurrency**: The Scenario Composer bi-directionally synchronizes Monaco JSON editor changes with the underlying canonical AES document model. Authoring supports first-class typed assertions (`exact`, `regex`, `numerical_tolerance`, `json_schema`) and conditional workflow edge predicates, guarded by `expected_revision_hash` optimistic concurrency control.
-- **Default-Deny PBAC/RBAC**: Session context initializes strictly to `Viewer` with fail-closed `<ProtectedRoute />` route guards. Server-side permission gates enforce granular capability controls across scenarios, runs, certificates, and settings.
-- **Signed Extension Manifests & Sandboxed Micro-Frontend Boundary**: Remote extensions loaded via `GET /api/nav` must provide a signed manifest schema and mandatory Subresource Integrity digest (`sha3-256-`, `sha3-384-`, `sha3-512-`, or `sha384-`). Cross-origin extensions execute inside an isolated sandboxed iframe boundary.
-- **Deterministic Verification Packages (`.agentv-package.json`)**: Single-file, self-contained audit packages conforming to NIST SP 800-218 and EU AI Act requirements. Package digests (`sha3_256:...`) are calculated deterministically across canonicalized scenario, manifest, telemetry, assertion, and signature sets, separating envelope timestamps to guarantee 100% digest reproducibility.
+The **Evaluation Runner** (`/runs/new` or home screen) manages test execution against frontier models and custom agent endpoints.
 
+### Preflight Fingerprinting & Dual-Tier Readiness:
 
+```mermaid
+graph TD
+    A["Scenario Definition + Target Config + Parameters"] -->|hashlib.sha3_256| B["preflight_fingerprint"]
+    B --> C{"Readiness Gating"}
+    C -->|Syntax & Schema Valid| D["Executable Readiness: READY"]
+    C -->|Signed Keys & Zero Policy Violations| E["Verifiable Readiness: READY"]
+    C -->|Missing Keys or Schema Drift| F["Verifiable Readiness: BLOCKED"]
+```
+
+1. **Deterministic Fingerprinting**:
+   - A cryptographic digest (`preflight_fingerprint`) is computed using `hashlib.sha3_256` over the canonical scenario definition, target URL, and execution parameter matrix.
+   - Any modification to input fields automatically invalidates stale preflight checks, triggering immediate background re-validation.
+
+2. **Dual-Tier Readiness Gates**:
+   - **Executable Gate**: Confirms that the target endpoint is reachable, required world shims are available, and the scenario workflow is structurally complete.
+   - **Verifiable Gate**: Confirms that cryptographic signing keys are active (`IdentityService`), policy references are satisfied, and zero security warnings exist.
+
+3. **Frontier Model Targets (2026 Baselines)**:
+   - Built-in connection profiles for **Gemini 3.7 Flash**, **Claude Opus 5 / Claude 3.7 Sonnet**, **OpenAI GPT-5.6**, and local **Ollama** fleets (`deepseek-r1:70b`, `llama-3.3`).
+
+---
+
+## 4. 🗂️ Scenario Library & Catalog Navigation
+
+The **Scenario Library** (`/scenarios`) enables exploration across thousands of pre-built industrial benchmarks:
+
+- **Taxonomy & Sector Filtering**: Filter by industry domain (Finance, Healthcare, Defense, Smart Cities, etc.), NIST AI 100-1 trustworthiness dimensions, and difficulty level (L1 Basic to L5 Complex Interactive).
+- **Readiness Probes**: Instant visibility into whether scenarios are fully runnable or require specific environment secrets.
+- **Full-Text Search**: Instant search matching across title, tags, intent descriptions, and tool requirements.
+
+---
+
+## 5. 📑 Runs, Truthful PDF Reports & Metrics Leaderboard
+
+### Runs & Reports (`/reports`):
+- Filter by status (`passed`, `failed`, `running`, `unverified`, `error`).
+- Detailed execution drawers displaying duration, token consumption, and assertion breakdowns.
+- **Truthful Enterprise PDF Generation**:
+  - The PDF generation engine (`eval_runner/console/pdf_service.py` via ReportLab) extracts all execution metrics, timestamps, and pass/fail states directly from authentic `summary.json` and `run_manifest.json` artifacts.
+  - Zero manufactured or hardcoded placeholder strings; unverified runs explicitly reflect `UNVERIFIED` badges.
+
+### Metrics Leaderboard (`/leaderboard`):
+- Comparative evaluation rankings across different agent models and prompt versions.
+- Inclusive ranking with certification badges (`CERTIFIED` vs `UNVERIFIED`).
+- Pass-rate filtering, threshold controls, and JSON export.
+
+---
+
+## 6. 🛡️ Trust Center & Evidence Verification
+
+The **Trust Center** (`/trust`) provides cryptographic transparency for non-repudiable audit logs:
+
+- **Server-Authoritative Verification**:
+  - The UI verifies runs by querying `/api/v1/runs/<run_id>/verify`, which triggers `TraceVerifier.verify_run_directory()`.
+  - Mathematical proof verification of trace hash (`sha3_256`), evidence ledger files, seal hash anchor, and Ed25519 / Post-Quantum (PQC) signatures.
+- **Downloadable Verification Packages (`.agentv-package.json`)**:
+  - Download self-contained, tamper-proof packages conforming to NIST SP 800-218 and EU AI Act specifications.
+
+---
+
+## 7. 🔌 Micro-Frontend Extension Architecture & Zero-Trust Isolation
+
+The Visual Console decouples open-core OSS functionality from enterprise control plane extensions via a dynamic, sandboxed architecture:
+
+```mermaid
+graph LR
+    API["GET /api/nav"] --> Gate["ControlPlaneExtensionGate"]
+    Gate --> Loader["RemoteComponentLoader<br/>(SRI Verification)"]
+    Loader --> Iframe["Sandboxed Iframe Boundary<br/>(postMessage Protocol)"]
+```
+
+- **Dynamic Module Discovery**: Navigation routes and enterprise tools are discovered dynamically via `GET /api/nav`.
+- **Subresource Integrity (SRI) Enforcement**:
+  - Remote modules must declare valid SRI digests.
+  - Supported algorithms: FIPS 202 SHA-3 (`sha3-256-`, `sha3-384-`, `sha3-512-`) and standard W3C fallback (`sha384-`, `sha256-`).
+- **Sandboxed Execution**: Remote extension bundles render inside zero-trust isolated iframes communicating via structured `postMessage` envelopes.
+- **Dynamic RBAC Context Switcher**:
+  - Built-in development role simulator allowing instant switching between `Viewer`, `Operator`, `Auditor`, and `Admin` permissions to validate UI authorization boundaries.

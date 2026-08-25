@@ -37,11 +37,17 @@ class TestEnvironmentHandlers:
     async def test_handle_analyze(self, clean_args, tmp_dir):
         from unittest.mock import AsyncMock, patch
 
-        mock_analyze = AsyncMock()
+        mock_analyze = AsyncMock(return_value=[{"id": "s1"}])
         with patch("eval_runner.analyzer.analyze_repo", mock_analyze):
             clean_args.url = "http://repo"
+            clean_args.ref = None
+            clean_args.token_file = None
+            clean_args.industry = "auto"
+            clean_args.acquire = "tree"
             await handlers.handle_analyze(clean_args)
-            mock_analyze.assert_called_with("http://repo")
+            mock_analyze.assert_called_with(
+                "http://repo", ref=None, token_file=None, industry="auto", acquire="tree"
+            )
 
     @pytest.mark.asyncio
     async def test_handle_init_standard(self, clean_args):

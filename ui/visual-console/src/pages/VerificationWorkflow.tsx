@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
   Plug, FileText, ShieldCheck, PlayCircle, Gavel, Bug, PackageCheck,
@@ -9,7 +9,7 @@ import {
 import { useRBAC } from '../context/RBACContext';
 
 /**
- * VerificationWorkflow — the primary product spine (P1-12).
+ * VerificationWorkflow; the primary product spine (P1-12).
  *
  * Connect → Validate → Select/Compose → Preflight → Run → Diagnose → Evidence
  *
@@ -65,6 +65,7 @@ const tierBadge = (tier?: string) => {
 
 export const VerificationWorkflow: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { canRunEval } = useRBAC();
   const [protocol, setProtocol] = useState('http_rest');
   const [endpoint, setEndpoint] = useState('');
@@ -83,9 +84,10 @@ export const VerificationWorkflow: React.FC = () => {
   const [sessionNotes, setSessionNotes] = useState('Standard regression run');
   const [launching, setLaunching] = useState(false);
   const [launchError, setLaunchError] = useState('');
+  const [boundScenarioHash, setBoundScenarioHash] = useState('');
   const verdict: string | null = null;
 
-  // Authoritative runtime health — never render READY without this.
+  // Authoritative runtime health; never render READY without this.
   const healthQuery = useQuery<RuntimeHealth>({
     queryKey: ['runtime-health'],
     queryFn: async () => {
@@ -129,6 +131,13 @@ export const VerificationWorkflow: React.FC = () => {
     7: runId && verdict ? 'active' : 'blocked',
   };
 
+  // [Chain binding] Deep-link preselection: /?scenario_id=<id> pre-fills the
+  // scenario so first-value flows can land directly in the spine.
+  useEffect(() => {
+    const sid = searchParams.get('scenario_id');
+    if (sid) setScenarioId(sid);
+  }, [searchParams]);
+
   const runPreflight = async () => {
     setPreflightResult(null);
     try {
@@ -152,7 +161,7 @@ export const VerificationWorkflow: React.FC = () => {
     }
   };
 
-  // Reset preflight when any execution parameter changes — a stale pass
+  // Reset preflight when any execution parameter changes; a stale pass
   // must never authorize a launch against a different configuration.
   const onParamChange = <T,>(setter: (v: T) => void) => (v: T) => {
     setter(v);
@@ -185,6 +194,7 @@ export const VerificationWorkflow: React.FC = () => {
       });
       const data = await res.json();
       if (res.ok && data.run_id) {
+        if (data.scenario_hash) setBoundScenarioHash(data.scenario_hash);
         navigate(`/debugger?run_id=${data.run_id}`);
       } else {
         setLaunchError(data.error || 'Failed to initialize evaluation.');
@@ -212,15 +222,14 @@ export const VerificationWorkflow: React.FC = () => {
         {STEPS.map((s, i) => (
           <React.Fragment key={s.id}>
             <div
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-[11px] font-semibold shrink-0 ${
-                stepStates[s.id] === 'done'
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-[11px] font-semibold shrink-0 ${stepStates[s.id] === 'done'
                   ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
                   : stepStates[s.id] === 'active'
                     ? 'border-indigo-500/40 bg-indigo-500/10 text-indigo-300'
                     : stepStates[Number(s.id)] === 'blocked'
                       ? 'border-slate-800 bg-slate-900/40 text-slate-600'
                       : 'border-slate-700 bg-slate-900/40 text-slate-400'
-              }`}
+                }`}
             >
               {stepStates[s.id] === 'done' ? (
                 <CheckCircle2 className="w-3.5 h-3.5" />
@@ -238,13 +247,12 @@ export const VerificationWorkflow: React.FC = () => {
 
       {/* Runtime health strip */}
       <div
-        className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-mono ${
-          healthStatus === 'HEALTHY'
+        className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-mono ${healthStatus === 'HEALTHY'
             ? 'border-emerald-500/20 bg-emerald-500/5 text-emerald-300'
             : healthStatus === 'DEGRADED'
               ? 'border-amber-500/20 bg-amber-500/5 text-amber-300'
               : 'border-red-500/20 bg-red-500/5 text-red-300'
-        }`}
+          }`}
       >
         {healthStatus === 'HEALTHY' ? (
           <CheckCircle2 className="w-3.5 h-3.5" />
@@ -254,7 +262,7 @@ export const VerificationWorkflow: React.FC = () => {
         Runtime: {healthStatus}
         {(healthQuery.data as any)?.signing_backend === 'ephemeral' && (
           <span className="ml-auto text-[10px] text-amber-400">
-            ephemeral signer — runs will be Executable/Verifiable, not Cryptographically Attested
+            ephemeral signer; runs will be Executable/Verifiable, not Cryptographically Attested
           </span>
         )}
       </div>
@@ -262,7 +270,7 @@ export const VerificationWorkflow: React.FC = () => {
       {/* Step 1: Connect Agent */}
       <section className="bg-slate-950/50 border border-slate-900 rounded-xl p-5 space-y-3">
         <h2 className="text-sm font-bold text-white flex items-center gap-2">
-          <Plug className="w-4 h-4 text-indigo-400" /> 1 · Connect Agent
+          <Plug className="w-4 h-4 text-indigo-400" /> 1 Â· Connect Agent
         </h2>
         <div className="grid grid-cols-[180px_1fr] gap-3 items-center">
           <label className="text-[11px] uppercase tracking-wider text-slate-500 font-bold">
@@ -308,7 +316,7 @@ export const VerificationWorkflow: React.FC = () => {
           onChange={e => onParamChange(setScenarioId)(e.target.value)}
           className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-xs text-slate-200 font-mono"
         >
-          <option value="">— select a scenario —</option>
+          <option value="">— select a scenario;</option>
           {scenarios.map(s => (
             <option key={s.id} value={s.id}>
               {s.name || s.id}
@@ -381,7 +389,7 @@ export const VerificationWorkflow: React.FC = () => {
           </p>
         ) : (
           <>
-            {/* [G1] Advanced execution settings drawer — folded in from the
+            {/* [G1] Advanced execution settings drawer; folded in from the
                 retired standalone runner page. */}
             <div className="border border-slate-800 rounded-lg overflow-hidden">
               <button
@@ -449,6 +457,12 @@ export const VerificationWorkflow: React.FC = () => {
               <PlayCircle className="w-4 h-4" />
               {launching ? 'Initializing job…' : 'Launch evaluation'}
             </button>
+            {boundScenarioHash && (
+              <p className="text-[10px] font-mono text-slate-500">
+                bound revision:{' '}
+                <span className="text-slate-400">{boundScenarioHash.slice(0, 19)}…</span>
+              </p>
+            )}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
               <input
                 value={runId}
@@ -457,22 +471,20 @@ export const VerificationWorkflow: React.FC = () => {
                 className="bg-slate-900 border border-slate-800 rounded px-3 py-2 text-xs text-slate-200 font-mono"
               />
               <Link
-                to={`/reports?run=${encodeURIComponent(runId)}`}
-                className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-xs font-semibold ${
-                  runId
+                to={`/reports?run_id=${encodeURIComponent(runId)}`}
+                className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-xs font-semibold ${runId
                     ? 'border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10'
                     : 'border-slate-800 text-slate-600 pointer-events-none'
-                }`}
+                  }`}
               >
                 <Gavel className="w-3.5 h-3.5" /> Verdict & report
               </Link>
               <Link
-                to={`/debugger?run=${encodeURIComponent(runId)}`}
-                className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-xs font-semibold ${
-                  runId
+                to={`/debugger?run_id=${encodeURIComponent(runId)}`}
+                className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-xs font-semibold ${runId
                     ? 'border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10'
                     : 'border-slate-800 text-slate-600 pointer-events-none'
-                }`}
+                  }`}
               >
                 <Bug className="w-3.5 h-3.5" /> Diagnose in debugger
               </Link>
@@ -485,3 +497,5 @@ export const VerificationWorkflow: React.FC = () => {
 };
 
 export default VerificationWorkflow;
+
+

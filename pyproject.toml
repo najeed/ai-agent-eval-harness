@@ -25,7 +25,7 @@ dependencies = [
     "PyYAML==6.0.3",
     "numpy==2.5.2",
     "PyJWT==2.13.0",
-    "cryptography==50.0.0",
+    "cryptography==50.0.1",
     "opentelemetry-api==1.44.0",
     "opentelemetry-sdk==1.44.0",
     "psutil==7.2.2",
@@ -58,7 +58,7 @@ pqc = [
     "cyclecore-pq==0.3.0",
 ]
 vcs = [
-    "GitPython==3.1.59",
+    "GitPython==3.1.60",
 ]
 all = [
     "sentence-transformers==6.0.0",
@@ -72,7 +72,7 @@ all = [
     "weasyprint>=69.0",
     "reportlab>=5.0.1",
     "cyclecore-pq==0.3.0",
-    "GitPython==3.1.59",
+    "GitPython==3.1.60",
 ]
 
 [build-system]

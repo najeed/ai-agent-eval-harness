@@ -1,6 +1,6 @@
 /**
  * Round-trip losslessness tests for the canonical AES document model
- * ([P0-3]/[P0-4] exit criterion: loading and re-saving any supported AES
+ * (loading and re-saving any supported AES
  * scenario produces no semantic loss).
  *
  * Run: npm run test:docmodel  (tsc → node --test, zero runtime deps)
@@ -126,7 +126,7 @@ test('metadata edits change only modeled keys', () => {
     metadata: {
       id: 'm1',
       name: 'Renamed',
-      version: '2.1.0',
+      version: '2.0.0',
       status: 'Validated',
       compliance_level: 'High',
       description: 'd',
@@ -136,7 +136,7 @@ test('metadata edits change only modeled keys', () => {
   });
 
   assert.equal((patched.metadata as any).name, 'Renamed');
-  assert.equal((patched.metadata as any).version, '2.1.0');
+  assert.equal((patched.metadata as any).version, '2.0.0');
   assert.equal((patched.metadata as any).compliance_level, 'High');
   // Untouched top-level/workflow content identical to original.
   assert.deepEqual(patched['governance'], before['governance']);
@@ -208,6 +208,95 @@ test('deleting a canvas node removes exactly that node', () => {
   assert.deepEqual(wf.nodes[0].custom_metadata, { tier: 'gold' });
   // Unknown workflow keys still intact after deletion edit.
   assert.deepEqual(wf.subflows, RICH_DOC.workflow.subflows);
+});
+
+test('edge_type and priority survive project -> patch unchanged', () => {
+  const doc = {
+    workflow: {
+      nodes: [{ id: 'a' }, { id: 'b' }, { id: 'c' }],
+      edges: [
+        {
+          from: 'a',
+          to: 'b',
+          type: 'condition',
+          priority: 42,
+          condition: 'approved == true',
+          weight: 0.7,
+        },
+      ],
+    },
+  };
+
+  // Projection surfaces the modeled edge fields.
+  const proj = projectToCanvas(doc);
+  assert.equal(proj.edges[0].edge_type, 'condition');
+  assert.equal(proj.edges[0].priority, 42);
+  assert.equal(proj.edges[0].condition, 'approved == true');
+
+  const patched = patchCanonicalDocument(doc, {
+    metadata: {
+      id: doc.workflow.nodes[0].id,
+      name: 'N',
+      version: '1.0.0',
+      status: 'Draft',
+      compliance_level: 'Standard',
+      description: '',
+    },
+    nodes: proj.nodes,
+    edges: [
+      {
+        source: 'a',
+        target: 'b',
+        condition: 'approved == true',
+        edge_type: proj.edges[0].edge_type as string,
+        priority: proj.edges[0].priority as number,
+      },
+    ],
+  });
+
+  const wf: any = patched.workflow;
+  // Canonical keys written as the interpreter expects ('type', int priority).
+  assert.equal(wf.edges[0].type, 'condition');
+  assert.equal(wf.edges[0].priority, 42);
+  // Condition preserved.
+  assert.equal(wf.edges[0].condition, 'approved == true');
+  // Unknown sibling fields intact.
+  assert.equal(wf.edges[0].weight, 0.7);
+});
+
+test('absent edge_type/priority stay absent through an unchanged round trip', () => {
+  const patched = patchCanonicalDocument(RICH_DOC, unchangedUiPatchFrom(RICH_DOC));
+  const edge: any = (patched.workflow as any).edges[0];
+  assert.equal(edge.type, undefined);
+  assert.equal(edge.priority, undefined);
+});
+
+test('unknown edge types are refused, not degraded', () => {
+  assert.throws(
+    () =>
+      patchCanonicalDocument(null, {
+        metadata: { id: 'x', name: 'X', version: '1.0.0', status: 'Draft', compliance_level: 'Standard', description: '' },
+        nodes: [{ id: 'a' }, { id: 'b' }],
+        edges: [{ source: 'a', target: 'b', edge_type: 'teleport' }],
+      }),
+    (err: unknown) =>
+      err instanceof DocumentProjectionError &&
+      err.reasons.some(r => r.code === 'EDGE_TYPE_UNKNOWN')
+  );
+});
+
+test('non-numeric edge priorities are refused', () => {
+  assert.throws(
+    () =>
+      patchCanonicalDocument(null, {
+        metadata: { id: 'x', name: 'X', version: '1.0.0', status: 'Draft', compliance_level: 'Standard', description: '' },
+        nodes: [{ id: 'a' }, { id: 'b' }],
+        edges: [{ source: 'a', target: 'b', priority: Number('nope') }],
+      }),
+    (err: unknown) =>
+      err instanceof DocumentProjectionError &&
+      err.reasons.some(r => r.code === 'EDGE_PRIORITY_INVALID')
+  );
 });
 
 test('scenario hash is order-insensitive but content-sensitive', () => {

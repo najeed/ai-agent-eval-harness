@@ -226,7 +226,7 @@ async def test_chaos_simulator_crash_never_passes_verification(
 
 def test_chaos_hitl_process_death_and_resume_on_resolve(chaos_scenario, tmp_path, monkeypatch):
     """
-    Chaos Resilience Invariant (§3.1):
+    Chaos Resilience Invariant:
     Process dies mid-HITL wait -> new process reloads approval with resumed_from_db=True ->
     resolving via /v1/hitl/<id>/resolve MUST automatically trigger
     InProcessExecutionBackend.resume() and continue run execution.

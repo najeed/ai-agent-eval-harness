@@ -877,7 +877,6 @@ def evaluate_scenario():
     """
     Triggers an evaluation run bound to an immutable ExecutionManifest.
     """
-    import time
 
     from agentv_runtime.manifest import ManifestBuilder
     from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
@@ -911,7 +910,12 @@ def evaluate_scenario():
         return jsonify({"error": f"Failed to load scenario: {str(e)}", "message": str(e)}), 500
 
     identifier = Path(path).stem
-    run_id = f"run-{identifier}-{time.time_ns()}"
+    # [P0-12] Collision-proof run IDs: UUIDv7 suffix (time-ordered, unique).
+    import uuid as _uuid
+
+    _u7 = getattr(_uuid, "uuid7", None)
+    unique_suffix = _u7().hex if callable(_u7) else _uuid.uuid4().hex
+    run_id = f"run-{identifier}-{unique_suffix}"
 
     meta = data.get("metadata") or {}
     raw_agent_config = data.get("agent_config") or {}
@@ -977,6 +981,10 @@ def evaluate_scenario():
             "status": "started",
             "run_id": run_id,
             "manifest_id": manifest.manifest_id,
+            # [Chain binding] The immutable revision identity of what was
+            # launched — surfaced so the UI can display it immediately.
+            "scenario_hash": manifest.scenario_hash,
+            "scenario_version_id": manifest.scenario_version,
             "manifest": manifest.to_dict(),
             "message": f"Evaluation of {path} initiated with manifest {manifest.manifest_id}.",
         }

@@ -95,9 +95,19 @@ def detect_framework() -> str:
 
 
 async def handle_analyze(args):
-    """Handler for 'analyze' command."""
+    """Handler for 'analyze' command — repository scan."""
     try:
-        await analyzer.analyze_repo(args.url)
+        scenarios = await analyzer.analyze_repo(
+            args.url,
+            ref=getattr(args, "ref", None),
+            token_file=getattr(args, "token_file", None),
+            industry=getattr(args, "industry", None) or "auto",
+            acquire=getattr(args, "acquire", None) or "tree",
+        )
+        print(
+            f"✅ [Analyzer] Scaffolded {len(scenarios)} STARTER scenario(s) "
+            "into scenarios/auto/ — complete their assertions before use."
+        )
         return 0
     except Exception as e:
         print(f"❌ [ERROR] Repository analysis FAILED: {e}")
@@ -132,10 +142,11 @@ async def handle_init(args):
 
 
 async def handle_install(args):
-    """Handler for 'install' command."""
+    """Handler for 'install' command. Exit code 1 when the simulated-registry
+    gate refuses execution."""
     try:
-        catalog.install_pack(args.pack)
-        return 0
+        ok = catalog.install_pack(args.pack)
+        return 0 if ok else 1
     except Exception as e:
         print(f"❌ [ERROR] Installation FAILED: {e}")
         return 1

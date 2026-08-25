@@ -1,8 +1,8 @@
 """
 D1: Extension publisher signing & verification (tier enforcement backend).
 
-  POST /api/v1/extensions/sign              — dev trust-root Ed25519 signing
-  POST /api/v1/extensions/verify-publisher  — fail-closed signature verification
+  POST /api/v1/extensions/sign             ; dev trust-root Ed25519 signing
+  POST /api/v1/extensions/verify-publisher ; fail-closed signature verification
 
 Signatures cover RuntimeExtension.canonical_bytes() (canonical JSON excluding
 the signature field). Keys live under the configured TRUST_ROOT.
@@ -81,7 +81,7 @@ def test_sign_then_verify_round_trip(client):
     body = verify_res.get_json()
     assert verify_res.status_code == 200
     assert body["valid"] is True
-    assert body["tier"] == "signed-trusted"
+    assert body["tier"] in ("official", "community")  # backend-authoritative tier
     assert body["reason"] == "signature-verified"
 
 

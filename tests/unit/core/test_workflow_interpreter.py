@@ -39,6 +39,9 @@ def _plan(scenario: dict):
     [A2] The minimum-oracle rule is an evaluation concern; these kernel
     semantics tests use deliberately bare nodes, so a trivially-satisfiable
     oracle is injected into any node that lacks one.
+
+    [P0-11] These tests DECLARE their entry node explicitly (the first
+    declared node) — declaration-order defaults are no longer inferred.
     """
     import copy as _copy
 
@@ -46,6 +49,8 @@ def _plan(scenario: dict):
     workflow = scenario.get("workflow")
     if isinstance(workflow, dict):
         nodes = workflow.setdefault("nodes", [])
+        if not workflow.get("entry_nodes") and nodes:
+            workflow["entry_nodes"] = [str(nodes[0]["id"])]
     elif isinstance(workflow, list):
         nodes = workflow
     else:
@@ -120,6 +125,67 @@ def test_compile_rejects_list_form_without_oracles():
     # [A2] Even legacy list-form workflows enforce the minimum-oracle rule.
     with pytest.raises(PlanValidationError, match="NO_ASSERTIONS"):
         compile_workflow({"workflow": [{"id": "a"}, {"id": "b"}]})
+
+
+def test_compile_rejects_ambiguous_multi_source_without_entry_declaration():
+    # [P0-11] Declaration order must never decide control flow: two source
+    # nodes without an explicit entry declaration are a plan error.
+    oracle = [{"metric": "task_completion", "threshold": 1.0}]
+    with pytest.raises(PlanValidationError, match="Ambiguous workflow entry"):
+        compile_workflow(
+            {
+                "workflow": {
+                    "nodes": [
+                        {"id": "x", "success_criteria": oracle},
+                        {"id": "y", "success_criteria": oracle},
+                        {"id": "z", "success_criteria": oracle},
+                    ],
+                    "edges": [{"from": "x", "to": "z"}, {"from": "y", "to": "z"}],
+                }
+            }
+        )
+
+
+def test_compile_entry_declaration_wins_over_declared_order():
+    # [P0-11] The declared entry is authoritative even when it is not first.
+    oracle = [{"metric": "task_completion", "threshold": 1.0}]
+    plan = compile_workflow(
+        {
+            "workflow": {
+                "entry_nodes": ["second"],
+                "nodes": [
+                    {"id": "first", "success_criteria": oracle},
+                    {"id": "second", "success_criteria": oracle},
+                ],
+                "edges": [{"from": "second", "to": "first"}],
+            }
+        }
+    )
+    assert plan.entry_node_ids == ["second"]
+    assert plan.nodes["second"].is_entry
+    assert not plan.nodes["first"].is_entry
+
+
+def test_compile_compensation_backedge_does_not_reroot_workflow():
+    # [P0-11] A compensation (undo) edge into the canonical start never makes
+    # another node the entry.
+    oracle = [{"metric": "task_completion", "threshold": 1.0}]
+    plan = compile_workflow(
+        {
+            "failure_policy": "compensate_then_fail",
+            "workflow": {
+                "nodes": [
+                    {"id": "start", "success_criteria": oracle},
+                    {"id": "worker", "success_criteria": oracle},
+                ],
+                "edges": [
+                    {"from": "start", "to": "worker"},
+                    {"from": "worker", "to": "start", "type": "compensation"},
+                ],
+            },
+        }
+    )
+    assert plan.entry_node_ids == ["start"]
 
 
 def test_conditional_edge_without_predicate_is_invalid():
@@ -441,9 +507,13 @@ async def test_fail_fast_policy_halts_sibling_branches():
 
     results, outcome = await _run(plan, executor)
     executed = [r["task_id"] for r in results]
-    assert "sibling" not in executed  # halted before sibling ran
+    # [P0-3] boom and sibling are ONE concurrent wave: both execute (an
+    # in-flight wave cannot be un-run), but fail-fast guarantees the verdict
+    # fails and NO downstream wave is ever scheduled.
+    assert "sibling" in executed
     assert not outcome.success
     assert outcome.failed_node_ids == ["boom"]
+    assert outcome.status.value == "workflow_failed"
 
 
 @pytest.mark.asyncio

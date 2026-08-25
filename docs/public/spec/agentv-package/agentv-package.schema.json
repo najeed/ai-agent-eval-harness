@@ -1,0 +1,251 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentv.dev/spec/agentv-package/agentv-package.schema.json",
+  "title": "AgentV Verification Package (.agentv-package.json) v2.0.0",
+  "description": "Immutable, single-file verification bundle: scenario revision, resolved configuration, verdicts, cryptographic proofs and the evidence graph. Canonical core is hash-addressed via package_hash (SHA3-256 over sorted-key compact JSON of the payload EXCLUDING package_hash and package_created_at).",
+  "type": "object",
+  "required": [
+    "format",
+    "package_version",
+    "run_id",
+    "chain",
+    "verdict",
+    "evidence_chain_valid",
+    "cryptographic_verification",
+    "evidence_manifest",
+    "evidence_graph",
+    "package_hash"
+  ],
+  "properties": {
+    "format": {
+      "type": "string",
+      "const": "agentv_verification_package"
+    },
+    "package_version": {
+      "type": "string",
+      "const": "2.0.0",
+      "description": "Pinned to agentv_runtime.versions.VERIFICATION_PACKAGE_VERSION. Additive-only within 2.x; breaking changes MUST bump the major."
+    },
+    "run_id": {
+      "type": "string",
+      "description": "Globally-unique run identifier (UUIDv7-suffixed since the collision fix)."
+    },
+    "tenant_id": {
+      "type": "string"
+    },
+    "workspace_id": {
+      "type": "string"
+    },
+    "chain": {
+      "type": "object",
+      "description": "[Five-field provenance chain] Binds this package immutably to what was executed. All five fields are REQUIRED; unknown values are expressed explicitly ('unknown'/null), never omitted.",
+      "required": [
+        "run_id",
+        "scenario_hash",
+        "resolved_config_hash",
+        "agent_target_id",
+        "execution_mode"
+      ],
+      "properties": {
+        "run_id": {
+          "type": "string",
+          "description": "Must equal the envelope run_id."
+        },
+        "scenario_hash": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "SHA3-256 content hash ('sha3_256:<hex>') of the RESOLVED scenario executed. null only when no resolved scenario document was persisted."
+        },
+        "resolved_config_hash": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Reproducibility fingerprint bound at run start (executor + IR + evaluator registry + adapter + environment + seed)."
+        },
+        "agent_target_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Identifier of the agent target used for dispatch."
+        },
+        "execution_mode": {
+          "type": "string",
+          "enum": [
+            "simulated",
+            "record_replay",
+            "live",
+            "hybrid",
+            "unknown"
+          ],
+          "description": "Truth mode of the certified run. 'simulated' packages are non-authoritative for compliance; 'unknown' requires execution_mode_declared=false."
+        },
+        "execution_mode_declared": {
+          "type": "boolean",
+          "description": "false when the mode was a silent default (never declared by operator)."
+        }
+      }
+    },
+    "manifest": {
+      "type": "object"
+    },
+    "scenario": {
+      "type": "object"
+    },
+    "verdict": {
+      "type": "object",
+      "required": [
+        "execution_status",
+        "verified_outcome",
+        "duration_seconds",
+        "score"
+      ],
+      "properties": {
+        "execution_status": {
+          "type": "string"
+        },
+        "verified_outcome": {
+          "type": "string",
+          "enum": [
+            "VERIFIED",
+            "UNVERIFIED",
+            "NOT_VERIFIED",
+            "POLICY_BREACH",
+            "EVIDENCE_INVALID"
+          ]
+        },
+        "duration_seconds": {
+          "type": "number"
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "evidence_chain_valid": {
+      "type": "boolean",
+      "description": "true ONLY when verified_outcome == VERIFIED and no corruption was detected."
+    },
+    "cryptographic_verification": {
+      "type": "object",
+      "properties": {
+        "verified": {
+          "type": "boolean"
+        },
+        "signer_identity": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "manifest_hash_match": {
+          "type": "boolean"
+        },
+        "scenario_hash_match": {
+          "type": "boolean"
+        },
+        "algorithm": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "evidence_manifest": {
+      "type": "object",
+      "required": [
+        "trace_hash",
+        "total_events",
+        "assertions_evaluated",
+        "artifacts"
+      ],
+      "properties": {
+        "trace_hash": {
+          "type": "string",
+          "pattern": "^sha3_256:[a-fA-F0-9]{64}$"
+        },
+        "total_events": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "assertions_evaluated": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "hash",
+              "type"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "evidence_graph": {
+      "type": "object",
+      "description": "Assertion→source-event linkage graph (see AGENTV_PACKAGE_EXHAUSTIVE_GUIDE §6)."
+    },
+    "integrity_corruption": {
+      "type": "object",
+      "description": "Present ONLY when unparseable trace lines exist (EVIDENCE_INVALID policy); carries exact byte offsets.",
+      "properties": {
+        "status": {
+          "const": "EVIDENCE_INVALID"
+        },
+        "corrupt_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "corrupt_line_byte_offsets": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "policy": {
+          "type": "string"
+        }
+      }
+    },
+    "signatures": {
+      "type": "array"
+    },
+    "package_hash": {
+      "type": "string",
+      "pattern": "^sha3_256:[a-fA-F0-9]{64}$",
+      "description": "SHA3-256 of sort-keys compact JSON over the canonical payload EXCLUDING package_hash and package_created_at."
+    },
+    "package_created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Envelope timestamp; excluded from package_hash."
+    }
+  }
+}

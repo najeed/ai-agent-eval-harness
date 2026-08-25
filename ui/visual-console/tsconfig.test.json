@@ -9,7 +9,14 @@
     "declaration": false,
     "sourceMap": false,
     "skipLibCheck": true,
-    "types": ["node"]
+    "types": ["node"],
+    "jsx": "react-jsx"
   },
-  "include": ["src/lib/aesDocument.ts", "tests/document-model/**/*.ts"]
+  "include": [
+    "src/lib/aesDocument.ts",
+    "src/types/extension-contract.ts",
+    "src/components/ExtensionLoadError.tsx",
+    "src/components/RemoteErrorBoundary.tsx",
+    "tests/document-model/**/*.ts"
+  ]
 }

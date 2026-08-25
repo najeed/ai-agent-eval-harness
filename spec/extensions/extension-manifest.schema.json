@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentv.dev/spec/extensions/extension-manifest.schema.json",
+  "title": "AgentV RuntimeExtension manifest v1.0.0",
+  "description": "Structural contract for Control Plane extension manifests. SRI proves bytes; ONLY a signature verified against the publisher trust root (server-side /api/v1/extensions/verify-publisher) grants trust, and the BACKEND's tier classification overrides any self-declared value. Semantic validation (api_version compatibility, capability whitelist, signature presence) is enforced by agentv_runtime.extension_contract.RuntimeExtension.validate.",
+  "type": "object",
+  "required": ["extension_id", "display_name", "version", "api_version"],
+  "additionalProperties": false,
+  "properties": {
+    "extension_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{1,63}$"
+    },
+    "display_name": { "type": "string", "minLength": 1 },
+    "version": {
+      "type": "string",
+      "description": "SemVer of the extension itself."
+    },
+    "api_version": {
+      "type": "string",
+      "description": "Contract version targeted. Host enforces SemVer major/minor compatibility against EXTENSION_CONTRACT_VERSION."
+    },
+    "compatibility_version": {
+      "type": "string",
+      "description": "Minimum AgentV host version required."
+    },
+    "compatible_runtime_versions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "enum": ["routes", "navigation", "lifecycle", "runs:read", "scenarios:read"]
+      },
+      "description": "Must be a subset of KNOWN_CAPABILITIES; unknown capabilities are contract violations."
+    },
+    "required_permissions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "routes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "label"],
+        "properties": {
+          "path": { "type": "string", "pattern": "^/" },
+          "label": { "type": "string" },
+          "icon": { "type": "string" },
+          "required_role": { "type": "string" }
+        }
+      }
+    },
+    "nav_group": { "type": "string", "default": "extensions" },
+    "remote_entry": {
+      "type": "string",
+      "description": "ESM entry URL for remote micro-frontend mounting."
+    },
+    "sri_hash": {
+      "type": "string",
+      "pattern": "^[a-fA-F0-9]{64}$",
+      "description": "SHA3-256 digest of the ESM bundle. Integrity only — never sufficient for trust alone."
+    },
+    "publisher": {
+      "type": "string",
+      "description": "Signing identity resolved via the trust root. REQUIRED when signed."
+    },
+    "signature": {
+      "type": "string",
+      "description": "Hex Ed25519 signature over canonical manifest bytes (every field EXCEPT signature). REQUIRED when signed."
+    },
+    "lifecycle": {
+      "type": "object",
+      "properties": {
+        "on_mount": { "type": "string" },
+        "on_unmount": { "type": "string" },
+        "on_error": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

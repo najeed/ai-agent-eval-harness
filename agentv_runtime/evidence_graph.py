@@ -148,7 +148,7 @@ def build_evidence_graph(
 
 def decision_evidence_root_hash(decision_assertions: list[dict[str, Any]]) -> str:
     """
-    [E2] Single-commit hash over the verification decision's assertion set.
+    Single-commit hash over the verification decision's assertion set.
     Computed over canonical assertion rows so ANY change flips the root.
     """
     rows = sorted(_canonical_row(a) for a in decision_assertions)

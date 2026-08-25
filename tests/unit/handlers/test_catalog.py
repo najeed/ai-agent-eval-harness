@@ -154,41 +154,73 @@ def test_parse_pack_string_coverage():
     assert flavor == "finra"
 
 
-def test_catalog_install_pack_full_cycle(mock_catalog_dir):
-    """Test downloading, extracting, and archiving an industrial pack."""
-    # 1. Install fresh pack
-    install_pack("finance-FINRA@1.2.3")
+SAMPLE_PACK_DIR = Path(__file__).resolve().parents[3] / "samples" / "packs" / "sample-pack"
 
-    # Verify installation
-    flavor_dir = mock_catalog_dir / "industries" / "finance" / "FINRA" / "1.2.3"
-    assert flavor_dir.exists()
-    assert (flavor_dir / "pack_manifest.json").exists()
-    assert (flavor_dir / "finance-finra.json").exists()
 
-    # 2. Re-install to trigger archive behavior
-    install_pack("finance-FINRA@1.2.3")
+def test_install_from_committed_sample_dir(mock_catalog_dir):
+    """[Fabricated-#2 Ã¢â€ â€™ real installer] Directory source with checksums."""
+    assert install_pack(str(SAMPLE_PACK_DIR)) is True
 
-    # Verify archive exists
-    archive_dir = mock_catalog_dir / "industries" / "finance" / "FINRA" / ".archived"
+    target = mock_catalog_dir / "industries" / "sample" / "STANDARD" / "1.0.0"
+    assert (target / "pack_manifest.json").exists()
+    assert (target / "scenarios" / "sample_greeting.json").exists()
+    manifest = json.loads((target / "pack_manifest.json").read_text())
+    assert manifest["checksums_enforced"] is True
+    assert manifest["verified_files"] == 1
+    assert manifest["pack"] == "sample"
+
+    catalog = ScenarioCatalog.get_instance()
+    catalog.load_index()
+    ids = [s["id"] for s in catalog.scenarios]
+    assert "sample_pack_greeting" in ids
+
+
+def test_install_from_zip_archive(mock_catalog_dir, tmp_path):
+    """Zip source: same pipeline, staging extracted then installed."""
+    import zipfile as _zf
+
+    zip_path = tmp_path / "my-pack.zip"
+    with _zf.ZipFile(zip_path, "w") as z:
+        for f in SAMPLE_PACK_DIR.rglob("*"):
+            if f.is_file():
+                z.write(f, f.relative_to(SAMPLE_PACK_DIR))
+
+    assert install_pack(str(zip_path)) is True
+
+    target = mock_catalog_dir / "industries" / "sample" / "STANDARD" / "1.0.0"
+    manifest = json.loads((target / "pack_manifest.json").read_text())
+    assert manifest["transport"] == "local-archive"
+    assert manifest["checksums_enforced"] is True
+
+
+def test_install_checksum_mismatch_refuses(mock_catalog_dir, tmp_path):
+    """Fail-closed: tampered content vs pack.yaml digest aborts install."""
+    import shutil as _shutil
+
+    work = tmp_path / "tampered-pack"
+    _shutil.copytree(SAMPLE_PACK_DIR, work)
+    scen = work / "scenarios" / "sample_greeting.json"
+    data = json.loads(scen.read_text())
+    data["description"] = "TAMPERED"
+    scen.write_text(json.dumps(data, indent=2))  # hash now differs from pack.yaml
+
+    assert install_pack(str(work)) is False
+    target = mock_catalog_dir / "industries" / "sample"
+    assert not target.exists()
+
+
+def test_install_bare_name_refused():
+    """No upstream registry exists; bare names are refused with guidance."""
+    assert install_pack("finance-FINRA@1.2.3") is False
+
+
+def test_install_reinstall_archives_previous(mock_catalog_dir):
+    assert install_pack(str(SAMPLE_PACK_DIR)) is True
+    assert install_pack(str(SAMPLE_PACK_DIR)) is True  # re-install triggers archive
+
+    archive_dir = mock_catalog_dir / "industries" / "sample" / "STANDARD" / ".archived"
     assert archive_dir.exists()
-    archives = list(archive_dir.glob("*_1.2.3"))
-    assert len(archives) == 1
-
-
-def test_catalog_install_pack_failure(mock_catalog_dir, monkeypatch):
-    """Test natural trigger for installation failure (e.g., download failure)."""
-
-    # Cause _download_simulated to fail
-    def mock_download(*args, **kwargs):
-        raise ValueError("Simulated network failure")
-
-    monkeypatch.setattr("eval_runner.catalog._download_simulated", mock_download)
-
-    install_pack("fail-pack@1.0")
-
-    # The directory should be cleaned up
-    flavor_dir = mock_catalog_dir / "industries" / "fail" / "pack" / "1.0"
-    assert not flavor_dir.exists()
+    assert len(list(archive_dir.glob("*_1.0.0"))) == 1
 
 
 def test_relative_to_value_error(mock_catalog_dir, monkeypatch):
@@ -590,23 +622,3 @@ def test_catalog_get_absolute_path_traversal(tmp_path):
         # Even though Path.exists is True, path traversal safety detects
         # it starts outside project root.
         assert cat.get_absolute_path("traversal_scen") is None
-
-
-def test_catalog_install_pack_failed_cleanup(tmp_path):
-    """Cover lines 493->494: install_pack failure cleaning up empty directory."""
-    # Setup directories
-    target_dir = tmp_path / "industries" / "finance" / "FINRA" / "latest"
-    target_dir.mkdir(parents=True)
-
-    with patch("eval_runner.config") as mock_cfg:
-        mock_cfg.PROJECT_ROOT = tmp_path
-
-        # Patch download to raise exception to trigger failure
-        with patch(
-            "eval_runner.catalog._download_simulated", side_effect=ValueError("Download failed")
-        ):
-            # Call install_pack which should fail and clean up
-            install_pack("finance-FINRA@latest")
-
-            # Directory should be cleaned up (removed) since it was empty
-            assert not target_dir.exists()

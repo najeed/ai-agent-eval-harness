@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldAlert, Trash2, HeartPulse, RefreshCw } from 'lucide-react';
+import { ShieldAlert, Trash2, HeartPulse, RefreshCw, Puzzle } from 'lucide-react';
 
 interface DoctorAudit {
   status: string;
@@ -11,7 +11,20 @@ interface DoctorAudit {
   error?: string;
 }
 
+interface ExtensionNavItem {
+  id?: string;
+  name?: string;
+  title?: string;
+  path?: string;
+  remoteEntry?: string;
+  tier?: string;
+  sriHash?: string;
+}
+
 import { useRBAC } from '../context/RBACContext';
+// Contract version is displayed until a manifest endpoint exists; the
+// authoritative trust decision always happens server-side.
+import { EXTENSION_CONTRACT_VERSION } from '../types/extension-contract';
 
 export const Settings: React.FC = () => {
   const { canAccessSettings, role } = useRBAC();
@@ -21,6 +34,7 @@ export const Settings: React.FC = () => {
   const [retentionDays, setRetentionDays] = useState('0');
   const [showConfirm, setShowConfirm] = useState(false);
   const [message, setMessage] = useState('');
+  const [extensions, setExtensions] = useState<ExtensionNavItem[] | null>(null);
 
   if (!canAccessSettings) {
     return (
@@ -58,6 +72,18 @@ export const Settings: React.FC = () => {
 
   useEffect(() => {
     fetchDoctor();
+    // [D2] Read-only Extension Host inventory: remote-capable nav entries.
+    // Trust tier + api version are advisory here; verify-publisher (server)
+    // remains the sole authority for mounting decisions.
+    fetch('/api/nav')
+      .then(res => res.json())
+      .then(data => {
+        const items = (Array.isArray(data?.nav) ? data.nav : []).filter(
+          (i: any) => i && typeof i === 'object' && !!i.remoteEntry
+        );
+        setExtensions(items);
+      })
+      .catch(() => setExtensions([]));
   }, []);
 
   const handleCleanup = async () => {
@@ -190,6 +216,62 @@ export const Settings: React.FC = () => {
             )}
           </div>
         </div>
+      </div>
+
+      {/* [D2] Extension Host inventory (read-only) */}
+      <div className="border border-slate-800 bg-slate-900/40 rounded-xl p-6 space-y-4">
+        <div className="flex items-center gap-2">
+          <Puzzle className="w-5 h-5 text-indigo-400" />
+          <h2 className="text-lg font-semibold text-white">Extension Host</h2>
+          <span className="ml-auto text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-950/60 border border-slate-800 text-slate-400">
+            contract v{EXTENSION_CONTRACT_VERSION}
+          </span>
+        </div>
+
+        <p className="text-slate-400 text-xs leading-relaxed">
+          Remote-capable navigation entries contributed by runtime extensions. Trust tiers and
+          capability scopes are enforced server-side; this view is read-only inventory.
+        </p>
+
+        {extensions === null ? (
+          <p className="text-xs text-slate-500 italic">Loading extension registry...</p>
+        ) : extensions.length === 0 ? (
+          <p className="text-xs text-slate-500 italic">
+            No remote extensions registered. Core runtime routes only.
+          </p>
+        ) : (
+          <div className="space-y-2">
+            {extensions.map((ext, i) => (
+              <div
+                key={ext.id || ext.path || i}
+                className="flex flex-wrap items-center gap-x-3 gap-y-1 p-3 rounded-lg bg-slate-950/40 border border-slate-800/60"
+              >
+                <span className="text-xs font-bold text-slate-200">
+                  {ext.name || ext.title || ext.id || 'Unnamed extension'}
+                </span>
+                {ext.tier && (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                    {ext.tier}
+                  </span>
+                )}
+                <span className="text-[10px] font-mono text-slate-500">api v{EXTENSION_CONTRACT_VERSION}</span>
+                <span className="text-[10px] font-mono text-slate-500 truncate ml-auto max-w-[40%]" title={ext.remoteEntry}>
+                  {ext.remoteEntry}
+                </span>
+                {!ext.sriHash && (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 uppercase tracking-wider">
+                    no SRI
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        <p className="text-[10px] text-slate-500 leading-snug">
+          Mount authorization is decided exclusively by the server-side verify-publisher trust root
+          (signature + publisher identity). Client badges are informational and never grant access.
+        </p>
       </div>
 
       {/* Confirmation Dialog Overlay */}

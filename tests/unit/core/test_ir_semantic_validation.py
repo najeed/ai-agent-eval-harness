@@ -132,6 +132,7 @@ def test_compensation_from_unreachable_source_rejected():
             {"from": "ghost", "to": "worker", "type": "compensation"},
         ],
     )
+    scenario["workflow"]["entry_nodes"] = ["entry"]
     with pytest.raises(PlanValidationError, match="compensation originates from unreachable"):
         compile_workflow(scenario)
 

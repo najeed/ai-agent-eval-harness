@@ -1,5 +1,5 @@
 """
-C1a: /api/runs returns a server-authoritative verification verdict per run.
+/api/runs returns a server-authoritative verification verdict per run.
 
   VERIFIED              — certificate/manifest trace_hash == SHA3-256(current trace)
   FAILED_VERIFICATION   — hash mismatch (trace mutated after certification)

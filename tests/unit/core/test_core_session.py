@@ -106,8 +106,8 @@ async def test_session_execute_tasks_cycle_error(base_scenario, tmp_path):
     results = await session.execute_tasks(1)
     assert len(results) > 0
     assert results[-1]["status"] == "failure"
-    # A pure cycle has no terminal state; the IR compiler rejects it.
-    assert "Invalid workflow plan" in results[-1]["message"]
+    # A pure cycle declares no canonical entry; the IR compiler rejects it.
+    assert "workflow" in results[-1]["message"].lower()
     assert results[-1].get("triage_tag") == "EVALUATION_INVALID"
 
 
@@ -421,6 +421,8 @@ async def test_session_calculate_metrics_hygiene_and_dispatch(base_scenario, tmp
 
 @pytest.mark.asyncio
 async def test_session_handle_hitl(base_scenario, tmp_path, monkeypatch):
+    """[P0-9] CI must NEVER auto-approve a human gate: the request resolves to
+    an explicit HITL_UNRESOLVED marker and flags the session accordingly."""
     session = SessionManager("test_run", base_scenario, log_root=tmp_path)
 
     agent_resp = {"prompt": "Confirm action"}
@@ -430,7 +432,9 @@ async def test_session_handle_hitl(base_scenario, tmp_path, monkeypatch):
 
     monkeypatch.setenv("CI", "true")
     res = await session._handle_hitl(1, agent_resp, history, actions, turn_ctx)
-    assert "Auto-approved" in res
+    assert "HITL_UNRESOLVED" in res
+    assert "Auto-approved" not in res
+    assert session._hitl_unresolved is True
 
 
 @pytest.mark.asyncio

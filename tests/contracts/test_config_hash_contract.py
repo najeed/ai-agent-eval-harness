@@ -174,7 +174,7 @@ class TestConfigHashContract:
         from agentv_runtime.manifest import ExecutionManifest, ManifestBuilder
 
         scen_data = {
-            "metadata": {"id": "test-scen", "version": "2.1.0"},
+            "metadata": {"id": "test-scen", "version": "2.0.0"},
             "workflow": {"nodes": [{"id": "node1"}]},
         }
         manifest = ManifestBuilder.build(

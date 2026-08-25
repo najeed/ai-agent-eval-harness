@@ -18,11 +18,11 @@ The bedrock of communication. These handle the literal transport of bits between
 
 ### 2. Model Providers (`active_providers`)
 Adapters that handle the specific payload formats and authentication requirements of LLM backend providers.
-- **`openai`**: GPT-5.4/o1 class communication.
-- **`claude`**: Anthropic XML-based protocols.
-- **`gemini`**: Google Vertex/AI-Studio integration.
-- **`grok`**: xAI adversarial benchmarks.
-- **`ollama`**: Local model parity testing.
+- **`openai`**: GPT-5.6 / o3 class communication.
+- **`claude`**: Anthropic XML and tool-use protocols (Claude 3.7 Sonnet / Claude Opus 5).
+- **`gemini`**: Google Vertex / Gemini 3.7 Flash integration.
+- **`grok`**: xAI frontier benchmarks.
+- **`ollama`**: Local open-weights model parity testing (DeepSeek R1 / Llama 3.3).
 
 ### 3. Orchestration Frameworks (`active_frameworks`)
 High-level SDKs that wrap agents. These often involve complex state management and autonomous loop logic.

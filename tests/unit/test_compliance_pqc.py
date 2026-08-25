@@ -53,12 +53,13 @@ class TestCompliancePQC(unittest.TestCase):
         self.assertFalse(status["quantum_safe"])
         self.assertEqual(status["reason"], "Manifest missing")
 
-    @patch("eval_runner.compliance.ComplianceService._evaluate_metrics_pack")
-    def test_evaluate_compliance_with_pqc_strict_mode(self, mock_eval):
-        # Setup mock compliance pack result
-        mock_eval.return_value = {"pass": True, "details": []}
+    def test_evaluate_compliance_with_pqc_strict_mode(self):
+        # [Fabricated-#3 remediation] Fail-closed doctrine: compliance starts
+        # as NON-compliant and only an evaluated proof path asserts it.
+        # Behavioral metrics are never scored in OSS — the old always-pass
+        # stub is gone, so classical-only proofs can no longer ride on it.
 
-        # Setup run manifest (Not Quantum Safe)
+        # Setup run manifest (Not Quantum Safe — classical ED25519 only)
         manifest = {
             "timestamp": "2026-05-14T12:00:00",
             "provenance_chain": [{"algorithm": "ED25519"}],
@@ -66,19 +67,45 @@ class TestCompliancePQC(unittest.TestCase):
         with open(self.manifest_path, "w") as f:
             json.dump(manifest, f)
 
-        # 1. PQC_STRICT_MODE = False (Should Pass)
+        from eval_runner.compliance import evaluate_compliance
+
+        # 1. PQC_STRICT_MODE = False + classical-only signature:
+        #    NOT compliant (no quantum-safe proof, metrics not evaluated).
         with patch("eval_runner.config.PQC_STRICT_MODE", False):
-            from eval_runner.compliance import evaluate_compliance
-
-            result = evaluate_compliance(self.run_id, {"some_metric": 1.0})
-            self.assertTrue(result["compliant"])
-            self.assertFalse(result["pqc_status"]["quantum_safe"])
-
-        # 2. PQC_STRICT_MODE = True (Should Fail)
-        with patch("eval_runner.config.PQC_STRICT_MODE", True):
             result = evaluate_compliance(self.run_id, {"some_metric": 1.0})
             self.assertFalse(result["compliant"])
             self.assertFalse(result["pqc_status"]["quantum_safe"])
+            self.assertEqual(result["behavioral_metrics"], "not_evaluated_in_oss")
+            self.assertFalse(result["metrics_eval"]["pass"])
+
+        # 2. PQC_STRICT_MODE = True: still non-compliant, explicit reason.
+        with patch("eval_runner.config.PQC_STRICT_MODE", True):
+            result = evaluate_compliance(self.run_id, {"some_metric": 1.0})
+            self.assertFalse(result["compliant"])
+            self.assertIn("PQC_STRICT_MODE", result["message"])
+            self.assertEqual(result["metrics_eval"]["status"], "NOT_EVALUATED")
+
+    def test_evaluate_compliance_quantum_safe_is_compliant(self):
+        """Quantum-safe proof ⇒ compliant under both strictness modes."""
+        manifest = {
+            "timestamp": "2026-05-14T12:00:00",
+            "provenance_chain": [
+                {
+                    "algorithm": "ML-DSA-65",
+                    "provider": "cyclecore",
+                    "timestamp": "2026-05-14T12:00:01",
+                }
+            ],
+        }
+        with open(self.manifest_path, "w") as f:
+            json.dump(manifest, f)
+
+        from eval_runner.compliance import evaluate_compliance
+
+        for strict in (False, True):
+            with patch("eval_runner.config.PQC_STRICT_MODE", strict), self.subTest(strict=strict):
+                result = evaluate_compliance(self.run_id, {})
+                self.assertTrue(result["compliant"])
 
 
 if __name__ == "__main__":

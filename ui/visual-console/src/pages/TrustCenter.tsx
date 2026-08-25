@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { ShieldCheck, ShieldAlert, Award, CheckCircle, XCircle, Search, Key } from 'lucide-react';
 import { useRBAC } from '../context/RBACContext';
 
@@ -43,7 +43,7 @@ export const TrustCenter: React.FC = () => {
     setResolvedKey('');
     
     try {
-      const res = await fetch(`/v1/verify/${verifyRunId.trim()}`);
+      const res = await fetch(`/api/v1/verify/${verifyRunId.trim()}`);
       const data = await res.json();
       
       if (res.ok) {
@@ -65,7 +65,7 @@ export const TrustCenter: React.FC = () => {
 
   const resolvePublicKey = async (signer: string) => {
     try {
-      const res = await fetch(`/v1/identity/${signer}/public_key`);
+      const res = await fetch(`/api/v1/identity/${signer}/public_key`);
       const data = await res.json();
       if (res.ok) {
         setResolvedKey(data.public_key);
@@ -86,7 +86,7 @@ export const TrustCenter: React.FC = () => {
     setCertifyResult(null);
 
     try {
-      const res = await fetch('/v1/certify', {
+      const res = await fetch('/api/v1/certify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -383,3 +383,4 @@ export const TrustCenter: React.FC = () => {
     </div>
   );
 };
+

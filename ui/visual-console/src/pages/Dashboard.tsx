@@ -37,7 +37,6 @@ export const Dashboard: React.FC = () => {
   const [runs, setRuns] = useState<RunItem[]>([]);
   const [scenarios, setScenarios] = useState<any[]>([]);
 
-
   // Verification Workflow Wizard State
   const [showWizard, setShowWizard] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<AgentTargetProfile>(DEFAULT_PROFILES[0]);
@@ -70,7 +69,7 @@ export const Dashboard: React.FC = () => {
           resultStatus: r.result_status || undefined,
           timestamp: r.timestamp || 'N/A',
           status: r.execution_status || r.status || 'UNKNOWN',
-          // [C1b] Server verdict is authoritative; no client-side inference.
+          // Server verdict is authoritative; no client-side inference.
           verdict:
             r.verification_status === 'VERIFIED' || r.verification_status === 'FAILED_VERIFICATION'
               ? r.verification_status
@@ -82,7 +81,6 @@ export const Dashboard: React.FC = () => {
       console.error('Error fetching dashboard metrics:', e);
     }
   };
-
 
   useEffect(() => {
     fetchData();
@@ -259,6 +257,27 @@ export const Dashboard: React.FC = () => {
         isLaunching={isLaunching}
       />
 
+      {/* [Zero-state] Fastest path to first verified value */}
+      {runs.length === 0 && (
+        <div
+          onClick={() => navigate('/spec-import')}
+          className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-teal-950/60 via-slate-900 to-slate-900 border border-teal-500/30 p-6 flex flex-col sm:flex-row sm:items-center gap-4 cursor-pointer group hover:border-teal-400/50 transition"
+        >
+          <div className="w-11 h-11 rounded-xl bg-teal-500/15 border border-teal-500/30 flex items-center justify-center text-teal-300 group-hover:scale-110 transition shrink-0">
+            <Sparkles className="w-5 h-5" />
+          </div>
+          <div className="flex-1 space-y-1">
+            <h3 className="text-sm font-bold text-white">Get your first verified run in minutes</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Paste a requirement spec — the importer scaffolds a runnable scenario, then the
+              verification workflow walks you through Connect → Preflight → Run → Evidence.
+            </p>
+          </div>
+          <span className="text-xs font-semibold text-teal-300 flex items-center gap-1 shrink-0">
+            Start with a spec <ArrowRight className="w-3.5 h-3.5" />
+          </span>
+        </div>
+      )}
       {/* 3 Core Pillars Quick Navigation */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <div
@@ -379,9 +398,6 @@ export const Dashboard: React.FC = () => {
                   </td>
                   <td className="py-3 text-right">
                     <div className="flex items-center justify-end gap-2 font-sans">
-                      {/* [G4] Post-run CTA chain: view the authoritative result,
-                          diagnose a failure in the live debugger, then export
-                          the immutable evidence package. */}
                       <button
                         onClick={() => navigate(`/reports?run_id=${r.run_id}`)}
                         className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-medium transition flex items-center gap-1"
@@ -391,11 +407,10 @@ export const Dashboard: React.FC = () => {
                       <button
                         onClick={() => navigate(`/debugger?run_id=${r.run_id}`)}
                         title="Open this run in the Live Debugger for root-cause inspection."
-                        className={`px-2.5 py-1 rounded text-[11px] font-semibold transition flex items-center gap-1 border ${
-                          r.verdict === 'FAILED_VERIFICATION' || r.resultStatus === 'FAIL'
+                        className={`px-2.5 py-1 rounded text-[11px] font-semibold transition flex items-center gap-1 border ${r.verdict === 'FAILED_VERIFICATION' || r.resultStatus === 'FAIL'
                             ? 'bg-red-500/10 hover:bg-red-500/20 border-red-500/30 text-red-300'
                             : 'bg-slate-800 hover:bg-slate-700 border-transparent text-slate-200'
-                        }`}
+                          }`}
                       >
                         <Activity className={`w-3 h-3 ${r.verdict === 'FAILED_VERIFICATION' || r.resultStatus === 'FAIL' ? 'text-red-400' : ''}`} />
                         Inspect failure

@@ -127,7 +127,7 @@ def test_get_verification_package_success_with_cert_and_provenance(crypto_client
     assert res.status_code == 200
     pkg = res.get_json()
     assert pkg["format"] == "agentv_verification_package"
-    assert pkg["package_version"] == "2.1.0"  # [E1] evidence graph schema
+    assert pkg["package_version"] == "2.0.0"  # evidence graph schema
     assert "evidence_graph" in pkg
     assert pkg["evidence_graph"]["graph_version"] == "1.0.0"
 

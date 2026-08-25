@@ -70,8 +70,8 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
     raw_trace_bytes = trace_path.read_bytes()
     trace_hash = compute_sha3_digest(raw_trace_bytes)
 
-    # [E1] Parse preserving per-line provenance: (event, raw_line) pairs plus
-    # byte offsets of any UNPARSEABLE lines (E3 corruption detection).
+    # Parse preserving per-line provenance: (event, raw_line) pairs plus
+    # byte offsets of any UNPARSEABLE lines.
     events: list[dict[str, Any]] = []
     events_with_lines: list[tuple[dict[str, Any], str]] = []
     corrupt_line_offsets: list[int] = []
@@ -208,7 +208,7 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
     else:
         score = 0.0
 
-    # [E1] Evidence Graph v1: every assertion linked to its source event
+    # Evidence Graph v1: every assertion linked to its source event
     # (by _seq + exact-line content hash) or reported UNRESOLVED.
     from agentv_runtime.evidence_graph import build_evidence_graph
 
@@ -227,6 +227,44 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
         artifact_hashes={"run.jsonl": trace_hash},
     )
 
+    # [Chain header] Run → Scenario(revision) → Config → Target → Mode → Run.
+    # Five immutable bindings an auditor must have WITHOUT reconstructing
+    # them from the trace. scenario_hash is computed over the resolved
+    # scenario actually executed (authoritative revision identity).
+    from agentv_runtime.manifest import compute_scenario_hash
+
+    run_start = next((e for e in events if e.get("event") == "run_start"), {})
+    start_meta = (
+        run_start.get("data", {}).get("metadata", {})
+        if isinstance(run_start.get("data"), dict)
+        else {}
+    ) or {}
+    mode_raw = (
+        run_start.get("execution_mode")
+        or start_meta.get("execution_mode")
+        or manifest_data.get("execution_mode")
+    )
+    declared = bool(
+        run_start.get("execution_mode_declared")
+        or start_meta.get("execution_mode_declared")
+        or mode_raw
+    )
+    chain = {
+        "run_id": run_id,
+        "scenario_hash": (compute_scenario_hash(scenario_resolved) if scenario_resolved else None),
+        "resolved_config_hash": (
+            run_start.get("reproducibility_fingerprint")
+            or start_meta.get("reproducibility_fingerprint")
+        ),
+        "agent_target_id": (
+            run_start.get("identifier")
+            or start_meta.get("identifier")
+            or manifest_data.get("identifier")
+        ),
+        "execution_mode": str(mode_raw) if mode_raw else "unknown",
+        "execution_mode_declared": declared,
+    }
+
     # Deterministic canonical core (excluding envelope timestamps)
     canonical_payload = {
         "format": "agentv_verification_package",
@@ -234,6 +272,7 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
         "run_id": run_id,
         "tenant_id": manifest_data.get("tenant_id", "default-tenant"),
         "workspace_id": manifest_data.get("workspace_id", "default-workspace"),
+        "chain": chain,
         "manifest": manifest_data,
         "scenario": scenario_resolved,
         "verdict": {

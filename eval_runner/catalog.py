@@ -5,10 +5,12 @@ Logic for indexing and searching scenario metadata.
 """
 
 import datetime
+import hashlib
 import io
 import json
 import os
 import shutil
+import tarfile
 import threading
 import time
 import zipfile
@@ -460,81 +462,191 @@ def _archive_existing_pack(target_dir: Path):
     print(f"   [Catalog] Archived existing pack to {archive_path.name}")
 
 
-def _download_simulated(pack: str, flavor: str, version: str) -> bytes:
-    """Generates a simulated scenario pack ZIP for industrial benchmarks (v1.2.3)."""
-    buf = io.BytesIO()
-    identifier = f"{pack}-{flavor}".lower()
-    with zipfile.ZipFile(buf, "w") as z:
-        # Create a sample scenario for the pack
-        scenario_data = {
-            "aes_version": 1.4,
-            "id": identifier,
-            "metadata": {
-                "id": identifier,
-                "name": f"Curated {pack} {flavor} ({version})",
-                "compliance_level": "Standard",
-                "capabilities": [],
-            },
-            "industry": pack,
-            "workflow": {
-                "nodes": [
-                    {"id": "n1", "task_description": f"Benchmark for {pack} {flavor} v{version}"}
-                ],
-                "edges": [],
-            },
-            "evaluation": {"consensus": {"strategy": "Majority_Vote", "judge_panel": ["Luna-1"]}},
-        }
-        z.writestr(f"{identifier}.json", json.dumps(scenario_data, indent=2))
+def _load_pack_manifest(tree_root: Path) -> dict:
+    """Reads pack.yaml / pack.yml from a pack root (fail-closed if absent)."""
+    import yaml
 
-        # Add a manifest for flavor/version parity
-        manifest = {
-            "pack": pack,
-            "flavor": flavor,
-            "version": version,
-            "installed_at": datetime.datetime.now().isoformat(),
-        }
-        z.writestr("pack_manifest.json", json.dumps(manifest, indent=2))
+    for cand in ("pack.yaml", "pack.yml", ".agentv-pack.yaml"):
+        p = tree_root / cand
+        if p.is_file():
+            data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+            if isinstance(data, dict):
+                return data
+    return {}
 
-    return buf.getvalue()
+
+def _sha256_file(p: Path) -> str:
+    h = hashlib.sha256()
+    with open(p, "rb") as fh:
+        for chunk in iter(lambda: fh.read(65536), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _extract_pack_archive(archive_path: Path, staging_root: Path) -> Path:
+    """Extracts a local .zip/.tar.gz pack into a jailed staging dir."""
+    staging_root.mkdir(parents=True, exist_ok=True)
+    buf = io.BytesIO(archive_path.read_bytes())
+    try:
+        with zipfile.ZipFile(buf) as z:
+            # Validate all member paths to prevent zip-slip path traversal
+            resolved_staging = staging_root.resolve()
+            for member in z.namelist():
+                target_path = (staging_root / member).resolve()
+                if not str(target_path).startswith(str(resolved_staging)):
+                    raise ValueError(f"Dangerous zip member path traversal detected: {member}")
+            z.extractall(staging_root)  # nosec B202
+    except zipfile.BadZipFile:
+        buf.seek(0)
+        with tarfile.open(fileobj=buf, mode="r:*") as tf:
+            tf.extractall(staging_root, filter="data")  # nosec B202
+    entries = list(staging_root.iterdir())
+    dirs = [d for d in entries if d.is_dir()]
+    root = (
+        dirs[0]
+        if len(dirs) == 1 and len(entries) == 1 and not (staging_root / "pack.yaml").is_file()
+        else staging_root
+    )
+    return root
 
 
 def install_pack(pack_name: str):
     """
-    Installs a curated industrial scenario pack with flavor and version support.
-    Usage: finance-FINRA@1.2.3
+    Installs a REAL scenario pack from a local source that exists:
+
+      - pack directory : ./my-pack        (contains pack.yaml)
+      - zip archive    : ./my-pack.zip
+      - tar.gz archive : ./my-pack.tar.gz
+
+    The pack root MUST contain ``pack.yaml`` declaring::
+
+        name: finance            # installs to industries/<name>/
+        flavor: FINRA            # optional (default STANDARD)
+        version: 1.2.3           # optional (default latest)
+        files:                   # optional sha256 map - tamper-evidence
+            scenarios/x.json: <sha256-hex>
+
+    Checksums are fail-closed: any mismatch aborts before installation.
+    Bare ``name-flavor@version`` names are refused - no upstream registry
+    exists in OSS; browse in-repo ``industries/`` or point at a real source.
     """
     from eval_runner import config
 
+    source = str(pack_name or "").strip()
+    src_path = Path(source)
+
+    is_dir_source = bool(source) and src_path.is_dir()
+    is_archive = bool(
+        source and src_path.is_file() and src_path.suffix.lower() in (".zip", ".gz", ".tgz")
+    )
+    if not (is_dir_source or is_archive):
+        print(
+            "   [Catalog] ❌ Installation Failed: bare pack names have no upstream registry in OSS."
+        )
+        print("   [Catalog]    Install a REAL pack from an existing source:")
+        print("   [Catalog]      agentv install samples/packs/sample-pack")
+        print("   [Catalog]      agentv install ./my-pack.zip")
+        print("   [Catalog]    Browse the in-repo curated catalog under industries/.")
+        return False
+
     root = Path(config.PROJECT_ROOT).resolve()
 
-    pack, flavor, version = _parse_pack_string(pack_name)
-    target_dir = root / "industries" / pack / flavor / version
-
-    print(f"   [Catalog] Installing Pack Source: {pack} (Flavor: {flavor}, Version: {version})")
-
-    # Industrial Hardening: Archiving (No data loss policy)
-    if target_dir.exists():
-        _archive_existing_pack(target_dir)
-
-    target_dir.mkdir(parents=True, exist_ok=True)
-
+    staging: Path | None = None
     try:
-        # 1. Acquire Pack (Simulated Industrial Registry)
-        print(f"   [Catalog] Downloading curated components for '{pack_name}'...")
-        pack_bytes = _download_simulated(pack, flavor, version)
+        if is_dir_source:
+            tree_root = src_path.resolve()
+            transport = "local-dir"
+        else:
+            staging = (
+                root
+                / ".aes"
+                / "pack_staging"
+                / (_sha256_file(src_path)[:12] + "_" + src_path.stem.replace(" ", "_"))
+            )
+            if staging.exists():
+                shutil.rmtree(staging)
+            tree_root = _extract_pack_archive(src_path, staging)
+            transport = "local-archive"
 
-        # 2. Extract and Verify
-        with zipfile.ZipFile(io.BytesIO(pack_bytes)) as z:
-            z.extractall(target_dir)
+        pack_meta = _load_pack_manifest(tree_root)
+        name = str(pack_meta.get("name") or "").strip()
+        if not name:
+            print(
+                "   [Catalog] ❌ Installation Failed: pack.yaml missing or "
+                "has no 'name'. Refusing to guess the target namespace."
+            )
+            return False
+        flavor = str(pack_meta.get("flavor") or "STANDARD")
+        version = str(pack_meta.get("version") or "latest")
+        target_dir = root / "industries" / name / flavor / version
 
-        print(f"   [Catalog] ✅ Installation Complete: {target_dir.relative_to(root)}")
+        print(f"   [Catalog] Installing '{name}-{flavor}@{version}' from {source} [{transport}]")
 
-        # 3. Atomic Index Refinement
+        files_manifest: dict = pack_meta.get("files") or {}
+        staged: list[tuple[Path, Path]] = []
+        mismatches: list[str] = []
+        for p in sorted(tree_root.rglob("*")):
+            if not p.is_file():
+                continue
+            rel = p.relative_to(tree_root).as_posix()
+            if rel.startswith(("pack.yaml", "pack.yml", ".agentv-pack.yaml", ".git/")):
+                continue
+            expected = files_manifest.get(rel)
+            actual = _sha256_file(p)
+            if expected and str(expected).lower() != actual:
+                mismatches.append(f"{rel}: manifest={expected} actual={actual}")
+                continue
+            staged.append((p, target_dir / rel))
+
+        if mismatches:
+            print("   [Catalog] ❌ Checksum mismatch - installation aborted:")
+            for m in mismatches[:5]:
+                print(f"   [Catalog]    {m}")
+            return False
+        if not staged:
+            print("   [Catalog] ❌ Pack contains no files.")
+            return False
+
+        if target_dir.exists():
+            _archive_existing_pack(target_dir)
+
+        target_dir.mkdir(parents=True, exist_ok=True)
+        for s, d in staged:
+            d.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(s, d)
+
+        installed_manifest = {
+            "pack": name,
+            "flavor": flavor,
+            "version": version,
+            "installed_at": datetime.datetime.now().isoformat(),
+            "transport": transport,
+            "source": source,
+            "verified_files": len(staged),
+            "checksums_enforced": bool(files_manifest),
+        }
+        with open(target_dir / "pack_manifest.json", "w", encoding="utf-8") as f:
+            json.dump(installed_manifest, f, indent=2)
+
+        note = "  (checksums verified)" if files_manifest else ""
+        print(
+            f"   [Catalog] ✅ Installed {len(staged)} file(s) -> "
+            f"{target_dir.relative_to(root)}{note}"
+        )
+
         catalog = get_catalog()
         catalog.build_index()
         print(f"   [Catalog] Re-indexed {len(catalog.scenarios)} total scenarios.")
+        return True
 
     except Exception as e:
         print(f"   [Catalog] ❌ Installation Failed: {e}")
-        if target_dir.exists() and not any(target_dir.iterdir()):
-            target_dir.rmdir()
+        try:
+            if target_dir.exists() and not any(target_dir.iterdir()):
+                target_dir.rmdir()
+        except Exception:  # noqa: BLE001
+            pass
+        return False
+    finally:
+        if staging is not None:
+            shutil.rmtree(staging, ignore_errors=True)

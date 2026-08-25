@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentv.dev/spec/scenario-pack/scenario-pack.schema.json",
+  "title": "AgentV Scenario Pack manifest (pack.yaml) v1.0.0",
+  "description": "Declarative manifest at the root of an installable scenario pack. The installer (eval_runner.catalog.install_pack) enforces this contract fail-closed: missing 'name' aborts; declared 'files' checksums are verified before any bytes are copied.",
+  "type": "object",
+  "required": ["name"],
+  "additionalProperties": true,
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$",
+      "description": "Pack namespace. Installs to industries/<name>/<flavor>/<version>/. Lowercase slug; no spaces."
+    },
+    "flavor": {
+      "type": "string",
+      "default": "STANDARD",
+      "description": "Regulatory/vertical flavor segment of the install path."
+    },
+    "version": {
+      "type": "string",
+      "default": "latest",
+      "description": "Version segment of the install path. For git-sourced packs prefer the ref tag."
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-facing summary; informational only."
+    },
+    "files": {
+      "type": "object",
+      "description": "OPTIONAL tamper-evidence map: relative path -> lowercase sha256 hex of file bytes. When present, EVERY listed file is verified and ANY mismatch aborts installation before copying. Files not listed are copied unverified.",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-fA-F0-9]{64}$"
+      }
+    },
+    "scenarios": {
+      "type": "array",
+      "description": "Optional informational index of contained scenarios.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "path": { "type": "string" }
+        }
+      }
+    }
+  }
+}

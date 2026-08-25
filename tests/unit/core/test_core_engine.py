@@ -589,11 +589,20 @@ def test_loader_load_dataset_invalid_uri():
 
 
 @pytest.mark.asyncio
-async def test_analyzer_comprehensive():
-    await analyzer.analyze_repo("http://github.com/telecom-agent")
-    await analyzer.analyze_repo("http://github.com/finance-agent")
-    results = await analyzer.analyze_repo("http://github.com/unknown")
-    assert results[0]["metadata"]["pattern"] == "AgentExecutor(...)"
+async def test_analyzer_comprehensive(tmp_path, monkeypatch):
+    """Repo analysis: local checkout scan produces
+    oracle-bearing STARTER scenarios with provenance metadata."""
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "main.py").write_text(
+        "from langchain.agents import initialize_agent\nagent = initialize_agent(llm=None)\n",
+        encoding="utf-8",
+    )
+
+    results = await analyzer.analyze_repo(str(tmp_path))
+    assert results, "expected at least one scaffolded scenario from real findings"
+    joined = json.dumps(results)
+    assert "agent_init" in joined
+    assert all(r["metadata"]["generated"] is True for r in results)
 
 
 def test_failure_corpus_no_log(tmp_path, monkeypatch):

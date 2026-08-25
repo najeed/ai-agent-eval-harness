@@ -29,10 +29,12 @@ import { AdversarialMutator } from './pages/AdversarialMutator';
 
 // Extension host: generic load/contract fallback + RuntimeExtension contract
 import { ExtensionLoadError } from './components/ExtensionLoadError';
+import { RemoteErrorBoundary } from './components/RemoteErrorBoundary';
 import {
   validateExtensionManifest,
   EXTENSION_CONTRACT_VERSION,
   hostApisForTier,
+  canCallHostApi,
   READ_ONLY_HOST_APIS,
   type ExtensionTier,
 } from './types/extension-contract';
@@ -193,42 +195,6 @@ export function mergeNavManifest(
   return merged;
 }
 
-interface RemoteErrorState {
-  hasError: boolean;
-  error?: Error;
-}
-
-class RemoteErrorBoundary extends React.Component<
-  { children: React.ReactNode; entryUrl: string },
-  RemoteErrorState
-> {
-  constructor(props: { children: React.ReactNode; entryUrl: string }) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error: Error): RemoteErrorState {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error(`[MicroFrontend] Failed to load remote entry: ${this.props.entryUrl}`, error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <ExtensionLoadError
-          title="Failed to Load Extension Module"
-          entryUrl={this.props.entryUrl}
-          message={this.state.error?.message || 'Module fetch or evaluation failed.'}
-        />
-      );
-    }
-    return this.props.children;
-  }
-}
-
 // ---------------------------------------------------------------------------
 // [D2] Extension host API surface. Extensions receive ONLY the APIs their
 // trust tier grants: unsigned/local extensions are restricted to read-only
@@ -260,7 +226,7 @@ const ExtensionHostProvider: React.FC<{ tier: ExtensionTier; children: React.Rea
     return {
       tier,
       allowedApis,
-      can: (call: string) => (allowedApis as readonly string[]).includes(call),
+      can: (call: string) => canCallHostApi(tier, call),
     };
   }, [tier]);
   return <ExtensionHostContext.Provider value={value}>{children}</ExtensionHostContext.Provider>;
@@ -341,7 +307,13 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
             });
             const data = await res.json();
             if (res.ok && data.valid) {
-              return manifestObj.tier === 'official' ? 'official' : 'community';
+              // [Trust hardening] The BACKEND's classification is the ONLY
+              // authority. A signed manifest cannot self-promote to
+              // 'official' via its own tier field — that field is ignored.
+              if (data.tier === 'official' || data.tier === 'community') {
+                return data.tier;
+              }
+              throw { kind: 'publisher', reason: 'unrecognized-backend-tier' };
             }
             throw { kind: 'publisher', reason: data.reason || 'signature-mismatch' };
           } catch (err: any) {
@@ -572,12 +544,22 @@ const ConsoleLayout: React.FC = () => {
   });
 
   useEffect(() => {
-    // Intercept window fetch for global authentication diagnostics
+    // Intercept window fetch for authentication diagnostics.
+    // [Adoption fix] Scoped to AUTH endpoints only: a 401/403 from any other
+    // API is a contextual authorization result (RBAC denial, missing run,
+    // etc.) and must not be mislabeled as "invalid credentials".
     const originalFetch = window.fetch;
     window.fetch = async (...args) => {
       try {
         const response = await originalFetch(...args);
-        if (response.status === 401 || response.status === 403) {
+        const reqUrl =
+          typeof args[0] === 'string'
+            ? args[0]
+            : (args[0] as Request)?.url ?? '';
+        const isAuthEndpoint =
+          reqUrl.includes('/api/auth/') ||
+          reqUrl.includes('/api/v1/extensions/verify-publisher');
+        if (isAuthEndpoint && (response.status === 401 || response.status === 403)) {
           window.dispatchEvent(new CustomEvent('agentv-toast', {
             detail: { message: 'Authentication Failure: Invalid API credentials.', type: 'error' }
           }));

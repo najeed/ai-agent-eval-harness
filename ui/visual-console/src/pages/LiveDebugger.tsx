@@ -45,7 +45,7 @@ interface LogEvent {
 // structured `state_comparison` object (expected / actual / comparison /
 // assertions / source / timestamp) emitted by the runtime parity verifier.
 // The debugger renders ONLY this object. Absence of the payload means NO
-// structured comparison exists — message text is never reparsed into a diff.
+// structured comparison exists; message text is never reparsed into a diff.
 // ---------------------------------------------------------------------------
 
 export interface StateComparisonPayload {
@@ -66,11 +66,16 @@ export const parseStateComparison = (evt: unknown): StateComparisonPayload | nul
 };
 
 // ---------------------------------------------------------------------------
-// [Sprint-6] Forensic execution waterfall — derived purely from authoritative
+// [Sprint-6] Forensic execution waterfall; derived purely from authoritative
 // execution_graph_node events: one row per execution_instance_id, parent/child
 // depth via parent_execution_id, retries/iterations labeled, observed
 // durations only. No synthesized timing.
 // ---------------------------------------------------------------------------
+
+export interface WaterfallMarker {
+  t: number;
+  kind: 'tool_call' | 'tool_result' | 'evaluation' | 'error';
+}
 
 export interface WaterfallRow {
   execId: string;
@@ -82,6 +87,7 @@ export interface WaterfallRow {
   startTs: number | null;
   endTs: number | null;
   depth: number;
+  markers: WaterfallMarker[];
 }
 
 export const buildWaterfall = (
@@ -104,6 +110,7 @@ export const buildWaterfall = (
         startTs: null,
         endTs: null,
         depth: 0,
+        markers: [],
       };
       byExec.set(execId, row);
     }
@@ -135,6 +142,47 @@ export const buildWaterfall = (
     (a.startTs ?? Infinity) - (b.startTs ?? Infinity) || a.execId.localeCompare(b.execId)
   );
 
+  // [Sprint-6 markers] Attach tool/assertion/failure ticks to the row whose
+  // time window contains them (authoritative node join via scenario_node_id).
+  const rowsByNode = new Map<string, WaterfallRow[]>();
+  for (const r of rows) {
+    const list = rowsByNode.get(r.nodeId) || [];
+    list.push(r);
+    rowsByNode.set(r.nodeId, list);
+  }
+  for (const e of allEvents) {
+    if (
+      e.event !== 'tool_call' &&
+      e.event !== 'tool_result' &&
+      e.event !== 'evaluation' &&
+      e.event !== 'error'
+    ) {
+      continue;
+    }
+    const nodeId = e.scenario_node_id || e.node_id || e.task_id;
+    if (!nodeId) continue;
+    const ts = Date.parse(e.timestamp || '');
+    if (Number.isNaN(ts)) continue;
+    const candidates = rowsByNode.get(nodeId);
+    if (!candidates?.length) continue;
+    const within = candidates.find(
+      r => r.startTs !== null && r.endTs !== null && ts >= r.startTs && ts <= r.endTs
+    );
+    const target = within || candidates[candidates.length - 1];
+    target.markers.push({
+      t: ts,
+      kind:
+        e.event === 'tool_call'
+          ? 'tool_call'
+          : e.event === 'tool_result'
+            ? 'tool_result'
+            : e.event === 'evaluation'
+              ? 'evaluation'
+              : 'error',
+    });
+  }
+  for (const r of rows) r.markers.sort((a, b) => a.t - b.t);
+
   const starts = rows.map(r => r.startTs).filter((v): v is number => v !== null);
   const ends = rows.map(r => r.endTs).filter((v): v is number => v !== null);
   const tMin = starts.length ? Math.min(...starts) : null;
@@ -165,7 +213,7 @@ export const mergeSeqGap = (existing: SeqGap[], next: SeqGap): SeqGap[] => {
 // ---------------------------------------------------------------------------
 // [B2] Compositional trace-integrity flags.
 //
-// Each condition is reported independently — detecting one NEVER downgrades or
+// Each condition is reported independently; detecting one NEVER downgrades or
 // masks another (e.g. a trace recovered from the master log still reports its
 // sequence gaps alongside RECOVERED instead of collapsing into a single state).
 // ---------------------------------------------------------------------------
@@ -216,7 +264,7 @@ export const computeTraceIntegrity = (
       issues.push('Events arrived out of monotonic _seq order (client-side reorder buffer applied).');
     }
 
-    // Coverage holes or duplicate frames — independent of arrival order.
+    // Coverage holes or duplicate frames; independent of arrival order.
     gaps =
       uniq[uniq.length - 1] - uniq[0] + 1 !== uniq.length ||
       uniq.length !== sorted.length;
@@ -243,7 +291,7 @@ export const computeTraceIntegrity = (
 
   const recovered = !!sourcedFromMaster;
   if (recovered) {
-    issues.push('Trace recovered from master log — per-run stream was incomplete.');
+    issues.push('Trace recovered from master log; per-run stream was incomplete.');
   }
 
   const hasStart = events.some(e => e.event === 'run_start');
@@ -257,7 +305,7 @@ export const computeTraceIntegrity = (
 };
 
 // ---------------------------------------------------------------------------
-// [B4] Typed telemetry taxonomy — the zoom levels select from an explicit
+// [B4] Typed telemetry taxonomy; the zoom levels select from an explicit
 // event-name taxonomy instead of fragile substring matching.
 // ---------------------------------------------------------------------------
 
@@ -298,7 +346,7 @@ export const filterEventsByTelemetryLevel = (
 };
 
 // ---------------------------------------------------------------------------
-// [B3] Telemetry diagnostics — heuristic status inference is quarantined here.
+// [B3] Telemetry diagnostics; heuristic status inference is quarantined here.
 //
 // String/status heuristics over generic telemetry NEVER drive the execution
 // graph. They are surfaced exclusively in a clearly-labeled non-authoritative
@@ -395,11 +443,11 @@ export const LiveDebugger: React.FC = () => {
   const [events, setEvents] = useState<LogEvent[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<LogEvent[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<LogEvent | null>(null);
-  
+
   // 4-level Telemetry controls
   const [telemetryLevel, setTelemetryLevel] = useState<'PHASE' | 'SUBTASK' | 'ACTION' | 'STEP'>('STEP');
 
-  // [B1] Topology provenance authority — reported by buildTraceGraph.
+  // [B1] Topology provenance authority; reported by buildTraceGraph.
   const [topologyProvenance, setTopologyProvenance] = useState<{
     source: 'CANONICAL' | 'TOPOLOGY_UNAVAILABLE';
     scenarioNodeCount: number;
@@ -408,12 +456,12 @@ export const LiveDebugger: React.FC = () => {
 
   // [GUI-P0-8] Explicit graph layers. The planned graph (scenario DAG), the
   // executed graph (execution_graph_edge evidence) and the divergence overlay
-  // (skipped planned nodes / unplanned executions) are DISTINCT views — the
+  // (skipped planned nodes / unplanned executions) are DISTINCT views; the
   // runtime never blends them into one implied truth.
   type GraphLayerMode = 'planned' | 'executed' | 'divergence';
   const [layerMode, setLayerMode] = useState<GraphLayerMode>('executed');
 
-  // [B3] Non-authoritative heuristic findings — rendered ONLY in the
+  // [B3] Non-authoritative heuristic findings; rendered ONLY in the
   // diagnostics panel; never applied to graph node states.
   const [diagnostics, setDiagnostics] = useState<NodeDiagnostic[]>([]);
 
@@ -422,8 +470,8 @@ export const LiveDebugger: React.FC = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
   const [activeScenario, setActiveScenario] = useState<any>(null);
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
-  
-  // AI explain drawer
+
+  // Deterministic RCA drawer
   const [explainResult, setExplainResult] = useState<string>('');
   const [showExplain, setShowExplain] = useState(false);
   const [analysisData, setAnalysisData] = useState<any>(null);
@@ -431,8 +479,9 @@ export const LiveDebugger: React.FC = () => {
   // [P0-9] Single cancellable stream controller. Exactly one EventSource and
   // at most one pending retry timer exist per run_id; every async continuation
   // is stale-guarded against run switches; terminal runs never schedule
-  // retries (explicit FINISHED state).
-  const [connectionStatus, setConnectionStatus] = useState<'CONNECTED' | 'CONNECTING' | 'RECONNECTING' | 'DISCONNECTED' | 'FINISHED'>('DISCONNECTED');
+  // retries (explicit FINISHED state). Replay resumption (cursor > 0) is a
+  // distinct REPLAYING state so operators can tell catch-up from live.
+  const [connectionStatus, setConnectionStatus] = useState<'CONNECTED' | 'CONNECTING' | 'RECONNECTING' | 'REPLAYING' | 'DISCONNECTED' | 'FINISHED'>('DISCONNECTED');
   const [reconnectCount, setReconnectCount] = useState(0);
   const [streamGaps, setStreamGaps] = useState<SeqGap[]>([]);
 
@@ -460,7 +509,7 @@ export const LiveDebugger: React.FC = () => {
       });
   }, []);
 
-  // Run status checker — only responsible for status/scenario state.
+  // Run status checker; only responsible for status/scenario state.
   // Graph derivation is handled exclusively by the reactive useEffect below.
   // Every async continuation is stale-guarded: a response for a run the
   // operator already left can never enter state.
@@ -510,7 +559,7 @@ export const LiveDebugger: React.FC = () => {
   const handleExplain = async () => {
     if (!runId) return;
     setShowExplain(true);
-    setExplainResult('AI Engine analyzing evaluation traces...');
+    setExplainResult('Deterministic triage engine analyzing evaluation traces (rule-based, replayable — no LLM).');
     setAnalysisData(null);
     try {
       const res = await fetch(`/api/v1/explain/${runId}`);
@@ -537,7 +586,7 @@ export const LiveDebugger: React.FC = () => {
             `• Suggestion: ${data.analysis.suggestion || 'N/A'}\n` +
             `• Confidence: ${confStr}`;
         } else {
-          resultText = data.analysis || 'Analysis complete. No loop or timeout patterns identified.';
+          resultText = 'NO_ANALYSIS_AVAILABLE — the deterministic triage engine returned no analysis for this trace. No negative finding is inferred.';
         }
         setExplainResult(resultText);
       } else {
@@ -552,7 +601,7 @@ export const LiveDebugger: React.FC = () => {
     if (!runId) return;
     // [P0-11] Strict priority: authoritative flag > heuristic analysis index >
     // correlated-error heuristic. Whatever route matched is surfaced in the
-    // UI as Confirmed vs Suspected — never collapsed into one label.
+    // UI as Confirmed vs Suspected; never collapsed into one label.
     let targetIdx = -1;
 
     // 1. Authoritative runtime designation
@@ -589,22 +638,32 @@ export const LiveDebugger: React.FC = () => {
   };
 
   // [P0-9][B2] Trace-integrity state derived from the authoritative event
-  // stream. Compositional flags — no single state downgrade.
+  // stream. Compositional flags; no single state downgrade.
   const traceIntegrity: TraceIntegrityFlags = computeTraceIntegrity(events, sourcedFromMaster);
 
   const integrityLabel = (() => {
+    // [Release-blocker 1] ONE authoritative integrity state: live SSE gaps
+    // participate in the verdict. An unreconciled gap can never coexist with
+    // a green COMPLETE label.
     if (!traceIntegrity.hasEvents) return 'UNKNOWN';
     const flags: string[] = [];
     if (traceIntegrity.recovered) flags.push('RECOVERED');
     if (traceIntegrity.reordered) flags.push('REORDERED');
-    if (traceIntegrity.gaps) flags.push('PARTIAL');
+    if (traceIntegrity.gaps || streamGaps.length > 0) flags.push('PARTIAL');
     if (traceIntegrity.missingEnd) flags.push('NO_END');
     return flags.length ? flags.join('+') : 'COMPLETE';
   })();
 
   const integrityTone: 'clean' | 'recovered' | 'warn' | 'unknown' = (() => {
     if (!traceIntegrity.hasEvents) return 'unknown';
-    if (traceIntegrity.gaps || traceIntegrity.reordered || traceIntegrity.missingEnd) return 'warn';
+    if (
+      traceIntegrity.gaps ||
+      traceIntegrity.reordered ||
+      traceIntegrity.missingEnd ||
+      streamGaps.length > 0
+    ) {
+      return 'warn';
+    }
     if (traceIntegrity.recovered) return 'recovered';
     return 'clean';
   })();
@@ -660,7 +719,8 @@ export const LiveDebugger: React.FC = () => {
     const delay = Math.min(10000, Math.pow(2, ctl.attempt) * 1000);
     ctl.attempt += 1;
     setReconnectCount(ctl.attempt);
-    setConnectionStatus('RECONNECTING');
+    // Catch-up with an existing cursor is a REPLAY, not a fresh connect.
+    setConnectionStatus(cursorRef.current > 0 ? 'REPLAYING' : 'RECONNECTING');
     // At most ONE pending retry timer; it re-validates run identity before
     // firing, so a stale timer can never reopen a dead run's stream.
     ctl.timer = setTimeout(() => {
@@ -695,7 +755,7 @@ export const LiveDebugger: React.FC = () => {
     checkStatus(rid);
     fetchScenarioWithRetry(rid, 0);
 
-    // Resume from the monotonic cursor — no URL rewriting inside the stream
+    // Resume from the monotonic cursor; no URL rewriting inside the stream
     // lifecycle; the address bar only changes when the operator picks a run.
     const lastId = cursorRef.current;
     const source = new EventSource(
@@ -803,7 +863,7 @@ export const LiveDebugger: React.FC = () => {
     return () => teardownStream();
   }, [runId]);
 
-  // [B1][B3] Canonical Graph Builder — provenance-gated (Runtime-Authoritative
+  // [B1][B3] Canonical Graph Builder; provenance-gated (Runtime-Authoritative
   // Truth Model).
   //
   // Node topology is constructed ONLY from canonical sources:
@@ -833,7 +893,7 @@ export const LiveDebugger: React.FC = () => {
     const workflowEdges = scen?.workflow?.edges || [];
 
     const graphNodeEventsAll = allEvents.filter(e => e.event === 'execution_graph_node');
-    // [GUI-P0-8] Nodes with authoritative executed coverage — drives the
+    // [GUI-P0-8] Nodes with authoritative executed coverage; drives the
     // divergence overlay (planned-but-never-executed detection).
     const executedNodeIds = new Set<string>(
       graphNodeEventsAll.map(e => e.scenario_node_id).filter((id): id is string => !!id)
@@ -864,7 +924,7 @@ export const LiveDebugger: React.FC = () => {
       };
     }
 
-    // 2. Map authoritative state per canonical node — status comes SOLELY from
+    // 2. Map authoritative state per canonical node; status comes SOLELY from
     // execution_graph_node events (B3). No string heuristics.
     const flowNodes = workflowNodes.map((n: any) => {
       const id = String(n.id || n.scenario_node_id || n.task_id);
@@ -915,7 +975,7 @@ export const LiveDebugger: React.FC = () => {
       }
 
       // [GUI-P0-8] Divergence overlay: only in divergence layer, only from
-      // canonical evidence. Pending ≠ skipped while the run is live — a
+      // canonical evidence. Pending ≠ skipped while the run is live; a
       // planned node is SKIPPED only once the run reached a terminal state.
       const isUnplanned = !!(n as any).__runtime_discovered;
       const isSkipped =
@@ -947,7 +1007,7 @@ export const LiveDebugger: React.FC = () => {
               </div>
               {!hasCanonicalEvent && (
                 <div
-                  title="No execution_graph_node event recorded for this node yet — status is PENDING by definition, not inferred."
+                  title="No execution_graph_node event recorded for this node yet; status is PENDING by definition, not inferred."
                   className="px-1 py-0.2 bg-slate-800/60 text-slate-500 text-[8px] rounded tracking-wider uppercase"
                 >
                   NO GRAPH EVENT
@@ -1037,10 +1097,10 @@ export const LiveDebugger: React.FC = () => {
     const allEdges = Array.from(flowEdgesMap.values());
 
     // [GUI-P0-8] Layer semantics:
-    //   planned    — the scenario DAG only (design-time contract)
-    //   executed   — authoritative execution_graph_edge transitions on top of
+    //   planned   ; the scenario DAG only (design-time contract)
+    //   executed  ; authoritative execution_graph_edge transitions on top of
     //                a dimmed plan skeleton
-    //   divergence — both layers plus node-level skip/unplanned overlays
+    //   divergence; both layers plus node-level skip/unplanned overlays
     const flowEdges = allEdges
       .filter(e => {
         const plannedEdge = e.id.startsWith('scen-edge-');
@@ -1050,7 +1110,7 @@ export const LiveDebugger: React.FC = () => {
       .map(e => {
         const plannedEdge = e.id.startsWith('scen-edge-');
         if (!plannedEdge) {
-          // Executed transition evidence — emerald in executed/divergence.
+          // Executed transition evidence; emerald in executed/divergence.
           return {
             ...e,
             animated: mode !== 'planned',
@@ -1144,7 +1204,7 @@ export const LiveDebugger: React.FC = () => {
   }, [events, telemetryLevel]);
 
   // [Sprint-3] Auto-fit fires ONCE per run+scenario (initial load only).
-  // During active investigation the viewport is never moved automatically —
+  // During active investigation the viewport is never moved automatically;
   // an explicit "Fit graph" button exists in the toolbar.
   const autoFitKeyRef = useRef<string>('');
   useEffect(() => {
@@ -1174,7 +1234,7 @@ export const LiveDebugger: React.FC = () => {
 
   // Selection highlighting is now handled inside buildTraceGraph() via the
   // reactive useEffect([events, activeScenario, selectedEvent]) above.
-  // The separate style-patch effect has been removed — it is no longer needed.
+  // The separate style-patch effect has been removed; it is no longer needed.
 
   const hasError = events.some(e =>
     e.event === 'error' ||
@@ -1224,9 +1284,8 @@ export const LiveDebugger: React.FC = () => {
                 <button
                   key={lvl}
                   onClick={() => setTelemetryLevel(lvl)}
-                  className={`py-1 rounded uppercase tracking-wider ${
-                    telemetryLevel === lvl ? 'bg-slate-900 text-indigo-400' : 'text-slate-500 hover:text-slate-400'
-                  }`}
+                  className={`py-1 rounded uppercase tracking-wider ${telemetryLevel === lvl ? 'bg-slate-900 text-indigo-400' : 'text-slate-500 hover:text-slate-400'
+                    }`}
                 >
                   {lvl}
                 </button>
@@ -1249,19 +1308,17 @@ export const LiveDebugger: React.FC = () => {
                 <button
                   key={idx}
                   onClick={() => setSelectedEvent(evt)}
-                  className={`w-full text-left p-2.5 rounded-lg border text-xs transition-all flex items-start gap-2.5 ${
-                    isSelected 
-                      ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-300 ring-2 ring-indigo-500/50' 
-                      : isRootCauseIndex
-                        ? 'bg-rose-950/40 border-rose-500/50 text-rose-200 ring-1 ring-rose-500/30'
-                        : isError 
-                          ? 'bg-red-500/5 border-red-500/20 text-red-400'
-                          : 'bg-slate-950/60 border-slate-900 text-slate-350 hover:bg-slate-900/40'
-                  }`}
+                  className={`w-full text-left p-2.5 rounded-lg border text-xs transition-all flex items-start gap-2.5 ${isSelected
+                    ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-300 ring-2 ring-indigo-500/50'
+                    : isRootCauseIndex
+                      ? 'bg-rose-950/40 border-rose-500/50 text-rose-200 ring-1 ring-rose-500/30'
+                      : isError
+                        ? 'bg-red-500/5 border-red-500/20 text-red-400'
+                        : 'bg-slate-950/60 border-slate-900 text-slate-350 hover:bg-slate-900/40'
+                    }`}
                 >
-                  <span className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${
-                    isRootCauseIndex ? 'bg-rose-500' : isError ? 'bg-red-500' : 'bg-indigo-500'
-                  }`} />
+                  <span className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${isRootCauseIndex ? 'bg-rose-500' : isError ? 'bg-red-500' : 'bg-indigo-500'
+                    }`} />
                   <div className="space-y-1 min-w-0 flex-1">
                     <div className="flex justify-between items-center text-[10px] text-slate-500 font-mono">
                       <span className="uppercase font-bold tracking-wider text-indigo-400">
@@ -1272,12 +1329,12 @@ export const LiveDebugger: React.FC = () => {
                             designation vs heuristic inference are never collapsed. */}
                         {evt.is_root_cause === true && (
                           <span className="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[8px] font-bold tracking-wider uppercase shrink-0">
-                            🔴 Root Cause (Confirmed)
+                            ðŸ”´ Root Cause (Confirmed)
                           </span>
                         )}
                         {!evt.is_root_cause && isRootCauseIndex && (
                           <span
-                            title="Inferred by the analysis heuristic — not an authoritative runtime designation."
+                            title="Inferred by the analysis heuristic; not an authoritative runtime designation."
                             className="px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[8px] font-bold tracking-wider uppercase shrink-0"
                           >
                             ⚠ Root Cause (Suspected)
@@ -1295,7 +1352,7 @@ export const LiveDebugger: React.FC = () => {
             })
           )}
 
-          {/* [Sprint-6] Execution waterfall — synchronized forensic timeline
+          {/* [Sprint-6] Execution waterfall; synchronized forensic timeline
               built ONLY from authoritative execution_graph_node evidence:
               parent/child depth, retries/iterations, observed durations and
               failure boundaries. Nodes without timestamps are listed, never
@@ -1346,6 +1403,27 @@ export const LiveDebugger: React.FC = () => {
                               className={`absolute h-full rounded ${barCls}`}
                               style={{ left: `${left}%`, width: `${width}%` }}
                             />
+                            {/* [Sprint-6] Tool/assertion/failure markers */}
+                            {row.markers.map((m, mi) => {
+                              const span = waterfall.tMax! - waterfall.tMin!;
+                              const mLeft = Math.min(((m.t - waterfall.tMin!) / span) * 100, 98);
+                              const color =
+                                m.kind === 'error'
+                                  ? 'bg-red-400'
+                                  : m.kind === 'evaluation'
+                                    ? 'bg-teal-300'
+                                    : m.kind === 'tool_result'
+                                      ? 'bg-cyan-300'
+                                      : 'bg-indigo-300';
+                              return (
+                                <span
+                                  key={mi}
+                                  title={`${m.kind} @ ${new Date(m.t).toLocaleTimeString()}`}
+                                  className={`absolute top-0 bottom-0 w-[2px] ${color}`}
+                                  style={{ left: `${mLeft}%` }}
+                                />
+                              );
+                            })}
                             {row.status === 'failed' && (
                               <span
                                 className="absolute top-0 bottom-0 w-0.5 bg-red-300"
@@ -1390,11 +1468,10 @@ export const LiveDebugger: React.FC = () => {
                   ? `Topology reconstructed from canonical sources only: ${topologyProvenance.scenarioNodeCount} scenario node(s), ${topologyProvenance.runtimeNodeCount} runtime-discovered node(s) (execution_graph_node events).`
                   : 'No canonical workflow definition and no execution_graph_node events were found for this trace. Generic telemetry cannot fabricate topology.'
               }
-              className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border font-mono text-[10px] font-bold uppercase tracking-wider cursor-help ${
-                topologyProvenance.source === 'CANONICAL'
-                  ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-                  : 'border-amber-500/40 bg-amber-500/10 text-amber-300 animate-pulse'
-              }`}
+              className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border font-mono text-[10px] font-bold uppercase tracking-wider cursor-help ${topologyProvenance.source === 'CANONICAL'
+                ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+                : 'border-amber-500/40 bg-amber-500/10 text-amber-300 animate-pulse'
+                }`}
             >
               {topologyProvenance.source === 'CANONICAL' ? (
                 <CheckCircle2 className="w-3.5 h-3.5" />
@@ -1406,15 +1483,14 @@ export const LiveDebugger: React.FC = () => {
             {/* [P0-9][B2] Prominent compositional trace-integrity state */}
             <div
               title={traceIntegrity.issues.join('\n') || 'Trace integrity verified.'}
-              className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border font-mono text-[10px] font-bold uppercase tracking-wider cursor-help ${
-                integrityTone === 'clean'
-                  ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-                  : integrityTone === 'recovered'
-                    ? 'border-violet-500/30 bg-violet-500/10 text-violet-300'
-                    : integrityTone === 'unknown'
-                      ? 'border-slate-700 bg-slate-900 text-slate-400'
-                      : 'border-amber-500/30 bg-amber-500/10 text-amber-300'
-              }`}
+              className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border font-mono text-[10px] font-bold uppercase tracking-wider cursor-help ${integrityTone === 'clean'
+                ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+                : integrityTone === 'recovered'
+                  ? 'border-violet-500/30 bg-violet-500/10 text-violet-300'
+                  : integrityTone === 'unknown'
+                    ? 'border-slate-700 bg-slate-900 text-slate-400'
+                    : 'border-amber-500/30 bg-amber-500/10 text-amber-300'
+                }`}
             >
               {integrityTone === 'clean' || integrityTone === 'recovered' ? (
                 <CheckCircle2 className="w-3.5 h-3.5" />
@@ -1423,7 +1499,7 @@ export const LiveDebugger: React.FC = () => {
               )}
               Trace: {integrityLabel}
             </div>
-            {/* [P0-10] Live SSE gap banner — missing server event ids are
+            {/* [P0-10] Live SSE gap banner; missing server event ids are
                 reported visibly, never silently tolerated. */}
             {streamGaps.length > 0 && (
               <div
@@ -1440,7 +1516,7 @@ export const LiveDebugger: React.FC = () => {
             <div
               title={
                 layerMode === 'planned'
-                  ? 'Planned layer: the scenario DAG as defined — the design-time control-flow contract.'
+                  ? 'Planned layer: the scenario DAG as defined; the design-time control-flow contract.'
                   : layerMode === 'executed'
                     ? 'Executed layer: authoritative execution_graph_edge transitions over a dimmed plan skeleton.'
                     : 'Divergence overlay: planned-vs-executed differences (SKIPPED planned nodes, UNPLANNED executions).'
@@ -1452,9 +1528,8 @@ export const LiveDebugger: React.FC = () => {
                 <button
                   key={l}
                   onClick={() => setLayerMode(l)}
-                  className={`px-2 py-1 rounded-md transition-colors ${
-                    layerMode === l ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-slate-200'
-                  }`}
+                  className={`px-2 py-1 rounded-md transition-colors ${layerMode === l ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-slate-200'
+                    }`}
                 >
                   {l}
                 </button>
@@ -1462,10 +1537,9 @@ export const LiveDebugger: React.FC = () => {
             </div>
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Runner Status:</span>
             <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider">
-              <span className={`w-2.5 h-2.5 rounded-full ${
-                status === 'RUNNING' ? 'bg-amber-500 animate-pulse' :
+              <span className={`w-2.5 h-2.5 rounded-full ${status === 'RUNNING' ? 'bg-amber-500 animate-pulse' :
                 status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-red-500'
-              }`} />
+                }`} />
               <span className={status === 'RUNNING' ? 'text-amber-400' : status === 'COMPLETED' ? 'text-emerald-400' : 'text-red-400'}>
                 {status}
               </span>
@@ -1473,13 +1547,13 @@ export const LiveDebugger: React.FC = () => {
 
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider ml-4">Stream:</span>
             <div className="flex items-center gap-1.5">
-              <span className={`px-2 py-0.5 rounded text-[9px] font-bold border ${
-                connectionStatus === 'CONNECTED' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                connectionStatus === 'CONNECTING' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20 animate-pulse' :
-                connectionStatus === 'RECONNECTING' ? 'bg-red-500/10 text-red-400 border-red-500/20 animate-pulse' :
-                connectionStatus === 'FINISHED' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20' :
-                'bg-slate-500/10 text-slate-400 border-slate-500/20'
-              }`}>
+              <span className={`px-2 py-0.5 rounded text-[9px] font-bold border ${connectionStatus === 'CONNECTED' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                connectionStatus === 'REPLAYING' ? 'bg-violet-500/10 text-violet-300 border-violet-500/20 animate-pulse' :
+                  connectionStatus === 'CONNECTING' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20 animate-pulse' :
+                    connectionStatus === 'RECONNECTING' ? 'bg-red-500/10 text-red-400 border-red-500/20 animate-pulse' :
+                      connectionStatus === 'FINISHED' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20' :
+                        'bg-slate-500/10 text-slate-400 border-slate-500/20'
+                }`}>
                 {connectionStatus === 'RECONNECTING' ? `RECONNECTING (${reconnectCount}/8)` : connectionStatus}
               </span>
               {(connectionStatus === 'DISCONNECTED' || connectionStatus === 'RECONNECTING') && (
@@ -1490,7 +1564,7 @@ export const LiveDebugger: React.FC = () => {
                   Reconnect
                 </button>
               )}
-              {/* [Sprint-3] Explicit fit — auto-fit only ever happens on
+              {/* [Sprint-3] Explicit fit; auto-fit only ever happens on
                   initial load of a run+scenario. */}
               <button
                 title="Fit graph to viewport (explicit)"
@@ -1517,7 +1591,7 @@ export const LiveDebugger: React.FC = () => {
               className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-950 border border-slate-900 rounded text-slate-400 hover:text-slate-200 transition-colors font-bold uppercase tracking-wider"
             >
               <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-              <span>AI Explain Diagnostics</span>
+              <span>Root Cause Analysis</span>
             </button>
           </div>
         </div>
@@ -1531,7 +1605,7 @@ export const LiveDebugger: React.FC = () => {
 
         {/* ReactFlow Canvas container */}
         <div className="flex-1 h-full bg-slate-950/20 relative">
-          {/* [B1] Explicit TOPOLOGY_UNAVAILABLE state — no synthetic graph is fabricated. */}
+          {/* Explicit TOPOLOGY_UNAVAILABLE state. */}
           {topologyProvenance.source === 'TOPOLOGY_UNAVAILABLE' && (
             <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
               <div className="max-w-md p-6 border border-amber-500/30 bg-slate-950/95 rounded-xl text-center space-y-2 shadow-2xl">
@@ -1575,6 +1649,9 @@ export const LiveDebugger: React.FC = () => {
             onNodeDragStop={handleNodeDragStop}
             onInit={setReactFlowInstance}
             fitView
+            nodesConnectable={false}
+            edgesReconnectable={false}
+            proOptions={{ hideAttribution: true }}
           >
 
             <Background color="#334155" gap={16} />
@@ -1588,7 +1665,7 @@ export const LiveDebugger: React.FC = () => {
         <div className="space-y-4 overflow-y-auto">
           <h3 className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">State Parity Inspector</h3>
 
-          {/* [B3] Non-authoritative telemetry diagnostics — heuristic findings
+          {/* [B3] Non-authoritative telemetry diagnostics; heuristic findings
               are quarantined here and never drive the execution graph. */}
           {diagnostics.length > 0 && (
             <div className="space-y-2 border border-sky-500/20 bg-sky-500/5 rounded-lg p-3">
@@ -1597,12 +1674,12 @@ export const LiveDebugger: React.FC = () => {
                   Telemetry Diagnostics
                 </h4>
                 <span className="px-1.5 py-0.5 rounded bg-sky-500/15 text-sky-300 border border-sky-500/30 text-[8px] font-bold tracking-wider uppercase">
-                  TELEMETRY-INFERRED · NON-AUTHORITATIVE
+                  TELEMETRY-INFERRED Â· NON-AUTHORITATIVE
                 </span>
               </div>
               <p className="text-[9px] text-slate-500 leading-relaxed">
                 Heuristic signals from generic telemetry. These NEVER alter graph
-                node states — canonical execution_graph_node events remain the sole
+                node states; canonical execution_graph_node events remain the sole
                 status authority.
               </p>
               {diagnostics.map(d => (
@@ -1618,13 +1695,12 @@ export const LiveDebugger: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <span className="font-mono font-bold text-[10px] text-slate-200">{d.nodeId}</span>
                     <span
-                      className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ${
-                        d.suspectedStatus === 'failed'
-                          ? 'bg-red-500/15 text-red-300 border border-red-500/30'
-                          : d.suspectedStatus === 'completed'
-                            ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-                            : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
-                      }`}
+                      className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ${d.suspectedStatus === 'failed'
+                        ? 'bg-red-500/15 text-red-300 border border-red-500/30'
+                        : d.suspectedStatus === 'completed'
+                          ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
+                          : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                        }`}
                     >
                       suspected: {d.suspectedStatus}
                     </span>
@@ -1634,7 +1710,7 @@ export const LiveDebugger: React.FC = () => {
               ))}
             </div>
           )}
-          
+
           {selectedEvent ? (
             <div className="space-y-3">
               <div className="p-3 bg-slate-950/60 border border-slate-850 rounded-lg space-y-1">
@@ -1642,7 +1718,7 @@ export const LiveDebugger: React.FC = () => {
                 <p className="text-white font-mono font-bold text-xs uppercase">{selectedEvent.event}</p>
               </div>
 
-              {/* [Sprint-4] Explicit focus — selection never moves the camera. */}
+              {/* [Sprint-4] Explicit focus; selection never moves the camera. */}
               {(selectedEvent.scenario_node_id || selectedEvent.node_id || selectedEvent.task_id) && (
                 <button
                   onClick={focusSelectedNode}
@@ -1655,7 +1731,7 @@ export const LiveDebugger: React.FC = () => {
 
               {(() => {
                 // [P0-12] Strict StateComparison rendering. The diff renders
-                // ONLY from the runtime's structured payload — never guessed
+                // ONLY from the runtime's structured payload; never guessed
                 // out of message text or arbitrary fallback fields.
                 const sc = parseStateComparison(selectedEvent);
                 const legacyParity =
@@ -1735,20 +1811,40 @@ export const LiveDebugger: React.FC = () => {
         </div>
       </div>
 
-      {/* AI diagnostics explain drawer overlay */}
+      {/* Deterministic diagnostics drawer overlay */}
       {showExplain && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex justify-end">
           <div className="bg-slate-900 border-l border-slate-800 w-full max-w-xl h-full p-6 flex flex-col justify-between text-slate-100 shadow-2xl animate-slide-in">
             <div className="space-y-4 overflow-y-auto flex-1 pr-2">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-indigo-400" />
-                <h3 className="text-base font-bold text-white uppercase tracking-wider">AI Diagnostics Trace Explainer</h3>
+                <h3 className="text-base font-bold text-white uppercase tracking-wider">Root Cause Analysis — Deterministic Diagnostics Engine</h3>
               </div>
               <p className="text-slate-400 text-xs leading-relaxed">
                 Analyzing cryptographic trace anchors and execution milestones to locate potential loops, logic hangs, and state overrides.
               </p>
-              
+
               <div className="p-4 bg-slate-950/60 border border-slate-850 rounded-lg text-xs leading-relaxed font-mono whitespace-pre-wrap leading-relaxed text-slate-350">
+                {/* [Release-blocker 4] The whole explanation is heuristic
+                    output: it is labeled SUSPECTED with its source and
+                    confidence — never presented as an authoritative verdict. */}
+                <div className="flex items-center gap-2 mb-2">
+                  {analysisData ? (
+                    <>
+                      <span className="px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[8px] font-bold tracking-wider uppercase">
+                        ⚠ SUSPECTED (heuristic)
+                      </span>
+                      <span className="text-[8px] font-mono text-slate-500 uppercase">
+                        source: deterministic triage rules (/api/v1/explain)
+                        · confidence: {explainResult.match(/Confidence:\s*([^\n]+)/)?.[1] ?? 'N/A'}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="px-1.5 py-0.5 rounded bg-slate-700/40 text-slate-400 border border-slate-600/40 text-[8px] font-bold tracking-wider uppercase">
+                      NO ANALYSIS AVAILABLE
+                    </span>
+                  )}
+                </div>
                 {explainResult}
               </div>
             </div>
@@ -1759,10 +1855,10 @@ export const LiveDebugger: React.FC = () => {
                   onClick={() => {
                     let targetIdx = analysisData?.index;
                     if (targetIdx === undefined || targetIdx < 0) {
-                      targetIdx = events.findIndex(e => 
-                        e.event === 'error' || 
-                        e.category === 'PARITY_STATE_DIVERGENCE' || 
-                        e.message?.toLowerCase().includes('error') || 
+                      targetIdx = events.findIndex(e =>
+                        e.event === 'error' ||
+                        e.category === 'PARITY_STATE_DIVERGENCE' ||
+                        e.message?.toLowerCase().includes('error') ||
                         e.message?.toLowerCase().includes('fail')
                       );
                     }
@@ -1790,3 +1886,7 @@ export const LiveDebugger: React.FC = () => {
     </div>
   );
 };
+
+
+
+

@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 from datetime import datetime
 from typing import Any
 
@@ -15,6 +16,43 @@ from ..auth_manager import Permission, require_permission
 logger = logging.getLogger(__name__)
 
 trust_bp = Blueprint("trust", __name__, url_prefix="/api")
+
+
+def _read_run_truth_level(run_id: str) -> tuple[str | None, bool]:
+    """
+    Reads the run vault's declared execution truth level.
+
+    Returns (execution_mode, provisional). provisional=True when the run
+    never explicitly declared a mode (silent SIMULATED default) — such
+    certificates are stamped non-authoritative for audit purposes.
+    """
+    trace = config.RUN_LOG_DIR / run_id / "run.jsonl"
+    if not trace.is_file():
+        return None, False
+    try:
+        with open(trace, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                ev = json.loads(line)
+                if ev.get("event") != "run_start":
+                    continue
+                data = ev.get("data", {}) or {}
+                mode = (
+                    data.get("execution_mode")
+                    or (data.get("metadata") or {}).get("execution_mode")
+                    or ev.get("execution_mode")
+                )
+                declared = bool(
+                    data.get("execution_mode_declared")
+                    or (data.get("metadata") or {}).get("execution_mode_declared")
+                    or mode  # any explicit mode on the event counts as declared
+                )
+                return mode, not declared
+    except Exception as e:  # noqa: BLE001 - truth-level is best-effort metadata
+        logger.debug("Could not read execution truth level for %s: %s", run_id, e)
+    return None, False
 
 
 def execute_industrial_certification(
@@ -40,6 +78,14 @@ def execute_industrial_certification(
         raise FileNotFoundError(f"Run vault not found for {run_id}")
 
     # 2. Authoritative Signature Execution (Zero-Copy)
+    execution_mode, provisional = _read_run_truth_level(run_id)
+    if provisional:
+        logger.warning(
+            "   [Certification] PROVISIONAL certificate for %s: run never "
+            "declared an execution_mode (silent SIMULATED default). This "
+            "certificate is non-authoritative for compliance purposes.",
+            run_id,
+        )
     manifest = TraceVerifier.sign_trace(
         str(target_trace),
         run_id=run_id,
@@ -48,6 +94,8 @@ def execute_industrial_certification(
         compliance_score=score,
         policy_ref=policy_ref,
         ttl_days=ttl or config.GOVERNANCE_TTL_DAYS,
+        execution_mode=execution_mode,
+        provisional=provisional,
     )
 
     # 3. Authoritative Manifest Save (Within the Vault)
@@ -339,11 +387,31 @@ def verify_extension_publisher():
         _canonical_manifest_bytes(manifest), signature_hex, pub_pem
     )
 
+    # [Trust hardening] The BACKEND owns tier classification. A signed
+    # manifest cannot self-promote to 'official': only publishers listed in
+    # AGENTV_OFFICIAL_PUBLISHERS (comma-separated identities) receive it.
+    official_publishers = {
+        p.strip().lower()
+        for p in os.getenv("AGENTV_OFFICIAL_PUBLISHERS", "").split(",")
+        if p.strip()
+    }
+    if not valid:
+        authoritative_tier = "invalid-signature"
+        reason = "signature-mismatch"
+    elif publisher.lower() in official_publishers:
+        authoritative_tier = "official"
+        reason = "signature-verified"
+    else:
+        authoritative_tier = "community"
+        reason = "signature-verified"
+
     return jsonify(
         {
             "valid": valid,
-            "tier": "signed-trusted" if valid else "invalid-signature",
-            "reason": "signature-verified" if valid else "signature-mismatch",
+            # Authoritative classification — the frontend MUST consume this
+            # value and ignore any tier the manifest declares about itself.
+            "tier": authoritative_tier,
+            "reason": reason,
             "publisher": publisher,
             "identity_id": identity_id,
             "algorithm": "ed25519",

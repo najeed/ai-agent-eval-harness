@@ -76,6 +76,70 @@ class WorkflowStatus(StrEnum):
     ABORTED = "workflow_aborted"
 
 
+class NodeVerdict:
+    """
+    [P0-A] The ONE authoritative node verdict.
+
+    Nothing downstream may infer success from a lower-level signal: the
+    workflow interpreter routes on ``overall`` ONLY, and ``overall`` is
+    ``success`` iff every required oracle passed:
+
+        EXECUTION_RESULT -> OBSERVED_STATE -> ASSERTION_RESULTS
+            -> POLICY_RESULT -> NODE_VERDICT -> EDGE_SELECTION -> WORKFLOW_VERDICT
+
+    Components:
+      execution    : success | failed | aborted        (agent action outcome)
+      verification : pass | fail | invalid | not_applicable   (oracle authority)
+                     Typed oracle outcomes: PASS | FAIL | INVALID | NOT_APPLICABLE
+      policy       : pass | denied | not_applicable    (tool authorization)
+      parity       : pass | fail | not_applicable      (state transition proof)
+    """
+
+    def __init__(
+        self,
+        execution: str,
+        verification: str,
+        policy: str,
+        parity: str,
+        failed_assertion: dict[str, Any] | None = None,
+    ):
+        self.execution = execution
+        self.verification = verification
+        self.policy = policy
+        self.parity = parity
+        self.failed_assertion = failed_assertion
+
+    @property
+    def overall(self) -> str:
+        if self.execution != "success":
+            return "execution_failed"
+        if self.verification == "fail":
+            return "verification_failed"
+        if self.verification == "invalid":
+            return "evaluation_invalid"
+        if self.policy == "denied":
+            return "policy_denied"
+        if self.parity == "fail":
+            return "parity_failed"
+        return "success"
+
+    @property
+    def success(self) -> bool:
+        return self.overall == "success"
+
+    def to_dict(self) -> dict[str, Any]:
+        d = {
+            "execution": self.execution,
+            "verification": self.verification,
+            "policy": self.policy,
+            "parity": self.parity,
+            "overall": self.overall,
+        }
+        if self.failed_assertion is not None:
+            d["failed_assertion"] = self.failed_assertion
+        return d
+
+
 class PlanValidationError(ValueError):
     """Raised when a scenario workflow cannot be normalized into a valid plan."""
 
@@ -182,6 +246,54 @@ class NodeIR:
         except (TypeError, ValueError):
             return None
 
+    @property
+    def timeout_seconds(self) -> float | None:
+        """[P0-7] Per-node wall-clock deadline owned by the interpreter."""
+        raw = self.definition.get("timeout")
+        if raw is None:
+            return None
+        try:
+            v = float(raw)
+            return v if v > 0 else None
+        except (TypeError, ValueError):
+            return None
+
+    def join_spec(self, incoming_edge_ids: set[str]) -> tuple[str, int]:
+        """
+        [P0-5] Explicit join semantics: mode ∈ {all, any, n_of_m}.
+
+        Declared via node ``join``: ``"any" | "all" | {"mode": "...", "n": k}``.
+        Legacy scalar ``join_threshold`` compiles to n_of_m over ALL M incoming
+        edges (never "first N by list order"). Defaults to AND-join (all).
+        """
+        raw = self.definition.get("join")
+        indegree = len(incoming_edge_ids)
+        mode, n = "all", indegree
+        if isinstance(raw, str):
+            mode = raw.strip().lower()
+        elif isinstance(raw, dict):
+            mode = str(raw.get("mode", "all")).strip().lower()
+            try:
+                n = int(raw.get("n", indegree))
+            except (TypeError, ValueError):
+                raise PlanValidationError(
+                    f"Node '{self.node_id}': join.n must be an integer"
+                ) from None
+        elif self.join_threshold is not None:
+            mode, n = "n_of_m", self.join_threshold
+        if mode not in ("all", "any", "n_of_m"):
+            raise PlanValidationError(
+                f"Node '{self.node_id}': unknown join mode '{mode}' (valid: all | any | n_of_m)"
+            )
+        if mode == "all":
+            n = indegree
+        elif mode == "any":
+            n = 1
+        # [P0-5] n_of_m is intentionally NOT clamped to indegree here: an
+        # unsatisfiable declaration (n > M) is a plan-validation error, never
+        # a silently weakened join.
+        return mode, max(0, n)
+
 
 @dataclass
 class WorkflowPlan:
@@ -204,16 +316,14 @@ class WorkflowPlan:
         return [e for e in self.edges if e.to_node == node_id]
 
     def required_incoming(self, node_id: str) -> set[str]:
-        """Edge IDs that must complete before a join-gated activation of node."""
-        node = self.nodes[node_id]
-        incoming = self.incoming(node_id)
-        explicit = node.join_threshold
-        if explicit is not None:
-            return {e.edge_id for e in incoming[: max(1, explicit)]}
-        if len(incoming) > 1:
-            # AND-join by default for convergence points
-            return {e.edge_id for e in incoming}
-        return {incoming[0].edge_id} if incoming else set()
+        """
+        Candidate incoming edge IDs for join activation of node.
+
+        [P0-5] The activation decision itself is generation-scoped and
+        threshold-aware (see WorkflowInterpreter._activate); this set is the
+        candidate pool over ALL incoming edges, independent of list order.
+        """
+        return {e.edge_id for e in self.incoming(node_id)}
 
     @property
     def step_budget(self) -> int:
@@ -317,11 +427,12 @@ def compile_workflow(scenario: dict[str, Any]) -> WorkflowPlan:
 
     nodes: dict[str, NodeIR] = {}
     declared_order: list[str] = []
-    for idx, n in enumerate(nodes_raw):
+    for _idx, n in enumerate(nodes_raw):
         nid = str(n["id"])
         if nid in nodes:
             raise PlanValidationError(f"Duplicate workflow node id: '{nid}'")
-        nodes[nid] = NodeIR(node_id=nid, definition=copy.deepcopy(n), is_entry=idx == 0)
+        # [P0-11] is_entry is assigned ONLY by explicit entry resolution below.
+        nodes[nid] = NodeIR(node_id=nid, definition=copy.deepcopy(n), is_entry=False)
         declared_order.append(nid)
 
     edges: list[EdgeIR] = []
@@ -361,10 +472,68 @@ def compile_workflow(scenario: dict[str, Any]) -> WorkflowPlan:
             )
         )
 
+    # [P0-11] Explicit entry semantics. Declaration order must NEVER decide
+    # control flow: the entry set is either declared (workflow.entry_nodes or
+    # node-level entry: true) or derived canonically as the unique
+    # zero-indegree source. Ambiguous multi-source graphs are rejected.
+    declared_entries: list[str] | None = None
+    if isinstance(workflow, dict):
+        raw_entries = workflow.get("entry_nodes")
+        if isinstance(raw_entries, list) and raw_entries:
+            declared_entries = [str(x) for x in raw_entries]
+        elif isinstance(raw_entries, str) and raw_entries:
+            declared_entries = [raw_entries]
+    if declared_entries is None:
+        flagged = [
+            str(n["id"])
+            for n in nodes_raw
+            if isinstance(n, dict) and n.get("entry") is True and "id" in n
+        ]
+        if flagged:
+            declared_entries = flagged
+
+    # [P0-11] Canonical sources are computed over REAL predecessor routes:
+    # self-loops and compensation (undo) edges do not make a node preceded,
+    # so a compensation back-edge can never silently re-root the workflow.
+    preceded: set[str] = set()
+    for _e in edges:
+        if _e.to_node == _e.from_node:
+            continue
+        if _e.type is EdgeType.COMPENSATION:
+            continue
+        preceded.add(_e.to_node)
+    sources = [nid for nid in declared_order if nid not in preceded]
+    # Undo destinations are failure-routing targets, never entry candidates:
+    # a node reachable ONLY via compensation cannot start the workflow.
+    comp_targets = {_e.to_node for _e in edges if _e.type is EdgeType.COMPENSATION}
+    entry_candidates = [s for s in sources if s not in comp_targets] or sources
+
+    if declared_entries is not None:
+        unknown = [x for x in declared_entries if x not in nodes]
+        if unknown:
+            raise PlanValidationError(f"entry_nodes reference unknown nodes: {unknown}")
+        entry_node_ids = declared_entries
+    elif legacy_linearized:
+        entry_node_ids = [declared_order[0]]
+    elif len(entry_candidates) == 1:
+        entry_node_ids = entry_candidates
+    else:
+        raise PlanValidationError(
+            "Ambiguous workflow entry: multiple source nodes "
+            f"{sorted(entry_candidates) or '<none>'} with no explicit declaration. "
+            "Declare workflow.entry_nodes (or node entry: true)."
+        )
+    for nid in entry_node_ids:
+        nodes[nid] = NodeIR(
+            node_id=nid,
+            definition=copy.deepcopy(nodes[nid].definition),
+            is_entry=True,
+        )
+
     plan = WorkflowPlan(
         nodes=nodes,
         edges=edges,
-        entry_node_ids=[declared_order[0]],
+        entry_node_ids=entry_node_ids,
         failure_policy=_resolve_failure_policy(scenario),
         legacy_linearized=legacy_linearized,
     )
@@ -435,7 +604,8 @@ def _validate_plan(plan: WorkflowPlan) -> None:
     # source can never yield a truth-authoritative verdict, so it is rejected
     # at compile time rather than silently passing at runtime.
     oracle_free: list[str] = []
-    for nid, node in plan.nodes.items():
+    for _nid in plan.nodes:
+        node = plan.nodes[_nid]
         definition = node.definition
         criteria = definition.get("success_criteria")
         hygiene = definition.get("state_hygiene")
@@ -450,7 +620,7 @@ def _validate_plan(plan: WorkflowPlan) -> None:
             or _non_empty_list(hygiene_rules)
             or _non_empty_list(expected_outcome)
         ):
-            oracle_free.append(nid)
+            oracle_free.append(_nid)
     if oracle_free:
         errors.append(
             "Minimum-oracle rule violated (NO_ASSERTIONS) — nodes declare no "
@@ -562,13 +732,19 @@ def _validate_plan_semantics(plan: WorkflowPlan, errors: list[str], reachable: s
             f"'condition' edges make selection order-dependent: {sorted(set(priority_clashes))}"
         )
 
-    # 3. Join cardinality <= incoming degree.
+    # 3. Join cardinality <= incoming degree (all declaration forms).
     join_violations: list[str] = []
     for nid, node in plan.nodes.items():
-        threshold = node.join_threshold
         indegree = len(plan.incoming(nid))
-        if threshold is not None and indegree > 0 and threshold > indegree:
-            join_violations.append(f"{nid} (join_threshold={threshold} > indegree={indegree})")
+        if indegree == 0:
+            continue
+        try:
+            _, n_req = node.join_spec({e.edge_id for e in plan.incoming(nid)})
+        except PlanValidationError as exc:
+            join_violations.append(f"{nid} ({exc})")
+            continue
+        if n_req > indegree:
+            join_violations.append(f"{nid} (join n={n_req} > indegree={indegree})")
     if join_violations:
         errors.append(f"Join cardinality exceeds incoming degree: {join_violations}")
 
@@ -697,6 +873,7 @@ __all__ = [
     "ExecutionMode",
     "FailurePolicy",
     "NodeIR",
+    "NodeVerdict",
     "PlanValidationError",
     "PredicateIR",
     "WorkflowPlan",

@@ -58,7 +58,9 @@ async def test_hitl_interactive_input():
 
 @pytest.mark.asyncio
 async def test_hitl_ci_auto_resume():
-    """Verifies that SessionManager auto-resumes in CI mode."""
+    """[P0-9] CI must NEVER auto-approve a human gate: the run resolves to an
+    explicit HITL_UNRESOLVED failure and no synthetic 'human' turn is ever
+    fabricated into the conversation history."""
     scenario = {
         "aes_version": 1.4,
         "id": "test_hitl_ci",
@@ -67,7 +69,7 @@ async def test_hitl_ci_auto_resume():
                 {
                     "id": "task1",
                     "task_description": "test",
-                    "success_criteria": [{"metric": "task_completion", "threshold": 1.0}],
+                    "state_hygiene": {"rules": [{"path": "__unset_probe__", "op": "not_exists"}]},
                 }
             ],
             "edges": [],
@@ -87,9 +89,13 @@ async def test_hitl_ci_auto_resume():
         with patch("sys.stdin.isatty", return_value=False):
             results = await session.execute_tasks(1)
 
-        history = results[0]["conversation_history"]
-        human_msg = next(m for m in history if m["role"] == "human")
-        assert "Auto-approved" in human_msg["content"]
+        node_result = next(r for r in results if r.get("scenario_node_id") == "task1")
+        assert node_result["status"] == "failure"
+        assert node_result["triage_tag"] == "HITL_UNRESOLVED"
+
+        # No fabricated human turn may appear in the conversation history.
+        history = node_result["conversation_history"]
+        assert not any(m.get("role") == "human" for m in history)
 
 
 def test_exporter_hf_push(tmp_path, monkeypatch):

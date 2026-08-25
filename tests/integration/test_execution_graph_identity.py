@@ -262,7 +262,7 @@ async def test_execution_graph_retry_and_failure(tmp_path, monkeypatch):
 
     # Truthful edge telemetry: edges are emitted only for actual
     # scenario-declared transitions. The failed attempt-1 produces NO edge to
-    # step-b (no fabricated cross-node/cross-attempt linearization).
+    # step-b (no cross-node/cross-attempt linearization).
     attempt1_edges = [e for e in graph_edges if e.get("attempt_number") == 1]
     assert len(attempt1_edges) == 0
 

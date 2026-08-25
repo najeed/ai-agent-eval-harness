@@ -12,6 +12,7 @@ import { Editor } from '@monaco-editor/react';
 import { useRBAC } from '../context/RBACContext';
 import {
   DocumentProjectionError,
+  EDGE_TYPES,
   patchCanonicalDocument,
   projectToCanvas,
   type CanvasProjection,
@@ -46,8 +47,8 @@ export const ScenarioComposer: React.FC = () => {
   const [loadError, setLoadError] = useState<string | null>(null);
 
   // Core metadata
-  const [scenarioId, setScenarioId] = useState('new-scenario');
-  const [title, setTitle] = useState('New AES Scenario');
+  const [scenarioId, setScenarioId] = useState('untitled-draft');
+  const [title, setTitle] = useState('Untitled Draft');
   const [version, setVersion] = useState('1.0.0');
   const [lifecycleStatus, setLifecycleStatus] = useState<
     'Draft' | 'Validated' | 'Ready' | 'Deprecated'
@@ -66,6 +67,11 @@ export const ScenarioComposer: React.FC = () => {
   const [nodeTools, setNodeTools] = useState('');
   const [assertions, setAssertions] = useState<AssertionItem[]>([]);
 
+  // Edge Inspector selection (edge edits apply directly to the edges state's
+  // data.* so getAESJson picks them up — the canonical doc is never rebuilt
+  // from a separate edge form buffer).
+  const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
+
   // JSON/YAML Toggle
   const [viewMode, setViewMode] = useState<'canvas' | 'json'>('canvas');
   const [rawJson, setRawJson] = useState('');
@@ -75,6 +81,15 @@ export const ScenarioComposer: React.FC = () => {
   // Spec import modal
   const [showImportModal, setShowImportModal] = useState(false);
   const [importText, setImportText] = useState('');
+
+  // [P0-review] Import results are STAGED, never committed implicitly: the
+  // parsed document waits here until the operator explicitly reviews and
+  // applies it on the canvas.
+  const [pendingImport, setPendingImport] = useState<{
+    doc: any;
+    preview: { nodes: number; edges: number };
+    ambiguities: string[];
+  } | null>(null);
 
   const [message, setMessage] = useState('');
   const [saving, setSaving] = useState(false);
@@ -108,6 +123,8 @@ export const ScenarioComposer: React.FC = () => {
         source: e.source,
         target: e.target,
         condition: e.data?.condition,
+        edge_type: e.data?.edge_type,
+        priority: e.data?.priority,
       })),
     });
 
@@ -152,7 +169,7 @@ export const ScenarioComposer: React.FC = () => {
       id: `edge-${idx}`,
       source: e.source,
       target: e.target,
-      data: { condition: e.condition }
+      data: { condition: e.condition, edge_type: e.edge_type, priority: e.priority }
     }));
     setEdges(flowEdges);
     return parsed;
@@ -246,7 +263,7 @@ export const ScenarioComposer: React.FC = () => {
               id: `edge-${idx}`,
               source: e.source,
               target: e.target,
-              data: { condition: e.condition }
+              data: { condition: e.condition, edge_type: e.edge_type, priority: e.priority }
             }));
 
             setNodes(flowNodes);
@@ -298,7 +315,7 @@ export const ScenarioComposer: React.FC = () => {
             id: `edge-${idx}`,
             source: e.source,
             target: e.target,
-            data: { condition: e.condition }
+            data: { condition: e.condition, edge_type: e.edge_type, priority: e.priority }
           })));
           window.dispatchEvent(new CustomEvent('agentv-toast', {
             detail: { message: 'Draft scenario loaded from Spec Importer.', type: 'success' }
@@ -323,7 +340,7 @@ export const ScenarioComposer: React.FC = () => {
             position: { x: 100, y: 150 },
             data: {
               label: 'start_node',
-              task_description: 'Agent should verify user identity',
+              task_description: '',
               required_tools: [],
               expected_outcome: []
             },
@@ -348,10 +365,26 @@ export const ScenarioComposer: React.FC = () => {
 
   // Handle node selection in React Flow
   const onNodeClick = (_: any, node: any) => {
+    setSelectedEdgeId(null);
     setSelectedNodeId(node.id);
     setNodeDesc(node.data.task_description || '');
     setNodeTools((node.data.required_tools || []).join(', '));
     setAssertions(node.data.expected_outcome || []);
+  };
+
+  // Handle edge selection — routes the inspector to the selected edge.
+  const onEdgeClick = (_: any, edge: any) => {
+    setSelectedNodeId(null);
+    setSelectedEdgeId(edge.id);
+  };
+
+  // Edge Inspector edits write straight onto the edges state's data.* so
+  // getAESJson patches them into the canonical document (patch-not-rebuild).
+  const updateEdgeField = (edgeId: string, field: 'condition' | 'edge_type' | 'priority', value: any) => {
+    setEdges(eds => eds.map(e => {
+      if (e.id !== edgeId) return e;
+      return { ...e, data: { ...e.data, [field]: value } };
+    }));
   };
 
   // Save updates from panel back to Node object
@@ -489,6 +522,7 @@ export const ScenarioComposer: React.FC = () => {
     // We never round-trip through React Flow state: parse synchronously and
     // POST the parsed document directly. This guarantees lossless preservation
     // of fields the canvas does not model.
+    // Resolve the authoritative document for BOTH authoring surfaces first.
     let authoritativeDoc: any = null;
     if (viewMode === 'json') {
       if (jsonParseError) {
@@ -502,26 +536,27 @@ export const ScenarioComposer: React.FC = () => {
         setMessage(`JSON Syntax Error: ${e?.message}`);
         return;
       }
+    } else {
+      authoritativeDoc = getAESJson();
+    }
 
-      // [C3a] Server-side canonical validation gate. The parsed JSON document
-      // must pass POST /api/scenarios/validate BEFORE it can be saved; local
-      // syntax-checking alone is not sufficient.
-      try {
-        const vRes = await fetch('/api/scenarios/validate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ scenario: authoritativeDoc })
-        });
-        const vData = await vRes.json();
-        if (!vData.valid) {
-          const serverErrors: string[] = vData.errors || ['Validation failed without details.'];
-          setMessage(`Server Validation Failed: ${serverErrors.join(' | ')}`);
-          return;
-        }
-      } catch (e: any) {
-        setMessage(`Validation request failed: ${e.message}`);
+    // [P0-unified] ONE validation contract for canvas AND JSON authoring:
+    // every save path passes POST /api/scenarios/validate before persisting.
+    try {
+      const vRes = await fetch('/api/scenarios/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ scenario: authoritativeDoc })
+      });
+      const vData = await vRes.json();
+      if (!vData.valid) {
+        const serverErrors: string[] = vData.errors || ['Validation failed without details.'];
+        setMessage(`Server Validation Failed: ${serverErrors.join(' | ')}`);
         return;
       }
+    } catch (e: any) {
+      setMessage(`Validation request failed: ${e.message}`);
+      return;
     }
 
     const errs = validateScenario();
@@ -571,6 +606,45 @@ export const ScenarioComposer: React.FC = () => {
   };
 
 
+  // [P0-review] Ambiguity scan over a freshly parsed document: nodes missing
+  // task_description; edges lacking condition where their source has >1
+  // outgoing route (routing ambiguity); absent evaluation block.
+  const buildImportAmbiguities = (doc: any): string[] => {
+    const out: string[] = [];
+    const wfNodes: any[] = Array.isArray(doc?.workflow?.nodes) ? doc.workflow.nodes : [];
+    const wfEdges: any[] = Array.isArray(doc?.workflow?.edges) ? doc.workflow.edges : [];
+
+    for (const n of wfNodes) {
+      if (!n?.task_description || String(n.task_description).trim() === '') {
+        out.push(`Node '${n?.id}' is missing task_description.`);
+      }
+    }
+
+    const outgoingCount = new Map<string, number>();
+    for (const e of wfEdges) {
+      const src = String(e?.from ?? e?.source ?? '');
+      outgoingCount.set(src, (outgoingCount.get(src) || 0) + 1);
+    }
+    for (const e of wfEdges) {
+      const src = String(e?.from ?? e?.source ?? '');
+      const dst = String(e?.to ?? e?.target ?? '');
+      const noCondition =
+        e?.condition === undefined || e?.condition === null || String(e.condition).trim() === '';
+      if (noCondition && (outgoingCount.get(src) || 0) > 1) {
+        out.push(`Edge ${src} → ${dst} has no condition while '${src}' routes to multiple targets.`);
+      }
+    }
+
+    if (
+      !doc?.evaluation ||
+      typeof doc.evaluation !== 'object' ||
+      Object.keys(doc.evaluation).length === 0
+    ) {
+      out.push('No evaluation block present — consensus/metrics defaults will apply.');
+    }
+    return out;
+  };
+
   const handleImportSpec = async () => {
     if (!importText.trim()) return;
     try {
@@ -582,42 +656,78 @@ export const ScenarioComposer: React.FC = () => {
       const data = await res.json();
       if (res.ok && data.scenario) {
         const parsed = data.scenario;
-        // [P0-4] Imported specs pass projection validation like every other path.
-        const projection = projectToCanvas(parsed);
-        setRawDoc(parsed);
-        setScenarioId(parsed.metadata?.id || 'imported-scenario');
-        setTitle(parsed.metadata?.name || 'Imported AES Scenario');
-        setIndustry(parsed.industry || 'generic');
-        setComplianceLevel(parsed.metadata?.compliance_level || 'Standard');
-        setDescription(parsed.metadata?.description || '');
-
-        setNodes(projection.nodes.map((n, idx) => ({
-          id: n.id,
-          type: 'default',
-          position: { x: 100 + idx * 200, y: 150 },
-          data: {
-            label: n.id,
-            task_description: n.task_description,
-            required_tools: n.required_tools || [],
-            expected_outcome: n.expected_outcome || [],
-          },
-          style: { background: '#0f172a', color: '#fff', border: '1px solid #334155', borderRadius: '8px', fontSize: '11px', width: 160 }
-        })));
-
-        setEdges(projection.edges.map((e, idx) => ({
-          id: `edge_${idx}`,
-          source: e.source,
-          target: e.target,
-          data: { condition: e.condition || '' },
-        })));
+        // [P0-4] Imported specs pass projection validation like every other path;
+        // an unrepresentable parse is refused before anything is staged.
+        let preview: { nodes: number; edges: number };
+        try {
+          const projection = projectToCanvas(parsed);
+          preview = { nodes: projection.nodes.length, edges: projection.edges.length };
+        } catch (e: any) {
+          const detail = e instanceof DocumentProjectionError
+            ? e.reasons.map(r => r.message).join('; ')
+            : String(e?.message || e);
+          alert(`Cannot review import on canvas: ${detail}`);
+          return;
+        }
+        // [P0-review] DO NOT commit. Stage for explicit operator review.
+        setPendingImport({
+          doc: parsed,
+          preview,
+          ambiguities: buildImportAmbiguities(parsed),
+        });
         setShowImportModal(false);
-        setMessage('Successfully parsed spec into scenario canvas nodes!');
+        setMessage('Spec parsed. Review the staged result before applying it.');
       } else {
         alert(`Parsing Failed: ${data.error || 'Syntax validation issue.'}`);
       }
     } catch (e: any) {
       alert(`Import error: ${e.message}`);
     }
+  };
+
+  // Explicit Apply: only here does the staged import mutate canvas/document state.
+  const commitPendingImport = () => {
+    if (!pendingImport) return;
+    const parsed = pendingImport.doc;
+    // Projection was validated at stage time; re-run defensively so a stale or
+    // tampered staged doc can never bypass the refusal contract.
+    const projection = projectToCanvas(parsed);
+    setRawDoc(parsed);
+    setScenarioId(parsed.metadata?.id || 'imported-scenario');
+    setTitle(parsed.metadata?.name || 'Imported AES Scenario');
+    setIndustry(parsed.industry || 'generic');
+    setComplianceLevel(parsed.metadata?.compliance_level || 'Standard');
+    setDescription(parsed.metadata?.description || '');
+
+    setNodes(projection.nodes.map((n, idx) => ({
+      id: n.id,
+      type: 'default',
+      position: { x: 100 + idx * 200, y: 150 },
+      data: {
+        label: n.id,
+        task_description: n.task_description,
+        required_tools: n.required_tools || [],
+        expected_outcome: n.expected_outcome || [],
+      },
+      style: { background: '#0f172a', color: '#fff', border: '1px solid #334155', borderRadius: '8px', fontSize: '11px', width: 160 }
+    })));
+
+    setEdges(projection.edges.map((e, idx) => ({
+      id: `edge_${idx}`,
+      source: e.source,
+      target: e.target,
+      data: { condition: e.condition || '', edge_type: e.edge_type, priority: e.priority },
+    })));
+    setSelectedNodeId(null);
+    setSelectedEdgeId(null);
+    setPendingImport(null);
+    setShowImportModal(false);
+    setMessage('Successfully parsed spec into scenario canvas nodes!');
+  };
+
+  const discardPendingImport = () => {
+    setPendingImport(null);
+    setMessage('Staged import discarded — current scenario untouched.');
   };
 
   const addAssertion = () => {
@@ -791,6 +901,7 @@ export const ScenarioComposer: React.FC = () => {
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
                 onNodeClick={onNodeClick}
+                onEdgeClick={onEdgeClick}
                 fitView
               >
                 <Background color="#334155" gap={16} />
@@ -809,8 +920,95 @@ export const ScenarioComposer: React.FC = () => {
 
             {/* Right Form Inspector Panel */}
             <div className="w-96 border-l border-slate-900 bg-slate-950/30 overflow-y-auto p-5 space-y-4 shrink-0 text-xs">
-              <h3 className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">Node Inspector</h3>
-              {selectedNodeId ? (
+              <h3 className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">
+                {selectedEdgeId && !selectedNodeId ? 'Edge Inspector' : 'Node Inspector'}
+              </h3>
+              {selectedEdgeId && !selectedNodeId ? (
+                (() => {
+                  const selectedEdge = edges.find((e: any) => e.id === selectedEdgeId);
+                  if (!selectedEdge) {
+                    return (
+                      <p className="text-slate-500 italic py-4">Selected edge no longer exists on the canvas.</p>
+                    );
+                  }
+                  const edgeType = selectedEdge.data?.edge_type || 'sequential';
+                  return (
+                    <div className="space-y-4">
+                      <div className="p-3 bg-slate-950/60 border border-slate-850 rounded-lg space-y-1">
+                        <span className="text-[10px] text-slate-500 font-bold uppercase font-mono">Edge Route</span>
+                        <p className="text-white font-mono font-bold text-sm">
+                          {selectedEdge.source} &rarr; {selectedEdge.target}
+                        </p>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-slate-400 font-semibold">Edge Type:</label>
+                        <select
+                          value={edgeType}
+                          disabled={!canEditScenario}
+                          onChange={(ev) => updateEdgeField(selectedEdgeId, 'edge_type', ev.target.value)}
+                          className="w-full bg-slate-950 border border-slate-850 rounded px-2 py-1.5 text-slate-200 focus:outline-none focus:border-indigo-500 disabled:opacity-60"
+                        >
+                          {EDGE_TYPES.map((t) => (
+                            <option key={t} value={t}>{t}</option>
+                          ))}
+                        </select>
+                        <p className="text-[9px] text-slate-500 leading-snug">
+                          Mirrors the canonical interpreter enum (eval_runner.execution_ir.EdgeType).
+                          Unknown types are refused at patch time.
+                        </p>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-slate-400 font-semibold">Priority (canonical default 100):</label>
+                        <input
+                          type="number"
+                          disabled={!canEditScenario}
+                          value={
+                            selectedEdge.data?.priority === undefined ||
+                            selectedEdge.data?.priority === null ||
+                            Number.isNaN(Number(selectedEdge.data?.priority))
+                              ? ''
+                              : Number(selectedEdge.data?.priority)
+                          }
+                          placeholder="100"
+                          onChange={(ev) => {
+                            const raw = ev.target.value;
+                            if (raw === '') {
+                              updateEdgeField(selectedEdgeId, 'priority', undefined);
+                              return;
+                            }
+                            const num = Number(raw);
+                            if (!Number.isNaN(num)) updateEdgeField(selectedEdgeId, 'priority', num);
+                          }}
+                          className="w-full bg-slate-950 border border-slate-850 rounded px-2.5 py-1.5 text-slate-200 focus:outline-none font-mono disabled:opacity-60"
+                        />
+                      </div>
+
+                      {edgeType === 'condition' && (
+                        <div className="space-y-1">
+                          <label className="text-slate-400 font-semibold">Condition (routing predicate):</label>
+                          <textarea
+                            value={selectedEdge.data?.condition ?? ''}
+                            disabled={!canEditScenario}
+                            onChange={(ev) => updateEdgeField(selectedEdgeId, 'condition', ev.target.value)}
+                            rows={3}
+                            placeholder="e.g. approved == true"
+                            className="w-full bg-slate-950 border border-slate-850 rounded p-2 text-slate-200 font-mono focus:outline-none focus:border-indigo-500 disabled:opacity-60"
+                          />
+                        </div>
+                      )}
+
+                      <button
+                        onClick={() => setSelectedEdgeId(null)}
+                        className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded font-bold transition-all uppercase tracking-wider"
+                      >
+                        Deselect edge
+                      </button>
+                    </div>
+                  );
+                })()
+              ) : selectedNodeId ? (
                 <div className="space-y-4">
                   <div className="p-3 bg-slate-950/60 border border-slate-850 rounded-lg space-y-1">
                     <span className="text-[10px] text-slate-500 font-bold uppercase font-mono">Node Identifier</span>
@@ -883,7 +1081,7 @@ export const ScenarioComposer: React.FC = () => {
                               >
                                 <option value="exact">Exact Match</option>
                                 <option value="regex">Regex Pattern</option>
-                                <option value="numerical_tolerance">Numerical Tolerance (±)</option>
+                                <option value="numerical_tolerance">Numerical Tolerance (Â±)</option>
                                 <option value="json_schema">JSON Schema Match</option>
                               </select>
                             </div>
@@ -910,11 +1108,11 @@ export const ScenarioComposer: React.FC = () => {
                     onClick={saveNodeSettings}
                     className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold transition-all uppercase tracking-wider"
                   >
-                    Staging Node Settings
+                    Apply changes
                   </button>
                 </div>
               ) : (
-                <p className="text-slate-500 italic py-4">Click a node on the canvas to inspect and edit its parameters.</p>
+                <p className="text-slate-500 italic py-4">Click a node or an edge on the canvas to inspect and edit its parameters.</p>
               )}
             </div>
           </>
@@ -988,6 +1186,63 @@ export const ScenarioComposer: React.FC = () => {
           </div>
         </div>
       )}
+      {/* [P0-review] Import Review modal — staged imports are committed ONLY
+          via the explicit "Review in canvas" action. */}
+      {pendingImport && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl max-w-lg w-full p-6 space-y-4 text-slate-100 shadow-2xl flex flex-col max-h-[85vh]">
+            <div className="flex items-center gap-2">
+              <Upload className="w-5 h-5 text-indigo-400" />
+              <h3 className="text-base font-bold text-white uppercase tracking-wider">Review Imported Scenario</h3>
+            </div>
+
+            <p className="text-slate-400 text-xs leading-relaxed">
+              The parsed spec is staged and has NOT been applied. Current canvas state is untouched until you commit.
+            </p>
+
+            <div className="flex gap-3 text-[11px] font-mono">
+              <span className="px-2 py-1 bg-slate-950 border border-slate-850 rounded">
+                nodes: <b className="text-indigo-300">{pendingImport.preview.nodes}</b>
+              </span>
+              <span className="px-2 py-1 bg-slate-950 border border-slate-850 rounded">
+                edges: <b className="text-indigo-300">{pendingImport.preview.edges}</b>
+              </span>
+            </div>
+
+            {pendingImport.ambiguities.length > 0 ? (
+              <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-lg space-y-1.5 overflow-y-auto min-h-0">
+                <span className="text-[10px] text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                  Ambiguities requiring review ({pendingImport.ambiguities.length})
+                </span>
+                <ul className="list-disc list-inside space-y-1 text-[11px] text-amber-200/90 leading-snug">
+                  {pendingImport.ambiguities.map((a, i) => (
+                    <li key={i}>{a}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p className="text-emerald-400/90 text-xs">No ambiguities detected in the staged document.</p>
+            )}
+
+            <div className="flex justify-end gap-3 pt-2 text-xs shrink-0">
+              <button
+                onClick={discardPendingImport}
+                className="px-4 py-2 bg-slate-800 rounded-lg hover:bg-slate-700 text-slate-300 transition-colors"
+              >
+                Discard
+              </button>
+              <button
+                onClick={commitPendingImport}
+                className="px-4 py-2 bg-indigo-600 rounded-lg hover:bg-indigo-500 text-white font-bold transition-colors"
+              >
+                Review in canvas
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+

@@ -1,115 +1,215 @@
 ---
-title: Agent Interaction Contract
-description: Reference for the API contract between the harness and the AI agent under test.
+title: Agent Interaction Contract & Envelope Protocol
+description: Authoritative specification for communication contracts between the AgentV evaluation engine and agent implementations.
 ---
 
-This document describes the expected API contract between the AgentV harness and the AI agent.
+The **Agent Interaction Contract** defines the bidirectional communication interface between the AgentV evaluation runtime and the AI agent under evaluation.
 
-## 📡 Primary Endpoint
-By default, the harness expects the agent to expose a REST endpoint:
-```text
-POST /execute_task
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Harness as AgentV Harness
+    participant Sandbox as Tool Sandbox (World Shims)
+    participant Agent as Target Agent Endpoint
+
+    Harness->>Agent: POST /execute_task (Task Description, Turn Context, History, OTel Context)
+    alt Agent Requests Tool Execution
+        Agent-->>Harness: 200 OK {"action": "call_tool" | "call_multiple_tools", "tool_calls": [...]}
+        Harness->>Sandbox: Execute sandboxed tool calls & record state mutations
+        Sandbox-->>Harness: Return tool outputs & environmental diffs
+        Harness->>Agent: POST /execute_task (Turn N+1 with tool results in conversation_history)
+    else Agent Concludes Task
+        Agent-->>Harness: 200 OK {"action": "final_answer", "summary": "...", "metadata": {...}}
+        Harness->>Harness: Run Verifier & Issue Cryptographic Certificate
+    else Agent Requires Human Intervention
+        Agent-->>Harness: 200 OK {"action": "hitl_pause", "reason": "...", "approval_token": "..."}
+    end
 ```
 
-### Request Payload
-| Field | Type | Required | Description |
-| :--- | :--- | :--- | :--- |
-| `task_description`| string | ✅ | The current instruction for the agent. |
-| `turn` | integer| ✅ | Current turn number (1 to `MAX_TURNS`). |
-| `conversation_history`| array | ❌ | History of previous turns. |
-| `identity_binding`| object | ❌ | Cryptographic proof of agent identity. |
-| `span_context` | object | ❌ | Distributed tracing metadata (OTel 1.40.0). |
-| `run_id` | string | ✅ | Mandatory Run ID for forensic vault affinity. |
+---
+
+## 📡 1. HTTP/REST Protocol Specification
+
+By default, the harness connects to an agent exposing a standard HTTP endpoint:
+
+```http
+POST /execute_task HTTP/1.1
+Host: agent-service.internal:8000
+Content-Type: application/json
+traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+tracestate: agentv=session_123
+```
+
+### Request Payload Schema
+
+```json
+{
+  "run_id": "run_fintech_2026_01",
+  "task_description": "Verify applicant KYC documents, calculate debt-to-income ratio, and approve or decline loan.",
+  "turn": 1,
+  "max_turns": 10,
+  "scenario_id": "loan_approval_risk_check",
+  "conversation_history": [
+    {
+      "role": "user",
+      "content": "Verify applicant KYC documents, calculate debt-to-income ratio, and approve or decline loan."
+    }
+  ],
+  "available_tools": [
+    {
+      "name": "fetch_applicant_kyc",
+      "description": "Retrieves verified identity and tax records for an applicant ID.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "applicant_id": { "type": "string" }
+        },
+        "required": ["applicant_id"]
+      }
+    },
+    {
+      "name": "submit_underwriting_decision",
+      "description": "Submits final underwriting decision to core ledger.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "applicant_id": { "type": "string" },
+          "decision": { "type": "string", "enum": ["APPROVED", "DECLINED", "MANUAL_REVIEW"] },
+          "dti_ratio": { "type": "number" }
+        },
+        "required": ["applicant_id", "decision", "dti_ratio"]
+      }
+    }
+  ],
+  "span_context": {
+    "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
+    "span_id": "00f067aa0ba902b7",
+    "trace_flags": 1
+  }
+}
+```
 
 ---
 
-## 🛠️ Response Protocol
-The agent must return an **Action Object** indicating its next step.
+## 🛠️ 2. Agent Action Response Envelope
 
-### Hub Actions
-- **`call_tool`**: Execute a single sandboxed tool.
-- **`call_multiple_tools`**: Execute a bundle of tool calls (parallel execution).
-- **`final_answer`**: Terminates the session with a summary of accomplishment.
-- **`hitl_pause`**: Pause evaluation for human-in-the-loop intervention.
+The agent must return an **Action Envelope** object. Four standard actions are supported:
 
-### Example: Multi-Tool Call (Parameterized)
+### 1. `call_tool` (Single Tool Invocation)
+```json
+{
+  "action": "call_tool",
+  "tool_name": "fetch_applicant_kyc",
+  "tool_args": {
+    "applicant_id": "APP-98214"
+  },
+  "summary": "Fetching KYC verification documents for applicant APP-98214."
+}
+```
+
+### 2. `call_multiple_tools` (Parallel Parameterized Tool Calls)
 ```json
 {
   "action": "call_multiple_tools",
   "tool_calls": [
     {
-      "tool": "run_line_test",
-      "params": {"port": 8080}
+      "tool": "fetch_applicant_kyc",
+      "params": { "applicant_id": "APP-98214" }
     },
     {
-      "tool": "check_firmware",
-      "params": {"version": "1.4.0"}
+      "tool": "check_credit_score",
+      "params": { "ssn_last4": "8841" }
     }
   ],
-  "summary": "Performing remote diagnostics with specific parameters."
+  "summary": "Fetching KYC records and credit bureau score in parallel."
 }
 ```
-:::note
-In AES v1.6.0+, `call_multiple_tools` supports the `tool_calls` array for parameterized parallel execution. The legacy `tool_names` (string array) format is still supported for no-op parameter calls.
+
+### 3. `final_answer` (Session Completion)
+```json
+{
+  "action": "final_answer",
+  "summary": "Underwriting completed. Applicant credit score is 745 and DTI is 28.5%. Loan decision APPROVED under policy FIN-POL-402.",
+  "metadata": {
+    "decision": "APPROVED",
+    "dti": 0.285,
+    "confidence": 0.98
+  }
+}
+```
+
+### 4. `hitl_pause` (Human-in-the-Loop Intervention)
+```json
+{
+  "action": "hitl_pause",
+  "reason": "Loan amount exceeds $500,000 automated threshold; requesting manual credit officer sign-off.",
+  "approval_token": "req_hitl_882910"
+}
+```
+
+---
+
+## 🔁 3. Receiving Tool Results in Subsequent Turns
+
+When the agent requests tool execution, the **AgentV harness executes the sandboxed tools** and appends the outputs to `conversation_history` on turn $N+1$:
+
+```json
+{
+  "run_id": "run_fintech_2026_01",
+  "task_description": "Continue loan assessment.",
+  "turn": 2,
+  "conversation_history": [
+    {
+      "role": "user",
+      "content": "Verify applicant KYC documents, calculate debt-to-income ratio, and approve or decline loan."
+    },
+    {
+      "role": "assistant",
+      "action": "call_tool",
+      "tool_name": "fetch_applicant_kyc",
+      "tool_args": { "applicant_id": "APP-98214" }
+    },
+    {
+      "role": "tool",
+      "name": "fetch_applicant_kyc",
+      "content": "{\"status\": \"VERIFIED\", \"monthly_income\": 12500, \"monthly_debt\": 3500}"
+    }
+  ]
+}
+```
+
+:::important Authoritative Execution
+The agent **must never fabricate tool outputs** or claim to execute tools locally. The harness is the sole authoritative gateway to simulated environments and world shims.
 :::
 
 ---
 
-## 📡 Receiving Tool Outputs
+## 🧬 4. OpenTelemetry Context & Behavioral DNA
 
-After an agent issues a `call_tool` or `call_multiple_tools` action, the **harness executes the tools** and returns the results to the agent in the subsequent turn's `conversation_history`. 
+The harness automatically injects W3C Distributed Tracing headers (`traceparent`, `tracestate`) and span metadata into every turn invocation.
 
-:::important
-**Logical Direction**: The agent never returns `tool_outputs` in its own response. It only requests tool execution. The harness is the sole authoritative source of environment data and tool results.
-:::
-
----
-
-## 🧬 Behavioral DNA (V1)
- 
-To ensure that an evaluation trace genuinely reflects the intended scenario logic, AgentV enforces the **Forensic Evidence Ledger**. This provides a verifiable baseline for the environment state (IDs, API keys, and simulator configurations).
- 
-| Marker | Description |
-| :--- | :--- |
-| **`topology_hash`** | SHA3-256 hash of the `scenario.workflow` structure. |
-| **`tool_dna_hash`** | Hash of the tool definitions available to the agent. |
-| **`fingerprint_v1`** | A cryptographic digest ensuring the behavioral baseline was not tampered with. |
- 
----
-
-## 📡 Forensic Environmental DNA
-
-v1.6.0 elevates the environment to a **First-Class Member** of the evaluation trace.
-
-### Capability-Based Routing
-To ensure infrastructure abstraction, scenarios should list **required capabilities** instead of hardcoded endpoints. The Core resolves these via the [Routing Manifest](/spec/routing_v1/).
-
-### Provisioning Snapshots
-Every `run.jsonl` trace includes:
-1.  **`environmental_snapshot`**: A point-in-time capture of the final merged registry state.
-2.  **`provisioning_hash`**: A cryptographic link ensuring the environment hasn't drifted from the sanctioned baseline.
-
-### Event Hierarchy
-| Marker | Level | Purpose | Example |
-| :--- | :--- | :--- | :--- |
-| `PHASE` | Strategic | High-level mission segments. | "Reconstruction", "Targeting" |
-| `SUBTASK`| Tactical | Discrete logical missions within a phase. | "Resolve Account", "Verify Sig" |
-| `ACTION` | Operational | Individual decisions or tool invocations. | "Call API", "Parse JSON" |
-| `STEP` | Atomic | Granular execution units. | "Init Socket", "Buffer Read" |
-
-### Implementation Pattern (JSON Metadata)
-Agents should include these markers in their response metadata or specific telemetry headers:
+### Recommended Telemetry Markers:
+Agents can include structured operational telemetry in `metadata.telemetry`:
 
 ```json
 {
   "action": "call_tool",
-  "tool_name": "resolve_identity",
+  "tool_name": "submit_underwriting_decision",
+  "tool_args": {
+    "applicant_id": "APP-98214",
+    "decision": "APPROVED",
+    "dti_ratio": 0.28
+  },
   "metadata": {
     "telemetry": {
-      "phase": "Public Trust Verification",
-      "subtask": "Identity Resolution",
-      "action": "GET /v1/identity/system_id/public_key",
-      "depth": 2
+      "phase": "Decision Execution",
+      "subtask": "Underwriting Ledger Commit",
+      "action": "POST /v1/underwriting/commits",
+      "reasoning_step": 4,
+      "token_usage": {
+        "prompt_tokens": 1420,
+        "completion_tokens": 85
+      }
     }
   }
 }
@@ -117,26 +217,21 @@ Agents should include these markers in their response metadata or specific telem
 
 ---
 
-## 💻 Alternative Protocols
+## 🔌 5. Non-HTTP Protocol Alternatives
 
 ### Local Subprocess (`local://`)
-Harness communicates via **Standard I/O**.
-- **Request**: Single-line JSON to agent `stdin`.
-- **Response**: Single-line JSON from agent `stdout`.
-- **Logs**: Captured from `stderr`.
+The harness executes the agent command as a local child process communicating over standard input/output streams:
+- `stdin`: Single-line JSON request envelope per turn.
+- `stdout`: Single-line JSON action response envelope.
+- `stderr`: Streamed to engine debug logs.
 
-### Persistent Socket (`socket://`)
-Harness connects via TCP or Unix sockets. Payloads are newline-delimited JSON strings. This is recommended for high-performance, low-latency integrations.
+```bash
+agentv run --scenario scenarios/loan.json --protocol local --agent "python -m my_agent.cli"
+```
 
----
+### Persistent TCP/Unix Socket (`socket://`)
+The harness connects via persistent TCP socket, transmitting newline-delimited JSON packets. This mode eliminates HTTP connection setup latency for high-throughput batch benchmarks.
 
-## 🔐 Identity Discovery
-The harness automatically discovers the agent's identity and scenario ID with the following priority (Strict AES v1.4+):
-1.  **Scenario Metadata (Authoritative)**: `metadata.id` and `metadata.name`.
-2.  **Scenario Root**: Top-level `id` or `run_id`.
-3.  **Dynamic Discovery**: `metadata.model` or `metadata.agent_name`.
-4.  **CLI Overrides**: The `--agent-name` CLI flag or endpoint URL.
-
-:::caution
-**Forensic Stability**: In AES v1.4+, the `metadata.id` is the primary key for all audit-grade visualizations. Failing to provide a unique `id` will result in "SILVER" tier compliance warnings.
-:::
+```bash
+agentv evaluate --path scenarios/ --protocol socket --agent "socket://127.0.0.1:9099"
+```

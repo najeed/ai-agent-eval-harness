@@ -10,6 +10,7 @@ Returns first-class EvaluationResult contracts.
 
 import asyncio  # noqa: E402
 import logging  # noqa: E402
+import uuid  # noqa: E402
 from abc import ABC, abstractmethod  # noqa: E402
 from pathlib import Path  # noqa: E402
 from typing import Any  # noqa: E402
@@ -19,10 +20,26 @@ from agentv_runtime.results import EvaluationResult  # noqa: E402
 from . import events, plugins  # noqa: E402
 from .context import EvaluationContext  # noqa: E402
 from .execution_ir import WorkflowStatus  # noqa: E402
-from .reproducibility import build_reproducibility_contract, fingerprint  # noqa: E402
+from .reproducibility import (  # noqa: E402
+    build_reproducibility_contract,
+    fingerprint,
+    metric_registry_fingerprint,
+)
 from .statistics import compute_attempt_statistics  # noqa: E402
 
 logger = logging.getLogger(__name__)
+
+
+def new_run_id(scenario_id: str) -> str:
+    """
+    [P0-12] Globally-unique, time-ordered run ID: UUIDv7 suffix (UUID4
+    fallback on pre-3.14 interpreters). The legacy integer-second truncation
+    allowed concurrent same-scenario collisions that contaminated evidence
+    vaults.
+    """
+    _u7 = getattr(uuid, "uuid7", None)
+    unique_suffix = _u7().hex if callable(_u7) else uuid.uuid4().hex
+    return f"run-{scenario_id}-{unique_suffix}"
 
 
 class BaseRunner(ABC):
@@ -129,8 +146,8 @@ class DefaultRunner(BaseRunner):
 
         from .session import SessionManager
 
-        # [Forensic Hardening] Centralized Identifier Resolution
-        effective_run_id = run_id or f"run-{scenario['id']}-{int(asyncio.get_event_loop().time())}"
+        # Centralized Identifier Resolution
+        effective_run_id = run_id or new_run_id(scenario["id"])
 
         # Resolve OpenTelemetry parent context/span
         otel_ctx = None
@@ -183,6 +200,8 @@ class DefaultRunner(BaseRunner):
             attempts=attempts,
             execution_mode=str(execution_mode),
             adapter_metadata=dict(ctx.metadata),
+            evaluator_fingerprint=metric_registry_fingerprint(),
+            plugin_provenance=dict(getattr(plugins.manager, "provenance_map", {}) or {}),
         )
 
         try:
@@ -195,6 +214,13 @@ class DefaultRunner(BaseRunner):
                     "workflow": ctx.scenario_data.get("workflow"),
                     "scenario_data": dict(ctx.scenario_data) if ctx.scenario_data else {},
                     "execution_mode": str(execution_mode),
+                    # Whether the operator explicitly declared the mode;
+                    # absent declaration → provisional certificates.
+                    "execution_mode_declared": bool(
+                        scenario.get("execution_mode")
+                        or (metadata or {}).get("execution_mode")
+                        or scenario.get("metadata", {}).get("execution_mode")
+                    ),
                     "reproducibility_fingerprint": fingerprint(repro_contract),
                 },
                 span_context=ctx.span_context,

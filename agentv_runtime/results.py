@@ -73,7 +73,7 @@ class EvaluationResult(Sequence):
     metadata: dict[str, Any] = field(default_factory=dict)
     config_hash: str = ""
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
-    version: str = "2.1.0"
+    version: str = "2.0.0"
     statistics: dict[str, Any] = field(default_factory=dict)
 
     def __getitem__(self, index: Any) -> Any:
@@ -106,7 +106,7 @@ class EvaluationResult(Sequence):
             metadata=dict(data.get("metadata", {})),
             config_hash=str(data.get("config_hash", "")),
             timestamp=str(data.get("timestamp", datetime.now(UTC).isoformat())),
-            version=str(data.get("version", "2.1.0")),
+            version=str(data.get("version", "2.0.0")),
             statistics=dict(data.get("statistics", {})),
         )
 

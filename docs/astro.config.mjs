@@ -70,6 +70,10 @@ export default defineConfig({
 					label: 'The Scholar (Research)',
 					autogenerate: { directory: 'scholar' },
 				},
+				{
+					label: 'Formal Specifications',
+					autogenerate: { directory: 'spec' },
+				},
 			],
 			customCss: [
 				// Relative path to your custom CSS file

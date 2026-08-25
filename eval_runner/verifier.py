@@ -405,6 +405,8 @@ class TraceVerifier:
         run_id: str | None = None,
         artifact_store: ArtifactStore | None = None,
         evidence_root_hash: str | None = None,
+        execution_mode: str | None = None,
+        provisional: bool = False,
     ) -> dict[str, Any]:
         """
         Signs a trace file and issues a standardized Verification Certificate (VC) v3
@@ -415,6 +417,12 @@ class TraceVerifier:
         Any stage failure rolls back partial mutations and raises
         CertificationFailedError (outcome CERTIFICATION_FAILED). No certificate is
         ever returned from an incomplete sealing operation.
+
+        ``execution_mode`` is stamped into every certificate so an
+        auditor can distinguish simulated from live/replay-verified evidence.
+        ``provisional=True`` marks certificates produced without an explicit
+        operator-declared mode (silent SIMULATED default) — such certificates
+        are non-authoritative for compliance purposes.
         """
         stages: list[dict[str, Any]] = []
 
@@ -534,6 +542,26 @@ class TraceVerifier:
             # [E2] Additive field within VC v3.0.0: the certificate commits to
             # the decision's evidence root hash over its assertion set.
             manifest["evidence_root_hash"] = evidence_root_hash
+        # [VC-Trust B] REQUIRED truth-level stamping (2026-08 waiver, no
+        # version bump): every certificate states the run's execution mode.
+        # Whitelist enforcement here too (defense in depth): SessionManager
+        # rejects junk upstream, but the verifier must never emit a value
+        # outside the schema enum. Unrecognized input is recorded truthfully
+        # as "unknown" + provisional — never fabricated, never passed through.
+        from .execution_ir import ExecutionMode
+
+        _valid_modes = {m.value for m in ExecutionMode}
+        # Exact-match only: mirrors SessionManager's strict fail-closed
+        # parsing ("SIMULATED" / "live " are rejected upstream). Case- or
+        # space-variants never silently become declarations.
+        _mode_in = str(execution_mode) if execution_mode else ""
+        if _mode_in in _valid_modes:
+            manifest["execution_mode"] = _mode_in
+            if provisional:
+                manifest["provisional"] = True
+        else:
+            manifest["execution_mode"] = "unknown"
+            manifest["provisional"] = True
         _stage("canonicalize")(lambda: manifest)
 
         # 3. EMIT LIFECYCLE EVENT + HASH (mutation point; rolled back on failure)

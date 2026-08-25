@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] - 2026-08-21
+## [2.0.0] - 2026-08-26
 
 ### Added
 * **3-Pillar Enterprise Verification Information Architecture**: Recomposed the Visual Console navigation hierarchy around three first-class objects: **Scenarios** (`/scenarios`, `/scenarios/compose`, `/suites`), **Runs** (`/runs`, `/reports`, `/debugger`, `/triage`), and **Evidence** (`/evidence/packages`, `/trust`, `/compliance`, `/publish`).
@@ -26,7 +26,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * **Lossless Canonical Scenario Composer**: Visual scenario composer operates as a non-destructive patcher over the canonical AES JSON tree, eliminating semantic loss of custom node parameters and edge conditions.
 * **Pure LiveDebugger Telemetry Parity**: Live debugger diff viewer binds directly to authentic runtime telemetry payloads (`expected_state`, `actual_state`, `divergence`), eliminating mock diff simulations.
 * **Server-Authoritative Identity & RBAC**: Implemented `GET /api/auth/me` and `POST /api/auth/logout`, binding permissions strictly to server session claims and isolating developer persona switching to dev mode.
-* **Audience-Bound Handoff Tokens**: Dynamic secret resolution for handoff JWTs with explicit audience validation (`aud="agentv-plugin"`), short expiry, and JTI tracking.
+* **Canonical Execution Graph & Dagre Topology Rendering**: Formalized `execution_graph_node` and `execution_graph_edge` schema branches in `runs.schema.json` unified around the canonical identity triple (`scenario_node_id`, `execution_instance_id`, `parent_execution_id`); Live Debugger renders the Scenario DAG as the primary structural spine with real-time OpenTelemetry state overlays, Dagre LR layout, persistent coordinate caching (`nodePositionsRef`), and unified timeline scrubber centering.
+* **Resilient SSE Streaming with `Last-Event-ID` Catch-Up Replay**: Upgraded `/api/v1/runs/<run_id>/stream` with monotonic event sequence identifiers and durable trace replay for seamless reconnection without frame loss or duplication.
+* **Server-Authoritative Verification Endpoint**: Promoted `/api/v1/runs/<run_id>/verify` to the sole authoritative source of verification truth, delegating directly to `TraceVerifier.verify_run_directory()`.
+* **Deterministic Immutable Evidence Packages (`.agentv-package.json`)**: Engineered NIST SP 800-218 and EU AI Act compliant single-file audit packages with deterministic SHA3-256 package digest calculation across canonicalized components.
+* **Dual-Tier Readiness Probes & Preflight Fingerprinting**: Added `preflight_fingerprint` invalidation on parameter modification via `hashlib.sha3_256`, strictly gating execution readiness into **Executable** and **Verifiable** tiers.
+* **Monaco Canonical Source of Truth & Typed Assertions**: Implemented bi-directional document sync between embedded Monaco JSON/YAML editor and the AES canonical model, supporting typed assertions (`exact`, `regex`, `numerical_tolerance`, `json_schema`), conditional edge editing, and optimistic concurrency (`expected_revision_hash`).
+* **PDF Report Generation**: Implemented ReportLab PDF generator in `pdf_service.py` extracting authentic metrics directly from `summary.json` and `run_manifest.json`.
 * **Durable Job Store & Deterministic Output Binding**: File-backed `DurableJobStore` in `results/jobs/{job_id}.json` and explicit `results/batch_{job_id}` directory creation in `conductor.py` and `publication_suite.py`.
 
 * **Runtime Extension Interface Wiring & Authoritative Dependency Injection**: Closed the runtime interface seam gap by wiring all 6 Extension Families directly into active execution paths with real caller invocations and explicit dependency injection:

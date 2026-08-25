@@ -159,7 +159,8 @@ Usage: agentv <command> [options]
   scenario       Generic scenario management (Generate/Inspect)
   spec-to-eval   Convert Markdown PRD/Specs into Scenario JSON
   mutate         Generate adversarial/edge-case scenario variants
-  analyze        Auto-generate scenarios from GitHub repositories
+  analyze        Scaffold AES scenarios from a real repository scan
+                 (URL or --path; private repos: --token-file / AGENTV_REPO_TOKEN)
   auto-translate Use local LLMs to translate docs to AES JSON
   install        Install industrial scenario packs (e.g., Fintech, Healthcare)
 
@@ -457,15 +458,43 @@ Usage: agentv <command> [options]
     init_parser.add_argument("--standard")
     init_parser.add_argument("--registry")
 
-    install_parser = subparsers.add_parser("install", help="Install templates")
+    install_parser = subparsers.add_parser(
+        "install",
+        help=(
+            "Install a scenario pack from a local source (dir / .zip / "
+            ".tar.gz containing pack.yaml); checksums enforced when the "
+            "manifest declares them"
+        ),
+    )
     install_parser.set_defaults(func=_dispatch_environment)
     install_parser.add_argument("pack")
 
-    analyze_parser = subparsers.add_parser("analyze", help="Analyze repository")
+    analyze_parser = subparsers.add_parser(
+        "analyze",
+        help=(
+            "Scaffold AES scenarios from a real repository scan (Python AST "
+            "+ framework patterns). Private repos: --token-file or "
+            "AGENTV_REPO_TOKEN / GITHUB_TOKEN. Local checkout: pass a path."
+        ),
+    )
     analyze_parser.set_defaults(func=_dispatch_environment)
-    analyze_parser.add_argument("repo_url", nargs="?", help="Repository URL to analyze")
+    analyze_parser.add_argument("url", help="Repository URL or local checkout path")
+    analyze_parser.add_argument("--ref", default=None, help="Branch/tag/commit for remote URLs")
+    analyze_parser.add_argument(
+        "--token-file",
+        default=None,
+        help="File containing a repo access token (never pass tokens as CLI args)",
+    )
+    analyze_parser.add_argument(
+        "--acquire",
+        choices=["tree", "tarball"],
+        default="tree",
+        help=(
+            "tree = forge tree API, fetch only relevant source blobs "
+            "(default; best for huge repos); tarball = full archive fallback"
+        ),
+    )
     analyze_parser.add_argument("--path", "--url", dest="url", help="Local path or URL (flagged)")
-
     translate_parser = subparsers.add_parser("auto-translate", help="Auto-translate docs")
     translate_parser.set_defaults(func=_dispatch_environment)
     translate_parser.add_argument("--path", "--input", dest="input", required=True)
