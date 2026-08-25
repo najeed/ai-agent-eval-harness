@@ -10,6 +10,9 @@ Covers the P0 kernel contract:
 
 from __future__ import annotations
 
+import asyncio
+import time
+
 import pytest
 
 from eval_runner.execution_ir import (
@@ -736,3 +739,126 @@ async def test_error_edge_takes_priority_over_timeout_edge():
     reasons = [t.transition_reason for t in outcome.transitions]
     assert "error_handler" in reasons
     assert "timeout_route" not in reasons
+
+
+# ---------------------------------------------------------------------------
+# Quick-win kernel contracts
+# ---------------------------------------------------------------------------
+
+
+def test_join_rejects_cross_iteration_tokens():
+    """[P0-4] A join consumes ONLY tokens sharing one (lineage, iteration) key.
+
+    Direct _try_join probe: an e2 token produced by loop iteration 9 can never
+    complete the AND-join left half-open by e1's iteration-1 sibling.
+    """
+    from eval_runner.workflow_interpreter import ExecutionToken, _SchedulerState
+
+    plan = _plan(
+        {
+            "workflow": {
+                "nodes": [{"id": "a"}, {"id": "b"}, {"id": "j"}],
+                "edges": [
+                    {"id": "e0", "from": "a", "to": "b"},
+                    {"id": "e1", "from": "a", "to": "j"},
+                    {"id": "e2", "from": "b", "to": "j"},
+                ],
+                "entry_nodes": ["a"],
+            }
+        }
+    )
+    interp = WorkflowInterpreter(plan, _identity(), event_bus=None)
+    state = _SchedulerState(plan)
+
+    def tok(edge_id: str, produced_by: str, iteration: int) -> ExecutionToken:
+        return ExecutionToken(
+            edge_id=edge_id,
+            branch_generation="g0",
+            produced_by=produced_by,
+            iteration=iteration,
+        )
+
+    # e2 arrives from iteration 9 while e1 sits half-open from iteration 1:
+    # match keys differ -> NO activation despite full edge coverage.
+    state.pending_tokens["j"] = [
+        tok("e1", "a:attempt:1", 1),
+        tok("e2", "b:attempt:9", 9),
+    ]
+    assert interp._try_join("j", None, state) == []
+    assert len(state.pending_tokens["j"]) == 2  # nothing consumed on a mismatch
+
+    # Same-key sibling completes the AND-join and is consumed.
+    state.pending_tokens["j"][1] = tok("e2", "b:attempt:1", 1)
+    activated = interp._try_join("j", None, state)
+    assert len(activated) == 1
+    joined = activated[0]
+    assert joined.node_id == "j"
+    assert joined.iteration == 1  # first visitation of j
+    assert joined.generation == "g0"
+    assert state.pending_tokens["j"] == []
+
+
+@pytest.mark.asyncio
+async def test_interpreter_owned_deadline_routes_timeout():
+    """Per-node wall-clock deadline: the interpreter enforces it, tags the
+    triage as TIMEOUT, marks record.timed_out, and the timeout edge routes."""
+    scenario = {
+        "workflow": {
+            "nodes": [
+                {"id": "slow", "timeout": 0.05},
+                {"id": "handler"},
+                {"id": "finalize"},
+            ],
+            "edges": [
+                {"id": "e_to", "from": "slow", "to": "handler", "type": "timeout"},
+                {"from": "handler", "to": "finalize"},
+            ],
+        },
+        "failure_policy": "fail_fast",
+    }
+    plan = _plan(scenario)
+
+    async def executor(node_ir, exec_id, parent):
+        await asyncio.sleep(0.3)  # far beyond the declared 0.05s deadline
+        return {"task_id": node_ir.node_id, "status": "success"}
+
+    results, outcome = await _run(plan, executor)
+
+    # NODE_FAILED != WORKFLOW_FAILED: deadline breach routes to the handler.
+    assert outcome.success
+    slow = next(r for r in outcome.node_executions if r.scenario_node_id == "slow")
+    assert slow.timed_out is True
+    transition = outcome.transitions[0]
+    assert transition.edge_type == EdgeType.TIMEOUT.value
+    assert transition.transition_reason == "timeout_route"
+
+
+@pytest.mark.asyncio
+async def test_parallel_wave_runs_concurrently_wall_clock():
+    """True parallel waves: two 0.25s branches in one wave finish well under
+    the 0.5s sequential lower bound."""
+    scenario = {
+        "workflow": {
+            "nodes": [{"id": "root"}, {"id": "l"}, {"id": "r"}],
+            "edges": [
+                {"from": "root", "to": "l", "type": "parallel"},
+                {"from": "root", "to": "r", "type": "parallel"},
+            ],
+        },
+        "failure_policy": "fail_fast",
+    }
+    plan = _plan(scenario)
+
+    async def executor(node_ir, exec_id, parent):
+        if node_ir.node_id == "root":
+            return {"task_id": "root", "status": "success"}
+        await asyncio.sleep(0.25)
+        return {"task_id": node_ir.node_id, "status": "success"}
+
+    start = time.perf_counter()
+    results, outcome = await _run(plan, executor)
+    elapsed = time.perf_counter() - start
+
+    assert outcome.success
+    assert sorted(r["task_id"] for r in results) == ["l", "r", "root"]
+    assert elapsed < 0.45, f"wave did not overlap: took {elapsed:.3f}s"

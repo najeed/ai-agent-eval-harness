@@ -91,7 +91,7 @@ export const VerificationWorkflow: React.FC = () => {
   const healthQuery = useQuery<RuntimeHealth>({
     queryKey: ['runtime-health'],
     queryFn: async () => {
-      const res = await fetch('/api/system/status');
+      const res = await fetch('/api/status');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return res.json();
     },

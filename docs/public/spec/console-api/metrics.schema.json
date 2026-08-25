@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "spec/console-api/metrics.schema.json",
+  "title": "GET /api/v1/metrics",
+  "description": "Locked metric-discovery contract.",
+  "type": "object",
+  "required": ["metrics"],
+  "additionalProperties": false,
+  "properties": {
+    "metrics": { "type": "array", "items": { "type": "string" } }
+  }
+}

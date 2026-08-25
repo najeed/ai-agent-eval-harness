@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "spec/console-api/certificate.schema.json",
+  "title": "GET /api/v1/certificates/<run_id>",
+  "description": "Public Trust Protocol passthrough: the served document is the certificate/manifest artifact. Locked on the attestation-critical keys every Verification Certificate must carry.",
+  "type": "object",
+  "required": ["run_id", "trace_hash"],
+  "properties": {
+    "run_id": { "type": "string" },
+    "trace_hash": { "type": "string" }
+  }
+}

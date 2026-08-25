@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "spec/console-api/system-status.schema.json",
+  "title": "GET /api/status (system runtime status)",
+  "description": "Authoritative RuntimeHealth probe. The GUI header may render READY only when this object reports HEALTHY; never derived client-side, never unconditional.",
+  "type": "object",
+  "required": [
+    "status",
+    "mode",
+    "version",
+    "last_heartbeat",
+    "dependencies",
+    "signing_backend",
+    "details"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "status": { "enum": ["HEALTHY", "DEGRADED", "UNREACHABLE"] },
+    "mode": { "enum": ["demo", "production"] },
+    "version": { "type": "string" },
+    "last_heartbeat": { "type": "string" },
+    "dependencies": {
+      "type": "object",
+      "required": ["signing", "run_vault", "scenario_catalog"],
+      "properties": {
+        "signing": { "enum": ["HEALTHY", "DEGRADED", "FAILED"] },
+        "run_vault": { "enum": ["HEALTHY", "DEGRADED", "FAILED"] },
+        "scenario_catalog": { "enum": ["HEALTHY", "DEGRADED", "FAILED"] }
+      }
+    },
+    "signing_backend": { "enum": ["persistent", "ephemeral"] },
+    "details": { "type": "array", "items": { "type": "string" } }
+  }
+}
