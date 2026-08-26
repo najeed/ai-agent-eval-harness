@@ -30,6 +30,11 @@ share/python-wheels/
 MANIFEST
 .pypirc
 
+# [CI-fix] Python packaging globs above must not swallow frontend sources.
+# (lib/ silently excluded ui/visual-console/src/lib from every commit.)
+!ui/*/src/lib/
+!ui/*/src/lib/**
+
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.

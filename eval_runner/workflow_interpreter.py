@@ -46,15 +46,36 @@ from .execution_ir import (
 NodeExecutor = Callable[[Any, str, str | None], Awaitable[dict[str, Any]]]
 ContextProvider = Callable[[], Awaitable[dict[str, Any]]]
 
+# [P2.4] Edge-role split for join mathematics. Structural edges carry the
+# plan's convergence contract; repair/exception edges (retry, compensation,
+# error, timeout) route control BACK into an existing node and must never
+# raise a join's required degree — counting them starved any node with a
+# self-retry under the default AND-join.
+_STRUCTURAL_EDGE_TYPES = frozenset(
+    {
+        EdgeType.SEQUENTIAL,
+        EdgeType.PARALLEL,
+        EdgeType.JOIN,
+        EdgeType.CONDITION,
+        EdgeType.DEFAULT,
+    }
+)
+_REPAIR_EDGE_TYPES = frozenset(
+    {EdgeType.RETRY, EdgeType.COMPENSATION, EdgeType.ERROR, EdgeType.TIMEOUT}
+)
+
 
 @dataclass
 class ExecutionToken:
-    """[P0-B] Join currency: tokens move through the graph; joins consume them.
+    """[P0-B][P2.4] Join currency: tokens move through the graph; joins consume them.
 
-    match_key binds a token to (branch lineage, producer iteration): sibling
-    branches of one fork share lineage, so their tokens can satisfy a common
-    join, while a retried producer's later iteration can never complete a
-    join left half-open by an earlier iteration ([P0-4]).
+    ``epoch`` is a globally-unique fork-wave identifier minted at every edge
+    fire. A join consumes ONLY tokens sharing one epoch, and firing a join
+    invalidates every unused token of that epoch — a later loop wave can
+    never satisfy a join left half-open by an earlier one ([P0-4]), while
+    sibling branches of one fan-out always converge.
+
+    ``branch_generation`` is retained for provenance/evidence only.
     """
 
     edge_id: str
@@ -62,10 +83,11 @@ class ExecutionToken:
     produced_by: str
     iteration: int
     compensating: bool = False
+    epoch: str = ""
 
     @property
-    def match_key(self) -> tuple[str, int]:
-        return (self.branch_generation, self.iteration)
+    def match_key(self) -> str:
+        return self.epoch
 
 
 @dataclass
@@ -75,6 +97,7 @@ class ReadyItem:
     compensating: bool
     generation: str
     parent_exec_id: str | None
+    epoch: str = ""
 
 
 @dataclass
@@ -144,6 +167,7 @@ class WorkflowOutcome:
     node_executions: list[NodeExecutionRecord] = field(default_factory=list)
     transitions: list[TransitionRecord] = field(default_factory=list)
     skipped_node_ids: list[str] = field(default_factory=list)
+    dropped_after_cap_node_ids: list[str] = field(default_factory=list)
     failed_node_ids: list[str] = field(default_factory=list)
     terminal_node_ids: list[str] = field(default_factory=list)
     steps_taken: int = 0
@@ -159,6 +183,7 @@ class WorkflowOutcome:
             "node_executions": [n.to_dict() for n in self.node_executions],
             "transitions": [t.to_dict() for t in self.transitions],
             "skipped_node_ids": self.skipped_node_ids,
+            "dropped_after_cap_node_ids": self.dropped_after_cap_node_ids,
             "failed_node_ids": self.failed_node_ids,
             "terminal_node_ids": self.terminal_node_ids,
             "steps_taken": self.steps_taken,
@@ -175,6 +200,9 @@ class _SchedulerState:
         self.compensated_nodes: set[str] = set()
         self.unhandled_failures: list[str] = []
         self.pending_compensations: int = 0
+        # [P2.5/V11] Nodes whose activations were dropped after exhausting
+        # their visitation cap — distinct from zero-visitation skips.
+        self.dropped_after_cap: set[str] = set()
 
     def pending_compensations_increment(self) -> None:
         self.pending_compensations += 1
@@ -210,6 +238,7 @@ class WorkflowInterpreter:
         self.transitions: list[TransitionRecord] = []
         self.node_records: list[NodeExecutionRecord] = []
         self._wave_counter = 0
+        self._epoch_counter = 0
 
     async def _default_context(self) -> dict[str, Any]:
         return {"state": {}, "result": {}, "tools_used": []}
@@ -219,6 +248,11 @@ class WorkflowInterpreter:
         base = producer_exec_id or f"{self.identity.attempt_id}:entry"
         return f"{base}/{kind}{self._wave_counter}"
 
+    def _new_epoch(self) -> str:
+        """[P2.4] Mints a globally-unique join epoch (fork-wave scope)."""
+        self._epoch_counter += 1
+        return f"ep{self._epoch_counter}"
+
     # ------------------------------------------------------------------
     # Public entry point
     # ------------------------------------------------------------------
@@ -227,7 +261,8 @@ class WorkflowInterpreter:
         results: list[dict[str, Any]] = []
         root_gen = self._new_generation(None, "root")
         ready: list[ReadyItem] = [
-            ReadyItem(nid, 1, False, root_gen, None) for nid in self.plan.entry_node_ids
+            ReadyItem(nid, 1, False, root_gen, None, epoch="ep0")
+            for nid in self.plan.entry_node_ids
         ]
         budget = self.plan.step_budget
         steps = 0
@@ -256,8 +291,10 @@ class WorkflowInterpreter:
                     )
                 break
 
-            # Dequeue respecting per-node visitation caps (over-cap items are
-            # silently dropped exactly as before — they count as skipped).
+            # Dequeue respecting per-node visitation caps. [P2.5/V11] Over-cap
+            # items are DROPPED, never silently: each drop is recorded on the
+            # scheduler state (distinct from zero-visitation skips) and emits
+            # a node_dropped_over_cap event for deterministic-replay audit.
             batch: list[ReadyItem] = []
             while ready:
                 cand = ready.pop(0)
@@ -265,8 +302,32 @@ class WorkflowInterpreter:
                     state.visitation_counts[cand.node_id]
                     >= self.plan.nodes[cand.node_id].max_visitations
                 ):
+                    state.dropped_after_cap.add(cand.node_id)
+                    self._emit_drop_over_cap(cand, "dequeue_cap")
                     continue
                 batch.append(cand)
+            if not batch:
+                continue
+
+            # [V11] Batch-level cap enforcement: sibling activations enqueued
+            # before an earlier twin executed would slip past the dequeue gate
+            # (stale counts) and over-run the visitation budget. Trim here,
+            # deterministically, BEFORE any executor fires.
+            trimmed: list[ReadyItem] = []
+            per_node_slots: dict[str, int] = {}
+            for cand in batch:
+                remaining = (
+                    self.plan.nodes[cand.node_id].max_visitations
+                    - state.visitation_counts[cand.node_id]
+                )
+                used = per_node_slots.get(cand.node_id, 0)
+                if used >= remaining:
+                    state.dropped_after_cap.add(cand.node_id)
+                    self._emit_drop_over_cap(cand, "batch_cap")
+                    continue
+                per_node_slots[cand.node_id] = used + 1
+                trimmed.append(cand)
+            batch = trimmed
             if not batch:
                 continue
 
@@ -414,6 +475,7 @@ class WorkflowInterpreter:
             node_executions=self.node_records,
             transitions=self.transitions,
             skipped_node_ids=skipped,
+            dropped_after_cap_node_ids=sorted(state.dropped_after_cap),
             failed_node_ids=sorted(state.failed_nodes),
             terminal_node_ids=terminal_ids,
             steps_taken=steps,
@@ -421,6 +483,21 @@ class WorkflowInterpreter:
         for nid in skipped:
             self._emit_node(nid, 1, None, "skipped")
         return results, outcome
+
+    def _emit_drop_over_cap(self, item: ReadyItem, phase: str) -> None:
+        """[P2.5/V11] Over-cap scheduling drops are first-class evidence."""
+        if not self.event_bus:
+            return
+        self.event_bus.emit(
+            "node_dropped_over_cap",
+            {
+                "run_id": self.identity.evaluation_run_id,
+                "scenario_node_id": item.node_id,
+                "attempt_id": self.identity.attempt_id,
+                "phase": phase,
+                "compensating": bool(item.compensating),
+            },
+        )
 
     # ------------------------------------------------------------------
     # Single-node execution with interpreter-owned deadline
@@ -604,11 +681,16 @@ class WorkflowInterpreter:
         compensating: bool = False,
     ) -> list[ReadyItem]:
         producer_exec_id = self.identity.execution_instance_id(item.node_id, item.iteration)
-        # [P0-4] Tokens inherit the BRANCH LINEAGE of their producer and are
-        # match-keyed by (lineage, iteration): fork siblings satisfy a common
-        # join, while a later loop iteration can never complete a join left
-        # half-open by an earlier one.
+        # [P0-4][P2.4] Epoch semantics: tokens INHERIT the wave epoch of their
+        # producing item; a multi-edge fan-out mints a FRESH epoch so its
+        # siblings converge at downstream joins while other waves never mix.
+        # A retried loop wave therefore re-mints exactly once per pass over
+        # the fork head — cross-wave satisfaction is structurally impossible.
         lineage = item.generation
+        if len(edges) > 1:
+            epoch = self._new_epoch()
+        else:
+            epoch = item.epoch
 
         activated: list[ReadyItem] = []
         seen_keys: set[tuple[str, int, str]] = set()
@@ -632,6 +714,7 @@ class WorkflowInterpreter:
                 produced_by=producer_exec_id,
                 iteration=item.iteration,
                 compensating=compensating or item.compensating,
+                epoch=epoch,
             )
             state.pending_tokens.setdefault(edge.to_node, []).append(token)
             if token.compensating:
@@ -650,56 +733,113 @@ class WorkflowInterpreter:
 
     def _try_join(self, target: str, item: ReadyItem, state: _SchedulerState) -> list[ReadyItem]:
         """
-        [P0-4][P0-5] Generation-scoped activation.
+        [P0-4][P0-5][P2.4] Epoch-scoped join activation.
 
-        A join consumes ONLY tokens sharing one (branch lineage, iteration)
-        match key, so a wave from loop iteration N can never satisfy a join
-        half-open from iteration N-1, while fork siblings of the same lineage
-        converge. Modes: all (AND), any, n_of_m over ALL incoming edges.
+        Structural inputs (sequential/parallel/join/condition/default) are
+        grouped strictly by JOIN EPOCH: a join consumes ONLY tokens minted by
+        the same fork-wave fire, and firing invalidates every unused token of
+        that epoch, so late arrivals from an older wave can never satisfy (or
+        inflate) a later join. Repair edges (retry/compensation/error/timeout)
+        BYPASS join mathematics entirely — they re-activate the target
+        directly in their own epoch and never raise the required degree.
+
+        Modes over the STRUCTURAL in-degree: all (AND), any, n_of_m.
         """
-        incoming_ids = {e.edge_id for e in self.plan.incoming(target)}
-        if not incoming_ids:
+        incoming = self.plan.incoming(target)
+        if not incoming:
             return []
-        mode, n_required = self.plan.nodes[target].join_spec(incoming_ids)
+        structural_ids = {e.edge_id for e in incoming if e.type in _STRUCTURAL_EDGE_TYPES}
+        repair_ids = {e.edge_id for e in incoming} - structural_ids
 
         tokens = state.pending_tokens.get(target, [])
-        by_key: dict[tuple[str, int], list[ExecutionToken]] = {}
-        for t in tokens:
-            if t.edge_id in incoming_ids:
-                by_key.setdefault(t.match_key, []).append(t)
 
-        chosen_lineage: str | None = None
+        # --- Repair-path bypass -------------------------------------------
+        # A repair arrival re-activates the target INSIDE the same wave: the
+        # detour must complete under its original epoch so downstream joins
+        # still converge (producer iteration skew is irrelevant by design).
+        repair_hit = next((t for t in tokens if t.edge_id in repair_ids), None)
+        if repair_hit is not None:
+            state.pending_tokens[target] = [t for t in tokens if t is not repair_hit]
+            if state.visitation_counts[target] >= self.plan.nodes[target].max_visitations:
+                # [P2.5/V11] Token consumed then discarded over cap: recorded.
+                state.dropped_after_cap.add(target)
+                self._emit_drop_over_cap(
+                    ReadyItem(target, 0, repair_hit.compensating, "", None),
+                    "join_token_cap",
+                )
+                return []
+            return [
+                ReadyItem(
+                    node_id=target,
+                    iteration=state.visitation_counts[target] + 1,
+                    compensating=repair_hit.compensating,
+                    generation=repair_hit.branch_generation,
+                    parent_exec_id=repair_hit.produced_by,
+                    epoch=repair_hit.epoch,
+                )
+            ]
+
+        # --- Epoch-scoped structural join ---------------------------------
+        if not structural_ids:
+            return []
+        mode, n_required = self.plan.nodes[target].join_spec(structural_ids)
+
+        by_epoch: dict[str, list[ExecutionToken]] = {}
+        for t in tokens:
+            if t.edge_id in structural_ids:
+                by_epoch.setdefault(t.epoch, []).append(t)
+
+        chosen_epoch: str | None = None
         consumed: list[ExecutionToken] = []
-        for key in sorted(by_key):
-            group = by_key[key]
-            covered = {t.edge_id for t in group} & incoming_ids
+        for epoch in sorted(by_epoch):
+            group = by_epoch[epoch]
+            covered = {t.edge_id for t in group}
             satisfied = (
-                (incoming_ids <= covered) if mode == "all" else (len(covered) >= max(1, n_required))
+                (structural_ids <= covered)
+                if mode == "all"
+                else (len(covered) >= max(1, n_required))
             )
             if satisfied:
-                chosen_lineage = key[0]
+                chosen_epoch = epoch
                 used_edges = (
-                    set(incoming_ids)
+                    set(structural_ids)
                     if mode == "all"
                     else set(sorted(covered)[: max(1, n_required)])
                 )
                 consumed = [t for t in group if t.edge_id in used_edges]
                 break
 
-        if chosen_lineage is None or not consumed:
+        if chosen_epoch is None or not consumed:
             return []
 
-        state.pending_tokens[target] = [t for t in tokens if t not in consumed]
+        # Firing the join INVALIDATES every unused token of this epoch: the
+        # wave is complete; its stragglers are evidentiary dead weight.
+        state.pending_tokens[target] = [
+            t
+            for t in tokens
+            if t.epoch != chosen_epoch  # includes consumed
+        ]
         if state.visitation_counts[target] >= self.plan.nodes[target].max_visitations:
+            # [P2.5/V11] Satisfied join discarded over cap: recorded.
+            state.dropped_after_cap.add(target)
+            self._emit_drop_over_cap(
+                ReadyItem(target, 0, any(t.compensating for t in consumed), "", None),
+                "join_satisfied_cap",
+            )
             return []
         parent = sorted(consumed, key=lambda t: t.edge_id)[0].produced_by
+        lineage = sorted(consumed, key=lambda t: t.edge_id)[0].branch_generation
+        # Wave boundary ONLY at true merges (>1 token consumed): a pass-through
+        # single-token join must not fork the epoch space, or every hop would.
+        joined_epoch = self._new_epoch() if len(consumed) > 1 else consumed[0].epoch
         return [
             ReadyItem(
                 node_id=target,
                 iteration=state.visitation_counts[target] + 1,
                 compensating=any(t.compensating for t in consumed),
-                generation=chosen_lineage,
+                generation=lineage,
                 parent_exec_id=parent,
+                epoch=joined_epoch,
             )
         ]
 

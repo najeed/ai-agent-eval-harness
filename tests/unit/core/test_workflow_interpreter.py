@@ -44,7 +44,7 @@ def _plan(scenario: dict):
     oracle is injected into any node that lacks one.
 
     [P0-11] These tests DECLARE their entry node explicitly (the first
-    declared node) — declaration-order defaults are no longer inferred.
+    declared node) â€” declaration-order defaults are no longer inferred.
     """
     import copy as _copy
 
@@ -625,7 +625,7 @@ async def test_dropped_compensation_prevents_workflow_completion():
         "failure_policy": "compensate_then_fail",
         "workflow": {
             "nodes": [
-                # join:any — the default AND-join over BOTH incoming retry
+                # join:any â€” the default AND-join over BOTH incoming retry
                 # edges would strand a single retry token forever.
                 {"id": "worker", "max_visitations": 3, "join": "any"},
                 {"id": "refund", "max_visitations": 1, "join": "any"},
@@ -753,7 +753,7 @@ async def _async_ctx(state):
 
 
 # ---------------------------------------------------------------------------
-# [A7] TIMEOUT edge — executable contract (closes per-EdgeType coverage)
+# [A7] TIMEOUT edge â€” executable contract (closes per-EdgeType coverage)
 # ---------------------------------------------------------------------------
 
 
@@ -853,10 +853,9 @@ async def test_error_edge_takes_priority_over_timeout_edge():
 
 
 def test_join_rejects_cross_iteration_tokens():
-    """[P0-4] A join consumes ONLY tokens sharing one (lineage, iteration) key.
-
-    Direct _try_join probe: an e2 token produced by loop iteration 9 can never
-    complete the AND-join left half-open by e1's iteration-1 sibling.
+    """[P0-4][P2.4] A join consumes ONLY tokens sharing one minted EPOCH,
+    and firing invalidates every unused token of that epoch while leaving
+    other epochs untouched. Direct _try_join probe.
     """
     from eval_runner.workflow_interpreter import ExecutionToken, _SchedulerState
 
@@ -876,32 +875,34 @@ def test_join_rejects_cross_iteration_tokens():
     interp = WorkflowInterpreter(plan, _identity(), event_bus=None)
     state = _SchedulerState(plan)
 
-    def tok(edge_id: str, produced_by: str, iteration: int) -> ExecutionToken:
+    def tok(edge_id: str, produced_by: str, epoch: str) -> ExecutionToken:
         return ExecutionToken(
             edge_id=edge_id,
             branch_generation="g0",
             produced_by=produced_by,
-            iteration=iteration,
+            iteration=1,
+            epoch=epoch,
         )
 
-    # e2 arrives from iteration 9 while e1 sits half-open from iteration 1:
-    # match keys differ -> NO activation despite full edge coverage.
+    # e2 arrives from fork-wave ep9 while e1 sits half-open from wave ep1:
+    # epochs differ -> NO activation despite full edge coverage.
     state.pending_tokens["j"] = [
-        tok("e1", "a:attempt:1", 1),
-        tok("e2", "b:attempt:9", 9),
+        tok("e1", "a:w1", "ep1"),
+        tok("e2", "b:w9", "ep9"),
     ]
     assert interp._try_join("j", None, state) == []
     assert len(state.pending_tokens["j"]) == 2  # nothing consumed on a mismatch
 
-    # Same-key sibling completes the AND-join and is consumed.
-    state.pending_tokens["j"][1] = tok("e2", "b:attempt:1", 1)
+    # Same-epoch sibling completes the AND-join and is consumed.
+    state.pending_tokens["j"].append(tok("e2", "b:w1", "ep1"))
     activated = interp._try_join("j", None, state)
     assert len(activated) == 1
     joined = activated[0]
     assert joined.node_id == "j"
     assert joined.iteration == 1  # first visitation of j
     assert joined.generation == "g0"
-    assert state.pending_tokens["j"] == []
+    # Epoch ep1 is fully invalidated by the firing; ep9 survives untouched.
+    assert [t.epoch for t in state.pending_tokens["j"]] == ["ep9"]
 
 
 @pytest.mark.asyncio
@@ -968,3 +969,291 @@ async def test_parallel_wave_runs_concurrently_wall_clock():
     assert outcome.success
     assert sorted(r["task_id"] for r in results) == ["l", "r", "root"]
     assert elapsed < 0.45, f"wave did not overlap: took {elapsed:.3f}s"
+
+
+# ---------------------------------------------------------------------------
+# [Open Decision #1] Join-token lifecycle: looped ALL/ANY/N_OF_M adversarial
+# battery. Decides whether explicit join epochs (P2.4) are required.
+#
+#   Direction A (Reviewer A): stale tokens from an earlier loop wave can
+#   satisfy a later join -> false satisfaction.
+#   Direction B: tokens of one logical wave can NEVER pair when producer
+#   visitation counts skew (self-retry on one branch) -> false starvation.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_join_all_never_pairs_tokens_across_loop_waves():
+    """Direction A. Wave 1: branch b fails (handled via its error edge to
+    'sink') after a already deposited its join token; wave 2 completes fully.
+    The lingering wave-1 token must NEVER combine with wave-2 evidence:
+    j executes exactly once."""
+    scenario = {
+        "failure_policy": "continue_independent",
+        "workflow": {
+            "nodes": [
+                {"id": "s", "max_visitations": 3},
+                {"id": "a", "max_visitations": 3},
+                {"id": "b", "max_visitations": 3},
+                {"id": "sink"},
+                {"id": "j", "join": "all", "max_visitations": 3},
+                {"id": "done"},
+            ],
+            "entry_nodes": ["s"],
+            "edges": [
+                {
+                    "from": "s",
+                    "to": "s",
+                    "type": "retry",
+                    "condition": {"op": "eq", "path": "result.loop_more", "value": True},
+                },
+                {"from": "s", "to": "a", "type": "parallel"},
+                {"from": "s", "to": "b", "type": "parallel"},
+                {"from": "a", "to": "j", "type": "sequential"},
+                {"from": "b", "to": "j", "type": "sequential"},
+                {"from": "b", "to": "sink", "type": "error"},
+                {"from": "j", "to": "done", "type": "sequential"},
+            ],
+        },
+    }
+    plan = _plan(scenario)
+    calls = {"s": 0, "a": 0, "b": 0, "j": 0, "done": 0, "sink": 0}
+
+    async def executor(node_ir, exec_id, parent):
+        nid = node_ir.node_id
+        if nid == "s":
+            calls["s"] += 1
+            return {"task_id": nid, "status": "success", "loop_more": calls["s"] == 1}
+        if nid == "a":
+            calls["a"] += 1
+        elif nid == "b":
+            calls["b"] += 1
+            # Wave 1 fails AFTER a has fired its token toward j.
+            if calls["s"] == 1 and calls["b"] == 1:
+                return {"task_id": nid, "status": "failure", "message": "boom"}
+        elif nid == "j":
+            calls["j"] += 1
+        elif nid == "done":
+            calls["done"] += 1
+        elif nid == "sink":
+            calls["sink"] += 1
+        return {"task_id": nid, "status": "success"}
+
+    results, outcome = await _run(plan, executor)
+
+    assert calls["s"] == 2
+    assert calls["j"] == 1, f"stale-token leak: j fired {calls['j']}x; cross-wave pairing occurred"
+    assert calls["done"] == 1
+    assert outcome.success
+
+
+@pytest.mark.asyncio
+async def test_join_all_converges_same_wave_despite_producer_iteration_skew():
+    """Direction B. Branch a self-retries once before depositing its join
+    token, so its producer iteration (2) differs from b's (1) inside the
+    SAME fork wave. A logically complete wave must converge at the join."""
+    scenario = {
+        "failure_policy": "best_effort",
+        "workflow": {
+            "nodes": [
+                {"id": "p"},
+                {"id": "a", "max_visitations": 5},
+                {"id": "b"},
+                {"id": "j", "join": "all"},
+                {"id": "done"},
+            ],
+            "entry_nodes": ["p"],
+            "edges": [
+                {"from": "p", "to": "a", "type": "parallel"},
+                {"from": "p", "to": "b", "type": "parallel"},
+                {
+                    "from": "a",
+                    "to": "a",
+                    "type": "retry",
+                    "condition": {"op": "eq", "path": "result.retry_a", "value": True},
+                },
+                {"from": "a", "to": "j", "type": "sequential"},
+                {"from": "b", "to": "j", "type": "sequential"},
+                {"from": "j", "to": "done", "type": "sequential"},
+            ],
+        },
+    }
+    plan = _plan(scenario)
+    calls = {"a": 0, "j": 0}
+
+    async def executor(node_ir, exec_id, parent):
+        nid = node_ir.node_id
+        if nid == "a":
+            calls["a"] += 1
+            return {"task_id": nid, "status": "success", "retry_a": calls["a"] == 1}
+        if nid == "j":
+            calls["j"] += 1
+        return {"task_id": nid, "status": "success"}
+
+    results, outcome = await _run(plan, executor)
+
+    assert calls["a"] == 2
+    assert calls["j"] == 1, (
+        "same-wave convergence starved: producer iteration skew blocked "
+        f"the join (j fired {calls['j']}x); outcome={outcome.reason!r}"
+    )
+
+
+@pytest.mark.asyncio
+async def test_join_n_of_m_leftovers_do_not_inflate_later_waves():
+    """N_OF_M(2 of 3): each wave's late third token is stranded in its own
+    epoch; leftover tokens must never satisfy or inflate later waves."""
+    scenario = {
+        "failure_policy": "continue_independent",
+        "workflow": {
+            "nodes": [
+                {"id": "s", "max_visitations": 3},
+                {"id": "x", "max_visitations": 3},
+                {"id": "y", "max_visitations": 3},
+                {"id": "z", "max_visitations": 3},
+                {"id": "m", "join": {"mode": "n_of_m", "n": 2}, "max_visitations": 3},
+                {"id": "done"},
+            ],
+            "entry_nodes": ["s"],
+            "edges": [
+                {"from": "s", "to": "x", "type": "parallel"},
+                {"from": "s", "to": "y", "type": "parallel"},
+                {"from": "s", "to": "z", "type": "parallel"},
+                {"from": "x", "to": "m", "type": "sequential"},
+                {"from": "y", "to": "m", "type": "sequential"},
+                {"from": "z", "to": "m", "type": "sequential"},
+                {
+                    "from": "m",
+                    "to": "s",
+                    "type": "retry",
+                    "condition": {"op": "eq", "path": "result.loop_more", "value": True},
+                },
+                {"from": "m", "to": "done", "type": "sequential"},
+            ],
+        },
+    }
+    plan = _plan(scenario)
+    calls = {"s": 0, "m": 0, "done": 0}
+
+    async def executor(node_ir, exec_id, parent):
+        nid = node_ir.node_id
+        if nid == "s":
+            calls["s"] += 1
+        elif nid == "m":
+            calls["m"] += 1
+            return {"task_id": nid, "status": "success", "loop_more": calls["m"] == 1}
+        elif nid == "done":
+            calls["done"] += 1
+        return {"task_id": nid, "status": "success"}
+
+    results, outcome = await _run(plan, executor)
+
+    assert calls["s"] == 2
+    assert calls["m"] == 2, f"leftover inflation: m fired {calls['m']}x"
+    assert calls["done"] == 1
+
+
+@pytest.mark.asyncio
+async def test_over_cap_drops_are_recorded_and_emitted():
+    """[P2.5/V11] No evidentiary black holes: over-cap drops surface as
+    dropped_after_cap_node_ids (distinct from skips) AND emit
+    node_dropped_over_cap events from both drop paths."""
+
+    class Bus:
+        def __init__(self):
+            self.events = []
+
+        def emit(self, name, payload):
+            self.events.append((name, payload))
+
+    async def ctx_provider():
+        return {"state": {}}
+
+    # --- Path 1: batch cap ----------------------------------------------
+    # Two sibling branches converge on an ANY-join of cap 1 within one wave:
+    # both activations enqueue before either executes; the batch trimmer
+    # drops the second BEFORE any executor fires (no silent budget over-run).
+    plan_a = _plan(
+        {
+            "workflow": {
+                "nodes": [
+                    {"id": "m"},
+                    {"id": "p"},
+                    {"id": "q"},
+                    {"id": "d", "join": "any", "max_visitations": 1},
+                ],
+                "entry_nodes": ["m"],
+                "edges": [
+                    {"from": "m", "to": "p", "type": "parallel"},
+                    {"from": "m", "to": "q", "type": "parallel"},
+                    {"from": "p", "to": "d", "type": "sequential"},
+                    {"from": "q", "to": "d", "type": "sequential"},
+                ],
+            }
+        }
+    )
+    bus_a = Bus()
+    interp_a = WorkflowInterpreter(
+        plan_a, _identity(), event_bus=bus_a, context_provider=ctx_provider
+    )
+    d_calls = {"n": 0}
+
+    async def executor_loop(node_ir, exec_id, parent):
+        if node_ir.node_id == "d":
+            d_calls["n"] += 1
+        return {"task_id": node_ir.node_id, "status": "success"}
+
+    _, outcome_a = await interp_a.run(executor_loop)
+    assert d_calls["n"] == 1  # budget never over-runs
+    assert outcome_a.dropped_after_cap_node_ids == ["d"]
+    drops_a = [p for name, p in bus_a.events if name == "node_dropped_over_cap"]
+    assert [p["phase"] for p in drops_a] == ["batch_cap"]
+
+    # --- Path 2: satisfied join discarded over cap ----------------------
+    # j drives the loop: wave 1 executes j (cap 1), fires j->s, and wave 2
+    # fully satisfies the join again — consumed, then discarded by the cap.
+    plan_b = _plan(
+        {
+            "workflow": {
+                "nodes": [
+                    {"id": "s", "max_visitations": 3},
+                    {"id": "a", "max_visitations": 3},
+                    {"id": "b", "max_visitations": 3},
+                    {"id": "j", "join": "all", "max_visitations": 1},
+                    {"id": "done"},
+                ],
+                "entry_nodes": ["s"],
+                "edges": [
+                    {"from": "s", "to": "a", "type": "parallel"},
+                    {"from": "s", "to": "b", "type": "parallel"},
+                    {"from": "a", "to": "j", "type": "sequential"},
+                    {"from": "b", "to": "j", "type": "sequential"},
+                    {
+                        "from": "j",
+                        "to": "s",
+                        "type": "retry",
+                        "condition": {"op": "eq", "path": "result.loop_more", "value": True},
+                    },
+                    {"from": "j", "to": "done", "type": "sequential"},
+                ],
+            }
+        }
+    )
+    bus_b = Bus()
+    interp_b = WorkflowInterpreter(
+        plan_b, _identity(), event_bus=bus_b, context_provider=ctx_provider
+    )
+    j_calls = {"n": 0}
+
+    async def executor_waves(node_ir, exec_id, parent):
+        nid = node_ir.node_id
+        if nid == "j":
+            j_calls["n"] += 1
+            return {"task_id": nid, "status": "success", "loop_more": j_calls["n"] == 1}
+        return {"task_id": nid, "status": "success"}
+
+    _, outcome_b = await interp_b.run(executor_waves)
+    assert outcome_b.dropped_after_cap_node_ids == ["j"]
+    drops_b = [p for name, p in bus_b.events if name == "node_dropped_over_cap"]
+    assert [p["phase"] for p in drops_b] == ["join_satisfied_cap"]
+    assert all(p["scenario_node_id"] == "j" for p in drops_b)
