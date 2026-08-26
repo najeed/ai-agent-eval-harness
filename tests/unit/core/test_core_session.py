@@ -77,7 +77,7 @@ async def test_session_execute_tasks_success(base_scenario, tmp_path):
         {"metric": "task_completion", "threshold": 1.0}
     ]
 
-    mock_agent_response = {"action": "completed", "tool_name": None}
+    mock_agent_response = {"action": "completed", "tool_name": None, "message": "success"}
 
     with patch(
         "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
@@ -87,7 +87,6 @@ async def test_session_execute_tasks_success(base_scenario, tmp_path):
             mock_metrics.return_value = {"status": "success", "metrics": [{"success": True}]}
 
             results = await session.execute_tasks(attempt_number=1)
-
             assert len(results) == 2  # node_1 + global_evaluation
             assert results[0]["status"] == "success"
             assert results[1]["status"] == "success"
@@ -992,3 +991,83 @@ async def test_adapter_resolution_case_insensitive():
             protocol="HTTP", endpoint="http://test", message="hello", history=[]
         )
         assert res == {"action": "completed"}
+
+
+@pytest.mark.asyncio
+async def test_parallel_branch_state_and_history_isolation(tmp_path):
+    """[P2.1/P2.2] Sibling parallel nodes must execute in isolated ExecutionInstanceContexts
+    against dedicated sandbox forks without cross-branch history or state contamination.
+    """
+    scenario = {
+        "id": "parallel_isolation_test",
+        "run_id": "run_parallel_iso",
+        "max_turns": 2,
+        "metadata": {
+            "agent": {"endpoint": "mock://test", "protocol": "http"},
+            "execution_mode": "simulated",
+        },
+        "initial_state": {"counter": 0},
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "root",
+                    "task_description": "Root",
+                    "success_criteria": [{"metric": "m_root", "threshold": 1.0}],
+                },
+                {
+                    "id": "branch_left",
+                    "task_description": "Left",
+                    "success_criteria": [{"metric": "m_left", "threshold": 1.0}],
+                },
+                {
+                    "id": "branch_right",
+                    "task_description": "Right",
+                    "success_criteria": [{"metric": "m_right", "threshold": 1.0}],
+                },
+            ],
+            "edges": [
+                {"from": "root", "to": "branch_left", "type": "parallel"},
+                {"from": "root", "to": "branch_right", "type": "parallel"},
+            ],
+        },
+        "tools": {
+            "tool_l": {
+                "output": {"status": "success"},
+                "state_changes": [{"path": "left_val", "value": "L"}],
+            },
+            "tool_r": {
+                "output": {"status": "success"},
+                "state_changes": [{"path": "right_val", "value": "R"}],
+            },
+        },
+    }
+
+    session = SessionManager("run_parallel_iso", scenario, log_root=tmp_path)
+    observed_histories = {}
+
+    async def mock_call_agent(protocol, endpoint, message, history=None, turn_ctx=None, **kwargs):
+        if history is not None:
+            # Capture the exact history seen by this branch at call time
+            observed_histories[message] = [h["content"] for h in history if "content" in h]
+        return {"action": "completed", "tool_name": None}
+
+    async def fake_calculate_metrics(node, attempt, turn, hist=None, sbox=None, acts=None):
+        criteria = node.get("success_criteria", [])
+        m_list = [
+            {"id": c.get("metric"), "metric": c.get("metric"), "success": True} for c in criteria
+        ]
+        return {"status": "success", "metrics": m_list}
+
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", side_effect=mock_call_agent):
+        with patch.object(session, "_calculate_metrics", side_effect=fake_calculate_metrics):
+            results = await session.execute_tasks(attempt_number=1)
+            assert len(results) >= 3
+            # Both parallel branches executed successfully
+            assert any(r.get("scenario_node_id") == "branch_left" for r in results)
+            assert any(r.get("scenario_node_id") == "branch_right" for r in results)
+
+            # Neither branch saw each other's message history during execution
+            left_hist = observed_histories.get("Left", [])
+            right_hist = observed_histories.get("Right", [])
+            assert "Right" not in left_hist
+            assert "Left" not in right_hist

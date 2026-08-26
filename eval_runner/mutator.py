@@ -59,7 +59,12 @@ def mutate_text_with_typos(text: str, probability: float = 0.1) -> str:
 
 
 class ScenarioMutator(ABC):
-    """Abstract Base Class for Scenario Mutators in the pipeline."""
+    """
+    [P2.8] Abstract Base Class for Mutation Providers (e.g., typos, ambiguity, injection).
+    Supports is_mandatory to differentiate required mutations from optional plugins.
+    """
+
+    is_mandatory: bool = False
 
     @abstractmethod
     def can_mutate(self, mutation_type: str) -> bool:
@@ -205,7 +210,16 @@ class MutationService:
                         # Safeguard 2: Never swallow system control/cycle exceptions
                         raise
                     except Exception as e:
-                        logging.error(
+                        is_mandatory = getattr(provider, "is_mandatory", False)
+                        if is_mandatory:
+                            logging.error(
+                                f"Mandatory mutator '{provider.__class__.__name__}' "
+                                f"failed: {e}. Failing."
+                            )
+                            raise RuntimeError(
+                                f"Mandatory mutator '{provider.__class__.__name__}' failed: {e}"
+                            ) from e
+                        logging.warning(
                             f"Plugin mutator '{provider.__class__.__name__}' failed: {e}. "
                             "Gracefully bypassing to next handler."
                         )

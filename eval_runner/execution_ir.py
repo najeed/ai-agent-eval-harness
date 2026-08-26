@@ -295,6 +295,58 @@ class NodeIR:
         return mode, max(0, n)
 
 
+@dataclass(frozen=True)
+class CompiledOracle:
+    """
+    [P2.6] Authoritative compiled oracle assertion.
+    Every declared assertion carries an explicit resolver, evidence source,
+    requiredness, and expected type.
+    """
+
+    oracle_id: str
+    scenario_node_id: str
+    source_type: str  # "success_criteria" | "state_hygiene" | "expected_outcome"
+    resolver: str  # "metrics_calculator" | "state_hygiene" | "state_parity"
+    evidence_source: str
+    required: bool = True
+    expected_type: str = "any"
+    definition: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "oracle_id": self.oracle_id,
+            "scenario_node_id": self.scenario_node_id,
+            "source_type": self.source_type,
+            "resolver": self.resolver,
+            "evidence_source": self.evidence_source,
+            "required": self.required,
+            "expected_type": self.expected_type,
+        }
+
+
+@dataclass
+class CompiledEvaluationPlan:
+    """
+    [P2.6] Authoritative compiled evaluation inventory across the entire scenario.
+    """
+
+    oracles: dict[str, CompiledOracle] = field(default_factory=dict)
+    node_oracles: dict[str, list[CompiledOracle]] = field(default_factory=dict)
+
+    def required_oracles_for_node(self, node_id: str) -> list[CompiledOracle]:
+        return [o for o in self.node_oracles.get(node_id, []) if o.required]
+
+    def all_required_oracles(self) -> list[CompiledOracle]:
+        return [o for o in self.oracles.values() if o.required]
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "total_oracles": len(self.oracles),
+            "required_oracles": len(self.all_required_oracles()),
+            "oracles": {k: v.to_dict() for k, v in self.oracles.items()},
+        }
+
+
 @dataclass
 class WorkflowPlan:
     """
@@ -308,6 +360,7 @@ class WorkflowPlan:
     failure_policy: FailurePolicy = FailurePolicy.FAIL_FAST
     ir_version: str = EXECUTION_IR_VERSION
     legacy_linearized: bool = False
+    evaluation_plan: CompiledEvaluationPlan | None = None
 
     def outgoing(self, node_id: str) -> list[EdgeIR]:
         return sorted((e for e in self.edges if e.from_node == node_id), key=lambda e: e.sort_key)
@@ -331,6 +384,103 @@ class WorkflowPlan:
             MIN_STEP_BUDGET,
             len(self.nodes) * DEFAULT_STEP_BUDGET_MULTIPLIER * DEFAULT_MAX_NODE_VISITATIONS,
         )
+
+
+def compile_evaluation_plan(
+    scenario: dict[str, Any], plan: WorkflowPlan | None = None
+) -> CompiledEvaluationPlan:
+    """
+    Compiles an authoritative evaluation plan containing every assertion, its
+    resolver, evidence source, requiredness, and expected type.
+    """
+    eval_plan = CompiledEvaluationPlan()
+    nodes_to_inspect: dict[str, NodeIR] = {}
+    if plan is not None:
+        nodes_to_inspect = plan.nodes
+    else:
+        wf = scenario.get("workflow", {})
+        nodes_raw = (
+            wf if isinstance(wf, list) else wf.get("nodes", []) if isinstance(wf, dict) else []
+        )
+        for n in nodes_raw:
+            if isinstance(n, dict) and "id" in n:
+                nid = str(n["id"])
+                nodes_to_inspect[nid] = NodeIR(node_id=nid, definition=copy.deepcopy(n))
+
+    for node_id, node in nodes_to_inspect.items():
+        definition = node.definition
+        criteria = definition.get("success_criteria") or []
+        if isinstance(criteria, list):
+            for idx, c in enumerate(criteria):
+                if not isinstance(c, dict):
+                    continue
+                oid = str(c.get("id") or c.get("metric") or f"{node_id}:sc:{idx}")
+                target = str(
+                    c.get("target")
+                    or c.get("property")
+                    or c.get("name")
+                    or c.get("metric")
+                    or "metric"
+                )
+                req = bool(c.get("required", True))
+                compiled = CompiledOracle(
+                    oracle_id=oid,
+                    scenario_node_id=node_id,
+                    source_type="success_criteria",
+                    resolver="metrics_calculator",
+                    evidence_source=target,
+                    required=req,
+                    expected_type=str(c.get("type", "metric")),
+                    definition=copy.deepcopy(c),
+                )
+                eval_plan.oracles[oid] = compiled
+                eval_plan.node_oracles.setdefault(node_id, []).append(compiled)
+
+        hygiene = definition.get("state_hygiene")
+        if isinstance(hygiene, dict):
+            rules = hygiene.get("rules") or []
+            if isinstance(rules, list):
+                for idx, r in enumerate(rules):
+                    if not isinstance(r, dict):
+                        continue
+                    oid = str(r.get("id") or f"{node_id}:hygiene:{idx}")
+                    path = str(r.get("path") or r.get("target") or "state")
+                    req = bool(r.get("required", True))
+                    compiled = CompiledOracle(
+                        oracle_id=oid,
+                        scenario_node_id=node_id,
+                        source_type="state_hygiene",
+                        resolver="state_hygiene",
+                        evidence_source=path,
+                        required=req,
+                        expected_type=str(r.get("type", "hygiene_rule")),
+                        definition=copy.deepcopy(r),
+                    )
+                    eval_plan.oracles[oid] = compiled
+                    eval_plan.node_oracles.setdefault(node_id, []).append(compiled)
+
+        expected_outcome = definition.get("expected_outcome") or []
+        if isinstance(expected_outcome, list):
+            for idx, o in enumerate(expected_outcome):
+                if not isinstance(o, dict):
+                    continue
+                oid = str(o.get("id") or f"{node_id}:parity:{idx}")
+                target = str(o.get("target") or o.get("property") or "state")
+                req = bool(o.get("required", True))
+                compiled = CompiledOracle(
+                    oracle_id=oid,
+                    scenario_node_id=node_id,
+                    source_type="expected_outcome",
+                    resolver="state_parity",
+                    evidence_source=target,
+                    required=req,
+                    expected_type=str(o.get("mode", "exact")),
+                    definition=copy.deepcopy(o),
+                )
+                eval_plan.oracles[oid] = compiled
+                eval_plan.node_oracles.setdefault(node_id, []).append(compiled)
+
+    return eval_plan
 
 
 def _normalize_predicate(raw: Any) -> PredicateIR:
@@ -538,6 +688,7 @@ def compile_workflow(scenario: dict[str, Any]) -> WorkflowPlan:
         legacy_linearized=legacy_linearized,
     )
     _validate_plan(plan)
+    plan.evaluation_plan = compile_evaluation_plan(scenario, plan)
     return plan
 
 
@@ -705,6 +856,37 @@ def _validate_plan_semantics(plan: WorkflowPlan, errors: list[str], reachable: s
     for e in plan.edges:
         outgoing_by_source.setdefault(e.from_node, []).append(e)
 
+    # 0. Outgoing successor exclusivity (P2.3).
+    # Exactly one legal semantics per outgoing-edge class:
+    # - single sequential successor, OR
+    # - mutually-exclusive conditions (+ optional single default), OR
+    # - explicit parallel fan-out (>= 2 parallel edges).
+    for nid, outs in outgoing_by_source.items():
+        seq_edges = [e for e in outs if e.type == EdgeType.SEQUENTIAL]
+        par_edges = [e for e in outs if e.type == EdgeType.PARALLEL]
+        cond_edges = [e for e in outs if e.type == EdgeType.CONDITION]
+        def_edges = [e for e in outs if e.type == EdgeType.DEFAULT]
+
+        if len(seq_edges) > 1:
+            errors.append(
+                f"Ambiguous successor set on node '{nid}' — multiple sequential edges declared "
+                f"({[e.edge_id for e in seq_edges]}). Use 'parallel' for explicit fan-out."
+            )
+        if seq_edges and par_edges:
+            errors.append(
+                f"Ambiguous successor set on node '{nid}' — mixed sequential and parallel edges. "
+                "Declare either a single sequential successor or explicit parallel fan-out."
+            )
+        if par_edges and cond_edges:
+            errors.append(
+                f"Ambiguous successor set on node '{nid}' — mixed parallel and conditional edges."
+            )
+        if seq_edges and cond_edges and not def_edges:
+            errors.append(
+                f"Ambiguous successor set on node '{nid}' — unconditional sequential edge "
+                "alongside conditional edges without 'default' designation. Use 'default'."
+            )
+
     # 1. Default uniqueness.
     ambiguous_defaults = sorted(
         nid
@@ -867,6 +1049,8 @@ def evaluate_predicate(predicate: PredicateIR, context: dict[str, Any]) -> tuple
 
 __all__ = [
     "EXECUTION_IR_VERSION",
+    "CompiledEvaluationPlan",
+    "CompiledOracle",
     "EdgeIR",
     "EdgeType",
     "ExecutionIdentity",
@@ -878,6 +1062,7 @@ __all__ = [
     "PredicateIR",
     "WorkflowPlan",
     "WorkflowStatus",
+    "compile_evaluation_plan",
     "compile_workflow",
     "evaluate_predicate",
     "normalize_edge_type",

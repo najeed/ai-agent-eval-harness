@@ -14,6 +14,7 @@ import logging
 import os
 import sys
 import time
+from dataclasses import dataclass, field
 from pathlib import Path  # noqa: E402
 from typing import Any  # noqa: E402
 
@@ -31,6 +32,7 @@ from .context import TurnContext  # noqa: E402
 from .engine import AgentAdapterRegistry  # noqa: E402
 from .events import CoreEvents, Event, EventEmitter  # noqa: E402
 from .execution_ir import (  # noqa: E402
+    CompiledEvaluationPlan,
     ExecutionIdentity,
     ExecutionMode,
     NodeVerdict,
@@ -54,6 +56,29 @@ from .workflow_interpreter import WorkflowInterpreter  # noqa: E402
 # Security Guardrails: Fork Bomb Prevention
 MAX_FORK_DEPTH = config.MAX_FORK_DEPTH
 MAX_FORK_BREADTH = config.MAX_FORK_BREADTH
+
+
+@dataclass
+class ExecutionInstanceContext:
+    """
+    Isolated per-execution-instance context.
+    Owns conversation history, actions ledger, turns taken, isolated sandbox fork,
+    and state snapshots so parallel branches never bleed state.
+    """
+
+    scenario_node_id: str
+    execution_instance_id: str
+    parent_execution_id: str | None
+    attempt_number: int
+    identity: ExecutionIdentity
+    sandbox: Any
+    history: list[dict[str, Any]] = field(default_factory=list)
+    actions: dict[str, Any] = field(default_factory=lambda: {"used_tools": []})
+    turns_taken: int = 0
+    state_before: dict[str, Any] | None = None
+    state_after: dict[str, Any] | None = None
+    metrics: list[dict[str, Any]] = field(default_factory=list)
+    policy_decisions: list[dict[str, Any]] = field(default_factory=list)
 
 
 class SessionManager:
@@ -125,7 +150,7 @@ class SessionManager:
             # unmistakable warning and the certificate will be stamped
             # provisional=true (non-authoritative for audits).
             print(
-                "      ⚠⚠  EXECUTION MODE NOT DECLARED — defaulting to "
+                "      [WARNING] EXECUTION MODE NOT DECLARED - defaulting to "
                 "'simulated'. This run can NEVER be cited as live/replay "
                 "verification. Declare execution_mode explicitly."
             )
@@ -144,7 +169,7 @@ class SessionManager:
                 "Refusing to fall back to SIMULATED (fail-closed)."
             ) from err
 
-        # [P0-8] Truth-mode vs adapter consistency. A session that can reach a
+        # Truth-mode vs adapter consistency. A session that can reach a
         # real agent endpoint may never be silently labeled SIMULATED: the
         # operator must declare live/hybrid, or explicitly accept simulated.
         import os as _os
@@ -465,13 +490,10 @@ class SessionManager:
             self.metadata["attempt_id"] = identity.attempt_id
             self.metadata["scenario_version_id"] = identity.scenario_version_id
 
-            # [P0-6] Execution-instance-scoped evidence. Every before-state
-            # observation is keyed by execution_instance_id — never solely by
-            # scenario node id — so retries/loops/parallel branches preserve
-            # their own immutable precondition evidence.
-            turns_taken = 0
-            history: list[dict[str, Any]] = []
-            actions: dict[str, Any] = {"used_tools": []}
+            # Execution-instance-scoped context ledger.
+            # Parallel branches execute against isolated sandbox forks with independent
+            # conversation histories and action ledgers.
+            instance_contexts: dict[str, ExecutionInstanceContext] = {}
             state_before_map: dict[str, dict[str, Any]] = {}
 
             async def _context_provider() -> dict[str, Any]:
@@ -483,7 +505,6 @@ class SessionManager:
                 return {"state": state}
 
             async def _executor(node_ir, exec_id: str, parent_exec_id: str | None):
-                nonlocal turns_taken
                 node_def = node_ir.definition
                 node_id_local = node_ir.node_id
                 if (
@@ -494,36 +515,64 @@ class SessionManager:
                         "task_id": node_id_local,
                         "status": "aborted",
                         "message": "Execution cancelled",
-                        "turns_taken": turns_taken,
+                        "turns_taken": 0,
                         "used_tools": [],
-                        "conversation_history": list(history),
+                        "conversation_history": [],
                     }
+
+                # Isolated branch sandbox fork
+                branch_sandbox = sandbox.fork(exec_id) if hasattr(sandbox, "fork") else sandbox
+
+                # Isolated conversation and action ledger per execution instance
+                branch_history: list[dict[str, Any]] = []
+                if parent_exec_id and parent_exec_id in instance_contexts:
+                    branch_history = copy.deepcopy(instance_contexts[parent_exec_id].history)
+
+                branch_actions: dict[str, Any] = {"used_tools": []}
+
                 try:
                     state_before = (
-                        await sandbox.get_full_state()
-                        if hasattr(sandbox, "get_full_state")
-                        else copy.deepcopy(getattr(sandbox, "state", {}))
+                        await branch_sandbox.get_full_state()
+                        if hasattr(branch_sandbox, "get_full_state")
+                        else copy.deepcopy(getattr(branch_sandbox, "state", {}))
                     )
                 except Exception:  # noqa: BLE001 - evidence capture must not break execution
                     state_before = None
                 if state_before is not None:
                     state_before_map[exec_id] = copy.deepcopy(state_before)
 
+                ctx = ExecutionInstanceContext(
+                    scenario_node_id=node_id_local,
+                    execution_instance_id=exec_id,
+                    parent_execution_id=parent_exec_id,
+                    attempt_number=attempt_number,
+                    identity=identity,
+                    sandbox=branch_sandbox,
+                    history=branch_history,
+                    actions=branch_actions,
+                    state_before=state_before,
+                )
+                instance_contexts[exec_id] = ctx
+
                 result = await self._execute_node(
                     node_def,
                     attempt_number,
                     0,
-                    sandbox,
-                    history,
-                    actions,
+                    branch_sandbox,
+                    ctx.history,
+                    ctx.actions,
                     state_before=state_before,
                     execution_context={
                         "execution_instance_id": exec_id,
                         "parent_execution_id": parent_exec_id,
                         "attempt_id": identity.attempt_id,
                         "evaluation_run_id": identity.evaluation_run_id,
+                        "evaluation_plan": plan.evaluation_plan,
                     },
                 )
+                # Commit branch state back to base sandbox for sequential routing / final state
+                if hasattr(sandbox, "merge_branch_state") and branch_sandbox is not sandbox:
+                    sandbox.merge_branch_state(branch_sandbox)
                 # [AgentV v2.0.0] Immutable join model on every task result
                 result["execution_instance_id"] = exec_id
                 result["parent_execution_id"] = parent_exec_id
@@ -535,7 +584,7 @@ class SessionManager:
                 result["execution_mode"] = identity.execution_mode.value
 
                 if result.get("status") == "success":
-                    turns_taken += 1
+                    ctx.turns_taken += 1
 
                 # [E4] LIVE/HYBRID reconciliation: independently capture the
                 # post-node world state and reconcile it against the node's
@@ -559,7 +608,7 @@ class SessionManager:
                         expected_state_changes=node_def.get("expected_state_changes"),
                         observations={"used_tools": list(result.get("used_tools") or [])},
                     )
-                    # [P0-6] Reconciliation evidence is instance-addressable.
+                    # Reconciliation evidence is instance-addressable.
                     result["reconciliation"]["execution_instance_id"] = exec_id
                     result["reconciliation"]["attempt_id"] = identity.attempt_id
                     result["reconciliation"]["scenario_node_id"] = node_id_local
@@ -578,7 +627,9 @@ class SessionManager:
             )
 
             all_task_results, outcome = await interpreter.run(_executor)
-            global_cumulative_history = list(history)
+            global_cumulative_history = [
+                item for ctx in instance_contexts.values() for item in ctx.history
+            ]
 
             # 🧬 Global Evaluation Pass (Industrial AES v1.6.0)
             # Process metrics defined at the scenario level (e.g. DNA_STABLE)
@@ -609,31 +660,35 @@ class SessionManager:
                 success = all(
                     m.get("success", False) for m in global_results.get("metrics", [])
                 ) and global_results.get("evaluation_valid", True)
-                global_results["status"] = "success" if success else "failed"
+                # Named explicitly: this status describes GLOBAL
+                # metric evaluation only and must never be mistaken for the
+                # authoritative workflow verdict (workflow_verdict.status).
+                global_results["global_evaluation_status"] = "success" if success else "failed"
                 if not success and not global_results.get("evaluation_invalid_reasons"):
                     global_results.setdefault("message", "Global evaluation metrics failed.")
-                all_task_results.append(global_results)
+                # Appended once, below, together with the synthetic host.
                 verdict_target = global_results
             else:
-                verdict_target = (
-                    all_task_results[-1]
-                    if all_task_results
-                    else {
-                        "task_id": "workflow_verdict",
-                        "status": "success" if outcome.success else "failure",
-                        "metrics": [],
-                        "turns_taken": 0,
-                        "used_tools": [],
-                        "conversation_history": [],
-                    }
-                )
+                # Synthetic verdict host: carries ONLY authoritative
+                # verdict fields. It deliberately has NO generic "status" key
+                # — nothing downstream may mistake it for a task result.
+                verdict_target = {
+                    "task_id": "workflow_verdict",
+                    "synthetic": True,
+                    "metrics": [],
+                    "turns_taken": 0,
+                    "used_tools": [],
+                    "conversation_history": [],
+                }
                 if not all_task_results:
                     all_task_results.append(verdict_target)
 
-            # [AgentV v2.0.0] Verification decision tree + workflow verdict
+            # [AgentV v2.0.0] Verification decision tree + workflow verdict.
+            # Verdict fields live ONLY on the dedicated host row —
+            # never bolted onto a real node/task result.
             verdict_target["workflow_verdict"] = verdict_payload
 
-            # [Category A] Multi-judge consensus — IMPLEMENTED, never ignored.
+            # Multi-judge consensus — IMPLEMENTED, never ignored.
             # When evaluation.consensus is declared the runtime executes the
             # declared panel through the authoritative LLM-judge primitive;
             # an unprovisionable panel produces an explicit evaluated=false
@@ -658,6 +713,7 @@ class SessionManager:
                         "human review required."
                     )
             verdict_target["verification_decision"] = decision
+            all_task_results.append(verdict_target)
 
         except Exception as e:
             err_msg = f"Forensic Exception during node execution: {str(e)}"
@@ -679,7 +735,7 @@ class SessionManager:
                     "metrics": [],
                     "turns_taken": 0,
                     "used_tools": [],
-                    "conversation_history": history if "history" in locals() else [],
+                    "conversation_history": locals().get("history", []),
                     "traceback": tb,
                 }
             )
@@ -1018,10 +1074,8 @@ class SessionManager:
 
         node_success = False
         hitl_unresolved = False
-        start_turn = (
-            self.turn_number + 1 if hasattr(self, "turn_number") and self.turn_number > 0 else 1
-        )
-        for turn in range(start_turn, self.max_turns + 1):
+        turn = 0
+        for turn in range(1, self.max_turns + 1):
             if (
                 self.cancellation_event
                 and getattr(self.cancellation_event, "is_set", lambda: False)()
@@ -1097,7 +1151,7 @@ class SessionManager:
                         turn, agent_response, conversation_history, agent_actions, turn_ctx
                     )
                     if getattr(self, "_hitl_unresolved", False):
-                        # [P0-9] CI/automation never fabricates a human decision.
+                        # CI/automation never fabricates a human decision.
                         # An unresolved approval is a first-class failure cause.
                         self._hitl_unresolved = False
                         node_success = False
@@ -1168,7 +1222,7 @@ class SessionManager:
             if _a.get("target") == "message" and _row.get("expected") is not None:
                 self._last_transition_expectations.append(_row.get("expected"))
 
-        # [P0-6] Transition evidence is instance-addressable and hash-bound:
+        # Transition evidence is instance-addressable and hash-bound:
         # attempt_id + execution_instance_id + before/after content hashes.
         exec_id = execution_context.get("execution_instance_id")
         attempt_id = execution_context.get("attempt_id")
@@ -1204,39 +1258,114 @@ class SessionManager:
         )
 
         # ------------------------------------------------------------------
-        # [P0-A] THE authoritative NodeVerdict. Nothing downstream may infer
+        # THE authoritative NodeVerdict. Nothing downstream may infer
         # node success from the agent action alone: overall == success only
         # when every required oracle passed. Typed oracle outcomes:
         # PASS | FAIL | INVALID | NOT_APPLICABLE.
         # ------------------------------------------------------------------
         metric_rows = task_results.get("metrics") or []
         hygiene_rows = task_results.get("state_hygiene") or []
+        parity_rows = parity_evidence or []
         invalid_eval = not task_results.get("evaluation_valid", True)
 
         def _typed_outcome(row: dict[str, Any]) -> str:
             if row.get("status") == "EVALUATION_INVALID" or row.get("invalid"):
                 return "INVALID"
-            if row.get("success") is True:
+            if row.get("outcome") in ("PASS", "FAIL", "INVALID", "NOT_APPLICABLE"):
+                return str(row.get("outcome"))
+            if row.get("success") is True or row.get("passed") is True:
                 return "PASS"
-            if row.get("success") is False:
+            if row.get("success") is False or row.get("passed") is False:
                 return "FAIL"
             return "NOT_APPLICABLE"
 
-        oracle_rows: list[tuple[dict[str, Any], str]] = [
-            (r, "success_criteria") for r in metric_rows
-        ] + [(r, "state_hygiene") for r in hygiene_rows]
+        declared_criteria = node.get("success_criteria") or []
+        if isinstance(declared_criteria, list) and len(metric_rows) == len(declared_criteria):
+            for idx, m_row in enumerate(metric_rows):
+                if isinstance(m_row, dict) and isinstance(declared_criteria[idx], dict):
+                    crit = declared_criteria[idx]
+                    if "metric" in crit:
+                        m_row.setdefault("metric", crit["metric"])
+                    if "target" in crit or "property" in crit or "name" in crit or "metric" in crit:
+                        m_row.setdefault(
+                            "target",
+                            crit.get("target")
+                            or crit.get("property")
+                            or crit.get("name")
+                            or crit.get("metric"),
+                        )
+                    if "id" in crit:
+                        m_row.setdefault("id", crit["id"])
+
+        for row in metric_rows:
+            row.setdefault("required", True)
+            row.setdefault("evaluated", True)
+            row.setdefault("observable", not row.get("invalid", False))
+            row.setdefault("outcome", _typed_outcome(row))
+
+        for row in hygiene_rows:
+            row.setdefault("required", True)
+            row.setdefault("evaluated", True)
+            row.setdefault("observable", not row.get("invalid", False))
+            row.setdefault("outcome", _typed_outcome(row))
+
+        for row in parity_rows:
+            row.setdefault("required", True)
+            row.setdefault("evaluated", True)
+            row.setdefault("observable", not row.get("invalid", False))
+            row.setdefault("outcome", _typed_outcome(row))
+
+        oracle_rows: list[tuple[dict[str, Any], str]] = (
+            [(r, "success_criteria") for r in metric_rows]
+            + [(r, "state_hygiene") for r in hygiene_rows]
+            + [(r, "expected_outcome") for r in parity_rows]
+        )
         outcomes = [_typed_outcome(r) for r, _ in oracle_rows]
 
-        if invalid_eval or "INVALID" in outcomes:
+        eval_plan: CompiledEvaluationPlan | None = execution_context.get("evaluation_plan")
+        required_missing = False
+        if eval_plan is not None:
+            plan_reqs = eval_plan.required_oracles_for_node(node_id)
+            evaluated_sources: set[str] = set()
+            for r, _ in oracle_rows:
+                if not isinstance(r, dict):
+                    continue
+                a = r.get("assertion") if isinstance(r.get("assertion"), dict) else {}
+                for key in (
+                    r.get("target"),
+                    r.get("property"),
+                    r.get("path"),
+                    r.get("id"),
+                    r.get("metric"),
+                    r.get("name"),
+                    r.get("assertion_id"),
+                    a.get("target"),
+                    a.get("property"),
+                    a.get("path"),
+                    a.get("id"),
+                ):
+                    if key:
+                        evaluated_sources.add(str(key))
+
+            for req_oracle in plan_reqs:
+                if (
+                    req_oracle.evidence_source not in evaluated_sources
+                    and req_oracle.oracle_id not in evaluated_sources
+                ):
+                    required_missing = True
+                    break
+
+        non_na_outcomes = [o for o in outcomes if o != "NOT_APPLICABLE"]
+        if invalid_eval or "INVALID" in outcomes or required_missing:
             verification = "invalid"
-        elif not outcomes or all(o == "NOT_APPLICABLE" for o in outcomes):
+        elif not non_na_outcomes:
             verification = "not_applicable"
-        elif all(o == "PASS" for o in outcomes):
+        elif all(o == "PASS" for o in non_na_outcomes):
             verification = "pass"
         else:
             verification = "fail"
 
-        # [A4] First-class policy assertions: every sandbox policy decision
+        # First-class policy assertions: every sandbox policy decision
         # taken during this node's execution attaches here; a denial gates.
         new_policy_decisions = getattr(sandbox, "policy_decisions", [])[policy_cursor:]
         denied_ids = [
@@ -1453,7 +1582,7 @@ class SessionManager:
             tn = call.get("tool") or call.get("tool_name")
             actions["used_tools"].append(tn)
 
-        # [P0-10] TRUE parallel tool execution. Independent calls (no declared
+        # TRUE parallel tool execution. Independent calls (no declared
         # dependencies) run concurrently under structured concurrency; results
         # aggregate deterministically in declaration order. A call that
         # declares ``depends_on`` is deferred until its producers completed.
@@ -1713,18 +1842,15 @@ class SessionManager:
             # Fallback to string representation for anything else
             return str(obj)
 
+    # Research fork: creates a shallow session clone. Note the
+    # sandbox deep-copy and history partitioning are NOT implemented here
+    # — true trajectory reproduction waits for P2.1 per-execution-isolation.
     def fork(self, history: list[dict[str, Any]], sandbox_state: dict[str, Any]) -> SessionManager:
-        """
-        Creates a clone of the current session at a specific checkpoint.
-        Supports research into non-linear trajectories.
-        """
         if getattr(self, "fork_depth", 0) >= MAX_FORK_DEPTH:
             raise RuntimeError(f"Fork Bomb Prevention: Maximum depth ({MAX_FORK_DEPTH}) reached.")
         scenario_copy = copy.deepcopy(self.scenario)
         scenario_copy["_fork_depth"] = getattr(self, "fork_depth", 0) + 1
         new_session = SessionManager(self.run_id, scenario_copy)
-        # Note: In a full implementation, we'd need to deep copy the sandbox
-        # and ensure the conversation history is properly partitioned.
         print(f"   [Session] Forking trajectory with {len(history)} messages in history.")
         return new_session
 

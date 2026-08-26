@@ -422,13 +422,37 @@ class DefaultRunner(BaseRunner):
             if res.get("evaluation_valid") is False:
                 return False
 
+            # [P2.7] First-class NodeVerdict gating across all typed evidence dimensions
+            if "node_verdict" in res and isinstance(res["node_verdict"], dict):
+                nv = res["node_verdict"]
+                if nv.get("verification") in ("fail", "invalid"):
+                    return False
+                if nv.get("policy") == "denied":
+                    return False
+                if nv.get("parity") == "fail":
+                    return False
+                if nv.get("overall") not in ("success", "not_applicable"):
+                    return False
+
             # 3. Oracle rows: invalid or failed assertions veto the attempt.
             for m in res.get("metrics") or []:
-                if str(m.get("status", "")).upper() == "EVALUATION_INVALID":
+                if str(m.get("status", "")).upper() == "EVALUATION_INVALID" or m.get("invalid"):
                     return False
                 if m.get("success") is False and m.get("severity") == "informational":
                     continue
-                if m.get("success") is False:
+                if m.get("success") is False or m.get("outcome") == "FAIL":
+                    return False
+
+            for h in res.get("state_hygiene") or []:
+                if h.get("invalid") or h.get("status") == "EVALUATION_INVALID":
+                    return False
+                if h.get("success") is False or h.get("outcome") == "FAIL":
+                    return False
+
+            for p in res.get("state_parity") or []:
+                if p.get("invalid") or p.get("status") == "EVALUATION_INVALID":
+                    return False
+                if p.get("success") is False or p.get("outcome") == "FAIL":
                     return False
 
             # 4. Policy denials are gating (first-class policy assertions).

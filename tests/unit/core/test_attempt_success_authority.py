@@ -104,3 +104,28 @@ class TestVerdictAuthoritativeSuccess:
             }
         ]
         assert runner._is_attempt_successful(rows) is False
+
+
+def test_verdict_host_rows_are_never_task_rows():
+    """[P2.10] Verdict hosts must be structurally unmistakable: the
+    synthetic fallback and the global-evaluation row are excluded from
+    task aggregation, and the synthetic host carries no generic status."""
+    from eval_runner.reporter import _is_task_row
+
+    host = {
+        "task_id": "workflow_verdict",
+        "synthetic": True,
+        "workflow_verdict": {"status": "workflow_completed", "reason": "terminal reached"},
+    }
+    global_row = {
+        "task_id": "global_evaluation",
+        "global_evaluation_status": "failed",
+        "workflow_verdict": {"status": "workflow_completed"},
+    }
+    real_task = {"task_id": "n1", "status": "success", "metrics": [{"success": True}]}
+
+    assert not _is_task_row(host)
+    assert not _is_task_row(global_row)
+    assert _is_task_row(real_task)
+    # The synthetic verdict host deliberately exposes NO generic status.
+    assert "status" not in host

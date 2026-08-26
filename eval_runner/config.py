@@ -524,7 +524,7 @@ DEFAULT_LLM_TIMEOUT = int(os.getenv("DEFAULT_LLM_TIMEOUT", "10"))
 LLM_MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", "1024"))
 
 # --- UI & Demo Persistence ---
-ENABLE_DEMO = os.getenv("ENABLE_DEMO", "true").lower() == "true"
+ENABLE_DEMO = os.getenv("ENABLE_DEMO", "false").lower() == "true"
 
 # --- Security R3 Best Practices ---
 # Service API Key for programmatic / CLI access.

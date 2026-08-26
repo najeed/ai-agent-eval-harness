@@ -17,7 +17,12 @@ from contextlib import asynccontextmanager, contextmanager
 
 
 class Interceptor[RequestT, ResponseT](ABC):
-    """Abstract base class for type-safe synchronous pipeline interceptors."""
+    """
+    [P2.8] Abstract base class for type-safe synchronous pipeline interceptors.
+    Differentiates mandatory processors from optional enrichers.
+    """
+
+    is_mandatory: bool = True
 
     @abstractmethod
     def can_intercept(self, request: RequestT) -> bool:
@@ -112,8 +117,18 @@ class PipelineService[RequestT, ResponseT]:
                         # Propagate system control exceptions immediately
                         raise
                     except Exception as e:
-                        logging.error(
-                            f"[{self._service_name}] Interceptor "
+                        is_mandatory = getattr(interceptor, "is_mandatory", True)
+                        if is_mandatory:
+                            logging.error(
+                                f"[{self._service_name}] Mandatory interceptor "
+                                f"'{interceptor.__class__.__name__}' failed: {e}. Failing."
+                            )
+                            raise RuntimeError(
+                                f"Mandatory interceptor '{interceptor.__class__.__name__}' "
+                                f"failed: {e}"
+                            ) from e
+                        logging.warning(
+                            f"[{self._service_name}] Optional interceptor "
                             f"'{interceptor.__class__.__name__}' failed: {e}. "
                             "Gracefully bypassing to next handler."
                         )
@@ -132,7 +147,12 @@ class PipelineService[RequestT, ResponseT]:
 
 
 class AsyncInterceptor[RequestT, ResponseT](ABC):
-    """Abstract base class for type-safe native asynchronous pipeline interceptors."""
+    """
+    [P2.8] Abstract base class for type-safe native asynchronous pipeline interceptors.
+    Differentiates mandatory processors from optional enrichers.
+    """
+
+    is_mandatory: bool = True
 
     @abstractmethod
     def can_intercept(self, request: RequestT) -> bool:
@@ -232,8 +252,18 @@ class AsyncPipelineService[RequestT, ResponseT]:
                     except (RecursionError, KeyboardInterrupt, SystemExit, GeneratorExit):
                         raise
                     except Exception as e:
-                        logging.error(
-                            f"[{self._service_name}] Interceptor "
+                        is_mandatory = getattr(interceptor, "is_mandatory", True)
+                        if is_mandatory:
+                            logging.error(
+                                f"[{self._service_name}] Mandatory interceptor "
+                                f"'{interceptor.__class__.__name__}' failed: {e}. Failing."
+                            )
+                            raise RuntimeError(
+                                f"Mandatory interceptor '{interceptor.__class__.__name__}' "
+                                f"failed: {e}"
+                            ) from e
+                        logging.warning(
+                            f"[{self._service_name}] Optional interceptor "
                             f"'{interceptor.__class__.__name__}' failed: {e}. "
                             "Gracefully bypassing to next handler."
                         )

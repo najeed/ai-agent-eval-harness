@@ -92,7 +92,6 @@ class SessionStateParityVerifier:
     ) -> tuple[Any, str | None]:
         target = assertion.get("target", "message")
         property_path = assertion.get("property")
-        sm = self.session_manager
 
         if target.startswith("shim:"):
             raw_target = target.split(":", 1)[1]
@@ -111,9 +110,20 @@ class SessionStateParityVerifier:
                 return None, "__unobserved_source__"
             return actual_val, property_path
         if target == "message":
-            actual_val = (
-                sm._extract_agent_summary(history) if hasattr(sm, "_extract_agent_summary") else ""
-            )
+            actual_val = ""
+            for item in reversed(history or []):
+                if isinstance(item, dict) and item.get("role") in ("agent", "assistant"):
+                    content = item.get("content")
+                    if isinstance(content, dict):
+                        actual_val = (
+                            content.get("message")
+                            or content.get("content")
+                            or content.get("action")
+                            or str(content)
+                        )
+                    elif isinstance(content, str):
+                        actual_val = content
+                    break
             return actual_val, property_path
         if target == "state":
             actual_val = (

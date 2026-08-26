@@ -49,6 +49,11 @@ async def test_dos_attempt_cap_clamp(monkeypatch, tmp_path):
 # ──────────────────────────────────────────────────────────────────────────────
 
 
+# ──────────────────────────────────────────────────────────────────────────────
+# Audit Point #6 — Fork Bomb Prevention
+# ──────────────────────────────────────────────────────────────────────────────
+
+
 def test_fork_bomb_depth(monkeypatch, tmp_path):
     """SessionManager.fork() must raise at MAX_FORK_DEPTH."""
     from eval_runner import config
@@ -56,7 +61,6 @@ def test_fork_bomb_depth(monkeypatch, tmp_path):
 
     monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path)
 
-    # Create a session already at max depth
     scenario = {
         "id": "fork-depth",
         "workflow": {"nodes": [], "edges": []},

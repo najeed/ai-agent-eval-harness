@@ -5,6 +5,7 @@ evidence ledger tracking, and governance TTL enforcement.
 """
 
 import json
+from collections.abc import Callable
 from datetime import UTC
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -1103,3 +1104,47 @@ def test_sign_trace_seals_artifact_store_and_rejects_subsequent_writes():
             artifact_name="tampered_data.json",
             content=b'{"malicious": true}',
         )
+
+
+def test_mandatory_vs_optional_interceptor_classification():
+    """[P2.8] Mandatory interceptor failure must raise CertificationFailedError (fail-closed);
+    optional enricher failure must log warning and gracefully bypass to next handler.
+    """
+    from eval_runner.verifier import (
+        CertificationFailedError,
+        TraceVerificationInterceptor,
+        verification_service,
+    )
+
+    class FailingMandatoryInterceptor(TraceVerificationInterceptor):
+        is_mandatory = True
+
+        def can_sign(self, format: str) -> bool:
+            return True
+
+        def sign(self, manifest: dict, next_signer: Callable[[dict], dict]) -> dict:
+            raise ValueError("KMS unavailable / network partition")
+
+    class FailingOptionalInterceptor(TraceVerificationInterceptor):
+        is_mandatory = False
+
+        def can_sign(self, format: str) -> bool:
+            return True
+
+        def sign(self, manifest: dict, next_signer: Callable[[dict], dict]) -> dict:
+            raise ValueError("Telemetry enrichment service timeout")
+
+    manifest = {"provenance_chain": []}
+
+    # 1. Mandatory failure -> CertificationFailedError
+    with verification_service.override_interceptor(FailingMandatoryInterceptor()):
+        with pytest.raises(
+            CertificationFailedError, match="Mandatory verification interceptor.*failed"
+        ):
+            verification_service.sign(manifest, format="standard")
+
+    # 2. Optional failure -> bypassed gracefully, CoreTraceSigner succeeds
+    with verification_service.override_interceptor(FailingOptionalInterceptor()):
+        signed = verification_service.sign(manifest, format="standard")
+        assert len(signed["provenance_chain"]) >= 1
+        assert signed["provenance_chain"][-1]["identity"] == "system_id"

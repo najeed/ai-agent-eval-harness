@@ -864,8 +864,8 @@ def test_join_rejects_cross_iteration_tokens():
             "workflow": {
                 "nodes": [{"id": "a"}, {"id": "b"}, {"id": "j"}],
                 "edges": [
-                    {"id": "e0", "from": "a", "to": "b"},
-                    {"id": "e1", "from": "a", "to": "j"},
+                    {"id": "e0", "from": "a", "to": "b", "type": "parallel"},
+                    {"id": "e1", "from": "a", "to": "j", "type": "parallel"},
                     {"id": "e2", "from": "b", "to": "j"},
                 ],
                 "entry_nodes": ["a"],
@@ -1257,3 +1257,101 @@ async def test_over_cap_drops_are_recorded_and_emitted():
     drops_b = [p for name, p in bus_b.events if name == "node_dropped_over_cap"]
     assert [p["phase"] for p in drops_b] == ["join_satisfied_cap"]
     assert all(p["scenario_node_id"] == "j" for p in drops_b)
+
+
+def test_compiler_rejects_ambiguous_successor_sets():
+    """[P2.3] Compiler must reject ambiguous successor sets: multiple sequential edges,
+    mixed sequential + parallel edges, and mixed condition + parallel edges.
+    """
+    # 1. Multiple sequential edges declare ambiguous fan-out
+    multi_seq = {
+        "workflow": {
+            "nodes": [{"id": "a"}, {"id": "b"}, {"id": "c"}],
+            "edges": [
+                {"from": "a", "to": "b", "type": "sequential"},
+                {"from": "a", "to": "c", "type": "sequential"},
+            ],
+            "entry_nodes": ["a"],
+        }
+    }
+    with pytest.raises(PlanValidationError, match="Ambiguous successor set.*multiple sequential"):
+        _plan(multi_seq)
+
+    # 2. Mixed sequential and parallel edges
+    mixed_seq_par = {
+        "workflow": {
+            "nodes": [{"id": "a"}, {"id": "b"}, {"id": "c"}],
+            "edges": [
+                {"from": "a", "to": "b", "type": "sequential"},
+                {"from": "a", "to": "c", "type": "parallel"},
+            ],
+            "entry_nodes": ["a"],
+        }
+    }
+    with pytest.raises(
+        PlanValidationError, match="Ambiguous successor set.*mixed sequential and parallel"
+    ):
+        _plan(mixed_seq_par)
+
+    # 3. Mixed parallel and condition edges
+    mixed_par_cond = {
+        "workflow": {
+            "nodes": [{"id": "a"}, {"id": "b"}, {"id": "c"}],
+            "edges": [
+                {"from": "a", "to": "b", "type": "parallel"},
+                {"from": "a", "to": "c", "type": "condition", "predicate": {"op": "truthy"}},
+            ],
+            "entry_nodes": ["a"],
+        }
+    }
+    with pytest.raises(
+        PlanValidationError, match="Ambiguous successor set.*mixed parallel and conditional"
+    ):
+        _plan(mixed_par_cond)
+
+
+def test_compile_evaluation_plan_captures_all_oracles():
+    """[P2.6] Evaluation plan compilation must inventory every declared assertion."""
+
+    scenario = {
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "node1",
+                    "success_criteria": [
+                        {"id": "sc1", "target": "accuracy", "required": True, "type": "metric"}
+                    ],
+                    "state_hygiene": {
+                        "rules": [
+                            {
+                                "id": "hyg1",
+                                "path": "auth.token",
+                                "required": True,
+                                "type": "not_null",
+                            }
+                        ]
+                    },
+                    "expected_outcome": [
+                        {"id": "par1", "target": "db.users", "mode": "exact", "required": True}
+                    ],
+                },
+                {
+                    "id": "node2",
+                    "success_criteria": [{"id": "sc2", "name": "latency", "required": False}],
+                },
+            ],
+            "edges": [{"from": "node1", "to": "node2"}],
+        }
+    }
+    plan = _plan(scenario)
+    assert plan.evaluation_plan is not None
+    eval_plan = plan.evaluation_plan
+
+    assert "sc1" in eval_plan.oracles
+    assert "hyg1" in eval_plan.oracles
+    assert "par1" in eval_plan.oracles
+    assert "sc2" in eval_plan.oracles
+
+    assert len(eval_plan.all_required_oracles()) == 3
+    assert len(eval_plan.required_oracles_for_node("node1")) == 3
+    assert len(eval_plan.required_oracles_for_node("node2")) == 0

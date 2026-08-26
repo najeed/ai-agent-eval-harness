@@ -1,0 +1,83 @@
+{
+  "id": "parallel_isolation_test",
+  "run_id": "run_parallel_iso",
+  "max_turns": 2,
+  "metadata": {
+    "agent": "mock://test",
+    "execution_mode": "simulated",
+    "protocol": "http"
+  },
+  "initial_state": {
+    "counter": 0
+  },
+  "workflow": {
+    "nodes": [
+      {
+        "id": "root",
+        "task_description": "Root",
+        "success_criteria": [
+          {
+            "metric": "m_root",
+            "threshold": 1.0
+          }
+        ]
+      },
+      {
+        "id": "branch_left",
+        "task_description": "Left",
+        "success_criteria": [
+          {
+            "metric": "m_left",
+            "threshold": 1.0
+          }
+        ]
+      },
+      {
+        "id": "branch_right",
+        "task_description": "Right",
+        "success_criteria": [
+          {
+            "metric": "m_right",
+            "threshold": 1.0
+          }
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "branch_left",
+        "type": "parallel"
+      },
+      {
+        "from": "root",
+        "to": "branch_right",
+        "type": "parallel"
+      }
+    ]
+  },
+  "tools": {
+    "tool_l": {
+      "output": {
+        "status": "success"
+      },
+      "state_changes": [
+        {
+          "path": "left_val",
+          "value": "L"
+        }
+      ]
+    },
+    "tool_r": {
+      "output": {
+        "status": "success"
+      },
+      "state_changes": [
+        {
+          "path": "right_val",
+          "value": "R"
+        }
+      ]
+    }
+  }
+}

@@ -122,7 +122,13 @@ class BaseVerifier(ABC):
 
 
 class TraceVerificationInterceptor(ABC):
-    """Abstract Base Class for Trace Verification Interceptors in the signing pipeline."""
+    """
+    [P2.8] Abstract Base Class for Trace Verification Interceptors in the signing pipeline.
+    Differentiates mandatory trust providers (failure -> CERTIFICATION_FAILED)
+    from optional enrichers (failure -> warning/bypass).
+    """
+
+    is_mandatory: bool = True
 
     @abstractmethod
     def can_sign(self, format: str) -> bool:
@@ -310,11 +316,28 @@ class VerificationService:
                 if interceptor.can_sign(format):
                     try:
                         return interceptor.sign(m, make_next(index + 1, depth + 1))
-                    except (RecursionError, KeyboardInterrupt, SystemExit, GeneratorExit):
+                    except (
+                        RecursionError,
+                        KeyboardInterrupt,
+                        SystemExit,
+                        GeneratorExit,
+                        CertificationFailedError,
+                    ):
                         raise
                     except Exception as e:
-                        logger.error(
-                            f"[VerificationService] Interceptor "
+                        is_mandatory = getattr(interceptor, "is_mandatory", True)
+                        if is_mandatory:
+                            logger.error(
+                                f"[VerificationService] Mandatory interceptor "
+                                f"'{interceptor.__class__.__name__}' failed: {e}. "
+                                "Failing certification (fail-closed)."
+                            )
+                            raise CertificationFailedError(
+                                f"Mandatory verification interceptor "
+                                f"'{interceptor.__class__.__name__}' failed: {e}"
+                            ) from e
+                        logger.warning(
+                            f"[VerificationService] Optional interceptor "
                             f"'{interceptor.__class__.__name__}' failed: {e}. "
                             "Gracefully bypassing to next handler."
                         )

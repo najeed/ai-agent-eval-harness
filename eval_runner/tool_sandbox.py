@@ -697,3 +697,54 @@ class ToolSandbox(AbstractSandbox):
         elif isinstance(value, list):
             return [ToolSandbox._sanitize_value(v) for v in value]
         return value
+
+    def fork(self, branch_id: str, state_semantics: str = "isolated") -> ToolSandbox:
+        """
+        [P2.1/P2.2] Creates an isolated branch sandbox instance for concurrent
+        workflow node execution. Branch mutations (state, policy decisions,
+        shared state) remain isolated until explicitly committed via merge_branch_state.
+        """
+        import copy
+
+        forked = ToolSandbox(
+            scenario=copy.deepcopy(self.scenario),
+            event_bus=self.event_bus,
+            forensics=self.forensics,
+            plugin_manager=self.plugin_manager,
+            workspace_root=self.workspace_dir,
+            jail_root=self.terminal_jail,
+            policy_evaluator=self.policy_evaluator,
+        )
+        forked.state = copy.deepcopy(self.state)
+        forked.shared_state = SharedStateRegistry(
+            self.scenario.get("agent_topology", {}), event_bus=self.event_bus
+        )
+        forked.shared_state.registry = copy.deepcopy(self.shared_state.registry)
+        forked.policy_decisions = list(self.policy_decisions)
+        forked.current_agent = self.current_agent
+        return forked
+
+    def merge_branch_state(self, source_fork: ToolSandbox, keys: list[str] | None = None) -> None:
+        """
+        [P2.2] Explicit join-level state commit primitive.
+        Merges candidate state transitions and policy decisions from a branch fork.
+        """
+        import copy
+
+        if keys is not None:
+            for k in keys:
+                if k in source_fork.state:
+                    self.state[k] = copy.deepcopy(source_fork.state[k])
+        else:
+            self.state.update(copy.deepcopy(source_fork.state))
+
+        # Merge shared state registry additions
+        self.shared_state.registry.update(copy.deepcopy(source_fork.shared_state.registry))
+
+        # Append new policy decisions
+        existing_hashes = {d.get("input_hash") for d in self.policy_decisions if "input_hash" in d}
+        for decision in source_fork.policy_decisions:
+            if decision.get("input_hash") not in existing_hashes:
+                self.policy_decisions.append(copy.deepcopy(decision))
+                if "input_hash" in decision:
+                    existing_hashes.add(decision["input_hash"])

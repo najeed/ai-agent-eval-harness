@@ -125,6 +125,14 @@ def generate_mermaid_trajectory(task_results: dict) -> str:
     return "\n".join(mermaid)
 
 
+def _is_task_row(tr: dict) -> bool:
+    """[P2.10] A verdict host (synthetic fallback or the global-evaluation
+    row carrying workflow_verdict/verification_decision) is never a task
+    result — conflating them let generic ``status`` fields masquerade as
+    the authoritative workflow verdict."""
+    return "workflow_verdict" not in tr and not tr.get("synthetic")
+
+
 def generate_html_report(
     scenario: dict, results: list, metadata: dict | None = None, standalone: bool = False
 ) -> Path:
@@ -164,7 +172,9 @@ def generate_html_report(
 
     is_multi_attempt = len(results) > 0 and isinstance(results[0], list)
     attempts_list = results if is_multi_attempt else [results]
-    all_tasks = [tr for att in attempts_list for tr in att]
+    # [P2.10] Verdict hosts (synthetic fallback, global-evaluation row) are
+    # NOT task results: they must never inflate totals or render as cards.
+    all_tasks = [tr for att in attempts_list for tr in att if _is_task_row(tr)]
 
     # Discovery: If not in metadata, scan results for a discovered name
     if not agent_name:
@@ -199,6 +209,10 @@ def generate_html_report(
                 </div>
             """
         for tr in att:
+            if not _is_task_row(tr):
+                # [P2.10] Verdict hosts render via the verdict panel, never
+                # as task cards.
+                continue
             task_id = tr.get("task_id", "unknown")
             metrics = tr.get("metrics", [])
             is_success = (
@@ -459,6 +473,10 @@ def generate_report(
 
         attempt_success = True
         for task_result in attempt_results:
+            if not _is_task_row(task_result):
+                # [P2.10] Verdict host: report authoritative verdict fields,
+                # never as a pseudo-task card.
+                continue
             total_tasks_run += 1
             task_id = task_result["task_id"]
             metrics_list = task_result.get("metrics", [])
