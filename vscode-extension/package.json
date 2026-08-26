@@ -5,7 +5,7 @@
   "version": "0.1.0",
   "publisher": "AgentV",
   "dependencies": {
-    "flatted": "^3.4.2"
+    "flatted": "^3.4.4"
   },
   "engines": {
     "vscode": "^1.80.0"
@@ -52,7 +52,12 @@
     "test": "node ./test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.80.0",
-    "eslint": "^8.41.0"
+    "@eslint/js": "^10.0.1",
+    "@types/vscode": "^1.134.0",
+    "eslint": "^10.9.1"
+  },
+  "overrides": {
+    "js-yaml": "^5.4.0",
+    "brace-expansion": "^5.0.9"
   }
 }

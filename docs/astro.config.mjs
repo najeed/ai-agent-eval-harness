@@ -46,33 +46,35 @@ export default defineConfig({
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/najeed/ai-agent-eval-harness' }
 			],
 			sidebar: [
+				// [Starlight 0.39] autogenerate moved inside items[]; label-only
+				// groups are no longer supported.
 				{
 					label: 'Industry Evaluator',
-					autogenerate: { directory: 'evaluator' },
+					items: [{ autogenerate: { directory: 'evaluator' } }],
 				},
 				{
 					label: 'Agent Integrator',
-					autogenerate: { directory: 'integrator' },
+					items: [{ autogenerate: { directory: 'integrator' } }],
 				},
 				{
 					label: 'Platform Extender',
-					autogenerate: { directory: 'extender' },
+					items: [{ autogenerate: { directory: 'extender' } }],
 				},
 				{
 					label: 'OSS Core Builder',
-					autogenerate: { directory: 'builder' },
+					items: [{ autogenerate: { directory: 'builder' } }],
 				},
 				{
 					label: 'Security Auditor',
-					autogenerate: { directory: 'auditor' },
+					items: [{ autogenerate: { directory: 'auditor' } }],
 				},
 				{
 					label: 'The Scholar (Research)',
-					autogenerate: { directory: 'scholar' },
+					items: [{ autogenerate: { directory: 'scholar' } }],
 				},
 				{
 					label: 'Formal Specifications',
-					autogenerate: { directory: 'spec' },
+					items: [{ autogenerate: { directory: 'spec' } }],
 				},
 			],
 			customCss: [

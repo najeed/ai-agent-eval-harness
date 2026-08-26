@@ -1,6 +1,7 @@
 # [P1.6/V05] UI build stage: the Visual Suite is built from source so images
 # never depend on CDN-loaded prototypes and air-gapped deploys get the full UX.
-FROM node:20-alpine AS ui-build
+# Node 22: required by Vite 8 / Astro 7 toolchains.
+FROM node:22-alpine AS ui-build
 
 WORKDIR /build/ui/visual-console
 

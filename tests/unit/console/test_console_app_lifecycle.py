@@ -138,14 +138,45 @@ def test_create_app_nav_registry_overrides():
     assert community_item["path"] == "https://github.com/najeed/ai-agent-eval-harness"
 
 
-def test_console_app_hooks_and_spa_routing(app):
-    """Verify trace hooks (before/after request) and SPA route handle requests correctly."""
-    with app.test_client() as client:
-        # Call SPA route /demo which exists in SPA routes
-        response = client.get("/demo")
+def test_console_app_hooks_and_spa_routing(tmp_path, monkeypatch):
+    """[P1.6] SPA routing serves the built Visual Suite when present and
+    fails HONESTLY (404) when ui/visual-console/dist is absent â€” the legacy
+    CDN-loaded fallback was removed; no silent degradation in either state."""
+    from eval_runner import config as app_config
+
+    def make_app():
+        with patch("eval_runner.plugins.manager.load_plugins"):
+            with patch("eval_runner.catalog.ScenarioCatalog.get_instance"):
+                with patch(
+                    "eval_runner.console.auth_manager.require_permission",
+                    lambda _: lambda f: f,
+                ):
+                    application = create_app()
+                    application.config["TESTING"] = True
+                    return application
+
+    # State 1: production bundle built -> SPA index is served.
+    dist = tmp_path / "ui" / "visual-console" / "dist"
+    dist.mkdir(parents=True)
+    (dist / "index.html").write_text(
+        "<!DOCTYPE html><html><body>AgentV Visual Console</body></html>",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(app_config, "PROJECT_ROOT", tmp_path)
+    app_built = make_app()
+    with app_built.test_client() as client:
+        response = client.get("/")
         assert response.status_code == 200
-        # Check that it returns index.html content (mock/static folder file)
-        assert b"index.html" in response.data or response.status_code == 200
+        assert b"AgentV Visual Console" in response.data
+
+    # State 2: bundle missing -> honest 404, never fabricated content.
+    bare_root = tmp_path / "bare"
+    (bare_root / "ui" / "visual-console" / "dist").mkdir(parents=True)
+    monkeypatch.setattr(app_config, "PROJECT_ROOT", bare_root)
+    app_bare = make_app()
+    with app_bare.test_client() as client:
+        response = client.get("/")
+        assert response.status_code == 404
 
 
 # ---------------------------------------------------------------------------
