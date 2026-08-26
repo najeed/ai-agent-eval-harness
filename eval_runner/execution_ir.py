@@ -295,7 +295,45 @@ class NodeIR:
         return mode, max(0, n)
 
 
-@dataclass(frozen=True)
+class OracleRequiredness(StrEnum):
+    REQUIRED = "REQUIRED"
+    OPTIONAL = "OPTIONAL"
+    INFORMATIONAL = "INFORMATIONAL"
+
+
+@dataclass
+class OracleResult:
+    """
+    Authoritative evaluation outcome for a single compiled oracle assertion.
+    """
+
+    oracle_id: str
+    scenario_node_id: str
+    resolver: str
+    requiredness: str = "REQUIRED"
+    outcome: str = "NOT_EVALUATED"
+    expected: Any = None
+    observed: Any = None
+    evidence_refs: list[str] = field(default_factory=list)
+    error: str | None = None
+    resolver_version: str = "1.0.0"
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "oracle_id": self.oracle_id,
+            "scenario_node_id": self.scenario_node_id,
+            "resolver": self.resolver,
+            "requiredness": self.requiredness,
+            "outcome": self.outcome,
+            "expected": self.expected,
+            "observed": self.observed,
+            "evidence_refs": self.evidence_refs,
+            "error": self.error,
+            "resolver_version": self.resolver_version,
+        }
+
+
+@dataclass
 class CompiledOracle:
     """
     [P2.6] Authoritative compiled oracle assertion.
@@ -309,6 +347,7 @@ class CompiledOracle:
     resolver: str  # "metrics_calculator" | "state_hygiene" | "state_parity"
     evidence_source: str
     required: bool = True
+    requiredness: str = "REQUIRED"
     expected_type: str = "any"
     definition: dict[str, Any] = field(default_factory=dict)
 
@@ -320,6 +359,7 @@ class CompiledOracle:
             "resolver": self.resolver,
             "evidence_source": self.evidence_source,
             "required": self.required,
+            "requiredness": self.requiredness,
             "expected_type": self.expected_type,
         }
 
@@ -392,6 +432,7 @@ def compile_evaluation_plan(
     """
     Compiles an authoritative evaluation plan containing every assertion, its
     resolver, evidence source, requiredness, and expected type.
+    Fails validation on duplicate oracle IDs or malformed assertion entries.
     """
     eval_plan = CompiledEvaluationPlan()
     nodes_to_inspect: dict[str, NodeIR] = {}
@@ -413,8 +454,16 @@ def compile_evaluation_plan(
         if isinstance(criteria, list):
             for idx, c in enumerate(criteria):
                 if not isinstance(c, dict):
-                    continue
-                oid = str(c.get("id") or c.get("metric") or f"{node_id}:sc:{idx}")
+                    raise PlanValidationError(
+                        f"Malformed success_criteria on node '{node_id}': "
+                        f"expected dict, got {type(c).__name__}"
+                    )
+                oid = str(c.get("id") or f"{node_id}:sc:{c.get('metric', idx)}")
+                if oid in eval_plan.oracles:
+                    raise PlanValidationError(
+                        f"Duplicate oracle_id '{oid}' declared in evaluation plan. "
+                        "Oracle identifiers must be unique across all assertions."
+                    )
                 target = str(
                     c.get("target")
                     or c.get("property")
@@ -423,13 +472,17 @@ def compile_evaluation_plan(
                     or "metric"
                 )
                 req = bool(c.get("required", True))
+                req_level = str(
+                    c.get("requiredness") or ("REQUIRED" if req else "OPTIONAL")
+                ).upper()
                 compiled = CompiledOracle(
                     oracle_id=oid,
                     scenario_node_id=node_id,
                     source_type="success_criteria",
                     resolver="metrics_calculator",
                     evidence_source=target,
-                    required=req,
+                    required=req and req_level == "REQUIRED",
+                    requiredness=req_level,
                     expected_type=str(c.get("type", "metric")),
                     definition=copy.deepcopy(c),
                 )
@@ -442,17 +495,29 @@ def compile_evaluation_plan(
             if isinstance(rules, list):
                 for idx, r in enumerate(rules):
                     if not isinstance(r, dict):
-                        continue
-                    oid = str(r.get("id") or f"{node_id}:hygiene:{idx}")
+                        raise PlanValidationError(
+                            f"Malformed state_hygiene rule on node '{node_id}': "
+                            f"expected dict, got {type(r).__name__}"
+                        )
+                    oid = str(r.get("id") or f"{node_id}:hygiene:{r.get('path', idx)}")
+                    if oid in eval_plan.oracles:
+                        raise PlanValidationError(
+                            f"Duplicate oracle_id '{oid}' declared in evaluation plan. "
+                            "Oracle identifiers must be unique across all assertions."
+                        )
                     path = str(r.get("path") or r.get("target") or "state")
                     req = bool(r.get("required", True))
+                    req_level = str(
+                        r.get("requiredness") or ("REQUIRED" if req else "OPTIONAL")
+                    ).upper()
                     compiled = CompiledOracle(
                         oracle_id=oid,
                         scenario_node_id=node_id,
                         source_type="state_hygiene",
                         resolver="state_hygiene",
                         evidence_source=path,
-                        required=req,
+                        required=req and req_level == "REQUIRED",
+                        requiredness=req_level,
                         expected_type=str(r.get("type", "hygiene_rule")),
                         definition=copy.deepcopy(r),
                     )
@@ -463,17 +528,29 @@ def compile_evaluation_plan(
         if isinstance(expected_outcome, list):
             for idx, o in enumerate(expected_outcome):
                 if not isinstance(o, dict):
-                    continue
-                oid = str(o.get("id") or f"{node_id}:parity:{idx}")
+                    raise PlanValidationError(
+                        f"Malformed expected_outcome on node '{node_id}': "
+                        f"expected dict, got {type(o).__name__}"
+                    )
+                oid = str(o.get("id") or f"{node_id}:parity:{o.get('target', idx)}")
+                if oid in eval_plan.oracles:
+                    raise PlanValidationError(
+                        f"Duplicate oracle_id '{oid}' declared in evaluation plan. "
+                        "Oracle identifiers must be unique across all assertions."
+                    )
                 target = str(o.get("target") or o.get("property") or "state")
                 req = bool(o.get("required", True))
+                req_level = str(
+                    o.get("requiredness") or ("REQUIRED" if req else "OPTIONAL")
+                ).upper()
                 compiled = CompiledOracle(
                     oracle_id=oid,
                     scenario_node_id=node_id,
                     source_type="expected_outcome",
                     resolver="state_parity",
                     evidence_source=target,
-                    required=req,
+                    required=req and req_level == "REQUIRED",
+                    requiredness=req_level,
                     expected_type=str(o.get("mode", "exact")),
                     definition=copy.deepcopy(o),
                 )
@@ -596,13 +673,29 @@ def compile_workflow(scenario: dict[str, Any]) -> WorkflowPlan:
             raise PlanValidationError(f"Edge references unknown source node: '{src}'")
         if trg not in nodes:
             raise PlanValidationError(f"Edge references unknown target node: '{trg}'")
-        etype = normalize_edge_type(e.get("type"))
         raw_predicate: Any = None
         for key in ("predicate", "condition", "when"):
             if key in e:
                 raw_predicate = e[key]
                 break
         has_predicate = raw_predicate is not None
+
+        declared_type = e.get("type")
+        if not declared_type:
+            untyped_same_src = [
+                x
+                for x in edges_raw
+                if (x.get("source") or x.get("from")) == src
+                and not x.get("type")
+                and not any(k in x for k in ("predicate", "condition", "when"))
+            ]
+            if len(untyped_same_src) > 1 and not has_predicate:
+                etype = EdgeType.PARALLEL
+            else:
+                etype = EdgeType.SEQUENTIAL
+        else:
+            etype = normalize_edge_type(declared_type)
+
         if etype == EdgeType.SEQUENTIAL and has_predicate:
             etype = EdgeType.CONDITION
         predicate = _normalize_predicate(raw_predicate) if has_predicate else None

@@ -229,12 +229,14 @@ class WorkflowInterpreter:
         event_bus: Any | None = None,
         context_provider: ContextProvider | None = None,
         should_abort: Callable[[], bool] | None = None,
+        on_batch_complete: Callable[[list[str]], None] | None = None,
     ):
         self.plan = plan
         self.identity = identity
         self.event_bus = event_bus
         self.context_provider = context_provider or self._default_context
         self.should_abort = should_abort or (lambda: False)
+        self.on_batch_complete = on_batch_complete
         self.transitions: list[TransitionRecord] = []
         self.node_records: list[NodeExecutionRecord] = []
         self._wave_counter = 0
@@ -358,6 +360,16 @@ class WorkflowInterpreter:
                     )
                     for i, packed in zip(indexes, gathered, strict=True):
                         batch_results[i] = packed
+
+            if self.on_batch_complete and batch:
+                sorted_exec_ids = [
+                    batch_results[i][0].execution_instance_id
+                    for i in sorted(
+                        range(len(batch)), key=lambda k: (batch[k].node_id, batch[k].iteration)
+                    )
+                    if i in batch_results
+                ]
+                self.on_batch_complete(sorted_exec_ids)
 
             # Deterministic post-processing in submission order.
             for idx, item in enumerate(batch):

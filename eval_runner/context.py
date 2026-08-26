@@ -60,6 +60,7 @@ class TurnContext:
     metadata: dict[str, Any] = field(default_factory=dict)
     span_context: dict[str, Any] | None = None
     otel_context: Any | None = None
+    sandbox: Any | None = None
 
     def __post_init__(self):
         # Convert history list to tuple if passed as list

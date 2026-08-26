@@ -1,3 +1,4 @@
+import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -1071,3 +1072,110 @@ async def test_parallel_branch_state_and_history_isolation(tmp_path):
             right_hist = observed_histories.get("Right", [])
             assert "Right" not in left_hist
             assert "Left" not in right_hist
+
+
+@pytest.mark.asyncio
+async def test_parallel_branch_state_merge_order_is_deterministic(tmp_path):
+    """[F1] Parallel branches merge state in deterministic (node_id, iteration) order."""
+    scenario = {
+        "id": "scenario_merge_determinism",
+        "initial_state": {"target_key": "initial"},
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "root",
+                    "task_description": "Root",
+                    "entry": True,
+                    "success_criteria": [{"metric": "m1"}],
+                },
+                {"id": "branch_z", "task_description": "Z", "success_criteria": [{"metric": "m1"}]},
+                {"id": "branch_a", "task_description": "A", "success_criteria": [{"metric": "m1"}]},
+            ],
+            "edges": [
+                {"from": "root", "to": "branch_z", "type": "parallel"},
+                {"from": "root", "to": "branch_a", "type": "parallel"},
+            ],
+        },
+    }
+
+    session = SessionManager("run_merge_det", scenario, log_root=tmp_path)
+    merged_events = []
+    session.event_bus.subscribe(
+        lambda evt: merged_events.append(evt.data if hasattr(evt, "data") else evt)
+    )
+
+    async def mock_call_agent(protocol, endpoint, message, history=None, turn_ctx=None, **kwargs):
+        # Branch Z writes "Z_WIN", Branch A writes "A_WIN" into its sandbox state
+        if message == "Z":
+            # Simulate artificial latency: branch Z completes slower
+            await asyncio.sleep(0.02)
+            turn_ctx.sandbox.state["target_key"] = "Z_WIN"
+        elif message == "A":
+            turn_ctx.sandbox.state["target_key"] = "A_WIN"
+        return {"action": "completed", "tool_name": None}
+
+    async def fake_calculate_metrics(node, attempt, turn, hist=None, sbox=None, acts=None):
+        return {"status": "success", "metrics": [{"metric": "m1", "success": True}]}
+
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", side_effect=mock_call_agent):
+        with patch.object(session, "_calculate_metrics", side_effect=fake_calculate_metrics):
+            results = await session.execute_tasks(attempt_number=1)
+            assert len(results) >= 3
+
+            # Merge order is sorted by (node_id, iteration): branch_a merges BEFORE branch_z
+            # So branch_z's state write is applied last, resulting deterministically in "Z_WIN"
+            assert session.sandbox.state["target_key"] == "Z_WIN"
+            assert len(merged_events) >= 1
+            # Verify exact recorded merge order
+            assert any(
+                "branch_a" in e.get("merge_order", [])[0]
+                and "branch_z" in e.get("merge_order", [])[1]
+                for e in merged_events
+                if isinstance(e, dict) and len(e.get("merge_order", [])) == 2
+            )
+
+
+@pytest.mark.asyncio
+async def test_tool_dependency_cycle_fails_closed(tmp_path):
+    """[W5] Circular tool dependencies fail closed rather than serial fallback."""
+    scenario = {
+        "id": "scenario_deadlock",
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "node1",
+                    "task_description": "Deadlock tool test",
+                    "success_criteria": [{"metric": "m1"}],
+                }
+            ]
+        },
+    }
+
+    session = SessionManager("run_deadlock", scenario, log_root=tmp_path)
+    mock_sandbox = AsyncMock()
+    mock_sandbox.state = {}
+    mock_sandbox.get_full_state = AsyncMock(return_value={})
+    mock_sandbox.get_active_simulators = MagicMock(return_value={})
+    tool_calls = [
+        {"id": "tool_1", "tool": "file_writer", "params": {}, "depends_on": ["tool_2"]},
+        {"id": "tool_2", "tool": "file_reader", "params": {}, "depends_on": ["tool_1"]},
+    ]
+
+    history = []
+    actions = {"used_tools": []}
+    turn_ctx = MagicMock()
+    turn_ctx.span_context = None
+
+    await session._handle_multiple_tools(
+        turn=1,
+        agent_response={"tool_calls": tool_calls},
+        sandbox=mock_sandbox,
+        history=history,
+        actions=actions,
+        turn_ctx=turn_ctx,
+    )
+
+    env_responses = next(h["content"] for h in history if h.get("role") == "environment")
+    assert len(env_responses) == 2
+    assert all(r.get("error_type") == "DEPENDENCY_CYCLE" for r in env_responses)
+    assert all(r.get("status") == "failed" for r in env_responses)

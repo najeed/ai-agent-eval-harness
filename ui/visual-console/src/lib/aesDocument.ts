@@ -49,6 +49,7 @@ export interface ProjectedNode {
 }
 
 export interface ProjectedEdge {
+  id: string;
   source: string;
   target: string;
   condition: unknown;
@@ -202,13 +203,24 @@ export function projectToCanvas(doc: unknown): CanvasProjection {
       required_tools: n.required_tools,
       expected_outcome: n.expected_outcome,
     })),
-    edges: ((rawEdges as unknown[]) || []).map((e: any) => ({
-      source: String(e.from ?? e.source),
-      target: String(e.to ?? e.target),
-      condition: e.condition,
-      edge_type: e.type,
-      priority: e.priority,
-    })),
+    edges: ((rawEdges as unknown[]) || []).map((e: any, idx: number) => {
+      const src = String(e.from ?? e.source);
+      const dst = String(e.to ?? e.target);
+      const edgeId =
+        typeof e.id === 'string' && e.id
+          ? e.id
+          : typeof e.edge_id === 'string' && e.edge_id
+            ? e.edge_id
+            : `edge_${src}_${dst}_${idx}`;
+      return {
+        id: edgeId,
+        source: src,
+        target: dst,
+        condition: e.condition,
+        edge_type: e.type,
+        priority: e.priority,
+      };
+    }),
   };
 }
 
@@ -228,6 +240,7 @@ export interface UiEditPatch {
   nodes: Array<{ id: string; task_description?: unknown; required_tools?: unknown; expected_outcome?: unknown }>;
   /** Edges present on the canvas after operator edits. */
   edges: Array<{
+    id?: string;
     source: string;
     target: string;
     condition?: unknown;
@@ -256,7 +269,6 @@ export function patchCanonicalDocument(
           consensus: {
             strategy: 'Majority_Vote',
             min_judges: 1,
-            judge_panel: ['Luna-1'],
           },
         },
       };
@@ -269,11 +281,14 @@ export function patchCanonicalDocument(
   for (const n of existingNodes) {
     if (isRecord(n) && typeof n.id === 'string') nodeById.set(n.id, n);
   }
-  const edgeKey = (s: unknown, t: unknown) => `${String(s)}->${String(t)}`;
-  const edgeByKey = new Map<string, any>();
-  for (const e of existingEdges) {
-    if (isRecord(e)) edgeByKey.set(edgeKey(e.from ?? e.source, e.to ?? e.target), e);
-  }
+
+  const edgeById = new Map<string, any>();
+  existingEdges.forEach((e: any, idx: number) => {
+    if (isRecord(e)) {
+      const eid = typeof e.id === 'string' && e.id ? e.id : (typeof e.edge_id === 'string' && e.edge_id ? e.edge_id : `edge_${String(e.from ?? e.source)}_${String(e.to ?? e.target)}_${idx}`);
+      edgeById.set(eid, e);
+    }
+  });
 
   const workflowNodes = patch.nodes.map(n => {
     const existing = nodeById.get(n.id) || {};
@@ -288,8 +303,10 @@ export function patchCanonicalDocument(
     };
   });
 
-  const workflowEdges = patch.edges.map(e => {
-    const existing = edgeByKey.get(edgeKey(e.source, e.target)) || {};
+  const workflowEdges = patch.edges.map((e, idx) => {
+    const fallbackId = `edge_${e.source}_${e.target}_${idx}`;
+    const eid = e.id || fallbackId;
+    const existing = edgeById.get(eid) || {};
     if (e.edge_type !== undefined && !isValidEdgeType(e.edge_type)) {
       throw new DocumentProjectionError([
         {
@@ -312,6 +329,7 @@ export function patchCanonicalDocument(
     }
     return {
       ...existing,
+      ...(existing.id ? { id: existing.id } : (e.id && !e.id.startsWith('edge_') ? { id: e.id } : {})),
       from: e.source,
       to: e.target,
       ...(e.condition !== undefined ? { condition: e.condition } : {}),

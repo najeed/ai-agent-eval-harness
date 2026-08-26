@@ -80,10 +80,10 @@ class ReportingPlugin(BaseEvalPlugin):
             scenario, results, export_trajectory=True, metadata=context.metadata
         )
 
-        # 2. Reproduction Script (Mock implementation)
+        # 2. Reproduction Script Generation
         self.generate_repro_script(context)
 
-        # 3. Notifications (Mock implementation)
+        # 3. Notification Dispatch
         # We can check CLI args if we store them in a shared location,
         # but for now we'll check context metadata.
         args = context.metadata.get("args", {})

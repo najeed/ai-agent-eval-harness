@@ -434,11 +434,22 @@ class DefaultRunner(BaseRunner):
                 if nv.get("overall") not in ("success", "not_applicable"):
                     return False
 
+            # Typed OracleResult requiredness lattice evaluation
+            if "oracle_results" in res and isinstance(res["oracle_results"], list):
+                for or_res in res["oracle_results"]:
+                    req_level = str(or_res.get("requiredness", "REQUIRED")).upper()
+                    outcome = str(or_res.get("outcome", "NOT_EVALUATED")).upper()
+                    if req_level == "REQUIRED":
+                        if outcome in ("FAIL", "INVALID", "NOT_EVALUATED"):
+                            return False
+                    # OPTIONAL and INFORMATIONAL oracles never gate attempt success
+
             # 3. Oracle rows: invalid or failed assertions veto the attempt.
             for m in res.get("metrics") or []:
-                if str(m.get("status", "")).upper() == "EVALUATION_INVALID" or m.get("invalid"):
-                    return False
-                if m.get("success") is False and m.get("severity") == "informational":
+                is_opt_or_info = m.get("severity") == "informational" or str(
+                    m.get("requiredness", "")
+                ).upper() in ("OPTIONAL", "INFORMATIONAL")
+                if is_opt_or_info:
                     continue
                 if m.get("success") is False or m.get("outcome") == "FAIL":
                     return False
@@ -446,12 +457,16 @@ class DefaultRunner(BaseRunner):
             for h in res.get("state_hygiene") or []:
                 if h.get("invalid") or h.get("status") == "EVALUATION_INVALID":
                     return False
+                if str(h.get("requiredness", "")).upper() in ("OPTIONAL", "INFORMATIONAL"):
+                    continue
                 if h.get("success") is False or h.get("outcome") == "FAIL":
                     return False
 
             for p in res.get("state_parity") or []:
                 if p.get("invalid") or p.get("status") == "EVALUATION_INVALID":
                     return False
+                if str(p.get("requiredness", "")).upper() in ("OPTIONAL", "INFORMATIONAL"):
+                    continue
                 if p.get("success") is False or p.get("outcome") == "FAIL":
                     return False
 

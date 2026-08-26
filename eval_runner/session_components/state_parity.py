@@ -124,6 +124,11 @@ class SessionStateParityVerifier:
                     elif isinstance(content, str):
                         actual_val = content
                     break
+            if not actual_val and hasattr(self.session_manager, "_extract_agent_summary"):
+                try:
+                    actual_val = self.session_manager._extract_agent_summary(history)
+                except Exception as exc:
+                    logger.debug("Failed to extract agent summary: %s", exc)
             return actual_val, property_path
         if target == "state":
             actual_val = (
@@ -339,5 +344,6 @@ class SessionStateParityVerifier:
             return state_before
         try:
             return PathResolver.resolve(state_before, property_path)
-        except Exception:  # noqa: BLE001 - evidence only
+        except Exception as exc:  # noqa: BLE001 - evidence only
+            logger.debug("Path resolution failed for before state: %s", exc)
             return None

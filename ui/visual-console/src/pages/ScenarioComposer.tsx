@@ -120,6 +120,7 @@ export const ScenarioComposer: React.FC = () => {
         expected_outcome: n.data.expected_outcome,
       })),
       edges: edges.map((e: any) => ({
+        id: e.id,
         source: e.source,
         target: e.target,
         condition: e.data?.condition,
@@ -166,7 +167,7 @@ export const ScenarioComposer: React.FC = () => {
     setNodes(flowNodes);
 
     const flowEdges = projection.edges.map((e, idx) => ({
-      id: `edge-${idx}`,
+      id: e.id || `edge-${idx}`,
       source: e.source,
       target: e.target,
       data: { condition: e.condition, edge_type: e.edge_type, priority: e.priority }
@@ -260,7 +261,7 @@ export const ScenarioComposer: React.FC = () => {
             }));
 
             const flowEdges = projection.edges.map((e, idx) => ({
-              id: `edge-${idx}`,
+              id: e.id || `edge-${idx}`,
               source: e.source,
               target: e.target,
               data: { condition: e.condition, edge_type: e.edge_type, priority: e.priority }
@@ -312,11 +313,12 @@ export const ScenarioComposer: React.FC = () => {
           })));
 
           setEdges(projection.edges.map((e, idx) => ({
-            id: `edge-${idx}`,
+            id: e.id || `edge-${idx}`,
             source: e.source,
             target: e.target,
             data: { condition: e.condition, edge_type: e.edge_type, priority: e.priority }
           })));
+
           window.dispatchEvent(new CustomEvent('agentv-toast', {
             detail: { message: 'Draft scenario loaded from Spec Importer.', type: 'success' }
           }));
@@ -360,7 +362,18 @@ export const ScenarioComposer: React.FC = () => {
 
 
   const onConnect = useCallback((params: Connection) => {
-    setEdges((eds) => addEdge({ ...params, animated: true }, eds));
+    const newEdgeId = `edge_${params.source}_${params.target}_${Date.now()}`;
+    setEdges((eds) =>
+      addEdge(
+        {
+          ...params,
+          id: newEdgeId,
+          animated: true,
+          data: { edge_type: 'sequential', priority: 100 },
+        },
+        eds
+      )
+    );
   }, [setEdges]);
 
   // Handle node selection in React Flow

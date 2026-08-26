@@ -36,6 +36,7 @@ from .execution_ir import (  # noqa: E402
     ExecutionIdentity,
     ExecutionMode,
     NodeVerdict,
+    OracleResult,
     PlanValidationError,
     WorkflowStatus,
     compile_workflow,
@@ -453,6 +454,7 @@ class SessionManager:
             jail_root=(self.log_root / self.run_id / "terminal_jail").resolve(),
             policy_evaluator=self.policy_evaluator,
         )
+        self.sandbox = sandbox
         try:
             await sandbox.setup()
 
@@ -570,9 +572,6 @@ class SessionManager:
                         "evaluation_plan": plan.evaluation_plan,
                     },
                 )
-                # Commit branch state back to base sandbox for sequential routing / final state
-                if hasattr(sandbox, "merge_branch_state") and branch_sandbox is not sandbox:
-                    sandbox.merge_branch_state(branch_sandbox)
                 # [AgentV v2.0.0] Immutable join model on every task result
                 result["execution_instance_id"] = exec_id
                 result["parent_execution_id"] = parent_exec_id
@@ -615,6 +614,42 @@ class SessionManager:
 
                 return result
 
+            def _on_batch_complete(exec_ids: list[str]) -> None:
+                """
+                [F1] Deterministic post-gather state merge.
+                Merges branch sandboxes in strict canonical sorted order.
+                """
+                merged_keys: set[str] = set()
+                for eid in exec_ids:
+                    ctx = instance_contexts.get(eid)
+                    if (
+                        ctx
+                        and hasattr(sandbox, "merge_branch_state")
+                        and ctx.sandbox is not sandbox
+                    ):
+                        before_keys = (
+                            set(sandbox.state.keys())
+                            if hasattr(sandbox, "state") and isinstance(sandbox.state, dict)
+                            else set()
+                        )
+                        sandbox.merge_branch_state(ctx.sandbox)
+                        after_keys = (
+                            set(sandbox.state.keys())
+                            if hasattr(sandbox, "state") and isinstance(sandbox.state, dict)
+                            else set()
+                        )
+                        merged_keys.update(after_keys - before_keys)
+                if self.event_bus and exec_ids:
+                    self.event_bus.emit(
+                        "parallel_state_merged",
+                        {
+                            "run_id": identity.evaluation_run_id,
+                            "attempt_id": identity.attempt_id,
+                            "merge_order": exec_ids,
+                            "keys_affected": sorted(merged_keys),
+                        },
+                    )
+
             interpreter = WorkflowInterpreter(
                 plan,
                 identity,
@@ -624,12 +659,24 @@ class SessionManager:
                     self.cancellation_event
                     and getattr(self.cancellation_event, "is_set", lambda: False)()
                 ),
+                on_batch_complete=_on_batch_complete,
             )
 
             all_task_results, outcome = await interpreter.run(_executor)
-            global_cumulative_history = [
-                item for ctx in instance_contexts.values() for item in ctx.history
+            leaf_contexts = [
+                ctx
+                for eid, ctx in instance_contexts.items()
+                if not any(c.parent_execution_id == eid for c in instance_contexts.values())
             ]
+            global_cumulative_history = (
+                leaf_contexts[0].history
+                if len(leaf_contexts) == 1
+                else [
+                    item
+                    for ctx in (leaf_contexts or list(instance_contexts.values()))
+                    for item in ctx.history
+                ]
+            )
 
             # 🧬 Global Evaluation Pass (Industrial AES v1.6.0)
             # Process metrics defined at the scenario level (e.g. DNA_STABLE)
@@ -1097,6 +1144,7 @@ class SessionManager:
                 history=list(conversation_history),
                 input_payload=node.get("input_payload", {}),
                 span_context=self.session_metadata.get("span_context"),
+                sandbox=sandbox,
                 metadata={
                     **self.session_metadata,
                     "agent_name": self.metadata.get("agent_name"),
@@ -1280,40 +1328,121 @@ class SessionManager:
             return "NOT_APPLICABLE"
 
         declared_criteria = node.get("success_criteria") or []
-        if isinstance(declared_criteria, list) and len(metric_rows) == len(declared_criteria):
-            for idx, m_row in enumerate(metric_rows):
-                if isinstance(m_row, dict) and isinstance(declared_criteria[idx], dict):
-                    crit = declared_criteria[idx]
-                    if "metric" in crit:
-                        m_row.setdefault("metric", crit["metric"])
-                    if "target" in crit or "property" in crit or "name" in crit or "metric" in crit:
-                        m_row.setdefault(
-                            "target",
-                            crit.get("target")
-                            or crit.get("property")
-                            or crit.get("name")
-                            or crit.get("metric"),
-                        )
-                    if "id" in crit:
-                        m_row.setdefault("id", crit["id"])
+        declared_rules = (node.get("state_hygiene") or {}).get("rules") or []
+        declared_outcomes = node.get("expected_outcome") or []
 
-        for row in metric_rows:
-            row.setdefault("required", True)
-            row.setdefault("evaluated", True)
-            row.setdefault("observable", not row.get("invalid", False))
-            row.setdefault("outcome", _typed_outcome(row))
+        node_oracle_results: dict[str, OracleResult] = {}
 
-        for row in hygiene_rows:
-            row.setdefault("required", True)
-            row.setdefault("evaluated", True)
-            row.setdefault("observable", not row.get("invalid", False))
-            row.setdefault("outcome", _typed_outcome(row))
+        for idx, row in enumerate(metric_rows):
+            crit = (
+                declared_criteria[idx]
+                if idx < len(declared_criteria) and isinstance(declared_criteria[idx], dict)
+                else {}
+            )
+            oid = str(
+                crit.get("id")
+                or row.get("oracle_id")
+                or f"{node_id}:sc:{crit.get('metric') or row.get('metric', idx)}"
+            )
+            row["oracle_id"] = oid
+            req = bool(crit.get("required", row.get("required", True)))
+            req_level = str(
+                crit.get("requiredness")
+                or row.get("requiredness")
+                or ("REQUIRED" if req else "OPTIONAL")
+            ).upper()
+            row["requiredness"] = req_level
+            row["outcome"] = _typed_outcome(row)
+            node_oracle_results[oid] = OracleResult(
+                oracle_id=oid,
+                scenario_node_id=node_id,
+                resolver="metrics_calculator",
+                requiredness=req_level,
+                outcome=row["outcome"],
+                expected=crit.get("threshold", row.get("threshold")),
+                observed=row.get("score"),
+                error=row.get("error"),
+            )
 
-        for row in parity_rows:
-            row.setdefault("required", True)
-            row.setdefault("evaluated", True)
-            row.setdefault("observable", not row.get("invalid", False))
-            row.setdefault("outcome", _typed_outcome(row))
+        for idx, row in enumerate(hygiene_rows):
+            rule = (
+                declared_rules[idx]
+                if idx < len(declared_rules) and isinstance(declared_rules[idx], dict)
+                else {}
+            )
+            oid = str(
+                rule.get("id")
+                or row.get("oracle_id")
+                or f"{node_id}:hygiene:{rule.get('path') or row.get('path', idx)}"
+            )
+            row["oracle_id"] = oid
+            req = bool(rule.get("required", row.get("required", True)))
+            req_level = str(
+                rule.get("requiredness")
+                or row.get("requiredness")
+                or ("REQUIRED" if req else "OPTIONAL")
+            ).upper()
+            row["requiredness"] = req_level
+            row["outcome"] = _typed_outcome(row)
+            node_oracle_results[oid] = OracleResult(
+                oracle_id=oid,
+                scenario_node_id=node_id,
+                resolver="state_hygiene",
+                requiredness=req_level,
+                outcome=row["outcome"],
+                expected=rule.get("rule", row.get("rule")),
+                observed=row.get("actual"),
+                error=row.get("error"),
+            )
+
+        for idx, row in enumerate(parity_rows):
+            assertion_dict = row.get("assertion") if isinstance(row.get("assertion"), dict) else {}
+            out_decl = (
+                declared_outcomes[idx]
+                if idx < len(declared_outcomes) and isinstance(declared_outcomes[idx], dict)
+                else {}
+            )
+            target_str = str(
+                out_decl.get("target") or assertion_dict.get("target") or row.get("target", idx)
+            )
+            is_synthetic_na = target_str == "__state_parity__" or not declared_outcomes
+            oid = str(
+                out_decl.get("id")
+                or assertion_dict.get("id")
+                or row.get("oracle_id")
+                or f"{node_id}:parity:{target_str}"
+            )
+            row["oracle_id"] = oid
+            if is_synthetic_na:
+                req = False
+                req_level = "OPTIONAL"
+            else:
+                req = bool(
+                    out_decl.get(
+                        "required",
+                        assertion_dict.get("required", row.get("required", True)),
+                    )
+                )
+                req_level = str(
+                    out_decl.get("requiredness")
+                    or assertion_dict.get("requiredness")
+                    or row.get("requiredness")
+                    or ("REQUIRED" if req else "OPTIONAL")
+                ).upper()
+            row["requiredness"] = req_level
+            row["outcome"] = _typed_outcome(row)
+            node_oracle_results[oid] = OracleResult(
+                oracle_id=oid,
+                scenario_node_id=node_id,
+                resolver="state_parity",
+                requiredness=req_level,
+                outcome=row["outcome"],
+                expected=out_decl.get(
+                    "expected", assertion_dict.get("expected", row.get("expected"))
+                ),
+                observed=row.get("actual", row.get("actual_after")),
+                error=row.get("error"),
+            )
 
         oracle_rows: list[tuple[dict[str, Any], str]] = (
             [(r, "success_criteria") for r in metric_rows]
@@ -1324,46 +1453,65 @@ class SessionManager:
 
         eval_plan: CompiledEvaluationPlan | None = execution_context.get("evaluation_plan")
         required_missing = False
+        required_invalid = False
+        required_failed = False
+        required_pass_count = 0
+        required_na_count = 0
+        required_total = 0
+
         if eval_plan is not None:
             plan_reqs = eval_plan.required_oracles_for_node(node_id)
-            evaluated_sources: set[str] = set()
-            for r, _ in oracle_rows:
-                if not isinstance(r, dict):
-                    continue
-                a = r.get("assertion") if isinstance(r.get("assertion"), dict) else {}
-                for key in (
-                    r.get("target"),
-                    r.get("property"),
-                    r.get("path"),
-                    r.get("id"),
-                    r.get("metric"),
-                    r.get("name"),
-                    r.get("assertion_id"),
-                    a.get("target"),
-                    a.get("property"),
-                    a.get("path"),
-                    a.get("id"),
-                ):
-                    if key:
-                        evaluated_sources.add(str(key))
-
+            required_total = len(plan_reqs)
             for req_oracle in plan_reqs:
-                if (
-                    req_oracle.evidence_source not in evaluated_sources
-                    and req_oracle.oracle_id not in evaluated_sources
-                ):
+                res = node_oracle_results.get(req_oracle.oracle_id)
+                if res is None:
                     required_missing = True
                     break
+                if res.outcome in ("INVALID", "NOT_EVALUATED"):
+                    required_invalid = True
+                elif res.outcome == "FAIL":
+                    required_failed = True
+                elif res.outcome == "PASS":
+                    required_pass_count += 1
+                elif res.outcome == "NOT_APPLICABLE":
+                    if not req_oracle.definition.get("allow_not_applicable", False):
+                        # Required oracle that is unjustifiably NOT_APPLICABLE yields INVALID
+                        required_invalid = True
+                    else:
+                        required_na_count += 1
+        else:
+            for res in node_oracle_results.values():
+                if res.requiredness == "REQUIRED":
+                    required_total += 1
+                    if res.outcome in ("INVALID", "NOT_EVALUATED"):
+                        required_invalid = True
+                    elif res.outcome == "FAIL":
+                        required_failed = True
+                    elif res.outcome == "PASS":
+                        required_pass_count += 1
+                    elif res.outcome == "NOT_APPLICABLE":
+                        required_na_count += 1
 
-        non_na_outcomes = [o for o in outcomes if o != "NOT_APPLICABLE"]
-        if invalid_eval or "INVALID" in outcomes or required_missing:
+        if invalid_eval or required_missing or required_invalid or "INVALID" in outcomes:
             verification = "invalid"
-        elif not non_na_outcomes:
+        elif required_failed:
+            verification = "fail"
+        elif required_total > 0 and required_pass_count == (required_total - required_na_count):
+            verification = "pass"
+        elif required_total > 0 and required_na_count == required_total:
             verification = "not_applicable"
-        elif all(o == "PASS" for o in non_na_outcomes):
+        elif not node_oracle_results:
+            verification = "not_applicable"
+        elif all(
+            r.outcome == "PASS"
+            for r in node_oracle_results.values()
+            if r.requiredness == "REQUIRED"
+        ):
             verification = "pass"
         else:
             verification = "fail"
+
+        task_results["oracle_results"] = [r.to_dict() for r in node_oracle_results.values()]
 
         # First-class policy assertions: every sandbox policy decision
         # taken during this node's execution attaches here; a denial gates.
@@ -1646,8 +1794,22 @@ class SessionManager:
                 )
             ]
             if not runnable:
-                # Dependency deadlock safety: execute remaining serially.
-                runnable = [min(pending_indices)]
+                cycle_ids = [call_ids[i] for i in sorted(pending_indices)]
+                err_msg = (
+                    f"Tool dependency deadlock detected: circular or unresolved dependencies "
+                    f"among calls {cycle_ids}. Failing execution (fail-closed)."
+                )
+                self.event_bus.emit(
+                    CoreEvents.ERROR,
+                    {"error_type": "DEPENDENCY_CYCLE", "message": err_msg, "calls": cycle_ids},
+                )
+                for i in pending_indices:
+                    all_tool_results[i] = {
+                        "status": "failed",
+                        "error_type": "DEPENDENCY_CYCLE",
+                        "message": err_msg,
+                    }
+                break
             await asyncio.gather(*(_run_single(i, tool_calls[i]) for i in runnable))
             pending_indices -= set(runnable)
             completed_indices |= set(runnable)

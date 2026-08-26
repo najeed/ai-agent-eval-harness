@@ -10,7 +10,11 @@ A6: IR semantic validation contract tests.
 
 import pytest
 
-from eval_runner.execution_ir import PlanValidationError, compile_workflow
+from eval_runner.execution_ir import (
+    PlanValidationError,
+    compile_evaluation_plan,
+    compile_workflow,
+)
 
 
 def _scenario(nodes: list[dict], edges: list[dict]) -> dict:
@@ -187,3 +191,38 @@ def test_loop_scc_with_budgets_accepted():
     ]
     plan = compile_workflow(_scenario(nodes, edges))
     assert plan.nodes["loop_a"].max_visitations == 5
+
+
+def test_duplicate_oracle_id_rejected_at_compile_time():
+    """[P0-Oracle] Compiler fails immediately on duplicate oracle IDs."""
+    scenario = {
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "node1",
+                    "success_criteria": [
+                        {"id": "duplicate_id", "metric": "accuracy"},
+                        {"id": "duplicate_id", "metric": "exact_match"},
+                    ],
+                }
+            ]
+        }
+    }
+    with pytest.raises(PlanValidationError, match="Duplicate oracle_id 'duplicate_id'"):
+        compile_evaluation_plan(scenario)
+
+
+def test_malformed_assertion_rejected_at_compile_time():
+    """[P0-Oracle] Compiler rejects non-dict assertion items rather than skipping."""
+    scenario = {
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "node1",
+                    "success_criteria": ["invalid_string_assertion"],
+                }
+            ]
+        }
+    }
+    with pytest.raises(PlanValidationError, match="Malformed success_criteria"):
+        compile_evaluation_plan(scenario)

@@ -1095,20 +1095,14 @@ export const LiveDebugger: React.FC = () => {
 
     // Decorate with runtime execution_graph_edge events
     const graphEdgeEvents = normalizedEvents.filter(e => e.event === 'execution_graph_edge');
-    // [P1.4] Resolve execution-instance IDs to their OWNING scenario nodes so
-    // executed transitions remain placeable even when an edge event carries
-    // only instance-level identifiers.
     const instanceOwner = new Map<string, string>();
     for (const ev of graphNodeEventsAll) {
       if (ev.execution_instance_id && ev.scenario_node_id) {
         instanceOwner.set(String(ev.execution_instance_id), String(ev.scenario_node_id));
       }
     }
-    // [P1.4] Executed transitions that cannot be placed on the graph are
-    // REPORTED, never silently discarded — a rendered graph must not look
-    // complete when evidence was dropped.
     const unplacedExecEdges = new Set<string>();
-    graphEdgeEvents.forEach((e: any) => {
+    graphEdgeEvents.forEach((e: any, idx: number) => {
       const rawSource = e.from_scenario_node_id || e.source_execution_id || e.source;
       const rawTarget = e.to_scenario_node_id || e.target_execution_id || e.target;
       const source = nodeIdSet.has(rawSource)
@@ -1118,12 +1112,24 @@ export const LiveDebugger: React.FC = () => {
         ? rawTarget
         : instanceOwner.get(String(rawTarget));
       if (source && target && nodeIdSet.has(source) && nodeIdSet.has(target)) {
-        const edgeId = `exec-edge-${source}-${target}`;
+        const edgeId =
+          e.execution_edge_id ||
+          (e.execution_instance_id
+            ? `exec-edge-${e.execution_instance_id}`
+            : `exec-edge-${source}-${target}-${e._seq ?? idx}`);
+        const label =
+          e.edge_type === 'retry'
+            ? `retry${e.iteration ? ` #${e.iteration}` : ''}`
+            : e.edge_type === 'conditional'
+              ? 'if'
+              : e.iteration
+                ? `#${e.iteration}`
+                : undefined;
         flowEdgesMap.set(edgeId, {
           id: edgeId,
           source,
           target,
-          label: e.edge_type === 'retry' ? 'retry' : e.edge_type === 'conditional' ? 'if' : undefined,
+          label,
           animated: true,
           style: {
             stroke: e.edge_type === 'retry' ? '#f59e0b' : '#6366f1',
@@ -1138,11 +1144,6 @@ export const LiveDebugger: React.FC = () => {
 
     const allEdges = Array.from(flowEdgesMap.values());
 
-    // [GUI-P0-8] Layer semantics:
-    //   planned   ; the scenario DAG only (design-time contract)
-    //   executed  ; authoritative execution_graph_edge transitions on top of
-    //                a dimmed plan skeleton
-    //   divergence; both layers plus node-level skip/unplanned overlays
     const flowEdges = allEdges
       .filter(e => {
         const plannedEdge = e.id.startsWith('scen-edge-');
@@ -1152,7 +1153,6 @@ export const LiveDebugger: React.FC = () => {
       .map(e => {
         const plannedEdge = e.id.startsWith('scen-edge-');
         if (!plannedEdge) {
-          // Executed transition evidence; emerald in executed/divergence.
           return {
             ...e,
             animated: mode !== 'planned',
@@ -1162,7 +1162,6 @@ export const LiveDebugger: React.FC = () => {
         if (mode === 'planned') {
           return { ...e, animated: true, style: { stroke: '#6366f1', strokeWidth: 2 } };
         }
-        // Plan skeleton dimmed under executed evidence / divergence overlay.
         return {
           ...e,
           animated: false,
@@ -1240,7 +1239,6 @@ export const LiveDebugger: React.FC = () => {
     // [B3] Heuristic findings are computed for the diagnostics panel only.
     setDiagnostics(computeTelemetryDiagnostics(events));
   }, [events, activeScenario, selectedEvent, layerMode, isTerminalRun, runId, scenarioHash]);
-
 
   // [B4] Filter events by selected telemetry level via typed taxonomy
   useEffect(() => {

@@ -42,6 +42,9 @@ def test_console_app_secret_key_fallback(monkeypatch):
     from eval_runner import config
 
     monkeypatch.setattr(config, "DASHBOARD_API_KEY", None)
+    monkeypatch.delenv("DASHBOARD_API_KEY", raising=False)
+    monkeypatch.delenv("SECRET_KEY", raising=False)
+    monkeypatch.delenv("JWT_SECRET", raising=False)
 
     with patch("eval_runner.plugins.manager.load_plugins"):
         with patch("eval_runner.catalog.ScenarioCatalog.get_instance"):

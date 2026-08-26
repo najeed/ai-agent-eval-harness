@@ -113,6 +113,8 @@ mock.output_dir/
 /reports/
 tmp/
 .tmp/
+tmp_test/
+/tmp_test/
 /scratch/
 /scratch_tmp/
 /scripts/

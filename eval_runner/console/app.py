@@ -33,7 +33,7 @@ os.environ["PYTHONUTF8"] = "1"
 os.environ["PYTHONIOENCODING"] = "utf-8"
 
 print(
-    f"--- Flask App Initializing (DASHBOARD_API_KEY: {config.DASHBOARD_API_KEY[:4] if config.DASHBOARD_API_KEY else 'None'})",  # noqa: E501
+    "--- Flask App Initializing",
     flush=True,
 )
 
@@ -65,13 +65,19 @@ def create_app():
     app = Flask(__name__, static_folder=ui_path, static_url_path="/static")
 
     # Ensure session persistence (v1.2.3 Stabilization)
-    api_key = getattr(config, "DASHBOARD_API_KEY", None)
-    if api_key:
+    api_key = getattr(config, "DASHBOARD_API_KEY", None) or os.getenv("DASHBOARD_API_KEY")
+    secret_key_env = os.getenv("SECRET_KEY") or os.getenv("JWT_SECRET")
+    if api_key or secret_key_env:
         from ..utils import crypto
 
-        app.secret_key = crypto.checksum(api_key)
+        app.secret_key = crypto.checksum(api_key or secret_key_env)
     else:
-        # Fallback to a random key if no API key is provided, allowing the app to boot.
+        if os.getenv("AGENTV_ENV", "").lower() == "production":
+            raise RuntimeError(
+                "[Console][CRITICAL] AGENTV_ENV=production requires DASHBOARD_API_KEY, "
+                "SECRET_KEY, or JWT_SECRET. Ephemeral secret_key fallback is forbidden."
+            )
+        # Fallback to a random key if no API key is provided in development/test.
         # Warn loudly: per-process session keys break multi-worker deployments.
         print(
             "   [Console][WARN] No DASHBOARD_API_KEY configured: using an "

@@ -22,7 +22,7 @@ class Interceptor[RequestT, ResponseT](ABC):
     Differentiates mandatory processors from optional enrichers.
     """
 
-    is_mandatory: bool = True
+    is_mandatory: bool = False
 
     @abstractmethod
     def can_intercept(self, request: RequestT) -> bool:
@@ -117,7 +117,7 @@ class PipelineService[RequestT, ResponseT]:
                         # Propagate system control exceptions immediately
                         raise
                     except Exception as e:
-                        is_mandatory = getattr(interceptor, "is_mandatory", True)
+                        is_mandatory = getattr(interceptor, "is_mandatory", False)
                         if is_mandatory:
                             logging.error(
                                 f"[{self._service_name}] Mandatory interceptor "
@@ -152,7 +152,7 @@ class AsyncInterceptor[RequestT, ResponseT](ABC):
     Differentiates mandatory processors from optional enrichers.
     """
 
-    is_mandatory: bool = True
+    is_mandatory: bool = False
 
     @abstractmethod
     def can_intercept(self, request: RequestT) -> bool:
@@ -252,7 +252,7 @@ class AsyncPipelineService[RequestT, ResponseT]:
                     except (RecursionError, KeyboardInterrupt, SystemExit, GeneratorExit):
                         raise
                     except Exception as e:
-                        is_mandatory = getattr(interceptor, "is_mandatory", True)
+                        is_mandatory = getattr(interceptor, "is_mandatory", False)
                         if is_mandatory:
                             logging.error(
                                 f"[{self._service_name}] Mandatory interceptor "

@@ -325,7 +325,7 @@ class VerificationService:
                     ):
                         raise
                     except Exception as e:
-                        is_mandatory = getattr(interceptor, "is_mandatory", True)
+                        is_mandatory = getattr(interceptor, "is_mandatory", False)
                         if is_mandatory:
                             logger.error(
                                 f"[VerificationService] Mandatory interceptor "

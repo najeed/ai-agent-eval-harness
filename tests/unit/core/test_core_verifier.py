@@ -557,6 +557,8 @@ def test_verification_service_interceptor_exception_bypasses_gracefully():
     svc = VerificationService()
 
     class CrashInterceptor(TraceVerificationInterceptor):
+        is_mandatory = False
+
         def can_sign(self, fmt):
             return True
 
