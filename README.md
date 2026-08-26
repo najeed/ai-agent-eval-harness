@@ -143,7 +143,7 @@ The harness is organized into the following key components:
 -   `/industries`: Evaluation assets (5,000+ starter scenarios) categorized by 50+ industries.
 -   `/eval_runner`: Modular Core Engine (Multi-turn loop, Sandbox, Metrics, Simulators, Mutator).
 -   `/eval_runner/console`: Flask-based REST API for the Integrated Visual Suite.
--   `/ui/visual-debugger`: Premium React-based Visual Debugger & Dashboard.
+-   `/ui/visual-console`: React + Vite Visual Suite (Live Debugger, Trust Center, Scenario Composer). Build with `npm ci && npm run build` inside the directory — `ui/visual-console/dist` is what the console serves.
 -   `/examples`: Sample drift traces and triage scenarios for rapid onboarding.
 -   `/reports`: Generated artifacts (JSONL, trajectories, HTML heatmaps).
 -   `/runs`: Local execution history (Flight Recorder logs).

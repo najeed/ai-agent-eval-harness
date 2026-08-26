@@ -452,7 +452,8 @@ export const LiveDebugger: React.FC = () => {
     source: 'CANONICAL' | 'TOPOLOGY_UNAVAILABLE';
     scenarioNodeCount: number;
     runtimeNodeCount: number;
-  }>({ source: 'TOPOLOGY_UNAVAILABLE', scenarioNodeCount: 0, runtimeNodeCount: 0 });
+    droppedEdgeCount: number;
+  }>({ source: 'TOPOLOGY_UNAVAILABLE', scenarioNodeCount: 0, runtimeNodeCount: 0, droppedEdgeCount: 0 });
 
   // [GUI-P0-8] Explicit graph layers. The planned graph (scenario DAG), the
   // executed graph (execution_graph_edge evidence) and the divergence overlay
@@ -885,14 +886,33 @@ export const LiveDebugger: React.FC = () => {
     provenance: 'CANONICAL' | 'TOPOLOGY_UNAVAILABLE';
     scenarioNodeCount: number;
     runtimeNodeCount: number;
+    droppedEdgeCount: number;
   } => {
     const positions = nodePositionsRef.current;
+
+    // 0. [P1.3/V08] Canonical event normalization: every consumer below
+    // (node status, attempt counts, edge decoration) derives from events
+    // ordered by server-assigned _seq — NEVER array arrival order, which
+    // replay/recovery reconnection can scramble. Events lacking _seq retain
+    // stable arrival position after all sequenced events.
+    const seqIndexed = allEvents.map((e, arrivalIdx) => ({
+      ev: e,
+      arrivalIdx,
+      seq: typeof e._seq === 'number' && Number.isFinite(e._seq) ? e._seq : null
+    }));
+    seqIndexed.sort((a, b) => {
+      if (a.seq !== null && b.seq !== null && a.seq !== b.seq) return a.seq - b.seq;
+      if (a.seq !== null && b.seq === null) return -1;
+      if (a.seq === null && b.seq !== null) return 1;
+      return a.arrivalIdx - b.arrivalIdx;
+    });
+    const normalizedEvents = seqIndexed.map(x => x.ev);
 
     // 1. Canonical sources only.
     const scenarioNodesRaw = scen?.workflow?.nodes || scen?.workflow?.tasks || [];
     const workflowEdges = scen?.workflow?.edges || [];
 
-    const graphNodeEventsAll = allEvents.filter(e => e.event === 'execution_graph_node');
+    const graphNodeEventsAll = normalizedEvents.filter(e => e.event === 'execution_graph_node');
     // [GUI-P0-8] Nodes with authoritative executed coverage; drives the
     // divergence overlay (planned-but-never-executed detection).
     const executedNodeIds = new Set<string>(
@@ -921,6 +941,7 @@ export const LiveDebugger: React.FC = () => {
         provenance: 'TOPOLOGY_UNAVAILABLE',
         scenarioNodeCount: 0,
         runtimeNodeCount: 0,
+        droppedEdgeCount: 0
       };
     }
 
@@ -1073,10 +1094,29 @@ export const LiveDebugger: React.FC = () => {
     });
 
     // Decorate with runtime execution_graph_edge events
-    const graphEdgeEvents = allEvents.filter(e => e.event === 'execution_graph_edge');
+    const graphEdgeEvents = normalizedEvents.filter(e => e.event === 'execution_graph_edge');
+    // [P1.4] Resolve execution-instance IDs to their OWNING scenario nodes so
+    // executed transitions remain placeable even when an edge event carries
+    // only instance-level identifiers.
+    const instanceOwner = new Map<string, string>();
+    for (const ev of graphNodeEventsAll) {
+      if (ev.execution_instance_id && ev.scenario_node_id) {
+        instanceOwner.set(String(ev.execution_instance_id), String(ev.scenario_node_id));
+      }
+    }
+    // [P1.4] Executed transitions that cannot be placed on the graph are
+    // REPORTED, never silently discarded — a rendered graph must not look
+    // complete when evidence was dropped.
+    const unplacedExecEdges = new Set<string>();
     graphEdgeEvents.forEach((e: any) => {
-      const source = e.from_scenario_node_id || e.source_execution_id || e.source;
-      const target = e.to_scenario_node_id || e.target_execution_id || e.target;
+      const rawSource = e.from_scenario_node_id || e.source_execution_id || e.source;
+      const rawTarget = e.to_scenario_node_id || e.target_execution_id || e.target;
+      const source = nodeIdSet.has(rawSource)
+        ? rawSource
+        : instanceOwner.get(String(rawSource));
+      const target = nodeIdSet.has(rawTarget)
+        ? rawTarget
+        : instanceOwner.get(String(rawTarget));
       if (source && target && nodeIdSet.has(source) && nodeIdSet.has(target)) {
         const edgeId = `exec-edge-${source}-${target}`;
         flowEdgesMap.set(edgeId, {
@@ -1091,6 +1131,8 @@ export const LiveDebugger: React.FC = () => {
             strokeDasharray: e.edge_type === 'retry' ? '5,5' : undefined
           }
         });
+      } else if (rawSource != null && rawTarget != null) {
+        unplacedExecEdges.add(`${rawSource}->${rawTarget}`);
       }
     });
 
@@ -1171,6 +1213,7 @@ export const LiveDebugger: React.FC = () => {
       provenance: 'CANONICAL',
       scenarioNodeCount: scenarioNodesRaw.length,
       runtimeNodeCount: runtimeDiscoveredNodes.length,
+      droppedEdgeCount: unplacedExecEdges.size
     };
   };
 
@@ -1192,6 +1235,7 @@ export const LiveDebugger: React.FC = () => {
       source: result.provenance,
       scenarioNodeCount: result.scenarioNodeCount,
       runtimeNodeCount: result.runtimeNodeCount,
+      droppedEdgeCount: result.droppedEdgeCount
     });
     // [B3] Heuristic findings are computed for the diagnostics panel only.
     setDiagnostics(computeTelemetryDiagnostics(events));
@@ -1499,6 +1543,17 @@ export const LiveDebugger: React.FC = () => {
               )}
               Trace: {integrityLabel}
             </div>
+            {/* [P1.4] Executed transitions that could not be placed on the
+                graph are surfaced — never a silently false-complete graph. */}
+            {topologyProvenance.droppedEdgeCount > 0 && (
+              <div
+                title={`${topologyProvenance.droppedEdgeCount} executed transition event(s) reference endpoints that could not be resolved to scenario nodes. The rendered graph is INCOMPLETE: absence of an edge here is NOT evidence it did not fire.`}
+                className="flex items-center gap-1.5 px-2 py-1 rounded-lg border border-amber-500/40 bg-amber-500/10 text-amber-300 font-mono text-[10px] font-bold uppercase tracking-wider cursor-help animate-pulse"
+              >
+                <AlertTriangle className="w-3.5 h-3.5" />
+                DROPPED EDGES ({topologyProvenance.droppedEdgeCount})
+              </div>
+            )}
             {/* [P0-10] Live SSE gap banner; missing server event ids are
                 reported visibly, never silently tolerated. */}
             {streamGaps.length > 0 && (

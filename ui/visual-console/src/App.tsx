@@ -390,12 +390,22 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
         }
       } catch (err: any) {
         console.error(`[ZeroTrust Loader] Error mounting module ${entryUrl}:`, err);
-        if (active) {
+        if (!active) return;
+        if (err && err.kind === 'publisher') {
+          // [P1.7/V06] Publisher verification failures carry a structured
+          // `reason` (not a `message`). They must surface as the actionable
+          // publisher_failed state; routing them through load_error hid the
+          // actual trust failure from operators.
           setLoadingState({
-            status: 'load_error',
-            errorMessage: err?.message || 'Module evaluation failed.',
+            status: 'publisher_failed',
+            publisherReason: String(err.reason || 'unknown'),
           });
+          return;
         }
+        setLoadingState({
+          status: 'load_error',
+          errorMessage: err?.message || 'Module evaluation failed.',
+        });
       }
     }
 

@@ -103,6 +103,12 @@ class SessionStateParityVerifier:
             else:
                 shim_id = raw_target
                 actual_val = shim_snapshots.get(shim_id)
+            if actual_val is None:
+                # Oracle resolution contract: a declared observation
+                # source that does not exist is an INVALID observation, never
+                # an observed value of None (which could vacuously match an
+                # expected null and produce a false PASS).
+                return None, "__unobserved_source__"
             return actual_val, property_path
         if target == "message":
             actual_val = (
@@ -151,7 +157,20 @@ class SessionStateParityVerifier:
         """
         assertions = node.get("expected_outcome", [])
         if not isinstance(assertions, list) or not assertions:
-            return True, []
+            # "No parity assertions" must be distinguishable from
+            # "parity successfully verified": record an explicit
+            # NOT_APPLICABLE outcome with its reason in the evidence trail.
+            return True, [
+                {
+                    "assertion": {"target": "__state_parity__"},
+                    "outcome": "NOT_APPLICABLE",
+                    "passed": True,
+                    "reason": (
+                        "No expected_outcome assertions declared on this node; "
+                        "no state transition verification was required."
+                    ),
+                }
+            ]
 
         timeout = float(node.get("timeout", 30))
         interval = 2.0
@@ -196,6 +215,33 @@ class SessionStateParityVerifier:
                             "actual_before": None,
                             "actual_after": None,
                             "passed": False,
+                            "invalid": True,
+                            "outcome": "INVALID",
+                            "error": failed_reason,
+                        }
+                    )
+                    break
+
+                # A declared observation source that never produced a
+                # snapshot is an INVALID oracle resolution, not an observed
+                # value — fail closed immediately instead of comparing None.
+                if property_path == "__unobserved_source__":
+                    all_passed = False
+                    failed_reason = (
+                        f"Unobservable oracle target '{assertion.get('target')}': "
+                        "no active shim/simulator produced a snapshot. Missing "
+                        "observation source = INVALID, never an observed value."
+                    )
+                    evidence_rows.append(
+                        {
+                            "assertion": assertion,
+                            "mode": mode,
+                            "expected": expected,
+                            "actual_before": None,
+                            "actual_after": None,
+                            "passed": False,
+                            "invalid": True,
+                            "outcome": "INVALID",
                             "error": failed_reason,
                         }
                     )
@@ -218,6 +264,7 @@ class SessionStateParityVerifier:
                         "actual_after": resolved_after,
                         "tolerance": tolerance if mode == "numerical_tolerance" else None,
                         "passed": match,
+                        "outcome": "PASS" if match else "FAIL",
                     }
                 )
 

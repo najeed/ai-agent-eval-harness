@@ -770,7 +770,7 @@ def tail_file_generator(log_path: Path, run_id: str, last_event_id: int = 0):
                 seq_id += 1
                 if seq_id > last_event_id:
                     yield f"id: {seq_id}\ndata: {stripped}\n\n"
-            if '"event": "run_end"' in line or '"event": "strategy_end"' in line:
+            if '"event": "run_end"' in line:
                 return
 
         # Step B: Enter tail loop
@@ -835,7 +835,7 @@ def tail_file_generator(log_path: Path, run_id: str, last_event_id: int = 0):
                 seq_id += 1
                 yield f"id: {seq_id}\ndata: {stripped}\n\n"
 
-            if '"event": "run_end"' in line or '"event": "strategy_end"' in line:
+            if '"event": "run_end"' in line:
                 break
 
 

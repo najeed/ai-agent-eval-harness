@@ -123,6 +123,27 @@ jobs:
       uses: actions/setup-python@v6
       with:
         python-version: '3.12'
+    - name: Set up Node 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: npm
+        cache-dependency-path: ui/visual-console/package-lock.json
+    # Gate: the Visual Suite MUST build from source. A red job here
+    # means the shipped image would silently lack its console UI.
+    - name: Build Visual Console production bundle
+      run: |
+        cd ui/visual-console
+        npm ci
+        npm run build
+    - name: Verify UI production bundle exists
+      shell: bash
+      run: |
+        if [ ! -f ui/visual-console/dist/index.html ]; then
+          echo "::error::ui/visual-console/dist/index.html missing — UI build gate failed"
+          exit 1
+        fi
+        echo "UI production bundle present."
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip

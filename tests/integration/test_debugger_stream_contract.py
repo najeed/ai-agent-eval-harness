@@ -213,6 +213,35 @@ def test_contract_retry_attempts_surface_in_emission_order(run_log_dir):
 
 
 # ---------------------------------------------------------------------------
+# multistage — strategy_end is telemetry, never a terminator (P1.2)
+# ---------------------------------------------------------------------------
+
+
+def test_contract_strategy_end_does_not_truncate_multi_stage_runs(run_log_dir):
+    """Only ``run_end`` terminates the SSE stream. ``strategy_end`` is an
+    ordinary mid-run marker for multi-stage runs: truncating there silently
+    drops every subsequent stage's forensic trace."""
+    lines = [
+        ev_line(1, "run_start"),
+        ev_line(2, "execution_graph_node", scenario_node_id="stage1", status="completed"),
+        ev_line(3, "strategy_end"),
+        ev_line(4, "execution_graph_node", scenario_node_id="stage2", status="running"),
+        ev_line(5, "execution_graph_edge", edge_type="sequential"),
+        ev_line(6, "execution_graph_node", scenario_node_id="stage2", status="completed"),
+        ev_line(7, "run_end"),
+    ]
+    write_vault(run_log_dir, "run-multistage", lines)
+
+    gen = tail_file_generator(run_log_dir / "run-multistage" / "run.jsonl", "run-multistage")
+    frames = sse_frames(gen)
+
+    # Post-strategy events must cross the wire.
+    assert [f[1]["_seq"] for f in frames] == [1, 2, 3, 4, 5, 6, 7]
+    assert any(f[1]["event"] == "strategy_end" for f in frames)
+    assert frames[-1][1]["event"] == "run_end"
+
+
+# ---------------------------------------------------------------------------
 # partial — unterminated trailing writes are never broadcast mid-write
 # ---------------------------------------------------------------------------
 

@@ -105,7 +105,13 @@ export const AgentTargetSelector: React.FC<AgentTargetSelectorProps> = ({
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const [isCustomMode, setIsCustomMode] = useState<boolean>(false);
-  const [connectionStatus, setConnectionStatus] = useState<'idle' | 'testing' | 'reachable' | 'error'>('idle');
+  // [P1.5/V09] Status semantics are DISTINCT claims about the target:
+  //   'configured' — schema/shape validated by the backend; NO reachability proof.
+  //   'reachable'  — server-executed probe succeeded (the ONLY reachability claim).
+  // Only a server-side test may ever produce 'reachable'.
+  const [connectionStatus, setConnectionStatus] = useState<
+    'idle' | 'testing' | 'configured' | 'reachable' | 'error'
+  >('idle');
   const [statusMessage, setStatusMessage] = useState<string>('Unverified Endpoint');
 
   // [G3] Reachability results keyed by saved-target id ('' = unsaved draft probe).
@@ -157,11 +163,15 @@ export const AgentTargetSelector: React.FC<AgentTargetSelectorProps> = ({
         });
         const data = await res.json();
         if (res.ok && data.ready) {
-          setConnectionStatus('reachable');
-          setStatusMessage('Target Configuration Validated');
+          // Readiness validates the DECLARED configuration only. Claiming
+          // reachability here was a direct false-positive (audit V09).
+          setConnectionStatus('configured');
+          setStatusMessage('Target Configured (Not Reach-Tested)');
         } else {
-          setConnectionStatus('reachable'); // Backend configured
-          setStatusMessage('Target Configured (Readiness Confirmed)');
+          setConnectionStatus('error');
+          setStatusMessage(
+            data.message || data.error || 'Readiness Check Failed (Configuration Not Validated)'
+          );
         }
       }
     } catch {
@@ -327,6 +337,13 @@ export const AgentTargetSelector: React.FC<AgentTargetSelectorProps> = ({
           {connectionStatus === 'reachable' ? (
             <span className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1">
               <CheckCircle className="w-3 h-3" /> {statusMessage}
+            </span>
+          ) : connectionStatus === 'configured' ? (
+            <span
+              title="Configuration validated server-side; network reachability has NOT been proven. Run a server-side test for a reachability claim."
+              className="text-[11px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 flex items-center gap-1"
+            >
+              <HelpCircle className="w-3 h-3" /> {statusMessage}
             </span>
           ) : connectionStatus === 'error' ? (
             <span className="text-[11px] font-mono text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20 flex items-center gap-1">

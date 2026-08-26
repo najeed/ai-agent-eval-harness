@@ -22,7 +22,7 @@ from eval_runner.execution_ir import (
     compile_workflow,
     evaluate_predicate,
 )
-from eval_runner.workflow_interpreter import WorkflowInterpreter
+from eval_runner.workflow_interpreter import ReadyItem, WorkflowInterpreter, _SchedulerState
 
 
 def _identity(attempt_number: int = 1) -> ExecutionIdentity:
@@ -566,6 +566,112 @@ async def test_compensation_then_fail_runs_compensation_target():
     comp = outcome.transitions[0]
     assert comp.edge_type == EdgeType.COMPENSATION.value
     assert comp.transition_reason == "compensation"
+
+
+# ---------------------------------------------------------------------------
+# Compensation obligation tracking (increment-on-fire contract)
+# ---------------------------------------------------------------------------
+
+
+def test_fired_compensation_edge_increments_pending_obligation():
+    """Firing a COMPENSATION edge creates an outstanding rollback
+    obligation. Without the increment, the end-of-workflow completion check
+    is dead code and dropped rollbacks certify as COMPLETED."""
+    scenario = {
+        "failure_policy": "compensate_then_fail",
+        "workflow": {
+            "nodes": [{"id": "charge"}, {"id": "refund"}, {"id": "done"}],
+            "edges": [
+                {"id": "e_seq", "from": "charge", "to": "done", "type": "sequential"},
+                {"id": "e_comp", "from": "charge", "to": "refund", "type": "compensation"},
+            ],
+        },
+    }
+    plan = _plan(scenario)
+    state = _SchedulerState(plan)
+    assert state.pending_compensations == 0
+
+    interp = WorkflowInterpreter(plan, _identity(), event_bus=None)
+    item = ReadyItem(
+        node_id="charge",
+        iteration=1,
+        compensating=False,
+        generation="gen-root",
+        parent_exec_id=None,
+    )
+    comp_edge = next(e for e in plan.outgoing("charge") if e.type == EdgeType.COMPENSATION)
+
+    interp._fire_and_activate([comp_edge], state, item, "compensation", compensating=True)
+    assert state.pending_compensations == 1
+
+    state.pending_compensations_decrement()
+    assert state.pending_compensations == 0
+
+
+@pytest.mark.asyncio
+async def test_dropped_compensation_prevents_workflow_completion():
+    """End-to-end regression for the audit's D1 defect: a required
+    rollback that is silently DROPPED (its target already exhausted
+    max_visitations) must fail the workflow instead of certifying COMPLETED.
+
+    Trace: worker succeeds twice (second attempt fans out to refund, which
+    consumes its only visitation and routes back into worker); worker's third
+    attempt FAILS and fires its compensation edge onto the already-capped
+    refund. Before the fix the pending counter was never incremented, the
+    completion check was dead, and this workflow reported COMPLETED with an
+    unfinished rollback. It must now FAIL with 'Compensation path did not
+    complete'."""
+    scenario = {
+        "failure_policy": "compensate_then_fail",
+        "workflow": {
+            "nodes": [
+                # join:any — the default AND-join over BOTH incoming retry
+                # edges would strand a single retry token forever.
+                {"id": "worker", "max_visitations": 3, "join": "any"},
+                {"id": "refund", "max_visitations": 1, "join": "any"},
+                {"id": "done"},
+            ],
+            "entry_nodes": ["worker", "done"],
+            "edges": [
+                {
+                    "id": "e_retry",
+                    "from": "worker",
+                    "to": "worker",
+                    "type": "retry",
+                    "condition": {"op": "eq", "path": "result.retry_again", "value": True},
+                },
+                {"id": "e_seq", "from": "worker", "to": "refund", "type": "sequential"},
+                {"id": "e_comp", "from": "worker", "to": "refund", "type": "compensation"},
+                {
+                    "id": "e_rework",
+                    "from": "refund",
+                    "to": "worker",
+                    "type": "retry",
+                    "condition": {"op": "eq", "path": "result.rework", "value": True},
+                },
+            ],
+        },
+    }
+    plan = _plan(scenario)
+    calls = {"worker": 0}
+
+    async def executor(node_ir, exec_id, parent):
+        nid = node_ir.node_id
+        if nid == "worker":
+            calls["worker"] += 1
+            if calls["worker"] == 1:
+                return {"task_id": nid, "status": "success", "retry_again": True}
+            if calls["worker"] == 2:
+                return {"task_id": nid, "status": "success", "retry_again": False}
+            return {"task_id": nid, "status": "failure"}
+        if nid == "refund":
+            return {"task_id": nid, "status": "success", "rework": True}
+        return {"task_id": nid, "status": "success"}
+
+    results, outcome = await _run(plan, executor)
+    assert calls["worker"] == 3  # happy path ran; the third attempt failed
+    assert outcome.status.value == "workflow_failed"
+    assert outcome.reason == "Compensation path did not complete"
 
 
 @pytest.mark.asyncio

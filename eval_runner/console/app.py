@@ -48,10 +48,20 @@ def create_app():
     else:
         print("   [Industrial Start] Lazy Catalog active for Demo Stability.", flush=True)
 
-    # Set visual-console as primary static_folder with fallback to visual-debugger
+    # [P1.6/V05] visual-console/dist is the ONLY supported UI. The legacy
+    # CDN-loaded prototype (ui/visual-debugger) was removed — silently
+    # degrading to it broke air-gapped deployments and hid the missing build.
     v2_ui_dist = os.path.abspath(config.PROJECT_ROOT / "ui" / "visual-console" / "dist")
-    fallback_ui = os.path.abspath(config.PROJECT_ROOT / "ui" / "visual-debugger")
-    ui_path = v2_ui_dist if os.path.exists(v2_ui_dist) else fallback_ui
+    if os.path.exists(v2_ui_dist):
+        ui_path = v2_ui_dist
+    else:
+        ui_path = v2_ui_dist  # Flask tolerates an absent static dir at boot.
+        print(
+            "   [Console][WARN] ui/visual-console/dist is NOT BUILT. The "
+            "console API will serve without the Visual Suite UI. Build it "
+            "with: cd ui/visual-console && npm ci && npm run build",
+            flush=True,
+        )
     app = Flask(__name__, static_folder=ui_path, static_url_path="/static")
 
     # Ensure session persistence (v1.2.3 Stabilization)
@@ -61,10 +71,25 @@ def create_app():
 
         app.secret_key = crypto.checksum(api_key)
     else:
-        # Fallback to a random key if no API key is provided, allowing the app to boot
+        # Fallback to a random key if no API key is provided, allowing the app to boot.
+        # Warn loudly: per-process session keys break multi-worker deployments.
+        print(
+            "   [Console][WARN] No DASHBOARD_API_KEY configured: using an "
+            "ephemeral per-process Flask secret key. Sessions will not survive "
+            "worker restarts and will fail across replicas.",
+            flush=True,
+        )
         app.secret_key = os.urandom(24).hex()
 
-    CORS(app, supports_credentials=True)  # Explicit support for session cookies
+    # CORS is opt-in only. With no explicit allow-list the console is
+    # same-origin and emits no CORS headers — never reflect arbitrary origins
+    # on credentialed requests.
+    if getattr(config, "ALLOWED_ORIGINS", None):
+        CORS(
+            app,
+            origins=config.ALLOWED_ORIGINS,
+            supports_credentials=True,
+        )
     app.register_blueprint(auth_bp)
     app.register_blueprint(system_bp, url_prefix="/api")
     app.register_blueprint(scenario_bp, url_prefix="/api")

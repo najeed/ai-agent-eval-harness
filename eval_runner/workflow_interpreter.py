@@ -176,6 +176,9 @@ class _SchedulerState:
         self.unhandled_failures: list[str] = []
         self.pending_compensations: int = 0
 
+    def pending_compensations_increment(self) -> None:
+        self.pending_compensations += 1
+
     def pending_compensations_decrement(self) -> None:
         self.pending_compensations = max(0, self.pending_compensations - 1)
 
@@ -631,6 +634,13 @@ class WorkflowInterpreter:
                 compensating=compensating or item.compensating,
             )
             state.pending_tokens.setdefault(edge.to_node, []).append(token)
+            if token.compensating:
+                # A fired compensation edge is an outstanding rollback
+                # obligation until its target node completes successfully.
+                # Without this increment the end-of-workflow check can never
+                # fire (dead branch) and a dropped/incomplete compensation
+                # would silently certify as COMPLETED/PASS.
+                state.pending_compensations_increment()
             for ji in self._try_join(edge.to_node, item, state):
                 key = (ji.node_id, ji.iteration, ji.generation)
                 if key not in seen_keys:
@@ -748,6 +758,12 @@ class WorkflowInterpreter:
             "triage_tag": result.get("triage_tag"),
             "node_verdict": result.get("node_verdict"),
         }
+        # Executor-provided fields are exposed so declared transition
+        # predicates (e.g. ``result.retry_again``) can route loops/retries.
+        # Canonical keys above always win.
+        for key, value in result.items():
+            if key not in ctx["result"] and not key.startswith("_"):
+                ctx["result"][key] = value
         return ctx
 
     def _eval(self, predicate: PredicateIR | None, context: dict[str, Any]) -> tuple[bool, Any]:

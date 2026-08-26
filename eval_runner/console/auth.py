@@ -28,6 +28,24 @@ def get_jwt_secret() -> str:
         return config.DASHBOARD_API_KEY
     if getattr(config, "SERVICE_API_KEY", None):
         return config.SERVICE_API_KEY
+
+    # A per-process ephemeral secret silently breaks JWT validation and
+    # Flask sessions across worker processes/replicas. Fail loud in production;
+    # warn clearly everywhere else.
+    env = os.environ.get("AGENTV_ENV", "").strip().lower()
+    if env in ("production", "prod"):
+        raise RuntimeError(
+            "AGENTV_ENV=production requires a stable signing secret: set "
+            "JWT_SECRET or DASHBOARD_API_KEY. A per-process ephemeral secret "
+            "breaks multi-worker deployments (tokens issued by one worker fail "
+            "validation on another)."
+        )
+    logger.warning(
+        "JWT secret falling back to a per-process EPHEMERAL value. Sessions "
+        "and handoff tokens will NOT validate across worker processes or "
+        "replicas. Set JWT_SECRET (or DASHBOARD_API_KEY) for any "
+        "multi-process deployment."
+    )
     return _EPHEMERAL_SECRET
 
 

@@ -1,0 +1,12 @@
+# Keep Docker build context lean; the UI bundle is built inside the
+# dedicated node stage of the Dockerfile (P1.6).
+.git
+.venv
+venv
+__pycache__
+*.pyc
+reports
+node_modules
+ui/visual-console/dist
+ui/visual-console/node_modules
+scratch

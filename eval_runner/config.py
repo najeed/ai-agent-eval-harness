@@ -536,6 +536,22 @@ SERVICE_API_KEY = os.getenv("SERVICE_API_KEY", os.getenv("DASHBOARD_API_KEY"))
 # See: docs-v1-deprecated-reference/guides/07_SECURITY_AND_AUTHENTICATION.md for setup instructions.
 DASHBOARD_API_KEY = os.getenv("DASHBOARD_API_KEY")
 
+# Explicit JWT signing secret for console handoff tokens. Falls back to
+# DASHBOARD_API_KEY / SERVICE_API_KEY; a per-process ephemeral secret is used
+# only in non-production environments (with a startup warning).
+JWT_SECRET = os.getenv("JWT_SECRET")
+
+# --- Console CORS ---
+# Explicit allow-list for cross-origin console API access. When unset, the
+# console is same-origin only and NO CORS headers are emitted at all.
+# Opt in explicitly with a comma-separated list of origins, e.g.:
+#   AGENTV_ALLOWED_ORIGINS="https://console.example.com,https://ops.example.com"
+ALLOWED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv("AGENTV_ALLOWED_ORIGINS", "").split(",")
+    if origin.strip()
+]
+
 
 # --- OIDC / SSO Configuration ---
 OIDC_JWKS_URL = os.getenv("OIDC_JWKS_URL")
