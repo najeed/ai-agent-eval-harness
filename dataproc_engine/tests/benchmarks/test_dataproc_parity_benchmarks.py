@@ -8,19 +8,18 @@ from dataproc_engine.cli.main import cli, run_rotational_backup
 
 
 def test_cli_backup_rotation_zenith():
-    """Target CLI lines 17-41, 169-192."""
     runner = CliRunner()
     with runner.isolated_filesystem():
         # 1. Create a dummy output file
         with open("test.jsonl", "w") as f:
             f.write("{}")
 
-        # 2. Test rotation logic manually (Lines 17-41)
+        # 2. Test rotation logic manually
         archive = run_rotational_backup("test.jsonl", 2)
         assert archive is not None
         assert os.path.exists(archive)
 
-        # 3. Test CLI conflict handling (Lines 169-185)
+        # 3. Test CLI conflict handling
         with open("output.jsonl", "w") as f:
             f.write("{}")
 
@@ -44,7 +43,6 @@ def test_cli_backup_rotation_zenith():
 
 
 def test_cli_error_graceful_zenith():
-    """Target CLI lines 210-212 (Graceful Error)."""
     runner = CliRunner()
     # Trigger exception in LLMManager init
     with patch(
@@ -56,7 +54,6 @@ def test_cli_error_graceful_zenith():
 
 
 def test_cli_file_source_validation_zenith():
-    """Target CLI lines 70-72."""
     runner = CliRunner()
     result = runner.invoke(cli, ["extract", "--source", "file"])  # Missing --input-uri
     assert "Error: --input-uri" in result.output
@@ -65,7 +62,7 @@ def test_cli_file_source_validation_zenith():
 
 @pytest.mark.asyncio
 async def test_unstructured_path_traversal_gap():
-    """Target Unstructured lines 80-84 (Directory processing)."""
+    """Target Unstructured Directory processing."""
     from dataproc_engine.core.llm_manager import LLMManager
     from dataproc_engine.providers.unstructured_provider import UnstructuredProvider
 

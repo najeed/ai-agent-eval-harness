@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Onboarding - SIM-Only Plan Activation",
     "compliance_level": "Standard",
-    "id": "13844-sim-only-plan-activation"
+    "id": "13844-sim-only-plan-activation",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer has received their new SIM card for a SIM-only plan and needs to activate it.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

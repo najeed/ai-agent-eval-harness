@@ -17,12 +17,12 @@ async def test_unstructured_common_crawl_protocol_hit():
     }
     provider = UnstructuredProvider(config, llm_manager=LLMManager({}))
 
-    # 1. Extract (Lines 26-31)
+    # 1. Extract
     artifacts = await provider.extract()
     assert len(artifacts) > 0
     assert "CC-" in artifacts[0].id
 
-    # 2. Transform (Lines 140-158)
+    # 2. Transform
     results = await provider.transform(artifacts)
     assert len(results) > 0
     assert results[0].provenance["provider"] == "Common Crawl"

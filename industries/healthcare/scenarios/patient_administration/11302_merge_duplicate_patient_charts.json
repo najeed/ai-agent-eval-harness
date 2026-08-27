@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Merge Duplicate Patient Charts",
     "compliance_level": "Standard",
-    "id": "11302-merge-duplicate-patient-charts"
+    "id": "11302-merge-duplicate-patient-charts",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A Health Information Management (HIM) specialist has identified two charts for the same patient that need to be merged.",
   "industry": "Healthcare",
@@ -82,9 +86,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

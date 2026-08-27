@@ -37,7 +37,7 @@ async def test_demographics_world_bank_production():
 
 @pytest.mark.asyncio
 async def test_demographics_census_hardened():
-    """Verify US Census transformation logic (Lines 107-127)."""
+    """Verify US Census transformation logic."""
     config = {"industry": "public_sector", "demographics_mode": "census", "allow_simulation": True}
     provider = DemographicsProvider(config, llm_manager=LLMManager({"llm_provider": "heuristic"}))
 
@@ -49,7 +49,7 @@ async def test_demographics_census_hardened():
 
 @pytest.mark.asyncio
 async def test_public_sector_local_load_boost(tmp_path):
-    """Verify local CSV loading across Labor, Housing, and Environment (Lines 24-38)."""
+    """Verify local CSV loading across Labor, Housing, and Environment."""
     df = pd.DataFrame([{"key": "val", "metric": 100}])
     csv_path = str(tmp_path / "sector_data.csv")
     df.to_csv(csv_path, index=False)
@@ -78,7 +78,7 @@ async def test_public_sector_local_load_boost(tmp_path):
 
 @pytest.mark.asyncio
 async def test_housing_fhfa_transformation():
-    """Verify FHFA/HUD housing transformation (Lines 61-79)."""
+    """Verify FHFA/HUD housing transformation."""
     # Create raw artifact mimicking FHFA structure
     provider = HousingProvider(
         {"industry": "public_sector", "housing_mode": "hud"},

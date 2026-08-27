@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Perform Emergency Alert System (EAS) Test",
     "compliance_level": "Standard",
-    "id": "13893-emergency-alert-system-test"
+    "id": "13893-emergency-alert-system-test",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "An agent must perform a scheduled test of the Wireless Emergency Alert system for a specific region.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

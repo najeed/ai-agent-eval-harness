@@ -226,3 +226,69 @@ def test_malformed_assertion_rejected_at_compile_time():
     }
     with pytest.raises(PlanValidationError, match="Malformed success_criteria"):
         compile_evaluation_plan(scenario)
+
+
+def test_node_verdict_properties_and_evidence():
+    from eval_runner.execution_ir import NodeIR, NodeVerdict, OracleResult, PredicateIR
+
+    # NodeVerdict branches
+    v_exec_fail = NodeVerdict(execution="failed", verification="pass", policy="pass", parity="pass")
+    assert v_exec_fail.overall == "execution_failed"
+    assert not v_exec_fail.success
+
+    v_ver_invalid = NodeVerdict(
+        execution="success", verification="invalid", policy="pass", parity="pass"
+    )
+    assert v_ver_invalid.overall == "evaluation_invalid"
+
+    v_policy_denied = NodeVerdict(
+        execution="success", verification="pass", policy="denied", parity="pass"
+    )
+    assert v_policy_denied.overall == "policy_denied"
+
+    v_parity_fail = NodeVerdict(
+        execution="success", verification="pass", policy="pass", parity="fail"
+    )
+    assert v_parity_fail.overall == "parity_failed"
+
+    v_success = NodeVerdict(
+        execution="success",
+        verification="pass",
+        policy="pass",
+        parity="pass",
+        failed_assertion={"oracle_id": "o1"},
+    )
+    assert v_success.overall == "success"
+    assert v_success.success
+    d = v_success.to_dict()
+    assert d["failed_assertion"] == {"oracle_id": "o1"}
+
+    # NodeIR parsing fallbacks
+    n_invalid = NodeIR(
+        node_id="n1",
+        definition={"max_visitations": "bad", "join_threshold": "bad", "timeout": -5},
+    )
+    assert n_invalid.max_visitations == 3
+    assert n_invalid.join_threshold is None
+    assert n_invalid.timeout_seconds is None
+
+    # NodeIR join_spec validation errors
+    with pytest.raises(PlanValidationError, match="join.n must be an integer"):
+        NodeIR(node_id="n2", definition={"join": {"mode": "all", "n": "bad"}}).join_spec({"e1"})
+
+    with pytest.raises(PlanValidationError, match="unknown join mode"):
+        NodeIR(node_id="n3", definition={"join": "invalid_mode"}).join_spec({"e1"})
+
+    # PredicateIR to_evidence
+    p_leaf = PredicateIR(op="eq", path="data.val", value=42)
+    assert p_leaf.to_evidence() == {"op": "eq", "path": "data.val", "value": 42}
+
+    p_composite = PredicateIR(clauses=(p_leaf,), logic="any")
+    assert p_composite.to_evidence() == {
+        "logic": "any",
+        "clauses": [{"op": "eq", "path": "data.val", "value": 42}],
+    }
+
+    # OracleResult to_dict
+    ores = OracleResult(oracle_id="o1", scenario_node_id="n1", resolver="exact_match")
+    assert ores.to_dict()["oracle_id"] == "o1"

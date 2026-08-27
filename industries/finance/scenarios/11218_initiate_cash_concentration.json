@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Initiate Corporate Cash Concentration",
     "compliance_level": "Standard",
-    "id": "11218-initiate-cash-concentration"
+    "id": "11218-initiate-cash-concentration",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A treasury manager needs to sweep funds from multiple subsidiary accounts into a central concentration account.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

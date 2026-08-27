@@ -72,7 +72,7 @@ Invalid line here.
     assert scenario["metadata"]["name"] == "Minimal"
     assert scenario["description"] == ""
 
-    # Cover line 62: sections with only whitespace header
+    # sections with only whitespace header
     md_empty = "## \n"
     await spec_parser.parse_markdown_to_scenario(md_empty)
 

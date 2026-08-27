@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Verify Insurance Eligibility",
     "compliance_level": "Standard",
-    "id": "11301-verify-insurance-eligibility"
+    "id": "11301-verify-insurance-eligibility",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A front desk staff member needs to verify a patient's insurance eligibility for an upcoming appointment.",
   "industry": "Healthcare",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

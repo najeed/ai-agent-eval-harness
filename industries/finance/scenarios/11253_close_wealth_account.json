@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Close Wealth Management Account",
     "compliance_level": "Standard",
-    "id": "11253-close-wealth-account"
+    "id": "11253-close-wealth-account",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A client is transferring their assets to another institution and wants to close their account.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

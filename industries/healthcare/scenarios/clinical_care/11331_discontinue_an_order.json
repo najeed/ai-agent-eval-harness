@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Discontinue an Order",
     "compliance_level": "Standard",
-    "id": "11331-discontinue-an-order"
+    "id": "11331-discontinue-an-order",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A patient has had an adverse reaction to a medication. The physician needs to discontinue the order immediately.",
   "industry": "Healthcare",
@@ -82,9 +86,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

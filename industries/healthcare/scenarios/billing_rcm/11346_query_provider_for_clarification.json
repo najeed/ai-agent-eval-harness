@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Query a Provider for Documentation Clarification",
     "compliance_level": "Standard",
-    "id": "11346-query-provider-for-clarification"
+    "id": "11346-query-provider-for-clarification",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A coder finds the clinical documentation is ambiguous and needs to ask the provider for clarification to assign the correct code.",
   "industry": "Healthcare",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

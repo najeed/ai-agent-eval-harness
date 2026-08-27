@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Customer Plan Change Request - Upgrade",
     "compliance_level": "Standard",
-    "id": "13809-plan-change-request-upgrade"
+    "id": "13809-plan-change-request-upgrade",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer frequently exceeds their data limit and wants to upgrade to a plan with more data.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

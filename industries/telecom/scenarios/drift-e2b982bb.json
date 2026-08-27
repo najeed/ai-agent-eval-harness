@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Imported Drift: sample_trace.json",
     "compliance_level": "Standard",
-    "id": "drift-e2b982bb"
+    "id": "drift-e2b982bb",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "Automatically imported from production trace: sample_trace.json",
   "industry": "telecom",
@@ -36,9 +40,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

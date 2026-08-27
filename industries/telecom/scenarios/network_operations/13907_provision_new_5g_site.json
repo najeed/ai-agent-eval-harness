@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Provision New 5G Site",
     "compliance_level": "Standard",
-    "id": "13907-provision-new-5g-site"
+    "id": "13907-provision-new-5g-site",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A new 5G cell site has been physically installed. The agent must remotely configure and activate it.",
   "industry": "Telecom",
@@ -82,9 +86,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

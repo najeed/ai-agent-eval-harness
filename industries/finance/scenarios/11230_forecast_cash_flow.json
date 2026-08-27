@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Forecast Short-Term Corporate Cash Flow",
     "compliance_level": "Standard",
-    "id": "11230-forecast-cash-flow"
+    "id": "11230-forecast-cash-flow",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A treasury analyst needs to create a 13-week cash flow forecast for the company.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

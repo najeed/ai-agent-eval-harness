@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Respond to a Drug-Interaction Alert",
     "compliance_level": "Standard",
-    "id": "11321-respond-to-drug-interaction-alert"
+    "id": "11321-respond-to-drug-interaction-alert",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A physician is ordering a new medication, and the Clinical Decision Support system fires an alert for a potential major drug-drug interaction.",
   "industry": "Healthcare",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

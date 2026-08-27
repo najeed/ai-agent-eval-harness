@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Place a Medication Order (CPOE)",
     "compliance_level": "Standard",
-    "id": "11319-place-medication-order"
+    "id": "11319-place-medication-order",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A physician needs to order a new medication for a patient.",
   "industry": "Healthcare",
@@ -82,9 +86,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

@@ -253,7 +253,7 @@ def test_diff_identical_nesting():
     old3 = [{"id": 1, "v": 1}]
     new3 = [BadDict({"id": 1, "v": 1})]
     res = list_diff(old3, new3)
-    # If list_diff uses != (line 55), it will enter. Then dict_diff returns {}
+    # If list_diff uses !=, it will enter. Then dict_diff returns {}
     # check 'if row_diff:' will be False.
     assert res is None
 

@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Set Up Automated Investing",
     "compliance_level": "Standard",
-    "id": "11262-set-up-automated-investing"
+    "id": "11262-set-up-automated-investing",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A client wants to set up an automatic monthly investment from their bank account into their portfolio.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

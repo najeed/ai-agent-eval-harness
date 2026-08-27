@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Update Patient Insurance Information",
     "compliance_level": "Standard",
-    "id": "11305-update-patient-insurance"
+    "id": "11305-update-patient-insurance",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A patient informs the front desk that their insurance has changed.",
   "industry": "Healthcare",
@@ -82,9 +86,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

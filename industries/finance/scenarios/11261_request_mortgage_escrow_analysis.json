@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Request Mortgage Escrow Analysis",
     "compliance_level": "Standard",
-    "id": "11261-request-mortgage-escrow-analysis"
+    "id": "11261-request-mortgage-escrow-analysis",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer's property taxes have increased, and they want to understand how this will affect their monthly mortgage payment.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

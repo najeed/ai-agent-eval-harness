@@ -1081,7 +1081,7 @@ class SocialMediaSimulator(BaseSimulator):
         return {"status": "success", "id": post_id}
 
     async def on_poll(self, condition: str, params: dict) -> bool:
-        """Social specific polling (Line 639 coverage check)."""
+        """Social specific polling."""
         if condition == "post_confirmed":
             post_id = params.get("post_id")
             return any(p.get("id") == post_id for p in self.state["posts"])

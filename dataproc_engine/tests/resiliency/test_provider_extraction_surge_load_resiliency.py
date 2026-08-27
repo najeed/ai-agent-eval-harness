@@ -11,7 +11,7 @@ from dataproc_engine.providers.healthcare import HealthcareProvider
 
 @pytest.mark.asyncio
 async def test_agriculture_exception_handler():
-    """Trigger the catch block in AgricultureProvider.extract (Line 97)."""
+    """Trigger the catch block in AgricultureProvider.extract."""
     config = {"industry": "agriculture", "usda_api_key": "FAIL_KEY", "allow_simulation": False}
     provider = AgricultureProvider(config, llm_manager=LLMManager({}))
 
@@ -22,7 +22,7 @@ async def test_agriculture_exception_handler():
 
 @pytest.mark.asyncio
 async def test_finance_sec_parsing_error():
-    """Trigger the catch block in FinanceProvider.extract (Lines 129-131)."""
+    """Trigger the catch block in FinanceProvider.extract."""
     config = {
         "industry": "finance",
         "finance_mode": "sec_edgar",
@@ -59,7 +59,7 @@ async def test_healthcare_api_error_branches():
 
 
 def test_cli_rotation_policy_message(tmp_path):
-    """Exercise the 'Rotation Policy Active' message (Line 183)."""
+    """Exercise the 'Rotation Policy Active' message."""
     from click.testing import CliRunner
 
     from dataproc_engine.cli.main import cli

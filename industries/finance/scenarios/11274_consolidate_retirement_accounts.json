@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Consolidate Retirement Accounts (Rollover)",
     "compliance_level": "Standard",
-    "id": "11274-consolidate-retirement-accounts"
+    "id": "11274-consolidate-retirement-accounts",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A new client wants to roll over an old 401(k) from a previous employer into a new IRA.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

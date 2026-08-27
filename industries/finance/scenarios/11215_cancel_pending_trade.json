@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Cancel a Pending Trade Order",
     "compliance_level": "Standard",
-    "id": "11215-cancel-pending-trade"
+    "id": "11215-cancel-pending-trade",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A client placed a limit order to buy a stock, but now wants to cancel it before it executes.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

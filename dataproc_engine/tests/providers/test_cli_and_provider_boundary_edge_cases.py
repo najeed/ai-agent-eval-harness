@@ -34,7 +34,6 @@ async def test_finance_provider_error_handling():
         mock_ctx.__aenter__ = AsyncMock(return_value=mock_resp)
         mock_get.return_value = mock_ctx
 
-        # Hit lines 47, 61
         artifacts = await provider.extract()
         assert len(artifacts) == 0
 
@@ -47,7 +46,6 @@ async def test_finance_provider_credit_risk_success(tmp_path):
     config = {"finance_mode": "credit_risk", "input_uri": str(csv_file), "allow_simulation": False}
     provider = FinanceProvider(config)
 
-    # Hit lines 108-111
     artifacts = await provider.extract()
     assert len(artifacts) == 1
     assert artifacts[0].id == "UCI-CREDIT-USER"
@@ -60,7 +58,6 @@ async def test_finance_provider_sec_mock_default():
     provider = FinanceProvider(config)
 
     with patch("os.path.exists", return_value=False):
-        # Hit lines 207-230
         artifacts = await provider.extract()
         assert len(artifacts) == 1
         assert "SIM Company" in artifacts[0].metadata["company"]
@@ -69,13 +66,13 @@ async def test_finance_provider_sec_mock_default():
 @pytest.mark.asyncio
 async def test_agriculture_provider_boost():
     """Boost coverage for agriculture.py."""
-    # FAOStat Empty Path (line 58)
+    # FAOStat Empty Path
     provider_faostat = AgricultureProvider(
         {"agriculture_mode": "faostat", "allow_simulation": False}
     )
     assert await provider_faostat.extract() == []
 
-    # Transform with climate anomaly (line 219)
+    # Transform with climate anomaly
     mock_llm = MagicMock()
     mock_llm.strategy = "mock"
     # Ensure verify_schema returns a dict to avoid JSON serialization error
@@ -106,15 +103,15 @@ async def test_agriculture_provider_boost():
 @pytest.mark.asyncio
 async def test_telecom_provider_boost():
     """Boost coverage for telecom.py."""
-    # ITU Empty Path (line 55)
+    # ITU Empty Path
     p_itu = TelecomProvider({"telecom_mode": "itu", "allow_simulation": False})
     assert await p_itu.extract() == []
 
-    # Ookla Empty Path (line 121)
+    # Ookla Empty Path
     p_ookla = TelecomProvider({"telecom_mode": "ookla", "allow_simulation": False})
     assert await p_ookla.extract() == []
 
-    # FCC Error Path (lines 190)
+    # FCC Error Path
     p_fcc = TelecomProvider({"allow_simulation": False})
     with patch("aiohttp.ClientSession.get") as mock_get:
         mock_ctx = MagicMock()
@@ -126,7 +123,7 @@ async def test_telecom_provider_boost():
 @pytest.mark.asyncio
 async def test_healthcare_provider_boost(tmp_path):
     """Boost coverage for healthcare.py."""
-    # WHO Error Path (line 57)
+    # WHO Error Path
     p_who = HealthcareProvider({"healthcare_mode": "who", "allow_simulation": False})
     with patch("aiohttp.ClientSession.get") as mock_get:
         mock_ctx = MagicMock()
@@ -134,11 +131,11 @@ async def test_healthcare_provider_boost(tmp_path):
         mock_get.return_value = mock_ctx
         assert await p_who.extract() == []
 
-    # CMS Empty Actual Paths (line 240)
+    # CMS Empty Actual Paths
     p_cms = HealthcareProvider({"input_uris": ["broken.csv"], "allow_simulation": False})
     assert await p_cms.extract() == []
 
-    # CMS Simulation Trigger (line 228)
+    # CMS Simulation Trigger
     p_sim = HealthcareProvider({"input_uris": [], "allow_simulation": True})
     with patch("os.path.exists", return_value=False):
         artifacts = await p_sim.extract()
@@ -147,11 +144,11 @@ async def test_healthcare_provider_boost(tmp_path):
 
 
 def test_cli_rotational_backup_edge_cases(tmp_path):
-    """Cover OSError and empty list in run_rotational_backup (lines 29, 42)."""
-    # 1. Empty list (line 29)
+    """Cover OSError and empty list in run_rotational_backup."""
+    # 1. Empty list
     run_rotational_backup("nonexistent.txt", 5)
 
-    # 2. OSError (line 42)
+    # 2. OSError
     f = tmp_path / "test.txt"
     f.write_text("content")
     bak = tmp_path / "test.txt.20230101_000000_000.bak"
@@ -161,7 +158,7 @@ def test_cli_rotational_backup_edge_cases(tmp_path):
 
 
 def test_cli_industry_provider_branches():
-    """Cover all industry provider registration branches in extract command (lines 165-221)."""
+    """Cover all industry provider registration branches in extract command"""
     runner = CliRunner()
     industries = [
         "energy",
@@ -190,7 +187,7 @@ def test_cli_industry_provider_branches():
 
 
 def test_cli_save_and_success_flow(tmp_path):
-    """Cover successful pipeline execution and saving (lines 239, 255, 288)."""
+    """Cover successful pipeline execution and saving."""
     runner = CliRunner()
     # Use 'output' to hit line 239 relocation logic
     target_dir = "output"
@@ -203,7 +200,7 @@ def test_cli_save_and_success_flow(tmp_path):
         with patch("dataproc_engine.core.engine.DatasetEngine.run_industry_pipeline", MagicMock()):
             with patch("os.makedirs"):
                 with patch("pandas.DataFrame.to_json"):
-                    # Use overwrite=True to skip confirmation (line 288)
+                    # Use overwrite=True to skip confirmation
                     result = runner.invoke(
                         cli,
                         [
@@ -219,7 +216,7 @@ def test_cli_save_and_success_flow(tmp_path):
 
 
 def test_cli_empty_results(tmp_path):
-    """Cover line 293 (no data generated)."""
+    """Cover no data generated."""
     runner = CliRunner()
     with patch("asyncio.run", side_effect=mock_run_factory([])):
         with patch("dataproc_engine.core.engine.DatasetEngine.run_industry_pipeline", MagicMock()):
@@ -228,7 +225,7 @@ def test_cli_empty_results(tmp_path):
 
 
 def test_cli_file_source_unstructured(tmp_path):
-    """Cover lines 226-231 (unstructured provider for file source)."""
+    """Cover unstructured provider for file source."""
     runner = CliRunner()
     dummy_file = tmp_path / "dummy.txt"
     dummy_file.write_text("data")

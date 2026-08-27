@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Advanced Diagnostics - Intermittent Packet Loss",
     "compliance_level": "Standard",
-    "id": "13898-advanced-diagnostics-packet-loss"
+    "id": "13898-advanced-diagnostics-packet-loss",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer with a business account reports intermittent packet loss affecting their VoIP service.",
   "industry": "Telecom",
@@ -82,9 +86,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

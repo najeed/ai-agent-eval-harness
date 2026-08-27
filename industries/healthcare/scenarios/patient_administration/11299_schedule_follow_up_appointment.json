@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Schedule a Follow-up Appointment",
     "compliance_level": "Standard",
-    "id": "11299-schedule-follow-up-appointment"
+    "id": "11299-schedule-follow-up-appointment",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A patient is checking out and needs to schedule a 3-month follow-up appointment with their physician.",
   "industry": "Healthcare",
@@ -82,9 +86,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

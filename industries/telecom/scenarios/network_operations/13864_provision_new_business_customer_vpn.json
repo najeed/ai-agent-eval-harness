@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Provision VPN for New Business Customer",
     "compliance_level": "Standard",
-    "id": "13864-provision-new-business-customer-vpn"
+    "id": "13864-provision-new-business-customer-vpn",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A new enterprise customer requires a secure VPN tunnel to be configured between their office and the telecom network.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

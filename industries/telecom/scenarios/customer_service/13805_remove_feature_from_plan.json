@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Remove Feature from Plan",
     "compliance_level": "Standard",
-    "id": "13805-remove-feature-from-plan"
+    "id": "13805-remove-feature-from-plan",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer wants to remove the 'Premium Voicemail' feature from their plan to save money.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

@@ -28,24 +28,22 @@ class MockResponse:
 
 @pytest.mark.asyncio
 async def test_housing_fhfa_and_hud_mastery():
-    """Target Housing lines 24-38, 55, 61-79."""
     config = {"industry": "public_sector", "housing_mode": "hud", "allow_simulation": True}
     provider = HousingProvider(config, llm_manager=LLMManager({}))
 
-    # 1. Trigger Simulation (Lines 24-38)
+    # 1. Trigger Simulation
     with patch("os.path.exists", return_value=False):
         artifacts = await provider.extract()
         assert len(artifacts) > 0
         assert "sim-HUD" in artifacts[0].id
 
-    # 2. Trigger transform (Lines 61-79)
+    # 2. Trigger transform
     result = await provider.transform(artifacts)
     assert len(result) > 0
 
 
 @pytest.mark.asyncio
 async def test_finance_world_bank_fallback_mastery():
-    """Target Finance lines 39, 51-52, 65, 95, 113, 129-131."""
     config = {"industry": "finance", "finance_mode": "worldbank", "allow_simulation": True}
     provider = FinanceProvider(config, llm_manager=LLMManager({}))
 
@@ -58,7 +56,6 @@ async def test_finance_world_bank_fallback_mastery():
 
 @pytest.mark.asyncio
 async def test_energy_opsd_fallback_mastery():
-    """Target Energy lines 53, 63, 72, 87, 95, 116-117, 149-150."""
     config = {"industry": "energy", "energy_mode": "opsd", "allow_simulation": True}
     provider = EnergyProvider(config, llm_manager=LLMManager({}))
 
@@ -71,23 +68,22 @@ async def test_energy_opsd_fallback_mastery():
 
 @pytest.mark.asyncio
 async def test_transportation_eurostat_mastery():
-    """Target Transportation lines 33, 57, 62-73, 137-149, 183-184."""
     config = {
         "industry": "transportation",
-        "transit_mode": "eurostat",  # Fixed key: transit_mode (Line 19 in provider)
+        "transit_mode": "eurostat",  # Fixed key: transit_mode
         "allow_simulation": True,
     }
     provider = TransportationProvider(config, llm_manager=LLMManager({}))
 
-    # 1. Extract Eurostat Simulation (Lines 62-73)
+    # 1. Extract Eurostat Simulation
     artifacts = await provider.extract()
     assert len(artifacts) > 0
     assert "EURO" in artifacts[0].id
 
-    # 2. Transform Eurostat (Lines 137-149)
+    # 2. Transform Eurostat
     results = await provider.transform(artifacts)
     assert len(results) > 0
     assert results[0].provenance["provider"] == "Eurostat"
 
-    # 3. Validate Eurostat (Lines 183-184)
+    # 3. Validate Eurostat
     assert provider.validate(results) is True

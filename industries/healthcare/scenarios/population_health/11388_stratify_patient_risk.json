@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Stratify Patient Risk by Condition",
     "compliance_level": "Standard",
-    "id": "11388-stratify-patient-risk"
+    "id": "11388-stratify-patient-risk",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "An analyst wants to view the risk scores for all patients with asthma, broken down by risk level (low, medium, high).",
   "industry": "Healthcare",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

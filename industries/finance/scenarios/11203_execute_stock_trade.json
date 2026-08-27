@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Execute a Stock Trade",
     "compliance_level": "Standard",
-    "id": "11203-execute-stock-trade"
+    "id": "11203-execute-stock-trade",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A wealth management client wants to buy 100 shares of a specific tech company (e.g., AAPL).",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

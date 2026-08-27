@@ -34,6 +34,35 @@
       "type": "array",
       "items": { "type": "string" },
       "description": "Explicit whitelist of world simulators to activate."
+    },
+    "tools": {
+      "type": "object",
+      "description": "Declared scenario tool manifest with deterministic outcomes and state mutations."
+    },
+    "failure_policy": {
+      "type": "string",
+      "enum": [
+        "fail_fast",
+        "continue_independent",
+        "compensate_then_fail",
+        "best_effort"
+      ]
+    },
+    "$schema": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "industry": {
+      "type": "string"
+    },
+    "use_case": {
+      "type": "string"
+    },
+    "cleanup_workspace": {
+      "type": "boolean"
     }
-  }
+  },
+  "additionalProperties": false
 }

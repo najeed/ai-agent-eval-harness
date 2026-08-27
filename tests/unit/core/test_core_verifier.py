@@ -856,10 +856,10 @@ def test_sign_trace_lifecycle_event_failure():
 
 
 def test_verify_trace_pqc_mismatch_and_unavailable(monkeypatch):
-    """Test verify_trace when PQC signature mismatches (line 627) or when PQC
-    client is unavailable (lines 632-640).
+    """Test verify_trace when PQC signature mismatches or when PQC
+    client is unavailable.
     """
-    # 1. Signature mismatch (line 627)
+    # 1. Signature mismatch
     mock_pqc_client_bad = MagicMock()
     mock_pqc_client_bad.verify_digest.return_value = False  # Mismatch!
 
@@ -901,12 +901,12 @@ def test_verify_trace_pqc_mismatch_and_unavailable(monkeypatch):
     ):
         assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is True
 
-    # 2. PQC client unavailable with STRICT mode (line 637-638)
+    # 2. PQC client unavailable with STRICT mode
     monkeypatch.setattr(config, "PQC_STRICT_MODE", True)
     with patch("eval_runner.identity.IdentityService.get_pqc_client", return_value=None):
         assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
 
-    # 3. Unknown algorithm (line 640)
+    # 3. Unknown algorithm
     manifest_bad_algo = manifest.copy()
     manifest_bad_algo["provenance_chain"][-1]["algorithm"] = "UNKNOWN_ALGO"
     manifest_path.write_text(json.dumps(manifest_bad_algo))
@@ -960,7 +960,7 @@ def test_verification_service_thread_isolation():
     # The new thread should see 0 because dummy's thread affinity is 9999, which is not 7777 or 8888
     assert results[0] == 0
 
-    # Also cover line 247 by using override_interceptor and triggering removal
+    # Also cover using override_interceptor and triggering removal
     # from local interceptors. We must patch get_ident for register_interceptor,
     # _interceptors lookup, AND the exit block assertions.
     with (

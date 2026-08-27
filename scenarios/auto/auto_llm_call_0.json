@@ -1,11 +1,11 @@
 {
   "aes_version": 1.4,
-  "id": "auto_llm_call_0",
   "metadata": {
     "id": "auto_llm_call_0",
     "name": "Auto-generated for ChatOpenAI(model='gpt-5.6')",
     "source_file": "agent/core.py",
-    "pattern": "ChatOpenAI(model='gpt-5.6')"
+    "pattern": "ChatOpenAI(model='gpt-5.6')",
+    "compliance_level": "Standard"
   },
   "description": "Verification of llm_call discovered in agent/core.py",
   "industry": "auto",
@@ -17,5 +17,14 @@
       }
     ],
     "edges": []
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
+      ]
+    }
   }
 }

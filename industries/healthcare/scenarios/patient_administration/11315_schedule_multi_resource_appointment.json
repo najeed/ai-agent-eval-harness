@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Schedule Multi-Resource Appointment",
     "compliance_level": "Standard",
-    "id": "11315-schedule-multi-resource-appointment"
+    "id": "11315-schedule-multi-resource-appointment",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A patient needs an appointment that requires both a specific provider and a special piece of equipment (e.g., an ultrasound machine) to be available at the same time.",
   "industry": "Healthcare",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

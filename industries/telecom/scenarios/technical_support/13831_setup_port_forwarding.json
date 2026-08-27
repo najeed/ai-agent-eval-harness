@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Home Internet - Setup Port Forwarding",
     "compliance_level": "Standard",
-    "id": "13831-setup-port-forwarding"
+    "id": "13831-setup-port-forwarding",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer needs to set up port forwarding on their router for a home gaming server.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

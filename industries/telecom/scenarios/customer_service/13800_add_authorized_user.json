@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Add an Authorized User to Account",
     "compliance_level": "Standard",
-    "id": "13800-add-authorized-user"
+    "id": "13800-add-authorized-user",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer wants to add their spouse as an authorized user who can make changes to the account.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

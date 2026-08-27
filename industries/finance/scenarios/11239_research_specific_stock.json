@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Research a Specific Stock",
     "compliance_level": "Standard",
-    "id": "11239-research-specific-stock"
+    "id": "11239-research-specific-stock",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "An advisor asks for a summary report on a specific company before recommending it to a client.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

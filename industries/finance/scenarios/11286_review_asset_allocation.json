@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Review Portfolio Asset Allocation",
     "compliance_level": "Standard",
-    "id": "11286-review-asset-allocation"
+    "id": "11286-review-asset-allocation",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "An advisor is conducting an annual review and needs to check if a client's portfolio allocation is aligned with their goals.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

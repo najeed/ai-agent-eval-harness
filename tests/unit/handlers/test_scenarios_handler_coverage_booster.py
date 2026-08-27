@@ -6,7 +6,7 @@ from eval_runner.handlers import scenarios
 
 
 def test_classify_scenario_explicit():
-    """Exercises explicit industry mapping (lines 28-35)."""
+    """Exercises explicit industry mapping."""
     scenario = {"metadata": {"industry": "Finance"}}
     res = scenarios.classify_scenario(scenario)
     assert res["industry"] == "fintech"
@@ -14,7 +14,7 @@ def test_classify_scenario_explicit():
 
 
 def test_classify_scenario_ml_fallback():
-    """Exercises ML classification (lines 44-57) and fallback."""
+    """Exercises ML classification and fallback."""
     scenario = {"title": "Loan Application", "description": "Processing a bank loan"}
 
     # Mocking SentenceTransformer to trigger ML path or fallback
@@ -30,7 +30,7 @@ def test_classify_scenario_ml_fallback():
             res = scenarios.classify_scenario(scenario)
             assert "industry" in res
 
-    # Exception fallback (line 61)
+    # Exception fallback
     with patch("sentence_transformers.SentenceTransformer", side_effect=Exception("No ML")):
         res = scenarios.classify_scenario(scenario)
         assert res["industry"] == "generic"
@@ -38,7 +38,7 @@ def test_classify_scenario_ml_fallback():
 
 @pytest.mark.asyncio
 async def test_handle_aes_validate_export(tmp_path):
-    """Exercises export logic and loop failure (lines 118-124)."""
+    """Exercises export logic and loop failure."""
     export_file = tmp_path / "exported.yaml"
     args = MagicMock(path=str(tmp_path), export=str(export_file))
 
@@ -60,14 +60,14 @@ async def test_handle_aes_validate_export(tmp_path):
 
 @pytest.mark.asyncio
 async def test_handle_aes_validate_exception():
-    """Exercises exception in handle_aes_validate (lines 127-129)."""
+    """Exercises exception in handle_aes_validate."""
     with patch("pathlib.Path.parent", side_effect=Exception("Fail")):
         assert await scenarios.handle_aes_validate(MagicMock()) == 1
 
 
 @pytest.mark.asyncio
 async def test_handle_scenario_generate_coverage():
-    """Exercises handle_scenario_generate (lines 245, 247-248)."""
+    """Exercises handle_scenario_generate."""
     # 1. Success case
     with patch("eval_runner.scaffold.generate_interactive", return_value=None):
         assert await scenarios.handle_scenario_generate(MagicMock()) == 0

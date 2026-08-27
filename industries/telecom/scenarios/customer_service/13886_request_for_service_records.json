@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Request for Service Records (Legal)",
     "compliance_level": "Standard",
-    "id": "13886-request-for-service-records"
+    "id": "13886-request-for-service-records",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer is requesting their complete call and data usage history for legal purposes.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

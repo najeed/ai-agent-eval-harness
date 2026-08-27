@@ -436,9 +436,9 @@ class _MockSandbox:
 
 
 @pytest.fixture
-def dispatch_session():
+def dispatch_session(tmp_path):
     scenario = {"id": "test-scenario", "success_criteria": []}
-    return _SessionManager("run_1", scenario)
+    return _SessionManager("run_1", scenario, log_root=tmp_path)
 
 
 @pytest.mark.asyncio

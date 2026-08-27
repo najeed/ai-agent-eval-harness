@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Prepare Section of 10-Q Report",
     "compliance_level": "Standard",
-    "id": "11221-prepare-10q-report-section"
+    "id": "11221-prepare-10q-report-section",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "An accounting manager needs to draft the Management's Discussion and Analysis (MD&A) section for the quarterly 10-Q filing.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

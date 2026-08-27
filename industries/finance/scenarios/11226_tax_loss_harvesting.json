@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Identify Tax-Loss Harvesting Opportunities",
     "compliance_level": "Standard",
-    "id": "11226-tax-loss-harvesting"
+    "id": "11226-tax-loss-harvesting",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "An advisor wants to identify opportunities to sell securities at a loss to offset capital gains for a client.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

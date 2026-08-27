@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Decommission Old Network Server",
     "compliance_level": "Standard",
-    "id": "13868-decommission-old-server"
+    "id": "13868-decommission-old-server",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "An old server is being retired. An agent must ensure it is safely removed from the network.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

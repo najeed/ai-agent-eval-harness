@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Flag Patient for Intervention",
     "compliance_level": "Standard",
-    "id": "11392-flag-patient-for-intervention"
+    "id": "11392-flag-patient-for-intervention",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A risk model identifies a patient whose risk score has significantly increased. The system needs to flag them for intervention.",
   "industry": "Healthcare",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

@@ -402,7 +402,7 @@ def test_compliance_packs_test_no_pack_file(packs_client, packs_jail):
 
 
 def test_compliance_packs_load_standards_failure(packs_client, packs_jail):
-    """Verify standards load failure path (lines 48-50) is covered."""
+    """Verify standards load failure path is covered."""
     std_path = packs_jail["root"] / "spec" / "aes" / "standards.json"
     std_path.parent.mkdir(parents=True, exist_ok=True)
     std_path.write_text("{}", encoding="utf-8")
@@ -414,7 +414,7 @@ def test_compliance_packs_load_standards_failure(packs_client, packs_jail):
 
 
 def test_compliance_packs_save_pack_failure(packs_client):
-    """Verify save compliance pack file write exception is handled (lines 148-150)."""
+    """Verify save compliance pack file write exception is handled."""
     with patch("builtins.open", side_effect=OSError("Write error")):
         res = packs_client.post(
             "/api/v1/compliance-packs",
@@ -425,7 +425,7 @@ def test_compliance_packs_save_pack_failure(packs_client):
 
 
 def test_compliance_packs_test_pack_read_error(packs_client, packs_jail):
-    """Verify pack read config file open exception (lines 182-183) is handled."""
+    """Verify pack read config file open exception is handled."""
     run_id = "run_read_err"
     run_dir = packs_jail["runs"] / run_id
     run_dir.mkdir()
@@ -454,7 +454,7 @@ def test_compliance_packs_test_pack_read_error(packs_client, packs_jail):
 
 
 def test_compliance_packs_test_master_log_scanner(packs_client, packs_jail):
-    """Verify scanner for master log (lines 193-211) handles various paths."""
+    """Verify scanner for master log handles various paths."""
     run_id = "master_scan_1"
     master_log = packs_jail["runs"] / "run.jsonl"
 
@@ -474,7 +474,7 @@ def test_compliance_packs_test_master_log_scanner(packs_client, packs_jail):
 
 
 def test_compliance_packs_test_master_log_scanner_read_error(packs_client, packs_jail):
-    """Verify master log read failure (lines 204-205) is handled gracefully."""
+    """Verify master log read failure is handled gracefully."""
     run_id = "master_scan_err"
     master_log = packs_jail["runs"] / "run.jsonl"
     master_log.write_text("{}", encoding="utf-8")
@@ -495,7 +495,7 @@ def test_compliance_packs_test_master_log_scanner_read_error(packs_client, packs
 
 
 def test_compliance_packs_first_trace_line_read_failure(packs_client, packs_jail):
-    """Verify trace first line read exception is handled (lines 234-235)."""
+    """Verify trace first line read exception is handled."""
     run_id = "trace_first_fail"
     run_dir = packs_jail["runs"] / run_id
     run_dir.mkdir()
@@ -520,7 +520,7 @@ def test_compliance_packs_first_trace_line_read_failure(packs_client, packs_jail
 
 
 def test_compliance_packs_test_empty_trace_file(packs_client, packs_jail):
-    """Verify empty trace file handles first line read (lines 231-237 branch)."""
+    """Verify empty trace file handles first line read."""
     run_id = "trace_empty"
     run_dir = packs_jail["runs"] / run_id
     run_dir.mkdir()
@@ -535,7 +535,7 @@ def test_compliance_packs_test_empty_trace_file(packs_client, packs_jail):
 
 
 def test_compliance_packs_list_custom_success(packs_client, packs_jail):
-    """Cover lines 96-109: discovery of custom user-defined compliance pack JSON files."""
+    """Cover discovery of custom user-defined compliance pack JSON files."""
     custom_pack = {
         "name": "My Custom Compliance Pack",
         "description": "Custom requirements",
@@ -558,7 +558,7 @@ def test_compliance_packs_list_custom_success(packs_client, packs_jail):
 
 
 def test_compliance_packs_list_custom_corrupt(packs_client, packs_jail):
-    """Cover lines 110-111: loader exception logging when loading a malformed custom pack."""
+    """Cover loader exception logging when loading a malformed custom pack."""
     (packs_jail["packs_dir"] / "custom_corrupt.json").write_text("{{corrupt", encoding="utf-8")
 
     res = packs_client.get("/api/v1/compliance-packs")
@@ -569,7 +569,7 @@ def test_compliance_packs_list_custom_corrupt(packs_client, packs_jail):
 
 
 def test_compliance_packs_publish_auto_create(packs_client, packs_jail):
-    """Cover lines 186-200: auto-creation of predefined compliance packs on publish."""
+    """Cover auto-creation of predefined compliance packs on publish."""
     # Ensure ISO27001 is a predefined standard but the file does not exist yet
     pack_file = packs_jail["packs_dir"] / "ISO27001.json"
     if pack_file.exists():
@@ -590,7 +590,7 @@ def test_compliance_packs_publish_auto_create(packs_client, packs_jail):
 
 
 def test_compliance_packs_publish_auto_create_write_error(packs_client, packs_jail):
-    """Cover lines 201-203: write exception handling during auto-creation on publish."""
+    """Cover write exception handling during auto-creation on publish."""
     pack_file = packs_jail["packs_dir"] / "ISO27001.json"
     if pack_file.exists():
         pack_file.unlink()

@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Provide Documentation for External Audit",
     "compliance_level": "Standard",
-    "id": "11209-provide-document-for-audit"
+    "id": "11209-provide-document-for-audit",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "An external auditor requests all invoices over $50,000 from the previous fiscal year.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

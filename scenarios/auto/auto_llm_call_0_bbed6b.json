@@ -1,0 +1,55 @@
+{
+  "aes_version": 1.4,
+  "metadata": {
+    "id": "auto_llm_call_0_bbed6b",
+    "name": "[GENERATED] llm_call; app.py:5",
+    "generator": "analyzer-v1",
+    "generated": true,
+    "source_kind": "repository",
+    "source_repo": "https://github.com/o/r",
+    "source_ref": "main",
+    "source_commit": null,
+    "source_file": "app.py",
+    "source_line": 5,
+    "source_file_hash": "sha256:1234567890ab",
+    "access": "public",
+    "auth_method": null,
+    "analyzer": {
+      "transport": "https-tree-stream",
+      "truncated": true,
+      "tree_truncated": true
+    },
+    "compliance_level": "Standard"
+  },
+  "description": "STARTER scenario scaffolded from discovered llm_call in app.py:5; complete the assertions before relying on any verdict.",
+  "industry": "auto",
+  "workflow": {
+    "entry_nodes": [
+      "t1"
+    ],
+    "nodes": [
+      {
+        "id": "t1",
+        "task_description": "Exercise the llm_call at ChatOpenAI() and produce a final answer that demonstrates correct behavior.",
+        "state_hygiene": {
+          "rules": [
+            {
+              "path": "__unset_probe__",
+              "op": "not_exists"
+            }
+          ]
+        }
+      }
+    ],
+    "edges": []
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
+      ]
+    }
+  }
+}

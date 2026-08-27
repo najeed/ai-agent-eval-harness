@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Mobile Troubleshooting - No Service While Roaming",
     "compliance_level": "Standard",
-    "id": "13827-mobile-international-roaming-no-service"
+    "id": "13827-mobile-international-roaming-no-service",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer traveling internationally reports having no service, despite having a roaming plan.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

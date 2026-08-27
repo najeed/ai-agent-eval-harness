@@ -3,7 +3,11 @@
   "metadata": {
     "name": "View Patient Cost and Utilization",
     "compliance_level": "Standard",
-    "id": "11393-view-patient-cost-and-utilization"
+    "id": "11393-view-patient-cost-and-utilization",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A care manager is reviewing a high-risk patient and wants to see their healthcare cost and utilization over the past year.",
   "industry": "Healthcare",
@@ -82,9 +86,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

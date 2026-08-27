@@ -1,11 +1,11 @@
 {
   "aes_version": 1.4,
-  "id": "auto_agent_init_0",
   "metadata": {
     "id": "auto_agent_init_0",
     "name": "Auto-generated for AgentExecutor(...)",
     "source_file": "main.py",
-    "pattern": "AgentExecutor(...)"
+    "pattern": "AgentExecutor(...)",
+    "compliance_level": "Standard"
   },
   "description": "Verification of agent_init discovered in main.py",
   "industry": "auto",
@@ -17,5 +17,14 @@
       }
     ],
     "edges": []
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
+      ]
+    }
   }
 }

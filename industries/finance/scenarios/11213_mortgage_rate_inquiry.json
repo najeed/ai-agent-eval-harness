@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Mortgage Rate Inquiry",
     "compliance_level": "Standard",
-    "id": "11213-mortgage-rate-inquiry"
+    "id": "11213-mortgage-rate-inquiry",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A potential customer is inquiring about current interest rates for a 30-year fixed-rate mortgage.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

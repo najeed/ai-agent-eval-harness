@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Verify a Large Check Deposit",
     "compliance_level": "Standard",
-    "id": "11283-verify-check-deposit"
+    "id": "11283-verify-check-deposit",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer has deposited a large, out-of-state check, and the bank needs to place a hold on the funds for verification.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

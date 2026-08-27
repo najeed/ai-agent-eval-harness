@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Create Board of Directors Financial Report",
     "compliance_level": "Standard",
-    "id": "11279-create-board-of-directors-report"
+    "id": "11279-create-board-of-directors-report",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "An FP&A director needs to create the financial package for the upcoming quarterly board of directors meeting.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

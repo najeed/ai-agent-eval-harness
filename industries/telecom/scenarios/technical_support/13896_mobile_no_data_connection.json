@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Mobile Troubleshooting - No Data Connection",
     "compliance_level": "Standard",
-    "id": "13896-mobile-no-data-connection"
+    "id": "13896-mobile-no-data-connection",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer reports they can make calls but have no mobile data connection.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

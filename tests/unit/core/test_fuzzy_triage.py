@@ -162,7 +162,7 @@ def test_apply_triage():
 
 
 def test_check_forensic_report():
-    # Empty chain (line 230 coverage)
+    # Empty chain
     class CustomReport(dict):
         def get(self, key, default=None):
             if key == "causal_chain":

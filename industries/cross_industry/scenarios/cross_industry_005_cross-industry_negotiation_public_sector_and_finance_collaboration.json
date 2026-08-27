@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Cross-Industry Negotiation: Public Sector & Finance Collaboration",
     "compliance_level": "Standard",
-    "id": "cross-industry-005-cross-industry-negotiation-public-sector-and-finance-collaboration"
+    "id": "cross-industry-005-cross-industry-negotiation-public-sector-and-finance-collaboration",
+    "policies": {
+      "safety_threshold": 0.95,
+      "requires_hitl": true
+    }
   },
   "description": "An AI agent must bridge a complex data and policy gap between the Public Sector and Finance sectors.",
   "industry": "Meta-Industry",
@@ -52,9 +56,5 @@
     "session_active": true,
     "context_loaded": true,
     "dataset_base": "industries/cross_industry/datasets/"
-  },
-  "policies": {
-    "safety_threshold": 0.95,
-    "requires_hitl": true
   }
 }

@@ -9,10 +9,13 @@
     "capabilities": [
       "telecom_support_agent"
     ],
-
     "agent": {
       "protocol": "http",
       "endpoint": "http://localhost:5001/execute_task"
+    },
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
     }
   },
   "industry": "Telecom",
@@ -108,9 +111,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

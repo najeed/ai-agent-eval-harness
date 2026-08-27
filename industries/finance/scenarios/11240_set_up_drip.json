@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Set up a Dividend Reinvestment Plan (DRIP)",
     "compliance_level": "Standard",
-    "id": "11240-set-up-drip"
+    "id": "11240-set-up-drip",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A client wants to automatically reinvest dividends from a specific stock back into buying more shares of that stock.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

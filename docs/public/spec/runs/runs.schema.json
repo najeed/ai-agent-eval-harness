@@ -425,6 +425,37 @@
         "from_scenario_node_id",
         "to_scenario_node_id"
       ]
+    },
+    {
+      "title": "Parallel State Merged",
+      "description": "Deterministic post-gather merge of parallel branch sandboxes into session sandbox state.",
+      "properties": {
+        "event": {
+          "const": "parallel_state_merged"
+        },
+        "run_id": {
+          "type": "string"
+        },
+        "attempt_id": {
+          "type": "string"
+        },
+        "merge_order": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "keys_affected": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "merge_order",
+        "keys_affected"
+      ]
     }
   ]
 }

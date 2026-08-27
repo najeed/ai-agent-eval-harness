@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Reroute Traffic for Scheduled Maintenance",
     "compliance_level": "Standard",
-    "id": "13867-reroute-traffic-for-maintenance"
+    "id": "13867-reroute-traffic-for-maintenance",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "Before scheduled maintenance on a core router, an agent must proactively reroute traffic to a backup path.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

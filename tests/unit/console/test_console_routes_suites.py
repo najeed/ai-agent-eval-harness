@@ -408,7 +408,7 @@ def test_suites_bundle_pre_existing_staging_and_master_log_fallback(suites_clien
 
 
 def test_suites_bundle_explain_failure_and_read_trace_line_error(suites_client, suites_jail):
-    """Verify explain_trace failure (148-150) and first trace line exception (161-162)."""
+    """Verify explain_trace failure and first trace line exception."""
     suite_id = "suite-fail-test"
     run_id = "run-fail-1"
     run_dir = suites_jail["runs"] / run_id
@@ -574,7 +574,7 @@ def test_suites_run_report_pdf_master_log_and_exceptions(suites_client, suites_j
 
 
 def test_suites_run_report_pdf_empty_trace(suites_client, suites_jail):
-    """Verify pdf report empty trace first line read (lines 320-326 branch)."""
+    """Verify pdf report empty trace first line read."""
     run_id = "run-pdf-empty"
     run_dir = suites_jail["runs"] / run_id
     run_dir.mkdir()
@@ -596,7 +596,7 @@ def test_suites_run_report_pdf_empty_trace(suites_client, suites_jail):
 
 
 def test_suites_run_report_pdf_generate_failed_temp_cleanup(suites_client, suites_jail):
-    """Verify temp file cleanup on PDF generation failure (line 351)."""
+    """Verify temp file cleanup on PDF generation failure."""
     run_id = "run-pdf-fail-cleanup"
     line_correct = json.dumps({"run_id": run_id, "status": "COMPLETED"})
     line_corrupt = f'{{"run_id": "{run_id}", "status": corrupt}}'
@@ -615,7 +615,7 @@ def test_suites_run_report_pdf_generate_failed_temp_cleanup(suites_client, suite
 
 
 def test_suites_verify_save_exception(suites_client):
-    """Verify temp path exists check on verify save failure (lines 268-270 branch)."""
+    """Verify temp path exists check on verify save failure."""
     from io import BytesIO
 
     data = {"file": (BytesIO(b"{}"), "manifest.json")}
@@ -628,7 +628,7 @@ def test_suites_verify_save_exception(suites_client):
 
 
 def test_suites_bundle_zip_exception(suites_client, suites_jail):
-    """Verify zip bundle exception cleanup path (lines 236-240)."""
+    """Verify zip bundle exception cleanup path."""
     suite_id = "suite-zip-fail"
     run_id = "run-zip-1"
     run_dir = suites_jail["runs"] / run_id
@@ -660,7 +660,7 @@ def test_suites_bundle_zip_exception(suites_client, suites_jail):
 
 
 def test_suites_bundle_master_log_read_error(suites_client, suites_jail):
-    """Verify master log read exception in bundle logic (lines 132-133)."""
+    """Verify master log read exception in bundle logic."""
     suite_id = "suite-read-err"
     run_id = "run-read-1"
     master_log = suites_jail["runs"] / "run.jsonl"
@@ -740,7 +740,7 @@ def test_suites_bundle_generate_pdf_false(suites_client, suites_jail):
 
 
 def test_suites_bundle_mkdir_exception(suites_client, suites_jail):
-    """Verify staging directory mkdir failure exception block (lines 238->240 branch)."""
+    """Verify staging directory mkdir failure exception block."""
     suite_id = "suite-mkdir-fail"
     run_id = "run-mkdir-1"
     run_dir = suites_jail["runs"] / run_id
@@ -766,7 +766,7 @@ def test_suites_bundle_mkdir_exception(suites_client, suites_jail):
 
 
 def test_suites_bundle_empty_trace_first_line(suites_client, suites_jail):
-    """Cover false branch of `if first_line:` (line 158->164) in bundle_suite loop.
+    """Cover false branch of `if first_line:` in bundle_suite loop.
 
     When the trace file is empty, readline() returns '' which is falsy, so the
     timestamp stays as the default UTC string and we skip JSON parsing.
@@ -947,3 +947,104 @@ def test_suites_verify_zip_corrupt_zip_error(suites_client):
     )
     assert res.status_code == 500
     assert "Failed to parse ZIP bundle" in res.get_json()["message"]
+
+
+def test_suites_verify_zip_includes_audit_manifest_in_files_list(suites_client):
+    """Test verify_bundle with audit_manifest.json explicitly listed in files entry."""
+    manifest = {
+        "files": [{"name": "audit_manifest.json", "file_hash": "dummy"}],
+    }
+    zip_buf = BytesIO()
+    with zipfile.ZipFile(zip_buf, "w") as z:
+        z.writestr("audit_manifest.json", json.dumps(manifest))
+    zip_bytes = zip_buf.getvalue()
+
+    res = suites_client.post(
+        "/api/v1/bundles/verify",
+        data={"file": (BytesIO(zip_bytes), "bundle.zip")},
+        content_type="multipart/form-data",
+    )
+    assert res.status_code == 200
+    assert res.get_json()["is_valid"] is True
+
+
+def test_suites_get_run_data_summary_and_manifest_variations(suites_client, suites_jail):
+    """
+    Test suite bundle creation and PDF report generation with runs
+    having summary.json and run_manifest.json PQC flags.
+    """
+    runs_dir = suites_jail["runs"]
+    run1_dir = runs_dir / "run-pqc-1"
+    run1_dir.mkdir(parents=True)
+
+    # run.jsonl with timestamp
+    (run1_dir / "run.jsonl").write_text(
+        json.dumps({"timestamp": "2026-08-01T12:00:00Z"}) + "\n", encoding="utf-8"
+    )
+
+    # summary.json with success=True and verification_status="VERIFIED"
+    (run1_dir / "summary.json").write_text(
+        json.dumps(
+            {"scenario": "pqc-scenario", "success": True, "verification_status": "VERIFIED"}
+        ),
+        encoding="utf-8",
+    )
+
+    # run_manifest.json with ML-DSA and certificate
+    (run1_dir / "run_manifest.json").write_text(
+        json.dumps(
+            {
+                "algorithm": "ML-DSA-65",
+                "has_certificate": True,
+                "metadata": {"scenario_name": "pqc-scenario"},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    def fake_gen_pdf(data, path):
+        path.write_bytes(b"%PDF-1.4 dummy")
+        return True
+
+    # Call get_run_report_pdf for run-pqc-1
+    with patch("eval_runner.console.routes.suites.generate_run_pdf", side_effect=fake_gen_pdf):
+        res_pdf = suites_client.get("/api/v1/runs/run-pqc-1/report.pdf")
+        assert res_pdf.status_code == 200
+        assert res_pdf.data == b"%PDF-1.4 dummy"
+
+    # Create run2 with summary passed=False and crypto_suite=pqc
+    run2_dir = runs_dir / "run-fail-2"
+    run2_dir.mkdir(parents=True)
+    (run2_dir / "run.jsonl").write_text(
+        json.dumps({"_ts_iso": "2026-08-02T12:00:00Z"}) + "\n", encoding="utf-8"
+    )
+    (run2_dir / "summary.json").write_text(
+        json.dumps({"scenario_id": "fail-scenario", "passed": False}), encoding="utf-8"
+    )
+    (run2_dir / "run_manifest.json").write_text(
+        json.dumps({"crypto_suite": "PQC-DILITHIUM"}), encoding="utf-8"
+    )
+
+    with patch("eval_runner.console.routes.suites.generate_run_pdf", side_effect=fake_gen_pdf):
+        res_pdf2 = suites_client.get("/api/v1/runs/run-fail-2/report.pdf")
+        assert res_pdf2.status_code == 200
+
+    # Create run3 with corrupt summary.json and run_manifest.json
+    run3_dir = runs_dir / "run-corrupt-3"
+    run3_dir.mkdir(parents=True)
+    (run3_dir / "run.jsonl").write_text("{}\n", encoding="utf-8")
+    (run3_dir / "summary.json").write_text("CORRUPT_JSON{", encoding="utf-8")
+    (run3_dir / "run_manifest.json").write_text("CORRUPT_JSON{", encoding="utf-8")
+
+    with patch("eval_runner.console.routes.suites.generate_run_pdf", side_effect=fake_gen_pdf):
+        res_pdf3 = suites_client.get("/api/v1/runs/run-corrupt-3/report.pdf")
+        assert res_pdf3.status_code == 200
+
+    # Save suite referencing both runs with agent_name included
+    suite_payload = {
+        "name": "PQC Suite",
+        "agent_name": "TestAgent",
+        "run_ids": ["run-pqc-1", "run-fail-2"],
+    }
+    res_create = suites_client.post("/api/v1/suites", json=suite_payload)
+    assert res_create.status_code == 201

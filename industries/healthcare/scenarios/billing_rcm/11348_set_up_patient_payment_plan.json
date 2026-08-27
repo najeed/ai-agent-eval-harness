@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Set Up a Patient Payment Plan",
     "compliance_level": "Standard",
-    "id": "11348-set-up-patient-payment-plan"
+    "id": "11348-set-up-patient-payment-plan",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A patient calls with a large outstanding balance and is unable to pay it all at once. They want to set up a payment plan.",
   "industry": "Healthcare",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

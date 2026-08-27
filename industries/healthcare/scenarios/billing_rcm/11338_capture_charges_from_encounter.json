@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Capture Charges from an Encounter",
     "compliance_level": "Standard",
-    "id": "11338-capture-charges-from-encounter"
+    "id": "11338-capture-charges-from-encounter",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A coding specialist is reviewing a physician's documentation to capture all billable charges from an office visit.",
   "industry": "Healthcare",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

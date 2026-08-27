@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Obtain Preauthorization for Surgery",
     "compliance_level": "Standard",
-    "id": "11313-obtain-preauthorization-for-surgery"
+    "id": "11313-obtain-preauthorization-for-surgery",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A surgery scheduler needs to obtain preauthorization from a patient's insurance company for a scheduled procedure.",
   "industry": "Healthcare",
@@ -82,9 +86,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

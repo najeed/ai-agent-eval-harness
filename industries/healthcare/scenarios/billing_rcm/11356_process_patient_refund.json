@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Process a Patient Refund",
     "compliance_level": "Standard",
-    "id": "11356-process-patient-refund"
+    "id": "11356-process-patient-refund",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A patient has a credit balance on their account due to an overpayment. A refund check needs to be issued.",
   "industry": "Healthcare",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

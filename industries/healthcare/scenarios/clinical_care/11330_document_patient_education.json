@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Document Patient Education",
     "compliance_level": "Standard",
-    "id": "11330-document-patient-education"
+    "id": "11330-document-patient-education",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A nurse has just educated a newly diagnosed diabetic patient on how to use a glucose meter. This education must be documented.",
   "industry": "Healthcare",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

@@ -1,6 +1,5 @@
 {
   "aes_version": 1.4,
-  "title": "Test Log Dir Creation V2",
   "metadata": {
     "name": "Test Log Dir Creation V2",
     "compliance_level": "Standard",
@@ -23,5 +22,14 @@
       }
     ],
     "edges": []
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
+      ]
+    }
   }
 }

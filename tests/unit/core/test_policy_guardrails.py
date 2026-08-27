@@ -7,7 +7,9 @@ from eval_runner.tool_sandbox import ToolSandbox
 async def test_policy_enforcement_success(tmp_path):
     scenario = {
         "tools": {"apply_refund": {"output": {"status": "success"}}},
-        "policies": {"apply_refund": {"max_limit": 50.0}},
+        "metadata": {
+            "policies": {"apply_refund": {"max_limit": 50.0}},
+        },
         "workflow": {
             "nodes": [{"id": "t1", "task_description": "task", "required_tools": ["apply_refund"]}],
             "edges": [],
@@ -28,7 +30,9 @@ async def test_policy_enforcement_success(tmp_path):
 async def test_policy_enforcement_violation(tmp_path):
     scenario = {
         "tools": {"apply_refund": {"output": {"status": "success"}}},
-        "policies": {"apply_refund": {"max_limit": 50.0}},
+        "metadata": {
+            "policies": {"apply_refund": {"max_limit": 50.0}},
+        },
         "workflow": {
             "nodes": [{"id": "t1", "task_description": "task", "required_tools": ["apply_refund"]}],
             "edges": [],
@@ -46,7 +50,9 @@ async def test_policy_enforcement_violation(tmp_path):
 async def test_policy_enforcement_no_policy(tmp_path):
     scenario = {
         "tools": {"apply_refund": {"output": {"status": "success"}}},
-        "policies": {},
+        "metadata": {
+            "policies": {},
+        },
         "workflow": {
             "nodes": [{"id": "t1", "task_description": "task", "required_tools": ["apply_refund"]}],
             "edges": [],

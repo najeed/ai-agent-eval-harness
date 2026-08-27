@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Power Substation Real-time Optimization Simulation",
     "compliance_level": "Standard",
-    "id": "simulations-017-power-substation-real-time-optimization-simulation"
+    "id": "simulations-017-power-substation-real-time-optimization-simulation",
+    "policies": {
+      "safety_threshold": 0.95,
+      "requires_hitl": true
+    }
   },
   "description": "Agent must manage a high-fidelity Power Substation simulation with streaming telemetry.",
   "industry": "Meta-Industry",
@@ -52,9 +56,5 @@
     "session_active": true,
     "context_loaded": true,
     "dataset_base": "industries/simulations/datasets/"
-  },
-  "policies": {
-    "safety_threshold": 0.95,
-    "requires_hitl": true
   }
 }

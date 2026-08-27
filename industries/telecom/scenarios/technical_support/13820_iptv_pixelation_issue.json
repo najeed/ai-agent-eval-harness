@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Troubleshooting - IPTV Pixelation",
     "compliance_level": "Standard",
-    "id": "13820-iptv-pixelation-issue"
+    "id": "13820-iptv-pixelation-issue",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer reports that their TV service is frequently pixelated, especially on HD channels.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

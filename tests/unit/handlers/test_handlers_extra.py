@@ -309,7 +309,7 @@ async def test_catalog_refresh_success():
 
 @pytest.mark.asyncio
 async def test_classify_scenario_fallback(monkeypatch):
-    # Force failure to cover line 46
+    # Force failure
     monkeypatch.setitem(sys.modules, "sentence_transformers", None)
     res = scenarios.classify_scenario({"id": "test"})
     assert res["industry"] == "generic"

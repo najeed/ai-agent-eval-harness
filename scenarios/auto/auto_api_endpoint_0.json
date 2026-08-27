@@ -1,11 +1,11 @@
 {
   "aes_version": 1.4,
-  "id": "auto_api_endpoint_0",
   "metadata": {
     "id": "auto_api_endpoint_0",
     "name": "Auto-generated for /api/v1/billing",
     "source_file": "app/billing.py",
-    "pattern": "/api/v1/billing"
+    "pattern": "/api/v1/billing",
+    "compliance_level": "Standard"
   },
   "description": "Verification of api_endpoint discovered in app/billing.py",
   "industry": "auto",
@@ -17,5 +17,14 @@
       }
     ],
     "edges": []
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
+      ]
+    }
   }
 }

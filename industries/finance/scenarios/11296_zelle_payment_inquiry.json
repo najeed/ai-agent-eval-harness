@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Zelle / P2P Payment Inquiry",
     "compliance_level": "Standard",
-    "id": "11296-zelle-payment-inquiry"
+    "id": "11296-zelle-payment-inquiry",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer sent a Zelle payment to a friend, but the friend claims they never received it.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

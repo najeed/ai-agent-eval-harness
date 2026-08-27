@@ -241,7 +241,7 @@ def test_hitl_stream_yields_ping_and_events(hitl_client):
     assert len(_sse_listeners) > 0
     request_listener = _sse_listeners[-1]
 
-    # Trigger listener to cover line 55
+    # Trigger listener
     request_listener("create", {"id": "evt-1"})
 
     iterator = res.response
@@ -257,7 +257,7 @@ def test_hitl_stream_yields_ping_and_events(hitl_client):
 
 
 def test_hitl_stream_empty_timeout(hitl_client):
-    """Verify SSE stream handles queue Empty timeout (line 71)."""
+    """Verify SSE stream handles queue Empty timeout."""
     from queue import Empty
 
     with patch("eval_runner.console.routes.hitl.Queue.get", side_effect=Empty):
@@ -265,11 +265,11 @@ def test_hitl_stream_empty_timeout(hitl_client):
         assert res.status_code == 200
         iterator = res.response
 
-        # Connection ping (line 61)
+        # Connection ping
         ping_1 = next(iterator)
         assert b"ping" in ping_1
 
-        # Keepalive ping from Empty timeout (line 71)
+        # Keepalive ping from Empty timeout
         ping_2 = next(iterator)
         assert b"ping" in ping_2
 

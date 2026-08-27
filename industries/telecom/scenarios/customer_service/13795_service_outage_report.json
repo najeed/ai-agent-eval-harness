@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Customer Reports Service Outage",
     "compliance_level": "Standard",
-    "id": "13795-service-outage-report"
+    "id": "13795-service-outage-report",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer calls to report a total loss of mobile service. The agent must check for known outages and provide an estimated time for resolution.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

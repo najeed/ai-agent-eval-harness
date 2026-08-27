@@ -50,7 +50,7 @@ def test_correlator_production_logic(sample_datasets):
 
 
 def test_correlator_file_discovery_resiliency(tmp_path):
-    """Verify recursive discovery and load-failure handling (Lines 22-43)."""
+    """Verify recursive discovery and load-failure handling."""
     correlator = DataCorrelator()
     data_dir = tmp_path / "data"
     data_dir.mkdir()
@@ -85,7 +85,7 @@ def test_correlator_file_discovery_resiliency(tmp_path):
 
 
 def test_correlator_signal_normalization():
-    """Verify edge cases in signal normalization (Lines 109-117)."""
+    """Verify edge cases in signal normalization."""
     # 0.5 (Midpoint)
     assert DataCorrelator.normalize_signal(150, 100, 200) == 0.5
     # Max bound

@@ -14,7 +14,7 @@ async def test_correlator_edge_branches():
     """Exercise Correlator error and missing key branches."""
     correlator = DataCorrelator()
 
-    # 1. Missing Secondary Dataset branch (Lines 29-43)
+    # 1. Missing Secondary Dataset
     results = correlator.correlate_cross_sector(
         primary_dataset=[MagicMock()],
         secondary_dataset=[],  # Empty
@@ -22,7 +22,7 @@ async def test_correlator_edge_branches():
     )
     assert len(results) > 0  # Returns primary dataset regardless of secondary
 
-    # 2. Unsupported Correlation Type (Lines 59-74)
+    # 2. Unsupported Correlation Type
     results_invalid = correlator.correlate_cross_sector(
         primary_dataset=[MagicMock()],
         secondary_dataset=[MagicMock()],
@@ -67,7 +67,7 @@ async def test_unstructured_common_crawl_hit():
     }
     provider = UnstructuredProvider(config, llm_manager=LLMManager({}))
 
-    # Mock the Input path found check (Line 108)
+    # Mock the Input path found check
     with patch("os.path.exists", return_value=True):
         artifacts = await provider.extract()
         assert len(artifacts) > 0

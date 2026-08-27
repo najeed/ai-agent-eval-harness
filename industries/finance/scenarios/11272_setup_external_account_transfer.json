@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Set up External Account for Transfers",
     "compliance_level": "Standard",
-    "id": "11272-setup-external-account-transfer"
+    "id": "11272-setup-external-account-transfer",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer wants to link an account from another bank to be able to transfer funds.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

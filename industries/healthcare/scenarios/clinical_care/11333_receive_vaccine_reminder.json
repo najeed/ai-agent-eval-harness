@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Receive a Vaccine Reminder",
     "compliance_level": "Standard",
-    "id": "11333-receive-vaccine-reminder"
+    "id": "11333-receive-vaccine-reminder",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "While documenting in a pediatric patient's chart, a CDS alert reminds the provider that the patient is due for their MMR vaccine.",
   "industry": "Healthcare",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

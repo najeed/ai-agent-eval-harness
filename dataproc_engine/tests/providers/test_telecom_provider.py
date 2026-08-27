@@ -26,7 +26,7 @@ class MockResponse:
 
 @pytest.mark.asyncio
 async def test_telecom_itu_production_loop():
-    """Verify ITU ICT Statistics transformation (Lines 147-166)."""
+    """Verify ITU ICT Statistics transformation."""
     config = {"industry": "telecom", "telecom_mode": "itu", "allow_simulation": True}
     provider = TelecomProvider(config, llm_manager=LLMManager({"llm_provider": "heuristic"}))
 
@@ -41,7 +41,7 @@ async def test_telecom_itu_production_loop():
 
 @pytest.mark.asyncio
 async def test_telecom_ookla_production_loop(tmp_path):
-    """Verify Ookla Speedtest Tile transformation (Lines 168-195)."""
+    """Verify Ookla Speedtest Tile transformation."""
     df = pd.DataFrame(
         [
             {
@@ -69,7 +69,7 @@ async def test_telecom_ookla_production_loop(tmp_path):
 
 @pytest.mark.asyncio
 async def test_telecom_fcc_api_retry_and_simulation():
-    """Verify FCC API failure and simulation fallbacks (Lines 103-140)."""
+    """Verify FCC API failure and simulation fallbacks."""
     config = {"industry": "telecom", "telecom_mode": "fcc", "allow_simulation": True}
     provider = TelecomProvider(config, llm_manager=LLMManager({"llm_provider": "heuristic"}))
 
@@ -84,7 +84,7 @@ async def test_telecom_fcc_api_retry_and_simulation():
 
 @pytest.mark.asyncio
 async def test_telecom_validation_branches():
-    """Exercise Ookla/ITU validation logic (Lines 241-252)."""
+    """Exercise Ookla/ITU validation logic."""
     provider = TelecomProvider({"telecom_mode": "ookla"}, llm_manager=LLMManager({}))
     bad_record = MagicMock(data={"avg_download_speed": -10.0})
     assert provider.validate([bad_record]) is False

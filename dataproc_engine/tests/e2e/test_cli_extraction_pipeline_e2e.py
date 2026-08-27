@@ -71,7 +71,7 @@ async def test_healthcare_who_hit():
 
 @pytest.mark.asyncio
 async def test_cli_confirmation_branches(tmp_path):
-    """Exercise Click confirm/overwrite branches (Lines 167-172)."""
+    """Exercise Click confirm/overwrite branches."""
     from click.testing import CliRunner
 
     from dataproc_engine.cli.main import cli

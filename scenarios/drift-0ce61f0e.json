@@ -1,12 +1,14 @@
 {
   "aes_version": 1.4,
-  "id": "drift-0ce61f0e",
   "industry": "finance",
   "use_case": "production_replay",
   "metadata": {
     "id": "drift-0ce61f0e",
     "name": "Imported Drift: i.json",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "ground_truth_history": [
+      {}
+    ]
   },
   "description": "Automatically imported from production trace: i.json",
   "workflow": {
@@ -24,7 +26,13 @@
     ],
     "edges": []
   },
-  "ground_truth_history": [
-    {}
-  ]
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
+      ]
+    }
+  }
 }

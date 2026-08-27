@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Add a Trusted Contact Person",
     "compliance_level": "Standard",
-    "id": "11288-add-trusted-contact"
+    "id": "11288-add-trusted-contact",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A senior client wants to add their adult child as a trusted contact on their account for added security.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Update Financial Forecast",
     "compliance_level": "Standard",
-    "id": "11219-update-financial-forecast"
+    "id": "11219-update-financial-forecast",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "An FP&A analyst needs to update the quarterly revenue forecast based on new sales data.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

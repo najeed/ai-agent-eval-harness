@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Diagnose GPS Timing Failure on Cell Site",
     "compliance_level": "Standard",
-    "id": "13881-diagnose-gps-timing-failure"
+    "id": "13881-diagnose-gps-timing-failure",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A cell site reports a 'Loss of Sync' alarm, indicating a problem with its GPS timing source.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Process a Device Trade-in",
     "compliance_level": "Standard",
-    "id": "13888-trade-in-device"
+    "id": "13888-trade-in-device",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer upgrading their phone wants to trade in their old device for credit.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Billing Dispute Resolution Agent",
     "compliance_level": "Standard",
-    "id": "scenario-dbf1058a"
+    "id": "scenario-dbf1058a",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "Evaluate an agent's ability to handle a complex billing dispute involving data overages and multi-agent coordination.",
   "industry": "telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

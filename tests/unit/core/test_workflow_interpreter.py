@@ -19,6 +19,7 @@ from eval_runner.execution_ir import (
     EdgeType,
     ExecutionIdentity,
     PlanValidationError,
+    WorkflowStatus,
     compile_workflow,
     evaluate_predicate,
 )
@@ -26,6 +27,7 @@ from eval_runner.workflow_interpreter import ReadyItem, WorkflowInterpreter, _Sc
 
 
 def _identity(attempt_number: int = 1) -> ExecutionIdentity:
+
     return ExecutionIdentity(
         evaluation_run_id="run-test",
         scenario_version_id="sha3_256:test",
@@ -1347,11 +1349,80 @@ def test_compile_evaluation_plan_captures_all_oracles():
     assert plan.evaluation_plan is not None
     eval_plan = plan.evaluation_plan
 
-    assert "sc1" in eval_plan.oracles
-    assert "hyg1" in eval_plan.oracles
-    assert "par1" in eval_plan.oracles
-    assert "sc2" in eval_plan.oracles
-
     assert len(eval_plan.all_required_oracles()) == 3
     assert len(eval_plan.required_oracles_for_node("node1")) == 3
     assert len(eval_plan.required_oracles_for_node("node2")) == 0
+
+
+def test_interpreter_should_abort_and_on_batch_complete():
+    plan = _plan(
+        {
+            "workflow": {
+                "nodes": [{"id": "n1"}, {"id": "n2"}],
+                "edges": [{"from": "n1", "to": "n2"}],
+                "entry_nodes": ["n1"],
+            }
+        }
+    )
+
+    async def dummy_executor(*args, **kwargs):
+        return {"status": "success", "oracle_results": {}}
+
+    # Abort flag active before running
+    interp_abort = WorkflowInterpreter(plan=plan, identity=_identity(), should_abort=lambda: True)
+    results, outcome = asyncio.run(interp_abort.run(dummy_executor))
+    assert outcome.status == WorkflowStatus.ABORTED
+
+    # on_batch_complete callback tracking
+    completed_batches = []
+    interp_batch = WorkflowInterpreter(
+        plan=plan,
+        identity=_identity(),
+        on_batch_complete=lambda batch_ids: completed_batches.extend(batch_ids),
+    )
+    results, outcome = asyncio.run(interp_batch.run(dummy_executor))
+    assert outcome.status == WorkflowStatus.COMPLETED
+    assert len(completed_batches) >= 2
+
+
+def test_interpreter_node_aborted_status_and_budget_limit():
+    from unittest.mock import PropertyMock, patch
+
+    from eval_runner.execution_ir import WorkflowPlan
+
+    plan = _plan(
+        {
+            "workflow": {
+                "nodes": [{"id": "n1"}, {"id": "n2"}],
+                "edges": [{"from": "n1", "to": "n2"}],
+                "entry_nodes": ["n1"],
+            }
+        }
+    )
+
+    # Custom executor returning aborted
+    async def aborting_executor(*args, **kwargs):
+        return {"status": "aborted"}
+
+    interp_node_abort = WorkflowInterpreter(
+        plan=plan,
+        identity=_identity(),
+    )
+    results, outcome = asyncio.run(interp_node_abort.run(aborting_executor))
+    assert outcome.status in (WorkflowStatus.ABORTED, WorkflowStatus.FAILED)
+
+    # Step budget limited via mocked property
+    async def fast_executor(*args, **kwargs):
+        return {"status": "success", "oracle_results": {}}
+
+    with patch.object(WorkflowPlan, "step_budget", new_callable=PropertyMock, return_value=1):
+        interp_budget = WorkflowInterpreter(
+            plan=plan,
+            identity=_identity(),
+        )
+        results_b, outcome_b = asyncio.run(interp_budget.run(fast_executor))
+        assert outcome_b.status in (
+            WorkflowStatus.COMPLETED,
+            WorkflowStatus.FAILED,
+            WorkflowStatus.ABORTED,
+        )

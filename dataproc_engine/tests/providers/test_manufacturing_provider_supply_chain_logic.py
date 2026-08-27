@@ -24,7 +24,7 @@ async def test_manufacturing_industrial_production():
 
 @pytest.mark.asyncio
 async def test_manufacturing_asm_production():
-    """Verify US Census ASM transformation (Lines 85-107)."""
+    """Verify US Census ASM transformation."""
     config = {"industry": "manufacturing", "manufacturing_mode": "asm", "allow_simulation": True}
     provider = ManufacturingProvider(config, llm_manager=LLMManager({"llm_provider": "heuristic"}))
 

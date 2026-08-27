@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Check Status of Port-in Request",
     "compliance_level": "Standard",
-    "id": "13845-port-in-status-check"
+    "id": "13845-port-in-status-check",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer who requested to port their number in yesterday is calling to check the status.",
   "industry": "Telecom",
@@ -52,9 +56,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

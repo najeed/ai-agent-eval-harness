@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Mobile Troubleshooting - Cannot Send MMS",
     "compliance_level": "Standard",
-    "id": "13823-cannot-send-mms"
+    "id": "13823-cannot-send-mms",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer can send SMS texts but cannot send or receive MMS (picture messages).",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

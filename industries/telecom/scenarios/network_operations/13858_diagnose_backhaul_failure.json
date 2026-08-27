@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Diagnose Cell Tower Failure - Backhaul",
     "compliance_level": "Standard",
-    "id": "13858-diagnose-backhaul-failure"
+    "id": "13858-diagnose-backhaul-failure",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A cell tower is online but not passing traffic. The agent suspects a backhaul link failure.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

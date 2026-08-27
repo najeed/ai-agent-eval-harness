@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Upsell - Device Insurance",
     "compliance_level": "Standard",
-    "id": "13847-upsell-insurance-addon"
+    "id": "13847-upsell-insurance-addon",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "After selling a customer a new high-end smartphone, the agent should attempt to sell them device insurance.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Troubleshooting - Landline No Dial Tone",
     "compliance_level": "Standard",
-    "id": "13891-landline-no-dial-tone"
+    "id": "13891-landline-no-dial-tone",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "An elderly customer reports their landline phone has no dial tone.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

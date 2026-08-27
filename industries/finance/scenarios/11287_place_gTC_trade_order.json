@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Place a Good-'Til-Canceled (GTC) Trade Order",
     "compliance_level": "Standard",
-    "id": "11287-place-gTC-trade-order"
+    "id": "11287-place-gTC-trade-order",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A client wants to place a limit order to buy a stock, but wants the order to remain active until it's either filled or they cancel it.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Execute a Foreign Exchange (FX) Spot Trade",
     "compliance_level": "Standard",
-    "id": "11242-execute-foreign-exchange"
+    "id": "11242-execute-foreign-exchange",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A corporate treasury needs to convert 1 million EUR to USD to fund US operations.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

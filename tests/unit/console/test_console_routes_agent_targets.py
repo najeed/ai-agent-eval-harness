@@ -207,3 +207,114 @@ def test_saved_target_test_404_for_unknown_id(targets_jail):
 def test_validator_raises_on_bad_id_format():
     with pytest.raises(AgentTargetValidationError):
         AgentTargetStore().upsert(_validate_target_payload(VALID_PAYLOAD), target_id="BAD ID!")
+
+
+def test_validator_additional_error_branches():
+    # Non-dict payload
+    with pytest.raises(AgentTargetValidationError, match="Request body must be a JSON object"):
+        _validate_target_payload("not-a-dict")  # type: ignore
+
+    # URL with no hostname
+    with pytest.raises(AgentTargetValidationError, match="no resolvable hostname"):
+        _validate_target_payload({**VALID_PAYLOAD, "endpoint": "http:///no-host"})
+
+    # Non-integer max_turns
+    with pytest.raises(AgentTargetValidationError, match="'max_turns' must be an integer"):
+        _validate_target_payload({**VALID_PAYLOAD, "max_turns": "invalid-int"})
+
+    # Non-integer timeout_seconds
+    with pytest.raises(AgentTargetValidationError, match="'timeout_seconds' must be an integer"):
+        _validate_target_payload({**VALID_PAYLOAD, "timeout_seconds": "invalid-int"})
+
+
+def test_probe_endpoint_additional_branches(monkeypatch):
+    import urllib.error
+    import urllib.request
+    from unittest.mock import MagicMock
+
+    # 1. Non-http scheme probe
+    res_scheme = _probe_endpoint("custom_http", "ftp://example.com/agent")
+    assert res_scheme["reachable"] is False
+    assert "not probeable" in res_scheme["message"]
+
+    # 2. DNS resolution failure
+    def mock_getaddrinfo(*args, **kwargs):
+        raise OSError("Name or service not known")
+
+    monkeypatch.setattr("socket.getaddrinfo", mock_getaddrinfo)
+    res_dns = _probe_endpoint("custom_http", "http://unresolvable.fake.local:8080/agent")
+    assert res_dns["reachable"] is False
+    assert "DNS resolution failed" in res_dns["message"]
+
+    # 3. HTTP 200 Success probe
+    monkeypatch.undo()
+    mock_resp = MagicMock()
+    mock_resp.status = 200
+    mock_resp.read.return_value = b'{"status": "ok"}'
+    mock_resp.__enter__.return_value = mock_resp
+    mock_resp.__exit__.return_value = False
+
+    monkeypatch.setattr(urllib.request, "urlopen", lambda req, timeout=5.0: mock_resp)
+    monkeypatch.setattr("socket.getaddrinfo", lambda *a, **k: None)
+
+    res_ok = _probe_endpoint("custom_http", "http://127.0.0.1:8000/agent")
+    assert res_ok["reachable"] is True
+    assert res_ok["tier"] == "REACHABLE"
+
+    # 4. HTTPError probe
+    def mock_urlopen_err(*args, **kwargs):
+        raise urllib.error.HTTPError("http://127.0.0.1:8000/agent", 401, "Unauthorized", {}, None)
+
+    monkeypatch.setattr(urllib.request, "urlopen", mock_urlopen_err)
+    res_err = _probe_endpoint("custom_http", "http://127.0.0.1:8000/agent")
+    assert res_err["reachable"] is True
+    assert "HTTP 401" in res_err["message"]
+
+
+def test_agent_target_store_corrupt_file_and_missing_endpoints(targets_jail):
+    from unittest.mock import patch
+
+    client = targets_jail["client"]
+    reg_path = targets_jail["path"]
+
+    # 1. Corrupt file handling (lines 249-251)
+    reg_path.parent.mkdir(parents=True, exist_ok=True)
+    reg_path.write_text("NOT_VALID_JSON{", encoding="utf-8")
+    store = AgentTargetStore(reg_path)
+    assert store.list_targets() == []
+    assert store.get("any_id") is None
+
+    # 2. Delete 404 for nonexistent target (lines 353-354)
+    res_del = client.delete("/api/v1/agent-targets/nonexistent_id")
+    assert res_del.status_code == 404
+
+    # 3. Slug collision in upsert (line 292)
+    t1 = store.upsert({"name": "duplicate-name", "endpoint": "http://127.0.0.1:8000"})
+    t2 = store.upsert({"name": "duplicate-name", "endpoint": "http://127.0.0.1:8000"})
+    assert t1["id"] != t2["id"]
+
+    # 4. Probe endpoint with 500+ status (lines 203-207)
+    from unittest.mock import MagicMock
+
+    mock_502 = MagicMock()
+    mock_502.status = 502
+    mock_502.read.return_value = b""
+    mock_502.__enter__.return_value = mock_502
+    mock_502.__exit__.return_value = False
+
+    with patch("urllib.request.urlopen", return_value=mock_502):
+        with patch("socket.getaddrinfo", return_value=None):
+            res_502 = _probe_endpoint("custom_http", "http://127.0.0.1:8000/agent")
+            assert res_502["reachable"] is False
+            assert res_502["tier"] == "UNREACHABLE"
+            assert "Unexpected HTTP status 502" in res_502["message"]
+
+    # 5. Save error 500 in route (lines 344-346)
+    with patch.object(AgentTargetStore, "upsert", side_effect=OSError("Disk write error")):
+        res_500 = _save(client, VALID_PAYLOAD)
+        assert res_500.status_code == 500
+
+    # 6. Unsaved target test with valid payload (lines 367-368)
+    res_unsaved_valid = client.post("/api/v1/agent-targets/test", json=VALID_PAYLOAD)
+    assert res_unsaved_valid.status_code == 200
+    assert "reachable" in res_unsaved_valid.get_json()

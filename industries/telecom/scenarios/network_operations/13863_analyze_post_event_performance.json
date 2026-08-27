@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Analyze Post-Event Network Performance",
     "compliance_level": "Standard",
-    "id": "13863-analyze-post-event-performance"
+    "id": "13863-analyze-post-event-performance",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "After a major sporting event, an agent needs to analyze network performance in the stadium's area to plan for future events.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

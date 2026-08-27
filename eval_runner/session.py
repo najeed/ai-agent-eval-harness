@@ -1329,7 +1329,16 @@ class SessionManager:
 
         declared_criteria = node.get("success_criteria") or []
         declared_rules = (node.get("state_hygiene") or {}).get("rules") or []
-        declared_outcomes = node.get("expected_outcome") or []
+        # Normalize: expected_outcome may be a dict (legacy single-assertion format)
+        # or a list (multi-assertion format). Either way, downstream code indexes it
+        # as a list; a raw dict would produce KeyError on integer index access.
+        _raw_outcomes = node.get("expected_outcome")
+        if isinstance(_raw_outcomes, dict):
+            declared_outcomes: list[Any] = [_raw_outcomes]
+        elif isinstance(_raw_outcomes, list):
+            declared_outcomes = _raw_outcomes
+        else:
+            declared_outcomes = []
 
         node_oracle_results: dict[str, OracleResult] = {}
 

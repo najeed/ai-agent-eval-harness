@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Write a Progress Note",
     "compliance_level": "Standard",
-    "id": "11322-write-progress-note"
+    "id": "11322-write-progress-note",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A resident physician needs to write a SOAP (Subjective, Objective, Assessment, Plan) note for a patient they have just examined.",
   "industry": "Healthcare",
@@ -82,9 +86,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

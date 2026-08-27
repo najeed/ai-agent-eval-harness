@@ -6,7 +6,7 @@ from dataproc_engine.core.llm_manager import LLMManager
 
 
 def test_llm_manager_initialization_defaults():
-    """Cover default config logic (lines 20-33)."""
+    """Cover default config logic."""
     manager = LLMManager({})
     assert manager.strategy == "auto"
     assert manager.preferred_provider == "gemini"
@@ -14,14 +14,14 @@ def test_llm_manager_initialization_defaults():
 
 @pytest.mark.asyncio
 async def test_llm_manager_cloud_provider_retry_logic():
-    """Cover cloud call paths and provider selection (lines 196-217)."""
-    # 1. Skip if no API key (lines 202-204)
+    """Cover cloud call paths and provider selection."""
+    # 1. Skip if no API key
     manager = LLMManager({"llm_provider": "openai"})
     with patch("os.getenv", return_value=None):
         res = await manager._try_cloud_providers("content", {})
         assert res is None
 
-    # 2. Unknown provider (line 217)
+    # 2. Unknown provider
     manager_unknown = LLMManager({"llm_provider": "unknown_box"})
     with patch("os.getenv", return_value="fake_key"):
         res = await manager_unknown._try_cloud_providers("content", {})
@@ -30,7 +30,7 @@ async def test_llm_manager_cloud_provider_retry_logic():
 
 @pytest.mark.asyncio
 async def test_llm_manager_call_openai_success():
-    """Cover OpenAI success path (lines 235-238)."""
+    """Cover OpenAI success path."""
     manager = LLMManager({"llm_provider": "openai"})
     with patch("aiohttp.ClientSession.post") as mock_post:
         mock_resp = AsyncMock()
@@ -52,7 +52,7 @@ async def test_llm_manager_call_openai_success():
 
 @pytest.mark.asyncio
 async def test_llm_manager_call_claude_success():
-    """Cover Claude success path (lines 288-291)."""
+    """Cover Claude success path."""
     manager = LLMManager({"llm_provider": "claude"})
     with patch("aiohttp.ClientSession.post") as mock_post:
         mock_resp = AsyncMock()
@@ -68,7 +68,7 @@ async def test_llm_manager_call_claude_success():
 
 @pytest.mark.asyncio
 async def test_llm_manager_call_grok_success():
-    """Cover Grok success path (lines 312-314)."""
+    """Cover Grok success path."""
     manager = LLMManager({"llm_provider": "grok"})
     with patch("aiohttp.ClientSession.post") as mock_post:
         mock_resp = AsyncMock()
@@ -86,14 +86,14 @@ async def test_llm_manager_call_grok_success():
 
 @pytest.mark.asyncio
 async def test_llm_manager_mock_unsupported_type():
-    """Cover line 63 (unknown type in mock strategy)."""
+    """Cover unknown type in mock strategy."""
     manager = LLMManager({"llm_strategy": "mock"})
     res = await manager.extract_structured_data("content", {"key": "unknown_type"})
     assert res["key"] is None
 
 
 def test_llm_manager_verify_schema_inference():
-    """Cover inference logic in verify_schema (lines 415-416)."""
+    """Cover inference logic in verify_schema."""
     manager = LLMManager({})
     schema = {"revenue": "number"}
     # Should infer 'revenue' from 'total_revenue'
@@ -102,7 +102,7 @@ def test_llm_manager_verify_schema_inference():
 
 
 def test_llm_manager_verify_schema_strict_inference_failure():
-    """Cover strict failure after inference failed (lines 420-421)."""
+    """Cover strict failure after inference failed."""
     manager = LLMManager({})
     schema = {"missing_key": "string"}
     # Inference fails, and strict is True
@@ -111,7 +111,7 @@ def test_llm_manager_verify_schema_strict_inference_failure():
 
 
 def test_llm_manager_verify_schema_default_types():
-    """Cover default value population (lines 428-431)."""
+    """Cover default value population."""
     manager = LLMManager({})
     schema = {"cnt": "integer", "price": "number", "name": "string"}
     # Inference fails, strict is False
@@ -123,7 +123,7 @@ def test_llm_manager_verify_schema_default_types():
 
 @pytest.mark.asyncio
 async def test_llm_manager_token_guard_hits():
-    """Cover token guard interception (lines 464-475)."""
+    """Cover token guard interception."""
     manager = LLMManager({"llm_strategy": "auto"})
     # Content contains public domain
     await manager.extract_structured_data(

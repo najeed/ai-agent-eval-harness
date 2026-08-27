@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Document Patient Outreach Call",
     "compliance_level": "Standard",
-    "id": "11382-document-patient-outreach-call"
+    "id": "11382-document-patient-outreach-call",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A care manager calls a high-risk patient to check on their status after a recent hospital discharge.",
   "industry": "Healthcare",
@@ -82,9 +86,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Appeal a Claim Denial",
     "compliance_level": "Standard",
-    "id": "11345-appeal-a-denial"
+    "id": "11345-appeal-a-denial",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A claim was denied for 'not medically necessary'. A denial specialist needs to write and submit an appeal.",
   "industry": "Healthcare",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

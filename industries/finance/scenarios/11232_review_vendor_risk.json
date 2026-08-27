@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Review Vendor for Financial Risk",
     "compliance_level": "Standard",
-    "id": "11232-review-vendor-risk"
+    "id": "11232-review-vendor-risk",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "Before signing a large contract, a risk officer needs to assess the financial stability of a new vendor.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

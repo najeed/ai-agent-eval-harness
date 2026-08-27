@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Analyze Profitability by Product",
     "compliance_level": "Standard",
-    "id": "11267-analyze-profitability-by-product"
+    "id": "11267-analyze-profitability-by-product",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "An FP&A analyst needs to determine which of the company's products are the most and least profitable.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

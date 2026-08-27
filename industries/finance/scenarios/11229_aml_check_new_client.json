@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Perform AML Check on New Client",
     "compliance_level": "Standard",
-    "id": "11229-aml-check-new-client"
+    "id": "11229-aml-check-new-client",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "As part of onboarding, a new client must be checked against AML and sanctions watchlists.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Process Patient Name Change",
     "compliance_level": "Standard",
-    "id": "11314-process-patient-name-change"
+    "id": "11314-process-patient-name-change",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A patient has legally changed their name and provides documentation. An HIM specialist needs to update their medical record.",
   "industry": "Healthcare",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Verify Source of Wealth for Large Deposit",
     "compliance_level": "Standard",
-    "id": "11241-verify-source-of-wealth"
+    "id": "11241-verify-source-of-wealth",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A client makes a large, unusual deposit, triggering a requirement to verify the source of the wealth.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

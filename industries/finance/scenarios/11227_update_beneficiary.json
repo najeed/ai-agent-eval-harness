@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Update Beneficiary on Investment Account",
     "compliance_level": "Standard",
-    "id": "11227-update-beneficiary"
+    "id": "11227-update-beneficiary",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A client wants to add their newborn child as a beneficiary on their investment account.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

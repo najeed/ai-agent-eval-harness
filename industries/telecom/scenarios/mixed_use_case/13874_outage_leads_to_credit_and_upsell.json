@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Outage Leads to Credit and Upsell",
     "compliance_level": "Standard",
-    "id": "13874-outage-leads-to-credit-and-upsell"
+    "id": "13874-outage-leads-to-credit-and-upsell",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer calls about a service outage. After resolving, the agent identifies they are a good candidate for a higher-tier plan with better reliability.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

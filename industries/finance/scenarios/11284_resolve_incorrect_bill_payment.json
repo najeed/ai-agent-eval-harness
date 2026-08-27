@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Resolve Incorrect Bill Payment",
     "compliance_level": "Standard",
-    "id": "11284-resolve-incorrect-bill-payment"
+    "id": "11284-resolve-incorrect-bill-payment",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer used bill pay to send money to a utility company, but entered the wrong account number and the payment was not credited.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

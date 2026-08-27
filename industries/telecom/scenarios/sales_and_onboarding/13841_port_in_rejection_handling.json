@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Handle Rejected Port-in Request",
     "compliance_level": "Standard",
-    "id": "13841-port-in-rejection-handling"
+    "id": "13841-port-in-rejection-handling",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A port-in request was rejected by the old carrier due to an incorrect account PIN.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

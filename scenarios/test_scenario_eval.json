@@ -1,12 +1,4 @@
 {
-  "title": "Test Eval V1",
-  "tasks": [
-    {
-      "task_id": "task1",
-      "prompt": "Hello",
-      "expected_outcome": "World"
-    }
-  ],
   "aes_version": 1.4,
   "metadata": {
     "compliance_level": "Standard",
@@ -14,5 +6,30 @@
     "standards_registry": [],
     "id": "test_eval_v1",
     "name": "Test Eval V1"
+  },
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Test task",
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "OK",
+            "mode": "exact"
+          }
+        ]
+      }
+    ],
+    "edges": []
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
+      ]
+    }
   }
 }

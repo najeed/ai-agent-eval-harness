@@ -15,7 +15,7 @@ async def test_industrial_excellence_final_push():
     """Target the remaining logic gaps in industrial providers for 95%+."""
     llm = LLMManager({"llm_strategy": "heuristic"})
 
-    # 1. Environment: NOAA Fallback (Lines 24-38)
+    # 1. Environment: NOAA Fallback
     env_config = {"industry": "public_sector", "environment_mode": "noaa", "allow_simulation": True}
     env_provider = EnvironmentProvider(env_config, llm_manager=llm)
     with patch("aiohttp.ClientSession.get") as m_get:
@@ -23,7 +23,7 @@ async def test_industrial_excellence_final_push():
         arts = await env_provider.extract()
         assert len(arts) > 0  # Hits 24-38
 
-    # 2. Labor: BLS Fallback (Lines 24-38)
+    # 2. Labor: BLS Fallback
     lab_config = {"industry": "public_sector", "labor_mode": "bls", "allow_simulation": True}
     lab_provider = LaborProvider(lab_config, llm_manager=llm)
     with patch("aiohttp.ClientSession.get") as m_get:
@@ -31,7 +31,7 @@ async def test_industrial_excellence_final_push():
         arts = await lab_provider.extract()
         assert len(arts) > 0  # Hits 24-38
 
-    # 3. Agriculture: FAOSTAT Fallback (Lines 69-81)
+    # 3. Agriculture: FAOSTAT Fallback
     agr_config = {
         "industry": "agriculture",
         "agriculture_mode": "faostat",
@@ -51,7 +51,7 @@ async def test_industrial_excellence_final_push():
             arts = await hc_provider.extract()
             # Hits 40-48
 
-    # 5. Transportation: Eurostat Logic Zenith (Lines 33, 38-46, 55, 73, 90-103)
+    # 5. Transportation: Eurostat Logic Zenith
     # Already partially hit, but ensuring all paths are clean
     trans_config = {"industry": "transportation", "transit_mode": "air", "allow_simulation": True}
     trans_provider = TransportationProvider(trans_config, llm_manager=llm)
@@ -62,7 +62,7 @@ async def test_industrial_excellence_final_push():
 
 @pytest.mark.asyncio
 async def test_unstructured_ocr_final_zenith():
-    """Trigger the OCR exceptions in UnstructuredProvider (Lines 158-164)."""
+    """Trigger the OCR exceptions in UnstructuredProvider."""
     from dataproc_engine.providers.unstructured_provider import UnstructuredProvider
 
     config = {"industry": "unstructured", "input_uri": "test.pdf", "allow_simulation": False}

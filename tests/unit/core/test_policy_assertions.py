@@ -26,11 +26,13 @@ def guarded_scenario():
         "aes_version": 1.4,
         "initial_state": {"balance": 500},
         "tools": {"transfer_funds": {"output": {"status": "success", "message": "transferred"}}},
-        "policies": {
-            "transfer_funds": {
-                "id": "max_transfer_limit",
-                "max_limit": 1000,
-                "constrained_params": "amount",
+        "metadata": {
+            "policies": {
+                "transfer_funds": {
+                    "id": "max_transfer_limit",
+                    "max_limit": 1000,
+                    "constrained_params": "amount",
+                }
             }
         },
         "workflow": {

@@ -1,11 +1,11 @@
 {
   "aes_version": 1.4,
-  "id": "auto_tool_definition_1",
   "metadata": {
     "id": "auto_tool_definition_1",
     "name": "Auto-generated for def ticker_tool()",
     "source_file": "tools/market.py",
-    "pattern": "def ticker_tool()"
+    "pattern": "def ticker_tool()",
+    "compliance_level": "Standard"
   },
   "description": "Verification of tool_definition discovered in tools/market.py",
   "industry": "auto",
@@ -17,5 +17,14 @@
       }
     ],
     "edges": []
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
+      ]
+    }
   }
 }

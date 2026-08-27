@@ -1,6 +1,4 @@
 {
-  "title": "Test Log Dir Creation",
-  "tasks": [],
   "aes_version": 1.4,
   "metadata": {
     "compliance_level": "Standard",
@@ -8,5 +6,30 @@
     "standards_registry": [],
     "id": "test_log_dir",
     "name": "Test Log Dir Creation"
+  },
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task-1",
+        "task_description": "Test task",
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "OK",
+            "mode": "exact"
+          }
+        ]
+      }
+    ],
+    "edges": []
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
+      ]
+    }
   }
 }

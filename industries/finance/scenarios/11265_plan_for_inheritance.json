@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Create a Financial Plan for an Inheritance",
     "compliance_level": "Standard",
-    "id": "11265-plan-for-inheritance"
+    "id": "11265-plan-for-inheritance",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A client is expecting to receive a large inheritance and wants advice on how to manage it.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

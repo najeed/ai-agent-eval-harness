@@ -584,31 +584,31 @@ def test_verifier_invalid_manifest_branches(clean_vault_setup):
     )
     manifest_path = trace_file.parent / "run_manifest.json"
 
-    # 1. Invalid version (line 551)
+    # 1. Invalid version
     m1 = manifest.copy()
     m1["vc_version"] = "1.0.0"
     manifest_path.write_text(json.dumps(m1), encoding="utf-8")
     assert TraceVerifier.verify_trace(trace_file, manifest_path) is False
 
-    # 2. Corrupted governance timestamp (line 562)
+    # 2. Corrupted governance timestamp
     m2 = manifest.copy()
     m2["timestamp"] = "1990-01-01T00:00:00.000+0000"
     manifest_path.write_text(json.dumps(m2), encoding="utf-8")
     assert TraceVerifier.verify_trace(trace_file, manifest_path) is False
 
-    # 3. Missing forensic artifact specified in evidence ledger (line 578)
+    # 3. Missing forensic artifact specified in evidence ledger
     m3 = manifest.copy()
     m3["evidence_ledger"]["missing_sidecar.txt"] = "00" * 32
     manifest_path.write_text(json.dumps(m3), encoding="utf-8")
     assert TraceVerifier.verify_trace(trace_file, manifest_path, verify_ledger=True) is False
 
-    # 4. Empty provenance chain (line 593)
+    # 4. Empty provenance chain
     m4 = manifest.copy()
     m4["provenance_chain"] = []
     manifest_path.write_text(json.dumps(m4), encoding="utf-8")
     assert TraceVerifier.verify_trace(trace_file, manifest_path) is False
 
-    # 5. Invalid signature format / corrupted key (line 596)
+    # 5. Invalid signature format / corrupted key
     m5 = manifest.copy()
     m5["provenance_chain"] = [{"identity": "s", "algorithm": "ED25519", "signature": "xyz"}]
     manifest_path.write_text(json.dumps(m5), encoding="utf-8")
@@ -665,7 +665,7 @@ def test_verification_service_interceptor_pipeline():
     assert history == ["B", "A"]
     assert isinstance(res, dict)
 
-    # 2. Interceptor cannot sign format -> bypassed (kills line 277 + -> -)
+    # 2. Interceptor cannot sign format -> bypassed
     history.clear()
     service2 = VerificationService()
     service2.register_interceptor(InterceptorA())
@@ -673,7 +673,7 @@ def test_verification_service_interceptor_pipeline():
     service2.sign({"vc_version": "3.0.0"}, format="ED25519")
     assert history == ["A"]
 
-    # 3. Interceptor raises exception -> bypassed (kills line 275 + -> -)
+    # 3. Interceptor raises exception -> bypassed
     history.clear()
     service3 = VerificationService()
     service3.register_interceptor(InterceptorA())
@@ -681,21 +681,21 @@ def test_verification_service_interceptor_pipeline():
     service3.sign({"vc_version": "3.0.0"}, format="ED25519")
     assert history == ["FAILS", "A"]
 
-    # 4. Cycle / depth detection across all paths (kills depth + 1 -> - 1 at lines 266, 275, 277)
+    # 4. Cycle / depth detection across all paths (kills depth + 1 -> - 1)
     service_loop = VerificationService()
     for _ in range(55):
         service_loop.register_interceptor(InterceptorA())
     with pytest.raises(RecursionError, match="Max verifier pipeline depth exceeded"):
         service_loop.sign({"vc_version": "3.0.0"}, format="ED25519")
 
-    # Skipped interceptors depth increment (kills depth + 1 -> - 1 at line 277)
+    # Skipped interceptors depth increment (kills depth + 1 -> - 1)
     service_loop_skip = VerificationService()
     for _ in range(55):
         service_loop_skip.register_interceptor(InterceptorSkip())
     with pytest.raises(RecursionError, match="Max verifier pipeline depth exceeded"):
         service_loop_skip.sign({"vc_version": "3.0.0"}, format="ED25519")
 
-    # Failing interceptors depth increment (kills depth + 1 -> - 1 at line 275)
+    # Failing interceptors depth increment (kills depth + 1 -> - 1)
     service_loop_fails = VerificationService()
     for _ in range(55):
         service_loop_fails.register_interceptor(InterceptorFails())
@@ -706,7 +706,7 @@ def test_verification_service_interceptor_pipeline():
 def test_verifier_missing_trace_file_verify_trace(clean_vault_setup):
     """
     Mutation Assurance Test: Verifies verify_trace returns False when trace file is missing
-    (kills return False -> True mutation at line 551 in verifier.py).
+    (kills return False -> True mutation).
     """
     manifest_path = clean_vault_setup["run_dir"] / "verification_manifest.json"
     manifest_path.write_text(json.dumps({"vc_version": "3.0.0"}), encoding="utf-8")
@@ -717,7 +717,7 @@ def test_verifier_missing_trace_file_verify_trace(clean_vault_setup):
 def test_verifier_invalid_iso_timestamp_governance(clean_vault_setup):
     """
     Mutation Assurance Test: Verifies invalid timestamp in manifest triggers exception handler
-    (kills return False -> True mutation at line 596 in verifier.py).
+    (kills return False -> True mutation).
     """
     run_id = clean_vault_setup["run_id"]
     trace_file = clean_vault_setup["trace_file"]
@@ -733,7 +733,7 @@ def test_verifier_invalid_iso_timestamp_governance(clean_vault_setup):
 def test_verifier_certificate_mkdir_nested_parents(clean_vault_setup, monkeypatch, tmp_path):
     """
     Mutation Assurance Test: Verifies cert_dir.mkdir(parents=True, exist_ok=True) creates nested
-    dirs (kills parents=True -> False and exist_ok=True -> False at line 490 in verifier.py).
+    dirs (kills parents=True -> False and exist_ok=True -> False).
     """
     deep_project = tmp_path / "deep" / "nested" / "project"
     deep_reports = deep_project / "reports"
@@ -767,7 +767,7 @@ def test_verifier_certificate_mkdir_nested_parents(clean_vault_setup, monkeypatc
 def test_verifier_sign_outside_vault_raises_error(clean_vault_setup, tmp_path):
     """
     Mutation Assurance Test: Verifies signing a trace outside vault raises Forensic Pollution error
-    (kills resolved_p == vault_path -> != mutation at line 394 in verifier.py).
+    (kills resolved_p == vault_path -> != mutation).
     """
     outside_trace = clean_vault_setup["project_root"] / "outside_run.jsonl"
     outside_trace.write_text('{"event": "start"}\n', encoding="utf-8")
@@ -780,7 +780,7 @@ def test_verifier_sign_outside_vault_raises_error(clean_vault_setup, tmp_path):
 def test_verifier_tampered_trace_hash_returns_false(clean_vault_setup):
     """
     Mutation Assurance Test: Verifies verify_trace returns False on trace hash mismatch
-    (kills return False -> True mutation at line 569 in verifier.py).
+    (kills return False -> True mutation).
     """
     run_id = clean_vault_setup["run_id"]
     trace_file = clean_vault_setup["trace_file"]
@@ -796,7 +796,7 @@ def test_verifier_tampered_trace_hash_returns_false(clean_vault_setup):
 def test_verifier_valid_trace_with_governance_ttl_assert_true(clean_vault_setup):
     """
     Mutation Assurance Test: Verifies verify_trace with governance TTL subtraction
-    (kills age = datetime.now() - created_at (- -> +) mutation at line 588 in verifier.py).
+    (kills age = datetime.now() - created_at (- -> +) mutation).
     """
     run_id = clean_vault_setup["run_id"]
     trace_file = clean_vault_setup["trace_file"]

@@ -9,7 +9,7 @@ from dataproc_engine.core.correlator import DataCorrelator
 
 @pytest.mark.asyncio
 async def test_correlator_file_discovery(tmp_path):
-    """Exercise Correlator's recursive file discovery (Lines 22-43)."""
+    """Exercise Correlator's recursive file discovery."""
     correlator = DataCorrelator()
     target_dir = str(tmp_path / "data")
     os.makedirs(target_dir)
@@ -38,7 +38,7 @@ async def test_correlator_file_discovery(tmp_path):
 
 @pytest.mark.asyncio
 async def test_correlator_fuzzy_and_temporal():
-    """Exercise fuzzy matching and spatio-temporal logic (Lines 45-106)."""
+    """Exercise fuzzy matching and spatio-temporal logic."""
     correlator = DataCorrelator()
 
     # 1. Finance Record
@@ -90,7 +90,7 @@ async def test_correlator_fuzzy_and_temporal():
 
 @pytest.mark.asyncio
 async def test_correlator_normalization():
-    """Exercise normalization edge cases (Lines 109-117)."""
+    """Exercise normalization edge cases."""
     val = DataCorrelator.normalize_signal(150, 100, 200)
     assert val == 0.5
 

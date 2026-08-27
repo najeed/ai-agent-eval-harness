@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Update DNS Record for a Customer",
     "compliance_level": "Standard",
-    "id": "13889-update-dns-record"
+    "id": "13889-update-dns-record",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A business customer needs to update the A record for their domain, which is hosted on the telecom's DNS servers.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

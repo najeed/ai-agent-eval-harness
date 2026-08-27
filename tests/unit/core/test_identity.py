@@ -295,7 +295,7 @@ def test_identity_service_no_auto_provision(tmp_path):
         assert IdentityService.get_private_key("missing_id", auto_provision=False) is None
         assert IdentityService.get_public_key("missing_id", auto_provision=False) is None
 
-        # Test auto_provision=True to cover line 192
+        # Test auto_provision=True
         pub_key = IdentityService.get_public_key("missing_id_auto", auto_provision=True)
         assert pub_key is not None
     finally:

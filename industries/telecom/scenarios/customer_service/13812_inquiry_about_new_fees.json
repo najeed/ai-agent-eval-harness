@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Inquiry About New Government Fee",
     "compliance_level": "Standard",
-    "id": "13812-inquiry-about-new-fees"
+    "id": "13812-inquiry-about-new-fees",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer is calling to ask about a new 'Regulatory Recovery Fee' that appeared on their bill.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

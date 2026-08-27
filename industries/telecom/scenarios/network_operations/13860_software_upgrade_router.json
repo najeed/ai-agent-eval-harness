@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Provision Software Upgrade on Core Router",
     "compliance_level": "Standard",
-    "id": "13860-software-upgrade-router"
+    "id": "13860-software-upgrade-router",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A core network router needs a scheduled software upgrade during a maintenance window.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

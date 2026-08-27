@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Flag Suspicious Activity for SAR Filing",
     "compliance_level": "Standard",
-    "id": "11220-flag-suspicious-activity-sar"
+    "id": "11220-flag-suspicious-activity-sar",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A compliance analyst identifies a series of unusual transactions that may require filing a Suspicious Activity Report (SAR).",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

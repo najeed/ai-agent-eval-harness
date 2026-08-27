@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Order New Checks",
     "compliance_level": "Standard",
-    "id": "11234-order-new-checks"
+    "id": "11234-order-new-checks",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer has run out of checks and needs to order a new box.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Stateful Customer Update",
     "compliance_level": "Standard",
-    "id": "stateful-test"
+    "id": "stateful-test",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "Verify that the agent can update a customer's plan and that the harness correctly tracks the state change.",
   "industry": "telecom",
@@ -36,9 +40,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

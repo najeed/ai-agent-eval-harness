@@ -3,7 +3,11 @@
   "metadata": {
     "name": "File Annual Report (10-K) with SEC",
     "compliance_level": "Standard",
-    "id": "11257-file-annual-report"
+    "id": "11257-file-annual-report",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "The reporting team is ready to file the company's annual 10-K report with the SEC.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

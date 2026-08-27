@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Troubleshooting - Visual Voicemail Not Syncing",
     "compliance_level": "Standard",
-    "id": "13828-visual-voicemail-not-syncing"
+    "id": "13828-visual-voicemail-not-syncing",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer reports that their Visual Voicemail is not updating with new messages.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

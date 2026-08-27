@@ -34,6 +34,7 @@ import os
 import re
 import socket
 import tarfile
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -42,6 +43,7 @@ from urllib.parse import quote as _urlquote, urlparse
 from .utils import is_path_safe
 
 DEFAULT_MAX_TOTAL_BYTES = 200 * 1024 * 1024  # tarball hard cap
+
 DEFAULT_MAX_FILE_BYTES = 512 * 1024  # per candidate file
 DEFAULT_MAX_FILES = 20_000  # local-checkout file cap
 DEFAULT_TREE_FILE_BUDGET = 2_000  # max blobs fetched
@@ -884,9 +886,10 @@ async def analyze_repo(
             url_or_path, token, token_source, allow_private_hosts, ref_override=ref
         )
         digest = hashlib.sha256(data).hexdigest()[:12]
-        jail = Path(".aes") / "analyzer_cache" / digest
+        jail = Path(tempfile.gettempdir()) / "agentv_analyzer_cache" / digest
         src_root = _extract_tarball(data, jail)
         findings = _scan_tree(src_root)
+
     elif acquire == "tree":
         findings, meta, is_private = await _analyze_remote_tree(
             url_or_path,

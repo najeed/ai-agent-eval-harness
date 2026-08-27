@@ -1,22 +1,28 @@
 {
   "aes_version": 1.4,
-  "id": "sample_pack_greeting",
   "metadata": {
     "id": "sample_pack_greeting",
-    "name": "Sample Pack — Greeting Verification",
+    "name": "Sample Pack \u2014 Greeting Verification",
     "compliance_level": "Standard",
     "description": "Starter scenario shipped with the sample AgentV pack. Complete the assertions before production use."
   },
   "description": "Verifies that the agent greets the user by name.",
   "industry": "sample",
   "workflow": {
-    "entry_nodes": ["t1"],
+    "entry_nodes": [
+      "t1"
+    ],
     "nodes": [
       {
         "id": "t1",
         "task_description": "Greet the caller and state the assistant's purpose in one sentence.",
         "state_hygiene": {
-          "rules": [{ "path": "__unset_probe__", "op": "not_exists" }]
+          "rules": [
+            {
+              "path": "__unset_probe__",
+              "op": "not_exists"
+            }
+          ]
         }
       }
     ],

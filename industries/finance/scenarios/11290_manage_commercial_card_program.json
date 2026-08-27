@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Manage a Commercial Card Program",
     "compliance_level": "Standard",
-    "id": "11290-manage-commercial-card-program"
+    "id": "11290-manage-commercial-card-program",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A corporate administrator needs to issue a new commercial credit card to an employee and set their spending limits.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

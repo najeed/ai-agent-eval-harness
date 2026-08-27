@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Distribute Funds from a Trust",
     "compliance_level": "Standard",
-    "id": "11238-distribute-funds-from-trust"
+    "id": "11238-distribute-funds-from-trust",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A trustee requests a distribution from a trust account to one of its beneficiaries.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

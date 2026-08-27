@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Analyze Departmental Spending",
     "compliance_level": "Standard",
-    "id": "11231-analyze-departmental-spend"
+    "id": "11231-analyze-departmental-spend",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A manager asks an FP&A analyst to analyze the Marketing department's spending for the year to date.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

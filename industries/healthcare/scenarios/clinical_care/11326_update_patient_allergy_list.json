@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Update Patient Allergy List",
     "compliance_level": "Standard",
-    "id": "11326-update-patient-allergy-list"
+    "id": "11326-update-patient-allergy-list",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "During an intake, a patient reports a new allergy to penicillin. A nurse needs to update the patient's allergy list.",
   "industry": "Healthcare",
@@ -82,9 +86,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

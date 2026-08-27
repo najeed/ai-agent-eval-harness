@@ -264,6 +264,50 @@ async def test_session_state_parity_verifier_comprehensive():
     passed, _ev = await verifier.verify_state_parity(node_unsupported, mock_sandbox, [])
     assert passed is False
 
+    # 6. Tolerance parsing fallback with invalid string and unsupported mode
+    node_bad_tol = {
+        "expected_outcome": [
+            {
+                "target": "message",
+                "property": "",
+                "expected": "hi",
+                "mode": "unsupported_mode",
+                "tolerance": "bad_tol",
+            },
+        ]
+    }
+    passed_mode, _ = await verifier.verify_state_parity(
+        node_bad_tol,
+        mock_sandbox,
+        [{"role": "assistant", "content": "hi"}],
+    )
+    assert passed_mode is False
+
+    # 7. Agent summary extraction failure handling
+    mock_session_failing = MagicMock()
+    mock_session_failing._extract_agent_summary.side_effect = RuntimeError("Summary crash")
+    verifier_fail = SessionStateParityVerifier(session_manager=mock_session_failing)
+    passed_sum, _ = await verifier_fail.verify_state_parity(
+        {"expected_outcome": [{"target": "message", "expected": "hello"}]}, mock_sandbox, []
+    )
+    assert passed_sum is False
+
+    # 8. State before value resolution
+    mock_state_box = MagicMock()
+    mock_state_box.get_full_state = AsyncMock(return_value={"user": {"name": "Alice"}})
+    node_state_before = {
+        "expected_outcome": [
+            {"target": "state", "property": "user.name", "expected": "Alice", "mode": "exact"},
+            {"target": "state", "expected": {"user": {"name": "Alice"}}, "mode": "exact"},
+        ]
+    }
+    passed_before, ev_before = await verifier.verify_state_parity(
+        node_state_before, mock_state_box, [], state_before={"user": {"name": "Bob"}}
+    )
+    assert passed_before is True
+    assert ev_before[0]["actual_before"] == "Bob"
+    assert ev_before[1]["actual_before"] == {"user": {"name": "Bob"}}
+
 
 @pytest.mark.asyncio
 async def test_tool_execution_coordinator_all_branches():

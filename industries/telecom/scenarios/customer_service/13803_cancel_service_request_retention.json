@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Request to Cancel Service with Retention Offer",
     "compliance_level": "Standard",
-    "id": "13803-cancel-service-request-retention"
+    "id": "13803-cancel-service-request-retention",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer wants to cancel due to high price. The agent must attempt a retention offer.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

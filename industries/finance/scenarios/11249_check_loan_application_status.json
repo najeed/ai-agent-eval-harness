@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Check Loan Application Status",
     "compliance_level": "Standard",
-    "id": "11249-check-loan-application-status"
+    "id": "11249-check-loan-application-status",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer who recently applied for a mortgage wants to know the status of their application.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

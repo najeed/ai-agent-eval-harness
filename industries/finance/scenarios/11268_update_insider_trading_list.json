@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Update Insider Trading List",
     "compliance_level": "Standard",
-    "id": "11268-update-insider-trading-list"
+    "id": "11268-update-insider-trading-list",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A compliance officer needs to add a new executive to the company's insider trading list, restricting when they can trade company stock.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

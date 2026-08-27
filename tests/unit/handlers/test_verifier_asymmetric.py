@@ -1,5 +1,7 @@
 import json
 
+import pytest
+
 from eval_runner import config
 from eval_runner.verifier import TraceVerifier
 
@@ -73,3 +75,38 @@ def test_trace_verification_cycle(tmp_path, monkeypatch):
         json.dump(bad_manifest, f)
 
     assert TraceVerifier.verify_trace(str(trace_path), str(bad_manifest_path)) is False
+
+
+def test_verification_service_pipeline_depth_and_override(tmp_path):
+    from eval_runner.verifier import (
+        CertificationFailedError,
+        TraceVerificationInterceptor,
+        VerificationService,
+    )
+
+    svc = VerificationService()
+
+    class CyclicInterceptor(TraceVerificationInterceptor):
+        def can_sign(self, format: str) -> bool:
+            return True
+
+        def sign(self, manifest: dict, next_signer) -> dict:
+            return next_signer(manifest)
+
+    # Register interceptor with override_interceptor context manager
+    with svc.override_interceptor(CyclicInterceptor()):
+        assert len(svc._interceptors) > 0
+
+    # Mandatory interceptor failure
+    class FailingMandatoryInterceptor(TraceVerificationInterceptor):
+        is_mandatory = True
+
+        def can_sign(self, format: str) -> bool:
+            return True
+
+        def sign(self, manifest: dict, next_signer) -> dict:
+            raise RuntimeError("Mandatory signer failed")
+
+    with svc.override_interceptor(FailingMandatoryInterceptor()):
+        with pytest.raises(CertificationFailedError):
+            svc.sign({"test": "manifest"}, "default")

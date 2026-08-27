@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Process Denial for No Coverage",
     "compliance_level": "Standard",
-    "id": "11353-process-denial-for-no-coverage"
+    "id": "11353-process-denial-for-no-coverage",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A claim is denied because the payer reports the patient did not have coverage on the date of service. The balance needs to be transferred to the patient.",
   "industry": "Healthcare",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

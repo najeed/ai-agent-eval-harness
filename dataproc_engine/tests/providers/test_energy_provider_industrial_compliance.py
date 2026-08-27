@@ -37,7 +37,7 @@ def make_artifact(content, id="test-artifact", source_url="test://energy"):
 
 @pytest.mark.asyncio
 async def test_energy_balances_extract_with_api_key():
-    """energy_balances with api_key generates dynamic records (lines 72-90)."""
+    """energy_balances with api_key generates dynamic records."""
     config = {
         "energy_mode": "energy_balances",
         "eia_api_key": "test_api_key_xyz",
@@ -130,7 +130,7 @@ async def test_energy_balances_transform_missing_fields():
     assert isinstance(results, list)
 
 
-# ─── EIA list-format transform path (lines 249-258) ──────────────────────────
+# ─── EIA list-format transform path ──────────────────────────
 
 
 @pytest.mark.asyncio

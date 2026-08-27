@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Process Corporate ACH Payment File",
     "compliance_level": "Standard",
-    "id": "11206-process-bulk-ach-payments"
+    "id": "11206-process-bulk-ach-payments",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A corporate client's treasury department needs to process a payroll file via ACH.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

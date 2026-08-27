@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Cancel a Pending Port-in Request",
     "compliance_level": "Standard",
-    "id": "13849-cancel-port-in-request"
+    "id": "13849-cancel-port-in-request",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer who requested a port-in has changed their mind and wants to cancel it before it completes.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

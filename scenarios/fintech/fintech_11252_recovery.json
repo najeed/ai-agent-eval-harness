@@ -8,10 +8,10 @@
     "compliance_level": "Gold",
     "capabilities": [],
     "standards_registry": [],
-    "id": "fintech_11252_recovery"
+    "id": "fintech_11252_recovery",
+    "complexity": "high"
   },
   "description": "Agent must handle an API failure during a trade execution and correctly execute the recovery/rollback path without data loss.",
-  "complexity_level": "high",
   "industry": "fintech",
   "workflow": {
     "nodes": [

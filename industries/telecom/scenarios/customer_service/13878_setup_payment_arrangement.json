@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Setup a Payment Arrangement",
     "compliance_level": "Standard",
-    "id": "13878-setup-payment-arrangement"
+    "id": "13878-setup-payment-arrangement",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer is unable to pay their full bill and requests to set up a payment arrangement.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

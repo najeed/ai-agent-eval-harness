@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Request Copy of a Cashed Check",
     "compliance_level": "Standard",
-    "id": "11236-request-copy-of-cashed-check"
+    "id": "11236-request-copy-of-cashed-check",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer needs a copy of a specific check that has already been cashed for their records.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Resolve Debit Card Dispute (Provisional Credit)",
     "compliance_level": "Standard",
-    "id": "11295-resolve-debit-card-dispute"
+    "id": "11295-resolve-debit-card-dispute",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer disputes a transaction. After an initial investigation, the bank issues a provisional credit while the full investigation continues.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

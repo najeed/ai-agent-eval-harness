@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Onboarding - Explain First Bill",
     "compliance_level": "Standard",
-    "id": "13840-explain-first-bill"
+    "id": "13840-explain-first-bill",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A new customer calls, confused about their first bill which includes prorated charges.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

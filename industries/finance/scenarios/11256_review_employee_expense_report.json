@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Review Employee Expense Report for Policy Violations",
     "compliance_level": "Standard",
-    "id": "11256-review-employee-expense-report"
+    "id": "11256-review-employee-expense-report",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A compliance officer is reviewing an employee's expense report for any violations of company policy.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

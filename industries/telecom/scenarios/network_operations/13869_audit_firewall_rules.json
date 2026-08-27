@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Audit Firewall Rules",
     "compliance_level": "Standard",
-    "id": "13869-audit-firewall-rules"
+    "id": "13869-audit-firewall-rules",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "As part of a security audit, an agent must find and flag any firewall rules that are overly permissive (e.g., 'allow any any').",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

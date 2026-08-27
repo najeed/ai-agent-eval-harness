@@ -3,7 +3,11 @@
   "metadata": {
     "name": "New Customer Acquisition - Mobile Plan",
     "compliance_level": "Standard",
-    "id": "13900-new-customer-mobile-plan"
+    "id": "13900-new-customer-mobile-plan",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A potential new customer wants to sign up for a mobile plan.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

@@ -811,7 +811,7 @@ def test_explain_run_master_log_empty_line_skip(runs_jail, runs_client):
 
 
 def test_explain_run_temp_write_failure_unlinks(runs_jail, runs_client, tmp_path):
-    """Cover line 76: temp_path.unlink() is called when write fails and file was created."""
+    """temp_path.unlink() is called when write fails and file was created."""
     rid = "explain-unlink-fail"
     master = runs_jail["runs"] / "run.jsonl"
     master.write_text(json.dumps({"run_id": rid, "event": "run_start"}) + "\n", encoding="utf-8")
@@ -840,7 +840,7 @@ def test_explain_run_temp_write_failure_unlinks(runs_jail, runs_client, tmp_path
 
 
 def test_explain_run_exception_cleanup_temp_path(runs_jail, runs_client):
-    """Cover line 98: temp_path.unlink() called when explain_trace raises."""
+    """temp_path.unlink() called when explain_trace raises."""
     rid = "explain-exc-cleanup"
     master = runs_jail["runs"] / "run.jsonl"
     master.write_text(json.dumps({"run_id": rid, "event": "run_start"}) + "\n", encoding="utf-8")
@@ -896,7 +896,7 @@ def test_get_run_status_master_log_event_not_run_end(runs_jail, runs_client):
 
 
 def test_list_runs_vault_two_part_run_id(runs_jail, runs_client):
-    """Cover line 149: run id with only 2 parts (run-abc) → scenario = parts[1]."""
+    """run id with only 2 parts (run-abc) → scenario = parts[1]."""
     rid = "run-myscenario"
     d = runs_jail["runs"] / rid
     d.mkdir(exist_ok=True)
@@ -963,7 +963,7 @@ def test_stream_run_logs_cleanup_on_complete(runs_jail, runs_client):
 
 
 def test_tail_file_generator_wait_loop_sleep(tmp_path):
-    """Cover line 311 (time.sleep in file-wait loop): exists() returns False first,
+    """time.sleep in file-wait loop: exists() returns False first,
     sleep is called, then True so file is opened and events are read."""
     log_path = tmp_path / "delayed.jsonl"
 

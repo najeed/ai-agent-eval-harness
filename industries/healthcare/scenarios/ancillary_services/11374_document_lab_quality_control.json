@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Document Lab Quality Control",
     "compliance_level": "Standard",
-    "id": "11374-document-lab-quality-control"
+    "id": "11374-document-lab-quality-control",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "At the beginning of a shift, a lab technician must run quality control (QC) samples on an analyzer and document the results.",
   "industry": "Healthcare",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

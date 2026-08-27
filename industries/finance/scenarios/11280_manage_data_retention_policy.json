@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Manage Data Retention Policy",
     "compliance_level": "Standard",
-    "id": "11280-manage-data-retention-policy"
+    "id": "11280-manage-data-retention-policy",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A compliance officer needs to ensure that financial records older than the 7-year retention policy are being properly archived or disposed of.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

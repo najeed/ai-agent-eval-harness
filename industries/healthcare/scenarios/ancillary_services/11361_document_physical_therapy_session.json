@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Document a Physical Therapy Session",
     "compliance_level": "Standard",
-    "id": "11361-document-physical-therapy-session"
+    "id": "11361-document-physical-therapy-session",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A physical therapist has completed a session with a patient and needs to document the activities and the patient's progress.",
   "industry": "Healthcare",
@@ -82,9 +86,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

@@ -3,7 +3,11 @@
   "metadata": {
     "name": "New Customer Acquisition - Fiber Internet",
     "compliance_level": "Standard",
-    "id": "13846-new-customer-fiber-internet"
+    "id": "13846-new-customer-fiber-internet",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A potential customer in a new housing development wants to sign up for the fastest available fiber internet.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

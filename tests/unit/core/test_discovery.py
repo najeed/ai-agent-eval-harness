@@ -44,12 +44,12 @@ class TestDiscovery(unittest.TestCase):
     def test_discover_plugins_in_directory_various_cases(self):
         mock_dir = MagicMock(spec=Path)
 
-        # Scenario 1: Line 34 - Exists but not a directory
+        # Scenario 1: Exists but not a directory
         mock_dir.exists.return_value = True
         mock_dir.is_dir.return_value = False
         self.assertEqual(discovery.discover_plugins_in_directory(mock_dir, BaseTest), [])
 
-        # Scenario 2: Line 38 and 42/44
+        # Scenario 2:
         mock_dir.is_dir.return_value = True
         init_file = MagicMock(spec=Path)
         init_file.name = "__init__.py"
@@ -75,13 +75,13 @@ class TestDiscovery(unittest.TestCase):
             discovery, "importlib", MagicMock(import_module=MagicMock(side_effect=import_side))
         ):
             with patch.object(discovery, "discover_classes_in_module", return_value=["Inst"]):
-                # Test with prefix (line 42)
+                # Test with prefix
                 plugins = discovery.discover_plugins_in_directory(
                     mock_dir, BaseTest, package_prefix="prefix"
                 )
                 self.assertEqual(plugins, ["Inst"])
 
-                # Test without prefix (line 44)
+                # Test without prefix
                 plugins = discovery.discover_plugins_in_directory(mock_dir, BaseTest)
                 self.assertEqual(plugins, ["Inst"])
 
@@ -109,7 +109,7 @@ class TestDiscovery(unittest.TestCase):
                 with patch.object(
                     discovery, "discover_classes_in_module", return_value=["SomeClass"]
                 ):
-                    # results set to hit lines 76/77 silent fail
+                    # results set to hit silent fail
                     res = discovery.discover_classes_in_package(mock_pkg, BaseTest)
                     self.assertIn("sub", res)
                     self.assertEqual(res["sub"], "SomeClass")
@@ -143,7 +143,7 @@ class TestDiscovery(unittest.TestCase):
             with patch.object(
                 discovery, "importlib", MagicMock(import_module=MagicMock(side_effect=import_side))
             ):
-                # hit lines 94/95 silent fail
+                # hit silent fail
                 discovery.scan_package_for_adapters(mock_pkg, reg)
                 self.assertIn("valid", results)
                 self.assertNotIn("broken", results)

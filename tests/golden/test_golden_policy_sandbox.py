@@ -15,9 +15,14 @@ async def test_golden_policy_arbitrary_numeric_keys(tmp_path):
             "transfer_funds": {"output": {"status": "success"}},
             "allocate_tokens": {"output": {"status": "success"}},
         },
-        "policies": {
-            "transfer_funds": {"max_limit": 100.0, "constrained_params": ["quantity", "volume"]},
-            "allocate_tokens": {"max_limit": 50.0},
+        "metadata": {
+            "policies": {
+                "transfer_funds": {
+                    "max_limit": 100.0,
+                    "constrained_params": ["quantity", "volume"],
+                },
+                "allocate_tokens": {"max_limit": 50.0},
+            },
         },
         "workflow": {
             "nodes": [

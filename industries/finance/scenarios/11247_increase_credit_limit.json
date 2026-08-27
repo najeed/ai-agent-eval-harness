@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Request Credit Limit Increase",
     "compliance_level": "Standard",
-    "id": "11247-increase-credit-limit"
+    "id": "11247-increase-credit-limit",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer with a good payment history requests an increase to their credit card limit.",
   "industry": "Finance",
@@ -82,9 +86,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

@@ -8,10 +8,10 @@
     "compliance_level": "Gold",
     "capabilities": [],
     "standards_registry": [],
-    "id": "fintech_11200"
+    "id": "fintech_11200",
+    "complexity": "medium"
   },
   "description": "Automated fintech stress test 11200.",
-  "complexity_level": "medium",
   "industry": "fintech",
   "workflow": {
     "nodes": [

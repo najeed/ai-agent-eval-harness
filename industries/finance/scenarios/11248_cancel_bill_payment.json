@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Cancel a Scheduled Bill Payment",
     "compliance_level": "Standard",
-    "id": "11248-cancel-bill-payment"
+    "id": "11248-cancel-bill-payment",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer scheduled a bill payment but now needs to cancel it before it is sent.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

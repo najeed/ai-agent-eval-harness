@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Sales Call Uncovers Technical Issue",
     "compliance_level": "Standard",
-    "id": "13875-sales-call-uncovers-tech-issue"
+    "id": "13875-sales-call-uncovers-tech-issue",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "During a sales call to upgrade a customer's phone, the customer mentions their current phone has poor battery life.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Request Personal Loan Payoff Quote",
     "compliance_level": "Standard",
-    "id": "11225-personal-loan-payoff-quote"
+    "id": "11225-personal-loan-payoff-quote",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer wants to know the total amount required to pay off their personal loan today.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

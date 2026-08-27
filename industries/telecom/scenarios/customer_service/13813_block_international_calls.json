@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Block International Calls",
     "compliance_level": "Standard",
-    "id": "13813-block-international-calls"
+    "id": "13813-block-international-calls",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer wants to block all outgoing international calls from their phone to prevent accidental charges.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

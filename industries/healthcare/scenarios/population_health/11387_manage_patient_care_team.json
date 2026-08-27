@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Manage a Patient's Care Team",
     "compliance_level": "Standard",
-    "id": "11387-manage-patient-care-team"
+    "id": "11387-manage-patient-care-team",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A care manager needs to add a new home health nurse to a patient's official care team.",
   "industry": "Healthcare",
@@ -82,9 +86,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

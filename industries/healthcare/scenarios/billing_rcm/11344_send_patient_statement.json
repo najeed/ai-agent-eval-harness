@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Send Patient Statement",
     "compliance_level": "Standard",
-    "id": "11344-send-patient-statement"
+    "id": "11344-send-patient-statement",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A billing office runs a weekly process to generate and send statements to patients with outstanding balances.",
   "industry": "Healthcare",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Inquire About a Home Equity Line of Credit (HELOC)",
     "compliance_level": "Standard",
-    "id": "11237-inquire-about-heloc"
+    "id": "11237-inquire-about-heloc",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A homeowner wants to learn about the bank's HELOC product and how to apply.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

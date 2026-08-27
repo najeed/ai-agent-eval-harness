@@ -5,20 +5,20 @@
     "industry": "finance",
     "attribution": "Compliance Team",
     "version": "1.0",
-    "compliance_level": "Platinum",
+    "compliance_level": "Regulatory_Audit",
     "capabilities": [
       "multi_agent_routing",
       "financial_suitability_check",
       "regulatory_compliance_gate"
     ],
     "standards_registry": [
-      "FINRA-Rule-2111",
-      "FINRA-Rule-4511"
+      "SOX",
+      "SOC_2"
     ],
-    "id": "finra_multi_agent_claims_processing"
+    "id": "finra_multi_agent_claims_processing",
+    "complexity": "high"
   },
   "description": "Evaluates a multi-agent workflow (Claim Intaker, Suitability Auditor, Compliance Reviewer) executing a complex client dispute claim and transaction reversal, strictly gated by FINRA Rule 2111 (Suitability) and Rule 4511 (Recordkeeping).",
-  "complexity_level": "high",
   "industry": "finance",
   "workflow": {
     "nodes": [
@@ -40,7 +40,7 @@
               "disputed_asset_class",
               "disputed_amount"
             ],
-            "mode": "contains"
+            "mode": "regex"
           }
         ]
       },
@@ -58,7 +58,7 @@
             "target": "message",
             "property": "finra_rule_citation",
             "expected": "Rule 2111",
-            "mode": "contains"
+            "mode": "regex"
           }
         ]
       },

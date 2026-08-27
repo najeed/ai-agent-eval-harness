@@ -9,7 +9,7 @@ from dataproc_engine.providers.ecommerce import EcommerceProvider
 
 @pytest.mark.asyncio
 async def test_ecommerce_olist_production_loop(tmp_path):
-    """Verify Olist (Brazil) extraction and transformation (Lines 28-129)."""
+    """Verify Olist (Brazil) extraction and transformation."""
     # 1. Setup Mock Tabular Data
     df = pd.DataFrame(
         [
@@ -48,7 +48,7 @@ async def test_ecommerce_olist_production_loop(tmp_path):
 
 @pytest.mark.asyncio
 async def test_ecommerce_uci_production_loop(tmp_path):
-    """Verify UCI (UK Retail) extraction and transformation (Lines 28-119)."""
+    """Verify UCI (UK Retail) extraction and transformation."""
     df = pd.DataFrame(
         [
             {
@@ -76,7 +76,7 @@ async def test_ecommerce_uci_production_loop(tmp_path):
 
 @pytest.mark.asyncio
 async def test_ecommerce_cpi_inflation_impact():
-    """Verify CPI-impact weighting for sentiment (Lines 143-147)."""
+    """Verify CPI-impact weighting for sentiment."""
     config = {
         "industry": "ecommerce",
         "ecommerce_mode": "standard",
@@ -98,7 +98,7 @@ async def test_ecommerce_cpi_inflation_impact():
 
 @pytest.mark.asyncio
 async def test_ecommerce_web_stream_hit():
-    """Verify web-streaming/text extraction (Lines 43-67)."""
+    """Verify web-streaming/text extraction."""
     config = {
         "industry": "ecommerce",
         "ecommerce_mode": "standard",

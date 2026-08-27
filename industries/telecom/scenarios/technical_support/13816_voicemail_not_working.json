@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Troubleshooting - Voicemail Not Working",
     "compliance_level": "Standard",
-    "id": "13816-voicemail-not-working"
+    "id": "13816-voicemail-not-working",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer reports that their voicemail service is not picking up calls.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Cross-sell - Add a Tablet Line",
     "compliance_level": "Standard",
-    "id": "13880-add-tablet-line"
+    "id": "13880-add-tablet-line",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer with a mobile phone plan wants to add a new line for their tablet.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

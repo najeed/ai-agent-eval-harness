@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Track Care Gap Closure",
     "compliance_level": "Standard",
-    "id": "11385-track-care-gap-closure"
+    "id": "11385-track-care-gap-closure",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A population health manager wants to see if their outreach campaign for diabetic eye exams has been effective.",
   "industry": "Healthcare",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

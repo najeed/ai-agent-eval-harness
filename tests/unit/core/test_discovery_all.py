@@ -61,7 +61,7 @@ class TestDiscovery(unittest.TestCase):
         mock_import.return_value = mock_module
 
         with patch.object(discovery, "discover_classes_in_module", return_value=[123]):
-            # Test with package_prefix (Line 42)
+            # Test with package_prefix
             plugins = discovery.discover_plugins_in_directory(
                 mock_dir, BaseTest, package_prefix="com.aes"
             )
@@ -69,7 +69,6 @@ class TestDiscovery(unittest.TestCase):
             mock_import.assert_called_with("com.aes.my_plugin")
 
     def test_discover_plugins_in_directory_not_exists(self):
-        # Line 34
         mock_dir = MagicMock(spec=Path)
         mock_dir.exists.return_value = False
         plugins = discovery.discover_plugins_in_directory(mock_dir, BaseTest)
@@ -110,7 +109,6 @@ class TestDiscovery(unittest.TestCase):
             self.assertEqual(results, {"sub": "found_class"})
 
     def test_discover_classes_in_package_fail(self):
-        # Line 77-79
         mock_package = MagicMock()
         mock_package.__path__ = ["/path"]
         mock_package.__name__ = "my_pkg"

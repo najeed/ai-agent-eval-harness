@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Analyze an Estate Plan",
     "compliance_level": "Standard",
-    "id": "11277-analyze-estate-plan"
+    "id": "11277-analyze-estate-plan",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A client wants a review of their current estate plan to ensure it meets their goals and is tax-efficient.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

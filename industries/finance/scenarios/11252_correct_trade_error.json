@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Correct a Trade Error",
     "compliance_level": "Standard",
-    "id": "11252-correct-trade-error"
+    "id": "11252-correct-trade-error",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A trade was executed in the wrong client account by mistake and needs to be corrected.",
   "industry": "Finance",
@@ -82,9 +86,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

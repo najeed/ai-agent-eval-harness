@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Change Investment Strategy",
     "compliance_level": "Standard",
-    "id": "11250-change-investment-strategy"
+    "id": "11250-change-investment-strategy",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A client's risk tolerance has decreased, and they want to move from a 'Growth' to a 'Balanced' investment strategy.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

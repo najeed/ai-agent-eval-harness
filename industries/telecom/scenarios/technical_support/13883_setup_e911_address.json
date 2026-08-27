@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Setup e911 Address for VoIP Service",
     "compliance_level": "Standard",
-    "id": "13883-setup-e911-address"
+    "id": "13883-setup-e911-address",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer with a VoIP (internet phone) service needs to set or update their e911 address for emergency services.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

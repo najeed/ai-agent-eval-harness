@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Use an Order Set",
     "compliance_level": "Standard",
-    "id": "11337-use-order-set"
+    "id": "11337-use-order-set",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A hospitalist is admitting a patient with community-acquired pneumonia and uses a pre-built order set to place all the standard orders efficiently.",
   "industry": "Healthcare",
@@ -82,9 +86,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

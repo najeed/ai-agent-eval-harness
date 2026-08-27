@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Manage Month-End Accruals",
     "compliance_level": "Standard",
-    "id": "11293-manage-accruals"
+    "id": "11293-manage-accruals",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "An accountant needs to create an accrual journal entry for expenses that have been incurred but not yet invoiced.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

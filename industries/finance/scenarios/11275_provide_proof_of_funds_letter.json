@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Provide Proof of Funds Letter",
     "compliance_level": "Standard",
-    "id": "11275-provide-proof-of-funds-letter"
+    "id": "11275-provide-proof-of-funds-letter",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A client is buying a house and needs an official letter from the firm confirming they have sufficient funds for the purchase.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

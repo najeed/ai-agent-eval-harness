@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Add Patient to Appointment Waitlist",
     "compliance_level": "Standard",
-    "id": "11311-create-appointment-waitlist-entry"
+    "id": "11311-create-appointment-waitlist-entry",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A provider's schedule is full, but a patient wants to be notified if an earlier appointment becomes available.",
   "industry": "Healthcare",
@@ -82,9 +86,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

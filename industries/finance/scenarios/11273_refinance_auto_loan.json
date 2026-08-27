@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Refinance an Auto Loan",
     "compliance_level": "Standard",
-    "id": "11273-refinance-auto-loan"
+    "id": "11273-refinance-auto-loan",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer wants to refinance their existing auto loan from another lender to get a lower interest rate.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

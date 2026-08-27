@@ -1,0 +1,794 @@
+{
+    "$schema": "../../spec/aes/aes.schema.json",
+    "aes_version": 1.4,
+    "metadata": {
+        "id": "agentv-runtime-golden-1-4",
+        "name": "AgentV Runtime Golden Regression Scenario 1.4",
+        "compliance_level": "Regulatory_Audit",
+        "standards_registry": [
+            "NIST_AI_RMF",
+            "ISO_23894",
+            "ISO_27001",
+            "ISO_42001",
+            "SOC_2",
+            "GDPR",
+            "PCI_DSS_V4",
+            "OAUTH_2",
+            "OIDC"
+        ],
+        "description": "Canonical deterministic regression scenario for the AgentV Runtime.",
+        "complexity": "high",
+        "capabilities": [
+            "default_http_agent",
+            "secure_sandbox",
+            "audit_trail_validator",
+            "state_registry",
+            "parallel_execution",
+            "timeout_enforcement",
+            "forensic_capture"
+        ],
+        "agent": {
+            "protocol": "http",
+            "endpoint": "http://localhost:5001/execute_task"
+        },
+        "policies": {
+            "ledger_commit": {
+                "rules": [
+                    {
+                        "field": "amount",
+                        "operator": "lte",
+                        "value": 5000
+                    }
+                ]
+            }
+        },
+        "agent_topology": {
+            "orchestrator": {
+                "reads": [
+                    "customer:*",
+                    "risk:*",
+                    "ledger:*",
+                    "audit:*",
+                    "system:*",
+                    "workflow:*"
+                ],
+                "writes": [
+                    "workflow:*",
+                    "audit:*"
+                ]
+            },
+            "risk_agent": {
+                "reads": [
+                    "customer:*",
+                    "risk:*"
+                ],
+                "writes": [
+                    "risk:*"
+                ]
+            },
+            "ledger_agent": {
+                "reads": [
+                    "customer:*",
+                    "risk:*"
+                ],
+                "writes": [
+                    "ledger:*",
+                    "audit:*"
+                ]
+            },
+            "recovery_agent": {
+                "reads": [
+                    "workflow:*",
+                    "ledger:*",
+                    "audit:*"
+                ],
+                "writes": [
+                    "ledger:*",
+                    "audit:*"
+                ]
+            }
+        }
+    },
+    "initial_state": {
+
+        "system": {
+            "status": "ready",
+            "schema_version": "1.4",
+            "run_mode": "golden_regression"
+        },
+        "customer": {
+            "id": "CUST-10042",
+            "name": "Ada Example",
+            "email": "ada@example.com",
+            "country": "IN",
+            "kyc_status": "verified"
+        },
+        "risk": {
+            "score": 0.18,
+            "assessment": "pending",
+            "model_version": "risk-model-7",
+            "retry_count": 0
+        },
+        "ledger": {
+            "account_id": "ACCT-90017",
+            "balance": 125000.0,
+            "currency": "USD",
+            "reservation_status": "none",
+            "transaction_status": "pending"
+        },
+        "audit": {
+            "event_count": 0,
+            "last_event": null
+        },
+        "workflow": {
+            "phase": "initialized",
+            "decision": null,
+            "recovery_required": false,
+            "parallel_checks_complete": false,
+            "timeout_handled": false,
+            "golden_marker": "RUNTIME_GOLDEN_1_4"
+        }
+    },
+    "environmental_snapshot": {
+        "runtime": {
+            "name": "AgentV",
+            "contract_version": "2.0.0",
+            "aes_version": 1.4
+        },
+        "execution": {
+            "mode": "simulated",
+            "deterministic": true,
+            "parallelism": 4
+        }
+    },
+    "enabled_shims": [
+        "api",
+        "database",
+        "knowledge_base",
+        "support_desk",
+        "stripe",
+        "terminal"
+    ],
+    "failure_policy": "compensate_then_fail",
+    "tools": {
+        "state_read": {
+            "output": {
+                "status": "success",
+                "message": "STATE_READ_COMPLETE"
+            }
+        },
+        "state_write": {
+            "state_changes": [],
+            "output": {
+                "status": "success",
+                "message": "STATE_WRITE_COMPLETE"
+            }
+        },
+        "risk_assess": {
+            "state_changes": [
+                {
+                    "path": "risk.assessment",
+                    "value": "approved"
+                }
+            ],
+            "output": {
+                "status": "success",
+                "message": "RISK_ASSESSMENT_COMPLETE"
+            }
+        },
+        "customer_read": {
+            "output": {
+                "status": "success",
+                "message": "IDENTITY_VALID"
+            }
+        },
+        "ledger_read": {
+            "output": {
+                "status": "success",
+                "message": "BALANCE_VALID"
+            }
+        },
+        "ledger_write": {
+            "state_changes": [
+                {
+                    "path": "ledger.reservation_status",
+                    "value": "reserved"
+                }
+            ],
+            "output": {
+                "status": "success",
+                "message": "RESERVED_5000"
+            }
+        },
+        "authorization_check": {
+            "output": {
+                "status": "success",
+                "message": "AUTHORIZED"
+            }
+        },
+        "consistency_check": {
+            "output": {
+                "status": "error",
+                "error_code": "TRANSIENT_INCONSISTENCY",
+                "message": "INCONSISTENT"
+            }
+        },
+        "ledger_commit": {
+            "output": {
+                "status": "error",
+                "error_code": "TRANSIENT_LEDGER_FAILURE",
+                "message": "COMMIT_FAILED"
+            }
+        },
+        "rollback_reservation": {
+            "state_changes": [
+                {
+                    "path": "ledger.reservation_status",
+                    "value": "none"
+                },
+                {
+                    "path": "workflow.recovery_required",
+                    "value": false
+                },
+                {
+                    "path": "audit.last_event",
+                    "value": "COMPENSATION_COMPLETED"
+                }
+            ],
+            "output": {
+                "status": "success",
+                "message": "COMPENSATION_COMPLETED"
+            }
+        }
+    },
+    "workflow": {
+        "entry_nodes": [
+            "initialize"
+        ],
+        "nodes": [
+            {
+                "id": "initialize",
+                "task_description": "Initialize the workflow. Confirm that the system is ready, the customer KYC state is verified, the ledger is pending, and the golden regression marker is present. Do not mutate financial state.",
+                "required_tools": [
+                    "state_read"
+                ],
+                "state_hygiene": {
+                    "rules": [
+                        {
+                            "id": "init-system-ready",
+                            "path": "system.status",
+                            "expected": "ready",
+                            "op": "eq"
+                        },
+                        {
+                            "id": "init-schema",
+                            "path": "system.schema_version",
+                            "expected": "1.4",
+                            "op": "eq"
+                        },
+                        {
+                            "id": "init-kyc",
+                            "path": "customer.kyc_status",
+                            "expected": "verified",
+                            "op": "eq"
+                        },
+                        {
+                            "id": "init-ledger",
+                            "path": "ledger.transaction_status",
+                            "expected": "pending",
+                            "op": "eq"
+                        }
+                    ]
+                },
+                "expected_outcome": [
+                    {
+                        "id": "init-message",
+                        "target": "message",
+                        "expected": "INITIALIZED",
+                        "mode": "exact"
+                    }
+                ]
+            },
+            {
+                "id": "risk_assessment",
+                "task_description": "Perform the customer risk assessment. Use only the risk assessment tool. Return APPROVE when risk score is below 0.25. Do not write to the ledger.",
+                "required_tools": [
+                    "risk_assess"
+                ],
+                "state_hygiene": {
+                    "rules": [
+                        {
+                            "id": "risk-score",
+                            "path": "risk.score",
+                            "expected": 0.18,
+                            "op": "eq"
+                        }
+                    ]
+                },
+                "expected_outcome": [
+                    {
+                        "id": "risk-message",
+                        "target": "message",
+                        "expected": "^APPROVE$",
+                        "mode": "regex"
+                    },
+                    {
+                        "id": "risk-state",
+                        "target": "risk.assessment",
+                        "expected": "approved",
+                        "mode": "exact"
+                    }
+                ]
+            },
+            {
+                "id": "parallel_customer_validation",
+                "task_description": "Fan out into independent identity and balance validations.",
+                "expected_outcome": [
+                    {
+                        "id": "parallel-marker",
+                        "target": "message",
+                        "expected": "PARALLEL_FANOUT",
+                        "mode": "exact"
+                    }
+                ]
+            },
+            {
+                "id": "identity_check",
+                "task_description": "Validate the customer identity. Confirm customer ID CUST-10042 and verified KYC.",
+                "required_tools": [
+                    "customer_read"
+                ],
+                "expected_outcome": [
+                    {
+                        "id": "identity-id",
+                        "target": "customer.id",
+                        "expected": "CUST-10042",
+                        "mode": "exact"
+                    },
+                    {
+                        "id": "identity-kyc",
+                        "target": "customer.kyc_status",
+                        "expected": "verified",
+                        "mode": "exact"
+                    }
+                ]
+            },
+            {
+                "id": "balance_check",
+                "task_description": "Validate that the account balance is approximately 125000 USD and no reservation exists.",
+                "required_tools": [
+                    "ledger_read"
+                ],
+                "expected_outcome": [
+                    {
+                        "id": "balance-value",
+                        "target": "ledger.balance",
+                        "expected": 125000.0,
+                        "mode": "numerical_tolerance",
+                        "tolerance": 0.01
+                    },
+                    {
+                        "id": "balance-reservation",
+                        "target": "ledger.reservation_status",
+                        "expected": "none",
+                        "mode": "exact"
+                    }
+                ]
+            },
+            {
+                "id": "join_customer_validation",
+                "task_description": "Join identity and balance validation branches.",
+                "join": "all",
+                "expected_outcome": [
+                    {
+                        "id": "join-message",
+                        "target": "message",
+                        "expected": "VALIDATIONS_JOINED",
+                        "mode": "exact"
+                    }
+                ]
+            },
+            {
+                "id": "risk_route",
+                "task_description": "Route the approved risk decision.",
+                "required_tools": [
+                    "state_read"
+                ],
+                "expected_outcome": [
+                    {
+                        "id": "risk-route",
+                        "target": "risk.score",
+                        "expected": 0.18,
+                        "mode": "numerical_tolerance",
+                        "tolerance": 0.001
+                    }
+                ]
+            },
+            {
+                "id": "reserve_funds",
+                "task_description": "Reserve 5000 USD against the account.",
+                "required_tools": [
+                    "ledger_write"
+                ],
+                "state_hygiene": {
+                    "rules": [
+                        {
+                            "id": "reserve-precondition",
+                            "path": "ledger.reservation_status",
+                            "expected": "none",
+                            "op": "eq"
+                        }
+                    ]
+                },
+                "expected_outcome": [
+                    {
+                        "id": "reserve-message",
+                        "target": "message",
+                        "expected": "RESERVED_5000",
+                        "mode": "exact"
+                    },
+                    {
+                        "id": "reserve-state",
+                        "target": "ledger.reservation_status",
+                        "expected": "reserved",
+                        "mode": "exact"
+                    }
+                ]
+            },
+            {
+                "id": "authorization_probe",
+                "task_description": "Verify authorization for the read-only ledger operation.",
+                "required_tools": [
+                    "authorization_check"
+                ],
+                "expected_outcome": [
+                    {
+                        "id": "authorization",
+                        "target": "message",
+                        "expected": "AUTHORIZED",
+                        "mode": "exact"
+                    }
+                ]
+            },
+            {
+                "id": "retryable_validation",
+                "task_description": "Perform consistency validation. A transient inconsistency is expected on the first execution. Retry through the Runtime routing mechanism.",
+                "required_tools": [
+                    "consistency_check"
+                ],
+                "max_visitations": 2,
+                "expected_outcome": [
+                    {
+                        "id": "retry-message",
+                        "target": "message",
+                        "expected": "CONSISTENT",
+                        "mode": "exact"
+                    }
+                ]
+            },
+            {
+                "id": "dangerous_operation",
+                "task_description": "Attempt the final ledger commit. The reference tool deliberately fails so the Runtime must exercise error and compensation routing.",
+                "required_tools": [
+                    "ledger_commit"
+                ],
+                "expected_outcome": [
+                    {
+                        "id": "commit-result",
+                        "target": "message",
+                        "expected": "COMMITTED",
+                        "mode": "exact"
+                    }
+                ]
+            },
+            {
+                "id": "error_recovery",
+                "task_description": "Handle the ledger commit failure and mark the workflow as requiring recovery.",
+                "required_tools": [
+                    "state_write"
+                ],
+                "expected_outcome": [
+                    {
+                        "id": "recovery-message",
+                        "target": "message",
+                        "expected": "RECOVERY_REQUIRED",
+                        "mode": "exact"
+                    }
+                ]
+            },
+            {
+                "id": "rollback_reservation",
+                "task_description": "Compensate the reserved funds and restore reservation state.",
+                "required_tools": [
+                    "rollback_reservation"
+                ],
+                "state_hygiene": {
+                    "rules": [
+                        {
+                            "id": "rollback-required",
+                            "path": "workflow.recovery_required",
+                            "expected": true,
+                            "op": "eq"
+                        }
+                    ]
+                },
+                "expected_outcome": [
+                    {
+                        "id": "rollback-message",
+                        "target": "message",
+                        "expected": "COMPENSATION_COMPLETED",
+                        "mode": "exact"
+                    },
+                    {
+                        "id": "rollback-state",
+                        "target": "ledger.reservation_status",
+                        "expected": "none",
+                        "mode": "exact"
+                    },
+                    {
+                        "id": "rollback-audit",
+                        "target": "audit.last_event",
+                        "expected": "^COMPENSATION_COMPLETED$",
+                        "mode": "regex"
+                    }
+                ]
+            },
+            {
+                "id": "timeout_probe",
+                "task_description": "Execute a deliberately slow validation. The Runtime interpreter must terminate this node with its TIMEOUT outcome.",
+                "timeout": 0.05,
+                "expected_outcome": [
+                    {
+                        "id": "timeout-detection",
+                        "target": "message",
+                        "expected": "TIMEOUT",
+                        "mode": "regex"
+                    }
+                ]
+            },
+            {
+                "id": "timeout_recovery",
+                "task_description": "Handle the timeout and mark timeout handling complete.",
+                "required_tools": [
+                    "state_write"
+                ],
+                "expected_outcome": [
+                    {
+                        "id": "timeout-handled",
+                        "target": "message",
+                        "expected": "TIMEOUT_HANDLED",
+                        "mode": "exact"
+                    }
+                ]
+            },
+            {
+                "id": "compound_policy_check",
+                "task_description": "Evaluate the final governance gate using system readiness, low risk, and absence of a reservation.",
+                "required_tools": [
+                    "state_read"
+                ],
+                "expected_outcome": [
+                    {
+                        "id": "policy-pass",
+                        "target": "message",
+                        "expected": "GOVERNANCE_PASS",
+                        "mode": "exact"
+                    }
+                ]
+            },
+            {
+                "id": "finalize",
+                "task_description": "Confirm the recovered workflow is clean and finalize the run.",
+                "required_tools": [
+                    "state_write"
+                ],
+                "state_hygiene": {
+                    "rules": [
+                        {
+                            "id": "final-system",
+                            "path": "system.status",
+                            "expected": "ready",
+                            "op": "eq"
+                        },
+                        {
+                            "id": "final-reservation",
+                            "path": "ledger.reservation_status",
+                            "expected": "none",
+                            "op": "eq"
+                        },
+                        {
+                            "id": "final-marker",
+                            "path": "workflow.golden_marker",
+                            "expected": "RUNTIME_GOLDEN_1_4",
+                            "op": "eq"
+                        }
+                    ]
+                },
+                "expected_outcome": [
+                    {
+                        "id": "final-message",
+                        "target": "message",
+                        "expected": "GOLDEN_SCENARIO_PASS",
+                        "mode": "exact"
+                    }
+                ]
+            }
+        ],
+        "edges": [
+            {
+                "id": "e01",
+                "from": "initialize",
+                "to": "risk_assessment",
+                "type": "sequential"
+            },
+            {
+                "id": "e02",
+                "from": "risk_assessment",
+                "to": "parallel_customer_validation",
+                "type": "condition",
+                "priority": 10,
+                "predicate": {
+                    "op": "eq",
+                    "path": "state.risk.assessment",
+                    "value": "approved"
+                }
+            },
+            {
+                "id": "e03",
+                "from": "parallel_customer_validation",
+                "to": "identity_check",
+                "type": "parallel"
+            },
+            {
+                "id": "e04",
+                "from": "parallel_customer_validation",
+                "to": "balance_check",
+                "type": "parallel"
+            },
+            {
+                "id": "e05",
+                "from": "identity_check",
+                "to": "join_customer_validation",
+                "type": "join"
+            },
+            {
+                "id": "e06",
+                "from": "balance_check",
+                "to": "join_customer_validation",
+                "type": "join"
+            },
+            {
+                "id": "e07",
+                "from": "join_customer_validation",
+                "to": "risk_route",
+                "type": "sequential"
+            },
+            {
+                "id": "e08",
+                "from": "risk_route",
+                "to": "reserve_funds",
+                "type": "condition",
+                "priority": 10,
+                "predicate": {
+                    "all": [
+                        {
+                            "op": "eq",
+                            "path": "state.risk.assessment",
+                            "value": "approved"
+                        },
+                        {
+                            "op": "lt",
+                            "path": "state.risk.score",
+                            "value": 0.25
+                        }
+                    ]
+                }
+            },
+            {
+                "id": "e09",
+                "from": "reserve_funds",
+                "to": "authorization_probe",
+                "type": "sequential"
+            },
+            {
+                "id": "e10",
+                "from": "authorization_probe",
+                "to": "retryable_validation",
+                "type": "sequential"
+            },
+            {
+                "id": "e11",
+                "from": "retryable_validation",
+                "to": "retryable_validation",
+                "type": "retry",
+                "priority": 10
+            },
+            {
+                "id": "e12",
+                "from": "retryable_validation",
+                "to": "dangerous_operation",
+                "type": "condition",
+                "priority": 20,
+                "predicate": {
+                    "op": "eq",
+                    "path": "result.message",
+                    "value": "CONSISTENT"
+                }
+            },
+            {
+                "id": "e13",
+                "from": "dangerous_operation",
+                "to": "error_recovery",
+                "type": "error"
+            },
+            {
+                "id": "e14",
+                "from": "dangerous_operation",
+                "to": "rollback_reservation",
+                "type": "compensation"
+            },
+            {
+                "id": "e15",
+                "from": "rollback_reservation",
+                "to": "timeout_probe",
+                "type": "sequential"
+            },
+            {
+                "id": "e16",
+                "from": "timeout_probe",
+                "to": "timeout_recovery",
+                "type": "timeout"
+            },
+            {
+                "id": "e17",
+                "from": "timeout_recovery",
+                "to": "compound_policy_check",
+                "type": "sequential"
+            },
+            {
+                "id": "e18",
+                "from": "compound_policy_check",
+                "to": "finalize",
+                "type": "condition",
+                "priority": 10,
+                "predicate": {
+                    "all": [
+                        {
+                            "op": "eq",
+                            "path": "state.system.status",
+                            "value": "ready"
+                        },
+                        {
+                            "op": "lt",
+                            "path": "state.risk.score",
+                            "value": 0.25
+                        },
+                        {
+                            "op": "eq",
+                            "path": "state.ledger.reservation_status",
+                            "value": "none"
+                        }
+                    ]
+                }
+            },
+            {
+                "id": "e19",
+                "from": "compound_policy_check",
+                "to": "finalize",
+                "type": "default"
+            }
+        ]
+    },
+    "evaluation": {
+        "consensus": {
+            "strategy": "Majority_Vote",
+            "min_judges": 3,
+            "judge_panel": [
+                "Luna-1",
+                "Luna-2",
+                "Luna-3"
+            ]
+        },
+        "ija_threshold": 0.9
+    }
+}

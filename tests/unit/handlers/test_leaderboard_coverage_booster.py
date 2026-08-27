@@ -28,7 +28,7 @@ def test_run_leaderboard(tmp_path):
 
 
 def test_leaderboard_corrupted_manifest(tmp_path):
-    """Exercises manifest read failure (lines 32-39)."""
+    """Exercises manifest read failure."""
     runs_dir = tmp_path / "runs"
     runs_dir.mkdir()
 
@@ -52,7 +52,7 @@ def test_leaderboard_corrupted_manifest(tmp_path):
 
 
 def test_leaderboard_certified_badge(tmp_path):
-    """Exercises certified badge logic (line 53)."""
+    """Exercises certified badge logic."""
     runs_dir = tmp_path / "runs"
     runs_dir.mkdir()
 
@@ -74,7 +74,7 @@ def test_leaderboard_certified_badge(tmp_path):
 
 
 def test_leaderboard_no_evals(tmp_path):
-    """Exercises continue when no evals found (line 58)."""
+    """Exercises continue when no evals found."""
     runs_dir = tmp_path / "runs"
     runs_dir.mkdir()
 

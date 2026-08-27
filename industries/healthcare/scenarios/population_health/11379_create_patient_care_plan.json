@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Create a Patient Care Plan",
     "compliance_level": "Standard",
-    "id": "11379-create-patient-care-plan"
+    "id": "11379-create-patient-care-plan",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A care manager is creating a comprehensive care plan for a patient with congestive heart failure (CHF).",
   "industry": "Healthcare",
@@ -82,9 +86,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

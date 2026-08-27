@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Temporarily Suspend Service",
     "compliance_level": "Standard",
-    "id": "13807-suspend-service-temporarily"
+    "id": "13807-suspend-service-temporarily",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer is traveling for three months and wants to suspend their line to avoid charges.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

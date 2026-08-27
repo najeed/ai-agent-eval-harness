@@ -78,7 +78,7 @@ def generate_coverage_report(context: EvaluationContext, output_path: Path):
     hits = context.grounding_hits
     scenario = context.scenario_data
 
-    all_policies = scenario.get("policies", {}).keys()
+    all_policies = scenario.get("metadata", {}).get("policies", {}).keys()
     all_tools = scenario.get("tools_required", []) or scenario.get("tools", {}).keys()
 
     policy_html = ""

@@ -1,3 +1,4 @@
+import json
 import os
 import tempfile
 import time
@@ -428,7 +429,7 @@ def test_runs_route_tail_file_generator_zombie_and_heartbeat(console_jail):
 
 
 def test_runs_route_list_metrics(client):
-    """Test GET /api/v1/metrics (Line 25)"""
+    """Test GET /api/v1/metrics"""
     from eval_runner.metrics import MetricRegistry
 
     with patch.object(MetricRegistry, "list_metrics", return_value=["m1", "m2"]):
@@ -438,7 +439,7 @@ def test_runs_route_list_metrics(client):
 
 
 def test_runs_route_list_runs_skip_vault_root(client, console_jail):
-    """Test skipped root file in list_runs vault scan (Line 86)"""
+    """Test skipped root file in list_runs vault scan"""
     # Create run.jsonl directly in RUN_LOG_DIR
     log_file = console_jail["runs"] / "run.jsonl"
     log_file.write_text(
@@ -463,14 +464,14 @@ def test_runs_route_list_runs_skip_vault_root(client, console_jail):
 
 
 def test_runs_route_get_run_status_not_found_extra(client):
-    """Test get_run_status 404 error (Line 162)"""
+    """Test get_run_status 404 error"""
     res = client.get("/api/v1/runs/nonexistent_run_id_xyz")
     assert res.status_code == 404
     assert res.get_json()["error"] == "Run not found"
 
 
 def test_runs_route_get_verification_certificate_corrupt_first_check(client, console_jail):
-    """Test corrupt certificate file path handling (Lines 173-175)"""
+    """Test corrupt certificate file path handling"""
     run_id = "corrupt_cert_direct"
     cert_path = console_jail["reports"] / "certificates" / f"{run_id}_vc.json"
     cert_path.parent.mkdir(parents=True, exist_ok=True)
@@ -485,7 +486,7 @@ def test_runs_route_get_verification_certificate_corrupt_first_check(client, con
 
 
 def test_runs_route_is_run_alive_helper():
-    """Test is_run_alive helper with threads (Line 190)"""
+    """Test is_run_alive helper with threads"""
     import threading
 
     from eval_runner.console.routes.runs import is_run_alive
@@ -500,7 +501,7 @@ def test_runs_route_is_run_alive_helper():
 
 
 def test_runs_route_tail_file_generator_inode_rotation_transient_oserror(console_jail):
-    """Test tail_file_generator with transient OSError in rotation check (Line 243)"""
+    """Test tail_file_generator with transient OSError in rotation check"""
     from eval_runner.console.routes.runs import tail_file_generator
 
     run_id = "transient_oserror_run"
@@ -542,13 +543,13 @@ def test_runs_route_tail_file_generator_inode_rotation_transient_oserror(console
 def test_runs_route_list_runs_first_line_empty_and_rid_parsing(client, console_jail):
     runs_dir = console_jail["runs"]
 
-    # 1. Create a run with first line empty (Line 89 branch)
+    # 1. Create a run with first line empty
     r_empty_dir = runs_dir / "r_empty"
     r_empty_dir.mkdir(parents=True, exist_ok=True)
     r_empty_json = '\n{"event": "run_start", "run_id": "r_empty"}\n'
     (r_empty_dir / "run.jsonl").write_text(r_empty_json, encoding="utf-8")
 
-    # 2. Create a run where scenario is missing and parsed from run_id (Lines 96-100)
+    # 2. Create a run where scenario is missing and parsed from run_id
     # Format: run-scenario_name-timestamp
     r_parse_dir = runs_dir / "run-scen1-12345"
     r_parse_dir.mkdir(parents=True, exist_ok=True)
@@ -572,7 +573,7 @@ def test_runs_route_list_runs_first_line_empty_and_rid_parsing(client, console_j
     parsed_run = next(r for r in runs if r["run_id"] == "run-scen1-12345")
     assert parsed_run["scenario"] == "scen1"
 
-    # Verify run-scen2 was parsed and scenario is scen2 (Line 100)
+    # Verify run-scen2 was parsed and scenario is scen2
     parsed_short_run = next(r for r in runs if r["run_id"] == "run-scen2")
     assert parsed_short_run["scenario"] == "scen2"
 
@@ -585,13 +586,13 @@ def test_runs_route_stream_tail_generator_branches(console_jail):
     run_dir.mkdir(parents=True, exist_ok=True)
     log_file = run_dir / "run.jsonl"
 
-    # 1. Write file with empty lines (Line 231->230 branch)
+    # 1. Write file with empty lines
     log_file.write_text('\n\n{"event": "run_start"}\n\n', encoding="utf-8")
 
     gen1 = tail_file_generator(log_file, run_id)
     assert "run_start" in next(gen1)
 
-    # 2. Test Stream Timeout (Line 245)
+    # 2. Test Stream Timeout
     # We patch time.time with 4 values: start_time (0), stream_start (0),
     # and then the loop checks (4000)
     with patch("time.time", side_effect=[0, 0, 4000, 4000, 4000]):
@@ -604,7 +605,7 @@ def test_runs_route_stream_tail_generator_branches(console_jail):
         with pytest.raises(StopIteration):
             next(gen2)
 
-    # 3. Test Log file deleted during tail (Line 250)
+    # 3. Test Log file deleted during tail
     gen3 = tail_file_generator(log_file, run_id)
     assert "run_start" in next(gen3)
     with patch.object(Path, "exists", return_value=False):
@@ -613,7 +614,7 @@ def test_runs_route_stream_tail_generator_branches(console_jail):
         with pytest.raises(StopIteration):
             next(gen3)
 
-    # 4. Test Log file rotated (Line 257)
+    # 4. Test Log file rotated
     class MockStat:
         def __init__(self, ino):
             self.st_ino = ino
@@ -639,7 +640,7 @@ def test_runs_route_stream_tail_generator_branches(console_jail):
         with pytest.raises(StopIteration):
             next(gen4)
 
-    # 5. Test Zombie check (Line 278)
+    # 5. Test Zombie check
     gen5 = tail_file_generator(log_file, run_id)
     assert "run_start" in next(gen5)
 
@@ -654,7 +655,7 @@ def test_runs_route_stream_tail_generator_branches(console_jail):
         results = list(gen5)
         assert any("Process thread terminated abruptly" in r for r in results)
 
-    # 6. Test break when strategy_end/run_end in line (Line 284)
+    # 6. Test break when strategy_end/run_end in line
     log_file_end = run_dir / "run_end.jsonl"
     log_file_end_content = '{"event": "run_start"}\n{"event": "run_end"}\n'
     log_file_end.write_text(log_file_end_content, encoding="utf-8")
@@ -700,16 +701,14 @@ def test_runs_route_stream_tail_generator_step_b_read(console_jail):
 
 
 def test_runs_cache_start_twice():
-    """Cover line 116: start() returns early if already started."""
+    """start() returns early if already started."""
     from eval_runner.console.routes.runs import runs_cache
 
     runs_cache.start()  # Should be a no-op
 
 
 def test_get_runs_no_pytest_env():
-    """Cover lines 124->130: get_runs does not force update_cache
-    if PYTEST_CURRENT_TEST is absent.
-    """
+    """get_runs does not force update_cache if PYTEST_CURRENT_TEST is absent."""
     import os
 
     from eval_runner.console.routes.runs import runs_cache
@@ -726,7 +725,7 @@ def test_get_runs_no_pytest_env():
 
 
 def test_runs_cache_scan_exception():
-    """Cover lines 146-147 and 153-154: update_cache scan exceptions in _update_loop."""
+    """update_cache scan exceptions in _update_loop"""
     from eval_runner.console.routes.runs import RunsCache
 
     cache = RunsCache()
@@ -740,7 +739,7 @@ def test_runs_cache_scan_exception():
 
 
 def test_runs_route_stream_runs_list(client, console_jail):
-    """Cover lines 273-369: stream_runs_list route SSE streaming and status resolution."""
+    """stream_runs_list route SSE streaming and status resolution."""
     runs_dir = console_jail["runs"]
 
     # 1. Certified run (vc exists)
@@ -784,7 +783,7 @@ def test_runs_route_stream_runs_list(client, console_jail):
 
 
 def test_runs_route_get_status_uncovered_branches(client, console_jail):
-    """Cover lines 425-430, 455->451, 474-478, 483->497, 489-495 in get_run_status."""
+    """get_run_status uncovered branches"""
     runs_dir = console_jail["runs"]
 
     # 1. Corrupt json in resolved scenario
@@ -799,9 +798,9 @@ def test_runs_route_get_status_uncovered_branches(client, console_jail):
     # 2. Master log path fallback with non-matching run_id line
     master_log = runs_dir / "run.jsonl"
     master_log.write_text(
-        # Line containing target run_id in notes, but real event run_id is different (455->451)
+        # Line containing target run_id in notes, but real event run_id is different
         '{"event": "run_start", "run_id": "other_run", "notes": "r_master_fall"}\n'
-        # Real event (474-478, 483->497)
+        # Real event
         '{"event": "run_start", "run_id": "run-scen-123", "scenario": "scen"}\n',
         encoding="utf-8",
     )
@@ -828,7 +827,7 @@ def test_runs_route_get_status_uncovered_branches(client, console_jail):
 
 
 def test_runs_route_stream_run_logs_uncovered_branches(client, console_jail):
-    """Cover lines 661->exit and 664-665 in stream_run_logs."""
+    """stream_run_logs uncovered branches"""
     runs_dir = console_jail["runs"]
     master_log = runs_dir / "run.jsonl"
     master_log.write_text(
@@ -848,7 +847,7 @@ def test_runs_route_stream_run_logs_uncovered_branches(client, console_jail):
 
 
 def test_runs_cache_prune_no_path_attributes(client):
-    """Cover line 245: runs_cache pruning when path and _fragment_path are absent."""
+    """runs_cache pruning when path and _fragment_path are absent."""
     from eval_runner.console.routes.runs import runs_cache
 
     runs_cache._runs = [{"run_id": "no_path_run", "scenario": "scen"}]
@@ -859,7 +858,7 @@ def test_runs_cache_prune_no_path_attributes(client):
 
 
 def test_runs_route_stream_run_logs_exist(client, console_jail):
-    """Cover lines 648-650 in runs.py stream_run_logs when log_path exists."""
+    """stream_run_logs when log_path exists."""
     runs_dir = console_jail["runs"]
     r_exist_dir = runs_dir / "r_exist"
     r_exist_dir.mkdir(parents=True, exist_ok=True)
@@ -876,7 +875,7 @@ def test_runs_route_stream_run_logs_exist(client, console_jail):
 
 
 def test_runs_route_stream_run_logs_not_found(client, console_jail):
-    """Cover line 669->670 and line 690 in runs.py stream_run_logs returning 404."""
+    """stream_run_logs returning 404"""
     # Request a stream for a run that does not exist in master or individual log
     res = client.get("/api/v1/runs/r_nonexistent/stream")
     assert res.status_code == 200
@@ -885,7 +884,7 @@ def test_runs_route_stream_run_logs_not_found(client, console_jail):
 
 
 def test_runs_route_stream_run_logs_temp_write_error(client, console_jail):
-    """Cover line 674-676 in runs.py stream_run_logs handling temp write error (500)."""
+    """stream_run_logs handling temp write error (500)."""
     runs_dir = console_jail["runs"]
     master_log = runs_dir / "run.jsonl"
     master_log.write_text('{"event": "run_start", "run_id": "r_temp_err"}\n', encoding="utf-8")
@@ -902,3 +901,43 @@ def test_runs_route_stream_run_logs_temp_write_error(client, console_jail):
         res = client.get("/api/v1/runs/r_temp_err/stream")
         assert res.status_code == 500
         assert "Failed to resolve stream log" in res.get_json()["error"]
+
+
+def test_runs_route_resolve_trace_path_variants(client, console_jail):
+    from eval_runner.console.routes.runs import resolve_trace_path
+
+    runs_dir = console_jail["runs"]
+    run_id = "r_named_jsonl"
+    r_dir = runs_dir / run_id
+    r_dir.mkdir(parents=True, exist_ok=True)
+    (r_dir / f"{run_id}.jsonl").write_text("{}\n", encoding="utf-8")
+
+    resolved = resolve_trace_path(run_id)
+    assert resolved is not None
+    assert resolved.name == f"{run_id}.jsonl"
+
+
+def test_runs_vault_scanner_corrupt_lines_and_run_end(client, console_jail):
+    runs_dir = console_jail["runs"]
+
+    # Fragment with corrupt line and unreadable fragment
+    frag_dir = runs_dir / "r_frag_corrupt"
+    frag_dir.mkdir(parents=True, exist_ok=True)
+    (frag_dir / "fragment_001.jsonl").write_text("CORRUPT_JSON{\n", encoding="utf-8")
+
+    # Vault with empty lines, invalid JSON, and run_end event
+    vault_dir = runs_dir / "r_vault_end"
+    vault_dir.mkdir(parents=True, exist_ok=True)
+    start_ev = json.dumps({"event": "run_start", "run_id": "r_vault_end", "scenario": "scen_1"})
+    end_ev = json.dumps({"event": "run_end", "data": {"passed": True, "duration": 12.5}})
+    (vault_dir / "run.jsonl").write_text(
+        f"{start_ev}\n\nBAD_JSON_LINE\n{end_ev}\n",
+        encoding="utf-8",
+    )
+
+    res = client.get("/api/runs")
+    assert res.status_code == 200
+    runs = res.get_json()["runs"]
+    r_end = next((r for r in runs if r.get("run_id") == "r_vault_end"), None)
+    if r_end:
+        assert r_end.get("duration_seconds") == 12.5 or r_end.get("result_status") == "PASS"

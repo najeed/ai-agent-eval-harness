@@ -112,3 +112,73 @@ def test_scenario_compliance(rel_path: str, schema_registry_and_specs):
         validate(instance=scenario, schema=target_schema, registry=registry)
     except ValidationError as exc:
         pytest.fail(f"Scenario ValidationError in {rel_path} (AES v{aes_version}): {exc.message}")
+
+
+def test_golden_runtime_scenario_compliance(schema_registry_and_specs):
+    """
+    Validates that scenarios/golden/golden_runtime_1_4.json is strictly schema-compliant
+    with the AES v1.4.0 root schema and its reference definitions.
+    """
+    schemas, registry = schema_registry_and_specs
+    golden_path = BASE_DIR / "scenarios" / "golden" / "golden_runtime_1_4.json"
+    assert golden_path.exists(), f"Golden scenario not found: {golden_path}"
+
+    content = golden_path.read_text(encoding="utf-8").strip()
+    scenario = json.loads(content)
+    validate(instance=scenario, schema=schemas[1.4], registry=registry)
+
+
+def test_schema_rejects_root_level_policies(schema_registry_and_specs):
+    """Negative Test: Placing 'policies' at the root level must fail schema validation."""
+    schemas, registry = schema_registry_and_specs
+    golden_path = BASE_DIR / "scenarios" / "golden" / "golden_runtime_1_4.json"
+    scenario = json.loads(golden_path.read_text(encoding="utf-8"))
+
+    # Intentionally corrupt scenario by moving policies to root
+    scenario["policies"] = scenario["metadata"].pop("policies", {})
+
+    with pytest.raises(ValidationError) as exc_info:
+        validate(instance=scenario, schema=schemas[1.4], registry=registry)
+    assert "additionalProperties" in str(exc_info.value.message) or "policies" in str(
+        exc_info.value.message
+    )
+
+
+def test_schema_rejects_root_level_agent_topology(schema_registry_and_specs):
+    """Negative Test: Placing 'agent_topology' at the root level must fail schema validation."""
+    schemas, registry = schema_registry_and_specs
+    golden_path = BASE_DIR / "scenarios" / "golden" / "golden_runtime_1_4.json"
+    scenario = json.loads(golden_path.read_text(encoding="utf-8"))
+
+    # Intentionally corrupt scenario by moving agent_topology to root
+    scenario["agent_topology"] = scenario["metadata"].pop("agent_topology", {})
+
+    with pytest.raises(ValidationError) as exc_info:
+        validate(instance=scenario, schema=schemas[1.4], registry=registry)
+    assert "additionalProperties" in str(exc_info.value.message) or "agent_topology" in str(
+        exc_info.value.message
+    )
+
+
+def test_schema_rejects_arbitrary_undeclared_root_keys(schema_registry_and_specs):
+    """Negative Test: Undeclared arbitrary root keys must fail schema validation."""
+    schemas, registry = schema_registry_and_specs
+    golden_path = BASE_DIR / "scenarios" / "golden" / "golden_runtime_1_4.json"
+    scenario = json.loads(golden_path.read_text(encoding="utf-8"))
+
+    scenario["unrecognized_bogus_key"] = {"data": 123}
+
+    with pytest.raises(ValidationError):
+        validate(instance=scenario, schema=schemas[1.4], registry=registry)
+
+
+def test_schema_rejects_missing_required_blocks(schema_registry_and_specs):
+    """Negative Test: Omitting required top-level blocks must fail schema validation."""
+    schemas, registry = schema_registry_and_specs
+    golden_path = BASE_DIR / "scenarios" / "golden" / "golden_runtime_1_4.json"
+
+    for req_field in ["metadata", "workflow", "evaluation", "aes_version"]:
+        scenario = json.loads(golden_path.read_text(encoding="utf-8"))
+        del scenario[req_field]
+        with pytest.raises(ValidationError):
+            validate(instance=scenario, schema=schemas[1.4], registry=registry)

@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Waive Monthly Account Fee",
     "compliance_level": "Standard",
-    "id": "11282-waive-monthly-account-fee"
+    "id": "11282-waive-monthly-account-fee",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A long-time customer requests to have their monthly maintenance fee waived after their balance temporarily dropped below the minimum.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

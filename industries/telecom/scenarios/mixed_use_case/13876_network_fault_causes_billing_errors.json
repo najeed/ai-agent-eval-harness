@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Network Fault Causes Mass Billing Errors",
     "compliance_level": "Standard",
-    "id": "13876-network-fault-causes-billing-errors"
+    "id": "13876-network-fault-causes-billing-errors",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A network fault caused incorrect data usage metering for a batch of customers. An agent must identify the affected customers and correct their bills.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

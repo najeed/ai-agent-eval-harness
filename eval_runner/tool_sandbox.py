@@ -123,10 +123,10 @@ class AbstractSandbox(ABC):
         self.scenario = scenario
         self.policy_evaluator = policy_evaluator or BasicFieldPolicyEvaluator()
         self.state = scenario.get("initial_state", {}).copy()
-        self.shared_state = SharedStateRegistry(
-            scenario.get("agent_topology", {}), event_bus=event_bus
-        )
+        topology = scenario.get("metadata", {}).get("agent_topology", {})
+        self.shared_state = SharedStateRegistry(topology, event_bus=event_bus)
         self.current_agent = "default_agent"
+
         self.event_bus = event_bus
         self.forensics = forensics
         self.resources = ResourceRegistry()
@@ -375,6 +375,21 @@ class ToolSandbox(AbstractSandbox):
     Uses a static mapping of tool behaviors defined in the scenario.
     """
 
+    def _set_state_path(self, path: str, value: Any) -> None:
+        """
+        Applies a dotted path mutation to the hierarchical sandbox state.
+        Navigates and initializes intermediate dictionaries as needed.
+        """
+        parts = path.split(".")
+        cursor = self.state
+        for part in parts[:-1]:
+            existing = cursor.get(part)
+            if not isinstance(existing, dict):
+                existing = {}
+                cursor[part] = existing
+            cursor = existing
+        cursor[parts[-1]] = value
+
     async def execute(self, tool_name: str, params: dict, agent_name: str | None = None) -> dict:
         """Executes a tool and returns the result, routing through the
 
@@ -449,7 +464,8 @@ class ToolSandbox(AbstractSandbox):
         else:
             tool_def = all_tool_defs[tool_name]
         self.grounding_hits["tools"][tool_name] = self.grounding_hits["tools"].get(tool_name, 0) + 1
-        policies = self.scenario.get("policies", {})
+        policies = self.scenario.get("metadata", {}).get("policies", {})
+
         if tool_name in policies:
             self.grounding_hits["policies"][tool_name] = (
                 self.grounding_hits["policies"].get(tool_name, 0) + 1
@@ -504,7 +520,7 @@ class ToolSandbox(AbstractSandbox):
             path = change.get("path")
             value = change.get("value")
             if path:
-                self.state[path] = value
+                self._set_state_path(path, value)
         if "shared_write" in params:
             write_path = params["shared_write"].get("path")
             write_val = params["shared_write"].get("value")
@@ -716,10 +732,10 @@ class ToolSandbox(AbstractSandbox):
             policy_evaluator=self.policy_evaluator,
         )
         forked.state = copy.deepcopy(self.state)
-        forked.shared_state = SharedStateRegistry(
-            self.scenario.get("agent_topology", {}), event_bus=self.event_bus
-        )
+        topology = self.scenario.get("metadata", {}).get("agent_topology", {})
+        forked.shared_state = SharedStateRegistry(topology, event_bus=self.event_bus)
         forked.shared_state.registry = copy.deepcopy(self.shared_state.registry)
+
         forked.policy_decisions = list(self.policy_decisions)
         forked.current_agent = self.current_agent
         return forked

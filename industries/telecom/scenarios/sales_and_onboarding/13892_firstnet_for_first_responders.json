@@ -3,7 +3,11 @@
   "metadata": {
     "name": "New Customer - FirstNet for First Responder",
     "compliance_level": "Standard",
-    "id": "13892-firstnet-for-first-responders"
+    "id": "13892-firstnet-for-first-responders",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A first responder (e.g., paramedic, firefighter) wants to sign up for a specialized FirstNet plan.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

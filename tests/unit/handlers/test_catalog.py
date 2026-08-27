@@ -535,7 +535,7 @@ def test_check_for_updates_sync(tmp_path):
 
 
 def test_catalog_new_magicmock():
-    """Cover line 34-35: __new__ returns a new instance if class name is MagicMock."""
+    """__new__ returns a new instance if class name is MagicMock."""
 
     class MagicMockMeta(type):
         pass
@@ -550,7 +550,7 @@ def test_catalog_new_magicmock():
 
 
 def test_catalog_build_index_unsafe_path(tmp_path):
-    """Cover line 109: skipping unsafe paths during index building."""
+    """skipping unsafe paths during index building."""
     cat = ScenarioCatalog(index_path=str(tmp_path / "index.json"))
     cat.root_dir = tmp_path
 
@@ -565,7 +565,7 @@ def test_catalog_build_index_unsafe_path(tmp_path):
 
 
 def test_catalog_rename_permission_error(tmp_path):
-    """Cover lines 190->201: PermissionError handling during index atomic rename."""
+    """PermissionError handling during index atomic rename."""
     index_file = tmp_path / "index.json"
     cat = ScenarioCatalog(index_path=str(index_file))
     cat.root_dir = tmp_path
@@ -580,7 +580,7 @@ def test_catalog_rename_permission_error(tmp_path):
 
 
 def test_catalog_check_for_updates_mtime_cached(tmp_path):
-    """Cover line 228: check_for_updates returning False when top mtime is cached."""
+    """check_for_updates returning False when top mtime is cached."""
     cat = ScenarioCatalog(index_path=str(tmp_path / "index.json"))
     cat.root_dir = tmp_path
     cat.manifest["last_top_mtime"] = 100
@@ -611,7 +611,7 @@ def test_catalog_load_index_stale_sync(tmp_path):
 
 
 def test_catalog_get_absolute_path_traversal(tmp_path):
-    """Cover line 346: get_absolute_path traversal check return None."""
+    """get_absolute_path traversal check return None."""
     cat = ScenarioCatalog(index_path=str(tmp_path / "index.json"))
     cat.root_dir = tmp_path
 
@@ -622,3 +622,254 @@ def test_catalog_get_absolute_path_traversal(tmp_path):
         # Even though Path.exists is True, path traversal safety detects
         # it starts outside project root.
         assert cat.get_absolute_path("traversal_scen") is None
+
+
+class TestCatalogStoreAndFiltersCoverage:
+    def test_catalog_store_delegation(self, tmp_path):
+        from unittest.mock import MagicMock
+
+        from eval_runner.catalog import ScenarioCatalog
+
+        mock_store = MagicMock()
+        mock_store.get_scenario.return_value = {"id": "scen_123", "data": "val"}
+        mock_store.save_scenario.return_value = "saved_path.json"
+
+        cat = ScenarioCatalog(index_path=str(tmp_path / "index.json"), store=mock_store)
+        cat.root_dir = tmp_path
+
+        # 1. get_scenario_by_id delegation (lines 78-79)
+        assert cat.get_scenario_by_id("scen_123") == {"id": "scen_123", "data": "val"}
+        mock_store.get_scenario.assert_called_with("scen_123")
+
+        # 2. save_scenario_to_store delegation (lines 81-85)
+        with patch.object(cat, "build_index"):
+            res = cat.save_scenario_to_store("scen_123", {"data": "val"})
+            assert res == "saved_path.json"
+            mock_store.save_scenario.assert_called_with("scen_123", {"data": "val"})
+
+    def test_catalog_skips_mock_database_files(self, tmp_path):
+        from eval_runner.catalog import ScenarioCatalog
+
+        scenarios_dir = tmp_path / "scenarios"
+        scenarios_dir.mkdir()
+
+        # Regular scenario
+        (scenarios_dir / "valid_scen.json").write_text(
+            json.dumps({"id": "valid_1", "metadata": {"name": "Valid"}}), encoding="utf-8"
+        )
+        # Mock database file (lines 141-142)
+        (scenarios_dir / "mock_sec_edgar.json").write_text(
+            json.dumps({"id": "mock_db", "metadata": {"name": "Mock"}}), encoding="utf-8"
+        )
+
+        cat = ScenarioCatalog(index_path=str(tmp_path / "index.json"))
+        cat.root_dir = tmp_path
+        cat.build_index()
+
+        ids = [s["id"] for s in cat.scenarios]
+        assert "valid_1" in ids
+        assert "mock_db" not in ids
+
+    def test_catalog_query_difficulty_filters(self, tmp_path):
+        from eval_runner.catalog import ScenarioCatalog
+
+        cat = ScenarioCatalog(index_path=str(tmp_path / "index.json"))
+        cat.scenarios = [
+            {
+                "id": "s1",
+                "title": "Standard Easy",
+                "difficulty": 1,
+                "compliance_level": "standard",
+                "industry": "fin",
+                "description": "",
+                "tags": [],
+            },
+            {
+                "id": "s2",
+                "title": "High Difficulty",
+                "difficulty": 3,
+                "compliance_level": "strict",
+                "industry": "health",
+                "description": "",
+                "tags": [],
+            },
+            {
+                "id": "s3",
+                "title": "Custom Level",
+                "difficulty": "expert",
+                "compliance_level": "expert",
+                "industry": "fin",
+                "description": "",
+                "tags": [],
+            },
+        ]
+
+        # 1. Standard filter (lines 321-327)
+        res_std = cat.search(difficulty="standard")
+        assert len(res_std) == 1
+        assert res_std[0]["id"] == "s1"
+
+        # 2. High filter (lines 328-334)
+        res_high = cat.search(difficulty="high")
+        assert len(res_high) >= 1
+        assert any(s["id"] == "s2" for s in res_high)
+
+        # 3. Custom string difficulty filter (lines 335-341)
+        res_custom = cat.search(difficulty="expert")
+        assert len(res_custom) == 1
+        assert res_custom[0]["id"] == "s3"
+
+        # 4. Non-standard key filter (line 345)
+        res_key = cat.search(compliance_level="strict")
+        assert len(res_key) == 1
+        assert res_key[0]["id"] == "s2"
+
+    def test_get_all_industries_and_get_scenario_lazy_load(self, tmp_path):
+        from eval_runner.catalog import ScenarioCatalog
+
+        cat = ScenarioCatalog(index_path=str(tmp_path / "index.json"))
+        cat.root_dir = tmp_path
+        cat.scenarios = []  # Empty
+
+        def fake_load():
+            cat.scenarios = [{"id": "s_lazy", "title": "Lazy Title", "industry": "telecom"}]
+
+        with patch.object(cat, "load_index", side_effect=fake_load):
+            # get_all_industries lazy load (lines 351-355)
+            industries = cat.get_all_industries()
+            assert industries == ["telecom"]
+
+            cat.scenarios = []
+            # get_scenario lazy load (line 361)
+            scen = cat.get_scenario("s_lazy")
+            assert scen is not None
+            assert scen["id"] == "s_lazy"
+
+
+class TestPackParsingAndInstallationCoverage:
+    def test_parse_pack_string_flavors_and_versions(self):
+        from eval_runner.catalog import _parse_pack_string
+
+        # pack@version (line 441)
+        p1, f1, v1 = _parse_pack_string("fintech@1.2.0")
+        assert p1 == "fintech"
+        assert f1 == "STANDARD"
+        assert v1 == "1.2.0"
+
+        # pack-flavor@version
+        p2, f2, v2 = _parse_pack_string("healthcare-hardened@2.0.0")
+        assert p2 == "healthcare"
+        assert f2 == "hardened"
+        assert v2 == "2.0.0"
+
+    def test_load_pack_manifest_alternatives(self, tmp_path):
+        from eval_runner.catalog import _load_pack_manifest
+
+        # 1. pack.yml (line 471)
+        dir1 = tmp_path / "p1"
+        dir1.mkdir()
+        (dir1 / "pack.yml").write_text("name: pack_one\nflavor: pro\n", encoding="utf-8")
+        assert _load_pack_manifest(dir1) == {"name": "pack_one", "flavor": "pro"}
+
+        # 2. .agentv-pack.yaml (line 471)
+        dir2 = tmp_path / "p2"
+        dir2.mkdir()
+        (dir2 / ".agentv-pack.yaml").write_text("name: pack_two\n", encoding="utf-8")
+        assert _load_pack_manifest(dir2) == {"name": "pack_two"}
+
+        # 3. None exists -> returns {} (line 475)
+        dir3 = tmp_path / "p3"
+        dir3.mkdir()
+        assert _load_pack_manifest(dir3) == {}
+
+    def test_extract_pack_archive_zip_slip_and_tar_fallback(self, tmp_path):
+        import io
+        import tarfile
+        import zipfile
+
+        from eval_runner.catalog import _extract_pack_archive
+
+        staging = tmp_path / "staging"
+
+        # 1. Tarball fallback when BadZipFile (lines 499-502)
+        tar_buf = io.BytesIO()
+        with tarfile.open(fileobj=tar_buf, mode="w:gz") as tf:
+            content = b"name: tar_pack\n"
+            info = tarfile.TarInfo(name="pack.yaml")
+            info.size = len(content)
+            tf.addfile(info, io.BytesIO(content))
+        tar_file = tmp_path / "archive.tar.gz"
+        tar_file.write_bytes(tar_buf.getvalue())
+
+        root = _extract_pack_archive(tar_file, staging)
+        assert (root / "pack.yaml").exists()
+
+        # 2. Zip Slip traversal validation (lines 496-497)
+        zip_buf = io.BytesIO()
+        with zipfile.ZipFile(zip_buf, mode="w") as zf:
+            zf.writestr("../../outside_slip.txt", "pwned")
+        slip_zip = tmp_path / "slip.zip"
+        slip_zip.write_bytes(zip_buf.getvalue())
+
+        with pytest.raises(ValueError, match="Dangerous zip member path traversal detected"):
+            _extract_pack_archive(slip_zip, staging / "slip_test")
+
+    def test_install_pack_error_branches(self, tmp_path):
+        from eval_runner.catalog import install_pack
+
+        # 1. Source pack directory with pack.yaml missing 'name' (lines 574-578)
+        no_name_dir = tmp_path / "no_name_pack"
+        no_name_dir.mkdir()
+        (no_name_dir / "pack.yaml").write_text("description: missing name\n", encoding="utf-8")
+        assert install_pack(str(no_name_dir)) is False
+
+        # 2. Source pack with no files (lines 607-608)
+        empty_pack_dir = tmp_path / "empty_pack"
+        empty_pack_dir.mkdir()
+        (empty_pack_dir / "pack.yaml").write_text("name: empty_test\n", encoding="utf-8")
+        assert install_pack(str(empty_pack_dir)) is False
+
+        # 3. Exception in install_pack cleans up target directory (lines 642-649)
+        fail_pack_dir = tmp_path / "fail_pack"
+        fail_pack_dir.mkdir()
+        (fail_pack_dir / "pack.yaml").write_text("name: fail_test\n", encoding="utf-8")
+        (fail_pack_dir / "scenario.json").write_text("{}", encoding="utf-8")
+
+        with patch("shutil.copy2", side_effect=OSError("Disk full")):
+            assert install_pack(str(fail_pack_dir)) is False
+
+        # 4. Staging directory exists prior to extraction (line 567)
+        import io
+        import zipfile
+
+        zip_buf = io.BytesIO()
+        with zipfile.ZipFile(zip_buf, mode="w") as zf:
+            zf.writestr("pack.yaml", "name: stage_test\n")
+            zf.writestr("scenario.json", "{}")
+        stage_zip = tmp_path / "stage.zip"
+        stage_zip.write_bytes(zip_buf.getvalue())
+
+        from eval_runner.catalog import _sha256_file
+
+        pre_staging = (
+            tmp_path
+            / ".aes"
+            / "pack_staging"
+            / (_sha256_file(stage_zip)[:12] + "_" + stage_zip.stem)
+        )
+        pre_staging.mkdir(parents=True, exist_ok=True)
+        (pre_staging / "old.txt").write_text("old")
+
+        with patch("eval_runner.catalog.Path.cwd", return_value=tmp_path):
+            with patch("eval_runner.catalog.get_catalog") as mock_gc:
+                mock_gc.return_value.scenarios = []
+                assert install_pack(str(stage_zip)) is True
+
+    def test_load_pack_manifest_non_dict_data(self, tmp_path):
+        from eval_runner.catalog import _load_pack_manifest
+
+        # pack.yaml contains a list/string, not a dict (line 473->469)
+        p_dir = tmp_path / "p_list"
+        p_dir.mkdir()
+        (p_dir / "pack.yaml").write_text("- item1\n- item2\n", encoding="utf-8")
+        assert _load_pack_manifest(p_dir) == {}

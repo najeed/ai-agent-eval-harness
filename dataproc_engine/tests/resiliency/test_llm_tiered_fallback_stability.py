@@ -46,7 +46,7 @@ async def test_llm_manager_tiered_success(llm_config):
 
 @pytest.mark.asyncio
 async def test_llm_manager_heuristic_recovery(llm_config):
-    """Verify Tier 3 Heuristic recovery when Cloud/Ollama fail (Lines 266-307)."""
+    """Verify Tier 3 Heuristic recovery when Cloud/Ollama fail."""
     llm = LLMManager({"llm_strategy": "heuristic"})
     schema = {"revenue": "number", "status": "string"}
     # Intentionally messy content that should hit the regexes
@@ -64,15 +64,15 @@ async def test_llm_manager_heuristic_recovery(llm_config):
 
 @pytest.mark.asyncio
 async def test_llm_manager_sentiment_loops(llm_config):
-    """Verify sentiment fallback from Cloud to Heuristics (Lines 60-129)."""
+    """Verify sentiment fallback from Cloud to Heuristics."""
     llm = LLMManager(llm_config)
     content = "The market is extremely bullish and showing robust stability."
 
-    # 1. Cloud success (Hits Line 67)
+    # 1. Cloud success
     with patch.object(llm, "_call_sentiment_llm", AsyncMock(return_value=0.9)):
         assert await llm.analyze_sentiment(content) == 0.9
 
-    # 2. total failure (Hits Lines 88-89, 69)
+    # 2. total failure
     llm.strategy = "ollama"
     with patch.object(llm, "_try_cloud_providers", AsyncMock(return_value=None)):
         with patch.object(llm, "_try_ollama", AsyncMock(return_value={})):  # Empty return
@@ -82,7 +82,7 @@ async def test_llm_manager_sentiment_loops(llm_config):
 
 @pytest.mark.asyncio
 async def test_llm_manager_error_resiliency(llm_config):
-    """Verify exception handling in all Cloud Provider calls (Harden: Lines 169-238)."""
+    """Verify exception handling in all Cloud Provider calls."""
     llm = LLMManager(llm_config)
     providers = ["openai", "gemini", "claude", "grok"]
     schema = {"v": "s"}
@@ -100,7 +100,7 @@ async def test_llm_manager_error_resiliency(llm_config):
 
 @pytest.mark.asyncio
 async def test_llm_manager_type_enforcement(llm_config):
-    """Exhaustive test for _verify_schema type conversions (Lines 344-366)."""
+    """Exhaustive test for _verify_schema type conversions."""
     llm = LLMManager(llm_config)
     schema = {"price": "number", "id": "integer", "name": "string"}
 
@@ -118,24 +118,24 @@ async def test_llm_manager_type_enforcement(llm_config):
 
 @pytest.mark.asyncio
 async def test_llm_manager_ollama_json_fail(llm_config):
-    """Harden Ollama JSON parsing resilience (Line 260, 264)."""
+    """Harden Ollama JSON parsing resilience."""
     llm = LLMManager({"llm_strategy": "ollama"})
     with patch("aiohttp.ClientSession.post", side_effect=Exception("Ollama Dead")):
-        # Hits Line 264 (return None)
+        # Hits return None
         result = await llm._try_ollama("test", {"k": "v"})
         assert result is None
 
     with patch("aiohttp.ClientSession.post") as mock_post:
         mock_resp = AsyncMock()
         mock_resp.status = 200
-        # Corrupt JSON response (Hits Line 260 exception)
+        # Corrupt JSON response
         mock_resp.json = AsyncMock(return_value={"response": "{invalid-json}"})
         mock_post.return_value.__aenter__.return_value = mock_resp
 
 
 @pytest.mark.asyncio
 async def test_llm_manager_unknown_provider(llm_config):
-    """Hit Line 150: Unsupported provider fallback."""
+    """Hit Unsupported provider fallback."""
     llm = LLMManager({"llm_strategy": "cloud", "llm_provider": "unknown_ai"})
     with patch.dict(os.environ, {"UNKNOWN_AI_API_KEY": "test"}):
         assert await llm._try_cloud_providers("test", {"k": "v"}) is None
@@ -143,7 +143,7 @@ async def test_llm_manager_unknown_provider(llm_config):
 
 @pytest.mark.asyncio
 async def test_llm_manager_grok_fail_path(llm_config):
-    """Hit Line 238: Grok exception path."""
+    """Hit Grok exception path."""
     llm = LLMManager({"llm_strategy": "cloud", "llm_provider": "grok"})
     with patch("aiohttp.ClientSession.post", side_effect=Exception("Grok Offline")):
         assert await llm._call_grok("test", {"k": "v"}, "test-key") is None

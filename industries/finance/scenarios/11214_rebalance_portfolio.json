@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Rebalance a Portfolio to Target Allocation",
     "compliance_level": "Standard",
-    "id": "11214-rebalance-portfolio"
+    "id": "11214-rebalance-portfolio",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A client's portfolio has drifted from its target asset allocation (60% stocks, 40% bonds) and needs to be rebalanced.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

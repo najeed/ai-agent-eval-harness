@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Reconcile Bank Statement",
     "compliance_level": "Standard",
-    "id": "11269-reconcile-bank-statement"
+    "id": "11269-reconcile-bank-statement",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "An accountant needs to perform the monthly bank reconciliation, matching transactions in the general ledger to the bank statement.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

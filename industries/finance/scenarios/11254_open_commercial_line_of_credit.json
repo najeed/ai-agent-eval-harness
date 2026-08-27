@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Open a Commercial Line of Credit",
     "compliance_level": "Standard",
-    "id": "11254-open-commercial-line-of-credit"
+    "id": "11254-open-commercial-line-of-credit",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A corporate client needs to open a line of credit to manage working capital.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

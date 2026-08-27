@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Check Claim Status",
     "compliance_level": "Standard",
-    "id": "11347-check-claim-status"
+    "id": "11347-check-claim-status",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A biller wants to check the status of a high-dollar claim that was submitted two weeks ago.",
   "industry": "Healthcare",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

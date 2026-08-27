@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Check Network Capacity Before Adding Service",
     "compliance_level": "Standard",
-    "id": "13871-check-capacity-before-adding-service"
+    "id": "13871-check-capacity-before-adding-service",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "Before sales can sell a large new service, the agent must verify there is enough network capacity to support it.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

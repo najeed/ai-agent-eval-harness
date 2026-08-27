@@ -26,7 +26,7 @@ class MockResponse:
 
 @pytest.mark.asyncio
 async def test_finance_world_bank_logic():
-    """Verify World Bank macroeconomic extraction and simulation (Lines 27-65)."""
+    """Verify World Bank macroeconomic extraction and simulation."""
     # 1. Successful Web Fetch
     config = {"industry": "finance", "finance_mode": "worldbank", "allow_simulation": False}
     provider = FinanceProvider(config, llm_manager=LLMManager({"llm_provider": "mock"}))

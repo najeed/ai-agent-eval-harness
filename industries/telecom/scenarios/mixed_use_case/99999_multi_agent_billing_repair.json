@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Multi-Agent Billing & Network Repair",
     "compliance_level": "Standard",
-    "id": "99999-multi-agent-billing-repair"
+    "id": "99999-multi-agent-billing-repair",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A complex multi-agent scenario where a billing agent must coordinate with a network specialist to resolve a high-bill complaint caused by technical faults.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

@@ -25,8 +25,10 @@ def base_scenario():
             },
             "restricted_tool": {"output": {"status": "success"}},
         },
-        "policies": {"restricted_tool": {"max_limit": 5}},
-        "agent_topology": {"agent_a": {"reads": ["global", "ns:*"], "writes": ["global"]}},
+        "metadata": {
+            "policies": {"restricted_tool": {"max_limit": 5}},
+            "agent_topology": {"agent_a": {"reads": ["global", "ns:*"], "writes": ["global"]}},
+        },
     }
 
 

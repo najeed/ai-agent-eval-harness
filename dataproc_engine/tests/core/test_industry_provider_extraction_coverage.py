@@ -167,14 +167,14 @@ def test_config_exhaustion():
 @pytest.mark.asyncio
 async def test_correlator_extended_branches(tmp_path):
     """
-    Cover correlator file load exception (60-61), rapidfuzz import failure (98-115),
-    and healthcare energy resiliency (167-170).
+    Cover correlator file load exception, rapidfuzz import failure,
+    and healthcare energy resiliency.
     """
     from unittest.mock import patch
 
     from dataproc_engine.core.base_provider import StandardSchema
 
-    # 1. File discovery load exception (60-61)
+    # 1. File discovery load exception
     target_dir = tmp_path / "corrupt_data"
     target_dir.mkdir()
     corrupt_file = target_dir / "finance_corrupt.csv"
@@ -187,7 +187,7 @@ async def test_correlator_extended_branches(tmp_path):
         res = correlator.correlate({"telecom": []}, target_dir=str(target_dir))
     assert "finance" not in res  # Load failed, so finance is not added
 
-    # 2. Healthcare energy resiliency mapping (167-170)
+    # 2. Healthcare energy resiliency mapping
     hc_record = StandardSchema(
         id="hc1",
         industry="healthcare",
@@ -205,7 +205,7 @@ async def test_correlator_extended_branches(tmp_path):
     res_hc = correlator.correlate({"healthcare": [hc_record], "energy": [energy_record]})
     assert res_hc["healthcare"][0].data["energy_resiliency_index"] == 85.0
 
-    # 3. Rapidfuzz import failure fallback path (98-115)
+    # 3. Rapidfuzz import failure fallback path
     # Mock python import mapping to raise ImportError for rapidfuzz
     orig_import = __builtins__["__import__"]
 
@@ -215,7 +215,7 @@ async def test_correlator_extended_branches(tmp_path):
         return orig_import(name, *args, **kwargs)
 
     with patch("builtins.__import__", side_effect=mock_import):
-        # A. Substring match fallback (105-107)
+        # A. Substring match fallback
         fin_sub = StandardSchema(
             id="fin_sub",
             industry="finance",
@@ -233,9 +233,9 @@ async def test_correlator_extended_branches(tmp_path):
         res_sub = correlator.correlate({"finance": [fin_sub], "telecom": [tel_sub]})
         assert res_sub["finance"][0].data["telecom_footprint_speed"] == 90
 
-        # B. Close match difflib fallback (110-115)
+        # B. Close match difflib fallback
         # We use names that are close but do not contain each other as substrings
-        # to avoid the substring breakout (line 104) and reach difflib get_close_matches (line 110).
+        # to avoid the substring breakout and reach difflib get_close_matches.
         fin_record = StandardSchema(
             id="fin1",
             industry="finance",
@@ -258,29 +258,29 @@ async def test_correlator_extended_branches(tmp_path):
 @pytest.mark.asyncio
 async def test_dataset_engine_coverage_hardening():
     """
-    Cover client submission errors (27-29), registered provider returns (46),
-    suffix lookup (70), unknown industry (75), and validation fails (110-111).
+    Cover client submission errors, registered provider returns,
+    suffix lookup, unknown industry, and validation fails.
     """
     from unittest.mock import MagicMock, patch
 
-    # 1. Already registered provider logic (46)
+    # 1. Already registered provider logic
     engine = DatasetEngine(config={"llm_strategy": "mock"})
     mock_provider = MagicMock()
     engine.register_provider("finance", mock_provider)
     assert engine.get_provider("finance", {}) == mock_provider
 
-    # 2. Suffix lookup fallback (70)
+    # 2. Suffix lookup fallback
     # We mock packages search to return a suffix provider class
     mock_classes = {"dummy_provider": MagicMock}
     with patch("eval_runner.discovery.discover_classes_in_package", return_value=mock_classes):
         provider = engine.get_provider("dummy", {})
         assert isinstance(provider, MagicMock)
 
-    # 3. Unknown industry provider check (75)
+    # 3. Unknown industry provider check
     with pytest.raises(ValueError, match="Unknown industry"):
         engine.get_provider("alien_industry", {})
 
-    # 4. DataProc client submission logic (27-29)
+    # 4. DataProc client submission logic
     engine.client = None
     with pytest.raises(RuntimeError, match="DataProc client not initialized"):
         engine.run_job("job_spec")
@@ -293,7 +293,7 @@ async def test_dataset_engine_coverage_hardening():
     engine.region = "us-east1"
     assert engine.run_job("spec") == "job_submitted"
 
-    # 5. Validation failure path (110-111)
+    # 5. Validation failure path
     mock_failing_provider = MagicMock()
     mock_failing_provider.extract = AsyncMock(return_value=[])
     mock_failing_provider.transform = AsyncMock(return_value=[])

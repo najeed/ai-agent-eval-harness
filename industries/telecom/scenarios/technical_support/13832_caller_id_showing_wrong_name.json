@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Troubleshooting - Caller ID Showing Wrong Name",
     "compliance_level": "Standard",
-    "id": "13832-caller-id-showing-wrong-name"
+    "id": "13832-caller-id-showing-wrong-name",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer reports that when they call people, the wrong name is appearing on the recipient's Caller ID.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

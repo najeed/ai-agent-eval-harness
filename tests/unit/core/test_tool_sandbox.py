@@ -154,7 +154,7 @@ def test_tool_sandbox_shared_state_registry_permissions():
 
 def test_sandbox_path_sanitization():
     """Verify that file paths are properly sanitized to prevent traversals."""
-    # Test _sanitize_path logic (Lines 201+)
+    # Test _sanitize_path logic
     # It should strip traversals and add prefix
     res = ToolSandbox._sanitize_path("../../etc/passwd")
     assert ".." not in res
@@ -163,7 +163,7 @@ def test_sandbox_path_sanitization():
 
 def test_sandbox_value_sanitization():
     """Verify that command values are sanitized against shell meta-characters."""
-    # Test _sanitize_value logic (Lines 231+)
+    # Test _sanitize_value logic
     # It should strip shell meta-characters
     val = ToolSandbox._sanitize_value("ls -la; rm -rf /")
     assert ";" not in val
@@ -201,7 +201,12 @@ def test_abstract_sandbox_propagate_bus(tmp_path):
     from eval_runner.tool_sandbox import ToolSandbox
 
     mock_bus = MagicMock()
-    scenario = {"id": "bus-test", "agent_topology": {"agent_a": {"writes": ["*"]}}}
+    scenario = {
+        "id": "bus-test",
+        "metadata": {
+            "agent_topology": {"agent_a": {"writes": ["*"]}},
+        },
+    }
     sandbox = ToolSandbox(
         scenario, event_bus=mock_bus, workspace_root=tmp_path, jail_root=tmp_path / "jail"
     )
@@ -223,7 +228,7 @@ def test_abstract_sandbox_propagate_bus(tmp_path):
 async def test_sandbox_cleanup_missing_dir_and_no_jail_cleanup(tmp_path):
     from eval_runner.tool_sandbox import ToolSandbox
 
-    # 1. Non-existent path for resources cleanup (Line 40->36 branch)
+    # 1. Non-existent path for resources cleanup
     scenario = {
         "id": "cleanup-test",
         "cleanup_workspace": True,
@@ -232,7 +237,7 @@ async def test_sandbox_cleanup_missing_dir_and_no_jail_cleanup(tmp_path):
     sandbox = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
     sandbox.resources.register(tmp_path / "non_existent_file_xyz")
 
-    # 2. Cleanup workspace when it does not exist (Line 288->295 branch)
+    # 2. Cleanup workspace when it does not exist
     # Delete workspace dir first
     import shutil
 
@@ -240,7 +245,7 @@ async def test_sandbox_cleanup_missing_dir_and_no_jail_cleanup(tmp_path):
         shutil.rmtree(tmp_path)
 
     await sandbox.teardown()
-    # Should complete without error and with cleanup_terminal_jail = False (Line 299->exit branch)
+    # Should complete without error and with cleanup_terminal_jail = False
 
 
 def test_sandbox_service_interceptor_branches():
@@ -259,14 +264,14 @@ def test_sandbox_service_interceptor_branches():
                 raise RecursionError("Simulated recursion")
             return await next_handler(call_data)
 
-    # 1. Test register_interceptor when local_interceptors is not None (Line 358)
+    # 1. Test register_interceptor when local_interceptors is not None
     tool_sandbox_service._local_interceptors.set([])
     interceptor = DummyInterceptor(can_isolate_val=False)
     tool_sandbox_service.register_interceptor(interceptor)
     assert interceptor in tool_sandbox_service._local_interceptors.get()
     tool_sandbox_service.reset()
 
-    # 2. Test override_interceptor finally block where interceptor not in global (Line 383->exit)
+    # 2. Test override_interceptor finally block where interceptor not in global
     async def run_override():
         async with tool_sandbox_service.override_interceptor(interceptor):
             # Manually remove from global to trigger the branch in finally
@@ -276,7 +281,7 @@ def test_sandbox_service_interceptor_branches():
 
     asyncio.run(run_override())
 
-    # 3. Test max depth cycle detection (Line 396)
+    # 3. Test max depth cycle detection
     async def run_pipeline():
         # Inject interceptor that calls isolate on itself/loop
         class CyclingInterceptor(ToolSandboxInterceptor):
@@ -300,7 +305,7 @@ def test_sandbox_service_interceptor_branches():
     asyncio.run(run_pipeline())
     tool_sandbox_service.reset()
 
-    # 4. Test interceptor raising RecursionError/KeyboardInterrupt (Line 409)
+    # 4. Test interceptor raising RecursionError/KeyboardInterrupt
     async def run_raise_recursion():
         interceptor_err = DummyInterceptor(can_isolate_val=True, raise_recursion=True)
         async with tool_sandbox_service.override_interceptor(interceptor_err):
@@ -320,8 +325,8 @@ async def test_sandbox_execute_missing_branches(tmp_path):
         async def handle_dummy_dna(self, params):
             return {"status": "success", "dna": {"key1": "val1"}}
 
-    # 1. Test tool not matching simulator prefix (Line 475->474)
-    # 2. Test merging dna from raw result (Line 506)
+    # 1. Test tool not matching simulator prefix
+    # 2. Test merging dna from raw result
     sim = DummyDnaSimulator()
     scenario = {"id": "dummy-dna", "enabled_shims": ["dummy"]}
     sandbox = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
@@ -344,30 +349,33 @@ async def test_sandbox_state_changes_and_shared_state_edge_cases(tmp_path):
 
     scenario = {
         "id": "state-edge",
+        "metadata": {
+            "agent_topology": {"agent_a": {"writes": ["*"], "reads": ["*"]}},
+        },
         "tools": {
             "test_tool": {
-                # State change with missing/None path (Line 531->528 branch)
+                # State change with missing/None path
                 "state_changes": [{"path": None, "value": 1}]
             }
         },
-        "agent_topology": {"agent_a": {"writes": ["*"], "reads": ["*"]}},
     }
+
     sandbox = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
 
     # 1. State change without path
     await sandbox.execute("test_tool", {})
 
-    # 2. Shared write without path (Line 539->547 branch)
+    # 2. Shared write without path
     await sandbox.execute("test_tool", {"shared_write": {"value": 1}})
 
-    # 3. Shared read without path (Line 549->558 branch)
+    # 3. Shared read without path
     await sandbox.execute("test_tool", {"shared_read": {"value": 1}})
 
 
 def test_sandbox_sanitize_path_vfs_prefix_check():
     from eval_runner.tool_sandbox import ToolSandbox
 
-    # If path already starts with config.SANDBOX_VFS_PREFIX (Line 631->634 branch)
+    # If path already starts with config.SANDBOX_VFS_PREFIX
     res = ToolSandbox._sanitize_path("vfs:/etc/passwd")
     assert res == "vfs:/etc/passwd"
 
@@ -375,7 +383,7 @@ def test_sandbox_sanitize_path_vfs_prefix_check():
 def test_sandbox_sanitize_value_list():
     from eval_runner.tool_sandbox import ToolSandbox
 
-    # Test sanitizing a list of strings (Line 782-784)
+    # Test sanitizing a list of strings
     res = ToolSandbox._sanitize_value(["ls -la; rm -rf", "ok"])
     assert ";" not in res[0]
     assert res[1] == "ok"
@@ -480,7 +488,7 @@ def test_sandbox_mkdir_exist_ok(tmp_path):
 def test_sandbox_shared_state_pattern_prefix_matching():
     """
     Mutation Assurance Test: Verifies SharedStateRegistry._match_namespace prefix matching
-    (kills return namespace == pattern.split(":")[0] -> != at line 102 in tool_sandbox.py).
+    (kills return namespace == pattern.split(":")[0] -> !=).
     """
     from eval_runner.tool_sandbox import SharedStateRegistry
 
@@ -493,7 +501,7 @@ def test_sandbox_shared_state_pattern_prefix_matching():
 async def test_sandbox_cleanup_terminal_jail_env(tmp_path, monkeypatch):
     """
     Mutation Assurance Test: Verifies CLEANUP_TERMINAL_JAIL env var cleanup
-    (kills == "true" -> != mutation at line 235 in tool_sandbox.py).
+    (kills == "true" -> != mutation).
     """
     jail = tmp_path / "jail"
     jail.mkdir(parents=True, exist_ok=True)
@@ -509,12 +517,15 @@ async def test_sandbox_cleanup_terminal_jail_env(tmp_path, monkeypatch):
 async def test_sandbox_record_policy_check_counter(tmp_path):
     """
     Mutation Assurance Test: Verifies policy hit count increment + 1
-    (kills + 1 -> - 1 mutation at line 429 in tool_sandbox.py).
+    (kills + 1 -> - 1 mutation).
     """
     scenario = {
+        "metadata": {
+            "policies": {"test_tool": {"max_limit": 100}},
+        },
         "tools": {"test_tool": {"state_changes": []}},
-        "policies": {"test_tool": {"max_limit": 100}},
     }
+
     sb = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
     await sb.execute("test_tool", {"amount": 50})
     await sb.execute("test_tool", {"amount": 50})
@@ -524,7 +535,7 @@ async def test_sandbox_record_policy_check_counter(tmp_path):
 def test_sandbox_provisioning_snapshot_sort_keys(tmp_path, monkeypatch):
     """
     Mutation Assurance Test: Verifies ToolSandbox.__init__ sorts keys for provisioning_hash
-    (kills sort_keys=True -> False mutation at line 152 in tool_sandbox.py).
+    (kills sort_keys=True -> False mutation).
     """
     import json
 
@@ -544,7 +555,7 @@ def test_sandbox_provisioning_snapshot_sort_keys(tmp_path, monkeypatch):
 async def test_sandbox_scenario_cleanup_workspace_override(tmp_path):
     """
     Mutation Assurance Test: Verifies scenario.cleanup_workspace override
-    (kills default False mutation at line 227 in tool_sandbox.py).
+    (kills default False mutation).
     """
     ws = tmp_path / "ws"
     scenario = {"cleanup_workspace": True}
@@ -560,7 +571,7 @@ async def test_sandbox_scenario_cleanup_workspace_override(tmp_path):
 def test_sandbox_service_unregister_interceptor():
     """
     Mutation Assurance Test: Verifies register/unregister interceptor logic
-    (kills if x is not interceptor -> is at line 313 in tool_sandbox.py).
+    (kills if x is not interceptor).
     """
     from eval_runner.tool_sandbox import ToolSandboxInterceptor, tool_sandbox_service
 
@@ -581,7 +592,7 @@ def test_sandbox_service_unregister_interceptor():
 def test_sandbox_read_shared_state_none_value(tmp_path):
     """
     Mutation Assurance Test: Verifies read shared state returns None when value is None
-    (kills val is None check at line 457 in tool_sandbox.py).
+    (kills val is None check).
     """
     scenario = {"shared_state_topology": {"agent1": {"reads": ["*"], "writes": ["*"]}}}
     sb = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
@@ -643,7 +654,7 @@ def test_sandbox_service_pipeline_multi_interceptor():
                 res = await tool_sandbox_service.isolate({"tool_name": "t"}, fallback)
                 assert res == {"status": "ok"}
 
-        # 2. Test Exception bypass (kills line 350 + -> -)
+        # 2. Test Exception bypass (kills + -> -)
         history.clear()
         i_fails = InterceptorFails()
         async with tool_sandbox_service.override_interceptor(i1):
@@ -668,7 +679,7 @@ def test_sandbox_service_pipeline_multi_interceptor():
         with pytest.raises(RecursionError, match="Max tool sandbox pipeline depth exceeded"):
             await service_loop_noop.isolate({"tool_name": "t"}, fallback)
 
-        # 4. Test Failing interceptors recursion depth (kills line 350 depth + 1 -> - 1)
+        # 4. Test Failing interceptors recursion depth (kills depth + 1 -> - 1)
         class InterceptorFailsSilent(ToolSandboxInterceptor):
             def can_isolate(self, name):
                 return True
@@ -682,7 +693,7 @@ def test_sandbox_service_pipeline_multi_interceptor():
         with pytest.raises(RecursionError, match="Max tool sandbox pipeline depth exceeded"):
             await service_loop_fails.isolate({"tool_name": "t"}, fallback)
 
-        # 5. Test Skipped interceptors recursion depth (kills line 352 depth + 1 -> - 1)
+        # 5. Test Skipped interceptors recursion depth (kills depth + 1 -> - 1)
         class InterceptorSkipped(ToolSandboxInterceptor):
             def can_isolate(self, name):
                 return False
@@ -696,7 +707,7 @@ def test_sandbox_service_pipeline_multi_interceptor():
         with pytest.raises(RecursionError, match="Max tool sandbox pipeline depth exceeded"):
             await service_loop_skipped.isolate({"tool_name": "t"}, fallback)
 
-        # 6. Skipped interceptor sequence progression (kills line 352 index + 1 -> - 1)
+        # 6. Skipped interceptor sequence progression (kills index + 1 -> - 1)
         history.clear()
         i_skip = InterceptorSkipped()
         async with tool_sandbox_service.override_interceptor(i1):
@@ -735,7 +746,7 @@ async def test_sandbox_nested_mkdir_parents_and_exist_ok(tmp_path):
 async def test_sandbox_cleanup_workspace_default_false(tmp_path):
     """
     Mutation Assurance Test: Verifies workspace is NOT deleted when cleanup_workspace is
-    False/absent (kills default False -> True mutation at line 227 in tool_sandbox.py).
+    False/absent (kills default False -> True mutation).
     """
     ws = tmp_path / "persist_ws"
     jail = tmp_path / "jail"
@@ -753,7 +764,7 @@ async def test_sandbox_cleanup_workspace_default_false(tmp_path):
 def test_resource_registry_missing_ok_unlink(tmp_path):
     """
     Mutation Assurance Test: Verifies path.unlink(missing_ok=True)
-    (kills missing_ok=True -> False mutation at line 36 in tool_sandbox.py).
+    (kills missing_ok=True -> False mutation).
     """
     from unittest.mock import patch
 
@@ -772,7 +783,7 @@ def test_resource_registry_missing_ok_unlink(tmp_path):
 async def test_sandbox_interceptor_depth_increment():
     """
     Mutation Assurance Test: Verifies depth increments during chained isolate calls
-    (kills depth + 1 -> depth - 1 mutation at line 352 in tool_sandbox.py).
+    (kills depth + 1 -> depth - 1 mutation).
     """
     from eval_runner.tool_sandbox import ToolSandboxInterceptor, ToolSandboxService
 
@@ -794,12 +805,15 @@ async def test_sandbox_interceptor_depth_increment():
 async def test_sandbox_read_shared_state_unauthorized_error(tmp_path):
     """
     Mutation Assurance Test: Verifies unauthorized read returns error when key exists
-    (kills val is None -> val is not None mutation at line 457 in tool_sandbox.py).
+    (kills val is None -> val is not None mutation).
     """
     scenario = {
+        "metadata": {
+            "agent_topology": {"agent_auth": {"reads": ["*"], "writes": ["*"]}},
+        },
         "tools": {"reader_tool": {"state_changes": []}},
-        "agent_topology": {"agent_auth": {"reads": ["*"], "writes": ["*"]}},
     }
+
     sb = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
     sb.shared_state.write("agent_auth", "auth:secret_key", "secret_value")
     # agent_unauth has no read permission for secret_key
@@ -813,7 +827,7 @@ async def test_sandbox_read_shared_state_unauthorized_error(tmp_path):
 def test_sandbox_shim_discovery_union_mutant(tmp_path, monkeypatch):
     """
     Mutation Assurance Test: Verifies set(shim_configs.keys()) | set(shim_classes.keys())
-    (kills | -> & mutation at line 582 in tool_sandbox.py).
+    (kills | -> & mutation).
     """
     from eval_runner import config, simulators
 
@@ -840,7 +854,7 @@ def test_sandbox_shim_discovery_union_mutant(tmp_path, monkeypatch):
 async def test_sandbox_execute_no_interceptors_clean_run(tmp_path):
     """
     Mutation Assurance Test: Verifies pipeline executes cleanly with 0 interceptors
-    (kills index >= len(interceptors_list) -> < mutation at line 333 in tool_sandbox.py).
+    (kills index >= len(interceptors_list) -> < mutation).
     """
     scenario = {"tools": {"direct_tool": {"state_changes": []}}}
     sb = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
@@ -852,7 +866,7 @@ async def test_sandbox_execute_no_interceptors_clean_run(tmp_path):
 async def test_sandbox_cleanup_workspace_default_false_with_subfiles(tmp_path):
     """
     Mutation Assurance Test: Verifies workspace is NOT deleted when cleanup_workspace is False
-    (kills default False -> True mutation at line 227 in tool_sandbox.py).
+    (kills default False -> True mutation).
     """
     scenario = {"cleanup_workspace": False}
     sb = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
@@ -869,7 +883,7 @@ def test_sandbox_scenario_enabled_shims_none_handling(tmp_path, monkeypatch):
     """
     Mutation Assurance Test: Verifies get_active_simulators activates relevant shims when
     enabled_shims is omitted (None) without raising TypeError or misrouting.
-    (kills is None -> is not None mutation in tool_sandbox.py).
+    (kills is None -> is not None mutation).
     """
     from eval_runner import config, simulators
 
@@ -898,3 +912,156 @@ def test_sandbox_scenario_enabled_shims_none_handling(tmp_path, monkeypatch):
     monkeypatch.setattr(sb, "_get_scenario_relevant_shims", lambda: {"my_relevant"})
     shims = sb.get_active_simulators()
     assert "my_relevant" in shims
+
+
+@pytest.mark.asyncio
+async def test_sandbox_state_changes_multi_level_and_path_resolver(tmp_path):
+    """
+    Verifies that state_changes correctly performs multi-level hierarchical mutations
+    into initial_state across 1-level, 2-level, and 3-level deep paths, and confirms
+    compatibility with PathResolver.
+    """
+    from eval_runner.utils.path_resolver import PathResolver
+
+    scenario = {
+        "aes_version": 1.4,
+        "metadata": {
+            "id": "multi-level-test",
+            "name": "Multi Level Test",
+            "compliance_level": "Standard",
+            "agent_topology": {
+                "risk_agent": {"reads": ["risk:*"], "writes": ["risk:*"]},
+            },
+            "policies": {
+                "risk_assess": {
+                    "rules": [{"field": "score", "operator": "lte", "value": 0.5}],
+                },
+            },
+        },
+        "initial_state": {
+            "flat_key": "initial_flat",
+            "risk": {
+                "assessment": "pending",
+                "score": 0.18,
+            },
+            "ledger": {
+                "account": {
+                    "limits": {
+                        "daily": 1000.0,
+                    },
+                },
+            },
+        },
+        "tools": {
+            "risk_assess": {
+                "state_changes": [
+                    {"path": "flat_key", "value": "updated_flat"},
+                    {"path": "risk.assessment", "value": "approved"},
+                    {"path": "risk.details.confidence", "value": 0.99},
+                    {"path": "ledger.account.limits.daily", "value": 5000.0},
+                    {"path": "ledger.account.limits.currency", "value": "USD"},
+                ],
+                "output": {"status": "success", "message": "Risk assessed"},
+            },
+        },
+        "workflow": {
+            "nodes": [{"id": "t1", "task_description": "task", "required_tools": ["risk_assess"]}],
+            "edges": [],
+        },
+    }
+
+    sb = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+
+    # Before execution checks
+    assert PathResolver.resolve(sb.state, "risk.assessment") == "pending"
+    assert PathResolver.resolve(sb.state, "ledger.account.limits.daily") == 1000.0
+
+    res = await sb.execute("risk_assess", {"score": 0.2}, agent_name="risk_agent")
+    assert res["status"] == "success"
+
+    # Verify hierarchical nested dictionary mutation
+    assert sb.state["flat_key"] == "updated_flat"
+    assert sb.state["risk"]["assessment"] == "approved"
+    assert sb.state["risk"]["details"]["confidence"] == 0.99
+    assert sb.state["ledger"]["account"]["limits"]["daily"] == 5000.0
+    assert sb.state["ledger"]["account"]["limits"]["currency"] == "USD"
+
+    # Verify resolution via PathResolver
+    assert PathResolver.resolve(sb.state, "flat_key") == "updated_flat"
+    assert PathResolver.resolve(sb.state, "risk.assessment") == "approved"
+    assert PathResolver.resolve(sb.state, "risk.details.confidence") == 0.99
+    assert PathResolver.resolve(sb.state, "ledger.account.limits.daily") == 5000.0
+    assert PathResolver.resolve(sb.state, "ledger.account.limits.currency") == "USD"
+
+    # Policy was grounded and recorded
+    assert sb.grounding_hits["policies"]["risk_assess"] == 1
+
+
+@pytest.mark.asyncio
+async def test_sandbox_set_state_path_overwrites_non_dict_intermediate(tmp_path):
+    """
+    Verifies that _set_state_path correctly overwrites non-dict intermediate
+    values when creating nested paths.
+    """
+    scenario = {
+        "aes_version": 1.4,
+        "initial_state": {
+            "corrupt_node": "string_value_instead_of_dict",
+        },
+        "tools": {
+            "fix_node": {
+                "state_changes": [
+                    {"path": "corrupt_node.sub_field.leaf", "value": "leaf_value"},
+                ],
+                "output": {"status": "success"},
+            }
+        },
+        "workflow": {
+            "nodes": [{"id": "t1", "task_description": "task", "required_tools": ["fix_node"]}],
+            "edges": [],
+        },
+    }
+    sb = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+    res = await sb.execute("fix_node", {})
+    assert res["status"] == "success"
+    assert sb.state["corrupt_node"]["sub_field"]["leaf"] == "leaf_value"
+
+
+@pytest.mark.asyncio
+async def test_sandbox_strict_metadata_placement_enforcement(tmp_path):
+    """
+    Verifies that placing policies or agent_topology at root level (instead of metadata)
+    is NOT recognized by ToolSandbox, ensuring zero backward-compatibility masking.
+    """
+    scenario_with_root_entries = {
+        "aes_version": 1.4,
+        "policies": {
+            "gated_tool": {
+                "rules": [{"field": "amount", "operator": "lte", "value": 100}],
+            },
+        },
+        "agent_topology": {
+            "restricted_agent": {"reads": ["safe:*"], "writes": ["safe:*"]},
+        },
+        "tools": {
+            "gated_tool": {
+                "output": {"status": "success"},
+            },
+        },
+        "workflow": {
+            "nodes": [{"id": "t1", "task_description": "task", "required_tools": ["gated_tool"]}],
+            "edges": [],
+        },
+    }
+
+    sb = ToolSandbox(
+        scenario_with_root_entries, workspace_root=tmp_path, jail_root=tmp_path / "jail"
+    )
+
+    # Policy at root is NOT evaluated because it must reside under metadata
+    res = await sb.execute("gated_tool", {"amount": 500}, agent_name="restricted_agent")
+    assert res["status"] == "success"
+    assert "gated_tool" not in sb.grounding_hits["policies"]
+
+    # Topology at root is NOT in shared_state registry
+    assert "restricted_agent" not in sb.shared_state.topology

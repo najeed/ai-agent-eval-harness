@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Onboarding - Follow up on Abandoned Cart",
     "compliance_level": "Standard",
-    "id": "13852-follow-up-on-abandoned-cart"
+    "id": "13852-follow-up-on-abandoned-cart",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "An agent is tasked with calling a potential customer who started an online order but did not complete it.",
   "industry": "Telecom",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }

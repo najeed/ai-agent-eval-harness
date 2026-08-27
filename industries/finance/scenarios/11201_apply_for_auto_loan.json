@@ -3,7 +3,11 @@
   "metadata": {
     "name": "Apply for an Auto Loan",
     "compliance_level": "Standard",
-    "id": "11201-apply-for-auto-loan"
+    "id": "11201-apply-for-auto-loan",
+    "policies": {
+      "max_spend_limit": 500,
+      "requires_approval_for_destructive_actions": true
+    }
   },
   "description": "A customer wants to apply for a pre-approval for a $30,000 auto loan.",
   "industry": "Finance",
@@ -67,9 +71,5 @@
     "session_active": true,
     "user_authenticated": true,
     "system_status": "nominal"
-  },
-  "policies": {
-    "max_spend_limit": 500,
-    "requires_approval_for_destructive_actions": true
   }
 }
