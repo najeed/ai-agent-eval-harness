@@ -248,14 +248,31 @@ export const Dashboard: React.FC = () => {
           id: selectedScenarioObj.id || selectedScenarioId,
           title: selectedScenarioObj.title || selectedScenarioObj.metadata?.name,
           version: selectedScenarioObj.version || selectedScenarioObj.metadata?.version,
+          hash: selectedScenarioObj.metadata?.provisioning_hash,
         }}
         targetProfile={selectedProfile}
         tenantId={tenantId}
         workspaceId={workspaceId}
-        seed={42}
-        evaluators={['GroundTruthValidator', 'PolicyGuardrailsVerifier', 'StateHygieneChecker']}
+        seed={selectedScenarioObj.metadata?.seed ?? null}
+        runtimeBoundary={
+          selectedScenarioObj.metadata?.execution_mode
+            ? `Declared: ${selectedScenarioObj.metadata.execution_mode}`
+            : 'Standard Sandbox'
+        }
+        evaluators={
+          Array.from(
+            new Set([
+              ...(selectedScenarioObj.evaluation?.metrics?.map((m: any) => m.metric || m) || []),
+              ...(selectedScenarioObj.workflow?.nodes?.flatMap(
+                (n: any) => n.success_criteria?.map((sc: any) => sc.metric) || []
+              ) || []),
+            ])
+          ).filter(Boolean) as string[]
+        }
+        signingBackend={null}
         isLaunching={isLaunching}
       />
+
 
       {/* [Zero-state] Fastest path to first verified value */}
       {runs.length === 0 && (

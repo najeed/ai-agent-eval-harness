@@ -14,9 +14,12 @@
   },
   "include": [
     "src/lib/aesDocument.ts",
+    "src/lib/debuggerLogic.ts",
     "src/types/extension-contract.ts",
     "src/components/ExtensionLoadError.tsx",
     "src/components/RemoteErrorBoundary.tsx",
-    "tests/document-model/**/*.ts"
+    "tests/**/*.ts"
   ]
 }
+
+

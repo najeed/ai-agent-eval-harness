@@ -430,6 +430,8 @@ class TraceVerifier:
         evidence_root_hash: str | None = None,
         execution_mode: str | None = None,
         provisional: bool = False,
+        rubrics: dict[str, Any] | None = None,
+        consensus: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """
         Signs a trace file and issues a standardized Verification Certificate (VC) v3
@@ -565,6 +567,37 @@ class TraceVerifier:
             # [E2] Additive field within VC v3.0.0: the certificate commits to
             # the decision's evidence root hash over its assertion set.
             manifest["evidence_root_hash"] = evidence_root_hash
+
+        # Extract real consensus / rubrics from trace if present and not explicitly passed
+        extracted_consensus = consensus or (metadata.get("consensus") if metadata else None)
+        extracted_rubrics = rubrics or (metadata.get("rubrics") if metadata else None)
+        if (extracted_consensus is None or extracted_rubrics is None) and p.exists():
+            try:
+                with open(p, encoding="utf-8") as tf:
+                    for line in tf:
+                        if not line.strip():
+                            continue
+                        try:
+                            record = json.loads(line)
+                            if extracted_consensus is None and record.get("consensus"):
+                                extracted_consensus = record.get("consensus")
+                            if extracted_rubrics is None and record.get("rubrics"):
+                                extracted_rubrics = record.get("rubrics")
+                            if record.get("event") == "workflow_verdict":
+                                if extracted_consensus is None and record.get("consensus"):
+                                    extracted_consensus = record.get("consensus")
+                                if extracted_rubrics is None and record.get("rubrics"):
+                                    extracted_rubrics = record.get("rubrics")
+                        except Exception:
+                            pass
+            except Exception:
+                pass
+
+        if extracted_consensus:
+            manifest["consensus"] = extracted_consensus
+        if extracted_rubrics:
+            manifest["rubrics"] = extracted_rubrics
+
         # [VC-Trust B] REQUIRED truth-level stamping (2026-08 waiver, no
         # version bump): every certificate states the run's execution mode.
         # Whitelist enforcement here too (defense in depth): SessionManager

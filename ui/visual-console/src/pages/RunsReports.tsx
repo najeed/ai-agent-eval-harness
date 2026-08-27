@@ -204,8 +204,11 @@ export const RunsReports: React.FC = () => {
                 { key: 'All', label: 'All' },
                 { key: 'VERIFIED', label: 'Verified' },
                 { key: 'FAILED_VERIFICATION', label: 'Failed Verification' },
+                { key: 'NOT_EXECUTED', label: 'Not Executed' },
+                { key: 'ERROR', label: 'Error' },
                 { key: 'UNKNOWN', label: 'Unknown' },
               ].map((st) => (
+
                 <button
                   key={st.key}
                   onClick={() => setStatusFilter(st.key)}

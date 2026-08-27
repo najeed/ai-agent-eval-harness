@@ -40,6 +40,7 @@ from .execution_ir import (  # noqa: E402
     PlanValidationError,
     WorkflowStatus,
     compile_workflow,
+    derive_oracle_id,
 )
 from .forensics import ForensicCollector  # noqa: E402
 from .session_components import (  # noqa: E402
@@ -55,6 +56,7 @@ from .utils import crypto  # noqa: E402
 from .workflow_interpreter import WorkflowInterpreter  # noqa: E402
 
 # Security Guardrails: Fork Bomb Prevention
+
 MAX_FORK_DEPTH = config.MAX_FORK_DEPTH
 MAX_FORK_BREADTH = config.MAX_FORK_BREADTH
 
@@ -74,6 +76,7 @@ class ExecutionInstanceContext:
     identity: ExecutionIdentity
     sandbox: Any
     history: list[dict[str, Any]] = field(default_factory=list)
+    initial_history_len: int = 0
     actions: dict[str, Any] = field(default_factory=lambda: {"used_tools": []})
     turns_taken: int = 0
     state_before: dict[str, Any] | None = None
@@ -551,6 +554,7 @@ class SessionManager:
                     identity=identity,
                     sandbox=branch_sandbox,
                     history=branch_history,
+                    initial_history_len=len(branch_history),
                     actions=branch_actions,
                     state_before=state_before,
                 )
@@ -668,15 +672,16 @@ class SessionManager:
                 for eid, ctx in instance_contexts.items()
                 if not any(c.parent_execution_id == eid for c in instance_contexts.values())
             ]
-            global_cumulative_history = (
-                leaf_contexts[0].history
-                if len(leaf_contexts) == 1
-                else [
+            if len(leaf_contexts) == 1:
+                global_cumulative_history = leaf_contexts[0].history
+            else:
+                # Deduplicate DAG history on unmerged parallel fan-out:
+                # Each context contributes its local interactions without duplicating ancestors
+                global_cumulative_history = [
                     item
-                    for ctx in (leaf_contexts or list(instance_contexts.values()))
-                    for item in ctx.history
+                    for ctx in instance_contexts.values()
+                    for item in ctx.history[ctx.initial_history_len :]
                 ]
-            )
 
             # 🧬 Global Evaluation Pass (Industrial AES v1.6.0)
             # Process metrics defined at the scenario level (e.g. DNA_STABLE)
@@ -1348,11 +1353,7 @@ class SessionManager:
                 if idx < len(declared_criteria) and isinstance(declared_criteria[idx], dict)
                 else {}
             )
-            oid = str(
-                crit.get("id")
-                or row.get("oracle_id")
-                or f"{node_id}:sc:{crit.get('metric') or row.get('metric', idx)}"
-            )
+            oid = derive_oracle_id("sc", node_id, crit if crit else row, idx)
             row["oracle_id"] = oid
             req = bool(crit.get("required", row.get("required", True)))
             req_level = str(
@@ -1379,11 +1380,7 @@ class SessionManager:
                 if idx < len(declared_rules) and isinstance(declared_rules[idx], dict)
                 else {}
             )
-            oid = str(
-                rule.get("id")
-                or row.get("oracle_id")
-                or f"{node_id}:hygiene:{rule.get('path') or row.get('path', idx)}"
-            )
+            oid = derive_oracle_id("hygiene", node_id, rule if rule else row, idx)
             row["oracle_id"] = oid
             req = bool(rule.get("required", row.get("required", True)))
             req_level = str(
@@ -1411,17 +1408,13 @@ class SessionManager:
                 if idx < len(declared_outcomes) and isinstance(declared_outcomes[idx], dict)
                 else {}
             )
-            target_str = str(
-                out_decl.get("target") or assertion_dict.get("target") or row.get("target", idx)
+            entry_for_id = out_decl if out_decl else (assertion_dict if assertion_dict else row)
+            is_synthetic_na = (
+                entry_for_id.get("target") == "__state_parity__" or not declared_outcomes
             )
-            is_synthetic_na = target_str == "__state_parity__" or not declared_outcomes
-            oid = str(
-                out_decl.get("id")
-                or assertion_dict.get("id")
-                or row.get("oracle_id")
-                or f"{node_id}:parity:{target_str}"
-            )
+            oid = derive_oracle_id("parity", node_id, entry_for_id, idx)
             row["oracle_id"] = oid
+
             if is_synthetic_na:
                 req = False
                 req_level = "OPTIONAL"

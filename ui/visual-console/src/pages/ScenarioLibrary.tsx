@@ -103,8 +103,9 @@ export const ScenarioLibrary: React.FC = () => {
 
   const handleBulkExecute = () => {
     if (selectedIds.length === 0) return;
-    navigate(`/runner?scenarios=${selectedIds.join(',')}`);
+    navigate(`/?scenario_id=${encodeURIComponent(selectedIds[0])}&scenarios=${encodeURIComponent(selectedIds.join(','))}`);
   };
+
 
   const handleBulkMutate = async () => {
     if (selectedIds.length === 0) return;

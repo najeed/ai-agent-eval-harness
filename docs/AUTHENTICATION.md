@@ -79,8 +79,12 @@ In production environments (`AGENTV_ENV=production`):
   - `exp`: 15 minutes (900 seconds)
   - `jti`: Unique token nonce
 
-### Verification
-Endpoints handling extension communication apply `@handoff_required`, decoding and validating the token signature and audience against the active signing secret.
+### Verification & Capability Boundary Status
+- **Server Enforcement**: Handled via `eval_runner.console.auth.handoff_required` decorator, which validates `X-Handoff-Token` or `?token=` parameter for audience (`agentv-plugin`), signature, and expiration against `JWT_SECRET`.
+- **Client Manifest Capabilities**: Extension declared capabilities (e.g. `canCallHostApi`, `canReadRuns`) and Subresource Integrity (SHA-384 SRI) are currently validated client-side by the Extension Host module loader upon importing signed plugin manifests.
+- **Open Architectural Decision (Iframe & Realm Isolation)**:
+  - *Current OSS Boundary*: Remote components are dynamically loaded as ECMAScript modules (ESM) into the host realm, gated by cryptographic signature and SRI verification.
+  - *Target Boundary (v2.1+)*: Transitioning to cross-origin sandboxed `<iframe>` or ShadowRealm execution with structured `postMessage` RPC to prevent untrusted plugins from accessing host DOM, window storage, or memory.
 
 ---
 
@@ -90,9 +94,10 @@ Endpoints handling extension communication apply `@handoff_required`, decoding a
 |---|---|---|---|
 | **PQC Verification** | ML-DSA-65 / Falcon-512 | NIST FIPS 204 Post-Quantum | `TraceVerifier` & Flight Recorder |
 | **Integrity Checks** | SHA-384 SRI | Subresource Integrity Digest | ESM Module & Asset Fetch |
-| **Extension Trust** | Signed Manifests | Ed25519 / RSA Keyroot | Extension Host & SRI Gating |
+| **Extension Trust** | Signed Manifests | Ed25519 / RSA Keyroot | Extension Host & SRI Gating (Client Verified) |
 | **Runtime Sessions** | Flask Session Cookies | itsdangerous / HMAC-SHA256 | Console Web Gateway |
-| **Plugin Handoff** | Scoped JWTs | HMAC-SHA256 (Audience Bound) | `/api/auth/handoff` |
+| **Plugin Handoff** | Scoped JWTs | HMAC-SHA256 (Audience Bound) | `/api/auth/handoff` & `@handoff_required` |
+
 
 ---
 

@@ -87,6 +87,14 @@ export const VerificationWorkflow: React.FC = () => {
   const [boundScenarioHash, setBoundScenarioHash] = useState('');
   const verdict: string | null = null;
 
+  useEffect(() => {
+    const sId = searchParams.get('scenario_id') || searchParams.get('scenarios');
+    if (sId) {
+      setScenarioId(sId.split(',')[0].trim());
+    }
+  }, [searchParams]);
+
+
   // Authoritative runtime health; never render READY without this.
   const healthQuery = useQuery<RuntimeHealth>({
     queryKey: ['runtime-health'],
@@ -162,15 +170,38 @@ export const VerificationWorkflow: React.FC = () => {
   };
 
   // Reset preflight when any execution parameter changes; a stale pass
-  // must never authorize a launch against a different configuration.
-  const onParamChange = <T,>(setter: (v: T) => void) => (v: T) => {
-    setter(v);
-    setPreflightResult(null);
-    setLaunchError('');
-  };
+  const [availableProtocols, setAvailableProtocols] = useState<string[]>([
+    'http',
+    'http_rest',
+    'sse',
+    'socket',
+    'ollama',
+    'openai',
+    'anthropic',
+    'gemini',
+  ]);
+
+  useEffect(() => {
+    // Dynamic protocol discovery from Runtime health
+    fetch('/api/v1/doctor')
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data && Array.isArray(data.available_protocols) && data.available_protocols.length > 0) {
+          setAvailableProtocols(data.available_protocols);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const launchEvaluation = async () => {
-    if (!scenarioId || !endpoint.trim()) return;
+    if (!scenarioId || !endpoint.trim()) {
+      setLaunchError('Please specify a valid Scenario ID and Agent Endpoint.');
+      return;
+    }
+    if (!preflightResult || !preflightResult.ready) {
+      setLaunchError('Cannot launch: a passing preflight check is required.');
+      return;
+    }
     setLaunching(true);
     setLaunchError('');
     const found = scenarios.find(s => s.id === scenarioId);
@@ -188,7 +219,7 @@ export const VerificationWorkflow: React.FC = () => {
           runtime_config: { max_turns: parseInt(maxTurns) || 10 },
           metadata: {
             notes: sessionNotes || undefined,
-            preflight_fingerprint: preflightResult?.fingerprint,
+            preflight_fingerprint: preflightResult.fingerprint,
           },
         }),
       });
@@ -205,6 +236,7 @@ export const VerificationWorkflow: React.FC = () => {
       setLaunching(false);
     }
   };
+
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
@@ -280,15 +312,12 @@ export const VerificationWorkflow: React.FC = () => {
               onChange={e => onParamChange(setProtocol)(e.target.value)}
               className="mt-1 w-full bg-slate-900 border border-slate-800 rounded px-2 py-1.5 text-xs text-slate-200"
             >
-              <option value="http_rest">http_rest</option>
-              <option value="http">http</option>
-              <option value="sse">sse</option>
-              <option value="ollama">ollama</option>
-              <option value="openai">openai</option>
-              <option value="anthropic">anthropic</option>
-              <option value="gemini">gemini</option>
+              {availableProtocols.map(p => (
+                <option key={p} value={p}>{p}</option>
+              ))}
             </select>
           </label>
+
           <label className="text-[11px] uppercase tracking-wider text-slate-500 font-bold">
             Endpoint
             <input
@@ -451,18 +480,24 @@ export const VerificationWorkflow: React.FC = () => {
 
             <button
               onClick={launchEvaluation}
-              disabled={launching || !canRunEval}
+              disabled={launching || !canRunEval || !preflightResult?.ready}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-600 text-white text-xs font-bold transition-colors"
             >
               <PlayCircle className="w-4 h-4" />
               {launching ? 'Initializing job…' : 'Launch evaluation'}
             </button>
+            {!preflightResult?.ready && (
+              <p className="text-[10px] text-amber-400 font-medium">
+                Preflight validation required: complete and pass preflight check before launch.
+              </p>
+            )}
             {boundScenarioHash && (
               <p className="text-[10px] font-mono text-slate-500">
                 bound revision:{' '}
                 <span className="text-slate-400">{boundScenarioHash.slice(0, 19)}…</span>
               </p>
             )}
+
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
               <input
                 value={runId}

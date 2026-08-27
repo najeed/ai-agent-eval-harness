@@ -129,6 +129,14 @@
     "provisional": {
       "type": "boolean",
       "description": "True when execution_mode was not explicitly declared by the operator or could not be determined from the run vault. Provisional certificates must never back audit claims."
+    },
+    "consensus": {
+      "type": "object",
+      "description": "Multi-judge consensus quorum and agreement metrics from evaluation"
+    },
+    "rubrics": {
+      "type": "object",
+      "description": "Fiduciary or rubric-based scoring results"
     }
   }
 }

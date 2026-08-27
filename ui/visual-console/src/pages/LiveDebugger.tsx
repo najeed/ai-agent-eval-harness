@@ -142,14 +142,8 @@ export const buildWaterfall = (
     (a.startTs ?? Infinity) - (b.startTs ?? Infinity) || a.execId.localeCompare(b.execId)
   );
 
-  // [Sprint-6 markers] Attach tool/assertion/failure ticks to the row whose
-  // time window contains them (authoritative node join via scenario_node_id).
-  const rowsByNode = new Map<string, WaterfallRow[]>();
-  for (const r of rows) {
-    const list = rowsByNode.get(r.nodeId) || [];
-    list.push(r);
-    rowsByNode.set(r.nodeId, list);
-  }
+  // [Sprint-6 markers] Attach tool/assertion/failure ticks via authoritative execution_instance_id
+  const rowsByExecId = byId;
   for (const e of allEvents) {
     if (
       e.event !== 'tool_call' &&
@@ -159,28 +153,43 @@ export const buildWaterfall = (
     ) {
       continue;
     }
+    const execId = e.execution_instance_id;
     const nodeId = e.scenario_node_id || e.node_id || e.task_id;
-    if (!nodeId) continue;
     const ts = Date.parse(e.timestamp || '');
     if (Number.isNaN(ts)) continue;
-    const candidates = rowsByNode.get(nodeId);
-    if (!candidates?.length) continue;
-    const within = candidates.find(
-      r => r.startTs !== null && r.endTs !== null && ts >= r.startTs && ts <= r.endTs
-    );
-    const target = within || candidates[candidates.length - 1];
-    target.markers.push({
-      t: ts,
-      kind:
-        e.event === 'tool_call'
-          ? 'tool_call'
-          : e.event === 'tool_result'
-            ? 'tool_result'
-            : e.event === 'evaluation'
-              ? 'evaluation'
-              : 'error',
-    });
+
+    let target: WaterfallRow | undefined;
+    if (execId && rowsByExecId.has(execId)) {
+      target = rowsByExecId.get(execId);
+    } else if (nodeId) {
+      const candidates = rowsByNode.get(nodeId);
+      if (candidates?.length) {
+        if (typeof e.iteration === 'number') {
+          target = candidates.find(r => r.iteration === e.iteration);
+        }
+        if (!target) {
+          target = candidates.find(
+            r => r.startTs !== null && r.endTs !== null && ts >= r.startTs && ts <= r.endTs
+          );
+        }
+      }
+    }
+
+    if (target) {
+      target.markers.push({
+        t: ts,
+        kind:
+          e.event === 'tool_call'
+            ? 'tool_call'
+            : e.event === 'tool_result'
+              ? 'tool_result'
+              : e.event === 'evaluation'
+                ? 'evaluation'
+                : 'error',
+      });
+    }
   }
+
   for (const r of rows) r.markers.sort((a, b) => a.t - b.t);
 
   const starts = rows.map(r => r.startTs).filter((v): v is number => v !== null);
@@ -366,40 +375,41 @@ const resolveTelemetryNodeId = (e: LogEvent): string | undefined =>
 
 export const computeTelemetryDiagnostics = (allEvents: LogEvent[]): NodeDiagnostic[] => {
   const diagnostics: NodeDiagnostic[] = [];
-  const seen = new Set<string>();
+  const canonicallyCovered = new Set<string>();
+  const eventsByNode = new Map<string, LogEvent[]>();
 
-  // Nodes with authoritative canonical coverage are excluded: their status is
-  // already runtime-authoritative and requires no heuristic assistance.
-  const canonicallyCovered = new Set(
-    allEvents
-      .filter(e => e.event === 'execution_graph_node')
-      .map(e => e.scenario_node_id)
-      .filter((id): id is string => !!id)
-  );
+  // Single O(N) pass to index events by nodeId and collect canonical nodes
+  for (const e of allEvents) {
+    if (e.event === 'execution_graph_node') {
+      if (e.scenario_node_id) canonicallyCovered.add(e.scenario_node_id);
+    } else {
+      const nodeId = resolveTelemetryNodeId(e);
+      if (nodeId) {
+        let list = eventsByNode.get(nodeId);
+        if (!list) {
+          list = [];
+          eventsByNode.set(nodeId, list);
+        }
+        list.push(e);
+      }
+    }
+  }
 
-  for (const ev of allEvents) {
-    const nodeId = resolveTelemetryNodeId(ev);
-    if (!nodeId || seen.has(nodeId) || canonicallyCovered.has(nodeId)) continue;
-
-    const group = allEvents.filter(
-      e =>
-        e.event !== 'execution_graph_node' &&
-        resolveTelemetryNodeId(e) === nodeId
-    );
-    seen.add(nodeId);
+  for (const [nodeId, group] of eventsByNode.entries()) {
+    if (canonicallyCovered.has(nodeId)) continue;
 
     const signals: string[] = [];
     let suspectedStatus: NodeDiagnostic['suspectedStatus'] | undefined;
 
+    // Structured failure/verdict evidence check first
     if (group.some(e =>
       e.event === 'error' ||
+      (e.event === 'evaluation' && e.status === 'failed') ||
       e.category === 'PARITY_STATE_DIVERGENCE' ||
-      (e.status && e.status.toLowerCase() === 'failed') ||
-      e.message?.toLowerCase().includes('error') ||
-      e.message?.toLowerCase().includes('fail')
+      (e.status && e.status.toLowerCase() === 'failed')
     )) {
       suspectedStatus = 'failed';
-      signals.push('error/failure signal in generic telemetry');
+      signals.push('structured error or failed verdict in telemetry');
     } else if (group.some(e =>
       (e.status && e.status.toLowerCase() === 'completed') ||
       e.event === 'maneuver_end' ||
@@ -407,18 +417,18 @@ export const computeTelemetryDiagnostics = (allEvents: LogEvent[]): NodeDiagnost
       e.result === 'success'
     )) {
       suspectedStatus = 'completed';
-      signals.push('completion signal in generic telemetry');
+      signals.push('completion signal in telemetry');
     } else if (group.some(e =>
       (e.status && e.status.toLowerCase() === 'running') ||
       e.event === 'node_start' ||
       e.event === 'maneuver_start'
     )) {
       suspectedStatus = 'running';
-      signals.push('activity signal in generic telemetry');
+      signals.push('activity signal in telemetry');
     }
 
     if (suspectedStatus) {
-      const firstMatch = group.find(e => resolveTelemetryNodeId(e) === nodeId);
+      const firstMatch = group[0];
       diagnostics.push({
         nodeId,
         suspectedStatus,
@@ -428,9 +438,9 @@ export const computeTelemetryDiagnostics = (allEvents: LogEvent[]): NodeDiagnost
     }
     if (diagnostics.length >= 50) break;
   }
-
   return diagnostics;
 };
+
 
 export const LiveDebugger: React.FC = () => {
   const [searchParams] = useSearchParams();

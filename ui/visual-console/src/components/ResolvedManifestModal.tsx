@@ -18,8 +18,10 @@ interface ResolvedManifestModalProps {
   targetProfile: AgentTargetProfile;
   tenantId: string;
   workspaceId: string;
-  seed: number;
-  evaluators: string[];
+  seed?: number | null;
+  runtimeBoundary?: string;
+  evaluators?: string[];
+  signingBackend?: string | null;
   isLaunching?: boolean;
 }
 
@@ -32,14 +34,14 @@ export const ResolvedManifestModal: React.FC<ResolvedManifestModalProps> = ({
   tenantId,
   workspaceId,
   seed,
-  evaluators,
+  runtimeBoundary,
+  evaluators = [],
+  signingBackend,
   isLaunching = false,
 }) => {
   if (!isOpen) return null;
 
-  const contentHash =
-    scenario.hash ||
-    `sha3_256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`;
+  const contentHash = scenario.hash || 'Computed at execution (Unsealed)';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
@@ -53,7 +55,7 @@ export const ResolvedManifestModal: React.FC<ResolvedManifestModalProps> = ({
             <div>
               <h2 className="text-base font-bold text-slate-100">Review Resolved Execution Manifest</h2>
               <p className="text-xs text-slate-400">
-                Immutable, reproducible preflight configuration for enterprise auditability.
+                Authoritative preflight configuration derived from runtime resolution.
               </p>
             </div>
           </div>
@@ -79,11 +81,15 @@ export const ResolvedManifestModal: React.FC<ResolvedManifestModalProps> = ({
             </div>
             <div>
               <span className="text-[10px] text-slate-500 uppercase block">Deterministic Seed</span>
-              <span className="text-amber-400 font-semibold">{seed}</span>
+              <span className="text-amber-400 font-semibold">
+                {typeof seed === 'number' ? seed : 'Auto (Stochastic)'}
+              </span>
             </div>
             <div>
               <span className="text-[10px] text-slate-500 uppercase block">Runtime Boundary</span>
-              <span className="text-emerald-400 font-semibold">Strict VFS Jail</span>
+              <span className="text-emerald-400 font-semibold truncate block">
+                {runtimeBoundary || 'Standard Sandbox'}
+              </span>
             </div>
           </div>
 
@@ -91,10 +97,10 @@ export const ResolvedManifestModal: React.FC<ResolvedManifestModalProps> = ({
           <div className="bg-slate-950/40 p-4 rounded-xl border border-slate-800 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-                <FileCode className="w-4 h-4 text-indigo-400" /> Scenario Assurance Target
+                <FileCode className="w-4 h-4 text-indigo-400" /> Scenario Target
               </span>
               <span className="text-[11px] font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-                v{scenario.version || '1.4.0'}
+                AES v{scenario.version || '1.4'}
               </span>
             </div>
             <div className="text-sm font-medium text-white">{scenario.title || scenario.id}</div>
@@ -107,7 +113,7 @@ export const ResolvedManifestModal: React.FC<ResolvedManifestModalProps> = ({
           <div className="bg-slate-950/40 p-4 rounded-xl border border-slate-800 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-                <Cpu className="w-4 h-4 text-emerald-400" /> Resolved Target Configuration
+                <Cpu className="w-4 h-4 text-emerald-400" /> Target Configuration
               </span>
               <span className="text-[11px] font-mono text-emerald-400 uppercase">
                 {targetProfile.provider}
@@ -136,19 +142,34 @@ export const ResolvedManifestModal: React.FC<ResolvedManifestModalProps> = ({
           {/* Active Evaluators & Signers */}
           <div className="bg-slate-950/40 p-4 rounded-xl border border-slate-800 space-y-2">
             <span className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-              <Key className="w-4 h-4 text-amber-400" /> Active Evaluators & Verification Sealers
+              <Key className="w-4 h-4 text-amber-400" /> Active Oracles & Verification Sealer
             </span>
             <div className="flex flex-wrap gap-1.5 pt-1">
-              {evaluators.map((ev, i) => (
-                <span
-                  key={i}
-                  className="px-2 py-0.5 rounded bg-slate-900 border border-slate-700/80 text-[11px] font-mono text-slate-300 flex items-center gap-1"
-                >
-                  <CheckCircle2 className="w-3 h-3 text-emerald-400" /> {ev}
+              {evaluators.length > 0 ? (
+                evaluators.map((ev, i) => (
+                  <span
+                    key={i}
+                    className="px-2 py-0.5 rounded bg-slate-900 border border-slate-700/80 text-[11px] font-mono text-slate-300 flex items-center gap-1"
+                  >
+                    <CheckCircle2 className="w-3 h-3 text-emerald-400" /> {ev}
+                  </span>
+                ))
+              ) : (
+                <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-700/80 text-[11px] font-mono text-slate-400">
+                  Default Workflow Oracles
                 </span>
-              ))}
-              <span className="px-2 py-0.5 rounded bg-indigo-950/40 border border-indigo-500/30 text-[11px] font-mono text-indigo-300 flex items-center gap-1">
-                <ShieldCheck className="w-3 h-3 text-indigo-400" /> PQC Post-Quantum Signer (Ed25519)
+              )}
+              <span className={`px-2 py-0.5 rounded border text-[11px] font-mono flex items-center gap-1 ${
+                signingBackend && signingBackend !== 'ephemeral'
+                  ? 'bg-indigo-950/40 border-indigo-500/30 text-indigo-300'
+                  : 'bg-slate-950 border-slate-800 text-slate-500'
+              }`}>
+                <ShieldCheck className="w-3 h-3" />
+                {signingBackend === 'ed25519'
+                  ? 'Ed25519 Flight Recorder Signer'
+                  : signingBackend === 'ml-dsa-65'
+                    ? 'ML-DSA-65 PQC Signer'
+                    : 'Unsigned / Ephemeral Execution'}
               </span>
             </div>
           </div>
@@ -179,3 +200,4 @@ export const ResolvedManifestModal: React.FC<ResolvedManifestModalProps> = ({
     </div>
   );
 };
+

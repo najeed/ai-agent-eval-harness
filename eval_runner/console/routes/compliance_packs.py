@@ -336,12 +336,18 @@ def test_pack(pack_id):
             rubric = chk_params.get("rubric", "fiduciary_accuracy")
             min_score = chk_params.get("min_score", 0.8)
 
-            # Query real rubric score from certificate, manifest, or analysis
-            rubrics = cert_data.get("rubrics", {}) or cert_data.get("metrics", {})
+            # Query real rubric score from certificate, manifest, or consensus metadata
+            rubrics = (
+                cert_data.get("rubrics", {})
+                or cert_data.get("metrics", {})
+                or cert_data.get("metadata", {}).get("rubrics", {})
+            )
             actual_score = rubrics.get(rubric) if isinstance(rubrics, dict) else None
             if actual_score is None:
                 # Fallback to general compliance score if single rubric is declared
-                actual_score = cert_data.get("compliance_score")
+                actual_score = cert_data.get("compliance_score") or cert_data.get(
+                    "compliance", {}
+                ).get("score")
 
             if actual_score is not None and isinstance(actual_score, int | float):
                 if actual_score >= min_score:
@@ -364,13 +370,19 @@ def test_pack(pack_id):
         elif chk_type == "ija_threshold":
             min_val = chk_params.get("min_value", 0.75)
 
-            # Query real Independent Judge Assessment index
-            actual_ija = (
-                cert_data.get("ija_score")
-                or cert_data.get("metrics", {}).get("ija_threshold")
-                or analysis.get("ija_index")
-                or analysis.get("consensus_agreement")
-            )
+            # Query real Independent Judge Assessment index from consensus engine / certificate
+            consensus_obj = cert_data.get("consensus", {})
+            actual_ija = None
+            if isinstance(consensus_obj, dict) and "agreement" in consensus_obj:
+                actual_ija = consensus_obj.get("agreement")
+
+            if actual_ija is None:
+                actual_ija = (
+                    cert_data.get("ija_score")
+                    or cert_data.get("metrics", {}).get("ija_threshold")
+                    or analysis.get("ija_index")
+                    or analysis.get("consensus_agreement")
+                )
             if actual_ija is None and "compliance_score" in cert_data:
                 actual_ija = cert_data.get("compliance_score")
 

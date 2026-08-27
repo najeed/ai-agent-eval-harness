@@ -554,35 +554,6 @@ const ConsoleLayout: React.FC = () => {
   });
 
   useEffect(() => {
-    // Intercept window fetch for authentication diagnostics.
-    // [Adoption fix] Scoped to AUTH endpoints only: a 401/403 from any other
-    // API is a contextual authorization result (RBAC denial, missing run,
-    // etc.) and must not be mislabeled as "invalid credentials".
-    const originalFetch = window.fetch;
-    window.fetch = async (...args) => {
-      try {
-        const response = await originalFetch(...args);
-        const reqUrl =
-          typeof args[0] === 'string'
-            ? args[0]
-            : (args[0] as Request)?.url ?? '';
-        const isAuthEndpoint =
-          reqUrl.includes('/api/auth/') ||
-          reqUrl.includes('/api/v1/extensions/verify-publisher');
-        if (isAuthEndpoint && (response.status === 401 || response.status === 403)) {
-          window.dispatchEvent(new CustomEvent('agentv-toast', {
-            detail: { message: 'Authentication Failure: Invalid API credentials.', type: 'error' }
-          }));
-        }
-        return response;
-      } catch (err: any) {
-        window.dispatchEvent(new CustomEvent('agentv-toast', {
-          detail: { message: `Harness Connection Error: ${err.message}`, type: 'warning' }
-        }));
-        throw err;
-      }
-    };
-
     const handleToast = (e: Event) => {
       const detail = (e as CustomEvent).detail;
       const id = Math.random().toString(36).substr(2, 9);
@@ -594,10 +565,10 @@ const ConsoleLayout: React.FC = () => {
 
     window.addEventListener('agentv-toast', handleToast);
     return () => {
-      window.fetch = originalFetch;
       window.removeEventListener('agentv-toast', handleToast);
     };
   }, []);
+
 
   const toggleGroup = (title: string) => {
     setExpandedGroups(prev => ({ ...prev, [title]: !prev[title] }));

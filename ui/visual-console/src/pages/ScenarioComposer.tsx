@@ -421,9 +421,16 @@ export const ScenarioComposer: React.FC = () => {
   };
 
   const addNode = () => {
-    const nextId = `node_${nodes.length + 1}`;
+    const existingIds = new Set(nodes.map(n => n.id));
+    let counter = nodes.length + 1;
+    let nextId = `node_${counter}`;
+    while (existingIds.has(nextId)) {
+      counter += 1;
+      nextId = `node_${counter}`;
+    }
     const newNode = {
       id: nextId,
+
       type: 'default',
       position: { x: 200 + nodes.length * 50, y: 200 + (nodes.length % 2) * 50 },
       data: {

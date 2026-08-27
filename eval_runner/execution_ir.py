@@ -426,6 +426,36 @@ class WorkflowPlan:
         )
 
 
+def derive_oracle_id(
+    kind: str,
+    node_id: str,
+    entry: dict[str, Any],
+    idx: int = 0,
+) -> str:
+    """
+    Derives a canonical, stable oracle ID for success criteria, state hygiene, or expected outcomes.
+    Acts as the single source of truth across compile-time IR validation and runtime reconciliation.
+    """
+    explicit = entry.get("id") or entry.get("oracle_id")
+    if explicit is not None and str(explicit).strip():
+        return str(explicit).strip()
+
+    if kind in ("sc", "success_criteria"):
+        val = entry.get("metric")
+        suffix = str(val) if val is not None and str(val).strip() else str(idx)
+        return f"{node_id}:sc:{suffix}"
+    if kind in ("hygiene", "state_hygiene", "sh"):
+        val = entry.get("path")
+        suffix = str(val) if val is not None and str(val).strip() else str(idx)
+        return f"{node_id}:hygiene:{suffix}"
+    if kind in ("parity", "expected_outcome", "eo"):
+        val = entry.get("target")
+        suffix = str(val) if val is not None and str(val).strip() else str(idx)
+        return f"{node_id}:parity:{suffix}"
+
+    return f"{node_id}:{kind}:{idx}"
+
+
 def compile_evaluation_plan(
     scenario: dict[str, Any], plan: WorkflowPlan | None = None
 ) -> CompiledEvaluationPlan:
@@ -458,7 +488,7 @@ def compile_evaluation_plan(
                         f"Malformed success_criteria on node '{node_id}': "
                         f"expected dict, got {type(c).__name__}"
                     )
-                oid = str(c.get("id") or f"{node_id}:sc:{c.get('metric', idx)}")
+                oid = derive_oracle_id("sc", node_id, c, idx)
                 if oid in eval_plan.oracles:
                     raise PlanValidationError(
                         f"Duplicate oracle_id '{oid}' declared in evaluation plan. "
@@ -499,7 +529,7 @@ def compile_evaluation_plan(
                             f"Malformed state_hygiene rule on node '{node_id}': "
                             f"expected dict, got {type(r).__name__}"
                         )
-                    oid = str(r.get("id") or f"{node_id}:hygiene:{r.get('path', idx)}")
+                    oid = derive_oracle_id("hygiene", node_id, r, idx)
                     if oid in eval_plan.oracles:
                         raise PlanValidationError(
                             f"Duplicate oracle_id '{oid}' declared in evaluation plan. "
@@ -532,12 +562,13 @@ def compile_evaluation_plan(
                         f"Malformed expected_outcome on node '{node_id}': "
                         f"expected dict, got {type(o).__name__}"
                     )
-                oid = str(o.get("id") or f"{node_id}:parity:{o.get('target', idx)}")
+                oid = derive_oracle_id("parity", node_id, o, idx)
                 if oid in eval_plan.oracles:
                     raise PlanValidationError(
                         f"Duplicate oracle_id '{oid}' declared in evaluation plan. "
                         "Oracle identifiers must be unique across all assertions."
                     )
+
                 target = str(o.get("target") or o.get("property") or "state")
                 req = bool(o.get("required", True))
                 req_level = str(
