@@ -360,10 +360,13 @@ async def test_engine_policy_violation():
     scenario = {
         "aes_version": 1.4,
         "id": "policy-test",
-        "metadata": {"name": "policy-test", "compliance_level": "Standard"},
+        "metadata": {
+            "name": "policy-test",
+            "compliance_level": "Standard",
+            "policies": {"apply_refund": {"max_limit": 50}},
+        },
         "industry": "test",
         "tools": {"apply_refund": {"output": {"status": "success"}}},
-        "policies": {"apply_refund": {"max_limit": 50}},
         "workflow": {
             "nodes": [
                 {
@@ -376,6 +379,7 @@ async def test_engine_policy_violation():
             "edges": [],
         },
     }
+
     responses = [
         {
             "action": "call_tool",

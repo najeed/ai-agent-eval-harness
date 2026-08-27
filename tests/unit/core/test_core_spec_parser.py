@@ -40,7 +40,6 @@ Calculate the score.
     assert scenario["metadata"]["name"] == "My Awesome App"
     assert scenario["industry"] == "Fintech"
     assert scenario["use_case"] == "Loan Approval"
-    assert scenario["core_function"] == "Credit Scoring"
     assert scenario["description"] == "This is a test 앱."
 
     # Nodes/Edges

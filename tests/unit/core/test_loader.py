@@ -12,13 +12,11 @@ from eval_runner import loader
 
 
 def test_load_valid_scenario(tmp_path):
-    """Test loading a valid scenario file with proper v1.2 JSON structure."""
+    """Test loading a valid scenario file with proper v1.4 JSON structure."""
     scenario_content = {
         "aes_version": 1.4,
-        "title": "Test Scenario",
         "description": "A test scenario.",
         "use_case": "Testing",
-        "core_function": "Unit Test",
         "metadata": {
             "name": "test_scenario",
             "id": "test_scenario",
@@ -119,7 +117,6 @@ def test_load_dataset_single_json(tmp_path):
     scenario_file = tmp_path / "test.json"
     scenario_data = {
         "aes_version": 1.4,
-        "title": "Test",
         "description": "Test description",
         "industry": "test",
         "metadata": {"name": "Test", "id": "test-123", "compliance_level": "Standard"},
@@ -138,7 +135,6 @@ def test_load_dataset_directory(tmp_path):
         json.dumps(
             {
                 "aes_version": 1.4,
-                "title": "S1",
                 "industry": "i1",
                 "description": "d1",
                 "metadata": {"name": "S1", "id": "s1", "compliance_level": "Standard"},
@@ -151,7 +147,6 @@ def test_load_dataset_directory(tmp_path):
         json.dumps(
             {
                 "aes_version": 1.4,
-                "title": "S2",
                 "industry": "i2",
                 "description": "d2",
                 "metadata": {"name": "S2", "id": "s2", "compliance_level": "Standard"},

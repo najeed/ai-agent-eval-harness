@@ -9,18 +9,27 @@ import os
 import traceback
 from pathlib import Path
 
-from .. import (
-    config,
-    engine,
-    loader,
-    playground,
-    plugins,
-    quickstart,
-    trace_recorder,
-    trace_utils,
-    utils,
-    verifier,
-)
+from .. import config, utils
+
+
+def __getattr__(name: str):
+    """PEP 562: Lazy-load submodules on demand for fast CLI startup and mock compatibility."""
+    if name in {
+        "engine",
+        "loader",
+        "playground",
+        "plugins",
+        "quickstart",
+        "trace_recorder",
+        "trace_utils",
+        "verifier",
+    }:
+        import importlib
+
+        mod = importlib.import_module(f"eval_runner.{name}")
+        globals()[name] = mod
+        return mod
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
 
 
 def _ensure_path_safe(path: str | Path, description: str = "Path"):
@@ -131,10 +140,15 @@ async def handle_evaluate(args):
     agent_metadata = prepare_agent_env(args)
 
     try:
+        # Lazy Import: Defer 'engine', 'loader', and 'plugins' to avoid running discovery
+        # or loading full execution runtimes until the batch evaluation actually begins.
+        from .. import engine, loader, plugins
+
         path_input = args.path
         scenarios = loader.load_dataset(
             path_input, format_type=args.format if args.format != "jsonl" else None
         )
+
     except Exception:
         print("❌ Error loading dataset:")
         traceback.print_exc()
@@ -209,6 +223,9 @@ async def handle_run(args):
     agent_metadata = prepare_agent_env(args)
 
     try:
+        # Lazy Import: Defer 'engine', 'loader', and 'plugins' to command execution
+        from .. import engine, loader, plugins
+
         scenario_path = getattr(args, "scenario", None)
         loaded = loader.load_scenario(scenario_path)
         scenarios = loaded if isinstance(loaded, list) else [loaded]
@@ -248,6 +265,9 @@ async def handle_run(args):
 async def handle_record(args):
     """Handler for 'record' command."""
     try:
+        # Lazy Import: Defer 'trace_recorder' until live recording is executed
+        from .. import trace_recorder
+
         prepare_agent_env(args)
         await trace_recorder.record_interaction(args.agent)
         return 0
@@ -259,6 +279,9 @@ async def handle_record(args):
 async def handle_playground(args):
     """Handler for 'playground' command."""
     try:
+        # Lazy Import: Defer 'playground' until interactive REPL is started
+        from .. import playground
+
         prepare_agent_env(args)
         await playground.run_playground(args.agent)
         return 0
@@ -274,7 +297,11 @@ async def handle_replay(args):
     """
 
     try:
+        # Lazy Import: Defer 'trace_utils' until replay is requested
+        from .. import trace_utils
+
         run_id = args.run_id
+
         if not run_id:
             print("❌ Error: Run ID is mandatory for replay.")
             return 1
@@ -356,7 +383,9 @@ async def handle_verify(args):
             return 1
 
         # Canonical Verification Call (Pillar 1)
-        # TraceVerifier.verify_trace is the industrial standard method.
+        # Lazy Import: Defer 'verifier' to avoid cryptography & trust-anchor overhead during startup
+        from .. import verifier
+
         is_valid = await verifier.TraceVerifier.verify_trace_async(
             str(trace_path), str(manifest_path)
         )
@@ -408,6 +437,9 @@ async def handle_gate(args):
         return 1
 
     try:
+        # Lazy Import: Defer 'verifier' until cryptographic gating check
+        from .. import verifier
+
         with open(vc_path, encoding="utf-8") as f:
             manifest = json.load(f)
 
@@ -451,6 +483,9 @@ async def handle_gate(args):
 
 async def handle_quickstart(args):
     """Handler for 'quickstart' command."""
+    # Lazy Import: Defer 'quickstart' until 60-second demo is run
+    from .. import quickstart
+
     await quickstart.run_quickstart()
 
 
@@ -478,6 +513,9 @@ async def handle_certify(args):
         return 1
 
     try:
+        # Lazy Import: Defer 'verifier' until signing trace
+        from .. import verifier
+
         # [VC v3] Argument mapping with industrial defaults
         identity_id = args.identity if hasattr(args, "identity") and args.identity else "system_id"
         status = args.status if hasattr(args, "status") and args.status else "pass"

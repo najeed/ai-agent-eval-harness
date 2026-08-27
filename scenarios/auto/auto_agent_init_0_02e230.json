@@ -1,5 +1,6 @@
 {
   "aes_version": 1.4,
+  "id": "auto_agent_init_0_02e230",
   "metadata": {
     "id": "auto_agent_init_0_02e230",
     "name": "[GENERATED] agent_init; app.py:1",
@@ -16,8 +17,7 @@
     "auth_method": null,
     "analyzer": {
       "transport": "https-tarball"
-    },
-    "compliance_level": "Standard"
+    }
   },
   "description": "STARTER scenario scaffolded from discovered agent_init in app.py:1; complete the assertions before relying on any verdict.",
   "industry": "auto",
@@ -40,14 +40,5 @@
       }
     ],
     "edges": []
-  },
-  "evaluation": {
-    "consensus": {
-      "strategy": "Majority_Vote",
-      "min_judges": 1,
-      "judge_panel": [
-        "Luna-1"
-      ]
-    }
   }
 }

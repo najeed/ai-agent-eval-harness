@@ -9,6 +9,7 @@ against compliance standards and tests them against historical runs.
 import json
 import logging
 from datetime import UTC, datetime
+from typing import Any
 
 from flask import Blueprint, jsonify, request
 
@@ -281,7 +282,23 @@ def test_pack(pack_id):
         logger.debug(f"Error reading first trace line: {e}")
 
     cert_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
-    has_cert = cert_path.exists() or "completed" in status.lower() or "certified" in status.lower()
+    manifest_path = config.RUN_LOG_DIR / run_id / "run_manifest.json"
+
+    cert_data: dict[str, Any] = {}
+    for c_path in [cert_path, manifest_path]:
+        if c_path.exists():
+            try:
+                with open(c_path, encoding="utf-8") as f_cert:
+                    cert_data.update(json.load(f_cert))
+            except Exception as e:
+                logger.debug(f"Error reading cert/manifest at {c_path}: {e}")
+
+    has_cert = (
+        bool(cert_data)
+        or cert_path.exists()
+        or "completed" in status.lower()
+        or "certified" in status.lower()
+    )
 
     for chk in checks:
         chk_type = chk.get("type")
@@ -302,7 +319,6 @@ def test_pack(pack_id):
         elif chk_type == "wsm_threshold":
             dim = chk_params.get("dimension", "security")
             min_score = chk_params.get("min_score", 0.85)
-            # Map confidence index
             actual_score = analysis.get("confidence", 0.0)
             if actual_score >= min_score:
                 details = (
@@ -319,12 +335,62 @@ def test_pack(pack_id):
         elif chk_type == "rubric_required":
             rubric = chk_params.get("rubric", "fiduciary_accuracy")
             min_score = chk_params.get("min_score", 0.8)
-            # Mock evaluation for fiduciary_accuracy criteria
-            details = f"Fiduciary Rubric Judge template '{rubric}' validated successfully."
+
+            # Query real rubric score from certificate, manifest, or analysis
+            rubrics = cert_data.get("rubrics", {}) or cert_data.get("metrics", {})
+            actual_score = rubrics.get(rubric) if isinstance(rubrics, dict) else None
+            if actual_score is None:
+                # Fallback to general compliance score if single rubric is declared
+                actual_score = cert_data.get("compliance_score")
+
+            if actual_score is not None and isinstance(actual_score, int | float):
+                if actual_score >= min_score:
+                    details = (
+                        f"Fiduciary Rubric Judge '{rubric}' cleared "
+                        f"threshold ({actual_score} >= {min_score})."
+                    )
+                else:
+                    status_val = "FAIL"
+                    details = (
+                        f"Fiduciary Rubric '{rubric}' score below "
+                        f"threshold ({actual_score} < {min_score})."
+                    )
+                    overall_pass = False
+            else:
+                status_val = "FAIL"
+                details = f"Required rubric '{rubric}' was not evaluated in run evidence."
+                overall_pass = False
 
         elif chk_type == "ija_threshold":
             min_val = chk_params.get("min_value", 0.75)
-            details = f"Independent Judge Assessment verified above {min_val} index."
+
+            # Query real Independent Judge Assessment index
+            actual_ija = (
+                cert_data.get("ija_score")
+                or cert_data.get("metrics", {}).get("ija_threshold")
+                or analysis.get("ija_index")
+                or analysis.get("consensus_agreement")
+            )
+            if actual_ija is None and "compliance_score" in cert_data:
+                actual_ija = cert_data.get("compliance_score")
+
+            if actual_ija is not None and isinstance(actual_ija, int | float):
+                if actual_ija >= min_val:
+                    details = (
+                        f"Independent Judge Assessment verified "
+                        f"above index ({actual_ija} >= {min_val})."
+                    )
+                else:
+                    status_val = "FAIL"
+                    details = (
+                        f"Independent Judge Assessment index below "
+                        f"threshold ({actual_ija} < {min_val})."
+                    )
+                    overall_pass = False
+            else:
+                status_val = "FAIL"
+                details = "Independent Judge Assessment (IJA) evidence missing from run trace."
+                overall_pass = False
 
         else:
             details = f"Verified compliance checker format type '{chk_type}'."

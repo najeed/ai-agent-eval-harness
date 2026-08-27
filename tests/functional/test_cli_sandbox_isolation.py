@@ -120,11 +120,16 @@ async def test_sandbox_permission_denied():
 
 @pytest.mark.asyncio
 async def test_sandbox_read_permission_denied():
-    # Covers line 166 (shared_read permission error)
+    # Covers shared_read permission error
     # We need the key to exist in registry first
     scenario = {
         "tools": {"some_tool": {}},
-        "agent_topology": {"admin": {"writes": ["*"]}, "user": {"reads": []}},
+        "metadata": {
+            "name": "read-test",
+            "id": "read-test",
+            "compliance_level": "Standard",
+            "agent_topology": {"admin": {"writes": ["*"]}, "user": {"reads": []}},
+        },
     }
     sandbox = tool_sandbox.ToolSandbox(scenario)
     sandbox.shared_state.write("admin", "global:secret", "value")
@@ -140,7 +145,12 @@ async def test_sandbox_read_permission_denied():
 async def test_sandbox_policy_violation_bridge():
     # Covers line 134: policy violation amount > limit
     scenario = {
-        "policies": {"spend": {"max_limit": 100}},
+        "metadata": {
+            "name": "spend-test",
+            "id": "spend-test",
+            "compliance_level": "Standard",
+            "policies": {"spend": {"max_limit": 100}},
+        },
         "tools": {"spend": {"state_changes": []}},
     }
     sandbox = tool_sandbox.ToolSandbox(scenario)

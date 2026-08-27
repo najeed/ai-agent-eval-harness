@@ -48,7 +48,7 @@ async def parse_markdown_to_scenario(markdown_text: str) -> dict[str, Any]:
     if title_match:
         scenario["metadata"]["name"] = title_match.group(1).strip()
 
-    # 2. Extract Metadata (Industry, Use Case, Core Function)
+    # 2. Extract Metadata (Industry, Use Case)
     industry_match = re.search(r"\*\*Industry:\*\*\s*(.*)", markdown_text, re.IGNORECASE)
     if industry_match:
         scenario["industry"] = industry_match.group(1).strip()
@@ -56,10 +56,6 @@ async def parse_markdown_to_scenario(markdown_text: str) -> dict[str, Any]:
     use_case_match = re.search(r"\*\*Use Case:\*\*\s*(.*)", markdown_text, re.IGNORECASE)
     if use_case_match:
         scenario["use_case"] = use_case_match.group(1).strip()
-
-    core_func_match = re.search(r"\*\*Core Function:\*\*\s*(.*)", markdown_text, re.IGNORECASE)
-    if core_func_match:
-        scenario["core_function"] = core_func_match.group(1).strip()
 
     # 3. Split into sections by H2
     sections = re.split(r"^##\s+", markdown_text, flags=re.MULTILINE)

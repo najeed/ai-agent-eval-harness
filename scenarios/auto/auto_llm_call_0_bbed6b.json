@@ -1,5 +1,6 @@
 {
   "aes_version": 1.4,
+  "id": "auto_llm_call_0_bbed6b",
   "metadata": {
     "id": "auto_llm_call_0_bbed6b",
     "name": "[GENERATED] llm_call; app.py:5",
@@ -18,8 +19,7 @@
       "transport": "https-tree-stream",
       "truncated": true,
       "tree_truncated": true
-    },
-    "compliance_level": "Standard"
+    }
   },
   "description": "STARTER scenario scaffolded from discovered llm_call in app.py:5; complete the assertions before relying on any verdict.",
   "industry": "auto",
@@ -42,14 +42,5 @@
       }
     ],
     "edges": []
-  },
-  "evaluation": {
-    "consensus": {
-      "strategy": "Majority_Vote",
-      "min_judges": 1,
-      "judge_panel": [
-        "Luna-1"
-      ]
-    }
   }
 }

@@ -140,7 +140,16 @@ class TestZeroTouchExternalPluginCompatibility:
 
         scenario = {
             "id": "external_plugin_e2e_scen",
-            "metadata": {"name": "External Plugin E2E Scenario"},
+            "metadata": {
+                "name": "External Plugin E2E Scenario",
+                "id": "external_plugin_e2e_scen",
+                "compliance_level": "Standard",
+                "policies": {
+                    "enterprise_action": {
+                        "rule": "max_limit_check",
+                    }
+                },
+            },
             "workflow": [
                 {
                     "id": "task_1",
@@ -152,11 +161,6 @@ class TestZeroTouchExternalPluginCompatibility:
             "tools": {
                 "enterprise_action": {
                     "output": {"status": "success", "message": "Enterprise audit verified"}
-                }
-            },
-            "policies": {
-                "enterprise_action": {
-                    "rule": "max_limit_check",
                 }
             },
         }

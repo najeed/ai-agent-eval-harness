@@ -276,6 +276,14 @@ def test_compliance_packs_test_success_all_pass(packs_client, packs_jail):
     }
     (packs_jail["packs_dir"] / "STD-K.json").write_text(json.dumps(pack), encoding="utf-8")
 
+    certs_dir = packs_jail["reports"] / "certificates"
+    certs_dir.mkdir(parents=True, exist_ok=True)
+    vc_file = certs_dir / f"{run_id}_vc.json"
+    vc_file.write_text(
+        json.dumps({"rubrics": {"fiduciary": 0.95}, "ija_score": 0.90}),
+        encoding="utf-8",
+    )
+
     with patch(
         "eval_runner.console.routes.compliance_packs.explain_trace",
         return_value={"confidence": 0.9, "root_cause": "ok"},
@@ -603,3 +611,154 @@ def test_compliance_packs_publish_auto_create_write_error(packs_client, packs_ja
             res = packs_client.post("/api/v1/compliance-packs/ISO27001/publish")
             assert res.status_code == 500
             assert "File locked" in res.get_json()["error"]
+
+
+def test_compliance_packs_test_rubric_required_pass_and_fail(packs_client, packs_jail):
+    """
+    Verify that rubric_required performs real evaluation and fails
+    when threshold is unmet or missing.
+    """
+    run_id = "test_run_rubric"
+    run_dir = packs_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    trace = run_dir / "run.jsonl"
+    trace.write_text(json.dumps({"run_id": run_id, "status": "COMPLETED"}) + "\n", encoding="utf-8")
+
+    # 1. Test missing rubric score -> FAIL
+    pack_fail = {
+        "id": "STD-RUBRIC-FAIL",
+        "name": "Rubric Test Pack Fail",
+        "checks": [
+            {
+                "type": "rubric_required",
+                "params": {"rubric": "fiduciary_accuracy", "min_score": 0.85},
+            }
+        ],
+        "version": 1,
+    }
+    (packs_jail["packs_dir"] / "STD-RUBRIC-FAIL.json").write_text(
+        json.dumps(pack_fail), encoding="utf-8"
+    )
+
+    with patch(
+        "eval_runner.console.routes.compliance_packs.resolve_trace_path",
+        return_value=trace,
+    ):
+        res = packs_client.post(f"/api/v1/compliance-packs/STD-RUBRIC-FAIL/test?run_id={run_id}")
+
+    data = res.get_json()
+    assert res.status_code == 200
+    assert data["overall_pass"] is False
+    assert data["checks"][0]["status"] == "FAIL"
+    assert "not evaluated" in data["checks"][0]["details"]
+
+    # 2. Test passing rubric score in certificate -> PASS
+    certs_dir = packs_jail["reports"] / "certificates"
+    certs_dir.mkdir(parents=True, exist_ok=True)
+    vc_file = certs_dir / f"{run_id}_vc.json"
+    vc_file.write_text(
+        json.dumps({"rubrics": {"fiduciary_accuracy": 0.95}}),
+        encoding="utf-8",
+    )
+
+    pack_pass = {
+        "id": "STD-RUBRIC-PASS",
+        "name": "Rubric Test Pack Pass",
+        "checks": [
+            {
+                "type": "rubric_required",
+                "params": {"rubric": "fiduciary_accuracy", "min_score": 0.85},
+            }
+        ],
+        "version": 1,
+    }
+    (packs_jail["packs_dir"] / "STD-RUBRIC-PASS.json").write_text(
+        json.dumps(pack_pass), encoding="utf-8"
+    )
+
+    with patch(
+        "eval_runner.console.routes.compliance_packs.resolve_trace_path",
+        return_value=trace,
+    ):
+        res_pass = packs_client.post(
+            f"/api/v1/compliance-packs/STD-RUBRIC-PASS/test?run_id={run_id}"
+        )
+
+    data_pass = res_pass.get_json()
+    assert res_pass.status_code == 200
+    assert data_pass["overall_pass"] is True
+    assert data_pass["checks"][0]["status"] == "PASS"
+
+
+def test_compliance_packs_test_ija_threshold_pass_and_fail(packs_client, packs_jail):
+    """
+    Verify that ija_threshold performs real evaluation and fails
+    when threshold is unmet or missing.
+    """
+    run_id = "test_run_ija"
+    run_dir = packs_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    trace = run_dir / "run.jsonl"
+    trace.write_text(json.dumps({"run_id": run_id, "status": "COMPLETED"}) + "\n", encoding="utf-8")
+
+    # 1. Test missing IJA -> FAIL
+    pack_ija_fail = {
+        "id": "STD-IJA-FAIL",
+        "name": "IJA Test Pack Fail",
+        "checks": [{"type": "ija_threshold", "params": {"min_value": 0.80}}],
+        "version": 1,
+    }
+    (packs_jail["packs_dir"] / "STD-IJA-FAIL.json").write_text(
+        json.dumps(pack_ija_fail), encoding="utf-8"
+    )
+
+    with patch(
+        "eval_runner.console.routes.compliance_packs.resolve_trace_path",
+        return_value=trace,
+    ):
+        res = packs_client.post(f"/api/v1/compliance-packs/STD-IJA-FAIL/test?run_id={run_id}")
+
+    data = res.get_json()
+    assert res.status_code == 200
+    assert data["overall_pass"] is False
+    assert data["checks"][0]["status"] == "FAIL"
+    assert "missing" in data["checks"][0]["details"].lower()
+
+    # 2. Test below threshold -> FAIL
+    certs_dir = packs_jail["reports"] / "certificates"
+    certs_dir.mkdir(parents=True, exist_ok=True)
+    vc_file = certs_dir / f"{run_id}_vc.json"
+    vc_file.write_text(json.dumps({"ija_score": 0.65}), encoding="utf-8")
+
+    with patch(
+        "eval_runner.console.routes.compliance_packs.resolve_trace_path",
+        return_value=trace,
+    ):
+        res_below = packs_client.post(f"/api/v1/compliance-packs/STD-IJA-FAIL/test?run_id={run_id}")
+
+    data_below = res_below.get_json()
+    assert data_below["overall_pass"] is False
+    assert data_below["checks"][0]["status"] == "FAIL"
+    assert "below" in data_below["checks"][0]["details"].lower()
+
+    # 3. Test above threshold -> PASS
+    vc_file.write_text(json.dumps({"ija_score": 0.92}), encoding="utf-8")
+    pack_ija_pass = {
+        "id": "STD-IJA-PASS",
+        "name": "IJA Test Pack Pass",
+        "checks": [{"type": "ija_threshold", "params": {"min_value": 0.80}}],
+        "version": 1,
+    }
+    (packs_jail["packs_dir"] / "STD-IJA-PASS.json").write_text(
+        json.dumps(pack_ija_pass), encoding="utf-8"
+    )
+
+    with patch(
+        "eval_runner.console.routes.compliance_packs.resolve_trace_path",
+        return_value=trace,
+    ):
+        res_pass = packs_client.post(f"/api/v1/compliance-packs/STD-IJA-PASS/test?run_id={run_id}")
+
+    data_pass = res_pass.get_json()
+    assert data_pass["overall_pass"] is True
+    assert data_pass["checks"][0]["status"] == "PASS"

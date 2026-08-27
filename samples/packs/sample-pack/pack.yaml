@@ -1,6 +1,7 @@
-﻿name: sample
+name: sample
 flavor: STANDARD
 version: 1.0.0
 description: Sample AgentV scenario pack for testing 'agentv install <path>'.
 files:
-  scenarios/sample_greeting.json: 2302b5db710c587f70332874aba638ce60b25d44cacb88e9a8d95f36fd67c32c
+  scenarios/sample_greeting.json: 877d6d1e4f6a12a29e347ef58c5ce1bac1fc407efcf0c2762c80ae7b9b7956f5
+

@@ -113,10 +113,10 @@ class ScenarioLinter:
                 results["warnings"].append("Missing recommended field: 'metadata.version'")
                 results["score"] -= 5
 
-        # Recommend complexity_level instead of difficulty
-        if "complexity_level" not in data:
+        # Recommend complexity in metadata (AES v1.4.0 standard)
+        if "complexity" not in metadata and "complexity_level" not in data:
             results["warnings"].append(
-                "Missing recommended field: 'complexity_level' (low/medium/high)"
+                "Missing recommended field: 'metadata.complexity' (low/medium/high)"
             )
             results["score"] -= 5
 

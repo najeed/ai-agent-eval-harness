@@ -86,14 +86,17 @@ async def test_tool_sandbox_policy_evaluator_wiring():
     custom_evaluator = MockCustomPolicyEvaluator()
     scenario = {
         "id": "policy_test_scenario",
+        "metadata": {
+            "name": "Policy Test Scenario",
+            "policies": {
+                "transfer_funds": {
+                    "max_limit": 100,
+                    "constrained_params": ["amount"],
+                }
+            },
+        },
         "tools": {
             "transfer_funds": {"output": {"status": "success", "message": "Funds transferred"}}
-        },
-        "policies": {
-            "transfer_funds": {
-                "max_limit": 100,
-                "constrained_params": ["amount"],
-            }
         },
     }
 
@@ -120,8 +123,11 @@ async def test_tool_sandbox_default_basic_field_policy_evaluator():
     """
     scenario = {
         "id": "default_policy_scenario",
+        "metadata": {
+            "name": "Default Policy Scenario",
+            "policies": {"refund": {"max_limit": 200, "constrained_params": ["val"]}},
+        },
         "tools": {"refund": {"output": {"status": "success"}}},
-        "policies": {"refund": {"max_limit": 200, "constrained_params": ["val"]}},
     }
     sandbox = ToolSandbox(scenario)
     assert isinstance(sandbox.policy_evaluator, BasicFieldPolicyEvaluator)
@@ -619,7 +625,10 @@ async def test_all_extension_families_exclusive_injection_contract(tmp_path):
 
     scenario = {
         "id": "exclusive_contract_scen",
-        "metadata": {"name": "Exclusive Contract"},
+        "metadata": {
+            "name": "Exclusive Contract",
+            "policies": {"test_tool": {"max_limit": 100}},
+        },
         "workflow": [
             {
                 "id": "node_1",
@@ -629,7 +638,6 @@ async def test_all_extension_families_exclusive_injection_contract(tmp_path):
             }
         ],
         "tools": {"test_tool": {"output": {"status": "success", "result": "ok"}}},
-        "policies": {"test_tool": {"max_limit": 100}},
     }
 
     from unittest.mock import AsyncMock, patch
@@ -686,7 +694,10 @@ def test_inprocess_backend_executes_injected_dependency_graph():
 
     scenario = {
         "id": "injected_backend_scen",
-        "metadata": {"name": "Injected Backend Scenario"},
+        "metadata": {
+            "name": "Injected Backend Scenario",
+            "policies": {"echo_tool": {"max_limit": 50}},
+        },
         "workflow": [
             {
                 "id": "node_1",
@@ -696,7 +707,6 @@ def test_inprocess_backend_executes_injected_dependency_graph():
             }
         ],
         "tools": {"echo_tool": {"output": {"status": "success"}}},
-        "policies": {"echo_tool": {"max_limit": 50}},
     }
 
     from unittest.mock import AsyncMock, patch

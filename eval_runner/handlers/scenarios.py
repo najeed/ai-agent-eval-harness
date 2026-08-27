@@ -8,11 +8,32 @@ import json
 import os
 from pathlib import Path
 
-import yaml
 from jsonschema.validators import validator_for
 from referencing import Registry, Resource
 
-from .. import catalog, drift_importer, linter, loader, mutator, spec_parser
+
+def __getattr__(name: str):
+    """PEP 562: Lazy-load submodules on demand for fast CLI startup and mock compatibility."""
+    if name == "yaml":
+        import yaml
+
+        globals()["yaml"] = yaml
+        return yaml
+    if name in {
+        "catalog",
+        "drift_importer",
+        "linter",
+        "loader",
+        "mutator",
+        "scaffold",
+        "spec_parser",
+    }:
+        import importlib
+
+        mod = importlib.import_module(f"eval_runner.{name}")
+        globals()[name] = mod
+        return mod
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
 
 
 def classify_scenario(scenario: dict) -> dict:
@@ -102,6 +123,8 @@ async def handle_aes_validate(args):
             try:
                 with open(f_path) as f:
                     if f_path.suffix == ".yaml" or f_path.suffix == ".aes.yaml":
+                        import yaml
+
                         data = yaml.safe_load(f)
                     else:
                         data = json.load(f)
@@ -115,6 +138,8 @@ async def handle_aes_validate(args):
 
                 # Industrial Export Logic (v1.2.3)
                 if getattr(args, "export", None):
+                    import yaml
+
                     export_path = Path(args.export)
                     export_path.parent.mkdir(parents=True, exist_ok=True)
                     with open(export_path, "w", encoding="utf-8") as yf:
@@ -132,6 +157,9 @@ async def handle_aes_validate(args):
 async def handle_inspect(args):
     """Handler for 'inspect' command."""
     try:
+        # Lazy Import: Defer 'loader' so inspection doesn't pull in heavy benchmark harnesses
+        from .. import loader
+
         path_input = getattr(args, "scenario_path", None) or getattr(args, "path", "")
         scenario = loader.load_scenario(path_input)
         print("\n" + "=" * 60)
@@ -154,6 +182,9 @@ async def handle_inspect(args):
 async def handle_lint(args):
     """Handler for 'lint' command."""
     try:
+        # Lazy Import: Defer 'linter' to avoid loading AST analysis components during CLI startup
+        from .. import linter
+
         linter.run_lint(args.target)
         return 0
     except Exception as e:
@@ -164,6 +195,9 @@ async def handle_lint(args):
 async def handle_list(args):
     """Handler for 'list' command."""
     try:
+        # Lazy Import: Defer 'catalog' to avoid eager disk scanning of scenario repositories
+        from .. import catalog
+
         cat = catalog.ScenarioCatalog()
         if getattr(args, "refresh", False):
             cat.build_index()
@@ -179,6 +213,9 @@ async def handle_list(args):
 async def handle_catalog_search(args):
     """Handler for 'catalog-search' command."""
     try:
+        # Lazy Import: Defer 'catalog' until search is requested
+        from .. import catalog
+
         cat = catalog.ScenarioCatalog()
         results = cat.search(args.query)
         for r in results:
@@ -192,6 +229,9 @@ async def handle_catalog_search(args):
 async def handle_mutate(args):
     """Handler for 'mutate' command."""
     try:
+        # Lazy Import: Defer 'mutator' to prevent loading transformation heuristics at startup
+        from .. import mutator
+
         if not os.path.exists(args.input):
             print(f"❌ Error: Mutation input file not found: {args.input}")
             return 1
@@ -210,6 +250,9 @@ async def handle_mutate(args):
 async def handle_spec_to_eval(args):
     """Handler for 'spec-to-eval' command."""
     try:
+        # Lazy Import: Defer 'spec_parser' to avoid loading LLM providers and PRD compilers
+        from .. import spec_parser
+
         if not os.path.exists(args.input):
             print(f"❌ Error: Spec input file not found: {args.input}")
             return 1
@@ -228,6 +271,9 @@ async def handle_spec_to_eval(args):
 async def handle_import_drift(args):
     """Handler for 'import-drift' command."""
     try:
+        # Lazy Import: Defer 'drift_importer' until drift conversion is executed
+        from .. import drift_importer
+
         out_dir = Path(getattr(args, "output_dir", "scenarios"))
         drift_importer.import_trace_as_scenario(Path(args.input), args.industry, out_dir)
         return 0
@@ -239,6 +285,7 @@ async def handle_import_drift(args):
 async def handle_scenario_generate(args):
     """Handler for 'scenario generate' command."""
     try:
+        # Lazy Import: Defer 'scaffold' until interactive generator wizard is invoked
         from .. import scaffold
 
         scaffold.generate_interactive()
@@ -251,6 +298,9 @@ async def handle_scenario_generate(args):
 async def handle_catalog_refresh(args):
     """Handler for 'catalog-refresh' command."""
     try:
+        # Lazy Import: Defer 'catalog' until refresh is invoked
+        from .. import catalog
+
         cat = catalog.ScenarioCatalog()
         cat.build_index()
         print("✅ Catalog index refreshed.")

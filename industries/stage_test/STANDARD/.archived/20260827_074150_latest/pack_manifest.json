@@ -1,0 +1,10 @@
+{
+  "pack": "stage_test",
+  "flavor": "STANDARD",
+  "version": "latest",
+  "installed_at": "2026-08-27T07:41:13.753830",
+  "transport": "local-archive",
+  "source": "C:\\Users\\najee\\AppData\\Local\\Temp\\pytest-of-najee\\pytest-9781\\test_install_pack_error_branch0\\stage.zip",
+  "verified_files": 1,
+  "checksums_enforced": false
+}

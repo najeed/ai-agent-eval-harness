@@ -118,38 +118,65 @@ def _dispatch_environment(args):
     return handler(args)
 
 
+STATIC_PROTOCOLS = [
+    "http",
+    "local",
+    "socket",
+    "sse",
+    "openapi",
+    "openai",
+    "claude",
+    "gemini",
+    "grok",
+    "ollama",
+    "ag2",
+    "crewai",
+    "langgraph",
+    "langchain",
+]
+
+
+# Commands that actively interface with live agent communication adapters and require
+# dynamic discovery of external/plugin adapters. Commands outside this set (such as
+# 'aes validate', 'inspect', 'lint', 'spec-to-eval', '--help', '--version') bypass
+# loading the evaluation engine to maintain <100ms startup times.
+DISCOVERY_COMMANDS = {
+    "evaluate",
+    "run",
+    "playground",
+    "record",
+    "quickstart",
+    "init",
+    "console",
+    "doctor",
+}
+
+
 def get_parser(is_help: bool = False):
-    """Configures and returns the CLI parser."""
+    """Configures and returns the CLI parser with command-level discovery gating."""
     global _parser_cache, _parser_argv_hash
 
     current_hash = hash(tuple(sys.argv))
     if _parser_cache is not None and _parser_argv_hash == current_hash:
         return _parser_cache
 
-    try:
-        from . import engine
+    needs_discovery = False
+    if len(sys.argv) > 1 and not is_help:
+        cmd = sys.argv[1]
+        needs_discovery = cmd in DISCOVERY_COMMANDS
 
-        needs_discovery = False
-        if len(sys.argv) > 1:
-            cmd = sys.argv[1]
-            needs_discovery = cmd in {
-                "evaluate",
-                "run",
-                "playground",
-                "record",
-                "quickstart",
-                "init",
-                "console",
-                "doctor",
-            }
+    if needs_discovery:
+        try:
+            # Lazy Import: Defer 'engine' to avoid initializing plugins, background hooks,
+            # and simulators during lightweight command executions or CLI help rendering.
+            from . import engine
 
-        if not is_help and needs_discovery:
             engine.AgentAdapterRegistry._discover()
             available_protocols = list(engine.AgentAdapterRegistry._adapters.keys())
-        else:
-            available_protocols = ["http", "local", "socket", "ag2", "crewai", "langgraph"]
-    except ImportError:
-        available_protocols = ["http", "local", "socket"]
+        except ImportError:
+            available_protocols = STATIC_PROTOCOLS
+    else:
+        available_protocols = STATIC_PROTOCOLS
 
     usage_text = """
 Usage: agentv <command> [options]

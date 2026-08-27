@@ -5,7 +5,6 @@ import sys
 import threading
 from pathlib import Path
 
-import yaml
 from dotenv import load_dotenv
 
 # Load environment variables from .env file if it exists
@@ -25,7 +24,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 
 # Diagnostic: Identify exactly which config.py is being used
-if os.getenv("DEBUG_PATHS", "true").lower() == "true":
+if os.getenv("DEBUG_PATHS", "false").lower() == "true":
     sys.stderr.write(f"   [Config] Loading Core Config from: {__file__}\n")
     sys.stderr.write(f"   [Config] PROJECT_ROOT: {PROJECT_ROOT}\n")
 
@@ -155,16 +154,19 @@ class RegistryManager:
             for d_dir in subdirs:
                 affinity_key = affinity_map.get(d_dir.name)
 
-                # Alphabetical file sort within each directory
                 paths = sorted(list(d_dir.glob("*.json")) + list(d_dir.glob("*.yaml")))
                 for path in paths:
                     try:
                         with open(path, encoding="utf-8") as f:
-                            ext = (
-                                yaml.safe_load(f)
-                                if path.suffix in [".yaml", ".yml"]
-                                else json.load(f)
-                            )
+                            if path.suffix in [".yaml", ".yml"]:
+                                # Lazy Import: Defer PyYAML (~65ms overhead) until YAML config is
+                                # actually loaded
+                                import yaml
+
+                                ext = yaml.safe_load(f)
+                            else:
+                                ext = json.load(f)
+
                             if ext:
                                 # Auto-Nesting Logic:
                                 # Standardizes disparate config sources into the authoritative keys.

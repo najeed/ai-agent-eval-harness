@@ -226,17 +226,13 @@ def load_scenario(
             print(f"      [Loader] Warning: Unknown benchmark scheme '{scheme}'")
             return []
 
-    # 2. Handle Scenario IDs (Industrial Alias resolution AgentV v1.6.0)
+    # 2. Direct File Path Resolution (Fast Path)
+    # Lazy Import: ScenarioCatalog scans the filesystem; defer until alias lookup is required
     from .catalog import ScenarioCatalog
 
     catalog = ScenarioCatalog.get_instance()
     abs_path = catalog.get_absolute_path(path_str)
-
-    if abs_path:
-        file_path = abs_path
-    else:
-        # Fallback to direct file path
-        file_path = Path(path)
+    file_path = abs_path if abs_path else Path(path)
 
     if not file_path.exists():
         msg = (
