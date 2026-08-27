@@ -2,7 +2,7 @@
 
 **Manifest:** `pack.yaml` (pack root) · **Schema:** `scenario-pack.schema.json` · **Installer:** `eval_runner.catalog.install_pack` · **Sample:** `samples/packs/sample-pack/`
 
-Companion specs: [`spec/aes/`](../aes/AES_SCHEMA_EXHAUSTIVE_GUIDE_FINAL.md) (the scenarios a pack contains) · [`spec/agent-targets/`](../agent-targets/AGENT_TARGETS_EXHAUSTIVE_GUIDE.md).
+Companion specs: [`spec/aes/`](../aes/AES_SCHEMA_EXHAUSTIVE_GUIDE.md) (the scenarios a pack contains) · [`spec/agent-targets/`](../agent-targets/AGENT_TARGETS_EXHAUSTIVE_GUIDE.md).
 
 ---
 

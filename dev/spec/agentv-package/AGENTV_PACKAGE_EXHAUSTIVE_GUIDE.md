@@ -2,7 +2,7 @@
 
 **Envelope:** `.agentv-package.json` · **Schema:** `agentv-package.schema.json` · **Version:** 2.0.0 (pinned to `agentv_runtime.versions.VERIFICATION_PACKAGE_VERSION`)
 
-Companion specs: [`spec/vc/`](../vc/VC_SPEC_EXHAUSTIVE_GUIDE.md) (certificates) · [`spec/runs/`](../runs/RUNS_SPEC_EXHAUSTIVE_GUIDE.md) (run records) · [`spec/aes/`](../aes/AES_SCHEMA_EXHAUSTIVE_GUIDE_FINAL.md) (scenario documents).
+Companion specs: [`spec/vc/`](../vc/VC_SPEC_EXHAUSTIVE_GUIDE.md) (certificates) · [`spec/runs/`](../runs/RUNS_SPEC_EXHAUSTIVE_GUIDE.md) (run records) · [`spec/aes/`](../aes/AES_SCHEMA_EXHAUSTIVE_GUIDE.md) (scenario documents).
 
 ---
 
