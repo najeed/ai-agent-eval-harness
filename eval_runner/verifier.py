@@ -533,9 +533,11 @@ class TraceVerifier:
             for stray in (sidecar_path, backup_path):
                 try:
                     if stray.exists():
-                        stray.unlink()
-                except Exception:  # noqa: BLE001
-                    pass
+                        stray.unlink(missing_ok=True)
+                except OSError as unlink_err:
+                    logger.debug(
+                        f"      [Verifier] Failed to unlink rollback stray {stray}: {unlink_err}"
+                    )
 
         store = artifact_store or LocalFileArtifactStore()
 
@@ -583,15 +585,19 @@ class TraceVerifier:
                                 extracted_consensus = record.get("consensus")
                             if extracted_rubrics is None and record.get("rubrics"):
                                 extracted_rubrics = record.get("rubrics")
-                            if record.get("event") == "workflow_verdict":
-                                if extracted_consensus is None and record.get("consensus"):
-                                    extracted_consensus = record.get("consensus")
-                                if extracted_rubrics is None and record.get("rubrics"):
-                                    extracted_rubrics = record.get("rubrics")
-                        except Exception:
-                            pass
-            except Exception:
-                pass
+                        except (
+                            json.JSONDecodeError,
+                            UnicodeDecodeError,
+                            AttributeError,
+                        ) as line_err:
+                            logger.debug(
+                                f"      [Verifier] Non-JSON line in trace scan: {line_err}"
+                            )
+
+            except OSError as read_err:
+                logger.warning(
+                    f"      [Verifier] Could not read trace for consensus extraction: {read_err}"
+                )
 
         if extracted_consensus:
             manifest["consensus"] = extracted_consensus

@@ -251,3 +251,134 @@ export const computeTelemetryDiagnostics = (allEvents: LogEvent[]): NodeDiagnost
   }
   return diagnostics;
 };
+
+
+// ---------------------------------------------------------------------------
+// [B2] Compositional trace-integrity flags.
+// ---------------------------------------------------------------------------
+
+
+export interface TraceIntegrityFlags {
+  hasEvents: boolean;
+  recovered: boolean;
+  gaps: boolean;
+  reordered: boolean;
+  missingStart: boolean;
+  missingEnd: boolean;
+  issues: string[];
+}
+
+const MAX_LISTED_GAPS = 5;
+
+export const computeTraceIntegrity = (
+  events: LogEvent[],
+  sourcedFromMaster: boolean
+): TraceIntegrityFlags => {
+  if (!events || events.length === 0) {
+    return {
+      hasEvents: false,
+      recovered: false,
+      gaps: false,
+      reordered: false,
+      missingStart: false,
+      missingEnd: false,
+      issues: ['No events received.'],
+    };
+  }
+
+  const issues: string[] = [];
+  const seqs = events.map(e => Number(e._seq)).filter(n => !Number.isNaN(n));
+
+  let reordered = false;
+  let gaps = false;
+
+  if (seqs.length === 0) {
+    issues.push('Events lack server-assigned _seq identifiers.');
+  } else {
+    const sorted = [...seqs].sort((a, b) => a - b);
+    const uniq = Array.from(new Set(sorted));
+
+    reordered = seqs.some((v, i) => i > 0 && v < seqs[i - 1]);
+    if (reordered) {
+      issues.push('Events arrived out of monotonic _seq order (client-side reorder buffer applied).');
+    }
+
+    gaps =
+      uniq[uniq.length - 1] - uniq[0] + 1 !== uniq.length ||
+      uniq.length !== sorted.length;
+    if (gaps) {
+      const missing: number[] = [];
+      for (let s = uniq[0]; s <= uniq[uniq.length - 1]; s++) {
+        if (!uniq.includes(s)) missing.push(s);
+        if (missing.length > MAX_LISTED_GAPS) {
+          missing.push(-1);
+          break;
+        }
+      }
+      const duplicates = sorted.length - uniq.length;
+      const parts: string[] = [];
+      if (missing.some(m => m >= 0)) {
+        parts.push(
+          `missing _seq ${missing.filter(m => m >= 0).join(', ')}${missing.includes(-1) ? ', …' : ''}`
+        );
+      }
+      if (duplicates > 0) parts.push(`${duplicates} duplicate frame(s)`);
+      issues.push(`Sequence discontinuity detected: ${parts.join('; ')}.`);
+    }
+  }
+
+  const recovered = !!sourcedFromMaster;
+  if (recovered) {
+    issues.push('Trace recovered from master log; per-run stream was incomplete.');
+  }
+
+  const hasStart = events.some(e => e.event === 'run_start');
+  const hasEnd = events.some(e => e.event === 'run_end');
+  const missingStart = !hasStart;
+  const missingEnd = !hasEnd;
+  if (missingEnd) issues.push('Missing terminal run_end event.');
+  else if (missingStart) issues.push('Missing run_start event.');
+
+  return { hasEvents: true, recovered, gaps, reordered, missingStart, missingEnd, issues };
+};
+
+// ---------------------------------------------------------------------------
+// [B4] Typed telemetry taxonomy
+// ---------------------------------------------------------------------------
+
+export type TelemetryLevel = 'PHASE' | 'SUBTASK' | 'ACTION' | 'STEP';
+
+const TELEMETRY_TAXONOMY: Record<Exclude<TelemetryLevel, 'STEP'>, ReadonlySet<string>> = {
+  PHASE: new Set(['phase_start', 'phase_end']),
+  SUBTASK: new Set([
+    'strategy_start',
+    'strategy_end',
+    'maneuver_start',
+    'maneuver_end',
+    'subtask_start',
+    'subtask_end',
+  ]),
+  ACTION: new Set([
+    'action_start',
+    'action_end',
+    'tool_call',
+    'tool_result',
+    'agent_request',
+    'agent_response',
+    'chain_start',
+    'chain_end',
+    'node_start',
+    'node_end',
+    'adapter_debug',
+  ]),
+};
+
+export const filterEventsByTelemetryLevel = (
+  events: LogEvent[],
+  level: TelemetryLevel
+): LogEvent[] => {
+  if (level === 'STEP') return events;
+  const taxonomy = TELEMETRY_TAXONOMY[level];
+  return events.filter(e => taxonomy.has(e.event));
+};
+

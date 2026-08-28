@@ -762,16 +762,11 @@ def test_session_telemetry_no_psutil(base_scenario, tmp_path):
         assert len(session.resource_telemetry) == 0
 
 
-def test_session_import_error_psutil():
-    import sys
-    from importlib import reload
-
-    import eval_runner.session
-
-    with patch.dict(sys.modules, {"psutil": None}):
-        reload(eval_runner.session)
-    # Restore normal module state
-    reload(eval_runner.session)
+def test_session_import_error_psutil(base_scenario, tmp_path):
+    with patch("eval_runner.session.psutil", None):
+        session = SessionManager("test_run_psutil", base_scenario, log_root=tmp_path)
+        session._capture_telemetry()
+        assert len(session.resource_telemetry) == 0
 
 
 def test_session_plugin_reload_error(base_scenario, tmp_path):

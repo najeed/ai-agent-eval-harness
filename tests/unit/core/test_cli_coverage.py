@@ -87,11 +87,8 @@ def test_get_parser_import_error_fallback():
     with patch.object(sys, "argv", ["agentv", "run"]):
         with patch.dict("sys.modules", {"eval_runner.engine": None}):
             with patch("builtins.__import__", side_effect=ImportError("no engine")):
-                # Should not raise
-                try:
-                    cli.get_parser(is_help=False)
-                except Exception:
-                    pass  # Acceptable — the test just ensures it doesn't crash completely
+                parser = cli.get_parser(is_help=False)
+                assert parser is not None
     _reset_cache()
 
 
@@ -113,10 +110,8 @@ def test_entry_points_type_error_fallback():
                 "importlib.metadata.entry_points",
                 side_effect=[TypeError("unexpected"), {"agentv.extensions": []}],
             ):
-                try:
-                    cli.get_parser(is_help=True)
-                except Exception:
-                    pass
+                parser = cli.get_parser(is_help=True)
+                assert parser is not None
     _reset_cache()
 
 

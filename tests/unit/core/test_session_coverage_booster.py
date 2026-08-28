@@ -1,4 +1,3 @@
-import importlib
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -25,14 +24,10 @@ def base_scenario():
 
 @pytest.mark.asyncio
 async def test_session_psutil_missing(base_scenario, tmp_path):
-    with patch.dict("sys.modules", {"psutil": None}):
-        import eval_runner.session
-
-        importlib.reload(eval_runner.session)
-        session = eval_runner.session.SessionManager("test_run", base_scenario, log_root=tmp_path)
+    with patch("eval_runner.session.psutil", None):
+        session = SessionManager("test_run", base_scenario, log_root=tmp_path)
         session._capture_telemetry()
         assert len(session.resource_telemetry) == 0
-    importlib.reload(eval_runner.session)
 
 
 @pytest.mark.asyncio

@@ -37,8 +37,10 @@ import {
   canCallHostApi,
   READ_ONLY_HOST_APIS,
   type ExtensionTier,
+  type RuntimeExtensionManifest,
 } from './types/extension-contract';
 import { verifySubresourceIntegrity } from './utils/crypto';
+
 
 
 const queryClient = new QueryClient({
@@ -217,20 +219,29 @@ const ExtensionHostContext = React.createContext<ExtensionHostApiInfo>({
 export const useExtensionHost = (): ExtensionHostApiInfo =>
   React.useContext(ExtensionHostContext);
 
-const ExtensionHostProvider: React.FC<{ tier: ExtensionTier; children: React.ReactNode }> = ({
+const ExtensionHostProvider: React.FC<{
+  tier: ExtensionTier;
+  manifest?: RuntimeExtensionManifest;
+  children: React.ReactNode;
+}> = ({
   tier,
+  manifest,
   children,
 }) => {
   const value = useMemo<ExtensionHostApiInfo>(() => {
-    const allowedApis = hostApisForTier(tier);
+    const tierApis = hostApisForTier(tier);
+    const allowedApis = manifest?.host_apis
+      ? tierApis.filter(api => manifest.host_apis.includes(api))
+      : tierApis;
     return {
       tier,
       allowedApis,
-      can: (call: string) => canCallHostApi(tier, call),
+      can: (call: string) => canCallHostApi(tier, call, manifest),
     };
-  }, [tier]);
+  }, [tier, manifest]);
   return <ExtensionHostContext.Provider value={value}>{children}</ExtensionHostContext.Provider>;
 };
+
 
 /**
  * Generic Runtime Micro-Frontend Remote Loader:
@@ -255,7 +266,9 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
     violations?: string[];
     publisherReason?: string;
     tier?: ExtensionTier;
+    manifest?: RuntimeExtensionManifest;
   }>({ status: 'idle' });
+
 
   const isTrustedOrigin = useMemo(() => {
     try {
@@ -367,7 +380,7 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
 
           const tier = await resolveTier(manifestObj);
           const ResolvedComp = mod.default || mod[Object.keys(mod)[0]] || mod;
-          if (active) setLoadingState({ status: 'ready', Component: ResolvedComp, tier });
+          if (active) setLoadingState({ status: 'ready', Component: ResolvedComp, tier, manifest: manifestObj });
         } else {
           // Local/trusted-origin ESM without SRI pin. [D2] The manifest is
           // MANDATORY here too — an anonymous module can never be mounted.
@@ -386,7 +399,7 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
 
           const tier = await resolveTier(manifestObj);
           const ResolvedComp = mod.default || mod[Object.keys(mod)[0]] || mod;
-          if (active) setLoadingState({ status: 'ready', Component: ResolvedComp, tier });
+          if (active) setLoadingState({ status: 'ready', Component: ResolvedComp, tier, manifest: manifestObj });
         }
       } catch (err: any) {
         console.error(`[ZeroTrust Loader] Error mounting module ${entryUrl}:`, err);
@@ -479,7 +492,8 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
     const Component = loadingState.Component;
     const tier: ExtensionTier = loadingState.tier ?? 'unsigned-local';
     return (
-      <ExtensionHostProvider tier={tier}>
+      <ExtensionHostProvider tier={tier} manifest={loadingState.manifest}>
+
         {tier === 'unsigned-local' && (
           <div className="bg-amber-500/10 border-b border-amber-500/20 px-6 py-2 flex items-center gap-2 text-[10px] text-amber-300 font-medium shrink-0">
             <AlertTriangle className="w-3.5 h-3.5 shrink-0" />

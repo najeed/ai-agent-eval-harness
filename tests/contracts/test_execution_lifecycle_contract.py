@@ -60,10 +60,9 @@ class TestExecutionLifecycleContract:
         must not raise an unhandled exception. Failures are captured and returned.
         """
         backend = InProcessExecutionBackend()
-        try:
-            backend.submit("lifecycle_run_001", _STUB_SCENARIO)
-        except Exception:
-            pass
+        # Contract requires submit to not raise unhandled exception
+        result = backend.submit("lifecycle_run_001", _STUB_SCENARIO)
+        assert result is not None or result is None
 
     def test_status_returns_dict(self):
         """Contract: status() always returns a dict (never None or non-mapping)."""

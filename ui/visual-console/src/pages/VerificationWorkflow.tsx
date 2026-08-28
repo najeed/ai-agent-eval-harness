@@ -170,7 +170,13 @@ export const VerificationWorkflow: React.FC = () => {
   };
 
   // Reset preflight when any execution parameter changes; a stale pass
+  const onParamChange = (setter: (val: string) => void) => (val: string) => {
+    setter(val);
+    setPreflightResult(null);
+  };
+
   const [availableProtocols, setAvailableProtocols] = useState<string[]>([
+
     'http',
     'http_rest',
     'sse',

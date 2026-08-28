@@ -231,6 +231,8 @@ class ForensicCollector:
         self._artifacts: list[dict[str, Any]] = []
         self._state_snapshots: dict[int, Path] = {}
         self._last_state: dict[str, Any] = {}
+        self._branch_states: dict[str, dict[str, Any]] = {}
+        self.evidence_incomplete: bool = False
 
     @property
     def resource_telemetry(self) -> dict[str, Any]:
@@ -292,23 +294,26 @@ class ForensicCollector:
 
         return file_hash
 
-    def snapshot_state(self, state: dict[str, Any], turn: int):
+    def snapshot_state(self, state: dict[str, Any], turn: int, branch_id: str | None = None):
         """
         Saves a JSON snapshot of the world state to disk.
-        Uses differential encoding (dict_diff) to minimize storage footprint.
+        Uses differential encoding (dict_diff) isolated per branch to prevent cross-contamination.
         """
         self.target_dir.mkdir(parents=True, exist_ok=True)
-        # Authoritative Baseline: Turn 0 is always full.
-        # All subsequent turns are differential.
-        is_full = turn == 0 or not self._last_state
+        branch_key = branch_id or "default"
+        prior_state = self._branch_states.get(branch_key, self._last_state)
+        is_full = turn == 0 or not prior_state
 
-        self.target_dir.mkdir(parents=True, exist_ok=True)
+        prefix = f"state_turn_{turn:03d}"
+        if branch_id:
+            prefix += f"_{branch_id}"
+
         if is_full:
-            snapshot_path = self.target_dir / f"state_turn_{turn:03d}_full.json"
+            snapshot_path = self.target_dir / f"{prefix}_full.json"
             content = state
         else:
-            snapshot_path = self.target_dir / f"state_turn_{turn:03d}_diff.json"
-            content = dict_diff(self._last_state, state)
+            snapshot_path = self.target_dir / f"{prefix}_diff.json"
+            content = dict_diff(prior_state, state)
             if not content:
                 # Zero-Change optimization: Don't write empty diffs
                 return
@@ -318,11 +323,13 @@ class ForensicCollector:
                 json.dump(content, f, indent=4)
 
             self._state_snapshots[turn] = snapshot_path
+            self._branch_states[branch_key] = state
             self._last_state = state  # Update cache for next turn
             logger.debug(
                 f"[Forensics] {'Full' if is_full else 'Diff'} snapshot saved: {snapshot_path.name}"
             )
         except Exception as e:
+            self.evidence_incomplete = True
             logger.error(f"[Forensics] Failed to save state snapshot for turn {turn}: {e}")
 
     def init_telemetry(self, headers: list[str]):

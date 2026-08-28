@@ -848,11 +848,11 @@ def test_sign_trace_lifecycle_event_failure():
             raise OSError("Write failure")
         return original_open(path, mode, **kwargs)
 
+    from eval_runner.verifier import CertificationFailedError
+
     with patch("builtins.open", side_effect=patched_open):
-        try:
+        with pytest.raises((CertificationFailedError, OSError)):
             TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
-        except Exception:
-            pass
 
 
 def test_verify_trace_pqc_mismatch_and_unavailable(monkeypatch):
@@ -906,12 +906,11 @@ def test_verify_trace_pqc_mismatch_and_unavailable(monkeypatch):
     with patch("eval_runner.identity.IdentityService.get_pqc_client", return_value=None):
         assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
 
-    # 3. Unknown algorithm
+    # 3. Unknown algorithm must fail closed
     manifest_bad_algo = manifest.copy()
     manifest_bad_algo["provenance_chain"][-1]["algorithm"] = "UNKNOWN_ALGO"
     manifest_path.write_text(json.dumps(manifest_bad_algo))
-    # Should proceed but warning is logged/handled gracefully
-    assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is True
+    assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
 
 
 def test_verification_service_thread_isolation():

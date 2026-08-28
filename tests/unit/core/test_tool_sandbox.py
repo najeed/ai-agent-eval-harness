@@ -1065,3 +1065,71 @@ async def test_sandbox_strict_metadata_placement_enforcement(tmp_path):
 
     # Topology at root is NOT in shared_state registry
     assert "restricted_agent" not in sb.shared_state.topology
+
+
+def test_sandbox_merge_branch_state_selective_keys(tmp_path):
+    """
+    Mutation Assurance Test: Verifies merge_branch_state with selective keys
+    (kills keys is not None -> is None mutation).
+    """
+    sb = ToolSandbox({"id": "test-merge"}, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+    sb.state = {"a": 1, "b": 2}
+
+    fork = sb.fork("branch_1")
+    fork.state["a"] = 100
+    fork.state["b"] = 200
+
+    # Merge only key 'a', 'b' must remain unchanged
+    sb.merge_branch_state(fork, keys=["a"])
+    assert sb.state["a"] == 100
+    assert sb.state["b"] == 2
+
+
+@pytest.mark.asyncio
+async def test_sandbox_service_isolate_empty_interceptors():
+    """
+    Mutation Assurance Test: Verifies ToolSandboxService with 0 interceptors
+    executes fallback immediately (kills index >= len -> index < len mutation).
+    """
+    from eval_runner.tool_sandbox import ToolSandboxService
+
+    svc = ToolSandboxService()
+    called = False
+
+    async def fallback(data):
+        nonlocal called
+        called = True
+        return {"fallback": "ok"}
+
+    res = await svc.isolate({"tool_name": "noop"}, fallback)
+    assert called is True
+    assert res == {"fallback": "ok"}
+
+
+@pytest.mark.asyncio
+async def test_sandbox_policy_input_hash_sort_keys_determinism(tmp_path):
+    """
+    Mutation Assurance Test: Verifies input_hash is deterministic regardless of
+    dict key insertion order (kills sort_keys=True -> False mutation).
+    """
+    scenario = {
+        "metadata": {
+            "policies": {
+                "audit_tool": {
+                    "rules": [{"field": "a", "operator": "eq", "value": 1}],
+                },
+            },
+        },
+        "tools": {"audit_tool": {"output": {"status": "ok"}}},
+    }
+    sb = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+
+    # Call with param order 1: {"a": 1, "b": 2, "c": 3}
+    await sb.execute("audit_tool", {"a": 1, "b": 2, "c": 3})
+    hash1 = sb.policy_decisions[-1]["input_hash"]
+
+    # Call with param order 2: {"c": 3, "a": 1, "b": 2}
+    await sb.execute("audit_tool", {"c": 3, "a": 1, "b": 2})
+    hash2 = sb.policy_decisions[-1]["input_hash"]
+
+    assert hash1 == hash2

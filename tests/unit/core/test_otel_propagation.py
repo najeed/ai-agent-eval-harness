@@ -25,15 +25,19 @@ def otel_setup():
     old_provider = trace.get_tracer_provider()
     try:
         trace.set_tracer_provider(provider)
-    except Exception:
-        pass
+    except (RuntimeError, ValueError) as err:
+        import logging
+
+        logging.getLogger(__name__).debug(f"Tracer provider setup notice: {err}")
 
     yield exporter
 
     try:
         trace.set_tracer_provider(old_provider)
-    except Exception:
-        pass
+    except (RuntimeError, ValueError) as err:
+        import logging
+
+        logging.getLogger(__name__).debug(f"Tracer provider restore notice: {err}")
 
 
 def test_context_creation_and_binding(otel_setup):

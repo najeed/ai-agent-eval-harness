@@ -28,8 +28,10 @@ def shutdown_tracer():
                 provider.force_flush()
             if hasattr(provider, "shutdown"):
                 provider.shutdown()
-        except Exception:
-            pass
+        except (RuntimeError, AttributeError, ValueError) as flush_err:
+            import logging
+
+            logging.getLogger(__name__).debug(f"Tracer shutdown notice: {flush_err}")
 
 
 @pytest_asyncio.fixture(autouse=True)
@@ -50,8 +52,10 @@ async def reset_sessions():
         pending = [t for t in asyncio.all_tasks(loop) if t is not asyncio.current_task(loop)]
         if pending:
             await asyncio.wait(pending, timeout=0.25)
-    except Exception:
-        pass
+    except (TimeoutError, asyncio.CancelledError, RuntimeError, OSError) as session_err:
+        import logging
+
+        logging.getLogger(__name__).debug(f"Session teardown notice: {session_err}")
 
 
 @pytest.fixture(autouse=True)
@@ -84,8 +88,10 @@ def reset_plugins():
         reset()
         MetricRegistry.reset()
         reset_universal_registry()
-    except Exception:
-        pass
+    except (AttributeError, KeyError, RuntimeError) as reset_err:
+        import logging
+
+        logging.getLogger(__name__).debug(f"Registry reset notice: {reset_err}")
 
 
 @pytest_asyncio.fixture(autouse=True)
@@ -109,8 +115,10 @@ async def reset_environ():
                 if hasattr(sim, "cleanup"):
                     # Properly await the async cleanup in our async fixture
                     await sim.cleanup()
-            except Exception:
-                pass
+            except (RuntimeError, OSError, AttributeError) as sim_err:
+                import logging
+
+                logging.getLogger(__name__).debug(f"Simulator cleanup notice: {sim_err}")
         BaseSimulator._instances.clear()
     gc.collect()
 
@@ -214,16 +222,17 @@ def pqc_client():
             return result.signature
 
         def verify_digest(signature: str | bytes, digest: bytes, identity_id: str = None) -> bool:
+            import binascii
+
             if isinstance(signature, str):
                 try:
-                    # Try base64 decoding first
                     sig_bytes = base64.b64decode(signature)
                     if len(sig_bytes) < 100:
-                        raise ValueError()
-                except Exception:
+                        raise ValueError("Signature payload too short for base64")
+                except (ValueError, binascii.Error):
                     try:
                         sig_bytes = bytes.fromhex(signature)
-                    except Exception:
+                    except ValueError:
                         sig_bytes = signature.encode()
             else:
                 sig_bytes = signature
@@ -231,7 +240,10 @@ def pqc_client():
             try:
                 result = client.verify(digest, sig_bytes)
                 return result.valid
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as verify_err:
+                import logging
+
+                logging.getLogger(__name__).debug(f"Signature verify notice: {verify_err}")
                 return False
 
         client.sign_digest = sign_digest

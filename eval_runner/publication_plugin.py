@@ -168,10 +168,15 @@ class PublicationPlugin(BaseEvalPlugin):
 
                 if old_rate - new_rate > threshold:
                     print(
-                        f"   [PublicationPlugin] 🚩 REGRESSION DETECTED on {s_id}: {old_rate:.2f} -> {new_rate:.2f}"  # noqa: E501
+                        f"   [PublicationPlugin] 🚩 REGRESSION DETECTED on {s_id}: "
+                        f"{old_rate:.2f} -> {new_rate:.2f}"
                     )
-        except:  # noqa: E722
-            pass
+        except (FileNotFoundError, json.JSONDecodeError, KeyError, OSError) as reg_err:
+            import logging
+
+            logging.getLogger(__name__).debug(
+                f"   [PublicationPlugin] Could not compute regression against baseline: {reg_err}"
+            )
 
     def on_register_commands(self, registry):
         pass

@@ -27,10 +27,8 @@ async def test_handle_report_exceptions(tmp_path, monkeypatch):
 
     # File not found
     args = parse_args(["report", "--run-id", "ghost"])
-    try:
-        await handle_report(args)
-    except Exception:
-        pass
+    res1 = await handle_report(args)
+    assert res1 == 1
 
     # Read error
     real_file = tmp_path / "real.jsonl"
@@ -38,12 +36,10 @@ async def test_handle_report_exceptions(tmp_path, monkeypatch):
 
     args = parse_args(["report", "--run-id", "real"])
     with patch(
-        "eval_runner.handlers.analysis.trace_utils.load_events", side_effect=Exception("Read fail")
+        "eval_runner.handlers.analysis.trace_utils.load_events", side_effect=OSError("Read fail")
     ):
-        try:
-            await handle_report(args)
-        except Exception:
-            pass
+        res2 = await handle_report(args)
+        assert res2 == 1
 
 
 # --- handle_replay exceptions ---
@@ -70,13 +66,11 @@ async def test_handle_replay_exceptions(tmp_path, monkeypatch):
         patch("eval_runner.config.RUN_LOG_DIR", tmp_path),
         patch(
             "eval_runner.handlers.analysis.trace_utils.load_events",
-            side_effect=Exception("Read fail"),
+            side_effect=OSError("Read fail"),
         ),
     ):
-        try:
-            await handle_replay(args)
-        except Exception:
-            pass
+        res_err = await handle_replay(args)
+        assert res_err == 1
 
 
 # --- handle_run extensions ---

@@ -731,11 +731,12 @@ export const ScenarioComposer: React.FC = () => {
     })));
 
     setEdges(projection.edges.map((e, idx) => ({
-      id: `edge_${idx}`,
+      id: e.id || `edge_${e.source}_${e.target}_${idx}`,
       source: e.source,
       target: e.target,
       data: { condition: e.condition || '', edge_type: e.edge_type, priority: e.priority },
     })));
+
     setSelectedNodeId(null);
     setSelectedEdgeId(null);
     setPendingImport(null);

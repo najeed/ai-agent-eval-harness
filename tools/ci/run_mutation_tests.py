@@ -309,7 +309,8 @@ def evaluate_mutant(
             return "killed" if res.returncode != 0 else "survived"
         except subprocess.TimeoutExpired:
             return "timeout"
-    except Exception:
+    except (SyntaxError, UnicodeDecodeError, OSError, ValueError) as err:
+        sys.stderr.write(f"      [Mutant] Incompetent AST substitution: {err}\n")
         return "incompetent"
     finally:
         target_file.write_bytes(original_bytes)
@@ -432,31 +433,21 @@ def run_mutation_sentinel() -> None:
                     f"  [FAIL] Another mutation testing runner is actively running (PID {old_pid})!"
                 )
                 sys.exit(1)
-        except Exception:
-            pass
+        except (ValueError, OSError) as read_err:
+            sys.stderr.write(f"  [Warn] Failed to inspect existing lock file: {read_err}\n")
         try:
             lock_file.unlink(missing_ok=True)
-        except Exception:
-            pass
+        except OSError as unlink_err:
+            sys.stderr.write(f"  [Warn] Failed to unlink lock file: {unlink_err}\n")
 
     try:
         lock_file.write_text(str(os.getpid()), encoding="utf-8")
-    except Exception:
-        pass
+    except OSError as lock_err:
+        sys.stderr.write(f"  [Warn] Could not write lock file: {lock_err}\n")
 
     # Preserve pristine module sources and register automatic emergency restore
     import atexit
     import signal
-    import subprocess
-
-    # Restore pristine files from git if git workspace is present
-    for target in TARGET_MODULES:
-        try:
-            rel_str = str(target.relative_to(BASE_DIR)).replace("\\", "/")
-            subprocess.run(["git", "restore", rel_str], cwd=BASE_DIR, capture_output=True)
-            subprocess.run(["git", "checkout", "--", rel_str], cwd=BASE_DIR, capture_output=True)
-        except Exception:
-            pass
 
     pristine_sources = {target: target.read_bytes() for target in TARGET_MODULES}
 
@@ -465,21 +456,12 @@ def run_mutation_sentinel() -> None:
             try:
                 if target.exists() and target.read_bytes() != data:
                     target.write_bytes(data)
-            except Exception:
-                pass
-        for target in TARGET_MODULES:
-            try:
-                rel_str = str(target.relative_to(BASE_DIR)).replace("\\", "/")
-                subprocess.run(["git", "restore", rel_str], cwd=BASE_DIR, capture_output=True)
-                subprocess.run(
-                    ["git", "checkout", "--", rel_str], cwd=BASE_DIR, capture_output=True
-                )
-            except Exception:
-                pass
+            except OSError as restore_err:
+                sys.stderr.write(f"  [CRITICAL] Failed to restore {target}: {restore_err}\n")
         try:
             lock_file.unlink(missing_ok=True)
-        except Exception:
-            pass
+        except OSError as lock_err:
+            sys.stderr.write(f"  [Warn] Failed to remove lock file on exit: {lock_err}\n")
 
     def signal_handler(signum, frame):
         emergency_restore()
@@ -494,8 +476,10 @@ def run_mutation_sentinel() -> None:
         if sig is not None:
             try:
                 signal.signal(sig, signal_handler)
-            except Exception:
-                pass
+            except (ValueError, OSError) as sig_err:
+                sys.stderr.write(
+                    f"  [Warn] Could not register signal handler for {sig}: {sig_err}\n"
+                )
 
     # Ensure all target modules are pristine before starting
     emergency_restore()

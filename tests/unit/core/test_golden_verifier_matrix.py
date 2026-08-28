@@ -1275,3 +1275,71 @@ def test_self_verify_stage_enforces_full_evidence_chain(clean_vault_setup):
 
     # No certificate may survive the aborted transaction.
     assert not (config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json").exists()
+
+
+def test_sign_trace_provisional_and_execution_modes(clean_vault_setup):
+    """Verify provisional flagging across valid and invalid execution modes."""
+    run_id = clean_vault_setup["run_id"]
+    trace_file = clean_vault_setup["trace_file"]
+
+    # 1. Valid execution mode with provisional=True
+    m1 = TraceVerifier.sign_trace(
+        str(trace_file),
+        identity_id="signer",
+        run_id=run_id,
+        execution_mode="live",
+        provisional=True,
+    )
+    assert m1["execution_mode"] == "live"
+    assert m1.get("provisional") is True
+
+    # 2. Invalid execution mode defaults to 'unknown' + provisional=True
+    m2 = TraceVerifier.sign_trace(
+        str(trace_file),
+        identity_id="signer",
+        run_id=run_id,
+        execution_mode="invalid_junk_mode",
+        provisional=False,
+    )
+    assert m2["execution_mode"] == "unknown"
+    assert m2.get("provisional") is True
+
+
+def test_sign_trace_trace_derived_consensus_and_rubrics(clean_vault_setup):
+    """Verify consensus and rubrics are extracted from the physical trace records."""
+    run_id = clean_vault_setup["run_id"]
+    trace_file = clean_vault_setup["trace_file"]
+
+    # Write trace events containing consensus and rubrics
+    ev1 = json.dumps({"event": "step", "step": 1})
+    ev2 = json.dumps(
+        {
+            "event": "evaluation_complete",
+            "consensus": {"agreement": 0.95, "strategy": "majority"},
+            "rubrics": {"accuracy": 5, "safety": 5},
+        }
+    )
+    trace_file.write_text(f"{ev1}\n{ev2}\n", encoding="utf-8")
+
+    manifest = TraceVerifier.sign_trace(
+        str(trace_file),
+        identity_id="signer",
+        run_id=run_id,
+    )
+    assert manifest.get("consensus") == {"agreement": 0.95, "strategy": "majority"}
+    assert manifest.get("rubrics") == {"accuracy": 5, "safety": 5}
+
+
+def test_verify_run_directory_corrupted_manifest_exception(clean_vault_setup):
+    """Corrupted non-JSON manifest in run directory triggers exception branch."""
+    run_dir = clean_vault_setup["run_dir"]
+
+    manifest_path = run_dir / "run_manifest.json"
+    manifest_path.write_text("INVALID_NON_JSON_CONTENT{{{", encoding="utf-8")
+
+    res = TraceVerifier.verify_run_directory(run_dir)
+    assert res["verification_status"] == "FAILED_VERIFICATION"
+    assert res["is_valid"] is False
+    assert res["has_certificate"] is True
+    assert res["has_signature"] is False
+    assert "Verification error" in res["failure_reason"]

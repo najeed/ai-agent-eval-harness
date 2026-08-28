@@ -141,12 +141,9 @@ def test_get_sanitized_registry():
         assert config.RegistryManager.get_sanitized_registry()["secret_key"] == "[REDACTED]"
 
 
-def test_update_from_env(monkeypatch):
-    monkeypatch.setenv("AES_TEST_KEY", '{"a": 1}')
-    monkeypatch.setenv("AES_BROKEN", "{broken}")
-    cfg = {}
-    # We may need to mock os.environ iteration if update_from_env iterates it
-    try:
-        config.update_from_env(cfg)
-    except Exception:
-        pass
+def test_registry_manager_reload():
+    """Verify that RegistryManager.reload() returns a valid dictionary registry."""
+    reg = config.RegistryManager.reload()
+    assert isinstance(reg, dict)
+    assert "shims" in reg
+    assert "forensics" in reg

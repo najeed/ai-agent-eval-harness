@@ -30,11 +30,15 @@ def reset_console_singletons():
         from eval_runner.catalog import ScenarioCatalog
 
         ScenarioCatalog.clear_instance()
-    except Exception:  # noqa: BLE001 - teardown must never fail a test
-        pass
+    except (AttributeError, ImportError) as err:
+        import logging
+
+        logging.getLogger(__name__).debug(f"ScenarioCatalog teardown notice: {err}")
     try:
         from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
 
         InProcessExecutionBackend.clear_instance()
-    except Exception:  # noqa: BLE001
-        pass
+    except (AttributeError, ImportError) as err:
+        import logging
+
+        logging.getLogger(__name__).debug(f"InProcessExecutionBackend teardown notice: {err}")

@@ -13,6 +13,7 @@ import importlib.metadata
 import importlib.util
 import inspect
 import json
+import logging
 import os
 import time  # noqa: F401
 from pathlib import Path
@@ -20,20 +21,29 @@ from typing import Any
 
 from . import config, discovery
 
+logger = logging.getLogger(__name__)
+
 PLUGIN_TIMEOUT = config.PLUGIN_TIMEOUT
+
 PERSISTENT_PLUGINS_PATH = config.PLUGINS_CONFIG_PATH
 STRICT_PLUGINS = os.getenv("STRICT_PLUGINS", "false").lower() == "true"
 
 
 def _invoke_with_timeout(func, *args, **kwargs):
-    """Executes a plugin hook with a security timeout using a thread pool."""
-    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-        future = executor.submit(func, *args, **kwargs)
+    """Executes a plugin hook with a security timeout using a non-blocking thread pool."""
+    executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+    future = executor.submit(func, *args, **kwargs)
+    try:
+        return future.result(timeout=PLUGIN_TIMEOUT)
+    except concurrent.futures.TimeoutError:
+        print(f"   [PluginManager] Timeout (>{PLUGIN_TIMEOUT}s) in hook execution.")
+        executor.shutdown(wait=False, cancel_futures=True)
+        raise
+    finally:
         try:
-            return future.result(timeout=PLUGIN_TIMEOUT)
-        except concurrent.futures.TimeoutError:
-            print(f"   [PluginManager] Timeout (>{PLUGIN_TIMEOUT}s) in hook execution.")
-            raise
+            executor.shutdown(wait=False, cancel_futures=True)
+        except Exception as e:
+            logger.debug(f"[PluginManager] Executor shutdown cleanup: {e}")
 
 
 class BaseEvalPlugin(ABC):  # noqa: B024

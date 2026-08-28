@@ -644,9 +644,14 @@ def install_pack(pack_name: str):
         try:
             if target_dir.exists() and not any(target_dir.iterdir()):
                 target_dir.rmdir()
-        except Exception:  # noqa: BLE001
-            pass
+        except OSError as cleanup_err:
+            import sys
+
+            sys.stderr.write(
+                f"   [Catalog] Warning: Failed to clean empty directory: {cleanup_err}\n"
+            )
         return False
+
     finally:
         if staging is not None:
             shutil.rmtree(staging, ignore_errors=True)

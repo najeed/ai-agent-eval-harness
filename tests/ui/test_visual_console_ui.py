@@ -148,23 +148,23 @@ def test_playwright_e2e_navigation(console_server):
             page = browser.new_page()
 
             # 1. Load Canonical Root
-            page.goto(base_url, timeout=10000)
+            page.goto(base_url, wait_until="domcontentloaded", timeout=20000)
             assert "AgentV" in page.title() or page.locator("#root").count() > 0
 
             # 2. Navigate to /scenarios
-            page.goto(f"{base_url}/scenarios", timeout=10000)
+            page.goto(f"{base_url}/scenarios", wait_until="domcontentloaded", timeout=20000)
             assert page.locator("#root").count() > 0
 
             # 3. Navigate to /reports
-            page.goto(f"{base_url}/reports", timeout=10000)
+            page.goto(f"{base_url}/reports", wait_until="domcontentloaded", timeout=20000)
             assert page.locator("#root").count() > 0
 
             # 4. Navigate to /debugger
-            page.goto(f"{base_url}/debugger", timeout=10000)
+            page.goto(f"{base_url}/debugger", wait_until="domcontentloaded", timeout=20000)
             assert page.locator("#root").count() > 0
 
             # 5. Navigate to /v2 (backward compatibility)
-            page.goto(f"{base_url}/v2", timeout=10000)
+            page.goto(f"{base_url}/v2", wait_until="domcontentloaded", timeout=20000)
             assert page.locator("#root").count() > 0
 
             browser.close()

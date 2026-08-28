@@ -31,20 +31,6 @@ async def test_event_emission():
 
 @pytest.mark.asyncio
 async def test_plugin_interception():
-    # Attempt to detect Docker availability
-    import socket
-
-    try:
-        # Check for typical Docker Desktop pipe/socket
-        (
-            socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            if hasattr(socket, "AF_UNIX")
-            else socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        )
-        # On Windows, we just try to catch the failure in the test itself or skip if not on Linux if we are strict., E501, E501  # noqa: E501
-        # But here I'll just skip specifically if the "failed to connect to the docker API" error occurs., E501, E501  # noqa: E501
-    except:  # noqa: E722
-        pass
 
     # Setup blocking plugin
     # Setup blocking plugin

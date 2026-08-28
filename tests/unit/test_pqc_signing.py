@@ -44,8 +44,10 @@ class TestPQCSigning(unittest.TestCase):
 
         try:
             self.temp_dir.cleanup()
-        except Exception:
-            pass
+        except OSError as cleanup_err:
+            import logging
+
+            logging.getLogger(__name__).debug(f"Tempdir cleanup notice: {cleanup_err}")
         config.RUN_LOG_DIR = self._orig_run_log_dir
 
     @patch("eval_runner.identity.IdentityService.get_private_key")

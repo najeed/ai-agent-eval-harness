@@ -153,8 +153,18 @@ class IdentityService:
 
     @staticmethod
     def get_public_key(
-        identity_id: str = "system_id", auto_provision: bool = True
+        identity_id: str = "system_id", auto_provision: bool = False
     ) -> ed25519.Ed25519PublicKey:
+        env_var = f"AES_PUBLIC_KEY_{identity_id.upper()}"
+        env_key = os.getenv(env_var)
+        if env_key:
+            try:
+                return serialization.load_pem_public_key(env_key.encode())
+            except Exception as e:
+                logger.warning(
+                    f"Failed to load public key from environment variable {env_var}: {e}"
+                )
+
         target_path = (config.TRUST_ROOT / identity_id).resolve()
         base_path = config.TRUST_ROOT.resolve()
         try:
@@ -169,15 +179,6 @@ class IdentityService:
 
         key_path = config.TRUST_ROOT / identity_id / "public_key.pem"
 
-        # Fallback to derivation from private key if public is missing
-        if not key_path.exists():
-            try:
-                priv = IdentityService.get_private_key(identity_id, auto_provision=False)
-                if priv:
-                    return priv.public_key()
-            except Exception as e:
-                logger.debug(f"Public key derivation fallback failed for {identity_id}: {e}")
-
         if key_path.exists():
             try:
                 with open(key_path, "rb") as f:
@@ -186,10 +187,19 @@ class IdentityService:
                 logger.error(f"Failed to load public key from {key_path}: {e}")
                 raise
 
-        # Auto-provision identity if missing for local developer experience
+        # Fallback to derivation from private key if public is missing
+        try:
+            priv = IdentityService.get_private_key(identity_id, auto_provision=False)
+            if priv:
+                return priv.public_key()
+        except Exception as e:
+            logger.debug(f"Public key derivation fallback failed for {identity_id}: {e}")
+
+        # Auto-provision identity only if explicitly requested
         if not auto_provision:
             return None
-        return IdentityService.get_private_key(identity_id).public_key()
+        priv = IdentityService.get_private_key(identity_id, auto_provision=True)
+        return priv.public_key() if priv else None
 
     @staticmethod
     def _provision_local_identity(identity_id: str) -> ed25519.Ed25519PrivateKey:

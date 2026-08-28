@@ -1068,9 +1068,11 @@ def test_stream_and_cleanup_finally_unlink_error(tmp_path):
         finally:
             if log_path.exists():
                 try:
-                    log_path.unlink()
-                except Exception:
-                    pass  # covers 426-427
+                    log_path.unlink(missing_ok=True)
+                except OSError as unlink_err:
+                    import logging
+
+                    logging.getLogger(__name__).debug(f"Test cleanup unlink notice: {unlink_err}")
 
     events = list(stream_and_cleanup())
     assert any("run_end" in e for e in events)

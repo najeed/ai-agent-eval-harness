@@ -44,10 +44,15 @@ export function hostApisForTier(tier) {
 }
 /**
  * [D2] Single authorization predicate used by the extension host context.
- * A call is granted iff it appears in the tier's allow-list; every name
- * outside the list — including unknown/future APIs — is denied by default.
+ * A call is granted iff it is explicitly declared in the extension's
+ * manifest AND allowed by the tier's allow-list; every name outside the
+ * intersection — including undeclared or unknown APIs — is denied by default.
  */
-export function canCallHostApi(tier, call) {
+export function canCallHostApi(tier, call, manifest) {
+    if (manifest?.host_apis && Array.isArray(manifest.host_apis)) {
+        if (!manifest.host_apis.includes(call))
+            return false;
+    }
     return hostApisForTier(tier).includes(call);
 }
 export function parseSemver(version) {

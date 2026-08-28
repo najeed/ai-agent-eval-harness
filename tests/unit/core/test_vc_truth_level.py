@@ -29,7 +29,8 @@ def _sign_tmp_trace(tmp_path, monkeypatch, **kwargs) -> dict:
 
 
 def _schema():
-    with open("spec/vc/vc.schema.json", encoding="utf-8") as f:
+    schema_path = config.PROJECT_ROOT / "spec" / "vc" / "vc.schema.json"
+    with open(schema_path, encoding="utf-8") as f:
         return json.load(f)
 
 
