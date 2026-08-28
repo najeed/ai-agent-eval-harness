@@ -164,8 +164,7 @@ class RunsCache:
             logger.warning(f"Error in initial runs cache scan: {e}")
 
         while not self._stop_event.is_set():
-            if self._stop_event.wait(timeout=1.0):
-                break
+            time.sleep(1.0)
             try:
                 self.update_cache()
             except Exception as e:
@@ -314,6 +313,7 @@ class RunsCache:
 
                 # Cap the cache to the most recent 500 runs
                 self._runs = sorted_runs[:500]
+                self._last_scan_time = time.time()
 
 
 # Thread-safe runs cache instance
@@ -848,7 +848,11 @@ def tail_file_generator(log_path: Path, run_id: str, last_event_id: int = 0):
                 seq_id += 1
                 yield f"id: {seq_id}\ndata: {stripped}\n\n"
 
-            if '"event": "run_end"' in line:
+            if (
+                '"event": "run_end"' in line
+                or '"event": "strategy_end"' in line
+                or '"event": "run_completed"' in line
+            ):
                 break
 
 

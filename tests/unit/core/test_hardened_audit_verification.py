@@ -1,0 +1,308 @@
+"""
+tests/unit/core/test_hardened_audit_verification.py
+
+Dedicated test suite verifying all hardened audit-defensibility and
+trust boundary guarantees:
+1. VerificationResult.attestation_grade is computed and evidence-derived.
+2. compute_manifest_hash() covers manifest_id and metadata canonically.
+3. index_events_by_seq() fails closed on duplicate sequence collisions.
+4. FlightRecorder generates genuine cryptographic trace seal in trace_seal.json.
+5. evaluate_scenario() enforces server-side preflight fingerprint validation.
+6. compliance_packs test_pack fails closed when independent judge consensus is absent.
+"""
+
+import hashlib
+import json
+from unittest.mock import patch
+
+import pytest
+from flask import Flask
+
+from agentv_runtime.contracts import (
+    Verdict,
+    VerificationResult,
+)
+from agentv_runtime.evidence_graph import index_events_by_seq
+from agentv_runtime.manifest import ManifestBuilder
+from eval_runner.console.routes.compliance_packs import compliance_packs_bp
+from eval_runner.console.routes.scenarios import scenario_bp
+from eval_runner.flight_recorder import FlightRecorderPlugin
+
+
+def test_attestation_grade_evidence_derived():
+    """Attestation grade requires VERIFIED verdict, live/hybrid mode, and signature verification."""
+    # 1. Non-verified -> not_applicable
+    vr_fail = VerificationResult(
+        evaluation_run_id="run-1",
+        scenario_version_id="sv-1",
+        case_id="c-1",
+        attempt_id="att-1",
+        attempt_number=1,
+        execution_mode="live",
+        verdict=Verdict.NOT_VERIFIED,
+        signature_verified=True,
+        evidence_complete=True,
+    )
+    assert vr_fail.attestation_grade == "not_applicable"
+
+    # 2. Live + Verified + Signed + Complete -> attested
+    vr_attested = VerificationResult(
+        evaluation_run_id="run-1",
+        scenario_version_id="sv-1",
+        case_id="c-1",
+        attempt_id="att-1",
+        attempt_number=1,
+        execution_mode="live",
+        verdict=Verdict.VERIFIED,
+        signature_verified=True,
+        evidence_complete=True,
+    )
+    assert vr_attested.attestation_grade == "attested"
+
+    # 3. Live + Verified + Unsigned -> verifiable (never attested without signature)
+    vr_unsigned = VerificationResult(
+        evaluation_run_id="run-1",
+        scenario_version_id="sv-1",
+        case_id="c-1",
+        attempt_id="att-1",
+        attempt_number=1,
+        execution_mode="live",
+        verdict=Verdict.VERIFIED,
+        signature_verified=False,
+        evidence_complete=True,
+    )
+    assert vr_unsigned.attestation_grade == "verifiable"
+
+    # 4. Live + Verified + Incomplete Evidence -> verifiable
+    vr_incomplete = VerificationResult(
+        evaluation_run_id="run-1",
+        scenario_version_id="sv-1",
+        case_id="c-1",
+        attempt_id="att-1",
+        attempt_number=1,
+        execution_mode="live",
+        verdict=Verdict.VERIFIED,
+        signature_verified=True,
+        evidence_complete=False,
+    )
+    assert vr_incomplete.attestation_grade == "verifiable"
+
+    # 5. Simulated + Verified -> verifiable
+    vr_sim = VerificationResult(
+        evaluation_run_id="run-1",
+        scenario_version_id="sv-1",
+        case_id="c-1",
+        attempt_id="att-1",
+        attempt_number=1,
+        execution_mode="simulated",
+        verdict=Verdict.VERIFIED,
+        signature_verified=True,
+        evidence_complete=True,
+    )
+    assert vr_sim.attestation_grade == "verifiable"
+
+
+def test_manifest_hash_includes_metadata_and_id():
+    """compute_manifest_hash must cover manifest_id and metadata fields."""
+    m1 = ManifestBuilder.build(
+        scenario_data={"id": "scen_test", "version": "1.0.0"},
+        tenant_id="t1",
+        workspace_id="w1",
+        metadata={"custom_audit_tag": "v1"},
+    )
+    m2 = ManifestBuilder.build(
+        scenario_data={"id": "scen_test", "version": "1.0.0"},
+        tenant_id="t1",
+        workspace_id="w1",
+        metadata={"custom_audit_tag": "v2"},  # Mutated metadata
+    )
+
+    hash1 = m1.compute_manifest_hash()
+    hash2 = m2.compute_manifest_hash()
+
+    assert hash1.startswith("sha3_256:")
+    assert hash2.startswith("sha3_256:")
+    # Mutating metadata MUST result in a different manifest hash
+    assert hash1 != hash2
+
+
+def test_evidence_graph_rejects_duplicate_sequence_numbers():
+    """index_events_by_seq must fail closed on sequence collision."""
+    good_events = [
+        ({"_seq": 1, "event": "start"}, '{"_seq": 1, "event": "start"}'),
+        ({"_seq": 2, "event": "step"}, '{"_seq": 2, "event": "step"}'),
+    ]
+    idx = index_events_by_seq(good_events)
+    assert len(idx) == 2
+    assert 1 in idx and 2 in idx
+
+    duplicate_events = [
+        ({"_seq": 1, "event": "start"}, '{"_seq": 1, "event": "start"}'),
+        ({"_seq": 1, "event": "clobber"}, '{"_seq": 1, "event": "clobber"}'),
+    ]
+    with pytest.raises(ValueError, match="Duplicate sequence number _seq=1 detected"):
+        index_events_by_seq(duplicate_events)
+
+
+def test_flight_recorder_cryptographic_trace_seal(tmp_path):
+    """finalize_run creates a genuine cryptographic trace digest in trace_seal.json."""
+    fr = FlightRecorderPlugin(log_dir=tmp_path)
+    run_id = "run-crypto-seal-01"
+
+    # Log some events
+    from eval_runner.events import CoreEvents, Event
+
+    fr.handle_event(Event(name=CoreEvents.RUN_START, data={"run_id": run_id, "_seq": 1}))
+    fr.handle_event(
+        Event(name=CoreEvents.STEP_START, data={"run_id": run_id, "_seq": 2, "step": "done"})
+    )
+    fr.finalize_run(run_id=run_id)
+
+    seal_path = tmp_path / run_id / "trace_seal.json"
+    assert seal_path.exists()
+    seal_data = json.loads(seal_path.read_text(encoding="utf-8"))
+
+    assert seal_data["status"] == "finalized"
+    assert seal_data["run_id"] == run_id
+    assert seal_data["algorithm"] == "sha3_256"
+    assert "trace_digest" in seal_data
+    assert seal_data["trace_digest"].startswith("sha3_256:")
+    assert seal_data["event_count"] >= 2
+
+
+def test_server_side_preflight_fingerprint_enforcement(tmp_path, monkeypatch):
+    """POST /api/v1/evaluate rejects mismatched preflight fingerprint."""
+    monkeypatch.setenv("AGENTV_TEST_AUTH_BYPASS", "1")
+    app = Flask(__name__)
+    app.secret_key = "test_key"
+    app.register_blueprint(scenario_bp, url_prefix="/api")
+
+    scen_data = {
+        "aes_version": 1.4,
+        "metadata": {
+            "id": "sec_01",
+            "name": "Sec Scenario",
+            "compliance_level": "Regulatory_Audit",
+            "standards_registry": ["NIST_AI_RMF"],
+            "description": "Desc",
+            "complexity": "low",
+            "capabilities": ["default_http_agent"],
+        },
+        "workflow": {
+            "entry_point": "n1",
+            "nodes": [
+                {
+                    "id": "n1",
+                    "task_description": "start task",
+                    "required_tools": [],
+                    "success_criteria": [],
+                }
+            ],
+            "edges": [],
+        },
+        "evaluation": {"assertions": []},
+    }
+    scen_file = tmp_path / "test_scen.json"
+    scen_file.write_text(json.dumps(scen_data), encoding="utf-8")
+
+    import eval_runner.loader
+    from agentv_runtime.manifest import compute_scenario_hash
+
+    loaded_scen = eval_runner.loader.load_scenario(str(scen_file))
+
+    # Compute expected fingerprint matching check_execution_readiness
+    raw_fp = {
+        "scenario_id": "sec_01",
+        "scen_hash": compute_scenario_hash(loaded_scen),
+        "endpoint": "http://localhost:8000",
+        "protocol": "http_rest",
+        "max_turns": 10,
+    }
+    valid_fp = hashlib.sha3_256(json.dumps(raw_fp, sort_keys=True).encode("utf-8")).hexdigest()
+
+    client = app.test_client()
+
+    # 1. Invalid fingerprint -> 400 Mismatch
+    res_mismatch = client.post(
+        "/api/v1/evaluate",
+        json={"path": str(scen_file), "preflight_fingerprint": "bad_fingerprint_hash_000"},
+    )
+    assert res_mismatch.status_code == 400
+    assert "PreflightFingerprintMismatch" in res_mismatch.get_json()["error"]
+
+    # 2. Matching fingerprint -> 200 Started
+    with patch(
+        "eval_runner.reference.inprocess_backend.InProcessExecutionBackend.submit",
+        return_value="queued",
+    ):
+        res_valid = client.post(
+            "/api/v1/evaluate",
+            json={"path": str(scen_file), "preflight_fingerprint": valid_fp},
+        )
+        assert res_valid.status_code == 200
+        assert res_valid.get_json()["status"] == "started"
+
+
+def test_compliance_pack_fail_closed_on_missing_consensus(tmp_path, monkeypatch):
+    """Compliance pack checks do not fall back to author compliance_score."""
+    monkeypatch.setenv("AGENTV_TEST_AUTH_BYPASS", "1")
+    root = tmp_path / "root"
+    root.mkdir()
+    runs = root / "runs"
+    runs.mkdir()
+    reports = root / "reports"
+    reports.mkdir()
+    certs_dir = reports / "certificates"
+    certs_dir.mkdir(parents=True)
+    packs_dir = root / "results" / "compliance_packs"
+    packs_dir.mkdir(parents=True)
+
+    from eval_runner import config
+
+    monkeypatch.setattr(config, "PROJECT_ROOT", root)
+    monkeypatch.setattr(config, "RUN_LOG_DIR", runs)
+    monkeypatch.setattr(config, "REPORTS_DIR", reports)
+    monkeypatch.setattr("eval_runner.console.routes.compliance_packs.PACKS_DIR", packs_dir)
+
+    app = Flask(__name__)
+    app.secret_key = "test"
+    app.register_blueprint(compliance_packs_bp, url_prefix="/api")
+
+    run_id = "test_run_fail_closed"
+    run_dir = runs / run_id
+    run_dir.mkdir()
+    trace = run_dir / "run.jsonl"
+    trace.write_text(json.dumps({"run_id": run_id, "status": "COMPLETED"}) + "\n", encoding="utf-8")
+
+    # Author supplied a compliance_score float, but NO independent consensus evaluation
+    vc_file = certs_dir / f"{run_id}_vc.json"
+    vc_file.write_text(
+        json.dumps({"compliance_score": 1.0}),  # Self-attested score only
+        encoding="utf-8",
+    )
+
+    pack = {
+        "id": "FAIL-CLOSED-PACK",
+        "name": "Fail Closed Pack",
+        "checks": [
+            {"type": "rubric_required", "params": {"rubric": "safety_rubric", "min_score": 0.8}},
+            {"type": "ija_threshold", "params": {"min_value": 0.75}},
+        ],
+        "version": 1,
+    }
+    (packs_dir / "FAIL-CLOSED-PACK.json").write_text(json.dumps(pack), encoding="utf-8")
+
+    with patch(
+        "eval_runner.console.routes.compliance_packs.resolve_trace_path", return_value=trace
+    ):
+        client = app.test_client()
+        res = client.post(f"/api/v1/compliance-packs/FAIL-CLOSED-PACK/test?run_id={run_id}")
+        data = res.get_json()
+
+        assert res.status_code == 200
+        assert data["overall_pass"] is False
+        # Both checks must FAIL because independent judge consensus is absent
+        assert data["checks"][0]["status"] == "FAIL"
+        assert "not evaluated" in data["checks"][0]["details"]
+        assert data["checks"][1]["status"] == "FAIL"
+        assert "missing" in data["checks"][1]["details"].lower()

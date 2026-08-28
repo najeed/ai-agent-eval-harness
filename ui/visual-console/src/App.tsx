@@ -360,11 +360,32 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
             return;
           }
 
+          // Extract and verify manifest before executing untrusted remote code
+          const sourceText = new TextDecoder().decode(buffer);
+          let extractedManifest: any = null;
+          try {
+            const match = sourceText.match(/(?:export\s+)?(?:const|let|var)?\s*manifest\s*=\s*(\{[\s\S]*?\n\s*\});?/);
+            if (match) {
+              extractedManifest = JSON.parse(match[1]);
+            }
+          } catch {
+            // Complex AST or expression
+          }
+
+          if (extractedManifest) {
+            const preViolations = validateExtensionManifest(extractedManifest, { requireSignature: true });
+            if (preViolations.length > 0) {
+              if (active) setLoadingState({ status: 'contract_violation', violations: preViolations });
+              return;
+            }
+            await resolveTier(extractedManifest);
+          }
+
           // Integrity validated: instantiate via ephemeral Blob URL
           const blob = new Blob([buffer], { type: 'text/javascript' });
           blobUrlToRevoke = URL.createObjectURL(blob);
           const mod = await import(/* @vite-ignore */ blobUrlToRevoke);
-          const manifestObj = (mod as any)?.manifest;
+          const manifestObj = (mod as any)?.manifest || extractedManifest;
 
           // [P1-14][D2] MANDATORY manifest + signed publisher for remotes.
           let violations = !manifestObj
@@ -578,8 +599,44 @@ const ConsoleLayout: React.FC = () => {
     };
 
     window.addEventListener('agentv-toast', handleToast);
+
+    // [N2 Global Network & Auth Signaling Interceptor]
+    const originalFetch = window.fetch;
+    window.fetch = async (...args) => {
+      try {
+        const response = await originalFetch(...args);
+        if (response.status === 401 || response.status === 403) {
+          const urlStr = typeof args[0] === 'string' ? args[0] : (args[0] as Request)?.url || '';
+          if (urlStr.includes('/api/auth') || urlStr.includes('/v1/')) {
+            window.dispatchEvent(
+              new CustomEvent('agentv-toast', {
+                detail: {
+                  type: 'error',
+                  title: 'Authentication Failure',
+                  message: 'Invalid or expired API credentials. Please re-authenticate.',
+                },
+              })
+            );
+          }
+        }
+        return response;
+      } catch (err: any) {
+        window.dispatchEvent(
+          new CustomEvent('agentv-toast', {
+            detail: {
+              type: 'error',
+              title: 'Harness Connection Error',
+              message: err?.message || 'Failed to communicate with AgentV Console API backend.',
+            },
+          })
+        );
+        throw err;
+      }
+    };
+
     return () => {
       window.removeEventListener('agentv-toast', handleToast);
+      window.fetch = originalFetch;
     };
   }, []);
 

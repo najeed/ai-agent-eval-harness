@@ -174,6 +174,10 @@ class VerificationResult:
     observed_execution: list[dict[str, Any]] = field(default_factory=list)
     policy_checks: list[dict[str, Any]] = field(default_factory=list)
     evidence_refs: list[str] = field(default_factory=list)
+    signature_verified: bool = True
+    evidence_complete: bool = True
+    signer_identity: str | None = None
+    manifest_digest: str | None = None
     workflow_status: str = ""  # workflow_completed | workflow_failed | workflow_aborted
     failure_policy: str = ""
     ir_version: str = ""
@@ -188,10 +192,13 @@ class VerificationResult:
     def attestation_grade(self) -> str:
         """
         Distinguish Executable / Verifiable / Cryptographically Attested.
-        Ephemeral-signing runs can be VERIFIED but are never audit-grade.
+        A run is only 'attested' when verdict is VERIFIED, execution mode is live/hybrid,
+        signatures are cryptographically verified, and evidence is complete.
         """
         if self.verdict != Verdict.VERIFIED:
             return "not_applicable"
+        if not self.signature_verified or not self.evidence_complete:
+            return "verifiable" if self.execution_mode in ("live", "hybrid") else "simulated"
         return "attested" if self.execution_mode in ("live", "hybrid") else "verifiable"
 
     def to_dict(self) -> dict[str, Any]:
@@ -254,6 +261,18 @@ class VerificationResult:
             )
             for t in decision.get("expected_transitions", [])
         ]
+        sig_verified = True
+        if "signature_verified" in decision:
+            sig_verified = bool(decision["signature_verified"])
+        elif "signatures" in decision:
+            sig_verified = bool(decision["signatures"] and not decision.get("signature_error"))
+        elif "signature_verified" in identity:
+            sig_verified = bool(identity["signature_verified"])
+
+        evidence_complete = bool(
+            decision.get("evidence_complete", True) and not decision.get("evidence_missing", False)
+        )
+
         return cls(
             evaluation_run_id=identity.get("evaluation_run_id", ""),
             scenario_version_id=identity.get("scenario_version_id", ""),
@@ -268,6 +287,10 @@ class VerificationResult:
             observed_execution=list(decision.get("observed_execution", [])),
             policy_checks=list(decision.get("policy_checks", [])),
             evidence_refs=list(decision.get("evidence_refs", [])),
+            signature_verified=sig_verified,
+            evidence_complete=evidence_complete,
+            signer_identity=decision.get("signer_identity") or identity.get("signer_identity"),
+            manifest_digest=decision.get("manifest_digest") or identity.get("manifest_digest"),
             workflow_status=decision.get("workflow_status", ""),
             ir_version=decision.get("ir_version", ""),
         )

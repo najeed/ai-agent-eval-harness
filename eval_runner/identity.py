@@ -203,8 +203,15 @@ class IdentityService:
 
     @staticmethod
     def _provision_local_identity(identity_id: str) -> ed25519.Ed25519PrivateKey:
-        """Generates and saves a new identity if allowed by config."""
-        logger.info(f"Generating new local identity: {identity_id}")
+        """
+        Generates and saves a new identity if allowed by config.
+        NOTE: Local unencrypted key storage is intended for development and local testing.
+        Production enterprise deployments should use KMS/HSM or environment-supplied keys.
+        """
+        logger.warning(
+            f"Generating local dev identity '{identity_id}' with unencrypted PEM storage. "
+            "For enterprise audit-defensible attestation, configure a KMS/HSM signing backend."
+        )
         private_key = ed25519.Ed25519PrivateKey.generate()
 
         id_dir = config.TRUST_ROOT / identity_id

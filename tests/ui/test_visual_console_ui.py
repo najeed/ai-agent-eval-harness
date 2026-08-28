@@ -87,6 +87,7 @@ def console_server(tmp_path_factory):
 
         yield f"http://127.0.0.1:{port}", port
         server.shutdown()
+        server.join(timeout=3.0)
 
 
 def test_console_spa_canonical_routes(console_server):

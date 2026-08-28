@@ -2,6 +2,7 @@ import asyncio
 import hashlib
 import json
 import logging
+import os
 import socket
 import urllib.error
 import urllib.parse
@@ -956,6 +957,60 @@ def evaluate_scenario():
             if k not in ("max_turns", "signing_backend", "policy_evaluator")
         },
     }
+
+    # [N1 Server-Side Readiness Enforcement]
+    meta = data.get("metadata") or {}
+    force_launch = bool(data.get("force_launch") or meta.get("force_launch"))
+    provided_fingerprint = (
+        data.get("preflight_fingerprint")
+        or meta.get("preflight_fingerprint")
+        or meta.get("fingerprint")
+    )
+
+    scen_id = (scen.get("metadata") or {}).get("id") or scen.get("id") or Path(path).stem
+    fingerprint_raw = {
+        "scenario_id": scen_id,
+        "scen_hash": compute_scenario_hash(scen),
+        "endpoint": agent_config.get("endpoint"),
+        "protocol": agent_config.get("protocol"),
+        "max_turns": runtime_config.get("max_turns", 10),
+    }
+    expected_fingerprint = hashlib.sha3_256(
+        json.dumps(fingerprint_raw, sort_keys=True).encode("utf-8")
+    ).hexdigest()
+
+    if provided_fingerprint:
+        if provided_fingerprint != expected_fingerprint:
+            return (
+                jsonify(
+                    {
+                        "error": (
+                            f"PreflightFingerprintMismatch: Provided fingerprint "
+                            f"'{provided_fingerprint}' does not match expected "
+                            f"'{expected_fingerprint}'. Scenario or runtime "
+                            "configuration was modified after preflight check."
+                        ),
+                        "message": "Stale or mismatched preflight fingerprint",
+                        "expected_fingerprint": expected_fingerprint,
+                        "provided_fingerprint": provided_fingerprint,
+                    }
+                ),
+                400,
+            )
+    elif os.getenv("EVAL_REQUIRE_PREFLIGHT", "false").lower() == "true" and not force_launch:
+        return (
+            jsonify(
+                {
+                    "error": (
+                        "PreflightRequired: Missing preflight_fingerprint. "
+                        "Run preflight readiness check before launching."
+                    ),
+                    "message": "Missing preflight fingerprint",
+                    "expected_fingerprint": expected_fingerprint,
+                }
+            ),
+            400,
+        )
 
     manifest = ManifestBuilder.build(
         scenario_data=scen,

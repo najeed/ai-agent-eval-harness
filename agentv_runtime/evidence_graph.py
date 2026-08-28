@@ -32,11 +32,18 @@ def hash_source_line(raw_line: str | bytes) -> str:
 
 
 def index_events_by_seq(events_with_lines: list[tuple[dict[str, Any], str]]) -> dict[int, str]:
-    """Maps `_seq` -> content hash for every event carrying a sequence id."""
+    """Maps `_seq` -> content hash for every event carrying a sequence id.
+    Fails closed if duplicate sequence numbers are encountered in trace.
+    """
     index: dict[int, str] = {}
     for event, raw_line in events_with_lines:
         seq = event.get("_seq")
         if isinstance(seq, int):
+            if seq in index:
+                raise ValueError(
+                    f"Evidence trace integrity violation: "
+                    f"Duplicate sequence number _seq={seq} detected."
+                )
             index[seq] = hash_source_line(raw_line)
     return index
 

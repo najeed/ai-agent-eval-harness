@@ -1,6 +1,6 @@
 # VC Specification Masterclass: The Forensic Chain of Custody
 
-This guide provides an exhaustive inventory of the **AgentV Verification Certificate (VC)** specification (`v3.0.0`, schema at [`spec/vc/vc.schema.json`](file:///c:/Users/najee/OneDrive/Documents/Projects/ai-agent-eval-harness/spec/vc/vc.schema.json)). The VC is the authoritative cryptographic document that proves an evaluation's integrity, provenance, multi-judge consensus, and compliance status.
+This guide provides an exhaustive inventory of the **AgentV Verification Certificate (VC)** specification (`v3.0.0`, schema at [`spec/vc/vc.schema.json`](/spec/vc/vc.schema.json)). The VC is the authoritative cryptographic document that proves an evaluation's integrity, provenance, multi-judge consensus, and compliance status.
 
 ---
 

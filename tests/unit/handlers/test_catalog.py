@@ -860,10 +860,11 @@ class TestPackParsingAndInstallationCoverage:
         pre_staging.mkdir(parents=True, exist_ok=True)
         (pre_staging / "old.txt").write_text("old")
 
-        with patch("eval_runner.catalog.Path.cwd", return_value=tmp_path):
-            with patch("eval_runner.catalog.get_catalog") as mock_gc:
-                mock_gc.return_value.scenarios = []
-                assert install_pack(str(stage_zip)) is True
+        with patch("eval_runner.config.PROJECT_ROOT", tmp_path):
+            with patch("eval_runner.catalog.Path.cwd", return_value=tmp_path):
+                with patch("eval_runner.catalog.get_catalog") as mock_gc:
+                    mock_gc.return_value.scenarios = []
+                    assert install_pack(str(stage_zip)) is True
 
     def test_load_pack_manifest_non_dict_data(self, tmp_path):
         from eval_runner.catalog import _load_pack_manifest

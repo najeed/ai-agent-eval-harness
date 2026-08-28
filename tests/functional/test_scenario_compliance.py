@@ -25,6 +25,9 @@ def _get_scenario_relative_paths() -> list[str]:
         return paths
 
     for root, _, files in os.walk(SCENARIOS_ROOT):
+        # Skip archive directories, temporary artifacts, and test staging directories
+        if ".archived" in root or "stage_test" in root or ".tmp" in root:
+            continue
         for file in files:
             if (
                 file.endswith(".json")

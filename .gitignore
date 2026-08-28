@@ -155,3 +155,8 @@ scenarios/index.json
 
 # --- Generated Documentation ---
 /site/
+
+# --- Test Staging & Archive Artifacts ---
+**/.archived/
+industries/stage_test/
+.aes/pack_staging/

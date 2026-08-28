@@ -5,19 +5,24 @@ A built-in plugin that subscribes to EventEmitter to record run traces.
 This decouples logging from the core engine loop.
 """
 
+import hashlib
 import json
 import logging
 import os
 import sys
 import threading
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 from eval_runner.interfaces.artifact import ArtifactStore
 from eval_runner.interfaces.signing import SigningBackend
 from eval_runner.reference.local_artifact import LocalFileArtifactStore
-from eval_runner.reference.signing import LocalEd25519SigningBackend, NullSigningBackend
+from eval_runner.reference.signing import (
+    LocalEd25519SigningBackend,
+    NullSigningBackend,
+    PQCSigningBackend,
+)
 
 from .events import CoreEvents, Event
 from .plugins import BaseEvalPlugin
@@ -156,13 +161,22 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             raise RuntimeError(err)
 
         # [Trace-level integrity (Fail-Closed Cryptography via SigningBackend)]
-        should_sign = (self._audit_level >= 2 and self._private_key_path) or (
-            not isinstance(self.signing_backend, NullSigningBackend) and self._private_key_path
+        backend_can_sign = not isinstance(self.signing_backend, NullSigningBackend) and (
+            self._private_key_path is not None
+            or getattr(self.signing_backend, "is_remote", False)
+            or hasattr(self.signing_backend, "can_sign")
+            or isinstance(self.signing_backend, PQCSigningBackend)
         )
+        should_sign = (
+            self._audit_level >= 2 and (self._private_key_path is not None or backend_can_sign)
+        ) or backend_can_sign
         if should_sign:
             try:
                 payload = json.dumps(data, sort_keys=True).encode("utf-8")
-                data["_sig"] = self.signing_backend.sign_payload(payload, self._private_key_path)
+                key_id = self._private_key_path or getattr(
+                    self.signing_backend, "key_id", "default"
+                )
+                data["_sig"] = self.signing_backend.sign_payload(payload, key_id)
             except Exception as e:
                 data["_sig_error"] = str(e)
                 msg = (
@@ -209,6 +223,11 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                 _write_buffered(self.master_log_path, content)
         except Exception as e:
             sys.stderr.write(f"   [FlightRecorder] [ERROR] File I/O Error: {e}\n")
+            if os.getenv("EVAL_PERSISTENCE_FAIL_CLOSED", "false").lower() == "true":
+                raise RuntimeError(
+                    f"TracePersistenceError: Failed to persist telemetry "
+                    f"event for run '{run_id}': {e}"
+                ) from e
 
     def finalize_run(self, run_id: str | None = None):
         """
@@ -216,18 +235,6 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         Critical for resolving Windows file-lock races.
         If run_id is provided, only closes handles associated with that run.
         """
-        if run_id and run_id != "unknown" and self.artifact_store:
-            try:
-                self.artifact_store.store_artifact(
-                    run_id=run_id,
-                    artifact_name="trace_seal.json",
-                    content=json.dumps({"status": "finalized", "run_id": run_id}),
-                    content_type="application/json",
-                    overwrite=True,
-                )
-            except Exception as e:
-                logger.debug(f"Artifact store finalize seal error: {e}")
-
         with self._lock:
             # Determine which handles to close
             if run_id and run_id != "unknown":
@@ -258,6 +265,55 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                     sys.stderr.write(
                         f"   [FlightRecorder] [WARNING] Finalization error on {path_str}: {e}\n"
                     )
+
+        if run_id and run_id != "unknown" and self.artifact_store:
+            try:
+                trace_content = ""
+                try:
+                    raw_art = self.artifact_store.get_artifact(run_id, "run.jsonl")
+                    if raw_art:
+                        trace_content = (
+                            raw_art.decode("utf-8") if isinstance(raw_art, bytes) else str(raw_art)
+                        )
+                except Exception:
+                    pass
+
+                if not trace_content:
+                    run_vault_dir = self.log_dir / run_id
+                    target_path = run_vault_dir / "run.jsonl"
+                    if target_path.exists():
+                        trace_content = target_path.read_text(encoding="utf-8")
+
+                trace_bytes = (
+                    trace_content.encode("utf-8")
+                    if isinstance(trace_content, str)
+                    else bytes(trace_content)
+                )
+                trace_digest = f"sha3_256:{hashlib.sha3_256(trace_bytes).hexdigest()}"
+                line_count = (
+                    len([line for line in trace_content.strip().split("\n") if line.strip()])
+                    if trace_content
+                    else 0
+                )
+
+                seal_payload = {
+                    "status": "finalized",
+                    "run_id": run_id,
+                    "trace_digest": trace_digest,
+                    "event_count": line_count,
+                    "sealed_at": datetime.now(UTC).isoformat(),
+                    "algorithm": "sha3_256",
+                }
+
+                self.artifact_store.store_artifact(
+                    run_id=run_id,
+                    artifact_name="trace_seal.json",
+                    content=json.dumps(seal_payload, indent=2),
+                    content_type="application/json",
+                    overwrite=True,
+                )
+            except Exception as e:
+                logger.debug(f"Artifact store finalize seal error: {e}")
 
             # Cleanup sequence number if finalizing a specific run
             if run_id:

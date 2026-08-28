@@ -333,21 +333,16 @@ def test_pack(pack_id):
                 overall_pass = False
 
         elif chk_type == "rubric_required":
-            rubric = chk_params.get("rubric", "fiduciary_accuracy")
+            rubric = chk_params.get("rubric", "general_compliance")
             min_score = chk_params.get("min_score", 0.8)
 
-            # Query real rubric score from certificate, manifest, or consensus metadata
             rubrics = (
                 cert_data.get("rubrics", {})
                 or cert_data.get("metrics", {})
                 or cert_data.get("metadata", {}).get("rubrics", {})
+                or cert_data.get("consensus", {}).get("rubrics", {})
             )
             actual_score = rubrics.get(rubric) if isinstance(rubrics, dict) else None
-            if actual_score is None:
-                # Fallback to general compliance score if single rubric is declared
-                actual_score = cert_data.get("compliance_score") or cert_data.get(
-                    "compliance", {}
-                ).get("score")
 
             if actual_score is not None and isinstance(actual_score, int | float):
                 if actual_score >= min_score:
@@ -364,7 +359,10 @@ def test_pack(pack_id):
                     overall_pass = False
             else:
                 status_val = "FAIL"
-                details = f"Required rubric '{rubric}' was not evaluated in run evidence."
+                details = (
+                    f"Required rubric '{rubric}' was not evaluated by an "
+                    "independent judge in run evidence."
+                )
                 overall_pass = False
 
         elif chk_type == "ija_threshold":
@@ -383,8 +381,6 @@ def test_pack(pack_id):
                     or analysis.get("ija_index")
                     or analysis.get("consensus_agreement")
                 )
-            if actual_ija is None and "compliance_score" in cert_data:
-                actual_ija = cert_data.get("compliance_score")
 
             if actual_ija is not None and isinstance(actual_ija, int | float):
                 if actual_ija >= min_val:
@@ -401,7 +397,10 @@ def test_pack(pack_id):
                     overall_pass = False
             else:
                 status_val = "FAIL"
-                details = "Independent Judge Assessment (IJA) evidence missing from run trace."
+                details = (
+                    "Independent Judge Assessment (IJA) / consensus "
+                    "evidence missing from run trace."
+                )
                 overall_pass = False
 
         else:
