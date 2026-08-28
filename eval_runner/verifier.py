@@ -379,7 +379,7 @@ class TraceVerifier:
         if not p.is_absolute():
             p = config.PROJECT_ROOT / p
 
-        p.mkdir(parents=True, exist_ok=False)
+        p.mkdir(parents=True, exist_ok=True)
 
         private_key = ed25519.Ed25519PrivateKey.generate()
         public_key = private_key.public_key()
