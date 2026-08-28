@@ -977,19 +977,30 @@ def test_verification_service_thread_isolation():
 
 
 class MockPreemptiveInterceptor(TraceVerificationInterceptor):
-    """Preempts signing completely, providing dummy signature and avoiding core logic."""
+    """Preempts signing completely, providing custom interceptor signature
+    and avoiding core logic.
+    """
 
     def can_sign(self, format: str) -> bool:
         return format in ["preempt", "ED25519", "hybrid"]
 
     def sign(self, manifest: dict, next_signer) -> dict:
+        from eval_runner.identity import IdentityService
+
+        identity = "preempted_signer"
+        priv_key = IdentityService.get_private_key(identity)
+        manifest_to_sign = manifest.copy()
+        manifest_to_sign.pop("provenance_chain", None)
+        manifest_to_sign.pop("signing_context", None)
+        manifest_bytes = json.dumps(manifest_to_sign, sort_keys=True).encode("utf-8")
+        sig_bytes = priv_key.sign(manifest_bytes)
         manifest["provenance_chain"] = [
             {
-                "identity": "preempted_signer",
+                "identity": identity,
                 "role": "Adversary",
                 "timestamp": manifest.get("timestamp"),
-                "signature": "dummy_preempt_signature",
-                "algorithm": "MOCK",
+                "signature": sig_bytes.hex(),
+                "algorithm": "ED25519",
             }
         ]
         return manifest
@@ -1006,14 +1017,24 @@ class MockAugmentingInterceptor(TraceVerificationInterceptor):
         return True
 
     def sign(self, manifest: dict, next_signer) -> dict:
+        from eval_runner.identity import IdentityService
+
         manifest = next_signer(manifest)
+        identity = "augmenting_signer"
+        priv_key = IdentityService.get_private_key(identity)
+        manifest_to_sign = manifest.copy()
+        manifest_to_sign.pop("provenance_chain", None)
+        manifest_to_sign.pop("signing_context", None)
+        manifest_bytes = json.dumps(manifest_to_sign, sort_keys=True).encode("utf-8")
+        sig_bytes = priv_key.sign(manifest_bytes)
         manifest["provenance_chain"].append(
             {
-                "identity": "augmenting_signer",
+                "identity": identity,
                 "role": "Validator",
                 "timestamp": manifest.get("timestamp"),
-                "signature": f"custom_{self.key}_{self.value}",
-                "algorithm": "MOCK",
+                "signature": sig_bytes.hex(),
+                "algorithm": "ED25519",
+                "metadata": {self.key: self.value},
             }
         )
         return manifest
@@ -1032,7 +1053,8 @@ def test_interceptor_preemption():
 
     assert len(manifest["provenance_chain"]) == 1
     assert manifest["provenance_chain"][0]["identity"] == "preempted_signer"
-    assert manifest["provenance_chain"][0]["signature"] == "dummy_preempt_signature"
+    assert manifest["provenance_chain"][0]["algorithm"] == "ED25519"
+    assert manifest["provenance_chain"][0]["signature"] is not None
 
 
 def test_interceptor_augmentation():
@@ -1048,7 +1070,8 @@ def test_interceptor_augmentation():
 
     assert len(manifest["provenance_chain"]) >= 2
     assert manifest["provenance_chain"][-1]["identity"] == "augmenting_signer"
-    assert manifest["provenance_chain"][-1]["signature"] == "custom_auditor_passed"
+    assert manifest["provenance_chain"][-1]["algorithm"] == "ED25519"
+    assert manifest["provenance_chain"][-1]["metadata"]["auditor"] == "passed"
 
 
 def test_override_interceptor_context_manager():

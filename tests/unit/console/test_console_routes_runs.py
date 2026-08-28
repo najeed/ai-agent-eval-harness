@@ -1170,16 +1170,17 @@ def test_runs_backend_status_fallback_when_trace_missing(runs_client):
             assert data["scenario"]["id"] == "s1"
 
 
-def test_runs_cache_thread_start_and_update_loop(monkeypatch):
-    """Verify RunsCache starts properly when force thread is enabled."""
+def test_runs_cache_thread_start_and_update_loop():
+    """Verify RunsCache starts and stops background thread properly."""
     from eval_runner.console.routes.runs import RunsCache
 
     cache = RunsCache()
-    monkeypatch.setenv("RUNS_CACHE_FORCE_THREAD", "1")
     with patch.object(threading.Thread, "start") as mock_start:
         cache.start()
         assert cache._started is True
         mock_start.assert_called_once()
+        cache.stop()
+        assert cache._started is False
 
 
 def test_runs_stream_list_sse(runs_client, runs_jail):

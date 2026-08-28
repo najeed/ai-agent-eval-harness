@@ -1,55 +1,89 @@
-# Forensic Compliance Manifesto (AgentV v1.6.0)
+# Forensic Compliance Manifesto (AgentV-runtime)
 
-This document defines the industrial governance and verification protocols for the AgentV 1.6.0 engine.
+This document defines the industrial governance and verification protocols for the AgentV-runtime engine.
 
 ---
 
 ## 🔐 Industrial Forensic Trust Protocol
-This document outlines the license obligations and compliance steps for the AgentV Verification Framework (`agentv`), as of **May 2026**.
+This document outlines the license obligations and compliance steps for the AgentV Verification Framework (`agentv`), as of **August 2026**.
 
 ## 1. Core Framework License
-The AgentV Verification Framework is distributed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file in the root directory for details.
+The AgentV Verification Runtime is distributed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file in the root directory for details.
 
 ## 2. Third-Party Dependency Licenses
-The following table summarizes the licenses of our core dependencies. All used licenses are permissive (MIT, BSD, Apache 2.0).
+The following tables summarize the licenses of our core dependencies. All used licenses are permissive (MIT, BSD, Apache 2.0, ISC, HPND).
 
+### 2.1 Python Core Runtime Dependencies
 | Package | Version | License | License File |
 | :--- | :--- | :--- | :--- |
 | **aiohttp** | 3.14.3 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **Authlib** | 1.7.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **cryptography** | 50.0.1 | Apache 2.0 / BSD | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **datasets** | 5.0.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **Flask** | 3.1.3 | BSD | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **flask-cors** | 6.0.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **Werkzeug** | 3.1.8 | BSD | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **requests** | 2.34.2 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **jsonschema** | 4.26.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **PyYAML** | 6.0.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **sentence-transformers** | 6.0.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **numpy** | 2.5.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **sqlalchemy** | 2.0.52 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **datasets** | 5.0.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **PyJWT** | 2.13.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **cryptography** | 50.0.1 | Apache 2.0 / BSD | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **opentelemetry-api** | 1.44.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **opentelemetry-sdk** | 1.44.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **GitPython** | 3.1.61 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **google-genai** | 2.20.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **pypdf** | 6.16.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **python-docx** | 1.2.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **python-dotenv** | 1.2.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **psutil** | 7.2.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **click** | 8.3.2 | BSD | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **pydantic** | 2.13.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **pyarrow** | 24.0.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **httpx** | 0.28.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **GitPython** | 3.1.60 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **urllib3** | 2.7.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **Authlib** | 1.7.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **idna** | 3.19 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **jsonschema** | 4.26.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-openai** | 1.6.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langsmith** | 0.11.2 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **lxml** | 6.1.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **numpy** | 2.5.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **opentelemetry-api** | 1.44.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **opentelemetry-sdk** | 1.44.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **Pillow** | 12.3.0 | HPND | [HPND.txt](LICENSES/HPND.txt) |
-| **cyclecore-pq** | 0.3.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **idna** | 3.19 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **weasyprint** | 69.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **psutil** | 7.2.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **PyJWT** | 2.13.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **pypdf** | 6.16.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **python-docx** | 1.2.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **python-dotenv** | 1.2.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **PyYAML** | 6.0.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **reportlab** | 5.0.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **requests** | 2.34.2 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **sentence-transformers** | 6.0.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **sqlalchemy** | 2.0.52 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **urllib3** | 2.7.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **weasyprint** | 69.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **Werkzeug** | 3.1.8 | BSD | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+
+### 2.2 Visual Console Frontend UI Dependencies (`ui/visual-console/package.json`)
+| Package | Version | License | License File |
+| :--- | :--- | :--- | :--- |
+| **@monaco-editor/react** | ^4.7.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **@tanstack/react-query** | ^5.102.4 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **@xyflow/react** | ^12.11.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **cmdk** | ^1.1.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **dagre** | ^0.8.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **lucide-react** | ^1.34.0 | ISC | [ISC.txt](LICENSES/ISC.txt) |
+| **react** | ^19.2.8 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **react-diff-viewer-continued** | ^4.4.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **react-dom** | ^19.2.8 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **react-router-dom** | ^7.18.2 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **recharts** | ^3.10.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **tailwindcss** | ^4.3.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+
+### 2.3 VS Code Extension Dependencies (`vscode-extension/package.json`)
+| Package | Version | License | License File |
+| :--- | :--- | :--- | :--- |
+| **flatted** | ^3.4.4 | ISC | [ISC.txt](LICENSES/ISC.txt) |
+
+### 2.4 Documentation Platform Dependencies (`docs/package.json`)
+| Package | Version | License | License File |
+| :--- | :--- | :--- | :--- |
+| **@astrojs/starlight** | ^0.41.9 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **astro** | ^7.2.7 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **sharp** | ^0.35.3 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+
+### 2.5 Data Processing Engine Dependencies (`dataproc_engine/pyproject.toml`)
+| Package | Version | License | License File |
+| :--- | :--- | :--- | :--- |
+| **aiohttp** | 3.14.3 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **click** | 8.3.1 | BSD | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **pandas** | 3.0.5 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **pyarrow** | 23.0.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **pydantic** | 2.13.4 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 
 ## 3. Obligations & Compliance Steps
 To remain compliant with these licenses, the following steps are handled automatically by this repository:

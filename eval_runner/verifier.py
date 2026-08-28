@@ -919,11 +919,15 @@ class TraceVerifier:
                         if config.PQC_STRICT_MODE:
                             raise ValueError(f"PQC_STRICT_MODE Violation: {msg}")
                 else:
-                    logger.warning(
-                        f"      [Verifier] Unknown algorithm '{algorithm}' for {identity_id}"
+                    msg = (
+                        f"Unknown or unsupported signature algorithm '{algorithm}' "
+                        f"for {identity_id}"
                     )
+                    logger.error(f"      [Verifier] {msg}")
+                    raise ValueError(msg)
 
             return True
+
         except Exception:
             import traceback
 

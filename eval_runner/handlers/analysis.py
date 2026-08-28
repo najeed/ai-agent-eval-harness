@@ -8,6 +8,7 @@ import logging
 
 from .. import (
     calibrator,
+    config,
     explainer,
     leaderboard_generator,
     reporter,
@@ -36,10 +37,17 @@ async def handle_report(args):
         if not trace_path or not _ensure_path_safe(trace_path, "Report Trace"):
             return 1
 
+        master_path = (config.RUN_LOG_DIR / "run.jsonl").resolve()
+        events = trace_utils.load_events(trace_path)
+        if trace_path == master_path:
+            events = [e for e in events if e.get("run_id") == run_id]
+            if not events:
+                print(f"❌ [ERROR] Run ID '{run_id}' not found in master log fallback.")
+                return 1
+
         print(f"\n[Report] Generating stylized HTML for Run ID: {run_id}")
 
         # Load and Reconstruction logic (Industry Standard)
-        events = trace_utils.load_events(trace_path)
         run_start = next((e for e in events if e.get("event") == "run_start"), {})
         metadata = run_start.get("metadata", {})
 

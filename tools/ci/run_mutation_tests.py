@@ -445,9 +445,19 @@ def run_mutation_sentinel() -> None:
     except OSError as lock_err:
         sys.stderr.write(f"  [Warn] Could not write lock file: {lock_err}\n")
 
-    # Preserve pristine module sources and register automatic emergency restore
+    # Self-heal any target modules from git index before snapshotting pristine sources
     import atexit
     import signal
+    import subprocess
+
+    try:
+        subprocess.run(
+            ["git", "checkout", "--"] + [str(t) for t in TARGET_MODULES],
+            capture_output=True,
+            check=False,
+        )
+    except Exception as git_err:
+        sys.stderr.write(f"  [Warn] Git self-heal restore skipped: {git_err}\n")
 
     pristine_sources = {target: target.read_bytes() for target in TARGET_MODULES}
 

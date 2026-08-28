@@ -1191,6 +1191,7 @@ def test_verify_run_directory_status_matrix(clean_vault_setup):
     assert corrupt["verification_status"] == "FAILED_VERIFICATION"
     assert corrupt["is_valid"] is False
     assert corrupt["has_certificate"] is True
+    assert corrupt["has_signature"] is False
     assert "Verification error" in corrupt["failure_reason"]
 
     assert project_root.exists()  # jail intact throughout
@@ -1333,6 +1334,10 @@ def test_sign_trace_trace_derived_consensus_and_rubrics(clean_vault_setup):
 def test_verify_run_directory_corrupted_manifest_exception(clean_vault_setup):
     """Corrupted non-JSON manifest in run directory triggers exception branch."""
     run_dir = clean_vault_setup["run_dir"]
+    trace_file = clean_vault_setup["trace_file"]
+
+    # Pre-create valid trace so verify_run_directory attempts manifest parsing
+    trace_file.write_text('{"event": "step"}\n', encoding="utf-8")
 
     manifest_path = run_dir / "run_manifest.json"
     manifest_path.write_text("INVALID_NON_JSON_CONTENT{{{", encoding="utf-8")
@@ -1343,3 +1348,65 @@ def test_verify_run_directory_corrupted_manifest_exception(clean_vault_setup):
     assert res["has_certificate"] is True
     assert res["has_signature"] is False
     assert "Verification error" in res["failure_reason"]
+
+
+def test_sign_trace_partial_consensus_or_rubrics_extraction(clean_vault_setup):
+    """
+    Mutation Assurance Test: Verifies that when only one of consensus/rubrics is
+    passed, the missing one is still extracted from the physical trace.
+    (Kills extracted_consensus is None -> is not None and extracted_rubrics is None -> is not None).
+    """
+    run_id = clean_vault_setup["run_id"]
+    trace_file = clean_vault_setup["trace_file"]
+
+    # Write trace events containing both consensus and rubrics
+    ev = json.dumps(
+        {
+            "event": "evaluation_complete",
+            "consensus": {"trace_consensus": True},
+            "rubrics": {"trace_rubric": 5},
+        }
+    )
+    trace_file.write_text(f"{ev}\n", encoding="utf-8")
+
+    # 1. Caller provides consensus only -> rubrics must be extracted from trace
+    m1 = TraceVerifier.sign_trace(
+        str(trace_file),
+        identity_id="signer",
+        run_id=run_id,
+        consensus={"caller_consensus": True},
+        rubrics=None,
+    )
+    assert m1.get("consensus") == {"caller_consensus": True}
+    assert m1.get("rubrics") == {"trace_rubric": 5}
+
+    # 2. Caller provides rubrics only -> consensus must be extracted from trace
+    m2 = TraceVerifier.sign_trace(
+        str(trace_file),
+        identity_id="signer",
+        run_id=run_id,
+        consensus=None,
+        rubrics={"caller_rubric": 10},
+    )
+    assert m2.get("consensus") == {"trace_consensus": True}
+    assert m2.get("rubrics") == {"caller_rubric": 10}
+
+
+def test_sign_trace_rollback_missing_ok_unlink(clean_vault_setup):
+    """
+    Mutation Assurance Test: Verifies rollback stray unlinking uses missing_ok=True
+    (kills stray.unlink(missing_ok=True -> False)).
+    """
+    from pathlib import Path
+    from unittest.mock import patch
+
+    run_id = clean_vault_setup["run_id"]
+    trace_file = clean_vault_setup["trace_file"]
+
+    with patch.object(TraceVerifier, "verify_trace", return_value=False):
+        with patch.object(Path, "unlink") as mock_unlink:
+            with pytest.raises(CertificationFailedError, match="verify"):
+                TraceVerifier.sign_trace(str(trace_file), identity_id="signer", run_id=run_id)
+
+            # Assert unlink was called with missing_ok=True
+            mock_unlink.assert_any_call(missing_ok=True)

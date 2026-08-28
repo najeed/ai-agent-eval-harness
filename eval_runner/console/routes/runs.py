@@ -109,39 +109,41 @@ def explain_run(run_id):
 class RunsCache:
     """Thread-safe in-memory cache for recent run logs, updated incrementally."""
 
-    def __init__(self):
+    def __init__(self, autostart: bool = False):
         self._lock = threading.Lock()
         self._runs = []
         self._scanned_files = {}  # path -> mtime
+        self._last_dir = None
         self._started = False
+        self._stop_event = threading.Event()
         self._thread = None
+        if autostart:
+            self.start()
 
     def start(self):
-        import sys
-
-        if (
-            "pytest" in sys.modules
-            or any("pytest" in arg for arg in sys.argv)
-            or "PYTEST_CURRENT_TEST" in os.environ
-        ):
-            if not os.environ.get("RUNS_CACHE_FORCE_THREAD"):
-                return
+        """Starts background updater thread if not already running."""
         with self._lock:
             if self._started:
                 return
             self._started = True
+            self._stop_event.clear()
             self._thread = threading.Thread(
                 target=self._update_loop, name="runs-cache-updater", daemon=True
             )
             self._thread.start()
 
-    def get_runs(self, query=None):
-        if "PYTEST_CURRENT_TEST" in os.environ:
-            # Under test, force a synchronous clean scan of the current config.RUN_LOG_DIR
-            self._runs = []
-            self._scanned_files = {}
-            self.update_cache()
+    def stop(self):
+        """Stops background updater thread."""
+        with self._lock:
+            if not self._started:
+                return
+            self._stop_event.set()
+            self._started = False
+            self._thread = None
 
+    def get_runs(self, query=None):
+        """Retrieves cached runs, ensuring directory freshness."""
+        self.update_cache()
         with self._lock:
             results = list(self._runs)
 
@@ -161,8 +163,9 @@ class RunsCache:
         except Exception as e:
             logger.warning(f"Error in initial runs cache scan: {e}")
 
-        while True:
-            time.sleep(1.0)
+        while not self._stop_event.is_set():
+            if self._stop_event.wait(timeout=1.0):
+                break
             try:
                 self.update_cache()
             except Exception as e:
@@ -172,8 +175,19 @@ class RunsCache:
         """Scans RUN_LOG_DIR differentially for changes."""
         from eval_runner import config
 
-        if not config.RUN_LOG_DIR.exists():
+        if not config.RUN_LOG_DIR or not config.RUN_LOG_DIR.exists():
+            with self._lock:
+                self._runs = []
+                self._scanned_files = {}
+                self._last_dir = config.RUN_LOG_DIR
             return
+
+        with self._lock:
+            # If the monitored directory path changed (e.g. reconfigured in runtime), reset state
+            if self._last_dir != config.RUN_LOG_DIR:
+                self._runs = []
+                self._scanned_files = {}
+                self._last_dir = config.RUN_LOG_DIR
 
         new_runs_map = {}
         changes = False
@@ -302,9 +316,8 @@ class RunsCache:
                 self._runs = sorted_runs[:500]
 
 
-# Initialize and start runs background caching daemon
+# Thread-safe runs cache instance
 runs_cache = RunsCache()
-runs_cache.start()
 
 
 @run_bp.route("/runs", methods=["GET"])

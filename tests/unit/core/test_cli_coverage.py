@@ -86,9 +86,8 @@ def test_get_parser_import_error_fallback():
     _reset_cache()
     with patch.object(sys, "argv", ["agentv", "run"]):
         with patch.dict("sys.modules", {"eval_runner.engine": None}):
-            with patch("builtins.__import__", side_effect=ImportError("no engine")):
-                parser = cli.get_parser(is_help=False)
-                assert parser is not None
+            parser = cli.get_parser(is_help=False)
+            assert parser is not None
     _reset_cache()
 
 

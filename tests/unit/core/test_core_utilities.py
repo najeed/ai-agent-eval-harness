@@ -258,6 +258,9 @@ def test_deep_diff_advanced():
     # List and tuple matching (kills list | tuple -> list & tuple mutation at line 185)
     assert utils.deep_diff([1, 2, 3], [1, 2, 3]) == []
     assert utils.deep_diff((1, 2), (1, 2)) == []
+    diff_tuple = utils.deep_diff((1, 2), (1, 3))
+    assert len(diff_tuple) == 1
+    assert "differ" in diff_tuple[0]
 
 
 def test_generate_id_advanced():
