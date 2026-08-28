@@ -1173,3 +1173,75 @@ def verify_trace_certificate(
         result["verified"] = True
 
     return result
+
+
+class VerificationAuthority:
+    """
+    Authoritative verification authority for AgentV evaluation runs and verification packages.
+    Enforces that certification claims are strictly derived from full package validation.
+    """
+
+    @staticmethod
+    def verify_package(
+        package: Any,
+        raw_trace_bytes: bytes | None = None,
+    ) -> dict[str, Any]:
+        """
+        Validates the entire evidence package:
+        - Trace SHA3-256 byte parity vs trace_hash
+        - Manifest hash binding
+        - Evidence graph root binding
+        - Decision verdict conformance
+        - Required oracle inventory completeness
+        """
+        import hashlib
+
+        from agentv_runtime.package import VerificationPackage
+
+        if isinstance(package, dict):
+            pkg = VerificationPackage.from_dict(package)
+        else:
+            pkg = package
+
+        failures: list[str] = []
+
+        # 1. Byte parity check if raw trace bytes supplied
+        if raw_trace_bytes is not None:
+            actual_trace_hash = hashlib.sha3_256(raw_trace_bytes).hexdigest()
+            if actual_trace_hash != pkg.trace_hash:
+                failures.append(
+                    f"TraceHashMismatch: package={pkg.trace_hash} actual={actual_trace_hash}"
+                )
+
+        # 2. Manifest binding
+        if not pkg.manifest_hash or not pkg.manifest_id:
+            failures.append("ManifestMissing: package does not bind a valid manifest hash")
+
+        # 3. Evidence root binding
+        if not pkg.evidence_root_hash:
+            failures.append("EvidenceRootMissing: package missing evidence graph root")
+
+        # 4. Decision verdict check
+        decision_val = pkg.decision.get("decision") or pkg.decision.get("verdict")
+        if decision_val not in ("PASS", "VERIFIED"):
+            failures.append(f"UnverifiedDecision: decision was '{decision_val}'")
+
+        # 5. Required oracle inventory check
+        executed_oracle_ids = {
+            str(o.get("metric") or o.get("assertion") or "") for o in pkg.executed_oracle_results
+        }
+        missing_oracles = [
+            req for req in pkg.required_oracle_ids if req and req not in executed_oracle_ids
+        ]
+        if missing_oracles:
+            failures.append(f"MissingRequiredOracles: {missing_oracles}")
+
+        is_valid = len(failures) == 0
+        return {
+            "verified": is_valid,
+            "status": "CERTIFIED" if is_valid else "UNVERIFIED",
+            "failures": failures,
+            "package_id": pkg.package_id,
+            "scenario_id": pkg.scenario_id,
+            "package_hash": pkg.compute_package_hash(),
+        }

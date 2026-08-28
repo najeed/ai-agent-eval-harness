@@ -161,7 +161,13 @@ class TestTransitionEvidence:
 
 
 class TestVerificationResult:
-    def _make(self, verdict: str = Verdict.VERIFIED, mode: str = "live") -> VerificationResult:
+    def _make(
+        self,
+        verdict: str = Verdict.VERIFIED,
+        mode: str = "live",
+        signature_verified: bool = True,
+        evidence_complete: bool = True,
+    ) -> VerificationResult:
         return VerificationResult(
             evaluation_run_id="run-001",
             scenario_version_id="sv-001",
@@ -171,6 +177,8 @@ class TestVerificationResult:
             execution_mode=mode,
             verdict=verdict,
             because=["All checks passed"],
+            signature_verified=signature_verified,
+            evidence_complete=evidence_complete,
         )
 
     def test_is_verified_true(self):
@@ -218,6 +226,8 @@ class TestVerificationResult:
             verdict=Verdict.VERIFIED,
             assertions=[ar],
             transitions=[te],
+            signature_verified=True,
+            evidence_complete=True,
         )
         d = vr.to_dict()
         assert d["attestation_grade"] == "attested"

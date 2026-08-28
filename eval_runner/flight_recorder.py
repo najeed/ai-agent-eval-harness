@@ -275,8 +275,8 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                         trace_content = (
                             raw_art.decode("utf-8") if isinstance(raw_art, bytes) else str(raw_art)
                         )
-                except Exception:
-                    pass
+                except Exception as art_err:
+                    logger.debug(f"Artifact store get trace notice: {art_err}")
 
                 if not trace_content:
                     run_vault_dir = self.log_dir / run_id
@@ -304,6 +304,19 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                     "sealed_at": datetime.now(UTC).isoformat(),
                     "algorithm": "sha3_256",
                 }
+
+                try:
+                    from eval_runner.identity import get_default_signer
+
+                    signer = get_default_signer()
+                    if signer:
+                        seal_bytes = json.dumps(
+                            seal_payload, sort_keys=True, separators=(",", ":")
+                        ).encode("utf-8")
+                        seal_payload["signature"] = signer.sign(seal_bytes).hex()
+                        seal_payload["signer_identity"] = getattr(signer, "identity", "local-node")
+                except Exception as sign_e:
+                    logger.debug(f"Trace seal signing notice: {sign_e}")
 
                 self.artifact_store.store_artifact(
                     run_id=run_id,

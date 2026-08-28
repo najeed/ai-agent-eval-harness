@@ -352,7 +352,7 @@ def list_runs():
 
 def _authoritative_verdict(run_id: str) -> str:
     """
-    Hash-compare verdict. Full literal set:
+    Authoritative verification computation. Full literal set:
 
         VERIFIED | FAILED_VERIFICATION | NOT_EXECUTED | ERROR | UNKNOWN
 
@@ -386,7 +386,6 @@ def _authoritative_verdict(run_id: str) -> str:
         expected = manifest.get("trace_hash")
         if not isinstance(expected, str) or not expected:
             return "UNKNOWN"
-        # Tolerate prefixed ('sha3_256:<hex>') and bare digest forms.
         expected_hex = expected.split(":", 1)[1] if ":" in expected else expected
         actual_hex = crypto.file_hash(tp)
         return (
@@ -411,15 +410,18 @@ def stream_runs_list():
             chunk = runs[i : i + chunk_size]
             resolved_chunk = []
             for run in chunk:
-                # Perform fast status resolving
                 run_id = run["run_id"]
                 cert_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
                 vault_manifest = config.RUN_LOG_DIR / run_id / "run_manifest.json"
 
                 status = "PASSED"
-                # Check status via certificate or manifest
+                # Check status via full authoritative verdict (Defect #3)
                 if cert_path.exists() or vault_manifest.exists():
-                    status = "CERTIFIED"
+                    auth_verdict = _authoritative_verdict(run_id)
+                    if auth_verdict == "VERIFIED":
+                        status = "CERTIFIED"
+                    else:
+                        status = "ARTIFACT_PRESENT"
                 else:
                     tp = resolve_trace_path(run_id)
                     if tp and tp.exists():
@@ -712,6 +714,7 @@ def resume_run(run_id):
 
 
 @run_bp.route("/v1/certificates/<run_id>", methods=["GET"])
+@require_permission(Permission.RUNS_READ)
 def get_verification_certificate(run_id):
     """Public Trust Protocol endpoint."""
     cert_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"

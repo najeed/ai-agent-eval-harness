@@ -90,17 +90,30 @@ def link_assertion(
         node["row_hash"] = _sha3_hex(_canonical_row({**node, "assertion": assertion}).encode())
         return node
 
-    seq = assertion.get("event_seq", assertion.get("_seq", fallback_seq))
-    if isinstance(seq, int) and seq in seq_index:
+    explicit_seq = assertion.get("event_seq", assertion.get("_seq"))
+    if isinstance(explicit_seq, int) and explicit_seq in seq_index:
         node.update(
             {
                 "source_type": "trace_event",
-                "source_ref": f"run.jsonl#seq={seq}",
-                "content_hash": seq_index[seq],
+                "source_ref": f"run.jsonl#seq={explicit_seq}",
+                "content_hash": seq_index[explicit_seq],
                 "resolved": True,
+                "is_direct_provenance": True,
             }
         )
-        # Commit to this node's own canonical row as well.
+        node["row_hash"] = _sha3_hex(_canonical_row({**node, "assertion": assertion}).encode())
+        return node
+
+    if isinstance(fallback_seq, int) and fallback_seq in seq_index:
+        node.update(
+            {
+                "source_type": "carrier_fallback",
+                "source_ref": f"run.jsonl#seq={fallback_seq}",
+                "content_hash": seq_index[fallback_seq],
+                "resolved": True,
+                "is_direct_provenance": False,
+            }
+        )
         node["row_hash"] = _sha3_hex(_canonical_row({**node, "assertion": assertion}).encode())
         return node
 
@@ -110,6 +123,7 @@ def link_assertion(
             "source_ref": None,
             "content_hash": None,
             "resolved": False,
+            "is_direct_provenance": False,
             "row_hash": _sha3_hex(_canonical_row({**node, "assertion": assertion}).encode()),
         }
     )
@@ -143,13 +157,27 @@ def build_evidence_graph(
         separators=(",", ":"),
     ).encode("utf-8")
 
+    all_direct = (
+        all(
+            n.get("is_direct_provenance", False) or n.get("source_type") == "artifact"
+            for n in nodes
+        )
+        if nodes
+        else True
+    )
+
     return {
         "graph_version": EVIDENCE_GRAPH_VERSION,
-        "node_count": len(nodes),
-        "resolved_count": sum(1 for n in nodes if n["resolved"]),
-        "unresolved_count": sum(1 for n in nodes if not n["resolved"]),
-        "nodes": nodes,
+        "root_hash": _sha3_hex(root_payload),
         "evidence_root_hash": _sha3_hex(root_payload),
+        "total_nodes": len(nodes),
+        "node_count": len(nodes),
+        "resolved_nodes": sum(1 for n in nodes if n.get("resolved")),
+        "resolved_count": sum(1 for n in nodes if n.get("resolved")),
+        "unresolved_count": sum(1 for n in nodes if not n.get("resolved")),
+        "direct_provenance_nodes": sum(1 for n in nodes if n.get("is_direct_provenance")),
+        "is_complete_provenance": all_direct,
+        "nodes": nodes,
     }
 
 

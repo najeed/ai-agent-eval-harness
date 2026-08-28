@@ -986,7 +986,10 @@ class SessionManager:
 
     @staticmethod
     def _build_verification_decision(
-        outcome, results: list[dict[str, Any]], identity: ExecutionIdentity
+        outcome,
+        results: list[dict[str, Any]],
+        identity: ExecutionIdentity,
+        required_oracles: list[str] | None = None,
     ) -> dict[str, Any]:
         """
         First-class 'why did this workflow pass/fail' decision tree (P1 #15):
@@ -1046,6 +1049,15 @@ class SessionManager:
         failed_assertions = [a for a in assertions if not a["passed"]]
         invalid_assertions = [a for a in assertions if a.get("invalid")]
         required_failures = [a for a in failed_assertions if a.get("severity") != "informational"]
+
+        # Reconcile compiled required oracles vs executed assertions (Defect #9)
+        if required_oracles:
+            evaluated_keys = {str(a.get("metric") or a.get("assertion") or "") for a in assertions}
+            missing_oracles = [req for req in required_oracles if req and req not in evaluated_keys]
+            if missing_oracles:
+                evaluation_valid = False
+                for mo in missing_oracles:
+                    because.append(f"Required oracle '{mo}' was missing from execution evaluation.")
 
         if not evaluation_valid:
             decision = "EVALUATION_INVALID"

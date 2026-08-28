@@ -121,6 +121,13 @@ class NodeVerdict:
             return "policy_denied"
         if self.parity == "fail":
             return "parity_failed"
+        # Strict conjunctive validation: every component must be explicitly pass or not_applicable
+        if self.verification not in ("pass", "not_applicable"):
+            return "verification_failed"
+        if self.policy not in ("pass", "not_applicable"):
+            return "policy_denied"
+        if self.parity not in ("pass", "not_applicable"):
+            return "parity_failed"
         return "success"
 
     @property

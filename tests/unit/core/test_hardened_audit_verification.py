@@ -306,3 +306,112 @@ def test_compliance_pack_fail_closed_on_missing_consensus(tmp_path, monkeypatch)
         assert "not evaluated" in data["checks"][0]["details"]
         assert data["checks"][1]["status"] == "FAIL"
         assert "missing" in data["checks"][1]["details"].lower()
+
+
+def test_verification_package_canonical_hash():
+    """VerificationPackage must compute deterministic SHA3-256 root hash."""
+    from agentv_runtime.package import VerificationPackage
+
+    pkg1 = VerificationPackage(
+        scenario_id="scen_audit_01",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:abc1",
+        manifest_id="mf_audit_01",
+        manifest_hash="sha3_256:def1",
+        execution_identity={"runtime_version": "1.4.0"},
+        trace_hash="sha3_256:1234",
+        trace_seal={"digest": "sha3_256:1234", "event_count": 10},
+        evidence_root_hash="sha3_256:5678",
+        required_oracle_ids=["oracle_1", "oracle_2"],
+        executed_oracle_results=[{"metric": "oracle_1", "passed": True}],
+        decision={"decision": "PASS", "verdict": "VERIFIED"},
+    )
+    h1 = pkg1.compute_package_hash()
+    assert len(h1) == 64
+
+    # Package hash must be deterministic across instances with same data
+    pkg2 = VerificationPackage.from_dict(pkg1.to_dict())
+    assert pkg2.compute_package_hash() == h1
+
+
+def test_node_verdict_conjunctive_success():
+    """NodeVerdict.overall must require all components to be explicitly pass or not_applicable."""
+    from eval_runner.execution_ir import NodeVerdict
+
+    # 1. All pass -> success
+    v_pass = NodeVerdict(execution="success", verification="pass", policy="pass", parity="pass")
+    assert v_pass.overall == "success"
+    assert v_pass.success is True
+
+    # 2. Unexpected/unverified string -> fail-closed (never success)
+    v_unverified = NodeVerdict(
+        execution="success", verification="unknown_string", policy="pass", parity="pass"
+    )
+    assert v_unverified.overall == "verification_failed"
+    assert v_unverified.success is False
+
+    # 3. Policy denied -> policy_denied
+    v_denied = NodeVerdict(execution="success", verification="pass", policy="denied", parity="pass")
+    assert v_denied.overall == "policy_denied"
+    assert v_denied.success is False
+
+
+def test_verification_authority_package_validation():
+    """VerificationAuthority validates package consistency and missing required oracles."""
+    from agentv_runtime.package import VerificationPackage
+    from eval_runner.verifier import VerificationAuthority
+
+    # Valid package with all required oracles executed
+    pkg_valid = VerificationPackage(
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen",
+        manifest_id="m1",
+        manifest_hash="sha3_256:man",
+        execution_identity={"evaluator": "test"},
+        trace_hash="sha3_256:trace",
+        trace_seal={"digest": "sha3_256:trace"},
+        evidence_root_hash="sha3_256:ev",
+        required_oracle_ids=["req_oracle_1"],
+        executed_oracle_results=[{"metric": "req_oracle_1", "passed": True}],
+        decision={"decision": "PASS", "verdict": "VERIFIED"},
+    )
+    res_valid = VerificationAuthority.verify_package(pkg_valid)
+    assert res_valid["verified"] is True
+    assert res_valid["status"] == "CERTIFIED"
+
+    # Incomplete package: missing required oracle
+    pkg_missing_oracle = VerificationPackage(
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen",
+        manifest_id="m1",
+        manifest_hash="sha3_256:man",
+        execution_identity={"evaluator": "test"},
+        trace_hash="sha3_256:trace",
+        trace_seal={"digest": "sha3_256:trace"},
+        evidence_root_hash="sha3_256:ev",
+        required_oracle_ids=["req_oracle_1", "missing_oracle_2"],
+        executed_oracle_results=[{"metric": "req_oracle_1", "passed": True}],
+        decision={"decision": "PASS", "verdict": "VERIFIED"},
+    )
+    res_missing = VerificationAuthority.verify_package(pkg_missing_oracle)
+    assert res_missing["verified"] is False
+    assert res_missing["status"] == "UNVERIFIED"
+    assert any("MissingRequiredOracles" in f for f in res_missing["failures"])
+
+
+def test_contracts_verification_result_fail_closed_defaults():
+    """VerificationResult defaults signature_verified and evidence_complete to False."""
+    vr = VerificationResult(
+        evaluation_run_id="run-def",
+        scenario_version_id="sv-def",
+        case_id="c-def",
+        attempt_id="att-def",
+        attempt_number=1,
+        execution_mode="live",
+        verdict=Verdict.VERIFIED,
+    )
+    assert vr.signature_verified is False
+    assert vr.evidence_complete is False
+    assert vr.attestation_grade == "verifiable"

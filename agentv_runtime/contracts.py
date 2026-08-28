@@ -174,8 +174,8 @@ class VerificationResult:
     observed_execution: list[dict[str, Any]] = field(default_factory=list)
     policy_checks: list[dict[str, Any]] = field(default_factory=list)
     evidence_refs: list[str] = field(default_factory=list)
-    signature_verified: bool = True
-    evidence_complete: bool = True
+    signature_verified: bool = False
+    evidence_complete: bool = False
     signer_identity: str | None = None
     manifest_digest: str | None = None
     workflow_status: str = ""  # workflow_completed | workflow_failed | workflow_aborted
@@ -261,17 +261,21 @@ class VerificationResult:
             )
             for t in decision.get("expected_transitions", [])
         ]
-        sig_verified = True
+        sig_verified = False
         if "signature_verified" in decision:
             sig_verified = bool(decision["signature_verified"])
-        elif "signatures" in decision:
-            sig_verified = bool(decision["signatures"] and not decision.get("signature_error"))
         elif "signature_verified" in identity:
             sig_verified = bool(identity["signature_verified"])
+        elif decision.get("signatures") and not decision.get("signature_error"):
+            sig_verified = True
 
-        evidence_complete = bool(
-            decision.get("evidence_complete", True) and not decision.get("evidence_missing", False)
-        )
+        evidence_complete = False
+        if "evidence_complete" in decision:
+            evidence_complete = bool(
+                decision["evidence_complete"] and not decision.get("evidence_missing", False)
+            )
+        elif "evidence_complete" in identity:
+            evidence_complete = bool(identity["evidence_complete"])
 
         return cls(
             evaluation_run_id=identity.get("evaluation_run_id", ""),

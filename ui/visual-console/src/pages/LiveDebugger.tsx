@@ -29,7 +29,7 @@ import type {
 
 
 // ---------------------------------------------------------------------------
-// [P0-12] Strict StateComparison contract. A divergence event carries a
+// Strict StateComparison contract. A divergence event carries a
 // structured `state_comparison` object (expected / actual / comparison /
 // assertions / source / timestamp) emitted by the runtime parity verifier.
 // The debugger renders ONLY this object. Absence of the payload means NO
@@ -78,7 +78,7 @@ export const LiveDebugger: React.FC = () => {
     droppedEdgeCount: number;
   }>({ source: 'TOPOLOGY_UNAVAILABLE', scenarioNodeCount: 0, runtimeNodeCount: 0, droppedEdgeCount: 0 });
 
-  // [GUI-P0-8] Explicit graph layers. The planned graph (scenario DAG), the
+  // Explicit graph layers. The planned graph (scenario DAG), the
   // executed graph (execution_graph_edge evidence) and the divergence overlay
   // (skipped planned nodes / unplanned executions) are DISTINCT views; the
   // runtime never blends them into one implied truth.
@@ -100,7 +100,7 @@ export const LiveDebugger: React.FC = () => {
   const [showExplain, setShowExplain] = useState(false);
   const [analysisData, setAnalysisData] = useState<any>(null);
 
-  // [P0-9] Single cancellable stream controller. Exactly one EventSource and
+  // Single cancellable stream controller. Exactly one EventSource and
   // at most one pending retry timer exist per run_id; every async continuation
   // is stale-guarded against run switches; terminal runs never schedule
   // retries (explicit FINISHED state). Replay resumption (cursor > 0) is a
@@ -112,11 +112,12 @@ export const LiveDebugger: React.FC = () => {
   interface StreamCtl {
     es: EventSource | null;
     timer: ReturnType<typeof setTimeout> | null;
+    scenarioTimer: ReturnType<typeof setTimeout> | null;
     run: string | null;
     attempt: number;
   }
-  const streamCtlRef = useRef<StreamCtl>({ es: null, timer: null, run: null, attempt: 0 });
-  // [P0-10] Server-generated monotonic event ids: dedupe set + replay cursor.
+  const streamCtlRef = useRef<StreamCtl>({ es: null, timer: null, scenarioTimer: null, run: null, attempt: 0 });
+  // Server-generated monotonic event ids: dedupe set + replay cursor.
   const seenSeqsRef = useRef<Set<number>>(new Set());
   const cursorRef = useRef<number>(0);
 
@@ -174,7 +175,9 @@ export const LiveDebugger: React.FC = () => {
       // fall through to retry scheduling
     }
     if (!staleAfterFetch() && attempt < 5) {
-      setTimeout(() => {
+      const ctl = streamCtlRef.current;
+      if (ctl.scenarioTimer) clearTimeout(ctl.scenarioTimer);
+      ctl.scenarioTimer = setTimeout(() => {
         if (streamCtlRef.current.run === rid) fetchScenarioWithRetry(rid, attempt + 1);
       }, 500 * (attempt + 1));
     }
@@ -261,12 +264,12 @@ export const LiveDebugger: React.FC = () => {
     }
   };
 
-  // [P0-9][B2] Trace-integrity state derived from the authoritative event
+  // Trace-integrity state derived from the authoritative event
   // stream. Compositional flags; no single state downgrade.
   const traceIntegrity: TraceIntegrityFlags = computeTraceIntegrity(events, sourcedFromMaster);
 
   const integrityLabel = (() => {
-    // [Release-blocker 1] ONE authoritative integrity state: live SSE gaps
+    // ONE authoritative integrity state: live SSE gaps
     // participate in the verdict. An unreconciled gap can never coexist with
     // a green COMPLETE label.
     if (!traceIntegrity.hasEvents) return 'UNKNOWN';
@@ -317,6 +320,10 @@ export const LiveDebugger: React.FC = () => {
       clearTimeout(ctl.timer);
       ctl.timer = null;
     }
+    if (ctl.scenarioTimer) {
+      clearTimeout(ctl.scenarioTimer);
+      ctl.scenarioTimer = null;
+    }
     if (ctl.es) {
       ctl.es.close();
       ctl.es = null;
@@ -324,6 +331,7 @@ export const LiveDebugger: React.FC = () => {
   };
 
   const resetRunLocalState = () => {
+    setActiveScenario(null);
     setEvents([]);
     setSelectedEvent(null);
     setNodes([]);
@@ -416,7 +424,7 @@ export const LiveDebugger: React.FC = () => {
         return;
       }
 
-      // [P0-10] Dedupe + gap detection BEFORE an event may enter state.
+      // Dedupe + gap detection BEFORE an event may enter state.
       const seq = typeof data._seq === 'number' ? data._seq : 0;
       if (seq > 0) {
         if (seenSeqsRef.current.has(seq)) return;
@@ -487,7 +495,7 @@ export const LiveDebugger: React.FC = () => {
     return () => teardownStream();
   }, [runId]);
 
-  // [B1][B3] Canonical Graph Builder; provenance-gated (Runtime-Authoritative
+  // Canonical Graph Builder; provenance-gated (Runtime-Authoritative
   // Truth Model).
   //
   // Node topology is constructed ONLY from canonical sources:
@@ -513,7 +521,7 @@ export const LiveDebugger: React.FC = () => {
   } => {
     const positions = nodePositionsRef.current;
 
-    // 0. [P1.3/V08] Canonical event normalization: every consumer below
+    // 0. Canonical event normalization: every consumer below
     // (node status, attempt counts, edge decoration) derives from events
     // ordered by server-assigned _seq — NEVER array arrival order, which
     // replay/recovery reconnection can scramble. Events lacking _seq retain
@@ -536,7 +544,7 @@ export const LiveDebugger: React.FC = () => {
     const workflowEdges = scen?.workflow?.edges || [];
 
     const graphNodeEventsAll = normalizedEvents.filter(e => e.event === 'execution_graph_node');
-    // [GUI-P0-8] Nodes with authoritative executed coverage; drives the
+    // Nodes with authoritative executed coverage; drives the
     // divergence overlay (planned-but-never-executed detection).
     const executedNodeIds = new Set<string>(
       graphNodeEventsAll.map(e => e.scenario_node_id).filter((id): id is string => !!id)
@@ -569,7 +577,7 @@ export const LiveDebugger: React.FC = () => {
     }
 
     // 2. Map authoritative state per canonical node; status comes SOLELY from
-    // execution_graph_node events (B3). No string heuristics.
+    // execution_graph_node events. No string heuristics.
     const flowNodes = workflowNodes.map((n: any) => {
       const id = String(n.id || n.scenario_node_id || n.task_id);
       const label = n.task_description || n.description || n.label || id;
@@ -618,7 +626,7 @@ export const LiveDebugger: React.FC = () => {
         statusLabel = 'Running';
       }
 
-      // [GUI-P0-8] Divergence overlay: only in divergence layer, only from
+      // Divergence overlay: only in divergence layer, only from
       // canonical evidence. Pending ≠ skipped while the run is live; a
       // planned node is SKIPPED only once the run reached a terminal state.
       const isUnplanned = !!(n as any).__runtime_discovered;
@@ -816,7 +824,7 @@ export const LiveDebugger: React.FC = () => {
     dagre.layout(dagreGraph);
 
     const layoutedNodes = flowNodes.map((node: any, index: number) => {
-      // [Sprint-2] Composite cache key: run_id :: scenario_hash :: node_id.
+      // Composite cache key: run_id :: scenario_hash :: node_id.
       const savedPos = positions.get(posKey(node.id));
       if (savedPos) {
         return { ...node, position: savedPos };
@@ -859,16 +867,16 @@ export const LiveDebugger: React.FC = () => {
       runtimeNodeCount: result.runtimeNodeCount,
       droppedEdgeCount: result.droppedEdgeCount
     });
-    // [B3] Heuristic findings are computed for the diagnostics panel only.
+    // Heuristic findings are computed for the diagnostics panel only.
     setDiagnostics(computeTelemetryDiagnostics(events));
   }, [events, activeScenario, selectedEvent, layerMode, isTerminalRun, runId, scenarioHash]);
 
-  // [B4] Filter events by selected telemetry level via typed taxonomy
+  // Filter events by selected telemetry level via typed taxonomy
   useEffect(() => {
     setFilteredEvents(filterEventsByTelemetryLevel(events, telemetryLevel));
   }, [events, telemetryLevel]);
 
-  // [Sprint-3] Auto-fit fires ONCE per run+scenario (initial load only).
+  // Auto-fit fires ONCE per run+scenario (initial load only).
   // During active investigation the viewport is never moved automatically;
   // an explicit "Fit graph" button exists in the toolbar.
   const autoFitKeyRef = useRef<string>('');
@@ -883,7 +891,7 @@ export const LiveDebugger: React.FC = () => {
     return () => clearTimeout(timer);
   }, [nodes.length, reactFlowInstance, runId, scenarioHash]);
 
-  // [Sprint-4] Selection NEVER moves the camera. Recentering happens only on
+  // Selection NEVER moves the camera. Recentering happens only on
   // this explicit operator action.
   const focusSelectedNode = () => {
     if (!selectedEvent || !reactFlowInstance) return;
@@ -908,7 +916,7 @@ export const LiveDebugger: React.FC = () => {
     e.message?.toLowerCase().includes('fail')
   );
 
-  // [Sprint-6] Forensic waterfall derived from authoritative graph-node events.
+  // Forensic waterfall derived from authoritative graph-node events.
   const waterfall = useMemo(() => buildWaterfall(events), [events]);
   const focusWaterfallRow = (row: WaterfallRow) => {
     const target = [...events]
@@ -990,11 +998,11 @@ export const LiveDebugger: React.FC = () => {
                         {evt.event} (Seq #{evt._seq}{evt.turn !== undefined ? `, Turn ${evt.turn}` : ''})
                       </span>
                       <div className="flex items-center gap-1.5">
-                        {/* [P0-11] RCA confidence labeling: authoritative runtime
+                        {/* RCA confidence labeling: authoritative runtime
                             designation vs heuristic inference are never collapsed. */}
                         {evt.is_root_cause === true && (
                           <span className="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[8px] font-bold tracking-wider uppercase shrink-0">
-                            ðŸ”´ Root Cause (Confirmed)
+                            🔴 Root Cause (Confirmed)
                           </span>
                         )}
                         {!evt.is_root_cause && isRootCauseIndex && (
@@ -1017,7 +1025,7 @@ export const LiveDebugger: React.FC = () => {
             })
           )}
 
-          {/* [Sprint-6] Execution waterfall; synchronized forensic timeline
+          {/* Execution waterfall; synchronized forensic timeline
               built ONLY from authoritative execution_graph_node evidence:
               parent/child depth, retries/iterations, observed durations and
               failure boundaries. Nodes without timestamps are listed, never
