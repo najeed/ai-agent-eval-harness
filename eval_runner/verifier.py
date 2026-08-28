@@ -379,7 +379,7 @@ class TraceVerifier:
         if not p.is_absolute():
             p = config.PROJECT_ROOT / p
 
-        p.mkdir(parents=True, exist_ok=True)
+        p.mkdir(parents=True, exist_ok=False)
 
         private_key = ed25519.Ed25519PrivateKey.generate()
         public_key = private_key.public_key()
@@ -1053,7 +1053,7 @@ def verify_trace_certificate(
     if expected_trace_hash:
         computed_hex = hashlib.sha3_256(trace_bytes).hexdigest()
         if computed_hex == expected_trace_hash:
-            result["manifest_hash_match"] = False
+            result["manifest_hash_match"] = True
         else:
             result["errors"].append(
                 f"Trace hash mismatch: expected={expected_trace_hash!r}, "
