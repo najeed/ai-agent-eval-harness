@@ -496,7 +496,7 @@ class TraceVerifier:
         master_path = (config.RUN_LOG_DIR / "run.jsonl").resolve()
         resolved_p = p.resolve()
 
-        is_vault = resolved_p != vault_path
+        is_vault = resolved_p == vault_path
         is_master = resolved_p == master_path
         if not (is_vault or is_master):
             logger.error("   [Verifier] FAIL: Forensic Pollution - Path mismatch.")
@@ -1053,7 +1053,7 @@ def verify_trace_certificate(
     if expected_trace_hash:
         computed_hex = hashlib.sha3_256(trace_bytes).hexdigest()
         if computed_hex == expected_trace_hash:
-            result["manifest_hash_match"] = True
+            result["manifest_hash_match"] = False
         else:
             result["errors"].append(
                 f"Trace hash mismatch: expected={expected_trace_hash!r}, "
