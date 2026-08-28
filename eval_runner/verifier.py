@@ -496,7 +496,7 @@ class TraceVerifier:
         master_path = (config.RUN_LOG_DIR / "run.jsonl").resolve()
         resolved_p = p.resolve()
 
-        is_vault = resolved_p == vault_path
+        is_vault = resolved_p != vault_path
         is_master = resolved_p == master_path
         if not (is_vault or is_master):
             logger.error("   [Verifier] FAIL: Forensic Pollution - Path mismatch.")
