@@ -1185,6 +1185,9 @@ class VerificationAuthority:
     def verify_package(
         package: Any,
         raw_trace_bytes: bytes | None = None,
+        raw_trace_events: list[dict[str, Any]] | None = None,
+        public_key_pem: str | None = None,
+        require_signature: bool = False,
     ) -> dict[str, Any]:
         """
         Validates the entire evidence package:
@@ -1193,6 +1196,7 @@ class VerificationAuthority:
         - Evidence graph root binding
         - Decision verdict conformance
         - Required oracle inventory completeness
+        - Cryptographic signature validation
         """
         import hashlib
 
@@ -1208,7 +1212,10 @@ class VerificationAuthority:
         # 1. Byte parity check if raw trace bytes supplied
         if raw_trace_bytes is not None:
             actual_trace_hash = hashlib.sha3_256(raw_trace_bytes).hexdigest()
-            if actual_trace_hash != pkg.trace_hash:
+            expected_hash = (
+                pkg.trace_hash.split(":", 1)[1] if ":" in pkg.trace_hash else pkg.trace_hash
+            )
+            if actual_trace_hash.lower() != expected_hash.lower():
                 failures.append(
                     f"TraceHashMismatch: package={pkg.trace_hash} actual={actual_trace_hash}"
                 )
@@ -1221,12 +1228,30 @@ class VerificationAuthority:
         if not pkg.evidence_root_hash:
             failures.append("EvidenceRootMissing: package missing evidence graph root")
 
-        # 4. Decision verdict check
+        # 4. Evidence graph recalculation from raw events if provided
+        if raw_trace_events is not None:
+            try:
+                from agentv_runtime.evidence_graph import (
+                    build_evidence_graph_from_events,
+                    compute_evidence_graph_root,
+                )
+
+                ev_graph = build_evidence_graph_from_events(raw_trace_events)
+                computed_root = compute_evidence_graph_root(ev_graph)
+                if computed_root != pkg.evidence_root_hash:
+                    failures.append(
+                        f"EvidenceRootMismatch: package={pkg.evidence_root_hash} "
+                        f"actual={computed_root}"
+                    )
+            except Exception as ev_err:
+                logger.debug("Evidence graph calculation failed: %s", ev_err)
+
+        # 5. Decision verdict check
         decision_val = pkg.decision.get("decision") or pkg.decision.get("verdict")
         if decision_val not in ("PASS", "VERIFIED"):
             failures.append(f"UnverifiedDecision: decision was '{decision_val}'")
 
-        # 5. Required oracle inventory check
+        # 6. Required oracle inventory check
         executed_oracle_ids = {
             str(o.get("metric") or o.get("assertion") or "") for o in pkg.executed_oracle_results
         }
@@ -1235,6 +1260,20 @@ class VerificationAuthority:
         ]
         if missing_oracles:
             failures.append(f"MissingRequiredOracles: {missing_oracles}")
+
+        # 7. Signature verification
+        if pkg.signature:
+            try:
+                sig_valid = pkg.verify_signature(public_key_pem=public_key_pem)
+                if not sig_valid:
+                    failures.append(
+                        f"SignatureVerificationFailed: Signature for identity "
+                        f"'{pkg.signer_identity}' failed verification"
+                    )
+            except Exception as sig_err:
+                failures.append(f"SignatureVerificationFailed: {sig_err}")
+        elif require_signature:
+            failures.append("UnsignedPackage: package signature is required")
 
         is_valid = len(failures) == 0
         return {

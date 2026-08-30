@@ -328,9 +328,9 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             except Exception as e:
                 logger.debug(f"Artifact store finalize seal error: {e}")
 
-            # Cleanup sequence number if finalizing a specific run
-            if run_id:
-                self._sequence_numbers.pop(run_id, None)
+        # Cleanup sequence number if finalizing a specific run
+        if run_id:
+            self._sequence_numbers.pop(run_id, None)
 
     def after_evaluation(
         self, context: Any, results: list, span_context: dict[str, Any] | None = None

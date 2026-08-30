@@ -131,6 +131,9 @@ def get_pack(pack_id):
         return jsonify({"error": str(e)}), 500
 
 
+SUPPORTED_CHECK_TYPES = {"pqc_required", "wsm_threshold", "rubric_required", "ija_threshold"}
+
+
 @compliance_packs_bp.route("/v1/compliance-packs", methods=["POST"])
 @require_permission(Permission.EVAL_TRIGGER)
 def save_pack():
@@ -142,6 +145,21 @@ def save_pack():
 
     if not pack_id or not name:
         return jsonify({"error": "Missing required parameters: id, name"}), 400
+
+    for chk in checks:
+        chk_type = chk.get("type") if isinstance(chk, dict) else chk
+        if not isinstance(chk, dict) or chk_type not in SUPPORTED_CHECK_TYPES:
+            return (
+                jsonify(
+                    {
+                        "error": (
+                            f"Invalid check configuration: check type '{chk_type}' "
+                            f"is not supported. Supported types: {sorted(SUPPORTED_CHECK_TYPES)}"
+                        )
+                    }
+                ),
+                400,
+            )
 
     pack_path = PACKS_DIR / f"{pack_id}.json"
 
@@ -319,8 +337,24 @@ def test_pack(pack_id):
         elif chk_type == "wsm_threshold":
             dim = chk_params.get("dimension", "security")
             min_score = chk_params.get("min_score", 0.85)
-            actual_score = analysis.get("confidence", 0.0)
-            if actual_score >= min_score:
+
+            # Query real WSM metrics from certificate, metrics dictionary, or run analysis
+            metrics_dict = (
+                cert_data.get("metrics", {})
+                or cert_data.get("wsm_scores", {})
+                or analysis.get("wsm_scores", {})
+            )
+            actual_score = (
+                metrics_dict.get(f"wsm_{dim}")
+                or metrics_dict.get("wsm_score")
+                or metrics_dict.get(dim)
+                or cert_data.get("compliance_score")
+                or analysis.get("wsm_score")
+            )
+            if actual_score is None:
+                actual_score = analysis.get("wsm_score", 0.0)
+
+            if isinstance(actual_score, int | float) and actual_score >= min_score:
                 details = (
                     f"Weighted Severity model for {dim} "
                     f"cleared threshold ({actual_score} >= {min_score})."
@@ -404,7 +438,9 @@ def test_pack(pack_id):
                 overall_pass = False
 
         else:
-            details = f"Verified compliance checker format type '{chk_type}'."
+            status_val = "FAIL"
+            details = f"Unsupported or unregistered compliance check type: '{chk_type}'."
+            overall_pass = False
 
         results.append({"type": chk_type, "status": status_val, "details": details})
 

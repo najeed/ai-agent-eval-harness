@@ -483,6 +483,19 @@ def _sha256_file(p: Path) -> str:
     return h.hexdigest()
 
 
+def _matches_file_digest(p: Path, expected: str) -> bool:
+    actual = _sha256_file(p)
+    if actual.lower() == expected.lower():
+        return True
+    try:
+        raw = p.read_bytes()
+        normalized = raw.decode("utf-8").replace("\r\n", "\n").encode("utf-8")
+        norm_hash = hashlib.sha256(normalized).hexdigest()
+        return norm_hash.lower() == expected.lower()
+    except (UnicodeDecodeError, OSError):
+        return False
+
+
 def _extract_pack_archive(archive_path: Path, staging_root: Path) -> Path:
     """Extracts a local .zip/.tar.gz pack into a jailed staging dir."""
     staging_root.mkdir(parents=True, exist_ok=True)
@@ -593,7 +606,7 @@ def install_pack(pack_name: str):
                 continue
             expected = files_manifest.get(rel)
             actual = _sha256_file(p)
-            if expected and str(expected).lower() != actual:
+            if expected and not _matches_file_digest(p, str(expected)):
                 mismatches.append(f"{rel}: manifest={expected} actual={actual}")
                 continue
             staged.append((p, target_dir / rel))

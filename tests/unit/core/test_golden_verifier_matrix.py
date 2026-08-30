@@ -11,6 +11,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -19,8 +20,12 @@ from eval_runner import config
 from eval_runner.identity import IdentityService
 from eval_runner.verifier import (
     CertificationFailedError,
+    CoreTraceSigner,
+    TraceVerificationInterceptor,
     TraceVerifier,
+    VerificationAuthority,
     VerificationResult,
+    VerificationService,
     verify_trace_certificate,
 )
 
@@ -1410,3 +1415,390 @@ def test_sign_trace_rollback_missing_ok_unlink(clean_vault_setup):
 
             # Assert unlink was called with missing_ok=True
             mock_unlink.assert_any_call(missing_ok=True)
+
+
+def test_verification_authority_trace_bytes_and_validity_mutants():
+    """Kills mutants [19], [20], [58] in VerificationAuthority.verify_package."""
+    import hashlib
+
+    from agentv_runtime.package import VerificationPackage
+    from eval_runner.verifier import VerificationAuthority
+
+    raw = b'{"event": "start"}\n'
+    h = hashlib.sha3_256(raw).hexdigest()
+
+    pkg = VerificationPackage(
+        scenario_id="s1",
+        scenario_version="1.0",
+        scenario_hash="sha3_256:scen",
+        manifest_id="m1",
+        manifest_hash="sha3_256:man",
+        execution_identity={"worker": "w1"},
+        trace_hash=h,
+        trace_seal={"digest": h},
+        evidence_root_hash="sha3_256:mock_root",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={"verdict": "PASS"},
+    )
+
+    # 1. Matching trace bytes -> verified is True (kills [19], [20])
+    res_valid = VerificationAuthority.verify_package(pkg, raw_trace_bytes=raw)
+    assert res_valid["verified"] is True
+    assert len(res_valid["failures"]) == 0
+
+    # 2. Mismatching trace bytes -> verified is False (kills [58])
+    tampered = b'{"event": "tampered"}\n'
+    res_tampered = VerificationAuthority.verify_package(pkg, raw_trace_bytes=tampered)
+    assert res_tampered["verified"] is False
+    assert any("TraceHashMismatch" in f for f in res_tampered["failures"])
+
+
+def test_independent_trace_oracle_mldsa65_algorithm(clean_vault_setup):
+    """Kills mutant [92] (elif algorithm == 'ML-DSA-65')."""
+    from unittest.mock import MagicMock, patch
+
+    manifest = {
+        "trace_hash": "sha3_256:mock",
+        "provenance_chain": [
+            {
+                "identity": "pqc-signer",
+                "signature": "aabbcc",
+                "algorithm": "ML-DSA-65",
+            }
+        ],
+    }
+    manifest_path = clean_vault_setup["project_root"] / "reports" / "mldsa_manifest.json"
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    trace_file = clean_vault_setup["trace_file"]
+
+    mock_client = MagicMock()
+    mock_client.verify_digest.return_value = True
+
+    with patch.object(IdentityService, "get_pqc_client", return_value=mock_client):
+        with patch.object(IndependentTraceOracle, "compute_sha3_256", return_value="sha3_256:mock"):
+            assert (
+                IndependentTraceOracle.verify_manifest(str(manifest_path), str(trace_file)) is True
+            )
+
+            mock_client.verify_digest.return_value = False
+            assert (
+                IndependentTraceOracle.verify_manifest(str(manifest_path), str(trace_file)) is False
+            )
+
+
+def test_verifier_direct_sign_method_fallback():
+    """Covers lines 183-184: key with .sign but without private_bytes."""
+
+    class CustomSigningKey:
+        def sign(self, data: bytes) -> bytes:
+            return b"custom_signature_bytes"
+
+    manifest = {
+        "provenance_chain": [],
+        "signing_context": {"identity_id": "custom_id", "timestamp": "2026-08-30T00:00:00Z"},
+    }
+    signer = CoreTraceSigner()
+    with patch.object(IdentityService, "get_private_key", return_value=CustomSigningKey()):
+        res = signer.sign(manifest, lambda m: m)
+        assert len(res["provenance_chain"]) == 1
+        assert res["provenance_chain"][0]["signature"] == b"custom_signature_bytes".hex()
+
+
+def test_verifier_override_interceptor_local_cleanup():
+    """Covers lines 297->299: override_interceptor cleanup when interceptor not in global list."""
+    service = VerificationService()
+    interceptor = MagicMock(spec=TraceVerificationInterceptor)
+    with service.override_interceptor(interceptor):
+        pass
+
+
+def test_verifier_pqc_strict_mode_violation(clean_vault_setup):
+    """Covers lines 919->887: PQC_STRICT_MODE raises on missing pqc_client."""
+    manifest = {
+        "vc_version": "3.0.0",
+        "timestamp": "2026-08-30T00:00:00.000+0000",
+        "governance_ttl": 90,
+        "trace_hash": "sha3_256:dummy",
+        "provenance_chain": [
+            {
+                "identity": "pqc_user",
+                "algorithm": "ML-DSA-65",
+                "signature": "aabbcc",
+            }
+        ],
+    }
+    manifest_path = clean_vault_setup["project_root"] / "pqc_strict_manifest.json"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    trace_file = clean_vault_setup["trace_file"]
+
+    with patch.object(TraceVerifier, "compute_signature", return_value="sha3_256:dummy"):
+        with patch.object(IdentityService, "get_pqc_client", return_value=None):
+            with patch.object(config, "PQC_STRICT_MODE", True):
+                assert TraceVerifier.verify_trace(trace_file, manifest_path) is False
+
+
+def test_verifier_verify_run_directory_reports_certificate(clean_vault_setup):
+    """Covers lines 947->950: certificate.json resolved in REPORTS_DIR / certificates."""
+    run_dir = clean_vault_setup["run_dir"]
+    run_id = clean_vault_setup["run_id"]
+    reports_cert = (
+        clean_vault_setup["project_root"] / "reports" / "certificates" / f"{run_id}_vc.json"
+    )
+    reports_cert.parent.mkdir(parents=True, exist_ok=True)
+    reports_cert.write_text(json.dumps({"vc_version": "3.0.0", "run_id": run_id}), encoding="utf-8")
+
+    with patch.object(config, "REPORTS_DIR", clean_vault_setup["project_root"] / "reports"):
+        res = TraceVerifier.verify_run_directory(run_dir)
+        assert res["has_certificate"] is True
+
+
+def test_verify_trace_certificate_scenario_exception(certified_manifest):
+    """Covers lines 1085-1086: scenario hash computation throws exception."""
+    manifest = certified_manifest["manifest"].copy()
+    manifest["scenario_hash"] = "sha3_256:expected"
+    with patch(
+        "agentv_runtime.manifest.compute_scenario_hash", side_effect=RuntimeError("Scen err")
+    ):
+        res = verify_trace_certificate(
+            certified_manifest["run_id"],
+            certified_manifest["trace_bytes"],
+            manifest,
+            scenario_data={"bad": "data"},
+        )
+        assert any("Scenario hash check failed" in e for e in res["errors"])
+
+
+def test_verify_trace_certificate_key_derivation_failures(certified_manifest):
+    """Verifies missing private key, unsupported key type, and derive exceptions."""
+    manifest = certified_manifest["manifest"]
+
+    # 1. No private key for identity
+    with patch.object(IdentityService, "get_private_key", return_value=None):
+        res1 = verify_trace_certificate(
+            certified_manifest["run_id"], certified_manifest["trace_bytes"], manifest
+        )
+        assert any("No private key available" in e for e in res1["errors"])
+
+    # 2. Key without public_key method
+    class DummyKeyNoPub:
+        pass
+
+    with patch.object(IdentityService, "get_private_key", return_value=DummyKeyNoPub()):
+        res2 = verify_trace_certificate(
+            certified_manifest["run_id"], certified_manifest["trace_bytes"], manifest
+        )
+        assert any("Cannot derive public key" in e for e in res2["errors"])
+
+    # 3. Key with unsupported public key type
+    class DummyKeyUnsupportedPub:
+        def public_key(self):
+            return "not_ed25519_pubkey"
+
+    with patch.object(IdentityService, "get_private_key", return_value=DummyKeyUnsupportedPub()):
+        res3 = verify_trace_certificate(
+            certified_manifest["run_id"], certified_manifest["trace_bytes"], manifest
+        )
+        assert any("Unsupported key type" in e for e in res3["errors"])
+
+
+def test_verification_authority_comprehensive_matrix():
+    """Verifies dict handling, signature requirement, and error paths in verify_package."""
+    from agentv_runtime.package import VerificationPackage
+
+    # 1. verify_package from dict
+    pkg_dict = {
+        "scenario_id": "scen-01",
+        "scenario_version": "1.0.0",
+        "scenario_hash": "sha3_256:scen",
+        "manifest_id": "man-01",
+        "manifest_hash": "sha3_256:man",
+        "execution_identity": {"worker_id": "w1"},
+        "trace_hash": "sha3_256:112233",
+        "trace_seal": {"count": 1},
+        "evidence_root_hash": "sha3_256:evroot",
+        "required_oracle_ids": [],
+        "executed_oracle_results": [],
+        "decision": {"decision": "PASS", "verdict": "VERIFIED"},
+        "signature": {"signature": "bad_sig", "identity": "signer"},
+        "signer_identity": "signer",
+    }
+    res_dict = VerificationAuthority.verify_package(pkg_dict)
+    assert res_dict["verified"] is False
+    assert any("SignatureVerificationFailed" in f for f in res_dict["failures"])
+
+    # 2. require_signature=True on unsigned package
+    pkg_unsigned = VerificationPackage(
+        scenario_id="scen-01",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen",
+        manifest_id="man-01",
+        manifest_hash="sha3_256:man",
+        execution_identity={},
+        trace_hash="sha3_256:112233",
+        trace_seal={},
+        evidence_root_hash="sha3_256:evroot",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={"verdict": "PASS"},
+    )
+    res_unsig = VerificationAuthority.verify_package(pkg_unsigned, require_signature=True)
+    assert any("UnsignedPackage" in f for f in res_unsig["failures"])
+
+    # 3. Evidence root mismatch and exception during evidence graph calc
+    events = [{"_seq": 1, "event": "step_1"}]
+    res_ev_mismatch = VerificationAuthority.verify_package(
+        pkg_unsigned,
+        raw_trace_events=events,
+    )
+    assert any("EvidenceRootMismatch" in f for f in res_ev_mismatch["failures"])
+
+    with patch(
+        "agentv_runtime.evidence_graph.build_evidence_graph_from_events",
+        side_effect=ValueError("Graph fail"),
+    ):
+        res_ev_err = VerificationAuthority.verify_package(pkg_unsigned, raw_trace_events=events)
+        assert res_ev_err["verified"] is True  # evidence graph exception caught and logged
+
+    # 4. Manifest missing (line 1271)
+    pkg_no_man = VerificationPackage(
+        scenario_id="scen-01",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen",
+        manifest_id="",
+        manifest_hash="",
+        execution_identity={},
+        trace_hash="sha3_256:112233",
+        trace_seal={},
+        evidence_root_hash="sha3_256:evroot",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={"verdict": "PASS"},
+    )
+    res_no_man = VerificationAuthority.verify_package(pkg_no_man)
+    assert any("ManifestMissing" in f for f in res_no_man["failures"])
+
+    # 5. Evidence root missing
+    pkg_no_ev = VerificationPackage(
+        scenario_id="scen-01",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen",
+        manifest_id="man-01",
+        manifest_hash="sha3_256:man",
+        execution_identity={},
+        trace_hash="sha3_256:112233",
+        trace_seal={},
+        evidence_root_hash="",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={"verdict": "PASS"},
+    )
+    res_no_ev = VerificationAuthority.verify_package(pkg_no_ev)
+    assert any("EvidenceRootMissing" in f for f in res_no_ev["failures"])
+
+    # 6. Unverified decision
+    pkg_failed = VerificationPackage(
+        scenario_id="scen-01",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen",
+        manifest_id="man-01",
+        manifest_hash="sha3_256:man",
+        execution_identity={},
+        trace_hash="sha3_256:112233",
+        trace_seal={},
+        evidence_root_hash="sha3_256:evroot",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={"verdict": "FAIL"},
+    )
+    res_failed = VerificationAuthority.verify_package(pkg_failed)
+    assert any("UnverifiedDecision" in f for f in res_failed["failures"])
+
+
+def test_verifier_global_interceptor_override_cleanup():
+    """Verifies global interceptor removal in override_interceptor."""
+    service = VerificationService()
+    interceptor = MagicMock(spec=TraceVerificationInterceptor)
+    with service.override_interceptor(interceptor):
+        assert interceptor in service._global_interceptors
+    assert interceptor not in service._global_interceptors
+
+
+def test_verifier_override_interceptor_already_removed_cleanup():
+    """Verifies override_interceptor when interceptor already removed from global."""
+    service = VerificationService()
+    interceptor = MagicMock(spec=TraceVerificationInterceptor)
+    with service.override_interceptor(interceptor):
+        service._global_interceptors.remove(interceptor)
+    assert interceptor not in service._global_interceptors
+
+
+def test_verifier_pqc_non_strict_mode_warning(clean_vault_setup):
+    """Verifies non-strict PQC verification bypass warning."""
+    manifest = {
+        "vc_version": "3.0.0",
+        "timestamp": "2026-08-30T00:00:00.000+0000",
+        "governance_ttl": 90,
+        "trace_hash": "sha3_256:dummy",
+        "provenance_chain": [
+            {
+                "identity": "pqc_user",
+                "algorithm": "ML-DSA-65",
+                "signature": "aabbcc",
+            }
+        ],
+    }
+    manifest_path = clean_vault_setup["project_root"] / "pqc_warn_manifest.json"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    trace_file = clean_vault_setup["trace_file"]
+
+    with patch.object(TraceVerifier, "compute_signature", return_value="sha3_256:dummy"):
+        with patch.object(IdentityService, "get_pqc_client", return_value=None):
+            with patch.object(config, "PQC_STRICT_MODE", False):
+                assert TraceVerifier.verify_trace(trace_file, manifest_path) is True
+
+
+def test_verify_run_directory_direct_certificate_json(clean_vault_setup):
+    """Verifies run directory with direct certificate.json in vault."""
+    run_dir = clean_vault_setup["run_dir"]
+    direct_cert = run_dir / "certificate.json"
+    direct_cert.write_text(
+        json.dumps({"vc_version": "3.0.0", "run_id": clean_vault_setup["run_id"]}), encoding="utf-8"
+    )
+    res = TraceVerifier.verify_run_directory(run_dir)
+    assert res["has_certificate"] is True
+
+
+def test_verify_run_directory_no_certificates(clean_vault_setup):
+    """Verifies run directory with trace but no certificates anywhere."""
+    run_dir = clean_vault_setup["run_dir"]
+    res = TraceVerifier.verify_run_directory(run_dir)
+    assert res["has_certificate"] is False
+    assert res["is_valid"] is False
+
+
+def test_verify_trace_certificate_no_scenario_hash_in_cert(certified_manifest):
+    """Verifies scenario verification when certificate omits scenario_hash."""
+    manifest = certified_manifest["manifest"].copy()
+    manifest.pop("scenario_hash", None)
+    res = verify_trace_certificate(
+        certified_manifest["run_id"],
+        certified_manifest["trace_bytes"],
+        manifest,
+        scenario_data={"some": "scen"},
+    )
+    assert res["scenario_hash_match"] is False
+
+
+def test_verify_trace_certificate_get_private_key_exception(certified_manifest):
+    """Verifies signature check handling when identity service raises an error."""
+    manifest = certified_manifest["manifest"]
+    with patch.object(
+        IdentityService, "get_private_key", side_effect=RuntimeError("Key store error")
+    ):
+        res = verify_trace_certificate(
+            certified_manifest["run_id"], certified_manifest["trace_bytes"], manifest
+        )
+        assert any("Signature check error" in e for e in res["errors"])

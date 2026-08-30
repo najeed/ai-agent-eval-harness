@@ -9,6 +9,7 @@ omit =
     eval_runner/console/gen_demo_assets.py
     eval_runner/console/routes/demo.py
     tests/*
+    tools/*
     */__init__.py
     */__main__.py
 

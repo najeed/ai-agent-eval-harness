@@ -140,7 +140,7 @@ JSON Output:
 
                 return parsed_json
 
-    except aiohttp.ClientConnectorError:
+    except (aiohttp.ClientError, TimeoutError, ConnectionRefusedError, OSError):
         raise ConnectionError(f"Could not connect to Ollama at {api_url}. Is Ollama running?")  # noqa: B904
     except json.JSONDecodeError as e:
         raise ValueError(  # noqa: B904

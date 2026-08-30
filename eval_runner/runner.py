@@ -412,7 +412,7 @@ class DefaultRunner(BaseRunner):
             return False
         for vr in verdict_rows:
             status = str(vr["workflow_verdict"].get("status", "")).lower()
-            if status != WorkflowStatus.COMPLETED.value:
+            if status != WorkflowStatus.COMPLETED.value.lower():
                 return False
 
         for res in attempt_results:

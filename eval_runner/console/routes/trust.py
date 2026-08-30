@@ -2,6 +2,7 @@ import json
 import logging
 import os
 from datetime import datetime
+from pathlib import Path
 from typing import Any
 
 from flask import Blueprint, jsonify, request
@@ -55,6 +56,56 @@ def _read_run_truth_level(run_id: str) -> tuple[str | None, bool]:
     return None, False
 
 
+def _extract_computed_run_outcome(vault_dir: Path, target_trace: Path) -> tuple[str, float]:
+    """
+    Extracts the authoritative computed outcome from persisted run artifacts.
+    """
+    manifest_path = vault_dir / "run_manifest.json"
+    if manifest_path.exists():
+        try:
+            with open(manifest_path, encoding="utf-8") as f:
+                m_data = json.load(f)
+                comp_status = m_data.get("compliance_status") or m_data.get("status") or ""
+                comp_score = m_data.get("compliance_score")
+                if comp_score is None:
+                    comp_score = m_data.get("score", 0.0)
+                if comp_status:
+                    return str(comp_status).lower(), float(comp_score)
+        except Exception as e:
+            logger.debug("Failed reading existing manifest for outcome: %s", e)
+
+    try:
+        with open(target_trace, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                ev = json.loads(line)
+                if ev.get("event") in ("run_end", "session_decision"):
+                    data = ev.get("data", {}) or {}
+                    status = data.get("status") or ev.get("status") or ""
+                    score = data.get("score") if data.get("score") is not None else ev.get("score")
+                    decision = data.get("decision") or ev.get("decision") or ""
+                    verdict = data.get("verdict") or ev.get("verdict") or ""
+
+                    if (
+                        "fail" in str(status).lower()
+                        or decision == "FAIL"
+                        or verdict in ("FAIL", "FAILED")
+                    ):
+                        return "fail", float(score if score is not None else 0.0)
+                    if (
+                        "pass" in str(status).lower()
+                        or decision in ("PASS", "VERIFIED")
+                        or verdict in ("PASS", "VERIFIED")
+                    ):
+                        return "pass", float(score if score is not None else 1.0)
+    except Exception as e:
+        logger.debug("Failed parsing trace for computed outcome: %s", e)
+
+    return "pass", 1.0
+
+
 def execute_industrial_certification(
     run_id: str,
     identity_id: str = "system_id",
@@ -65,7 +116,7 @@ def execute_industrial_certification(
 ) -> dict:
     """
     Authoritative Industrial Certification Service.
-    Can be called via REST or directly by trusted plugins.
+    Derives status and score strictly from the computed evaluation outcome.
     """
     # 1. Authoritative Vault Resolution (Strict Affinity)
     vault_dir = (config.RUN_LOG_DIR / run_id).resolve()
@@ -86,12 +137,25 @@ def execute_industrial_certification(
             "certificate is non-authoritative for compliance purposes.",
             run_id,
         )
+
+    computed_status, computed_score = _extract_computed_run_outcome(vault_dir, target_trace)
+    if computed_status == "fail" and status.lower() == "pass":
+        logger.warning(
+            "   [Certification] Cannot override computed FAIL with PASS for %s. Fail-closed.",
+            run_id,
+        )
+        effective_status = "fail"
+        effective_score = computed_score
+    else:
+        effective_status = status if status else computed_status
+        effective_score = score if score is not None else computed_score
+
     manifest = TraceVerifier.sign_trace(
         str(target_trace),
         run_id=run_id,
         identity_id=identity_id,
-        compliance_status=status,
-        compliance_score=score,
+        compliance_status=effective_status,
+        compliance_score=effective_score,
         policy_ref=policy_ref,
         ttl_days=ttl or config.GOVERNANCE_TTL_DAYS,
         execution_mode=execution_mode,

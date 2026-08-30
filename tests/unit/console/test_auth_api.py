@@ -100,13 +100,14 @@ def test_handoff_endpoint(client):
 
 def test_auth_me_endpoint(client):
     """Test the /api/auth/me endpoint for server-authoritative session."""
-    resp = client.get("/api/auth/me")
-    assert resp.status_code == 200
-    data = resp.json
-    assert data["authenticated"] is True
-    assert "user" in data
-    assert "role" in data["user"]
-    assert "permissions" in data["user"]
+    with patch("eval_runner.config.ENABLE_DEMO", True):
+        resp = client.get("/api/auth/me")
+        assert resp.status_code == 200
+        data = resp.json
+        assert data["authenticated"] is True
+        assert "user" in data
+        assert "role" in data["user"]
+        assert "permissions" in data["user"]
 
 
 @patch("eval_runner.console.auth_manager.get_auth_provider")

@@ -26,30 +26,21 @@ from eval_runner.console.routes.runs import (
     run_bp,
     tail_file_generator,
 )
-from eval_runner.utils import rmtree_resilient
 
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
 
 
-@pytest.fixture(scope="module")
-def runs_jail(request):
-    worker_id = getattr(request.config, "workerinput", {}).get("workerid", "master")
-    tmp_root = Path(tempfile.gettempdir()) / f"aes_runs_route_jail_{worker_id}"
-    root = tmp_root / "root"
+@pytest.fixture
+def runs_jail(tmp_path):
+    root = tmp_path / "root"
     runs = root / "results"
     reports = root / "reports"
 
-    if tmp_root.exists():
-        rmtree_resilient(tmp_root)
-
-    (reports / "certificates").mkdir(parents=True)
-    runs.mkdir(parents=True)
-    yield {"root": root, "runs": runs, "reports": reports}
-
-    if tmp_root.exists():
-        rmtree_resilient(tmp_root)
+    (reports / "certificates").mkdir(parents=True, exist_ok=True)
+    runs.mkdir(parents=True, exist_ok=True)
+    return {"root": root, "runs": runs, "reports": reports}
 
 
 @pytest.fixture
@@ -1084,9 +1075,6 @@ def test_get_run_status_master_log_fp_then_false_run_id(runs_jail, runs_client):
     # Use a run_id that is a prefix of another — ensures '"status-false-pos"' substring match
     other_rid = f"{rid}-extension"
     # Write to a unique directory to avoid master log conflicts
-    import tempfile
-    from pathlib import Path
-
     tmp_root = Path(tempfile.mkdtemp())
     tmp_runs = tmp_root / "runs"
     tmp_runs.mkdir()

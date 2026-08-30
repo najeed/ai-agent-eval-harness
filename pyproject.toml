@@ -32,7 +32,7 @@ dependencies = [
     "httpx==0.28.1",
     "sqlalchemy==2.0.52",
     "python-dotenv==1.2.3",
-    "Authlib==1.7.2",
+    "Authlib==1.8.0",
     "Pillow==12.3.0",
     "idna==3.19",
 ]

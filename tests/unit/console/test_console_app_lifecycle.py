@@ -143,7 +143,7 @@ def test_create_app_nav_registry_overrides():
 
 def test_console_app_hooks_and_spa_routing(tmp_path, monkeypatch):
     """[P1.6] SPA routing serves the built Visual Suite when present and
-    fails HONESTLY (404) when ui/visual-console/dist is absent â€” the legacy
+    fails HONESTLY (404) when ui/visual-console/dist is absent -- the legacy
     CDN-loaded fallback was removed; no silent degradation in either state."""
     from eval_runner import config as app_config
 

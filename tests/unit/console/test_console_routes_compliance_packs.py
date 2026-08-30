@@ -270,7 +270,6 @@ def test_compliance_packs_test_success_all_pass(packs_client, packs_jail):
             {"type": "wsm_threshold", "params": {"dimension": "security", "min_score": 0.1}},
             {"type": "rubric_required", "params": {"rubric": "fiduciary", "min_score": 0.8}},
             {"type": "ija_threshold", "params": {"min_value": 0.75}},
-            {"type": "unknown_type", "params": {}},
         ],
         "version": 1,
     }
@@ -280,13 +279,19 @@ def test_compliance_packs_test_success_all_pass(packs_client, packs_jail):
     certs_dir.mkdir(parents=True, exist_ok=True)
     vc_file = certs_dir / f"{run_id}_vc.json"
     vc_file.write_text(
-        json.dumps({"rubrics": {"fiduciary": 0.95}, "ija_score": 0.90}),
+        json.dumps(
+            {
+                "rubrics": {"fiduciary": 0.95},
+                "ija_score": 0.90,
+                "metrics": {"wsm_security": 0.92},
+            }
+        ),
         encoding="utf-8",
     )
 
     with patch(
         "eval_runner.console.routes.compliance_packs.explain_trace",
-        return_value={"confidence": 0.9, "root_cause": "ok"},
+        return_value={"confidence": 0.9, "root_cause": "ok", "wsm_score": 0.92},
     ):
         with patch(
             "eval_runner.console.routes.compliance_packs.resolve_trace_path",
@@ -297,7 +302,35 @@ def test_compliance_packs_test_success_all_pass(packs_client, packs_jail):
     assert res.status_code == 200
     data = res.get_json()
     assert data["overall_pass"] is True
-    assert len(data["checks"]) == 5
+    assert len(data["checks"]) == 4
+
+
+def test_compliance_packs_test_unknown_type_fail_closed(packs_client, packs_jail):
+    run_id = "test_run_unknown"
+    run_dir = packs_jail["runs"] / run_id
+    run_dir.mkdir()
+    trace = run_dir / "run.jsonl"
+    trace.write_text(json.dumps({"run_id": run_id, "status": "COMPLETED"}) + "\n", encoding="utf-8")
+
+    pack = {
+        "id": "STD-UNKNOWN",
+        "name": "Unknown",
+        "checks": [{"type": "unknown_future_check", "params": {}}],
+        "version": 1,
+    }
+    (packs_jail["packs_dir"] / "STD-UNKNOWN.json").write_text(json.dumps(pack), encoding="utf-8")
+
+    with patch(
+        "eval_runner.console.routes.compliance_packs.resolve_trace_path",
+        return_value=trace,
+    ):
+        res = packs_client.post(f"/api/v1/compliance-packs/STD-UNKNOWN/test?run_id={run_id}")
+
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["overall_pass"] is False
+    assert data["checks"][0]["status"] == "FAIL"
+    assert "Unsupported" in data["checks"][0]["details"]
 
 
 def test_compliance_packs_test_pqc_fail(packs_client, packs_jail):

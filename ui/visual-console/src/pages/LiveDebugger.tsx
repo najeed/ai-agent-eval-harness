@@ -743,11 +743,7 @@ export const LiveDebugger: React.FC = () => {
         ? rawTarget
         : instanceOwner.get(String(rawTarget));
       if (source && target && nodeIdSet.has(source) && nodeIdSet.has(target)) {
-        const edgeId =
-          e.execution_edge_id ||
-          (e.execution_instance_id
-            ? `exec-edge-${e.execution_instance_id}`
-            : `exec-edge-${source}-${target}-${e._seq ?? idx}`);
+        const edgeId = `exec-edge-${source}-${target}-${e._seq ?? e.execution_edge_id ?? idx}`;
         const label =
           e.edge_type === 'retry'
             ? `retry${e.iteration ? ` #${e.iteration}` : ''}`
@@ -975,8 +971,14 @@ export const LiveDebugger: React.FC = () => {
             filteredEvents.map((evt, idx) => {
               const isSelected = selectedEvent === evt;
               const isError = evt.event === 'error' || evt.category === 'PARITY_STATE_DIVERGENCE';
-              const eventIndexInMain = events.indexOf(evt);
-              const isRootCauseIndex = analysisData && eventIndexInMain === analysisData.index;
+              const isRootCauseIndex =
+                evt.is_root_cause === true ||
+                (analysisData &&
+                  (analysisData.seq !== undefined
+                    ? evt._seq === analysisData.seq
+                    : analysisData.event_id
+                      ? evt.event_id === analysisData.event_id
+                      : events.indexOf(evt) === analysisData.index));
               return (
                 <button
                   key={idx}

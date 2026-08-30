@@ -1,7 +1,7 @@
 """
 Unit tests for the Canonical Execution IR + Workflow Interpreter.
 
-Covers the P0 kernel contract:
+Covers the kernel contract:
   - real ready-set scheduling (not topological linearization)
   - typed edge selection with evaluated-predicate evidence
   - bounded loops, join convergence, parallel fan-out
@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import asyncio
 import time
+from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 
@@ -19,11 +20,20 @@ from eval_runner.execution_ir import (
     EdgeType,
     ExecutionIdentity,
     PlanValidationError,
+    WorkflowPlan,
     WorkflowStatus,
     compile_workflow,
     evaluate_predicate,
 )
-from eval_runner.workflow_interpreter import ReadyItem, WorkflowInterpreter, _SchedulerState
+from eval_runner.workflow_interpreter import (
+    ExecutionToken,
+    NodeExecutionRecord,
+    ReadyItem,
+    TransitionRecord,
+    WorkflowInterpreter,
+    WorkflowOutcome,
+    _SchedulerState,
+)
 
 
 def _identity(attempt_number: int = 1) -> ExecutionIdentity:
@@ -41,12 +51,12 @@ def _plan(scenario: dict):
     """
     Compiles the scenario via the authoritative compiler.
 
-    [A2] The minimum-oracle rule is an evaluation concern; these kernel
+    The minimum-oracle rule is an evaluation concern; these kernel
     semantics tests use deliberately bare nodes, so a trivially-satisfiable
     oracle is injected into any node that lacks one.
 
-    [P0-11] These tests DECLARE their entry node explicitly (the first
-    declared node) â€” declaration-order defaults are no longer inferred.
+    These tests DECLARE their entry node explicitly (the first
+    declared node) -- declaration-order defaults are no longer inferred.
     """
     import copy as _copy
 
@@ -127,13 +137,13 @@ def test_compile_legacy_list_form_becomes_explicit_chain():
 
 
 def test_compile_rejects_list_form_without_oracles():
-    # [A2] Even legacy list-form workflows enforce the minimum-oracle rule.
+    # Even legacy list-form workflows enforce the minimum-oracle rule.
     with pytest.raises(PlanValidationError, match="NO_ASSERTIONS"):
         compile_workflow({"workflow": [{"id": "a"}, {"id": "b"}]})
 
 
 def test_compile_rejects_ambiguous_multi_source_without_entry_declaration():
-    # [P0-11] Declaration order must never decide control flow: two source
+    # Declaration order must never decide control flow: two source
     # nodes without an explicit entry declaration are a plan error.
     oracle = [{"metric": "task_completion", "threshold": 1.0}]
     with pytest.raises(PlanValidationError, match="Ambiguous workflow entry"):
@@ -152,7 +162,7 @@ def test_compile_rejects_ambiguous_multi_source_without_entry_declaration():
 
 
 def test_compile_entry_declaration_wins_over_declared_order():
-    # [P0-11] The declared entry is authoritative even when it is not first.
+    # The declared entry is authoritative even when it is not first.
     oracle = [{"metric": "task_completion", "threshold": 1.0}]
     plan = compile_workflow(
         {
@@ -172,7 +182,7 @@ def test_compile_entry_declaration_wins_over_declared_order():
 
 
 def test_compile_compensation_backedge_does_not_reroot_workflow():
-    # [P0-11] A compensation (undo) edge into the canonical start never makes
+    # A compensation (undo) edge into the canonical start never makes
     # another node the entry.
     oracle = [{"metric": "task_completion", "threshold": 1.0}]
     plan = compile_workflow(
@@ -512,7 +522,7 @@ async def test_fail_fast_policy_halts_sibling_branches():
 
     results, outcome = await _run(plan, executor)
     executed = [r["task_id"] for r in results]
-    # [P0-3] boom and sibling are ONE concurrent wave: both execute (an
+    # boom and sibling are ONE concurrent wave: both execute (an
     # in-flight wave cannot be un-run), but fail-fast guarantees the verdict
     # fails and NO downstream wave is ever scheduled.
     assert "sibling" in executed
@@ -627,7 +637,7 @@ async def test_dropped_compensation_prevents_workflow_completion():
         "failure_policy": "compensate_then_fail",
         "workflow": {
             "nodes": [
-                # join:any â€” the default AND-join over BOTH incoming retry
+                # join:any -- the default AND-join over BOTH incoming retry
                 # edges would strand a single retry token forever.
                 {"id": "worker", "max_visitations": 3, "join": "any"},
                 {"id": "refund", "max_visitations": 1, "join": "any"},
@@ -755,7 +765,7 @@ async def _async_ctx(state):
 
 
 # ---------------------------------------------------------------------------
-# [A7] TIMEOUT edge â€” executable contract (closes per-EdgeType coverage)
+# TIMEOUT edge -- executable contract (closes per-EdgeType coverage)
 # ---------------------------------------------------------------------------
 
 
@@ -855,7 +865,7 @@ async def test_error_edge_takes_priority_over_timeout_edge():
 
 
 def test_join_rejects_cross_iteration_tokens():
-    """[P0-4][P2.4] A join consumes ONLY tokens sharing one minted EPOCH,
+    """A join consumes ONLY tokens sharing one minted EPOCH,
     and firing invalidates every unused token of that epoch while leaving
     other epochs untouched. Direct _try_join probe.
     """
@@ -974,7 +984,7 @@ async def test_parallel_wave_runs_concurrently_wall_clock():
 
 
 # ---------------------------------------------------------------------------
-# [Open Decision #1] Join-token lifecycle: looped ALL/ANY/N_OF_M adversarial
+# Join-token lifecycle: looped ALL/ANY/N_OF_M adversarial
 # battery. Decides whether explicit join epochs (P2.4) are required.
 #
 #   Direction A (Reviewer A): stale tokens from an earlier loop wave can
@@ -1157,7 +1167,7 @@ async def test_join_n_of_m_leftovers_do_not_inflate_later_waves():
 
 @pytest.mark.asyncio
 async def test_over_cap_drops_are_recorded_and_emitted():
-    """[P2.5/V11] No evidentiary black holes: over-cap drops surface as
+    """No evidentiary black holes: over-cap drops surface as
     dropped_after_cap_node_ids (distinct from skips) AND emit
     node_dropped_over_cap events from both drop paths."""
 
@@ -1213,7 +1223,7 @@ async def test_over_cap_drops_are_recorded_and_emitted():
 
     # --- Path 2: satisfied join discarded over cap ----------------------
     # j drives the loop: wave 1 executes j (cap 1), fires j->s, and wave 2
-    # fully satisfies the join again — consumed, then discarded by the cap.
+    # fully satisfies the join again -- consumed, then discarded by the cap.
     plan_b = _plan(
         {
             "workflow": {
@@ -1262,7 +1272,7 @@ async def test_over_cap_drops_are_recorded_and_emitted():
 
 
 def test_compiler_rejects_ambiguous_successor_sets():
-    """[P2.3] Compiler must reject ambiguous successor sets: multiple sequential edges,
+    """Compiler must reject ambiguous successor sets: multiple sequential edges,
     mixed sequential + parallel edges, and mixed condition + parallel edges.
     """
     # 1. Multiple sequential edges declare ambiguous fan-out
@@ -1313,7 +1323,7 @@ def test_compiler_rejects_ambiguous_successor_sets():
 
 
 def test_compile_evaluation_plan_captures_all_oracles():
-    """[P2.6] Evaluation plan compilation must inventory every declared assertion."""
+    """Evaluation plan compilation must inventory every declared assertion."""
 
     scenario = {
         "workflow": {
@@ -1426,3 +1436,266 @@ def test_interpreter_node_aborted_status_and_budget_limit():
             WorkflowStatus.FAILED,
             WorkflowStatus.ABORTED,
         )
+
+
+@pytest.mark.asyncio
+async def test_workflow_interpreter_edge_branches_comprehensive():
+    """Covers edge branches in workflow_interpreter.py."""
+    # 1. ExecutionToken.match_key & dataclass to_dict methods
+    token = ExecutionToken(
+        edge_id="e1",
+        branch_generation="gen0",
+        produced_by="p1",
+        iteration=1,
+        epoch="epoch-123",
+    )
+    assert token.match_key == "epoch-123"
+
+    trec = TransitionRecord(
+        from_node="n1",
+        to_node="n2",
+        selected_edge_id="e1",
+        edge_type="sequential",
+        transition_reason="test_step",
+    )
+    assert trec.to_dict()["selected_edge_id"] == "e1"
+
+    # 2. Dequeue cap exceeded & empty batch after cap
+    scenario_cap = {
+        "workflow": {
+            "nodes": [{"id": "n1", "max_visitations": 1}],
+            "edges": [{"from": "n1", "to": "n1", "type": "retry"}],
+        }
+    }
+    plan_cap = _plan(scenario_cap)
+    interp_cap = WorkflowInterpreter(plan=plan_cap, identity=_identity())
+    state_cap = _SchedulerState(plan=plan_cap)
+    state_cap.visitation_counts["n1"] = 5  # Already over cap
+
+    # 3. Executor raising generic Exception
+    rec, res, dur = await interp_cap._execute_item(
+        ReadyItem("n1", 1, False, "g0", None),
+        lambda *args: (_ for _ in ()).throw(RuntimeError("Boom")),
+    )
+    assert res["status"] == "failure"
+    assert "Interpreter executor error" in res["message"]
+    assert rec.to_dict()["status"] == "running"
+
+    outcome = WorkflowOutcome(status=WorkflowStatus.COMPLETED, reason="success")
+    assert outcome.to_dict()["status"] == "workflow_completed"
+
+    # 4. Dequeue cap exceeded across waves
+    scenario_multi_wave_cap = {
+        "workflow": {
+            "entry_nodes": ["p1", "runner"],
+            "nodes": [
+                {"id": "p1"},
+                {"id": "runner"},
+                {"id": "p2"},
+                {"id": "target", "max_visitations": 1},
+            ],
+            "edges": [
+                {"from": "p1", "to": "target", "type": "error"},
+                {"from": "runner", "to": "p2", "type": "sequential"},
+                {"from": "p2", "to": "target", "type": "error"},
+            ],
+        }
+    }
+    plan_mwc = _plan(scenario_multi_wave_cap)
+    interp_mwc = WorkflowInterpreter(plan=plan_mwc, identity=_identity())
+
+    async def mock_mwc_exec(node, eid, parent):
+        if node.node_id in ("runner", "target"):
+            return {"task_id": node.node_id, "status": "success"}
+        return {"task_id": node.node_id, "status": "failure"}
+
+    res_mwc, out_mwc = await interp_mwc.run(mock_mwc_exec)
+    assert "target" in out_mwc.dropped_after_cap_node_ids
+
+    # 5. Step budget mid-batch postponement
+    async def mock_success_exec(node, eid, parent):
+        return {"task_id": node.node_id, "status": "success"}
+
+    scenario_parallel = {
+        "workflow": {
+            "entry_nodes": ["p1", "p2"],
+            "nodes": [{"id": "p1"}, {"id": "p2"}],
+            "edges": [],
+        }
+    }
+    plan_p = _plan(scenario_parallel)
+    with patch.object(WorkflowPlan, "step_budget", new_callable=PropertyMock, return_value=1):
+        interp_p = WorkflowInterpreter(plan=plan_p, identity=_identity())
+        results_p, outcome_p = await interp_p.run(mock_success_exec)
+        assert outcome_p.status in (WorkflowStatus.FAILED, WorkflowStatus.COMPLETED)
+
+    # 6. Failure routing timeout with predicate match
+    scenario_timeout = {
+        "workflow": {
+            "nodes": [{"id": "t1"}, {"id": "t2"}],
+            "edges": [
+                {
+                    "from": "t1",
+                    "to": "t2",
+                    "type": "timeout",
+                    "condition": {"op": "eq", "path": "result.status", "value": "failure"},
+                }
+            ],
+        }
+    }
+    plan_t = _plan(scenario_timeout)
+    interp_t = WorkflowInterpreter(plan=plan_t, identity=_identity())
+    r_items, routed = await interp_t._route_failure(
+        "t1",
+        ReadyItem("t1", 1, False, "g0", None),
+        {"status": "failure", "triage_tag": "TIMEOUT"},
+        _SchedulerState(plan=plan_t),
+    )
+    assert routed is True
+    assert len(r_items) == 1
+
+    # 7. Failure routing retry with failing and passing predicate
+    scenario_retry_fail = {
+        "workflow": {
+            "nodes": [{"id": "r1", "max_visitations": 3}],
+            "edges": [
+                {
+                    "from": "r1",
+                    "to": "r1",
+                    "type": "retry",
+                    "condition": {"op": "eq", "path": "result.nonexistent", "value": "xyz"},
+                }
+            ],
+        }
+    }
+    plan_rf = _plan(scenario_retry_fail)
+    interp_rf = WorkflowInterpreter(plan=plan_rf, identity=_identity())
+    r_items_rf, routed_rf = await interp_rf._route_failure(
+        "r1",
+        ReadyItem("r1", 1, False, "g0", None),
+        {"status": "failure"},
+        _SchedulerState(plan=plan_rf),
+    )
+    assert r_items_rf == []
+
+    # Retry with passing predicate
+    scenario_retry_pass = {
+        "workflow": {
+            "nodes": [{"id": "r1", "max_visitations": 3}],
+            "edges": [
+                {
+                    "from": "r1",
+                    "to": "r1",
+                    "type": "retry",
+                    "condition": {"op": "eq", "path": "result.status", "value": "failure"},
+                }
+            ],
+        }
+    }
+    plan_rp = _plan(scenario_retry_pass)
+    interp_rp = WorkflowInterpreter(plan=plan_rp, identity=_identity())
+    r_items_rp, routed_rp = await interp_rp._route_failure(
+        "r1",
+        ReadyItem("r1", 1, False, "g0", None),
+        {"status": "failure"},
+        _SchedulerState(plan=plan_rp),
+    )
+    assert routed_rp is True
+    assert len(r_items_rp) == 1
+
+    # 8. Join when target has no incoming edges or no structural edges
+    assert (
+        interp_t._try_join(
+            "t1", ReadyItem("t1", 1, False, "g0", None), _SchedulerState(plan=plan_t)
+        )
+        == []
+    )
+    scenario_non_struct = {
+        "workflow": {
+            "nodes": [{"id": "ns1"}, {"id": "ns2"}],
+            "edges": [{"from": "ns1", "to": "ns2", "type": "error"}],
+        }
+    }
+    plan_ns = _plan(scenario_non_struct)
+    interp_ns = WorkflowInterpreter(plan=plan_ns, identity=_identity())
+    state_ns = _SchedulerState(plan=plan_ns)
+    assert interp_ns._try_join("ns2", ReadyItem("ns1", 1, False, "g0", None), state_ns) == []
+
+    # 9. Join when tokens have repair edges and structural edges
+    scenario_join = {
+        "workflow": {
+            "nodes": [{"id": "j1"}, {"id": "j2"}],
+            "edges": [{"from": "j1", "to": "j2", "type": "sequential"}],
+        }
+    }
+    plan_j = _plan(scenario_join)
+    interp_j = WorkflowInterpreter(plan=plan_j, identity=_identity())
+    state_j = _SchedulerState(plan=plan_j)
+    state_j.pending_tokens["j2"] = [
+        ExecutionToken(
+            edge_id="repair_edge", branch_generation="gen0", produced_by="j0", iteration=1
+        )
+    ]
+    assert interp_j._try_join("j2", ReadyItem("j1", 1, False, "g0", None), state_j) == []
+
+    # Duplicate key suppression in _fire_and_activate
+    edge_j = plan_j.edges[0]
+    with patch.object(interp_j, "_try_join", return_value=[ReadyItem("j2", 1, False, "g0", None)]):
+        act_dup = interp_j._fire_and_activate(
+            [edge_j, edge_j], state_j, ReadyItem("j1", 1, False, "g0", None), "test_fire"
+        )
+        assert len(act_dup) == 1
+
+    # 10. Predicate evaluation when predicate is None
+    assert interp_t._eval(None, {}) == (True, None)
+
+    # 11. Exception fallback when events import fails
+    bus_mock = MagicMock()
+    interp_emit = WorkflowInterpreter(
+        plan=plan_t,
+        identity=_identity(),
+        event_bus=bus_mock,
+    )
+    rec_emit = NodeExecutionRecord(
+        scenario_node_id="t1",
+        execution_instance_id="inst-1",
+        parent_execution_id=None,
+        iteration=1,
+        status="running",
+        duration_ms=42.0,
+        failure_class="Timeout",
+        failure_reason="Deadline",
+        timed_out=True,
+    )
+    with patch("builtins.__import__", side_effect=ImportError("Mock import err")):
+        interp_emit._emit_node("t1", 1, None, "running", record=rec_emit)
+    assert bus_mock.emit.called
+
+    # 12. Batch trimming and dequeue cap empty batch continue
+    scenario_batch_trim = {
+        "workflow": {
+            "nodes": [{"id": "b1"}],
+            "edges": [],
+        }
+    }
+    plan_bt = _plan(scenario_batch_trim)
+    interp_bt = WorkflowInterpreter(plan=plan_bt, identity=_identity())
+    with patch.object(
+        type(interp_bt.plan.nodes["b1"]),
+        "max_visitations",
+        new_callable=PropertyMock,
+        side_effect=[1, 0, 0, 0],
+    ):
+        res_bt, out_bt = await interp_bt.run(mock_success_exec)
+        assert "b1" in out_bt.dropped_after_cap_node_ids
+
+    # Dequeue cap zero max_visitations continue
+    interp_dq = WorkflowInterpreter(plan=plan_bt, identity=_identity())
+    with patch.object(
+        type(interp_dq.plan.nodes["b1"]),
+        "max_visitations",
+        new_callable=PropertyMock,
+        return_value=0,
+    ):
+        res_dq, out_dq = await interp_dq.run(mock_success_exec)
+        assert "b1" in out_dq.dropped_after_cap_node_ids

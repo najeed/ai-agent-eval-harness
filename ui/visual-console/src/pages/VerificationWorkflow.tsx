@@ -85,14 +85,42 @@ export const VerificationWorkflow: React.FC = () => {
   const [launching, setLaunching] = useState(false);
   const [launchError, setLaunchError] = useState('');
   const [boundScenarioHash, setBoundScenarioHash] = useState('');
-  const verdict: string | null = null;
 
   useEffect(() => {
     const sId = searchParams.get('scenario_id') || searchParams.get('scenarios');
     if (sId) {
       setScenarioId(sId.split(',')[0].trim());
     }
+    const rId = searchParams.get('run_id');
+    if (rId) {
+      setRunId(rId);
+    }
   }, [searchParams]);
+
+  const runQuery = useQuery<{
+    status?: string;
+    verdict?: string;
+    has_certificate?: boolean;
+    verification_status?: string;
+    decision?: any;
+  }>({
+    queryKey: ['run-detail', runId],
+    queryFn: async () => {
+      if (!runId.trim()) return {};
+      const res = await fetch(`/api/v1/runs/${encodeURIComponent(runId.trim())}`);
+      if (!res.ok) return {};
+      return res.json();
+    },
+    enabled: !!runId.trim(),
+    refetchInterval: (query) => {
+      const st = (query.state.data as any)?.status;
+      return st === 'RUNNING' || st === 'PENDING' ? 3000 : false;
+    },
+  });
+
+  const runData = runQuery.data || {};
+  const verdict = runData.verification_status || (runData.status === 'COMPLETED' ? 'VERIFIED' : runData.status) || null;
+
 
 
   // Authoritative runtime health; never render READY without this.

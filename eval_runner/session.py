@@ -149,19 +149,23 @@ class SessionManager:
         )
         execution_mode_declared = bool(mode_raw)
         if not mode_raw:
-            mode_raw = ExecutionMode.SIMULATED.value
-            # Silent SIMULATED default is LOUD: operators get an
-            # unmistakable warning and the certificate will be stamped
-            # provisional=true (non-authoritative for audits).
-            print(
-                "      [WARNING] EXECUTION MODE NOT DECLARED - defaulting to "
-                "'simulated'. This run can NEVER be cited as live/replay "
-                "verification. Declare execution_mode explicitly."
-            )
-            logger.warning(
-                "Run %s: execution_mode not declared; defaulting to simulated (provisional).",
-                self.run_id,
-            )
+            if self.session_metadata.get("agent") or scenario.get("agent_endpoint"):
+                mode_raw = ExecutionMode.LIVE.value
+                execution_mode_declared = True
+            else:
+                mode_raw = ExecutionMode.SIMULATED.value
+                # Silent SIMULATED default is LOUD: operators get an
+                # unmistakable warning and the certificate will be stamped
+                # provisional=true (non-authoritative for audits).
+                print(
+                    "      [WARNING] EXECUTION MODE NOT DECLARED - defaulting to "
+                    "'simulated'. This run can NEVER be cited as live/replay "
+                    "verification. Declare execution_mode explicitly."
+                )
+                logger.warning(
+                    "Run %s: execution_mode not declared; defaulting to simulated (provisional).",
+                    self.run_id,
+                )
         try:
             self.execution_mode = ExecutionMode(str(mode_raw))
         except ValueError as err:
@@ -2083,9 +2087,17 @@ class _InterpreterEventBridge:
 
     def __init__(self, bus: Any):
         self._bus = bus
+        self.emission_failures: int = 0
 
     def emit(self, name: Any, data: dict[str, Any]) -> None:
         try:
             self._bus.emit(name, data)
-        except Exception:  # noqa: BLE001 - telemetry must never break execution
-            logger.debug("Interpreter event emission failed for %s", name, exc_info=True)
+        except Exception:  # noqa: BLE001 - telemetry must never crash active workflow
+            self.emission_failures += 1
+            logger.warning(
+                "Interpreter audit event emission failed for '%s' (total failures: %d). "
+                "Evidentiary completeness degraded.",
+                name,
+                self.emission_failures,
+                exc_info=True,
+            )

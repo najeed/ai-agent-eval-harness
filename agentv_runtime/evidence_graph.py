@@ -189,3 +189,40 @@ def decision_evidence_root_hash(decision_assertions: list[dict[str, Any]]) -> st
     rows = sorted(_canonical_row(a) for a in decision_assertions)
     payload = json.dumps({"assertions": rows}, sort_keys=True, separators=(",", ":")).encode()
     return _sha3_hex(payload)
+
+
+def build_evidence_graph_from_events(
+    events: list[dict[str, Any] | tuple[dict[str, Any], str]],
+) -> dict[str, Any]:
+    """Reconstructs the Evidence Graph directly from a stream of parsed trace events."""
+    events_with_lines: list[tuple[dict[str, Any], str]] = []
+    assertions: list[dict[str, Any]] = []
+    carrier_seq = None
+
+    for item in events:
+        if isinstance(item, tuple):
+            evt, line = item
+        else:
+            evt = item
+            line = json.dumps(evt, sort_keys=True, separators=(",", ":"))
+        events_with_lines.append((evt, line))
+
+        if evt.get("event") in ("metric_evaluated", "assertion_evaluated", "node_execution_end"):
+            assertions.append(
+                {
+                    "source": "trace_event",
+                    "metric": evt.get("metric") or evt.get("assertion") or evt.get("name"),
+                    "node": evt.get("node_id") or evt.get("task_id"),
+                    "passed": bool(evt.get("passed", evt.get("success", False))),
+                    "event_seq": evt.get("_seq"),
+                }
+            )
+        if evt.get("event") in ("run_end", "verification_decision"):
+            carrier_seq = evt.get("_seq")
+
+    return build_evidence_graph(events_with_lines, assertions, carrier_seq=carrier_seq)
+
+
+def compute_evidence_graph_root(graph: dict[str, Any]) -> str:
+    """Returns the single-commit root hash from an Evidence Graph dictionary."""
+    return str(graph.get("evidence_root_hash") or graph.get("root_hash") or "")

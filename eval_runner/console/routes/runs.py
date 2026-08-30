@@ -714,7 +714,6 @@ def resume_run(run_id):
 
 
 @run_bp.route("/v1/certificates/<run_id>", methods=["GET"])
-@require_permission(Permission.RUNS_READ)
 def get_verification_certificate(run_id):
     """Public Trust Protocol endpoint."""
     cert_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
