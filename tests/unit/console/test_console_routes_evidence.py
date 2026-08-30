@@ -413,3 +413,51 @@ def test_package_corruption_policy_blocks_certification(crypto_client):
     assert corruption["status"] == "EVIDENCE_INVALID"
     assert corruption["corrupt_count"] == 1
     assert corruption["corrupt_line_byte_offsets"] == [len(line1)]
+
+
+def test_verify_verification_package_route(client):
+    import base64
+
+    # 1. Invalid payload
+    res_bad = client.post("/api/v1/evidence/verify", json="not a dict")
+    assert res_bad.status_code == 400
+
+    # 2. Valid minimal package
+    pkg_payload = {
+        "scenario_id": "scen-01",
+        "scenario_version": "1.0.0",
+        "scenario_hash": "sha3_256:scen",
+        "manifest_id": "man-01",
+        "manifest_hash": "sha3_256:man",
+        "execution_identity": {},
+        "trace_hash": "sha3_256:112233",
+        "trace_seal": {},
+        "evidence_root_hash": "sha3_256:evroot",
+        "required_oracle_ids": [],
+        "executed_oracle_results": [],
+        "decision": {"decision": "PASS"},
+    }
+
+    res_valid = client.post(
+        "/api/v1/evidence/verify",
+        json={"package": pkg_payload},
+    )
+    assert res_valid.status_code == 200
+    assert res_valid.get_json()["verified"] is True
+
+    # 3. Trace byte parity check mismatch
+    raw_b64 = base64.b64encode(b"some other trace content").decode("utf-8")
+    res_mismatch = client.post(
+        "/api/v1/evidence/verify",
+        json={"package": pkg_payload, "raw_trace_bytes": raw_b64},
+    )
+    assert res_mismatch.status_code == 422
+    assert res_mismatch.get_json()["verified"] is False
+    assert any("TraceHashMismatch" in f for f in res_mismatch.get_json()["failures"])
+
+    # 4. Invalid base64 trace
+    res_bad_b64 = client.post(
+        "/api/v1/evidence/verify",
+        json={"package": pkg_payload, "raw_trace_bytes": "invalid base64!"},
+    )
+    assert res_bad_b64.status_code == 400

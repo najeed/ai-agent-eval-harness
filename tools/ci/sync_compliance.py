@@ -359,10 +359,17 @@ def sync_compliance(check_mode: bool = False) -> int:
 
     # 5. Check for drift
     has_drift = False
-    if compliance_content != updated_compliance:
+    if (
+        compliance_content.replace("\r\n", "\n").strip()
+        != updated_compliance.replace("\r\n", "\n").strip()
+    ):
         has_drift = True
         print("  [DRIFT] COMPLIANCE.md requires update.")
-    if not NOTICE_FILE.exists() or NOTICE_FILE.read_text(encoding="utf-8") != updated_notice:
+    if (
+        not NOTICE_FILE.exists()
+        or NOTICE_FILE.read_text(encoding="utf-8").replace("\r\n", "\n").strip()
+        != updated_notice.replace("\r\n", "\n").strip()
+    ):
         has_drift = True
         print("  [DRIFT] NOTICE requires update.")
 

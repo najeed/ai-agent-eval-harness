@@ -370,13 +370,35 @@ Usage: agentv <command> [options]
     failures_search.add_argument("query")
     failures_search.set_defaults(func=_dispatch_environment)
 
-    # 4. TRUST & VERIFICATION
     verify_parser = subparsers.add_parser("verify", help="Verify trace integrity")
     verify_parser.set_defaults(func=_dispatch_evaluation)
     verify_parser.add_argument(
         "--path", "--run-id", dest="run_id", required=True, help="[SSOT] Mandatory Run ID"
     )
     _add_pqc_args(verify_parser)
+
+    verify_pkg_parser = subparsers.add_parser(
+        "verify-package",
+        help="Independently verify an .agentv-package.json verification package",
+    )
+    verify_pkg_parser.set_defaults(func=_dispatch_evaluation)
+    verify_pkg_parser.add_argument("package_path", help="Path to .agentv-package.json")
+    verify_pkg_parser.add_argument(
+        "--trace",
+        "--raw-trace",
+        dest="raw_trace_path",
+        help="Optional raw trace bytes path for parity check",
+    )
+    verify_pkg_parser.add_argument(
+        "--public-key",
+        dest="public_key_pem",
+        help="Optional public key PEM path or string",
+    )
+    verify_pkg_parser.add_argument(
+        "--require-signature",
+        action="store_true",
+        help="Require cryptographic signature",
+    )
 
     certify_parser = subparsers.add_parser("certify", help="Generate VC")
     certify_parser.set_defaults(func=_dispatch_evaluation)

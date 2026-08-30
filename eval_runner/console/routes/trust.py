@@ -59,6 +59,7 @@ def _read_run_truth_level(run_id: str) -> tuple[str | None, bool]:
 def _extract_computed_run_outcome(vault_dir: Path, target_trace: Path) -> tuple[str, float]:
     """
     Extracts the authoritative computed outcome from persisted run artifacts.
+    Returns (status, score). If unparseable or inconclusive, returns ("inconclusive", 0.0).
     """
     manifest_path = vault_dir / "run_manifest.json"
     if manifest_path.exists():
@@ -103,20 +104,21 @@ def _extract_computed_run_outcome(vault_dir: Path, target_trace: Path) -> tuple[
     except Exception as e:
         logger.debug("Failed parsing trace for computed outcome: %s", e)
 
-    return "pass", 1.0
+    return "inconclusive", 0.0
 
 
 def execute_industrial_certification(
     run_id: str,
     identity_id: str = "system_id",
-    status: str = "pass",
-    score: float = 1.0,
+    status: str | None = None,
+    score: float | None = None,
     policy_ref: str | None = None,
     ttl: int | None = None,
 ) -> dict:
     """
     Authoritative Industrial Certification Service.
     Derives status and score strictly from the computed evaluation outcome.
+    Fails closed if the outcome is inconclusive or cannot be positively verified.
     """
     # 1. Authoritative Vault Resolution (Strict Affinity)
     vault_dir = (config.RUN_LOG_DIR / run_id).resolve()
@@ -139,16 +141,28 @@ def execute_industrial_certification(
         )
 
     computed_status, computed_score = _extract_computed_run_outcome(vault_dir, target_trace)
-    if computed_status == "fail" and status.lower() == "pass":
-        logger.warning(
-            "   [Certification] Cannot override computed FAIL with PASS for %s. Fail-closed.",
+    if computed_status == "inconclusive":
+        logger.error(
+            "   [Certification] Inconclusive outcome for %s: missing terminal evaluation events.",
             run_id,
         )
+        raise ValueError(
+            f"Run {run_id} has inconclusive outcome: missing terminal evaluation events"
+        )
+
+    if computed_status == "fail":
+        if status and status.lower() == "pass":
+            logger.warning(
+                "   [Certification] Cannot override computed FAIL with PASS for %s. Fail-closed.",
+                run_id,
+            )
         effective_status = "fail"
         effective_score = computed_score
     else:
-        effective_status = status if status else computed_status
-        effective_score = score if score is not None else computed_score
+        effective_status = "pass"
+        effective_score = (
+            score if (score is not None and score <= computed_score) else computed_score
+        )
 
     manifest = TraceVerifier.sign_trace(
         str(target_trace),
@@ -193,14 +207,16 @@ def certify_run():
         result = execute_industrial_certification(
             run_id=run_id,
             identity_id=data.get("identity", "system_id"),
-            status=data.get("status", "pass"),
-            score=float(data.get("score", 1.0)),
+            status=data.get("status"),
+            score=float(data["score"]) if data.get("score") is not None else None,
             policy_ref=data.get("policy_ref"),
             ttl=data.get("ttl"),
         )
         return jsonify(result)
     except FileNotFoundError as e:
         return jsonify({"error": str(e)}), 404
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
     except Exception as e:
         logger.error(f"   [Certification] 500 ERROR: {str(e)}")
         return jsonify({"error": str(e)}), 500

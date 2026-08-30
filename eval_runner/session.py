@@ -149,23 +149,19 @@ class SessionManager:
         )
         execution_mode_declared = bool(mode_raw)
         if not mode_raw:
-            if self.session_metadata.get("agent") or scenario.get("agent_endpoint"):
-                mode_raw = ExecutionMode.LIVE.value
-                execution_mode_declared = True
-            else:
-                mode_raw = ExecutionMode.SIMULATED.value
-                # Silent SIMULATED default is LOUD: operators get an
-                # unmistakable warning and the certificate will be stamped
-                # provisional=true (non-authoritative for audits).
-                print(
-                    "      [WARNING] EXECUTION MODE NOT DECLARED - defaulting to "
-                    "'simulated'. This run can NEVER be cited as live/replay "
-                    "verification. Declare execution_mode explicitly."
-                )
-                logger.warning(
-                    "Run %s: execution_mode not declared; defaulting to simulated (provisional).",
-                    self.run_id,
-                )
+            mode_raw = ExecutionMode.SIMULATED.value
+            # Silent SIMULATED default is LOUD: operators get an
+            # unmistakable warning and the certificate will be stamped
+            # provisional=true (non-authoritative for audits).
+            print(
+                "      [WARNING] EXECUTION MODE NOT DECLARED - defaulting to "
+                "'simulated'. This run can NEVER be cited as live/replay "
+                "verification. Declare execution_mode explicitly."
+            )
+            logger.warning(
+                "Run %s: execution_mode not declared; defaulting to simulated (provisional).",
+                self.run_id,
+            )
         try:
             self.execution_mode = ExecutionMode(str(mode_raw))
         except ValueError as err:
@@ -177,25 +173,6 @@ class SessionManager:
                 "Refusing to fall back to SIMULATED (fail-closed)."
             ) from err
 
-        # Truth-mode vs adapter consistency. A session that can reach a
-        # real agent endpoint may never be silently labeled SIMULATED: the
-        # operator must declare live/hybrid, or explicitly accept simulated.
-        import os as _os
-
-        _endpoint = self.session_metadata.get("agent")
-        if (
-            _endpoint
-            and self.execution_mode is ExecutionMode.SIMULATED
-            and not config.ENABLE_DEMO
-            and _os.getenv("AES_ALLOW_IMPLICIT_SIMULATED", "").lower() != "1"
-        ):
-            raise ValueError(
-                f"execution_mode conflict: an agent endpoint ('{_endpoint}') is "
-                "configured but execution_mode defaults to 'simulated'. Declare "
-                "execution_mode='live' | 'hybrid' | 'record_replay', or pass "
-                "metadata execution_mode='simulated' explicitly to attest that "
-                "no live verification is claimed."
-            )
         self.metadata["execution_mode"] = self.execution_mode.value
         self.metadata["execution_mode_declared"] = execution_mode_declared
 

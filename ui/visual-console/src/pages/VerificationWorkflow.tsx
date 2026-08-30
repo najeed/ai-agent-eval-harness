@@ -9,7 +9,7 @@ import {
 import { useRBAC } from '../context/RBACContext';
 
 /**
- * VerificationWorkflow; the primary product spine (P1-12).
+ * VerificationWorkflow; the primary product spine.
  *
  * Connect → Validate → Select/Compose → Preflight → Run → Diagnose → Evidence
  *
@@ -77,7 +77,7 @@ export const VerificationWorkflow: React.FC = () => {
   } | null>(null);
   const [runId, setRunId] = useState('');
 
-  // [G1] Advanced execution settings (folded in from the retired standalone
+  // Advanced execution settings (folded in from the retired standalone
   // runner page): max turns and evaluation metadata notes.
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [maxTurns, setMaxTurns] = useState('10');
@@ -119,7 +119,9 @@ export const VerificationWorkflow: React.FC = () => {
   });
 
   const runData = runQuery.data || {};
-  const verdict = runData.verification_status || (runData.status === 'COMPLETED' ? 'VERIFIED' : runData.status) || null;
+  const verdict =
+    runData.verification_status ||
+    (runData.has_certificate ? 'VERIFIED' : runData.status ? `${runData.status} (Unverified)` : null);
 
 
 
@@ -224,7 +226,7 @@ export const VerificationWorkflow: React.FC = () => {
           setAvailableProtocols(data.available_protocols);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const launchEvaluation = async () => {
@@ -289,12 +291,12 @@ export const VerificationWorkflow: React.FC = () => {
           <React.Fragment key={s.id}>
             <div
               className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-[11px] font-semibold shrink-0 ${stepStates[s.id] === 'done'
-                  ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-                  : stepStates[s.id] === 'active'
-                    ? 'border-indigo-500/40 bg-indigo-500/10 text-indigo-300'
-                    : stepStates[Number(s.id)] === 'blocked'
-                      ? 'border-slate-800 bg-slate-900/40 text-slate-600'
-                      : 'border-slate-700 bg-slate-900/40 text-slate-400'
+                ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+                : stepStates[s.id] === 'active'
+                  ? 'border-indigo-500/40 bg-indigo-500/10 text-indigo-300'
+                  : stepStates[Number(s.id)] === 'blocked'
+                    ? 'border-slate-800 bg-slate-900/40 text-slate-600'
+                    : 'border-slate-700 bg-slate-900/40 text-slate-400'
                 }`}
             >
               {stepStates[s.id] === 'done' ? (
@@ -314,10 +316,10 @@ export const VerificationWorkflow: React.FC = () => {
       {/* Runtime health strip */}
       <div
         className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-mono ${healthStatus === 'HEALTHY'
-            ? 'border-emerald-500/20 bg-emerald-500/5 text-emerald-300'
-            : healthStatus === 'DEGRADED'
-              ? 'border-amber-500/20 bg-amber-500/5 text-amber-300'
-              : 'border-red-500/20 bg-red-500/5 text-red-300'
+          ? 'border-emerald-500/20 bg-emerald-500/5 text-emerald-300'
+          : healthStatus === 'DEGRADED'
+            ? 'border-amber-500/20 bg-amber-500/5 text-amber-300'
+            : 'border-red-500/20 bg-red-500/5 text-red-300'
           }`}
       >
         {healthStatus === 'HEALTHY' ? (
@@ -542,8 +544,8 @@ export const VerificationWorkflow: React.FC = () => {
               <Link
                 to={`/reports?run_id=${encodeURIComponent(runId)}`}
                 className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-xs font-semibold ${runId
-                    ? 'border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10'
-                    : 'border-slate-800 text-slate-600 pointer-events-none'
+                  ? 'border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10'
+                  : 'border-slate-800 text-slate-600 pointer-events-none'
                   }`}
               >
                 <Gavel className="w-3.5 h-3.5" /> Verdict & report
@@ -551,8 +553,8 @@ export const VerificationWorkflow: React.FC = () => {
               <Link
                 to={`/debugger?run_id=${encodeURIComponent(runId)}`}
                 className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-xs font-semibold ${runId
-                    ? 'border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10'
-                    : 'border-slate-800 text-slate-600 pointer-events-none'
+                  ? 'border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10'
+                  : 'border-slate-800 text-slate-600 pointer-events-none'
                   }`}
               >
                 <Bug className="w-3.5 h-3.5" /> Diagnose in debugger

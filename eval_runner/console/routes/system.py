@@ -469,6 +469,30 @@ def get_doctor_audit():
 def debugger_state():
     """Visual Debugger ephemeral state sink/source."""
     if request.method == "POST":
+        import os
+
+        from flask import session
+
+        from ..auth_manager import Permission, get_auth_provider
+
+        if os.getenv("AGENTV_TEST_AUTH_BYPASS") != "1":
+            provider = get_auth_provider()
+            user = session.get("user")
+            if not user:
+                auth_header = request.headers.get("Authorization", "")
+                api_key = request.headers.get("X-AES-API-KEY") or request.headers.get("X-API-Key")
+                if auth_header.startswith("Bearer "):
+                    user = provider.verify_token(auth_header[7:].strip())
+                elif api_key:
+                    user = provider.authenticate(api_key.strip())
+
+            has_perm = user and (
+                provider.has_permission(user, Permission.RUNS_WRITE)
+                or provider.has_permission(user, Permission.DEBUG_EVENT)
+            )
+            if not has_perm:
+                return jsonify({"error": "Unauthorized: debugger:event permission required"}), 403
+
         data = request.json or {}
         DebuggerStateStore.handle_event(data)
         return jsonify({"status": "updated"})

@@ -47,6 +47,7 @@ def mock_handlers():
         (["playground"], "evaluation", "handle_playground"),
         (["replay", "--run-id", "r1"], "evaluation", "handle_replay"),
         (["verify", "--path", "."], "evaluation", "handle_verify"),
+        (["verify-package", "pkg.json"], "evaluation", "handle_verify_package"),
         (["certify", "--path", "."], "evaluation", "handle_certify"),
         (["gate", "--path", "."], "evaluation", "handle_gate"),
         (["quickstart"], "evaluation", "handle_quickstart"),

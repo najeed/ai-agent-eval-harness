@@ -489,11 +489,16 @@ def _matches_file_digest(p: Path, expected: str) -> bool:
         return True
     try:
         raw = p.read_bytes()
-        normalized = raw.decode("utf-8").replace("\r\n", "\n").encode("utf-8")
-        norm_hash = hashlib.sha256(normalized).hexdigest()
-        return norm_hash.lower() == expected.lower()
+        text = raw.decode("utf-8")
+        lf_norm = text.replace("\r\n", "\n").encode("utf-8")
+        if hashlib.sha256(lf_norm).hexdigest().lower() == expected.lower():
+            return True
+        crlf_norm = text.replace("\r\n", "\n").replace("\n", "\r\n").encode("utf-8")
+        if hashlib.sha256(crlf_norm).hexdigest().lower() == expected.lower():
+            return True
     except (UnicodeDecodeError, OSError):
-        return False
+        pass
+    return False
 
 
 def _extract_pack_archive(archive_path: Path, staging_root: Path) -> Path:

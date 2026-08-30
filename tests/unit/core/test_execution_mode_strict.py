@@ -1,5 +1,5 @@
 """
-A3: Invalid execution_mode is a run-level failure — no silent SIMULATED fallback.
+Invalid execution_mode is a run-level failure — no silent SIMULATED fallback.
 
 SessionManager must refuse to construct when the scenario declares an unknown
 execution truth mode. Simulation may never masquerade as live verification.
@@ -57,4 +57,15 @@ def test_valid_execution_modes_construct(tmp_path, base_scenario, mode):
 
 def test_missing_execution_mode_defaults_to_simulated(tmp_path, base_scenario):
     session = SessionManager("run-default", base_scenario, log_root=tmp_path)
+    assert session.execution_mode == ExecutionMode.SIMULATED
+
+
+def test_endpoint_present_without_declared_mode_defaults_to_simulated(tmp_path, base_scenario):
+    base_scenario["agent_endpoint"] = "http://localhost:8080"
+    session = SessionManager(
+        "run-endpoint-default",
+        base_scenario,
+        metadata={"agent": "http://localhost:8080"},
+        log_root=tmp_path,
+    )
     assert session.execution_mode == ExecutionMode.SIMULATED

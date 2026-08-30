@@ -29,20 +29,29 @@ def list_metrics():
 
 
 def resolve_trace_path(run_id: str) -> Path | None:
-    """Resolves trace path across vaults and direct file conventions."""
-    runs_dir = Path(config.RUN_LOG_DIR)
-    p = runs_dir / run_id / "run.jsonl"
-    if p.is_file():
-        return p
-    p = runs_dir / run_id / f"{run_id}.jsonl"
-    if p.is_file():
-        return p
-    p = runs_dir / f"{run_id}.jsonl"
-    if p.is_file():
-        return p
-    p = runs_dir / run_id
-    if p.is_file():
-        return p
+    """Resolves trace path across vaults and direct file conventions with path jail containment."""
+    if not run_id or not isinstance(run_id, str):
+        return None
+
+    import re
+
+    from eval_runner.utils import is_path_safe
+
+    # Constrain run_id to safe identifier pattern
+    if not re.match(r"^[a-zA-Z0-9_\-]+$", run_id):
+        return None
+
+    runs_dir = Path(config.RUN_LOG_DIR).resolve()
+    candidates = [
+        runs_dir / run_id / "run.jsonl",
+        runs_dir / run_id / f"{run_id}.jsonl",
+        runs_dir / f"{run_id}.jsonl",
+        runs_dir / run_id,
+    ]
+    for candidate in candidates:
+        resolved = candidate.resolve()
+        if is_path_safe(str(resolved), str(runs_dir)) and resolved.is_file():
+            return resolved
     return None
 
 

@@ -342,13 +342,14 @@ def test_pack(pack_id):
             metrics_dict = (
                 cert_data.get("metrics", {})
                 or cert_data.get("wsm_scores", {})
+                or cert_data.get("compliance", {}).get("wsm_scores", {})
                 or analysis.get("wsm_scores", {})
             )
             actual_score = (
                 metrics_dict.get(f"wsm_{dim}")
                 or metrics_dict.get("wsm_score")
                 or metrics_dict.get(dim)
-                or cert_data.get("compliance_score")
+                or cert_data.get("compliance", {}).get("score")
                 or analysis.get("wsm_score")
             )
             if actual_score is None:

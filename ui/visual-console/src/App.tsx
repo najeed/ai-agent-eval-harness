@@ -607,7 +607,8 @@ const ConsoleLayout: React.FC = () => {
         const response = await originalFetch(...args);
         if (response.status === 401 || response.status === 403) {
           const urlStr = typeof args[0] === 'string' ? args[0] : (args[0] as Request)?.url || '';
-          if (urlStr.includes('/api/auth') || urlStr.includes('/v1/')) {
+          const isSameOrigin = urlStr.startsWith('/') || (typeof window !== 'undefined' && urlStr.startsWith(window.location.origin));
+          if (isSameOrigin && (urlStr.includes('/api/auth') || urlStr.includes('/api/v1/') || urlStr.includes('/v1/'))) {
             window.dispatchEvent(
               new CustomEvent('agentv-toast', {
                 detail: {
@@ -621,15 +622,19 @@ const ConsoleLayout: React.FC = () => {
         }
         return response;
       } catch (err: any) {
-        window.dispatchEvent(
-          new CustomEvent('agentv-toast', {
-            detail: {
-              type: 'error',
-              title: 'Harness Connection Error',
-              message: err?.message || 'Failed to communicate with AgentV Console API backend.',
-            },
-          })
-        );
+        const urlStr = typeof args[0] === 'string' ? args[0] : (args[0] as Request)?.url || '';
+        const isSameOrigin = urlStr.startsWith('/') || (typeof window !== 'undefined' && urlStr.startsWith(window.location.origin));
+        if (isSameOrigin) {
+          window.dispatchEvent(
+            new CustomEvent('agentv-toast', {
+              detail: {
+                type: 'error',
+                title: 'Harness Connection Error',
+                message: err?.message || 'Failed to communicate with AgentV Console API backend.',
+              },
+            })
+          );
+        }
         throw err;
       }
     };

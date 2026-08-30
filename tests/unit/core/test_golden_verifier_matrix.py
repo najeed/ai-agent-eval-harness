@@ -1660,9 +1660,10 @@ def test_verification_authority_comprehensive_matrix():
         side_effect=ValueError("Graph fail"),
     ):
         res_ev_err = VerificationAuthority.verify_package(pkg_unsigned, raw_trace_events=events)
-        assert res_ev_err["verified"] is True  # evidence graph exception caught and logged
+        assert res_ev_err["verified"] is False
+        assert any("EvidenceReconstructionFailed" in f for f in res_ev_err["failures"])
 
-    # 4. Manifest missing (line 1271)
+    # 4. Manifest missing
     pkg_no_man = VerificationPackage(
         scenario_id="scen-01",
         scenario_version="1.0.0",

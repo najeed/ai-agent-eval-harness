@@ -1245,6 +1245,7 @@ class VerificationAuthority:
                     )
             except Exception as ev_err:
                 logger.debug("Evidence graph calculation failed: %s", ev_err)
+                failures.append(f"EvidenceReconstructionFailed: {ev_err}")
 
         # 5. Decision verdict check
         decision_val = pkg.decision.get("decision") or pkg.decision.get("verdict")

@@ -369,3 +369,58 @@ async def test_handle_gate_trace_missing_and_exception_handling():
         patch("builtins.open", side_effect=RuntimeError("unexpected read error")),
     ):
         assert await evaluation.handle_gate(MagicMock(run_id="run_err")) == 1
+
+
+@pytest.mark.asyncio
+async def test_handle_verify_package_branches(tmp_path):
+    """Verify handle_verify_package CLI handler across success, failure, and security branches."""
+    import json
+
+    # 1. Unsafe path
+    with patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=False):
+        res = await evaluation.handle_verify_package(MagicMock(package_path="unsafe.json"))
+        assert res == 1
+
+    # 2. Missing file
+    pkg_missing = tmp_path / "missing.json"
+    res_missing = await evaluation.handle_verify_package(MagicMock(package_path=str(pkg_missing)))
+    assert res_missing == 1
+
+    # 3. Success verification
+    pkg_file = tmp_path / "valid.agentv-package.json"
+    pkg_data = {
+        "scenario_id": "scen-01",
+        "scenario_version": "1.0.0",
+        "scenario_hash": "sha3_256:scen",
+        "manifest_id": "man-01",
+        "manifest_hash": "sha3_256:man",
+        "execution_identity": {},
+        "trace_hash": "sha3_256:112233",
+        "trace_seal": {},
+        "evidence_root_hash": "sha3_256:evroot",
+        "required_oracle_ids": [],
+        "executed_oracle_results": [],
+        "decision": {"decision": "PASS"},
+    }
+    pkg_file.write_text(json.dumps(pkg_data), encoding="utf-8")
+
+    args_valid = MagicMock(
+        package_path=str(pkg_file),
+        raw_trace_path=None,
+        public_key_pem=None,
+        require_signature=False,
+    )
+    assert await evaluation.handle_verify_package(args_valid) == 0
+
+    # 4. Failed verification
+    pkg_failed_data = dict(pkg_data, decision={"decision": "FAIL"})
+    pkg_failed_file = tmp_path / "failed.agentv-package.json"
+    pkg_failed_file.write_text(json.dumps(pkg_failed_data), encoding="utf-8")
+
+    args_fail = MagicMock(
+        package_path=str(pkg_failed_file),
+        raw_trace_path=None,
+        public_key_pem=None,
+        require_signature=False,
+    )
+    assert await evaluation.handle_verify_package(args_fail) == 1

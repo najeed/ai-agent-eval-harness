@@ -352,3 +352,46 @@ def list_verification_packages():
             )
 
     return jsonify({"packages": packages_summary})
+
+
+@evidence_bp.route("/v1/evidence/verify", methods=["POST"])
+@require_permission("runs:read")
+def verify_verification_package():
+    """
+    Independently verifies an .agentv-package.json verification package.
+    Validates trace byte parity, manifest binding, evidence graph root,
+    decision verdict conformance, required oracle inventory, and signature.
+    """
+    from eval_runner.verifier import VerificationAuthority
+
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({"error": "Invalid payload: request body must be a JSON object"}), 400
+
+    package_data = data.get("package") or data
+    if not isinstance(package_data, dict):
+        return jsonify({"error": "Invalid payload: package must be a JSON object"}), 400
+
+    raw_trace_b64 = data.get("raw_trace_bytes")
+    raw_trace_bytes = None
+    if raw_trace_b64:
+        import base64
+
+        try:
+            raw_trace_bytes = base64.b64decode(raw_trace_b64)
+        except Exception as b64_err:
+            return jsonify({"error": f"Invalid base64 trace payload: {b64_err}"}), 400
+
+    raw_trace_events = data.get("raw_trace_events")
+    public_key_pem = data.get("public_key_pem")
+    require_signature = bool(data.get("require_signature", False))
+
+    res = VerificationAuthority.verify_package(
+        package_data,
+        raw_trace_bytes=raw_trace_bytes,
+        raw_trace_events=raw_trace_events,
+        public_key_pem=public_key_pem,
+        require_signature=require_signature,
+    )
+    status_code = 200 if res.get("verified") else 422
+    return jsonify(res), status_code

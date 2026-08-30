@@ -13,7 +13,7 @@ from .. import config, utils
 
 
 def __getattr__(name: str):
-    """PEP 562: Lazy-load submodules on demand for fast CLI startup and mock compatibility."""
+    """Lazy-load submodules on demand for fast CLI startup and mock compatibility."""
     if name in {
         "engine",
         "loader",
@@ -398,6 +398,64 @@ async def handle_verify(args):
             return 1
     except Exception as e:
         print(f"❌ [ERROR] Verification FAILED: {e}")
+        return 1
+
+
+async def handle_verify_package(args):
+    """
+    Handler for 'verify-package' command.
+    Independently verifies an .agentv-package.json verification package.
+    """
+    pkg_path = Path(args.package_path).resolve()
+    if not _ensure_path_safe(pkg_path, "Package file"):
+        return 1
+    if not pkg_path.exists():
+        print(f"❌ Error: Verification package file not found: {pkg_path}")
+        return 1
+
+    try:
+        with open(pkg_path, encoding="utf-8") as f:
+            pkg_data = json.load(f)
+
+        raw_trace_bytes = None
+        if getattr(args, "raw_trace_path", None):
+            trace_path = Path(args.raw_trace_path).resolve()
+            if not _ensure_path_safe(trace_path, "Trace file"):
+                return 1
+            if not trace_path.exists():
+                print(f"❌ Error: Raw trace file not found: {trace_path}")
+                return 1
+            raw_trace_bytes = trace_path.read_bytes()
+
+        pub_key_pem = getattr(args, "public_key_pem", None)
+        if pub_key_pem and Path(pub_key_pem).exists():
+            pub_key_pem = Path(pub_key_pem).read_text(encoding="utf-8")
+
+        require_sig = getattr(args, "require_signature", False)
+
+        from .. import verifier
+
+        res = verifier.VerificationAuthority.verify_package(
+            pkg_data,
+            raw_trace_bytes=raw_trace_bytes,
+            public_key_pem=pub_key_pem,
+            require_signature=require_sig,
+        )
+
+        if res.get("verified"):
+            print(f"✅ VERIFIED: Verification package '{pkg_path.name}' is valid.")
+            print(f"    - Package ID: {res.get('package_id')}")
+            print(f"    - Scenario ID: {res.get('scenario_id')}")
+            print(f"    - Package Hash: {res.get('package_hash')}")
+            print(f"    - Status: {res.get('status')}")
+            return 0
+        else:
+            print(f"❌ FAILED: Verification package '{pkg_path.name}' verification failed.")
+            for failure in res.get("failures", []):
+                print(f"    - Failure: {failure}")
+            return 1
+    except Exception as e:
+        print(f"❌ Error during package verification: {e}")
         return 1
 
 

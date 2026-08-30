@@ -60,7 +60,10 @@ def test_certify_run_success(client, console_jail):
     run_id = "test_run_1"
     run_dir = console_jail["runs"] / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
-    (run_dir / "run.jsonl").write_text('{"event": "run_start"}\n', encoding="utf-8")
+    (run_dir / "run.jsonl").write_text(
+        '{"event": "run_start"}\n{"event": "run_end", "data": {"status": "pass", "score": 1.0}}\n',
+        encoding="utf-8",
+    )
 
     with patch("eval_runner.verifier.TraceVerifier.sign_trace") as mock_sign:
         mock_sign.return_value = {"trace_hash": "fake_hash"}
@@ -68,6 +71,35 @@ def test_certify_run_success(client, console_jail):
         assert res.status_code == 200
         assert res.get_json()["status"] == "certified"
         assert (run_dir / "run_manifest.json").exists()
+
+
+def test_certify_run_inconclusive_missing_terminal_fails_closed(client, console_jail):
+    run_id = "inconclusive_run"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "run.jsonl").write_text('{"event": "run_start"}\n', encoding="utf-8")
+
+    res = client.post("/api/v1/certify", json={"run_id": run_id})
+    assert res.status_code == 400
+    assert "inconclusive" in res.get_json()["error"]
+
+
+def test_certify_run_fail_closed_computed_fail(client, console_jail):
+    run_id = "computed_fail_run"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "run.jsonl").write_text(
+        '{"event": "run_start"}\n{"event": "run_end", "data": {"status": "fail", "score": 0.0}}\n',
+        encoding="utf-8",
+    )
+
+    with patch("eval_runner.verifier.TraceVerifier.sign_trace") as mock_sign:
+        mock_sign.return_value = {"trace_hash": "fake_hash"}
+        # Attempt to override computed fail with pass
+        res = client.post("/api/v1/certify", json={"run_id": run_id, "status": "pass"})
+        assert res.status_code == 200
+        # Assert that sign_trace received fail
+        assert mock_sign.call_args[1]["compliance_status"] == "fail"
 
 
 def test_verify_run_public_404(client):
@@ -125,7 +157,9 @@ def test_verify_run_exception(client, console_jail):
 
 
 def test_get_identity_public_key_success(client):
-    with patch("eval_runner.identity.IdentityService.get_public_key") as mock_get:
+    with patch(
+        "eval_runner.console.routes.trust.identity.IdentityService.get_public_key"
+    ) as mock_get:
         mock_key = MagicMock()
         mock_key.public_bytes.return_value = b"PEM_KEY"
         mock_get.return_value = mock_key
@@ -137,7 +171,8 @@ def test_get_identity_public_key_success(client):
 
 def test_get_identity_public_key_404(client):
     with patch(
-        "eval_runner.identity.IdentityService.get_public_key", side_effect=ValueError("not found")
+        "eval_runner.console.routes.trust.identity.IdentityService.get_public_key",
+        side_effect=ValueError("not found"),
     ):
         res = client.get("/api/v1/identity/ghost/public_key")
         assert res.status_code == 404
@@ -167,7 +202,10 @@ def test_certify_run_generic_exception(client, console_jail):
     run_id = "crash_run"
     run_dir = console_jail["runs"] / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
-    (run_dir / "run.jsonl").write_text("data", encoding="utf-8")
+    (run_dir / "run.jsonl").write_text(
+        '{"event": "run_start"}\n{"event": "run_end", "data": {"status": "pass", "score": 1.0}}\n',
+        encoding="utf-8",
+    )
 
     with patch(
         "eval_runner.verifier.TraceVerifier.sign_trace", side_effect=Exception("Critical Failure")
@@ -211,12 +249,18 @@ def test_get_identity_public_key_none_and_private_key_none(client):
     from eval_runner.console.routes.trust import _private_key_pem_bytes
 
     # Public key returns None
-    with patch("eval_runner.identity.IdentityService.get_public_key", return_value=None):
+    with patch(
+        "eval_runner.console.routes.trust.identity.IdentityService.get_public_key",
+        return_value=None,
+    ):
         res = client.get("/api/v1/identity/sys_none/public_key")
         assert res.status_code == 404
 
     # Private key returns None
-    with patch("eval_runner.identity.IdentityService.get_private_key", return_value=None):
+    with patch(
+        "eval_runner.console.routes.trust.identity.IdentityService.get_private_key",
+        return_value=None,
+    ):
         with pytest.raises(ValueError, match="No signing identity available"):
             _private_key_pem_bytes("sys_none")
 
