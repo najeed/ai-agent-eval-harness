@@ -138,13 +138,12 @@ def get_current_user():
         elif api_key_header:
             user = provider.authenticate(api_key_header.strip())
 
-    if (
-        not user
-        and is_dev_mode
-        and (
-            request.remote_addr in ("127.0.0.1", "::1", "localhost") or request.remote_addr is None
-        )
-    ):
+    is_explicit_dev = os.getenv("AGENTV_ENV", "").lower() in ("dev", "development") or is_dev_mode
+    is_loopback = request.remote_addr in ("127.0.0.1", "::1", "localhost") or (
+        request.remote_addr is None and os.getenv("AGENTV_TEST_AUTH_BYPASS") == "1"
+    )
+
+    if not user and is_explicit_dev and is_loopback:
         # Local development persona default
         user = {
             "id": "dev-admin@agentv.local",

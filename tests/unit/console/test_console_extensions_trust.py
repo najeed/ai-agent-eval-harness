@@ -8,6 +8,7 @@ Signatures cover RuntimeExtension.canonical_bytes() (canonical JSON excluding
 the signature field). Keys live under the configured TRUST_ROOT.
 """
 
+import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
@@ -16,22 +17,20 @@ from flask import Flask
 
 from eval_runner import config
 from eval_runner.console.routes.trust import trust_bp
+from eval_runner.utils import rmtree_resilient
 
 
 @pytest.fixture(scope="module")
 def trust_jail(request):
     worker_id = getattr(request.config, "workerinput", {}).get("workerid", "master")
-    tmp_root = Path(__file__).parent / f"_trust_jail_{worker_id}"
+    tmp_root = Path(tempfile.gettempdir()) / f"aes_trust_jail_{worker_id}"
     if tmp_root.exists():
-        import shutil
-
-        shutil.rmtree(tmp_root, ignore_errors=True)
+        rmtree_resilient(tmp_root)
     keys = tmp_root / "keys"
-    keys.mkdir(parents=True)
+    keys.mkdir(parents=True, exist_ok=True)
     yield {"root": tmp_root, "keys": keys}
-    import shutil
-
-    shutil.rmtree(tmp_root, ignore_errors=True)
+    if tmp_root.exists():
+        rmtree_resilient(tmp_root)
 
 
 @pytest.fixture

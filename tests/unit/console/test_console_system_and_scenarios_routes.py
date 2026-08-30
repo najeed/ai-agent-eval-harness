@@ -8,7 +8,7 @@ import json
 import os
 import tempfile
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 from flask import Flask
@@ -50,6 +50,7 @@ def client(console_jail, monkeypatch):
 
     monkeypatch.setattr(config, "PROJECT_ROOT", console_jail["root"])
     monkeypatch.setattr(config, "RUN_LOG_DIR", console_jail["runs"])
+    monkeypatch.setenv("AGENTV_TEST_AUTH_BYPASS", "1")
 
     with patch("eval_runner.console.auth_manager.require_permission", lambda _: lambda f: f):
         yield app.test_client()
@@ -638,3 +639,86 @@ def test_check_execution_readiness_branches(client, console_jail, monkeypatch):
     assert agent_check["status"] == "WARNING"
     assert agent_check["tier"] == "CONFIGURED"
     assert "custom_agent_protocol" in agent_check["message"]
+
+
+def test_debugger_state_path_traversal_and_auth_hardening(client, console_jail, monkeypatch):
+    """Test debugger_state endpoint path traversal rejection, auth headers, and file loading."""
+    from eval_runner.session import SessionManager
+
+    # Set auth bypass for functional route tests
+    monkeypatch.setenv("AGENTV_TEST_AUTH_BYPASS", "1")
+
+    # 1. Global path traversal filter (contains '..')
+    res_traversal = client.get("/api/debugger/state?run_id=../../etc/passwd")
+    assert res_traversal.status_code == 403
+    assert "Unauthorized Path Traversal Attempt Detected" in res_traversal.get_json()["error"]
+
+    # 2. Invalid run_id regex (contains non-alphanumeric chars without '..')
+    res_bad_regex = client.get("/api/debugger/state?run_id=invalid*id#test")
+    assert res_bad_regex.status_code == 400
+    assert "Invalid run_id format" in res_bad_regex.get_json()["error"]
+
+    # 3. Non-existent run_id
+    res_not_found = client.get("/api/debugger/state?run_id=valid-id-not-found")
+    assert res_not_found.status_code == 404
+
+    # 3. Direct physical run.jsonl load
+    valid_run_dir = console_jail["runs"] / "valid-test-run"
+    valid_run_dir.mkdir(parents=True, exist_ok=True)
+    trace_file = valid_run_dir / "run.jsonl"
+    trace_file.write_text(json.dumps({"event": "run_start", "_seq": 1}) + "\n", encoding="utf-8")
+
+    res_ok = client.get("/api/debugger/state?run_id=valid-test-run")
+    assert res_ok.status_code == 200
+    assert res_ok.get_json()["data"] is not None
+
+    # 4. Fallback direct <run_id>.jsonl load
+    flat_trace = console_jail["runs"] / "flat-test-run.jsonl"
+    flat_trace.write_text(json.dumps({"event": "run_start", "_seq": 1}) + "\n", encoding="utf-8")
+
+    res_flat = client.get("/api/debugger/state?run_id=flat-test-run")
+    assert res_flat.status_code == 200
+    assert res_flat.get_json()["data"] is not None
+
+    # 5. Auth verification without bypass
+    monkeypatch.delenv("AGENTV_TEST_AUTH_BYPASS", raising=False)
+    res_unauth_get = client.get("/api/debugger/state")
+    assert res_unauth_get.status_code == 403
+
+    res_unauth_post = client.post("/api/debugger/state", json={"event": "debug"})
+    assert res_unauth_post.status_code == 403
+
+    # Authenticated via mock provider
+    mock_provider = MagicMock()
+    mock_provider.verify_token.return_value = {
+        "id": "user1",
+        "role": "System Admin",
+        "permissions": ["debugger:event", "debugger:read"],
+    }
+    mock_provider.has_permission.return_value = True
+
+    with patch("eval_runner.console.auth_manager.get_auth_provider", return_value=mock_provider):
+        res_auth_get = client.get(
+            "/api/debugger/state",
+            headers={"Authorization": "Bearer valid-token"},
+        )
+        assert res_auth_get.status_code == 200
+
+        res_auth_post = client.post(
+            "/api/debugger/state",
+            json={"event": "debug_ok"},
+            headers={"Authorization": "Bearer valid-token"},
+        )
+        assert res_auth_post.status_code == 200
+
+    # 6. SessionManager.fork() state propagation verification
+    scenario = {"metadata": {"id": "fork_test"}, "workflow": {"nodes": [{"id": "n1"}]}}
+    session = SessionManager("test-fork-run", scenario, log_root=console_jail["runs"])
+    history = [{"role": "user", "content": "hello"}]
+    sandbox_state = {"vars": {"counter": 42}}
+
+    forked = session.fork(history=history, sandbox_state=sandbox_state)
+    assert forked.scenario["_fork_depth"] == 1
+    assert forked.metadata == session.metadata
+    assert forked.turn_state_manager.history == history
+    assert forked.resumption_checkpoint == sandbox_state

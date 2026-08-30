@@ -360,7 +360,8 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
             return;
           }
 
-          // Extract and verify manifest before executing untrusted remote code
+          // J1 Hardening: Pre-execution Manifest Verification.
+          // Untrusted remote code must NEVER be dynamically evaluated without a cryptographically valid pre-execution manifest.
           const sourceText = new TextDecoder().decode(buffer);
           let extractedManifest: any = null;
           try {
@@ -369,37 +370,55 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
               extractedManifest = JSON.parse(match[1]);
             }
           } catch {
-            // Complex AST or expression
+            // Static regex parse failed
           }
 
-          if (extractedManifest) {
-            const preViolations = validateExtensionManifest(extractedManifest, { requireSignature: true });
-            if (preViolations.length > 0) {
-              if (active) setLoadingState({ status: 'contract_violation', violations: preViolations });
-              return;
+          let preManifest = extractedManifest;
+          if (!preManifest) {
+            try {
+              const manifestUrl = entryUrl.replace(/\.[^/.]+$/, '') + '.manifest.json';
+              const mRes = await fetch(manifestUrl);
+              if (mRes.ok) {
+                preManifest = await mRes.json();
+              }
+            } catch {
+              // Manifest file fetch fallback failed
             }
-            await resolveTier(extractedManifest);
           }
 
-          // Integrity validated: instantiate via ephemeral Blob URL
+          if (!preManifest) {
+            if (active) {
+              setLoadingState({
+                status: 'contract_violation',
+                violations: [
+                  "Pre-execution verification failed: Remote extension must supply a statically verifiable signed manifest prior to module execution."
+                ]
+              });
+            }
+            return;
+          }
+
+          const preViolations = validateExtensionManifest(preManifest, { requireSignature: true });
+          if (preViolations.length > 0) {
+            if (active) setLoadingState({ status: 'contract_violation', violations: preViolations });
+            return;
+          }
+          const tier = await resolveTier(preManifest);
+
+          // Integrity and contract validated: instantiate via ephemeral Blob URL
           const blob = new Blob([buffer], { type: 'text/javascript' });
           blobUrlToRevoke = URL.createObjectURL(blob);
           const mod = await import(/* @vite-ignore */ blobUrlToRevoke);
-          const manifestObj = (mod as any)?.manifest || extractedManifest;
+          const manifestObj = (mod as any)?.manifest || preManifest;
 
-          // [P1-14][D2] MANDATORY manifest + signed publisher for remotes.
-          let violations = !manifestObj
-            ? [
-                "Remote module exports no 'manifest' — the runtime cannot establish publisher, capabilities or api_version.",
-              ]
-            : validateExtensionManifest(manifestObj, { requireSignature: true });
+          // Mandatory manifest confirmation post-import
+          const violations = validateExtensionManifest(manifestObj, { requireSignature: true });
           if (violations.length > 0) {
             console.error(`[ExtensionHost] Contract violations for ${entryUrl}:`, violations);
             if (active) setLoadingState({ status: 'contract_violation', violations });
             return;
           }
 
-          const tier = await resolveTier(manifestObj);
           const ResolvedComp = mod.default || mod[Object.keys(mod)[0]] || mod;
           if (active) setLoadingState({ status: 'ready', Component: ResolvedComp, tier, manifest: manifestObj });
         } else {
@@ -973,14 +992,45 @@ const ConsoleLayout: React.FC = () => {
   );
 };
 
-function AppRoutes() {
+const RemoteRouteGuard: React.FC<{ item: any }> = ({ item }) => {
+  const { role, hasPermission } = useRBAC();
+  const requiredRole = item.required_role || item.role;
+  const requiredPerm = item.required_permission || item.permission;
+
+  if (requiredRole && role !== 'System Admin' && role !== requiredRole) {
+    return (
+      <div className="p-8 text-center text-slate-400">
+        <h3 className="text-lg font-bold text-red-400 mb-2">Access Denied</h3>
+        <p className="text-sm">Role '{requiredRole}' is required to access this extension view.</p>
+      </div>
+    );
+  }
+
+  if (requiredPerm && !hasPermission(requiredPerm)) {
+    return (
+      <div className="p-8 text-center text-slate-400">
+        <h3 className="text-lg font-bold text-red-400 mb-2">Access Denied</h3>
+        <p className="text-sm">Permission '{requiredPerm}' is required to access this extension view.</p>
+      </div>
+    );
+  }
+
+  return (
+    <RemoteComponentLoader
+      entryUrl={item.remoteEntry}
+      sriHash={item.sriHash || item.integrity || item.sri}
+    />
+  );
+};
+
+export function ConsoleRoutes() {
   const { data: remoteNav } = useQuery({
     queryKey: ['console-nav-registry'],
     queryFn: async () => {
       const res = await fetch('/api/nav');
       if (!res.ok) return null;
       const data = await res.json();
-      return Array.isArray(data) ? data : (data.nav || []);
+      return Array.isArray(data) ? data : data.nav || [];
     },
     staleTime: 60_000,
   });
@@ -1034,12 +1084,7 @@ function AppRoutes() {
           <Route
             key={item.path}
             path={item.path.startsWith('/') ? item.path : `/${item.path}`}
-            element={
-              <RemoteComponentLoader
-                entryUrl={item.remoteEntry}
-                sriHash={item.sriHash || item.integrity || item.sri}
-              />
-            }
+            element={<RemoteRouteGuard item={item} />}
           />
         ))}
 

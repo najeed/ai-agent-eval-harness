@@ -115,6 +115,7 @@ class SessionManager:
         self.checkpoint_store = checkpoint_store
         self.policy_evaluator = policy_evaluator
         self.signing_backend = signing_backend
+        self.resumption_checkpoint = resumption_checkpoint
         # [Forensic Isolation] Ensure parallel runs don't mutate shared scenario state
         self.scenario = copy.deepcopy(scenario)
         # Authoritatively inject run_id for downstream forensic affinity (e.g., ToolSandbox)
@@ -2003,11 +2004,23 @@ class SessionManager:
     # sandbox deep-copy and history partitioning are NOT implemented here
     # — true trajectory reproduction waits for P2.1 per-execution-isolation.
     def fork(self, history: list[dict[str, Any]], sandbox_state: dict[str, Any]) -> SessionManager:
+        """Forks the session trajectory while authoritatively preserving state and history."""
         if getattr(self, "fork_depth", 0) >= MAX_FORK_DEPTH:
             raise RuntimeError(f"Fork Bomb Prevention: Maximum depth ({MAX_FORK_DEPTH}) reached.")
         scenario_copy = copy.deepcopy(self.scenario)
         scenario_copy["_fork_depth"] = getattr(self, "fork_depth", 0) + 1
-        new_session = SessionManager(self.run_id, scenario_copy)
+        new_session = SessionManager(
+            self.run_id,
+            scenario_copy,
+            metadata=copy.deepcopy(self.metadata),
+            log_root=self.log_root,
+            resumption_checkpoint=copy.deepcopy(sandbox_state) if sandbox_state else None,
+        )
+        new_session.metadata["execution_mode_declared"] = self.metadata.get(
+            "execution_mode_declared", False
+        )
+        if hasattr(new_session, "turn_state_manager") and history:
+            new_session.turn_state_manager.history = copy.deepcopy(history)
         print(f"   [Session] Forking trajectory with {len(history)} messages in history.")
         return new_session
 

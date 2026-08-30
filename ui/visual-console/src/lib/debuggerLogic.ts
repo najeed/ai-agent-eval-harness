@@ -213,38 +213,51 @@ export const computeTelemetryDiagnostics = (allEvents: LogEvent[]): NodeDiagnost
     let suspectedStatus: NodeDiagnostic['suspectedStatus'] | undefined;
 
     // Structured failure/verdict evidence check first
-    if (group.some(e =>
-      e.event === 'error' ||
-      (e.event === 'evaluation' && e.status === 'failed') ||
-      e.category === 'PARITY_STATE_DIVERGENCE' ||
-      (e.status && e.status.toLowerCase() === 'failed')
-    )) {
+    let matchingEvent: any = null;
+    const failEvent = group.find(
+      (e) =>
+        e.event === 'error' ||
+        (e.event === 'evaluation' && e.status === 'failed') ||
+        e.category === 'PARITY_STATE_DIVERGENCE' ||
+        (e.status && e.status.toLowerCase() === 'failed')
+    );
+    if (failEvent) {
       suspectedStatus = 'failed';
       signals.push('structured error or failed verdict in telemetry');
-    } else if (group.some(e =>
-      (e.status && e.status.toLowerCase() === 'completed') ||
-      e.event === 'maneuver_end' ||
-      e.event === 'node_end' ||
-      e.result === 'success'
-    )) {
-      suspectedStatus = 'completed';
-      signals.push('completion signal in telemetry');
-    } else if (group.some(e =>
-      (e.status && e.status.toLowerCase() === 'running') ||
-      e.event === 'node_start' ||
-      e.event === 'maneuver_start'
-    )) {
-      suspectedStatus = 'running';
-      signals.push('activity signal in telemetry');
+      matchingEvent = failEvent;
+    } else {
+      const compEvent = group.find(
+        (e) =>
+          (e.status && e.status.toLowerCase() === 'completed') ||
+          e.event === 'maneuver_end' ||
+          e.event === 'node_end' ||
+          e.result === 'success'
+      );
+      if (compEvent) {
+        suspectedStatus = 'completed';
+        signals.push('completion signal in telemetry');
+        matchingEvent = compEvent;
+      } else {
+        const runEvent = group.find(
+          (e) =>
+            (e.status && e.status.toLowerCase() === 'running') ||
+            e.event === 'node_start' ||
+            e.event === 'maneuver_start'
+        );
+        if (runEvent) {
+          suspectedStatus = 'running';
+          signals.push('activity signal in telemetry');
+          matchingEvent = runEvent;
+        }
+      }
     }
 
-    if (suspectedStatus) {
-      const firstMatch = group[0];
+    if (suspectedStatus && matchingEvent) {
       diagnostics.push({
         nodeId,
         suspectedStatus,
         signals,
-        firstMatchingSeq: firstMatch?._seq,
+        firstMatchingSeq: matchingEvent._seq ?? matchingEvent.seq ?? group[0]?._seq,
       });
     }
     if (diagnostics.length >= 50) break;

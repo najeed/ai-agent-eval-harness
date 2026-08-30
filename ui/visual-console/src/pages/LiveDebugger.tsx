@@ -708,16 +708,17 @@ export const LiveDebugger: React.FC = () => {
     const nodeIdSet = new Set(flowNodes.map((n: any) => n.id));
     const flowEdgesMap = new Map<string, any>();
 
-    // Initial edges from workflow definition
-    workflowEdges.forEach((e: any) => {
+    // Initial edges from workflow definition: include stable edge ID or condition/ordinal to preserve parallel edges
+    workflowEdges.forEach((e: any, idx: number) => {
       const source = e.from || e.source;
       const target = e.to || e.target;
       if (nodeIdSet.has(source) && nodeIdSet.has(target)) {
-        const edgeId = `scen-edge-${source}-${target}`;
+        const edgeId = e.id || `scen-edge-${source}-${target}-${e.condition || e.type || idx}`;
         flowEdgesMap.set(edgeId, {
           id: edgeId,
           source,
           target,
+          label: e.condition || e.label || undefined,
           animated: true,
           style: { stroke: '#6366f1', strokeWidth: 2 }
         });
@@ -775,6 +776,8 @@ export const LiveDebugger: React.FC = () => {
       .filter(e => {
         const plannedEdge = e.id.startsWith('scen-edge-');
         if (mode === 'planned') return plannedEdge;
+        if (mode === 'executed' || mode === 'observed') return !plannedEdge;
+        // divergence layer displays both
         return true;
       })
       .map(e => {
