@@ -89,37 +89,40 @@ class ComplianceService:
 def evaluate_compliance(run_id: str, metrics: dict | None = None) -> dict:
     """
     Industrial Gatekeeping Utility.
-    Enforces compliance policies, including PQC_STRICT_MODE branching.
+    Enforces compliance policies with strict Tri-State Audit Invariants:
+    'COMPLIANT' | 'NON_COMPLIANT' | 'NOT_EVALUATED'.
     """
     metrics = metrics or {}
     service = ComplianceService()
     pqc_status = service.check_pqc_status(run_id)
-
-    # --- [Behavioral Branching Logic] ---
-    # Fail-closed: compliance starts as UNSUPPORTED, not True. Only an actual
-    # evaluated proof path may set it to compliant.
-    compliant = False
-    message = (
-        "NOT COMPLIANT: no evaluative proof path succeeded "
-        "(behavioral metrics are not evaluated in OSS; PQC status below)."
-    )
-
-    if config.PQC_STRICT_MODE:
-        if pqc_status["quantum_safe"]:
-            compliant = True
-            message = "Compliant: quantum-safe proof present under PQC_STRICT_MODE."
-        else:
-            message = (
-                "NON-COMPLIANT: PQC_STRICT_MODE enabled but manifest lacks quantum-safe proof."
-            )
-            logger.error(f"[Compliance] {message}")
-    elif pqc_status["quantum_safe"]:
-        compliant = True
-        message = "Compliant with standard trust policy (quantum-safe proof present)."
-
     metrics_eval = service._evaluate_metrics_pack(metrics)
 
+    # --- [Tri-State Audit Invariant] ---
+    # Cryptographic proof (PQC) alone can NEVER imply behavioral compliance.
+    # When behavioral metrics are un-evaluated, the status is strictly NOT_EVALUATED.
+    if config.PQC_STRICT_MODE and not pqc_status.get("quantum_safe"):
+        status = "NON_COMPLIANT"
+        compliant = False
+        message = "NON-COMPLIANT: PQC_STRICT_MODE enabled but manifest lacks quantum-safe proof."
+        logger.error(f"[Compliance] {message}")
+    elif metrics_eval.get("status") == "NOT_EVALUATED":
+        status = "NOT_EVALUATED"
+        compliant = False
+        message = (
+            "NOT_EVALUATED: Behavioral metrics are not evaluated in the standalone OSS runtime; "
+            "cryptographic PQC proof alone cannot imply behavioral compliance."
+        )
+    elif metrics_eval.get("pass") and pqc_status.get("quantum_safe"):
+        status = "COMPLIANT"
+        compliant = True
+        message = "COMPLIANT: Both quantum-safe cryptographic proof and behavioral metrics passed."
+    else:
+        status = "NON_COMPLIANT"
+        compliant = False
+        message = "NON-COMPLIANT: One or more compliance requirements failed."
+
     return {
+        "status": status,
         "compliant": compliant,
         "message": message,
         "pqc_status": pqc_status,

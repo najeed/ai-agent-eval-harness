@@ -239,9 +239,16 @@ class RuntimeExtension:
                 "(extensions must enumerate every host API they call)"
             )
 
+        if self.routes and not ("routes" in self.capabilities or "navigation" in self.capabilities):
+            violations.append(
+                'Manifest declares routes but does not declare "routes" or "navigation" capability'
+            )
+
         for route in self.routes:
-            if not route.path.startswith("/"):
+            if not route.path or not route.path.startswith("/"):
                 violations.append(f"Route path must be absolute: {route.path!r}")
+            if not route.label:
+                violations.append(f"Route label is required for path: {route.path!r}")
 
         if self.tier is not None and self.tier not in EXTENSION_TIERS:
             violations.append(f"Unknown trust tier: {self.tier!r}")

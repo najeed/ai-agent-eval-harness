@@ -89,6 +89,8 @@ export function validateExtensionManifest(manifest, opts = {}) {
         violations.push('display_name is required');
     if (!m.version)
         violations.push('version is required');
+    if (!m.api_version)
+        violations.push('api_version is required');
     const remoteEntry = m.remote_entry ?? m.remoteEntry;
     const sriHash = m.sri_hash ?? m.sriHash;
     if (!remoteEntry)
@@ -101,9 +103,16 @@ export function validateExtensionManifest(manifest, opts = {}) {
     catch {
         violations.push(`version must be SemVer: ${String(m.version)}`);
     }
-    if (m.api_version &&
-        !isCompatible(m.api_version, EXTENSION_CONTRACT_VERSION)) {
-        violations.push(`api_version ${m.api_version} is incompatible with host contract ${EXTENSION_CONTRACT_VERSION}`);
+    if (m.api_version) {
+        try {
+            parseSemver(m.api_version);
+            if (!isCompatible(m.api_version, EXTENSION_CONTRACT_VERSION)) {
+                violations.push(`api_version ${m.api_version} is incompatible with host contract ${EXTENSION_CONTRACT_VERSION}`);
+            }
+        }
+        catch {
+            violations.push(`api_version must be SemVer: ${String(m.api_version)}`);
+        }
     }
     if (requireSignature) {
         if (!m.publisher)
@@ -111,9 +120,15 @@ export function validateExtensionManifest(manifest, opts = {}) {
         if (!m.signature)
             violations.push('signature is required: SRI alone proves bytes, not trust');
     }
-    for (const cap of m.capabilities ?? []) {
-        if (!KNOWN_CAPABILITIES.includes(cap)) {
-            violations.push(`Unknown capability declared: ${cap}`);
+    const caps = m.capabilities ?? [];
+    if (!Array.isArray(caps)) {
+        violations.push('capabilities must be an array');
+    }
+    else {
+        for (const cap of caps) {
+            if (!KNOWN_CAPABILITIES.includes(cap)) {
+                violations.push(`Unknown capability declared: ${cap}`);
+            }
         }
     }
     for (const api of m.host_apis ?? []) {
@@ -121,9 +136,16 @@ export function validateExtensionManifest(manifest, opts = {}) {
             violations.push(`Undeclared host API referenced: ${api}`);
         }
     }
-    for (const route of m.routes ?? []) {
-        if (route.path && !route.path.startsWith('/')) {
-            violations.push(`Route path must be absolute: ${route.path}`);
+    const routes = m.routes ?? [];
+    if (routes.length > 0 && !caps.includes('routes') && !caps.includes('navigation')) {
+        violations.push('Manifest declares routes but does not declare "routes" or "navigation" capability');
+    }
+    for (const route of routes) {
+        if (!route.path || !route.path.startsWith('/')) {
+            violations.push(`Route path must be non-empty and absolute: ${String(route.path)}`);
+        }
+        if (!route.label) {
+            violations.push(`Route label is required for path: ${route.path}`);
         }
     }
     // [D2] Tier, when declared, must be a known enum value.

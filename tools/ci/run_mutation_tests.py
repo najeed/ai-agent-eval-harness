@@ -29,6 +29,7 @@ Generates diligence artifact 'reports/mutation_scorecard.md' and fails CI if sco
 from __future__ import annotations
 
 import ast
+import random
 import subprocess
 import sys
 from pathlib import Path
@@ -395,9 +396,18 @@ def run_mutation_sentinel() -> None:
         action="store_true",
         help="Evaluate 100%% of discovered mutation points (Nightly/Release CI mode).",
     )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=None,
+        help="Optional RNG seed for reproducible random sampling in non-full mode.",
+    )
     args = parser.parse_args()
 
-    mode_label = "FULL POPULATION" if args.full else "SAMPLED (max 15/module)"
+    seed_suffix = f", seed={args.seed}" if args.seed is not None else ""
+    mode_label = (
+        "FULL POPULATION" if args.full else f"RANDOMLY SAMPLED (max 15/module{seed_suffix})"
+    )
 
     print("=" * 80)
     print(f"=== INDUSTRIAL MUTATION TESTING SENTINEL & ASSURANCE PIPELINE ({mode_label}) ===")
@@ -534,11 +544,18 @@ def run_mutation_sentinel() -> None:
                 )
             else:
                 max_mutants = min(num_points, 15)
-                step = max(1, num_points // max_mutants)
-                sampled = all_points[::step][:max_mutants]
+                rng = random.Random(args.seed) if args.seed is not None else random.Random()
+                sampled = (
+                    rng.sample(all_points, max_mutants)
+                    if num_points > max_mutants
+                    else list(all_points)
+                )
+                # Sort sampled points by AST position (lineno, col_offset) for orderly execution
+                sampled.sort(key=lambda p: (p.lineno, p.col_offset))
+                seed_info = f" [seed={args.seed}]" if args.seed is not None else ""
                 print(
                     f"   • Module: {rel_path} ({num_points} mutation points discovered, "
-                    f"sampling {len(sampled)})"
+                    f"randomly sampled {len(sampled)}{seed_info})"
                 )
 
             for mp in sampled:

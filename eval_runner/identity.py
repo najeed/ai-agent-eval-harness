@@ -237,3 +237,17 @@ class IdentityService:
             )
 
         return private_key
+
+
+def get_default_signer():
+    """
+    Resolves the default SigningBackend based on environment configuration.
+    """
+    key_path = os.getenv("EVAL_SIGNING_KEY")
+    if key_path:
+        from eval_runner.reference.signing import LocalEd25519SigningBackend
+
+        return LocalEd25519SigningBackend(key_path=key_path)
+    from eval_runner.reference.signing import NullSigningBackend
+
+    return NullSigningBackend()

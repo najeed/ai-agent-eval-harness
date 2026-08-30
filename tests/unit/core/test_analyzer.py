@@ -895,6 +895,7 @@ def non_matching(): pass
 
 class TestLocalTreeScanAndGitHead:
     def test_scan_tree_skips_large_files_and_oserror(self, tmp_path):
+        import stat
         from unittest.mock import patch
 
         from eval_runner.analyzer import _scan_tree
@@ -908,6 +909,7 @@ class TestLocalTreeScanAndGitHead:
 
             class MockStat:
                 st_size = 999_999_999  # Exceeds max
+                st_mode = stat.S_IFREG | 0o644
 
             mock_stat.return_value = MockStat()
             findings = _scan_tree(tmp_path)

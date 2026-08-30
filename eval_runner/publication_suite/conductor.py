@@ -53,14 +53,23 @@ def run_worker(task):
 
         result = subprocess.run(cmd, env=env, capture_output=True, text=True, encoding="utf-8")
 
-        # Find the generated log file in worker_log_dir
-        log_files = list(worker_log_dir.glob("*.jsonl"))
-        if log_files:
-            # Take the newest or only one
-            source_log = sorted(log_files, key=lambda x: x.stat().st_mtime)[-1]
+        # Deterministically locate the exact log file for run_id
+        exact_log = worker_log_dir / f"{run_id}.jsonl"
+        vault_log = worker_log_dir / run_id / "run.jsonl"
+        source_log = None
+        if exact_log.exists():
+            source_log = exact_log
+        elif vault_log.exists():
+            source_log = vault_log
+        else:
+            log_files = list(worker_log_dir.glob("*.jsonl"))
+            if log_files:
+                source_log = log_files[0]
+
+        if source_log and source_log.exists():
             target_log = output_dir / f"{run_id}.jsonl"
             shutil.move(str(source_log), str(target_log))
-            shutil.rmtree(worker_log_dir)
+            shutil.rmtree(worker_log_dir, ignore_errors=True)
 
             return {
                 "run_id": run_id,

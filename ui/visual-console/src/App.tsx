@@ -1105,7 +1105,7 @@ export function App() {
     <QueryClientProvider client={queryClient}>
       <RBACProvider>
         <BrowserRouter basename={getConsoleBasename()}>
-          <AppRoutes />
+          <ConsoleRoutes />
         </BrowserRouter>
       </RBACProvider>
     </QueryClientProvider>

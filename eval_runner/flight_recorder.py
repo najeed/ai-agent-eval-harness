@@ -306,17 +306,32 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                 }
 
                 try:
-                    from eval_runner.identity import get_default_signer
+                    signer = self.signing_backend
+                    if not signer or isinstance(signer, NullSigningBackend):
+                        from eval_runner.identity import get_default_signer
 
-                    signer = get_default_signer()
-                    if signer:
+                        signer = get_default_signer()
+
+                    if signer and not isinstance(signer, NullSigningBackend):
                         seal_bytes = json.dumps(
                             seal_payload, sort_keys=True, separators=(",", ":")
                         ).encode("utf-8")
-                        seal_payload["signature"] = signer.sign(seal_bytes).hex()
-                        seal_payload["signer_identity"] = getattr(signer, "identity", "local-node")
+                        raw_sig = signer.sign(seal_bytes)
+                        seal_payload["signature"] = (
+                            raw_sig.hex() if isinstance(raw_sig, bytes) else str(raw_sig)
+                        )
+                        seal_payload["signer_identity"] = str(
+                            getattr(signer, "identity", "local-node")
+                        )
+                        key_id_val = getattr(signer, "key_id", None)
+                        if key_id_val and isinstance(key_id_val, str):
+                            seal_payload["key_id"] = key_id_val
                 except Exception as sign_e:
-                    logger.debug(f"Trace seal signing notice: {sign_e}")
+                    logger.error(f"Trace seal signing notice/failure: {sign_e}")
+                    if os.getenv("AES_CERTIFICATION_MODE") == "1":
+                        raise RuntimeError(
+                            f"Cryptographic trace seal signing failed: {sign_e}"
+                        ) from sign_e
 
                 self.artifact_store.store_artifact(
                     run_id=run_id,

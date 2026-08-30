@@ -108,10 +108,11 @@ export const VerificationWorkflow: React.FC = () => {
     queryFn: async () => {
       if (!runId.trim()) return {};
       const res = await fetch(`/api/v1/runs/${encodeURIComponent(runId.trim())}`);
-      if (!res.ok) return {};
+      if (!res.ok) throw new Error(`Run query failed: HTTP ${res.status}`);
       return res.json();
     },
     enabled: !!runId.trim(),
+    retry: 2,
     refetchInterval: (query) => {
       const st = (query.state.data as any)?.status;
       return st === 'RUNNING' || st === 'PENDING' ? 3000 : false;
@@ -123,8 +124,6 @@ export const VerificationWorkflow: React.FC = () => {
     runData.verification_status ||
     (runData.has_certificate ? 'VERIFIED' : runData.status ? `${runData.status} (Unverified)` : null);
 
-
-
   // Authoritative runtime health; never render READY without this.
   const healthQuery = useQuery<RuntimeHealth>({
     queryKey: ['runtime-health'],
@@ -133,7 +132,7 @@ export const VerificationWorkflow: React.FC = () => {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return res.json();
     },
-    retry: 1,
+    retry: 2,
     refetchInterval: 30_000,
   });
 
@@ -141,9 +140,10 @@ export const VerificationWorkflow: React.FC = () => {
     queryKey: ['scenario-list'],
     queryFn: async () => {
       const res = await fetch('/api/scenarios');
-      if (!res.ok) return {};
+      if (!res.ok) throw new Error(`Scenario catalog failed: HTTP ${res.status}`);
       return res.json();
     },
+    retry: 2,
     staleTime: 60_000,
   });
 
@@ -388,6 +388,12 @@ export const VerificationWorkflow: React.FC = () => {
             </option>
           ))}
         </select>
+        {scenariosQuery.isError && (
+          <div className="flex items-center justify-between p-2 rounded bg-red-950/40 border border-red-900 text-xs text-red-300">
+            <span>Failed to load scenario catalog ({String(scenariosQuery.error)})</span>
+            <button onClick={() => scenariosQuery.refetch()} className="underline font-semibold hover:text-white">Retry</button>
+          </div>
+        )}
         <div className="flex items-center justify-between">
           <Link to="/editor" className="text-[11px] text-indigo-400 hover:text-indigo-300">
             or compose a new scenario →

@@ -1243,6 +1243,11 @@ class VerificationAuthority:
                         f"EvidenceRootMismatch: package={pkg.evidence_root_hash} "
                         f"actual={computed_root}"
                     )
+                if require_signature and not ev_graph.get("is_complete_provenance", True):
+                    failures.append(
+                        "DirectProvenanceViolation: Evidence graph contains unresolved "
+                        "or carrier fallback provenance"
+                    )
             except Exception as ev_err:
                 logger.debug("Evidence graph calculation failed: %s", ev_err)
                 failures.append(f"EvidenceReconstructionFailed: {ev_err}")

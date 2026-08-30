@@ -424,7 +424,7 @@ export const LiveDebugger: React.FC = () => {
         return;
       }
 
-      // Dedupe + gap detection BEFORE an event may enter state.
+      // Dedupe + gap detection & reconciliation BEFORE an event may enter state.
       const seq = typeof data._seq === 'number' ? data._seq : 0;
       if (seq > 0) {
         if (seenSeqsRef.current.has(seq)) return;
@@ -432,6 +432,22 @@ export const LiveDebugger: React.FC = () => {
         const prev = cursorRef.current;
         if (prev > 0 && seq > prev + 1) {
           setStreamGaps(g => mergeSeqGap(g, { from: prev + 1, to: seq - 1 }));
+        } else {
+          // Reconcile gap: If this incoming seq fills an existing gap range, update/remove it
+          setStreamGaps(gaps => {
+            if (!gaps.length) return gaps;
+            return gaps
+              .map(gap => {
+                if (seq >= gap.from && seq <= gap.to) {
+                  if (gap.from === gap.to) return null; // exact single-seq gap filled
+                  if (seq === gap.from) return { from: gap.from + 1, to: gap.to };
+                  if (seq === gap.to) return { from: gap.from, to: gap.to - 1 };
+                  return gap;
+                }
+                return gap;
+              })
+              .filter(Boolean) as { from: number; to: number }[];
+          });
         }
         if (seq > cursorRef.current) cursorRef.current = seq;
       }
@@ -454,7 +470,11 @@ export const LiveDebugger: React.FC = () => {
         }
       }
 
-      setEvents(prevEvents => [...prevEvents, data]);
+      setEvents(prevEvents => {
+        const next = [...prevEvents, data];
+        // Bounded client-side memory: keep sliding window up to 10,000 events
+        return next.length > 10000 ? next.slice(-10000) : next;
+      });
     };
 
     source.onerror = () => {
@@ -576,13 +596,23 @@ export const LiveDebugger: React.FC = () => {
       };
     }
 
-    // 2. Map authoritative state per canonical node; status comes SOLELY from
+    // 2. Map authoritative state per canonical node using O(1) index; status comes SOLELY from
     // execution_graph_node events. No string heuristics.
+    const eventsByNodeId = new Map<string, any[]>();
+    for (const ev of graphNodeEventsAll) {
+      if (ev.scenario_node_id) {
+        const nid = String(ev.scenario_node_id);
+        const list = eventsByNodeId.get(nid);
+        if (list) list.push(ev);
+        else eventsByNodeId.set(nid, [ev]);
+      }
+    }
+
     const flowNodes = workflowNodes.map((n: any) => {
       const id = String(n.id || n.scenario_node_id || n.task_id);
       const label = n.task_description || n.description || n.label || id;
 
-      const graphNodeEvents = graphNodeEventsAll.filter(e => e.scenario_node_id === id);
+      const graphNodeEvents = eventsByNodeId.get(id) || [];
 
       let status = 'pending';
       let hasCanonicalEvent = false;
@@ -590,8 +620,15 @@ export const LiveDebugger: React.FC = () => {
       let failureReason: string | undefined;
       let durationMs: number | undefined;
       let maxAttempt = 1;
+      let passCount = 0;
+      let failCount = 0;
 
       if (graphNodeEvents.length > 0) {
+        for (const ev of graphNodeEvents) {
+          const st = ev.status ? ev.status.toLowerCase() : '';
+          if (st === 'completed') passCount++;
+          else if (st === 'failed' || st === 'error' || st === 'aborted') failCount++;
+        }
         const latestEv = graphNodeEvents[graphNodeEvents.length - 1];
         if (latestEv.status) {
           status = latestEv.status.toLowerCase();
@@ -599,7 +636,7 @@ export const LiveDebugger: React.FC = () => {
         failureClass = latestEv.failure_class;
         failureReason = latestEv.failure_reason;
         durationMs = latestEv.duration_ms;
-        const attempts = graphNodeEvents.map(e => e.attempt || 1);
+        const attempts = graphNodeEvents.map((e: any) => e.attempt || 1);
         maxAttempt = attempts.length > 0 ? Math.max(...attempts) : 1;
         hasCanonicalEvent = true;
       }
@@ -615,15 +652,15 @@ export const LiveDebugger: React.FC = () => {
       if (status === 'failed' || status === 'error' || status === 'aborted') {
         border = isHighlighted ? '2px solid #f87171' : '1px solid #ef4444';
         background = 'rgba(127,29,29,0.4)';
-        statusLabel = failureClass || failureReason || 'Failed';
+        statusLabel = failureClass || failureReason || (failCount > 1 ? `Failed (${failCount} attempts)` : 'Failed');
       } else if (status === 'completed') {
         border = isHighlighted ? '2px solid #34d399' : '1px solid #10b981';
         background = 'rgba(6,78,59,0.4)';
-        statusLabel = 'Completed';
+        statusLabel = failCount > 0 ? `Completed (${passCount}/${passCount + failCount} with retries)` : 'Completed';
       } else if (status === 'running') {
         border = isHighlighted ? '2px solid #fbbf24' : '1px solid #f59e0b';
         background = 'rgba(120,53,15,0.4)';
-        statusLabel = 'Running';
+        statusLabel = maxAttempt > 1 ? `Running (att #${maxAttempt})` : 'Running';
       }
 
       // Divergence overlay: only in divergence layer, only from
@@ -772,28 +809,48 @@ export const LiveDebugger: React.FC = () => {
 
     const allEdges = Array.from(flowEdgesMap.values());
 
+    // Parallel edge offset decoration
+    const edgePairCounts = new Map<string, number>();
+    const edgePairCurrent = new Map<string, number>();
+    for (const e of allEdges) {
+      const pair = `${e.source}->${e.target}`;
+      edgePairCounts.set(pair, (edgePairCounts.get(pair) || 0) + 1);
+    }
+
     const flowEdges = allEdges
       .filter(e => {
         const plannedEdge = e.id.startsWith('scen-edge-');
         if (mode === 'planned') return plannedEdge;
-        if (mode === 'executed' || mode === 'observed') return !plannedEdge;
+        if (mode === 'executed') return !plannedEdge;
         // divergence layer displays both
         return true;
       })
       .map(e => {
         const plannedEdge = e.id.startsWith('scen-edge-');
+        const pair = `${e.source}->${e.target}`;
+        const total = edgePairCounts.get(pair) || 1;
+        const cur = edgePairCurrent.get(pair) || 0;
+        edgePairCurrent.set(pair, cur + 1);
+
         if (!plannedEdge) {
           return {
             ...e,
+            type: total > 1 ? 'smoothstep' : undefined,
             animated: mode !== 'planned',
             style: { stroke: '#10b981', strokeWidth: 2 },
           };
         }
         if (mode === 'planned') {
-          return { ...e, animated: true, style: { stroke: '#6366f1', strokeWidth: 2 } };
+          return {
+            ...e,
+            type: total > 1 ? 'smoothstep' : undefined,
+            animated: true,
+            style: { stroke: '#6366f1', strokeWidth: 2 },
+          };
         }
         return {
           ...e,
+          type: total > 1 ? 'smoothstep' : undefined,
           animated: false,
           style: {
             stroke: mode === 'divergence' ? '#818cf8' : '#475569',
@@ -804,7 +861,7 @@ export const LiveDebugger: React.FC = () => {
         };
       });
 
-    // 4. Dagre Topology Layout (Preserves manual user drag coordinates)
+    // 4. Graph Layout Engine (Dagre Integration)
     const dagreGraph = new dagre.graphlib.Graph();
     dagreGraph.setDefaultEdgeLabel(() => ({}));
     dagreGraph.setGraph({ rankdir: 'LR', nodesep: 50, ranksep: 80 });

@@ -86,7 +86,7 @@ class TestCompliancePQC(unittest.TestCase):
             self.assertEqual(result["metrics_eval"]["status"], "NOT_EVALUATED")
 
     def test_evaluate_compliance_quantum_safe_is_compliant(self):
-        """Quantum-safe proof ⇒ compliant under both strictness modes."""
+        """Quantum-safe proof alone yields NOT_EVALUATED until behavioral metrics pass."""
         manifest = {
             "timestamp": "2026-05-14T12:00:00",
             "provenance_chain": [
@@ -102,10 +102,24 @@ class TestCompliancePQC(unittest.TestCase):
 
         from eval_runner.compliance import evaluate_compliance
 
+        # 1. Without evaluated behavioral metrics, status is NOT_EVALUATED (compliant=False)
         for strict in (False, True):
             with patch("eval_runner.config.PQC_STRICT_MODE", strict), self.subTest(strict=strict):
                 result = evaluate_compliance(self.run_id, {})
-                self.assertTrue(result["compliant"])
+                self.assertEqual(result["status"], "NOT_EVALUATED")
+                self.assertFalse(result["compliant"])
+                self.assertTrue(result["pqc_status"]["quantum_safe"])
+
+        # 2. When behavioral metrics are mocked as evaluated and passed, status is COMPLIANT
+        mock_eval = {"status": "EVALUATED", "pass": True}
+        with patch(
+            "eval_runner.compliance.ComplianceService._evaluate_metrics_pack",
+            return_value=mock_eval,
+        ):
+            result = evaluate_compliance(self.run_id, {"latency": 100})
+            self.assertEqual(result["status"], "COMPLIANT")
+            self.assertTrue(result["compliant"])
+            self.assertTrue(result["pqc_status"]["quantum_safe"])
 
 
 if __name__ == "__main__":
