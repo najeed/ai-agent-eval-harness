@@ -363,13 +363,16 @@ def _authoritative_verdict(run_id: str) -> str:
     """
     Authoritative verification computation. Full literal set:
 
-        VERIFIED | FAILED_VERIFICATION | NOT_EXECUTED | ERROR | UNKNOWN
+        VERIFIED | VERIFIED_PROVISIONAL | FAILED_VERIFICATION | NOT_EXECUTED | ERROR | UNKNOWN
 
-      NOT_EXECUTED — no trace exists for the run id (nothing to verify).
-      ERROR        — the verification procedure itself failed; truth is
-                     unavailable and must never masquerade as UNKNOWN-by-
-                     absence-of-certificate.
-      UNKNOWN      — trace exists but no certificate could be checked.
+      NOT_EXECUTED         — no trace exists for the run id (nothing to verify).
+      ERROR                — the verification procedure itself failed; truth is
+                             unavailable and must never masquerade as UNKNOWN-by-
+                             absence-of-certificate.
+      UNKNOWN              — trace exists but no certificate could be checked.
+      VERIFIED_PROVISIONAL — cryptographically valid certificate exists, but the run
+                             was marked provisional (undeclared or simulated execution mode).
+      VERIFIED             — cryptographically valid, authoritative certificate.
     """
     if not run_id:
         return "NOT_EXECUTED"
@@ -386,7 +389,22 @@ def _authoritative_verdict(run_id: str) -> str:
 
     try:
         is_valid = TraceVerifier.verify_trace(str(tp), str(manifest_path), verify_ledger=True)
-        return "VERIFIED" if is_valid else "FAILED_VERIFICATION"
+        if not is_valid:
+            return "FAILED_VERIFICATION"
+
+        # Check if the certificate is provisional
+        try:
+            with open(manifest_path, encoding="utf-8") as f_m:
+                m_data = json.load(f_m)
+                if m_data.get("provisional") is True or m_data.get("execution_mode") in (
+                    "simulated",
+                    "unknown",
+                ):
+                    return "VERIFIED_PROVISIONAL"
+        except Exception as prov_err:
+            logger.debug(f"Provisional manifest check note for {run_id}: {prov_err}")
+
+        return "VERIFIED"
     except Exception as err:  # noqa: BLE001 - verdict failures degrade to ERROR, not UNKNOWN
         logger.debug(f"Authoritative verdict check failed for {run_id}: {err}")
         return "ERROR"
@@ -414,6 +432,8 @@ def stream_runs_list():
                     auth_verdict = _authoritative_verdict(run_id)
                     if auth_verdict == "VERIFIED":
                         status = "CERTIFIED"
+                    elif auth_verdict == "VERIFIED_PROVISIONAL":
+                        status = "PROVISIONAL"
                     else:
                         status = "ARTIFACT_PRESENT"
                 else:

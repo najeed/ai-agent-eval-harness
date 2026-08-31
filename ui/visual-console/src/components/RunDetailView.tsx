@@ -15,13 +15,15 @@ import {
   HelpCircle,
   Loader2,
 } from 'lucide-react';
-
+import { ProvisionalBadge } from './ProvisionalBadge';
 
 export interface RunDetailData {
   run_id: string;
   scenario: string;
   status: string; // Process status: RUNNING, EXECUTION_COMPLETED, EXECUTION_FAILED, STALLED
-  verdict?: 'VERIFIED' | 'NOT_VERIFIED' | 'POLICY_BREACH' | 'UNVERIFIED';
+  verdict?: 'VERIFIED' | 'VERIFIED_PROVISIONAL' | 'NOT_VERIFIED' | 'POLICY_BREACH' | 'UNVERIFIED';
+  provisional?: boolean;
+  execution_mode?: string | null;
   score?: number;
   duration?: number;
   timestamp?: string;
@@ -93,7 +95,8 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
 
   // Strict Authoritative Verdict Resolution: Never Fabricate or Infer from Field Existence
   const verdict = auditResult?.verification_status || run.verdict || 'UNVERIFIED';
-  const isVerified = verdict === 'VERIFIED';
+  const isProvisional = auditResult?.provisional || verdict === 'VERIFIED_PROVISIONAL' || run.provisional || false;
+  const isVerified = verdict === 'VERIFIED' || verdict === 'VERIFIED_PROVISIONAL';
   const isBreach = verdict === 'POLICY_BREACH';
   const isNotVerified = verdict === 'FAILED_VERIFICATION' || verdict === 'NOT_VERIFIED';
 
@@ -144,6 +147,10 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
               <span className="text-xs font-mono font-bold text-slate-300 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
                 {run.run_id}
               </span>
+              <ProvisionalBadge
+                provisional={isProvisional}
+                executionMode={auditResult?.execution_mode || run.execution_mode}
+              />
             </div>
             <h1 className="text-xl font-bold text-white flex items-center gap-2">
               {run.scenario}
@@ -156,18 +163,20 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
           {/* Primary Verified Outcome Badge */}
           <div className="flex items-center gap-3">
             <div
-              className={`px-4 py-2.5 rounded-xl border flex items-center gap-2.5 shadow-lg ${isVerified
+              className={`px-4 py-2.5 rounded-xl border flex items-center gap-2.5 shadow-lg ${isVerified && !isProvisional
                 ? 'bg-emerald-950/50 border-emerald-500/40 text-emerald-300 shadow-emerald-500/10'
-                : isBreach
-                  ? 'bg-rose-950/50 border-rose-500/40 text-rose-300 shadow-rose-500/10'
-                  : isNotVerified
-                    ? 'bg-rose-950/40 border-rose-500/30 text-rose-300'
-                    : 'bg-amber-950/50 border-amber-500/40 text-amber-300 shadow-amber-500/10'
+                : isProvisional
+                  ? 'bg-amber-950/50 border-amber-500/40 text-amber-300 shadow-amber-500/10'
+                  : isBreach
+                    ? 'bg-rose-950/50 border-rose-500/40 text-rose-300 shadow-rose-500/10'
+                    : isNotVerified
+                      ? 'bg-rose-950/40 border-rose-500/30 text-rose-300'
+                      : 'bg-amber-950/50 border-amber-500/40 text-amber-300 shadow-amber-500/10'
                 }`}
             >
               {auditLoading ? (
                 <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
-              ) : isVerified ? (
+              ) : isVerified && !isProvisional ? (
                 <ShieldCheck className="w-6 h-6 text-emerald-400" />
               ) : isBreach || isNotVerified ? (
                 <AlertTriangle className="w-6 h-6 text-rose-400" />
@@ -179,7 +188,7 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
                   Verification Verdict
                 </div>
                 <div className="text-sm font-black tracking-wide">
-                  {auditLoading ? 'Verifying...' : verdict}
+                  {auditLoading ? 'Verifying...' : isProvisional ? 'VERIFIED (PROVISIONAL)' : verdict}
                 </div>
               </div>
             </div>

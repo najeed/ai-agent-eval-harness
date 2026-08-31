@@ -9,6 +9,7 @@ import {
   Eye,
 } from 'lucide-react';
 import { RunDetailView } from '../components/RunDetailView';
+import { ProvisionalBadge } from '../components/ProvisionalBadge';
 
 interface RunItem {
   run_id: string;
@@ -16,6 +17,8 @@ interface RunItem {
   timestamp: string;
   status?: string;
   verdict?: string;
+  provisional?: boolean;
+  execution_mode?: string;
   score?: number;
   duration?: number;
   agent?: string;
@@ -82,12 +85,15 @@ export const RunsReports: React.FC = () => {
           timestamp: r.timestamp || 'N/A',
           status: r.execution_status || r.status || 'UNKNOWN',
           verdict: verdict,
+          provisional: r.provisional || verdict === 'VERIFIED_PROVISIONAL' || false,
+          execution_mode: r.execution_mode || (r.manifest?.execution_mode) || null,
           score: r.score ?? undefined,
           duration: r.duration_seconds ?? r.duration ?? undefined,
           agent: r.identifier || undefined,
           resultStatus: r.result_status || undefined,
           traceIntegrity: r.trace_integrity || undefined,
           has_certificate: !!r.has_certificate,
+          manifest: r.manifest || undefined,
         };
       });
       setRuns(parsedRuns);
@@ -240,18 +246,29 @@ export const RunsReports: React.FC = () => {
                 <tbody className="divide-y divide-slate-800/60 font-mono">
                   {filteredRuns.map((r) => {
                     //Server-authoritative verdict only, no inference.
-                    const isVer = r.verdict === 'VERIFIED';
+                    // Server-authoritative verdict only, no inference.
+                    const isProv = r.provisional || r.verdict === 'VERIFIED_PROVISIONAL';
+                    const isVer = r.verdict === 'VERIFIED' || isProv;
                     const isFailed = r.verdict === 'FAILED_VERIFICATION';
-                    const verdictLabel = isVer
-                      ? 'Verified'
-                      : isFailed
-                        ? 'Failed Verification'
-                        : 'Unknown';
+                    const verdictLabel = isProv
+                      ? 'Verified (Provisional)'
+                      : isVer
+                        ? 'Verified'
+                        : isFailed
+                          ? 'Failed Verification'
+                          : 'Unknown';
 
                     return (
                       <tr key={r.run_id} className="hover:bg-slate-850/50 transition">
                         <td className="px-6 py-4 font-sans font-medium text-white max-w-[280px]">
-                          <div className="truncate" title={r.scenario}>{r.scenario}</div>
+                          <div className="flex items-center gap-2 truncate" title={r.scenario}>
+                            <span className="truncate">{r.scenario}</span>
+                            <ProvisionalBadge
+                              provisional={isProv}
+                              executionMode={r.execution_mode}
+                              size="sm"
+                            />
+                          </div>
                           <button
                             onClick={() => navigator.clipboard?.writeText(r.run_id)}
                             title="Copy run ID"
@@ -266,17 +283,21 @@ export const RunsReports: React.FC = () => {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             title={
-                              isVer
-                                ? 'Certificate trace-hash matches the current trace (server-verified).'
-                                : isFailed
-                                  ? 'Certificate trace-hash does NOT match the current trace.'
-                                  : 'No certificate available, or the server could not verify this run.'
+                              isProv
+                                ? 'Certificate signature is valid, but the run was marked provisional.'
+                                : isVer
+                                  ? 'Certificate trace-hash matches the current trace (server-verified).'
+                                  : isFailed
+                                    ? 'Certificate trace-hash does NOT match the current trace.'
+                                    : 'No certificate available, or the server could not verify this run.'
                             }
-                            className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5 ${isVer
-                              ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
-                              : isFailed
-                                ? 'bg-red-500/10 border border-red-500/20 text-red-400'
-                                : 'bg-slate-500/10 border border-slate-500/20 text-slate-400'
+                            className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5 ${isProv
+                              ? 'bg-amber-500/10 border border-amber-500/30 text-amber-300'
+                              : isVer
+                                ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
+                                : isFailed
+                                  ? 'bg-red-500/10 border border-red-500/20 text-red-400'
+                                  : 'bg-slate-500/10 border border-slate-500/20 text-slate-400'
                               }`}
                           >
                             {isVer ? <ShieldCheck className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}

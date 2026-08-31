@@ -6,6 +6,7 @@ import {
   CheckCircle2, XCircle, AlertTriangle, ArrowRight, RefreshCw,
   SlidersHorizontal, ChevronDown, ChevronRight,
 } from 'lucide-react';
+import { ProvisionalBadge } from '../components/ProvisionalBadge';
 import { useRBAC } from '../context/RBACContext';
 
 /**
@@ -100,6 +101,8 @@ export const VerificationWorkflow: React.FC = () => {
   const runQuery = useQuery<{
     status?: string;
     verdict?: string;
+    provisional?: boolean;
+    execution_mode?: string;
     has_certificate?: boolean;
     verification_status?: string;
     decision?: any;
@@ -541,12 +544,19 @@ export const VerificationWorkflow: React.FC = () => {
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-              <input
-                value={runId}
-                onChange={e => setRunId(e.target.value)}
-                placeholder="completed run_id"
-                className="bg-slate-900 border border-slate-800 rounded px-3 py-2 text-xs text-slate-200 font-mono"
-              />
+              <div className="flex items-center gap-2">
+                <input
+                  value={runId}
+                  onChange={e => setRunId(e.target.value)}
+                  placeholder="completed run_id"
+                  className="bg-slate-900 border border-slate-800 rounded px-3 py-2 text-xs text-slate-200 font-mono w-full"
+                />
+                <ProvisionalBadge
+                  provisional={runData.provisional || verdict === 'VERIFIED_PROVISIONAL'}
+                  executionMode={(runData as any).execution_mode}
+                  size="sm"
+                />
+              </div>
               <Link
                 to={`/reports?run_id=${encodeURIComponent(runId)}`}
                 className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-xs font-semibold ${runId

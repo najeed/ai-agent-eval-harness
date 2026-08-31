@@ -277,11 +277,16 @@ async def test_handle_certify_provenance_and_error_handling():
     with (
         patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=True),
         patch("pathlib.Path.exists", return_value=True),
-        patch("eval_runner.verifier.TraceVerifier.sign_trace") as mock_sign,
+        patch("eval_runner.console.routes.trust.execute_industrial_certification") as mock_cert,
     ):
-        mock_sign.return_value = {
-            "provenance_chain": [{"identity": "auditor-key"}],
+        mock_cert.return_value = {
+            "status": "certified",
             "run_id": "run_cert",
+            "manifest": {
+                "trace_hash": "sha3_256:12345",
+                "manifest_path": "/path/run_manifest.json",
+                "certified_at": "2026-08-31T00:00:00",
+            },
         }
         assert await evaluation.handle_certify(args) == 0
 

@@ -264,7 +264,7 @@ def test_verification_authority_default_require_signature():
         signature=None,  # Unsigned
     )
 
-    res = VerificationAuthority.verify_package(pkg, require_signature=True)
+    res = VerificationAuthority.verify_package(pkg)
     assert res["verified"] is False
     assert any("UnsignedPackage" in f for f in res["failures"])
 
@@ -280,12 +280,23 @@ def test_authoritative_verdict_execution(isolated_vault):
     # Before signing -> UNKNOWN
     assert _authoritative_verdict(run_id) == "UNKNOWN"
 
-    # Sign trace -> VERIFIED
+    # Sign trace without declared mode -> VERIFIED_PROVISIONAL
     TraceVerifier.sign_trace(
         trace_path=str(trace_file),
         identity_id="test_signer",
         run_id=run_id,
         compliance_status="pass",
+    )
+    assert _authoritative_verdict(run_id) == "VERIFIED_PROVISIONAL"
+
+    # Sign trace with declared non-provisional mode -> VERIFIED
+    TraceVerifier.sign_trace(
+        trace_path=str(trace_file),
+        identity_id="test_signer",
+        run_id=run_id,
+        compliance_status="pass",
+        execution_mode="live",
+        provisional=False,
     )
     assert _authoritative_verdict(run_id) == "VERIFIED"
 

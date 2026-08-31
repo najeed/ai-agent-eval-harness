@@ -376,7 +376,7 @@ def test_verification_authority_package_validation():
         executed_oracle_results=[{"metric": "req_oracle_1", "passed": True}],
         decision={"decision": "PASS", "verdict": "VERIFIED"},
     )
-    res_valid = VerificationAuthority.verify_package(pkg_valid)
+    res_valid = VerificationAuthority.verify_package(pkg_valid, require_signature=False)
     assert res_valid["verified"] is True
     assert res_valid["status"] == "CERTIFIED"
 
@@ -395,7 +395,7 @@ def test_verification_authority_package_validation():
         executed_oracle_results=[{"metric": "req_oracle_1", "passed": True}],
         decision={"decision": "PASS", "verdict": "VERIFIED"},
     )
-    res_missing = VerificationAuthority.verify_package(pkg_missing_oracle)
+    res_missing = VerificationAuthority.verify_package(pkg_missing_oracle, require_signature=False)
     assert res_missing["verified"] is False
     assert res_missing["status"] == "UNVERIFIED"
     assert any("MissingRequiredOracles" in f for f in res_missing["failures"])

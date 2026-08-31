@@ -66,13 +66,20 @@ def _make_vault(runs_dir: Path, run_id: str, trace_text: str = '{"event": "run_s
     return vault, trace
 
 
-def _write_manifest(trace_path: Path, trace_hash: str | None = None):
+def _write_manifest(
+    trace_path: Path,
+    trace_hash: str | None = None,
+    execution_mode: str = "live",
+    provisional: bool = False,
+):
     from eval_runner.verifier import TraceVerifier
 
     TraceVerifier.sign_trace(
         str(trace_path),
         identity_id="test_signer",
         run_id=trace_path.parent.name,
+        execution_mode=execution_mode,
+        provisional=provisional,
     )
 
 
@@ -136,3 +143,13 @@ def test_missing_trace_is_unknown_even_with_certificate(verdict_jail, client):
     rows = {r["run_id"]: r for r in res.get_json()["runs"]}
     if "run-verdict-gone" in rows:
         assert rows["run-verdict-gone"]["verification_status"] == "UNKNOWN"
+
+
+def test_list_runs_reports_verified_provisional_for_simulated_mode(verdict_jail, client):
+    _, trace = _make_vault(verdict_jail["runs"], "run-verdict-sim")
+    _write_manifest(trace, execution_mode="simulated", provisional=True)
+
+    res = client.get("/api/runs")
+    assert res.status_code == 200
+    row = next(r for r in res.get_json()["runs"] if r["run_id"] == "run-verdict-sim")
+    assert row["verification_status"] == "VERIFIED_PROVISIONAL"

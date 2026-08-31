@@ -571,52 +571,35 @@ async def handle_certify(args):
         return 1
 
     try:
-        # Lazy Import: Defer 'verifier' until signing trace
-        from .. import verifier
+        from ..console.routes.trust import execute_industrial_certification
 
-        # [VC v3] Argument mapping with industrial defaults
         identity_id = args.identity if hasattr(args, "identity") and args.identity else "system_id"
-        status = args.status if hasattr(args, "status") and args.status else "pass"
-        score = float(args.score) if hasattr(args, "score") and args.score is not None else 1.0
+        status = args.status if hasattr(args, "status") and args.status else None
+        score = float(args.score) if hasattr(args, "score") and args.score is not None else None
         policy_ref = args.policy_ref if hasattr(args, "policy_ref") else None
-        ttl_days = (
-            int(args.ttl)
-            if hasattr(args, "ttl") and args.ttl is not None
-            else config.GOVERNANCE_TTL_DAYS
-        )
-        behavioral_fingerprint_id = args.fingerprint if hasattr(args, "fingerprint") else None
+        ttl_days = int(args.ttl) if hasattr(args, "ttl") and args.ttl is not None else None
+        behavioral_fingerprint_id = getattr(args, "fingerprint", None)
 
-        manifest = verifier.TraceVerifier.sign_trace(
-            str(trace_path),
+        cert_res = execute_industrial_certification(
             run_id=args.run_id,
             identity_id=identity_id,
-            compliance_status=status,
-            compliance_score=score,
+            status=status,
+            score=score,
             policy_ref=policy_ref,
-            ttl_days=ttl_days,
+            ttl=ttl_days,
             behavioral_fingerprint_id=behavioral_fingerprint_id,
         )
 
         manifest_path = trace_path.parent / "run_manifest.json"
 
         print("✅ Success: Verification Certificate generated.")
-        print(f"    - Run ID: {manifest.get('run_id')}")
-        print(f"    - SHA3-256: {manifest.get('trace_hash')}")
-        print(f"    - VC Version: {manifest.get('vc_version')}")
-
-        chain = manifest.get("provenance_chain", [])
-        if chain:
-            print(f"    - Signed By: {', '.join([c['identity'] for c in chain])}")
-        else:
-            print("    - Signed: No (Integrity-only manifest)")
-
-        print(f"    - Governance TTL: {manifest.get('governance_ttl')} days")
-
+        print(f"    - Run ID: {args.run_id}")
+        print(f"    - SHA3-256: {cert_res.get('manifest', {}).get('trace_hash')}")
+        print(f"    - Status: {cert_res.get('status')}")
         print(f"    - Manifest: {manifest_path}")
 
         return 0
 
-    except Exception:
-        print("❌ Error during certification:")
-        traceback.print_exc()
+    except Exception as e:
+        print(f"❌ Error during certification: {e}")
         return 1

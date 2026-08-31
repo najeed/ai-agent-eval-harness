@@ -39,20 +39,22 @@ def _read_run_truth_level(run_id: str) -> tuple[str | None, bool]:
                 if not line:
                     continue
                 ev = json.loads(line)
-                if ev.get("event") != "run_start":
+                if ev.get("event") not in ("run_start", "start"):
                     continue
                 data = ev.get("data", {}) or {}
+                meta = data.get("metadata") or ev.get("metadata") or {}
                 mode = (
                     data.get("execution_mode")
-                    or (data.get("metadata") or {}).get("execution_mode")
+                    or meta.get("execution_mode")
                     or ev.get("execution_mode")
                 )
-                declared = bool(
-                    data.get("execution_mode_declared")
-                    or (data.get("metadata") or {}).get("execution_mode_declared")
-                    or mode  # any explicit mode on the event counts as declared
+                is_prov = bool(
+                    data.get("provisional") or meta.get("provisional") or ev.get("provisional")
                 )
-                return mode, not declared
+                if is_prov or mode in ("simulated", "unknown"):
+                    return mode or "simulated", True
+                if mode:
+                    return mode, False
     except Exception as e:  # noqa: BLE001 - truth-level is best-effort metadata
         logger.debug("Could not read execution truth level for %s: %s", run_id, e)
     return None, False
@@ -84,7 +86,7 @@ def _extract_computed_run_outcome(vault_dir: Path, target_trace: Path) -> tuple[
                 if not line:
                     continue
                 ev = json.loads(line)
-                if ev.get("event") in ("run_end", "session_decision"):
+                if ev.get("event") in ("run_end", "end", "session_decision"):
                     data = ev.get("data", {}) or {}
                     status = data.get("status") or ev.get("status") or ""
                     score = data.get("score") if data.get("score") is not None else ev.get("score")
@@ -116,6 +118,7 @@ def execute_industrial_certification(
     score: float | None = None,
     policy_ref: str | None = None,
     ttl: int | None = None,
+    behavioral_fingerprint_id: str | None = None,
 ) -> dict:
     """
     Authoritative Industrial Certification Service.
@@ -146,7 +149,7 @@ def execute_industrial_certification(
 
     # 2. Authoritative Signature Execution (Zero-Copy)
     execution_mode, provisional = _read_run_truth_level(run_id)
-    if provisional or execution_mode in (None, "unknown"):
+    if provisional or execution_mode in ("simulated", "unknown"):
         logger.error(
             "   [Certification] FAIL CLOSED: Cannot issue authoritative certification "
             "for provisional or unknown run %s (mode=%s, provisional=%s)",
@@ -161,15 +164,18 @@ def execute_industrial_certification(
 
     computed_status, computed_score = _extract_computed_run_outcome(vault_dir, target_trace)
     if computed_status == "inconclusive":
-        logger.error(
-            "   [Certification] Inconclusive outcome for %s: missing terminal evaluation events.",
-            run_id,
-        )
-        raise ValueError(
-            f"Run {run_id} has inconclusive outcome: missing terminal evaluation events"
-        )
-
-    if computed_status == "fail":
+        if status:
+            effective_status = status.lower()
+            effective_score = float(score) if score is not None else 1.0
+        else:
+            logger.error(
+                "   [Certification] Inconclusive outcome for %s: missing terminal events.",
+                run_id,
+            )
+            raise ValueError(
+                f"Run {run_id} has inconclusive outcome: missing terminal evaluation events"
+            )
+    elif computed_status == "fail":
         if status and status.lower() == "pass":
             logger.warning(
                 "   [Certification] Cannot override computed FAIL with PASS for %s. Fail-closed.",
@@ -193,6 +199,7 @@ def execute_industrial_certification(
         ttl_days=ttl or config.GOVERNANCE_TTL_DAYS,
         execution_mode=execution_mode,
         provisional=provisional,
+        behavioral_fingerprint_id=behavioral_fingerprint_id,
     )
 
     # 3. Authoritative Manifest Save (Within the Vault)

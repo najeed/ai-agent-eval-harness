@@ -1259,7 +1259,7 @@ class VerificationAuthority:
         raw_trace_bytes: bytes | None = None,
         raw_trace_events: list[dict[str, Any]] | None = None,
         public_key_pem: str | None = None,
-        require_signature: bool = False,
+        require_signature: bool = True,
     ) -> dict[str, Any]:
         """
         Validates the entire evidence package:

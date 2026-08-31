@@ -16,6 +16,7 @@ import {
 
 import { AgentTargetSelector, DEFAULT_PROFILES, type AgentTargetProfile } from '../components/AgentTargetSelector';
 import { ResolvedManifestModal } from '../components/ResolvedManifestModal';
+import { ProvisionalBadge } from '../components/ProvisionalBadge';
 import { useRBAC } from '../context/RBACContext';
 
 interface RunItem {
@@ -24,6 +25,8 @@ interface RunItem {
   timestamp: string;
   status: string;
   verdict?: string;
+  provisional?: boolean;
+  execution_mode?: string | null;
   has_certificate?: boolean;
   agent?: string;
   duration?: number;
@@ -61,21 +64,26 @@ export const Dashboard: React.FC = () => {
       }
 
       setRuns(
-        loadedRuns.slice(0, 10).map((r) => ({
-          run_id: r.run_id,
-          scenario: r.scenario || r.run_id,
-          agent: r.identifier || undefined,
-          duration: r.duration_seconds ?? undefined,
-          resultStatus: r.result_status || undefined,
-          timestamp: r.timestamp || 'N/A',
-          status: r.execution_status || r.status || 'UNKNOWN',
-          // Server verdict is authoritative; no client-side inference.
-          verdict:
-            r.verification_status === 'VERIFIED' || r.verification_status === 'FAILED_VERIFICATION'
-              ? r.verification_status
-              : 'UNKNOWN',
-          has_certificate: !!r.has_certificate,
-        }))
+        loadedRuns.slice(0, 10).map((r) => {
+          const isProv = r.provisional || r.verification_status === 'VERIFIED_PROVISIONAL';
+          return {
+            run_id: r.run_id,
+            scenario: r.scenario || r.run_id,
+            agent: r.identifier || undefined,
+            duration: r.duration_seconds ?? undefined,
+            resultStatus: r.result_status || undefined,
+            timestamp: r.timestamp || 'N/A',
+            status: r.execution_status || r.status || 'UNKNOWN',
+            // Server verdict is authoritative; no client-side inference.
+            verdict:
+              r.verification_status === 'VERIFIED' || r.verification_status === 'VERIFIED_PROVISIONAL' || r.verification_status === 'FAILED_VERIFICATION'
+                ? r.verification_status
+                : 'UNKNOWN',
+            provisional: isProv,
+            execution_mode: r.execution_mode || null,
+            has_certificate: !!r.has_certificate,
+          };
+        })
       );
     } catch (e) {
       console.error('Error fetching dashboard metrics:', e);
@@ -89,6 +97,24 @@ export const Dashboard: React.FC = () => {
   const handleLaunchVerification = async () => {
     setIsLaunching(true);
     try {
+      // 1. Mandatory Preflight Readiness Gate (P0 #4)
+      const preflightRes = await fetch('/api/scenarios/readiness', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scenario_id: selectedScenarioId,
+          agent_config: {
+            protocol: selectedProfile.provider,
+            endpoint: selectedProfile.endpoint,
+            model: selectedProfile.model,
+          },
+          runtime_config: { max_turns: 10 },
+        }),
+      });
+      const preflightData = await preflightRes.json();
+      const preflightFingerprint = preflightData?.preflight_fingerprint;
+
+      // 2. Governed Launch with preflight_fingerprint
       const res = await fetch('/api/v1/evaluate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -100,6 +126,10 @@ export const Dashboard: React.FC = () => {
           tenant_id: tenantId,
           workspace_id: workspaceId,
           seed: 42,
+          preflight_fingerprint: preflightFingerprint,
+          metadata: {
+            preflight_fingerprint: preflightFingerprint,
+          },
         }),
       });
       const data = await res.json();
@@ -380,39 +410,55 @@ export const Dashboard: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/50">
-              {runs.map((r) => (
-                <tr key={r.run_id} className="hover:bg-slate-850/50 transition">
-                  <td className="py-3 font-sans font-semibold text-white max-w-[220px] truncate" title={r.scenario}>
-                    {r.scenario}
-                    <button
-                      onClick={() => navigator.clipboard?.writeText(r.run_id)}
-                      title="Copy run ID"
-                      className="ml-2 px-1 py-0.5 rounded bg-slate-800 border border-slate-700 text-[8px] font-mono text-slate-400 hover:text-indigo-300 align-middle"
-                    >
-                      {r.run_id.length > 14 ? r.run_id.slice(0, 14) + '…' : r.run_id} ⧉
-                    </button>
-                  </td>
-                  <td className="py-3 font-sans text-slate-400">{r.agent || '—'}</td>
-                  <td className="py-3">
-                    <span
-                      title={
-                        r.verdict === 'VERIFIED'
-                          ? 'Certificate trace-hash matches the current trace (server-verified).'
-                          : r.verdict === 'FAILED_VERIFICATION'
-                            ? 'Certificate trace-hash does NOT match the current trace.'
-                            : 'No authoritative verification available for this run.'
-                      }
-                      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 w-fit ${r.verdict === 'VERIFIED'
-                        ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
-                        : r.verdict === 'FAILED_VERIFICATION'
-                          ? 'bg-red-500/10 border border-red-500/20 text-red-400'
-                          : 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-400'
-                        }`}
-                    >
-                      {r.verdict === 'VERIFIED' ? <ShieldCheck className="w-3 h-3" /> : <CheckCircle2 className="w-3 h-3" />}
-                      {r.verdict === 'UNKNOWN' ? r.status : r.verdict}
-                    </span>
-                  </td>
+              {runs.map((r) => {
+                const isProv = r.provisional || r.verdict === 'VERIFIED_PROVISIONAL';
+                const isVer = r.verdict === 'VERIFIED' || isProv;
+                const isFailed = r.verdict === 'FAILED_VERIFICATION';
+
+                return (
+                  <tr key={r.run_id} className="hover:bg-slate-850/50 transition">
+                    <td className="py-3 font-sans font-semibold text-white max-w-[220px]">
+                      <div className="flex items-center gap-2 truncate" title={r.scenario}>
+                        <span className="truncate">{r.scenario}</span>
+                        <ProvisionalBadge
+                          provisional={isProv}
+                          executionMode={r.execution_mode}
+                          size="sm"
+                        />
+                      </div>
+                      <button
+                        onClick={() => navigator.clipboard?.writeText(r.run_id)}
+                        title="Copy run ID"
+                        className="mt-1 px-1 py-0.5 rounded bg-slate-800 border border-slate-700 text-[8px] font-mono text-slate-400 hover:text-indigo-300 align-middle"
+                      >
+                        {r.run_id.length > 14 ? r.run_id.slice(0, 14) + '…' : r.run_id} ⧉
+                      </button>
+                    </td>
+                    <td className="py-3 font-sans text-slate-400">{r.agent || '—'}</td>
+                    <td className="py-3">
+                      <span
+                        title={
+                          isProv
+                            ? 'Certificate is valid, but the run was marked provisional.'
+                            : isVer
+                              ? 'Certificate trace-hash matches the current trace (server-verified).'
+                              : isFailed
+                                ? 'Certificate trace-hash does NOT match the current trace.'
+                                : 'No authoritative verification available for this run.'
+                        }
+                        className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 w-fit ${isProv
+                          ? 'bg-amber-500/10 border border-amber-500/30 text-amber-300'
+                          : isVer
+                            ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
+                            : isFailed
+                              ? 'bg-red-500/10 border border-red-500/20 text-red-400'
+                              : 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-400'
+                          }`}
+                      >
+                        {isVer ? <ShieldCheck className="w-3 h-3" /> : <CheckCircle2 className="w-3 h-3" />}
+                        {isProv ? 'VERIFIED (PROVISIONAL)' : r.verdict === 'UNKNOWN' ? r.status : r.verdict}
+                      </span>
+                    </td>
                   <td className="py-3 text-right">
                     <div className="flex items-center justify-end gap-2 font-sans">
                       <button
@@ -443,7 +489,8 @@ export const Dashboard: React.FC = () => {
                     </div>
                   </td>
                 </tr>
-              ))}
+              );
+            })}
             </tbody>
           </table>
         </div>
