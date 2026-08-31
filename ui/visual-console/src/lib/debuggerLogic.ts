@@ -42,11 +42,26 @@ export interface WaterfallRow {
   markers: WaterfallMarker[];
 }
 
+export const getSequenceOrderedEvents = (events: LogEvent[]): LogEvent[] => {
+  if (!events || events.length <= 1) return events || [];
+  return [...events].sort((a, b) => {
+    const seqA = a._seq ?? a.seq;
+    const seqB = b._seq ?? b.seq;
+    if (typeof seqA === 'number' && typeof seqB === 'number' && seqA !== seqB) {
+      return seqA - seqB;
+    }
+    const tsA = Date.parse(a.timestamp || '') || 0;
+    const tsB = Date.parse(b.timestamp || '') || 0;
+    return tsA - tsB;
+  });
+};
+
 export const buildWaterfall = (
   allEvents: LogEvent[]
 ): { rows: WaterfallRow[]; tMin: number | null; tMax: number | null } => {
+  const orderedEvents = getSequenceOrderedEvents(allEvents);
   const byExec = new Map<string, WaterfallRow>();
-  for (const e of allEvents) {
+  for (const e of orderedEvents) {
     if (e.event !== 'execution_graph_node') continue;
     const nodeId = e.scenario_node_id || e.node_id || '?';
     const execId = e.execution_instance_id || `${nodeId}#${e.iteration ?? e.attempt ?? 1}`;
@@ -188,9 +203,10 @@ export const computeTelemetryDiagnostics = (allEvents: LogEvent[]): NodeDiagnost
   const diagnostics: NodeDiagnostic[] = [];
   const canonicallyCovered = new Set<string>();
   const eventsByNode = new Map<string, LogEvent[]>();
+  const orderedEvents = getSequenceOrderedEvents(allEvents);
 
   // Single O(N) pass to index events by nodeId and collect canonical nodes
-  for (const e of allEvents) {
+  for (const e of orderedEvents) {
     if (e.event === 'execution_graph_node') {
       if (e.scenario_node_id) canonicallyCovered.add(e.scenario_node_id);
     } else {

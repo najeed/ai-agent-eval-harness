@@ -10,9 +10,11 @@ from flask import Blueprint, jsonify, request
 from eval_runner import config, identity
 from eval_runner.reference.signing import LocalEd25519SigningBackend
 from eval_runner.utils import crypto
-from eval_runner.verifier import TraceVerifier
+from eval_runner.utils.safe_path import is_path_safe
+from eval_runner.verifier import TraceVerifier, locate_certificate_file
 
 from ..auth_manager import Permission, require_permission
+from .runs import resolve_trace_path
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +29,8 @@ def _read_run_truth_level(run_id: str) -> tuple[str | None, bool]:
     never explicitly declared a mode (silent SIMULATED default) — such
     certificates are stamped non-authoritative for audit purposes.
     """
-    trace = config.RUN_LOG_DIR / run_id / "run.jsonl"
-    if not trace.is_file():
+    trace = resolve_trace_path(run_id) if run_id else None
+    if not trace or not trace.is_file() or not is_path_safe(trace, config.RUN_LOG_DIR):
         return None, False
     try:
         with open(trace, encoding="utf-8") as f:
@@ -120,24 +122,41 @@ def execute_industrial_certification(
     Derives status and score strictly from the computed evaluation outcome.
     Fails closed if the outcome is inconclusive or cannot be positively verified.
     """
-    # 1. Authoritative Vault Resolution (Strict Affinity)
-    vault_dir = (config.RUN_LOG_DIR / run_id).resolve()
-    target_trace = (vault_dir / "run.jsonl").resolve()
+    if (
+        not run_id
+        or not isinstance(run_id, str)
+        or ".." in run_id
+        or "/" in run_id
+        or "\\" in run_id
+    ):
+        raise ValueError(f"Invalid or unsafe run_id: {run_id}")
 
-    if not target_trace.exists():
+    target_trace = resolve_trace_path(run_id)
+    if (
+        not target_trace
+        or not is_path_safe(target_trace, config.RUN_LOG_DIR)
+        or not target_trace.exists()
+    ):
         logger.error(
-            f"   [Certification] 404 FAIL: Authoritative vault trace not found at {target_trace}"
+            f"   [Certification] 404 FAIL: Authoritative vault trace not found for run {run_id}"
         )
         raise FileNotFoundError(f"Run vault not found for {run_id}")
 
+    vault_dir = target_trace.parent
+
     # 2. Authoritative Signature Execution (Zero-Copy)
     execution_mode, provisional = _read_run_truth_level(run_id)
-    if provisional:
-        logger.warning(
-            "   [Certification] PROVISIONAL certificate for %s: run never "
-            "declared an execution_mode (silent SIMULATED default). This "
-            "certificate is non-authoritative for compliance purposes.",
+    if provisional or execution_mode in (None, "unknown"):
+        logger.error(
+            "   [Certification] FAIL CLOSED: Cannot issue authoritative certification "
+            "for provisional or unknown run %s (mode=%s, provisional=%s)",
             run_id,
+            execution_mode,
+            provisional,
+        )
+        raise ValueError(
+            f"Run {run_id} is provisional (execution mode undeclared or unknown); "
+            "cannot issue authoritative certification."
         )
 
     computed_status, computed_score = _extract_computed_run_outcome(vault_dir, target_trace)
@@ -179,8 +198,6 @@ def execute_industrial_certification(
     # 3. Authoritative Manifest Save (Within the Vault)
     manifest_path = vault_dir / "run_manifest.json"
     with open(manifest_path, "w", encoding="utf-8") as f:
-        import json
-
         json.dump(manifest, f, indent=2)
 
     return {
@@ -200,8 +217,14 @@ def certify_run():
     """REST wrapper for the industrial certification service."""
     data = request.json or {}
     run_id = data.get("run_id")
-    if not run_id:
-        return jsonify({"error": "run_id is required"}), 400
+    if (
+        not run_id
+        or not isinstance(run_id, str)
+        or ".." in run_id
+        or "/" in run_id
+        or "\\" in run_id
+    ):
+        return jsonify({"error": "Valid run_id is required"}), 400
 
     try:
         result = execute_industrial_certification(
@@ -222,14 +245,28 @@ def certify_run():
         return jsonify({"error": str(e)}), 500
 
 
-@trust_bp.route("/v1/verify/<run_id>", methods=["GET"])
+@trust_bp.route("/v1/verify/<path:run_id>", methods=["GET"])
 def verify_run_public(run_id):
     """Public Verification API (Unprotected)."""
-    run_dir = (config.RUN_LOG_DIR / run_id).resolve()
-    trace_path = (run_dir / "run.jsonl").resolve()
-    manifest_path = (run_dir / "run_manifest.json").resolve()
+    if (
+        not run_id
+        or not isinstance(run_id, str)
+        or ".." in run_id
+        or "/" in run_id
+        or "\\" in run_id
+    ):
+        return jsonify({"error": "Invalid or unsafe run_id"}), 400
 
-    if not manifest_path.exists() or not trace_path.exists():
+    trace_path = resolve_trace_path(run_id)
+    if (
+        not trace_path
+        or not is_path_safe(trace_path, config.RUN_LOG_DIR)
+        or not trace_path.exists()
+    ):
+        return jsonify({"error": "Verification Failed: Trace or Certificate not found."}), 404
+
+    manifest_path = locate_certificate_file(run_id)
+    if not manifest_path or not manifest_path.exists():
         return jsonify({"error": "Verification Failed: Trace or Certificate not found."}), 404
 
     try:

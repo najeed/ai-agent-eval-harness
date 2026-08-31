@@ -312,6 +312,13 @@ class FlightRecorderPlugin(BaseEvalPlugin):
 
                         signer = get_default_signer()
 
+                    if os.getenv("AES_CERTIFICATION_MODE") == "1":
+                        if not signer or isinstance(signer, NullSigningBackend):
+                            raise RuntimeError(
+                                "AES_CERTIFICATION_MODE=1 requires a non-null cryptographic "
+                                "signer for trace seal finalization"
+                            )
+
                     if signer and not isinstance(signer, NullSigningBackend):
                         seal_bytes = json.dumps(
                             seal_payload, sort_keys=True, separators=(",", ":")
@@ -342,6 +349,8 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                 )
             except Exception as e:
                 logger.debug(f"Artifact store finalize seal error: {e}")
+                if os.getenv("AES_CERTIFICATION_MODE") == "1":
+                    raise
 
         # Cleanup sequence number if finalizing a specific run
         if run_id:

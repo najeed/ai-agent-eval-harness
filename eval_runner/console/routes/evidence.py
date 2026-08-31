@@ -21,6 +21,7 @@ from eval_runner import config
 from eval_runner.console.auth_manager import require_permission
 from eval_runner.console.routes.runs import resolve_trace_path
 from eval_runner.utils import is_path_safe
+from eval_runner.verifier import locate_certificate_file
 
 logger = logging.getLogger(__name__)
 
@@ -114,27 +115,14 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
 
     # Load certificate and signature chain
     cert_data: dict[str, Any] = {}
-    # Authoritative publication paths first (transactional pipeline):
-    #   - reports/certificates/<run_id>_vc.json  (published certificate backup)
-    #   - <vault>/run_manifest.json              (persisted sidecar manifest)
-    # then legacy sidecar names for backward compatibility.
-    cert_candidates = [
-        reports_dir / "certificates" / f"{run_id}_vc.json",
-        vault_dir / "run_manifest.json",
-        reports_dir / "certificates" / f"{run_id}_certificate.json",
-        vault_dir / f"{run_id}_certificate.json",
-    ]
-    for cert_path in cert_candidates:
-        if not cert_path.exists():
-            continue
+    cert_path = locate_certificate_file(run_id)
+    if cert_path and cert_path.exists():
         jail = str(reports_dir) if "reports" in str(cert_path) else str(runs_dir)
-        if not is_path_safe(str(cert_path), jail):
-            continue
-        try:
-            cert_data = json.loads(cert_path.read_text(encoding="utf-8"))
-            break
-        except Exception as err:
-            logger.debug("Failed reading certificate for %s: %s", run_id, err)
+        if is_path_safe(str(cert_path), jail):
+            try:
+                cert_data = json.loads(cert_path.read_text(encoding="utf-8"))
+            except Exception as err:
+                logger.debug("Failed reading certificate for %s: %s", run_id, err)
 
     signatures = cert_data.get("provenance_chain", cert_data.get("signatures", []))
 
@@ -339,8 +327,9 @@ def list_verification_packages():
     for path in runs_dir.iterdir():
         if path.is_dir() and path.name.startswith("run-"):
             rid = path.name
-            cert_exists = (path / f"{rid}_certificate.json").exists()
-            manifest_exists = (path / "run_manifest.json").exists()
+            cert_file = locate_certificate_file(rid)
+            cert_exists = cert_file is not None and cert_file.exists()
+            manifest_exists = (path / "run_manifest.json").exists() or cert_exists
             packages_summary.append(
                 {
                     "run_id": rid,

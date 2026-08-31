@@ -680,10 +680,16 @@ class TraceVerifier:
             finally:
                 manifest.pop("signing_context", None)
 
-        persisted_local_path: Path | None = None
+        persisted_local_path = None
 
         def _persist() -> None:
             nonlocal persisted_local_path
+            manifest["certification"] = {
+                "pipeline_version": "1.0.0",
+                "transactional": True,
+                "stages": stages,
+                "outcome": "CERTIFIED",
+            }
             try:
                 store.store_artifact(
                     run_id=run_id,
@@ -695,20 +701,23 @@ class TraceVerifier:
                         "vc_version": manifest["vc_version"],
                     },
                 )
-                candidate = p.parent / "run_manifest.json"
-                if candidate.exists():
-                    persisted_local_path = candidate
-            except Exception:
+            except Exception as e:
+                logger.debug(f"Store artifact notice: {e}")
+
+            try:
                 with open(sidecar_path, "w", encoding="utf-8") as f:
                     json.dump(manifest, f, indent=4)
                 persisted_local_path = sidecar_path
+            except Exception as e:
+                logger.debug(f"Sidecar write notice: {e}")
 
         def _verify() -> None:
             target = persisted_local_path or sidecar_path
-            if target.exists():
-                ok = cls.verify_trace(str(p), str(target), verify_ledger=True)
-                if not ok:
-                    raise ValueError("Post-signature self-verification rejected the certificate")
+            if not target or not target.exists():
+                raise FileNotFoundError(f"Verification target missing after persistence: {target}")
+            ok = cls.verify_trace(str(p), str(target), verify_ledger=True)
+            if not ok:
+                raise ValueError("Post-signature self-verification rejected the certificate")
 
         def _seal() -> None:
             store.seal(
@@ -749,12 +758,6 @@ class TraceVerifier:
             _rollback()
             raise
 
-        manifest["certification"] = {
-            "pipeline_version": "1.0.0",
-            "transactional": True,
-            "stages": stages,
-            "outcome": "CERTIFIED",
-        }
         return manifest
 
     @staticmethod
@@ -1290,3 +1293,32 @@ class VerificationAuthority:
             "scenario_id": pkg.scenario_id,
             "package_hash": pkg.compute_package_hash(),
         }
+
+
+def locate_certificate_file(run_id: str) -> Path | None:
+    """
+    Authoritative canonical certificate locator across the AgentV ecosystem.
+    Searches:
+      1. Published reports vault: reports/certificates/<run_id>_vc.json
+      2. Per-run storage vault: runs/<run_id>/run_manifest.json
+      3. Legacy vault certificates: runs/<run_id>/<run_id>_certificate.json
+         or runs/<run_id>/<run_id>_vc.json
+    Returns the resolved Path if it exists, or None.
+    """
+    if not run_id or not isinstance(run_id, str) or ".." in run_id:
+        return None
+
+    reports_dir = Path(config.REPORTS_DIR)
+    runs_dir = Path(config.RUN_LOG_DIR)
+
+    candidates = [
+        reports_dir / "certificates" / f"{run_id}_vc.json",
+        runs_dir / run_id / "run_manifest.json",
+        runs_dir / run_id / f"{run_id}_certificate.json",
+        runs_dir / run_id / f"{run_id}_vc.json",
+        reports_dir / "certificates" / f"{run_id}_certificate.json",
+    ]
+    for c in candidates:
+        if c.is_file():
+            return c.resolve()
+    return None

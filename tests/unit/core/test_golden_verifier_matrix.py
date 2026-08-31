@@ -63,6 +63,7 @@ class IndependentTraceOracle:
 
         manifest_copy = manifest.copy()
         manifest_copy.pop("provenance_chain", None)
+        manifest_copy.pop("certification", None)
         manifest_bytes = json.dumps(manifest_copy, sort_keys=True).encode("utf-8")
 
         for node in chain:

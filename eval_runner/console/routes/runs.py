@@ -725,23 +725,18 @@ def resume_run(run_id):
 @run_bp.route("/v1/certificates/<run_id>", methods=["GET"])
 def get_verification_certificate(run_id):
     """Public Trust Protocol endpoint."""
-    cert_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
-    if cert_path.exists():
+    from eval_runner.verifier import locate_certificate_file
+
+    cert_path = locate_certificate_file(run_id)
+    if cert_path and cert_path.exists():
         try:
             with open(cert_path, encoding="utf-8") as f:
                 return jsonify(json.load(f))
         except (json.JSONDecodeError, OSError) as e:
             logger.error(f"Corrupt certificate file {cert_path}: {e}")
+            if cert_path.name.endswith("run_manifest.json"):
+                return jsonify({"error": "Corrupt manifest found"}), 500
             return jsonify({"error": "Corrupt certificate found"}), 500
-
-    vault_manifest = config.RUN_LOG_DIR / run_id / "run_manifest.json"
-    if vault_manifest.exists():
-        try:
-            with open(vault_manifest, encoding="utf-8") as f:
-                return jsonify(json.load(f))
-        except (json.JSONDecodeError, OSError) as e:
-            logger.error(f"Corrupt manifest file {vault_manifest}: {e}")
-            return jsonify({"error": "Corrupt manifest found"}), 500
     return jsonify({"error": "Certificate not found"}), 404
 
 

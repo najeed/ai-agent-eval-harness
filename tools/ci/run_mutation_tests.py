@@ -29,14 +29,37 @@ Generates diligence artifact 'reports/mutation_scorecard.md' and fails CI if sco
 from __future__ import annotations
 
 import ast
+import concurrent.futures
+import os
 import random
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
 BASE_DIR = Path(__file__).parent.parent.parent
 REPORT_DIR = BASE_DIR / "reports"
 REPORT_PATH = REPORT_DIR / "mutation_scorecard.md"
+
+# Strips heavy, slow third-party plugins that add 3-5s of startup latency per mutant
+FAST_PYTEST_FLAGS = [
+    "-q",
+    "--no-header",
+    "-p",
+    "no:plugin_gateway",
+    "-p",
+    "no:cov",
+    "-p",
+    "no:benchmark",
+    "-p",
+    "no:logfire",
+    "-p",
+    "no:langsmith",
+    "-p",
+    "no:playwright",
+    "-p",
+    "no:Faker",
+]
 
 TARGET_MODULES = [
     BASE_DIR / "eval_runner" / "verifier.py",
@@ -115,11 +138,12 @@ _BOOL_MUTATIONS: dict[bool, tuple[str, str]] = {
 
 def _annotation_line_numbers(tree: ast.AST) -> set[int]:
     """
-    Return line numbers that belong solely to type annotation context.
+    Return line numbers that belong solely to type annotation context or TYPE_CHECKING blocks.
 
     Under `from __future__ import annotations`, annotations are not evaluated
-    at runtime. Mutations in annotation-only positions produce no observable
-    behavior change and are classified as INCOMPETENT (excluded from denominator).
+    at runtime. Code inside `if TYPE_CHECKING:` is also skipped at runtime.
+    Mutations in these positions produce no observable behavior change and are
+    classified as INCOMPETENT (excluded from denominator).
     """
     annotation_lines: set[int] = set()
     for node in ast.walk(tree):
@@ -140,10 +164,21 @@ def _annotation_line_numbers(tree: ast.AST) -> set[int]:
                 for n in ast.walk(node.returns):
                     if hasattr(n, "lineno"):
                         annotation_lines.add(n.lineno)
-        if isinstance(node, ast.AnnAssign):
+        elif isinstance(node, ast.AnnAssign):
             for n in ast.walk(node.annotation):
                 if hasattr(n, "lineno"):
                     annotation_lines.add(n.lineno)
+        elif isinstance(node, ast.If):
+            test_name = ""
+            if isinstance(node.test, ast.Name):
+                test_name = node.test.id
+            elif isinstance(node.test, ast.Attribute):
+                test_name = node.test.attr
+            if test_name == "TYPE_CHECKING":
+                for body_item in node.body:
+                    for n in ast.walk(body_item):
+                        if hasattr(n, "lineno"):
+                            annotation_lines.add(n.lineno)
     return annotation_lines
 
 
@@ -282,7 +317,12 @@ def evaluate_mutant(
 
     Returns status: 'killed', 'survived', 'timeout', or 'incompetent'.
     """
-    import os
+    # 1. In-process AST syntax pre-check before touching disk or spawning subprocess
+    try:
+        compile(mutant_source, str(target_file), "exec")
+    except Exception as syntax_err:
+        sys.stderr.write(f"      [Mutant] Incompetent AST syntax: {syntax_err}\n")
+        return "incompetent"
 
     if original_bytes is None:
         original_bytes = target_file.read_bytes()
@@ -291,7 +331,7 @@ def evaluate_mutant(
     env["PYTHONPATH"] = f"{BASE_DIR}{os.pathsep}{env.get('PYTHONPATH', '')}"
     try:
         target_file.write_text(mutant_source, encoding="utf-8")
-        extra_flags = ["-q", "--no-header", "-x", "-p", "no:plugin_gateway", "-p", "no:cov"]
+        extra_flags = FAST_PYTEST_FLAGS + ["-x"]
         args_str = repr(tests + extra_flags)
         py_code = (
             f"import sys; sys.path.insert(0, r'{BASE_DIR}'); "
@@ -327,7 +367,6 @@ def verify_sentinel_preconditions() -> dict[str, float]:
       3. Failing un-mutated baseline tests or empty test collections.
       4. Dynamically scales per-module timeout to guarantee >= 2.0x headroom on any host.
     """
-    import os
     import time
 
     print("\n1. Running Self-Validating Sentinel Precondition Checks...")
@@ -358,8 +397,7 @@ def verify_sentinel_preconditions() -> dict[str, float]:
     for target in TARGET_MODULES:
         module_name = target.name
         tests = _tests_for_module(module_name)
-        extra_flags = ["-q", "--no-header", "-p", "no:plugin_gateway", "-p", "no:cov"]
-        args_str = repr(tests + extra_flags)
+        args_str = repr(tests + FAST_PYTEST_FLAGS)
         py_code = (
             f"import sys; sys.path.insert(0, r'{BASE_DIR}'); "
             f"import pytest; sys.exit(pytest.main({args_str}))"
@@ -386,6 +424,122 @@ def verify_sentinel_preconditions() -> dict[str, float]:
     return module_timeouts
 
 
+def _evaluate_target_module(
+    target: Path,
+    args: Any,
+    module_timeouts: dict[str, float],
+) -> tuple[int, int, int, int, list[dict]]:
+    """
+    Evaluates mutants for a single target module.
+    Returns: (killed, survived, timeout, incompetent, mutant_records)
+    """
+    rel_path = target.relative_to(BASE_DIR)
+    module_name = target.name
+    tests = _tests_for_module(module_name)
+    timeout_sec = module_timeouts.get(module_name, MUTANT_TIMEOUT_SECONDS)
+
+    original_bytes = target.read_bytes()
+    original_source = target.read_text(encoding="utf-8")
+    source_lines = [line + "\n" for line in original_source.splitlines()]
+
+    try:
+        tree = ast.parse(original_source)
+    except Exception as exc:
+        print(f"  [FAIL] Failed to parse AST for {rel_path}: {exc}")
+        sys.exit(1)
+
+    annotation_lines = _annotation_line_numbers(tree)
+    all_points = discover_mutation_points(original_source, annotation_lines)
+    num_points = len(all_points)
+    competent_points = [p for p in all_points if not p.is_incompetent]
+    num_competent = len(competent_points)
+
+    if args.full:
+        sampled = all_points
+        print(f"   • Module: {rel_path} ({num_points} mutation points, evaluating ALL 100%)")
+    else:
+        max_mutants = min(num_competent, 15)
+        rng = random.Random(args.seed) if args.seed is not None else random.Random()
+        sampled = (
+            rng.sample(competent_points, max_mutants)
+            if num_competent > max_mutants
+            else list(competent_points)
+        )
+        sampled.sort(key=lambda p: (p.lineno, p.col_offset))
+        seed_info = f" [seed={args.seed}]" if args.seed is not None else ""
+        print(
+            f"   • Module: {rel_path} ({num_points} total, {num_competent} runtime-effective, "
+            f"randomly sampled {len(sampled)}{seed_info})"
+        )
+
+    killed = 0
+    survived = 0
+    timeout = 0
+    incompetent = 0
+    records: list[dict] = []
+
+    try:
+        for mp in sampled:
+            if mp.is_incompetent:
+                incompetent += 1
+                records.append(
+                    {
+                        "module": str(rel_path),
+                        "mutation": mp.description,
+                        "status": "incompetent",
+                    }
+                )
+                print(
+                    f"      {'[INCOMPETENT]':15s} {mp.description}  "
+                    f"(annotation-only, no runtime effect)"
+                )
+                continue
+
+            mutant_source = _apply_surgical_mutation(source_lines, mp)
+            if mutant_source is None:
+                incompetent += 1
+                records.append(
+                    {
+                        "module": str(rel_path),
+                        "mutation": mp.description,
+                        "status": "incompetent",
+                    }
+                )
+                print(
+                    f"      {'[INCOMPETENT]':15s} {mp.description}  "
+                    f"(token not locatable at col {mp.col_offset} on line {mp.lineno})"
+                )
+                continue
+
+            status = evaluate_mutant(
+                target,
+                mutant_source,
+                tests,
+                timeout_seconds=timeout_sec,
+                original_bytes=original_bytes,
+            )
+
+            if status == "killed":
+                killed += 1
+                icon = "[KILLED]"
+            elif status == "timeout":
+                timeout += 1
+                icon = "[TIMEOUT]"
+            elif status == "survived":
+                survived += 1
+                icon = "[SURVIVED]"
+            else:
+                incompetent += 1
+                icon = "[INCOMPETENT]"
+
+            records.append({"module": str(rel_path), "mutation": mp.description, "status": status})
+            print(f"      {icon:15s} {mp.description}")
+    finally:
+        target.write_bytes(original_bytes)
+
+    return killed, survived, timeout, incompetent, records
+
+
 def run_mutation_sentinel() -> None:
     """Executes full or sampled mutation scoring lifecycle across critical verification modules."""
     import argparse
@@ -402,11 +556,20 @@ def run_mutation_sentinel() -> None:
         default=None,
         help="Optional RNG seed for reproducible random sampling in non-full mode.",
     )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=1,
+        help="Number of concurrent worker threads for parallel module evaluation (default: 1).",
+    )
     args = parser.parse_args()
 
     seed_suffix = f", seed={args.seed}" if args.seed is not None else ""
+    worker_suffix = f", workers={args.workers}" if args.workers > 1 else ""
     mode_label = (
-        "FULL POPULATION" if args.full else f"RANDOMLY SAMPLED (max 15/module{seed_suffix})"
+        "FULL POPULATION"
+        if args.full
+        else f"RANDOMLY SAMPLED (max 15/module{seed_suffix}{worker_suffix})"
     )
 
     print("=" * 80)
@@ -455,19 +618,8 @@ def run_mutation_sentinel() -> None:
     except OSError as lock_err:
         sys.stderr.write(f"  [Warn] Could not write lock file: {lock_err}\n")
 
-    # Self-heal any target modules from git index before snapshotting pristine sources
     import atexit
     import signal
-    import subprocess
-
-    try:
-        subprocess.run(
-            ["git", "checkout", "--"] + [str(t) for t in TARGET_MODULES],
-            capture_output=True,
-            check=False,
-        )
-    except Exception as git_err:
-        sys.stderr.write(f"  [Warn] Git self-heal restore skipped: {git_err}\n")
 
     pristine_sources = {target: target.read_bytes() for target in TARGET_MODULES}
 
@@ -517,109 +669,28 @@ def run_mutation_sentinel() -> None:
 
     try:
         print(f"2. Mutating Verification Modules & Scoring Test Suite ({mode_label})...")
-        for target in TARGET_MODULES:
-            rel_path = target.relative_to(BASE_DIR)
-            module_name = target.name
-            tests = _tests_for_module(module_name)
-            timeout_sec = module_timeouts.get(module_name, MUTANT_TIMEOUT_SECONDS)
-
-            original_bytes = target.read_bytes()
-            original_source = target.read_text(encoding="utf-8")
-            source_lines = [line + "\n" for line in original_source.splitlines()]
-            # Preserve original line endings for final write_bytes restore
-            try:
-                tree = ast.parse(original_source)
-            except Exception as exc:
-                print(f"  [FAIL] Failed to parse AST for {rel_path}: {exc}")
-                sys.exit(1)
-
-            annotation_lines = _annotation_line_numbers(tree)
-            all_points = discover_mutation_points(original_source, annotation_lines)
-            num_points = len(all_points)
-
-            if args.full:
-                sampled = all_points
-                print(
-                    f"   • Module: {rel_path} ({num_points} mutation points, evaluating ALL 100%)"
-                )
-            else:
-                max_mutants = min(num_points, 15)
-                rng = random.Random(args.seed) if args.seed is not None else random.Random()
-                sampled = (
-                    rng.sample(all_points, max_mutants)
-                    if num_points > max_mutants
-                    else list(all_points)
-                )
-                # Sort sampled points by AST position (lineno, col_offset) for orderly execution
-                sampled.sort(key=lambda p: (p.lineno, p.col_offset))
-                seed_info = f" [seed={args.seed}]" if args.seed is not None else ""
-                print(
-                    f"   • Module: {rel_path} ({num_points} mutation points discovered, "
-                    f"randomly sampled {len(sampled)}{seed_info})"
-                )
-
-            for mp in sampled:
-                # Annotation-only mutations have no runtime effect
-                if mp.is_incompetent:
-                    total_incompetent += 1
-                    mutant_records.append(
-                        {
-                            "module": str(rel_path),
-                            "mutation": mp.description,
-                            "status": "incompetent",
-                        }
-                    )
-                    print(
-                        f"      {'[INCOMPETENT]':15s} {mp.description}  "
-                        f"(annotation-only, no runtime effect)"
-                    )
-                    continue
-
-                mutant_source = _apply_surgical_mutation(source_lines, mp)
-                if mutant_source is None:
-                    # Token not locatable on expected line — treat as incompetent
-                    total_incompetent += 1
-                    mutant_records.append(
-                        {
-                            "module": str(rel_path),
-                            "mutation": mp.description,
-                            "status": "incompetent",
-                        }
-                    )
-                    print(
-                        f"      {'[INCOMPETENT]':15s} {mp.description}  "
-                        f"(token not locatable at col {mp.col_offset} on line {mp.lineno})"
-                    )
-                    continue
-
-                status = evaluate_mutant(
-                    target,
-                    mutant_source,
-                    tests,
-                    timeout_seconds=timeout_sec,
-                    original_bytes=original_bytes,
-                )
-
-                if status == "killed":
-                    total_killed += 1
-                    icon = "[KILLED]"
-                elif status == "timeout":
-                    total_timeout += 1
-                    icon = "[TIMEOUT]"
-                elif status == "survived":
-                    total_survived += 1
-                    icon = "[SURVIVED]"
-                else:
-                    total_incompetent += 1
-                    icon = "[INCOMPETENT]"
-
-                mutant_records.append(
-                    {"module": str(rel_path), "mutation": mp.description, "status": status}
-                )
-                print(f"      {icon:15s} {mp.description}")
-
-            # Ensure module is cleanly restored after its mutant run
-            target.write_bytes(original_bytes)
+        if args.workers > 1:
+            worker_count = min(args.workers, len(TARGET_MODULES))
+            with concurrent.futures.ThreadPoolExecutor(max_workers=worker_count) as executor:
+                futures = {
+                    executor.submit(_evaluate_target_module, target, args, module_timeouts): target
+                    for target in TARGET_MODULES
+                }
+                for fut in concurrent.futures.as_completed(futures):
+                    k, s, t, inc, recs = fut.result()
+                    total_killed += k
+                    total_survived += s
+                    total_timeout += t
+                    total_incompetent += inc
+                    mutant_records.extend(recs)
+        else:
+            for target in TARGET_MODULES:
+                k, s, t, inc, recs = _evaluate_target_module(target, args, module_timeouts)
+                total_killed += k
+                total_survived += s
+                total_timeout += t
+                total_incompetent += inc
+                mutant_records.extend(recs)
     finally:
         emergency_restore()
 

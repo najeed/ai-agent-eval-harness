@@ -302,7 +302,7 @@ def test_save_scenario_with_hash_and_status(ent_client):
     assert data["scenario_id"] == "new_created_scen"
     assert data["scenario_hash"].startswith("sha3_256:")
     assert data["status"] == "success"
-    assert data["lifecycle_status"] == "Validated"
+    assert data["lifecycle_status"] == "Draft"
 
 
 # ===========================================================================

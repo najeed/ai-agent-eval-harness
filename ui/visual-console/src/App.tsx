@@ -422,10 +422,49 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
           const ResolvedComp = mod.default || mod[Object.keys(mod)[0]] || mod;
           if (active) setLoadingState({ status: 'ready', Component: ResolvedComp, tier, manifest: manifestObj });
         } else {
-          // Local/trusted-origin ESM without SRI pin. [D2] The manifest is
-          // MANDATORY here too — an anonymous module can never be mounted.
+          // Local/trusted-origin ESM without SRI pin.
+          // J1/P0 #5 Hardening: Pre-execution Manifest Validation.
+          // Fetch source to parse statically declared manifest or .manifest.json BEFORE calling import().
+          let preManifest: any = null;
+          try {
+            const res = await fetch(entryUrl);
+            if (res.ok) {
+              const srcText = await res.text();
+              const match = srcText.match(/(?:export\s+)?(?:const|let|var)?\s*manifest\s*=\s*(\{[\s\S]*?\n\s*\});?/);
+              if (match) {
+                try {
+                  preManifest = JSON.parse(match[1]);
+                } catch {
+                  // Json parse fallback
+                }
+              }
+            }
+          } catch {
+            // Static fetch attempt failed
+          }
+
+          if (!preManifest) {
+            try {
+              const manifestUrl = entryUrl.replace(/\.[^/.]+$/, '') + '.manifest.json';
+              const mRes = await fetch(manifestUrl);
+              if (mRes.ok) {
+                preManifest = await mRes.json();
+              }
+            } catch {
+              // Manifest file fetch failed
+            }
+          }
+
+          if (preManifest) {
+            const preViolations = validateExtensionManifest(preManifest, { requireSignature: false });
+            if (preViolations.length > 0 && active) {
+              setLoadingState({ status: 'contract_violation', violations: preViolations });
+              return;
+            }
+          }
+
           const mod = await import(/* @vite-ignore */ entryUrl);
-          const manifestObj = (mod as any)?.manifest;
+          const manifestObj = (mod as any)?.manifest || preManifest;
 
           const violations = !manifestObj
             ? [

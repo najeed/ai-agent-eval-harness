@@ -60,10 +60,11 @@ def test_certify_run_success(client, console_jail):
     run_id = "test_run_1"
     run_dir = console_jail["runs"] / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
-    (run_dir / "run.jsonl").write_text(
-        '{"event": "run_start"}\n{"event": "run_end", "data": {"status": "pass", "score": 1.0}}\n',
-        encoding="utf-8",
+    start_ev = json.dumps(
+        {"event": "run_start", "data": {"execution_mode": "live", "execution_mode_declared": True}}
     )
+    end_ev = json.dumps({"event": "run_end", "data": {"status": "pass", "score": 1.0}})
+    (run_dir / "run.jsonl").write_text(f"{start_ev}\n{end_ev}\n", encoding="utf-8")
 
     with patch("eval_runner.verifier.TraceVerifier.sign_trace") as mock_sign:
         mock_sign.return_value = {"trace_hash": "fake_hash"}
@@ -77,7 +78,10 @@ def test_certify_run_inconclusive_missing_terminal_fails_closed(client, console_
     run_id = "inconclusive_run"
     run_dir = console_jail["runs"] / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
-    (run_dir / "run.jsonl").write_text('{"event": "run_start"}\n', encoding="utf-8")
+    start_ev = json.dumps(
+        {"event": "run_start", "data": {"execution_mode": "live", "execution_mode_declared": True}}
+    )
+    (run_dir / "run.jsonl").write_text(f"{start_ev}\n", encoding="utf-8")
 
     res = client.post("/api/v1/certify", json={"run_id": run_id})
     assert res.status_code == 400
@@ -88,10 +92,11 @@ def test_certify_run_fail_closed_computed_fail(client, console_jail):
     run_id = "computed_fail_run"
     run_dir = console_jail["runs"] / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
-    (run_dir / "run.jsonl").write_text(
-        '{"event": "run_start"}\n{"event": "run_end", "data": {"status": "fail", "score": 0.0}}\n',
-        encoding="utf-8",
+    start_ev = json.dumps(
+        {"event": "run_start", "data": {"execution_mode": "live", "execution_mode_declared": True}}
     )
+    end_ev = json.dumps({"event": "run_end", "data": {"status": "fail", "score": 0.0}})
+    (run_dir / "run.jsonl").write_text(f"{start_ev}\n{end_ev}\n", encoding="utf-8")
 
     with patch("eval_runner.verifier.TraceVerifier.sign_trace") as mock_sign:
         mock_sign.return_value = {"trace_hash": "fake_hash"}
@@ -202,10 +207,11 @@ def test_certify_run_generic_exception(client, console_jail):
     run_id = "crash_run"
     run_dir = console_jail["runs"] / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
-    (run_dir / "run.jsonl").write_text(
-        '{"event": "run_start"}\n{"event": "run_end", "data": {"status": "pass", "score": 1.0}}\n',
-        encoding="utf-8",
+    start_ev = json.dumps(
+        {"event": "run_start", "data": {"execution_mode": "live", "execution_mode_declared": True}}
     )
+    end_ev = json.dumps({"event": "run_end", "data": {"status": "pass", "score": 1.0}})
+    (run_dir / "run.jsonl").write_text(f"{start_ev}\n{end_ev}\n", encoding="utf-8")
 
     with patch(
         "eval_runner.verifier.TraceVerifier.sign_trace", side_effect=Exception("Critical Failure")

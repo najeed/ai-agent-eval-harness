@@ -28,6 +28,7 @@ jobs:
       with:
         token: ${{ github.token }}
         persist-credentials: false
+        fetch-depth: 0
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v6
@@ -109,10 +110,10 @@ jobs:
         export PYTHONPATH=.
         if [ "${{ github.ref }}" = "refs/heads/main" ]; then
           echo "Running FULL POPULATION mutation sentinel on main branch..."
-          python tools/ci/run_mutation_tests.py --full
+          python tools/ci/run_mutation_tests.py --full --workers 3
         else
           echo "Running SAMPLED mutation sentinel on PR / feature branch..."
-          python tools/ci/run_mutation_tests.py
+          python tools/ci/run_mutation_tests.py --workers 3
         fi
 
   ui-test:

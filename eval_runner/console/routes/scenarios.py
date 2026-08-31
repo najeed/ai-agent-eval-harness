@@ -3,7 +3,7 @@ import hashlib
 import json
 import logging
 import os
-import socket
+import re
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -303,14 +303,14 @@ def check_execution_readiness():
     Validates true Execution Readiness across scenario, agent endpoint,
     tools, policies, environment, credentials, simulator dependencies, and signing configuration.
     """
-    from agentv_runtime.manifest import ManifestBuilder
+    import time as _time
+
     from eval_runner import config
     from eval_runner.simulators import get_simulator_registry
 
     data = request.json or {}
     scen_id = data.get("scenario_id") or data.get("path")
     agent_config = data.get("agent_config") or {}
-    runtime_config = data.get("runtime_config") or {}
 
     checks: list[dict[str, Any]] = []
 
@@ -331,17 +331,26 @@ def check_execution_readiness():
             with open(abs_path, encoding="utf-8") as f:
                 scen_data = json.load(f)
         except Exception as e:
-            checks.append({"name": "Scenario Resolution", "status": "FAILED", "message": str(e)})
+            logger.debug(f"Failed to read scenario file for preflight: {e}")
 
-    if scen_data:
-        # Strict semantic validation
+    if not scen_data:
+        checks.append(
+            {
+                "name": "Scenario Specification",
+                "status": "FAILED",
+                "tier": "CONFIGURED",
+                "message": f"Scenario '{scen_id}' could not be resolved from disk or payload.",
+            }
+        )
+    else:
         valid, issues = validate_scenario_structure(scen_data)
         if valid:
             checks.append(
                 {
                     "name": "Scenario Specification",
                     "status": "PASSED",
-                    "message": "Canonical AES document loaded and verified.",
+                    "tier": "EXECUTABLE",
+                    "message": "Scenario schema and DAG structure valid.",
                 }
             )
         else:
@@ -349,83 +358,69 @@ def check_execution_readiness():
                 {
                     "name": "Scenario Specification",
                     "status": "WARNING",
-                    "message": f"Validation warnings: {'; '.join(issues[:2])}",
+                    "tier": "CONFIGURED",
+                    "message": f"Scenario has structural issues: {'; '.join(issues[:3])}",
                 }
             )
-    else:
-        checks.append(
-            {
-                "name": "Scenario Specification",
-                "status": "FAILED",
-                "message": f"Scenario '{scen_id}' could not be resolved.",
-            }
-        )
 
-    # 2. Agent Endpoint / Adapter — real connectivity probe
+    # 2. Agent Endpoint Probe
+    endpoint = agent_config.get("endpoint") or agent_config.get("url") or ""
     proto = str(agent_config.get("protocol", "http_rest")).lower()
-    endpoint = agent_config.get("endpoint", "http://localhost:8000")
 
-    # Provider-API protocols: validate env-var presence + DNS reachability
-    _provider_env_vars: dict[str, tuple[str, str]] = {
-        "openai": ("OPENAI_API_KEY", "api.openai.com"),
-        "gemini": ("GOOGLE_API_KEY", "generativelanguage.googleapis.com"),
-        "anthropic": ("ANTHROPIC_API_KEY", "api.anthropic.com"),
-        "claude": ("ANTHROPIC_API_KEY", "api.anthropic.com"),
-    }
-    # HTTP-style protocols that should be probed via real HTTP HEAD
+    agent_check = {"name": "Agent Endpoint", "protocol": proto, "endpoint": endpoint}
+
     _http_probed_protocols = {
         "http_rest",
-        "http",
-        "rest",
-        "ollama",
-        "custom_http",
-        "sse",
-        "grpc",
-        "langchain",
+        "custom",
+        "openai_assistants",
+        "crewai",
+        "langgraph",
+        "autogen",
     }
 
-    import os as _os
-    import time as _time
-
-    agent_check: dict[str, Any] = {
-        "name": "Agent Endpoint",
-        "status": "FAILED",
-        "tier": "CONFIGURED",
-        "message": f"Unknown protocol '{proto}'.",
-        "latency_ms": None,
-    }
-
-    if proto in _provider_env_vars:
-        env_var, provider_host = _provider_env_vars[proto]
-        key_present = bool(_os.environ.get(env_var))
-        # DNS resolution check
-        dns_ok = False
-        try:
-            socket.getaddrinfo(provider_host, 443, proto=socket.IPPROTO_TCP)
-            dns_ok = True
-        except OSError:
-            pass
-
-        if key_present and dns_ok:
+    if not endpoint:
+        agent_check.update(
+            {
+                "status": "WARNING",
+                "tier": "CONFIGURED",
+                "message": "No endpoint configured for agent. Simulated/stateless execution only.",
+            }
+        )
+    elif proto in ("stdio", "in_process"):
+        agent_check.update(
+            {
+                "status": "PASSED",
+                "tier": "EXECUTABLE",
+                "message": f"Agent protocol '{proto}' uses local in-process execution.",
+            }
+        )
+    elif proto in (
+        "gemini",
+        "google",
+        "openai",
+        "anthropic",
+        "azure_openai",
+        "mistral",
+        "bedrock",
+        "groq",
+    ):
+        key_env_vars = {
+            "gemini": ["GOOGLE_API_KEY", "GEMINI_API_KEY"],
+            "google": ["GOOGLE_API_KEY", "GEMINI_API_KEY"],
+            "openai": ["OPENAI_API_KEY"],
+            "anthropic": ["ANTHROPIC_API_KEY"],
+            "azure_openai": ["AZURE_OPENAI_API_KEY"],
+            "mistral": ["MISTRAL_API_KEY"],
+            "groq": ["GROQ_API_KEY"],
+        }
+        needed_vars = key_env_vars.get(proto, [])
+        has_key = any(os.getenv(v) for v in needed_vars) if needed_vars else True
+        if has_key:
             agent_check.update(
                 {
                     "status": "PASSED",
-                    "tier": "REACHABLE",
-                    "message": (
-                        f"API key ({env_var}) present; provider '{provider_host}' resolves. "
-                        f"Protocol: {proto}."
-                    ),
-                }
-            )
-        elif key_present:
-            agent_check.update(
-                {
-                    "status": "WARNING",
-                    "tier": "CONFIGURED",
-                    "message": (
-                        f"API key ({env_var}) present but provider '{provider_host}' "
-                        "DNS resolution failed (network unreachable?)."
-                    ),
+                    "tier": "AUTHENTICATED",
+                    "message": f"Agent provider '{proto}' configured with valid credentials.",
                 }
             )
         else:
@@ -434,20 +429,18 @@ def check_execution_readiness():
                     "status": "WARNING",
                     "tier": "CONFIGURED",
                     "message": (
-                        f"Protocol '{proto}' recognised but {env_var} is not set. "
-                        "Configure your API key to enable execution."
+                        f"Provider '{proto}' missing required environment variable "
+                        f"({'/'.join(needed_vars)})."
                     ),
                 }
             )
     elif proto in _http_probed_protocols:
-        # Attempt real HTTP HEAD probe
+        # Attempt real HTTP HEAD probe with strict status code tiering
         t0 = _time.monotonic()
-        probe_ok = False
+        probe_status = "WARNING"
+        probe_tier = "CONFIGURED"
         probe_msg = ""
         try:
-            # [B310 mitigation] Restrict the user-supplied endpoint to real
-            # HTTP(S) schemes so preflight can never be abused to open
-            # file:, ftp:, or custom-scheme URLs (SSRF / local-file read).
             endpoint_scheme = urllib.parse.urlparse(str(endpoint)).scheme.lower()
             if endpoint_scheme not in ("http", "https"):
                 raise urllib.error.URLError(
@@ -457,24 +450,43 @@ def check_execution_readiness():
             health_url = endpoint.rstrip("/") + "/health"
             req = urllib.request.Request(health_url, method="HEAD")
             req.add_header("User-Agent", "AgentV-Preflight/2.0")
-            with urllib.request.urlopen(req, timeout=3) as resp:  # nosec B310 - scheme allowlisted above
-                probe_ok = resp.status < 600
-                probe_msg = f"HTTP {resp.status}"
+            with urllib.request.urlopen(req, timeout=3) as resp:  # nosec B310
+                if 200 <= resp.status < 300:
+                    probe_status = "PASSED"
+                    probe_tier = "HEALTHY"
+                    probe_msg = f"HTTP {resp.status} (Healthy)"
+                elif 300 <= resp.status < 400:
+                    probe_status = "PASSED"
+                    probe_tier = "REACHABLE"
+                    probe_msg = f"HTTP {resp.status} (Redirect)"
+                else:
+                    probe_status = "WARNING"
+                    probe_tier = "CONFIGURED"
+                    probe_msg = f"HTTP {resp.status} (Unhealthy Response)"
         except urllib.error.HTTPError as he:
-            # 4xx/5xx still means the server is reachable
-            probe_ok = True
-            probe_msg = f"HTTP {he.code} (server reachable)"
+            if he.code in (401, 403):
+                probe_status = "WARNING"
+                probe_tier = "REACHABLE"
+                probe_msg = f"HTTP {he.code} (Authentication Required)"
+            else:
+                probe_status = "WARNING"
+                probe_tier = "CONFIGURED"
+                probe_msg = f"HTTP {he.code} (Server Error / Missing Handler)"
         except (urllib.error.URLError, OSError, TimeoutError) as ue:
-            probe_ok = False
-            probe_msg = str(ue)
+            probe_status = "WARNING"
+            probe_tier = "CONFIGURED"
+            probe_msg = f"Unreachable: {ue}"
         latency_ms = int((_time.monotonic() - t0) * 1000)
 
-        if probe_ok:
+        if probe_status == "PASSED":
             agent_check.update(
                 {
                     "status": "PASSED",
-                    "tier": "REACHABLE",
-                    "message": f"Endpoint '{endpoint}' reachable ({probe_msg}). Protocol: {proto}.",
+                    "tier": probe_tier,
+                    "message": (
+                        f"Endpoint '{endpoint}' reachable and responsive ({probe_msg}). "
+                        f"Protocol: {proto}."
+                    ),
                     "latency_ms": latency_ms,
                 }
             )
@@ -482,9 +494,9 @@ def check_execution_readiness():
             agent_check.update(
                 {
                     "status": "WARNING",
-                    "tier": "CONFIGURED",
+                    "tier": probe_tier,
                     "message": (
-                        f"Endpoint '{endpoint}' not reachable ({probe_msg}). "
+                        f"Endpoint '{endpoint}' failed readiness check ({probe_msg}). "
                         "Protocol configured; start the agent server to enable execution."
                     ),
                     "latency_ms": latency_ms,
@@ -570,91 +582,52 @@ def check_execution_readiness():
             {
                 "name": "Cryptographic Sealer",
                 "status": "WARNING",
-                "tier": "EXECUTABLE",
-                "signer_type": "EPHEMERAL",
+                "tier": "PROVISIONAL",
+                "signer_type": "NULL",
                 "message": (
-                    "Ephemeral in-memory Ed25519 sealer active (non-production mode; "
-                    "set SIGNING_KEY for persistent audit sealing)."
+                    "No SIGNING_KEY configured. Running with ephemeral/null signer. "
+                    "Generated certificates will be PROVISIONAL."
                 ),
             }
         )
 
-    # 5. Artifact Store Destination
-    runs_dir = config.RUN_LOG_DIR
-    if runs_dir.exists():
-        # Writable check
-        try:
-            probe_file = runs_dir / ".preflight_probe"
-            probe_file.write_text("probe", encoding="utf-8")
-            probe_file.unlink()
-            checks.append(
-                {
-                    "name": "Artifact Store",
-                    "status": "PASSED",
-                    "tier": "EXECUTABLE",
-                    "message": f"Artifact store writable at {runs_dir.name}/.",
-                }
-            )
-        except OSError as ose:
-            checks.append(
-                {
-                    "name": "Artifact Store",
-                    "status": "FAILED",
-                    "tier": "CONFIGURED",
-                    "message": f"Artifact store not writable: {ose}",
-                }
-            )
-    else:
-        checks.append(
-            {
-                "name": "Artifact Store",
-                "status": "FAILED",
-                "tier": "CONFIGURED",
-                "message": "Runs storage directory does not exist.",
-            }
-        )
+    # Overall tier rollup
+    tier_order = ["CONFIGURED", "REACHABLE", "AUTHENTICATED", "HEALTHY", "EXECUTABLE", "VERIFIABLE"]
+    overall_tier = "VERIFIABLE"
+    for c in checks:
+        t = c.get("tier", "CONFIGURED")
+        if t in tier_order and tier_order.index(t) < tier_order.index(overall_tier):
+            overall_tier = t
 
-    all_passed = all(c["status"] in ("PASSED", "WARNING") for c in checks)
+    has_warnings = any(c.get("status") == "WARNING" for c in checks)
+    all_passed = all(c.get("status") in ("PASSED", "WARNING") for c in checks)
     is_verifiable = (
-        all_passed and signing_key is not None and all(c["status"] == "PASSED" for c in checks)
+        all_passed and signing_key is not None and all(c.get("status") == "PASSED" for c in checks)
     )
 
-    # Compute deterministic preflight fingerprint
-    fingerprint_raw = {
+    manifest = {
         "scenario_id": scen_id,
-        "scen_hash": compute_scenario_hash(scen_data) if scen_data else None,
-        "endpoint": agent_config.get("endpoint"),
-        "protocol": agent_config.get("protocol"),
-        "max_turns": runtime_config.get("max_turns", 10),
+        "readiness_tier": overall_tier,
+        "is_executable": all_passed,
+        "is_verifiable": is_verifiable,
+        "checks": checks,
     }
-    preflight_fingerprint = hashlib.sha3_256(
-        json.dumps(fingerprint_raw, sort_keys=True).encode("utf-8")
-    ).hexdigest()
 
-    manifest = None
-    if scen_data and all_passed:
-        manifest = ManifestBuilder.build(
-            scenario_data=scen_data,
-            agent_config=agent_config,
-            runtime_config=runtime_config,
-            tenant_id=data.get("tenant_id", "default"),
-            workspace_id=data.get("workspace_id", "default"),
-            created_by=request.headers.get("X-User-Id", "system"),
-        ).to_dict()
+    import hashlib
+
+    pfp = hashlib.sha3_256(json.dumps(manifest, sort_keys=True).encode()).hexdigest()
 
     return jsonify(
         {
             "ready": all_passed,
             "is_executable": all_passed,
             "is_verifiable": is_verifiable,
-            "tier": "VERIFIABLE"
-            if is_verifiable
-            else "EXECUTABLE_ONLY"
-            if all_passed
-            else "BLOCKED",
-            "preflight_fingerprint": preflight_fingerprint,
-            "checks": checks,
+            "scenario_id": scen_id,
+            "overall_status": "READY" if not has_warnings else "CONFIGURED",
+            "readiness_tier": overall_tier,
+            "preflight_fingerprint": pfp,
             "manifest": manifest,
+            "checks": checks,
         }
     )
 
@@ -663,10 +636,10 @@ def check_execution_readiness():
 @require_permission(Permission.SCENARIOS_WRITE)
 def save_scenario():
     """
-    Industrial persistence for canonical scenarios with revision/status support,
-    optimistic concurrency, and content hashing.
+    Saves or creates a scenario definition.
+    Enforces AES 1.4 schema validation, server-authoritative Draft default on create,
+    and optimistic concurrency control via expected_revision_hash.
     """
-    import re
     from datetime import UTC, datetime
 
     from agentv_runtime.manifest import compute_scenario_hash
@@ -675,7 +648,7 @@ def save_scenario():
     data = request.json or {}
     meta = data.setdefault("metadata", {})
     scen_id = meta.get("id") or data.get("id")
-    industry = data.get("industry", "generic")
+    industry = data.get("industry") or meta.get("industry") or "generic"
 
     if not scen_id or not re.match(r"^[a-zA-Z0-9_\-]+$", scen_id):
         return jsonify({"error": "Invalid or missing scenario ID"}), 400
@@ -684,14 +657,31 @@ def save_scenario():
     meta["id"] = scen_id
     meta.setdefault("version", data.get("version", "1.0.0"))
 
-    # Server-authoritative status validation
-    requested_status = data.get("status") or meta.get("status") or "Draft"
+    save_dir = config.PROJECT_ROOT / "industries" / industry / "scenarios"
+    save_dir.mkdir(parents=True, exist_ok=True)
+    save_path = save_dir / f"{scen_id}.json"
+
     valid, issues = validate_scenario_structure(data)
-    if requested_status in ("Ready", "Validated") and not valid:
-        meta["status"] = "Draft"
-        meta["status_warning"] = f"Demoted from {requested_status} to Draft: {'; '.join(issues)}"
+
+    # Server-authoritative lifecycle status enforcement:
+    # Save must NEVER mutate lifecycle status directly on existing scenarios.
+    # Creation defaults to Draft unless valid structure is provided with Validated/Ready;
+    # editing existing files preserves the current on-disk status.
+    # All status transitions must go exclusively through /api/scenarios/<id>/transition.
+    if save_path.exists():
+        try:
+            with open(save_path, encoding="utf-8") as f_curr:
+                curr_data = json.load(f_curr)
+                existing_status = (
+                    curr_data.get("metadata", {}).get("status")
+                    or curr_data.get("status")
+                    or "Draft"
+                )
+                meta["status"] = existing_status
+        except Exception:
+            meta["status"] = "Draft"
     else:
-        meta["status"] = requested_status
+        meta["status"] = "Draft"
 
     if valid:
         meta["validated_at"] = datetime.now(UTC).isoformat()
@@ -700,11 +690,6 @@ def save_scenario():
     # Compute content hash
     scen_hash = compute_scenario_hash(data)
     meta["content_hash"] = scen_hash
-
-    save_dir = config.PROJECT_ROOT / "industries" / industry / "scenarios"
-    save_dir.mkdir(parents=True, exist_ok=True)
-
-    save_path = save_dir / f"{scen_id}.json"
 
     # Optimistic concurrency check
     expected_rev = data.get("expected_revision_hash") or meta.get("expected_revision_hash")
@@ -734,13 +719,27 @@ def save_scenario():
         logger.error(f"Failed to save scenario {scen_id}: {e}")
         return jsonify({"error": f"Failed to save scenario: {str(e)}"}), 500
 
-    ScenarioCatalog.get_instance().build_index()
+    try:
+        ScenarioCatalog.get_instance().build_index()
+    except Exception as idx_err:
+        logger.warning(f"ScenarioCatalog build_index notice: {idx_err}")
+
+    try:
+        rel_path = str(
+            save_path.resolve().relative_to(Path(config.PROJECT_ROOT).resolve())
+        ).replace("\\", "/")
+    except ValueError:
+        try:
+            rel_path = str(save_path.relative_to(config.PROJECT_ROOT)).replace("\\", "/")
+        except Exception:
+            rel_path = str(save_path).replace("\\", "/")
+
     return jsonify(
         {
             "status": "success",
             "id": scen_id,
             "scenario_id": scen_id,
-            "path": str(save_path.relative_to(config.PROJECT_ROOT)).replace("\\", "/"),
+            "path": rel_path,
             "scenario_hash": scen_hash,
             "version": meta["version"],
             "lifecycle_status": meta["status"],
