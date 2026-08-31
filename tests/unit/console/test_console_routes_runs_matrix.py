@@ -106,7 +106,7 @@ def test_authoritative_verdict_edge_cases(tmp_path):
     (run_vault / "run_manifest.json").write_text("corrupted_json_content", encoding="utf-8")
 
     with patch.object(config, "RUN_LOG_DIR", runs_dir):
-        assert _authoritative_verdict("run-corrupt-manifest") == "ERROR"
+        assert _authoritative_verdict("run-corrupt-manifest") == "FAILED_VERIFICATION"
 
 
 def test_stream_runs_list_branches(client, tmp_path):

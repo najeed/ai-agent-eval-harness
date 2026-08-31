@@ -1,4 +1,3 @@
-import hmac
 import json
 import logging
 import os
@@ -12,7 +11,6 @@ from flask import Blueprint, Response, jsonify, request
 from eval_runner import config
 from eval_runner.explainer import explain_trace
 from eval_runner.metrics import MetricRegistry
-from eval_runner.utils import crypto
 
 from ..auth_manager import Permission, require_permission
 
@@ -82,7 +80,9 @@ def explain_run(run_id):
                 logger.warning(f"Error scanning master log: {e}")
 
             if filtered_lines:
-                temp_path = config.RUN_LOG_DIR / f"temp_explain_{run_id}.jsonl"
+                import uuid
+
+                temp_path = config.RUN_LOG_DIR / f"temp_explain_{run_id}_{uuid.uuid4().hex}.jsonl"
                 try:
                     with open(temp_path, "w", encoding="utf-8") as out:
                         out.write("\n".join(filtered_lines))
@@ -378,32 +378,17 @@ def _authoritative_verdict(run_id: str) -> str:
     if not tp or not tp.exists():
         return "NOT_EXECUTED"
 
-    manifest_path: Path | None = None
-    vault_manifest = config.RUN_LOG_DIR / run_id / "run_manifest.json"
-    if vault_manifest.exists():
-        manifest_path = vault_manifest
-    else:
-        cert_backup = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
-        if cert_backup.exists():
-            manifest_path = cert_backup
-    if manifest_path is None:
+    from eval_runner.verifier import TraceVerifier, locate_certificate_file
+
+    manifest_path = locate_certificate_file(run_id)
+    if manifest_path is None or not manifest_path.exists():
         return "UNKNOWN"
 
     try:
-        with open(manifest_path, encoding="utf-8") as f:
-            manifest = json.load(f)
-        expected = manifest.get("trace_hash")
-        if not isinstance(expected, str) or not expected:
-            return "UNKNOWN"
-        expected_hex = expected.split(":", 1)[1] if ":" in expected else expected
-        actual_hex = crypto.file_hash(tp)
-        return (
-            "VERIFIED"
-            if hmac.compare_digest(expected_hex.lower(), actual_hex.lower())
-            else "FAILED_VERIFICATION"
-        )
-    except Exception:  # noqa: BLE001 - verdict failures degrade to ERROR, not UNKNOWN
-        logger.debug("Authoritative verdict check failed for %s", run_id, exc_info=True)
+        is_valid = TraceVerifier.verify_trace(str(tp), str(manifest_path), verify_ledger=True)
+        return "VERIFIED" if is_valid else "FAILED_VERIFICATION"
+    except Exception as err:  # noqa: BLE001 - verdict failures degrade to ERROR, not UNKNOWN
+        logger.debug(f"Authoritative verdict check failed for {run_id}: {err}")
         return "ERROR"
 
 
@@ -680,11 +665,11 @@ def get_run_status(run_id):
 @require_permission(Permission.RUNS_WRITE)
 def cancel_run(run_id):
     """Cancels an active execution run via ExecutionBackend."""
-    from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+    from eval_runner.reference.inprocess_backend import get_execution_backend
 
     data = request.json or {}
     reason = data.get("reason", "Cancelled via Console API")
-    backend = InProcessExecutionBackend.get_instance()
+    backend = get_execution_backend()
     success = backend.cancel(run_id, reason=reason)
     if not success:
         return (
@@ -703,11 +688,11 @@ def cancel_run(run_id):
 @require_permission(Permission.RUNS_WRITE)
 def resume_run(run_id):
     """Resumes a paused or checkpointed evaluation run via ExecutionBackend."""
-    from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+    from eval_runner.reference.inprocess_backend import get_execution_backend
 
     data = request.json or {}
     resumption_token = data.get("resumption_token")
-    backend = InProcessExecutionBackend.get_instance()
+    backend = get_execution_backend()
     resumed = backend.resume(run_id, resumption_token=resumption_token, background=True)
     if resumed is None:
         return (
@@ -723,6 +708,7 @@ def resume_run(run_id):
 
 
 @run_bp.route("/v1/certificates/<run_id>", methods=["GET"])
+@require_permission(Permission.RUNS_READ)
 def get_verification_certificate(run_id):
     """Public Trust Protocol endpoint."""
     from eval_runner.verifier import locate_certificate_file
@@ -786,9 +772,20 @@ def tail_file_generator(log_path: Path, run_id: str, last_event_id: int = 0):
                 break
             stripped = line.strip()
             if stripped:
-                seq_id += 1
-                if seq_id > last_event_id:
-                    yield f"id: {seq_id}\ndata: {stripped}\n\n"
+                event_seq = None
+                try:
+                    ev_obj = json.loads(stripped)
+                    if isinstance(ev_obj, dict) and isinstance(ev_obj.get("_seq"), int):
+                        event_seq = ev_obj["_seq"]
+                except (json.JSONDecodeError, KeyError, TypeError, ValueError):
+                    pass
+                if event_seq is not None:
+                    curr_seq = event_seq
+                else:
+                    seq_id += 1
+                    curr_seq = seq_id
+                if curr_seq > last_event_id:
+                    yield f"id: {curr_seq}\ndata: {stripped}\n\n"
             if '"event": "run_end"' in line:
                 return
 
@@ -851,8 +848,20 @@ def tail_file_generator(log_path: Path, run_id: str, last_event_id: int = 0):
             idle_cycles = 0
             stripped = line.strip()
             if stripped:
-                seq_id += 1
-                yield f"id: {seq_id}\ndata: {stripped}\n\n"
+                event_seq = None
+                try:
+                    ev_obj = json.loads(stripped)
+                    if isinstance(ev_obj, dict) and isinstance(ev_obj.get("_seq"), int):
+                        event_seq = ev_obj["_seq"]
+                except (json.JSONDecodeError, KeyError, TypeError, ValueError):
+                    pass
+                if event_seq is not None:
+                    curr_seq = event_seq
+                else:
+                    seq_id += 1
+                    curr_seq = seq_id
+                if curr_seq > last_event_id:
+                    yield f"id: {curr_seq}\ndata: {stripped}\n\n"
 
             if (
                 '"event": "run_end"' in line

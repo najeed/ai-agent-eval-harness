@@ -523,13 +523,7 @@ class TraceVerifier:
         pre_append_size = p.stat().st_size
 
         def _rollback() -> None:
-            """Best-effort rollback of any partial mutation."""
-            try:
-                if p.exists() and p.stat().st_size != pre_append_size:
-                    with open(p, "r+b") as f:
-                        f.truncate(pre_append_size)
-            except Exception as rb_exc:  # noqa: BLE001
-                logger.critical(f"      [Verifier] Rollback of trace failed: {rb_exc}")
+            """Best-effort rollback of any partial mutation without truncating trace."""
             for stray in (sidecar_path, backup_path):
                 try:
                     if stray.exists():
@@ -546,6 +540,39 @@ class TraceVerifier:
             lambda: cls._compute_evidence_ledger(p.parent, run_id=run_id, exclude_files=[p.name])
         )
         seal_hash = _stage("freeze_seal_hash")(lambda: cls.compute_signature(p))
+
+        # Recompute deterministic evidence root hash from trace events
+        computed_evidence_root: str | None = None
+        if p.exists():
+            try:
+                from agentv_runtime.evidence_graph import (
+                    build_evidence_graph_from_events,
+                    compute_evidence_graph_root,
+                )
+
+                events_list: list[dict[str, Any]] = []
+                with open(p, encoding="utf-8") as tf:
+                    for line in tf:
+                        if line.strip():
+                            try:
+                                events_list.append(json.loads(line))
+                            except Exception as ev_parse_err:
+                                logger.debug(f"Trace event parse debug: {ev_parse_err}")
+                if events_list:
+                    ev_graph = build_evidence_graph_from_events(events_list)
+                    computed_evidence_root = compute_evidence_graph_root(ev_graph)
+            except Exception as ev_err:
+                logger.debug(f"Evidence graph derivation notice: {ev_err}")
+
+        if (
+            evidence_root_hash
+            and computed_evidence_root
+            and evidence_root_hash != computed_evidence_root
+        ):
+            raise ValueError(
+                f"EvidenceRootMismatch: supplied evidence_root_hash ({evidence_root_hash}) "
+                f"does not match authoritative computed root ({computed_evidence_root})"
+            )
 
         # 2. CANONICALIZE: build Manifest v3.0.0
         manifest = {
@@ -565,10 +592,22 @@ class TraceVerifier:
             "metadata": metadata or {},
             "behavioral_fingerprint_id": behavioral_fingerprint_id or "default_v1",
         }
-        if evidence_root_hash:
-            # [E2] Additive field within VC v3.0.0: the certificate commits to
-            # the decision's evidence root hash over its assertion set.
-            manifest["evidence_root_hash"] = evidence_root_hash
+        manifest_evidence_root = evidence_root_hash or computed_evidence_root
+        if manifest_evidence_root:
+            manifest["evidence_root_hash"] = manifest_evidence_root
+
+        # Causal contract binding
+        if metadata:
+            for k in (
+                "scenario_id",
+                "scenario_hash",
+                "policy_id",
+                "evaluator_config_hash",
+                "agent_id",
+                "agent_identity",
+            ):
+                if k in metadata and k not in manifest:
+                    manifest[k] = metadata[k]
 
         # Extract real consensus / rubrics from trace if present and not explicitly passed
         extracted_consensus = consensus or (metadata.get("consensus") if metadata else None)
@@ -1134,45 +1173,69 @@ def verify_trace_certificate(
             continue
 
         try:
+            from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+            from cryptography.hazmat.primitives.serialization import load_pem_public_key
+
             from .identity import IdentityService
 
-            private_key = IdentityService.get_private_key(identity_id)
-            if private_key is None:
+            public_key = None
+            raw_pk = entry.get("public_key")
+            if raw_pk:
+                try:
+                    if isinstance(raw_pk, str):
+                        if "BEGIN PUBLIC KEY" in raw_pk:
+                            public_key = load_pem_public_key(raw_pk.encode("utf-8"))
+                        else:
+                            public_key = Ed25519PublicKey.from_public_bytes(bytes.fromhex(raw_pk))
+                    elif isinstance(raw_pk, bytes):
+                        public_key = Ed25519PublicKey.from_public_bytes(raw_pk)
+                except Exception as pk_parse_err:
+                    logger.debug(f"Embedded public key parsing failed: {pk_parse_err}")
+
+            if public_key is None:
+                try:
+                    public_key = IdentityService.get_public_key(identity_id)
+                except Exception as id_lookup_err:
+                    logger.debug(f"IdentityService lookup error for {identity_id}: {id_lookup_err}")
+
+            if public_key is None:
                 result["errors"].append(
-                    f"No private key available for signer identity '{identity_id}'."
+                    f"No public key available for signer identity '{identity_id}'."
                 )
                 continue
 
-            # Derive public key for verification
-            if hasattr(private_key, "public_key"):
-                public_key = private_key.public_key()
-                sig_bytes = bytes.fromhex(signature_hex)
-
-                from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
-
-                if isinstance(public_key, Ed25519PublicKey):
-                    try:
-                        public_key.verify(sig_bytes, manifest_bytes)
-                        sig_verified = True
-                        result["signer_identity"] = identity_id
-                        result["algorithm"] = algorithm
-                    except Exception as verify_err:
-                        result["errors"].append(
-                            f"Ed25519 signature verification failed for "
-                            f"'{identity_id}': {verify_err}"
-                        )
-                else:
+            sig_bytes = bytes.fromhex(signature_hex)
+            if isinstance(public_key, Ed25519PublicKey):
+                try:
+                    public_key.verify(sig_bytes, manifest_bytes)
+                    sig_verified = True
+                    result["signer_identity"] = identity_id
+                    result["algorithm"] = algorithm
+                except Exception as verify_err:
                     result["errors"].append(
-                        f"Unsupported key type for signer '{identity_id}': "
-                        f"{type(public_key).__name__}"
+                        f"Ed25519 signature verification failed for '{identity_id}': {verify_err}"
                     )
             else:
-                result["errors"].append(f"Cannot derive public key from signer '{identity_id}'.")
+                result["errors"].append(
+                    f"Unsupported key type for signer '{identity_id}': {type(public_key).__name__}"
+                )
         except Exception as sig_err:
             logger.debug("Signature check error for %s/%s: %s", run_id, identity_id, sig_err)
             result["errors"].append(f"Signature check error for '{identity_id}': {sig_err}")
 
-    if sig_verified and result["manifest_hash_match"]:
+    # Enforce scenario hash binding requirement if scenario hash is present in certificate
+    scenario_bound_valid = True
+    if cert_data.get("scenario_hash"):
+        if scenario_data is None:
+            scenario_bound_valid = False
+            result["errors"].append(
+                "Scenario binding verification required but scenario_data not provided."
+            )
+        elif not result.get("scenario_hash_match"):
+            scenario_bound_valid = False
+            result["errors"].append("Scenario hash mismatch against certificate binding.")
+
+    if sig_verified and result["manifest_hash_match"] and scenario_bound_valid:
         result["verified"] = True
 
     return result
@@ -1190,7 +1253,7 @@ class VerificationAuthority:
         raw_trace_bytes: bytes | None = None,
         raw_trace_events: list[dict[str, Any]] | None = None,
         public_key_pem: str | None = None,
-        require_signature: bool = False,
+        require_signature: bool = True,
     ) -> dict[str, Any]:
         """
         Validates the entire evidence package:

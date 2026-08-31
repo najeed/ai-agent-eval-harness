@@ -60,6 +60,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         # State-aware handles for Windows stability
         self._handles = {}
         self._lock = threading.Lock()
+        self._run_states: dict[str, str] = {}
 
         # [Iteration 4: Compliance DNA]
         self._sequence_numbers = {}  # Per-run sequence counters
@@ -113,6 +114,14 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             or (data.get("data", {}).get("run_id") if isinstance(data.get("data"), dict) else None)
             or "unknown"
         )
+
+        with self._lock:
+            run_state = self._run_states.get(run_id, "RUNNING")
+            if run_state in ("FINALIZING", "SEALED"):
+                logger.debug(
+                    f"FlightRecorder write rejected: run '{run_id}' in state '{run_state}'"
+                )
+                return
 
         # [Iteration 4: Compliance DNA]
         with self._lock:
@@ -231,11 +240,14 @@ class FlightRecorderPlugin(BaseEvalPlugin):
 
     def finalize_run(self, run_id: str | None = None):
         """
-        Explicitly closes file handles and flushes telemetry to disk.
-        Critical for resolving Windows file-lock races.
+        Explicitly closes file handles, seals telemetry, and transitions lifecycle state.
+        Critical for resolving Windows file-lock races and preventing TOCTOU mutations.
         If run_id is provided, only closes handles associated with that run.
         """
         with self._lock:
+            if run_id and run_id != "unknown":
+                self._run_states[run_id] = "FINALIZING"
+
             # Determine which handles to close
             if run_id and run_id != "unknown":
                 # Find handles associated with this run
@@ -352,9 +364,24 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                 if os.getenv("AES_CERTIFICATION_MODE") == "1":
                     raise
 
-        # Cleanup sequence number if finalizing a specific run
+        # Transition state to SEALED and cleanup sequence counter
         if run_id:
+            with self._lock:
+                self._run_states[run_id] = "SEALED"
             self._sequence_numbers.pop(run_id, None)
+
+    def freeze_run(self, run_id: str) -> None:
+        """Explicitly freezes a run in preparation for verification/certification."""
+        if not run_id or run_id == "unknown":
+            return
+        with self._lock:
+            self._run_states[run_id] = "FINALIZING"
+        self.finalize_run(run_id=run_id)
+
+    def get_run_state(self, run_id: str) -> str:
+        """Returns the current lifecycle state for run_id (RUNNING, FINALIZING, SEALED)."""
+        with self._lock:
+            return self._run_states.get(run_id, "RUNNING")
 
     def after_evaluation(
         self, context: Any, results: list, span_context: dict[str, Any] | None = None

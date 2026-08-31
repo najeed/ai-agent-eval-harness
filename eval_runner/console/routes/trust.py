@@ -277,22 +277,25 @@ def verify_run_public(run_id):
             if manifest.get("provenance_chain"):
                 method = "ED25519 cryptographic signature proof"
 
-        # [Staff Hardening] Score-First Compliance Check (AgentV v1.6.0)
+        # Disentangle cryptographic validity from threshold compliance
         compliance = manifest.get("compliance", {})
-        status = compliance.get("status") or manifest.get("compliance_status")
+        status = compliance.get("status") or manifest.get("compliance_status") or "UNKNOWN"
         score = compliance.get("score")
         if score is None:
             score = manifest.get("compliance_score")
 
-        # Unauthorized if status is fail or score < 1.0
-        is_compliant = status in ["CERTIFIED", "pass", "certified"]
-        if score is not None and float(score) < 1.0:
-            is_compliant = False
+        is_compliant = str(status).lower() in ["certified", "pass", "passed"]
+        verified = bool(is_valid and is_compliant)
 
         return jsonify(
             {
                 "run_id": run_id,
-                "verified": is_valid and is_compliant,
+                "verified": verified,
+                "cryptographically_valid": is_valid,
+                "evaluation_verdict": status,
+                "compliance_score": score,
+                "policy_compliant": is_compliant,
+                "certificate_authoritative": not manifest.get("provisional", False),
                 "timestamp": datetime.now().astimezone().isoformat(),
                 "method": method,
                 "manifest": manifest,

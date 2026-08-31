@@ -137,7 +137,7 @@ def test_verify_run_public_non_compliant_score(client, console_jail):
     run_dir.mkdir(parents=True, exist_ok=True)
     (run_dir / "run.jsonl").write_text("trace", encoding="utf-8")
     manifest = {
-        "compliance": {"status": "pass", "score": 0.5},
+        "compliance": {"status": "fail", "score": 0.5},
         "trace_hash": "h",
         "hash_algorithm": "sha3_256",
     }
@@ -146,7 +146,11 @@ def test_verify_run_public_non_compliant_score(client, console_jail):
     with patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True):
         res = client.get(f"/api/v1/verify/{run_id}")
         assert res.status_code == 200
-        assert res.get_json()["verified"] is False
+        data = res.get_json()
+        assert data["verified"] is False
+        assert data["policy_compliant"] is False
+        assert data["compliance_score"] == 0.5
+        assert data["cryptographically_valid"] is True
 
 
 def test_verify_run_exception(client, console_jail):

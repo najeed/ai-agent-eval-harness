@@ -66,6 +66,7 @@ export const LiveDebugger: React.FC = () => {
   const [events, setEvents] = useState<LogEvent[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<LogEvent[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<LogEvent | null>(null);
+  const [isWindowed, setIsWindowed] = useState<boolean>(false);
 
   // 4-level Telemetry controls
   const [telemetryLevel, setTelemetryLevel] = useState<'PHASE' | 'SUBTASK' | 'ACTION' | 'STEP'>('STEP');
@@ -473,7 +474,11 @@ export const LiveDebugger: React.FC = () => {
       setEvents(prevEvents => {
         const next = [...prevEvents, data];
         // Bounded client-side memory: keep sliding window up to 10,000 events
-        return next.length > 10000 ? next.slice(-10000) : next;
+        if (next.length > 10000) {
+          setIsWindowed(true);
+          return next.slice(-10000);
+        }
+        return next;
       });
     };
 
@@ -1025,6 +1030,16 @@ export const LiveDebugger: React.FC = () => {
 
         {/* Timeline event feed */}
         <div className="flex-1 overflow-y-auto p-3 space-y-2">
+          {isWindowed && (
+            <div className="p-2.5 rounded border border-amber-500/40 bg-amber-500/10 text-amber-300 text-[11px] space-y-1">
+              <div className="font-bold flex items-center gap-1.5 uppercase tracking-wider">
+                <span>⚠</span> PARTIAL / WINDOWED TRACE
+              </div>
+              <p className="text-[10px] text-amber-200/80">
+                Displaying the latest 10,000 events. Older events have been windowed from memory.
+              </p>
+            </div>
+          )}
           {filteredEvents.length === 0 ? (
             <p className="text-xs text-slate-500 italic p-2">Waiting for telemetry stream...</p>
           ) : (

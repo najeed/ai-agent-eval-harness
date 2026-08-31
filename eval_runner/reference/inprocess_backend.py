@@ -16,6 +16,11 @@ from eval_runner.interfaces.backend import ExecutionBackend
 from eval_runner.reference.sqlite_checkpoint import SQLiteCheckpointStore
 
 
+def get_execution_backend() -> InProcessExecutionBackend:
+    """Canonical factory to resolve the active execution backend."""
+    return InProcessExecutionBackend.get_instance()
+
+
 class InProcessExecutionBackend(ExecutionBackend):
     """
     In-process reference execution backend for local evaluation runs.

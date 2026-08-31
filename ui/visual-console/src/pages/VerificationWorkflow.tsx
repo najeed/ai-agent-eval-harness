@@ -122,7 +122,7 @@ export const VerificationWorkflow: React.FC = () => {
   const runData = runQuery.data || {};
   const verdict =
     runData.verification_status ||
-    (runData.has_certificate ? 'VERIFIED' : runData.status ? `${runData.status} (Unverified)` : null);
+    (runData.status ? `${runData.status} (Unverified)` : null);
 
   // Authoritative runtime health; never render READY without this.
   const healthQuery = useQuery<RuntimeHealth>({

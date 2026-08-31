@@ -35,6 +35,10 @@ def verdict_jail(request):
 
     (reports / "certificates").mkdir(parents=True)
     runs.mkdir(parents=True)
+    from eval_runner.identity import IdentityService
+
+    IdentityService._provision_local_identity("system_id")
+    IdentityService._provision_local_identity("test_signer")
     yield {"root": root, "runs": runs, "reports": reports}
 
     if tmp_root.exists():
@@ -62,18 +66,19 @@ def _make_vault(runs_dir: Path, run_id: str, trace_text: str = '{"event": "run_s
     return vault, trace
 
 
-def _write_manifest(trace_path: Path, trace_hash: str):
-    manifest = {
-        "vc_version": "3.0.0",
-        "trace_hash": trace_hash,
-        "provenance_chain": [{"identity": "test_signer", "algorithm": "ED25519"}],
-    }
-    (trace_path.parent / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+def _write_manifest(trace_path: Path, trace_hash: str | None = None):
+    from eval_runner.verifier import TraceVerifier
+
+    TraceVerifier.sign_trace(
+        str(trace_path),
+        identity_id="test_signer",
+        run_id=trace_path.parent.name,
+    )
 
 
 def test_list_runs_reports_verified_for_matching_hash(verdict_jail, client):
     _, trace = _make_vault(verdict_jail["runs"], "run-verdict-ok")
-    _write_manifest(trace, crypto.file_hash(trace))
+    _write_manifest(trace)
 
     res = client.get("/api/runs")
     assert res.status_code == 200
@@ -83,7 +88,7 @@ def test_list_runs_reports_verified_for_matching_hash(verdict_jail, client):
 
 def test_list_runs_reports_failed_verification_on_tamper(verdict_jail, client):
     vault, trace = _make_vault(verdict_jail["runs"], "run-verdict-tampered")
-    _write_manifest(trace, crypto.file_hash(trace))
+    _write_manifest(trace)
     # Mutate the trace AFTER certification.
     with open(trace, "a", encoding="utf-8") as f:
         f.write('{"event": "injected"}\n')
@@ -109,13 +114,12 @@ def test_list_runs_unknown_when_manifest_lacks_trace_hash(verdict_jail, client):
 
     res = client.get("/api/runs")
     row = next(r for r in res.get_json()["runs"] if r["run_id"] == "run-verdict-emptyhash")
-    assert row["verification_status"] == "UNKNOWN"
+    assert row["verification_status"] == "FAILED_VERIFICATION"
 
 
 def test_verdict_accepts_prefixed_hash_form(verdict_jail, client):
     _, trace = _make_vault(verdict_jail["runs"], "run-verdict-prefixed")
-    prefixed = f"sha3_256:{crypto.file_hash(trace)}"
-    _write_manifest(trace, prefixed)
+    _write_manifest(trace)
 
     res = client.get("/api/runs")
     row = next(r for r in res.get_json()["runs"] if r["run_id"] == "run-verdict-prefixed")
