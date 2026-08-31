@@ -16,6 +16,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from agentv_runtime.manifest import compute_scenario_hash
+from agentv_runtime.package import VerificationPackage
 from eval_runner import config
 from eval_runner.identity import IdentityService
 from eval_runner.verifier import (
@@ -1790,3 +1791,122 @@ def test_verify_trace_certificate_get_public_key_exception(certified_manifest):
         assert any(
             "Signature check error" in e or "No public key available" in e for e in res["errors"]
         )
+
+
+def test_verify_trace_certificate_scenario_hash_mismatch_fails_verification(clean_vault_setup):
+    """
+    Mutation Assurance Test: When scenario_hash is bound in certificate and scenario_data
+    does not match, verified must be False (kills Mutant [93]: scenario_bound_valid = False).
+    """
+    run_id = clean_vault_setup["run_id"]
+    trace_file = clean_vault_setup["trace_file"]
+    scen = {"scenario_id": "test_scen_001", "steps": [{"step": 1}]}
+    scen_hash = compute_scenario_hash(scen)
+
+    manifest = TraceVerifier.sign_trace(
+        str(trace_file),
+        identity_id="signer",
+        run_id=run_id,
+        metadata={"scenario_hash": scen_hash},
+    )
+    raw_trace_bytes = trace_file.read_bytes()
+
+    # 1. Matching scenario data -> verified is True
+    res_ok = verify_trace_certificate(
+        run_id=run_id,
+        trace_bytes=raw_trace_bytes,
+        cert_data=manifest,
+        scenario_data=scen,
+    )
+    assert res_ok["verified"] is True
+    assert res_ok["scenario_hash_match"] is True
+
+    # 2. Tampered scenario data -> verified is False (kills Mutant [93])
+    tampered_scen = {"scenario_id": "test_scen_001", "steps": [{"step": 2}]}
+    res_tampered = verify_trace_certificate(
+        run_id=run_id,
+        trace_bytes=raw_trace_bytes,
+        cert_data=manifest,
+        scenario_data=tampered_scen,
+    )
+    assert res_tampered["scenario_hash_match"] is False
+    assert res_tampered["verified"] is False
+    assert any("Scenario hash mismatch" in e for e in res_tampered["errors"])
+
+
+def test_sign_trace_declared_evidence_root_mismatch_raises(clean_vault_setup):
+    """
+    Mutation Assurance Test: Declaring an evidence_root_hash that does not match
+    computed_evidence_root must raise EvidenceRootMismatch (kills Mutant 46).
+    """
+    run_id = clean_vault_setup["run_id"]
+    trace_file = clean_vault_setup["trace_file"]
+    with pytest.raises(ValueError, match="EvidenceRootMismatch"):
+        TraceVerifier.sign_trace(
+            str(trace_file),
+            identity_id="signer",
+            run_id=run_id,
+            evidence_root_hash="sha3_256:0000000000000000000000000000000000000000000000000000000000000000",
+        )
+
+
+def test_verify_trace_cert_missing_scenario_data_fails_verification(clean_vault_setup):
+    """
+    Mutation Assurance Test: When certificate contains scenario_hash but scenario_data
+    is None, verified must be False (kills Mutant 63: scenario_bound_valid = False).
+    """
+    run_id = clean_vault_setup["run_id"]
+    trace_file = clean_vault_setup["trace_file"]
+    scen = {"scenario_id": "test_scen_001", "steps": [{"step": 1}]}
+    scen_hash = compute_scenario_hash(scen)
+
+    manifest = TraceVerifier.sign_trace(
+        str(trace_file),
+        identity_id="signer",
+        run_id=run_id,
+        metadata={"scenario_hash": scen_hash},
+    )
+    raw_trace_bytes = trace_file.read_bytes()
+
+    res = verify_trace_certificate(
+        run_id=run_id,
+        trace_bytes=raw_trace_bytes,
+        cert_data=manifest,
+        scenario_data=None,
+    )
+    assert res["verified"] is False
+    assert any(
+        "Scenario binding verification required but scenario_data not provided" in e
+        for e in res["errors"]
+    )
+
+
+def test_verification_authority_verify_package_complete_provenance_fallback():
+    """
+    Mutation Assurance Test: When ev_graph lacks is_complete_provenance key, it defaults
+    to True and does not raise DirectProvenanceViolation (kills Mutant 119).
+    """
+    pkg = VerificationPackage(
+        scenario_id="scen_1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:abcd",
+        manifest_id="manifest-001",
+        manifest_hash="sha3_256:fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321",
+        execution_identity={"agent_id": "test_agent"},
+        trace_hash="sha3_256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+        trace_seal={"seal": "ok"},
+        evidence_root_hash="sha3_256:0000000000000000000000000000000000000000000000000000000000000000",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={"verdict": "PASS"},
+    )
+    raw_events = [{"event": "assertion_evaluated", "_seq": 1, "status": "passed"}]
+    dummy_root = "sha3_256:0000000000000000000000000000000000000000000000000000000000000000"
+    with (
+        patch("agentv_runtime.evidence_graph.compute_evidence_graph_root", return_value=dummy_root),
+        patch("agentv_runtime.evidence_graph.build_evidence_graph_from_events", return_value={}),
+    ):
+        res = VerificationAuthority.verify_package(
+            pkg, raw_trace_events=raw_events, require_signature=True
+        )
+        assert not any("DirectProvenanceViolation" in f for f in res["failures"])

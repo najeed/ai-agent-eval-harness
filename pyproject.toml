@@ -39,7 +39,7 @@ dependencies = [
 
 [project.optional-dependencies]
 nlp = [
-    "sentence-transformers==6.0.0",
+    "sentence-transformers==6.0.1",
     "datasets==5.0.1",
 ]
 llm = [
@@ -61,7 +61,7 @@ vcs = [
     "GitPython==3.1.61",
 ]
 all = [
-    "sentence-transformers==6.0.0",
+    "sentence-transformers==6.0.1",
     "datasets==5.0.1",
     "google-genai==2.20.0",
     "langchain-openai==1.6.0",

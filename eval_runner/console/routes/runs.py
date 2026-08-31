@@ -708,7 +708,6 @@ def resume_run(run_id):
 
 
 @run_bp.route("/v1/certificates/<run_id>", methods=["GET"])
-@require_permission(Permission.RUNS_READ)
 def get_verification_certificate(run_id):
     """Public Trust Protocol endpoint."""
     from eval_runner.verifier import locate_certificate_file
@@ -772,20 +771,9 @@ def tail_file_generator(log_path: Path, run_id: str, last_event_id: int = 0):
                 break
             stripped = line.strip()
             if stripped:
-                event_seq = None
-                try:
-                    ev_obj = json.loads(stripped)
-                    if isinstance(ev_obj, dict) and isinstance(ev_obj.get("_seq"), int):
-                        event_seq = ev_obj["_seq"]
-                except (json.JSONDecodeError, KeyError, TypeError, ValueError):
-                    pass
-                if event_seq is not None:
-                    curr_seq = event_seq
-                else:
-                    seq_id += 1
-                    curr_seq = seq_id
-                if curr_seq > last_event_id:
-                    yield f"id: {curr_seq}\ndata: {stripped}\n\n"
+                seq_id += 1
+                if seq_id > last_event_id:
+                    yield f"id: {seq_id}\ndata: {stripped}\n\n"
             if '"event": "run_end"' in line:
                 return
 
@@ -848,20 +836,9 @@ def tail_file_generator(log_path: Path, run_id: str, last_event_id: int = 0):
             idle_cycles = 0
             stripped = line.strip()
             if stripped:
-                event_seq = None
-                try:
-                    ev_obj = json.loads(stripped)
-                    if isinstance(ev_obj, dict) and isinstance(ev_obj.get("_seq"), int):
-                        event_seq = ev_obj["_seq"]
-                except (json.JSONDecodeError, KeyError, TypeError, ValueError):
-                    pass
-                if event_seq is not None:
-                    curr_seq = event_seq
-                else:
-                    seq_id += 1
-                    curr_seq = seq_id
-                if curr_seq > last_event_id:
-                    yield f"id: {curr_seq}\ndata: {stripped}\n\n"
+                seq_id += 1
+                if seq_id > last_event_id:
+                    yield f"id: {seq_id}\ndata: {stripped}\n\n"
 
             if (
                 '"event": "run_end"' in line

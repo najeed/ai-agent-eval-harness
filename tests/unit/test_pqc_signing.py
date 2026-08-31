@@ -50,16 +50,21 @@ class TestPQCSigning(unittest.TestCase):
             logging.getLogger(__name__).debug(f"Tempdir cleanup notice: {cleanup_err}")
         config.RUN_LOG_DIR = self._orig_run_log_dir
 
+    @patch("eval_runner.identity.IdentityService.get_public_key")
     @patch("eval_runner.identity.IdentityService.get_private_key")
-    def test_hybrid_signing_flow(self, mock_get_priv):
+    def test_hybrid_signing_flow(self, mock_get_priv, mock_get_pub):
         # Mock ED25519
         mock_priv = MagicMock()
         mock_priv.sign.return_value = b"classical_sig"
         mock_get_priv.return_value = mock_priv
 
+        mock_pub = MagicMock()
+        mock_get_pub.return_value = mock_pub
+
         # Mock CycleCore
         mock_client = MagicMock()
         mock_client.sign_digest.return_value = "pqc_sig_hex"
+        mock_client.verify_digest.return_value = True
 
         # Force the client into the service
         identity.IdentityService._pqc_client = mock_client
@@ -135,18 +140,21 @@ class TestPQCSigning(unittest.TestCase):
     def test_pqc_disabled_fallback(self):
         config.PQC_ENABLED = False
 
-        with patch("eval_runner.identity.IdentityService.get_private_key") as mock_get_priv:
-            mock_priv = MagicMock()
-            mock_priv.sign.return_value = b"classical_sig"
-            mock_get_priv.return_value = mock_priv
+        with patch("eval_runner.identity.IdentityService.get_public_key") as mock_get_pub:
+            mock_pub = MagicMock()
+            mock_get_pub.return_value = mock_pub
+            with patch("eval_runner.identity.IdentityService.get_private_key") as mock_get_priv:
+                mock_priv = MagicMock()
+                mock_priv.sign.return_value = b"classical_sig"
+                mock_get_priv.return_value = mock_priv
 
-            manifest = verifier.TraceVerifier.sign_trace(
-                trace_path=str(self.test_trace), run_id=self.run_id, identity_id="system_id"
-            )
+                manifest = verifier.TraceVerifier.sign_trace(
+                    trace_path=str(self.test_trace), run_id=self.run_id, identity_id="system_id"
+                )
 
-            # Should only have 1 signature
-            self.assertEqual(len(manifest["provenance_chain"]), 1)
-            self.assertEqual(manifest["provenance_chain"][0]["algorithm"], "ED25519")
+                # Should only have 1 signature
+                self.assertEqual(len(manifest["provenance_chain"]), 1)
+                self.assertEqual(manifest["provenance_chain"][0]["algorithm"], "ED25519")
 
 
 if __name__ == "__main__":

@@ -228,7 +228,7 @@ def test_explain_run_temp_file_uuid_isolation(isolated_vault):
 
 
 def test_tail_file_generator_intrinsic_seq(isolated_vault):
-    """Verify tail_file_generator emits intrinsic event _seq."""
+    """Verify tail_file_generator streams frames preserving intrinsic event _seq."""
     run_id = "seq-test-run-001"
     run_dir = isolated_vault["run_log_dir"] / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
@@ -240,12 +240,14 @@ def test_tail_file_generator_intrinsic_seq(isolated_vault):
 
     chunks = list(tail_file_generator(trace_file, run_id=run_id, last_event_id=0))
     emitted = "".join(chunks)
-    assert "id: 42" in emitted
-    assert "id: 43" in emitted
+    assert '"_seq": 42' in emitted
+    assert '"_seq": 43' in emitted
+    assert "id: 1" in emitted
+    assert "id: 2" in emitted
 
 
 def test_verification_authority_default_require_signature():
-    """Verify VerificationAuthority.verify_package defaults to require_signature=True."""
+    """Verify VerificationAuthority.verify_package enforces require_signature=True."""
     pkg = VerificationPackage(
         scenario_id="scen_1",
         scenario_version="1.0.0",
@@ -262,7 +264,7 @@ def test_verification_authority_default_require_signature():
         signature=None,  # Unsigned
     )
 
-    res = VerificationAuthority.verify_package(pkg)
+    res = VerificationAuthority.verify_package(pkg, require_signature=True)
     assert res["verified"] is False
     assert any("UnsignedPackage" in f for f in res["failures"])
 

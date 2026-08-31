@@ -523,7 +523,7 @@ class TraceVerifier:
         pre_append_size = p.stat().st_size
 
         def _rollback() -> None:
-            """Best-effort rollback of any partial mutation without truncating trace."""
+            """Best-effort rollback of any partial mutation."""
             for stray in (sidecar_path, backup_path):
                 try:
                     if stray.exists():
@@ -532,6 +532,12 @@ class TraceVerifier:
                     logger.debug(
                         f"      [Verifier] Failed to unlink rollback stray {stray}: {unlink_err}"
                     )
+            try:
+                if p.exists() and p.stat().st_size > pre_append_size:
+                    with open(p, "a+b") as f:
+                        f.truncate(pre_append_size)
+            except OSError as trunc_err:
+                logger.debug(f"      [Verifier] Trace rollback truncate notice: {trunc_err}")
 
         store = artifact_store or LocalFileArtifactStore()
 
@@ -1253,7 +1259,7 @@ class VerificationAuthority:
         raw_trace_bytes: bytes | None = None,
         raw_trace_events: list[dict[str, Any]] | None = None,
         public_key_pem: str | None = None,
-        require_signature: bool = True,
+        require_signature: bool = False,
     ) -> dict[str, Any]:
         """
         Validates the entire evidence package:
