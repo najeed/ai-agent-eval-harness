@@ -100,3 +100,31 @@ def reconstruct_results_from_events(events: list) -> list:
     final_results = list(results_map.values())
     TriageEngine.apply_triage(final_results)
     return final_results
+
+
+def resolve_trace_path(run_id: str) -> Path | None:
+    """
+    Resolve the canonical path to a run's trace log within RUN_LOG_DIR.
+    Checks run directory structure (e.g. RUN_LOG_DIR / run_id / run.jsonl)
+    or direct file (e.g. RUN_LOG_DIR / f"{run_id}.jsonl").
+    """
+    if not run_id or not isinstance(run_id, str):
+        return None
+    import re
+
+    from . import config
+
+    if not re.match(r"^[a-zA-Z0-9_\-]+$", run_id):
+        return None
+
+    base_dir = Path(config.RUN_LOG_DIR).resolve()
+    candidates = [
+        base_dir / run_id / "run.jsonl",
+        base_dir / run_id / f"{run_id}.jsonl",
+        base_dir / f"{run_id}.jsonl",
+        base_dir / run_id,
+    ]
+    for c in candidates:
+        if c.exists() and c.is_file():
+            return c
+    return base_dir / run_id / "run.jsonl"

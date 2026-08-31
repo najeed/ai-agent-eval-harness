@@ -277,7 +277,7 @@ async def test_handle_certify_provenance_and_error_handling():
     with (
         patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=True),
         patch("pathlib.Path.exists", return_value=True),
-        patch("eval_runner.console.routes.trust.execute_industrial_certification") as mock_cert,
+        patch("eval_runner.services.certification.execute_industrial_certification") as mock_cert,
     ):
         mock_cert.return_value = {
             "status": "certified",

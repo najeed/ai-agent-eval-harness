@@ -9,6 +9,10 @@ from flask import Blueprint, jsonify, request
 
 from eval_runner import config, identity
 from eval_runner.reference.signing import LocalEd25519SigningBackend
+from eval_runner.services.certification import (
+    CertificationService,
+    execute_industrial_certification,
+)
 from eval_runner.utils import crypto
 from eval_runner.utils.safe_path import is_path_safe
 from eval_runner.verifier import TraceVerifier, locate_certificate_file
@@ -22,200 +26,13 @@ trust_bp = Blueprint("trust", __name__, url_prefix="/api")
 
 
 def _read_run_truth_level(run_id: str) -> tuple[str | None, bool]:
-    """
-    Reads the run vault's declared execution truth level.
-
-    Returns (execution_mode, provisional). provisional=True when the run
-    never explicitly declared a mode (silent SIMULATED default) — such
-    certificates are stamped non-authoritative for audit purposes.
-    """
-    trace = resolve_trace_path(run_id) if run_id else None
-    if not trace or not trace.is_file() or not is_path_safe(trace, config.RUN_LOG_DIR):
-        return None, False
-    try:
-        with open(trace, encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                ev = json.loads(line)
-                if ev.get("event") not in ("run_start", "start"):
-                    continue
-                data = ev.get("data", {}) or {}
-                meta = data.get("metadata") or ev.get("metadata") or {}
-                mode = (
-                    data.get("execution_mode")
-                    or meta.get("execution_mode")
-                    or ev.get("execution_mode")
-                )
-                is_prov = bool(
-                    data.get("provisional") or meta.get("provisional") or ev.get("provisional")
-                )
-                if is_prov or mode in ("simulated", "unknown"):
-                    return mode or "simulated", True
-                if mode:
-                    return mode, False
-    except Exception as e:  # noqa: BLE001 - truth-level is best-effort metadata
-        logger.debug("Could not read execution truth level for %s: %s", run_id, e)
-    return None, False
+    """Compatibility wrapper delegating to CertificationService."""
+    return CertificationService.read_run_truth_level(run_id)
 
 
 def _extract_computed_run_outcome(vault_dir: Path, target_trace: Path) -> tuple[str, float]:
-    """
-    Extracts the authoritative computed outcome from persisted run artifacts.
-    Returns (status, score). If unparseable or inconclusive, returns ("inconclusive", 0.0).
-    """
-    manifest_path = vault_dir / "run_manifest.json"
-    if manifest_path.exists():
-        try:
-            with open(manifest_path, encoding="utf-8") as f:
-                m_data = json.load(f)
-                comp_status = m_data.get("compliance_status") or m_data.get("status") or ""
-                comp_score = m_data.get("compliance_score")
-                if comp_score is None:
-                    comp_score = m_data.get("score", 0.0)
-                if comp_status:
-                    return str(comp_status).lower(), float(comp_score)
-        except Exception as e:
-            logger.debug("Failed reading existing manifest for outcome: %s", e)
-
-    try:
-        with open(target_trace, encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                ev = json.loads(line)
-                if ev.get("event") in ("run_end", "end", "session_decision"):
-                    data = ev.get("data", {}) or {}
-                    status = data.get("status") or ev.get("status") or ""
-                    score = data.get("score") if data.get("score") is not None else ev.get("score")
-                    decision = data.get("decision") or ev.get("decision") or ""
-                    verdict = data.get("verdict") or ev.get("verdict") or ""
-
-                    if (
-                        "fail" in str(status).lower()
-                        or decision == "FAIL"
-                        or verdict in ("FAIL", "FAILED")
-                    ):
-                        return "fail", float(score if score is not None else 0.0)
-                    if (
-                        "pass" in str(status).lower()
-                        or decision in ("PASS", "VERIFIED")
-                        or verdict in ("PASS", "VERIFIED")
-                    ):
-                        return "pass", float(score if score is not None else 1.0)
-    except Exception as e:
-        logger.debug("Failed parsing trace for computed outcome: %s", e)
-
-    return "inconclusive", 0.0
-
-
-def execute_industrial_certification(
-    run_id: str,
-    identity_id: str = "system_id",
-    status: str | None = None,
-    score: float | None = None,
-    policy_ref: str | None = None,
-    ttl: int | None = None,
-    behavioral_fingerprint_id: str | None = None,
-) -> dict:
-    """
-    Authoritative Industrial Certification Service.
-    Derives status and score strictly from the computed evaluation outcome.
-    Fails closed if the outcome is inconclusive or cannot be positively verified.
-    """
-    if (
-        not run_id
-        or not isinstance(run_id, str)
-        or ".." in run_id
-        or "/" in run_id
-        or "\\" in run_id
-    ):
-        raise ValueError(f"Invalid or unsafe run_id: {run_id}")
-
-    target_trace = resolve_trace_path(run_id)
-    if (
-        not target_trace
-        or not is_path_safe(target_trace, config.RUN_LOG_DIR)
-        or not target_trace.exists()
-    ):
-        logger.error(
-            f"   [Certification] 404 FAIL: Authoritative vault trace not found for run {run_id}"
-        )
-        raise FileNotFoundError(f"Run vault not found for {run_id}")
-
-    vault_dir = target_trace.parent
-
-    # 2. Authoritative Signature Execution (Zero-Copy)
-    execution_mode, provisional = _read_run_truth_level(run_id)
-    if provisional or execution_mode in ("simulated", "unknown"):
-        logger.error(
-            "   [Certification] FAIL CLOSED: Cannot issue authoritative certification "
-            "for provisional or unknown run %s (mode=%s, provisional=%s)",
-            run_id,
-            execution_mode,
-            provisional,
-        )
-        raise ValueError(
-            f"Run {run_id} is provisional (execution mode undeclared or unknown); "
-            "cannot issue authoritative certification."
-        )
-
-    computed_status, computed_score = _extract_computed_run_outcome(vault_dir, target_trace)
-    if computed_status == "inconclusive":
-        if status:
-            effective_status = status.lower()
-            effective_score = float(score) if score is not None else 1.0
-        else:
-            logger.error(
-                "   [Certification] Inconclusive outcome for %s: missing terminal events.",
-                run_id,
-            )
-            raise ValueError(
-                f"Run {run_id} has inconclusive outcome: missing terminal evaluation events"
-            )
-    elif computed_status == "fail":
-        if status and status.lower() == "pass":
-            logger.warning(
-                "   [Certification] Cannot override computed FAIL with PASS for %s. Fail-closed.",
-                run_id,
-            )
-        effective_status = "fail"
-        effective_score = computed_score
-    else:
-        effective_status = "pass"
-        effective_score = (
-            score if (score is not None and score <= computed_score) else computed_score
-        )
-
-    manifest = TraceVerifier.sign_trace(
-        str(target_trace),
-        run_id=run_id,
-        identity_id=identity_id,
-        compliance_status=effective_status,
-        compliance_score=effective_score,
-        policy_ref=policy_ref,
-        ttl_days=ttl or config.GOVERNANCE_TTL_DAYS,
-        execution_mode=execution_mode,
-        provisional=provisional,
-        behavioral_fingerprint_id=behavioral_fingerprint_id,
-    )
-
-    # 3. Authoritative Manifest Save (Within the Vault)
-    manifest_path = vault_dir / "run_manifest.json"
-    with open(manifest_path, "w", encoding="utf-8") as f:
-        json.dump(manifest, f, indent=2)
-
-    return {
-        "status": "certified",
-        "run_id": run_id,
-        "manifest": {
-            "trace_hash": manifest.get("trace_hash"),
-            "manifest_path": str(manifest_path),
-            "certified_at": datetime.now().isoformat(),
-        },
-    }
+    """Compatibility wrapper delegating to CertificationService."""
+    return CertificationService.extract_computed_run_outcome(vault_dir, target_trace)
 
 
 @trust_bp.route("/v1/certify", methods=["POST"])
@@ -299,6 +116,8 @@ def verify_run_public(run_id):
                 "run_id": run_id,
                 "verified": verified,
                 "cryptographically_valid": is_valid,
+                "certificate_valid": is_valid,
+                "evaluation_passed": is_compliant,
                 "evaluation_verdict": status,
                 "compliance_score": score,
                 "policy_compliant": is_compliant,

@@ -192,6 +192,22 @@ export function projectToCanvas(doc: unknown): CanvasProjection {
         message: `edge ${JSON.stringify(src)}→${JSON.stringify(dst)} references unknown node(s)`,
       });
     }
+    const edgeType = e.type !== undefined ? e.type : e.edge_type;
+    if (edgeType !== undefined && !isValidEdgeType(edgeType)) {
+      reasons.push({
+        code: 'EDGE_TYPE_UNKNOWN',
+        message: `edge ${String(src)}→${String(dst)} has unknown type '${String(edgeType)}' (valid: ${EDGE_TYPES.join(', ')})`,
+      });
+    }
+    if (e.priority !== undefined) {
+      const priority = Number(e.priority);
+      if (!Number.isFinite(priority)) {
+        reasons.push({
+          code: 'EDGE_PRIORITY_INVALID',
+          message: `edge ${String(src)}→${String(dst)} has non-numeric priority '${String(e.priority)}'`,
+        });
+      }
+    }
   }
 
   if (reasons.length > 0) throw new DocumentProjectionError(reasons);

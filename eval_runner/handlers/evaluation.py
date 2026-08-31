@@ -571,7 +571,7 @@ async def handle_certify(args):
         return 1
 
     try:
-        from ..console.routes.trust import execute_industrial_certification
+        from ..services.certification import execute_industrial_certification
 
         identity_id = args.identity if hasattr(args, "identity") and args.identity else "system_id"
         status = args.status if hasattr(args, "status") and args.status else None
