@@ -57,6 +57,7 @@ jobs:
       uses: dorny/paths-filter@v3
       id: changes
       with:
+        base: ${{ github.event_name == 'pull_request' && github.base_ref || (github.event.before != '0000000000000000000000000000000000000000' && github.event.before || 'HEAD~1') }}
         filters: |
           scenarios:
             - 'industries/**'

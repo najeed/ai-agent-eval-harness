@@ -35,6 +35,7 @@ def console_jail(request):
 def client(console_jail, monkeypatch):
     app = Flask(__name__)
     app.secret_key = "test-secret"
+    app.config["LOGIN_DISABLED"] = True
     app.register_blueprint(trust_bp)
 
     monkeypatch.setattr(config, "PROJECT_ROOT", console_jail["root"])

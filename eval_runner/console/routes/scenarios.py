@@ -7,6 +7,7 @@ import re
 import urllib.error
 import urllib.parse
 import urllib.request
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -640,7 +641,6 @@ def save_scenario():
     Enforces AES 1.4 schema validation, server-authoritative Draft default on create,
     and optimistic concurrency control via expected_revision_hash.
     """
-    from datetime import UTC, datetime
 
     from agentv_runtime.manifest import compute_scenario_hash
     from eval_runner import config
@@ -754,7 +754,6 @@ def transition_scenario_lifecycle(scenario_id):
     Server-authoritative state machine transition:
     Draft -> Validated -> Ready -> Deprecated
     """
-    from datetime import UTC, datetime
 
     from agentv_runtime.manifest import compute_scenario_hash
     from eval_runner import config
