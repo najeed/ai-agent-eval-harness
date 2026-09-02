@@ -56,12 +56,10 @@ class LocalFileArtifactStore(ArtifactStore):
         append: bool = False,
         **kwargs: Any,
     ) -> str:
-        # Check if already sealed
-        # (unless writing seal marker, trace_seal, or run_manifest during certification)
+        # Check if already sealed (only internal seal markers allowed)
         if self.is_sealed(run_id) and artifact_name not in (
             ".sealed",
             "trace_seal.json",
-            "run_manifest.json",
         ):
             raise PermissionError(
                 f"Artifact vault for run '{run_id}' is sealed; "

@@ -51,7 +51,7 @@ export const ScenarioComposer: React.FC = () => {
   const [title, setTitle] = useState('Untitled Draft');
   const [version, setVersion] = useState('1.0.0');
   const [lifecycleStatus, setLifecycleStatus] = useState<
-    'Draft' | 'Validated' | 'Ready' | 'Deprecated'
+    'Draft' | 'Validated' | 'Ready' | 'Deprecated' | 'Published'
   >('Draft');
   const [industry, setIndustry] = useState('generic');
   const [complianceLevel, setComplianceLevel] = useState('Standard');
@@ -803,7 +803,7 @@ export const ScenarioComposer: React.FC = () => {
           <div className="flex items-center gap-1 bg-slate-950/80 border border-slate-850 rounded px-2 py-0.5">
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">Status:</span>
             {(() => {
-              const options = ['Draft', 'Validated', 'Ready', 'Deprecated'] as const;
+              const options = ['Draft', 'Validated', 'Ready', 'Deprecated', 'Published'] as const;
               const legal = LEGAL_TRANSITIONS[lifecycleStatus] || [];
               return (
                 <select

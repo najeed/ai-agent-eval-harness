@@ -52,23 +52,32 @@ class ComplianceService:
                 shake_digest = forensics.compute_shake256_digest(manifest_bytes)
 
                 pqc_client = IdentityService.get_pqc_client()
-                if pqc_client:
-                    is_valid = pqc_client.verify_digest(
-                        signature=sig_hex,
-                        digest=shake_digest,
-                        identity_id=identity_id,
-                    )
-                    if not is_valid:
-                        return {
-                            "quantum_safe": False,
-                            "algorithm": "ML-DSA-65",
-                            "reason": f"PQC signature verification failed for {identity_id}",
-                        }
-                else:
-                    logger.debug(
+                if not pqc_client:
+                    logger.warning(
                         f"PQC client not available for {identity_id}; "
-                        "structural ML-DSA-65 signature recorded."
+                        "cannot cryptographically verify ML-DSA-65 signature."
                     )
+                    return {
+                        "quantum_safe": False,
+                        "status": "unverifiable",
+                        "algorithm": "ML-DSA-65",
+                        "reason": (
+                            f"PQC client not available to verify ML-DSA-65 signature "
+                            f"for {identity_id}"
+                        ),
+                    }
+
+                is_valid = pqc_client.verify_digest(
+                    signature=sig_hex,
+                    digest=shake_digest,
+                    identity_id=identity_id,
+                )
+                if not is_valid:
+                    return {
+                        "quantum_safe": False,
+                        "algorithm": "ML-DSA-65",
+                        "reason": f"PQC signature verification failed for {identity_id}",
+                    }
 
                 return {
                     "quantum_safe": True,

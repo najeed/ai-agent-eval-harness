@@ -1155,14 +1155,15 @@ export const LiveDebugger: React.FC = () => {
                 )}
               </summary>
               <div className="px-2.5 pb-2.5 space-y-1 max-h-64 overflow-y-auto">
-                {waterfall.tMin !== null && waterfall.tMax !== null && waterfall.tMax > waterfall.tMin ? (
+                {waterfall.tMin !== null && waterfall.tMax !== null && waterfall.tMax >= waterfall.tMin ? (
                   (() => {
-                    const span = waterfall.tMax - waterfall.tMin;
+                    const rawSpan = waterfall.tMax - waterfall.tMin;
+                    const span = Math.max(rawSpan, 1);
                     return waterfall.rows.map(row => {
-                      const start = row.startTs ?? row.endTs!;
-                      const end = row.endTs ?? row.startTs!;
-                      const left = Math.min(((start - waterfall.tMin!) / span) * 100, 97);
-                      const width = Math.max(((end - start) / span) * 100, 1);
+                      const start = row.startTs ?? row.endTs ?? waterfall.tMin!;
+                      const end = row.endTs ?? row.startTs ?? waterfall.tMax!;
+                      const left = rawSpan === 0 ? 0 : Math.min(((start - waterfall.tMin!) / span) * 100, 97);
+                      const width = rawSpan === 0 ? 100 : Math.max(((end - start) / span) * 100, 1);
                       const barCls =
                         row.status === 'completed'
                           ? 'bg-emerald-500/70'
@@ -1190,10 +1191,9 @@ export const LiveDebugger: React.FC = () => {
                               className={`absolute h-full rounded ${barCls}`}
                               style={{ left: `${left}%`, width: `${width}%` }}
                             />
-                            {/* [Sprint-6] Tool/assertion/failure markers */}
+                            {/* Tool/assertion/failure markers */}
                             {row.markers.map((m, mi) => {
-                              const span = waterfall.tMax! - waterfall.tMin!;
-                              const mLeft = Math.min(((m.t - waterfall.tMin!) / span) * 100, 98);
+                              const mLeft = rawSpan === 0 ? 50 : Math.min(((m.t - waterfall.tMin!) / span) * 100, 98);
                               const color =
                                 m.kind === 'error'
                                   ? 'bg-red-400'

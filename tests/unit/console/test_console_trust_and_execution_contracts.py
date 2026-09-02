@@ -552,7 +552,7 @@ def test_scenario_transition_and_readiness_edge_cases(ent_client):
         json={
             "scenario_data": {
                 "metadata": {"id": "demo_scen"},
-                "workflow": {"nodes": [{"id": "n1"}]},
+                "workflow": {"nodes": [{"id": "n1", "task_description": "demo task"}]},
             },
             "agent_config": {
                 "protocol": "custom_grpc",

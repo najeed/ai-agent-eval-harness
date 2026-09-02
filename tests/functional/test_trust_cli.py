@@ -18,7 +18,10 @@ def cli_env(tmp_path, isolated_trust, monkeypatch):
     run_vault.mkdir()
 
     trace_path = run_vault / "run.jsonl"
-    trace_path.write_text('{"event":"start"}\n{"event":"end"}')
+    trace_path.write_text(
+        '{"event":"run_start"}\n{"event":"run_end","outcome":"pass"}\n',
+        encoding="utf-8",
+    )
 
     # We must patch config and env for the subprocess to pick them up
     # In a real environment, we'd use environment variables

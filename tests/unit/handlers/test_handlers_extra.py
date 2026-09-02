@@ -181,19 +181,29 @@ async def test_handle_gate_success(mock_env_config):
 
 @pytest.mark.asyncio
 async def test_handle_certify_success(mock_env_config):
-    # evaluation.py 451-515
     run_id = "run_c"
     run_dir = mock_env_config / "runs" / run_id
     run_dir.mkdir()
-    (run_dir / "run.jsonl").write_text("[]")
+    (run_dir / "run.jsonl").write_text(
+        '{"event": "run_start"}\n'
+        '{"event": "summary_metrics", "metrics": {"success_rate": 1.0}}\n'
+        '{"event": "run_end", "outcome": "pass"}\n'
+    )
 
     args = MagicMock(run_id=run_id, identity="sys", status="pass", score=1.0, ttl=30)
-    with patch("eval_runner.verifier.TraceVerifier.sign_trace") as mock_s:
-        mock_s.return_value = {
+    with patch("eval_runner.services.certification.execute_industrial_certification") as mock_cert:
+        mock_cert.return_value = {
+            "status": "certified",
+            "compliance_status": "pass",
+            "certified": True,
+            "certificate_issued": True,
             "run_id": run_id,
-            "trace_hash": "123",
-            "vc_version": "3",
-            "governance_ttl": 30,
+            "manifest": {
+                "run_id": run_id,
+                "trace_hash": "123",
+                "vc_version": "3.0.0",
+                "governance_ttl": 30,
+            },
         }
         assert await evaluation.handle_certify(args) == 0
 

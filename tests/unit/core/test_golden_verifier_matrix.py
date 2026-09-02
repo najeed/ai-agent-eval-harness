@@ -106,7 +106,9 @@ def clean_vault_setup(tmp_path, monkeypatch):
     run_log_dir = project_root / "runs"
     reports_dir = project_root / "reports"
     trust_root = project_root / ".aes" / "keys"
-    run_id = "run-golden-matrix-001"
+    import uuid
+
+    run_id = f"run-golden-{uuid.uuid4().hex[:8]}"
     run_dir = run_log_dir / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     reports_dir.mkdir(parents=True, exist_ok=True)
@@ -449,30 +451,17 @@ def test_verifier_governance_ttl_subtraction(clean_vault_setup):
     Mutation Assurance Test: Verifies age calculation uses subtraction '-'
     (kills age = now - created_at '+' mutation in verifier TTL verification).
     """
-    from datetime import datetime
-
     run_id = clean_vault_setup["run_id"]
     trace_file = clean_vault_setup["trace_file"]
 
-    manifest = TraceVerifier.sign_trace(
+    TraceVerifier.sign_trace(
         trace_path=str(trace_file),
         identity_id="test_signer",
         compliance_status="pass",
         run_id=run_id,
+        ttl_days=30,
     )
     manifest_path = trace_file.parent / "run_manifest.json"
-
-    # Set timezone-aware timestamp
-    manifest["timestamp"] = datetime.now().astimezone().isoformat()
-    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
-
-    # Re-sign trace with valid timezone-aware timestamp
-    manifest = TraceVerifier.sign_trace(
-        trace_path=str(trace_file),
-        identity_id="test_signer",
-        compliance_status="pass",
-        run_id=run_id,
-    )
 
     # A freshly signed manifest with timezone must return True
     # If '-' is mutated to '+', age = now + created_at (4000+ years > 30 days), returning False.
@@ -576,7 +565,13 @@ def test_verifier_certificate_mkdir_exist_ok(clean_vault_setup):
     cert_dir.mkdir(parents=True, exist_ok=True)
 
     m1 = TraceVerifier.sign_trace(str(trace_file), identity_id="s1", run_id=run_id)
-    m2 = TraceVerifier.sign_trace(str(trace_file), identity_id="s2", run_id=run_id)
+
+    run_id2 = f"{run_id}_2"
+    run_dir2 = trace_file.parent.parent / run_id2
+    run_dir2.mkdir(parents=True, exist_ok=True)
+    trace_file2 = run_dir2 / "run.jsonl"
+    trace_file2.write_text(trace_file.read_text(encoding="utf-8"), encoding="utf-8")
+    m2 = TraceVerifier.sign_trace(str(trace_file2), identity_id="s2", run_id=run_id2)
     assert m1 is not None and m2 is not None
 
 
@@ -666,6 +661,10 @@ def test_verification_service_interceptor_pipeline():
             raise RuntimeError("Interceptor crashed")
 
     # 1. Normal multi-interceptor execution
+    from eval_runner.identity import IdentityService
+
+    IdentityService._provision_local_identity("system_id")
+
     service = VerificationService()
     service.register_interceptor(InterceptorA())
     service.register_interceptor(InterceptorB())
@@ -922,8 +921,14 @@ def test_lifecycle_event_never_merged_or_doubled(clean_vault_setup):
     assert TraceVerifier.verify_trace(str(trace_file), str(manifest_path)) is True
 
     # Case 2: newline-terminated trace -> appended directly, still no doubling.
-    TraceVerifier.sign_trace(str(trace_file), identity_id="signer", run_id=run_id)
-    data2 = trace_file.read_text(encoding="utf-8")
+    run_id_2 = f"{run_id}_case2"
+    run_dir_2 = trace_file.parent.parent / run_id_2
+    run_dir_2.mkdir(parents=True, exist_ok=True)
+    trace_file_2 = run_dir_2 / "run.jsonl"
+    trace_file_2.write_text(content.rstrip("\n") + "\n", encoding="utf-8")
+
+    TraceVerifier.sign_trace(str(trace_file_2), identity_id="signer", run_id=run_id_2)
+    data2 = trace_file_2.read_text(encoding="utf-8")
     idx2 = data2.rindex(event_marker)
     assert data2[idx2 - 1] == "\n"
     assert data2[idx2 - 2] != "\n"
@@ -1304,10 +1309,16 @@ def test_sign_trace_provisional_and_execution_modes(clean_vault_setup):
     assert m1.get("provisional") is True
 
     # 2. Invalid execution mode defaults to 'unknown' + provisional=True
+    run_id2 = f"{run_id}_2"
+    run_dir2 = trace_file.parent.parent / run_id2
+    run_dir2.mkdir(parents=True, exist_ok=True)
+    trace_file2 = run_dir2 / "run.jsonl"
+    trace_file2.write_text(trace_file.read_text(encoding="utf-8"), encoding="utf-8")
+
     m2 = TraceVerifier.sign_trace(
-        str(trace_file),
+        str(trace_file2),
         identity_id="signer",
-        run_id=run_id,
+        run_id=run_id2,
         execution_mode="invalid_junk_mode",
         provisional=False,
     )
@@ -1390,10 +1401,16 @@ def test_sign_trace_partial_consensus_or_rubrics_extraction(clean_vault_setup):
     assert m1.get("rubrics") == {"trace_rubric": 5}
 
     # 2. Caller provides rubrics only -> consensus must be extracted from trace
+    run_id2 = f"{run_id}_rubric_only"
+    run_dir2 = trace_file.parent.parent / run_id2
+    run_dir2.mkdir(parents=True, exist_ok=True)
+    trace_file2 = run_dir2 / "run.jsonl"
+    trace_file2.write_text(f"{ev}\n", encoding="utf-8")
+
     m2 = TraceVerifier.sign_trace(
-        str(trace_file),
+        str(trace_file2),
         identity_id="signer",
-        run_id=run_id,
+        run_id=run_id2,
         consensus=None,
         rubrics={"caller_rubric": 10},
     )
@@ -2265,9 +2282,10 @@ def test_verifier_certificate_embedded_pk_corrupted_parse_err(tmp_path):
             }
         ],
     }
-    res_sig = verify_trace_certificate(run_id, trace_bytes, manifest_bad_sig)
-    assert res_sig["verified"] is False
-    assert any("Signature check error" in e for e in res_sig["errors"])
+    with patch.object(IdentityService, "get_public_key", return_value=key.public_key()):
+        res_sig = verify_trace_certificate(run_id, trace_bytes, manifest_bad_sig)
+        assert res_sig["verified"] is False
+        assert any("Signature check error" in e for e in res_sig["errors"])
 
 
 def test_verifier_certificate_pk_comparison_exception(tmp_path):

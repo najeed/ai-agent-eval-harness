@@ -76,6 +76,19 @@ def test_inconclusive_run_cannot_be_certified(cert_vault):
         CertificationService.execute_industrial_certification(run_id=run_id)
 
 
+def test_inconclusive_run_cannot_be_certified_with_caller_status_override(cert_vault):
+    """Caller supplying status='pass' cannot bypass fail-closed inconclusive outcome check."""
+    run_id = "run-inconclusive-override"
+    events = [
+        {"event": "run_start", "execution_mode": "live", "data": {"execution_mode_declared": True}},
+        {"event": "step_executed", "data": {"step": 1}},
+    ]
+    _create_trace(cert_vault["runs"], run_id, events)
+
+    with pytest.raises(ValueError, match="inconclusive outcome"):
+        execute_industrial_certification(run_id=run_id, status="pass", score=1.0)
+
+
 def test_previous_run_manifest_cannot_circularly_influence_certification(cert_vault):
     """A prior run_manifest.json with fake PASS status must NOT influence new certification."""
     run_id = "run-no-circular-trust"
@@ -185,3 +198,32 @@ def test_public_verification_endpoint_semantics(cert_vault):
     assert data["cryptographically_valid"] is True
     assert data["evaluation_passed"] is True
     assert data["certificate_authoritative"] is True
+
+
+def test_invalid_run_ids_rejected(cert_vault):
+    """Verify invalid and path-traversal run IDs are rejected with ValueError."""
+    for bad_id in ("", 123, "../escape", "run/nested", "run\\slashes"):
+        with pytest.raises(ValueError, match="Invalid or unsafe run_id"):
+            execute_industrial_certification(run_id=bad_id)  # type: ignore
+
+
+def test_metadata_binding_with_corrupt_lines_and_attributes(cert_vault):
+    """Verify metadata extraction extracts bound scenario and agent identity attributes."""
+    run_id = "run-meta-binding"
+    vault = cert_vault["runs"] / run_id
+    vault.mkdir(parents=True, exist_ok=True)
+    trace = vault / "run.jsonl"
+    trace.write_text(
+        '{"event": "run_start", "execution_mode": "live", '
+        '"scenario_id": "scen_1", "agent_id": "ag_1"}\n'
+        "\n"
+        '{"event": "step_executed", "data": {"step": 1}}\n'
+        '{"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}}\n'
+        '{"event": "run_end", "data": {"status": "PASSED"}}\n',
+        encoding="utf-8",
+    )
+
+    res = execute_industrial_certification(run_id=run_id, identity_id="system_id")
+    assert res["certified"] is True
+    assert res["manifest"]["metadata"]["scenario_id"] == "scen_1"
+    assert res["manifest"]["metadata"]["agent_id"] == "ag_1"

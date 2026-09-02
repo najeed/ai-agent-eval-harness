@@ -59,6 +59,7 @@ def setup_vault(run_id, trace_name="run.jsonl"):
     vault_dir = config.RUN_LOG_DIR / run_id
     vault_dir.mkdir(parents=True, exist_ok=True)
     trace_path = vault_dir / trace_name
+    trace_path.write_text(f'{{"event": "init", "run_id": "{run_id}"}}\n')
     return vault_dir, trace_path
 
 
@@ -165,7 +166,7 @@ def test_compute_signature(tmp_path):
 def test_v3_signing_cycle():
     run_id = "run-v3-e2e"
     vault_dir, trace_path = setup_vault(run_id)
-    trace_path.write_text("trace content")
+    trace_path.write_text('{"event": "step", "content": "trace"}\n')
 
     # Add evidence
     (vault_dir / "evidence.txt").write_text("forensic data")
@@ -182,25 +183,25 @@ def test_v3_signing_cycle():
 def test_verifier_tamper_detection():
     run_id = "run-tamper"
     vault_dir, trace_path = setup_vault(run_id)
-    trace_path.write_text("original")
+    trace_path.write_text('{"event": "step", "content": "original"}\n')
 
     TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
     manifest_path = vault_dir / "run_manifest.json"
 
-    trace_path.write_text("TAMPERED")
+    trace_path.write_text('{"event": "step", "content": "TAMPERED"}\n')
     assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
 
 
 def test_verifier_security_jail_violation(tmp_path):
     outside = tmp_path / "outside.jsonl"
-    outside.write_text("{}")
+    outside.write_text('{"event": "outside"}\n')
     assert TraceVerifier.verify_trace(str(outside), "any") is False
 
 
 def test_v3_governance_ttl():
     run_id = "run-expired"
     vault_dir, trace_path = setup_vault(run_id)
-    trace_path.write_text("data")
+    trace_path.write_text('{"event": "data"}\n')
 
     # Transactional certification is fail-closed: the pipeline
     # refuses to issue (and self-verify) a certificate that is already expired.
@@ -212,7 +213,7 @@ def test_v3_governance_ttl():
 
     # A properly certified artifact still verifies while inside its TTL window.
     _, valid_trace = setup_vault("run-valid-ttl")
-    valid_trace.write_text("data")
+    valid_trace.write_text('{"event": "data"}\n')
     TraceVerifier.sign_trace(str(valid_trace), run_id="run-valid-ttl")
     assert (
         TraceVerifier.verify_trace(
@@ -225,7 +226,7 @@ def test_v3_governance_ttl():
 def test_v3_forensic_filtering():
     run_id = "run-filter"
     vault_dir, trace_path = setup_vault(run_id)
-    trace_path.write_text("trace")
+    trace_path.write_text('{"event": "trace"}\n')
 
     (vault_dir / "junk.node").write_text("exclude")
     (vault_dir / "valid.log").write_text("include")
@@ -239,7 +240,7 @@ def test_v3_forensic_filtering():
 async def test_verify_trace_async():
     run_id = "run-async"
     vault_dir, trace_path = setup_vault(run_id)
-    trace_path.write_text("data")
+    trace_path.write_text('{"event": "data"}\n')
 
     TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
     manifest_path = vault_dir / "run_manifest.json"
@@ -319,16 +320,9 @@ def test_verify_trace_missing_provenance(caplog):
 
 
 def test_verify_trace_forged_ed25519_signature(caplog):
-    """Verify that a well-formed provenance chain with a bad ED25519 signature fails.
-    This is distinct from test_verifier_tamper_detection (which fails at the SHA3-256
-    hash check, step 1) and test_verify_trace_missing_provenance (empty chain, step 4a).
-    Here the trace is unmodified, the chain node is structurally valid, but the signature
-    bytes do not correspond to the manifest — exercising the cryptographic rejection
-    path at verifier.py:L613 (public_key.verify raises, caught at L645).
-    """
     run_id = "run-forged-sig"
     vault_dir, trace_path = setup_vault(run_id)
-    trace_path.write_text("authentic trace content")
+    trace_path.write_text('{"event": "authentic trace"}\n')
     # Produce a legitimate manifest so SHA3-256, TTL, and ledger checks all pass.
     TraceVerifier.sign_trace(str(trace_path), run_id=run_id, identity_id="system_id")
     manifest_path = vault_dir / "run_manifest.json"
@@ -349,7 +343,7 @@ def test_v3_forensic_tier1_always_included():
     """Verify forensics/ directory files bypass size and extension filters."""
     run_id = "run-tier1-ported"
     vault_dir, trace_path = setup_vault(run_id)
-    trace_path.write_text("trace")
+    trace_path.write_text('{"event": "trace"}\n')
     forensics_dir = vault_dir / "forensics"
     forensics_dir.mkdir()
     (forensics_dir / "suspect.exe").write_text("malicious content")
@@ -361,7 +355,7 @@ def test_v3_forensic_extension_filtering():
     """Verify only allowed enterprise extensions are collected."""
     run_id = "run-ext-ported"
     vault_dir, trace_path = setup_vault(run_id)
-    trace_path.write_text("trace")
+    trace_path.write_text('{"event": "trace"}\n')
     (vault_dir / "data.parquet").write_text("parquet data")
     (vault_dir / "config.yaml").write_text("yaml content")
     (vault_dir / "legacy.doc").write_text("doc")
@@ -375,7 +369,7 @@ def test_v3_forensic_alias_normalization():
     """Verify .jpeg/.text/.logger aliases are included via extension normalization."""
     run_id = "run-alias-ported"
     vault_dir, trace_path = setup_vault(run_id)
-    trace_path.write_text("trace")
+    trace_path.write_text('{"event": "trace"}\n')
     (vault_dir / "image.jpeg").write_text("jpeg data")
     (vault_dir / "notes.text").write_text("text data")
     manifest = TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
@@ -387,7 +381,7 @@ def test_sign_payload_with_key():
     """Test TraceVerifier.sign_payload with a real generated key."""
     run_id = "run-sign-payload"
     vault_dir, trace_path = setup_vault(run_id)
-    trace_path.write_text("{}")
+    trace_path.write_text('{"event": "payload"}\n')
     key_dir = config.TRUST_ROOT / "sign_test_id"
     key_dir.mkdir(parents=True, exist_ok=True)
     TraceVerifier.generate_key_pair(output_dir=str(key_dir))
@@ -402,7 +396,7 @@ def test_verify_ledger_tampered_artifact():
     """Verify that a tampered sidecar file in the evidence ledger fails verification."""
     run_id = "run-ledger-tamper"
     vault_dir, trace_path = setup_vault(run_id)
-    trace_path.write_text("trace")
+    trace_path.write_text('{"event": "trace"}\n')
     evidence = vault_dir / "evidence.txt"
     evidence.write_text("raw evidence")
     TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
@@ -417,7 +411,7 @@ def test_get_certificate_api_helper():
     """Test get_certificate API wrapper returns the manifest dict."""
     run_id = "run-cert-helper"
     vault_dir, trace_path = setup_vault(run_id)
-    trace_path.write_text("{}}")
+    trace_path.write_text('{"event": "cert"}\n')
     cert = TraceVerifier.get_certificate(str(trace_path), run_id=run_id)
     assert cert["run_id"] == run_id
     assert "trace_hash" in cert
@@ -427,7 +421,7 @@ def test_verify_trace_manifest_outside_jail():
     """Verify that a manifest path outside the project jail returns False."""
     run_id = "run-manifest-jail"
     vault_dir, trace_path = setup_vault(run_id)
-    trace_path.write_text("{}")
+    trace_path.write_text('{"event": "jail"}\n')
     assert TraceVerifier.verify_trace(str(trace_path), "/outside/jail/manifest.json") is False
 
 
@@ -755,7 +749,7 @@ def test_core_trace_signer_pqc_sign_fails_non_strict(monkeypatch):
 
 
 def test_core_trace_signer_outer_exception_non_strict(monkeypatch):
-    """IdentityService.get_private_key fails, non-strict → logs warning, continues."""
+    """IdentityService.get_private_key fails → raises CertificationFailedError fail-closed."""
     monkeypatch.setattr(config, "PQC_STRICT_MODE", False)
 
     manifest = {
@@ -767,9 +761,10 @@ def test_core_trace_signer_outer_exception_non_strict(monkeypatch):
         mock_id_svc.get_private_key.side_effect = RuntimeError("Key not found")
 
         signer = CoreTraceSigner()
-        result = signer.sign(manifest, lambda m: m)
-
-    assert result["provenance_chain"] == []
+        with pytest.raises(
+            CertificationFailedError, match="CoreTraceSigner failed to sign manifest"
+        ):
+            signer.sign(manifest, lambda m: m)
 
 
 def test_core_trace_signer_outer_exception_strict_reraises(monkeypatch):
@@ -804,7 +799,7 @@ def test_verify_trace_bad_timestamp_continues(tmp_path):
     """verify_trace with unparseable timestamp logs warning but does not fail immediately."""
     run_id = "run-bad-ts"
     vault_dir, trace_path = setup_vault(run_id)
-    trace_path.write_text("trace content")
+    trace_path.write_text('{"event": "trace"}\n')
 
     TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
     manifest_path = vault_dir / "run_manifest.json"
@@ -823,7 +818,7 @@ def test_verify_trace_ledger_missing_artifact():
     """verify_trace with verify_ledger=True returns False when artifact is missing."""
     run_id = "run-ledger-missing"
     vault_dir, trace_path = setup_vault(run_id)
-    trace_path.write_text("trace")
+    trace_path.write_text('{"event": "trace"}\n')
     evidence = vault_dir / "evidence.txt"
     evidence.write_text("evidence content")
 
@@ -839,7 +834,7 @@ def test_sign_trace_lifecycle_event_failure():
     """If appending the lifecycle event to trace fails, sign_trace continues."""
     run_id = "run-event-fail"
     vault_dir, trace_path = setup_vault(run_id)
-    trace_path.write_text("trace")
+    trace_path.write_text('{"event": "trace"}\n')
 
     original_open = open
 
@@ -865,7 +860,7 @@ def test_verify_trace_pqc_mismatch_and_unavailable(monkeypatch):
 
     run_id = "run-pqc-mismatch"
     vault_dir, trace_path = setup_vault(run_id)
-    trace_path.write_text("trace")
+    trace_path.write_text('{"event": "trace"}\n')
 
     # Generate manifest with standard signing first
     monkeypatch.setattr(config, "PQC_ENABLED", False)
@@ -1044,7 +1039,7 @@ def test_interceptor_preemption():
     """Verify that an interceptor can completely preempt signature generation."""
     run_id = "run-preempt"
     vault_dir, trace_path = setup_vault(run_id)
-    trace_path.write_text("dummy trace contents", encoding="utf-8")
+    trace_path.write_text('{"event": "start", "run_id": "run-preempt"}\n', encoding="utf-8")
 
     preemptor = MockPreemptiveInterceptor()
     verification_service.register_interceptor(preemptor)
@@ -1061,7 +1056,7 @@ def test_interceptor_augmentation():
     """Verify that an interceptor can augment standard signature generation."""
     run_id = "run-augment"
     vault_dir, trace_path = setup_vault(run_id)
-    trace_path.write_text("dummy trace contents", encoding="utf-8")
+    trace_path.write_text('{"event": "start", "run_id": "run-augment"}\n', encoding="utf-8")
 
     augmenter = MockAugmentingInterceptor("auditor", "passed")
     verification_service.register_interceptor(augmenter)
@@ -1080,7 +1075,7 @@ def test_override_interceptor_context_manager():
     """
     run_id = "run-override"
     vault_dir, trace_path = setup_vault(run_id)
-    trace_path.write_text("dummy trace contents", encoding="utf-8")
+    trace_path.write_text('{"event": "start", "run_id": "run-override"}\n', encoding="utf-8")
 
     preemptor = MockPreemptiveInterceptor()
 
@@ -1172,3 +1167,92 @@ def test_mandatory_vs_optional_interceptor_classification():
         signed = verification_service.sign(manifest, format="standard")
         assert len(signed["provenance_chain"]) >= 1
         assert signed["provenance_chain"][-1]["identity"] == "system_id"
+
+
+def test_verify_trace_certificate_rejects_unanchored_embedded_key(tmp_path):
+    """Fail-closed: verify_trace_certificate must never accept an embedded key as the trust root."""
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+    from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
+
+    from eval_runner.verifier import verify_trace_certificate
+
+    # Generate an untrusted keypair
+    untrusted_priv = ed25519.Ed25519PrivateKey.generate()
+    untrusted_pub = untrusted_priv.public_key()
+    untrusted_pub_bytes = untrusted_pub.public_bytes(Encoding.Raw, PublicFormat.Raw)
+
+    manifest_to_sign = {
+        "vc_version": "3.0.0",
+        "run_id": "test_unanchored_run",
+        "compliance": {"status": "pass", "score": 1.0},
+    }
+    manifest_bytes = json.dumps(manifest_to_sign, sort_keys=True).encode("utf-8")
+    sig = untrusted_priv.sign(manifest_bytes)
+
+    cert_data = {
+        **manifest_to_sign,
+        "provenance_chain": [
+            {
+                "identity": "attacker_unanchored_id",
+                "signature": sig.hex(),
+                "algorithm": "ED25519",
+                "public_key": untrusted_pub_bytes.hex(),
+            }
+        ],
+    }
+
+    trace_bytes = b'{"event": "start", "run_id": "test_unanchored_run"}\n'
+    res = verify_trace_certificate(
+        trace_bytes=trace_bytes, cert_data=cert_data, run_id="test_unanchored_run"
+    )
+    assert res["verified"] is False
+    assert any("No trusted anchor public key" in err for err in res["errors"])
+
+
+def test_sign_and_verify_trace_fails_closed_on_malformed_records(tmp_path):
+    """Any malformed line in JSONL trace must cause sign_trace and verify_trace to fail closed."""
+    from eval_runner.verifier import CertificationFailedError, TraceVerifier
+
+    run_id = "malformed_trace_run"
+    run_dir = config.RUN_LOG_DIR / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    trace_path = run_dir / "run.jsonl"
+
+    # Write a trace containing a corrupt non-JSON line
+    trace_path.write_text(f'{{"event": "run_start", "run_id": "{run_id}"}}\n{{CORRUPT_JSON_LINE\n')
+
+    # 1. sign_trace must raise CertificationFailedError
+    with pytest.raises(CertificationFailedError, match="Malformed trace record at line 2"):
+        TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
+
+    # 2. verify_trace must return False
+    manifest_path = run_dir / "run_manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "vc_version": "3.0.0",
+                "trace_hash": "dummy_hash",
+                "evidence_root_hash": "dummy_root",
+                "provenance_chain": [{"identity": "system_id", "signature": "00" * 32}],
+            }
+        )
+    )
+    assert not TraceVerifier.verify_trace(str(trace_path), str(manifest_path))
+
+
+def test_core_trace_signer_raises_certification_failed_on_signing_error():
+    """CoreTraceSigner must raise CertificationFailedError on signing failures."""
+    from eval_runner.identity import IdentityService
+    from eval_runner.verifier import CertificationFailedError, CoreTraceSigner
+
+    signer = CoreTraceSigner()
+    manifest = {
+        "provenance_chain": [],
+        "signing_context": {"identity_id": "non_existent_signer_without_key"},
+    }
+
+    with patch.object(IdentityService, "get_private_key", side_effect=ValueError("Key load error")):
+        with pytest.raises(
+            CertificationFailedError, match="CoreTraceSigner failed to sign manifest"
+        ):
+            signer.sign(manifest, lambda m: m)

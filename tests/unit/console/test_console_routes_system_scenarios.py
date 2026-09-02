@@ -652,7 +652,7 @@ def test_scenario_readiness_gemini_and_warning_branches(client, monkeypatch):
         assert res.status_code == 200
         checks = res.get_json()["checks"]
         assert any(
-            c["name"] == "Scenario Specification" and c["status"] == "WARNING" for c in checks
+            c["name"] == "Scenario Specification" and c["status"] == "FAILED" for c in checks
         )
         assert any(c["name"] == "Agent Endpoint" and c["status"] == "PASSED" for c in checks)
 

@@ -156,15 +156,14 @@ def test_execution_readiness_comprehensive(client, tmp_path):
     checks_missing = {c["name"]: c["status"] for c in res_missing.get_json()["checks"]}
     assert checks_missing.get("Scenario Specification") == "FAILED"
 
-    # 2. Scenario with validation warning
     sc_warn = {
         "metadata": {"id": "warn_sc"},
-        "workflow": {"nodes": [{"id": "n1"}]},  # missing prompt
+        "workflow": {"nodes": [{"id": "n1"}]},  # missing prompt -> structural defect
     }
     res_warn = client.post("/scenarios/readiness", json={"scenario_data": sc_warn})
     assert res_warn.status_code == 200
     checks_warn = {c["name"]: c["status"] for c in res_warn.get_json()["checks"]}
-    assert checks_warn.get("Scenario Specification") == "WARNING"
+    assert checks_warn.get("Scenario Specification") == "FAILED"
 
     # 3. Provider protocol API key missing vs present with DNS failure
     res_provider = client.post(

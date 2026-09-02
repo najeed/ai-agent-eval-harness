@@ -114,16 +114,21 @@ async def test_handle_gate_asymmetric_success(gate_env, capsys, monkeypatch):
 
     identity_id = "test_tester"
 
-    # 2. Provision identity and resign trace
-    # IdentityService auto-provisions if private_key.pem is missing
+    # 2. Provision identity and sign distinct run trace
+    from pathlib import Path
+
+    run_id_asym = "test_gate_asym_run"
+    run_dir_asym = Path(gate_env["trace_path"]).parent.parent / run_id_asym
+    run_dir_asym.mkdir(parents=True, exist_ok=True)
+    trace_path_asym = run_dir_asym / "run.jsonl"
+    trace_path_asym.write_text('{"event": "run_start"}\n', encoding="utf-8")
+
     IdentityService.get_private_key(identity_id)
-    TraceVerifier.sign_trace(
-        gate_env["trace_path"], identity_id=identity_id, run_id=gate_env["run_id"]
-    )
+    TraceVerifier.sign_trace(str(trace_path_asym), identity_id=identity_id, run_id=run_id_asym)
 
     # 3. Handle gate with public key from IdentityService
     pub_key_path = trust_root / identity_id / "public_key.pem"
-    args = Namespace(run_id=gate_env["run_id"], vc=None, hash=None, public_key=str(pub_key_path))
+    args = Namespace(run_id=run_id_asym, vc=None, hash=None, public_key=str(pub_key_path))
 
     result = await evaluation.handle_gate(args)
     assert result == 0

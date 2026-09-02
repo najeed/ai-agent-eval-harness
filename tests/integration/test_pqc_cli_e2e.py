@@ -57,11 +57,17 @@ class TestPQCCLI(unittest.TestCase):
 
     def test_strict_mode_fail_closed_signing(self):
         # Test TraceVerifier.sign_trace behavior across all strict mode combinations
-        run_id = "test_strict_matrix"
-        run_dir = config.RUN_LOG_DIR / run_id
-        run_dir.mkdir(parents=True, exist_ok=True)
-        trace_path = run_dir / "run.jsonl"
-        trace_path.write_text(json.dumps({"event": "start"}) + "\n")
+        base_run_id = "test_strict_matrix"
+        created_dirs = []
+
+        def _get_case_trace(suffix: str):
+            rid = f"{base_run_id}_{suffix}"
+            rdir = config.RUN_LOG_DIR / rid
+            rdir.mkdir(parents=True, exist_ok=True)
+            created_dirs.append(rdir)
+            tpath = rdir / "run.jsonl"
+            tpath.write_text(json.dumps({"event": "start"}) + "\n")
+            return rid, tpath
 
         try:
             # Common mocks
@@ -83,6 +89,7 @@ class TestPQCCLI(unittest.TestCase):
                 mock_client.verify_digest.return_value = True
 
                 # --- CASE 1: PQC ENABLED + STRICT ON + SIGNING FAILURE = FAIL CLOSED ---
+                rid1, tpath1 = _get_case_trace("case1")
                 with (
                     patch("eval_runner.config.PQC_ENABLED", True),
                     patch("eval_runner.config.PQC_STRICT_MODE", True),
@@ -91,10 +98,11 @@ class TestPQCCLI(unittest.TestCase):
                     mock_get_client.return_value = mock_client
 
                     with self.assertRaises(RuntimeError) as cm:
-                        verifier.TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
+                        verifier.TraceVerifier.sign_trace(str(tpath1), run_id=rid1)
                     self.assertIn("PQC_STRICT_MODE Violation", str(cm.exception))
 
                 # --- CASE 2: PQC ENABLED + STRICT OFF + SIGNING FAILURE = FAIL OPEN ---
+                rid2, tpath2 = _get_case_trace("case2")
                 with (
                     patch("eval_runner.config.PQC_ENABLED", True),
                     patch("eval_runner.config.PQC_STRICT_MODE", False),
@@ -103,11 +111,12 @@ class TestPQCCLI(unittest.TestCase):
                     mock_get_client.return_value = mock_client
 
                     # Should NOT raise, should just log warning and continue with classical
-                    manifest = verifier.TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
+                    manifest = verifier.TraceVerifier.sign_trace(str(tpath2), run_id=rid2)
                     self.assertEqual(len(manifest["provenance_chain"]), 1)
                     self.assertEqual(manifest["provenance_chain"][0]["algorithm"], "ED25519")
 
                 # --- CASE 3: PQC ENABLED + STRICT ON + SIGNING SUCCESS = SUCCESS ---
+                rid3, tpath3 = _get_case_trace("case3")
                 with (
                     patch("eval_runner.config.PQC_ENABLED", True),
                     patch("eval_runner.config.PQC_STRICT_MODE", True),
@@ -116,22 +125,24 @@ class TestPQCCLI(unittest.TestCase):
                     mock_client.sign_digest.return_value = "pqc_sig"
                     mock_get_client.return_value = mock_client
 
-                    manifest = verifier.TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
+                    manifest = verifier.TraceVerifier.sign_trace(str(tpath3), run_id=rid3)
                     self.assertEqual(len(manifest["provenance_chain"]), 2)
                     self.assertEqual(manifest["provenance_chain"][1]["algorithm"], "ML-DSA-65")
 
                 # --- CASE 4: PQC DISABLED + STRICT ON = SUCCESS (Classical Only) ---
+                rid4, tpath4 = _get_case_trace("case4")
                 with (
                     patch("eval_runner.config.PQC_ENABLED", False),
                     patch("eval_runner.config.PQC_STRICT_MODE", True),
                 ):
-                    manifest = verifier.TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
+                    manifest = verifier.TraceVerifier.sign_trace(str(tpath4), run_id=rid4)
                     self.assertEqual(len(manifest["provenance_chain"]), 1)
                     self.assertEqual(manifest["provenance_chain"][0]["algorithm"], "ED25519")
 
         finally:
-            if run_dir.exists():
-                shutil.rmtree(run_dir)
+            for d in created_dirs:
+                if d.exists():
+                    shutil.rmtree(d, ignore_errors=True)
 
 
 if __name__ == "__main__":

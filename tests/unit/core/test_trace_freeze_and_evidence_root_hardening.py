@@ -271,35 +271,41 @@ def test_verification_authority_default_require_signature():
 
 def test_authoritative_verdict_execution(isolated_vault):
     """Verify _authoritative_verdict runs full TraceVerifier verification."""
-    run_id = "auth-verdict-run-001"
-    run_dir = isolated_vault["run_log_dir"] / run_id
-    run_dir.mkdir(parents=True, exist_ok=True)
-    trace_file = run_dir / "run.jsonl"
-    trace_file.write_text(json.dumps({"event": "start", "_seq": 1}) + "\n", encoding="utf-8")
+    run_id_prov = "auth-verdict-run-prov"
+    run_dir_prov = isolated_vault["run_log_dir"] / run_id_prov
+    run_dir_prov.mkdir(parents=True, exist_ok=True)
+    trace_prov = run_dir_prov / "run.jsonl"
+    trace_prov.write_text(json.dumps({"event": "start", "_seq": 1}) + "\n", encoding="utf-8")
 
     # Before signing -> UNKNOWN
-    assert _authoritative_verdict(run_id) == "UNKNOWN"
+    assert _authoritative_verdict(run_id_prov) == "UNKNOWN"
 
     # Sign trace without declared mode -> VERIFIED_PROVISIONAL
     TraceVerifier.sign_trace(
-        trace_path=str(trace_file),
+        trace_path=str(trace_prov),
         identity_id="test_signer",
-        run_id=run_id,
+        run_id=run_id_prov,
         compliance_status="pass",
     )
-    assert _authoritative_verdict(run_id) == "VERIFIED_PROVISIONAL"
+    assert _authoritative_verdict(run_id_prov) == "VERIFIED_PROVISIONAL"
 
-    # Sign trace with declared non-provisional mode -> VERIFIED
+    # Distinct live run: Sign trace with declared non-provisional mode -> VERIFIED
+    run_id_live = "auth-verdict-run-live"
+    run_dir_live = isolated_vault["run_log_dir"] / run_id_live
+    run_dir_live.mkdir(parents=True, exist_ok=True)
+    trace_live = run_dir_live / "run.jsonl"
+    trace_live.write_text(json.dumps({"event": "start", "_seq": 1}) + "\n", encoding="utf-8")
+
     TraceVerifier.sign_trace(
-        trace_path=str(trace_file),
+        trace_path=str(trace_live),
         identity_id="test_signer",
-        run_id=run_id,
+        run_id=run_id_live,
         compliance_status="pass",
         execution_mode="live",
         provisional=False,
     )
-    assert _authoritative_verdict(run_id) == "VERIFIED"
+    assert _authoritative_verdict(run_id_live) == "VERIFIED"
 
     # Tamper trace file -> FAILED_VERIFICATION
-    trace_file.write_text("tampered_content\n", encoding="utf-8")
-    assert _authoritative_verdict(run_id) == "FAILED_VERIFICATION"
+    trace_live.write_text("tampered_content\n", encoding="utf-8")
+    assert _authoritative_verdict(run_id_live) == "FAILED_VERIFICATION"

@@ -78,16 +78,50 @@ class CertificationService:
                     line = line.strip()
                     if not line:
                         continue
-                    ev = json.loads(line)
+                    try:
+                        ev = json.loads(line)
+                    except Exception as line_err:
+                        logger.debug("Skipping unparseable trace line: %s", line_err)
+                        continue
+
                     event_name = ev.get("event")
-                    if event_name in ("run_end", "end", "session_decision", "evaluation_result"):
+                    if event_name in (
+                        "run_end",
+                        "end",
+                        "session_decision",
+                        "evaluation_result",
+                        "evaluation_complete",
+                        "summary_metrics",
+                        "test_case_result",
+                    ):
                         data = ev.get("data", {}) or {}
-                        raw_status = data.get("status") or ev.get("status") or ""
+                        raw_status = (
+                            data.get("status")
+                            or ev.get("status")
+                            or data.get("outcome")
+                            or ev.get("outcome")
+                            or ""
+                        )
                         score_val = (
                             data.get("score") if data.get("score") is not None else ev.get("score")
                         )
                         decision = data.get("decision") or ev.get("decision") or ""
                         verdict = data.get("verdict") or ev.get("verdict") or ""
+
+                        passed = (
+                            data.get("passed")
+                            if data.get("passed") is not None
+                            else ev.get("passed")
+                        )
+                        if passed is not None:
+                            if passed is True:
+                                return "pass", float(score_val if score_val is not None else 1.0)
+                            return "fail", float(score_val if score_val is not None else 0.0)
+
+                        metrics = data.get("metrics") or ev.get("metrics") or {}
+                        if "success_rate" in metrics:
+                            sr = float(metrics["success_rate"])
+                            return ("pass" if sr >= 0.5 else "fail"), sr
 
                         status_lower = str(raw_status).strip().lower()
                         decision_upper = str(decision).strip().upper()
@@ -169,30 +203,47 @@ class CertificationService:
         # 2. Immutable Evaluation Outcome Extraction (Zero Circular Manifest Reading)
         computed_status, computed_score = cls.extract_computed_run_outcome(vault_dir, target_trace)
         if computed_status == "inconclusive":
-            if status:
-                effective_status = status.lower()
-                effective_score = float(score) if score is not None else 1.0
-            else:
-                logger.error(
-                    "   [Certification] Inconclusive outcome for %s: missing terminal events.",
-                    run_id,
-                )
-                raise ValueError(
-                    f"Run {run_id} has inconclusive outcome: missing terminal evaluation events"
-                )
+            logger.error(
+                "   [Certification] FAIL CLOSED: Inconclusive outcome for %s: missing terminal.",
+                run_id,
+            )
+            raise ValueError(
+                f"Run {run_id} has inconclusive outcome: missing terminal evaluation events; "
+                "cannot issue authoritative certification."
+            )
         elif computed_status == "fail":
-            if status and status.lower() == "pass":
-                logger.warning(
-                    "   [Certification] Cannot override computed FAIL with PASS for %s.",
-                    run_id,
-                )
             effective_status = "fail"
             effective_score = computed_score
         else:
             effective_status = "pass"
-            effective_score = (
-                score if (score is not None and score <= computed_score) else computed_score
-            )
+            effective_score = computed_score
+
+        # Mandatory scenario and runtime metadata binding
+        meta_binding: dict[str, Any] = {}
+        try:
+            with open(target_trace, encoding="utf-8") as tf:
+                for line in tf:
+                    if not line.strip():
+                        continue
+                    try:
+                        rec = json.loads(line)
+                        if rec.get("event") == "run_start" or rec.get("scenario_id"):
+                            for key in (
+                                "scenario_id",
+                                "scenario_hash",
+                                "policy_id",
+                                "evaluator_config_hash",
+                                "agent_id",
+                                "agent_identity",
+                            ):
+                                if rec.get(key) and key not in meta_binding:
+                                    meta_binding[key] = rec[key]
+                    except Exception as parse_err:
+                        logger.debug(
+                            "Could not parse trace record for metadata binding: %s", parse_err
+                        )
+        except Exception as read_err:
+            logger.debug("Could not read trace file for metadata binding: %s", read_err)
 
         # 3. Cryptographic Signature Execution
         manifest = TraceVerifier.sign_trace(
@@ -203,6 +254,7 @@ class CertificationService:
             compliance_score=effective_score,
             policy_ref=policy_ref,
             ttl_days=ttl or config.GOVERNANCE_TTL_DAYS,
+            metadata=meta_binding or None,
             execution_mode=execution_mode,
             provisional=provisional,
             behavioral_fingerprint_id=behavioral_fingerprint_id,

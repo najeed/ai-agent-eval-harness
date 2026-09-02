@@ -946,6 +946,9 @@ class TestAuthAndCatalogExtraBranches:
         with pytest.raises(PermissionError, match="sealed"):
             store.store_artifact(run_id, "post_seal.txt", "forbidden")
 
+        with pytest.raises(PermissionError, match="sealed"):
+            store.store_artifact(run_id, "run_manifest.json", '{"status": "tampered"}')
+
     def test_local_leaderboard_store_persistence(self, tmp_path):
         from eval_runner.reference.local_leaderboard import LocalLeaderboardStore
 

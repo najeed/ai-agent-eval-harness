@@ -83,8 +83,9 @@ export const TrustCenter: React.FC = () => {
       
       if (res.ok) {
         setVerifyResult(data);
-        // Automatically resolve public key if key id is present
-        const identity = data.manifest?.provenance_chain?.signer_identity || data.manifest?.signer_identity;
+        // Automatically resolve public key from provenance chain
+        const chain = Array.isArray(data.manifest?.provenance_chain) ? data.manifest.provenance_chain : [];
+        const identity = chain[0]?.identity || chain[0]?.signer_identity || data.manifest?.signer_identity;
         if (identity) {
           resolvePublicKey(identity);
         }
@@ -225,13 +226,43 @@ export const TrustCenter: React.FC = () => {
                 <div className="flex items-center gap-1.5 px-2 py-0.5 rounded border text-[10px] font-bold uppercase tracking-wider">
                   {verifyResult.verified ? (
                     <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded flex items-center gap-1">
-                      <CheckCircle className="w-3 h-3" /> VERIFIED
+                      <CheckCircle className="w-3 h-3" /> INTEGRITY VERIFIED
                     </span>
                   ) : (
                     <span className="bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded flex items-center gap-1">
-                      <XCircle className="w-3 h-3" /> FAILED
+                      <XCircle className="w-3 h-3" /> INTEGRITY FAILED
                     </span>
                   )}
+                </div>
+              </div>
+
+              {/* Tri-State Audit Verification Cards */}
+              <div className="grid grid-cols-3 gap-2 pt-1 text-[11px]">
+                <div className="bg-slate-950/60 p-2 rounded border border-slate-800 space-y-0.5">
+                  <span className="text-[9px] text-slate-500 uppercase font-bold block">1. Cryptographic</span>
+                  <span className={`font-mono font-bold ${verifyResult.verified ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {verifyResult.verified ? 'SEALED & VALID' : 'TAMPERED / INVALID'}
+                  </span>
+                </div>
+                <div className="bg-slate-950/60 p-2 rounded border border-slate-800 space-y-0.5">
+                  <span className="text-[9px] text-slate-500 uppercase font-bold block">2. Evaluation</span>
+                  <span className={`font-mono font-bold ${
+                    verifyResult.manifest?.compliance?.status === 'pass'
+                      ? 'text-emerald-400'
+                      : verifyResult.manifest?.compliance?.status === 'fail'
+                        ? 'text-red-400'
+                        : 'text-amber-400'
+                  }`}>
+                    {verifyResult.manifest?.compliance?.status?.toUpperCase() || 'UNSCORED'}
+                  </span>
+                </div>
+                <div className="bg-slate-950/60 p-2 rounded border border-slate-800 space-y-0.5">
+                  <span className="text-[9px] text-slate-500 uppercase font-bold block">3. Authority</span>
+                  <span className={`font-mono font-bold ${
+                    verifyResult.manifest?.provisional ? 'text-amber-400' : 'text-indigo-400'
+                  }`}>
+                    {verifyResult.manifest?.provisional ? 'PROVISIONAL' : (verifyResult.manifest?.execution_mode?.toUpperCase() || 'AUTHORITATIVE')}
+                  </span>
                 </div>
               </div>
 
@@ -352,7 +383,7 @@ export const TrustCenter: React.FC = () => {
                       <div className="bg-slate-900/60 p-2.5 rounded border border-slate-800">
                         <span className="text-[10px] text-slate-500 uppercase block font-semibold">Authoritative Score</span>
                         <span className="font-bold font-mono text-slate-200">
-                          {runDetails.score !== undefined ? String(runDetails.score) : runDetails.decision?.score !== undefined ? String(runDetails.decision.score) : '1.0 (Derived)'}
+                          {runDetails.score !== undefined ? String(runDetails.score) : runDetails.decision?.score !== undefined ? String(runDetails.decision.score) : 'N/A (Not Evaluated)'}
                         </span>
                       </div>
                     </div>

@@ -96,3 +96,22 @@ test('mergeSeqGap merges contiguous sequence intervals', () => {
   assert.equal(merged[0].from, 1);
   assert.equal(merged[0].to, 15);
 });
+
+test('buildWaterfall handles zero-duration and single-event traces deterministically', () => {
+  const events: LogEvent[] = [
+    {
+      _seq: 1,
+      timestamp: '2026-08-27T08:00:00.000Z',
+      event: 'execution_graph_node',
+      scenario_node_id: 'instant_node',
+      execution_instance_id: 'instant_node#1',
+      status: 'completed',
+      duration_ms: 0,
+    },
+  ];
+
+  const waterfall = buildWaterfall(events);
+  assert.equal(waterfall.rows.length, 1);
+  assert.equal(waterfall.rows[0].execId, 'instant_node#1');
+  assert.equal(waterfall.tMin, waterfall.tMax);
+});

@@ -118,7 +118,11 @@ async def test_trust_protocols_pure(mock_config):
     run_id = "v1"
     run_dir = tmp_path / run_id
     run_dir.mkdir()
-    (run_dir / "run.jsonl").write_text("[]")
+    (run_dir / "run.jsonl").write_text(
+        '{"event": "run_start"}\n'
+        '{"event": "summary_metrics", "metrics": {"success_rate": 1.0}}\n'
+        '{"event": "run_end", "outcome": "pass"}\n'
+    )
     manifest = {
         "run_id": run_id,
         "trace_hash": "h",
@@ -142,7 +146,10 @@ async def test_trust_protocols_pure(mock_config):
             assert await evaluation.handle_gate(MockArgs(tmp_path, run_id=run_id)) == 1
 
     # 3. Certify
-    with patch("eval_runner.verifier.TraceVerifier.sign_trace", return_value={"run_id": run_id}):
+    with patch(
+        "eval_runner.services.certification.execute_industrial_certification",
+        return_value={"status": "certified", "run_id": run_id},
+    ):
         assert await evaluation.handle_certify(MockArgs(tmp_path, run_id=run_id)) == 0
 
 

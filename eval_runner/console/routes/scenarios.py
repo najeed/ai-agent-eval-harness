@@ -368,7 +368,7 @@ def check_execution_readiness():
             checks.append(
                 {
                     "name": "Scenario Specification",
-                    "status": "WARNING",
+                    "status": "FAILED",
                     "tier": "CONFIGURED",
                     "message": f"Scenario has structural issues: {'; '.join(issues[:3])}",
                 }
@@ -610,8 +610,9 @@ def check_execution_readiness():
         if t in tier_order and tier_order.index(t) < tier_order.index(overall_tier):
             overall_tier = t
 
+    has_failed = any(c.get("status") == "FAILED" for c in checks)
     has_warnings = any(c.get("status") == "WARNING" for c in checks)
-    all_passed = all(c.get("status") in ("PASSED", "WARNING") for c in checks)
+    all_passed = not has_failed
     is_verifiable = (
         all_passed and signing_key is not None and all(c.get("status") == "PASSED" for c in checks)
     )
@@ -634,7 +635,9 @@ def check_execution_readiness():
             "is_executable": all_passed,
             "is_verifiable": is_verifiable,
             "scenario_id": scen_id,
-            "overall_status": "READY" if not has_warnings else "CONFIGURED",
+            "overall_status": (
+                "FAILED" if has_failed else ("CONFIGURED" if has_warnings else "READY")
+            ),
             "readiness_tier": overall_tier,
             "preflight_fingerprint": pfp,
             "manifest": manifest,

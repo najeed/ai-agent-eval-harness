@@ -288,3 +288,19 @@ def test_scenario_validation_and_concurrency(tmp_path, monkeypatch):
         assert data["is_executable"] is True
         assert "preflight_fingerprint" in data
         assert len(data["preflight_fingerprint"]) == 64
+
+        # Invalid cyclic scenario must fail preflight readiness
+        res_bad_readiness = client.post(
+            "/api/scenarios/readiness",
+            json={
+                "scenario_data": cyclic_scen,
+                "agent_config": {"model": "gpt-5", "endpoint": "https://api.openai.com"},
+            },
+        )
+        assert res_bad_readiness.status_code == 200
+        bad_data = res_bad_readiness.get_json()
+        assert bad_data["is_executable"] is False
+        assert bad_data["ready"] is False
+        assert bad_data["overall_status"] == "FAILED"
+        scen_check = next(c for c in bad_data["checks"] if c["name"] == "Scenario Specification")
+        assert scen_check["status"] == "FAILED"

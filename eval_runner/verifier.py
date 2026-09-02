@@ -188,7 +188,7 @@ class CoreTraceSigner(TraceVerificationInterceptor):
                     "(fail-closed: degenerate placeholder signatures are prohibited)"
                 )
 
-            manifest["provenance_chain"].append(
+            manifest.setdefault("provenance_chain", []).append(
                 {
                     "identity": identity_id,
                     "role": "Evaluator",
@@ -238,9 +238,10 @@ class CoreTraceSigner(TraceVerificationInterceptor):
             # error barrier below must never swallow this into a warning.
             raise
         except Exception as e:
-            logger.warning(f"Could not cryptographically sign trace as '{identity_id}': {e}")
-            if config.PQC_STRICT_MODE and "PQC_STRICT_MODE Violation" in str(e):
-                raise
+            logger.error(f"Could not cryptographically sign trace as '{identity_id}': {e}")
+            raise CertificationFailedError(
+                f"CoreTraceSigner failed to sign manifest for '{identity_id}': {e}"
+            ) from e
 
         return next_signer(manifest)
 
@@ -569,17 +570,28 @@ class TraceVerifier:
                 )
 
                 with open(p, encoding="utf-8") as tf:
-                    for line in tf:
-                        if line.strip():
+                    for line_idx, line in enumerate(tf, start=1):
+                        stripped = line.strip()
+                        if stripped:
                             try:
-                                events_list.append(json.loads(line))
+                                events_list.append(json.loads(stripped))
                             except Exception as ev_parse_err:
-                                logger.debug(f"Trace event parse debug: {ev_parse_err}")
+                                logger.error(
+                                    f"Malformed trace record at line {line_idx}: {ev_parse_err}"
+                                )
+                                raise CertificationFailedError(
+                                    f"Malformed trace record at line {line_idx}: {ev_parse_err}"
+                                ) from ev_parse_err
                 if events_list:
                     ev_graph = build_evidence_graph_from_events(events_list)
                     computed_evidence_root = compute_evidence_graph_root(ev_graph)
+            except CertificationFailedError:
+                raise
             except Exception as ev_err:
-                logger.debug(f"Evidence graph derivation notice: {ev_err}")
+                logger.error(f"Evidence graph derivation failed: {ev_err}")
+                raise CertificationFailedError(
+                    f"Evidence graph derivation failed: {ev_err}"
+                ) from ev_err
 
         if (
             evidence_root_hash
@@ -955,18 +967,22 @@ class TraceVerifier:
 
                     ev_list = []
                     with open(tp, encoding="utf-8") as tf:
-                        for line in tf:
-                            if line.strip():
+                        for line_idx, line in enumerate(tf, start=1):
+                            stripped = line.strip()
+                            if stripped:
                                 try:
-                                    ev_list.append(json.loads(line))
+                                    ev_list.append(json.loads(stripped))
                                 except (
                                     json.JSONDecodeError,
                                     UnicodeDecodeError,
                                     ValueError,
                                 ) as line_err:
-                                    logger.debug(
-                                        f"Trace line parse debug in verify_trace: {line_err}"
+                                    logger.warning(
+                                        "Trace line parse failure at line %d: %s",
+                                        line_idx,
+                                        line_err,
                                     )
+                                    return False
 
                     if ev_list:
                         graph = build_evidence_graph_from_events(ev_list)
@@ -1280,17 +1296,30 @@ def verify_trace_certificate(
 
             from .identity import IdentityService
 
-            # 1. Authoritative Anchor Key Lookup
+            # 1. Authoritative Anchor Key Lookup (Fail-closed: trust root must be anchored)
             anchor_pk = None
             try:
                 anchor_pk = IdentityService.get_public_key(identity_id)
             except Exception as id_lookup_err:
                 logger.debug(f"IdentityService lookup error for {identity_id}: {id_lookup_err}")
+                result["errors"].append(
+                    f"Signature check error for '{identity_id}': "
+                    f"IdentityService error: {id_lookup_err}"
+                )
+                continue
+
+            if anchor_pk is None:
+                result["errors"].append(
+                    f"No trusted anchor public key found in IdentityService for "
+                    f"identity '{identity_id}' (No public key available in trust root; "
+                    "unanchored embedded keys prohibited)."
+                )
+                continue
 
             raw_pk = entry.get("public_key")
-            embedded_pk = None
             if raw_pk:
                 try:
+                    embedded_pk = None
                     if isinstance(raw_pk, str):
                         if "BEGIN PUBLIC KEY" in raw_pk:
                             embedded_pk = load_pem_public_key(raw_pk.encode("utf-8"))
@@ -1298,44 +1327,40 @@ def verify_trace_certificate(
                             embedded_pk = Ed25519PublicKey.from_public_bytes(bytes.fromhex(raw_pk))
                     elif isinstance(raw_pk, bytes):
                         embedded_pk = Ed25519PublicKey.from_public_bytes(raw_pk)
-                except Exception as pk_parse_err:
-                    logger.debug(f"Embedded public key parsing failed: {pk_parse_err}")
-
-            # If anchor key exists and embedded key is present, verify they match
-            if anchor_pk is not None and embedded_pk is not None:
-                try:
-                    anchor_bytes = anchor_pk.public_bytes(Encoding.Raw, PublicFormat.Raw)
-                    embedded_bytes = embedded_pk.public_bytes(Encoding.Raw, PublicFormat.Raw)
-                    if anchor_bytes != embedded_bytes:
-                        result["errors"].append(
-                            f"Signer key mismatch: embedded key for '{identity_id}' "
-                            "does not match trusted IdentityService anchor."
-                        )
-                        continue
+                    if embedded_pk is not None:
+                        anchor_bytes = anchor_pk.public_bytes(Encoding.Raw, PublicFormat.Raw)
+                        embedded_bytes = embedded_pk.public_bytes(Encoding.Raw, PublicFormat.Raw)
+                        if anchor_bytes != embedded_bytes:
+                            result["errors"].append(
+                                f"Signer key mismatch: embedded key for '{identity_id}' "
+                                "does not match trusted IdentityService anchor."
+                            )
+                            continue
                 except Exception as pk_cmp_err:
                     logger.debug(f"Public key comparison error: {pk_cmp_err}")
+                    result["errors"].append(
+                        f"Signature check error for '{identity_id}': "
+                        f"No public key available ({pk_cmp_err})"
+                    )
+                    continue
 
-            public_key = anchor_pk or embedded_pk
-            if public_key is None:
+            public_key = anchor_pk
+
+            if not isinstance(public_key, Ed25519PublicKey):
                 result["errors"].append(
-                    f"No public key available for signer identity '{identity_id}'."
+                    f"Unsupported key type for signer '{identity_id}': {type(public_key).__name__}"
                 )
                 continue
 
             sig_bytes = bytes.fromhex(signature_hex)
-            if isinstance(public_key, Ed25519PublicKey):
-                try:
-                    public_key.verify(sig_bytes, manifest_bytes)
-                    sig_verified = True
-                    result["signer_identity"] = identity_id
-                    result["algorithm"] = algorithm
-                except Exception as verify_err:
-                    result["errors"].append(
-                        f"Ed25519 signature verification failed for '{identity_id}': {verify_err}"
-                    )
-            else:
+            try:
+                public_key.verify(sig_bytes, manifest_bytes)
+                sig_verified = True
+                result["signer_identity"] = identity_id
+                result["algorithm"] = algorithm
+            except Exception as verify_err:
                 result["errors"].append(
-                    f"Unsupported key type for signer '{identity_id}': {type(public_key).__name__}"
+                    f"Ed25519 signature verification failed for '{identity_id}': {verify_err}"
                 )
         except Exception as sig_err:
             logger.debug("Signature check error for %s/%s: %s", run_id, identity_id, sig_err)
@@ -1351,14 +1376,25 @@ def verify_trace_certificate(
             )
 
             ev_list = []
-            for line in trace_bytes.decode("utf-8", errors="replace").splitlines():
-                if line.strip():
-                    try:
-                        ev_list.append(_json.loads(line))
-                    except (json.JSONDecodeError, UnicodeDecodeError, ValueError) as line_err:
-                        logger.debug(
-                            f"Trace line parse debug in verify_trace_certificate: {line_err}"
-                        )
+            try:
+                trace_str = trace_bytes.decode("utf-8")
+            except UnicodeDecodeError as uerr:
+                evidence_root_valid = False
+                result["errors"].append(f"Trace file is not valid UTF-8: {uerr}")
+                trace_str = ""
+
+            if trace_str:
+                for line_idx, line in enumerate(trace_str.splitlines(), start=1):
+                    stripped = line.strip()
+                    if stripped:
+                        try:
+                            ev_list.append(_json.loads(stripped))
+                        except (json.JSONDecodeError, UnicodeDecodeError, ValueError) as line_err:
+                            evidence_root_valid = False
+                            result["errors"].append(
+                                f"Malformed trace record at line {line_idx}: {line_err}"
+                            )
+                            break
 
             if ev_list:
                 ev_graph = build_evidence_graph_from_events(ev_list)

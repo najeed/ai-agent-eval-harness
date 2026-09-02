@@ -36,9 +36,13 @@ def certify_env(tmp_path, monkeypatch):
     # Authoritative Eval Artifact
     run_id = "test_certification_run"
     run_dir = runs_dir / run_id
-    run_dir.mkdir()
+    run_dir.mkdir(parents=True, exist_ok=True)
     trace_path = run_dir / "run.jsonl"
-    trace_path.write_text('{"event": "run_start"}\n')
+    trace_path.write_text(
+        '{"event": "run_start"}\n'
+        '{"event": "summary_metrics", "metrics": {"success_rate": 1.0}}\n'
+        '{"event": "run_end", "outcome": "pass"}\n'
+    )
 
     return {"root": root, "run_id": run_id, "trace_path": trace_path}
 

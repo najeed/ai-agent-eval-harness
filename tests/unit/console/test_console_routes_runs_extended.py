@@ -39,7 +39,7 @@ def console_jail(request):
 def client(console_jail, monkeypatch):
     app = Flask(__name__)
     app.secret_key = "test-secret"
-    app.config["LOGIN_DISABLED"] = True
+    monkeypatch.setenv("AGENTV_TEST_AUTH_BYPASS", "1")
     app.register_blueprint(run_bp, url_prefix="/api")
 
     monkeypatch.setattr(config, "PROJECT_ROOT", console_jail["root"])

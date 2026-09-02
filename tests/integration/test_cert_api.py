@@ -25,7 +25,10 @@ def test_public_certificate_endpoint_v3(client, tmp_path, monkeypatch):
     run_dir = tmp_path / "runs" / run_id
     run_dir.mkdir(parents=True)
     trace_path = run_dir / "run.jsonl"
-    trace_path.write_bytes(b"integration test trace data v3")
+    trace_path.write_text(
+        '{"event": "start"}\n{"event": "run_end", "outcome": "pass"}\n',
+        encoding="utf-8",
+    )
 
     # Setup identity
     identity_id = "it_identity"

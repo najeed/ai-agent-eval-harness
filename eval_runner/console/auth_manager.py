@@ -231,14 +231,12 @@ def require_permission(permission_node: str):
         def decorated_function(*args, **kwargs):
             import os
 
-            from flask import current_app, jsonify, request, session
+            from flask import jsonify, request, session
 
             # [TEST HARNESS SEAM] Explicit opt-in bypass for deterministic test
             # suites. Never set in production: authorization remains deny-by-
             # default (no implicit localhost/demo trust).
-            if os.getenv("AGENTV_TEST_AUTH_BYPASS") == "1" or (
-                current_app and current_app.config.get("LOGIN_DISABLED")
-            ):
+            if os.getenv("AGENTV_TEST_AUTH_BYPASS") == "1":
                 return f(*args, **kwargs)
 
             # [INDUSTRIAL DIAGNOSTIC]: Log all permission checks for forensic auditing

@@ -30,9 +30,13 @@ def pqc_env(tmp_path, monkeypatch):
 
     run_id = "pqc_test_run"
     run_dir = runs_dir / run_id
-    run_dir.mkdir()
+    run_dir.mkdir(parents=True, exist_ok=True)
     trace_path = run_dir / "run.jsonl"
-    trace_path.write_text('{"event": "run_start", "run_id": "pqc_test_run"}\n')
+    trace_path.write_text(
+        '{"event": "run_start", "run_id": "pqc_test_run"}\n'
+        '{"event": "summary_metrics", "metrics": {"success_rate": 1.0}}\n'
+        '{"event": "run_end", "outcome": "pass"}\n'
+    )
 
     return {
         "root": root,

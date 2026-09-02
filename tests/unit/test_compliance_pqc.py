@@ -21,20 +21,54 @@ class TestCompliancePQC(unittest.TestCase):
         if self.run_dir.exists():
             self.run_dir.rmdir()
 
-    def test_check_pqc_status_quantum_safe(self):
+    def test_check_pqc_status_quantum_safe_with_client(self):
         manifest = {
             "timestamp": "2026-05-14T12:00:00",
             "provenance_chain": [
                 {"algorithm": "ED25519", "identity": "system_id"},
-                {"algorithm": "ML-DSA-65", "identity": "system_id@pqc"},
+                {
+                    "algorithm": "ML-DSA-65",
+                    "identity": "system_id@pqc",
+                    "signature": "abcdef123456",
+                },
             ],
         }
         with open(self.manifest_path, "w") as f:
             json.dump(manifest, f)
 
-        status = self.compliance_service.check_pqc_status(self.run_id)
-        self.assertTrue(status["quantum_safe"])
-        self.assertEqual(status["algorithm"], "ML-DSA-65")
+        from unittest.mock import MagicMock
+
+        from eval_runner.identity import IdentityService
+
+        mock_pqc = MagicMock()
+        mock_pqc.verify_digest.return_value = True
+        with patch.object(IdentityService, "get_pqc_client", return_value=mock_pqc):
+            status = self.compliance_service.check_pqc_status(self.run_id)
+            self.assertTrue(status["quantum_safe"])
+            self.assertEqual(status["algorithm"], "ML-DSA-65")
+
+    def test_check_pqc_status_unverifiable_without_client(self):
+        manifest = {
+            "timestamp": "2026-05-14T12:00:00",
+            "provenance_chain": [
+                {"algorithm": "ED25519", "identity": "system_id"},
+                {
+                    "algorithm": "ML-DSA-65",
+                    "identity": "system_id@pqc",
+                    "signature": "abcdef123456",
+                },
+            ],
+        }
+        with open(self.manifest_path, "w") as f:
+            json.dump(manifest, f)
+
+        from eval_runner.identity import IdentityService
+
+        with patch.object(IdentityService, "get_pqc_client", return_value=None):
+            status = self.compliance_service.check_pqc_status(self.run_id)
+            self.assertFalse(status["quantum_safe"])
+            self.assertEqual(status["status"], "unverifiable")
+            self.assertIn("PQC client not available", status["reason"])
 
     def test_check_pqc_status_not_quantum_safe(self):
         manifest = {
@@ -54,12 +88,6 @@ class TestCompliancePQC(unittest.TestCase):
         self.assertEqual(status["reason"], "Manifest missing")
 
     def test_evaluate_compliance_with_pqc_strict_mode(self):
-        # [Fabricated-#3 remediation] Fail-closed doctrine: compliance starts
-        # as NON-compliant and only an evaluated proof path asserts it.
-        # Behavioral metrics are never scored in OSS — the old always-pass
-        # stub is gone, so classical-only proofs can no longer ride on it.
-
-        # Setup run manifest (Not Quantum Safe — classical ED25519 only)
         manifest = {
             "timestamp": "2026-05-14T12:00:00",
             "provenance_chain": [{"algorithm": "ED25519"}],
@@ -69,8 +97,6 @@ class TestCompliancePQC(unittest.TestCase):
 
         from eval_runner.compliance import evaluate_compliance
 
-        # 1. PQC_STRICT_MODE = False + classical-only signature:
-        #    NOT compliant (no quantum-safe proof, metrics not evaluated).
         with patch("eval_runner.config.PQC_STRICT_MODE", False):
             result = evaluate_compliance(self.run_id, {"some_metric": 1.0})
             self.assertFalse(result["compliant"])
@@ -78,7 +104,6 @@ class TestCompliancePQC(unittest.TestCase):
             self.assertEqual(result["behavioral_metrics"], "not_evaluated_in_oss")
             self.assertFalse(result["metrics_eval"]["pass"])
 
-        # 2. PQC_STRICT_MODE = True: still non-compliant, explicit reason.
         with patch("eval_runner.config.PQC_STRICT_MODE", True):
             result = evaluate_compliance(self.run_id, {"some_metric": 1.0})
             self.assertFalse(result["compliant"])
@@ -94,32 +119,41 @@ class TestCompliancePQC(unittest.TestCase):
                     "algorithm": "ML-DSA-65",
                     "provider": "cyclecore",
                     "timestamp": "2026-05-14T12:00:01",
+                    "signature": "sig_hex_12345",
                 }
             ],
         }
         with open(self.manifest_path, "w") as f:
             json.dump(manifest, f)
 
+        from unittest.mock import MagicMock
+
         from eval_runner.compliance import evaluate_compliance
+        from eval_runner.identity import IdentityService
 
-        # 1. Without evaluated behavioral metrics, status is NOT_EVALUATED (compliant=False)
-        for strict in (False, True):
-            with patch("eval_runner.config.PQC_STRICT_MODE", strict), self.subTest(strict=strict):
-                result = evaluate_compliance(self.run_id, {})
-                self.assertEqual(result["status"], "NOT_EVALUATED")
-                self.assertFalse(result["compliant"])
+        mock_pqc = MagicMock()
+        mock_pqc.verify_digest.return_value = True
+
+        with patch.object(IdentityService, "get_pqc_client", return_value=mock_pqc):
+            for strict in (False, True):
+                with (
+                    patch("eval_runner.config.PQC_STRICT_MODE", strict),
+                    self.subTest(strict=strict),
+                ):
+                    result = evaluate_compliance(self.run_id, {})
+                    self.assertEqual(result["status"], "NOT_EVALUATED")
+                    self.assertFalse(result["compliant"])
+                    self.assertTrue(result["pqc_status"]["quantum_safe"])
+
+            mock_eval = {"status": "EVALUATED", "pass": True}
+            with patch(
+                "eval_runner.compliance.ComplianceService._evaluate_metrics_pack",
+                return_value=mock_eval,
+            ):
+                result = evaluate_compliance(self.run_id, {"latency": 100})
+                self.assertEqual(result["status"], "COMPLIANT")
+                self.assertTrue(result["compliant"])
                 self.assertTrue(result["pqc_status"]["quantum_safe"])
-
-        # 2. When behavioral metrics are mocked as evaluated and passed, status is COMPLIANT
-        mock_eval = {"status": "EVALUATED", "pass": True}
-        with patch(
-            "eval_runner.compliance.ComplianceService._evaluate_metrics_pack",
-            return_value=mock_eval,
-        ):
-            result = evaluate_compliance(self.run_id, {"latency": 100})
-            self.assertEqual(result["status"], "COMPLIANT")
-            self.assertTrue(result["compliant"])
-            self.assertTrue(result["pqc_status"]["quantum_safe"])
 
 
 if __name__ == "__main__":

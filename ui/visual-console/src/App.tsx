@@ -360,29 +360,27 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
             return;
           }
 
-          // J1 Hardening: Pre-execution Manifest Verification.
-          // Untrusted remote code must NEVER be dynamically evaluated without a cryptographically valid pre-execution manifest.
-          const sourceText = new TextDecoder().decode(buffer);
-          let extractedManifest: any = null;
+          // Pre-execution Manifest Verification: deterministic sidecar .manifest.json contract
+          let preManifest: any = null;
           try {
-            const match = sourceText.match(/(?:export\s+)?(?:const|let|var)?\s*manifest\s*=\s*(\{[\s\S]*?\n\s*\});?/);
-            if (match) {
-              extractedManifest = JSON.parse(match[1]);
+            const manifestUrl = entryUrl.replace(/\.[^/.]+$/, '') + '.manifest.json';
+            const mRes = await fetch(manifestUrl);
+            if (mRes.ok) {
+              preManifest = await mRes.json();
             }
           } catch {
-            // Static regex parse failed
+            // Sidecar manifest fetch failed
           }
 
-          let preManifest = extractedManifest;
           if (!preManifest) {
             try {
-              const manifestUrl = entryUrl.replace(/\.[^/.]+$/, '') + '.manifest.json';
-              const mRes = await fetch(manifestUrl);
-              if (mRes.ok) {
-                preManifest = await mRes.json();
+              const sourceText = new TextDecoder().decode(buffer);
+              const match = sourceText.match(/(?:export\s+)?(?:const|let|var)?\s*manifest\s*=\s*(\{[\s\S]*?\n\s*\});?/);
+              if (match) {
+                preManifest = JSON.parse(match[1]);
               }
             } catch {
-              // Manifest file fetch fallback failed
+              // Static regex parse failed
             }
           }
 
