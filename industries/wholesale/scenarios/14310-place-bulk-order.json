@@ -1,0 +1,75 @@
+{
+  "aes_version": 1.4,
+  "description": "A retail chain places a large purchase order for multiple products to stock its stores for the upcoming season.",
+  "evaluation": {
+    "consensus": {
+      "judge_panel": [
+        "Luna-1"
+      ],
+      "min_judges": 1,
+      "strategy": "Majority_Vote"
+    }
+  },
+  "industry": "Wholesale",
+  "metadata": {
+    "compliance_level": "Standard",
+    "id": "14310-place-bulk-order",
+    "name": "Retailer Places a Bulk Order",
+    "status": "Draft",
+    "version": "1.0.0",
+    "description": "A retail chain places a large purchase order for multiple products to stock its stores for the upcoming season.",
+    "validated_at": "2026-09-02T16:58:15.503873+00:00",
+    "validated_by": "system",
+    "content_hash": "sha3_256:9a70d838312fe768647c7ac0d8f9f149fbf35e2d192c3613fb0a0aa4a8e2ae79"
+  },
+  "workflow": {
+    "edges": [
+      {
+        "from": "task-1",
+        "to": "task-2"
+      },
+      {
+        "from": "task-2",
+        "to": "task-3"
+      }
+    ],
+    "nodes": [
+      {
+        "expected_outcome": [
+          {
+            "expected": "Agent successfully creates a new sales order with all items and quantities from the retailer's PO.",
+            "mode": "regex",
+            "target": "message"
+          }
+        ],
+        "id": "task-1",
+        "task_description": "Receive the purchase order from the retailer and enter it into the order management system.",
+        "required_tools": []
+      },
+      {
+        "expected_outcome": [
+          {
+            "expected": "Agent confirms that all items are in stock and can be fulfilled completely.",
+            "mode": "regex",
+            "target": "message"
+          }
+        ],
+        "id": "task-2",
+        "task_description": "Check inventory levels for all items on the order.",
+        "required_tools": []
+      },
+      {
+        "expected_outcome": [
+          {
+            "expected": "Agent sends a formal confirmation email to the customer.",
+            "mode": "regex",
+            "target": "message"
+          }
+        ],
+        "id": "task-3",
+        "task_description": "Send an order confirmation to the retailer with an estimated shipping date.",
+        "required_tools": []
+      }
+    ]
+  }
+}

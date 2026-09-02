@@ -2337,48 +2337,112 @@ def test_verifier_certificate_evidence_graph_exception(tmp_path):
         assert res["verified"] is False
 
 
+def _make_signed_cert_for_bytes(
+    trace_bytes: bytes, evidence_root_hash: str | None = "sha3_256:target_root"
+):
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+    from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
+
+    priv_key = Ed25519PrivateKey.generate()
+    pub_key = priv_key.public_key()
+    pub_hex = pub_key.public_bytes(Encoding.Raw, PublicFormat.Raw).hex()
+
+    manifest_payload = {
+        "vc_version": "3.0.0",
+        "harness_version": "2.0.0",
+        "timestamp": "2026-09-02T12:00:00+0000",
+        "run_id": "test-mutant-kill-run",
+        "trace_hash": f"sha3_256:{hashlib.sha3_256(trace_bytes).hexdigest()}",
+    }
+    if evidence_root_hash is not None:
+        manifest_payload["evidence_root_hash"] = evidence_root_hash
+
+    canonical_bytes = json.dumps(manifest_payload, sort_keys=True).encode("utf-8")
+    sig_hex = priv_key.sign(canonical_bytes).hex()
+
+    manifest_payload["provenance_chain"] = [
+        {
+            "algorithm": "ED25519",
+            "identity": "mock_anchor",
+            "public_key": pub_hex,
+            "signature": sig_hex,
+        }
+    ]
+    return manifest_payload, pub_key
+
+
 def test_verify_trace_certificate_invalid_utf8_trace_bytes(clean_vault_setup):
     """Verify verify_trace_certificate rejects invalid UTF-8 trace bytes
-    when evidence root is checked."""
-    project_root = clean_vault_setup["project_root"]
-    run_id = "run-utf8-invalid-01"
-    rdir = project_root / "runs" / run_id
-    rdir.mkdir(parents=True, exist_ok=True)
-    trace_path = rdir / "run.jsonl"
-    trace_path.write_text(
-        '{"event": "start"}\n{"event": "run_end", "outcome": "pass"}\n', encoding="utf-8"
-    )
+    when trace_hash and signature are otherwise valid."""
+    invalid_utf8_bytes = b'{"event": "start"}\n\xff\xfe\xfa\x00\n'
+    manifest, pub_key = _make_signed_cert_for_bytes(invalid_utf8_bytes)
 
-    manifest = TraceVerifier.sign_trace(str(trace_path), identity_id="signer", run_id=run_id)
-    assert "evidence_root_hash" in manifest
-
-    invalid_utf8_bytes = b"\xff\xfe\xfa\x00\x80\x81"
-    res = verify_trace_certificate(
-        run_id=run_id, trace_bytes=invalid_utf8_bytes, cert_data=manifest
-    )
-    assert res["verified"] is False
-    assert any("Trace file is not valid UTF-8" in e for e in res["errors"])
+    with patch.object(IdentityService, "get_public_key", return_value=pub_key):
+        res = verify_trace_certificate(
+            run_id="test-mutant-kill-run",
+            trace_bytes=invalid_utf8_bytes,
+            cert_data=manifest,
+        )
+        assert res["verified"] is False
+        assert any("Trace file is not valid UTF-8" in e for e in res["errors"])
 
 
 def test_verify_trace_certificate_malformed_json_trace_bytes(clean_vault_setup):
     """Verify verify_trace_certificate rejects malformed JSONL trace records
-    when evidence root is checked."""
-    project_root = clean_vault_setup["project_root"]
-    run_id = "run-malformed-json-01"
-    rdir = project_root / "runs" / run_id
-    rdir.mkdir(parents=True, exist_ok=True)
-    trace_path = rdir / "run.jsonl"
-    trace_path.write_text(
-        '{"event": "start"}\n{"event": "run_end", "outcome": "pass"}\n', encoding="utf-8"
+    when trace_hash and signature are otherwise valid."""
+    malformed_bytes = b'{"event": "start"}\n{not-valid-json-record}\n'
+    manifest, pub_key = _make_signed_cert_for_bytes(malformed_bytes)
+
+    with patch.object(IdentityService, "get_public_key", return_value=pub_key):
+        res = verify_trace_certificate(
+            run_id="test-mutant-kill-run",
+            trace_bytes=malformed_bytes,
+            cert_data=manifest,
+        )
+        assert res["verified"] is False
+        assert any("Malformed trace record at line" in e for e in res["errors"])
+
+
+def test_verify_trace_certificate_without_evidence_root_hash_succeeds(clean_vault_setup):
+    """Verify verify_trace_certificate succeeds for valid cert without evidence_root_hash."""
+    trace_bytes = b'{"event": "start"}\n{"event": "run_end", "outcome": "pass"}\n'
+    manifest, pub_key = _make_signed_cert_for_bytes(trace_bytes, evidence_root_hash=None)
+
+    with patch.object(IdentityService, "get_public_key", return_value=pub_key):
+        res = verify_trace_certificate(
+            run_id="test-mutant-kill-run",
+            trace_bytes=trace_bytes,
+            cert_data=manifest,
+        )
+        assert res["verified"] is True
+        assert res["manifest_hash_match"] is True
+
+
+def test_verify_trace_certificate_partial_events_with_malformed_trailing_line(clean_vault_setup):
+    """Verify verify_trace_certificate fails when a trace contains valid events matching
+    the evidence_root_hash followed by a malformed line."""
+    from agentv_runtime.evidence_graph import (
+        build_evidence_graph_from_events,
+        compute_evidence_graph_root,
     )
 
-    manifest = TraceVerifier.sign_trace(str(trace_path), identity_id="signer", run_id=run_id)
-    assert "evidence_root_hash" in manifest
+    valid_events = [{"event": "start", "_seq": 1}]
+    ev_graph = build_evidence_graph_from_events(valid_events)
+    matching_ev_root = compute_evidence_graph_root(ev_graph)
 
-    malformed_bytes = b'{"event": "start"}\n{not-valid-json-record}\n'
-    res = verify_trace_certificate(run_id=run_id, trace_bytes=malformed_bytes, cert_data=manifest)
-    assert res["verified"] is False
-    assert any("Malformed trace record at line" in e for e in res["errors"])
+    malformed_trailing_bytes = b'{"event": "start", "_seq": 1}\n{not-valid-json-record}\n'
+    manifest, pub_key = _make_signed_cert_for_bytes(
+        malformed_trailing_bytes, evidence_root_hash=matching_ev_root
+    )
+
+    with patch.object(IdentityService, "get_public_key", return_value=pub_key):
+        res = verify_trace_certificate(
+            run_id="test-mutant-kill-run",
+            trace_bytes=malformed_trailing_bytes,
+            cert_data=manifest,
+        )
+        assert res["verified"] is False
+        assert any("Malformed trace record at line" in e for e in res["errors"])
 
 
 def test_verify_trace_evidence_root_mismatch_fails_verification(clean_vault_setup):

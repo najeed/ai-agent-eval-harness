@@ -723,7 +723,7 @@ class TraceVerifier:
         if _mode_in in _valid_modes:
             manifest["execution_mode"] = _mode_in
             if provisional:
-                manifest["provisional"] = False
+                manifest["provisional"] = True
         else:
             manifest["execution_mode"] = "unknown"
             manifest["provisional"] = True
@@ -1368,46 +1368,56 @@ def verify_trace_certificate(
 
     # 4. Check evidence_root_hash if present in certificate
     evidence_root_valid = True
-    if cert_data.get("evidence_root_hash") and trace_bytes:
-        try:
-            from agentv_runtime.evidence_graph import (
-                build_evidence_graph_from_events,
-                compute_evidence_graph_root,
-            )
-
-            ev_list = []
+    if cert_data.get("evidence_root_hash"):
+        evidence_root_valid = False
+        if trace_bytes:
             try:
-                trace_str = trace_bytes.decode("utf-8")
-            except UnicodeDecodeError as uerr:
-                evidence_root_valid = False
-                result["errors"].append(f"Trace file is not valid UTF-8: {uerr}")
+                from agentv_runtime.evidence_graph import (
+                    build_evidence_graph_from_events,
+                    compute_evidence_graph_root,
+                )
+
+                ev_list = []
                 trace_str = ""
+                try:
+                    trace_str = trace_bytes.decode("utf-8")
+                except UnicodeDecodeError as uerr:
+                    result["errors"].append(f"Trace file is not valid UTF-8: {uerr}")
 
-            if trace_str:
-                for line_idx, line in enumerate(trace_str.splitlines(), start=1):
-                    stripped = line.strip()
-                    if stripped:
-                        try:
-                            ev_list.append(_json.loads(stripped))
-                        except (json.JSONDecodeError, UnicodeDecodeError, ValueError) as line_err:
-                            evidence_root_valid = False
+                if trace_str:
+                    has_line_error = False
+                    for line_idx, line in enumerate(trace_str.splitlines(), start=1):
+                        stripped = line.strip()
+                        if stripped:
+                            try:
+                                ev_list.append(_json.loads(stripped))
+                            except (
+                                json.JSONDecodeError,
+                                UnicodeDecodeError,
+                                ValueError,
+                            ) as line_err:
+                                has_line_error = True
+                                result["errors"].append(
+                                    f"Malformed trace record at line {line_idx}: {line_err}"
+                                )
+                                break
+
+                    if not has_line_error and ev_list:
+                        ev_graph = build_evidence_graph_from_events(ev_list)
+                        computed_ev_root = compute_evidence_graph_root(ev_graph)
+                        expected_ev_root = cert_data["evidence_root_hash"]
+                        if computed_ev_root == expected_ev_root:
+                            evidence_root_valid = True
+                        else:
                             result["errors"].append(
-                                f"Malformed trace record at line {line_idx}: {line_err}"
+                                f"Evidence root hash mismatch: expected={expected_ev_root!r}, "
+                                f"computed={computed_ev_root!r}"
                             )
-                            break
-
-            if ev_list:
-                ev_graph = build_evidence_graph_from_events(ev_list)
-                computed_ev_root = compute_evidence_graph_root(ev_graph)
-                expected_ev_root = cert_data["evidence_root_hash"]
-                if computed_ev_root != expected_ev_root:
-                    evidence_root_valid = False
-                    result["errors"].append(
-                        f"Evidence root hash mismatch: expected={expected_ev_root!r}, "
-                        f"computed={computed_ev_root!r}"
-                    )
-        except Exception as ev_check_err:
-            logger.debug("Evidence root check failed in verify_trace_certificate: %s", ev_check_err)
+            except Exception as ev_check_err:
+                logger.debug(
+                    "Evidence root check failed in verify_trace_certificate: %s",
+                    ev_check_err,
+                )
 
     # Enforce scenario hash binding requirement if scenario hash is present in certificate
     scenario_bound_valid = True

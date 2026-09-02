@@ -826,7 +826,7 @@ export const ScenarioComposer: React.FC = () => {
                     return (
                       <option key={opt} value={opt} disabled={!isCurrent && !isLegal}>
                         {opt}
-                        {!isCurrent && !isLegal ? ' (illegal from ' + lifecycleStatus + ')' : ''}
+                        {!isCurrent && !isLegal ? ' (disallowed from ' + lifecycleStatus + ')' : ''}
                       </option>
                     );
                   })}
