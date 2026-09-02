@@ -32,7 +32,14 @@ def _canonical_json_bytes(data: Any) -> bytes:
 
 def compute_scenario_hash(scenario_data: Mapping[str, Any]) -> str:
     """Computes a deterministic SHA3-256 hash of canonical scenario contents."""
-    canonical_bytes = _canonical_json_bytes(dict(scenario_data))
+    clean_data = dict(scenario_data)
+    clean_data.pop("expected_revision_hash", None)
+    if "metadata" in clean_data and isinstance(clean_data["metadata"], dict):
+        clean_meta = dict(clean_data["metadata"])
+        clean_meta.pop("content_hash", None)
+        clean_meta.pop("expected_revision_hash", None)
+        clean_data["metadata"] = clean_meta
+    canonical_bytes = _canonical_json_bytes(clean_data)
     return f"sha3_256:{hashlib.sha3_256(canonical_bytes).hexdigest()}"
 
 

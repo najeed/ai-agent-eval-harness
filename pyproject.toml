@@ -43,9 +43,9 @@ nlp = [
     "datasets==5.0.1",
 ]
 llm = [
-    "google-genai==2.20.0",
+    "google-genai==2.21.0",
     "langchain-openai==1.6.0",
-    "langsmith==0.11.2",
+    "langsmith==0.12.1",
 ]
 docs = [
     "pypdf==6.16.2",
@@ -63,9 +63,9 @@ vcs = [
 all = [
     "sentence-transformers==6.0.1",
     "datasets==5.0.1",
-    "google-genai==2.20.0",
+    "google-genai==2.21.0",
     "langchain-openai==1.6.0",
-    "langsmith==0.11.2",
+    "langsmith==0.12.1",
     "pypdf==6.16.2",
     "python-docx==1.2.0",
     "lxml==6.1.2",

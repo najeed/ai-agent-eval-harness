@@ -11,6 +11,7 @@ from flask import Blueprint, Response, jsonify, request
 from eval_runner import config
 from eval_runner.explainer import explain_trace
 from eval_runner.metrics import MetricRegistry
+from eval_runner.services.certification import CertificationService
 
 from ..auth_manager import Permission, require_permission
 
@@ -259,6 +260,13 @@ class RunsCache:
                     identifier = event.get("identifier") or ""
                     duration_seconds = None
                     result_status = None
+                    # Capture execution_mode from the run_start event so list endpoints
+                    # can surface it without a per-row truth-level lookup.
+                    execution_mode_cached = (
+                        event.get("execution_mode")
+                        or (event.get("data") or {}).get("execution_mode")
+                        or (event.get("metadata") or {}).get("execution_mode")
+                    )
                     if p.stat().st_size < 512 * 1024:
                         lines = f.readlines()
                         for ln in reversed(lines):
@@ -294,6 +302,7 @@ class RunsCache:
                         "identifier": identifier,
                         "duration_seconds": duration_seconds,
                         "result_status": result_status,
+                        "execution_mode": execution_mode_cached,
                     }
             except Exception as e:
                 logger.debug(f"Parsing vault run warning: {e}")
@@ -344,7 +353,8 @@ def list_runs():
     enriched = []
     for run in runs[:200]:
         row = dict(run)
-        row["verification_status"] = _authoritative_verdict(run.get("run_id") or "")
+        rid = run.get("run_id") or ""
+        row["verification_status"] = _authoritative_verdict(rid)
         # [Provenance surfacing] Cheap, truthful integrity badge derived from
         # the SAME evidence the cache already inspected: a terminal run_end
         # means COMPLETE; vault without terminal event is PARTIAL; fragments
@@ -355,6 +365,17 @@ def list_runs():
             row["trace_integrity"] = "RECOVERED"
         else:
             row["trace_integrity"] = "PARTIAL"
+        # Enrich with truth-level fields if not already captured by the cache.
+        # CertificationService.read_run_truth_level is the single canonical source
+        # for execution_mode/provisional so Dashboard/RunsReports badges are correct.
+        if not row.get("execution_mode"):
+            em, prov = CertificationService.read_run_truth_level(rid)
+            row["execution_mode"] = em
+            row["provisional"] = prov
+        else:
+            # execution_mode was cached from the trace; derive provisional from it.
+            em = row["execution_mode"]
+            row["provisional"] = bool(not em or em in ("simulated", "unknown"))
         enriched.append(row)
     return jsonify({"runs": enriched})
 
@@ -594,6 +615,9 @@ def get_run_status(run_id):
                 except Exception as e:
                     logger.debug(f"Error parsing resolved scenario: {e}")
 
+        # O1 fix: surface truth-level fields so VerificationWorkflow and TrustCenter
+        # can render ProvisionalBadge correctly on direct/deep-linked navigation.
+        em, prov = CertificationService.read_run_truth_level(run_id)
         return jsonify(
             {
                 "run_id": run_id,
@@ -603,6 +627,9 @@ def get_run_status(run_id):
                 "has_certificate": has_certificate,
                 "sourced_from_master": False,
                 "scenario": scenario_data,
+                "execution_mode": em,
+                "provisional": prov,
+                "verification_status": _authoritative_verdict(run_id),
             }
         )
 
@@ -660,6 +687,8 @@ def get_run_status(run_id):
                             logger.debug(f"Error parsing scenario from catalog: {e}")
 
             cert_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
+            # O1 fix: same truth-level enrichment as the vault branch.
+            em_ml, prov_ml = CertificationService.read_run_truth_level(run_id)
             return jsonify(
                 {
                     "run_id": run_id,
@@ -669,6 +698,9 @@ def get_run_status(run_id):
                     "has_certificate": cert_path.exists(),
                     "sourced_from_master": True,
                     "scenario": scenario_data,
+                    "execution_mode": em_ml,
+                    "provisional": prov_ml,
+                    "verification_status": _authoritative_verdict(run_id),
                 }
             )
 

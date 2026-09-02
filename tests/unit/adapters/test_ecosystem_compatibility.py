@@ -1,16 +1,16 @@
 # tests/test_p4_ecosystem.py
 import json
 
+import pytest
+
 from eval_runner import loader, plugins
 from eval_runner.exporter import HFExporter
 
 
 def test_benchmark_uri_loading():
-    """Test that gaia:// URIs are correctly caught by the loader."""
-    scenarios = loader.load_scenario("gaia://test_2023")
-    assert isinstance(scenarios, list)
-    assert len(scenarios) > 0
-    assert scenarios[0]["id"].startswith("gaia_")
+    """Test that gaia:// URIs are correctly caught and rejected by the loader."""
+    with pytest.raises(NotImplementedError):
+        loader.load_scenario("gaia://test_2023")
 
 
 def test_adapter_plugin_loading():

@@ -2000,9 +2000,8 @@ class SessionManager:
             # Fallback to string representation for anything else
             return str(obj)
 
-    # Research fork: creates a shallow session clone. Note the
-    # sandbox deep-copy and history partitioning are NOT implemented here
-    # — true trajectory reproduction waits for P2.1 per-execution-isolation.
+    # Research fork: creates a session clone with deep-copied scenario, metadata, sandbox state,
+    # and message history so forked trajectories are fully isolated from the parent.
     def fork(self, history: list[dict[str, Any]], sandbox_state: dict[str, Any]) -> SessionManager:
         """Forks the session trajectory while authoritatively preserving state and history."""
         if getattr(self, "fork_depth", 0) >= MAX_FORK_DEPTH:

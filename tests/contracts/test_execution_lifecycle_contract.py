@@ -54,11 +54,14 @@ class TestExecutionLifecycleContract:
         """Contract: InProcessExecutionBackend must be a subclass of ExecutionBackend."""
         assert issubclass(InProcessExecutionBackend, ExecutionBackend)
 
-    def test_submit_returns_without_error_for_empty_workflow(self, tmp_path):
+    def test_submit_returns_without_error_for_empty_workflow(self, tmp_path, monkeypatch):
         """
         Contract: submit() on a scenario with an empty workflow node list
         must not raise an unhandled exception. Failures are captured and returned.
         """
+        from eval_runner import config as _cfg
+
+        monkeypatch.setattr(_cfg, "RUN_LOG_DIR", tmp_path / "runs")
         backend = InProcessExecutionBackend()
         # Contract requires submit to not raise unhandled exception
         result = backend.submit("lifecycle_run_001", _STUB_SCENARIO)

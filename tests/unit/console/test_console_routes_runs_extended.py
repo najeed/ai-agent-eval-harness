@@ -826,6 +826,47 @@ def test_runs_route_get_status_uncovered_branches(client, console_jail):
     assert res3.get_json()["scenario"] is None
 
 
+def test_get_run_status_enriched_fields_vault_and_master(client, console_jail):
+    """Enriched fields (execution_mode, provisional, verification_status) on branches."""
+    runs_dir = console_jail["runs"]
+
+    # 1. Vault run with live execution mode in manifest and trace
+    v_id = "run-vault-live"
+    v_dir = runs_dir / v_id
+    v_dir.mkdir(parents=True, exist_ok=True)
+    (v_dir / "run.jsonl").write_text(
+        '{"event": "run_start", "execution_mode": "live"}\n{"event": "run_end"}\n', encoding="utf-8"
+    )
+    (v_dir / "run_manifest.json").write_text(
+        json.dumps({"execution_mode": "live", "provisional": False}), encoding="utf-8"
+    )
+
+    res_v = client.get(f"/api/v1/runs/{v_id}")
+    assert res_v.status_code == 200
+    data_v = res_v.get_json()
+    assert data_v["execution_mode"] == "live"
+    assert data_v["provisional"] is False
+    assert data_v["sourced_from_master"] is False
+    assert "verification_status" in data_v
+
+    # 2. Master log run fallback
+    m_id = "run-master-sim"
+    master_log = runs_dir / "run.jsonl"
+    master_log.write_text(
+        f'{{"event": "run_start", "run_id": "{m_id}", "execution_mode": "simulated"}}\n'
+        f'{{"event": "run_end", "run_id": "{m_id}"}}\n',
+        encoding="utf-8",
+    )
+
+    res_m = client.get(f"/api/v1/runs/{m_id}")
+    assert res_m.status_code == 200
+    data_m = res_m.get_json()
+    assert data_m["sourced_from_master"] is True
+    assert "execution_mode" in data_m
+    assert "provisional" in data_m
+    assert "verification_status" in data_m
+
+
 def test_runs_route_stream_run_logs_uncovered_branches(client, console_jail):
     """stream_run_logs uncovered branches"""
     runs_dir = console_jail["runs"]

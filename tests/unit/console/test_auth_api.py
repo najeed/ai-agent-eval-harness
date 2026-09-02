@@ -32,47 +32,45 @@ def test_generate_handoff_token():
 
 
 def test_handoff_required_decorator(app):
-    """Test the handoff_required decorator with varied inputs."""
+    """Verify handoff_required enforces token presence and validity (extension API contract)."""
 
-    @app.route("/protected")
+    @app.route("/protected-ext")
     @handoff_required
     def protected():
         return jsonify({"status": "ok"})
 
     client = app.test_client()
 
-    # 1. Missing token
-    resp = client.get("/protected")
+    # 1. Missing token → 401
+    resp = client.get("/protected-ext")
     assert resp.status_code == 401
     assert "Handoff token required" in resp.json["error"]
 
-    # 2. Invalid token
-    resp = client.get("/protected?token=trash")
+    # 2. Invalid token → 401
+    resp = client.get("/protected-ext?token=trash")
     assert resp.status_code == 401
     assert "Invalid token" in resp.json["error"]
 
-    # 3. Valid token
+    # 3. Valid token via query param → 200
     token = generate_handoff_token()
-    resp = client.get(f"/protected?token={token}")
+    resp = client.get(f"/protected-ext?token={token}")
     assert resp.status_code == 200
     assert resp.json["status"] == "ok"
 
-    # 4. Valid token in header
-    resp = client.get("/protected", headers={"X-Handoff-Token": token})
+    # 4. Valid token via header → 200
+    resp = client.get("/protected-ext", headers={"X-Handoff-Token": token})
     assert resp.status_code == 200
 
 
 def test_handoff_token_expired(app):
-    """Test expired JWT handling."""
+    """Test expired JWT rejection by handoff_required."""
 
-    @app.route("/protected_expired")
+    @app.route("/protected-expired-ext")
     @handoff_required
-    def protected():
+    def protected_expired():
         return jsonify({"status": "ok"})
 
     client = app.test_client()
-
-    # Generate token that expired 10s ago
     from datetime import UTC, datetime, timedelta
 
     payload = {
@@ -82,8 +80,7 @@ def test_handoff_token_expired(app):
         "aud": "agentv-plugin",
     }
     expired_token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
-
-    resp = client.get(f"/protected_expired?token={expired_token}")
+    resp = client.get(f"/protected-expired-ext?token={expired_token}")
     assert resp.status_code == 401
     assert "Token expired" in resp.json["error"]
 
@@ -96,6 +93,18 @@ def test_handoff_endpoint(client):
     token = resp.json["token"]
     decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"], audience="agentv-plugin")
     assert decoded["aud"] == "agentv-plugin"
+
+
+def test_handoff_endpoint_custom_plugin(client):
+    """Handoff endpoint stamps the requested plugin_id into the token."""
+    resp = client.get("/api/auth/handoff?plugin_id=my-extension")
+    assert resp.status_code == 200
+    token = resp.json["token"]
+    decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"], audience="agentv-plugin")
+    assert decoded["plugin_id"] == "my-extension"
+    assert decoded["scope"] == "console-handoff"
+    assert resp.json["expires_in"] == 900
+    assert resp.json["audience"] == "agentv-plugin"
 
 
 def test_auth_me_endpoint(client):

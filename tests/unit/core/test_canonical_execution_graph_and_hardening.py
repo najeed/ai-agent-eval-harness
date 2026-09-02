@@ -88,7 +88,8 @@ def test_verify_run_directory_all_paths(tmp_path):
     assert res_missing_trace["has_certificate"] is True
     assert "missing" in res_missing_trace["failure_reason"]
 
-    # 4. Valid run directory with manifest and trace
+    # 4. Manifest without execution_mode → VERIFIED_PROVISIONAL (provisional=True)
+    #    because absence of execution_mode is treated as unknown/unconfirmed.
     valid_run = tmp_path / "valid_run"
     valid_run.mkdir()
     (valid_run / "run.jsonl").write_text('{"event": "run_start"}\n', encoding="utf-8")
@@ -101,18 +102,44 @@ def test_verify_run_directory_all_paths(tmp_path):
     (valid_run / "run_manifest.json").write_text(json.dumps(manifest_data), encoding="utf-8")
 
     with patch.object(TraceVerifier, "verify_trace", return_value=True):
-        res_valid = TraceVerifier.verify_run_directory(valid_run)
-        assert res_valid["verification_status"] == "VERIFIED"
-        assert res_valid["is_valid"] is True
-        assert res_valid["algorithm"] == "Ed25519"
+        res = TraceVerifier.verify_run_directory(valid_run)
+        assert res["verification_status"] == "VERIFIED_PROVISIONAL"
+        assert res["is_valid"] is True
+        assert res["algorithm"] == "Ed25519"
+        # New P2 fields must be present
+        assert "execution_mode" in res
+        assert "provisional" in res
+        assert res["provisional"] is True  # no execution_mode in manifest
 
-    # 5. Invalid signature / hash verification failure
+    # 5. Live-execution manifest → VERIFIED (provisional=False)
+    live_manifest = {**manifest_data, "execution_mode": "live"}
+    (valid_run / "run_manifest.json").write_text(json.dumps(live_manifest), encoding="utf-8")
+
+    with patch.object(TraceVerifier, "verify_trace", return_value=True):
+        res_live = TraceVerifier.verify_run_directory(valid_run)
+        assert res_live["verification_status"] == "VERIFIED"
+        assert res_live["provisional"] is False
+        assert res_live["execution_mode"] == "live"
+
+    # 6. Simulated-execution manifest → VERIFIED_PROVISIONAL (provisional=True)
+    sim_manifest = {**manifest_data, "execution_mode": "simulated"}
+    (valid_run / "run_manifest.json").write_text(json.dumps(sim_manifest), encoding="utf-8")
+
+    with patch.object(TraceVerifier, "verify_trace", return_value=True):
+        res_sim = TraceVerifier.verify_run_directory(valid_run)
+        assert res_sim["verification_status"] == "VERIFIED_PROVISIONAL"
+        assert res_sim["provisional"] is True
+        assert res_sim["execution_mode"] == "simulated"
+
+    # 7. Invalid signature / hash verification failure — status is FAILED regardless of mode
+    live_manifest = {**manifest_data, "execution_mode": "live"}
+    (valid_run / "run_manifest.json").write_text(json.dumps(live_manifest), encoding="utf-8")
     with patch.object(TraceVerifier, "verify_trace", return_value=False):
         res_tampered = TraceVerifier.verify_run_directory(valid_run)
         assert res_tampered["verification_status"] == "FAILED_VERIFICATION"
         assert res_tampered["is_valid"] is False
 
-    # 6. Exception during verification
+    # 8. Exception during verification
     with patch.object(TraceVerifier, "verify_trace", side_effect=ValueError("Corrupt trace")):
         res_err = TraceVerifier.verify_run_directory(valid_run)
         assert res_err["verification_status"] == "FAILED_VERIFICATION"

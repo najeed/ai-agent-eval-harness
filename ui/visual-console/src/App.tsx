@@ -658,41 +658,47 @@ const ConsoleLayout: React.FC = () => {
 
     window.addEventListener('agentv-toast', handleToast);
 
-    // [N2 Global Network & Auth Signaling Interceptor]
+    // [N2/J2 Scoped Network & Auth Signaling Interceptor]
     const originalFetch = window.fetch;
+    const isInternalApi = (urlStr: string): boolean => {
+      if (!urlStr) return false;
+      const isRelative = urlStr.startsWith('/api/') || urlStr.startsWith('/v1/');
+      const isSameOriginApi =
+        typeof window !== 'undefined' &&
+        urlStr.startsWith(window.location.origin) &&
+        (urlStr.includes('/api/') || urlStr.includes('/v1/'));
+      return isRelative || isSameOriginApi;
+    };
+
     window.fetch = async (...args) => {
+      const urlStr = typeof args[0] === 'string' ? args[0] : (args[0] as Request)?.url || '';
+      if (!isInternalApi(urlStr)) {
+        return originalFetch(...args);
+      }
       try {
         const response = await originalFetch(...args);
         if (response.status === 401 || response.status === 403) {
-          const urlStr = typeof args[0] === 'string' ? args[0] : (args[0] as Request)?.url || '';
-          const isSameOrigin = urlStr.startsWith('/') || (typeof window !== 'undefined' && urlStr.startsWith(window.location.origin));
-          if (isSameOrigin && (urlStr.includes('/api/auth') || urlStr.includes('/api/v1/') || urlStr.includes('/v1/'))) {
-            window.dispatchEvent(
-              new CustomEvent('agentv-toast', {
-                detail: {
-                  type: 'error',
-                  title: 'Authentication Failure',
-                  message: 'Invalid or expired API credentials. Please re-authenticate.',
-                },
-              })
-            );
-          }
-        }
-        return response;
-      } catch (err: any) {
-        const urlStr = typeof args[0] === 'string' ? args[0] : (args[0] as Request)?.url || '';
-        const isSameOrigin = urlStr.startsWith('/') || (typeof window !== 'undefined' && urlStr.startsWith(window.location.origin));
-        if (isSameOrigin) {
           window.dispatchEvent(
             new CustomEvent('agentv-toast', {
               detail: {
                 type: 'error',
-                title: 'Harness Connection Error',
-                message: err?.message || 'Failed to communicate with AgentV Console API backend.',
+                title: 'Authentication Failure',
+                message: 'Invalid or expired API credentials. Please re-authenticate.',
               },
             })
           );
         }
+        return response;
+      } catch (err: any) {
+        window.dispatchEvent(
+          new CustomEvent('agentv-toast', {
+            detail: {
+              type: 'error',
+              title: 'Harness Connection Error',
+              message: err?.message || 'Failed to communicate with AgentV Console API backend.',
+            },
+          })
+        );
         throw err;
       }
     };
@@ -702,6 +708,7 @@ const ConsoleLayout: React.FC = () => {
       window.fetch = originalFetch;
     };
   }, []);
+
 
 
   const toggleGroup = (title: string) => {

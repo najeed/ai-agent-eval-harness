@@ -7,79 +7,24 @@ class GAIABenchmark:
 
     @staticmethod
     def load(uri: str) -> list[dict[str, Any]]:
-        # uri format: gaia://2023_all (or similar)
-        # For now, we expect the user to have the gaia parquet/json locally or we'd fetch from HF
-        # Mocking the fetch logic for v1.0 RC
-        print(f"      [Benchmark] Loading mock GAIA dataset from {uri}...")
+        """
+        Load GAIA benchmark scenarios from the given URI.
 
-        # In a real implementation, this would use `datasets` library to pull from HF
-        # For the harness, we convert it to our Scenario format
-        return [
-            {
-                "aes_version": 1.4,
-                "metadata": {
-                    "id": "gaia_validation_001",
-                    "name": "GAIA: Complex Information Extraction",
-                    "compliance_level": "Standard",
-                },
-                "id": "gaia_validation_001",
-                "description": (
-                    "The agent must find the total population of a specific city in 2022 "
-                    "and compare it to its neighboring city."
-                ),
-                "industry": "General Intelligence",
-                "workflow": {
-                    "nodes": [
-                        {
-                            "id": "step_1",
-                            "task_description": (
-                                "Identify the 2022 population for San Francisco and San Jose."
-                            ),
-                            "expected_outcome": [
-                                {
-                                    "target": "message",
-                                    "expected": (
-                                        "Correct population counts retrieved from a "
-                                        "reliable source."
-                                    ),
-                                    "mode": "regex",
-                                }
-                            ],
-                            "success_criteria": [{"metric": "factual_accuracy", "threshold": 1.0}],
-                        }
-                    ],
-                    "edges": [],
-                },
-            },
-            {
-                "aes_version": 1.4,
-                "metadata": {
-                    "id": "gaia_validation_002",
-                    "name": "GAIA: Tool-Enabled Cross-Referencing",
-                    "compliance_level": "Standard",
-                },
-                "id": "gaia_validation_002",
-                "description": (
-                    "Given a list of scientific papers, find the most cited one "
-                    "and extract its main conclusion."
-                ),
-                "industry": "General Intelligence",
-                "workflow": {
-                    "nodes": [
-                        {
-                            "id": "step_1",
-                            "task_description": "Find citation counts for the provided DOIs.",
-                            "expected_outcome": [
-                                {
-                                    "target": "message",
-                                    "expected": "Correct identification of the most cited paper.",
-                                    "mode": "regex",
-                                }
-                            ],
-                            "success_criteria": [{"metric": "factual_accuracy", "threshold": 0.9}],
-                        }
-                    ],
-                    "edges": [],
-                },
-            },
-        ]
+        Raises NotImplementedError because fabricated dataset substitution is prohibited
+        on an audit-defensible certification platform.  Runs sourced from a gaia:// URI
+        must test against the real GAIA dataset to produce valid evaluation evidence.
+
+        To integrate the real dataset:
+          1. Install the HuggingFace `datasets` library (``pip install datasets``).
+          2. Replace this body with:
+                from datasets import load_dataset
+                ds = load_dataset("gaia-benchmark/GAIA", split=uri or "validation")
+                return [_convert(row) for row in ds]
+          3. Implement ``_convert`` to project each GAIA row to the AES 1.4 scenario schema.
+        """
+        raise NotImplementedError(
+            f"GAIABenchmark.load('{uri}') is not implemented. "
+            "Fabricated data substitution is prohibited on this platform. "
+            "Provide a real GAIA dataset path or implement HuggingFace integration before "
+            "using the gaia:// URI scheme in certification-grade evaluations."
+        )

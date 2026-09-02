@@ -4,7 +4,9 @@ Unit and behavioral contract tests for CLI evaluation, replay, gate, record,
 playground, and certify handlers in eval_runner/handlers/evaluation.py.
 """
 
+import json
 import os
+from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -40,7 +42,7 @@ def test_prepare_agent_env_socket_protocol():
 
 def test_resolve_replay_trace_security_jail(tmp_path):
     """Verify security rejection when trace resolution breaches jail boundary."""
-    with patch("eval_runner.utils.is_path_safe", side_effect=[True, False]):
+    with patch("eval_runner.handlers.evaluation.utils.is_path_safe", return_value=False):
         res = evaluation._resolve_replay_trace("out_of_bounds_run")
         assert res is None
 
@@ -429,3 +431,305 @@ async def test_handle_verify_package_branches(tmp_path):
         require_signature=False,
     )
     assert await evaluation.handle_verify_package(args_fail) == 1
+
+
+def test_handler_resolve_replay_trace_and_manifest(tmp_path):
+    """Resolve replay trace and manifest."""
+    # 1. No run_id
+    assert evaluation._resolve_replay_trace("") is None
+    assert evaluation._resolve_replay_trace(None) is None
+
+    # 2. Vault path unsafe check
+    with patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=False):
+        assert evaluation._resolve_replay_trace("some-run-id") is None
+
+    # 3. Master path unsafe check
+    with patch("eval_runner.handlers.evaluation._ensure_path_safe", side_effect=[True, False]):
+        assert evaluation._resolve_replay_trace("some-run-id") is None
+
+    # 4. Neither vault nor master log exists
+    with (
+        patch("eval_runner.config.RUN_LOG_DIR", tmp_path),
+        patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=True),
+    ):
+        assert evaluation._resolve_replay_trace("nonexistent-run") is None
+
+    # 5. Master path fallback
+    with (
+        patch("eval_runner.config.RUN_LOG_DIR", tmp_path),
+        patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=True),
+    ):
+        master_file = tmp_path / "run.jsonl"
+        master_file.write_text('{"event": "start"}\n', encoding="utf-8")
+        assert evaluation._resolve_replay_trace("fallback-run") == master_file
+
+
+def test_load_plugins_from_args_exception():
+    """Plugin load error."""
+    args = MagicMock(plugin=["nonexistent_plugin_xyz"])
+    with patch("eval_runner.plugins.manager.load", side_effect=RuntimeError("Plugin load error")):
+        evaluation.load_plugins_from_args(args)
+
+
+@pytest.mark.asyncio
+async def test_handler_evaluate_branches(tmp_path):
+    """Dataset loading exception and empty scenarios."""
+    scenario_path = tmp_path / "scenario.json"
+    scenario_path.write_text(json.dumps({"id": "s1", "title": "Scen 1", "turns": []}))
+
+    # 1. Dataset loading exception
+    args_bad_load = MagicMock(
+        path=str(scenario_path),
+        format="json",
+        protocol="http",
+        agent="http://localhost:8000",
+        run_log_dir=str(tmp_path),
+        per_run_logs=True,
+        master_log=True,
+        seed=123,
+    )
+    with patch("eval_runner.loader.load_dataset", side_effect=RuntimeError("Corrupt dataset")):
+        assert await evaluation.handle_evaluate(args_bad_load) == 1
+
+    # 2. Empty scenarios
+    with patch("eval_runner.loader.load_dataset", return_value=[]):
+        assert await evaluation.handle_evaluate(args_bad_load) == 1
+
+    # 3. TypeError on vars(args)
+    class TypeErrArgs:
+        def __init__(self):
+            self.path = str(scenario_path)
+            self.format = "json"
+            self.attempts = "invalid_int"
+            self.protocol = "local"
+            self.agent = "http://localhost:8000"
+            self.agent_name = "test"
+            self.agent_cmd = "python test.py"
+            self.seed = "seed_str"
+
+    obj = TypeErrArgs()
+    with (
+        patch("eval_runner.loader.load_dataset", return_value=[{"id": "s1", "title": "Scen 1"}]),
+        patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock),
+        patch("builtins.vars", side_effect=TypeError("vars() error")),
+    ):
+        assert await evaluation.handle_evaluate(obj) == 0
+
+
+@pytest.mark.asyncio
+async def test_handler_run_branches(tmp_path):
+    """Evaluation exception in handle_run."""
+    scenario_path = tmp_path / "scenario.json"
+    scenario_path.write_text(json.dumps({"id": "s1", "title": "Scen 1", "turns": []}))
+
+    # 1. Evaluation exception in handle_run
+    args_err = MagicMock(
+        scenario=str(scenario_path),
+        attempts=1,
+        protocol="socket",
+        agent="s",
+        agent_socket="127.0.0.1:9000",
+    )
+    with (
+        patch("eval_runner.loader.load_scenario", return_value={"id": "s1", "title": "Scen 1"}),
+        patch(
+            "eval_runner.engine.run_evaluation",
+            new_callable=AsyncMock,
+            side_effect=RuntimeError("Run eval crash"),
+        ),
+    ):
+        assert await evaluation.handle_run(args_err) == 1
+
+    # 2. TypeError on vars(args) in handle_run
+    class TypeErrRunArgs:
+        def __init__(self):
+            self.scenario = str(scenario_path)
+            self.attempts = "invalid_int"
+            self.protocol = "http"
+            self.agent = "http://localhost:8000"
+
+    with (
+        patch("eval_runner.loader.load_scenario", return_value={"id": "s1", "title": "Scen 1"}),
+        patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock),
+        patch("builtins.vars", side_effect=TypeError("vars() error")),
+    ):
+        assert await evaluation.handle_run(TypeErrRunArgs()) == 0
+
+
+@pytest.mark.asyncio
+async def test_handler_replay_all_events(tmp_path):
+    """Replay exception and missing trace."""
+    # 1. No run_id
+    assert await evaluation.handle_replay(MagicMock(run_id=None)) == 1
+
+    # 2. Missing trace
+    with patch("eval_runner.handlers.evaluation._resolve_replay_trace", return_value=None):
+        assert await evaluation.handle_replay(MagicMock(run_id="nonexistent-run")) == 1
+
+    # 3. Successful event replay printing all event types
+    events = [
+        {"event": "run_start", "run_id": "r1", "scenario": "scen_1"},
+        {"event": "prompt", "role": "user", "content": "Hello!"},
+        {"event": "agent_response", "content": "Hi there!"},
+        {"event": "run_end", "status": "COMPLETED"},
+    ]
+    trace_file = tmp_path / "run.jsonl"
+    trace_file.write_text("{}", encoding="utf-8")
+
+    with (
+        patch("eval_runner.handlers.evaluation._resolve_replay_trace", return_value=trace_file),
+        patch("eval_runner.trace_utils.load_events", return_value=events),
+    ):
+        assert await evaluation.handle_replay(MagicMock(run_id="r1")) == 0
+
+
+@pytest.mark.asyncio
+async def test_handler_verify_branches(tmp_path):
+    run_id = "run-verify-branches"
+    run_dir = tmp_path / "runs" / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    trace_file = run_dir / "run.jsonl"
+    manifest_file = run_dir / "run_manifest.json"
+
+    # 1. Missing trace file
+    args = MagicMock(run_id=run_id, verify_ledger=False)
+    with patch("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs"):
+        assert await evaluation.handle_verify(args) == 1
+
+        # Create files
+        trace_file.write_text("{}", encoding="utf-8")
+        manifest_file.write_text("{}", encoding="utf-8")
+
+        # 2. TraceVerifier returns True
+        with patch("eval_runner.verifier.TraceVerifier.verify_trace_async", return_value=True):
+            assert await evaluation.handle_verify(args) == 0
+
+        # 3. TraceVerifier exception
+        with patch(
+            "eval_runner.verifier.TraceVerifier.verify_trace_async",
+            side_effect=RuntimeError("Verification error"),
+        ):
+            assert await evaluation.handle_verify(args) == 1
+
+
+@pytest.mark.asyncio
+async def test_handler_verify_package_all_branches(tmp_path):
+    pkg_file = tmp_path / "valid.agentv-package.json"
+    pkg_file.write_text(json.dumps({"package_id": "p1"}), encoding="utf-8")
+
+    pub_pem_file = tmp_path / "pub.pem"
+    pub_pem_file.write_text(
+        "-----BEGIN PUBLIC KEY-----\n"
+        "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE\n"
+        "-----END PUBLIC KEY-----",
+        encoding="utf-8",
+    )
+
+    # 1. raw_trace_path does not exist
+    args_bad_trace = MagicMock(
+        package_path=str(pkg_file),
+        raw_trace_path=str(tmp_path / "nonexistent_trace.jsonl"),
+        public_key_pem=None,
+        require_signature=False,
+    )
+    assert await evaluation.handle_verify_package(args_bad_trace) == 1
+
+    # 2. raw_trace_path unsafe jail escape
+    with patch("eval_runner.handlers.evaluation._ensure_path_safe", side_effect=[True, False]):
+        args_unsafe_trace = MagicMock(
+            package_path=str(pkg_file),
+            raw_trace_path=str(tmp_path / "trace.jsonl"),
+            public_key_pem=None,
+            require_signature=False,
+        )
+        assert await evaluation.handle_verify_package(args_unsafe_trace) == 1
+
+    # 3. public_key_pem file exists + successful verification
+    trace_file = tmp_path / "trace.jsonl"
+    trace_file.write_bytes(b'{"event": "start"}\n')
+    args_good = MagicMock(
+        package_path=str(pkg_file),
+        raw_trace_path=str(trace_file),
+        public_key_pem=str(pub_pem_file),
+        require_signature=False,
+    )
+    with patch(
+        "eval_runner.verifier.VerificationAuthority.verify_package",
+        return_value={"verified": True, "package_id": "p1"},
+    ):
+        assert await evaluation.handle_verify_package(args_good) == 0
+
+    # 4. Exception in verify_package
+    with patch(
+        "eval_runner.verifier.VerificationAuthority.verify_package",
+        side_effect=RuntimeError("Fatal verifier crash"),
+    ):
+        assert await evaluation.handle_verify_package(args_good) == 1
+
+
+@pytest.mark.asyncio
+async def test_handler_gate_branches(tmp_path):
+    run_id = "run-gate-test"
+    with (
+        patch("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs"),
+        patch("eval_runner.config.REPORTS_DIR", tmp_path / "reports"),
+    ):
+        run_dir = tmp_path / "runs" / run_id
+        run_dir.mkdir(parents=True, exist_ok=True)
+        (run_dir / "run.jsonl").write_text("{}", encoding="utf-8")
+        (run_dir / "run_manifest.json").write_text(
+            json.dumps({"manifest": {}, "metadata": {"git_hash": "commit_123"}}), encoding="utf-8"
+        )
+
+        args = MagicMock(run_id=run_id, hash="commit_123", verify_ledger=False)
+
+        # 1. Unsafe path check
+        with patch("eval_runner.handlers.evaluation._ensure_path_safe", side_effect=[True, False]):
+            assert await evaluation.handle_gate(args) == 1
+
+        # 2. vc_path.exists() is False
+        with patch.object(Path, "exists", side_effect=[False, True, False]):
+            assert await evaluation.handle_gate(args) == 1
+
+        # 3. Verification failure
+        with patch("eval_runner.verifier.TraceVerifier.verify_trace_async", return_value=False):
+            assert await evaluation.handle_gate(args) == 1
+
+        # 4. Successful gate verification
+        with patch("eval_runner.verifier.TraceVerifier.verify_trace_async", return_value=True):
+            assert await evaluation.handle_gate(args) == 0
+
+
+@pytest.mark.asyncio
+async def test_handler_certify_unsafe_and_exception(tmp_path):
+    run_id = "run-cert-test"
+    run_dir = tmp_path / "runs" / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    trace_path = run_dir / "run.jsonl"
+    trace_path.write_text("{}", encoding="utf-8")
+
+    args = MagicMock(
+        run_id=run_id,
+        identity="sys",
+        status="PASS",
+        score=1.0,
+        policy_ref=None,
+        ttl=30,
+        fingerprint=None,
+    )
+
+    # Unsafe path check
+    with patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=False):
+        res = await evaluation.handle_certify(args)
+        assert res == 1
+
+    # Certification exception
+    with (
+        patch("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs"),
+        patch(
+            "eval_runner.services.certification.execute_industrial_certification",
+            side_effect=RuntimeError("Cert failure"),
+        ),
+    ):
+        res_exc = await evaluation.handle_certify(args)
+        assert res_exc == 1

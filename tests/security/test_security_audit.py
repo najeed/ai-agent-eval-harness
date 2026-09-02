@@ -326,31 +326,64 @@ def test_auth_jwt_generation():
     assert "exp" in decoded
 
 
+def test_auth_handoff_token_audience_binding():
+    """
+    Audit Point #9: Verify that handoff tokens are audience-bound and carry
+    unique jti values (replay prevention). The token must not be decodable
+    with an incorrect audience — ensuring plugins cannot be impersonated by
+    tokens issued for a different audience.
+    """
+    import jwt
+
+    from eval_runner.console.auth import SECRET_KEY, generate_handoff_token
+
+    t1 = generate_handoff_token(sub="user-a", plugin_id="plugin-x")
+    t2 = generate_handoff_token(sub="user-a", plugin_id="plugin-x")
+
+    d1 = jwt.decode(t1, SECRET_KEY, algorithms=["HS256"], audience="agentv-plugin")
+    d2 = jwt.decode(t2, SECRET_KEY, algorithms=["HS256"], audience="agentv-plugin")
+
+    # Each token must have a unique jti for replay prevention.
+    assert d1["jti"] != d2["jti"]
+    assert d1["plugin_id"] == "plugin-x"
+    assert d1["aud"] == "agentv-plugin"
+
+    # Token must be rejected for an incorrect audience.
+    with pytest.raises(jwt.InvalidAudienceError):
+        jwt.decode(t1, SECRET_KEY, algorithms=["HS256"], audience="wrong-audience")
+
+
 def test_auth_handoff_decorator():
-    """Verify that @handoff_required enforces token presence and validity."""
+    """
+    Audit Point #9 (enforcement): Verify that the handoff_required decorator
+    rejects missing, invalid, and expired tokens — and admits valid ones.
+    This is the route-guard primitive consumed by enterprise extensions.
+    """
     from flask import Flask, jsonify
 
     from eval_runner.console.auth import generate_handoff_token, handoff_required
 
     app = Flask(__name__)
 
-    @app.route("/test")
+    @app.route("/test-handoff")
     @handoff_required
     def protected():
         return jsonify({"status": "ok"})
 
-    with app.test_request_context("/test"):
-        # No token
-        response, status = protected()
-        assert status == 401
-
-    with app.test_request_context("/test?token=invalid"):
-        # Invalid token
-        response, status = protected()
-        assert status == 401
-
     valid_token = generate_handoff_token()
-    with app.test_request_context(f"/test?token={valid_token}"):
-        # Valid token
-        response = protected()
-        assert response.json["status"] == "ok"
+
+    with app.test_client() as tc:
+        # No token → 401
+        r = tc.get("/test-handoff")
+        assert r.status_code == 401
+        assert "Handoff token required" in r.get_json()["error"]
+
+        # Invalid token → 401
+        r = tc.get("/test-handoff?token=invalid-garbage")
+        assert r.status_code == 401
+        assert "Invalid token" in r.get_json()["error"]
+
+        # Valid token → 200
+        r = tc.get(f"/test-handoff?token={valid_token}")
+        assert r.status_code == 200
+        assert r.get_json()["status"] == "ok"

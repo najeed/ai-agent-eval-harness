@@ -342,7 +342,7 @@ export const TrustCenter: React.FC = () => {
                       <div className="bg-slate-900/60 p-2.5 rounded border border-slate-800">
                         <span className="text-[10px] text-slate-500 uppercase block font-semibold">Authoritative Verdict</span>
                         <span className={`font-bold font-mono ${
-                          runDetails.verification_status === 'VERIFIED' || runDetails.verdict === 'VERIFIED' || runDetails.status === 'COMPLETED'
+                          runDetails.verification_status === 'VERIFIED' || runDetails.verdict === 'VERIFIED'
                             ? 'text-emerald-400'
                             : 'text-amber-400'
                         }`}>

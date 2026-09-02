@@ -542,13 +542,25 @@ class TraceVerifier:
         store = artifact_store or LocalFileArtifactStore()
 
         # 1. FREEZE: hash evidence + seal-hash BEFORE any mutation
+        manifest_sidecars = [
+            p.name,
+            "run_manifest.json",
+            "run_manifest.json.meta.json",
+            "certificate.json",
+            "trace_seal.json",
+            ".sealed",
+        ]
         evidence_ledger = _stage("freeze")(
-            lambda: cls._compute_evidence_ledger(p.parent, run_id=run_id, exclude_files=[p.name])
+            lambda: cls._compute_evidence_ledger(
+                p.parent, run_id=run_id, exclude_files=manifest_sidecars
+            )
         )
         seal_hash = _stage("freeze_seal_hash")(lambda: cls.compute_signature(p))
 
         # Recompute deterministic evidence root hash from trace events
         computed_evidence_root: str | None = None
+        ev_graph: dict[str, Any] | None = None
+        events_list: list[dict[str, Any]] = []
         if p.exists():
             try:
                 from agentv_runtime.evidence_graph import (
@@ -556,7 +568,6 @@ class TraceVerifier:
                     compute_evidence_graph_root,
                 )
 
-                events_list: list[dict[str, Any]] = []
                 with open(p, encoding="utf-8") as tf:
                     for line in tf:
                         if line.strip():
@@ -580,6 +591,41 @@ class TraceVerifier:
                 f"does not match authoritative computed root ({computed_evidence_root})"
             )
 
+        # Derive machine-verifiable compliance status and score from trace
+        # if not explicitly provided
+        effective_compliance_status = compliance_status
+        effective_compliance_score = compliance_score
+
+        # Check trace events for negative findings or terminal evaluation verdict
+        has_failure_event = False
+        trace_verdict_score: float | None = None
+        for ev in events_list:
+            ev_name = ev.get("event") or ev.get("name") or ""
+            if (
+                ev_name in ("error", "parity_state_divergence")
+                or ev.get("is_root_cause") is True
+                or ev.get("status") in ("FAILED", "FAIL", "ERROR")
+                or ev.get("verdict") in ("FAIL", "FAILED")
+            ):
+                has_failure_event = True
+            if ev_name == "evaluation_verdict" or "verdict" in ev:
+                v = ev.get("verdict") or ev.get("status")
+                if v in ("FAIL", "FAILED"):
+                    has_failure_event = True
+                s = ev.get("score")
+                if isinstance(s, (int, float)):
+                    trace_verdict_score = float(s)
+
+        if has_failure_event and effective_compliance_status == "pass" and compliance_score == 1.0:
+            logger.warning(
+                "      [Verifier] Trace contains negative evaluation events/failures; "
+                "deriving compliance_status='fail', compliance_score=0.0"
+            )
+            effective_compliance_status = "fail"
+            effective_compliance_score = 0.0
+        elif trace_verdict_score is not None and effective_compliance_score == 1.0:
+            effective_compliance_score = trace_verdict_score
+
         # 2. CANONICALIZE: build Manifest v3.0.0
         manifest = {
             "vc_version": VC_V3_SCHEMA_VERSION,
@@ -588,8 +634,8 @@ class TraceVerifier:
             "run_id": run_id,
             "trace_file": p.name,
             "compliance": {
-                "status": compliance_status,
-                "score": compliance_score,
+                "status": effective_compliance_status,
+                "score": effective_compliance_score,
                 "policy_ref": policy_ref or config.TRUSTED_POLICY_REF,
             },
             "evidence_ledger": evidence_ledger,
@@ -735,26 +781,20 @@ class TraceVerifier:
                 "stages": stages,
                 "outcome": "CERTIFIED",
             }
-            try:
-                store.store_artifact(
-                    run_id=run_id,
-                    artifact_name="run_manifest.json",
-                    content=json.dumps(manifest, indent=4),
-                    content_type="application/json",
-                    metadata={
-                        "status": compliance_status,
-                        "vc_version": manifest["vc_version"],
-                    },
-                )
-            except Exception as e:
-                logger.debug(f"Store artifact notice: {e}")
+            store.store_artifact(
+                run_id=run_id,
+                artifact_name="run_manifest.json",
+                content=json.dumps(manifest, indent=4),
+                content_type="application/json",
+                metadata={
+                    "status": effective_compliance_status,
+                    "vc_version": manifest["vc_version"],
+                },
+            )
 
-            try:
-                with open(sidecar_path, "w", encoding="utf-8") as f:
-                    json.dump(manifest, f, indent=4)
-                persisted_local_path = sidecar_path
-            except Exception as e:
-                logger.debug(f"Sidecar write notice: {e}")
+            with open(sidecar_path, "w", encoding="utf-8") as f:
+                json.dump(manifest, f, indent=4)
+            persisted_local_path = sidecar_path
 
         def _verify() -> None:
             target = persisted_local_path or sidecar_path
@@ -904,6 +944,43 @@ class TraceVerifier:
                         logger.warning(f"Forensic artifact tampered: {rel_path}")
                         return False
 
+            # 2b. Deterministic Evidence Graph Root Check (when present)
+            expected_evidence_root = manifest.get("evidence_root_hash")
+            if expected_evidence_root and tp.exists():
+                try:
+                    from agentv_runtime.evidence_graph import (
+                        build_evidence_graph_from_events,
+                        compute_evidence_graph_root,
+                    )
+
+                    ev_list = []
+                    with open(tp, encoding="utf-8") as tf:
+                        for line in tf:
+                            if line.strip():
+                                try:
+                                    ev_list.append(json.loads(line))
+                                except (
+                                    json.JSONDecodeError,
+                                    UnicodeDecodeError,
+                                    ValueError,
+                                ) as line_err:
+                                    logger.debug(
+                                        f"Trace line parse debug in verify_trace: {line_err}"
+                                    )
+
+                    if ev_list:
+                        graph = build_evidence_graph_from_events(ev_list)
+                        computed_root = compute_evidence_graph_root(graph)
+                        if computed_root != expected_evidence_root:
+                            logger.warning(
+                                f"Evidence root mismatch: expected {expected_evidence_root}, "
+                                f"got {computed_root}"
+                            )
+                            return False
+                except Exception as ev_v_err:
+                    logger.warning(f"Failed to verify evidence graph root: {ev_v_err}")
+                    return False
+
             # 3. Governance TTL Check (v3+)
             ts_str = manifest.get("timestamp")
             ttl_days = manifest.get("governance_ttl", config.GOVERNANCE_TTL_DAYS)
@@ -1038,7 +1115,20 @@ class TraceVerifier:
             algorithm = mdata.get("algorithm") or mdata.get("crypto_suite", "Ed25519")
             pqc = bool("ml-dsa" in str(algorithm).lower() or "pqc" in str(algorithm).lower())
 
-            status = "VERIFIED" if is_valid else "FAILED_VERIFICATION"
+            # Surface truth-level fields from the manifest so every caller has a single
+            # authoritative source — avoids parent-prop fragility on direct/deep navigation.
+            cert_execution_mode = mdata.get("execution_mode")
+            cert_provisional = bool(
+                mdata.get("provisional")
+                or cert_execution_mode in ("simulated", "unknown")
+                or not cert_execution_mode
+            )
+
+            if is_valid:
+                status = "VERIFIED_PROVISIONAL" if cert_provisional else "VERIFIED"
+            else:
+                status = "FAILED_VERIFICATION"
+
             return {
                 "run_id": p.name,
                 "verification_status": status,
@@ -1049,6 +1139,8 @@ class TraceVerifier:
                 "is_pqc": pqc,
                 "trace_hash": mdata.get("trace_hash"),
                 "timestamp": mdata.get("timestamp"),
+                "execution_mode": cert_execution_mode,
+                "provisional": cert_provisional,
                 "failure_reason": None
                 if is_valid
                 else "Trace content hash mismatch or signature verification failed.",
@@ -1158,7 +1250,7 @@ def verify_trace_certificate(
             continue
         algorithm = entry.get("algorithm", "ED25519")
         signature_hex = entry.get("signature", "")
-        identity_id = entry.get("identity", "system_id")
+        identity_id = entry.get("identity") or entry.get("signer_identity") or "system_id"
 
         if not signature_hex or len(signature_hex) < 32:
             result["errors"].append(
@@ -1180,30 +1272,50 @@ def verify_trace_certificate(
 
         try:
             from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
-            from cryptography.hazmat.primitives.serialization import load_pem_public_key
+            from cryptography.hazmat.primitives.serialization import (
+                Encoding,
+                PublicFormat,
+                load_pem_public_key,
+            )
 
             from .identity import IdentityService
 
-            public_key = None
+            # 1. Authoritative Anchor Key Lookup
+            anchor_pk = None
+            try:
+                anchor_pk = IdentityService.get_public_key(identity_id)
+            except Exception as id_lookup_err:
+                logger.debug(f"IdentityService lookup error for {identity_id}: {id_lookup_err}")
+
             raw_pk = entry.get("public_key")
+            embedded_pk = None
             if raw_pk:
                 try:
                     if isinstance(raw_pk, str):
                         if "BEGIN PUBLIC KEY" in raw_pk:
-                            public_key = load_pem_public_key(raw_pk.encode("utf-8"))
+                            embedded_pk = load_pem_public_key(raw_pk.encode("utf-8"))
                         else:
-                            public_key = Ed25519PublicKey.from_public_bytes(bytes.fromhex(raw_pk))
+                            embedded_pk = Ed25519PublicKey.from_public_bytes(bytes.fromhex(raw_pk))
                     elif isinstance(raw_pk, bytes):
-                        public_key = Ed25519PublicKey.from_public_bytes(raw_pk)
+                        embedded_pk = Ed25519PublicKey.from_public_bytes(raw_pk)
                 except Exception as pk_parse_err:
                     logger.debug(f"Embedded public key parsing failed: {pk_parse_err}")
 
-            if public_key is None:
+            # If anchor key exists and embedded key is present, verify they match
+            if anchor_pk is not None and embedded_pk is not None:
                 try:
-                    public_key = IdentityService.get_public_key(identity_id)
-                except Exception as id_lookup_err:
-                    logger.debug(f"IdentityService lookup error for {identity_id}: {id_lookup_err}")
+                    anchor_bytes = anchor_pk.public_bytes(Encoding.Raw, PublicFormat.Raw)
+                    embedded_bytes = embedded_pk.public_bytes(Encoding.Raw, PublicFormat.Raw)
+                    if anchor_bytes != embedded_bytes:
+                        result["errors"].append(
+                            f"Signer key mismatch: embedded key for '{identity_id}' "
+                            "does not match trusted IdentityService anchor."
+                        )
+                        continue
+                except Exception as pk_cmp_err:
+                    logger.debug(f"Public key comparison error: {pk_cmp_err}")
 
+            public_key = anchor_pk or embedded_pk
             if public_key is None:
                 result["errors"].append(
                     f"No public key available for signer identity '{identity_id}'."
@@ -1229,6 +1341,38 @@ def verify_trace_certificate(
             logger.debug("Signature check error for %s/%s: %s", run_id, identity_id, sig_err)
             result["errors"].append(f"Signature check error for '{identity_id}': {sig_err}")
 
+    # 4. Check evidence_root_hash if present in certificate
+    evidence_root_valid = True
+    if cert_data.get("evidence_root_hash") and trace_bytes:
+        try:
+            from agentv_runtime.evidence_graph import (
+                build_evidence_graph_from_events,
+                compute_evidence_graph_root,
+            )
+
+            ev_list = []
+            for line in trace_bytes.decode("utf-8", errors="replace").splitlines():
+                if line.strip():
+                    try:
+                        ev_list.append(_json.loads(line))
+                    except (json.JSONDecodeError, UnicodeDecodeError, ValueError) as line_err:
+                        logger.debug(
+                            f"Trace line parse debug in verify_trace_certificate: {line_err}"
+                        )
+
+            if ev_list:
+                ev_graph = build_evidence_graph_from_events(ev_list)
+                computed_ev_root = compute_evidence_graph_root(ev_graph)
+                expected_ev_root = cert_data["evidence_root_hash"]
+                if computed_ev_root != expected_ev_root:
+                    evidence_root_valid = False
+                    result["errors"].append(
+                        f"Evidence root hash mismatch: expected={expected_ev_root!r}, "
+                        f"computed={computed_ev_root!r}"
+                    )
+        except Exception as ev_check_err:
+            logger.debug("Evidence root check failed in verify_trace_certificate: %s", ev_check_err)
+
     # Enforce scenario hash binding requirement if scenario hash is present in certificate
     scenario_bound_valid = True
     if cert_data.get("scenario_hash"):
@@ -1241,7 +1385,12 @@ def verify_trace_certificate(
             scenario_bound_valid = False
             result["errors"].append("Scenario hash mismatch against certificate binding.")
 
-    if sig_verified and result["manifest_hash_match"] and scenario_bound_valid:
+    if (
+        sig_verified
+        and result["manifest_hash_match"]
+        and scenario_bound_valid
+        and evidence_root_valid
+    ):
         result["verified"] = True
 
     return result

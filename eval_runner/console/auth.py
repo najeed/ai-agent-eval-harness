@@ -75,9 +75,32 @@ def generate_handoff_token(
     return jwt.encode(payload, get_jwt_secret(), algorithm="HS256")
 
 
-def handoff_required(f):
+def handoff_required(f: Any) -> Any:
+    """
+    Route decorator that enforces a valid audience-bound handoff token on any
+    route it protects.
+
+    Usage (extension / enterprise control-plane routes):
+        @app.route("/my-extension/secure-endpoint")
+        @handoff_required
+        def my_endpoint():
+            ...
+
+    Accepts the token via:
+      - Query parameter:  ``?token=<jwt>``
+      - Request header:   ``X-Handoff-Token: <jwt>``
+
+    Validates audience (``agentv-plugin``), signature, and expiration against
+    the same ``JWT_SECRET`` used by ``generate_handoff_token``.
+
+    This decorator is part of the published AgentV extension API contract
+    (see AUTHENTICATION.md § 4).  It is intentionally provided by the OSS
+    runtime for extensions to consume on their own routes; OSS-internal routes
+    do not use it because the OSS layer does not host extension-owned endpoints.
+    """
+
     @functools.wraps(f)
-    def decorated(*args: Any, **kwargs: Any):
+    def decorated(*args: Any, **kwargs: Any) -> Any:
         token = request.args.get("token") or request.headers.get("X-Handoff-Token")
 
         if not token:

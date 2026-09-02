@@ -11,7 +11,6 @@ from unittest.mock import MagicMock, patch
 
 import jwt
 import pytest
-from flask import Flask
 
 from eval_runner import config
 from eval_runner.console.app import create_app
@@ -113,51 +112,62 @@ def test_get_jwt_secret_resolution():
         assert get_jwt_secret() == "svc_key_456"
 
 
-def test_handoff_token_and_decorator(ent_client):
+def test_handoff_token_endpoint(ent_client):
+    """Handoff endpoint issues a valid scoped JWT and stamps plugin_id."""
     client, _ = ent_client
 
-    # Generate token
     res = client.get("/api/auth/handoff?plugin_id=custom-p")
     assert res.status_code == 200
-    token = res.get_json()["token"]
-    assert res.get_json()["audience"] == "agentv-plugin"
+    data = res.get_json()
+    assert "token" in data
+    assert data["audience"] == "agentv-plugin"
+    assert data["expires_in"] == 900
 
-    # Test handoff_required decorator
-    test_app = Flask(__name__)
+    from eval_runner.console.auth import get_jwt_secret
 
-    @test_app.route("/protected")
+    decoded = jwt.decode(
+        data["token"],
+        get_jwt_secret(),
+        algorithms=["HS256"],
+        audience="agentv-plugin",
+    )
+    assert decoded["plugin_id"] == "custom-p"
+    assert decoded["scope"] == "console-handoff"
+    assert "jti" in decoded
+
+
+def test_handoff_required_decorator_contract():
+    """Verify handoff_required decorator enforces the extension API trust contract."""
+    from flask import Flask, jsonify
+
+    app = Flask(__name__)
+
+    @app.route("/ext-protected")
     @handoff_required
     def protected():
-        return {"status": "ok"}
+        return jsonify({"status": "ok"})
 
-    with test_app.test_client() as tc:
-        # Missing token
-        r1 = tc.get("/protected")
+    token = generate_handoff_token()
+
+    with app.test_client() as tc:
+        # No token
+        r1 = tc.get("/ext-protected")
         assert r1.status_code == 401
         assert "Handoff token required" in r1.get_json()["error"]
 
-        # Valid token in query param
-        r2 = tc.get(f"/protected?token={token}")
+        # Valid token
+        r2 = tc.get(f"/ext-protected?token={token}")
         assert r2.status_code == 200
-        assert r2.get_json()["status"] == "ok"
 
-        # Valid token in header
-        r3 = tc.get("/protected", headers={"X-Handoff-Token": token})
+        # Valid token via header
+        r3 = tc.get("/ext-protected", headers={"X-Handoff-Token": token})
         assert r3.status_code == 200
 
         # Expired token
-        expired_token = generate_handoff_token(expires_in_seconds=-10)
-        r4 = tc.get(f"/protected?token={expired_token}")
+        expired = generate_handoff_token(expires_in_seconds=-10)
+        r4 = tc.get(f"/ext-protected?token={expired}")
         assert r4.status_code == 401
         assert "Token expired" in r4.get_json()["error"]
-
-        # Invalid token signature
-        bad_token = jwt.encode(
-            {"sub": "admin"}, "wrong_key_that_is_long_enough_32_bytes", algorithm="HS256"
-        )
-        r5 = tc.get(f"/protected?token={bad_token}")
-        assert r5.status_code == 401
-        assert "Invalid token" in r5.get_json()["error"]
 
 
 def test_auth_me_scenarios(ent_client):

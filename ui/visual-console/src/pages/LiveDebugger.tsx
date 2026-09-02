@@ -118,9 +118,11 @@ export const LiveDebugger: React.FC = () => {
     attempt: number;
   }
   const streamCtlRef = useRef<StreamCtl>({ es: null, timer: null, scenarioTimer: null, run: null, attempt: 0 });
-  // Server-generated monotonic event ids: dedupe set + replay cursor.
+  // Server-generated monotonic event ids: dedupe set + monotonic cursor + contiguous prefix cursor.
   const seenSeqsRef = useRef<Set<number>>(new Set());
   const cursorRef = useRef<number>(0);
+  const contiguousCursorRef = useRef<number>(0);
+  const explainReqIdRef = useRef<number>(0);
 
   useEffect(() => {
     // Load runs dropdown
@@ -186,12 +188,15 @@ export const LiveDebugger: React.FC = () => {
 
   const handleExplain = async () => {
     if (!runId) return;
+    const reqId = ++explainReqIdRef.current;
     setShowExplain(true);
     setExplainResult('Deterministic triage engine analyzing evaluation traces (rule-based, replayable — no LLM).');
     setAnalysisData(null);
     try {
       const res = await fetch(`/api/v1/explain/${runId}`);
+      if (explainReqIdRef.current !== reqId || streamCtlRef.current.run !== runId) return;
       const data = await res.json();
+      if (explainReqIdRef.current !== reqId || streamCtlRef.current.run !== runId) return;
       if (res.ok) {
         let resultText = '';
         if (data.analysis && typeof data.analysis === 'object') {
@@ -221,12 +226,14 @@ export const LiveDebugger: React.FC = () => {
         setExplainResult(`Error: ${data.error || 'Failed to explain trace.'}`);
       }
     } catch (e: any) {
+      if (explainReqIdRef.current !== reqId || streamCtlRef.current.run !== runId) return;
       setExplainResult(`Failed to trigger analysis: ${e.message}`);
     }
   };
 
   const handleIsolateRootCause = async () => {
     if (!runId) return;
+    const reqId = ++explainReqIdRef.current;
     // [P0-11] Strict priority: authoritative flag > heuristic analysis index >
     // correlated-error heuristic. Whatever route matched is surfaced in the
     // UI as Confirmed vs Suspected; never collapsed into one label.
@@ -241,7 +248,9 @@ export const LiveDebugger: React.FC = () => {
     } else if (targetIdx < 0) {
       try {
         const res = await fetch(`/api/v1/explain/${runId}`);
+        if (explainReqIdRef.current !== reqId || streamCtlRef.current.run !== runId) return;
         const data = await res.json();
+        if (explainReqIdRef.current !== reqId || streamCtlRef.current.run !== runId) return;
         if (res.ok && data.analysis && data.analysis.index !== undefined) {
           setAnalysisData(data.analysis);
           targetIdx = data.analysis.index;
@@ -250,6 +259,7 @@ export const LiveDebugger: React.FC = () => {
         console.error('Failed to isolate root cause via API:', e);
       }
     }
+
 
     // 3. First-correlated-failure heuristic (explicitly labeled as suspected)
     if (targetIdx < 0) {
@@ -338,9 +348,11 @@ export const LiveDebugger: React.FC = () => {
     setNodes([]);
     setEdges([]);
     cursorRef.current = 0;
+    contiguousCursorRef.current = 0;
     seenSeqsRef.current.clear();
     setStreamGaps([]);
     setReconnectCount(0);
+    streamCtlRef.current.attempt = 0;
   };
 
   const scheduleRetry = (rid: string) => {
@@ -352,8 +364,8 @@ export const LiveDebugger: React.FC = () => {
     const delay = Math.min(10000, Math.pow(2, ctl.attempt) * 1000);
     ctl.attempt += 1;
     setReconnectCount(ctl.attempt);
-    // Catch-up with an existing cursor is a REPLAY, not a fresh connect.
-    setConnectionStatus(cursorRef.current > 0 ? 'REPLAYING' : 'RECONNECTING');
+    // Catch-up with an existing contiguous cursor is a REPLAY, not a fresh connect.
+    setConnectionStatus(contiguousCursorRef.current > 0 ? 'REPLAYING' : 'RECONNECTING');
     // At most ONE pending retry timer; it re-validates run identity before
     // firing, so a stale timer can never reopen a dead run's stream.
     ctl.timer = setTimeout(() => {
@@ -373,10 +385,10 @@ export const LiveDebugger: React.FC = () => {
     teardownStream();
     ctl.es = null;
     ctl.timer = null;
-    ctl.attempt = 0;
 
     if (isNewRun) {
       ctl.run = rid;
+      ctl.attempt = 0;
       resetRunLocalState();
       // [Sprint-2] Prune layout cache entries belonging to other runs.
       for (const key of Array.from(nodePositionsRef.current.keys())) {
@@ -388,9 +400,9 @@ export const LiveDebugger: React.FC = () => {
     checkStatus(rid);
     fetchScenarioWithRetry(rid, 0);
 
-    // Resume from the monotonic cursor; no URL rewriting inside the stream
-    // lifecycle; the address bar only changes when the operator picks a run.
-    const lastId = cursorRef.current;
+    // Resume from the contiguous cursor so any gaps are re-requested on reconnect;
+    // no URL rewriting inside the stream lifecycle; the address bar only changes when the operator picks a run.
+    const lastId = contiguousCursorRef.current;
     const source = new EventSource(
       `/api/v1/runs/${rid}/stream${lastId > 0 ? `?last_event_id=${lastId}` : ''}`
     );
@@ -399,12 +411,16 @@ export const LiveDebugger: React.FC = () => {
     source.onopen = () => {
       if (streamCtlRef.current.es !== source) return;
       setConnectionStatus('CONNECTED');
-      setReconnectCount(0);
     };
 
     source.onmessage = (event) => {
       // Stale-frame guard: frames from a superseded connection are dropped.
       if (streamCtlRef.current.run !== rid || streamCtlRef.current.es !== source) return;
+      // Reset reconnect retry counter on active frame reception
+      if (streamCtlRef.current.attempt > 0) {
+        streamCtlRef.current.attempt = 0;
+        setReconnectCount(0);
+      }
       let data: LogEvent;
       try {
         data = JSON.parse(event.data);
@@ -451,7 +467,15 @@ export const LiveDebugger: React.FC = () => {
           });
         }
         if (seq > cursorRef.current) cursorRef.current = seq;
+        // Monotonically advance unbroken contiguous sequence prefix
+        if (seq === contiguousCursorRef.current + 1) {
+          contiguousCursorRef.current = seq;
+          while (seenSeqsRef.current.has(contiguousCursorRef.current + 1)) {
+            contiguousCursorRef.current += 1;
+          }
+        }
       }
+
 
       // Hydrate scenario topology directly from canonical event envelope if present
       if (data.event === 'run_start' || (data as any).name === 'run_start') {
@@ -775,7 +799,7 @@ export const LiveDebugger: React.FC = () => {
         instanceOwner.set(String(ev.execution_instance_id), String(ev.scenario_node_id));
       }
     }
-    const unplacedExecEdges = new Set<string>();
+    let droppedEdgeEvents = 0;
     graphEdgeEvents.forEach((e: any, idx: number) => {
       const rawSource = e.from_scenario_node_id || e.source_execution_id || e.source;
       const rawTarget = e.to_scenario_node_id || e.target_execution_id || e.target;
@@ -808,7 +832,7 @@ export const LiveDebugger: React.FC = () => {
           }
         });
       } else if (rawSource != null && rawTarget != null) {
-        unplacedExecEdges.add(`${rawSource}->${rawTarget}`);
+        droppedEdgeEvents++;
       }
     });
 
@@ -826,8 +850,7 @@ export const LiveDebugger: React.FC = () => {
       .filter(e => {
         const plannedEdge = e.id.startsWith('scen-edge-');
         if (mode === 'planned') return plannedEdge;
-        if (mode === 'executed') return !plannedEdge;
-        // divergence layer displays both
+        // In executed and divergence modes, keep both planned and executed edges for topology context
         return true;
       })
       .map(e => {
@@ -851,6 +874,19 @@ export const LiveDebugger: React.FC = () => {
             type: total > 1 ? 'smoothstep' : undefined,
             animated: true,
             style: { stroke: '#6366f1', strokeWidth: 2 },
+          };
+        }
+        if (mode === 'executed') {
+          return {
+            ...e,
+            type: total > 1 ? 'smoothstep' : undefined,
+            animated: false,
+            style: {
+              stroke: '#334155',
+              strokeWidth: 1,
+              strokeDasharray: '4,4',
+              opacity: 0.5,
+            },
           };
         }
         return {
@@ -904,8 +940,9 @@ export const LiveDebugger: React.FC = () => {
       provenance: 'CANONICAL',
       scenarioNodeCount: scenarioNodesRaw.length,
       runtimeNodeCount: runtimeDiscoveredNodes.length,
-      droppedEdgeCount: unplacedExecEdges.size
+      droppedEdgeCount: droppedEdgeEvents
     };
+
   };
 
   // Node Drag Position Saver to ensure layout state persistence

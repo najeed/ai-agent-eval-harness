@@ -14,6 +14,8 @@ import json
 from unittest.mock import MagicMock, patch
 
 import pytest
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 
 from agentv_runtime.manifest import compute_scenario_hash
 from agentv_runtime.package import VerificationPackage
@@ -581,7 +583,7 @@ def test_verifier_certificate_mkdir_exist_ok(clean_vault_setup):
 def test_verifier_invalid_manifest_branches(clean_vault_setup):
     """
     Mutation Assurance Test: Verifies invalid manifest failure returns False
-    (kills return False -> True mutations at lines 551, 562, 578, 593, 596, 602 in verifier.py).
+    (kills return False -> True mutations).
     """
     run_id = clean_vault_setup["run_id"]
     trace_file = clean_vault_setup["trace_file"]
@@ -1173,7 +1175,9 @@ def test_verify_run_directory_status_matrix(clean_vault_setup):
 
     # VERIFIED: freshly certified vault passes with full chain validation.
     trace_file.write_text(VC_EVENT_LINE, encoding="utf-8")
-    TraceVerifier.sign_trace(str(trace_file), identity_id="test_signer", run_id=run_id)
+    TraceVerifier.sign_trace(
+        str(trace_file), identity_id="test_signer", run_id=run_id, execution_mode="live"
+    )
     verified = TraceVerifier.verify_run_directory(run_dir)
     assert verified["verification_status"] == "VERIFIED"
     assert verified["is_valid"] is True
@@ -1229,7 +1233,9 @@ def test_verify_run_directory_enforces_full_evidence_chain(clean_vault_setup):
 
     evidence = trace_file.parent / f"{run_id}_artifact.txt"
     evidence.write_text("original content", encoding="utf-8")
-    TraceVerifier.sign_trace(str(trace_file), identity_id="test_signer", run_id=run_id)
+    TraceVerifier.sign_trace(
+        str(trace_file), identity_id="test_signer", run_id=run_id, execution_mode="live"
+    )
 
     # Sanity: pristine evidence verifies cleanly.
     assert TraceVerifier.verify_run_directory(run_dir)["verification_status"] == "VERIFIED"
@@ -1416,7 +1422,6 @@ def test_sign_trace_rollback_missing_ok_unlink(clean_vault_setup):
 
 
 def test_verification_authority_trace_bytes_and_validity_mutants():
-    """Kills mutants [19], [20], [58] in VerificationAuthority.verify_package."""
     import hashlib
 
     from agentv_runtime.package import VerificationPackage
@@ -1455,7 +1460,7 @@ def test_verification_authority_trace_bytes_and_validity_mutants():
 
 
 def test_independent_trace_oracle_mldsa65_algorithm(clean_vault_setup):
-    """Kills mutant [92] (elif algorithm == 'ML-DSA-65')."""
+    """elif algorithm == 'ML-DSA-65'."""
     from unittest.mock import MagicMock, patch
 
     manifest = {
@@ -1490,7 +1495,7 @@ def test_independent_trace_oracle_mldsa65_algorithm(clean_vault_setup):
 
 
 def test_verifier_direct_sign_method_fallback():
-    """Covers lines 183-184: key with .sign but without private_bytes."""
+    """Key with .sign but without private_bytes."""
 
     class CustomSigningKey:
         def sign(self, data: bytes) -> bytes:
@@ -1508,7 +1513,7 @@ def test_verifier_direct_sign_method_fallback():
 
 
 def test_verifier_override_interceptor_local_cleanup():
-    """Covers lines 297->299: override_interceptor cleanup when interceptor not in global list."""
+    """Override_interceptor cleanup when interceptor not in global list."""
     service = VerificationService()
     interceptor = MagicMock(spec=TraceVerificationInterceptor)
     with service.override_interceptor(interceptor):
@@ -1516,7 +1521,7 @@ def test_verifier_override_interceptor_local_cleanup():
 
 
 def test_verifier_pqc_strict_mode_violation(clean_vault_setup):
-    """Covers lines 919->887: PQC_STRICT_MODE raises on missing pqc_client."""
+    """PQC_STRICT_MODE raises on missing pqc_client."""
     manifest = {
         "vc_version": "3.0.0",
         "timestamp": "2026-08-30T00:00:00.000+0000",
@@ -1541,7 +1546,7 @@ def test_verifier_pqc_strict_mode_violation(clean_vault_setup):
 
 
 def test_verifier_verify_run_directory_reports_certificate(clean_vault_setup):
-    """Covers lines 947->950: certificate.json resolved in REPORTS_DIR / certificates."""
+    """Certificate.json resolved in REPORTS_DIR / certificates."""
     run_dir = clean_vault_setup["run_dir"]
     run_id = clean_vault_setup["run_id"]
     reports_cert = (
@@ -1556,7 +1561,7 @@ def test_verifier_verify_run_directory_reports_certificate(clean_vault_setup):
 
 
 def test_verify_trace_certificate_scenario_exception(certified_manifest):
-    """Covers lines 1085-1086: scenario hash computation throws exception."""
+    """Scenario hash computation throws exception."""
     manifest = certified_manifest["manifest"].copy()
     manifest["scenario_hash"] = "sha3_256:expected"
     with patch(
@@ -1796,7 +1801,7 @@ def test_verify_trace_certificate_get_public_key_exception(certified_manifest):
 def test_verify_trace_certificate_scenario_hash_mismatch_fails_verification(clean_vault_setup):
     """
     Mutation Assurance Test: When scenario_hash is bound in certificate and scenario_data
-    does not match, verified must be False (kills Mutant [93]: scenario_bound_valid = False).
+    does not match, verified must be False (scenario_bound_valid = False).
     """
     run_id = clean_vault_setup["run_id"]
     trace_file = clean_vault_setup["trace_file"]
@@ -1821,7 +1826,7 @@ def test_verify_trace_certificate_scenario_hash_mismatch_fails_verification(clea
     assert res_ok["verified"] is True
     assert res_ok["scenario_hash_match"] is True
 
-    # 2. Tampered scenario data -> verified is False (kills Mutant [93])
+    # 2. Tampered scenario data -> verified is False
     tampered_scen = {"scenario_id": "test_scen_001", "steps": [{"step": 2}]}
     res_tampered = verify_trace_certificate(
         run_id=run_id,
@@ -1837,7 +1842,7 @@ def test_verify_trace_certificate_scenario_hash_mismatch_fails_verification(clea
 def test_sign_trace_declared_evidence_root_mismatch_raises(clean_vault_setup):
     """
     Mutation Assurance Test: Declaring an evidence_root_hash that does not match
-    computed_evidence_root must raise EvidenceRootMismatch (kills Mutant 46).
+    computed_evidence_root must raise EvidenceRootMismatch.
     """
     run_id = clean_vault_setup["run_id"]
     trace_file = clean_vault_setup["trace_file"]
@@ -1853,7 +1858,7 @@ def test_sign_trace_declared_evidence_root_mismatch_raises(clean_vault_setup):
 def test_verify_trace_cert_missing_scenario_data_fails_verification(clean_vault_setup):
     """
     Mutation Assurance Test: When certificate contains scenario_hash but scenario_data
-    is None, verified must be False (kills Mutant 63: scenario_bound_valid = False).
+    is None, verified must be False (scenario_bound_valid = False).
     """
     run_id = clean_vault_setup["run_id"]
     trace_file = clean_vault_setup["trace_file"]
@@ -1884,7 +1889,7 @@ def test_verify_trace_cert_missing_scenario_data_fails_verification(clean_vault_
 def test_verification_authority_verify_package_complete_provenance_fallback():
     """
     Mutation Assurance Test: When ev_graph lacks is_complete_provenance key, it defaults
-    to True and does not raise DirectProvenanceViolation (kills Mutant 119).
+    to True and does not raise DirectProvenanceViolation.
     """
     pkg = VerificationPackage(
         scenario_id="scen_1",
@@ -1910,3 +1915,405 @@ def test_verification_authority_verify_package_complete_provenance_fallback():
             pkg, raw_trace_events=raw_events, require_signature=True
         )
         assert not any("DirectProvenanceViolation" in f for f in res["failures"])
+
+
+def test_sign_trace_machine_derived_root_cause_and_score_extraction(clean_vault_setup):
+    """
+    Verifies that is_root_cause=True and evaluation_verdict score/failure are derived directly.
+    """
+    project_root = clean_vault_setup["project_root"]
+
+    # 1. Trace with is_root_cause=True -> compliance status becomes fail, score becomes 0.0
+    rid_1 = "run-rc-001"
+    rdir_1 = project_root / "runs" / rid_1
+    rdir_1.mkdir(parents=True, exist_ok=True)
+    trace_rc = rdir_1 / "run.jsonl"
+    trace_rc.write_text(
+        json.dumps({"event": "run_start", "_seq": 1})
+        + "\n"
+        + json.dumps({"event": "tool_call", "is_root_cause": True, "_seq": 2})
+        + "\n",
+        encoding="utf-8",
+    )
+    m_rc = TraceVerifier.sign_trace(
+        str(trace_rc),
+        identity_id="signer",
+        run_id=rid_1,
+        compliance_status="pass",
+        compliance_score=1.0,
+    )
+    assert m_rc["compliance"]["status"] == "fail"
+    assert m_rc["compliance"]["score"] == 0.0
+
+    # 2. Trace with evaluation_verdict verdict=FAIL -> status fail, score 0.0
+    rid_2 = "run-fail-002"
+    rdir_2 = project_root / "runs" / rid_2
+    rdir_2.mkdir(parents=True, exist_ok=True)
+    trace_fail = rdir_2 / "run.jsonl"
+    trace_fail.write_text(
+        json.dumps({"event": "run_start", "_seq": 1})
+        + "\n"
+        + json.dumps({"event": "evaluation_verdict", "verdict": "FAIL", "_seq": 2})
+        + "\n",
+        encoding="utf-8",
+    )
+    m_fail = TraceVerifier.sign_trace(
+        str(trace_fail),
+        identity_id="signer",
+        run_id=rid_2,
+        compliance_status="pass",
+        compliance_score=1.0,
+    )
+    assert m_fail["compliance"]["status"] == "fail"
+    assert m_fail["compliance"]["score"] == 0.0
+
+    # 3. Trace with evaluation_verdict score=0.75 without failure -> score 0.75
+    rid_3 = "run-score-003"
+    rdir_3 = project_root / "runs" / rid_3
+    rdir_3.mkdir(parents=True, exist_ok=True)
+    trace_score = rdir_3 / "run.jsonl"
+    trace_score.write_text(
+        json.dumps({"event": "run_start", "_seq": 1})
+        + "\n"
+        + json.dumps({"event": "evaluation_verdict", "verdict": "PASS", "score": 0.75, "_seq": 2})
+        + "\n",
+        encoding="utf-8",
+    )
+    m_score = TraceVerifier.sign_trace(
+        str(trace_score),
+        identity_id="signer",
+        run_id=rid_3,
+        compliance_status="pass",
+        compliance_score=1.0,
+    )
+    assert m_score["compliance"]["status"] == "pass"
+    assert m_score["compliance"]["score"] == 0.75
+
+    # 4. Clean trace without failure events -> compliance status remains pass, score 1.0
+    rid_4 = "run-clean-004"
+    rdir_4 = project_root / "runs" / rid_4
+    rdir_4.mkdir(parents=True, exist_ok=True)
+    trace_clean = rdir_4 / "run.jsonl"
+    trace_clean.write_text(
+        json.dumps({"event": "run_start", "_seq": 1})
+        + "\n"
+        + json.dumps({"event": "run_end", "_seq": 2})
+        + "\n",
+        encoding="utf-8",
+    )
+    m_clean = TraceVerifier.sign_trace(
+        str(trace_clean),
+        identity_id="signer",
+        run_id=rid_4,
+        compliance_status="pass",
+        compliance_score=1.0,
+    )
+    assert m_clean["compliance"]["status"] == "pass"
+    assert m_clean["compliance"]["score"] == 1.0
+
+    # 5. Trace with non-verdict event containing a score attribute
+    rid_5 = "run-score-no-verdict-005"
+    rdir_5 = project_root / "runs" / rid_5
+    rdir_5.mkdir(parents=True, exist_ok=True)
+    trace_score_nv = rdir_5 / "run.jsonl"
+    trace_score_nv.write_text(
+        json.dumps({"event": "run_start", "_seq": 1})
+        + "\n"
+        + json.dumps({"event": "step_executed", "score": 0.42, "_seq": 2})
+        + "\n",
+        encoding="utf-8",
+    )
+    m_nv = TraceVerifier.sign_trace(
+        str(trace_score_nv),
+        identity_id="signer",
+        run_id=rid_5,
+        compliance_status="pass",
+        compliance_score=1.0,
+    )
+    assert m_nv["compliance"]["status"] == "pass"
+    assert m_nv["compliance"]["score"] == 1.0
+
+
+def test_verify_trace_evidence_root_mismatch_and_exception(clean_vault_setup):
+    """
+    Verifies that verify_trace returns False when evidence graph root fails verification or errors.
+    """
+    from datetime import datetime
+
+    run_dir = clean_vault_setup["run_dir"]
+    trace_file = run_dir / "run.jsonl"
+    trace_file.write_text(
+        json.dumps({"event": "run_start", "_seq": 1})
+        + "\n"
+        + "invalid json line\n"
+        + json.dumps({"event": "run_end", "_seq": 2})
+        + "\n",
+        encoding="utf-8",
+    )
+
+    # 1. Evidence root mismatch
+    manifest_mismatch = {
+        "vc_version": "3.0.0",
+        "harness_version": "2.0.0",
+        "timestamp": datetime.now().isoformat(),
+        "trace_hash": TraceVerifier.compute_signature(trace_file),
+        "evidence_root_hash": (
+            "sha3_256:badroot00000000000000000000000000000000000000000000000000000000"
+        ),
+        "provenance_chain": [{"algorithm": "Ed25519", "signer_identity": "signer"}],
+    }
+    manifest_path = run_dir / "run_manifest.json"
+    manifest_path.write_text(json.dumps(manifest_mismatch), encoding="utf-8")
+    with patch.object(IdentityService, "get_public_key", return_value=None):
+        ok = TraceVerifier.verify_trace(str(trace_file), str(manifest_path), verify_ledger=False)
+        assert ok is False
+
+    # 2. Evidence root exception
+    with (
+        patch(
+            "agentv_runtime.evidence_graph.compute_evidence_graph_root",
+            side_effect=RuntimeError("graph error"),
+        ),
+        patch.object(IdentityService, "get_public_key", return_value=None),
+    ):
+        ok_exc = TraceVerifier.verify_trace(
+            str(trace_file), str(manifest_path), verify_ledger=False
+        )
+        assert ok_exc is False
+
+
+def test_verify_trace_certificate_key_mismatch_and_embedded_formats(certified_manifest):
+    """
+    Verifies anchor vs embedded key comparison, embedded PEM/hex formats,
+    and evidence root mismatch.
+    """
+    from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
+
+    manifest = dict(certified_manifest["manifest"])
+    run_id = certified_manifest["run_id"]
+    trace_bytes = certified_manifest["trace_bytes"]
+
+    anchor_pk = IdentityService.get_public_key("test_signer")
+    raw_bytes = anchor_pk.public_bytes(Encoding.Raw, PublicFormat.Raw)
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
+    different_pk = Ed25519PrivateKey.generate().public_key()
+    different_raw = different_pk.public_bytes(Encoding.Raw, PublicFormat.Raw)
+
+    sig = manifest.get("signature") or (manifest.get("provenance_chain", [{}])[0].get("signature"))
+
+    # 1. Embedded key does not match anchor key -> error "Signer key mismatch"
+    m_key_mismatch = dict(manifest)
+    m_key_mismatch["provenance_chain"] = [
+        {
+            "algorithm": "Ed25519",
+            "identity": "test_signer",
+            "signer_identity": "test_signer",
+            "public_key": different_raw.hex(),
+            "signature": sig,
+        }
+    ]
+    res_mismatch = verify_trace_certificate(run_id, trace_bytes, m_key_mismatch)
+    assert res_mismatch["verified"] is False
+    assert any("Signer key mismatch" in e for e in res_mismatch["errors"])
+
+    # 2. Embedded key in PEM format matching anchor key
+    pem_str = anchor_pk.public_bytes(Encoding.PEM, PublicFormat.SubjectPublicKeyInfo).decode(
+        "utf-8"
+    )
+    m_pem = dict(manifest)
+    m_pem["provenance_chain"] = [
+        {
+            "algorithm": "Ed25519",
+            "identity": "test_signer",
+            "signer_identity": "test_signer",
+            "public_key": pem_str,
+            "signature": sig,
+        }
+    ]
+    res_pem = verify_trace_certificate(run_id, trace_bytes, m_pem)
+    assert res_pem["verified"] is True
+
+    # 3. Embedded key as raw bytes object
+    m_bytes = dict(manifest)
+    m_bytes["provenance_chain"] = [
+        {
+            "algorithm": "Ed25519",
+            "identity": "test_signer",
+            "signer_identity": "test_signer",
+            "public_key": raw_bytes,
+            "signature": sig,
+        }
+    ]
+    res_bytes = verify_trace_certificate(run_id, trace_bytes, m_bytes)
+    assert res_bytes["verified"] is True
+
+    # 4. Evidence root mismatch against valid signature -> verified is False
+    with patch(
+        "agentv_runtime.evidence_graph.compute_evidence_graph_root",
+        return_value="sha3_256:different_root_000000000000000000000000000000000000000000000000",
+    ):
+        res_ev_mismatch = verify_trace_certificate(run_id, trace_bytes, manifest)
+        assert res_ev_mismatch["verified"] is False
+        assert any("Evidence root hash mismatch" in e for e in res_ev_mismatch["errors"])
+
+
+def test_verification_authority_verify_package_incomplete_provenance_and_sig_exception():
+    """
+    Mutation Assurance Test: Kills provenance and signature mutants
+    in VerificationAuthority.verify_package.
+    """
+    pkg = VerificationPackage(
+        scenario_id="scen_1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:abcd",
+        manifest_id="manifest-001",
+        manifest_hash="sha3_256:fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321",
+        execution_identity={"agent_id": "test_agent"},
+        trace_hash="sha3_256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+        trace_seal={"seal": "ok"},
+        evidence_root_hash="sha3_256:0000000000000000000000000000000000000000000000000000000000000000",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={"verdict": "PASS"},
+        signature="dummy_sig",
+    )
+    raw_events = [{"event": "run_start", "_seq": 1}]
+    dummy_root = "sha3_256:0000000000000000000000000000000000000000000000000000000000000000"
+
+    # 1. Incomplete provenance
+    with (
+        patch("agentv_runtime.evidence_graph.compute_evidence_graph_root", return_value=dummy_root),
+        patch(
+            "agentv_runtime.evidence_graph.build_evidence_graph_from_events",
+            return_value={"is_complete_provenance": False},
+        ),
+        patch.object(VerificationPackage, "verify_signature", return_value=True),
+    ):
+        res1 = VerificationAuthority.verify_package(
+            pkg, raw_trace_events=raw_events, require_signature=True
+        )
+        assert any("DirectProvenanceViolation" in f for f in res1["failures"])
+
+    # 2. Signature verification exception
+    with (
+        patch("agentv_runtime.evidence_graph.compute_evidence_graph_root", return_value=dummy_root),
+        patch(
+            "agentv_runtime.evidence_graph.build_evidence_graph_from_events",
+            return_value={"is_complete_provenance": True},
+        ),
+        patch.object(
+            VerificationPackage, "verify_signature", side_effect=RuntimeError("crypto error")
+        ),
+    ):
+        res2 = VerificationAuthority.verify_package(
+            pkg, raw_trace_events=raw_events, require_signature=True
+        )
+        assert any("SignatureVerificationFailed" in f for f in res2["failures"])
+
+
+def test_locate_certificate_file_boundary_cases():
+    """Verifies boundary cases in locate_certificate_file helper."""
+    from eval_runner.verifier import locate_certificate_file
+
+    assert locate_certificate_file("") is None
+    assert locate_certificate_file(None) is None  # type: ignore
+    assert locate_certificate_file("../escape/run_1") is None
+    assert locate_certificate_file("nonexistent_run_99999") is None
+
+
+def test_verifier_certificate_embedded_pk_corrupted_parse_err(tmp_path):
+    """PK parse error and signature check error."""
+    run_id = "run-pk-corrupt"
+    run_dir = tmp_path / "runs" / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    trace_file = run_dir / "run.jsonl"
+    trace_file.write_text('{"event": "start"}\n', encoding="utf-8")
+    trace_bytes = trace_file.read_bytes()
+
+    # Corrupted public key format string (triggers pk_parse_err)
+    manifest = {
+        "vc_version": "3.0.0",
+        "run_id": run_id,
+        "trace_hash": TraceVerifier.compute_signature(trace_file),
+        "provenance_chain": [
+            {
+                "algorithm": "Ed25519",
+                "identity": "unknown_signer",
+                "public_key": "not_valid_hex_or_pem_public_key!!!",
+                "signature": "abcd" * 16,
+            }
+        ],
+    }
+    res = verify_trace_certificate(run_id, trace_bytes, manifest)
+    assert res["verified"] is False
+    assert any("No public key available" in e for e in res["errors"])
+
+    # Corrupted signature hex (triggers sig_err)
+    key = Ed25519PrivateKey.generate()
+    raw_pk = key.public_key().public_bytes(Encoding.Raw, PublicFormat.Raw).hex()
+    manifest_bad_sig = {
+        "vc_version": "3.0.0",
+        "run_id": run_id,
+        "trace_hash": TraceVerifier.compute_signature(trace_file),
+        "provenance_chain": [
+            {
+                "algorithm": "Ed25519",
+                "identity": "custom_signer",
+                "public_key": raw_pk,
+                "signature": "not_hex_signature_string_length_32_chars!",
+            }
+        ],
+    }
+    res_sig = verify_trace_certificate(run_id, trace_bytes, manifest_bad_sig)
+    assert res_sig["verified"] is False
+    assert any("Signature check error" in e for e in res_sig["errors"])
+
+
+def test_verifier_certificate_pk_comparison_exception(tmp_path):
+    """Public key comparison exception."""
+    run_id = "run-pk-cmp-exc"
+    trace_bytes = b'{"event": "start"}\n'
+
+    key = Ed25519PrivateKey.generate()
+    raw_pk = key.public_key().public_bytes(Encoding.Raw, PublicFormat.Raw).hex()
+
+    manifest = {
+        "vc_version": "3.0.0",
+        "run_id": run_id,
+        "trace_hash": "sha3_256:0000000000000000000000000000000000000000000000000000000000000000",
+        "provenance_chain": [
+            {
+                "algorithm": "Ed25519",
+                "identity": "test_anchor",
+                "public_key": raw_pk,
+                "signature": "11" * 32,
+            }
+        ],
+    }
+
+    mock_anchor = MagicMock()
+    mock_anchor.public_bytes.side_effect = RuntimeError("Crypto failure")
+
+    with patch.object(IdentityService, "get_public_key", return_value=mock_anchor):
+        res = verify_trace_certificate(run_id, trace_bytes, manifest)
+        assert res["verified"] is False
+
+
+def test_verifier_certificate_evidence_graph_exception(tmp_path):
+    """Evidence root check exception."""
+    run_id = "run-ev-exc"
+    trace_bytes = b'{"event": "start"}\n'
+    manifest = {
+        "vc_version": "3.0.0",
+        "run_id": run_id,
+        "trace_hash": "sha3_256:0000000000000000000000000000000000000000000000000000000000000000",
+        "evidence_root_hash": "sha3_256:target_root",
+        "provenance_chain": [],
+    }
+    with patch(
+        "agentv_runtime.evidence_graph.build_evidence_graph_from_events",
+        side_effect=RuntimeError("Graph build error"),
+    ):
+        res = verify_trace_certificate(run_id, trace_bytes, manifest)
+        assert res["verified"] is False

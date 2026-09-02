@@ -56,8 +56,13 @@ class LocalFileArtifactStore(ArtifactStore):
         append: bool = False,
         **kwargs: Any,
     ) -> str:
-        # Check if already sealed (unless writing seal marker or trace_seal.json itself)
-        if self.is_sealed(run_id) and artifact_name not in (".sealed", "trace_seal.json"):
+        # Check if already sealed
+        # (unless writing seal marker, trace_seal, or run_manifest during certification)
+        if self.is_sealed(run_id) and artifact_name not in (
+            ".sealed",
+            "trace_seal.json",
+            "run_manifest.json",
+        ):
             raise PermissionError(
                 f"Artifact vault for run '{run_id}' is sealed; "
                 "mutations and new artifacts are prohibited."

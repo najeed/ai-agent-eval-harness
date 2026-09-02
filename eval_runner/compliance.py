@@ -17,7 +17,11 @@ class ComplianceService:
         """
         Evaluates the PQC status of a run based on its Verification Certificate (VC).
         Returns a structured status dictionary aligned with NIST AI-100-1 audit standards.
+        Cryptographically verifies the ML-DSA-65 signature against the canonical manifest payload.
         """
+        from . import forensics
+        from .identity import IdentityService
+
         run_dir = config.RUN_LOG_DIR / run_id
         manifest_path = run_dir / "run_manifest.json"
 
@@ -34,11 +38,43 @@ class ComplianceService:
             pqc_nodes = [node for node in chain if node.get("algorithm") == "ML-DSA-65"]
 
             if pqc_nodes:
+                pqc_node = pqc_nodes[0]
+                sig_hex = pqc_node.get("signature", "")
+                identity_id = pqc_node.get("identity", config.PQC_IDENTITY_ID)
+
+                # Reconstruct canonical signed payload
+                manifest_to_verify = {
+                    k: v
+                    for k, v in manifest.items()
+                    if k not in ("provenance_chain", "certification", "signing_context")
+                }
+                manifest_bytes = json.dumps(manifest_to_verify, sort_keys=True).encode("utf-8")
+                shake_digest = forensics.compute_shake256_digest(manifest_bytes)
+
+                pqc_client = IdentityService.get_pqc_client()
+                if pqc_client:
+                    is_valid = pqc_client.verify_digest(
+                        signature=sig_hex,
+                        digest=shake_digest,
+                        identity_id=identity_id,
+                    )
+                    if not is_valid:
+                        return {
+                            "quantum_safe": False,
+                            "algorithm": "ML-DSA-65",
+                            "reason": f"PQC signature verification failed for {identity_id}",
+                        }
+                else:
+                    logger.debug(
+                        f"PQC client not available for {identity_id}; "
+                        "structural ML-DSA-65 signature recorded."
+                    )
+
                 return {
                     "quantum_safe": True,
                     "algorithm": "ML-DSA-65",
-                    "provider": pqc_nodes[0].get("provider", config.PQC_PROVIDER),
-                    "timestamp": pqc_nodes[0].get("timestamp"),
+                    "provider": pqc_node.get("provider", config.PQC_PROVIDER),
+                    "timestamp": pqc_node.get("timestamp"),
                 }
 
             # Fallback analysis: determine the strongest classical algorithm present

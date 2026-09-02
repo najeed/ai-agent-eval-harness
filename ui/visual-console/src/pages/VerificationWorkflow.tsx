@@ -256,6 +256,7 @@ export const VerificationWorkflow: React.FC = () => {
           endpoint,
           agent_config: { protocol, endpoint },
           runtime_config: { max_turns: parseInt(maxTurns) || 10 },
+          preflight_fingerprint: preflightResult.fingerprint,
           metadata: {
             notes: sessionNotes || undefined,
             preflight_fingerprint: preflightResult.fingerprint,
@@ -275,6 +276,7 @@ export const VerificationWorkflow: React.FC = () => {
       setLaunching(false);
     }
   };
+
 
 
   return (
