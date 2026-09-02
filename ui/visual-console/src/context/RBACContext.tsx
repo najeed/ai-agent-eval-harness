@@ -33,6 +33,10 @@ interface RBACContextType {
   isDevMode: boolean;
   workspaceId: string;
   tenantId: string;
+  isLoginModalOpen: boolean;
+  openLoginModal: () => void;
+  closeLoginModal: () => void;
+  logout: () => Promise<void>;
   hasPermission: (permission: string) => boolean;
   canEditScenario: boolean;
   canRunEval: boolean;
@@ -51,6 +55,7 @@ export const RBACProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [workspaceId, setWorkspaceId] = useState<string>('ws-default');
   const [tenantId, setTenantId] = useState<string>('tenant-default');
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
 
   const fetchAuth = async () => {
     try {
@@ -64,6 +69,7 @@ export const RBACProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setWorkspaceId(data.user.workspace_id || 'ws-default');
           setTenantId(data.user.tenant_id || 'tenant-default');
           setActiveRole(data.user.role || 'Viewer');
+          setIsLoginModalOpen(false);
           return;
         }
       }
@@ -71,17 +77,49 @@ export const RBACProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsAuthenticated(false);
       setUser(null);
       setActiveRole('Viewer');
+      setIsLoginModalOpen(true);
     } catch (err) {
       console.warn('[RBAC] Default-deny: Server authentication unreachable. Enforcing Viewer role.', err);
       setIsAuthenticated(false);
       setUser(null);
       setActiveRole('Viewer');
+      setIsLoginModalOpen(true);
     }
   };
 
   useEffect(() => {
     fetchAuth();
+
+    const handleAuthRequired = () => {
+      setIsAuthenticated(false);
+      setIsLoginModalOpen(true);
+    };
+
+    window.addEventListener('agentv-auth-required', handleAuthRequired);
+    return () => {
+      window.removeEventListener('agentv-auth-required', handleAuthRequired);
+    };
   }, []);
+
+  const logout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (err) {
+      console.warn('[RBAC] Error during logout:', err);
+    } finally {
+      setUser(null);
+      setIsAuthenticated(false);
+      setActiveRole('Viewer');
+      setIsLoginModalOpen(true);
+    }
+  };
+
+  const openLoginModal = () => setIsLoginModalOpen(true);
+  const closeLoginModal = () => {
+    if (isAuthenticated) {
+      setIsLoginModalOpen(false);
+    }
+  };
 
   const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
     'System Admin': ['*'],
@@ -115,6 +153,10 @@ export const RBACProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isDevMode,
       workspaceId,
       tenantId,
+      isLoginModalOpen,
+      openLoginModal,
+      closeLoginModal,
+      logout,
       hasPermission,
       canEditScenario: isAdmin || activeRole === 'Scenario Designer' || perms.has('scenarios:write'),
       canRunEval: isAdmin || activeRole === 'MultiAgentOps Eng.' || activeRole === 'Scenario Designer' || perms.has('eval:trigger'),
@@ -123,7 +165,7 @@ export const RBACProvider: React.FC<{ children: React.ReactNode }> = ({ children
       canResolveHITL: isAdmin || activeRole === 'Compliance Auditor' || perms.has('hitl:resolve'),
       refreshAuth: fetchAuth,
     }),
-    [user, activeRole, isAuthenticated, isDevMode, workspaceId, tenantId, perms, isAdmin]
+    [user, activeRole, isAuthenticated, isDevMode, workspaceId, tenantId, perms, isAdmin, isLoginModalOpen]
   );
 
   return <RBACContext.Provider value={value}>{children}</RBACContext.Provider>;

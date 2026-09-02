@@ -26,6 +26,7 @@ import { FailureCorpus } from './pages/FailureCorpus';
 import { Triage } from './pages/Triage';
 import { SpecToEvalImporter } from './pages/SpecToEvalImporter';
 import { AdversarialMutator } from './pages/AdversarialMutator';
+import { LoginModal } from './components/LoginModal';
 
 // Extension host: generic load/contract fallback + RuntimeExtension contract
 import { ExtensionLoadError } from './components/ExtensionLoadError';
@@ -150,7 +151,9 @@ export function mergeNavManifest(
 
   for (const rawItem of remoteItems) {
     if (!rawItem || typeof rawItem !== 'object') continue;
-    const name = rawItem.name || rawItem.id || 'Plugin Item';
+    if (rawItem.type === 'heading') continue;
+    if (!rawItem.path && !rawItem.remoteEntry) continue;
+    const name = rawItem.name || rawItem.title || rawItem.id || 'Plugin Item';
     const path = rawItem.path || (rawItem.id ? `/${rawItem.id}` : '#');
     if (existingPaths.has(path)) continue;
 
@@ -604,7 +607,18 @@ const ConsoleLayout: React.FC = () => {
   const location = useLocation();
   // [P1-15] RBAC is presentation gating only. The role shown here comes from
   // the server (/api/auth/me); there is no client-side persona switching.
-  const { user, role, canAccessSettings, canEditScenario, canSignCert } = useRBAC();
+  const {
+    user,
+    role,
+    isAuthenticated,
+    isLoginModalOpen,
+    openLoginModal,
+    closeLoginModal,
+    logout,
+    canAccessSettings,
+    canEditScenario,
+    canSignCert,
+  } = useRBAC();
   const [isCmdOpen, setIsCmdOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [toasts, setToasts] = useState<{ id: string; message: string; type: string }[]>([]);
@@ -676,12 +690,13 @@ const ConsoleLayout: React.FC = () => {
       try {
         const response = await originalFetch(...args);
         if (response.status === 401 || response.status === 403) {
+          window.dispatchEvent(new CustomEvent('agentv-auth-required'));
           window.dispatchEvent(
             new CustomEvent('agentv-toast', {
               detail: {
                 type: 'error',
-                title: 'Authentication Failure',
-                message: 'Invalid or expired API credentials. Please re-authenticate.',
+                title: 'Authentication Required',
+                message: 'Active PBAC session required. Please authenticate.',
               },
             })
           );
@@ -955,6 +970,32 @@ const ConsoleLayout: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            {/* User Persona & Authentication Gateway */}
+            {isAuthenticated ? (
+              <div className="flex items-center gap-2 bg-slate-900/80 border border-slate-800 rounded-lg px-2.5 py-1 text-xs">
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                <span className="text-slate-300 font-medium">{user?.name || 'Operator'}</span>
+                <span className="text-[10px] bg-slate-800 text-cyan-400 px-1.5 py-0.5 rounded border border-slate-700 font-mono">
+                  {role}
+                </span>
+                <button
+                  onClick={logout}
+                  className="ml-1 text-[11px] text-slate-400 hover:text-rose-400 transition-colors cursor-pointer"
+                  title="Sign Out"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={openLoginModal}
+                className="flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-xs font-semibold rounded-lg shadow cursor-pointer transition-all"
+              >
+                <Shield className="w-3.5 h-3.5" />
+                <span>Sign In</span>
+              </button>
+            )}
+
             {/* Authoritative Runtime Health (P0-1): server-derived only.
                 Never render READY without a successful health verification. */}
             {(() => {
@@ -1032,6 +1073,13 @@ const ConsoleLayout: React.FC = () => {
           </div>
         ))}
       </div>
+
+      {/* Authentication Gateway Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={closeLoginModal}
+        canDismiss={isAuthenticated}
+      />
     </div>
   );
 };
@@ -1113,6 +1161,7 @@ export function ConsoleRoutes() {
         <Route path="/evidence/packages" element={<RunsReportsPage />} />
         <Route path="/trust" element={<TrustCenterPage />} />
         <Route path="/docs" element={<DocsPage />} />
+        <Route path="/docs/:docId" element={<DocsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
 
         {/* Runtime OSS Diagnostics & Tooling */}

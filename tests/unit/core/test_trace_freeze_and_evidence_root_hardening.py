@@ -172,6 +172,49 @@ def test_scenario_hash_binding_enforcement(isolated_vault):
     assert any("Scenario binding verification required" in err for err in res_missing["errors"])
 
 
+def test_verify_trace_certificate_invalid_utf8_trace(isolated_vault):
+    """Verify verify_trace_certificate fails when trace_bytes contains non-UTF-8 bytes."""
+    run_id = "utf8-fail-run-001"
+    run_dir = isolated_vault["run_log_dir"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    trace_file = run_dir / "run.jsonl"
+    trace_file.write_text(json.dumps({"event": "start", "_seq": 1}) + "\n", encoding="utf-8")
+
+    manifest = TraceVerifier.sign_trace(
+        trace_path=str(trace_file),
+        identity_id="test_signer",
+        run_id=run_id,
+    )
+    # Pass invalid UTF-8 trace bytes to verify_trace_certificate
+    invalid_trace_bytes = b"\xff\xfe\xfa\x00\x80\x81"
+    res = verify_trace_certificate(
+        run_id=run_id, trace_bytes=invalid_trace_bytes, cert_data=manifest
+    )
+    assert res["verified"] is False
+    assert any("Trace file is not valid UTF-8" in err for err in res["errors"])
+
+
+def test_verify_trace_certificate_malformed_trace_line(isolated_vault):
+    """Verify verify_trace_certificate fails when trace_bytes contains malformed JSONL line."""
+    run_id = "malformed-line-run-001"
+    run_dir = isolated_vault["run_log_dir"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    trace_file = run_dir / "run.jsonl"
+    trace_file.write_text(json.dumps({"event": "start", "_seq": 1}) + "\n", encoding="utf-8")
+
+    manifest = TraceVerifier.sign_trace(
+        trace_path=str(trace_file),
+        identity_id="test_signer",
+        run_id=run_id,
+    )
+    malformed_trace_bytes = b'{"event": "start"}\n{invalid-json-line}\n'
+    res = verify_trace_certificate(
+        run_id=run_id, trace_bytes=malformed_trace_bytes, cert_data=manifest
+    )
+    assert res["verified"] is False
+    assert any("Malformed trace record at line" in err for err in res["errors"])
+
+
 def test_public_verification_score_independence(isolated_vault):
     """Verify /v1/verify/<run_id> reports verified=True for a passing status with score < 1.0."""
     run_id = "score-indep-run-001"

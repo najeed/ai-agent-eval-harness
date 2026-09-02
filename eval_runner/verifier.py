@@ -723,7 +723,7 @@ class TraceVerifier:
         if _mode_in in _valid_modes:
             manifest["execution_mode"] = _mode_in
             if provisional:
-                manifest["provisional"] = True
+                manifest["provisional"] = False
         else:
             manifest["execution_mode"] = "unknown"
             manifest["provisional"] = True

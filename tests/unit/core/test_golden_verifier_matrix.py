@@ -2335,3 +2335,95 @@ def test_verifier_certificate_evidence_graph_exception(tmp_path):
     ):
         res = verify_trace_certificate(run_id, trace_bytes, manifest)
         assert res["verified"] is False
+
+
+def test_verify_trace_certificate_invalid_utf8_trace_bytes(clean_vault_setup):
+    """Verify verify_trace_certificate rejects invalid UTF-8 trace bytes
+    when evidence root is checked."""
+    project_root = clean_vault_setup["project_root"]
+    run_id = "run-utf8-invalid-01"
+    rdir = project_root / "runs" / run_id
+    rdir.mkdir(parents=True, exist_ok=True)
+    trace_path = rdir / "run.jsonl"
+    trace_path.write_text(
+        '{"event": "start"}\n{"event": "run_end", "outcome": "pass"}\n', encoding="utf-8"
+    )
+
+    manifest = TraceVerifier.sign_trace(str(trace_path), identity_id="signer", run_id=run_id)
+    assert "evidence_root_hash" in manifest
+
+    invalid_utf8_bytes = b"\xff\xfe\xfa\x00\x80\x81"
+    res = verify_trace_certificate(
+        run_id=run_id, trace_bytes=invalid_utf8_bytes, cert_data=manifest
+    )
+    assert res["verified"] is False
+    assert any("Trace file is not valid UTF-8" in e for e in res["errors"])
+
+
+def test_verify_trace_certificate_malformed_json_trace_bytes(clean_vault_setup):
+    """Verify verify_trace_certificate rejects malformed JSONL trace records
+    when evidence root is checked."""
+    project_root = clean_vault_setup["project_root"]
+    run_id = "run-malformed-json-01"
+    rdir = project_root / "runs" / run_id
+    rdir.mkdir(parents=True, exist_ok=True)
+    trace_path = rdir / "run.jsonl"
+    trace_path.write_text(
+        '{"event": "start"}\n{"event": "run_end", "outcome": "pass"}\n', encoding="utf-8"
+    )
+
+    manifest = TraceVerifier.sign_trace(str(trace_path), identity_id="signer", run_id=run_id)
+    assert "evidence_root_hash" in manifest
+
+    malformed_bytes = b'{"event": "start"}\n{not-valid-json-record}\n'
+    res = verify_trace_certificate(run_id=run_id, trace_bytes=malformed_bytes, cert_data=manifest)
+    assert res["verified"] is False
+    assert any("Malformed trace record at line" in e for e in res["errors"])
+
+
+def test_verify_trace_evidence_root_mismatch_fails_verification(clean_vault_setup):
+    """Verify TraceVerifier.verify_trace returns False when manifest
+    evidence_root_hash does not match trace."""
+    project_root = clean_vault_setup["project_root"]
+    run_id = "run-ev-mismatch-01"
+    rdir = project_root / "runs" / run_id
+    rdir.mkdir(parents=True, exist_ok=True)
+    trace_path = rdir / "run.jsonl"
+    trace_path.write_text(
+        '{"event": "start"}\n{"event": "run_end", "outcome": "pass"}\n', encoding="utf-8"
+    )
+
+    manifest = TraceVerifier.sign_trace(str(trace_path), identity_id="signer", run_id=run_id)
+    manifest_path = rdir / "run_manifest.json"
+
+    # Tamper with evidence_root_hash in the manifest file
+    manifest_tampered = manifest.copy()
+    manifest_tampered["evidence_root_hash"] = (
+        "sha3_256:0000000000000000000000000000000000000000000000000000000000000000"
+    )
+    with open(manifest_path, "w", encoding="utf-8") as f:
+        json.dump(manifest_tampered, f)
+
+    assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
+
+
+def test_verify_trace_evidence_root_exception_fails_verification(clean_vault_setup):
+    """Verify TraceVerifier.verify_trace returns False when evidence
+    graph root check raises an exception."""
+    project_root = clean_vault_setup["project_root"]
+    run_id = "run-ev-err-01"
+    rdir = project_root / "runs" / run_id
+    rdir.mkdir(parents=True, exist_ok=True)
+    trace_path = rdir / "run.jsonl"
+    trace_path.write_text(
+        '{"event": "start"}\n{"event": "run_end", "outcome": "pass"}\n', encoding="utf-8"
+    )
+
+    TraceVerifier.sign_trace(str(trace_path), identity_id="signer", run_id=run_id)
+    manifest_path = rdir / "run_manifest.json"
+
+    with patch(
+        "agentv_runtime.evidence_graph.build_evidence_graph_from_events",
+        side_effect=RuntimeError("Graph engine failure"),
+    ):
+        assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False

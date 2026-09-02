@@ -63,7 +63,6 @@ def register_core_routes(app, nav_registry):
     from eval_runner.config import ENABLE_DEMO
 
     items = [
-        {"id": "core_heading", "title": "Core Harness", "type": "heading"},
         {
             "id": "dashboard",
             "title": "Dashboard",
@@ -136,14 +135,6 @@ def register_core_routes(app, nav_registry):
         )
     items.extend(
         [
-            {
-                "id": "api_docs",
-                "title": "API Reference",
-                "path": "/docs/api",
-                "icon": "box",
-                "type": "internal",
-                "group": "System",
-            },
             {
                 "id": "community",
                 "title": "Community",
