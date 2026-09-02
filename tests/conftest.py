@@ -61,6 +61,7 @@ async def reset_sessions():
 @pytest.fixture(autouse=True)
 def reset_plugins():
     """Resets all registries before each test."""
+    from eval_runner.catalog import ScenarioCatalog
     from eval_runner.engine import AgentAdapterRegistry
     from eval_runner.events import reset
     from eval_runner.loader import reset_universal_registry
@@ -72,6 +73,7 @@ def reset_plugins():
     reset()
     MetricRegistry.reset()
     reset_universal_registry()
+    ScenarioCatalog.clear_instance()
     from eval_runner.config import RegistryManager
 
     RegistryManager.reload()
@@ -88,6 +90,7 @@ def reset_plugins():
         reset()
         MetricRegistry.reset()
         reset_universal_registry()
+        ScenarioCatalog.clear_instance()
     except (AttributeError, KeyError, RuntimeError) as reset_err:
         import logging
 

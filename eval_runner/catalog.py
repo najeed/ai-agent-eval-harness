@@ -383,14 +383,28 @@ class ScenarioCatalog:
                 # Fast-path: Load disk cache without scanning filesystem
                 self.load_index()
 
+            from eval_runner import config
+
+            current_root = (
+                Path(config.PROJECT_ROOT).resolve()
+                if getattr(config, "PROJECT_ROOT", None)
+                else self.root_dir
+            )
+            canonical_current_root = str(current_root).lower().replace("\\", "/")
+
             scenarios = self.scenarios if isinstance(self.scenarios, list) else []
             for s in scenarios:
                 if isinstance(s, dict) and s.get("id") == identifier:
-                    base_join = self.root_dir / s["path"]
+                    base_join = current_root / s["path"]
+                    if not base_join.exists():
+                        base_join = self.root_dir / s["path"]
                     if not base_join.exists():
                         return None
                     abs_path = base_join.resolve()
-                    if not str(abs_path).lower().replace("\\", "/").startswith(self.canonical_root):
+                    abs_path_str = str(abs_path).lower().replace("\\", "/")
+                    if not abs_path_str.startswith(
+                        canonical_current_root
+                    ) and not abs_path_str.startswith(self.canonical_root):
                         return None
                     return abs_path
             return None

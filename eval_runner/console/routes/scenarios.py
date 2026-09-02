@@ -108,11 +108,21 @@ def get_canonical_scenario(scenario_id: str):
         meta = data.setdefault("metadata", {})
         meta.setdefault("version", "1.0.0")
         meta.setdefault("status", "Published" if "industries" in str(abs_path) else "Draft")
+        try:
+            rel_path = str(
+                abs_path.resolve().relative_to(Path(config.PROJECT_ROOT).resolve())
+            ).replace("\\", "/")
+        except ValueError:
+            try:
+                rel_path = str(abs_path.relative_to(config.PROJECT_ROOT)).replace("\\", "/")
+            except Exception:
+                rel_path = str(abs_path).replace("\\", "/")
+
         return jsonify(
             {
                 "scenario": data,
                 "scenario_hash": scen_hash,
-                "path": str(abs_path.relative_to(config.PROJECT_ROOT)).replace("\\", "/"),
+                "path": rel_path,
             }
         )
     except Exception as e:

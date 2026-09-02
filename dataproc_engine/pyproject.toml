@@ -6,11 +6,11 @@ authors = [
     { name = "Najeed Khan", email = "agentvos@agentvos.ai" }
 ]
 dependencies = [
-    "click",
-    "pydantic",
-    "aiohttp",
-    "pandas",
-    "pyarrow"
+    "click==8.3.1",
+    "pydantic==2.13.4",
+    "aiohttp==3.14.3",
+    "pandas==3.0.5",
+    "pyarrow==23.0.1"
 ]
 readme = "README.md"
 requires-python = ">=3.9"
