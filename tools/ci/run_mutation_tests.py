@@ -79,6 +79,7 @@ TARGET_MODULES = [
 MODULE_TEST_MAP: dict[str, list[str]] = {
     "verifier.py": [
         "tests/unit/core/test_golden_verifier_matrix.py",
+        "tests/unit/core/test_hardened_audit_verification.py",
     ],
     "tool_sandbox.py": [
         "tests/unit/core/test_tool_sandbox.py",
@@ -279,11 +280,21 @@ def _apply_surgical_mutation(source_lines: list[str], mp: MutationPoint) -> str 
 
     # Search from col_offset forward for the original token
     search_start = mp.col_offset
-    pos = line.find(mp.original, search_start)
+    if mp.original.isalnum() or all(c.isalnum() or c == " " for c in mp.original):
+        import re
 
-    if pos == -1:
-        # Fallback: search from beginning of line (handles multi-op comparisons)
-        pos = line.find(mp.original)
+        pattern = re.compile(r"\b" + re.escape(mp.original) + r"\b")
+        match = pattern.search(line, search_start)
+        if match:
+            pos = match.start()
+        else:
+            match = pattern.search(line)
+            pos = match.start() if match else -1
+    else:
+        pos = line.find(mp.original, search_start)
+        if pos == -1:
+            # Fallback: search from beginning of line (handles multi-op comparisons)
+            pos = line.find(mp.original)
 
     if pos == -1:
         return None  # Token not found on expected line → incompetent

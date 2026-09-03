@@ -31,6 +31,19 @@ AgentV enforces authentication and authorization across three distinct layers de
 - On login via `/api/auth/login`, credentials authenticate against the active `AuthorizationBackend` (default: `StaticKeyProvider` / `SimpleAPIKeyAuthBackend`).
 - On successful authentication, a cryptographically signed cookie session (`session["user"]`) is established.
 
+### Session Security & Hardening
+- **HTTP-Only Enforcement**: `SESSION_COOKIE_HTTPONLY = True` prevents client-side JavaScript access, neutralizing session hijacking via XSS.
+- **CSRF Mitigation**: `SESSION_COOKIE_SAMESITE = "Lax"` isolates cookies from cross-site request contexts.
+- **Transport Security**: `SESSION_COOKIE_SECURE = True` is enforced automatically in production (`AGENTV_ENV=production`), requiring TLS/HTTPS.
+- **IP Rate Limiting**: The `/api/auth/login` endpoint enforces a thread-safe sliding-window rate limiter:
+  - Threshold: 10 failed attempts within a 60-second window per remote IP.
+  - Exceeding the threshold immediately yields `HTTP 429 Too Many Requests`.
+
+### Non-Blocking Unauthenticated Experience & RBAC
+- **Default Viewer Role**: Unauthenticated operators receive an implicit read-only `Viewer` role.
+- **Exploration Without Lockout**: Viewers can inspect scenarios, completed runs, debugger DAGs, and trust artifacts without a blocking modal.
+- **Mutation Boundary**: Any write or privileged action (running tests, modifying scenarios, changing lifecycle states, resolving HITL approvals) triggers the dismissable `LoginModal`.
+
 ### Route Protection
 Protected console routes apply `@require_permission(Permission.<NAME>)`:
 - `Permission.RUNS_READ` / `Permission.RUNS_WRITE`
@@ -59,10 +72,19 @@ def terminate_run(run_id): ...
   - `X-API-Key: <API_KEY>` / `X-AES-API-KEY: <API_KEY>`
 - Resolved via `eval_runner.console.auth.get_current_user()` and verified by `AuthorizationBackend`.
 
+### Zero-Config Bootstrap Authentication (Local Development)
+To eliminate developer onboarding friction while maintaining strict RBAC integrity:
+- If no `DASHBOARD_API_KEY` or `SERVICE_API_KEY` is defined in non-production environments:
+  1. The server generates a high-entropy 32-byte secret via `secrets.token_urlsafe(32)`.
+  2. The key is saved to `.aes/keys/bootstrap.key` (with `0600` file permissions on POSIX systems).
+  3. The key is clearly logged in the terminal startup banner for operator access.
+  4. The generated key is bound to `config.SERVICE_API_KEY` and `config.DASHBOARD_API_KEY`.
+- Subsequent console restarts automatically load the existing key from `.aes/keys/bootstrap.key`.
+
 ### Production Key Enforcement
 In production environments (`AGENTV_ENV=production`):
-- `DASHBOARD_API_KEY` or `JWT_SECRET` must be explicitly configured in the environment.
-- The server fails fast and raises a `RuntimeError` at boot if keys are missing or default ephemeral keys are attempted.
+- `DASHBOARD_API_KEY`, `SERVICE_API_KEY`, or `JWT_SECRET` must be explicitly configured in the environment.
+- Bootstrap key auto-generation and fallback to random ephemeral keys are strictly forbidden. The server fails fast and raises a `RuntimeError` at boot if production keys are missing.
 
 ---
 
@@ -106,7 +128,8 @@ In production environments (`AGENTV_ENV=production`):
 | Environment Variable | Description | Default / Production Behavior |
 |---|---|---|
 | `AGENTV_ENV` | Runtime environment (`development`, `production`, `testing`) | Defaults to `development`. In `production`, requires explicit secrets. |
-| `DASHBOARD_API_KEY` | Master API Key for console administrative operations | Must be set in `production`. |
+| `DASHBOARD_API_KEY` | Master API Key for console administrative operations | Auto-generated in dev at `.aes/keys/bootstrap.key`; must be set in `production`. |
+| `SERVICE_API_KEY` | API Key for headless engine service automation & CI/CD | Synced with `DASHBOARD_API_KEY` by default; required in `production`. |
 | `JWT_SECRET` | Secret key for signing console sessions and handoff JWTs | Falls back to `DASHBOARD_API_KEY` or fails in `production`. |
 | `EVAL_SIGNING_KEY` | Ed25519 private key path for Flight Recorder trace signing | Required when `EVAL_REQUIRE_SIGNING=true`. |
 | `DEV_PERSONA_SIMULATOR` | Enables local loopback persona switching for UI dev | Ignored in `production`. |

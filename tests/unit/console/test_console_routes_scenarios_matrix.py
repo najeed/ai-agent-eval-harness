@@ -260,17 +260,26 @@ def test_scenario_save_and_lifecycle_state_machine(client, tmp_path):
     res_illegal = client.post("/scenarios/sc_trans/transition", json={"target_status": "Validated"})
     assert res_illegal.status_code == 400
 
-    # Sensitive regression Ready -> Draft requires reason
-    res_no_reason = client.post(
+    # Ready -> Published requires reason
+    res_pub_no_reason = client.post(
         "/scenarios/sc_trans/transition",
-        json={"target_status": "Draft", "reason": ""},
+        json={"target_status": "Published", "reason": ""},
     )
-    assert res_no_reason.status_code == 400
+    assert res_pub_no_reason.status_code == 400
+    assert "requires a non-empty 'reason' field" in res_pub_no_reason.get_json()["error"]
 
-    # Successful transition Ready -> Deprecated with reason
+    # Successful transition Ready -> Published with reason
+    res_pub = client.post(
+        "/scenarios/sc_trans/transition",
+        json={"target_status": "Published", "reason": "Passed all certification criteria"},
+    )
+    assert res_pub.status_code == 200
+    assert res_pub.get_json()["lifecycle_status"] == "Published"
+
+    # Successful transition Published -> Deprecated with reason
     res_dep = client.post(
         "/scenarios/sc_trans/transition",
-        json={"target_status": "Deprecated", "reason": "End of support"},
+        json={"target_status": "Deprecated", "reason": "Superceded by v2"},
     )
     assert res_dep.status_code == 200
     assert res_dep.get_json()["lifecycle_status"] == "Deprecated"

@@ -33,11 +33,13 @@ def hash_source_line(raw_line: str | bytes) -> str:
 
 def index_events_by_seq(events_with_lines: list[tuple[dict[str, Any], str]]) -> dict[int, str]:
     """Maps `_seq` -> content hash for every event carrying a sequence id.
+    If no events carry explicit `_seq`, defaults to 1-based stream position.
     Fails closed if duplicate sequence numbers are encountered in trace.
     """
+    has_explicit_seq = any(isinstance(event.get("_seq"), int) for event, _ in events_with_lines)
     index: dict[int, str] = {}
-    for event, raw_line in events_with_lines:
-        seq = event.get("_seq")
+    for idx, (event, raw_line) in enumerate(events_with_lines, start=1):
+        seq = event.get("_seq") if has_explicit_seq else idx
         if isinstance(seq, int):
             if seq in index:
                 raise ValueError(
@@ -199,13 +201,23 @@ def build_evidence_graph_from_events(
     assertions: list[dict[str, Any]] = []
     carrier_seq = None
 
-    for item in events:
+    has_explicit_seq = any(
+        isinstance(
+            (item[0] if isinstance(item, tuple) else item).get("_seq"),
+            int,
+        )
+        for item in events
+    )
+
+    for idx, item in enumerate(events, start=1):
         if isinstance(item, tuple):
             evt, line = item
         else:
             evt = item
             line = json.dumps(evt, sort_keys=True, separators=(",", ":"))
         events_with_lines.append((evt, line))
+
+        seq_val = evt.get("_seq") if has_explicit_seq else idx
 
         if evt.get("event") in ("metric_evaluated", "assertion_evaluated", "node_execution_end"):
             assertions.append(
@@ -214,11 +226,11 @@ def build_evidence_graph_from_events(
                     "metric": evt.get("metric") or evt.get("assertion") or evt.get("name"),
                     "node": evt.get("node_id") or evt.get("task_id"),
                     "passed": bool(evt.get("passed", evt.get("success", False))),
-                    "event_seq": evt.get("_seq"),
+                    "event_seq": seq_val,
                 }
             )
         if evt.get("event") in ("run_end", "verification_decision"):
-            carrier_seq = evt.get("_seq")
+            carrier_seq = seq_val
 
     return build_evidence_graph(events_with_lines, assertions, carrier_seq=carrier_seq)
 

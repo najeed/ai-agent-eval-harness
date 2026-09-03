@@ -29,7 +29,8 @@ graph TD
     subgraph "Simulation & Security Boundary"
         Sandbox["ToolSandbox (tool_sandbox.py)"]
         Shims["World Shims (20+ VFS Simulators)"]
-        Verifier["VerificationService (verifier.py)"]
+        Verifier["TraceVerifier & VerificationAuthority (verifier.py)"]
+        Cert["CertificationService (services/certification.py)"]
         PQC["Hybrid PQC (ML-DSA + Ed25519)"]
     end
 
@@ -44,7 +45,8 @@ graph TD
     Sandbox --> Shims
     Session --> Graph
     Session --> OTel
-    Session --> Verifier
+    Session --> Cert
+    Cert --> Verifier
     Verifier --> PQC
 ```
 
@@ -76,10 +78,11 @@ graph TD
    - 20+ built-in world shims (`git`, `database`, `api`, `slack`, `terminal`, `cloud`, `crm`, `erp`, `stripe`).
    - Context-bound coroutine isolation powered by Python `contextvars.ContextVar`.
 
-5. **Trust & Verification Layer (`eval_runner/verifier.py`, `eval_runner/identity.py`)**:
-   - Content-addressable streaming hashing (`hashlib.sha3_256`).
-   - Dual-mode cryptographic signing: Classical Ed25519 and Post-Quantum (PQC) ML-DSA Dilithium via `cyclecore-pq`.
-   - Detached Verification Certificate v3 (`run_manifest.json`) and WORM audit trail sealing (`audit_chain.jsonl`).
+5. **Trust, Certification & Verification Layer (`eval_runner/verifier.py`, `eval_runner/services/certification.py`, `eval_runner/identity.py`)**:
+   - **`TraceVerifier` & `VerificationAuthority`**: Content-addressable streaming hashing (`hashlib.sha3_256`), Split Package Verification API (`verify_package_signature_only`, `verify_package_artifacts`), canonical scenario hash binding, and Evidence Graph direct provenance enforcement.
+   - **`CertificationService`**: Authoritative evaluation outcome extraction ensuring terminal execution failures take absolute precedence over caller overrides or heuristic counters.
+   - **`IdentityService`**: Dual-mode cryptographic signing (Classical Ed25519 and Post-Quantum ML-DSA-65) with strict trust root jail protection.
+   - Detached Verification Certificate v3 (`run_manifest.json`), Verification Packages (`.agentv-package.json`), and WORM audit trail sealing (`audit_chain.jsonl`).
 
 ---
 

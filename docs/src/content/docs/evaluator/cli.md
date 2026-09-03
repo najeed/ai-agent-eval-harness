@@ -84,7 +84,7 @@ agentv run \
 ---
 
 ### `agentv quickstart`
-Run a self-contained 60-second engine demonstration using the built-in mock agent.
+Run a self-contained 60-second engine demonstration executing a real telecom support benchmark scenario (`13814_home_internet_slow_speed.json`) against the local sample agent service.
 
 ```bash
 agentv quickstart

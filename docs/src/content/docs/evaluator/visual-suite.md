@@ -73,6 +73,11 @@ graph LR
 5. **Bidirectional Timeline Synchronization**:
    - The bottom timeline scrubber displays chronological event slices. Clicking any step in the timeline automatically centers and highlights the corresponding node in the visual graph via its `scenario_node_id`.
 
+6. **Edge Visual Hierarchy & Disambiguation**:
+   - In `executed` and `divergence` modes, planned/unexecuted edges are visually subordinated with muted dashed lines (`stroke-dasharray: 4,4`), preventing visual clutter.
+   - Executed edges are accentuated as solid paths dynamically color-coded by the downstream node's execution outcome (`#10b981` success, `#f43f5e` failure/deviation).
+   - An interactive **Edge Hierarchy Legend** in the debugger toolbar provides immediate visual clarity across planned, executed, and divergent pathways.
+
 ---
 
 ## 2. 🎨 Visual Composer & Monaco Source of Truth
@@ -84,6 +89,10 @@ The **Scenario Composer** (`/scenarios/compose` or `/editor`) offers dual-mode s
 - **Monaco Canonical Source of Truth**:
   - The embedded Monaco JSON/YAML editor acts as the authoritative document state.
   - Edits in the visual canvas instantly reflect in the code editor, and syntax changes in Monaco immediately re-render the visual graph via bi-directional AST synchronization.
+- **Scenario Lifecycle State Machine**:
+  - Governs scenario lifecycle across formal enterprise stages:
+    $$\text{Draft} \longrightarrow \text{InReview} \longrightarrow \text{Ready} \longrightarrow \text{Published} \longrightarrow \text{Deprecated}$$
+  - **Mandatory Audit Reason Gate**: Transitioning from `Ready` to `Published` requires entering an explicit audit justification reason in an interactive dialog, recorded into the audit ledger for governance compliance.
 - **Typed Scenario Assertions**:
   - Author structured verification criteria directly within the editor:
     - `exact`: Deterministic literal string or value matching.
@@ -183,3 +192,7 @@ graph LR
 - **Sandboxed Execution**: Remote extension bundles render inside zero-trust isolated iframes communicating via structured `postMessage` envelopes.
 - **Dynamic RBAC Context Switcher**:
   - Built-in development role simulator allowing instant switching between `Viewer`, `Operator`, `Auditor`, and `Admin` permissions to validate UI authorization boundaries.
+- **Zero-Config Bootstrap Authentication**:
+  - On fresh local runs where no `DASHBOARD_API_KEY` or `SERVICE_API_KEY` is configured, an admin key is auto-generated into `.aes/keys/bootstrap.key` and displayed in the terminal banner.
+- **Non-Blocking Viewer Experience**:
+  - Unauthenticated users automatically enter in read-only `Viewer` mode, browsing benchmarks and past runs freely without blocking modal dialogs. Writing or promoting runs triggers the authenticated `LoginModal` with first-run key guidance.

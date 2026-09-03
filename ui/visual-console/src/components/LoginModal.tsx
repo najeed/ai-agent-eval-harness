@@ -11,7 +11,7 @@ interface LoginModalProps {
 export const LoginModal: React.FC<LoginModalProps> = ({
   isOpen,
   onClose,
-  canDismiss = false,
+  canDismiss = true,
 }) => {
   const { refreshAuth } = useRBAC();
   const [apiKey, setApiKey] = useState('');
@@ -81,31 +81,27 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           </button>
         )}
 
-        <div className="p-6 sm:p-8">
+        <div className="p-6">
           {/* Header */}
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-xl text-cyan-400">
+            <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shadow-inner">
               <Shield className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-100 tracking-tight">
-                AgentV Security Gateway
+              <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
+                AgentV Visual Suite
               </h2>
               <p className="text-xs text-slate-400">
-                PBAC Protected Console Access
+                Server-Authoritative PBAC Authentication
               </p>
             </div>
           </div>
 
-          <p className="text-xs text-slate-350 mb-6 leading-relaxed">
-            Authentication is required to inspect scenarios, view traces, and evaluate AI agent runs. Please authenticate with your authorized Service or Operator API Key.
-          </p>
-
           {/* Error Alert */}
           {errorMessage && (
-            <div className="mb-5 p-3.5 bg-rose-500/10 border border-rose-500/30 rounded-xl flex items-start gap-2.5 text-rose-400 text-xs">
-              <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
-              <span className="leading-snug">{errorMessage}</span>
+            <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-2.5 text-xs text-rose-300">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
+              <div className="leading-relaxed">{errorMessage}</div>
             </div>
           )}
 
@@ -120,11 +116,11 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
-                API Key or Access Token
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                Access Credential
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
                   <Key className="w-4 h-4" />
                 </div>
                 <input
@@ -137,9 +133,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-950/80 border border-slate-700 rounded-xl text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all font-mono"
                 />
               </div>
-              <p className="text-[11px] text-slate-500 mt-1.5">
-                Matches the <code className="text-slate-400 font-mono">SERVICE_API_KEY</code> configured in your server environment.
-              </p>
             </div>
 
             <button
@@ -164,8 +157,20 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             </button>
           </form>
 
+          {/* Zero-Config First-Run Guidance */}
+          <div className="mt-4 p-3 bg-slate-950/60 border border-slate-800 rounded-xl text-[11px] text-slate-400 space-y-1">
+            <div className="flex items-center gap-1.5 font-medium text-slate-300">
+              <Key className="w-3.5 h-3.5 text-cyan-400" />
+              <span>First-time setup?</span>
+            </div>
+            <p className="leading-relaxed text-[10px] text-slate-500">
+              On fresh OSS installs, check the terminal startup log for the generated bootstrap key, or view{' '}
+              <code className="px-1 py-0.5 rounded bg-slate-800 font-mono text-cyan-300">.aes/keys/bootstrap.key</code>.
+            </p>
+          </div>
+
           {/* Footer Security Notice */}
-          <div className="mt-6 pt-4 border-t border-slate-800 text-[10px] text-slate-500 text-center flex items-center justify-center gap-1.5">
+          <div className="mt-4 pt-3 border-t border-slate-800 text-[10px] text-slate-500 text-center flex items-center justify-center gap-1.5">
             <Lock className="w-3 h-3 text-slate-600" />
             <span>Encrypted Session Cookie &bull; PBAC Deny-by-Default</span>
           </div>

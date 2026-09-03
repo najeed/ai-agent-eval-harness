@@ -171,3 +171,39 @@ def test_auth_secret_and_token_branches():
 
     tok = generate_handoff_token("user-1", "admin", "custom-plugin")
     assert isinstance(tok, str)
+
+
+@patch("eval_runner.console.auth_manager.get_auth_provider")
+def test_login_rate_limiting(mock_get_provider, client):
+    """Test that failed login attempts from an IP are rate limited to 10 per 60s."""
+    from eval_runner.console.auth import _FAILED_LOGIN_ATTEMPTS, _LOGIN_ATTEMPT_LOCK
+
+    with _LOGIN_ATTEMPT_LOCK:
+        _FAILED_LOGIN_ATTEMPTS.clear()
+
+    mock_provider = MagicMock()
+    mock_provider.authenticate.return_value = None
+    mock_get_provider.return_value = mock_provider
+
+    # 10 failed attempts should be allowed (returning 401)
+    for _ in range(10):
+        resp = client.post("/api/auth/login", json={"apiKey": "bad-key"})
+        assert resp.status_code == 401
+
+    # 11th attempt must be rate-limited with HTTP 429
+    resp_blocked = client.post("/api/auth/login", json={"apiKey": "bad-key"})
+    assert resp_blocked.status_code == 429
+    assert "Too many failed login attempts" in resp_blocked.json["error"]
+    assert "retry_after_seconds" in resp_blocked.json
+
+    # A valid authentication resets the tracker
+    mock_provider.authenticate.return_value = {
+        "name": "Operator",
+        "id": "op-1",
+        "permissions": ["*"],
+    }
+    with _LOGIN_ATTEMPT_LOCK:
+        _FAILED_LOGIN_ATTEMPTS.clear()
+
+    resp_valid = client.post("/api/auth/login", json={"apiKey": "valid-key"})
+    assert resp_valid.status_code == 200

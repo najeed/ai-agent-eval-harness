@@ -861,11 +861,15 @@ export const LiveDebugger: React.FC = () => {
         edgePairCurrent.set(pair, cur + 1);
 
         if (!plannedEdge) {
+          const isDivergence = mode === 'divergence';
           return {
             ...e,
             type: total > 1 ? 'smoothstep' : undefined,
             animated: mode !== 'planned',
-            style: { stroke: '#10b981', strokeWidth: 2 },
+            style: {
+              stroke: isDivergence ? '#f59e0b' : '#10b981',
+              strokeWidth: isDivergence ? 2.5 : 2,
+            },
           };
         }
         if (mode === 'planned') {
@@ -876,28 +880,16 @@ export const LiveDebugger: React.FC = () => {
             style: { stroke: '#6366f1', strokeWidth: 2 },
           };
         }
-        if (mode === 'executed') {
-          return {
-            ...e,
-            type: total > 1 ? 'smoothstep' : undefined,
-            animated: false,
-            style: {
-              stroke: '#334155',
-              strokeWidth: 1,
-              strokeDasharray: '4,4',
-              opacity: 0.5,
-            },
-          };
-        }
+        // In executed and divergence modes, visually subordinate planned baseline edges
         return {
           ...e,
           type: total > 1 ? 'smoothstep' : undefined,
           animated: false,
           style: {
-            stroke: mode === 'divergence' ? '#818cf8' : '#475569',
+            stroke: '#334155',
             strokeWidth: 1,
-            strokeDasharray: '5,5',
-            opacity: 0.7,
+            strokeDasharray: '4,4',
+            opacity: 0.35,
           },
         };
       });
@@ -1332,6 +1324,22 @@ export const LiveDebugger: React.FC = () => {
                   {l}
                 </button>
               ))}
+            </div>
+
+            {/* Visual Edge Hierarchy Legend */}
+            <div className="hidden xl:flex items-center gap-2.5 px-2 py-0.5 bg-slate-900/80 border border-slate-800 rounded text-[9px] font-mono text-slate-400">
+              <span className="flex items-center gap-1">
+                <span className="w-2.5 h-0.5 border-t border-dashed border-slate-500 inline-block" />
+                <span className="text-slate-400">Planned</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-2.5 h-0.5 bg-emerald-500 inline-block" />
+                <span className="text-emerald-400">Executed</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-2.5 h-0.5 bg-amber-500 inline-block" />
+                <span className="text-amber-400">Divergence</span>
+              </span>
             </div>
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Runner Status:</span>
             <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider">

@@ -2,7 +2,7 @@ import json
 import logging
 import threading
 from abc import ABC, abstractmethod
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
@@ -433,6 +433,7 @@ class TraceVerifier:
         provisional: bool = False,
         rubrics: dict[str, Any] | None = None,
         consensus: dict[str, Any] | None = None,
+        scenario_data: Mapping[str, Any] | None = None,
     ) -> dict[str, Any]:
         """
         Signs a trace file and issues a standardized Verification Certificate (VC) v3
@@ -585,6 +586,14 @@ class TraceVerifier:
                 if events_list:
                     ev_graph = build_evidence_graph_from_events(events_list)
                     computed_evidence_root = compute_evidence_graph_root(ev_graph)
+                    if not ev_graph.get("is_complete_provenance", True):
+                        logger.error(
+                            "Evidence graph contains unresolved or carrier fallback provenance."
+                        )
+                        raise CertificationFailedError(
+                            "DirectProvenanceViolation: Evidence graph contains unresolved "
+                            "or carrier fallback provenance"
+                        )
             except CertificationFailedError:
                 raise
             except Exception as ev_err:
@@ -603,39 +612,75 @@ class TraceVerifier:
                 f"does not match authoritative computed root ({computed_evidence_root})"
             )
 
-        # Derive machine-verifiable compliance status and score from trace
-        # if not explicitly provided
+        # Scenario binding resolution from canonical scenario document
+        if scenario_data is not None:
+            from agentv_runtime.manifest import compute_scenario_hash
+
+            computed_scen_hash = compute_scenario_hash(scenario_data)
+            scen_meta = scenario_data.get("metadata", {}) if isinstance(scenario_data, dict) else {}
+            metadata = metadata or {}
+            metadata["scenario_id"] = scen_meta.get("id") or metadata.get("scenario_id") or ""
+            metadata["scenario_version"] = str(
+                scen_meta.get("version") or metadata.get("scenario_version") or "1.0.0"
+            )
+            metadata["scenario_hash"] = computed_scen_hash
+
+        # Derive machine-verifiable compliance status and score from trace.
+        # Fail-closed authoritative derivation: trace evidence takes absolute authority over caller.
         effective_compliance_status = compliance_status
         effective_compliance_score = compliance_score
 
-        # Check trace events for negative findings or terminal evaluation verdict
         has_failure_event = False
+        has_success_event = False
         trace_verdict_score: float | None = None
         for ev in events_list:
             ev_name = ev.get("event") or ev.get("name") or ""
+            data = ev.get("data") if isinstance(ev.get("data"), dict) else {}
+            st = str(ev.get("status") or data.get("status") or "").upper()
+            dec = str(ev.get("decision") or data.get("decision") or "").upper()
+            verd = str(ev.get("verdict") or data.get("verdict") or "").upper()
+
             if (
                 ev_name in ("error", "parity_state_divergence")
                 or ev.get("is_root_cause") is True
-                or ev.get("status") in ("FAILED", "FAIL", "ERROR")
-                or ev.get("verdict") in ("FAIL", "FAILED")
+                or st in ("FAILED", "FAIL", "ERROR", "REJECTED")
+                or dec in ("FAIL", "FAILED", "REJECTED", "UNVERIFIED")
+                or verd in ("FAIL", "FAILED", "POLICY_BREACH", "NOT_VERIFIED")
             ):
                 has_failure_event = True
-            if ev_name == "evaluation_verdict" or "verdict" in ev:
-                v = ev.get("verdict") or ev.get("status")
-                if v in ("FAIL", "FAILED"):
-                    has_failure_event = True
-                s = ev.get("score")
+
+            if (
+                st in ("PASS", "PASSED", "SUCCESS", "VERIFIED")
+                or dec in ("PASS", "PASSED", "VERIFIED")
+                or verd in ("PASS", "PASSED", "VERIFIED")
+            ):
+                has_success_event = True
+
+            is_verdict_event = (
+                ev_name in ("evaluation_verdict", "evaluation_result", "session_decision")
+                or "verdict" in ev
+                or "verdict" in data
+            )
+            if is_verdict_event:
+                s = ev.get("score") if ev.get("score") is not None else data.get("score")
                 if isinstance(s, (int, float)):
                     trace_verdict_score = float(s)
 
-        if has_failure_event and effective_compliance_status == "pass" and compliance_score == 1.0:
+        if has_failure_event:
             logger.warning(
                 "      [Verifier] Trace contains negative evaluation events/failures; "
                 "deriving compliance_status='fail', compliance_score=0.0"
             )
             effective_compliance_status = "fail"
             effective_compliance_score = 0.0
-        elif trace_verdict_score is not None and effective_compliance_score == 1.0:
+        elif has_success_event:
+            effective_compliance_status = "pass"
+            effective_compliance_score = (
+                trace_verdict_score
+                if trace_verdict_score is not None
+                else (compliance_score if compliance_score is not None else 1.0)
+            )
+        elif trace_verdict_score is not None:
             effective_compliance_score = trace_verdict_score
 
         # 2. CANONICALIZE: build Manifest v3.0.0
@@ -991,6 +1036,11 @@ class TraceVerifier:
                             logger.warning(
                                 f"Evidence root mismatch: expected {expected_evidence_root}, "
                                 f"got {computed_root}"
+                            )
+                            return False
+                        if not graph.get("is_complete_provenance", True):
+                            logger.warning(
+                                "Evidence graph contains unresolved or carrier fallback provenance"
                             )
                             return False
                 except Exception as ev_v_err:
@@ -1407,7 +1457,14 @@ def verify_trace_certificate(
                         computed_ev_root = compute_evidence_graph_root(ev_graph)
                         expected_ev_root = cert_data["evidence_root_hash"]
                         if computed_ev_root == expected_ev_root:
-                            evidence_root_valid = True
+                            if ev_graph.get("is_complete_provenance") is False:
+                                result["errors"].append(
+                                    "Evidence graph contains unresolved or carrier fallback "
+                                    "provenance"
+                                )
+                                evidence_root_valid = False
+                            else:
+                                evidence_root_valid = True
                         else:
                             result["errors"].append(
                                 f"Evidence root hash mismatch: expected={expected_ev_root!r}, "
@@ -1418,10 +1475,15 @@ def verify_trace_certificate(
                     "Evidence root check failed in verify_trace_certificate: %s",
                     ev_check_err,
                 )
+                result["errors"].append(f"Evidence root check failed: {ev_check_err}")
+                evidence_root_valid = False
 
     # Enforce scenario hash binding requirement if scenario hash is present in certificate
     scenario_bound_valid = True
-    if cert_data.get("scenario_hash"):
+    scen_hash_binding = cert_data.get("scenario_hash") or (
+        cert_data.get("metadata", {}).get("scenario_hash")
+    )
+    if scen_hash_binding:
         if scenario_data is None:
             scenario_bound_valid = False
             result["errors"].append(
@@ -1430,6 +1492,8 @@ def verify_trace_certificate(
         elif not result.get("scenario_hash_match"):
             scenario_bound_valid = False
             result["errors"].append("Scenario hash mismatch against certificate binding.")
+        else:
+            scenario_bound_valid = True
 
     if (
         sig_verified
@@ -1449,18 +1513,218 @@ class VerificationAuthority:
     """
 
     @staticmethod
-    def verify_package(
+    def verify_package_signature_only(
         package: Any,
-        raw_trace_bytes: bytes | None = None,
-        raw_trace_events: list[dict[str, Any]] | None = None,
+        public_key_pem: str | None = None,
+    ) -> dict[str, Any]:
+        """
+        Validates the detached cryptographic signature over the canonical package payload.
+        Fast-path signature validation without requiring underlying evidence artifacts.
+        """
+        from agentv_runtime.package import VerificationPackage
+
+        if isinstance(package, dict):
+            pkg = VerificationPackage.from_dict(package)
+        else:
+            pkg = package
+
+        if not pkg.signature:
+            return {
+                "verified": False,
+                "status": "UNSIGNED",
+                "failures": ["UnsignedPackage: package signature is missing"],
+                "package_id": pkg.package_id,
+                "package_hash": pkg.compute_package_hash(),
+            }
+
+        sig_valid = pkg.verify_signature(public_key_pem=public_key_pem)
+        return {
+            "verified": sig_valid,
+            "status": "SIGNATURE_VALID" if sig_valid else "SIGNATURE_INVALID",
+            "failures": []
+            if sig_valid
+            else [
+                f"SignatureVerificationFailed: Signature for identity "
+                f"'{pkg.signer_identity}' failed verification"
+            ],
+            "package_id": pkg.package_id,
+            "package_hash": pkg.compute_package_hash(),
+        }
+
+    @staticmethod
+    def verify_package_artifacts(
+        package: Any,
+        raw_trace_bytes: bytes,
+        raw_trace_events: list[dict[str, Any]],
+        canonical_manifest: Any,
+        scenario_data: Any | None = None,
         public_key_pem: str | None = None,
         require_signature: bool = True,
     ) -> dict[str, Any]:
         """
-        Validates the entire evidence package:
+        Authoritative validation of the complete evidence chain against underlying artifacts:
+        1. Trace byte parity (recomputed SHA3-256 vs pkg.trace_hash)
+        2. Manifest canonical hash binding (recomputed SHA3-256 vs pkg.manifest_hash)
+        3. Evidence graph deterministic root reconstruction & direct provenance
+        4. Trace seal integrity
+        5. Scenario hash binding
+        6. Decision verdict conformance
+        7. Required oracle inventory completeness
+        8. Cryptographic signature verification
+        """
+        import hashlib
+
+        from agentv_runtime.package import VerificationPackage
+
+        if isinstance(package, dict):
+            pkg = VerificationPackage.from_dict(package)
+        else:
+            pkg = package
+
+        failures: list[str] = []
+
+        # 1. Trace byte parity check
+        if raw_trace_bytes is None:
+            failures.append("TraceBytesMissing: artifact verification requires raw trace bytes")
+        else:
+            actual_trace_hash = hashlib.sha3_256(raw_trace_bytes).hexdigest()
+            expected_hash = (
+                pkg.trace_hash.split(":", 1)[1] if ":" in pkg.trace_hash else pkg.trace_hash
+            )
+            if actual_trace_hash.lower() != expected_hash.lower():
+                failures.append(
+                    f"TraceHashMismatch: package={pkg.trace_hash} actual={actual_trace_hash}"
+                )
+
+        # 2. Manifest canonical hash binding
+        if canonical_manifest is None:
+            failures.append("ManifestMissing: artifact verification requires canonical manifest")
+        else:
+            try:
+                if hasattr(canonical_manifest, "compute_manifest_hash"):
+                    computed_m_hash = canonical_manifest.compute_manifest_hash()
+                elif isinstance(canonical_manifest, dict):
+                    from agentv_runtime.manifest import ExecutionManifest
+
+                    computed_m_hash = ExecutionManifest.from_dict(
+                        canonical_manifest
+                    ).compute_manifest_hash()
+                elif isinstance(canonical_manifest, (bytes, str)):
+                    c_bytes = (
+                        canonical_manifest
+                        if isinstance(canonical_manifest, bytes)
+                        else canonical_manifest.encode("utf-8")
+                    )
+                    computed_m_hash = f"sha3_256:{hashlib.sha3_256(c_bytes).hexdigest()}"
+                else:
+                    computed_m_hash = ""
+
+                exp_m_hash = pkg.manifest_hash
+                if not exp_m_hash or computed_m_hash != exp_m_hash:
+                    failures.append(
+                        f"ManifestHashMismatch: package={exp_m_hash} actual={computed_m_hash}"
+                    )
+            except Exception as m_err:
+                failures.append(f"ManifestVerificationFailed: {m_err}")
+
+        # 3. Evidence root binding & reconstruction from raw events
+        if raw_trace_events is None:
+            failures.append("TraceEventsMissing: artifact verification requires raw trace events")
+        else:
+            try:
+                from agentv_runtime.evidence_graph import (
+                    build_evidence_graph_from_events,
+                    compute_evidence_graph_root,
+                )
+
+                ev_graph = build_evidence_graph_from_events(raw_trace_events)
+                computed_root = compute_evidence_graph_root(ev_graph)
+                if computed_root != pkg.evidence_root_hash:
+                    failures.append(
+                        f"EvidenceRootMismatch: package={pkg.evidence_root_hash} "
+                        f"actual={computed_root}"
+                    )
+                if not ev_graph.get("is_complete_provenance", True):
+                    failures.append(
+                        "DirectProvenanceViolation: Evidence graph contains unresolved "
+                        "or carrier fallback provenance"
+                    )
+            except Exception as ev_err:
+                failures.append(f"EvidenceReconstructionFailed: {ev_err}")
+
+        # 4. Trace seal check
+        if not pkg.trace_seal:
+            failures.append("TraceSealMissing: package missing trace seal")
+
+        # 5. Scenario hash binding check
+        if scenario_data is not None:
+            try:
+                from agentv_runtime.manifest import compute_scenario_hash
+
+                computed_scen_hash = compute_scenario_hash(scenario_data)
+                if computed_scen_hash != pkg.scenario_hash:
+                    failures.append(
+                        f"ScenarioHashMismatch: package={pkg.scenario_hash} "
+                        f"actual={computed_scen_hash}"
+                    )
+            except Exception as s_err:
+                failures.append(f"ScenarioVerificationFailed: {s_err}")
+
+        # 6. Decision verdict check
+        decision_val = pkg.decision.get("decision") or pkg.decision.get("verdict")
+        if decision_val not in ("PASS", "VERIFIED"):
+            failures.append(f"UnverifiedDecision: decision was '{decision_val}'")
+
+        # 7. Required oracle inventory check
+        executed_oracle_ids = {
+            str(o.get("metric") or o.get("assertion") or "") for o in pkg.executed_oracle_results
+        }
+        missing_oracles = [
+            req for req in pkg.required_oracle_ids if req and req not in executed_oracle_ids
+        ]
+        if missing_oracles:
+            failures.append(f"MissingRequiredOracles: {missing_oracles}")
+
+        # 8. Signature verification
+        if pkg.signature:
+            try:
+                sig_valid = pkg.verify_signature(public_key_pem=public_key_pem)
+                if not sig_valid:
+                    failures.append(
+                        f"SignatureVerificationFailed: Signature for identity "
+                        f"'{pkg.signer_identity}' failed verification"
+                    )
+            except Exception as sig_err:
+                failures.append(f"SignatureVerificationFailed: {sig_err}")
+        elif require_signature:
+            failures.append("UnsignedPackage: package signature is required")
+
+        is_valid = len(failures) == 0
+        return {
+            "verified": is_valid,
+            "status": "CERTIFIED" if is_valid else "UNVERIFIED",
+            "failures": failures,
+            "package_id": pkg.package_id,
+            "scenario_id": pkg.scenario_id,
+            "package_hash": pkg.compute_package_hash(),
+        }
+
+    @staticmethod
+    def verify_package(
+        package: Any,
+        raw_trace_bytes: bytes | None = None,
+        raw_trace_events: list[dict[str, Any]] | None = None,
+        canonical_manifest: Any | None = None,
+        scenario_data: Any | None = None,
+        public_key_pem: str | None = None,
+        require_signature: bool = True,
+    ) -> dict[str, Any]:
+        """
+        Validates the evidence package against supplied artifacts:
         - Trace SHA3-256 byte parity vs trace_hash
-        - Manifest hash binding
-        - Evidence graph root binding
+        - Manifest hash binding (recomputes canonical hash if canonical_manifest is provided)
+        - Evidence graph root binding & direct provenance
+        - Scenario hash binding (if scenario_data is provided)
         - Decision verdict conformance
         - Required oracle inventory completeness
         - Cryptographic signature validation
@@ -1488,7 +1752,34 @@ class VerificationAuthority:
                 )
 
         # 2. Manifest binding
-        if not pkg.manifest_hash or not pkg.manifest_id:
+        if canonical_manifest is not None:
+            try:
+                if hasattr(canonical_manifest, "compute_manifest_hash"):
+                    computed_m_hash = canonical_manifest.compute_manifest_hash()
+                elif isinstance(canonical_manifest, dict):
+                    from agentv_runtime.manifest import ExecutionManifest
+
+                    computed_m_hash = ExecutionManifest.from_dict(
+                        canonical_manifest
+                    ).compute_manifest_hash()
+                elif isinstance(canonical_manifest, (bytes, str)):
+                    c_bytes = (
+                        canonical_manifest
+                        if isinstance(canonical_manifest, bytes)
+                        else canonical_manifest.encode("utf-8")
+                    )
+                    computed_m_hash = f"sha3_256:{hashlib.sha3_256(c_bytes).hexdigest()}"
+                else:
+                    computed_m_hash = ""
+
+                exp_m_hash = pkg.manifest_hash
+                if not exp_m_hash or computed_m_hash != exp_m_hash:
+                    failures.append(
+                        f"ManifestHashMismatch: package={exp_m_hash} actual={computed_m_hash}"
+                    )
+            except Exception as m_err:
+                failures.append(f"ManifestVerificationFailed: {m_err}")
+        elif not pkg.manifest_hash or not pkg.manifest_id:
             failures.append("ManifestMissing: package does not bind a valid manifest hash")
 
         # 3. Evidence root binding
@@ -1519,12 +1810,26 @@ class VerificationAuthority:
                 logger.debug("Evidence graph calculation failed: %s", ev_err)
                 failures.append(f"EvidenceReconstructionFailed: {ev_err}")
 
-        # 5. Decision verdict check
+        # 5. Scenario hash binding check if provided
+        if scenario_data is not None:
+            try:
+                from agentv_runtime.manifest import compute_scenario_hash
+
+                computed_scen_hash = compute_scenario_hash(scenario_data)
+                if computed_scen_hash != pkg.scenario_hash:
+                    failures.append(
+                        f"ScenarioHashMismatch: package={pkg.scenario_hash} "
+                        f"actual={computed_scen_hash}"
+                    )
+            except Exception as s_err:
+                failures.append(f"ScenarioVerificationFailed: {s_err}")
+
+        # 6. Decision verdict check
         decision_val = pkg.decision.get("decision") or pkg.decision.get("verdict")
         if decision_val not in ("PASS", "VERIFIED"):
             failures.append(f"UnverifiedDecision: decision was '{decision_val}'")
 
-        # 6. Required oracle inventory check
+        # 7. Required oracle inventory check
         executed_oracle_ids = {
             str(o.get("metric") or o.get("assertion") or "") for o in pkg.executed_oracle_results
         }
@@ -1534,7 +1839,7 @@ class VerificationAuthority:
         if missing_oracles:
             failures.append(f"MissingRequiredOracles: {missing_oracles}")
 
-        # 7. Signature verification
+        # 8. Signature verification
         if pkg.signature:
             try:
                 sig_valid = pkg.verify_signature(public_key_pem=public_key_pem)

@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 LEGAL_TRANSITIONS: dict[str, set[str]] = {
     "Draft": {"Validated", "Deprecated"},
     "Validated": {"Ready", "Draft", "Deprecated"},
-    "Ready": {"Deprecated"},
+    "Ready": {"Published", "Deprecated"},
     "Deprecated": set(),  # Terminal — no transitions out
     "Published": {"Deprecated"},
 }
@@ -39,6 +39,7 @@ TRANSITION_REQUIRES_REASON: set[tuple[str, str]] = {
     ("Draft", "Deprecated"),
     ("Published", "Deprecated"),
     ("Validated", "Draft"),  # Regression requires an explanation
+    ("Ready", "Published"),  # Formal publication requires a release justification
 }
 
 scenario_bp = Blueprint("scenarios", __name__)
@@ -773,9 +774,14 @@ def transition_scenario_lifecycle(scenario_id):
 
     data = request.json or {}
     target_status = data.get("target_status")
-    allowed_statuses = {"Draft", "Validated", "Ready", "Deprecated"}
+    allowed_statuses = set(LEGAL_TRANSITIONS.keys())
     if target_status not in allowed_statuses:
-        return jsonify({"error": f"Invalid target_status. Must be one of: {allowed_statuses}"}), 400
+        return (
+            jsonify(
+                {"error": f"Invalid target_status. Must be one of: {sorted(allowed_statuses)}"}
+            ),
+            400,
+        )
 
     catalog = ScenarioCatalog.get_instance()
     abs_path = catalog.get_absolute_path(scenario_id)

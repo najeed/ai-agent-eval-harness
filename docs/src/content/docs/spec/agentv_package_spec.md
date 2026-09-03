@@ -3,91 +3,159 @@ title: "Verification Package Specification (.agentv-package.json)"
 description: "Authoritative specification for self-contained, deterministic immutable verification packages conforming to NIST SP 800-218 and EU AI Act standards."
 ---
 
-The **AgentV Verification Package** (`.agentv-package.json`) is an immutable, self-contained single-file audit artifact that bundles all forensic evidence from an agent evaluation run.
+The **AgentV Verification Package** (`.agentv-package.json`) is an immutable, self-contained single-file audit artifact that bundles all forensic evidence, execution provenance, and cryptographic proofs from an agent evaluation run.
 
 ```mermaid
 graph TD
-    subgraph "Verification Package (.agentv-package.json)"
-        Meta["Package Metadata & Schema Version"]
-        Scenario["Canonical AES Scenario Definition"]
-        Manifest["Resolved ExecutionManifest"]
-        Telemetry["Telemetry Digests (run.jsonl SHA3-256)"]
-        Assertions["Assertion Outcomes & Verdicts"]
-        Signatures["Provenance Chain & PQC Signatures"]
+    subgraph "Verification Package (.agentv-package.json v2.0.0)"
+        Envelope["Format & Envelope Metadata<br/>(format: agentv_verification_package, version: 2.0.0)"]
+        Chain["Five-Field Provenance Chain<br/>(run_id, scenario_hash, resolved_config_hash, agent_target_id, execution_mode)"]
+        Manifest["Resolved ExecutionManifest & Scenario"]
+        Evidence["Evidence Manifest & Artifacts<br/>(trace_hash, total_events, assertions_evaluated, artifacts)"]
+        Graph["Evidence Graph<br/>(Assertion-Event Linkages, evidence_root_hash)"]
+        Verdict["Authoritative Verdict<br/>(execution_status, verified_outcome, score)"]
+        Signatures["Cryptographic Signatures<br/>(Ed25519, ML-DSA-65 PQC)"]
     end
     
-    Hash["Canonical Digest Calculation<br/>(hashlib.sha3_256)"]
-    Meta --> Hash
-    Scenario --> Hash
+    Hash["Canonical Package Hash<br/>(hashlib.sha3_256 over sorted compact JSON)"]
+    Envelope --> Hash
+    Chain --> Hash
     Manifest --> Hash
-    Telemetry --> Hash
-    Assertions --> Hash
+    Evidence --> Hash
+    Graph --> Hash
+    Verdict --> Hash
     Signatures --> Hash
+    Hash --> Root["package_hash (sha3_256:...)"]
 ```
 
 ---
 
-## 1. Schema Structure (`agentv-package.schema.json`)
+## 1. Authoritative Schema Structure (`agentv-package.schema.json` v2.0.0)
+
+The package adheres strictly to the `agentv-package.schema.json` specification:
 
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "AgentV Verification Package",
+  "$id": "https://agentv.dev/spec/agentv-package/agentv-package.schema.json",
+  "title": "AgentV Verification Package (.agentv-package.json) v2.0.0",
   "type": "object",
   "required": [
+    "format",
     "package_version",
-    "package_digest",
     "run_id",
-    "scenario",
-    "manifest",
-    "telemetry_digest",
-    "assertion_outcomes",
-    "signatures"
+    "chain",
+    "verdict",
+    "evidence_chain_valid",
+    "cryptographic_verification",
+    "evidence_manifest",
+    "evidence_graph",
+    "package_hash"
   ],
   "properties": {
-    "package_version": { "type": "string", "enum": ["1.0.0", "2.0.0"] },
-    "package_digest": { "type": "string", "pattern": "^sha3_256:[a-f0-9]{64}$" },
-    "run_id": { "type": "string" },
-    "scenario": { "type": "object" },
-    "manifest": { "type": "object" },
-    "telemetry_digest": {
+    "format": {
+      "type": "string",
+      "const": "agentv_verification_package"
+    },
+    "package_version": {
+      "type": "string",
+      "const": "2.0.0"
+    },
+    "run_id": {
+      "type": "string",
+      "description": "Globally-unique run identifier (UUIDv7-suffixed)."
+    },
+    "tenant_id": { "type": "string" },
+    "workspace_id": { "type": "string" },
+    "chain": {
       "type": "object",
-      "required": ["trace_hash", "total_events", "seal_hash"],
+      "description": "Five-field provenance chain binding execution parameters.",
+      "required": [
+        "run_id",
+        "scenario_hash",
+        "resolved_config_hash",
+        "agent_target_id",
+        "execution_mode"
+      ],
       "properties": {
-        "trace_hash": { "type": "string" },
-        "total_events": { "type": "integer" },
-        "seal_hash": { "type": "string" }
+        "run_id": { "type": "string" },
+        "scenario_hash": { "type": ["string", "null"] },
+        "resolved_config_hash": { "type": ["string", "null"] },
+        "agent_target_id": { "type": ["string", "null"] },
+        "execution_mode": {
+          "type": "string",
+          "enum": ["simulated", "record_replay", "live", "hybrid", "unknown"]
+        },
+        "execution_mode_declared": { "type": "boolean" }
       }
     },
-    "assertion_outcomes": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["criterion_type", "passed", "score"],
-        "properties": {
-          "criterion_type": { "type": "string" },
-          "passed": { "type": "boolean" },
-          "score": { "type": "number" },
-          "details": { "type": "object" }
-        }
-      }
-    },
-    "evidence_ledger": {
+    "manifest": { "type": "object" },
+    "scenario": { "type": "object" },
+    "verdict": {
       "type": "object",
-      "additionalProperties": { "type": "string" }
+      "required": ["execution_status", "verified_outcome", "duration_seconds", "score"],
+      "properties": {
+        "execution_status": { "type": "string" },
+        "verified_outcome": {
+          "type": "string",
+          "enum": ["VERIFIED", "UNVERIFIED", "NOT_VERIFIED", "POLICY_BREACH", "EVIDENCE_INVALID"]
+        },
+        "duration_seconds": { "type": "number" },
+        "score": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
     },
-    "signatures": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["identity", "algorithm", "signature"],
-        "properties": {
-          "identity": { "type": "string" },
-          "algorithm": { "type": "string", "enum": ["Ed25519", "ML-DSA-65", "ML-DSA-87", "hybrid-pqc"] },
-          "signature": { "type": "string" },
-          "timestamp": { "type": "string" }
+    "evidence_chain_valid": {
+      "type": "boolean",
+      "description": "true ONLY when verified_outcome == VERIFIED and no corruption detected."
+    },
+    "cryptographic_verification": {
+      "type": "object",
+      "properties": {
+        "verified": { "type": "boolean" },
+        "signer_identity": { "type": ["string", "null"] },
+        "manifest_hash_match": { "type": "boolean" },
+        "scenario_hash_match": { "type": "boolean" },
+        "algorithm": { "type": ["string", "null"] },
+        "errors": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "evidence_manifest": {
+      "type": "object",
+      "required": ["trace_hash", "total_events", "assertions_evaluated", "artifacts"],
+      "properties": {
+        "trace_hash": { "type": "string", "pattern": "^sha3_256:[a-fA-F0-9]{64}$" },
+        "total_events": { "type": "integer", "minimum": 0 },
+        "assertions_evaluated": { "type": "integer", "minimum": 0 },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "hash", "type"],
+            "properties": {
+              "name": { "type": "string" },
+              "hash": { "type": "string" },
+              "type": { "type": "string" }
+            }
+          }
         }
       }
+    },
+    "evidence_graph": {
+      "type": "object",
+      "description": "Assertion-to-source-event linkage graph and evidence_root_hash."
+    },
+    "integrity_corruption": {
+      "type": "object",
+      "description": "Present ONLY when corrupted trace lines exist."
+    },
+    "signatures": { "type": "array" },
+    "package_hash": {
+      "type": "string",
+      "pattern": "^sha3_256:[a-fA-F0-9]{64}$"
+    },
+    "package_created_at": {
+      "type": "string",
+      "format": "date-time"
     }
   }
 }
@@ -95,10 +163,20 @@ graph TD
 
 ---
 
-## 2. Deterministic Digest Calculation
+## 2. Deterministic Package Hash Calculation
 
-To guarantee 100% digest reproducibility across export operations:
-1. The scenario, manifest, telemetry digests, assertion verdicts, and evidence ledger are serialized into canonical sorted JSON.
-2. The package digest is computed:
-   $$\text{package\_digest} = \text{sha3\_256:}\text{SHA3-256}\left(\text{CanonicalJSON}\left(\text{Payload}\right)\right)$$
-3. The resulting digest is embedded into `package_digest`. Re-verifying the file independently recalculates the digest over the canonicalized payload excluding the `package_digest` key.
+To guarantee 100% cryptographic reproducibility across systems and storage media:
+
+1. **Payload Isolation**: The canonical payload dictionary is formed by extracting all package fields **excluding** `package_hash` and `package_created_at`.
+2. **Canonical Serialization**:
+   ```python
+   payload_bytes = json.dumps(
+       payload_dict,
+       sort_keys=True,
+       separators=(",", ":"),
+       ensure_ascii=True,
+   ).encode("utf-8")
+   ```
+3. **Digest Generation**:
+   $$\text{package\_hash} = \text{"sha3\_256:"} + \text{SHA3-256}(\text{payload\_bytes})\text{.hexdigest()}$$
+4. Independent verification re-computes this digest and strictly rejects any package where the recalculated digest deviates from the embedded `package_hash`.

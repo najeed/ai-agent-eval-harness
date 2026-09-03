@@ -160,7 +160,10 @@ export async function verifySubresourceIntegrity(
     const hash = sha3Digest(data, 256);
     const b64 = bytesToBase64(hash);
     const hex = bytesToHex(hash);
-    const valid = cleanSri.includes(b64) || cleanSri.includes(hex);
+    const expected = cleanSri.startsWith('sha3-256-')
+      ? cleanSri.slice('sha3-256-'.length)
+      : cleanSri.slice('sha3_256:'.length);
+    const valid = expected === b64 || expected.toLowerCase() === hex.toLowerCase();
     return { valid, computed: `sha3-256-${b64}`, algorithm: 'SHA3-256' };
   }
 
@@ -168,7 +171,10 @@ export async function verifySubresourceIntegrity(
     const hash = sha3Digest(data, 384);
     const b64 = bytesToBase64(hash);
     const hex = bytesToHex(hash);
-    const valid = cleanSri.includes(b64) || cleanSri.includes(hex);
+    const expected = cleanSri.startsWith('sha3-384-')
+      ? cleanSri.slice('sha3-384-'.length)
+      : cleanSri.slice('sha3_384:'.length);
+    const valid = expected === b64 || expected.toLowerCase() === hex.toLowerCase();
     return { valid, computed: `sha3-384-${b64}`, algorithm: 'SHA3-384' };
   }
 
@@ -176,7 +182,10 @@ export async function verifySubresourceIntegrity(
     const hash = sha3Digest(data, 512);
     const b64 = bytesToBase64(hash);
     const hex = bytesToHex(hash);
-    const valid = cleanSri.includes(b64) || cleanSri.includes(hex);
+    const expected = cleanSri.startsWith('sha3-512-')
+      ? cleanSri.slice('sha3-512-'.length)
+      : cleanSri.slice('sha3_512:'.length);
+    const valid = expected === b64 || expected.toLowerCase() === hex.toLowerCase();
     return { valid, computed: `sha3-512-${b64}`, algorithm: 'SHA3-512' };
   }
 
@@ -185,19 +194,19 @@ export async function verifySubresourceIntegrity(
   let expectedBase64 = cleanSri;
   if (cleanSri.startsWith('sha256-')) {
     webCryptoAlgo = 'SHA-256';
-    expectedBase64 = cleanSri.replace('sha256-', '');
+    expectedBase64 = cleanSri.slice('sha256-'.length);
   } else if (cleanSri.startsWith('sha384-')) {
     webCryptoAlgo = 'SHA-384';
-    expectedBase64 = cleanSri.replace('sha384-', '');
+    expectedBase64 = cleanSri.slice('sha384-'.length);
   } else if (cleanSri.startsWith('sha512-')) {
     webCryptoAlgo = 'SHA-512';
-    expectedBase64 = cleanSri.replace('sha512-', '');
+    expectedBase64 = cleanSri.slice('sha512-'.length);
   }
 
   const digestBuffer = await window.crypto.subtle.digest(webCryptoAlgo, buffer);
   const computedBase64 = btoa(String.fromCharCode(...new Uint8Array(digestBuffer)));
   const computedSRI = `${webCryptoAlgo.toLowerCase().replace('-', '')}-${computedBase64}`;
-  const valid = computedBase64 === expectedBase64 || cleanSri.includes(computedBase64);
+  const valid = computedBase64 === expectedBase64;
 
   return { valid, computed: computedSRI, algorithm: webCryptoAlgo };
 }

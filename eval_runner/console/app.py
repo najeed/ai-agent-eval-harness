@@ -64,6 +64,58 @@ def create_app():
         )
     app = Flask(__name__, static_folder=ui_path, static_url_path="/static")
 
+    # Bootstrap key initialization for zero-config non-production environments
+    has_api_key = bool(
+        getattr(config, "SERVICE_API_KEY", None)
+        or getattr(config, "DASHBOARD_API_KEY", None)
+        or os.getenv("SERVICE_API_KEY")
+        or os.getenv("DASHBOARD_API_KEY")
+    )
+    if not has_api_key:
+        if os.getenv("AGENTV_ENV", "").lower() == "production":
+            raise RuntimeError(
+                "[Console][CRITICAL] AGENTV_ENV=production requires "
+                "DASHBOARD_API_KEY or SERVICE_API_KEY."
+            )
+        import secrets
+        from pathlib import Path
+
+        keys_dir = Path(config.PROJECT_ROOT) / ".aes" / "keys"
+        keys_dir.mkdir(parents=True, exist_ok=True)
+        boot_file = keys_dir / "bootstrap.key"
+        if boot_file.exists():
+            bootstrap_key = boot_file.read_text(encoding="utf-8").strip()
+        else:
+            bootstrap_key = secrets.token_urlsafe(32)
+            try:
+                boot_file.write_text(bootstrap_key, encoding="utf-8")
+                try:
+                    os.chmod(boot_file, 0o600)
+                except (OSError, NotImplementedError) as chmod_err:
+                    print(
+                        "   [Console][DEBUG] Could not set 0600 permissions on "
+                        f"bootstrap.key: {chmod_err}",
+                        flush=True,
+                    )
+            except Exception as e:
+                print(f"   [Console][WARN] Could not write bootstrap.key: {e}", flush=True)
+
+        config.SERVICE_API_KEY = bootstrap_key
+        if not getattr(config, "DASHBOARD_API_KEY", None):
+            config.DASHBOARD_API_KEY = bootstrap_key
+
+        print(
+            "\n"
+            "================================================================================\n"
+            "   [AgentV Security] ZERO-CONFIG BOOTSTRAP ADMIN KEY GENERATED\n"
+            "   No DASHBOARD_API_KEY or SERVICE_API_KEY was found in environment or .env.\n"
+            f"   Bootstrap Key: {bootstrap_key}\n"
+            "   (Saved to .aes/keys/bootstrap.key for local development and initial "
+            "console access)\n"
+            "================================================================================\n",
+            flush=True,
+        )
+
     # Ensure session persistence (v1.2.3 Stabilization)
     api_key = getattr(config, "DASHBOARD_API_KEY", None) or os.getenv("DASHBOARD_API_KEY")
     secret_key_env = os.getenv("SECRET_KEY") or os.getenv("JWT_SECRET")
@@ -86,6 +138,14 @@ def create_app():
             flush=True,
         )
         app.secret_key = os.urandom(24).hex()
+
+    # Explicit Session Cookie Hardening (T2 DevSecOps)
+    app.config["SESSION_COOKIE_HTTPONLY"] = True
+    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+    is_prod = os.getenv("AGENTV_ENV", "").lower() == "production"
+    app.config["SESSION_COOKIE_SECURE"] = (
+        is_prod or os.getenv("AGENTV_SECURE_COOKIES", "false").lower() == "true"
+    )
 
     # CORS is opt-in only. With no explicit allow-list the console is
     # same-origin and emits no CORS headers — never reflect arbitrary origins

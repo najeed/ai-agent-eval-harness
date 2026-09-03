@@ -3,6 +3,8 @@ import functools
 import logging
 import os
 import secrets
+import threading
+import time
 from datetime import UTC
 from typing import Any
 
@@ -14,6 +16,12 @@ from eval_runner import config
 logger = logging.getLogger(__name__)
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
+
+# Sliding-window rate limiting for /api/auth/login (S1 DevSecOps Hardening)
+_FAILED_LOGIN_ATTEMPTS: dict[str, list[float]] = {}
+_LOGIN_ATTEMPT_LOCK = threading.Lock()
+LOGIN_RATE_LIMIT_MAX = 10
+LOGIN_RATE_LIMIT_WINDOW = 60.0  # 10 failed attempts per 60 seconds
 
 # Dynamic Secret Resolution: Use configured secret, service key hash, or ephemeral secret
 _EPHEMERAL_SECRET = secrets.token_hex(32)
@@ -227,6 +235,27 @@ def login():
     """Standard PBAC Login Gate for the Visual Suite."""
     from .auth_manager import Permission, get_auth_provider
 
+    ip = request.remote_addr or "127.0.0.1"
+    now = time.time()
+
+    with _LOGIN_ATTEMPT_LOCK:
+        attempts = _FAILED_LOGIN_ATTEMPTS.get(ip, [])
+        # Prune attempts outside the sliding window
+        valid_attempts = [t for t in attempts if now - t < LOGIN_RATE_LIMIT_WINDOW]
+        _FAILED_LOGIN_ATTEMPTS[ip] = valid_attempts
+
+        if len(valid_attempts) >= LOGIN_RATE_LIMIT_MAX:
+            retry_after = int(LOGIN_RATE_LIMIT_WINDOW - (now - valid_attempts[0]))
+            return (
+                jsonify(
+                    {
+                        "error": "Too many failed login attempts. Please wait before retrying.",
+                        "retry_after_seconds": max(1, retry_after),
+                    }
+                ),
+                429,
+            )
+
     data = request.json or {}
     api_key = data.get("apiKey") or data.get("api_key") or data.get("key")
 
@@ -237,7 +266,13 @@ def login():
     user = provider.authenticate(api_key)
 
     if not user:
+        with _LOGIN_ATTEMPT_LOCK:
+            _FAILED_LOGIN_ATTEMPTS.setdefault(ip, []).append(now)
         return jsonify({"error": "Unauthorized: Invalid API Key"}), 401
+
+    # Successful authentication resets failed attempts counter
+    with _LOGIN_ATTEMPT_LOCK:
+        _FAILED_LOGIN_ATTEMPTS.pop(ip, None)
 
     perms = user.get("permissions", [])
     role = (

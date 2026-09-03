@@ -30,6 +30,7 @@ interface RBACContextType {
   user: AuthenticatedUser | null;
   role: UserRole;
   isAuthenticated: boolean;
+  isAuthResolving: boolean;
   isDevMode: boolean;
   workspaceId: string;
   tenantId: string;
@@ -55,6 +56,7 @@ export const RBACProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [workspaceId, setWorkspaceId] = useState<string>('ws-default');
   const [tenantId, setTenantId] = useState<string>('tenant-default');
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthResolving, setIsAuthResolving] = useState<boolean>(true);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
 
   const fetchAuth = async () => {
@@ -73,17 +75,17 @@ export const RBACProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return;
         }
       }
-      // Fail closed
+      // Fail closed to Viewer role without forcing a disruptive modal overlay on initial load
       setIsAuthenticated(false);
       setUser(null);
       setActiveRole('Viewer');
-      setIsLoginModalOpen(true);
     } catch (err) {
       console.warn('[RBAC] Default-deny: Server authentication unreachable. Enforcing Viewer role.', err);
       setIsAuthenticated(false);
       setUser(null);
       setActiveRole('Viewer');
-      setIsLoginModalOpen(true);
+    } finally {
+      setIsAuthResolving(false);
     }
   };
 
@@ -150,6 +152,7 @@ export const RBACProvider: React.FC<{ children: React.ReactNode }> = ({ children
       user,
       role: activeRole,
       isAuthenticated,
+      isAuthResolving,
       isDevMode,
       workspaceId,
       tenantId,
@@ -165,7 +168,7 @@ export const RBACProvider: React.FC<{ children: React.ReactNode }> = ({ children
       canResolveHITL: isAdmin || activeRole === 'Compliance Auditor' || perms.has('hitl:resolve'),
       refreshAuth: fetchAuth,
     }),
-    [user, activeRole, isAuthenticated, isDevMode, workspaceId, tenantId, perms, isAdmin, isLoginModalOpen]
+    [user, activeRole, isAuthenticated, isAuthResolving, isDevMode, workspaceId, tenantId, perms, isAdmin, isLoginModalOpen]
   );
 
   return <RBACContext.Provider value={value}>{children}</RBACContext.Provider>;

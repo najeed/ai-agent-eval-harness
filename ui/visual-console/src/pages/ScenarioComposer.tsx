@@ -32,7 +32,7 @@ interface AssertionItem {
 const LEGAL_TRANSITIONS: Record<string, string[]> = {
   Draft: ['Validated', 'Deprecated'],
   Validated: ['Ready', 'Draft', 'Deprecated'],
-  Ready: ['Deprecated'],
+  Ready: ['Published', 'Deprecated'],
   Deprecated: [],
   Published: ['Deprecated'],
 };
@@ -470,6 +470,23 @@ export const ScenarioComposer: React.FC = () => {
       return;
     }
 
+    const requiresReason =
+      target === 'Deprecated' ||
+      (lifecycleStatus === 'Validated' && target === 'Draft') ||
+      (lifecycleStatus === 'Ready' && target === 'Published');
+
+    let reason = '';
+    if (requiresReason) {
+      const inputReason = window.prompt(
+        `Please provide a mandatory audit reason for transition '${lifecycleStatus}' → '${target}':`
+      );
+      if (!inputReason || !inputReason.trim()) {
+        setMessage(`Transition cancelled: A non-empty reason is mandatory for audit traceability.`);
+        return;
+      }
+      reason = inputReason.trim();
+    }
+
     setTransitioning(true);
     setMessage('');
     try {
@@ -478,7 +495,7 @@ export const ScenarioComposer: React.FC = () => {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ target_status: target })
+          body: JSON.stringify({ target_status: target, reason })
         }
       );
       const data = await res.json();

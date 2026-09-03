@@ -46,7 +46,54 @@ graph TD
 
 ---
 
-## 💻 2. CLI Offline Verification (`agentv verify`)
+---
+
+## 📦 2. Split Package Verification API (`VerificationAuthority`)
+
+For decoupled, zero-trust verification pipelines, AgentV provides the **Split Package Verification API**:
+
+```mermaid
+graph TD
+    PKG[".agentv-package.json"] --> SPLIT{"Verification Mode"}
+    SPLIT -->|Lightweight / Air-Gapped| SIG["verify_package_signature_only()<br/>Cryptographic Signature Verification"]
+    SPLIT -->|Deep Forensic Audit| ART["verify_package_artifacts()<br/>Raw Trace, Manifest, Scenario & Evidence Graph"]
+    
+    SIG --> RES1["Status: CERTIFIED / UNSIGNED / UNVERIFIED"]
+    ART --> RES2["Multi-Point Forensic Verdict"]
+```
+
+### 1. Signature-Only Verification
+Validates cryptographic integrity without requiring underlying raw trace files or artifacts on disk:
+```python
+from eval_runner.verifier import VerificationAuthority
+
+result = VerificationAuthority.verify_package_signature_only(package)
+# Returns: {"verified": True/False, "status": "CERTIFIED"|"UNSIGNED"|"UNVERIFIED", ...}
+```
+
+### 2. Deep Artifact Verification
+Recomputes canonical digests from raw execution artifacts to prove zero-tampering:
+```python
+result = VerificationAuthority.verify_package_artifacts(
+    package=pkg,
+    raw_trace_bytes=raw_bytes,
+    raw_trace_events=raw_events,
+    canonical_manifest=manifest,
+    scenario_data=scenario_dict,
+    require_signature=True,
+)
+```
+
+### Multi-Point Verification Checks:
+1. **Raw Trace Parity**: Recomputes `SHA3-256(raw_trace_bytes)` and matches against `pkg.trace_hash`.
+2. **Canonical Manifest Recomputation**: Re-derives canonical manifest hash via `canonical_manifest.compute_manifest_hash()` against `pkg.manifest_hash`.
+3. **Scenario Canonical Hash Binding**: Computes `compute_scenario_hash(scenario_data)` and asserts equality with `pkg.scenario_hash`. Tampered scenario definitions fail immediately.
+4. **Direct Trace Provenance Enforcement**: Reconstructs the Evidence Graph from raw trace events (`build_evidence_graph_from_events`) and enforces `is_complete_provenance = True`. Any assertion evaluated without direct event linkage (e.g. carrier fallback) fails closed with `DirectProvenanceViolation`.
+5. **Authoritative Verdict Precedence**: Derives final certification from authoritative terminal event verdicts. Caller-supplied status overrides and heuristic counters (`passed=True`, `success_rate`) cannot certify failed runs.
+
+---
+
+## 💻 3. CLI Offline Verification (`agentv verify`)
 
 Audit execution traces directly on disk without launching the web server:
 
@@ -60,7 +107,7 @@ agentv verify --run-id run_fintech_2026_01 --pqc
 
 ---
 
-## 🚦 3. CI/CD Hard Gating (`agentv gate`)
+## 🚦 4. CI/CD Hard Gating (`agentv gate`)
 
 The `agentv gate` command acts as a non-bypassable quality gate for deployment pipelines.
 
@@ -78,7 +125,7 @@ agentv gate \
 
 ---
 
-## 🌐 4. Framework Adapter Verification Matrix
+## 🌐 5. Framework Adapter Verification Matrix
 
 Verify connectivity and readiness across target frameworks:
 

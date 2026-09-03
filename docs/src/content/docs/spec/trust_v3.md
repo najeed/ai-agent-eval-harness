@@ -31,10 +31,17 @@ To ensure audit-grade forensic stability, the protocol enforces strict identity 
 - **Vault Affinity**: Verification is ONLY permitted for traces residing in an industrial vault (`/runs/<run_id>/run.jsonl`) or the master log (`/runs/run.jsonl`). Traces found in shared temporary or non-compliant directories are considered corrupted.
 - **Path Portability**: All evidence ledgers MUST use site-relative paths to the vault root, ensuring manifests are portable across distinct storage backends.
 
-# 4. Cryptographic Requirements
-- **Algorithm**: ED25519 (Asymmetric) / SHA3-256 (Hashing).
-- **Deterministic Signing**: Signatures MUST be computed by excluding the `provenance_chain` from the payload to allow for multi-party appending without invalidating existing signatures.
+# 4. Cryptographic Requirements & Evidence Graph
+- **Algorithm**: ED25519 (Asymmetric) / SHA3-256 (Hashing) / ML-DSA-65 (NIST FIPS 204 PQC).
+- **Deterministic Signing**: Signatures MUST be computed by excluding mutable envelope fields from the payload to allow for multi-party appending without invalidating existing signatures.
+- **Evidence Graph Root Binding**: The certificate must bind an `evidence_root_hash` computed over the canonical assertion node linkages (`compute_evidence_graph_root`).
+- **Direct Trace Provenance**: Verification strictly mandates `is_complete_provenance = True`. If any evaluated assertion relies on a fallback or terminal carrier sequence instead of direct execution event linkage, verification fails closed (`DirectProvenanceViolation`).
+- **Scenario Canonical Hash Binding**: The certificate is bound to `scenario_hash` computed from the canonical scenario definition (`compute_scenario_hash`). Tampered scenario definitions fail verification immediately.
 
-# 4. Use Cases
-- **Regulatory Audits**: Providing high-fidelity proof for healthcare or finance agents.
-- **Zero-Trust CI/CD**: Using the `gate` command to verify integrity before deployment.
+# 5. Authoritative Verdict Precedence
+- **No Caller Overrides**: Compliance status and score are derived authoritatively from verifiable execution events. Caller-supplied status overrides are strictly rejected.
+- **Precedence Hierarchy**: Any terminal failure status (`failed`, `timeout`, `policy_breach`, `error`) takes absolute precedence over optimistic heuristic counters (`passed=True`, `success_rate`).
+
+# 6. Use Cases
+- **Regulatory Audits**: Providing high-fidelity proof for healthcare or finance agents under NIST AI 100-1 and EU AI Act.
+- **Zero-Trust CI/CD**: Using the `gate` command to verify integrity and evidence graph completion before deployment.

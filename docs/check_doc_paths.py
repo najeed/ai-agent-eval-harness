@@ -13,6 +13,8 @@ PROJECT_ROOT = Path(__file__).parent.parent
 DOC_FILES = [
     PROJECT_ROOT / "TESTING.md",
     PROJECT_ROOT / "README.md",
+    PROJECT_ROOT / "COMPLIANCE.md",
+    PROJECT_ROOT / "docs" / "AUTHENTICATION.md",
     *list((PROJECT_ROOT / "docs" / "src" / "content" / "docs").rglob("*.md")),
     *list((PROJECT_ROOT / "docs" / "src" / "content" / "docs").rglob("*.mdx")),
     *list((PROJECT_ROOT / "docs-v1-deprecated-reference").rglob("*.md")),
@@ -20,7 +22,7 @@ DOC_FILES = [
 
 # Regex pattern matching code blocks referencing project root directories
 PATH_PATTERN = re.compile(
-    r"`((?:tests|eval_runner|dataproc_engine|industries|agentv_runtime)/[a-zA-Z0-9_\-\./]+)`"
+    r"`((?:tests|eval_runner|dataproc_engine|industries|agentv_runtime|spec|tools)/[a-zA-Z0-9_\-\./]+)`"
 )
 
 

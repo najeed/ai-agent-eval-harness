@@ -611,6 +611,7 @@ const ConsoleLayout: React.FC = () => {
     user,
     role,
     isAuthenticated,
+    isAuthResolving,
     isLoginModalOpen,
     openLoginModal,
     closeLoginModal,
@@ -628,7 +629,7 @@ const ConsoleLayout: React.FC = () => {
     Inspect: true,
     Audit: true,
     Advanced: false,
-    System: true,
+    Settings: false,
   });
 
   // Authoritative RuntimeHealth (P0-1) + operating mode (P0-5).
@@ -656,6 +657,7 @@ const ConsoleLayout: React.FC = () => {
       return Array.isArray(data) ? data : (data.nav || []);
     },
     staleTime: 60_000,
+    enabled: !isAuthResolving,
   });
 
   useEffect(() => {
@@ -674,12 +676,13 @@ const ConsoleLayout: React.FC = () => {
     const originalFetch = window.fetch;
     const isInternalApi = (urlStr: string): boolean => {
       if (!urlStr) return false;
-      const isRelative = urlStr.startsWith('/api/') || urlStr.startsWith('/v1/');
-      const isSameOriginApi =
-        typeof window !== 'undefined' &&
-        urlStr.startsWith(window.location.origin) &&
-        (urlStr.includes('/api/') || urlStr.includes('/v1/'));
-      return isRelative || isSameOriginApi;
+      try {
+        const parsed = new URL(urlStr, window.location.origin);
+        if (parsed.origin !== window.location.origin) return false;
+        return parsed.pathname.startsWith('/api/') || parsed.pathname.startsWith('/v1/');
+      } catch {
+        return urlStr.startsWith('/api/') || urlStr.startsWith('/v1/');
+      }
     };
 
     window.fetch = async (...args) => {
@@ -801,6 +804,19 @@ const ConsoleLayout: React.FC = () => {
     'MultiAgentOps Eng.': 'text-amber-400 bg-amber-500/10 border-amber-500/20',
     'Viewer': 'text-slate-400 bg-slate-500/10 border-slate-500/20',
   };
+
+  if (isAuthResolving) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-slate-950 text-slate-400">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 rounded-full border-2 border-cyan-500 border-t-transparent animate-spin" />
+          <span className="font-mono text-xs uppercase tracking-wider text-slate-300">
+            Initializing Security Context...
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   return (
 
@@ -1078,7 +1094,7 @@ const ConsoleLayout: React.FC = () => {
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={closeLoginModal}
-        canDismiss={isAuthenticated}
+        canDismiss={true}
       />
     </div>
   );

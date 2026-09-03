@@ -90,9 +90,7 @@ class CertificationService:
                         "end",
                         "session_decision",
                         "evaluation_result",
-                        "evaluation_complete",
-                        "summary_metrics",
-                        "test_case_result",
+                        "evaluation_verdict",
                     ):
                         data = ev.get("data", {}) or {}
                         raw_status = (
@@ -108,26 +106,22 @@ class CertificationService:
                         decision = data.get("decision") or ev.get("decision") or ""
                         verdict = data.get("verdict") or ev.get("verdict") or ""
 
-                        passed = (
+                        # If explicit boolean passed field is present, map it into status candidates
+                        passed_val = (
                             data.get("passed")
                             if data.get("passed") is not None
                             else ev.get("passed")
                         )
-                        if passed is not None:
-                            if passed is True:
-                                return "pass", float(score_val if score_val is not None else 1.0)
-                            return "fail", float(score_val if score_val is not None else 0.0)
-
-                        metrics = data.get("metrics") or ev.get("metrics") or {}
-                        if "success_rate" in metrics:
-                            sr = float(metrics["success_rate"])
-                            return ("pass" if sr >= 0.5 else "fail"), sr
+                        if passed_val is False:
+                            raw_status = "fail"
+                        elif passed_val is True and not raw_status:
+                            raw_status = "pass"
 
                         status_lower = str(raw_status).strip().lower()
                         decision_upper = str(decision).strip().upper()
                         verdict_upper = str(verdict).strip().upper()
 
-                        # Authoritative Failure Matching
+                        # Authoritative Failure Matching takes absolute precedence
                         if (
                             status_lower in ("fail", "failed", "failure", "rejected")
                             or decision_upper in ("FAIL", "FAILED", "REJECTED", "UNVERIFIED")
@@ -135,7 +129,7 @@ class CertificationService:
                         ):
                             return "fail", float(score_val if score_val is not None else 0.0)
 
-                        # Authoritative Success Matching
+                        # Authoritative Success Matching requires explicit pass/verified status
                         if (
                             status_lower in ("pass", "passed", "success", "verified")
                             or decision_upper in ("PASS", "PASSED", "VERIFIED")

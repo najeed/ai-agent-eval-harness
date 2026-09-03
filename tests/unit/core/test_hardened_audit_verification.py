@@ -415,3 +415,323 @@ def test_contracts_verification_result_fail_closed_defaults():
     assert vr.signature_verified is False
     assert vr.evidence_complete is False
     assert vr.attestation_grade == "verifiable"
+
+
+def test_verification_authority_split_and_manifest_tamper_detection():
+    """P0.3: Split package verification and manifest hash tamper detection."""
+    import hashlib
+
+    from agentv_runtime.evidence_graph import (
+        build_evidence_graph_from_events,
+        compute_evidence_graph_root,
+    )
+    from agentv_runtime.manifest import ExecutionManifest
+    from agentv_runtime.package import VerificationPackage
+    from eval_runner.verifier import VerificationAuthority
+
+    manifest = ExecutionManifest(
+        manifest_id="m1",
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen",
+        tenant_id="t1",
+        workspace_id="ws1",
+        agent_config={"model": "gpt-4"},
+        runtime_config={},
+        environment={},
+        created_at="2026-09-01T00:00:00Z",
+        created_by="system",
+        metadata={},
+    )
+    m_hash = manifest.compute_manifest_hash()
+
+    raw_trace_bytes = b'{"event": "run_start", "_seq": 1}\n{"event": "run_end", "_seq": 2}\n'
+    trace_hash = f"sha3_256:{hashlib.sha3_256(raw_trace_bytes).hexdigest()}"
+    raw_events = [
+        {"event": "run_start", "_seq": 1, "data": {}},
+        {"event": "run_end", "_seq": 2, "data": {}},
+    ]
+    ev_graph = build_evidence_graph_from_events(raw_events)
+    ev_root = compute_evidence_graph_root(ev_graph)
+
+    pkg = VerificationPackage(
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen",
+        manifest_id="m1",
+        manifest_hash=m_hash,
+        execution_identity={"evaluator": "test"},
+        trace_hash=trace_hash,
+        trace_seal={"digest": trace_hash},
+        evidence_root_hash=ev_root,
+        required_oracle_ids=["oracle_1"],
+        executed_oracle_results=[{"metric": "oracle_1", "passed": True}],
+        decision={"decision": "PASS", "verdict": "VERIFIED"},
+    )
+
+    # 1. verify_package_signature_only without signature -> UNSIGNED
+    sig_res = VerificationAuthority.verify_package_signature_only(pkg)
+    assert sig_res["verified"] is False
+    assert sig_res["status"] == "UNSIGNED"
+
+    # 2. verify_package_artifacts with matching evidence -> CERTIFIED
+    art_res = VerificationAuthority.verify_package_artifacts(
+        pkg,
+        raw_trace_bytes=raw_trace_bytes,
+        raw_trace_events=raw_events,
+        canonical_manifest=manifest,
+        require_signature=False,
+    )
+    assert art_res["verified"] is True
+    assert art_res["status"] == "CERTIFIED"
+
+    # 3. Tamper manifest only: change tenant_id -> ManifestHashMismatch -> UNVERIFIED
+    tampered_manifest = ExecutionManifest(
+        manifest_id="m1",
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen",
+        tenant_id="tampered_tenant",
+        workspace_id="ws1",
+        agent_config={"model": "gpt-4"},
+        runtime_config={},
+        environment={},
+        created_at="2026-09-01T00:00:00Z",
+        created_by="system",
+        metadata={},
+    )
+    tampered_res = VerificationAuthority.verify_package_artifacts(
+        pkg,
+        raw_trace_bytes=raw_trace_bytes,
+        raw_trace_events=raw_events,
+        canonical_manifest=tampered_manifest,
+        require_signature=False,
+    )
+    assert tampered_res["verified"] is False
+    assert tampered_res["status"] == "UNVERIFIED"
+    assert any("ManifestHashMismatch" in f for f in tampered_res["failures"])
+
+    # 4. Missing raw trace bytes or events -> fails closed
+    missing_bytes_res = VerificationAuthority.verify_package_artifacts(
+        pkg,
+        raw_trace_bytes=None,  # type: ignore
+        raw_trace_events=raw_events,
+        canonical_manifest=manifest,
+        require_signature=False,
+    )
+    assert missing_bytes_res["verified"] is False
+    assert any("TraceBytesMissing" in f for f in missing_bytes_res["failures"])
+
+
+def test_certification_outcome_extraction_authoritative_precedence(tmp_path):
+    """R1 / S1: Authoritative failure decision is never bypassed by passed=True."""
+    import json
+
+    from eval_runner.services.certification import CertificationService
+
+    # Trace containing passed=True but authoritative failure decision="POLICY_BREACH"
+    trace_file = tmp_path / "run.jsonl"
+    records = [
+        {"event": "run_start", "_seq": 1},
+        {
+            "event": "evaluation_verdict",
+            "passed": True,  # Non-authoritative heuristic field
+            "decision": "POLICY_BREACH",  # Authoritative terminal failure
+            "verdict": "FAIL",
+            "score": 0.0,
+            "_seq": 2,
+        },
+        {"event": "run_end", "_seq": 3},
+    ]
+    trace_file.write_text("\n".join(json.dumps(r) for r in records), encoding="utf-8")
+
+    status, score = CertificationService.extract_computed_run_outcome(tmp_path, trace_file)
+    assert status == "fail"
+    assert score == 0.0
+
+
+def test_zero_config_bootstrap_admin_key_and_cookie_security(tmp_path):
+    """Component 1: Zero-config bootstrap key generation and secure session cookie flags."""
+    from unittest.mock import patch
+
+    from eval_runner import config
+    from eval_runner.console.app import create_app
+
+    keys_dir = tmp_path / ".aes" / "keys"
+    boot_file = keys_dir / "bootstrap.key"
+
+    with (
+        patch.object(config, "PROJECT_ROOT", tmp_path),
+        patch.object(config, "SERVICE_API_KEY", ""),
+        patch.object(config, "DASHBOARD_API_KEY", ""),
+        patch.dict(
+            "os.environ",
+            {
+                "AGENTV_ENV": "development",
+                "SERVICE_API_KEY": "",
+                "DASHBOARD_API_KEY": "",
+            },
+            clear=False,
+        ),
+    ):
+        # Create app without pre-configured keys
+        app = create_app()
+        assert boot_file.exists()
+        generated_key = boot_file.read_text(encoding="utf-8").strip()
+        assert len(generated_key) >= 32
+        assert config.SERVICE_API_KEY == generated_key
+        assert config.DASHBOARD_API_KEY == generated_key
+        assert app.config["SESSION_COOKIE_HTTPONLY"] is True
+        assert app.config["SESSION_COOKIE_SAMESITE"] == "Lax"
+
+
+def test_verify_package_artifacts_scenario_mismatch_detected():
+    """Verify verify_package_artifacts rejects mismatched scenario data."""
+    from agentv_runtime.package import VerificationPackage
+    from eval_runner.verifier import VerificationAuthority
+
+    pkg = VerificationPackage(
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:original_hash",
+        manifest_id="m1",
+        manifest_hash="sha3_256:manifest_hash",
+        execution_identity={"evaluator": "test"},
+        trace_hash="sha3_256:trace",
+        trace_seal={"digest": "sha3_256:trace"},
+        evidence_root_hash="sha3_256:ev",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={"decision": "PASS", "verdict": "VERIFIED"},
+    )
+    mismatched_scenario = {"id": "mismatched_scenario_xyz", "version": "99.0"}
+    res = VerificationAuthority.verify_package_artifacts(
+        pkg,
+        raw_trace_bytes=b"",
+        raw_trace_events=[],
+        canonical_manifest=None,
+        scenario_data=mismatched_scenario,
+        require_signature=False,
+    )
+    assert res["verified"] is False
+    assert any("ScenarioHashMismatch" in f for f in res["failures"])
+
+
+def test_verify_trace_certificate_incomplete_provenance_fails(tmp_path):
+    """Verify verify_trace_certificate fails if is_complete_provenance is False."""
+    import json
+    from unittest.mock import patch
+
+    from eval_runner import config
+    from eval_runner.verifier import TraceVerifier
+
+    trace_file = tmp_path / "test.jsonl"
+    trace_file.write_text('{"event": "start", "_seq": 1}\n', encoding="utf-8")
+    actual_hash = TraceVerifier.compute_signature(trace_file)
+
+    manifest_file = tmp_path / "test_manifest.json"
+    manifest_data = {
+        "vc_version": "3.0.0",
+        "trace_hash": actual_hash,
+        "evidence_root_hash": "sha3_256:fake_root",
+        "trace_path": str(trace_file),
+        "timestamp": "2026-09-01T00:00:00+00:00",
+        "signature": "fake_sig",
+    }
+    manifest_file.write_text(json.dumps(manifest_data), encoding="utf-8")
+
+    with (
+        patch.object(config, "PROJECT_ROOT", tmp_path),
+        patch(
+            "agentv_runtime.evidence_graph.compute_evidence_graph_root",
+            return_value="sha3_256:fake_root",
+        ),
+        patch(
+            "agentv_runtime.evidence_graph.build_evidence_graph_from_events",
+            return_value={"is_complete_provenance": False},
+        ),
+    ):
+        is_valid = TraceVerifier.verify_trace(
+            trace_path=str(trace_file),
+            manifest_path=str(manifest_file),
+        )
+        assert is_valid is False
+
+
+def test_verification_authority_verify_package_scenario_hash_match():
+    """
+    Verify VerificationAuthority.verify_package passes scenario check when scenario_data matches.
+    Kills mutant 125: if computed_scen_hash != pkg.scenario_hash -> (==).
+    """
+    from agentv_runtime.manifest import compute_scenario_hash
+    from agentv_runtime.package import VerificationPackage
+    from eval_runner.verifier import VerificationAuthority
+
+    scen = {"scenario_id": "test_scen_pkg", "steps": [{"step": 1}]}
+    scen_hash = compute_scenario_hash(scen)
+    pkg = VerificationPackage(
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+        manifest_id="m1",
+        manifest_hash="sha3_256:man",
+        execution_identity={"evaluator": "test"},
+        trace_hash="sha3_256:trace",
+        trace_seal={"digest": "sha3_256:trace"},
+        evidence_root_hash="sha3_256:ev",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={"decision": "PASS", "verdict": "VERIFIED"},
+    )
+    res = VerificationAuthority.verify_package(pkg, scenario_data=scen, require_signature=False)
+    assert not any("ScenarioHashMismatch" in f for f in res["failures"])
+
+
+def test_verification_authority_artifacts_missing_provenance_defaults_true():
+    """
+    Verify verify_package_artifacts defaults is_complete_provenance to True
+    when missing from graph dict.
+    Kills mutant 158: if not ev_graph.get('is_complete_provenance', True) -> False.
+    """
+    import hashlib
+    from unittest.mock import patch
+
+    from agentv_runtime.package import VerificationPackage
+    from eval_runner.verifier import VerificationAuthority
+
+    raw_bytes = b'{"event": "start", "_seq": 1}\n'
+    raw_hash = f"sha3_256:{hashlib.sha3_256(raw_bytes).hexdigest()}"
+    dummy_root = "sha3_256:0000000000000000000000000000000000000000000000000000000000000000"
+    pkg = VerificationPackage(
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen",
+        manifest_id="man-01",
+        manifest_hash="sha3_256:man",
+        execution_identity={"evaluator": "test"},
+        trace_hash=raw_hash,
+        trace_seal={"digest": raw_hash},
+        evidence_root_hash=dummy_root,
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={"decision": "PASS", "verdict": "VERIFIED"},
+    )
+    graph_without_key = {"root_hash": dummy_root}
+    with (
+        patch(
+            "agentv_runtime.evidence_graph.compute_evidence_graph_root",
+            return_value=dummy_root,
+        ),
+        patch(
+            "agentv_runtime.evidence_graph.build_evidence_graph_from_events",
+            return_value=graph_without_key,
+        ),
+    ):
+        res = VerificationAuthority.verify_package_artifacts(
+            pkg,
+            raw_trace_bytes=raw_bytes,
+            raw_trace_events=[{"event": "start", "_seq": 1}],
+            canonical_manifest=None,
+            require_signature=False,
+        )
+        assert not any("DirectProvenanceViolation" in f for f in res["failures"])
