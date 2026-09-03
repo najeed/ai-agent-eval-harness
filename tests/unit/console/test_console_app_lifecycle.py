@@ -38,11 +38,13 @@ def test_console_app_405_handler(app):
 
 
 def test_console_app_secret_key_fallback(monkeypatch):
-    """Verify that a random secret key is generated if DASHBOARD_API_KEY is missing."""
+    """Verify strict zero-config bootstrap generates a persistent 64-char SHA3-256 secret key."""
     from eval_runner import config
 
     monkeypatch.setattr(config, "DASHBOARD_API_KEY", None)
+    monkeypatch.setattr(config, "SERVICE_API_KEY", None)
     monkeypatch.delenv("DASHBOARD_API_KEY", raising=False)
+    monkeypatch.delenv("SERVICE_API_KEY", raising=False)
     monkeypatch.delenv("SECRET_KEY", raising=False)
     monkeypatch.delenv("JWT_SECRET", raising=False)
 
@@ -50,7 +52,23 @@ def test_console_app_secret_key_fallback(monkeypatch):
         with patch("eval_runner.catalog.ScenarioCatalog.get_instance"):
             app = create_app()
             assert app.secret_key is not None
-            assert len(app.secret_key) == 48  # 24 bytes hex
+            assert len(app.secret_key) == 64  # Strictly 64-char SHA3-256 bootstrap checksum
+
+
+def test_console_app_production_missing_keys_fails(monkeypatch):
+    """In production, missing keys must raise RuntimeError without ephemeral fallback."""
+    from eval_runner import config
+
+    monkeypatch.setattr(config, "DASHBOARD_API_KEY", None)
+    monkeypatch.setattr(config, "SERVICE_API_KEY", None)
+    monkeypatch.delenv("DASHBOARD_API_KEY", raising=False)
+    monkeypatch.delenv("SERVICE_API_KEY", raising=False)
+    monkeypatch.setenv("AGENTV_ENV", "production")
+
+    with patch("eval_runner.plugins.manager.load_plugins"):
+        with patch("eval_runner.catalog.ScenarioCatalog.get_instance"):
+            with pytest.raises(RuntimeError, match="AGENTV_ENV=production requires"):
+                create_app()
 
 
 def test_create_app_api_key_present(monkeypatch):

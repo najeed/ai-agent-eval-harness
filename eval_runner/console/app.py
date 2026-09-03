@@ -48,7 +48,7 @@ def create_app():
     else:
         print("   [Industrial Start] Lazy Catalog active for Demo Stability.", flush=True)
 
-    # [P1.6/V05] visual-console/dist is the ONLY supported UI. The legacy
+    # visual-console/dist is the ONLY supported UI. The legacy
     # CDN-loaded prototype (ui/visual-debugger) was removed — silently
     # degrading to it broke air-gapped deployments and hid the missing build.
     v2_ui_dist = os.path.abspath(config.PROJECT_ROOT / "ui" / "visual-console" / "dist")
@@ -116,28 +116,19 @@ def create_app():
             flush=True,
         )
 
-    # Ensure session persistence (v1.2.3 Stabilization)
+    # Ensure session persistence via strict zero-config bootstrap or explicit secret
     api_key = getattr(config, "DASHBOARD_API_KEY", None) or os.getenv("DASHBOARD_API_KEY")
     secret_key_env = os.getenv("SECRET_KEY") or os.getenv("JWT_SECRET")
-    if api_key or secret_key_env:
-        from ..utils import crypto
-
-        app.secret_key = crypto.checksum(api_key or secret_key_env)
-    else:
-        if os.getenv("AGENTV_ENV", "").lower() == "production":
-            raise RuntimeError(
-                "[Console][CRITICAL] AGENTV_ENV=production requires DASHBOARD_API_KEY, "
-                "SECRET_KEY, or JWT_SECRET. Ephemeral secret_key fallback is forbidden."
-            )
-        # Fallback to a random key if no API key is provided in development/test.
-        # Warn loudly: per-process session keys break multi-worker deployments.
-        print(
-            "   [Console][WARN] No DASHBOARD_API_KEY configured: using an "
-            "ephemeral per-process Flask secret key. Sessions will not survive "
-            "worker restarts and will fail across replicas.",
-            flush=True,
+    if not (api_key or secret_key_env):
+        raise RuntimeError(
+            "[Console][CRITICAL] Missing API key or secret key for console session derivation. "
+            "In production, configure DASHBOARD_API_KEY, SECRET_KEY, or JWT_SECRET. "
+            "In development, ensure zero-config bootstrap key is generated."
         )
-        app.secret_key = os.urandom(24).hex()
+
+    from ..utils import crypto
+
+    app.secret_key = crypto.checksum(api_key or secret_key_env)
 
     # Explicit Session Cookie Hardening (T2 DevSecOps)
     app.config["SESSION_COOKIE_HTTPONLY"] = True

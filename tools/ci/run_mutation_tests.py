@@ -373,22 +373,35 @@ def _tests_for_module(module_name: str) -> list[str]:
 
 
 def _make_loader_code(mutant_file: str, orig_file: Path, module_name: str, args_str: str) -> str:
-    pkg_name = module_name.rsplit(".", 1)[0]
+    parts = module_name.rsplit(".", 1)
+    if len(parts) > 1:
+        pkg_name = parts[0]
+        sub_name = parts[1]
+    else:
+        pkg_name = ""
+        sub_name = module_name
+
     return f"""
 import sys, importlib.util
 from pathlib import Path
 sys.path.insert(0, r"{BASE_DIR}")
 code = compile(Path(r"{mutant_file}").read_text(encoding="utf-8"), r"{orig_file}", "exec")
 pkg_name = "{pkg_name}"
-__import__(pkg_name)
-pkg = sys.modules[pkg_name]
+sub_name = "{sub_name}"
 spec = importlib.util.spec_from_file_location("{module_name}", r"{orig_file}")
 mod = importlib.util.module_from_spec(spec)
 mod.__file__ = r"{orig_file}"
-mod.__package__ = pkg_name
-setattr(pkg, "{module_name.rsplit(".", 1)[-1]}", mod)
+if pkg_name:
+    mod.__package__ = pkg_name
 sys.modules["{module_name}"] = mod
 exec(code, mod.__dict__)
+if pkg_name:
+    __import__(pkg_name)
+    pkg = sys.modules[pkg_name]
+    setattr(pkg, sub_name, mod)
+    for k, v in mod.__dict__.items():
+        if hasattr(pkg, k):
+            setattr(pkg, k, v)
 import pytest
 sys.exit(pytest.main({args_str}))
 """

@@ -11,13 +11,14 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 import pytest
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 
-from agentv_runtime.manifest import compute_scenario_hash
+from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
 from agentv_runtime.package import VerificationPackage
 from eval_runner import config
 from eval_runner.identity import IdentityService
@@ -2842,3 +2843,789 @@ def test_verify_trace_certificate_incomplete_provenance_invalid_root(clean_vault
         )
         assert res["verified"] is False
         assert any("carrier fallback provenance" in e for e in res["errors"])
+
+
+def test_verify_trace_blank_lines_and_empty_events(clean_vault_setup):
+    """
+    Exercises trace file with blank lines and trace file with only blank lines
+    in verify_trace evidence root verification.
+    """
+    project_root = clean_vault_setup["project_root"]
+    run_id = "run-blank-lines-01"
+    rdir = project_root / "runs" / run_id
+    rdir.mkdir(parents=True, exist_ok=True)
+
+    # 1. Blank lines between valid events
+    trace_file = rdir / "run.jsonl"
+    trace_file.write_text(
+        '{"event": "start", "_seq": 1}\n\n   \n{"event": "end", "_seq": 2}\n',
+        encoding="utf-8",
+    )
+    manifest = TraceVerifier.sign_trace(str(trace_file), run_id=run_id, identity_id="system_id")
+    m_path = rdir / "manifest.json"
+    m_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    assert TraceVerifier.verify_trace(str(trace_file), str(m_path)) is True
+
+    # 2. Only blank lines in trace with expected evidence root in manifest
+    run_id_empty = "run-empty-lines-02"
+    rdir_empty = project_root / "runs" / run_id_empty
+    rdir_empty.mkdir(parents=True, exist_ok=True)
+    trace_empty = rdir_empty / "run.jsonl"
+    trace_empty.write_text("\n   \n\n", encoding="utf-8")
+    sig_empty = TraceVerifier.compute_signature(trace_empty)
+    m_empty_path = rdir_empty / "manifest.json"
+    m_empty_path.write_text(
+        json.dumps(
+            {
+                "vc_version": "3.0.0",
+                "trace_hash": sig_empty,
+                "timestamp": datetime.now().astimezone().isoformat(),
+                "evidence_root_hash": "sha3_256:target_root",
+                "provenance_chain": [
+                    {"algorithm": "ED25519", "identity": "system_id", "signature": "deadbeef"}
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    mock_pk = MagicMock()
+    with patch.object(IdentityService, "get_public_key", return_value=mock_pk):
+        assert (
+            TraceVerifier.verify_trace(str(trace_empty), str(m_empty_path), trace_only=True) is True
+        )
+
+
+def test_verify_trace_certificate_raw_pk_non_str_bytes():
+    """
+    Exercises raw_pk being an int or other non-str/non-bytes type in provenance chain.
+    """
+    priv_key = Ed25519PrivateKey.generate()
+    pub_key = priv_key.public_key()
+    trace_bytes = b'{"event": "start"}\n'
+
+    manifest_payload = {
+        "vc_version": "3.0.0",
+        "harness_version": "2.0.0",
+        "timestamp": "2026-09-02T12:00:00+0000",
+        "run_id": "test-raw-pk-run",
+        "trace_hash": f"sha3_256:{hashlib.sha3_256(trace_bytes).hexdigest()}",
+    }
+    canonical_bytes = json.dumps(manifest_payload, sort_keys=True).encode("utf-8")
+    sig_hex = priv_key.sign(canonical_bytes).hex()
+
+    manifest_payload["provenance_chain"] = [
+        {
+            "algorithm": "ED25519",
+            "identity": "int_key_signer",
+            "public_key": 99999,
+            "signature": sig_hex,
+        }
+    ]
+
+    with patch.object(IdentityService, "get_public_key", return_value=pub_key):
+        res = verify_trace_certificate(
+            run_id="test-raw-pk-run",
+            trace_bytes=trace_bytes,
+            cert_data=manifest_payload,
+        )
+        assert res["verified"] is True
+        assert res["signer_identity"] == "int_key_signer"
+
+
+def test_verify_trace_certificate_evidence_root_trace_bytes_edge_cases():
+    """
+    Exercises verify_trace_certificate when trace_bytes is empty/None with evidence_root_hash,
+    and when trace_bytes contains blank lines.
+    """
+    priv_key = Ed25519PrivateKey.generate()
+    pub_key = priv_key.public_key()
+
+    manifest_payload = {
+        "vc_version": "3.0.0",
+        "harness_version": "2.0.0",
+        "timestamp": "2026-09-02T12:00:00+0000",
+        "run_id": "test-ev-root-edge-run",
+        "trace_hash": "sha3_256:abc",
+        "evidence_root_hash": "sha3_256:target_root",
+    }
+    canonical_bytes = json.dumps(manifest_payload, sort_keys=True).encode("utf-8")
+    sig_hex = priv_key.sign(canonical_bytes).hex()
+    manifest_payload["provenance_chain"] = [
+        {
+            "algorithm": "ED25519",
+            "identity": "signer_ev",
+            "public_key": pub_key.public_bytes(Encoding.Raw, PublicFormat.Raw).hex(),
+            "signature": sig_hex,
+        }
+    ]
+
+    # 1. trace_bytes is empty bytes
+    with patch.object(IdentityService, "get_public_key", return_value=pub_key):
+        res1 = verify_trace_certificate(
+            run_id="test-ev-root-edge-run",
+            trace_bytes=b"",
+            cert_data=manifest_payload,
+        )
+        assert res1["verified"] is False
+
+    # 2. trace_bytes has blank lines
+    trace_with_blank_lines = b'{"event": "start", "_seq": 1}\n   \n\n{"event": "end", "_seq": 2}\n'
+    from agentv_runtime.evidence_graph import (
+        build_evidence_graph_from_events,
+        compute_evidence_graph_root,
+    )
+
+    ev_list = [{"event": "start", "_seq": 1}, {"event": "end", "_seq": 2}]
+    expected_root = compute_evidence_graph_root(build_evidence_graph_from_events(ev_list))
+    t_hash_val = hashlib.sha3_256(trace_with_blank_lines).hexdigest()
+
+    manifest_payload2 = {
+        "vc_version": "3.0.0",
+        "harness_version": "2.0.0",
+        "timestamp": "2026-09-02T12:00:00+0000",
+        "run_id": "test-ev-root-edge-run",
+        "trace_hash": f"sha3_256:{t_hash_val}",
+        "evidence_root_hash": expected_root,
+    }
+    canonical_bytes2 = json.dumps(manifest_payload2, sort_keys=True).encode("utf-8")
+    manifest_payload2["provenance_chain"] = [
+        {
+            "algorithm": "ED25519",
+            "identity": "signer_ev",
+            "public_key": pub_key.public_bytes(Encoding.Raw, PublicFormat.Raw).hex(),
+            "signature": priv_key.sign(canonical_bytes2).hex(),
+        }
+    ]
+
+    with patch.object(IdentityService, "get_public_key", return_value=pub_key):
+        res2 = verify_trace_certificate(
+            run_id="test-ev-root-edge-run",
+            trace_bytes=trace_with_blank_lines,
+            cert_data=manifest_payload2,
+        )
+        assert res2["verified"] is True
+
+
+def test_verify_package_signature_only_complete_branches():
+    """
+    Exercises verify_package_signature_only with package as dict,
+    and with valid vs invalid signature outcomes.
+    """
+    pkg = VerificationPackage(
+        scenario_id="scen-01",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen",
+        manifest_id="m1",
+        manifest_hash="sha3_256:man",
+        execution_identity={"worker": "w1"},
+        trace_hash="sha3_256:trace",
+        trace_seal={"count": 1},
+        evidence_root_hash="sha3_256:ev",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={"decision": "PASS", "verdict": "VERIFIED"},
+        signature="deadbeef",
+        signer_identity="test_signer",
+    )
+
+    # 1. Package as dict with valid signature
+    pkg_dict = pkg.to_dict()
+    with patch.object(VerificationPackage, "verify_signature", return_value=True):
+        res_valid = VerificationAuthority.verify_package_signature_only(pkg_dict)
+        assert res_valid["verified"] is True
+        assert res_valid["status"] == "SIGNATURE_VALID"
+        assert res_valid["failures"] == []
+
+    # 2. Package as dict with invalid signature
+    with patch.object(VerificationPackage, "verify_signature", return_value=False):
+        res_invalid = VerificationAuthority.verify_package_signature_only(pkg_dict)
+        assert res_invalid["verified"] is False
+        assert res_invalid["status"] == "SIGNATURE_INVALID"
+        assert any("SignatureVerificationFailed" in f for f in res_invalid["failures"])
+
+
+def test_verify_package_artifacts_manifest_types_and_errors():
+    """
+    Exercises verify_package_artifacts with dict, bytes, str, unsupported types,
+    and compute_manifest_hash exceptions.
+    """
+    trace_bytes = b'{"event": "start", "_seq": 1}\n'
+    trace_hash = f"sha3_256:{hashlib.sha3_256(trace_bytes).hexdigest()}"
+    events = [{"event": "start", "_seq": 1}]
+
+    from agentv_runtime.evidence_graph import (
+        build_evidence_graph_from_events,
+        compute_evidence_graph_root,
+    )
+
+    ev_root = compute_evidence_graph_root(build_evidence_graph_from_events(events))
+
+    m_dict = {
+        "manifest_id": "m1",
+        "scenario_id": "s1",
+        "scenario_version": "1.0.0",
+        "scenario_hash": "sha3_256:scen",
+        "tenant_id": "t1",
+        "workspace_id": "ws1",
+        "agent_config": {},
+        "runtime_config": {},
+        "environment": {},
+        "created_at": "2026-09-01T00:00:00Z",
+        "created_by": "test",
+        "metadata": {},
+    }
+    m_hash = ExecutionManifest.from_dict(m_dict).compute_manifest_hash()
+
+    pkg = VerificationPackage(
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen",
+        manifest_id="m1",
+        manifest_hash=m_hash,
+        execution_identity={"worker": "w1"},
+        trace_hash=trace_hash,
+        trace_seal={"count": 1},
+        evidence_root_hash=ev_root,
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={"decision": "PASS", "verdict": "VERIFIED"},
+        signature="deadbeef",
+        signer_identity="test_signer",
+    )
+    pkg_dict = pkg.to_dict()
+
+    with patch.object(VerificationPackage, "verify_signature", return_value=True):
+        # 1. Package as dict, canonical_manifest as dict
+        res_dict = VerificationAuthority.verify_package_artifacts(
+            package=pkg_dict,
+            raw_trace_bytes=trace_bytes,
+            raw_trace_events=events,
+            canonical_manifest=m_dict,
+            require_signature=True,
+        )
+        assert res_dict["verified"] is True
+
+        # 2. canonical_manifest as bytes
+        m_raw_bytes = b'{"manifest_id": "m_bytes"}'
+        m_bytes_hash = f"sha3_256:{hashlib.sha3_256(m_raw_bytes).hexdigest()}"
+        pkg_b = VerificationPackage(
+            scenario_id="s1",
+            scenario_version="1.0.0",
+            scenario_hash="sha3_256:scen",
+            manifest_id="m1",
+            manifest_hash=m_bytes_hash,
+            execution_identity={"worker": "w1"},
+            trace_hash=trace_hash,
+            trace_seal={"count": 1},
+            evidence_root_hash=ev_root,
+            required_oracle_ids=[],
+            executed_oracle_results=[],
+            decision={"decision": "PASS", "verdict": "VERIFIED"},
+            signature="deadbeef",
+            signer_identity="test_signer",
+        )
+        res_bytes = VerificationAuthority.verify_package_artifacts(
+            package=pkg_b,
+            raw_trace_bytes=trace_bytes,
+            raw_trace_events=events,
+            canonical_manifest=m_raw_bytes,
+            require_signature=True,
+        )
+        assert res_bytes["verified"] is True
+
+        # 3. canonical_manifest as str
+        m_str = '{"manifest_id": "m_str"}'
+        m_str_hash = f"sha3_256:{hashlib.sha3_256(m_str.encode('utf-8')).hexdigest()}"
+        pkg_s = VerificationPackage(
+            scenario_id="s1",
+            scenario_version="1.0.0",
+            scenario_hash="sha3_256:scen",
+            manifest_id="m1",
+            manifest_hash=m_str_hash,
+            execution_identity={"worker": "w1"},
+            trace_hash=trace_hash,
+            trace_seal={"count": 1},
+            evidence_root_hash=ev_root,
+            required_oracle_ids=[],
+            executed_oracle_results=[],
+            decision={"decision": "PASS", "verdict": "VERIFIED"},
+            signature="deadbeef",
+            signer_identity="test_signer",
+        )
+        res_str = VerificationAuthority.verify_package_artifacts(
+            package=pkg_s,
+            raw_trace_bytes=trace_bytes,
+            raw_trace_events=events,
+            canonical_manifest=m_str,
+            require_signature=True,
+        )
+        assert res_str["verified"] is True
+
+        # 4. canonical_manifest as unsupported type (e.g. integer)
+        res_unsupported = VerificationAuthority.verify_package_artifacts(
+            package=pkg,
+            raw_trace_bytes=trace_bytes,
+            raw_trace_events=events,
+            canonical_manifest=12345,
+            require_signature=True,
+        )
+        assert res_unsupported["verified"] is False
+        assert any("ManifestHashMismatch" in f for f in res_unsupported["failures"])
+
+        # 5. canonical_manifest raises exception
+        class ExplodingManifest:
+            def compute_manifest_hash(self):
+                raise RuntimeError("Manifest calculation exploded")
+
+        res_err = VerificationAuthority.verify_package_artifacts(
+            package=pkg,
+            raw_trace_bytes=trace_bytes,
+            raw_trace_events=events,
+            canonical_manifest=ExplodingManifest(),
+            require_signature=True,
+        )
+        assert res_err["verified"] is False
+        assert any("ManifestVerificationFailed" in f for f in res_err["failures"])
+
+
+def test_verify_package_artifacts_events_and_provenance_branches():
+    """
+    Exercises raw_trace_events=None, incomplete direct provenance,
+    evidence graph exception, and missing trace seal in verify_package_artifacts.
+    """
+    trace_bytes = b'{"event": "start", "_seq": 1}\n'
+    trace_hash = f"sha3_256:{hashlib.sha3_256(trace_bytes).hexdigest()}"
+    m_bytes = b'{"manifest": 1}'
+    m_hash = f"sha3_256:{hashlib.sha3_256(m_bytes).hexdigest()}"
+
+    pkg = VerificationPackage(
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen",
+        manifest_id="m1",
+        manifest_hash=m_hash,
+        execution_identity={"worker": "w1"},
+        trace_hash=trace_hash,
+        trace_seal={"count": 1},
+        evidence_root_hash="sha3_256:ev_root",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={"decision": "PASS", "verdict": "VERIFIED"},
+        signature="deadbeef",
+        signer_identity="test_signer",
+    )
+
+    with patch.object(VerificationPackage, "verify_signature", return_value=True):
+        # 1. raw_trace_events is None
+        res_none = VerificationAuthority.verify_package_artifacts(
+            package=pkg,
+            raw_trace_bytes=trace_bytes,
+            raw_trace_events=None,
+            canonical_manifest=m_bytes,
+            require_signature=False,
+        )
+        assert any("TraceEventsMissing" in f for f in res_none["failures"])
+
+        # 2. Evidence graph with incomplete provenance
+        events = [{"event": "start", "_seq": 1}]
+        with (
+            patch(
+                "agentv_runtime.evidence_graph.compute_evidence_graph_root",
+                return_value="sha3_256:ev_root",
+            ),
+            patch(
+                "agentv_runtime.evidence_graph.build_evidence_graph_from_events",
+                return_value={"is_complete_provenance": False},
+            ),
+        ):
+            res_prov = VerificationAuthority.verify_package_artifacts(
+                package=pkg,
+                raw_trace_bytes=trace_bytes,
+                raw_trace_events=events,
+                canonical_manifest=m_bytes,
+                require_signature=False,
+            )
+            assert any("DirectProvenanceViolation" in f for f in res_prov["failures"])
+
+        # 3. Evidence reconstruction raises exception
+        with patch(
+            "agentv_runtime.evidence_graph.build_evidence_graph_from_events",
+            side_effect=RuntimeError("Graph build error"),
+        ):
+            res_ev_err = VerificationAuthority.verify_package_artifacts(
+                package=pkg,
+                raw_trace_bytes=trace_bytes,
+                raw_trace_events=events,
+                canonical_manifest=m_bytes,
+                require_signature=False,
+            )
+            assert any("EvidenceReconstructionFailed" in f for f in res_ev_err["failures"])
+
+        # 4. Missing trace seal
+        pkg_no_seal = VerificationPackage(
+            scenario_id="s1",
+            scenario_version="1.0.0",
+            scenario_hash="sha3_256:scen",
+            manifest_id="m1",
+            manifest_hash=m_hash,
+            execution_identity={"worker": "w1"},
+            trace_hash=trace_hash,
+            trace_seal={},
+            evidence_root_hash="sha3_256:ev_root",
+            required_oracle_ids=[],
+            executed_oracle_results=[],
+            decision={"decision": "PASS", "verdict": "VERIFIED"},
+            signature="deadbeef",
+            signer_identity="test_signer",
+        )
+        with (
+            patch(
+                "agentv_runtime.evidence_graph.compute_evidence_graph_root",
+                return_value="sha3_256:ev_root",
+            ),
+            patch(
+                "agentv_runtime.evidence_graph.build_evidence_graph_from_events",
+                return_value={"is_complete_provenance": True},
+            ),
+        ):
+            res_seal = VerificationAuthority.verify_package_artifacts(
+                package=pkg_no_seal,
+                raw_trace_bytes=trace_bytes,
+                raw_trace_events=events,
+                canonical_manifest=m_bytes,
+                require_signature=False,
+            )
+            assert any("TraceSealMissing" in f for f in res_seal["failures"])
+
+
+def test_verify_package_artifacts_scenario_decision_oracle_and_sig_branches():
+    """
+    Exercises scenario match/exception, unverified decision, missing oracles,
+    and signature verification failure/exception/missing branches in verify_package_artifacts.
+    """
+    trace_bytes = b'{"event": "start", "_seq": 1}\n'
+    trace_hash = f"sha3_256:{hashlib.sha3_256(trace_bytes).hexdigest()}"
+    m_bytes = b'{"manifest": 1}'
+    m_hash = f"sha3_256:{hashlib.sha3_256(m_bytes).hexdigest()}"
+    events = [{"event": "start", "_seq": 1}]
+
+    from agentv_runtime.manifest import compute_scenario_hash
+
+    scen_data = {"scenario_id": "scen-01", "steps": []}
+    scen_hash = compute_scenario_hash(scen_data)
+
+    base_pkg = VerificationPackage(
+        scenario_id="scen-01",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+        manifest_id="m1",
+        manifest_hash=m_hash,
+        execution_identity={"worker": "w1"},
+        trace_hash=trace_hash,
+        trace_seal={"count": 1},
+        evidence_root_hash="sha3_256:ev_root",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={"decision": "PASS", "verdict": "VERIFIED"},
+        signature="deadbeef",
+        signer_identity="test_signer",
+    )
+
+    with (
+        patch(
+            "agentv_runtime.evidence_graph.compute_evidence_graph_root",
+            return_value="sha3_256:ev_root",
+        ),
+        patch(
+            "agentv_runtime.evidence_graph.build_evidence_graph_from_events",
+            return_value={"is_complete_provenance": True},
+        ),
+    ):
+        # 1. Scenario hash match branch (1665->1674)
+        with patch.object(VerificationPackage, "verify_signature", return_value=True):
+            res_scen_match = VerificationAuthority.verify_package_artifacts(
+                package=base_pkg,
+                raw_trace_bytes=trace_bytes,
+                raw_trace_events=events,
+                canonical_manifest=m_bytes,
+                scenario_data=scen_data,
+                require_signature=True,
+            )
+            assert res_scen_match["verified"] is True
+
+        # 2. Scenario hash computation raises exception
+        with (
+            patch.object(VerificationPackage, "verify_signature", return_value=True),
+            patch(
+                "agentv_runtime.manifest.compute_scenario_hash",
+                side_effect=RuntimeError("Scen compute error"),
+            ),
+        ):
+            res_scen_err = VerificationAuthority.verify_package_artifacts(
+                package=base_pkg,
+                raw_trace_bytes=trace_bytes,
+                raw_trace_events=events,
+                canonical_manifest=m_bytes,
+                scenario_data=scen_data,
+                require_signature=False,
+            )
+            assert any("ScenarioVerificationFailed" in f for f in res_scen_err["failures"])
+
+        # 3. Decision is not PASS or VERIFIED
+        pkg_failed_decision = VerificationPackage(
+            scenario_id="scen-01",
+            scenario_version="1.0.0",
+            scenario_hash=scen_hash,
+            manifest_id="m1",
+            manifest_hash=m_hash,
+            execution_identity={"worker": "w1"},
+            trace_hash=trace_hash,
+            trace_seal={"count": 1},
+            evidence_root_hash="sha3_256:ev_root",
+            required_oracle_ids=[],
+            executed_oracle_results=[],
+            decision={"decision": "FAIL"},
+            signature="deadbeef",
+            signer_identity="test_signer",
+        )
+        with patch.object(VerificationPackage, "verify_signature", return_value=True):
+            res_dec = VerificationAuthority.verify_package_artifacts(
+                package=pkg_failed_decision,
+                raw_trace_bytes=trace_bytes,
+                raw_trace_events=events,
+                canonical_manifest=m_bytes,
+                require_signature=False,
+            )
+            assert any("UnverifiedDecision" in f for f in res_dec["failures"])
+
+        # 4. Missing required oracles
+        pkg_missing_oracles = VerificationPackage(
+            scenario_id="scen-01",
+            scenario_version="1.0.0",
+            scenario_hash=scen_hash,
+            manifest_id="m1",
+            manifest_hash=m_hash,
+            execution_identity={"worker": "w1"},
+            trace_hash=trace_hash,
+            trace_seal={"count": 1},
+            evidence_root_hash="sha3_256:ev_root",
+            required_oracle_ids=["required_oracle_1"],
+            executed_oracle_results=[{"metric": "other_oracle"}],
+            decision={"decision": "PASS", "verdict": "VERIFIED"},
+            signature="deadbeef",
+            signer_identity="test_signer",
+        )
+        with patch.object(VerificationPackage, "verify_signature", return_value=True):
+            res_oracles = VerificationAuthority.verify_package_artifacts(
+                package=pkg_missing_oracles,
+                raw_trace_bytes=trace_bytes,
+                raw_trace_events=events,
+                canonical_manifest=m_bytes,
+                require_signature=False,
+            )
+            assert any("MissingRequiredOracles" in f for f in res_oracles["failures"])
+
+        # 5. Signature verification returns False
+        with patch.object(VerificationPackage, "verify_signature", return_value=False):
+            res_sig_false = VerificationAuthority.verify_package_artifacts(
+                package=base_pkg,
+                raw_trace_bytes=trace_bytes,
+                raw_trace_events=events,
+                canonical_manifest=m_bytes,
+                require_signature=True,
+            )
+            assert any("SignatureVerificationFailed" in f for f in res_sig_false["failures"])
+
+        # 6. Signature verification raises Exception
+        with patch.object(
+            VerificationPackage,
+            "verify_signature",
+            side_effect=RuntimeError("Signature verify crashed"),
+        ):
+            res_sig_exc = VerificationAuthority.verify_package_artifacts(
+                package=base_pkg,
+                raw_trace_bytes=trace_bytes,
+                raw_trace_events=events,
+                canonical_manifest=m_bytes,
+                require_signature=True,
+            )
+            assert any("SignatureVerificationFailed" in f for f in res_sig_exc["failures"])
+
+        # 7. require_signature=True on package with no signature
+        pkg_unsigned = VerificationPackage(
+            scenario_id="scen-01",
+            scenario_version="1.0.0",
+            scenario_hash=scen_hash,
+            manifest_id="m1",
+            manifest_hash=m_hash,
+            execution_identity={"worker": "w1"},
+            trace_hash=trace_hash,
+            trace_seal={"count": 1},
+            evidence_root_hash="sha3_256:ev_root",
+            required_oracle_ids=[],
+            executed_oracle_results=[],
+            decision={"decision": "PASS", "verdict": "VERIFIED"},
+            signature=None,
+            signer_identity="test_signer",
+        )
+        res_unsigned = VerificationAuthority.verify_package_artifacts(
+            package=pkg_unsigned,
+            raw_trace_bytes=trace_bytes,
+            raw_trace_events=events,
+            canonical_manifest=m_bytes,
+            require_signature=True,
+        )
+        assert any("UnsignedPackage" in f for f in res_unsigned["failures"])
+
+
+def test_verify_package_manifest_and_scenario_branches():
+    """
+    Exercises verify_package with canonical_manifest as dict, bytes, str, unsupported type,
+    manifest mismatch/exception, and scenario mismatch/exception.
+    """
+    trace_bytes = b'{"event": "start", "_seq": 1}\n'
+    trace_hash = f"sha3_256:{hashlib.sha3_256(trace_bytes).hexdigest()}"
+
+    m_dict = {
+        "manifest_id": "m1",
+        "scenario_id": "s1",
+        "scenario_version": "1.0.0",
+        "scenario_hash": "sha3_256:scen",
+        "tenant_id": "t1",
+        "workspace_id": "ws1",
+        "agent_config": {},
+        "runtime_config": {},
+        "environment": {},
+        "created_at": "2026-09-01T00:00:00Z",
+        "created_by": "test",
+        "metadata": {},
+    }
+    m_hash = ExecutionManifest.from_dict(m_dict).compute_manifest_hash()
+
+    pkg = VerificationPackage(
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen",
+        manifest_id="m1",
+        manifest_hash=m_hash,
+        execution_identity={"worker": "w1"},
+        trace_hash=trace_hash,
+        trace_seal={"count": 1},
+        evidence_root_hash="sha3_256:ev_root",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={"decision": "PASS", "verdict": "VERIFIED"},
+        signature="deadbeef",
+        signer_identity="test_signer",
+    )
+
+    # 1. canonical_manifest as dict
+    res_dict = VerificationAuthority.verify_package(
+        pkg,
+        canonical_manifest=m_dict,
+        require_signature=False,
+    )
+    assert not any("Manifest" in f for f in res_dict["failures"])
+
+    # 2. canonical_manifest as bytes
+    m_bytes = b'{"manifest_id": "m_bytes_test"}'
+    m_bytes_hash = f"sha3_256:{hashlib.sha3_256(m_bytes).hexdigest()}"
+    pkg_b = VerificationPackage(
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen",
+        manifest_id="m1",
+        manifest_hash=m_bytes_hash,
+        execution_identity={"worker": "w1"},
+        trace_hash=trace_hash,
+        trace_seal={"count": 1},
+        evidence_root_hash="sha3_256:ev_root",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={"decision": "PASS", "verdict": "VERIFIED"},
+        signature="deadbeef",
+        signer_identity="test_signer",
+    )
+    res_b = VerificationAuthority.verify_package(
+        pkg_b,
+        canonical_manifest=m_bytes,
+        require_signature=False,
+    )
+    assert not any("Manifest" in f for f in res_b["failures"])
+
+    # 3. canonical_manifest as str
+    m_str = '{"manifest_id": "m_str_test"}'
+    m_str_hash = f"sha3_256:{hashlib.sha3_256(m_str.encode('utf-8')).hexdigest()}"
+    pkg_s = VerificationPackage(
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen",
+        manifest_id="m1",
+        manifest_hash=m_str_hash,
+        execution_identity={"worker": "w1"},
+        trace_hash=trace_hash,
+        trace_seal={"count": 1},
+        evidence_root_hash="sha3_256:ev_root",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={"decision": "PASS", "verdict": "VERIFIED"},
+        signature="deadbeef",
+        signer_identity="test_signer",
+    )
+    res_s = VerificationAuthority.verify_package(
+        pkg_s,
+        canonical_manifest=m_str,
+        require_signature=False,
+    )
+    assert not any("Manifest" in f for f in res_s["failures"])
+
+    # 4. canonical_manifest as unsupported type
+    res_unsupp = VerificationAuthority.verify_package(
+        pkg,
+        canonical_manifest=12345,
+        require_signature=False,
+    )
+    assert any("ManifestHashMismatch" in f for f in res_unsupp["failures"])
+
+    # 5. Manifest hash mismatch
+    res_mismatch = VerificationAuthority.verify_package(
+        pkg,
+        canonical_manifest=b'{"manifest_id": "different"}',
+        require_signature=False,
+    )
+    assert any("ManifestHashMismatch" in f for f in res_mismatch["failures"])
+
+    # 6. Manifest computation exception
+    class BadManifest:
+        def compute_manifest_hash(self):
+            raise RuntimeError("Manifest crash")
+
+    res_exc = VerificationAuthority.verify_package(
+        pkg,
+        canonical_manifest=BadManifest(),
+        require_signature=False,
+    )
+    assert any("ManifestVerificationFailed" in f for f in res_exc["failures"])
+
+    # 7. Scenario hash mismatch
+    scen_data = {"scenario_id": "s1", "steps": []}
+    res_scen_mismatch = VerificationAuthority.verify_package(
+        pkg,
+        scenario_data=scen_data,
+        require_signature=False,
+    )
+    assert any("ScenarioHashMismatch" in f for f in res_scen_mismatch["failures"])
+
+    # 8. Scenario computation exception
+    with patch(
+        "agentv_runtime.manifest.compute_scenario_hash",
+        side_effect=RuntimeError("Scenario calculation failed"),
+    ):
+        res_scen_exc = VerificationAuthority.verify_package(
+            pkg,
+            scenario_data=scen_data,
+            require_signature=False,
+        )
+        assert any("ScenarioVerificationFailed" in f for f in res_scen_exc["failures"])
