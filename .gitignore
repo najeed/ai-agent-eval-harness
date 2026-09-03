@@ -119,6 +119,7 @@ tmp_test/
 /scratch_tmp/
 /scripts/
 /workspace/
+/.test_staging/
 
 # --- Dependencies ---
 node_modules/

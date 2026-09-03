@@ -4,7 +4,12 @@ import jwt
 import pytest
 from flask import Flask, jsonify
 
-from eval_runner.console.auth import SECRET_KEY, auth_bp, generate_handoff_token, handoff_required
+from eval_runner.console.auth import (
+    auth_bp,
+    generate_handoff_token,
+    get_jwt_secret,
+    handoff_required,
+)
 
 
 @pytest.fixture
@@ -23,7 +28,7 @@ def client(app):
 def test_generate_handoff_token():
     """Test token generation and payload structure."""
     token = generate_handoff_token()
-    decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"], audience="agentv-plugin")
+    decoded = jwt.decode(token, get_jwt_secret(), algorithms=["HS256"], audience="agentv-plugin")
 
     assert decoded["sub"] == "admin-user"
     assert decoded["aud"] == "agentv-plugin"
@@ -79,7 +84,7 @@ def test_handoff_token_expired(app):
         "sub": "admin-user",
         "aud": "agentv-plugin",
     }
-    expired_token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+    expired_token = jwt.encode(payload, get_jwt_secret(), algorithm="HS256")
     resp = client.get(f"/protected-expired-ext?token={expired_token}")
     assert resp.status_code == 401
     assert "Token expired" in resp.json["error"]
@@ -91,7 +96,7 @@ def test_handoff_endpoint(client):
     assert resp.status_code == 200
     assert "token" in resp.json
     token = resp.json["token"]
-    decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"], audience="agentv-plugin")
+    decoded = jwt.decode(token, get_jwt_secret(), algorithms=["HS256"], audience="agentv-plugin")
     assert decoded["aud"] == "agentv-plugin"
 
 
@@ -100,7 +105,7 @@ def test_handoff_endpoint_custom_plugin(client):
     resp = client.get("/api/auth/handoff?plugin_id=my-extension")
     assert resp.status_code == 200
     token = resp.json["token"]
-    decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"], audience="agentv-plugin")
+    decoded = jwt.decode(token, get_jwt_secret(), algorithms=["HS256"], audience="agentv-plugin")
     assert decoded["plugin_id"] == "my-extension"
     assert decoded["scope"] == "console-handoff"
     assert resp.json["expires_in"] == 900

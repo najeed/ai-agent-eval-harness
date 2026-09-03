@@ -32,8 +32,11 @@ import ast
 import concurrent.futures
 import os
 import random
+import re
 import subprocess
 import sys
+import tempfile
+import threading
 from pathlib import Path
 from typing import Any
 
@@ -59,6 +62,10 @@ FAST_PYTEST_FLAGS = [
     "no:playwright",
     "-p",
     "no:Faker",
+    "-p",
+    "no:xdist",
+    "-o",
+    "addopts=",
 ]
 
 TARGET_MODULES = [
@@ -185,8 +192,8 @@ def _annotation_line_numbers(tree: ast.AST) -> set[int]:
 
 class MutationPoint:
     """
-    Describes a single mutation: where it is, what it changes, and whether it
-    is in an annotation-only (incompetent) position.
+    Describes a single mutation: where it is, what it changes, whether it
+    is in an annotation-only (incompetent) position, and its enclosing AST scope.
     """
 
     __slots__ = (
@@ -197,6 +204,7 @@ class MutationPoint:
         "mutated",
         "description",
         "is_incompetent",
+        "scope",
     )
 
     def __init__(
@@ -208,6 +216,7 @@ class MutationPoint:
         mutated: str,
         description: str,
         is_incompetent: bool,
+        scope: str = "",
     ):
         self.index = index
         self.lineno = lineno
@@ -216,50 +225,99 @@ class MutationPoint:
         self.mutated = mutated
         self.description = f"[{index}] line {lineno}: {description}"
         self.is_incompetent = is_incompetent
+        self.scope = scope
+
+
+class _MutationVisitor(ast.NodeVisitor):
+    """AST visitor that discovers mutation points and tracks enclosing method/class scope."""
+
+    def __init__(self, annotation_lines: set[int]):
+        self.annotation_lines = annotation_lines
+        self.points: list[MutationPoint] = []
+        self.scope_stack: list[str] = []
+        self.idx = 0
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        self.scope_stack.append(node.name)
+        self.generic_visit(node)
+        self.scope_stack.pop()
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        self.scope_stack.append(node.name)
+        self.generic_visit(node)
+        self.scope_stack.pop()
+
+    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
+        self.scope_stack.append(node.name)
+        self.generic_visit(node)
+        self.scope_stack.pop()
+
+    def _current_scope(self) -> str:
+        return self.scope_stack[-1] if self.scope_stack else "module"
+
+    def visit_Compare(self, node: ast.Compare) -> None:
+        lineno = getattr(node, "lineno", None)
+        col = getattr(node, "col_offset", 0)
+        in_annotation = lineno is not None and lineno in self.annotation_lines
+        scope = self._current_scope()
+
+        for op in node.ops:
+            op_type = type(op)
+            if op_type in _COMPARE_MUTATIONS:
+                orig, mut = _COMPARE_MUTATIONS[op_type]
+                # For multi-operator comparisons the AST doesn't give per-op col_offset.
+                # Use the node's start col as a best-effort anchor; the surgical
+                # replacer will find the first occurrence of orig on that line.
+                desc = f"{op_type.__name__} ({orig}) -> ({mut})"
+                self.points.append(
+                    MutationPoint(self.idx, lineno, col, orig, mut, desc, in_annotation, scope)
+                )
+                self.idx += 1
+        self.generic_visit(node)
+
+    def visit_BinOp(self, node: ast.BinOp) -> None:
+        lineno = getattr(node, "lineno", None)
+        col = getattr(node, "col_offset", 0)
+        in_annotation = lineno is not None and lineno in self.annotation_lines
+        scope = self._current_scope()
+
+        op_type = type(node.op)
+        if op_type in _BINOP_MUTATIONS:
+            orig, mut = _BINOP_MUTATIONS[op_type]
+            desc = f"{orig} -> {mut}"
+            self.points.append(
+                MutationPoint(self.idx, lineno, col, orig, mut, desc, in_annotation, scope)
+            )
+            self.idx += 1
+        self.generic_visit(node)
+
+    def visit_Constant(self, node: ast.Constant) -> None:
+        lineno = getattr(node, "lineno", None)
+        col = getattr(node, "col_offset", 0)
+        in_annotation = lineno is not None and lineno in self.annotation_lines
+        scope = self._current_scope()
+
+        if isinstance(node.value, bool):
+            val = node.value
+            orig, mut = _BOOL_MUTATIONS[val]
+            desc = f"{orig} -> {mut}"
+            self.points.append(
+                MutationPoint(self.idx, lineno, col, orig, mut, desc, in_annotation, scope)
+            )
+            self.idx += 1
+        self.generic_visit(node)
 
 
 def discover_mutation_points(source: str, annotation_lines: set[int]) -> list[MutationPoint]:
     """
     Walk the AST and enumerate every mutatable node as a MutationPoint.
     Uses col_offset from the AST to locate the exact operator in the source line.
+    Captures enclosing function/class scope for targeted test dispatch.
     """
     tree = ast.parse(source)
-    points: list[MutationPoint] = []
-    idx = 0
-
-    for node in ast.walk(tree):
-        lineno = getattr(node, "lineno", None)
-        col = getattr(node, "col_offset", 0)
-        in_annotation = lineno is not None and lineno in annotation_lines
-
-        if isinstance(node, ast.Compare):
-            for op in node.ops:
-                op_type = type(op)
-                if op_type in _COMPARE_MUTATIONS:
-                    orig, mut = _COMPARE_MUTATIONS[op_type]
-                    # For multi-operator comparisons the AST doesn't give per-op col_offset.
-                    # Use the node's start col as a best-effort anchor; the surgical
-                    # replacer will find the first occurrence of orig on that line.
-                    desc = f"{op_type.__name__} ({orig}) -> ({mut})"
-                    points.append(MutationPoint(idx, lineno, col, orig, mut, desc, in_annotation))
-                    idx += 1
-
-        elif isinstance(node, ast.BinOp):
-            op_type = type(node.op)
-            if op_type in _BINOP_MUTATIONS:
-                orig, mut = _BINOP_MUTATIONS[op_type]
-                desc = f"{orig} -> {mut}"
-                points.append(MutationPoint(idx, lineno, col, orig, mut, desc, in_annotation))
-                idx += 1
-
-        elif isinstance(node, ast.Constant) and isinstance(node.value, bool):
-            val = node.value
-            orig, mut = _BOOL_MUTATIONS[val]
-            desc = f"{orig} -> {mut}"
-            points.append(MutationPoint(idx, lineno, col, orig, mut, desc, in_annotation))
-            idx += 1
-
-    return points
+    visitor = _MutationVisitor(annotation_lines)
+    visitor.visit(tree)
+    return visitor.points
 
 
 def _apply_surgical_mutation(source_lines: list[str], mp: MutationPoint) -> str | None:
@@ -314,18 +372,44 @@ def _tests_for_module(module_name: str) -> list[str]:
     return MODULE_TEST_MAP.get(module_name, BASELINE_TESTS)
 
 
+def _make_loader_code(mutant_file: str, orig_file: Path, module_name: str, args_str: str) -> str:
+    pkg_name = module_name.rsplit(".", 1)[0]
+    return f"""
+import sys, importlib.util
+from pathlib import Path
+sys.path.insert(0, r"{BASE_DIR}")
+code = compile(Path(r"{mutant_file}").read_text(encoding="utf-8"), r"{orig_file}", "exec")
+pkg_name = "{pkg_name}"
+__import__(pkg_name)
+pkg = sys.modules[pkg_name]
+spec = importlib.util.spec_from_file_location("{module_name}", r"{orig_file}")
+mod = importlib.util.module_from_spec(spec)
+mod.__file__ = r"{orig_file}"
+mod.__package__ = pkg_name
+setattr(pkg, "{module_name.rsplit(".", 1)[-1]}", mod)
+sys.modules["{module_name}"] = mod
+exec(code, mod.__dict__)
+import pytest
+sys.exit(pytest.main({args_str}))
+"""
+
+
 def evaluate_mutant(
     target_file: Path,
     mutant_source: str,
     tests: list[str],
     timeout_seconds: float = 30.0,
     original_bytes: bytes | None = None,
+    scope: str = "",
+    killer_cache: dict[str, str] | None = None,
+    cache_lock: threading.Lock | None = None,
 ) -> str:
     """
-    Surgically applies mutant source to the target file, executes pytest against
-    the per-module corpus with bytecode caching disabled (-B and PYTHONDONTWRITEBYTECODE=1)
-    and PYTHONPATH prioritized to BASE_DIR, then restores the original file byte-for-byte.
-
+    Evaluates mutant using dynamic in-memory injection without mutating target_file on disk.
+    Applies 3-phase cascading acceleration:
+      1. Cached killer-test execution (stops in ~1 test if cached)
+      2. Targeted scope test execution (-k <scope> -x)
+      3. Fallback full module corpus execution (-x)
     Returns status: 'killed', 'survived', 'timeout', or 'incompetent'.
     """
     # 1. In-process AST syntax pre-check before touching disk or spawning subprocess
@@ -335,37 +419,95 @@ def evaluate_mutant(
         sys.stderr.write(f"      [Mutant] Incompetent AST syntax: {syntax_err}\n")
         return "incompetent"
 
-    if original_bytes is None:
-        original_bytes = target_file.read_bytes()
+    rel_path = target_file.resolve().relative_to(BASE_DIR)
+    module_name = ".".join(rel_path.with_suffix("").parts)
+    target_resolved = target_file.resolve()
+
+    # Isolated temporary mutant file (never modifies original source file on disk!)
+    with tempfile.NamedTemporaryFile("w", suffix=".py", delete=False, encoding="utf-8") as tf:
+        tf.write(mutant_source)
+        tf_path = tf.name
+
     env = os.environ.copy()
     env["PYTHONDONTWRITEBYTECODE"] = "1"
     env["PYTHONPATH"] = f"{BASE_DIR}{os.pathsep}{env.get('PYTHONPATH', '')}"
+
+    def _extract_and_cache_killer(output: str) -> None:
+        if killer_cache is not None and scope and scope != "module":
+            m = re.search(r"FAILED\s+[^:]+::([A-Za-z0-9_]+)", output)
+            if m:
+                test_name = m.group(1)
+                if cache_lock:
+                    with cache_lock:
+                        killer_cache[scope] = test_name
+                else:
+                    killer_cache[scope] = test_name
+
     try:
-        target_file.write_text(mutant_source, encoding="utf-8")
-        extra_flags = FAST_PYTEST_FLAGS + ["-x"]
-        args_str = repr(tests + extra_flags)
-        py_code = (
-            f"import sys; sys.path.insert(0, r'{BASE_DIR}'); "
-            f"import pytest; sys.exit(pytest.main({args_str}))"
-        )
-        cmd = [sys.executable, "-B", "-c", py_code]
-        try:
+        # Phase 1: Try cached killer test first (fast-fail on 1 test)
+        cached_killer = None
+        if killer_cache and scope:
+            if cache_lock:
+                with cache_lock:
+                    cached_killer = killer_cache.get(scope)
+            else:
+                cached_killer = killer_cache.get(scope)
+
+        if cached_killer:
+            fast_flags = FAST_PYTEST_FLAGS + ["-k", cached_killer, "-x"]
+            args_str = repr(tests + fast_flags)
+            loader_code = _make_loader_code(tf_path, target_resolved, module_name, args_str)
             res = subprocess.run(
-                cmd,
+                [sys.executable, "-B", "-c", loader_code],
+                cwd=BASE_DIR,
+                capture_output=True,
+                text=True,
+                timeout=min(timeout_seconds, 15.0),
+                env=env,
+            )
+            if res.returncode != 0:
+                return "killed"
+
+        # Phase 2: Scoped test filter
+        if scope and scope != "module":
+            scoped_flags = FAST_PYTEST_FLAGS + ["-k", scope, "-x"]
+            args_str = repr(tests + scoped_flags)
+            loader_code = _make_loader_code(tf_path, target_resolved, module_name, args_str)
+            res = subprocess.run(
+                [sys.executable, "-B", "-c", loader_code],
                 cwd=BASE_DIR,
                 capture_output=True,
                 text=True,
                 timeout=timeout_seconds,
                 env=env,
             )
-            return "killed" if res.returncode != 0 else "survived"
-        except subprocess.TimeoutExpired:
-            return "timeout"
+            if res.returncode != 0:
+                _extract_and_cache_killer(res.stdout)
+                return "killed"
+
+        # Phase 3: Fallback full module corpus
+        full_flags = FAST_PYTEST_FLAGS + ["-x"]
+        args_str = repr(tests + full_flags)
+        loader_code = _make_loader_code(tf_path, target_resolved, module_name, args_str)
+        res = subprocess.run(
+            [sys.executable, "-B", "-c", loader_code],
+            cwd=BASE_DIR,
+            capture_output=True,
+            text=True,
+            timeout=timeout_seconds,
+            env=env,
+        )
+        if res.returncode != 0:
+            _extract_and_cache_killer(res.stdout)
+            return "killed"
+        return "survived"
+    except subprocess.TimeoutExpired:
+        return "timeout"
     except (SyntaxError, UnicodeDecodeError, OSError, ValueError) as err:
         sys.stderr.write(f"      [Mutant] Incompetent AST substitution: {err}\n")
         return "incompetent"
     finally:
-        target_file.write_bytes(original_bytes)
+        Path(tf_path).unlink(missing_ok=True)
 
 
 def verify_sentinel_preconditions() -> dict[str, float]:
@@ -439,9 +581,11 @@ def _evaluate_target_module(
     target: Path,
     args: Any,
     module_timeouts: dict[str, float],
+    shared_killer_cache: dict[str, str] | None = None,
+    cache_lock: threading.Lock | None = None,
 ) -> tuple[int, int, int, int, list[dict]]:
     """
-    Evaluates mutants for a single target module.
+    Evaluates mutants for a single target module using mutant-level concurrency.
     Returns: (killed, survived, timeout, incompetent, mutant_records)
     """
     rel_path = target.relative_to(BASE_DIR)
@@ -489,47 +633,57 @@ def _evaluate_target_module(
     incompetent = 0
     records: list[dict] = []
 
-    try:
-        for mp in sampled:
-            if mp.is_incompetent:
-                incompetent += 1
-                records.append(
-                    {
-                        "module": str(rel_path),
-                        "mutation": mp.description,
-                        "status": "incompetent",
-                    }
-                )
-                print(
-                    f"      {'[INCOMPETENT]':15s} [{rel_path.as_posix()}] {mp.description}  "
-                    f"(annotation-only, no runtime effect)"
-                )
-                continue
+    num_workers = max(1, getattr(args, "workers", 1))
 
-            mutant_source = _apply_surgical_mutation(source_lines, mp)
-            if mutant_source is None:
-                incompetent += 1
-                records.append(
-                    {
-                        "module": str(rel_path),
-                        "mutation": mp.description,
-                        "status": "incompetent",
-                    }
-                )
-                print(
-                    f"      {'[INCOMPETENT]':15s} [{rel_path.as_posix()}] {mp.description}  "
-                    f"(token not locatable at col {mp.col_offset} on line {mp.lineno})"
-                )
-                continue
+    def _eval_one(mp: MutationPoint) -> tuple[str, str, MutationPoint]:
+        if mp.is_incompetent:
+            return "incompetent", f"{mp.description}  (annotation-only, no runtime effect)", mp
 
-            status = evaluate_mutant(
-                target,
-                mutant_source,
-                tests,
-                timeout_seconds=timeout_sec,
-                original_bytes=original_bytes,
+        mutant_source = _apply_surgical_mutation(source_lines, mp)
+        if mutant_source is None:
+            desc = (
+                f"{mp.description}  "
+                f"(token not locatable at col {mp.col_offset} on line {mp.lineno})"
             )
+            return "incompetent", desc, mp
 
+        status = evaluate_mutant(
+            target,
+            mutant_source,
+            tests,
+            timeout_seconds=timeout_sec,
+            original_bytes=original_bytes,
+            scope=mp.scope,
+            killer_cache=shared_killer_cache,
+            cache_lock=cache_lock,
+        )
+        return status, mp.description, mp
+
+    if num_workers > 1:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as pool:
+            futures = {pool.submit(_eval_one, mp): mp for mp in sampled}
+            for fut in concurrent.futures.as_completed(futures):
+                status, desc, mp = fut.result()
+                if status == "killed":
+                    killed += 1
+                    icon = "[KILLED]"
+                elif status == "timeout":
+                    timeout += 1
+                    icon = "[TIMEOUT]"
+                elif status == "survived":
+                    survived += 1
+                    icon = "[SURVIVED]"
+                else:
+                    incompetent += 1
+                    icon = "[INCOMPETENT]"
+
+                records.append(
+                    {"module": str(rel_path), "mutation": mp.description, "status": status}
+                )
+                print(f"      {icon:15s} [{rel_path.as_posix()}] {desc}", flush=True)
+    else:
+        for mp in sampled:
+            status, desc, _ = _eval_one(mp)
             if status == "killed":
                 killed += 1
                 icon = "[KILLED]"
@@ -544,9 +698,7 @@ def _evaluate_target_module(
                 icon = "[INCOMPETENT]"
 
             records.append({"module": str(rel_path), "mutation": mp.description, "status": status})
-            print(f"      {icon:15s} [{rel_path.as_posix()}] {mp.description}")
-    finally:
-        target.write_bytes(original_bytes)
+            print(f"      {icon:15s} [{rel_path.as_posix()}] {desc}", flush=True)
 
     return killed, survived, timeout, incompetent, records
 
@@ -678,30 +830,19 @@ def run_mutation_sentinel() -> None:
     total_incompetent = 0
     mutant_records: list[dict] = []
 
+    shared_killer_cache: dict[str, str] = {}
+    cache_lock = threading.Lock()
     try:
         print(f"2. Mutating Verification Modules & Scoring Test Suite ({mode_label})...")
-        if args.workers > 1:
-            worker_count = min(args.workers, len(TARGET_MODULES))
-            with concurrent.futures.ThreadPoolExecutor(max_workers=worker_count) as executor:
-                futures = {
-                    executor.submit(_evaluate_target_module, target, args, module_timeouts): target
-                    for target in TARGET_MODULES
-                }
-                for fut in concurrent.futures.as_completed(futures):
-                    k, s, t, inc, recs = fut.result()
-                    total_killed += k
-                    total_survived += s
-                    total_timeout += t
-                    total_incompetent += inc
-                    mutant_records.extend(recs)
-        else:
-            for target in TARGET_MODULES:
-                k, s, t, inc, recs = _evaluate_target_module(target, args, module_timeouts)
-                total_killed += k
-                total_survived += s
-                total_timeout += t
-                total_incompetent += inc
-                mutant_records.extend(recs)
+        for target in TARGET_MODULES:
+            k, s, t, inc, recs = _evaluate_target_module(
+                target, args, module_timeouts, shared_killer_cache, cache_lock
+            )
+            total_killed += k
+            total_survived += s
+            total_timeout += t
+            total_incompetent += inc
+            mutant_records.extend(recs)
     finally:
         emergency_restore()
 

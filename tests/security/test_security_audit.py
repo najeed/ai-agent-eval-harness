@@ -315,10 +315,10 @@ def test_auth_jwt_generation():
     """Verify that generate_handoff_token creates a short-lived HS256 JWT."""
     import jwt
 
-    from eval_runner.console.auth import SECRET_KEY, generate_handoff_token
+    from eval_runner.console.auth import generate_handoff_token, get_jwt_secret
 
     token = generate_handoff_token()
-    decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"], audience="agentv-plugin")
+    decoded = jwt.decode(token, get_jwt_secret(), algorithms=["HS256"], audience="agentv-plugin")
 
     assert decoded["sub"] == "admin-user"
     assert decoded["aud"] == "agentv-plugin"
@@ -335,13 +335,13 @@ def test_auth_handoff_token_audience_binding():
     """
     import jwt
 
-    from eval_runner.console.auth import SECRET_KEY, generate_handoff_token
+    from eval_runner.console.auth import generate_handoff_token, get_jwt_secret
 
     t1 = generate_handoff_token(sub="user-a", plugin_id="plugin-x")
     t2 = generate_handoff_token(sub="user-a", plugin_id="plugin-x")
 
-    d1 = jwt.decode(t1, SECRET_KEY, algorithms=["HS256"], audience="agentv-plugin")
-    d2 = jwt.decode(t2, SECRET_KEY, algorithms=["HS256"], audience="agentv-plugin")
+    d1 = jwt.decode(t1, get_jwt_secret(), algorithms=["HS256"], audience="agentv-plugin")
+    d2 = jwt.decode(t2, get_jwt_secret(), algorithms=["HS256"], audience="agentv-plugin")
 
     # Each token must have a unique jti for replay prevention.
     assert d1["jti"] != d2["jti"]
@@ -350,7 +350,7 @@ def test_auth_handoff_token_audience_binding():
 
     # Token must be rejected for an incorrect audience.
     with pytest.raises(jwt.InvalidAudienceError):
-        jwt.decode(t1, SECRET_KEY, algorithms=["HS256"], audience="wrong-audience")
+        jwt.decode(t1, get_jwt_secret(), algorithms=["HS256"], audience="wrong-audience")
 
 
 def test_auth_handoff_decorator():

@@ -57,7 +57,11 @@ def get_jwt_secret() -> str:
     return _EPHEMERAL_SECRET
 
 
-SECRET_KEY = get_jwt_secret()
+def __getattr__(name: str) -> Any:
+    """Dynamic module attribute accessor for backward-compatible SECRET_KEY resolution."""
+    if name == "SECRET_KEY":
+        return get_jwt_secret()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def generate_handoff_token(

@@ -104,9 +104,17 @@ async def reset_environ():
     import os
 
     orig = dict(os.environ)
+    from eval_runner import config
+
+    orig_svc_key = getattr(config, "SERVICE_API_KEY", None)
+    orig_dash_key = getattr(config, "DASHBOARD_API_KEY", None)
+    orig_jwt_secret = getattr(config, "JWT_SECRET", None)
     yield
     os.environ.clear()
     os.environ.update(orig)
+    config.SERVICE_API_KEY = orig_svc_key
+    config.DASHBOARD_API_KEY = orig_dash_key
+    config.JWT_SECRET = orig_jwt_secret
     # Physically purge stale references and close pending file handles (Windows Hardening)
 
     from eval_runner.simulators import BaseSimulator
