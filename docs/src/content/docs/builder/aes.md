@@ -70,7 +70,7 @@ Every execution captures an immutable **Provisioning Hash** of the final merged 
 ### Behavioral DNA
 A cryptographic signature (Ed25519) that binds the execution trace (`run.jsonl`) and all sidecar artifacts (reports, plots) to the scenario's DAG structure.
 
-:::important
+:::note[Important]
 **Certification Rule**: A trace is only "Forensically Valid" if the `harness_version` supports the requested `aes_version` and the `provisioning_hash` matches the sanctioned baseline.
 :::
 

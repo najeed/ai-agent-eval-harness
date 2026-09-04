@@ -76,7 +76,7 @@ AgentV includes a high-fidelity PII scanner designed for industrial compliance (
 | **Digital** | GDPR | IP Addresses, MAC Addresses, and social handles. |
 | **Crypto** | FinCEN | Bitcoin (bc1) and Ethereum (0x) wallet addresses. |
 
-:::important
+:::note[Important]
 When PII is detected, the engine emits a `SECURITY_PII_LEAK` event. In Enterprise environments, these values are automatically redacted in the visual console while being retained as encrypted hashes in the forensic audit trail.
 :::
 

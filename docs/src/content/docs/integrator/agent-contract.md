@@ -178,7 +178,7 @@ When the agent requests tool execution, the **AgentV harness executes the sandbo
 }
 ```
 
-:::important Authoritative Execution
+:::note[Important: Authoritative Execution]
 The agent **must never fabricate tool outputs** or claim to execute tools locally. The harness is the sole authoritative gateway to simulated environments and world shims.
 :::
 

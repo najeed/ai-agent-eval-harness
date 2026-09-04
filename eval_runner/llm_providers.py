@@ -3,6 +3,17 @@ from abc import ABC, abstractmethod
 import aiohttp
 
 from . import config
+from .llm_resilience import (
+    LLMAuthenticationError,
+    LLMError,
+    LLMInvalidRequestError,
+    LLMModelNotFoundError,
+    LLMQuotaExceededError,
+    LLMRateLimitError,
+    LLMTransientError,
+    classify_llm_error,
+    execute_with_resilience,
+)
 
 
 class LLMProvider(ABC):
@@ -22,28 +33,33 @@ class OllamaProvider(LLMProvider):
         self.model = model or config.OLLAMA_MODEL
 
     async def generate(self, prompt: str, **kwargs) -> str:
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.post(
-                    f"{self.host}/api/generate",
-                    json={
-                        "model": self.model,
-                        "prompt": prompt,
-                        "stream": False,
-                        "options": {
-                            "temperature": kwargs.get("temperature", 0.0),
-                            "seed": kwargs.get("seed"),
+        async def _call():
+            async with aiohttp.ClientSession() as session:
+                try:
+                    async with session.post(
+                        f"{self.host}/api/generate",
+                        json={
+                            "model": self.model,
+                            "prompt": prompt,
+                            "stream": False,
+                            "options": {
+                                "temperature": kwargs.get("temperature", 0.0),
+                                "seed": kwargs.get("seed"),
+                            },
                         },
-                    },
-                    timeout=aiohttp.ClientTimeout(total=30),
-                ) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        return data.get("response", "").strip()
-                    else:
-                        raise Exception(f"Ollama error: {response.status}")
-            except Exception as e:
-                raise Exception(f"Ollama connection failed: {e}")  # noqa: B904
+                        timeout=aiohttp.ClientTimeout(total=30),
+                    ) as response:
+                        if response.status == 200:
+                            data = await response.json()
+                            return data.get("response", "").strip()
+                        else:
+                            raise Exception(f"Ollama error: {response.status}")
+                except Exception as e:
+                    if "Ollama error:" in str(e):
+                        raise
+                    raise Exception(f"Ollama connection failed: {e}") from e
+
+        return await execute_with_resilience(_call, provider="ollama")
 
     async def list_models(self) -> list:
         """Lists available models in Ollama."""
@@ -74,36 +90,45 @@ class OpenAIProvider(LLMProvider):
 
     async def generate(self, prompt: str, **kwargs) -> str:
         if not self.api_key:
-            raise Exception("OpenAI API key missing.")
+            raise LLMAuthenticationError(
+                "OpenAI API key missing.", provider="openai", status_code=401
+            )
 
-        async with aiohttp.ClientSession() as session:
-            try:
-                headers = {
-                    "Authorization": f"Bearer {self.api_key}",
-                    "Content-Type": "application/json",
-                }
-                async with session.post(
-                    f"{self.base_url}/chat/completions",
-                    headers=headers,
-                    json={
-                        "model": self.model,
-                        "messages": [{"role": "user", "content": prompt}],
-                        "temperature": kwargs.get("temperature", 0.0),
-                        "seed": kwargs.get("seed"),
-                    },
-                    timeout=aiohttp.ClientTimeout(total=30),
-                ) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        try:
-                            return data["choices"][0]["message"]["content"].strip()
-                        except (KeyError, IndexError):
-                            raise Exception(f"Unexpected OpenAI response format: {data}")  # noqa: B904
-                    else:
-                        error_body = await response.text()
-                        raise Exception(f"OpenAI error {response.status}: {error_body}")
-            except Exception as e:
-                raise Exception(f"OpenAI request failed: {e}")  # noqa: B904
+        async def _call():
+            async with aiohttp.ClientSession() as session:
+                try:
+                    headers = {
+                        "Authorization": f"Bearer {self.api_key}",
+                        "Content-Type": "application/json",
+                    }
+                    async with session.post(
+                        f"{self.base_url}/chat/completions",
+                        headers=headers,
+                        json={
+                            "model": self.model,
+                            "messages": [{"role": "user", "content": prompt}],
+                            "temperature": kwargs.get("temperature", 0.0),
+                            "seed": kwargs.get("seed"),
+                        },
+                        timeout=aiohttp.ClientTimeout(total=30),
+                    ) as response:
+                        if response.status == 200:
+                            data = await response.json()
+                            try:
+                                return data["choices"][0]["message"]["content"].strip()
+                            except (KeyError, IndexError) as err:
+                                raise Exception(
+                                    f"Unexpected OpenAI response format: {data}"
+                                ) from err
+                        else:
+                            error_body = await response.text()
+                            raise Exception(f"OpenAI error {response.status}: {error_body}")
+                except Exception as e:
+                    if "OpenAI error " in str(e) or "Unexpected OpenAI response format" in str(e):
+                        raise
+                    raise Exception(f"OpenAI request failed: {e}") from e
+
+        return await execute_with_resilience(_call, provider="openai")
 
     async def list_models(self) -> list:
         """Lists available models in OpenAI."""
@@ -138,37 +163,48 @@ class AnthropicProvider(LLMProvider):
 
     async def generate(self, prompt: str, **kwargs) -> str:
         if not self.api_key:
-            raise Exception("Anthropic API key missing.")
+            raise LLMAuthenticationError(
+                "Anthropic API key missing.", provider="anthropic", status_code=401
+            )
 
-        async with aiohttp.ClientSession() as session:
-            try:
-                headers = {
-                    "x-api-key": self.api_key,
-                    "anthropic-version": config.ANTHROPIC_VERSION,
-                    "content-type": "application/json",
-                }
-                async with session.post(
-                    self.base_url,
-                    headers=headers,
-                    json={
-                        "model": self.model,
-                        "max_tokens": 1024,
-                        "messages": [{"role": "user", "content": prompt}],
-                        "temperature": kwargs.get("temperature", 0.0),
-                    },
-                    timeout=aiohttp.ClientTimeout(total=30),
-                ) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        try:
-                            return data["content"][0]["text"].strip()
-                        except (KeyError, IndexError):
-                            raise Exception(f"Unexpected Anthropic response format: {data}")  # noqa: B904
-                    else:
-                        error_body = await response.text()
-                        raise Exception(f"Anthropic error {response.status}: {error_body}")
-            except Exception as e:
-                raise Exception(f"Anthropic request failed: {e}")  # noqa: B904
+        async def _call():
+            async with aiohttp.ClientSession() as session:
+                try:
+                    headers = {
+                        "x-api-key": self.api_key,
+                        "anthropic-version": config.ANTHROPIC_VERSION,
+                        "content-type": "application/json",
+                    }
+                    async with session.post(
+                        self.base_url,
+                        headers=headers,
+                        json={
+                            "model": self.model,
+                            "max_tokens": 1024,
+                            "messages": [{"role": "user", "content": prompt}],
+                            "temperature": kwargs.get("temperature", 0.0),
+                        },
+                        timeout=aiohttp.ClientTimeout(total=30),
+                    ) as response:
+                        if response.status == 200:
+                            data = await response.json()
+                            try:
+                                return data["content"][0]["text"].strip()
+                            except (KeyError, IndexError) as err:
+                                raise Exception(
+                                    f"Unexpected Anthropic response format: {data}"
+                                ) from err
+                        else:
+                            error_body = await response.text()
+                            raise Exception(f"Anthropic error {response.status}: {error_body}")
+                except Exception as e:
+                    if "Anthropic error " in str(
+                        e
+                    ) or "Unexpected Anthropic response format" in str(e):
+                        raise
+                    raise Exception(f"Anthropic request failed: {e}") from e
+
+        return await execute_with_resilience(_call, provider="anthropic")
 
     async def list_models(self) -> list:
         """Lists available models for Anthropic."""
@@ -204,29 +240,38 @@ class GeminiProvider(LLMProvider):
 
     async def generate(self, prompt: str, **kwargs) -> str:
         if not self.api_key:
-            raise Exception("Google API key missing.")
-
-        try:
-            client = await self._get_client()
-            from google.genai import types
-
-            response = await client.aio.models.generate_content(
-                model=self.model,
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    temperature=kwargs.get("temperature", 0.1),
-                    max_output_tokens=kwargs.get("max_output_tokens", 1024),
-                    seed=kwargs.get("seed"),
-                ),
+            raise LLMAuthenticationError(
+                "Google API key missing.", provider="gemini", status_code=401
             )
 
-            if response and response.text:
-                return response.text.strip()
-            else:
-                raise Exception(f"Empty response from Gemini SDK: {response}")
+        async def _call():
+            try:
+                client = await self._get_client()
+                from google.genai import types
 
-        except Exception as e:
-            raise Exception(f"Gemini SDK request failed: {e}")  # noqa: B904
+                response = await client.aio.models.generate_content(
+                    model=self.model,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        temperature=kwargs.get("temperature", 0.1),
+                        max_output_tokens=kwargs.get("max_output_tokens", 1024),
+                        seed=kwargs.get("seed"),
+                        automatic_function_calling=types.AutomaticFunctionCallingConfig(
+                            disable=True
+                        ),
+                    ),
+                )
+
+                if response and response.text:
+                    return response.text.strip()
+                else:
+                    raise Exception(f"Empty response from Gemini SDK: {response}")
+            except Exception as e:
+                if "Empty response from Gemini SDK" in str(e):
+                    raise
+                raise Exception(f"Gemini SDK request failed: {e}") from e
+
+        return await execute_with_resilience(_call, provider="gemini")
 
     async def list_models(self) -> list:
         """Lists available models using the GenAI SDK."""
@@ -287,3 +332,23 @@ class LLMProviderFactory:
             return GrokProvider()
         else:
             raise ValueError(f"Unknown LLM provider: {provider_name}")
+
+
+__all__ = [
+    "LLMProvider",
+    "OllamaProvider",
+    "OpenAIProvider",
+    "AnthropicProvider",
+    "GeminiProvider",
+    "GrokProvider",
+    "LLMProviderFactory",
+    "LLMError",
+    "LLMTransientError",
+    "LLMRateLimitError",
+    "LLMQuotaExceededError",
+    "LLMAuthenticationError",
+    "LLMInvalidRequestError",
+    "LLMModelNotFoundError",
+    "classify_llm_error",
+    "execute_with_resilience",
+]

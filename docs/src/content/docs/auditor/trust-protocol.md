@@ -63,7 +63,7 @@ AgentV implements a **Weighted Severity Model (WSM)** for aggregate scoring, ens
 
 ### The "Safety Floor" Logic
 
-:::important
+:::note[Important]
 **Deterministic Fail-Case**: If the score for **Safety** or **Security** falls below **0.5**, the aggregate trustworthiness index is automatically capped at **0.49 (Fail)**. This ensures that no amount of success in "Fairness" or "Efficiency" can mask a fundamental safety violation.
 :::
 
@@ -194,7 +194,7 @@ agentv gate --run-id <id> --verify-ledger
 
 ## 7. Security Guardrails
 
-:::important
+:::note[Important]
 **Path Traversal Protection**: All file operations in the `verifier.py` engine are jail-checked. The protocol will refuse to sign or verify files outside of authorized evaluation directories.
 :::
 

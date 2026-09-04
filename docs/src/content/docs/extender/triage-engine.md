@@ -30,7 +30,7 @@ Each diagnostic trigger is assigned a **Global Rank** (0-10) and a **Confidence 
 1. **Primary Root Cause**: The trigger with the highest combined Rank and Confidence.
 2. **Contributing Factors**: Secondary triggers that occurred but are ranked lower (e.g., an Infrastructure Timeout that was caused by an upstream Agent Stall).
 
-:::important
+:::note[Important]
 Infrastructure and Policy violations (e.g., OOM or PII Leaks) are always weighted higher than behavioral symptoms (e.g., Stalls), as they represent deterministic execution boundaries.
 :::
 

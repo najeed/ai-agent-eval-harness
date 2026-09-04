@@ -72,9 +72,10 @@ The following tables summarize the licenses of our core dependencies. All used l
 ### 2.4 Documentation Platform Dependencies (`docs/package.json`)
 | Package | Version | License | License File |
 | :--- | :--- | :--- | :--- |
-| **@astrojs/starlight** | ^0.41.9 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **astro** | ^7.2.7 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **sharp** | ^0.35.3 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **@astrojs/markdown-remark** | ^7.3.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **@astrojs/starlight** | ^0.42.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **astro** | ^7.3.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **sharp** | ^0.35.4 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 
 ### 2.5 Data Processing Engine Dependencies (`dataproc_engine/pyproject.toml`)
 | Package | Version | License | License File |

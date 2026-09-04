@@ -12,9 +12,10 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.41.9",
-    "astro": "^7.2.7",
-    "sharp": "^0.35.3"
+    "@astrojs/markdown-remark": "^7.3.0",
+    "@astrojs/starlight": "^0.42.0",
+    "astro": "^7.3.1",
+    "sharp": "^0.35.4"
   },
   "overrides": {
     "nanoid": "^6.0.1"

@@ -91,7 +91,7 @@ When registering plugins persistently, AgentV enforces a strict **Split Schema**
 }
 ```
 
-:::important
+:::note[Important]
 The harness no longer supports the combined `"module": "path.Class"` string format for persistent registration. You **must** provide the `module` and `class` fields as separate entities in the registry.
 :::
 

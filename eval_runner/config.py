@@ -479,6 +479,12 @@ XAI_API_KEY = os.getenv("XAI_API_KEY")
 XAI_BASE_URL = os.getenv("XAI_BASE_URL", "https://api.x.ai/v1")
 XAI_MODEL = os.getenv("XAI_MODEL", "grok-4.20-multi-agent")
 
+# --- LLM Resilience & Retry Policies ---
+LLM_MAX_RETRIES = int(os.getenv("AGENTV_LLM_MAX_RETRIES", "4"))
+LLM_INITIAL_RETRY_DELAY = float(os.getenv("AGENTV_LLM_INITIAL_DELAY", "1.0"))
+LLM_MAX_RETRY_DELAY = float(os.getenv("AGENTV_LLM_MAX_DELAY", "30.0"))
+LLM_BACKOFF_FACTOR = float(os.getenv("AGENTV_LLM_BACKOFF_FACTOR", "2.0"))
+
 # --- Metric Thresholds & Defaults ---
 CLARITY_MIN_LENGTH = int(os.getenv("CLARITY_MIN_LENGTH", "10"))
 LATENCY_DECAY_PER_HOP = float(os.getenv("LATENCY_DECAY_PER_HOP", "0.2"))

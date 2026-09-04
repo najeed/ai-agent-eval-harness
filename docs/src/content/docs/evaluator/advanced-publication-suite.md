@@ -92,6 +92,6 @@ Every execution creates a unique batch directory in `results/batch_YYYYMMDD_HHMM
 - **`leaderboard.html`**: Professional visual report.
 - **`publication_artifact_bundle.zip`**: The signed, immutable package for regulatory submission.
 
-:::important
+:::note[Important]
 Because this bundling logic is part of the **Zero-Touch Core**, it serves as an immutable "Source of Truth" for regulatory or public disclosures.
 :::

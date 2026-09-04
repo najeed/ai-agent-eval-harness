@@ -81,6 +81,6 @@ agentv spec-to-eval \
   --force
 ```
 
-:::important
+:::note[Important]
 **Schema Validation**: Validated AES files are required for [Trust Protocol Certification](/auditor/trust-protocol/). Unauthorized modifications to a certified AES file will trigger a **Behavioral Drift** alert.
 :::
