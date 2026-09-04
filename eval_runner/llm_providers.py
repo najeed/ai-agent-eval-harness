@@ -223,7 +223,7 @@ class GeminiProvider(LLMProvider):
     def __init__(
         self, api_key: str | None = None, base_url: str | None = None, model: str | None = None
     ):
-        self.api_key = api_key or config.GOOGLE_API_KEY
+        self.api_key = api_key if api_key is not None else config.GOOGLE_API_KEY
         self.model = model or config.GEMINI_MODEL
         # The SDK handles the base URL automatically, but we can override if needed
         self.vertex_ai = "vertexai" in (base_url or "").lower()

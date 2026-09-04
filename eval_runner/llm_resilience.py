@@ -3,7 +3,7 @@ Centralized LLM Error Classifier & Resilience Layer.
 
 Provides normalized typed domain exceptions, heuristic and SDK-level error classification,
 and full-jitter exponential backoff retry execution for LLM providers across both
-OSS evaluation harnesses and Enterprise services.
+OSS and extension services.
 """
 
 from __future__ import annotations
