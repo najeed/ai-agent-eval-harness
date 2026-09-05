@@ -23,7 +23,7 @@ pygments>=2.21.0
 langchain-core>=1.6.2
 langchain==1.4.0
 langgraph==1.2.11
-# crewai==1.15.18    # crewai doesn't support the latest dependencies as of September 2026.
+# crewai==1.15.20    # crewai doesn't support Py3.14 as of September 2026.
 ag2==1.0.3
 pyasn1>=0.6.4
 
