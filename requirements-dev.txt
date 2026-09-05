@@ -20,7 +20,7 @@ playwright>=1.62.0
 pre-commit>=4.6.2
 pandas>=3.0.5
 pygments>=2.21.0
-langchain-core>=1.6.1
+langchain-core>=1.6.2
 langchain==1.4.0
 langgraph==1.2.11
 # crewai==1.15.18    # crewai doesn't support the latest dependencies as of September 2026.
