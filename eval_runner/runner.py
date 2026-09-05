@@ -233,13 +233,13 @@ class DefaultRunner(BaseRunner):
             # 🚀 STRATEGY: Mission-Level Telemetry
             events.emit(
                 events.CoreEvents.STRATEGY_START,
-                {"strategy": "pass_at_k", "k": attempts},
+                {"run_id": effective_run_id, "strategy": "pass_at_k", "k": attempts},
                 span_context=ctx.span_context,
             )
 
             events.emit(
                 events.CoreEvents.PHASE_START,
-                {"phase": "pass_at_k_execution", "k": attempts},
+                {"run_id": effective_run_id, "phase": "pass_at_k_execution", "k": attempts},
                 span_context=ctx.span_context,
             )
             for k in range(1, attempts + 1):
@@ -286,7 +286,7 @@ class DefaultRunner(BaseRunner):
 
             events.emit(
                 events.CoreEvents.PHASE_END,
-                {"phase": "pass_at_k_execution"},
+                {"run_id": effective_run_id, "phase": "pass_at_k_execution"},
                 span_context=ctx.span_context,
             )
 
@@ -314,7 +314,11 @@ class DefaultRunner(BaseRunner):
                 print(tb)
                 events.emit(
                     events.CoreEvents.ERROR,
-                    {"message": f"Runner Post-Process Error: {e}", "traceback": tb},
+                    {
+                        "run_id": effective_run_id,
+                        "message": f"Runner Post-Process Error: {e}",
+                        "traceback": tb,
+                    },
                 )
 
             successful_attempts_count = sum(
@@ -324,6 +328,10 @@ class DefaultRunner(BaseRunner):
             events.emit(
                 events.CoreEvents.RUN_END,
                 {
+                    "run_id": effective_run_id,
+                    "status": "passed" if pass_at_k > 0 else "failed",
+                    "passed": bool(pass_at_k > 0),
+                    "score": float(pass_at_k),
                     "pass_at_k": pass_at_k,
                     "attempt_success_rate": attempt_statistics.get("attempt_success_rate", 0.0),
                     "all_pass": attempt_statistics.get("all_pass", False),
@@ -338,7 +346,11 @@ class DefaultRunner(BaseRunner):
 
             events.emit(
                 events.CoreEvents.STRATEGY_END,
-                {"strategy": "pass_at_k", "status": "success" if pass_at_k > 0 else "failure"},
+                {
+                    "run_id": effective_run_id,
+                    "strategy": "pass_at_k",
+                    "status": "success" if pass_at_k > 0 else "failure",
+                },
                 span_context=ctx.span_context,
             )
 

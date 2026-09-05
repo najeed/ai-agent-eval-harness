@@ -1,0 +1,20 @@
+manifest_version: "1.0"
+name: agentv-nightly-acceptance
+description: Comprehensive full acceptance matrix for nightly regression testing.
+thresholds:
+  allow_false_negatives: 0
+  allow_false_positives: 0
+  allow_security_failures: 0
+  allow_evidence_failures: 0
+  allow_execution_errors: 0
+cases:
+  - tests/acceptance/corpus/core/pass/AT-CORE-001.yaml
+  - tests/acceptance/corpus/core/fail/AT-POLICY-001.yaml
+  - tests/acceptance/corpus/core/false_positive/AT-FP-001.yaml
+  - tests/acceptance/corpus/core/false_negative/AT-FN-001.yaml
+  - tests/acceptance/corpus/security/AT-SEC-001.yaml
+  - tests/acceptance/corpus/security/AT-SEC-002.yaml
+  - tests/acceptance/corpus/resilience/AT-RES-001.yaml
+  - tests/acceptance/corpus/multi_agent/AT-MA-001.yaml
+  - tests/acceptance/corpus/hitl/AT-HITL-001.yaml
+  - tests/acceptance/corpus/evidence/AT-EVID-001.yaml

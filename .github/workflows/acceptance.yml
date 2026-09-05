@@ -1,0 +1,43 @@
+name: Acceptance Certification
+
+on:
+  pull_request:
+    branches: [main, dev]
+  push:
+    branches: [main]
+
+jobs:
+  acceptance-smoke:
+    name: Acceptance Smoke Gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install -e ".[llm]"
+      - name: Run Acceptance Smoke Tests
+        run: pytest -m "acceptance and not acceptance_release" --junitxml=reports/acceptance-smoke.xml
+
+  acceptance-release:
+    name: Acceptance Release Certification Gate
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install -e ".[llm]"
+      - name: Run Release Acceptance Suite
+        run: pytest -m acceptance_release --junitxml=reports/acceptance-release.xml
+      - name: Enforce Release Certification Gate
+        run: python tools/ci/acceptance_gate.py --report-dir reports/acceptance/latest
+      - name: Upload Acceptance Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: acceptance-artifacts
+          path: reports/acceptance/

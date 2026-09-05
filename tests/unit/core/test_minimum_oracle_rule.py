@@ -185,3 +185,25 @@ async def test_calculate_metrics_with_criteria_remains_valid():
     assert result["evaluation_valid"] is True
     assert "triage_tag" not in result
     assert all(m.get("status") != EVALUATION_INVALID for m in result["metrics"])
+
+
+@pytest.mark.asyncio
+async def test_calculate_metrics_with_expected_outcome_remains_valid():
+    calc = SessionMetricsCalculator(_StubSessionManager())
+    node = {
+        "id": "has_expected_outcome",
+        "expected_outcome": [{"target": "message", "expected": "done"}],
+    }
+
+    result = await calc.calculate_metrics(
+        node=node,
+        attempt_number=1,
+        turns=1,
+        history=[],
+        sandbox=type("SandboxStub", (), {"state": {}})(),
+        actions={"used_tools": []},
+    )
+
+    assert result["evaluation_valid"] is True
+    assert "triage_tag" not in result
+    assert all(m.get("status") != EVALUATION_INVALID for m in result["metrics"])

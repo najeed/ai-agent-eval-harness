@@ -1,0 +1,12 @@
+manifest_version: "1.0"
+name: agentv-security-acceptance
+description: Security containment and isolation acceptance certification suite for AgentV.
+thresholds:
+  allow_false_negatives: 0
+  allow_false_positives: 0
+  allow_security_failures: 0
+  allow_evidence_failures: 0
+  allow_execution_errors: 0
+cases:
+  - tests/acceptance/corpus/security/AT-SEC-001.yaml
+  - tests/acceptance/corpus/security/AT-SEC-002.yaml

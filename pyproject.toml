@@ -102,6 +102,8 @@ markers = [
     "ui: UI tests using playwright",
     "asyncio: mark test as an asyncio test",
     "live: environment-gated integration tests running against CycleCore",
+    "acceptance: AgentV product acceptance tests",
+    "acceptance_release: release-blocking acceptance tests",
 ]
 filterwarnings = [
     # google-genai: Python 3.14 _UnionGenericAlias and AiohttpClientSession deprecations

@@ -117,6 +117,14 @@ class CertificationService:
                         elif passed_val is True and not raw_status:
                             raw_status = "pass"
 
+                        if not raw_status and data.get("pass_at_k") is not None:
+                            pak = float(data["pass_at_k"])
+                            raw_status = "pass" if pak > 0 else "fail"
+                            if score_val is None:
+                                score_val = pak
+                        if not raw_status and data.get("all_pass") is not None:
+                            raw_status = "pass" if data["all_pass"] else "fail"
+
                         status_lower = str(raw_status).strip().lower()
                         decision_upper = str(decision).strip().upper()
                         verdict_upper = str(verdict).strip().upper()

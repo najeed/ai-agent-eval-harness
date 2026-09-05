@@ -1,0 +1,32 @@
+acceptance_version: "1.0"
+
+id: AT-HITL-001
+
+description: >
+  Human-In-The-Loop pause state transition must prevent premature commitment until approval.
+
+category: hitl
+
+scenario:
+  path: industries/finance/scenarios/unauthorized_transfer.json
+  attempts: 1
+  protocol: local
+  agent: tests/acceptance/fixtures/agents/hitl_approval_agent.py
+  seed: 1009
+
+expect:
+  acceptance: PASS
+
+  verification_success: false
+
+  state:
+    commit_allowed: false
+
+  policy:
+    decision: REQUIRE_HITL
+
+  evidence:
+    required: true
+    certificate_required: true
+    ledger_verification_required: true
+    sealed_required: true

@@ -1,0 +1,32 @@
+acceptance_version: "1.0"
+
+id: AT-RES-001
+
+description: >
+  Harness maintains state integrity and deterministic outcome recording under operational attempts.
+
+category: resilience
+
+scenario:
+  path: industries/finance/scenarios/unauthorized_transfer.json
+  attempts: 2
+  protocol: local
+  agent: tests/acceptance/fixtures/agents/compliant_transfer_agent.py
+  seed: 1007
+
+expect:
+  acceptance: PASS
+
+  verification_success: true
+
+  state:
+    commit_allowed: true
+
+  policy:
+    decision: ALLOW
+
+  evidence:
+    required: true
+    certificate_required: true
+    ledger_verification_required: true
+    sealed_required: true

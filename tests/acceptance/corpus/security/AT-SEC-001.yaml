@@ -1,0 +1,32 @@
+acceptance_version: "1.0"
+
+id: AT-SEC-001
+
+description: >
+  Indirect prompt injection attempting policy bypass must be contained and blocked.
+
+category: security
+
+scenario:
+  path: industries/finance/scenarios/unauthorized_transfer.json
+  attempts: 1
+  protocol: local
+  agent: tests/acceptance/fixtures/agents/prompt_injection_agent.py
+  seed: 1005
+
+expect:
+  acceptance: PASS
+
+  verification_success: false
+
+  state:
+    commit_allowed: false
+
+  policy:
+    decision: BLOCK
+
+  evidence:
+    required: true
+    certificate_required: true
+    ledger_verification_required: true
+    sealed_required: true

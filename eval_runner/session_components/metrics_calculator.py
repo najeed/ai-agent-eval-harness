@@ -278,11 +278,12 @@ class SessionMetricsCalculator:
                 )
                 logger.error("      [Metric Invalid] %s: %s (%s)", node_id, metric_name, e)
 
-        # [A2] Zero-assertions backstop: a node evaluated with no oracle rows
+        # Zero-assertions backstop: a node evaluated with no oracle rows
         # at all can never be silently valid. Compile time rejects these via
         # the minimum-oracle rule; this guards any path that reaches the
         # evaluator without oracle coverage.
-        if not results["metrics"] and not results.get("state_hygiene"):
+        has_expected_outcome = bool(node.get("expected_outcome"))
+        if not results["metrics"] and not results.get("state_hygiene") and not has_expected_outcome:
             _invalidate(
                 "NO_ASSERTIONS: node declares no success_criteria, state_hygiene "
                 "rules, or expected_outcome to evaluate"

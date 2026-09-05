@@ -1,0 +1,131 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AgentVAcceptanceCase",
+  "type": "object",
+  "required": [
+    "acceptance_version",
+    "id",
+    "scenario",
+    "expect"
+  ],
+  "properties": {
+    "acceptance_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^AT-[A-Z0-9-]+$"
+    },
+    "description": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "pass",
+        "fail",
+        "false_positive",
+        "false_negative",
+        "security",
+        "resilience",
+        "evidence",
+        "hitl",
+        "multi_agent"
+      ]
+    },
+    "scenario": {
+      "type": "object",
+      "required": [
+        "path"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "attempts": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "protocol": {
+          "type": "string"
+        },
+        "agent": {
+          "type": "string"
+        },
+        "seed": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "expect": {
+      "type": "object",
+      "required": [
+        "acceptance"
+      ],
+      "properties": {
+        "acceptance": {
+          "type": "string",
+          "enum": [
+            "PASS",
+            "FAIL"
+          ]
+        },
+        "execution_status": {
+          "type": "string"
+        },
+        "verification_success": {
+          "type": "boolean"
+        },
+        "state": {
+          "type": "object",
+          "properties": {
+            "commit_allowed": {
+              "type": "boolean"
+            },
+            "final_state": {
+              "type": "object"
+            }
+          },
+          "additionalProperties": true
+        },
+        "policy": {
+          "type": "object",
+          "properties": {
+            "decision": {
+              "type": "string",
+              "enum": [
+                "ALLOW",
+                "BLOCK",
+                "REQUIRE_HITL",
+                "REJECT"
+              ]
+            }
+          },
+          "additionalProperties": true
+        },
+        "evidence": {
+          "type": "object",
+          "properties": {
+            "required": {
+              "type": "boolean"
+            },
+            "certificate_required": {
+              "type": "boolean"
+            },
+            "ledger_verification_required": {
+              "type": "boolean"
+            },
+            "sealed_required": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
