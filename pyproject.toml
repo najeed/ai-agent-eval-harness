@@ -45,7 +45,7 @@ nlp = [
 llm = [
     "google-genai==2.22.0",
     "langchain-openai==1.6.0",
-    "langsmith==0.12.1",
+    "langsmith==0.12.2",
 ]
 docs = [
     "pypdf==6.17.0",
@@ -65,7 +65,7 @@ all = [
     "datasets==5.0.1",
     "google-genai==2.22.0",
     "langchain-openai==1.6.0",
-    "langsmith==0.12.1",
+    "langsmith==0.12.2",
     "pypdf==6.17.0",
     "python-docx==1.2.0",
     "lxml==6.1.3",

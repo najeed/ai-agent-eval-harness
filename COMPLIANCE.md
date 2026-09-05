@@ -28,7 +28,7 @@ The following tables summarize the licenses of our core dependencies. All used l
 | **idna** | 3.19 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **jsonschema** | 4.26.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-openai** | 1.6.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langsmith** | 0.12.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langsmith** | 0.12.2 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **lxml** | 6.1.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **numpy** | 2.5.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **opentelemetry-api** | 1.44.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
