@@ -196,21 +196,30 @@ class ScenarioCatalog:
                     },
                     "scenarios": new_scenarios,
                 }
-                tmp_path = self.index_path.with_suffix(".tmp")
-                with open(tmp_path, "w", encoding="utf-8") as f:
-                    json.dump(manifest, f, indent=2)
+                tmp_path = self.index_path.with_name(f"index.{os.getpid()}.tmp")
+                try:
+                    with open(tmp_path, "w", encoding="utf-8") as f:
+                        json.dump(manifest, f, indent=2)
 
-                # Atomic Write Resilience
-                for attempt in range(3):
-                    try:
-                        if os.path.exists(self.index_path):
-                            os.remove(self.index_path)
-                        os.rename(tmp_path, self.index_path)
-                        break
-                    except PermissionError:
-                        if attempt == 2:
-                            raise
-                        time.sleep(0.1 * (attempt + 1))
+                    # Atomic Write Resilience
+                    for attempt in range(3):
+                        try:
+                            if os.path.exists(self.index_path):
+                                os.remove(self.index_path)
+                            os.rename(tmp_path, self.index_path)
+                            break
+                        except PermissionError:
+                            if attempt == 2:
+                                raise
+                            time.sleep(0.1 * (attempt + 1))
+                        except FileNotFoundError:
+                            break
+                finally:
+                    if os.path.exists(tmp_path):
+                        try:
+                            os.remove(tmp_path)
+                        except OSError:
+                            pass
 
                 self.scenarios = new_scenarios
                 self._disk_count = disk_count
