@@ -418,8 +418,9 @@ async def handle_verify_package(args):
             pkg_data = json.load(f)
 
         raw_trace_bytes = None
-        if getattr(args, "raw_trace_path", None):
-            trace_path = Path(args.raw_trace_path).resolve()
+        raw_trace_path = getattr(args, "raw_trace_path", None)
+        if isinstance(raw_trace_path, (str, Path)):
+            trace_path = Path(raw_trace_path).resolve()
             if not _ensure_path_safe(trace_path, "Trace file"):
                 return 1
             if not trace_path.exists():
@@ -428,18 +429,34 @@ async def handle_verify_package(args):
             raw_trace_bytes = trace_path.read_bytes()
 
         pub_key_pem = getattr(args, "public_key_pem", None)
-        if pub_key_pem and Path(pub_key_pem).exists():
-            pub_key_pem = Path(pub_key_pem).read_text(encoding="utf-8")
+        if isinstance(pub_key_pem, (str, Path)):
+            pub_p = Path(pub_key_pem)
+            if pub_p.exists():
+                pub_key_pem = pub_p.read_text(encoding="utf-8")
+        elif not isinstance(pub_key_pem, str):
+            pub_key_pem = None
 
-        require_sig = getattr(args, "require_signature", False)
+        require_sig = getattr(args, "require_signature", False) is True
+
+        scenario_data = None
+        scen_path = getattr(args, "scenario_path", None)
+        if isinstance(scen_path, (str, Path)):
+            scen_p = Path(scen_path).resolve()
+            if _ensure_path_safe(scen_p, "Scenario file") and scen_p.exists():
+                with open(scen_p, encoding="utf-8") as sf:
+                    scenario_data = json.load(sf)
+
+        require_scen = getattr(args, "require_scenario", False) is True or scenario_data is not None
 
         from .. import verifier
 
         res = verifier.VerificationAuthority.verify_package(
             pkg_data,
+            scenario_data=scenario_data,
             raw_trace_bytes=raw_trace_bytes,
             public_key_pem=pub_key_pem,
             require_signature=require_sig,
+            require_scenario_binding=require_scen,
         )
 
         if res.get("verified"):

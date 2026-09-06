@@ -7,7 +7,17 @@ Neutral contract layer for AgentV OS Runtime and Control Plane seams.
 
 from __future__ import annotations
 
-from agentv_runtime import config, contracts, extension_contract, interfaces, manifest, results
+from agentv_runtime import (
+    canonical,
+    config,
+    contracts,
+    extension_contract,
+    interfaces,
+    manifest,
+    package,
+    results,
+)
+from agentv_runtime.canonical import canonical_json_dumps, canonical_json_encode
 from agentv_runtime.config import ConfigResolver, ResolvedRuntimeConfig
 from agentv_runtime.contracts import (
     MutationCampaignSpec,
@@ -18,6 +28,8 @@ from agentv_runtime.contracts import (
     MutationRecord,
     MutationTier,
     MutationVector,
+    ReadinessState,
+    ReadinessTier,
 )
 from agentv_runtime.extension_contract import (
     EXTENSION_CONTRACT_STATUS,
@@ -30,6 +42,7 @@ from agentv_runtime.extension_contract import (
 )
 from agentv_runtime.interfaces import MutationEngine
 from agentv_runtime.manifest import ExecutionManifest, ManifestBuilder, compute_scenario_hash
+from agentv_runtime.package import VerificationPackage
 from agentv_runtime.results import (
     Attestation,
     EvaluationResult,
@@ -55,11 +68,16 @@ __all__ = [
     "contracts",
     "manifest",
     "extension_contract",
+    "package",
+    "canonical",
     "ConfigResolver",
     "ResolvedRuntimeConfig",
     "ExecutionManifest",
     "ManifestBuilder",
     "compute_scenario_hash",
+    "VerificationPackage",
+    "canonical_json_dumps",
+    "canonical_json_encode",
     "ExecutionResult",
     "EvaluationResult",
     "VerificationResult",
@@ -81,6 +99,8 @@ __all__ = [
     "MutationRecord",
     "MutationCampaignSpec",
     "MutationEngine",
+    "ReadinessState",
+    "ReadinessTier",
     "__version__",
     "__runtime_api_version__",
     "__plugin_api_version__",

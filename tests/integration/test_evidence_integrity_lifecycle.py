@@ -83,8 +83,8 @@ def test_sign_trace_happy_path_is_fully_certified(cert_env):
         "sign",
         "persist",
         "verify",
-        "seal",
         "publish",
+        "seal",
     ]
 
     # Sidecar manifest persisted and certificate backup published

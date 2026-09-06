@@ -70,6 +70,23 @@ class ReadinessTier:
             return False
 
 
+class ReadinessState:
+    """
+    Explicit execution readiness states:
+    BLOCKED -> not executable
+    READY_TO_EXECUTE -> executable
+    READY_TO_CERTIFY -> executable + trusted signer + all required dependencies
+    CERTIFIABLE -> post-run evidence complete
+    """
+
+    BLOCKED = "BLOCKED"
+    READY_TO_EXECUTE = "READY_TO_EXECUTE"
+    READY_TO_CERTIFY = "READY_TO_CERTIFY"
+    CERTIFIABLE = "CERTIFIABLE"
+
+    ALL = {BLOCKED, READY_TO_EXECUTE, READY_TO_CERTIFY, CERTIFIABLE}
+
+
 class ExecutionMode:
     """Execution truth modes. Simulation must never masquerade as live."""
 
@@ -546,6 +563,7 @@ __all__ = [
     "MutationTier",
     "MutationVector",
     "RCAResult",
+    "ReadinessState",
     "ReadinessTier",
     "RuntimeHealth",
     "TransitionEvidence",

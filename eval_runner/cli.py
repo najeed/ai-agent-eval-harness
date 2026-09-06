@@ -399,6 +399,16 @@ Usage: agentv <command> [options]
         action="store_true",
         help="Require cryptographic signature",
     )
+    verify_pkg_parser.add_argument(
+        "--scenario",
+        dest="scenario_path",
+        help="Optional scenario JSON path for scenario binding verification",
+    )
+    verify_pkg_parser.add_argument(
+        "--require-scenario",
+        action="store_true",
+        help="Require scenario binding verification",
+    )
 
     certify_parser = subparsers.add_parser("certify", help="Generate VC")
     certify_parser.set_defaults(func=_dispatch_evaluation)

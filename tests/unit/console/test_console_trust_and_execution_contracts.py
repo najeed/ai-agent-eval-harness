@@ -269,7 +269,7 @@ def test_validate_scenario_schema(ent_client):
 def test_check_execution_readiness(ent_client):
     client, tmp_path = ent_client
 
-    # 1. Successful readiness check
+    # 1. Successful readiness check (with live agent endpoint response)
     payload = {
         "scenario_id": "test_scen_1",
         "agent_config": {
@@ -278,12 +278,25 @@ def test_check_execution_readiness(ent_client):
         },
         "runtime_config": {"max_turns": 10},
     }
-    res = client.post("/api/scenarios/readiness", json=payload)
-    assert res.status_code == 200
-    data = res.get_json()
-    assert data["ready"] is True
-    assert data["manifest"] is not None
-    assert data["manifest"]["scenario_id"] == "test_scen_1"
+
+    class MockResponse:
+        def __init__(self):
+            self.status = 200
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            pass
+
+    with patch("urllib.request.urlopen", return_value=MockResponse()):
+        res = client.post("/api/scenarios/readiness", json=payload)
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["ready"] is True
+        assert data["manifest"] is not None
+        assert data["manifest"]["scenario_id"] == "test_scen_1"
+        assert data["state"] in ("READY_TO_EXECUTE", "READY_TO_CERTIFY")
 
     # 2. Failed scenario resolution
     payload_fail = {
@@ -293,6 +306,7 @@ def test_check_execution_readiness(ent_client):
     res_fail = client.post("/api/scenarios/readiness", json=payload_fail)
     assert res_fail.status_code == 200
     assert res_fail.get_json()["ready"] is False
+    assert res_fail.get_json()["state"] == "BLOCKED"
 
 
 def test_save_scenario_with_hash_and_status(ent_client):

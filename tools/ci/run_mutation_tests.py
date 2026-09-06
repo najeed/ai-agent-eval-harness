@@ -72,6 +72,7 @@ TARGET_MODULES = [
     BASE_DIR / "eval_runner" / "verifier.py",
     BASE_DIR / "eval_runner" / "tool_sandbox.py",
     BASE_DIR / "eval_runner" / "utils" / "base.py",
+    BASE_DIR / "agentv_runtime" / "package.py",
 ]
 
 # Per-module test corpora.
@@ -93,6 +94,9 @@ MODULE_TEST_MAP: dict[str, list[str]] = {
     ],
     "base.py": [
         "tests/unit/core/test_core_utilities.py",
+    ],
+    "package.py": [
+        "tests/unit/core/test_verification_envelope.py",
     ],
 }
 

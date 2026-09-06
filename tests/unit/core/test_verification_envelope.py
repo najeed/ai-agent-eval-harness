@@ -90,11 +90,15 @@ def test_package_signing_and_detached_verification():
     assert signed_pkg.signer_identity == "auditor-node-01"
     assert signed_pkg.public_key_pem == signer.public_key_pem
 
-    # Verify signature with embedded public key
-    assert signed_pkg.verify_signature() is True
+    # Zero-Trust Rule: Verify signature without external trust anchor or registry fails closed
+    assert signed_pkg.verify_signature() is False
 
     # Verify signature with explicitly supplied trust anchor public key
     assert signed_pkg.verify_signature(public_key_pem=signer.public_key_pem) is True
+
+    # Verify signature with external key registry
+    registry = {signed_pkg.signer_identity: signer.public_key_pem}
+    assert signed_pkg.verify_signature(key_registry=registry) is True
 
     # Verify signature fails against an unrelated public key
     other_signer = MockEd25519Signer(identity="other")
@@ -102,6 +106,8 @@ def test_package_signing_and_detached_verification():
 
 
 def test_verification_authority_full_verification_pass():
+    from agentv_runtime.manifest import compute_scenario_hash
+
     signer = MockEd25519Signer()
     raw_trace = (
         b'{"_seq": 1, "event": "run_start"}\n'
@@ -116,18 +122,34 @@ def test_verification_authority_full_verification_pass():
     ev_graph = build_evidence_graph_from_events(events)
     ev_root = compute_evidence_graph_root(ev_graph)
 
+    scen_data = {
+        "scenario_id": "scen-01",
+        "version": "1.0.0",
+        "description": "test scenario",
+    }
+    scen_hash = compute_scenario_hash(scen_data)
+
+    trace_hash_str = f"sha3_256:{actual_trace_hash}"
     pkg = VerificationPackage(
         scenario_id="scen-01",
         scenario_version="1.0.0",
-        scenario_hash="sha3_256:scen",
+        scenario_hash=scen_hash,
         manifest_id="man-01",
         manifest_hash="sha3_256:man",
         execution_identity={"worker_id": "w1"},
-        trace_hash=f"sha3_256:{actual_trace_hash}",
-        trace_seal={"event_count": 2},
+        trace_hash=trace_hash_str,
+        trace_seal={"event_count": 2, "digest": trace_hash_str},
         evidence_root_hash=ev_root,
         required_oracle_ids=["o1"],
-        executed_oracle_results=[{"metric": "o1", "passed": True}],
+        executed_oracle_results=[
+            {
+                "oracle_id": "o1",
+                "outcome": "PASS",
+                "resolver": "deterministic_resolver",
+                "version": "1.0.0",
+                "evidence_refs": ["ev_1"],
+            }
+        ],
         decision={"decision": "PASS", "verdict": "VERIFIED"},
     )
     signed_pkg = pkg.sign(signer)
@@ -136,6 +158,7 @@ def test_verification_authority_full_verification_pass():
         signed_pkg,
         raw_trace_bytes=raw_trace,
         raw_trace_events=events,
+        scenario_data=scen_data,
         public_key_pem=signer.public_key_pem,
         require_signature=True,
     )
@@ -179,3 +202,266 @@ def test_strict_instantiation_requires_critical_fields():
         ValueError, match="strict instantiation requires valid scenario_id and trace_hash"
     ):
         VerificationPackage.from_dict({"scenario_id": ""}, strict=True)
+    with pytest.raises(
+        ValueError, match="strict instantiation requires valid scenario_id and trace_hash"
+    ):
+        VerificationPackage.from_dict({"scenario_id": "scen-1", "trace_hash": ""}, strict=True)
+
+
+def test_package_verify_signature_without_signature_returns_false():
+    pkg = VerificationPackage(
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:s",
+        manifest_id="m1",
+        manifest_hash="sha3_256:m",
+        execution_identity={},
+        trace_hash="sha3_256:t",
+        trace_seal={},
+        evidence_root_hash="sha3_256:e",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={},
+        signature=None,
+    )
+    assert pkg.verify_signature(public_key_pem="fake-pem") is False
+
+
+def test_package_verify_signature_key_registry_branches():
+    signer = MockEd25519Signer(identity="node-x")
+    pkg = VerificationPackage(
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:s",
+        manifest_id="m1",
+        manifest_hash="sha3_256:m",
+        execution_identity={},
+        trace_hash="sha3_256:t",
+        trace_seal={},
+        evidence_root_hash="sha3_256:e",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={},
+        key_id="custom-key-id",
+        signer_identity="node-x",
+    )
+    signed = pkg.sign(signer)
+
+    # Matched via key_id
+    assert signed.verify_signature(key_registry={"custom-key-id": signer.public_key_pem}) is True
+
+    # Matched via signer_identity when key_id is empty
+    pkg_no_key_id = VerificationPackage(
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:s",
+        manifest_id="m1",
+        manifest_hash="sha3_256:m",
+        execution_identity={},
+        trace_hash="sha3_256:t",
+        trace_seal={},
+        evidence_root_hash="sha3_256:e",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={},
+        key_id=None,
+        signer_identity="node-x",
+    )
+    signed_no_key_id = pkg_no_key_id.sign(signer)
+    assert signed_no_key_id.verify_signature(key_registry={"node-x": signer.public_key_pem}) is True
+    # Missing from registry fails closed
+    assert signed.verify_signature(key_registry={"other-key": signer.public_key_pem}) is False
+
+
+def test_package_verify_signature_trust_root_branches(tmp_path):
+    signer = MockEd25519Signer(identity="node-y")
+    pkg = VerificationPackage(
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:s",
+        manifest_id="m1",
+        manifest_hash="sha3_256:m",
+        execution_identity={},
+        trace_hash="sha3_256:t",
+        trace_seal={},
+        evidence_root_hash="sha3_256:e",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={},
+        key_id="k-1",
+        signer_identity="node-y",
+    )
+    signed = pkg.sign(signer)
+
+    # 1. Trust root with get_public_key returning an Ed25519 key
+    class MockTrustRootObj:
+        def get_public_key(self, target_id):
+            assert target_id == "k-1"
+            return signer.public_key
+
+    assert signed.verify_signature(trust_root=MockTrustRootObj()) is True
+
+    # 2. Trust root raising an exception
+    class BrokenTrustRootObj:
+        def get_public_key(self, target_id):
+            raise RuntimeError("PKI lookup timeout")
+
+    assert signed.verify_signature(trust_root=BrokenTrustRootObj()) is False
+
+    # 3. Trust root as directory path
+    trust_dir = tmp_path / "trust_anchors"
+    key_dir = trust_dir / "k-1"
+    key_dir.mkdir(parents=True)
+    (key_dir / "public_key.pem").write_text(signer.public_key_pem, encoding="utf-8")
+
+    assert signed.verify_signature(trust_root=trust_dir) is True
+    assert signed.verify_signature(trust_root=str(trust_dir)) is True
+
+    # 4. Trust root directory missing key file
+    empty_dir = tmp_path / "empty_trust"
+    empty_dir.mkdir()
+    assert signed.verify_signature(trust_root=empty_dir) is False
+
+
+def test_package_verify_signature_identity_service_fallback(monkeypatch):
+    signer = MockEd25519Signer(identity="service-node")
+    pkg = VerificationPackage(
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:s",
+        manifest_id="m1",
+        manifest_hash="sha3_256:m",
+        execution_identity={},
+        trace_hash="sha3_256:t",
+        trace_seal={},
+        evidence_root_hash="sha3_256:e",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={},
+        key_id="node-sys",
+        signer_identity="service-node",
+    )
+    signed = pkg.sign(signer)
+
+    # Mock IdentityService returning public key
+    from unittest.mock import MagicMock
+
+    mock_id_svc = MagicMock()
+    mock_id_svc.get_public_key.return_value = signer.public_key
+    monkeypatch.setattr("eval_runner.identity.IdentityService", mock_id_svc)
+
+    assert signed.verify_signature() is True
+
+    # Mock IdentityService throwing exception
+    mock_id_svc.get_public_key.side_effect = RuntimeError("DB down")
+    assert signed.verify_signature() is False
+
+
+def test_package_verify_signature_embedded_key_mismatch_and_invalid():
+    import dataclasses
+
+    signer = MockEd25519Signer()
+    other_signer = MockEd25519Signer()
+    pkg = VerificationPackage(
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:s",
+        manifest_id="m1",
+        manifest_hash="sha3_256:m",
+        execution_identity={},
+        trace_hash="sha3_256:t",
+        trace_seal={},
+        evidence_root_hash="sha3_256:e",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={},
+    )
+    signed = pkg.sign(signer)
+    # Tamper with embedded public_key_pem to mismatch external trust anchor
+    tampered_key = dataclasses.replace(signed, public_key_pem=other_signer.public_key_pem)
+    assert tampered_key.verify_signature(public_key_pem=signer.public_key_pem) is False
+
+    # Corrupt embedded public_key_pem (triggers exception)
+    corrupt_key = dataclasses.replace(signed, public_key_pem="NOT-A-VALID-PEM")
+    assert corrupt_key.verify_signature(public_key_pem=signer.public_key_pem) is False
+
+
+def test_package_verify_signature_corrupt_signature_and_rsa_key():
+    import dataclasses
+
+    signer = MockEd25519Signer()
+    pkg = VerificationPackage(
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:s",
+        manifest_id="m1",
+        manifest_hash="sha3_256:m",
+        execution_identity={},
+        trace_hash="sha3_256:t",
+        trace_seal={},
+        evidence_root_hash="sha3_256:e",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={},
+    )
+    signed = pkg.sign(signer)
+    # Bad signature hex (triggers verify exception)
+    bad_sig = dataclasses.replace(signed, signature="deadbeef")
+    assert bad_sig.verify_signature(public_key_pem=signer.public_key_pem) is False
+
+    # RSA key instead of Ed25519
+    from cryptography.hazmat.primitives.asymmetric import rsa
+
+    rsa_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)  # nosec B505
+    rsa_pem = (
+        rsa_key.public_key()
+        .public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
+        )
+        .decode("utf-8")
+    )
+    no_embedded = dataclasses.replace(signed, public_key_pem=None)
+    assert no_embedded.verify_signature(public_key_pem=rsa_pem) is False
+
+
+def test_package_from_dict_defaults_and_dict_signature():
+    raw = {
+        "scenario_id": "s1",
+        "trace_hash": "sha3_256:xyz",
+        "signature": {
+            "signature": "abcdef123456",
+            "identity": "auditor-01",
+            "public_key_pem": "pem-content",
+            "algorithm": "ed25519",
+            "key_id": "k-01",
+        },
+    }
+    pkg = VerificationPackage.from_dict(raw)
+    assert pkg.scenario_id == "s1"
+    assert pkg.trace_hash == "sha3_256:xyz"
+    assert pkg.signature == "abcdef123456"
+    assert pkg.signer_identity == "auditor-01"
+    assert pkg.public_key_pem == "pem-content"
+    assert pkg.algorithm == "ed25519"
+    assert pkg.key_id == "k-01"
+    assert pkg.required_oracle_ids == []
+    assert pkg.executed_oracle_results == []
+
+
+def test_canonical_jcs_dumps_and_encode():
+    from agentv_runtime.canonical import canonical_json_dumps, canonical_json_encode
+
+    data = {
+        "z": 100,
+        "a": "hello world",
+        "m": {"nested_b": 2, "nested_a": 1},
+        "unicode": "téñ§",
+    }
+    dumped = canonical_json_dumps(data)
+    # RFC 8785: sorted keys, no whitespace around separators, UTF-8 unicode preserved
+    assert dumped == '{"a":"hello world","m":{"nested_a":1,"nested_b":2},"unicode":"téñ§","z":100}'
+
+    encoded = canonical_json_encode(data)
+    assert isinstance(encoded, bytes)
+    assert encoded == dumped.encode("utf-8")

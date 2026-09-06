@@ -374,13 +374,17 @@ def verify_verification_package():
     raw_trace_events = data.get("raw_trace_events")
     public_key_pem = data.get("public_key_pem")
     require_signature = bool(data.get("require_signature", False))
+    scenario_data = data.get("scenario_data")
+    require_scenario = bool(data.get("require_scenario", False) or scenario_data is not None)
 
     res = VerificationAuthority.verify_package(
         package_data,
+        scenario_data=scenario_data,
         raw_trace_bytes=raw_trace_bytes,
         raw_trace_events=raw_trace_events,
         public_key_pem=public_key_pem,
         require_signature=require_signature,
+        require_scenario_binding=require_scenario,
     )
     status_code = 200 if res.get("verified") else 422
     return jsonify(res), status_code

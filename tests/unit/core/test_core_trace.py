@@ -286,3 +286,29 @@ async def test_record_interaction_connection_exception(tmp_path, monkeypatch):
     content = files[0].read_text(encoding="utf-8").strip().splitlines()
     # run_start + agent_request only (exception prevents response)
     assert len(content) == 2
+
+
+@pytest.mark.asyncio
+async def test_record_interaction_legacy_mirror_os_error(tmp_path, monkeypatch, caplog):
+    """Test that OSError during legacy file mirroring is gracefully logged."""
+    import logging
+
+    from eval_runner.trace_recorder import record_interaction
+
+    inputs = ["exit"]
+    monkeypatch.setattr("builtins.input", lambda _: inputs.pop(0))
+    monkeypatch.setattr("eval_runner.trace_recorder.Path", lambda *args, **kwargs: tmp_path)
+
+    orig_open = open
+
+    def fake_open(file, *args, **kwargs):
+        if "run-" in str(file):
+            raise OSError("Permission denied")
+        return orig_open(file, *args, **kwargs)
+
+    monkeypatch.setattr("builtins.open", fake_open)
+
+    with caplog.at_level(logging.WARNING):
+        await record_interaction("http://fake-agent")
+
+    assert "Could not mirror trace to legacy path" in caplog.text

@@ -5,12 +5,15 @@ OSS Reference Implementation: LocalFileArtifactStore
 
 import hashlib
 import json
+import logging
 from pathlib import Path
 from typing import Any
 
 import eval_runner.config as config
 from eval_runner.interfaces.artifact import ArtifactStore
 from eval_runner.utils.safe_path import SafeRunPathResolver
+
+logger = logging.getLogger(__name__)
 
 
 class LocalFileArtifactStore(ArtifactStore):
@@ -44,6 +47,19 @@ class LocalFileArtifactStore(ArtifactStore):
         seal_data.setdefault("run_id", run_id)
         with open(seal_marker, "w", encoding="utf-8") as f:
             json.dump(seal_data, f, indent=2)
+
+    def unseal(self, run_id: str) -> None:
+        """
+        Rollback helper: unseals a vault if rollback is required during transactional recovery.
+        """
+        try:
+            run_dir = self._get_run_dir(run_id, create=False)
+            if run_dir.exists():
+                seal_marker = run_dir / ".sealed"
+                if seal_marker.exists():
+                    seal_marker.unlink(missing_ok=True)
+        except OSError as unlink_err:
+            logger.debug("Failed to unseal run directory for %s: %s", run_id, unlink_err)
 
     def store_artifact(
         self,

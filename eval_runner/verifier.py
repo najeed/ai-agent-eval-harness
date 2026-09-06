@@ -165,6 +165,13 @@ class CoreTraceSigner(TraceVerificationInterceptor):
             manifest_to_sign = manifest.copy()
             manifest_to_sign.pop("provenance_chain", None)
             manifest_to_sign.pop("signing_context", None)
+            manifest_to_sign.pop("certification_diagnostics", None)
+            if "certification" in manifest_to_sign and isinstance(
+                manifest_to_sign["certification"], dict
+            ):
+                cert_copy = dict(manifest_to_sign["certification"])
+                cert_copy.pop("stages", None)
+                manifest_to_sign["certification"] = cert_copy
             manifest_bytes = json.dumps(manifest_to_sign, sort_keys=True).encode("utf-8")
 
             if hasattr(private_key, "private_bytes") and callable(private_key.private_bytes):
@@ -522,18 +529,34 @@ class TraceVerifier:
 
         sidecar_path = p.parent / "run_manifest.json"
         backup_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
+        staging_dir = p.parent / ".staging"
+        staged_manifest_path = staging_dir / "run_manifest.json"
         pre_append_size = p.stat().st_size
 
         def _rollback() -> None:
             """Best-effort rollback of any partial mutation."""
+            import shutil
+
+            if staging_dir.exists():
+                try:
+                    shutil.rmtree(staging_dir, ignore_errors=True)
+                except Exception as s_err:
+                    logger.debug(f"      [Verifier] Failed to remove staging directory: {s_err}")
+
             for stray in (sidecar_path, backup_path):
                 try:
-                    if stray.exists():
-                        stray.unlink(missing_ok=True)
+                    stray.unlink(missing_ok=True)
                 except OSError as unlink_err:
                     logger.debug(
                         f"      [Verifier] Failed to unlink rollback stray {stray}: {unlink_err}"
                     )
+            try:
+                if hasattr(store, "unseal"):
+                    store.unseal(run_id)
+            except OSError as unseal_err:
+                logger.debug(
+                    f"      [Verifier] Failed to unseal rollback target {run_id}: {unseal_err}"
+                )
             try:
                 if p.exists() and p.stat().st_size > pre_append_size:
                     with open(p, "a+b") as f:
@@ -828,20 +851,29 @@ class TraceVerifier:
             finally:
                 manifest.pop("signing_context", None)
 
-        persisted_local_path = None
-
         def _persist() -> None:
-            nonlocal persisted_local_path
-            manifest["certification"] = {
-                "pipeline_version": "1.0.0",
-                "transactional": True,
-                "stages": stages,
-                "outcome": "CERTIFIED",
-            }
+            """
+            Prepare: Persist manifest artifact and sidecars to isolated staging and store.
+            No irreversible seal operations occur in this stage.
+            """
+            import copy
+
+            staging_dir.mkdir(parents=True, exist_ok=True)
+            manifest_to_write = copy.deepcopy(manifest)
+            manifest_to_write["certification"]["stages"] = stages
+
+            with open(staged_manifest_path, "w", encoding="utf-8") as f:
+                json.dump(manifest_to_write, f, indent=4)
+
+            # Persist to local run directory sidecar
+            with open(sidecar_path, "w", encoding="utf-8") as f:
+                json.dump(manifest_to_write, f, indent=4)
+
+            # Store artifact in configured ArtifactStore
             store.store_artifact(
                 run_id=run_id,
                 artifact_name="run_manifest.json",
-                content=json.dumps(manifest, indent=4),
+                content=json.dumps(manifest_to_write, indent=4),
                 content_type="application/json",
                 metadata={
                     "status": effective_compliance_status,
@@ -849,19 +881,36 @@ class TraceVerifier:
                 },
             )
 
-            with open(sidecar_path, "w", encoding="utf-8") as f:
-                json.dump(manifest, f, indent=4)
-            persisted_local_path = sidecar_path
-
         def _verify() -> None:
-            target = persisted_local_path or sidecar_path
-            if not target or not target.exists():
-                raise FileNotFoundError(f"Verification target missing after persistence: {target}")
+            """
+            Self-Verification: Verify trace and full evidence ledger
+            against manifest before promotion.
+            """
+            target = sidecar_path if sidecar_path.exists() else staged_manifest_path
             ok = cls.verify_trace(str(p), str(target), verify_ledger=True)
             if not ok:
                 raise ValueError("Post-signature self-verification rejected the certificate")
 
+        def _publish() -> None:
+            """
+            Commit/Promote: Publish public verification certificate backup.
+            """
+            import copy
+
+            cert_dir = config.REPORTS_DIR / "certificates"
+            cert_dir.mkdir(parents=True, exist_ok=True)
+            manifest_to_write = copy.deepcopy(manifest)
+            manifest_to_write["certification"]["stages"] = stages
+            with open(backup_path, "w", encoding="utf-8") as f:
+                json.dump(manifest_to_write, f, indent=4)
+
         def _seal() -> None:
+            """
+            Final Irreversible Operation:
+            Seal vault only after all artifacts are verified and published.
+            """
+            import shutil
+
             store.seal(
                 run_id=run_id,
                 metadata={
@@ -871,14 +920,9 @@ class TraceVerifier:
                     "compliance_status": compliance_status,
                 },
             )
+            shutil.rmtree(staging_dir, ignore_errors=True)
 
-        def _publish() -> None:
-            cert_dir = config.REPORTS_DIR / "certificates"
-            cert_dir.mkdir(parents=True, exist_ok=True)
-            with open(backup_path, "w", encoding="utf-8") as f:
-                json.dump(manifest, f, indent=4)
-
-        # --- TRANSACTION: hash -> sign -> persist -> verify -> seal -> publish ---
+        # --- TRANSACTION: hash -> sign -> persist(stage) -> verify -> publish(promote) -> seal ---
         # Any stage failure rolls back the trace mutation and partial artifacts,
         # then raises CertificationFailedError. No certificate is ever emitted
         # from an incomplete sealing operation (P0 #11).
@@ -886,20 +930,28 @@ class TraceVerifier:
             manifest["trace_hash"] = _stage("hash")(_append_and_hash)
             manifest["hash_algorithm"] = "sha3_256"
 
+            # Semantically authoritative certification metadata is signed (Defect 2)
+            manifest["certification"] = {
+                "pipeline_version": "1.0.0",
+                "transactional": True,
+                "outcome": "CERTIFIED",
+            }
+
             _stage("sign")(_sign)
 
             _stage("persist")(_persist)
 
             _stage("verify")(_verify)
 
+            _stage("publish")(_publish)
+
             _stage("seal")(_seal)
             logger.info(f"      [Verifier] Evidence vault sealed for run '{run_id}'")
-
-            _stage("publish")(_publish)
         except CertificationFailedError:
             _rollback()
             raise
 
+        manifest["certification"]["stages"] = stages
         return manifest
 
     @staticmethod
@@ -1070,10 +1122,23 @@ class TraceVerifier:
 
             manifest_to_verify = manifest.copy()
             manifest_to_verify.pop("provenance_chain", None)
-            # Transient pipeline metadata is excluded from the signed payload
-            # (it is appended after signing by the certification transaction).
-            manifest_to_verify.pop("certification", None)
+            manifest_to_verify.pop("certification_diagnostics", None)
+            # Transient stage execution logs are excluded from the signed payload,
+            # while authoritative certification metadata (outcome, pipeline_version, transactional)
+            # is signed and verified against tampering (Defect 2).
+            if "certification" in manifest_to_verify and isinstance(
+                manifest_to_verify["certification"], dict
+            ):
+                cert_copy = dict(manifest_to_verify["certification"])
+                cert_copy.pop("stages", None)
+                manifest_to_verify["certification"] = cert_copy
             manifest_bytes = json.dumps(manifest_to_verify, sort_keys=True).encode("utf-8")
+
+            if "certification" in manifest:
+                cert_meta = manifest["certification"]
+                if isinstance(cert_meta, dict) and cert_meta.get("outcome") != "CERTIFIED":
+                    logger.warning("Uncertified manifest: certification outcome is not CERTIFIED")
+                    return False
 
             for node in chain:
                 identity_id = node.get("identity")
@@ -1278,7 +1343,11 @@ def verify_trace_certificate(
         try:
             from agentv_runtime.manifest import compute_scenario_hash
 
-            expected_scen_hash = cert_data.get("scenario_hash")
+            expected_scen_hash = cert_data.get("scenario_hash") or (
+                cert_data.get("metadata", {}).get("scenario_hash")
+                if isinstance(cert_data.get("metadata"), dict)
+                else None
+            )
             if expected_scen_hash:
                 computed_scen = compute_scenario_hash(scenario_data)
                 if computed_scen == expected_scen_hash:
@@ -1300,11 +1369,14 @@ def verify_trace_certificate(
     if not provenance_chain:
         result["errors"].append("Certificate has no provenance_chain entries to verify.")
 
-    signed_payload = {
-        k: v
-        for k, v in cert_data.items()
-        if k not in ("provenance_chain", "certification", "signing_context")
-    }
+    signed_payload = dict(cert_data)
+    signed_payload.pop("provenance_chain", None)
+    signed_payload.pop("signing_context", None)
+    signed_payload.pop("certification_diagnostics", None)
+    if "certification" in signed_payload and isinstance(signed_payload["certification"], dict):
+        cert_copy = dict(signed_payload["certification"])
+        cert_copy.pop("stages", None)
+        signed_payload["certification"] = cert_copy
     manifest_bytes = _json.dumps(signed_payload, sort_keys=True).encode("utf-8")
 
     sig_verified = False
@@ -1516,10 +1588,13 @@ class VerificationAuthority:
     def verify_package_signature_only(
         package: Any,
         public_key_pem: str | None = None,
+        trust_root: Any | None = None,
+        key_registry: Mapping[str, str] | None = None,
     ) -> dict[str, Any]:
         """
         Validates the detached cryptographic signature over the canonical package payload.
         Fast-path signature validation without requiring underlying evidence artifacts.
+        Requires an external trust anchor (public_key_pem, trust_root, or key_registry).
         """
         from agentv_runtime.package import VerificationPackage
 
@@ -1537,7 +1612,11 @@ class VerificationAuthority:
                 "package_hash": pkg.compute_package_hash(),
             }
 
-        sig_valid = pkg.verify_signature(public_key_pem=public_key_pem)
+        sig_valid = pkg.verify_signature(
+            public_key_pem=public_key_pem,
+            trust_root=trust_root,
+            key_registry=key_registry,
+        )
         return {
             "verified": sig_valid,
             "status": "SIGNATURE_VALID" if sig_valid else "SIGNATURE_INVALID",
@@ -1559,6 +1638,8 @@ class VerificationAuthority:
         canonical_manifest: Any,
         scenario_data: Any | None = None,
         public_key_pem: str | None = None,
+        trust_root: Any | None = None,
+        key_registry: Mapping[str, str] | None = None,
         require_signature: bool = True,
     ) -> dict[str, Any]:
         """
@@ -1566,11 +1647,11 @@ class VerificationAuthority:
         1. Trace byte parity (recomputed SHA3-256 vs pkg.trace_hash)
         2. Manifest canonical hash binding (recomputed SHA3-256 vs pkg.manifest_hash)
         3. Evidence graph deterministic root reconstruction & direct provenance
-        4. Trace seal integrity
-        5. Scenario hash binding
+        4. Trace seal integrity (cryptographic digest verification vs pkg.trace_hash)
+        5. Scenario hash binding (mandatory scenario artifact presence, ID, version, and hash)
         6. Decision verdict conformance
-        7. Required oracle inventory completeness
-        8. Cryptographic signature verification
+        7. Required oracle inventory completeness & authoritative PASS outcome
+        8. Cryptographic signature verification against external trust root
         """
         import hashlib
 
@@ -1652,20 +1733,95 @@ class VerificationAuthority:
             except Exception as ev_err:
                 failures.append(f"EvidenceReconstructionFailed: {ev_err}")
 
-        # 4. Trace seal check
+        # 4. Trace seal integrity check (Defect 6)
         if not pkg.trace_seal:
             failures.append("TraceSealMissing: package missing trace seal")
+        else:
+            seal_digest = (
+                pkg.trace_seal.get("trace_digest")
+                or pkg.trace_seal.get("digest")
+                or pkg.trace_seal.get("trace_hash")
+                or pkg.trace_seal.get("certificate_hash")
+            )
+            if not seal_digest or not isinstance(seal_digest, str):
+                failures.append("TraceSealCorrupt: trace seal missing cryptographic digest")
+            else:
+                norm_seal_digest = (
+                    seal_digest.split(":", 1)[1] if ":" in seal_digest else seal_digest
+                )
+                norm_trace_hash = (
+                    pkg.trace_hash.split(":", 1)[1] if ":" in pkg.trace_hash else pkg.trace_hash
+                )
+                if norm_seal_digest.lower() != norm_trace_hash.lower():
+                    failures.append(
+                        f"TraceSealMismatch: trace seal digest '{seal_digest}' does not match "
+                        f"trace hash '{pkg.trace_hash}'"
+                    )
 
-        # 5. Scenario hash binding check
-        if scenario_data is not None:
+            if raw_trace_events is not None and "event_count" in pkg.trace_seal:
+                try:
+                    exp_count = int(pkg.trace_seal["event_count"])
+                    if len(raw_trace_events) != exp_count:
+                        failures.append(
+                            f"TraceSealEventCountMismatch: seal declared {exp_count} events "
+                            f"but actual trace contains {len(raw_trace_events)} events"
+                        )
+                except (ValueError, TypeError):
+                    pass
+
+        # 5. Scenario artifact binding check (Defect 3: mandatory for certification)
+        if scenario_data is None:
+            failures.append(
+                "ScenarioArtifactMissing: package certification requires bound scenario artifact"
+            )
+        else:
             try:
                 from agentv_runtime.manifest import compute_scenario_hash
 
                 computed_scen_hash = compute_scenario_hash(scenario_data)
-                if computed_scen_hash != pkg.scenario_hash:
+                if not pkg.scenario_hash or computed_scen_hash != pkg.scenario_hash:
                     failures.append(
                         f"ScenarioHashMismatch: package={pkg.scenario_hash} "
                         f"actual={computed_scen_hash}"
+                    )
+
+                if not pkg.scenario_id or not pkg.scenario_version:
+                    failures.append(
+                        "ScenarioBindingIncomplete: package missing scenario ID or version"
+                    )
+
+                scen_meta = (
+                    scenario_data.get("metadata")
+                    if isinstance(scenario_data.get("metadata"), dict)
+                    else {}
+                )
+                scen_id_in_data = str(
+                    scenario_data.get("id")
+                    or scenario_data.get("scenario_id")
+                    or scen_meta.get("id")
+                    or scen_meta.get("scenario_id")
+                    or ""
+                )
+                if scen_id_in_data and pkg.scenario_id and scen_id_in_data != pkg.scenario_id:
+                    failures.append(
+                        f"ScenarioIdMismatch: package={pkg.scenario_id} actual={scen_id_in_data}"
+                    )
+
+                scen_ver_in_data = str(
+                    scenario_data.get("version")
+                    or scenario_data.get("scenario_version")
+                    or scen_meta.get("version")
+                    or scen_meta.get("scenario_version")
+                    or ""
+                )
+                if (
+                    scen_ver_in_data
+                    and pkg.scenario_version
+                    and scen_ver_in_data != pkg.scenario_version
+                ):
+                    failures.append(
+                        f"ScenarioVersionMismatch: package={pkg.scenario_version} "
+                        f"actual={scen_ver_in_data}"
                     )
             except Exception as s_err:
                 failures.append(f"ScenarioVerificationFailed: {s_err}")
@@ -1675,20 +1831,55 @@ class VerificationAuthority:
         if decision_val not in ("PASS", "VERIFIED"):
             failures.append(f"UnverifiedDecision: decision was '{decision_val}'")
 
-        # 7. Required oracle inventory check
-        executed_oracle_ids = {
-            str(o.get("metric") or o.get("assertion") or "") for o in pkg.executed_oracle_results
-        }
-        missing_oracles = [
-            req for req in pkg.required_oracle_ids if req and req not in executed_oracle_ids
-        ]
-        if missing_oracles:
-            failures.append(f"MissingRequiredOracles: {missing_oracles}")
+        # 7. Required oracle inventory & outcome check (Defect 4)
+        seen_oracle_ids: set[str] = set()
+        executed_oracles: dict[str, dict[str, Any]] = {}
+        for o in pkg.executed_oracle_results:
+            o_id = str(o.get("oracle_id") or o.get("metric") or o.get("assertion") or "")
+            if not o_id:
+                continue
+            if o_id in seen_oracle_ids:
+                failures.append(f"DuplicateOracleId: duplicate oracle evaluation for '{o_id}'")
+            seen_oracle_ids.add(o_id)
+            executed_oracles[o_id] = o
 
-        # 8. Signature verification
+        for req in pkg.required_oracle_ids:
+            if not req:
+                continue
+            if req not in executed_oracles:
+                failures.append(f"MissingRequiredOracles: required oracle '{req}' was not executed")
+                continue
+
+            o_res = executed_oracles[req]
+            outcome = str(
+                o_res.get("outcome") or ("PASS" if o_res.get("passed") is True else "FAIL")
+            ).upper()
+            if outcome != "PASS":
+                failures.append(
+                    f"RequiredOracleFailed: required oracle '{req}' outcome is '{outcome}'"
+                )
+
+            resolver = o_res.get("resolver") or o_res.get("evaluator") or o_res.get("metric_type")
+            if not resolver or not isinstance(resolver, str):
+                failures.append(
+                    f"InvalidOracleResolver: required oracle '{req}' missing resolver specification"
+                )
+
+            ev_refs = o_res.get("evidence_refs")
+            if ev_refs is not None and not isinstance(ev_refs, list):
+                failures.append(
+                    f"InvalidOracleEvidenceRefs: required oracle '{req}' "
+                    "evidence_refs must be a list"
+                )
+
+        # 8. Signature verification against external trust root (Defect 1)
         if pkg.signature:
             try:
-                sig_valid = pkg.verify_signature(public_key_pem=public_key_pem)
+                sig_valid = pkg.verify_signature(
+                    public_key_pem=public_key_pem,
+                    trust_root=trust_root,
+                    key_registry=key_registry,
+                )
                 if not sig_valid:
                     failures.append(
                         f"SignatureVerificationFailed: Signature for identity "
@@ -1717,17 +1908,21 @@ class VerificationAuthority:
         canonical_manifest: Any | None = None,
         scenario_data: Any | None = None,
         public_key_pem: str | None = None,
+        trust_root: Any | None = None,
+        key_registry: Mapping[str, str] | None = None,
         require_signature: bool = True,
+        require_scenario_binding: bool = True,
     ) -> dict[str, Any]:
         """
         Validates the evidence package against supplied artifacts:
         - Trace SHA3-256 byte parity vs trace_hash
         - Manifest hash binding (recomputes canonical hash if canonical_manifest is provided)
         - Evidence graph root binding & direct provenance
-        - Scenario hash binding (if scenario_data is provided)
+        - Trace seal integrity vs trace hash
+        - Mandatory scenario hash binding (for certified results)
         - Decision verdict conformance
-        - Required oracle inventory completeness
-        - Cryptographic signature validation
+        - Required oracle inventory completeness and PASS outcome
+        - Cryptographic signature validation against external trust root
         """
         import hashlib
 
@@ -1810,7 +2005,41 @@ class VerificationAuthority:
                 logger.debug("Evidence graph calculation failed: %s", ev_err)
                 failures.append(f"EvidenceReconstructionFailed: {ev_err}")
 
-        # 5. Scenario hash binding check if provided
+        # 4b. Trace seal verification (Defect 6)
+        if pkg.trace_seal:
+            seal_digest = (
+                pkg.trace_seal.get("trace_digest")
+                or pkg.trace_seal.get("digest")
+                or pkg.trace_seal.get("trace_hash")
+                or pkg.trace_seal.get("certificate_hash")
+            )
+            if not seal_digest or not isinstance(seal_digest, str):
+                failures.append("TraceSealCorrupt: trace seal missing cryptographic digest")
+            else:
+                norm_seal_digest = (
+                    seal_digest.split(":", 1)[1] if ":" in seal_digest else seal_digest
+                )
+                norm_trace_hash = (
+                    pkg.trace_hash.split(":", 1)[1] if ":" in pkg.trace_hash else pkg.trace_hash
+                )
+                if norm_seal_digest.lower() != norm_trace_hash.lower():
+                    failures.append(
+                        f"TraceSealMismatch: trace seal digest '{seal_digest}' does not match "
+                        f"trace hash '{pkg.trace_hash}'"
+                    )
+
+            if raw_trace_events is not None and "event_count" in pkg.trace_seal:
+                try:
+                    exp_count = int(pkg.trace_seal["event_count"])
+                    if len(raw_trace_events) != exp_count:
+                        failures.append(
+                            f"TraceSealEventCountMismatch: seal declared {exp_count} events "
+                            f"but actual trace contains {len(raw_trace_events)} events"
+                        )
+                except (ValueError, TypeError):
+                    pass
+
+        # 5. Scenario hash binding check (Defect 3)
         if scenario_data is not None:
             try:
                 from agentv_runtime.manifest import compute_scenario_hash
@@ -1821,28 +2050,105 @@ class VerificationAuthority:
                         f"ScenarioHashMismatch: package={pkg.scenario_hash} "
                         f"actual={computed_scen_hash}"
                     )
+                if not pkg.scenario_id or not pkg.scenario_version:
+                    failures.append(
+                        "ScenarioBindingIncomplete: package missing scenario ID or version"
+                    )
+
+                scen_meta = (
+                    scenario_data.get("metadata")
+                    if isinstance(scenario_data.get("metadata"), dict)
+                    else {}
+                )
+                scen_id_in_data = str(
+                    scenario_data.get("id")
+                    or scenario_data.get("scenario_id")
+                    or scen_meta.get("id")
+                    or scen_meta.get("scenario_id")
+                    or ""
+                )
+                if scen_id_in_data and pkg.scenario_id and scen_id_in_data != pkg.scenario_id:
+                    failures.append(
+                        f"ScenarioIdMismatch: package={pkg.scenario_id} actual={scen_id_in_data}"
+                    )
+
+                scen_ver_in_data = str(
+                    scenario_data.get("version")
+                    or scenario_data.get("scenario_version")
+                    or scen_meta.get("version")
+                    or scen_meta.get("scenario_version")
+                    or ""
+                )
+                if (
+                    scen_ver_in_data
+                    and pkg.scenario_version
+                    and scen_ver_in_data != pkg.scenario_version
+                ):
+                    failures.append(
+                        f"ScenarioVersionMismatch: package={pkg.scenario_version} "
+                        f"actual={scen_ver_in_data}"
+                    )
             except Exception as s_err:
                 failures.append(f"ScenarioVerificationFailed: {s_err}")
+        elif require_scenario_binding:
+            failures.append(
+                "ScenarioArtifactMissing: package certification requires bound scenario artifact"
+            )
 
         # 6. Decision verdict check
         decision_val = pkg.decision.get("decision") or pkg.decision.get("verdict")
         if decision_val not in ("PASS", "VERIFIED"):
             failures.append(f"UnverifiedDecision: decision was '{decision_val}'")
 
-        # 7. Required oracle inventory check
-        executed_oracle_ids = {
-            str(o.get("metric") or o.get("assertion") or "") for o in pkg.executed_oracle_results
-        }
-        missing_oracles = [
-            req for req in pkg.required_oracle_ids if req and req not in executed_oracle_ids
-        ]
-        if missing_oracles:
-            failures.append(f"MissingRequiredOracles: {missing_oracles}")
+        # 7. Required oracle inventory & outcome check (Defect 4)
+        seen_oracle_ids: set[str] = set()
+        executed_oracles: dict[str, dict[str, Any]] = {}
+        for o in pkg.executed_oracle_results:
+            o_id = str(o.get("oracle_id") or o.get("metric") or o.get("assertion") or "")
+            if not o_id:
+                continue
+            if o_id in seen_oracle_ids:
+                failures.append(f"DuplicateOracleId: duplicate oracle evaluation for '{o_id}'")
+            seen_oracle_ids.add(o_id)
+            executed_oracles[o_id] = o
 
-        # 8. Signature verification
+        for req in pkg.required_oracle_ids:
+            if not req:
+                continue
+            if req not in executed_oracles:
+                failures.append(f"MissingRequiredOracles: required oracle '{req}' was not executed")
+                continue
+
+            o_res = executed_oracles[req]
+            outcome = str(
+                o_res.get("outcome") or ("PASS" if o_res.get("passed") is True else "FAIL")
+            ).upper()
+            if outcome != "PASS":
+                failures.append(
+                    f"RequiredOracleFailed: required oracle '{req}' outcome is '{outcome}'"
+                )
+
+            resolver = o_res.get("resolver") or o_res.get("evaluator") or o_res.get("metric_type")
+            if not resolver or not isinstance(resolver, str):
+                failures.append(
+                    f"InvalidOracleResolver: required oracle '{req}' missing resolver specification"
+                )
+
+            ev_refs = o_res.get("evidence_refs")
+            if ev_refs is not None and not isinstance(ev_refs, list):
+                failures.append(
+                    f"InvalidOracleEvidenceRefs: required oracle '{req}' "
+                    "evidence_refs must be a list"
+                )
+
+        # 8. Signature verification against external trust root (Defect 1)
         if pkg.signature:
             try:
-                sig_valid = pkg.verify_signature(public_key_pem=public_key_pem)
+                sig_valid = pkg.verify_signature(
+                    public_key_pem=public_key_pem,
+                    trust_root=trust_root,
+                    key_registry=key_registry,
+                )
                 if not sig_valid:
                     failures.append(
                         f"SignatureVerificationFailed: Signature for identity "

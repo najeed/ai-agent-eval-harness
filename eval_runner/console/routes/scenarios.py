@@ -391,13 +391,22 @@ def check_execution_readiness():
     }
 
     if not endpoint:
-        agent_check.update(
-            {
-                "status": "WARNING",
-                "tier": "CONFIGURED",
-                "message": "No endpoint configured for agent. Simulated/stateless execution only.",
-            }
-        )
+        if proto in ("stdio", "in_process"):
+            agent_check.update(
+                {
+                    "status": "PASSED",
+                    "tier": "EXECUTABLE",
+                    "message": f"Agent protocol '{proto}' uses local in-process execution.",
+                }
+            )
+        else:
+            agent_check.update(
+                {
+                    "status": "FAILED",
+                    "tier": "CONFIGURED",
+                    "message": "No endpoint configured for network agent. Execution blocked.",
+                }
+            )
     elif proto in ("stdio", "in_process"):
         agent_check.update(
             {
@@ -438,7 +447,7 @@ def check_execution_readiness():
         else:
             agent_check.update(
                 {
-                    "status": "WARNING",
+                    "status": "FAILED",
                     "tier": "CONFIGURED",
                     "message": (
                         f"Provider '{proto}' missing required environment variable "
@@ -449,7 +458,7 @@ def check_execution_readiness():
     elif proto in _http_probed_protocols:
         # Attempt real HTTP HEAD probe with strict status code tiering
         t0 = _time.monotonic()
-        probe_status = "WARNING"
+        probe_status = "FAILED"
         probe_tier = "CONFIGURED"
         probe_msg = ""
         try:
@@ -472,20 +481,24 @@ def check_execution_readiness():
                     probe_tier = "REACHABLE"
                     probe_msg = f"HTTP {resp.status} (Redirect)"
                 else:
-                    probe_status = "WARNING"
+                    probe_status = "FAILED"
                     probe_tier = "CONFIGURED"
                     probe_msg = f"HTTP {resp.status} (Unhealthy Response)"
         except urllib.error.HTTPError as he:
             if he.code in (401, 403):
-                probe_status = "WARNING"
+                probe_status = "FAILED"
                 probe_tier = "REACHABLE"
                 probe_msg = f"HTTP {he.code} (Authentication Required)"
+            elif he.code in (404, 405):
+                probe_status = "PASSED"
+                probe_tier = "REACHABLE"
+                probe_msg = f"HTTP {he.code} (Endpoint Reachable, No Health Handler)"
             else:
                 probe_status = "WARNING"
                 probe_tier = "CONFIGURED"
                 probe_msg = f"HTTP {he.code} (Server Error / Missing Handler)"
         except (urllib.error.URLError, OSError, TimeoutError) as ue:
-            probe_status = "WARNING"
+            probe_status = "FAILED"
             probe_tier = "CONFIGURED"
             probe_msg = f"Unreachable: {ue}"
         latency_ms = int((_time.monotonic() - t0) * 1000)
@@ -502,10 +515,22 @@ def check_execution_readiness():
                     "latency_ms": latency_ms,
                 }
             )
-        else:
+        elif probe_status == "WARNING":
             agent_check.update(
                 {
                     "status": "WARNING",
+                    "tier": probe_tier,
+                    "message": (
+                        f"Endpoint '{endpoint}' responded with warning ({probe_msg}). "
+                        "Protocol configured; verify agent server health before execution."
+                    ),
+                    "latency_ms": latency_ms,
+                }
+            )
+        else:
+            agent_check.update(
+                {
+                    "status": "FAILED",
                     "tier": probe_tier,
                     "message": (
                         f"Endpoint '{endpoint}' failed readiness check ({probe_msg}). "
@@ -542,28 +567,27 @@ def check_execution_readiness():
         except Exception as sim_err:
             sim_failed_names.append(f"{sim_name}: {sim_err}")
     if not isinstance(sim_registry, dict):
-        # Registry returned a non-dict (e.g. list/count) — report truthfully
         sim_healthy = sim_count
 
-    if sim_count == 0:
+    if sim_failed_names:
         checks.append(
             {
                 "name": "Simulator Environment",
-                "status": "WARNING",
-                "tier": "CONFIGURED",
-                "message": "No domain simulators registered. Stateless evaluation only.",
-            }
-        )
-    elif sim_failed_names:
-        checks.append(
-            {
-                "name": "Simulator Environment",
-                "status": "WARNING",
+                "status": "FAILED",
                 "tier": "CONFIGURED",
                 "message": (
                     f"{sim_healthy}/{sim_count} simulators healthy. "
                     f"Failed: {'; '.join(sim_failed_names[:3])}"
                 ),
+            }
+        )
+    elif sim_count == 0:
+        checks.append(
+            {
+                "name": "Simulator Environment",
+                "status": "PASSED",
+                "tier": "EXECUTABLE",
+                "message": "No domain simulators registered. Stateless evaluation.",
             }
         )
     else:
@@ -611,17 +635,74 @@ def check_execution_readiness():
         if t in tier_order and tier_order.index(t) < tier_order.index(overall_tier):
             overall_tier = t
 
+    from agentv_runtime.contracts import ReadinessState
+
     has_failed = any(c.get("status") == "FAILED" for c in checks)
     has_warnings = any(c.get("status") == "WARNING" for c in checks)
-    all_passed = not has_failed
-    is_verifiable = (
-        all_passed and signing_key is not None and all(c.get("status") == "PASSED" for c in checks)
+
+    # Core execution prerequisites: scenario and simulators must be valid,
+    # and agent endpoint must be reachable
+    scenario_ok = any(
+        c.get("name") == "Scenario Specification" and c.get("status") == "PASSED" for c in checks
     )
+    # Agent endpoint is executable if strictly PASSED, or if an unprobed
+    # custom protocol has an endpoint configured
+    agent_status = agent_check.get("status")
+    agent_ok = (agent_status == "PASSED") or (
+        agent_status == "WARNING" and proto not in _http_probed_protocols and bool(endpoint)
+    )
+    sim_ok = any(
+        c.get("name") == "Simulator Environment" and c.get("status") == "PASSED" for c in checks
+    )
+
+    can_execute = scenario_ok and agent_ok and sim_ok and not has_failed
+    has_trusted_signer = signing_key is not None
+    post_run_evidence_complete = bool(
+        data.get("post_run_evidence")
+        or data.get("evidence_complete")
+        or (data.get("run_id") and data.get("trace_sealed"))
+    )
+
+    if not can_execute:
+        readiness_state = ReadinessState.BLOCKED
+        ready = False
+        is_executable = False
+        is_verifiable = False
+        overall_status = "FAILED"
+    elif has_trusted_signer and not has_warnings and post_run_evidence_complete:
+        readiness_state = ReadinessState.CERTIFIABLE
+        ready = True
+        is_executable = True
+        is_verifiable = True
+        overall_status = "CERTIFIABLE"
+    elif has_trusted_signer and not any(
+        c.get("name")
+        in (
+            "Scenario Specification",
+            "Agent Endpoint",
+            "Simulator Environment",
+            "Cryptographic Sealer",
+        )
+        and c.get("status") != "PASSED"
+        for c in checks
+    ):
+        readiness_state = ReadinessState.READY_TO_CERTIFY
+        ready = True
+        is_executable = True
+        is_verifiable = True
+        overall_status = "READY"
+    else:
+        readiness_state = ReadinessState.READY_TO_EXECUTE
+        ready = True
+        is_executable = True
+        is_verifiable = False
+        overall_status = "CONFIGURED" if has_warnings else "READY"
 
     manifest = {
         "scenario_id": scen_id,
+        "readiness_state": readiness_state,
         "readiness_tier": overall_tier,
-        "is_executable": all_passed,
+        "is_executable": is_executable,
         "is_verifiable": is_verifiable,
         "checks": checks,
     }
@@ -632,13 +713,13 @@ def check_execution_readiness():
 
     return jsonify(
         {
-            "ready": all_passed,
-            "is_executable": all_passed,
+            "ready": ready,
+            "readiness_state": readiness_state,
+            "state": readiness_state,
+            "is_executable": is_executable,
             "is_verifiable": is_verifiable,
             "scenario_id": scen_id,
-            "overall_status": (
-                "FAILED" if has_failed else ("CONFIGURED" if has_warnings else "READY")
-            ),
+            "overall_status": overall_status,
             "readiness_tier": overall_tier,
             "preflight_fingerprint": pfp,
             "manifest": manifest,

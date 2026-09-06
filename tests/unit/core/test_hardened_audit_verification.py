@@ -357,15 +357,21 @@ def test_node_verdict_conjunctive_success():
 
 
 def test_verification_authority_package_validation():
-    """VerificationAuthority validates package consistency and missing required oracles."""
+    from agentv_runtime.manifest import compute_scenario_hash
     from agentv_runtime.package import VerificationPackage
     from eval_runner.verifier import VerificationAuthority
+
+    scenario_data = {
+        "metadata": {"id": "s1", "version": "1.0.0"},
+        "workflow": {"nodes": [{"id": "n1"}]},
+    }
+    scen_hash = compute_scenario_hash(scenario_data)
 
     # Valid package with all required oracles executed
     pkg_valid = VerificationPackage(
         scenario_id="s1",
         scenario_version="1.0.0",
-        scenario_hash="sha3_256:scen",
+        scenario_hash=scen_hash,
         manifest_id="m1",
         manifest_hash="sha3_256:man",
         execution_identity={"evaluator": "test"},
@@ -373,10 +379,20 @@ def test_verification_authority_package_validation():
         trace_seal={"digest": "sha3_256:trace"},
         evidence_root_hash="sha3_256:ev",
         required_oracle_ids=["req_oracle_1"],
-        executed_oracle_results=[{"metric": "req_oracle_1", "passed": True}],
+        executed_oracle_results=[
+            {
+                "oracle_id": "req_oracle_1",
+                "outcome": "PASS",
+                "resolver": "builtin_v1",
+                "version": "1.0.0",
+                "evidence_refs": ["ref_1"],
+            }
+        ],
         decision={"decision": "PASS", "verdict": "VERIFIED"},
     )
-    res_valid = VerificationAuthority.verify_package(pkg_valid, require_signature=False)
+    res_valid = VerificationAuthority.verify_package(
+        pkg_valid, scenario_data=scenario_data, require_signature=False
+    )
     assert res_valid["verified"] is True
     assert res_valid["status"] == "CERTIFIED"
 
@@ -384,7 +400,7 @@ def test_verification_authority_package_validation():
     pkg_missing_oracle = VerificationPackage(
         scenario_id="s1",
         scenario_version="1.0.0",
-        scenario_hash="sha3_256:scen",
+        scenario_hash=scen_hash,
         manifest_id="m1",
         manifest_hash="sha3_256:man",
         execution_identity={"evaluator": "test"},
@@ -392,13 +408,152 @@ def test_verification_authority_package_validation():
         trace_seal={"digest": "sha3_256:trace"},
         evidence_root_hash="sha3_256:ev",
         required_oracle_ids=["req_oracle_1", "missing_oracle_2"],
-        executed_oracle_results=[{"metric": "req_oracle_1", "passed": True}],
+        executed_oracle_results=[
+            {
+                "oracle_id": "req_oracle_1",
+                "outcome": "PASS",
+                "resolver": "builtin_v1",
+                "version": "1.0.0",
+                "evidence_refs": ["ref_1"],
+            }
+        ],
         decision={"decision": "PASS", "verdict": "VERIFIED"},
     )
-    res_missing = VerificationAuthority.verify_package(pkg_missing_oracle, require_signature=False)
+    res_missing = VerificationAuthority.verify_package(
+        pkg_missing_oracle, scenario_data=scenario_data, require_signature=False
+    )
     assert res_missing["verified"] is False
     assert res_missing["status"] == "UNVERIFIED"
     assert any("MissingRequiredOracles" in f for f in res_missing["failures"])
+
+
+def test_verification_authority_comprehensive_failure_branches():
+    import dataclasses
+
+    from agentv_runtime.manifest import compute_scenario_hash
+    from agentv_runtime.package import VerificationPackage
+    from eval_runner.verifier import VerificationAuthority
+
+    scenario_data = {
+        "metadata": {"id": "s1", "version": "1.0.0"},
+        "workflow": {"nodes": [{"id": "n1"}]},
+    }
+    scen_hash = compute_scenario_hash(scenario_data)
+
+    base_pkg = VerificationPackage(
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+        manifest_id="m1",
+        manifest_hash="sha3_256:man",
+        execution_identity={"evaluator": "test"},
+        trace_hash="sha3_256:trace",
+        trace_seal={"digest": "sha3_256:trace", "event_count": 2},
+        evidence_root_hash="sha3_256:ev",
+        required_oracle_ids=["o1"],
+        executed_oracle_results=[
+            {
+                "oracle_id": "o1",
+                "outcome": "PASS",
+                "resolver": "builtin_v1",
+                "version": "1.0.0",
+                "evidence_refs": ["ref_1"],
+            }
+        ],
+        decision={"decision": "PASS", "verdict": "VERIFIED"},
+    )
+
+    # 1. Trace seal corrupt (missing digest)
+    p_bad_seal = dataclasses.replace(base_pkg, trace_seal={"event_count": 2})
+    res = VerificationAuthority.verify_package(
+        p_bad_seal, scenario_data=scenario_data, require_signature=False
+    )
+    assert any("TraceSealCorrupt" in f for f in res["failures"])
+
+    # 2. Trace seal event count mismatch
+    events = [{"_seq": 1}, {"_seq": 2}, {"_seq": 3}]
+    res = VerificationAuthority.verify_package(
+        base_pkg, scenario_data=scenario_data, raw_trace_events=events, require_signature=False
+    )
+    assert any("TraceSealEventCountMismatch" in f for f in res["failures"])
+
+    # 3. ScenarioBindingIncomplete: missing scenario_id or version
+    p_incomp = dataclasses.replace(base_pkg, scenario_id="")
+    res = VerificationAuthority.verify_package(
+        p_incomp, scenario_data=scenario_data, require_signature=False
+    )
+    assert any("ScenarioBindingIncomplete" in f for f in res["failures"])
+
+    # 4. ScenarioIdMismatch / ScenarioVersionMismatch
+    bad_scen_data = {
+        "metadata": {"id": "different_s", "version": "9.9.9"},
+        "workflow": {"nodes": []},
+    }
+    res = VerificationAuthority.verify_package(
+        base_pkg, scenario_data=bad_scen_data, require_signature=False
+    )
+    assert any("ScenarioIdMismatch" in f for f in res["failures"])
+    assert any("ScenarioVersionMismatch" in f for f in res["failures"])
+
+    # 5. UnverifiedDecision
+    p_bad_dec = dataclasses.replace(base_pkg, decision={"decision": "FAIL"})
+    res = VerificationAuthority.verify_package(
+        p_bad_dec, scenario_data=scenario_data, require_signature=False
+    )
+    assert any("UnverifiedDecision" in f for f in res["failures"])
+
+    # 6. DuplicateOracleId
+    p_dup_oracle = dataclasses.replace(
+        base_pkg,
+        executed_oracle_results=[
+            {"oracle_id": "o1", "outcome": "PASS", "resolver": "r1", "evidence_refs": []},
+            {"oracle_id": "o1", "outcome": "PASS", "resolver": "r1", "evidence_refs": []},
+        ],
+    )
+    res = VerificationAuthority.verify_package(
+        p_dup_oracle, scenario_data=scenario_data, require_signature=False
+    )
+    assert any("DuplicateOracleId" in f for f in res["failures"])
+
+    # 7. RequiredOracleFailed
+    p_fail_oracle = dataclasses.replace(
+        base_pkg,
+        executed_oracle_results=[
+            {"oracle_id": "o1", "outcome": "FAIL", "resolver": "r1", "evidence_refs": []}
+        ],
+    )
+    res = VerificationAuthority.verify_package(
+        p_fail_oracle, scenario_data=scenario_data, require_signature=False
+    )
+    assert any("RequiredOracleFailed" in f for f in res["failures"])
+
+    # 8. InvalidOracleResolver
+    p_no_res = dataclasses.replace(
+        base_pkg,
+        executed_oracle_results=[{"oracle_id": "o1", "outcome": "PASS", "evidence_refs": []}],
+    )
+    res = VerificationAuthority.verify_package(
+        p_no_res, scenario_data=scenario_data, require_signature=False
+    )
+    assert any("InvalidOracleResolver" in f for f in res["failures"])
+
+    # 9. InvalidOracleEvidenceRefs
+    p_bad_refs = dataclasses.replace(
+        base_pkg,
+        executed_oracle_results=[
+            {"oracle_id": "o1", "outcome": "PASS", "resolver": "r1", "evidence_refs": "not-a-list"}
+        ],
+    )
+    res = VerificationAuthority.verify_package(
+        p_bad_refs, scenario_data=scenario_data, require_signature=False
+    )
+    assert any("InvalidOracleEvidenceRefs" in f for f in res["failures"])
+
+    # 10. UnsignedPackage when signature required
+    res = VerificationAuthority.verify_package(
+        base_pkg, scenario_data=scenario_data, require_signature=True
+    )
+    assert any("UnsignedPackage" in f for f in res["failures"])
 
 
 def test_contracts_verification_result_fail_closed_defaults():
@@ -425,15 +580,21 @@ def test_verification_authority_split_and_manifest_tamper_detection():
         build_evidence_graph_from_events,
         compute_evidence_graph_root,
     )
-    from agentv_runtime.manifest import ExecutionManifest
+    from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
     from agentv_runtime.package import VerificationPackage
     from eval_runner.verifier import VerificationAuthority
+
+    scenario_data = {
+        "metadata": {"id": "s1", "version": "1.0.0"},
+        "workflow": {"nodes": [{"id": "n1"}]},
+    }
+    scen_hash = compute_scenario_hash(scenario_data)
 
     manifest = ExecutionManifest(
         manifest_id="m1",
         scenario_id="s1",
         scenario_version="1.0.0",
-        scenario_hash="sha3_256:scen",
+        scenario_hash=scen_hash,
         tenant_id="t1",
         workspace_id="ws1",
         agent_config={"model": "gpt-4"},
@@ -457,7 +618,7 @@ def test_verification_authority_split_and_manifest_tamper_detection():
     pkg = VerificationPackage(
         scenario_id="s1",
         scenario_version="1.0.0",
-        scenario_hash="sha3_256:scen",
+        scenario_hash=scen_hash,
         manifest_id="m1",
         manifest_hash=m_hash,
         execution_identity={"evaluator": "test"},
@@ -465,7 +626,15 @@ def test_verification_authority_split_and_manifest_tamper_detection():
         trace_seal={"digest": trace_hash},
         evidence_root_hash=ev_root,
         required_oracle_ids=["oracle_1"],
-        executed_oracle_results=[{"metric": "oracle_1", "passed": True}],
+        executed_oracle_results=[
+            {
+                "oracle_id": "oracle_1",
+                "outcome": "PASS",
+                "resolver": "builtin_v1",
+                "version": "1.0.0",
+                "evidence_refs": ["ref_1"],
+            }
+        ],
         decision={"decision": "PASS", "verdict": "VERIFIED"},
     )
 
@@ -480,6 +649,7 @@ def test_verification_authority_split_and_manifest_tamper_detection():
         raw_trace_bytes=raw_trace_bytes,
         raw_trace_events=raw_events,
         canonical_manifest=manifest,
+        scenario_data=scenario_data,
         require_signature=False,
     )
     assert art_res["verified"] is True
@@ -490,7 +660,7 @@ def test_verification_authority_split_and_manifest_tamper_detection():
         manifest_id="m1",
         scenario_id="s1",
         scenario_version="1.0.0",
-        scenario_hash="sha3_256:scen",
+        scenario_hash=scen_hash,
         tenant_id="tampered_tenant",
         workspace_id="ws1",
         agent_config={"model": "gpt-4"},
@@ -505,6 +675,7 @@ def test_verification_authority_split_and_manifest_tamper_detection():
         raw_trace_bytes=raw_trace_bytes,
         raw_trace_events=raw_events,
         canonical_manifest=tampered_manifest,
+        scenario_data=scenario_data,
         require_signature=False,
     )
     assert tampered_res["verified"] is False
@@ -517,6 +688,7 @@ def test_verification_authority_split_and_manifest_tamper_detection():
         raw_trace_bytes=None,  # type: ignore
         raw_trace_events=raw_events,
         canonical_manifest=manifest,
+        scenario_data=scenario_data,
         require_signature=False,
     )
     assert missing_bytes_res["verified"] is False

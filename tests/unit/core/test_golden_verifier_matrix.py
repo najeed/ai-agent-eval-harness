@@ -67,7 +67,12 @@ class IndependentTraceOracle:
 
         manifest_copy = manifest.copy()
         manifest_copy.pop("provenance_chain", None)
-        manifest_copy.pop("certification", None)
+        manifest_copy.pop("signing_context", None)
+        manifest_copy.pop("certification_diagnostics", None)
+        if "certification" in manifest_copy and isinstance(manifest_copy["certification"], dict):
+            cert_copy = dict(manifest_copy["certification"])
+            cert_copy.pop("stages", None)
+            manifest_copy["certification"] = cert_copy
         manifest_bytes = json.dumps(manifest_copy, sort_keys=True).encode("utf-8")
 
         for node in chain:
@@ -1465,14 +1470,16 @@ def test_verification_authority_trace_bytes_and_validity_mutants():
 
     # 1. Matching trace bytes -> verified is True (kills [19], [20])
     res_valid = VerificationAuthority.verify_package(
-        pkg, raw_trace_bytes=raw, require_signature=False
+        pkg, raw_trace_bytes=raw, require_signature=False, require_scenario_binding=False
     )
     assert res_valid["verified"] is True
     assert len(res_valid["failures"]) == 0
 
     # 2. Mismatching trace bytes -> verified is False (kills [58])
     tampered = b'{"event": "tampered"}\n'
-    res_tampered = VerificationAuthority.verify_package(pkg, raw_trace_bytes=tampered)
+    res_tampered = VerificationAuthority.verify_package(
+        pkg, raw_trace_bytes=tampered, require_signature=False, require_scenario_binding=False
+    )
     assert res_tampered["verified"] is False
     assert any("TraceHashMismatch" in f for f in res_tampered["failures"])
 
@@ -2691,10 +2698,13 @@ def test_verification_authority_package_artifacts_and_signature_only():
     ev_graph = build_evidence_graph_from_events(raw_events)
     ev_root = compute_evidence_graph_root(ev_graph)
 
+    scen_data = {"id": "s1", "version": "1.0.0"}
+    scen_hash = compute_scenario_hash(scen_data)
+
     pkg = VerificationPackage(
         scenario_id="s1",
         scenario_version="1.0.0",
-        scenario_hash="sha3_256:scen",
+        scenario_hash=scen_hash,
         manifest_id="m1",
         manifest_hash=m_hash,
         execution_identity={"evaluator": "test"},
@@ -2702,7 +2712,15 @@ def test_verification_authority_package_artifacts_and_signature_only():
         trace_seal={"digest": trace_hash},
         evidence_root_hash=ev_root,
         required_oracle_ids=["oracle_1"],
-        executed_oracle_results=[{"metric": "oracle_1", "passed": True}],
+        executed_oracle_results=[
+            {
+                "oracle_id": "oracle_1",
+                "outcome": "PASS",
+                "resolver": "builtin_v1",
+                "version": "1.0.0",
+                "evidence_refs": ["ref_1"],
+            }
+        ],
         decision={"decision": "PASS", "verdict": "VERIFIED"},
     )
 
@@ -2713,6 +2731,7 @@ def test_verification_authority_package_artifacts_and_signature_only():
         raw_trace_bytes=raw_trace_bytes,
         raw_trace_events=raw_events,
         canonical_manifest=manifest,
+        scenario_data=scen_data,
         require_signature=False,
     )
     assert res["verified"] is True
@@ -3062,11 +3081,16 @@ def test_verify_package_artifacts_manifest_types_and_errors():
 
     ev_root = compute_evidence_graph_root(build_evidence_graph_from_events(events))
 
+    from agentv_runtime.manifest import compute_scenario_hash
+
+    scen_data = {"id": "s1", "version": "1.0.0"}
+    scen_hash = compute_scenario_hash(scen_data)
+
     m_dict = {
         "manifest_id": "m1",
         "scenario_id": "s1",
         "scenario_version": "1.0.0",
-        "scenario_hash": "sha3_256:scen",
+        "scenario_hash": scen_hash,
         "tenant_id": "t1",
         "workspace_id": "ws1",
         "agent_config": {},
@@ -3081,12 +3105,12 @@ def test_verify_package_artifacts_manifest_types_and_errors():
     pkg = VerificationPackage(
         scenario_id="s1",
         scenario_version="1.0.0",
-        scenario_hash="sha3_256:scen",
+        scenario_hash=scen_hash,
         manifest_id="m1",
         manifest_hash=m_hash,
         execution_identity={"worker": "w1"},
         trace_hash=trace_hash,
-        trace_seal={"count": 1},
+        trace_seal={"digest": trace_hash},
         evidence_root_hash=ev_root,
         required_oracle_ids=[],
         executed_oracle_results=[],
@@ -3103,6 +3127,7 @@ def test_verify_package_artifacts_manifest_types_and_errors():
             raw_trace_bytes=trace_bytes,
             raw_trace_events=events,
             canonical_manifest=m_dict,
+            scenario_data=scen_data,
             require_signature=True,
         )
         assert res_dict["verified"] is True
@@ -3113,12 +3138,12 @@ def test_verify_package_artifacts_manifest_types_and_errors():
         pkg_b = VerificationPackage(
             scenario_id="s1",
             scenario_version="1.0.0",
-            scenario_hash="sha3_256:scen",
+            scenario_hash=scen_hash,
             manifest_id="m1",
             manifest_hash=m_bytes_hash,
             execution_identity={"worker": "w1"},
             trace_hash=trace_hash,
-            trace_seal={"count": 1},
+            trace_seal={"digest": trace_hash},
             evidence_root_hash=ev_root,
             required_oracle_ids=[],
             executed_oracle_results=[],
@@ -3131,6 +3156,7 @@ def test_verify_package_artifacts_manifest_types_and_errors():
             raw_trace_bytes=trace_bytes,
             raw_trace_events=events,
             canonical_manifest=m_raw_bytes,
+            scenario_data=scen_data,
             require_signature=True,
         )
         assert res_bytes["verified"] is True
@@ -3141,12 +3167,12 @@ def test_verify_package_artifacts_manifest_types_and_errors():
         pkg_s = VerificationPackage(
             scenario_id="s1",
             scenario_version="1.0.0",
-            scenario_hash="sha3_256:scen",
+            scenario_hash=scen_hash,
             manifest_id="m1",
             manifest_hash=m_str_hash,
             execution_identity={"worker": "w1"},
             trace_hash=trace_hash,
-            trace_seal={"count": 1},
+            trace_seal={"digest": trace_hash},
             evidence_root_hash=ev_root,
             required_oracle_ids=[],
             executed_oracle_results=[],
@@ -3159,6 +3185,7 @@ def test_verify_package_artifacts_manifest_types_and_errors():
             raw_trace_bytes=trace_bytes,
             raw_trace_events=events,
             canonical_manifest=m_str,
+            scenario_data=scen_data,
             require_signature=True,
         )
         assert res_str["verified"] is True
@@ -3169,6 +3196,7 @@ def test_verify_package_artifacts_manifest_types_and_errors():
             raw_trace_bytes=trace_bytes,
             raw_trace_events=events,
             canonical_manifest=12345,
+            scenario_data=scen_data,
             require_signature=True,
         )
         assert res_unsupported["verified"] is False
@@ -3184,6 +3212,7 @@ def test_verify_package_artifacts_manifest_types_and_errors():
             raw_trace_bytes=trace_bytes,
             raw_trace_events=events,
             canonical_manifest=ExplodingManifest(),
+            scenario_data=scen_data,
             require_signature=True,
         )
         assert res_err["verified"] is False
@@ -3324,7 +3353,7 @@ def test_verify_package_artifacts_scenario_decision_oracle_and_sig_branches():
         manifest_hash=m_hash,
         execution_identity={"worker": "w1"},
         trace_hash=trace_hash,
-        trace_seal={"count": 1},
+        trace_seal={"digest": trace_hash},
         evidence_root_hash="sha3_256:ev_root",
         required_oracle_ids=[],
         executed_oracle_results=[],
@@ -3382,7 +3411,7 @@ def test_verify_package_artifacts_scenario_decision_oracle_and_sig_branches():
             manifest_hash=m_hash,
             execution_identity={"worker": "w1"},
             trace_hash=trace_hash,
-            trace_seal={"count": 1},
+            trace_seal={"digest": trace_hash},
             evidence_root_hash="sha3_256:ev_root",
             required_oracle_ids=[],
             executed_oracle_results=[],
@@ -3396,6 +3425,7 @@ def test_verify_package_artifacts_scenario_decision_oracle_and_sig_branches():
                 raw_trace_bytes=trace_bytes,
                 raw_trace_events=events,
                 canonical_manifest=m_bytes,
+                scenario_data=scen_data,
                 require_signature=False,
             )
             assert any("UnverifiedDecision" in f for f in res_dec["failures"])
@@ -3409,7 +3439,7 @@ def test_verify_package_artifacts_scenario_decision_oracle_and_sig_branches():
             manifest_hash=m_hash,
             execution_identity={"worker": "w1"},
             trace_hash=trace_hash,
-            trace_seal={"count": 1},
+            trace_seal={"digest": trace_hash},
             evidence_root_hash="sha3_256:ev_root",
             required_oracle_ids=["required_oracle_1"],
             executed_oracle_results=[{"metric": "other_oracle"}],
@@ -3423,6 +3453,7 @@ def test_verify_package_artifacts_scenario_decision_oracle_and_sig_branches():
                 raw_trace_bytes=trace_bytes,
                 raw_trace_events=events,
                 canonical_manifest=m_bytes,
+                scenario_data=scen_data,
                 require_signature=False,
             )
             assert any("MissingRequiredOracles" in f for f in res_oracles["failures"])
@@ -3434,6 +3465,7 @@ def test_verify_package_artifacts_scenario_decision_oracle_and_sig_branches():
                 raw_trace_bytes=trace_bytes,
                 raw_trace_events=events,
                 canonical_manifest=m_bytes,
+                scenario_data=scen_data,
                 require_signature=True,
             )
             assert any("SignatureVerificationFailed" in f for f in res_sig_false["failures"])
@@ -3449,6 +3481,7 @@ def test_verify_package_artifacts_scenario_decision_oracle_and_sig_branches():
                 raw_trace_bytes=trace_bytes,
                 raw_trace_events=events,
                 canonical_manifest=m_bytes,
+                scenario_data=scen_data,
                 require_signature=True,
             )
             assert any("SignatureVerificationFailed" in f for f in res_sig_exc["failures"])
@@ -3462,7 +3495,7 @@ def test_verify_package_artifacts_scenario_decision_oracle_and_sig_branches():
             manifest_hash=m_hash,
             execution_identity={"worker": "w1"},
             trace_hash=trace_hash,
-            trace_seal={"count": 1},
+            trace_seal={"digest": trace_hash},
             evidence_root_hash="sha3_256:ev_root",
             required_oracle_ids=[],
             executed_oracle_results=[],
@@ -3475,6 +3508,7 @@ def test_verify_package_artifacts_scenario_decision_oracle_and_sig_branches():
             raw_trace_bytes=trace_bytes,
             raw_trace_events=events,
             canonical_manifest=m_bytes,
+            scenario_data=scen_data,
             require_signature=True,
         )
         assert any("UnsignedPackage" in f for f in res_unsigned["failures"])

@@ -13,9 +13,11 @@ async def record_interaction(agent_url: str):
     print("Type 'exit' or 'quit' to stop recording.\n")
 
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_dir = Path("runs")
-    log_dir.mkdir(parents=True, exist_ok=True)
-    log_file = log_dir / f"run-{run_id}.jsonl"
+    runs_root = Path("runs")
+    run_dir = runs_root / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    log_file = run_dir / "run.jsonl"
+    legacy_file = runs_root / f"run-{run_id}.jsonl"
 
     events = []
 
@@ -81,12 +83,23 @@ async def record_interaction(agent_url: str):
                     print(f"  ❌ Error: Failed to contact agent: {e}")
 
     finally:
-        # Save to file
+        # Save to canonical vault layout runs/<run_id>/run.jsonl
         from .trace_utils import AESJsonEncoder
 
         with open(log_file, "w", encoding="utf-8") as f:
             for e in events:
                 f.write(json.dumps(e, cls=AESJsonEncoder) + "\n")
+
+        try:
+            with open(legacy_file, "w", encoding="utf-8") as f:
+                for e in events:
+                    f.write(json.dumps(e, cls=AESJsonEncoder) + "\n")
+        except OSError as exc:
+            import logging
+
+            logging.getLogger("eval_runner.trace_recorder").warning(
+                "Could not mirror trace to legacy path: %s", exc
+            )
 
         print(f"\n✅ Recording saved to: {log_file}")
         print(f"Tip: You can replay this with 'agentv replay --path {log_file}'")
