@@ -329,7 +329,7 @@ class DefaultRunner(BaseRunner):
                 events.CoreEvents.RUN_END,
                 {
                     "run_id": effective_run_id,
-                    "status": "passed" if pass_at_k > 0 else "failed",
+                    "status": "success" if pass_at_k > 0 else "failure",
                     "passed": bool(pass_at_k > 0),
                     "score": float(pass_at_k),
                     "pass_at_k": pass_at_k,

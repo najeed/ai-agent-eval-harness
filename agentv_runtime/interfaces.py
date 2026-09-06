@@ -362,16 +362,56 @@ class LeaderboardStore(ABC):
         raise NotImplementedError
 
 
+# ==============================================================================
+# 10. MutationEngine Contract
+# ==============================================================================
+
+
+class MutationEngine(ABC):
+    """
+    Abstraction for adversarial scenario mutation and dynamic in-run perturbation engines.
+    OSS Reference: eval_runner.mutator.MutationService
+    Control Plane / Enterprise: EnterpriseMutationCampaignEngine
+    """
+
+    @abstractmethod
+    def mutate_scenario(
+        self,
+        scenario_data: dict[str, Any],
+        mutation_spec: str | dict[str, Any],
+        seed: int | None = None,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        """Applies a mutation to a scenario definition, producing a mutated variant."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def apply_in_run(
+        self,
+        context: Any,
+        mutation_spec: str | dict[str, Any] | Any,
+        **kwargs: Any,
+    ) -> Any:
+        """Applies dynamic in-memory mutation to an active execution context."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_supported_mutators(self) -> list[dict[str, Any]]:
+        """Returns catalog of registered mutators, coordinates, and supported tiers."""
+        raise NotImplementedError
+
+
 __all__ = [
-    "ExecutionBackend",
-    "CheckpointStore",
-    "SigningBackend",
     "ArtifactStore",
-    "PolicyEvaluator",
-    "PolicyEvaluationResult",
-    "AuthorizationBackend",
     "AuthPrincipal",
+    "AuthorizationBackend",
     "CatalogStore",
-    "RunStore",
+    "CheckpointStore",
+    "ExecutionBackend",
     "LeaderboardStore",
+    "MutationEngine",
+    "PolicyEvaluationResult",
+    "PolicyEvaluator",
+    "RunStore",
+    "SigningBackend",
 ]

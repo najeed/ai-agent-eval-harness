@@ -11,6 +11,8 @@ UI-generated verification claims are prohibited by contract.
 
 from __future__ import annotations
 
+import random
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from typing import Any
@@ -339,11 +341,210 @@ class EvidenceArtifact:
         return asdict(self)
 
 
+# ---------------------------------------------------------------------------
+# 3D Mutation Taxonomy Enums & Contracts
+# ---------------------------------------------------------------------------
+
+
+class MutationVector:
+    """Authoritative mutation target dimensions across agent evaluation."""
+
+    INPUT = "input"
+    CONTEXT = "context"
+    MEMORY = "memory"
+    RETRIEVAL = "retrieval"
+    TOOL = "tool"
+    STATE = "state"
+    IDENTITY = "identity"
+    AUTHORIZATION = "authorization"
+    POLICY = "policy"
+    TIME = "time"
+    CONCURRENCY = "concurrency"
+    DEPENDENCY = "dependency"
+    MULTI_AGENT = "multi_agent"
+
+    ALL = {
+        INPUT,
+        CONTEXT,
+        MEMORY,
+        RETRIEVAL,
+        TOOL,
+        STATE,
+        IDENTITY,
+        AUTHORIZATION,
+        POLICY,
+        TIME,
+        CONCURRENCY,
+        DEPENDENCY,
+        MULTI_AGENT,
+    }
+
+
+class MutationOperation:
+    """Authoritative mutation operators applied across target vectors."""
+
+    INSERT = "insert"
+    DELETE = "delete"
+    REPLACE = "replace"
+    CORRUPT = "corrupt"
+    DELAY = "delay"
+    REORDER = "reorder"
+    DUPLICATE = "duplicate"
+    REPLAY = "replay"
+    DROP = "drop"
+    CONFLICT = "conflict"
+    ESCALATE = "escalate"
+    EXPIRE = "expire"
+    DRIFT = "drift"
+
+    ALL = {
+        INSERT,
+        DELETE,
+        REPLACE,
+        CORRUPT,
+        DELAY,
+        REORDER,
+        DUPLICATE,
+        REPLAY,
+        DROP,
+        CONFLICT,
+        ESCALATE,
+        EXPIRE,
+        DRIFT,
+    }
+
+
+class MutationTier:
+    """Execution and risk calibration tiers."""
+
+    T0_LINGUISTIC = "T0_linguistic"
+    T1_BEHAVIORAL = "T1_behavioral"
+    T2_STRUCTURAL = "T2_structural"
+    T3_WORKFLOW = "T3_workflow"
+    T4_SECURITY = "T4_security"
+    T5_ENTERPRISE = "T5_enterprise"
+
+    ALL = {
+        T0_LINGUISTIC,
+        T1_BEHAVIORAL,
+        T2_STRUCTURAL,
+        T3_WORKFLOW,
+        T4_SECURITY,
+        T5_ENTERPRISE,
+    }
+
+
+@dataclass(frozen=True)
+class MutationCoordinate:
+    """Uniquely indexes any mutation in the 3D mutation algebra (vector x operation x tier)."""
+
+    vector: str
+    operation: str
+    tier: str = MutationTier.T1_BEHAVIORAL
+
+    def to_dict(self) -> dict[str, str]:
+        return {"vector": self.vector, "operation": self.operation, "tier": self.tier}
+
+
+@dataclass
+class MutationContext:
+    """
+    Execution context provided to a mutator during evaluation or scenario compilation.
+    Maintains deterministic RNG seeding and runtime state references.
+    """
+
+    scenario: dict[str, Any]
+    seed: int | None = None
+    rng: random.Random = field(default_factory=random.Random)
+    step_index: int = 0
+    history: list[dict[str, Any]] = field(default_factory=list)
+    active_node: dict[str, Any] | None = None
+    event: dict[str, Any] | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self):
+        if self.seed is not None and self.rng is not None:
+            self.rng.seed(self.seed)
+
+
+@dataclass(frozen=True)
+class MutationHandle:
+    """Authoritative outcome handle produced when a mutator applies an operation."""
+
+    mutation_id: str
+    name: str
+    applied: bool
+    coordinate: MutationCoordinate | None = None
+    target: str = ""
+    details: dict[str, Any] = field(default_factory=dict)
+    revert: Callable[[], None] | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "mutation_id": self.mutation_id,
+            "name": self.name,
+            "applied": self.applied,
+            "coordinate": self.coordinate.to_dict() if self.coordinate else None,
+            "target": self.target,
+            "details": self.details,
+        }
+
+
+@dataclass(frozen=True)
+class MutationRecord:
+    """Immutable audit record of an applied mutation for trace and certificate inclusion."""
+
+    mutation_id: str
+    name: str
+    vector: str
+    operation: str
+    tier: str
+    target: str
+    applied_at_step: int
+    timestamp: str = field(default_factory=_now)
+    details: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
+class MutationCampaignSpec:
+    """
+    Authoritative specification contract for Control Plane orchestrated campaigns.
+    Defines the enterprise campaign intent executed by the Runtime.
+    """
+
+    campaign_id: str
+    profile: str
+    tiers: list[str] = field(default_factory=lambda: [MutationTier.T1_BEHAVIORAL])
+    dimensions: list[str] = field(default_factory=list)
+    operators: list[str] = field(default_factory=list)
+    intensity: int = 1
+    duration_seconds: int = 0
+    agents: list[str] = field(default_factory=list)
+    environment: str = "staging"
+    thresholds: dict[str, Any] = field(default_factory=dict)
+    policies: dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
 __all__ = [
     "AssertionResult",
     "CONTRACTS_VERSION",
     "EvidenceArtifact",
     "ExecutionMode",
+    "MutationCampaignSpec",
+    "MutationContext",
+    "MutationCoordinate",
+    "MutationHandle",
+    "MutationOperation",
+    "MutationRecord",
+    "MutationTier",
+    "MutationVector",
     "RCAResult",
     "ReadinessTier",
     "RuntimeHealth",

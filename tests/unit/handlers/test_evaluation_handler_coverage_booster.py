@@ -1,5 +1,5 @@
 import os
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -107,10 +107,16 @@ async def test_handle_record_playground_success():
     """Exercises successful calls (lines 253, 264)."""
     args = MagicMock(agent="a", protocol="http")
     with patch(
-        "eval_runner.handlers.evaluation.trace_recorder.record_interaction", return_value=None
+        "eval_runner.handlers.evaluation.trace_recorder.record_interaction",
+        new_callable=AsyncMock,
+        return_value=None,
     ):
         assert await evaluation.handle_record(args) == 0
-    with patch("eval_runner.handlers.evaluation.playground.run_playground", return_value=None):
+    with patch(
+        "eval_runner.handlers.evaluation.playground.run_playground",
+        new_callable=AsyncMock,
+        return_value=None,
+    ):
         assert await evaluation.handle_playground(args) == 0
 
 

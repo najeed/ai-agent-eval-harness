@@ -9,6 +9,16 @@ from __future__ import annotations
 
 from agentv_runtime import config, contracts, extension_contract, interfaces, manifest, results
 from agentv_runtime.config import ConfigResolver, ResolvedRuntimeConfig
+from agentv_runtime.contracts import (
+    MutationCampaignSpec,
+    MutationContext,
+    MutationCoordinate,
+    MutationHandle,
+    MutationOperation,
+    MutationRecord,
+    MutationTier,
+    MutationVector,
+)
 from agentv_runtime.extension_contract import (
     EXTENSION_CONTRACT_STATUS,
     EXTENSION_CONTRACT_VERSION,
@@ -18,6 +28,7 @@ from agentv_runtime.extension_contract import (
     RuntimeExtension,
     is_compatible as extension_api_is_compatible,
 )
+from agentv_runtime.interfaces import MutationEngine
 from agentv_runtime.manifest import ExecutionManifest, ManifestBuilder, compute_scenario_hash
 from agentv_runtime.results import (
     Attestation,
@@ -61,6 +72,15 @@ __all__ = [
     "EXTENSION_CONTRACT_VERSION",
     "EXTENSION_CONTRACT_STATUS",
     "extension_api_is_compatible",
+    "MutationVector",
+    "MutationOperation",
+    "MutationTier",
+    "MutationCoordinate",
+    "MutationContext",
+    "MutationHandle",
+    "MutationRecord",
+    "MutationCampaignSpec",
+    "MutationEngine",
     "__version__",
     "__runtime_api_version__",
     "__plugin_api_version__",
