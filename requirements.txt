@@ -30,11 +30,11 @@ cryptography==50.0.1
 opentelemetry-api==1.44.0
 opentelemetry-sdk==1.44.0
 google-genai==2.22.0
-GitPython==3.1.61
+GitPython==3.1.62
 psutil==7.2.2
 
 # --- Document Processing ---
-pypdf==6.17.0
+pypdf==6.18.0
 python-docx==1.2.0
 weasyprint>=69.0
 reportlab>=5.0.1
