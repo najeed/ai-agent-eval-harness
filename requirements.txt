@@ -19,7 +19,7 @@ sqlalchemy==2.0.52
 
 # --- ML / Embeddings (optional, for benchmark loaders) ---
 sentence-transformers==6.0.1
-numpy==2.5.2
+numpy==2.5.3
 datasets==5.0.1
 
 # --- Security & Auth ---
