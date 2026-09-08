@@ -11,7 +11,7 @@ pytest-cov>=7.1.0
 pytest-asyncio>=1.4.0
 pytest-aiohttp>=1.1.1
 pytest-xdist>=3.8.0
-hypothesis>=6.167.1
+hypothesis>=6.168.0
 mutmut>=3.7.0
 vcrpy>=8.3.0
 pytest-benchmark>=5.3.0
@@ -24,7 +24,7 @@ langchain-core>=1.6.2
 langchain==1.4.0
 langgraph==1.2.11
 # crewai==1.15.20    # crewai doesn't support Py3.14 as of September 2026.
-ag2==1.0.3
+ag2==1.0.4
 pyasn1>=0.6.4
 
 # --- Code Quality & Security ---
