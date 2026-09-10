@@ -163,20 +163,30 @@ The package adheres strictly to the `agentv-package.schema.json` specification:
 
 ---
 
-## 2. Deterministic Package Hash Calculation
+## 2. Deterministic Package Hash Calculation (RFC 8785 JCS)
 
-To guarantee 100% cryptographic reproducibility across systems and storage media:
+To guarantee 100% cryptographic reproducibility across heterogeneous platforms, languages, and storage media:
 
 1. **Payload Isolation**: The canonical payload dictionary is formed by extracting all package fields **excluding** `package_hash` and `package_created_at`.
-2. **Canonical Serialization**:
+2. **Canonical Serialization (RFC 8785)**:
    ```python
-   payload_bytes = json.dumps(
-       payload_dict,
-       sort_keys=True,
-       separators=(",", ":"),
-       ensure_ascii=True,
-   ).encode("utf-8")
+   from agentv_runtime.canonical import canonical_json_encode
+
+   payload_bytes = canonical_json_encode(payload_dict)
    ```
+   The engine enforces strict RFC 8785 JSON Canonicalization Scheme (JCS) invariants:
+   - Object properties sorted strictly by UTF-16 code units (byte-level lexical ordering).
+   - ECMAScript 7.1.12.1 float serialization (eliminates indeterminate float representations and trailing `.0`).
+   - No whitespace between tokens (compact representation).
+   - Strict I-JSON compliance (UTF-8 encoding without byte-order marks).
 3. **Digest Generation**:
    $$\text{package\_hash} = \text{"sha3\_256:"} + \text{SHA3-256}(\text{payload\_bytes})\text{.hexdigest()}$$
-4. Independent verification re-computes this digest and strictly rejects any package where the recalculated digest deviates from the embedded `package_hash`.
+4. Independent verification re-computes this digest using `canonical_json_encode` and strictly rejects any package where the recalculated digest deviates from the embedded `package_hash`.
+
+---
+
+## 3. In-Archive ZIP Bundle Verification & Path Traversal Guards
+
+When packages are archived or distributed within `.zip` bundles:
+- **Direct Stream Inspection**: The verification authority validates internal package and trace bytes directly from the ZIP stream without writing unverified files to disk.
+- **Path Traversal Defenses**: The extractor inspects all internal archive paths before processing. Any archive containing path traversal sequences (`..`), absolute paths (`/etc/`, `C:\`), or Windows drive letters (`D:`) is rejected with a `SecurityViolation` error before any decompression occurs.

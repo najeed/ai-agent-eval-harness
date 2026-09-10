@@ -63,11 +63,15 @@ graph TD
 ```
 
 ### 1. Signature-Only Verification
-Validates cryptographic integrity without requiring underlying raw trace files or artifacts on disk:
+Validates cryptographic integrity against external trust roots without requiring underlying raw trace files or artifacts on disk:
 ```python
 from eval_runner.verifier import VerificationAuthority
 
-result = VerificationAuthority.verify_package_signature_only(package)
+# Requires an external trust root (PEM string, path, or mapping)
+result = VerificationAuthority.verify_package_signature_only(
+    package,
+    trust_roots={"system_id": public_key_pem},
+)
 # Returns: {"verified": True/False, "status": "CERTIFIED"|"UNSIGNED"|"UNVERIFIED", ...}
 ```
 
@@ -81,28 +85,34 @@ result = VerificationAuthority.verify_package_artifacts(
     canonical_manifest=manifest,
     scenario_data=scenario_dict,
     require_signature=True,
+    trust_roots={"system_id": public_key_pem},
 )
 ```
 
 ### Multi-Point Verification Checks:
-1. **Raw Trace Parity**: Recomputes `SHA3-256(raw_trace_bytes)` and matches against `pkg.trace_hash`.
-2. **Canonical Manifest Recomputation**: Re-derives canonical manifest hash via `canonical_manifest.compute_manifest_hash()` against `pkg.manifest_hash`.
-3. **Scenario Canonical Hash Binding**: Computes `compute_scenario_hash(scenario_data)` and asserts equality with `pkg.scenario_hash`. Tampered scenario definitions fail immediately.
-4. **Direct Trace Provenance Enforcement**: Reconstructs the Evidence Graph from raw trace events (`build_evidence_graph_from_events`) and enforces `is_complete_provenance = True`. Any assertion evaluated without direct event linkage (e.g. carrier fallback) fails closed with `DirectProvenanceViolation`.
-5. **Authoritative Verdict Precedence**: Derives final certification from authoritative terminal event verdicts. Caller-supplied status overrides and heuristic counters (`passed=True`, `success_rate`) cannot certify failed runs.
+1. **External Trust Root Anchoring**: The signing identity and public key are anchored against an authoritative external trust root or key registry; unanchored or self-signed keys fail closed as `UNVERIFIED`.
+2. **Raw Trace Parity**: Recomputes `SHA3-256(raw_trace_bytes)` and matches against `pkg.trace_hash`.
+3. **Canonical Manifest Recomputation (RFC 8785)**: Re-derives canonical manifest hash via `canonical_manifest.compute_manifest_hash()` against `pkg.manifest_hash`.
+4. **Scenario Canonical Hash Binding**: Computes `compute_scenario_hash(scenario_data)` and asserts equality with `pkg.scenario_hash`. Tampered scenario definitions fail immediately.
+5. **Direct Trace Provenance Enforcement**: Reconstructs the Evidence Graph from raw trace events (`build_evidence_graph_from_events`) and enforces `is_complete_provenance = True`. Any assertion evaluated without direct event linkage (e.g. carrier fallback) fails closed with `DirectProvenanceViolation`.
+6. **Authoritative Verdict Precedence**: Derives final certification from authoritative terminal event verdicts. Caller-supplied status overrides and heuristic counters (`passed=True`, `success_rate`) cannot certify failed runs.
 
 ---
 
-## 💻 3. CLI Offline Verification (`agentv verify`)
+## 💻 3. CLI Offline Verification (`agentv verify` & `agentv verify-package`)
 
-Audit execution traces directly on disk without launching the web server:
+Audit execution traces and portable package bundles directly on disk without launching the web server:
 
 ```bash
-# Standard classical verification
-agentv verify --run-id run_fintech_2026_01
-
-# Post-quantum hybrid verification
+# Verify execution run directory and sidecars on disk:
 agentv verify --run-id run_fintech_2026_01 --pqc
+
+# Verify self-contained offline .agentv-package.json bundle:
+agentv verify-package runs/run_fintech_2026_01.agentv-package.json \
+  --public-key .aes/keys/trust_root_pub.pem \
+  --require-signature \
+  --scenario scenarios/loan_risk.json \
+  --require-scenario
 ```
 
 ---

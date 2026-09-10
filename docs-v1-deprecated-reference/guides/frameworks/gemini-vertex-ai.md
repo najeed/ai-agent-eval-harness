@@ -9,7 +9,7 @@ As of v1.6.0, AgentV supports Vertex AI natively through the `gemini` adapter us
 You can trigger Vertex AI mode by setting `vertexai: true` in your agent metadata or by using a `vertex` hint in the URL.
 
 ```bash
-agentv evaluate --run-id <id> --protocol gemini --agent gemini://gemini-2.5-pro --metadata '{"vertexai": true}'
+agentv evaluate --run-id <id> --protocol gemini --agent gemini://gemini-3.1-pro --metadata '{"vertexai": true}'
 ```
 
 ## 2. Setup via Agent API (Legacy/Custom)
@@ -25,7 +25,7 @@ app = FastAPI()
 
 @app.post("/execute_task")
 async def execute(request: dict):
-    response = client.models.generate_content(model="gemini-2.5-pro", contents=request["input"])
+    response = client.models.generate_content(model="gemini-3.1-pro", contents=request["input"])
     return {"content": response.text}
 ```
 

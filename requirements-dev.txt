@@ -2,8 +2,8 @@
 # Development and testing dependencies for AgentV contributors.
 # Install with: pip install -r requirements-dev.txt
 #
-# Includes all runtime dependencies:
--r requirements.txt
+# Includes package in editable mode with full optional ecosystem extras:
+-e .[all]
 
 # --- Testing ---
 pytest==9.1.1
@@ -20,15 +20,10 @@ playwright>=1.62.0
 pre-commit>=4.6.2
 pandas>=3.0.5
 pygments>=2.21.0
-langchain-core>=1.6.2
-langchain==1.4.0
-langgraph==1.2.11
-# crewai==1.15.20    # crewai doesn't support Py3.14 as of September 2026.
-ag2==1.0.4
 pyasn1>=0.6.4
 
 # --- Code Quality & Security ---
-ruff==0.16.6
+ruff==0.16.7
 black>=26.5.1
 flake8>=7.3.0
 isort>=9.0.1

@@ -7,12 +7,17 @@ This guide is for engineers building on or extending the AgentV harness.
 
 ## 📂 Repository Architecture
 
-- **`eval_runner/`**: The core Python package. Includes the engine, loaders, metrics, and simulators.
-- **`industries/`**: The industrial scenario library.
-- **`.aes/`**: **[NEW]** Authoritative configuration mesh (Shims, Adapters, Forensics).
-- **`reports/`**: Destination for generated HTML and JSON results.
-- **`runs/`**: The "Flight Recorder" storage for `.jsonl` execution traces.
-- **`tests/`**: Unit and integration test suites.
+- **`eval_runner/`**: The core Python execution package. Includes the CLI dispatcher, orchestration engine, loaders, metrics, and simulators.
+- **`agentv_runtime/`**: Pure, zero-dependency canonical runtime contracts, RFC 8785 JSON Canonicalization Scheme (JCS), and offline packaging primitives.
+- **`dataproc_engine/`**: High-throughput telemetry stream processing and analytics pipeline.
+- **`ui/visual-console/`**: High-density React 18 + TypeScript Visual Console for interactive scenario authoring, trajectory inspection, and debugger graphs.
+- **`vscode-extension/`**: Visual Studio Code extension providing AES schema validation and scenario authoring assistance.
+- **`industries/`**: Industrial scenario library and golden evaluation benchmarks across finance, healthcare, telecom, and security.
+- **`.aes/`**: Authoritative configuration mesh (Shims, Adapters, Forensics, and Key Vault).
+- **`reports/`**: Destination for generated HTML and JSON verification reports and certificates.
+- **`runs/`**: The Flight Recorder storage for isolated `.jsonl` execution vaults.
+- **`tests/`**: Multi-tiered test suite (Unit, Integration, Functional, Security, Contracts, Golden, and Acceptance).
+- **`tools/ci/`**: Sentinels, dependency compliance verification, AST mutation testing engine, and acceptance release gate.
 
 ---
 

@@ -20,14 +20,14 @@ app = FastAPI()
 async def execute(request: dict):
     # Standardize the prompt for Gemini 2.5
     response = client.models.generate_content(
-        model="gemini-2.5-pro", contents=request["task_description"]
+        model="gemini-3.1-pro", contents=request["task_description"]
     )
     return {"content": response.text}
 ```
 
 ## 2. Register the Agent
 ```bash
-agentv evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "Gemini-2.5-Pro-Live"
+agentv evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "Gemini-3.1-Pro-Live"
 ```
 
 ## 3. Generate Verified Report

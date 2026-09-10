@@ -163,3 +163,41 @@ def test_flight_recorder_after_evaluation_and_rotation(tmp_path):
     # Vault rotation when targets <= effective_count
     fr.log_rotate_count = 10
     fr.rotate_logs(is_new_run=False)
+
+
+def test_flight_recorder_fail_closed_in_certification_mode(tmp_path):
+    """Persistence failure in certification mode transitions run to CERTIFICATION_FAILED
+
+    and unconditionally forbids seal or certificate generation.
+    """
+    recorder = FlightRecorderPlugin(log_dir=tmp_path / "logs", certification_mode=True)
+    run_id = "cert-run-001"
+
+    with patch("builtins.open", side_effect=OSError("Disk full / write failure")):
+        event = Event("model_call", {"run_id": run_id, "prompt": "test"})
+        with pytest.raises(RuntimeError, match="TracePersistenceError"):
+            recorder.handle_event(event)
+
+    assert recorder.get_run_state(run_id) == "CERTIFICATION_FAILED"
+    assert run_id in recorder._failed_runs
+
+    with pytest.raises(RuntimeError, match="TracePersistenceError"):
+        recorder.finalize_run(run_id)
+
+    seal_file = tmp_path / "logs" / run_id / "trace_seal.json"
+    assert not seal_file.exists()
+
+
+def test_flight_recorder_env_certification_mode(monkeypatch, tmp_path):
+    """EVAL_CERTIFICATION_MODE=true or EVAL_ATTESTATION_MODE=true activates fail-closed."""
+    monkeypatch.setenv("EVAL_CERTIFICATION_MODE", "true")
+    recorder = FlightRecorderPlugin(log_dir=tmp_path / "logs")
+    assert recorder.is_certification_mode() is True
+
+    run_id = "cert-env-run"
+    with patch("builtins.open", side_effect=OSError("Storage failure")):
+        event = Event("step_start", {"run_id": run_id})
+        with pytest.raises(RuntimeError, match="TracePersistenceError"):
+            recorder.handle_event(event)
+
+    assert recorder.get_run_state(run_id) == "CERTIFICATION_FAILED"

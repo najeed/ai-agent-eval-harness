@@ -7,47 +7,55 @@ description: Non-repudiable forensic signing for agentic evaluation results.
 
 For academic and industrial publications, it is not enough to report a score. You must provide a **proof of integrity**. AgentV implements the **Trust Protocol**, a cryptographic framework based on the **Verification Certificate (VC) v3** standard.
 
-## ED25519 Forensic Signing
+## Asymmetric & Hybrid Forensic Signing
 
-Every evaluation trace in AgentV can be "sealed" using asymmetric cryptography (ED25519).
+Every evaluation trace in AgentV can be cryptographically sealed using asymmetric cryptography (ED25519) and optional Post-Quantum Cryptography (ML-DSA):
 
-- **Evaluator Identity**: The `IdentityService` manages your research identity, protecting your private signing key.
-- **Trace Sealing**: When a run is certified, the entire `run.jsonl` trace is hashed. This hash is signed by your identity, creating a non-repudiable link between your persona and the result.
-- **Artifact Binding**: The Trust Protocol doesn't just sign the JSONL; it binds all sidecar artifacts (HTML reports, trajectory plots) to the same certificate.
+- **Evaluator Identity & Trust Roots**: The `IdentityService` manages research identities and key pairs. In certified evaluation environments, signing keys are bound to authorized organizational identities.
+- **RFC 8785 JCS Canonicalization**: Event streams and metadata payloads are normalized using pure RFC 8785 JSON Canonicalization Scheme (JCS), ensuring identical hash calculation regardless of runtime or OS platform.
+- **Whole-Envelope Detached Sealing**: Trace seals bind the entire trust envelope (`signer_identity`, `key_id`, `algorithm`, `trace_digest`, `event_count`, `sealed_at`, `metadata`) prior to signing.
+- **Fail-Closed Persistence**: Under certification mode, any event write failure immediately aborts the run, transitions status to `CERTIFICATION_FAILED`, and permanently blocks certificate generation.
+- **Artifact Binding**: The Trust Protocol binds the canonical scenario definition (`scenario_hash`), execution manifest, and all sidecar artifacts (HTML reports, trajectory plots) into an unbroken evidence chain.
 
 ---
 
 ## Certification Workflow
 
 ### 1. Execute & Certify
-After a successful evaluation run, use the `certify` command to generate the signature.
+After a successful evaluation run, use the `certify` command to generate the authoritative signature:
 ```bash
 agentv certify --run-id <run_id>
 ```
+*Note*: The evaluation verdict (`CERTIFIED`, `FAILED`) and score are derived server-authoritatively from terminal execution events; caller overrides are strictly prohibited.
 
-### 2. The Verification Certificate (VC) v3
+### 2. The Verification Certificate (VC v3.0.0)
 The output is a `run_manifest.json` file containing:
-- **`signature`**: The Ed25519 signature of the evaluation.
+- **`signature`**: The Ed25519 / ML-DSA detached signature over the canonical trust envelope.
 - **`evidence_ledger`**: A SHA3-256 manifest of every artifact generated during the run.
-- **`system_id`**: The public key of the evaluator who conducted the study.
+- **`scenario_binding`**: Bound `scenario_id`, `scenario_version`, and canonical `scenario_hash`.
+- **`system_id` & `key_id`**: The cryptographic identity and key identifier of the certifying evaluator.
 
 ---
 
-## Verification & Hard Gating
+## Verification & Independent Gating
 
-Peer reviewers can verify your results using the `agentv verify` command.
+Peer reviewers can verify your results using the `agentv verify` or `agentv verify-package` command:
 
 ```bash
-# Verify the integrity of a results bundle
-agentv verify --run-id <run_id>
+# Verify run directory within local vault
+agentv verify --run-id <run_id> --root-cert /etc/pki/agentv-root.pem
+
+# Verify standalone single-file research package
+agentv verify-package ./run_evidence.agentv-package.json --root-cert /etc/pki/agentv-root.pem
 ```
 
 The engine will return **`SIGNATURE_MATCH`** only if:
-1.  The behavioral DNA trace has not been modified.
-2.  The report artifacts in the `evidence_ledger` match their test-time hashes.
-3.  The signature was produced by the claimed public key.
+1. **Trace Non-Repudiation**: The behavioral DNA trace byte stream matches the signed digest.
+2. **Artifact Integrity**: Every report artifact in the `evidence_ledger` matches its test-time SHA3-256 hash.
+3. **Scenario Exactness**: The bound `scenario_hash` recomputed via RFC 8785 matches the executed scenario.
+4. **External Trust Root Validation**: The signature validates against an external certificate authority or trusted registry; unanchored self-attestation is strictly rejected as `UNVERIFIED`.
 
 :::tip
 **Trace Provenance**: Verification Certificates are linked to the raw `run.jsonl` trace via a content hash. Any modification to the trace file will invalidate the certificate.
 :::
-> **Use in Papers**: Include your **Public Key Fingerprint** in your research paper's "Data Availability" statement. This allow auditors to search global agent registers (where applicable) and verify your findings independently.
+> **Use in Papers**: Include your **Public Key Fingerprint** and root certificate URI in your research paper's "Data Availability" statement. This allows auditors to search global agent registers (where applicable) and verify your findings independently.

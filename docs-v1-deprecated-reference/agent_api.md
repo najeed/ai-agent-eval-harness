@@ -176,7 +176,7 @@ When using Ecosystem Adapters (`openai://`, `gemini://`, `claude://`), the harne
 {
   "task": "Process user request...",
   "messages": [{"role": "user", "content": "..."}],
-  "model": "gemini-2.5-flash",
+  "model": "gemini-3.7-flash",
   "temperature": 0.7
 }
 ```

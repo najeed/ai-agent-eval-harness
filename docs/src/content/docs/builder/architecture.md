@@ -98,9 +98,11 @@ AgentV implements an extensible, zero-trust **Interceptor Pipeline Pattern** all
 - **`TraceVerificationInterceptor`**: Intercepts sign and verify operations.
 - **`VerificationService` (`verification_service`)**: Routes signing to local keys or external enterprise KMS/HSM hardware vaults.
 
-### 3. Scenario Mutation Pipeline
-- **`ScenarioMutator`**: Intercepts scenario generation to apply adversarial perturbations (typos, prompt injection, cognitive ambiguity).
-- **`MutationService` (`mutation_service`)**: Concurrency-safe registry chaining mutator providers.
+### 3. Scenario Mutation & Adversarial Perturbation Pipeline
+- **3D Mutation Coordinate Space ($V \times O \times T$)**: Indexes perturbations across 13 target vectors (`MutationVector`), 13 transformational operators (`MutationOperation`), and 6 operational risk tiers (`MutationTier`). See the full [3D Mutation Engine Specification](/spec/mutation-algebra/).
+- **`ScenarioMutator` (`eval_runner.mutator.ScenarioMutator`)**: Base contract supporting operator overloading (`+`), execution-time `apply(context, rng)`, deterministic seed chaining, and backwards-compatible middleware interception.
+- **Algebraic Combinators**: Higher-order composition primitives (`sequence`, `repeat`, `probability`, `after_event`, `before_commit`, `between_steps`, `concurrent`) enabling complex multi-stage stress simulations.
+- **`MutationService` (`eval_runner.mutator.mutation_service`)**: Concurrency-safe, thread-isolated engine executing pre-run scenario mutations and dynamic in-run perturbations with full cryptographic trace lineage binding (`MutationRecord`).
 
 ---
 

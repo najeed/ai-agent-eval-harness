@@ -381,29 +381,52 @@ agentv verify --run-id run_fintech_2026_01 --pqc
 
 ---
 
+### `agentv verify-package`
+Independently and authoritatively verify an offline `.agentv-package.json` verification package bundle. Validates canonical RFC 8785 JSON manifest digests, detached signatures anchored to external trust roots, trace seals, sidecar evidence trees, and scenario cryptographic bindings without requiring access to a live AgentV server.
+
+```bash
+agentv verify-package runs/run_fintech_2026_01.agentv-package.json \
+  --trace runs/run_fintech_2026_01/run.jsonl \
+  --public-key .aes/keys/trust_root_pub.pem \
+  --require-signature \
+  --scenario scenarios/loan_risk.json \
+  --require-scenario
+```
+
+#### Options:
+- `package_path` *(positional, required)*: Path to `.agentv-package.json` file.
+- `--trace`, `--raw-trace`: Optional raw trace file path for forensic byte-parity verification against embedded trace data.
+- `--public-key`: Path to PEM public key file or inline PEM string for signature verification.
+- `--require-signature`: Require a valid cryptographic signature anchored to the provided or registered public key.
+- `--scenario`: Path to scenario definition JSON to verify scenario binding (`scenario_id`, `scenario_version`, and canonical `scenario_hash`).
+- `--require-scenario`: Require scenario binding validation, failing closed if scenario metadata does not match.
+
+---
+
 ### `agentv certify`
-Generate a signed Verification Certificate (VC v3) for a completed evaluation run.
+Generate an immutable, cryptographically signed Verification Certificate (VC v3) and sidecar manifest for a completed evaluation run.
+
+:::note
+**Server-Authoritative Derivation**: The certification engine extracts status, score, and execution mode directly from terminal execution events in the immutable trace (`run.jsonl`). Caller overrides are strictly prohibited to prevent forged certificates; provisional, simulated, or inconclusive runs fail closed.
+:::
 
 ```bash
 agentv certify \
   --run-id run_fintech_2026_01 \
   --identity system_id \
-  --status pass \
-  --score 0.96 \
   --policy-ref NIST-SP-800-218 \
   --ttl 90 \
   --pqc
 ```
 
 #### Options:
-- `--run-id`, `--path` *(required)*: Run identifier.
+- `--run-id`, `--path` *(required)*: Target evaluation run identifier.
 - `--identity`, `-i`: Signing identity key alias (default: `system_id`).
-- `--status`: Certification verdict (`pass`, `fail`, `warning`).
-- `--score`: Numeric evaluation score (0.0 - 1.0).
-- `--policy-ref`: Governance policy reference ID.
+- `--policy-ref`: Governance policy reference ID (e.g., `NIST-SP-800-218`, `EU-AI-ACT`).
 - `--ttl`: Certificate validity time-to-live in days.
 - `--fingerprint`: Custom execution environment fingerprint digest.
-- `--pqc`: Sign with Hybrid PQC (ML-DSA Dilithium).
+- `--pqc`: Sign with Hybrid PQC (ML-DSA Dilithium + Ed25519).
+- `--status`, `--score`: Historical parameters. Evaluation verdict (`pass`/`fail`) and score are strictly derived from the immutable trace by the Certification Authority.
 
 ---
 

@@ -48,10 +48,12 @@ agentv run --scenario industries/finance/scenarios/loan_v1.json -v
 ### ⚡ CLI Command Quick Reference
 | Category | Command | Purpose |
 | :--- | :--- | :--- |
-| **Execution** | `evaluate`, `run`, `quickstart` | Running tests. |
-| **Interactive**| `playground`, `record`, `replay` | Prototyping and debugging. |
-| **Analysis** | `report`, `explain`, `leaderboard`, `trend` | Viewing results and detecting regression. |
-| **Diagnostics**| `doctor`, `lint`, `verify` | Environment and integrity checks. |
+| **Execution** | `evaluate`, `run`, `quickstart` | Running deterministic and batch evaluation suites. |
+| **Interactive**| `playground`, `record`, `replay` | Prototyping, manual sessions, and step-by-step playback. |
+| **Analysis** | `report`, `explain`, `leaderboard`, `trend` | Generating HTML reports, root cause triage, and regression tracking. |
+| **Authoring** | `init`, `analyze`, `spec-to-eval`, `auto-translate`, `mutate`, `install` | Scaffolding workspaces, AST repo analysis, PRD parsing, and mutation. |
+| **Trust & Audit** | `certify`, `verify`, `verify-package`, `gate` | Cryptographic certification, offline package verification, and CI/CD gating. |
+| **Diagnostics**| `doctor`, `lint`, `taxonomy` | Environment diagnostics, AES scenario linting, and failure taxonomies. |
 
 ---
 

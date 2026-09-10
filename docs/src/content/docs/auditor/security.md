@@ -5,29 +5,45 @@ description: Industrial-grade security standards, authentication protocols, and 
 
 AgentV is **Secure-by-Design**. It protects evaluation infrastructure and data veracity using a multi-layered security model including mandatory API keys, sandbox isolation, and NIST-aligned trustworthiness metrics.
 
-## 🔑 The `DASHBOARD_API_KEY`
+## 🔑 Three-Pillar Authentication Architecture
 
-The `DASHBOARD_API_KEY` is a mandatory credential required for all protected REST API routes and the [Integrated Console](/extender/api-reference/).
+AgentV enforces authentication and authorization across three distinct ingress boundaries:
 
-### Generating a Secure Key
-```bash
-# Using Python (Native)
-python -c "import secrets; print(secrets.token_hex(32))"
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        AgentV Ingress Boundaries                        │
+├────────────────────────────┬────────────────────────────┬───────────────┤
+│ 1. Web UI / Visual Console │ 2. CI/CD & API Integrations │ 3. Extensions │
+│    (Session PBAC)          │    (Bearer / API Key)      │    (JWT)      │
+├────────────────────────────┼────────────────────────────┼───────────────┤
+│ Flask Session Cookie       │ Authorization: Bearer <key>│ X-Handoff-    │
+│ RBAC / Permission Bitset   │ X-API-Key: <key>           │ Token: <JWT>  │
+│ require_permission(...)    │ provider.authenticate(...) │ Capability    │
+│                            │                            │ Gating        │
+└────────────────────────────┴────────────────────────────┴───────────────┘
 ```
 
-### Configuration
-Set the key in your environment or a `.env` file:
-```ini
-DASHBOARD_API_KEY=7f8e3a2b1c9d0e5f...
-```
+### 1. Static API Keys (`DASHBOARD_API_KEY` & `SERVICE_API_KEY`)
+- **`DASHBOARD_API_KEY`**: Authenticates administrative and operator sessions in the Visual Console.
+- **`SERVICE_API_KEY`**: Dedicated token for headless CI/CD runners, automated testing pipelines, and programmatic API integrations.
+- Set keys via environment variables:
+  ```ini
+  DASHBOARD_API_KEY=7f8e3a2b1c9d0e5f...
+  SERVICE_API_KEY=svc_9a1b2c3d4e5f60...
+  ```
+- Send via `X-API-Key` or `Authorization: Bearer <key>` headers in HTTP API requests.
 
-### Usage in API Requests
-Pass the key in the `X-AES-API-KEY` header for all requests to the `/api/` namespace.
-```bash
-curl -X POST http://localhost:5000/api/evaluate \
-     -H "X-AES-API-KEY: your_secure_key" \
-     -d '{"path": "scenarios/my_scenario.json"}'
-```
+### 2. Zero-Config Bootstrap Authentication
+To prevent accidental lockouts while eliminating insecure hardcoded defaults:
+- **First-Boot Key Generation**: If no secret key is configured in non-production environments (`AGENTV_ENV != production`), AgentV automatically generates a cryptographically secure 64-character SHA3-256 session key and saves it to `.aes/keys/bootstrap.key`.
+- **Production Guardrail**: In production environments (`AGENTV_ENV=production`), missing cryptographic secret keys trigger an immediate fail-fast `RuntimeError`, preventing insecure ephemeral startups.
+
+### 3. Session Security & Rate Limiting
+- **Cookie Flags**: Flask sessions enforce `SESSION_COOKIE_HTTPONLY=True` (mitigating XSS session hijacking), `SESSION_COOKIE_SAMESITE="Lax"` (mitigating CSRF), and `SESSION_COOKIE_SECURE=True` in production.
+- **Sliding-Window IP Rate Limiting**: The `/api/auth/login` endpoint enforces a thread-safe sliding-window rate limit (maximum 10 failed attempts per 60-second window per remote IP) returning HTTP 429 upon threshold breach.
+- **Default Viewer Role**: Unauthenticated visitors are assigned a read-only `Viewer` role, permitting exploration of runs, DAGs, and traces without a disruptive blocking modal. Mutations and privileged actions cleanly trigger authentication.
+
+For in-depth security implementation details, review the [Authentication Architecture Specification](/spec/trust_v3/).
 
 ---
 

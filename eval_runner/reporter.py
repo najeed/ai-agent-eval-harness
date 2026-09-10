@@ -149,14 +149,35 @@ def generate_html_report(
     filename = f"{prefix}{scenario_identifier}_{timestamp}.html"
     filepath = report_dir / filename
 
-    # Check for verification manifest
+    # Authoritative cryptographic verification check (Defect 6)
+    # File existence must NEVER imply verification.
     is_verified = False
-    trace_path = (metadata or {}).get("trace_path")
-    if trace_path:
-        tp = Path(trace_path)
-        manifest_path = tp.parent / f"{tp.stem}_manifest.json"
-        if manifest_path.exists():
-            is_verified = True
+    verification_result = (metadata or {}).get("verification_result")
+    if isinstance(verification_result, dict):
+        is_verified = bool(
+            verification_result.get("is_valid") is True
+            and verification_result.get("status") in ("VALID", "CERTIFIED")
+        )
+    elif isinstance(verification_result, bool):
+        is_verified = verification_result
+
+    verification_pkg = (metadata or {}).get("verification_package")
+    if verification_pkg:
+        if hasattr(verification_pkg, "verify_completeness") and hasattr(
+            verification_pkg, "verify_signature"
+        ):
+            try:
+                is_verified = bool(
+                    verification_pkg.verify_completeness() and verification_pkg.verify_signature()
+                )
+            except Exception:
+                is_verified = False
+        elif isinstance(verification_pkg, dict):
+            if verification_pkg.get("verified") is True or verification_pkg.get("status") in (
+                "VALID",
+                "CERTIFIED",
+            ):
+                is_verified = True
 
     protocol = (metadata or {}).get("protocol", "unknown")
     agent = (metadata or {}).get("agent", "unknown")

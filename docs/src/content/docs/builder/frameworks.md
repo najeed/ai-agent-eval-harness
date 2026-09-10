@@ -13,6 +13,20 @@ For the highest level of integration, use native adapters. These typically requi
 - **`langgraph://`**: Official LangGraph v2 Protocol support.
 - **`crewai://`**: Support for CrewAI agent swarms.
 - **`ag2://`**: Support for AG2 (formerly AutoGen) agents.
+- **`langchain://`**: Direct LangChain chain/runnable protocol execution.
+
+:::tip
+**Modular Framework Extras & Lazy Imports**: AgentV uses execution-time lazy dynamic imports for all framework adapters. The core engine installs zero heavy framework dependencies by default. To enable a specific framework, install its corresponding extra:
+```bash
+pip install -e ".[framework-langchain]"
+pip install -e ".[framework-langgraph]"
+pip install -e ".[framework-ag2]"
+pip install -e ".[framework-crewai]"
+
+# Or install all framework substrates at once:
+pip install -e ".[frameworks]"
+```
+:::
 
 **Usage:**
 ```bash
@@ -20,7 +34,7 @@ agentv evaluate --agent langgraph://my_retail_node
 ```
 
 ### ⚙️ Behavioral Configuration Mesh
-As of v1.5.0, native adapters can be granularly configured via the **Industrial Confog Mesh** (e.g., `.aes/config/adapters.d/`). This allows you to define behavioral parameters (like Docker usage or custom timeouts) that are mathematically bound to the evaluation environment.
+As of v1.5.0, native adapters can be granularly configured via the **Industrial Config Mesh** (e.g., `.aes/config/adapters.d/`). This allows you to define behavioral parameters (like Docker usage or custom timeouts) that are mathematically bound to the evaluation environment.
 
 **Example: Disabling Docker for AG2**
 Create `.aes/config/adapters.d/ag2_policy.json`:

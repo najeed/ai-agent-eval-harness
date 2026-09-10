@@ -41,6 +41,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         signing_backend: SigningBackend | None = None,
         artifact_store: ArtifactStore | None = None,
         log_dir: Path | str | None = None,
+        certification_mode: bool = False,
     ):
         import eval_runner.config as config
 
@@ -61,6 +62,8 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         self._handles = {}
         self._lock = threading.Lock()
         self._run_states: dict[str, str] = {}
+        self._failed_runs: set[str] = set()
+        self._certification_mode = certification_mode
 
         # [Iteration 4: Compliance DNA]
         self._sequence_numbers = {}  # Per-run sequence counters
@@ -89,6 +92,18 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         if not is_already_subbed:
             events.subscribe(self.handle_event)
             print("   [FlightRecorder] Registered singleton event listener.")
+
+    def is_certification_mode(self, run_id: str | None = None) -> bool:
+        """
+        Determines whether the flight recorder is operating in certification/attestation mode.
+        In this mode, telemetry persistence is intrinsically fail-closed.
+        """
+        return bool(
+            self._certification_mode
+            or os.getenv("AES_CERTIFICATION_MODE") == "1"
+            or os.getenv("EVAL_CERTIFICATION_MODE", "").lower() in ("true", "1", "yes")
+            or os.getenv("EVAL_ATTESTATION_MODE", "").lower() in ("true", "1", "yes")
+        )
 
     def _enforce_safety_floor(self):
         """
@@ -232,7 +247,14 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                 _write_buffered(self.master_log_path, content)
         except Exception as e:
             sys.stderr.write(f"   [FlightRecorder] [ERROR] File I/O Error: {e}\n")
-            if os.getenv("EVAL_PERSISTENCE_FAIL_CLOSED", "false").lower() == "true":
+            with self._lock:
+                if run_id and run_id != "unknown":
+                    self._run_states[run_id] = "CERTIFICATION_FAILED"
+                    self._failed_runs.add(run_id)
+            is_fail_closed = self.is_certification_mode(run_id) or (
+                os.getenv("EVAL_PERSISTENCE_FAIL_CLOSED", "false").lower() == "true"
+            )
+            if is_fail_closed:
                 raise RuntimeError(
                     f"TracePersistenceError: Failed to persist telemetry "
                     f"event for run '{run_id}': {e}"
@@ -246,6 +268,16 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         """
         with self._lock:
             if run_id and run_id != "unknown":
+                if (
+                    run_id in self._failed_runs
+                    or self._run_states.get(run_id) == "CERTIFICATION_FAILED"
+                ):
+                    self._run_states[run_id] = "CERTIFICATION_FAILED"
+                    raise RuntimeError(
+                        f"TracePersistenceError: Run '{run_id}' transitioned to "
+                        "CERTIFICATION_FAILED due to telemetry persistence failure; "
+                        "cannot produce trace seal, certificate, or verification package."
+                    )
                 self._run_states[run_id] = "FINALIZING"
 
             # Determine which handles to close
@@ -308,7 +340,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                     else 0
                 )
 
-                seal_payload = {
+                seal_envelope = {
                     "status": "finalized",
                     "run_id": run_id,
                     "trace_digest": trace_digest,
@@ -324,7 +356,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
 
                         signer = get_default_signer()
 
-                    if os.getenv("AES_CERTIFICATION_MODE") == "1":
+                    if self.is_certification_mode(run_id):
                         if not signer or isinstance(signer, NullSigningBackend):
                             raise RuntimeError(
                                 "AES_CERTIFICATION_MODE=1 requires a non-null cryptographic "
@@ -332,22 +364,28 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                             )
 
                     if signer and not isinstance(signer, NullSigningBackend):
-                        seal_bytes = json.dumps(
-                            seal_payload, sort_keys=True, separators=(",", ":")
-                        ).encode("utf-8")
+                        signer_id = str(getattr(signer, "identity", None) or "local-node")
+                        seal_envelope["signer_identity"] = signer_id
+                        key_id_val = getattr(signer, "key_id", None)
+                        if not key_id_val and hasattr(signer, "get_key_id"):
+                            key_id_val = signer.get_key_id()
+                        if key_id_val and isinstance(key_id_val, str):
+                            seal_envelope["key_id"] = key_id_val
+
+                        # Sign exact canonical RFC 8785 envelope payload (Defect 2)
+                        from agentv_runtime.canonical import canonical_json_encode
+
+                        seal_bytes = canonical_json_encode(seal_envelope)
                         raw_sig = signer.sign(seal_bytes)
-                        seal_payload["signature"] = (
+                        seal_envelope["signature"] = (
                             raw_sig.hex() if isinstance(raw_sig, bytes) else str(raw_sig)
                         )
-                        seal_payload["signer_identity"] = str(
-                            getattr(signer, "identity", "local-node")
-                        )
-                        key_id_val = getattr(signer, "key_id", None)
-                        if key_id_val and isinstance(key_id_val, str):
-                            seal_payload["key_id"] = key_id_val
                 except Exception as sign_e:
                     logger.error(f"Trace seal signing notice/failure: {sign_e}")
-                    if os.getenv("AES_CERTIFICATION_MODE") == "1":
+                    if self.is_certification_mode(run_id):
+                        with self._lock:
+                            self._run_states[run_id] = "CERTIFICATION_FAILED"
+                            self._failed_runs.add(run_id)
                         raise RuntimeError(
                             f"Cryptographic trace seal signing failed: {sign_e}"
                         ) from sign_e
@@ -355,19 +393,23 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                 self.artifact_store.store_artifact(
                     run_id=run_id,
                     artifact_name="trace_seal.json",
-                    content=json.dumps(seal_payload, indent=2),
+                    content=json.dumps(seal_envelope, indent=2),
                     content_type="application/json",
                     overwrite=True,
                 )
             except Exception as e:
                 logger.debug(f"Artifact store finalize seal error: {e}")
-                if os.getenv("AES_CERTIFICATION_MODE") == "1":
+                if self.is_certification_mode(run_id):
+                    with self._lock:
+                        self._run_states[run_id] = "CERTIFICATION_FAILED"
+                        self._failed_runs.add(run_id)
                     raise
 
-        # Transition state to SEALED and cleanup sequence counter
+        # Transition state to SEALED only if run did not fail
         if run_id:
             with self._lock:
-                self._run_states[run_id] = "SEALED"
+                if self._run_states.get(run_id) != "CERTIFICATION_FAILED":
+                    self._run_states[run_id] = "SEALED"
             self._sequence_numbers.pop(run_id, None)
 
     def freeze_run(self, run_id: str) -> None:

@@ -17,10 +17,10 @@ python -m venv venv
 venv\Scripts\activate  # Windows
 
 # 2. Install dependencies & dev tools
-pip install -e .
-pip install pytest flake8 black mypy
+pip install -r requirements-dev.txt
 
-# 3. Run the core test suite
+# 3. Run linting and the core test suite
+ruff check .
 pytest tests/ -v
 ```
 

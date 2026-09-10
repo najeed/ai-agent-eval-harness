@@ -589,7 +589,7 @@ async def test_session_evaluate_consensus_model_shorthand(tmp_path):
     session = SessionManager(run_id, scenario, log_root=tmp_path / "runs")
     session._last_transition_expectations = ["Hello Expected"]
 
-    panel = [{"model": "gemini-1.5-flash", "provider": "mock"}]
+    panel = [{"model": "gemini-3.7-flash", "provider": "mock"}]
     res = await session._evaluate_consensus({"consensus": {"panel": panel}}, [])
     assert res is not None
 

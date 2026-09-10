@@ -39,11 +39,13 @@ graph TD
 ### SHA3-256 Content Hashing
 The `TraceVerifier` performs streaming SHA3-256 hashing of the trace file on-disk. This content-addressable signature ensures that if a single timestamp in the trace is modified, the hash changes, invalidating the entire protocol.
 
-### Ed25519 Asymmetric Signing
-We use the Ed25519 algorithm to sign the entire manifest.
-- **Security**: Resistant to side-channel and collision attacks.
-- **Efficiency**: signatures are only 64 bytes.
-- **Detached Binding**: Signs the trace hash rather than the trace itself, eliminating the overhead of signing massive files.
+### Asymmetric Signing & Hybrid Post-Quantum Cryptography (PQC)
+We use Ed25519 and NIST FIPS 204 ML-DSA-65 (Dilithium) to sign verification manifests and trace envelopes:
+- **RFC 8785 Canonical JSON Serialization**: Every signed manifest and trace seal envelope is serialized using the strict RFC 8785 JSON Canonicalization Scheme (JCS), ensuring deterministic byte representations across all platforms.
+- **Whole-Envelope Detached Trace Seal**: The trace seal signature covers the entire canonical envelope (`run_id`, `trace_digest`, `event_count`, `sealed_at`, `signer_identity`, `key_id`, `algorithm`, `metadata`) prior to attaching the detached signature.
+- **External Trust Root Anchoring**: Verification requires that signatures anchor to an external trust root (`public_key_pem`, `trust_roots`, or `trusted_keys`). Unanchored or auto-generated self-signed keys return `UNVERIFIED`.
+- **Hybrid PQC Protection**: When `--pqc` is enabled, AgentV signs the canonical hash with both Ed25519 and ML-DSA-65, providing long-term quantum resistance.
+- **Detached Binding**: Signs the canonical envelope rather than raw multi-gigabyte trace files, eliminating forensic transport overhead while guaranteeing non-repudiation.
 
 ---
 

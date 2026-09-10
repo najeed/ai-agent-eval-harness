@@ -91,8 +91,8 @@ The **Scenario Composer** (`/scenarios/compose` or `/editor`) offers dual-mode s
   - Edits in the visual canvas instantly reflect in the code editor, and syntax changes in Monaco immediately re-render the visual graph via bi-directional AST synchronization.
 - **Scenario Lifecycle State Machine**:
   - Governs scenario lifecycle across formal enterprise stages:
-    $$\text{Draft} \longrightarrow \text{InReview} \longrightarrow \text{Ready} \longrightarrow \text{Published} \longrightarrow \text{Deprecated}$$
-  - **Mandatory Audit Reason Gate**: Transitioning from `Ready` to `Published` requires entering an explicit audit justification reason in an interactive dialog, recorded into the audit ledger for governance compliance.
+    $$\text{Draft} \longrightarrow \text{Validated} \longrightarrow \text{Ready} \longrightarrow \text{Published} \longrightarrow \text{Deprecated}$$
+  - **Mandatory Audit Reason Gate**: Transitioning from `Ready` to `Published`, retiring any scenario to `Deprecated`, or demoting from `Validated` back to `Draft` requires entering an explicit audit justification reason in an interactive dialog, recorded into the audit ledger for governance compliance (`TRANSITION_REQUIRES_REASON`).
 - **Typed Scenario Assertions**:
   - Author structured verification criteria directly within the editor:
     - `exact`: Deterministic literal string or value matching.

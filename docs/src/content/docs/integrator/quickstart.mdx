@@ -18,7 +18,11 @@ Welcome to AgentV. This guide gets you from a fresh installation to your first *
     ```bash
     python -m venv venv
     venv\Scripts\activate
-    pip install -e ".[dev]"
+    # Install core runtime with development tooling:
+    pip install -r requirements-dev.txt
+
+    # Or install with all ecosystem providers and frameworks:
+    # pip install -e ".[all]"
     ```
 
 2.  **Initialize the Industrial Corpus**  

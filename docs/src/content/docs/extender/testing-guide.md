@@ -14,6 +14,11 @@ The repository organizes tests strictly by scope and target module to avoid spra
 ```text
 tests/
 ├── conftest.py                 # Global test configuration and cleanup hooks
+├── acceptance/                 # Industrial end-to-end acceptance testing corpus & release gates
+│   ├── schemas/                # JSON Schema for acceptance cases
+│   ├── manifests/              # Acceptance test matrices and suites
+│   ├── corpus/                 # Industry acceptance scenarios and cases
+│   └── support/                # Acceptance runner, oracle, trace/artifact readers, report generator
 ├── contracts/                  # Public contract stability and SemVer invariants
 ├── golden/                     # Immutable regression verification corpus
 ├── unit/                       # Component-level isolated tests
@@ -30,6 +35,22 @@ tests/
 ---
 
 ## 🧪 Test Categories
+
+### 0. Acceptance Testing Layer & Release Gate (`tests/acceptance/`, `tools/ci/acceptance_gate.py`)
+*   **Focus**: End-to-end verification of complete system capabilities against schema-validated acceptance cases, validating CLI invocations, trace generation, evidence ledgers, and security constraints.
+*   **Decoupled Architecture**:
+    *   `schemas/acceptance_case.schema.json`: Strict JSON Schema defining valid acceptance cases.
+    *   `result.py`: Zero-framework contract types (`AcceptanceResult`, `AssertionOutcome`, `AcceptanceReport`).
+    *   `manifests/acceptance_matrix.yaml`: Definitive suite matrix mapping acceptance IDs (e.g., `AT-COR-001`, `AT-SEC-001`, `AT-EVI-001`, `AT-CLI-001`) to scenario targets.
+    *   `support/acceptance_runner.py`: Subprocess execution harness with configurable timeout (`AGENTV_ACCEPTANCE_TIMEOUT`, default 180s) to withstand heavy parallel loads.
+*   **Execution Commands**:
+    ```bash
+    # Run acceptance test suites via pytest:
+    pytest -m acceptance -v
+
+    # Run the zero-tolerance CI/CD release gate:
+    python tools/ci/acceptance_gate.py --strict --output reports/acceptance_release_report.json
+    ```
 
 ### 1. Contract Tests (`tests/contracts/`)
 *   **Focus**: Public contract invariants that must not break without a SemVer MAJOR version bump.

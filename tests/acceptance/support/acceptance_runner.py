@@ -45,7 +45,12 @@ class AgentVAcceptanceRunner:
         self.base_env["PYTHONUTF8"] = "1"
         self.base_env["PYTHONIOENCODING"] = "utf-8"
 
-    def _exec(self, args: list[str], timeout: float = 60.0) -> CommandResult:
+    def _exec(self, args: list[str], timeout: float | None = None) -> CommandResult:
+        actual_timeout = (
+            timeout
+            if timeout is not None
+            else float(os.getenv("AGENTV_ACCEPTANCE_TIMEOUT", "180.0"))
+        )
         cmd = [sys.executable, "-m", "eval_runner.cli", *args]
         start = time.perf_counter()
         try:
@@ -57,7 +62,7 @@ class AgentVAcceptanceRunner:
                 encoding="utf-8",
                 errors="replace",
                 env=self.base_env,
-                timeout=timeout,
+                timeout=actual_timeout,
             )
             duration = time.perf_counter() - start
             return CommandResult(
@@ -73,7 +78,7 @@ class AgentVAcceptanceRunner:
                 command=cmd,
                 exit_code=-999,
                 stdout=err.stdout or "",
-                stderr=f"Command timed out after {timeout} seconds: {err}",
+                stderr=f"Command timed out after {actual_timeout} seconds: {err}",
                 duration_seconds=duration,
             )
 

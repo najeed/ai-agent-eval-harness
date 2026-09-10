@@ -16,10 +16,12 @@ The API uses **Identity-Based PBAC (Permission-Based Access Control)**.
 #### `POST /api/auth/login`
 Authenticates a user via an API Key.
 - **Body**: `{"apiKey": "AEH-..."}`
-- **Success**: Sets an encrypted session cookie and returns user metadata.
+- **Security & Rate Limiting**: Enforces a sliding-window IP rate limit of 10 attempts per minute per remote IP. Returns HTTP 429 (`Too Many Requests`) if exceeded.
+- **Session Security**: Sets an encrypted session cookie flagged with `HttpOnly`, `SameSite=Lax`, and `Secure` (in production).
+- **Graceful Fallback**: If unauthenticated, the console enables a dismissable modal falling back to a read-only `Viewer` role for non-blocking exploration.
 
 #### 🛠️ Programmatic Authorization (Headless)
-For CI/CD and programmatic orchestration, bypass session state by providing the `X-Api-Key` header with every request.
+For CI/CD and programmatic orchestration, bypass session state by providing the `X-Api-Key` or `Authorization: Bearer <key>` header with every request.
 - **Header**: `X-Api-Key: {SERVICE_API_KEY}`
 - **Note**: The harness prioritizes `SERVICE_API_KEY` for programmatic headers, falling back to `DASHBOARD_API_KEY` if not configured.
 
@@ -56,6 +58,25 @@ Saves or updates a scenario JSON file in the `industries/` directory.
 - **Body**: Complete AES V1.4 scenario JSON.
 - **Security**: Validates against the project jail and sanitizes industry paths.
 
+#### `POST /api/scenarios/<scenario_id>/transition`
+Enforces formal lifecycle state transitions for audited scenarios.
+- **Path Param**: `scenario_id` (string).
+- **Body**:
+  - `transition` (string, **required**): Target transition name (`validate`, `ready`, `publish`, `deprecate`).
+  - `reason` (string, **required**): Mandatory audit explanation justifying the lifecycle state change.
+- **Legal State Machine Transitions**:
+  - `Draft` $\rightarrow$ `Validated` $\rightarrow$ `Ready` $\rightarrow$ `Published` $\rightarrow$ `Deprecated`.
+- **Response**: `{"status": "ok", "scenario_id": "...", "lifecycle_state": "Published"}`.
+
+#### `GET /api/scenarios/readiness`
+Four-state fail-closed execution readiness adjudication.
+- **Query Param**: `scenario_id` (string, optional).
+- **Adjudicated States**:
+  - `BLOCKED`: Unauthenticated target, unreachable endpoint, or invalid scenario DAG.
+  - `READY_TO_EXECUTE`: Configuration verified; ready for initial execution.
+  - `READY_TO_CERTIFY`: Execution completed with clean trace logs; ready for cryptographic certification.
+  - `CERTIFIABLE`: Passed all mandatory policy assertions, oracles, and evidence checks.
+
 ---
 
 ### ⚡ Execution & Monitoring (Industrial v1)
@@ -68,11 +89,11 @@ Triggers an asynchronous evaluation run using the industrial namespace.
     - *Note*: `path` acts as an alias. It first resolves against the **Scenario ID** in the catalog index. If no match is found, it expects a project-relative path. Use `agentv list` to verify IDs.
     - `max_turns` (int, optional): Maximum conversation depth (Default: 10).
 - **Response**: `{"status": "started", "run_id": "eval_20240412_..."}`
-- **Note**: initiates a background thread. Results are streamed to `runs/<run_id>/run.jsonl`. Enforces strict vault affinity.
+- **Note**: Initiates a background thread. Results are streamed to `runs/<run_id>/run.jsonl`. Enforces strict vault affinity.
 
 #### `POST /api/v1/mutate`
-Programmatic scenario mutation for variance testing.
-- **Body**: `type` (mutation name), `path` (file path), or `raw_json` (raw object).
+Programmatic scenario mutation for variance testing across the 3D Mutation Taxonomy.
+- **Body**: `type` (mutation vector/operation), `path` (file path), or `raw_json` (raw object).
 
 #### `GET /api/v1/metrics`
 Discovery service for all registered evaluation metrics.
@@ -98,6 +119,9 @@ Industrial Polling Primitive.
 #### `GET /api/runs`
 Legacy faceted listing of all traces (supports master log and vault discovery).
 
+#### `GET /api/v1/evidence/packages/<run_id>`
+Downloads the single-file immutable `.agentv-package.json` package bundle containing the complete scenario, execution manifest, trace hashes, and assertion verdicts.
+
 ---
 
 ### 🛡️ Public Trust Protocol (v1)
@@ -105,15 +129,26 @@ Legacy faceted listing of all traces (supports master log and vault discovery).
 These endpoints live at the top-level `/v1/` namespace to clearly distinguish **Public Audit Services** (unprotected, read-only) from **Private Management APIs** (protected under `/api/`).
 
 #### `POST /api/v1/certify`
-Industrial Certification Service. Signs the trace zero-copy within the vault.
-- **Body**: `run_id` (required), `identity`, `status`, `score`, `policy_ref`, `ttl`.
-- **Note**: Requires write access to the vault. Generates `run_manifest.json`.
+Industrial Certification Service. Executes an atomic two-phase prepare-verify-promote-seal transaction lifecycle.
+- **Body**:
+  - `run_id` (string, **required**): Unique identifier of the completed evaluation run.
+  - `identity` (string, optional): Signing principal identity (defaults to authenticated caller or local trust root).
+  - `policy_ref` (string, optional): Regulatory policy reference ID.
+  - `ttl` (int, optional): Certificate time-to-live in seconds.
+- **Cryptographic Trust Boundary**:
+  - Caller-supplied overrides on `status` and `score` are strictly prohibited.
+  - The verdict (`CERTIFIED`, `FAILED`) and compliance score are extracted server-authoritatively from terminal execution events (`run_end`, `session_decision`, `evaluation_result`).
+- **Atomic Two-Phase Commit**:
+  - Persists intermediate certification manifest (`_persist`).
+  - Verifies signature, scenario binding, and oracle passing outcomes (`_verify`).
+  - Promotes certificate to public vault (`_promote`).
+  - Applies irreversible trace seal as final step (`_seal`). In case of verification error, automatically rolls back state (`_rollback`).
 
 #### `GET /v1/certificates/<run_id>`
-Retrieves the [Verification Certificate](/auditor/trust-protocol/) (VC) for a specific run. Unprotected for external deployment gates.
+Retrieves the [Verification Certificate](/auditor/trust-protocol/) (VC v3) for a specific run. Unprotected for external deployment gates.
 
 #### `GET /v1/verify/<run_id>`
-Public Verification API for SHA3-256 and cryptographic proof check. Performs a live integrity check comparing the `run.jsonl` trace against the issued manifest.
+Public Verification API for SHA3-256 and cryptographic proof check. Performs a live integrity check comparing the `run.jsonl` trace against the issued manifest using pure RFC 8785 JSON Canonicalization Scheme (JCS).
 
 #### `GET /v1/identity/<identity_id>/public_key`
 Resolves the public key for a forensic identity to support multi-party signature verification.
@@ -144,9 +179,58 @@ async def run_evaluation(
 ) -> Union[dict, list]
 ```
 
+### `eval_runner.llm_resilience`
+Centralized LLM Error Classifier and full-jitter exponential backoff retry wrapper.
+
+```python
+from eval_runner.llm_resilience import (
+    execute_with_resilience,
+    LLMRateLimitError,
+    LLMQuotaExceededError,
+    LLMAuthenticationError,
+    LLMTransientError,
+    LLMInvalidRequestError,
+    LLMModelNotFoundError,
+)
+
+# Resilient asynchronous LLM call with jittered backoff
+response = await execute_with_resilience(
+    coro_fn=lambda: client.chat(prompt),
+    provider="gemini",
+    max_retries=3,
+    initial_delay=1.0,
+    max_delay=60.0,
+)
+```
+
+### `eval_runner.mutation_algebra`
+3D Mutation Taxonomy contracts and composable combinators.
+
+```python
+from eval_runner.mutation_algebra import (
+    MutationCoordinate,
+    MutationVector,
+    MutationOperation,
+    MutationTier,
+    sequence,
+    repeat,
+    probability,
+    after_event,
+)
+
+# Compose algebraic mutation pipeline
+composite_mutator = sequence(
+    [
+        mutator_state_tamper,
+        after_event("user_prompt", mutator_adversarial_injection),
+        probability(0.5, mutator_schema_drift),
+    ]
+)
+```
+
 ### `AgentAdapterRegistry`
-Manage communication protocols (HTTP, SSE, Local, Socket, etc.).
-- **Protocols**: `http`, `sse` (Streaming), `local` (CLI), `socket` (Raw TCP).
+Manage communication protocols (HTTP, SSE, Local, Socket, etc.) with dynamic lazy imports.
+- **Protocols**: `http`, `sse` (Streaming), `local` (CLI), `socket` (Raw TCP), `gemini`, `openai`, `claude`, `grok`, `ollama`.
 - **Standardized Signature**: Adapters must accept `(payload, endpoint=None)`.
 ```python
 from eval_runner.engine import AgentAdapterRegistry
@@ -174,6 +258,7 @@ The `agentv_runtime.interfaces` and `agentv_runtime.reference` packages expose t
 
 ```python
 import agentv_runtime
+from agentv_runtime.canonical import canonical_json_dumps, canonical_json_bytes
 from agentv_runtime.interfaces import (
     ArtifactStore,
     AuthorizationBackend,
@@ -201,6 +286,9 @@ from agentv_runtime.reference import (
     SimpleAPIKeyAuthBackend,
     SQLiteCheckpointStore,
 )
+
+# RFC 8785 JSON Canonicalization Scheme (JCS)
+canonical_bytes = canonical_json_bytes({"b": 1, "a": [2, 3]})
 
 # Authoritative Contract Version Dunders
 assert agentv_runtime.__runtime_api_version__ == "2.0"

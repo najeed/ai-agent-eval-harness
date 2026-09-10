@@ -33,7 +33,7 @@ graph TD
 
 ## 1. ExecutionManifest Contract Schema
 
-The manifest is defined in [`agentv_runtime.manifest`](agentv_runtime/manifest.py) as an immutable dataclass (`@dataclass(frozen=True)`):
+The manifest is defined in [`agentv_runtime.manifest`](file:///agentv_runtime/manifest.py) as an immutable dataclass (`@dataclass(frozen=True)`):
 
 ```python
 @dataclass(frozen=True)
@@ -52,8 +52,23 @@ class ExecutionManifest:
     metadata: dict[str, Any]  # Arbitrary tags and execution context
 ```
 
-### Deterministic Integrity Hashing
-$$\text{Manifest Hash} = \text{SHA3-256}\left(\text{CanonicalJSON}\left(\text{ManifestPayload}\right)\right)$$
+### Deterministic Integrity Hashing & Binding Formulas
+
+AgentV computes all cryptographic hashes over canonical UTF-8 bytes using pure **RFC 8785 JSON Canonicalization Scheme (JCS)** (`agentv_runtime.canonical.canonical_json_dumps`):
+
+$$\text{Scenario Hash} = \text{SHA3-256}\left(\text{RFC8785\_JCS}\left(\text{ScenarioPayload}\right)\right)$$
+
+$$\text{Manifest Hash} = \text{SHA3-256}\left(\text{RFC8785\_JCS}\left(\text{ExecutionManifest}\right)\right)$$
+
+During verification (`TraceVerifier.verify_trace_certificate` or `verify_package_artifacts`), the verifier recomputes $\text{Scenario Hash}$ directly from the executed scenario payload using `compute_scenario_hash()` and asserts exact equality against the manifest. If the scenario has drifted or was modified post-execution, the verification immediately fails with `UNVERIFIED`.
+
+### Atomic Two-Phase Lifecycle Commit
+
+To ensure non-repudiation, the execution manifest participates in an atomic four-stage transaction lifecycle:
+1. **Prepare (`_persist`)**: Manifest, raw trace, and evidence ledger are written into an isolated staging location.
+2. **Verify (`_verify`)**: In-memory cryptographic verification confirms trace seal integrity, evidence root hashes, and required oracle verdicts.
+3. **Promote (`_promote`)**: Verified artifacts are promoted atomically to the authoritative public vault.
+4. **Seal (`_seal`)**: Irreversible detached signature is applied. Any failure during stages 1–3 triggers an automatic rollback (`_rollback`), ensuring no corrupt or unverified manifests are ever published.
 
 ---
 
@@ -104,9 +119,18 @@ Emitted to declare topological transitions between steps:
 
 ---
 
-## 3. Two-Tier Status Architecture
+## 3. Two-Tier Status Architecture & Execution Readiness
 
+### Execution & Governed States
 | Layer | Attribute | Possible States | Meaning |
 | :--- | :--- | :--- | :--- |
 | **Tier 1 (Technical)** | `execution_status` | `QUEUED`, `RUNNING`, `EXECUTION_COMPLETED`, `EXECUTION_FAILED`, `STALLED` | Technical execution lifecycle of the runner and sandbox. |
 | **Tier 2 (Governed)** | `verification_decision` | `VERIFIED`, `NOT_VERIFIED`, `POLICY_BREACH`, `UNVERIFIED` | Mathematical & cryptographic policy adjudication outcome. |
+
+### Four-State Fail-Closed Readiness (`ReadinessState`)
+Before initiating execution or issuing a cryptographic certificate, the engine adjudicates readiness across four fail-closed states:
+
+1. **`BLOCKED`**: The agent endpoint is unreachable, unauthenticated, or the scenario graph is structurally malformed. All execution attempts immediately fail closed.
+2. **`READY_TO_EXECUTE`**: Target configuration, environment shims, and scenario DAG are verified; ready for initial execution loop.
+3. **`READY_TO_CERTIFY`**: Execution completed successfully with valid append-only `run.jsonl` traces; ready for cryptographic verification pass.
+4. **`CERTIFIABLE`**: All required oracles, behavioral assertions, and hash bindings have passed, permitting irreversible detached signature application.

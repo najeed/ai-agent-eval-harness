@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
 Industrial Compliance & License Synchronization Tool
-Scans dependencies across eval_runner (root pyproject/requirements), dataproc_engine,
+Scans dependencies across eval_runner (root pyproject.toml), dataproc_engine,
 ui/visual-console, vscode-extension, and docs. Automatically updates COMPLIANCE.md,
-NOTICE (and NOTICE.md), and validates/populates required files in LICENSES/.
+NOTICE, requirements.txt, and validates/populates required files in LICENSES/.
 
 Usage:
     python tools/ci/sync_compliance.py         # Updates files if needed
@@ -17,11 +17,18 @@ import re
 import sys
 from pathlib import Path
 
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib  # type: ignore
+
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
 LICENSES_DIR = REPO_ROOT / "LICENSES"
 COMPLIANCE_FILE = REPO_ROOT / "COMPLIANCE.md"
 NOTICE_FILE = REPO_ROOT / "NOTICE"
+REQUIREMENTS_FILE = REPO_ROOT / "requirements.txt"
+PYPROJECT_FILE = REPO_ROOT / "pyproject.toml"
 
 # Standard known license mappings & files
 KNOWN_LICENSE_FILES: dict[str, str] = {
@@ -67,7 +74,16 @@ PYTHON_LICENSE_MAP: dict[str, tuple[str, str]] = {
     "GitPython": ("BSD-3-Clause", "BSD-3-Clause.txt"),
     "urllib3": ("MIT", "MIT.txt"),
     "Authlib": ("BSD-3-Clause", "BSD-3-Clause.txt"),
+    "langchain": ("MIT", "MIT.txt"),
+    "langchain-core": ("MIT", "MIT.txt"),
     "langchain-openai": ("MIT", "MIT.txt"),
+    "langchain-anthropic": ("MIT", "MIT.txt"),
+    "langchain-google-genai": ("Apache 2.0", "Apache-2.0.txt"),
+    "langchain-ollama": ("MIT", "MIT.txt"),
+    "langgraph": ("MIT", "MIT.txt"),
+    "ag2": ("Apache 2.0", "Apache-2.0.txt"),
+    "crewai": ("MIT", "MIT.txt"),
+    "dulwich": ("Apache 2.0", "Apache-2.0.txt"),
     "langsmith": ("MIT", "MIT.txt"),
     "lxml": ("BSD-3-Clause", "BSD-3-Clause.txt"),
     "Pillow": ("HPND", "HPND.txt"),
@@ -138,22 +154,35 @@ def scan_python_packages(
                 pkg_ver = match.group(2).strip() or "latest"
                 names.append((pkg_name, pkg_ver))
     elif source_file.name == "pyproject.toml":
-        # Extract dependencies array
-        in_deps = False
-        for line in text.splitlines():
-            line = line.strip()
-            if line.startswith("dependencies = ["):
-                in_deps = True
-                continue
-            if in_deps:
-                if line.startswith("]"):
-                    in_deps = False
+        try:
+            data = tomllib.loads(text)
+            deps = data.get("project", {}).get("dependencies", [])
+            for dep in deps:
+                clean_line = dep.split(";")[0].strip()
+                match = re.match(r"^([a-zA-Z0-9_\-\.]+)(?:==|>=|<=|~=|>|<)?(.*)$", clean_line)
+                if match:
+                    names.append((match.group(1).strip(), match.group(2).strip() or "latest"))
+        except Exception:
+            # Fallback regex parsing
+            in_deps = False
+            for line in text.splitlines():
+                line = line.strip()
+                if line.startswith("dependencies = ["):
+                    in_deps = True
                     continue
-                clean_line = line.strip("\",' ")
-                if clean_line:
-                    match = re.match(r"^([a-zA-Z0-9_\-\.]+)(?:==|>=|<=|~=|>|<)?(.*)$", clean_line)
-                    if match:
-                        names.append((match.group(1).strip(), match.group(2).strip() or "latest"))
+                if in_deps:
+                    if line.startswith("]"):
+                        in_deps = False
+                        continue
+                    clean_line = line.strip("\",' ").split(";")[0].strip()
+                    if clean_line:
+                        match = re.match(
+                            r"^([a-zA-Z0-9_\-\.]+)(?:==|>=|<=|~=|>|<)?(.*)$", clean_line
+                        )
+                        if match:
+                            pkg = match.group(1).strip()
+                            ver = match.group(2).strip() or "latest"
+                            names.append((pkg, ver))
 
     # Resolve metadata & licenses
     seen = set()
@@ -187,6 +216,104 @@ def scan_python_packages(
             }
         )
     return packages
+
+
+def scan_python_optional_packages(
+    source_file: Path,
+) -> list[dict[str, str]]:
+    """Extracts optional/extras dependencies from pyproject.toml."""
+    packages: list[dict[str, str]] = []
+    if not source_file.exists():
+        return packages
+
+    text = source_file.read_text(encoding="utf-8")
+    names: list[tuple[str, str]] = []
+
+    try:
+        data = tomllib.loads(text)
+        opt_deps = data.get("project", {}).get("optional-dependencies", {})
+        # Filter out purely composite meta-extras
+        composite_groups = {"all", "frameworks", "langchain-all", "llm"}
+        for group, items in opt_deps.items():
+            if group in composite_groups:
+                continue
+            for item in items:
+                base_item = item.split(";")[0].strip()
+                match = re.match(r"^([a-zA-Z0-9_\-\.]+)(?:==|>=|<=|~=|>|<)?(.*)$", base_item)
+                if match:
+                    names.append((match.group(1).strip(), match.group(2).strip() or "latest"))
+    except Exception:
+        pass
+
+    seen = set()
+    for name, req_ver in names:
+        if name.lower() in seen:
+            continue
+        seen.add(name.lower())
+
+        ver = req_ver
+        if ver == "latest" or not ver:
+            try:
+                ver = importlib.metadata.version(name)
+            except Exception:
+                ver = "latest"
+
+        if name in PYTHON_LICENSE_MAP:
+            lic_name, lic_file = PYTHON_LICENSE_MAP[name]
+        else:
+            try:
+                raw_lic = importlib.metadata.metadata(name).get("License", "MIT")
+                lic_name, lic_file = normalize_license(raw_lic)
+            except Exception:
+                lic_name, lic_file = ("MIT", "MIT.txt")
+
+        packages.append(
+            {
+                "name": name,
+                "version": ver,
+                "license": lic_name,
+                "license_file": lic_file,
+            }
+        )
+    return packages
+
+
+def check_or_sync_requirements(
+    pyproject_path: Path, requirements_path: Path, check_mode: bool = False
+) -> bool:
+    """
+    Validates or mirrors requirements.txt against [project.dependencies] in pyproject.toml.
+    Returns True if drift was detected.
+    """
+    if not pyproject_path.exists():
+        return False
+    try:
+        data = tomllib.loads(pyproject_path.read_text(encoding="utf-8"))
+        pyproject_deps = data.get("project", {}).get("dependencies", [])
+    except Exception:
+        return False
+
+    existing_deps: list[str] = []
+    if requirements_path.exists():
+        for line in requirements_path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line and not line.startswith("#"):
+                existing_deps.append(line)
+
+    has_drift = sorted(pyproject_deps) != sorted(existing_deps)
+    if has_drift:
+        print("  [DRIFT] requirements.txt out of sync with pyproject.toml [project.dependencies].")
+        if not check_mode:
+            header = (
+                "# requirements.txt\n"
+                "# Core runtime dependencies for AgentV.\n"
+                "# Mirrors [project.dependencies] in pyproject.toml (Single Source of Truth).\n"
+                "# Install with: pip install -r requirements.txt\n\n"
+            )
+            content = header + "\n".join(pyproject_deps) + "\n"
+            requirements_path.write_text(content, encoding="utf-8")
+            print("  [UPDATED] requirements.txt has been refreshed from pyproject.toml.")
+    return has_drift
 
 
 def scan_npm_packages(package_json_path: Path) -> list[dict[str, str]]:
@@ -249,7 +376,8 @@ def build_compliance_section(all_pkgs: dict[str, list[dict[str, str]]]) -> str:
     parts = [
         "## 2. Third-Party Dependency Licenses",
         (
-            "The following tables summarize the licenses of our core dependencies. "
+            "The following tables summarize the licenses of our core dependencies "
+            "and optional ecosystem extras. "
             "All used licenses are permissive (MIT, BSD, Apache 2.0, ISC, HPND).\n"
         ),
         "### 2.1 Python Core Runtime Dependencies",
@@ -263,6 +391,16 @@ def build_compliance_section(all_pkgs: dict[str, list[dict[str, str]]]) -> str:
         "\n### 2.5 Data Processing Engine Dependencies (`dataproc_engine/pyproject.toml`)",
         generate_markdown_table(all_pkgs["dataproc"]),
     ]
+    if all_pkgs.get("optional_extras"):
+        parts.extend(
+            [
+                (
+                    "\n### 2.6 Optional Ecosystem & Framework Integrations "
+                    "(`pyproject.toml [project.optional-dependencies]`)"
+                ),
+                generate_markdown_table(all_pkgs["optional_extras"]),
+            ]
+        )
     return "\n".join(parts)
 
 
@@ -276,8 +414,10 @@ def build_notice_file(all_pkgs: dict[str, list[dict[str, str]]]) -> str:
         "",
     ]
     seen: dict[str, str] = {}
-    for category in all_pkgs.values():
-        for pkg in category:
+    # NOTICE strictly lists core distributed dependencies
+    core_categories = ["python_core", "dataproc", "ui_console", "vscode_ext", "docs"]
+    for cat in core_categories:
+        for pkg in all_pkgs.get(cat, []):
             name = pkg["name"]
             lic = pkg["license"]
             if name not in seen:
@@ -300,8 +440,12 @@ def sync_compliance(check_mode: bool = False) -> int:
     """Main synchronization logic."""
     print("=== Scanning Dependencies Across AI Agent Eval Harness Ecosystem ===")
 
-    # 1. Scan all packages
-    python_core = scan_python_packages(REPO_ROOT / "requirements.txt")
+    # 0. Check / sync requirements.txt against pyproject.toml
+    req_drift = check_or_sync_requirements(PYPROJECT_FILE, REQUIREMENTS_FILE, check_mode=check_mode)
+
+    # 1. Scan all packages from authoritative sources
+    python_core = scan_python_packages(PYPROJECT_FILE)
+    optional_extras = scan_python_optional_packages(PYPROJECT_FILE)
     dataproc = scan_python_packages(REPO_ROOT / "dataproc_engine" / "pyproject.toml")
     ui_console = scan_npm_packages(REPO_ROOT / "ui" / "visual-console" / "package.json")
     vscode_ext = scan_npm_packages(REPO_ROOT / "vscode-extension" / "package.json")
@@ -309,6 +453,7 @@ def sync_compliance(check_mode: bool = False) -> int:
 
     all_pkgs = {
         "python_core": python_core,
+        "optional_extras": optional_extras,
         "dataproc": dataproc,
         "ui_console": ui_console,
         "vscode_ext": vscode_ext,
@@ -318,6 +463,7 @@ def sync_compliance(check_mode: bool = False) -> int:
     total_scanned = sum(len(v) for v in all_pkgs.values())
     print(f"  • Scanned {total_scanned} total component dependencies:")
     print(f"    - Python Core: {len(python_core)}")
+    print(f"    - Python Optional Extras: {len(optional_extras)}")
     print(f"    - DataProc Engine: {len(dataproc)}")
     print(f"    - Visual Console: {len(ui_console)}")
     print(f"    - VS Code Extension: {len(vscode_ext)}")
@@ -358,7 +504,7 @@ def sync_compliance(check_mode: bool = False) -> int:
     updated_notice = build_notice_file(all_pkgs)
 
     # 5. Check for drift
-    has_drift = False
+    has_drift = req_drift
     if (
         compliance_content.replace("\r\n", "\n").strip()
         != updated_compliance.replace("\r\n", "\n").strip()
@@ -375,14 +521,23 @@ def sync_compliance(check_mode: bool = False) -> int:
 
     if has_drift:
         if check_mode:
-            print("\n[FAIL] Compliance files out of date! Run 'python tools/ci/sync_compliance.py'")
+            print(
+                "\n[FAIL] Compliance files or requirements.txt out of date! "
+                "Run 'python tools/ci/sync_compliance.py'"
+            )
             return 1
 
         # Automatically write updates to disk
         COMPLIANCE_FILE.write_text(updated_compliance, encoding="utf-8")
         NOTICE_FILE.write_text(updated_notice, encoding="utf-8")
-        print("\n[UPDATED] Compliance files were out of date and have been synchronized.")
-        print("          Stage updated files ('git add COMPLIANCE.md NOTICE') and re-commit.")
+        print(
+            "\n[UPDATED] Compliance files and/or requirements.txt were out of date "
+            "and have been synchronized."
+        )
+        print(
+            "          Stage updated files ('git add requirements.txt COMPLIANCE.md NOTICE') "
+            "and re-commit."
+        )
         return 1
 
     print("\n[OK] All compliance files are up to date.")

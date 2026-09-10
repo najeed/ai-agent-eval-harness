@@ -38,14 +38,45 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# 1. Direct Native Provider SDKs
+# (OpenAI, Anthropic, Grok, Ollama connect directly via aiohttp; no external Python SDKs required)
+provider-gemini = [
+    "google-genai==2.22.0",
+]
+
+# 2. Framework Environments (Evaluated and verified agent architectures)
+framework-langchain = [
+    "langchain==1.4.0",
+    "langchain-core>=1.6.2",
+]
+framework-langgraph = [
+    "langgraph==1.2.11",
+]
+framework-ag2 = [
+    "ag2==1.0.4",
+]
+framework-crewai = [
+    "crewai==1.15.21; python_version < '3.14'",
+]
+
+# 3. Framework-to-Provider Integrations (LangChain Wrappers)
+langchain-openai = [
+    "langchain-openai==1.6.2",
+]
+langchain-anthropic = [
+    "langchain-anthropic>=1.7.2",
+]
+langchain-gemini = [
+    "langchain-google-genai>=4.4.0",
+]
+langchain-ollama = [
+    "langchain-ollama>=1.1.0",
+]
+
+# 4. Domain & Task Extras
 nlp = [
     "sentence-transformers==6.0.1",
     "datasets==5.0.1",
-]
-llm = [
-    "google-genai==2.22.0",
-    "langchain-openai==1.6.2",
-    "langsmith==0.12.4",
 ]
 docs = [
     "pypdf==6.18.0",
@@ -60,11 +91,42 @@ pqc = [
 vcs = [
     "GitPython==3.1.62",
 ]
+
+# 5. Composed Ecosystem Extras
+llm = [
+    "google-genai==2.22.0",
+    "langchain-openai==1.6.2",
+    "langsmith==0.12.4",
+]
+frameworks = [
+    "langchain==1.4.0",
+    "langchain-core>=1.6.2",
+    "langgraph==1.2.11",
+    "ag2==1.0.4",
+    "crewai==1.15.21; python_version < '3.14'",
+]
+langchain-all = [
+    "langchain==1.4.0",
+    "langchain-core>=1.6.2",
+    "langchain-openai==1.6.2",
+    "langchain-anthropic>=1.7.0",
+    "langchain-google-genai>=4.4.0",
+    "langchain-ollama>=1.0.0",
+    "langsmith==0.12.4",
+]
 all = [
     "sentence-transformers==6.0.1",
     "datasets==5.0.1",
     "google-genai==2.22.0",
+    "langchain==1.4.0",
+    "langchain-core>=1.6.2",
+    "langgraph==1.2.11",
+    "ag2==1.0.4",
+    "crewai==1.15.21; python_version < '3.14'",
     "langchain-openai==1.6.2",
+    "langchain-anthropic>=1.7.2",
+    "langchain-google-genai>=4.0.0",
+    "langchain-ollama>=1.1.0",
     "langsmith==0.12.4",
     "pypdf==6.18.0",
     "python-docx==1.2.0",

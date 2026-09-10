@@ -11,7 +11,7 @@ This document outlines the license obligations and compliance steps for the Agen
 The AgentV Verification Runtime is distributed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file in the root directory for details.
 
 ## 2. Third-Party Dependency Licenses
-The following tables summarize the licenses of our core dependencies. All used licenses are permissive (MIT, BSD, Apache 2.0, ISC, HPND).
+The following tables summarize the licenses of our core dependencies and optional ecosystem extras. All used licenses are permissive (MIT, BSD, Apache 2.0, ISC, HPND).
 
 ### 2.1 Python Core Runtime Dependencies
 | Package | Version | License | License File |
@@ -19,33 +19,22 @@ The following tables summarize the licenses of our core dependencies. All used l
 | **aiohttp** | 3.14.3 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **Authlib** | 1.8.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **cryptography** | 50.0.1 | Apache 2.0 / BSD | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **datasets** | 5.0.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **Flask** | 3.1.3 | BSD | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **flask-cors** | 6.0.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **GitPython** | 3.1.62 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **google-genai** | 2.22.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **httpx** | 0.28.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **idna** | 3.19 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **jsonschema** | 4.26.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langchain-openai** | 1.6.2 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langsmith** | 0.12.4 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **lxml** | 6.1.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **numpy** | 2.5.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **opentelemetry-api** | 1.44.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **opentelemetry-sdk** | 1.44.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **Pillow** | 12.3.0 | HPND | [HPND.txt](LICENSES/HPND.txt) |
 | **psutil** | 7.2.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **PyJWT** | 2.13.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **pypdf** | 6.18.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **python-docx** | 1.2.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **python-dotenv** | 1.2.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **PyYAML** | 6.0.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **reportlab** | 5.0.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **requests** | 2.34.2 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **sentence-transformers** | 6.0.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **sqlalchemy** | 2.0.52 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **urllib3** | 2.7.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **weasyprint** | 70.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **Werkzeug** | 3.1.8 | BSD | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 
 ### 2.2 Visual Console Frontend UI Dependencies (`ui/visual-console/package.json`)
@@ -85,6 +74,29 @@ The following tables summarize the licenses of our core dependencies. All used l
 | **pandas** | 3.0.5 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **pyarrow** | 23.0.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **pydantic** | 2.13.4 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+
+### 2.6 Optional Ecosystem & Framework Integrations (`pyproject.toml [project.optional-dependencies]`)
+| Package | Version | License | License File |
+| :--- | :--- | :--- | :--- |
+| **ag2** | 1.0.4 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **crewai** | 1.15.21 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **cyclecore-pq** | 0.3.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **datasets** | 5.0.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **GitPython** | 3.1.62 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **google-genai** | 2.22.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **langchain** | 1.4.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-anthropic** | 1.7.2 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-core** | 1.6.2 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-google-genai** | 4.4.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **langchain-ollama** | 1.1.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-openai** | 1.6.2 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langgraph** | 1.2.11 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **lxml** | 6.1.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **pypdf** | 6.18.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **python-docx** | 1.2.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **reportlab** | 5.0.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **sentence-transformers** | 6.0.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **weasyprint** | 70.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 
 ## 3. Obligations & Compliance Steps
 To remain compliant with these licenses, the following steps are handled automatically by this repository:

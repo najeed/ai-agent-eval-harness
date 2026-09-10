@@ -16,6 +16,8 @@ import json
 from unittest.mock import patch
 
 import pytest
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import ed25519
 from flask import Flask
 
 from agentv_runtime.contracts import (
@@ -24,9 +26,12 @@ from agentv_runtime.contracts import (
 )
 from agentv_runtime.evidence_graph import index_events_by_seq
 from agentv_runtime.manifest import ManifestBuilder
+from agentv_runtime.package import VerificationPackage
 from eval_runner.console.routes.compliance_packs import compliance_packs_bp
 from eval_runner.console.routes.scenarios import scenario_bp
+from eval_runner.events import Event
 from eval_runner.flight_recorder import FlightRecorderPlugin
+from eval_runner.verifier import VerificationAuthority
 
 
 def test_attestation_grade_evidence_derived():
@@ -907,3 +912,100 @@ def test_verification_authority_artifacts_missing_provenance_defaults_true():
             require_signature=False,
         )
         assert not any("DirectProvenanceViolation" in f for f in res["failures"])
+
+
+def test_trace_seal_trust_envelope_tamper_detected(tmp_path):
+    """Tampering with signer_identity or key_id in trace_seal.json breaks verification."""
+    priv = ed25519.Ed25519PrivateKey.generate()
+    pub_pem = (
+        priv.public_key()
+        .public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
+        )
+        .decode("utf-8")
+    )
+
+    class _MockSigner:
+        def __init__(self):
+            self.key_id = "cert-key-001"
+            self.identity = "agentv-attestor-v1"
+
+        def sign(self, payload: bytes) -> bytes:
+            return priv.sign(payload)
+
+        def sign_payload(self, payload: bytes, key_id: str | None = None) -> str:
+            return priv.sign(payload).hex()
+
+    backend = _MockSigner()
+    recorder = FlightRecorderPlugin(log_dir=tmp_path, signing_backend=backend)
+    run_id = "run-seal-001"
+
+    event = Event("step_start", {"run_id": run_id, "step": 1})
+    recorder.handle_event(event)
+    recorder.finalize_run(run_id)
+
+    seal_path = tmp_path / run_id / "trace_seal.json"
+    assert seal_path.exists()
+    seal_data = json.loads(seal_path.read_text(encoding="utf-8"))
+
+    assert seal_data["signer_identity"] == "agentv-attestor-v1"
+    assert seal_data["key_id"] == "cert-key-001"
+    assert "signature" in seal_data
+
+    trace_path = tmp_path / run_id / "run.jsonl"
+    raw_trace = trace_path.read_bytes() if trace_path.exists() else b""
+
+    valid_pkg = VerificationPackage(
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash="s_hash",
+        manifest_id="m1",
+        manifest_hash="m_hash",
+        execution_identity={"run_id": run_id},
+        trace_hash=seal_data.get("trace_digest", ""),
+        trace_seal=seal_data,
+        evidence_root_hash="ev_root",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={"decision": "PASS", "verdict": "VERIFIED"},
+    )
+    valid_res = VerificationAuthority.verify_package(
+        valid_pkg,
+        raw_trace_bytes=raw_trace,
+        trust_root={"cert-key-001": pub_pem},
+        require_signature=False,
+        require_scenario_binding=False,
+    )
+    assert valid_res["verified"] is True
+
+    # Tampering with signer_identity invalidates signature / trust binding
+    tampered_seal = dict(seal_data)
+    tampered_seal["signer_identity"] = "impostor-identity"
+
+    tampered_pkg = VerificationPackage(
+        scenario_id="s1",
+        scenario_version="1.0.0",
+        scenario_hash="s_hash",
+        manifest_id="m1",
+        manifest_hash="m_hash",
+        execution_identity={"run_id": run_id},
+        trace_hash=seal_data.get("trace_digest", ""),
+        trace_seal=tampered_seal,
+        evidence_root_hash="ev_root",
+        required_oracle_ids=[],
+        executed_oracle_results=[],
+        decision={"decision": "PASS", "verdict": "VERIFIED"},
+    )
+    tampered_res = VerificationAuthority.verify_package(
+        tampered_pkg,
+        raw_trace_bytes=raw_trace,
+        trust_root={"cert-key-001": pub_pem},
+        require_signature=False,
+        require_scenario_binding=False,
+    )
+    assert tampered_res["verified"] is False
+    assert any(
+        "TraceSealUntrustedSigner" in r or "TraceSealSignatureInvalid" in r
+        for r in tampered_res["failures"]
+    )

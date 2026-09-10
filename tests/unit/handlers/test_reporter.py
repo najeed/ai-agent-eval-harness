@@ -288,3 +288,37 @@ def test_generate_report_fail_mermaid(capsys, mock_results):
     reporter.generate_report(scenario, mock_results, export_html=False)
     captured = capsys.readouterr()
     assert "Trajectory Map (Mermaid)" in captured.out
+
+
+def test_reporter_truthfulness_no_file_existence_verification(tmp_path, monkeypatch):
+    """HTML report does NOT display VERIFIED RUN merely because a manifest exists on disk."""
+    monkeypatch.setattr(config, "HTML_REPORTS_DIR", tmp_path / "reports")
+    scenario = {"id": "s1", "title": "Test Scenario"}
+    results = [
+        {
+            "task_id": "t1",
+            "metrics": [{"metric": "m1", "score": 1, "threshold": 0.5, "success": True}],
+        }
+    ]
+
+    run_dir = tmp_path / "runs" / "run-unverified"
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "audit_manifest.json").write_text("{}", encoding="utf-8")
+    (run_dir / "trace.jsonl").write_text("{}", encoding="utf-8")
+
+    out_file = reporter.generate_html_report(
+        scenario, results, metadata={"run_id": "run-unverified"}
+    )
+    html = Path(out_file).read_text(encoding="utf-8")
+    assert "VERIFIED RUN" not in html
+
+    out_file_verified = reporter.generate_html_report(
+        scenario,
+        results,
+        metadata={
+            "run_id": "run-verified",
+            "verification_result": {"is_valid": True, "status": "CERTIFIED"},
+        },
+    )
+    html_verified = Path(out_file_verified).read_text(encoding="utf-8")
+    assert "VERIFIED RUN" in html_verified

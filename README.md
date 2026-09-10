@@ -49,7 +49,7 @@ graph TD
 | :--- | :--- |
 | **License** | Apache License 2.0 |
 | **Status** | 🟢 Production-Ready (NIST AI-100-1 & 2026 Audit Ready) |
-| **Version** | v2.0.0 (August 2026 Release) |
+| **Version** | v2.0.0 (September 2026 Release) |
 | **Trust Model** | [Behavioral DNA & VC v3.0.0](docs/src/content/docs/spec/trust_v3.md) |
 | **Architecture** | [3-Pillar Enterprise Verification OS](docs/src/content/docs/evaluator/visual-suite.md) |
 | **Quick Links** | [Quickstart](#zero-key-quickstart-get-running-now) • [AES v1.4 Spec](docs/src/content/docs/spec/aes_schema.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
@@ -158,12 +158,16 @@ The harness is organized into the following key components:
 - **Behavioral DNA Telemetry**: High-granularity event bus (4-level: PHASE, SUBTASK, ACTION, STEP) providing a precise "genetic" map of agent decision-making.
 - **Verification Certificate (VC) v3.0.0**: Traces are signed via the **Identity Registry** (Ed25519) and backed by a **Forensic Evidence Ledger** that hashes sidecar artifacts to ensure end-to-end provenance.
 
-### What's New in the August 2026 GA Release (v2.0.0)
+### What's New in the September 2026 GA Release (v2.0.0)
 
-The **v2.0.0 August 2026 GA Release** establishes AgentV as the open verification operating system for autonomous agents, introducing a primary visual verification environment, deterministic cryptographic packaging, enterprise audit defensibility, and a zero-trust extensible runtime:
+The **v2.0.0 September 2026 GA Release** establishes AgentV as the open verification operating system for autonomous agents, introducing a primary visual verification environment, deterministic cryptographic packaging, enterprise audit defensibility, a 3D mutation algebra, and a zero-trust extensible runtime:
 
-- 🖥️ **Interactive Visual Console & Live Debugger**: Canonical React SPA mounted at `/` featuring Dagre LR execution DAG topology rendering, Monaco editor source-of-truth document sync with typed assertions (`exact`, `regex`, `numerical_tolerance`, `json_schema`), resilient SSE streaming with `Last-Event-ID` trace replay, and PDF report generation.
-- 🛡️ **Audit-Defensible Forensic Trust Protocol & PQC**: Single-file immutable `.agentv-package.json` bundles conforming to NIST SP 800-218 and EU AI Act standards, backed by detached VC v3 certificates, immutable hard-freeze lifecycle boundaries (`RUNNING` → `FINALIZING` → `SEALED`), deterministic `evidence_root_hash` assertion binding, public-key-only attestation, hybrid Post-Quantum Cryptography (ML-DSA-65 + Ed25519), WORM audit logs (`audit_chain.jsonl`), and server-authoritative verification (`/api/v1/runs/<run_id>/verify`).
+- 🖥️ **Interactive Visual Console & Zero-Config Bootstrap**: Canonical React SPA mounted at `/` featuring Dagre LR execution DAG topology rendering, Monaco editor source-of-truth document sync with typed assertions (`exact`, `regex`, `numerical_tolerance`, `json_schema`), resilient SSE streaming with `Last-Event-ID` trace replay, persistent zero-config bootstrap authentication (`.aes/keys/bootstrap.key`), non-blocking `Viewer` role, and sliding-window IP rate limiting.
+- 🛡️ **Audit-Defensible Trust Architecture & RFC 8785 JCS**: Pure RFC 8785 JSON Canonicalization Scheme (`agentv_runtime.canonical`), whole-envelope detached trace sealing, external trust root mandate, in-archive ZIP bundle verification with path traversal defenses, Split Package Verification API (`verify_package_signature_only`, `verify_package_artifacts`), and standalone CLI `agentv verify-package`. Single-file immutable `.agentv-package.json` bundles conforming to NIST SP 800-218 and EU AI Act standards, backed by detached VC v3 certificates, immutable hard-freeze lifecycle boundaries (`RUNNING` → `FINALIZING` → `SEALED`), deterministic `evidence_root_hash` assertion binding, hybrid Post-Quantum Cryptography (ML-DSA-65 + Ed25519), WORM audit logs (`audit_chain.jsonl`), and server-authoritative verification (`/api/v1/runs/<run_id>/verify`).
+- ⚖️ **Server-Authoritative Outcome Derivation & Atomic Certification**: Certification Authority deriving verdicts and scores authoritatively from terminal execution events (`run_end`, `session_decision`, `evaluation_result`), strict prohibition of caller status/score overrides, 4-state fail-closed readiness (`BLOCKED`, `READY_TO_EXECUTE`, `READY_TO_CERTIFY`, `CERTIFIABLE`), and atomic two-phase certification transactions with rollback.
+- 🧬 **OSS Core Runtime 3D Mutation Engine**: Formal 3D taxonomy coordinates ($V \times O \times T$ across 13 target vectors, 13 operations, and 6 risk tiers), composable algebraic combinators (`sequence` / `+`, `repeat`, `probability`, `after_event`, `before_commit`, `between_steps`, `concurrent`), and dynamic in-run perturbation engine with deterministic seed chaining and audit lineage binding.
+- 🌐 **Centralized LLM Resilience & Zero-SDK Direct Transports**: Centralized error classifier (`eval_runner.llm_resilience`) mapping typed domain errors (`LLMQuotaExceededError`, `LLMRateLimitError`, etc.) with full-jitter exponential backoff retries, direct `aiohttp` REST transports (Anthropic, OpenAI, Grok, Ollama) and official `google-genai` SDK support.
+- 🧪 **Dedicated Acceptance Testing Layer & CI Release Gate**: Schema-validated acceptance testing corpus (`tests/acceptance/`), decoupled contracts (`result.py`), golden matrix (`manifests/acceptance_matrix.yaml`), and zero-tolerance release gate (`tools/ci/acceptance_gate.py`).
 - 📜 **Multi-Tenant ExecutionManifest & Dual-Tier Readiness**: Immutable frozen [`ExecutionManifest`](agentv_runtime/manifest.py) binding tenant and workspace context, deterministic SHA3-256 `preflight_fingerprint` cache invalidation, and strict readiness gating (**Executable** vs **Verifiable**).
 - 🔌 **Zero-Trust Architecture & Active Extension Wiring**: Neutral architectural boundary actively wiring all 6 Extension Families (`ExecutionBackend`, `CheckpointStore`, `SigningBackend`, `ArtifactStore`, `PolicyEvaluator`, `AuthorizationBackend`) and storage backends (`CatalogStore`, `RunStore`, `LeaderboardStore`), sandboxed micro-frontends with Subresource Integrity (SRI), and durable SQLite checkpoint recovery.
 
@@ -264,7 +268,7 @@ The harness supports multiple ways to talk to your agent. Use the `--protocol` f
 - **`aes add-standard`**: Expand the global industrial registry with new standard definitions (ID, Name, Industry, Description).
 - **`init --standard <id>`**: Rapidly scaffold a dedicated, industry-compliant evaluation environment for a specific standard (e.g., `init --standard ISO_20022`).
 
-and more (check [CLI Reference](docs/src/content/docs/evaluator/cli-reference.md) for complete list) ...
+and more (check [CLI Reference](docs/src/content/docs/evaluator/cli.md) for complete list) ...
 
 
 #### Premium UX Tools

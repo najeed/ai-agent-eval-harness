@@ -32,15 +32,18 @@ To ensure audit-grade forensic stability, the protocol enforces strict identity 
 - **Path Portability**: All evidence ledgers MUST use site-relative paths to the vault root, ensuring manifests are portable across distinct storage backends.
 
 # 4. Cryptographic Requirements & Evidence Graph
-- **Algorithm**: ED25519 (Asymmetric) / SHA3-256 (Hashing) / ML-DSA-65 (NIST FIPS 204 PQC).
-- **Deterministic Signing**: Signatures MUST be computed by excluding mutable envelope fields from the payload to allow for multi-party appending without invalidating existing signatures.
+- **Algorithm**: Ed25519 (Asymmetric) / SHA3-256 (Hashing) / ML-DSA-65 (NIST FIPS 204 PQC).
+- **RFC 8785 JCS Canonicalization**: All cryptographic hashes and signatures MUST be computed over canonical JSON serialized in strict accordance with the RFC 8785 JSON Canonicalization Scheme (JCS) (`agentv_runtime.canonical`). Keys are sorted by UTF-16 code units and floating point numbers format per ECMAScript 7.1.12.1.
+- **Whole-Envelope Detached Trace Seal**: The trace seal detached signature covers the complete canonical envelope (`run_id`, `trace_digest`, `event_count`, `sealed_at`, `signer_identity`, `key_id`, `algorithm`, `metadata`) prior to attaching the detached signature.
+- **External Trust Root Mandate**: Verification strictly requires an external trust root or key registry (`public_key_pem`, `trust_roots`, or `trusted_keys`). Unanchored, embedded, or auto-generated ephemeral keys yield `UNVERIFIED` and are prohibited from asserting authenticity.
 - **Evidence Graph Root Binding**: The certificate must bind an `evidence_root_hash` computed over the canonical assertion node linkages (`compute_evidence_graph_root`).
 - **Direct Trace Provenance**: Verification strictly mandates `is_complete_provenance = True`. If any evaluated assertion relies on a fallback or terminal carrier sequence instead of direct execution event linkage, verification fails closed (`DirectProvenanceViolation`).
 - **Scenario Canonical Hash Binding**: The certificate is bound to `scenario_hash` computed from the canonical scenario definition (`compute_scenario_hash`). Tampered scenario definitions fail verification immediately.
 
-# 5. Authoritative Verdict Precedence
+# 5. Authoritative Verdict Precedence & Fail-Closed Persistence
 - **No Caller Overrides**: Compliance status and score are derived authoritatively from verifiable execution events. Caller-supplied status overrides are strictly rejected.
 - **Precedence Hierarchy**: Any terminal failure status (`failed`, `timeout`, `policy_breach`, `error`) takes absolute precedence over optimistic heuristic counters (`passed=True`, `success_rate`).
+- **Intrinsically Fail-Closed Persistence**: In certification or attestation mode, any event write failure (disk full, I/O disruption) immediately aborts the run into `CERTIFICATION_FAILED`, tracks the failed run, and strictly refuses seal, certificate, or package generation.
 
 # 6. Use Cases
 - **Regulatory Audits**: Providing high-fidelity proof for healthcare or finance agents under NIST AI 100-1 and EU AI Act.

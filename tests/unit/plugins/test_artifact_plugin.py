@@ -2,6 +2,8 @@ import json
 import zipfile
 from pathlib import Path
 
+import pytest
+
 from eval_runner.artifact_plugin import ArtifactPlugin
 
 
@@ -182,21 +184,22 @@ def test_verify_integrity_signature_failure(tmp_path):
     assert verify_res["is_valid"] is False
 
 
-def test_get_signing_key_auto_generate(tmp_path, monkeypatch):
-    """Verify that a new key is generated if none exists."""
-    from cryptography.hazmat.primitives.asymmetric import ed25519
-
+def test_get_signing_key_no_auto_generation(tmp_path, monkeypatch):
+    """Verify that auto-generation is prohibited when no key exists."""
     from eval_runner import config
 
     plugin = ArtifactPlugin()
     monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
+    monkeypatch.setattr(config, "TRUST_ROOT", tmp_path / "nonexistent_trust")
+    monkeypatch.delenv("AES_PRIVATE_KEY", raising=False)
 
     key_path = tmp_path / ".aes" / "keys" / "system_id.pem"
     assert not key_path.exists()
 
-    key = plugin._get_signing_key()
-    assert isinstance(key, ed25519.Ed25519PrivateKey)
-    assert key_path.exists()
+    with pytest.raises(RuntimeError, match="Self-generated unanchored signing keys are prohibited"):
+        plugin._get_signing_key()
+
+    assert not key_path.exists()
 
 
 def test_bundle_artifacts_missing_file_handling(tmp_path):
@@ -250,14 +253,107 @@ def test_verify_integrity_mismatch_and_missing_files(tmp_path):
 
 
 def test_get_signing_key_invalid_env(tmp_path, monkeypatch):
-    """Verify fallback behavior when env key is malformed."""
-    from cryptography.hazmat.primitives.asymmetric import ed25519
-
+    """Verify fail-closed error behavior when env key is malformed (no auto-generation fallback)."""
     from eval_runner import config
 
     plugin = ArtifactPlugin()
     monkeypatch.setenv("AES_PRIVATE_KEY", "NOT_A_PRIVATE_KEY")
     monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
 
-    key = plugin._get_signing_key()
-    assert isinstance(key, ed25519.Ed25519PrivateKey)
+    with pytest.raises(RuntimeError, match="Failed to load signing key from AES_PRIVATE_KEY"):
+        plugin._get_signing_key()
+
+
+def test_verify_integrity_requires_external_trust_anchor(tmp_path, monkeypatch):
+    """Defect 3: Missing external trust anchor must result in UNVERIFIED, never valid."""
+    from eval_runner import config
+
+    plugin = ArtifactPlugin()
+    f = tmp_path / "data.txt"
+    f.write_text("certified payload")
+
+    res = plugin.bundle_artifacts(str(tmp_path), ["data.txt"])
+
+    # Isolate trust root so no system_id key is found
+    empty_trust = tmp_path / "empty_trust"
+    empty_trust.mkdir()
+    monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path / "empty_root")
+    monkeypatch.setattr(config, "TRUST_ROOT", empty_trust)
+    monkeypatch.delenv("AES_PUBLIC_KEY_SYSTEM_ID", raising=False)
+    monkeypatch.delenv("AES_PUBLIC_KEY", raising=False)
+
+    verify_res = plugin.verify_integrity(res["manifest_path"])
+    assert verify_res["is_valid"] is False
+    assert verify_res["status"] == "UNVERIFIED"
+    assert "No external trust anchor found" in verify_res["message"]
+
+
+def test_verify_integrity_zip_bundle_internal_bytes(tmp_path):
+    """Defect 4: ZIP verification must hash archive entries directly, ignoring adjacent files."""
+    plugin = ArtifactPlugin()
+    f = tmp_path / "file.txt"
+    f.write_text("zip payload")
+
+    res = plugin.bundle_artifacts(str(tmp_path), ["file.txt"])
+    zip_path = res["bundle_path"]
+
+    # Delete adjacent filesystem file: ZIP verification must still succeed
+    f.unlink()
+    assert not f.exists()
+
+    verify_res = plugin.verify_integrity(zip_path)
+    assert verify_res["is_valid"] is True
+    assert verify_res["status"] == "VALID"
+    assert verify_res["details"][0]["status"] == "valid"
+
+
+def test_verify_integrity_rejects_unsafe_paths(tmp_path):
+    """Defect 4: Reject path traversal entries (.. or absolute paths)."""
+    manifest_path = tmp_path / "audit_manifest.json"
+    manifest = {
+        "version": "1.0",
+        "timestamp": "2026-09-07T00:00:00",
+        "batch_id": "test",
+        "files": [
+            {"name": "../etc/passwd", "file_hash": "abc"},
+            {"name": "/absolute/path", "file_hash": "def"},
+        ],
+    }
+    manifest_path.write_text(json.dumps(manifest))
+
+    plugin = ArtifactPlugin()
+    verify_res = plugin.verify_integrity(str(manifest_path))
+    assert verify_res["is_valid"] is False
+    assert verify_res["status"] == "INVALID"
+    for detail in verify_res["details"]:
+        assert detail["status"] == "unsafe_path"
+
+
+def test_verify_integrity_zip_tampered_internal_bytes_detected(tmp_path):
+    """Corrupting bytes inside a ZIP archive is detected directly from archive streams."""
+    import io
+    import zipfile
+
+    plugin = ArtifactPlugin()
+    f1 = tmp_path / "item.txt"
+    f1.write_text("safe content", encoding="utf-8")
+
+    bundle_res = plugin.bundle_artifacts(str(tmp_path), ["item.txt"])
+    zip_path = Path(bundle_res["bundle_path"])
+
+    buf = io.BytesIO()
+    with zipfile.ZipFile(zip_path, "r") as zf_in:
+        with zipfile.ZipFile(buf, "w") as zf_out:
+            for item in zf_in.infolist():
+                if item.filename == "item.txt":
+                    zf_out.writestr(item, "corrupted content")
+                else:
+                    zf_out.writestr(item, zf_in.read(item.filename))
+
+    tampered_zip = tmp_path / "tampered.zip"
+    tampered_zip.write_bytes(buf.getvalue())
+
+    res_tampered = plugin.verify_integrity(str(tampered_zip))
+    assert res_tampered["is_valid"] is False
+    assert res_tampered["status"] == "INVALID"
+    assert any(d["status"] == "mismatch" for d in res_tampered["details"])

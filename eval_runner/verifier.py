@@ -930,7 +930,7 @@ class TraceVerifier:
             manifest["trace_hash"] = _stage("hash")(_append_and_hash)
             manifest["hash_algorithm"] = "sha3_256"
 
-            # Semantically authoritative certification metadata is signed (Defect 2)
+            # Semantically authoritative certification metadata is signed
             manifest["certification"] = {
                 "pipeline_version": "1.0.0",
                 "transactional": True,
@@ -1125,7 +1125,7 @@ class TraceVerifier:
             manifest_to_verify.pop("certification_diagnostics", None)
             # Transient stage execution logs are excluded from the signed payload,
             # while authoritative certification metadata (outcome, pipeline_version, transactional)
-            # is signed and verified against tampering (Defect 2).
+            # is signed and verified against tampering.
             if "certification" in manifest_to_verify and isinstance(
                 manifest_to_verify["certification"], dict
             ):
@@ -1733,7 +1733,7 @@ class VerificationAuthority:
             except Exception as ev_err:
                 failures.append(f"EvidenceReconstructionFailed: {ev_err}")
 
-        # 4. Trace seal integrity check (Defect 6)
+        # 4. Trace seal integrity check
         if not pkg.trace_seal:
             failures.append("TraceSealMissing: package missing trace seal")
         else:
@@ -1769,7 +1769,7 @@ class VerificationAuthority:
                 except (ValueError, TypeError):
                     pass
 
-        # 5. Scenario artifact binding check (Defect 3: mandatory for certification)
+        # 5. Scenario artifact binding check
         if scenario_data is None:
             failures.append(
                 "ScenarioArtifactMissing: package certification requires bound scenario artifact"
@@ -1831,7 +1831,7 @@ class VerificationAuthority:
         if decision_val not in ("PASS", "VERIFIED"):
             failures.append(f"UnverifiedDecision: decision was '{decision_val}'")
 
-        # 7. Required oracle inventory & outcome check (Defect 4)
+        # 7. Required oracle inventory & outcome check
         seen_oracle_ids: set[str] = set()
         executed_oracles: dict[str, dict[str, Any]] = {}
         for o in pkg.executed_oracle_results:
@@ -1872,7 +1872,7 @@ class VerificationAuthority:
                     "evidence_refs must be a list"
                 )
 
-        # 8. Signature verification against external trust root (Defect 1)
+        # 8. Signature verification against external trust root
         if pkg.signature:
             try:
                 sig_valid = pkg.verify_signature(
@@ -2005,7 +2005,7 @@ class VerificationAuthority:
                 logger.debug("Evidence graph calculation failed: %s", ev_err)
                 failures.append(f"EvidenceReconstructionFailed: {ev_err}")
 
-        # 4b. Trace seal verification (Defect 6)
+        # 4b. Trace seal verification
         if pkg.trace_seal:
             seal_digest = (
                 pkg.trace_seal.get("trace_digest")
@@ -2039,7 +2039,104 @@ class VerificationAuthority:
                 except (ValueError, TypeError):
                     pass
 
-        # 5. Scenario hash binding check (Defect 3)
+            # Trace seal trust binding verification
+            seal_sig = pkg.trace_seal.get("signature")
+            if seal_sig and isinstance(seal_sig, str):
+                seal_envelope_to_verify = {
+                    k: v for k, v in pkg.trace_seal.items() if k != "signature"
+                }
+                seal_signer_id = seal_envelope_to_verify.get(
+                    "signer_identity"
+                ) or seal_envelope_to_verify.get("key_id")
+                if not seal_signer_id:
+                    failures.append(
+                        "TraceSealMissingIdentity: trace seal signature present but missing "
+                        "signer_identity and key_id"
+                    )
+                else:
+                    seal_pub_pem: str | None = None
+                    if public_key_pem:
+                        seal_pub_pem = public_key_pem
+                    elif key_registry is not None:
+                        seal_pub_pem = key_registry.get(str(seal_signer_id)) or (
+                            key_registry.get(str(seal_envelope_to_verify.get("key_id")))
+                            if seal_envelope_to_verify.get("key_id")
+                            else None
+                        )
+                    elif trust_root is not None:
+                        if hasattr(trust_root, "get_public_key"):
+                            try:
+                                pk = trust_root.get_public_key(str(seal_signer_id))
+                                if pk:
+                                    from cryptography.hazmat.primitives import serialization
+
+                                    seal_pub_pem = pk.public_bytes(
+                                        encoding=serialization.Encoding.PEM,
+                                        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+                                    ).decode("utf-8")
+                            except Exception:
+                                seal_pub_pem = None
+                        elif isinstance(trust_root, Mapping):
+                            seal_pub_pem = trust_root.get(str(seal_signer_id)) or (
+                                trust_root.get(str(seal_envelope_to_verify.get("key_id")))
+                                if seal_envelope_to_verify.get("key_id")
+                                else None
+                            )
+                        elif isinstance(trust_root, (str, Path)):
+                            root_path = Path(trust_root)
+                            cand = root_path / str(seal_signer_id) / "public_key.pem"
+                            if cand.is_file():
+                                seal_pub_pem = cand.read_text(encoding="utf-8")
+                    else:
+                        try:
+                            from eval_runner.identity import IdentityService
+
+                            pk = IdentityService.get_public_key(
+                                str(seal_signer_id), auto_provision=False
+                            )
+                            if pk:
+                                from cryptography.hazmat.primitives import serialization
+
+                                seal_pub_pem = pk.public_bytes(
+                                    encoding=serialization.Encoding.PEM,
+                                    format=serialization.PublicFormat.SubjectPublicKeyInfo,
+                                ).decode("utf-8")
+                        except Exception:
+                            seal_pub_pem = None
+
+                    if not seal_pub_pem:
+                        failures.append(
+                            f"TraceSealUntrustedSigner: no external trust anchor found for "
+                            f"trace seal signer '{seal_signer_id}'"
+                        )
+                    else:
+                        try:
+                            from cryptography.hazmat.primitives import serialization
+                            from cryptography.hazmat.primitives.asymmetric.ed25519 import (
+                                Ed25519PublicKey,
+                            )
+
+                            from agentv_runtime.canonical import canonical_json_encode
+
+                            pub_obj = serialization.load_pem_public_key(
+                                seal_pub_pem.encode("utf-8")
+                            )
+                            if isinstance(pub_obj, Ed25519PublicKey):
+                                sig_bytes = bytes.fromhex(seal_sig)
+                                canon_seal_bytes = canonical_json_encode(seal_envelope_to_verify)
+                                pub_obj.verify(sig_bytes, canon_seal_bytes)
+                            else:
+                                failures.append(
+                                    "TraceSealUnsupportedKeyType: expected Ed25519 for "
+                                    f"signer '{seal_signer_id}'"
+                                )
+                        except Exception as seal_v_err:
+                            failures.append(
+                                f"TraceSealSignatureInvalid: signature verification failed for "
+                                f"trace seal: {seal_v_err}"
+                            )
+
+        # 5. Scenario hash binding check
         if scenario_data is not None:
             try:
                 from agentv_runtime.manifest import compute_scenario_hash
@@ -2100,7 +2197,7 @@ class VerificationAuthority:
         if decision_val not in ("PASS", "VERIFIED"):
             failures.append(f"UnverifiedDecision: decision was '{decision_val}'")
 
-        # 7. Required oracle inventory & outcome check (Defect 4)
+        # 7. Required oracle inventory & outcome check
         seen_oracle_ids: set[str] = set()
         executed_oracles: dict[str, dict[str, Any]] = {}
         for o in pkg.executed_oracle_results:
@@ -2141,7 +2238,7 @@ class VerificationAuthority:
                     "evidence_refs must be a list"
                 )
 
-        # 8. Signature verification against external trust root (Defect 1)
+        # 8. Signature verification against external trust root
         if pkg.signature:
             try:
                 sig_valid = pkg.verify_signature(
