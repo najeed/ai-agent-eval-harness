@@ -710,7 +710,12 @@ class StateMutators(ScenarioMutator):
                 node["partial_commit_simulated"] = True
                 node["failure_mode"] = "fail_after_step_1"
         elif mutation_type == "rollback_failure":
-            scenario.setdefault("failure_policy", {})["rollback_handler_corrupted"] = True
+            fp = scenario.get("failure_policy")
+            if isinstance(fp, dict):
+                fp["rollback_handler_corrupted"] = True
+            elif fp is None:
+                scenario["failure_policy"] = {"rollback_handler_corrupted": True}
+            scenario.setdefault("metadata", {})["rollback_handler_corrupted"] = True
             for node in nodes:
                 node["rollback_handler_corrupted"] = True
         elif mutation_type == "concurrency":
@@ -718,12 +723,22 @@ class StateMutators(ScenarioMutator):
             for node in nodes:
                 node["concurrent_writers"] = 2
         elif mutation_type == "duplicate_commit":
-            scenario.setdefault("failure_policy", {})["duplicate_commit"] = True
+            fp = scenario.get("failure_policy")
+            if isinstance(fp, dict):
+                fp["duplicate_commit"] = True
+            elif fp is None:
+                scenario["failure_policy"] = {"duplicate_commit": True}
+            scenario.setdefault("metadata", {})["duplicate_commit"] = True
             for node in nodes:
                 node["duplicate_commit"] = True
                 node["commit_multiplicity"] = 2
         elif mutation_type == "commit_after_cancel":
-            scenario.setdefault("failure_policy", {})["commit_after_cancel"] = True
+            fp = scenario.get("failure_policy")
+            if isinstance(fp, dict):
+                fp["commit_after_cancel"] = True
+            elif fp is None:
+                scenario["failure_policy"] = {"commit_after_cancel": True}
+            scenario.setdefault("metadata", {})["commit_after_cancel"] = True
             for node in nodes:
                 node["commit_after_cancel"] = True
                 node["allow_post_cancellation_write"] = True

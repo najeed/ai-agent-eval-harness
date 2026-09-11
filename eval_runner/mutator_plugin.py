@@ -37,17 +37,31 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
         elif not self.scenario and hasattr(context, "scenario"):
             self.scenario = getattr(context, "scenario", {}) or {}
 
-    def on_step_start(self, context: Any, node_id: str, node_data: dict[str, Any] | None = None):
+    def on_step_start(
+        self,
+        context: Any = None,
+        node_id: str | None = None,
+        node_data: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ):
         """Binds active step and node definition for node-scoped mutations."""
-        self.active_node_id = node_id
-        self.active_node_data = node_data or {}
-        self.step_index += 1
-        logger.debug(f"[RuntimeMutationPlugin] Step {self.step_index} start: node={node_id}")
+        if node_id is not None:
+            self.active_node_id = node_id
+            self.active_node_data = node_data or {}
+            self.step_index += 1
+            logger.debug(f"[RuntimeMutationPlugin] Step {self.step_index} start: node={node_id}")
 
-    def on_step_end(self, context: Any, node_id: str, verdict: Any = None):
+    def on_step_end(
+        self,
+        context: Any = None,
+        node_id: str | None = None,
+        verdict: Any = None,
+        **kwargs: Any,
+    ):
         """Cleans up active step-scoped state."""
-        self.active_node_id = None
-        self.active_node_data = {}
+        if node_id is not None:
+            self.active_node_id = None
+            self.active_node_data = {}
 
     def on_tool_request(
         self, context: Any, tool_name: str, arguments: dict[str, Any] | None = None
@@ -168,9 +182,17 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
         Intercepts compensating rollback execution to simulate catastrophic rollback failures.
         """
         node = self.active_node_data
-        fail_policy = self.scenario.get("failure_policy", {})
+        fail_policy = self.scenario.get("failure_policy")
+        fail_policy_dict = fail_policy if isinstance(fail_policy, dict) else {}
+        meta_dict = (
+            self.scenario.get("metadata") if isinstance(self.scenario.get("metadata"), dict) else {}
+        )
 
-        if node.get("rollback_handler_corrupted") or fail_policy.get("rollback_handler_corrupted"):
+        if (
+            node.get("rollback_handler_corrupted")
+            or fail_policy_dict.get("rollback_handler_corrupted")
+            or meta_dict.get("rollback_handler_corrupted")
+        ):
             record = {
                 "fault": "rollback_failure",
                 "action": compensation_action,

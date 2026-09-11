@@ -80,13 +80,21 @@ class BaseEvalPlugin(ABC):  # noqa: B024
         pass
 
     def on_step_start(  # noqa: B027
-        self, context: Any, node_id: str, node_data: dict[str, Any] | None = None
+        self,
+        context: Any = None,
+        node_id: str | None = None,
+        node_data: dict[str, Any] | None = None,
+        **kwargs: Any,
     ):
         """Hook called when a workflow DAG node or scenario step begins."""
         pass
 
     def on_step_end(  # noqa: B027
-        self, context: Any, node_id: str, verdict: Any = None
+        self,
+        context: Any = None,
+        node_id: str | None = None,
+        verdict: Any = None,
+        **kwargs: Any,
     ):
         """Hook called when a workflow DAG node or scenario step completes."""
         pass

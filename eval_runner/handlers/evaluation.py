@@ -191,6 +191,13 @@ async def handle_evaluate(args):
         print("❌ Error during evaluation execution:")
         traceback.print_exc()
         return 1
+    finally:
+        try:
+            from ..adapters.common import SessionManager as AdapterSessionManager
+
+            await AdapterSessionManager.close_all()
+        except Exception:
+            pass
 
 
 async def handle_run(args):
@@ -260,6 +267,13 @@ async def handle_run(args):
         print("❌ Error during evaluation:")
         traceback.print_exc()
         return 1
+    finally:
+        try:
+            from ..adapters.common import SessionManager as AdapterSessionManager
+
+            await AdapterSessionManager.close_all()
+        except Exception:
+            pass
 
 
 async def handle_record(args):

@@ -243,9 +243,16 @@ class SessionManager:
         else:
             wf_nodes = []
 
+        fail_policy = self.scenario.get("failure_policy")
+        fail_policy_dict = fail_policy if isinstance(fail_policy, dict) else {}
+        meta_dict = (
+            self.scenario.get("metadata") if isinstance(self.scenario.get("metadata"), dict) else {}
+        )
+
         has_mutations = bool(
-            self.scenario.get("metadata", {}).get("applied_mutations")
-            or self.scenario.get("failure_policy", {}).get("rollback_handler_corrupted")
+            meta_dict.get("applied_mutations")
+            or meta_dict.get("rollback_handler_corrupted")
+            or fail_policy_dict.get("rollback_handler_corrupted")
             or any(
                 isinstance(n, dict)
                 and (
