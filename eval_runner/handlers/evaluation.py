@@ -196,8 +196,8 @@ async def handle_evaluate(args):
             from ..adapters.common import SessionManager as AdapterSessionManager
 
             await AdapterSessionManager.close_all()
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"   [CLI] Warning: Failed to close adapter sessions: {e}")
 
 
 async def handle_run(args):
@@ -272,8 +272,8 @@ async def handle_run(args):
             from ..adapters.common import SessionManager as AdapterSessionManager
 
             await AdapterSessionManager.close_all()
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"   [CLI] Warning: Failed to close adapter sessions: {e}")
 
 
 async def handle_record(args):
