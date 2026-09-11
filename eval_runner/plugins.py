@@ -79,6 +79,42 @@ class BaseEvalPlugin(ABC):  # noqa: B024
         """Hook to register custom forensic failure analyzers with the taxonomy engine."""
         pass
 
+    def on_step_start(  # noqa: B027
+        self, context: Any, node_id: str, node_data: dict[str, Any] | None = None
+    ):
+        """Hook called when a workflow DAG node or scenario step begins."""
+        pass
+
+    def on_step_end(  # noqa: B027
+        self, context: Any, node_id: str, verdict: Any = None
+    ):
+        """Hook called when a workflow DAG node or scenario step completes."""
+        pass
+
+    def on_tool_request(  # noqa: B027
+        self, context: Any, tool_name: str, arguments: dict[str, Any] | None = None
+    ):
+        """Hook called before tool execution to redirect, mutate, or short-circuit."""
+        pass
+
+    def on_before_commit(  # noqa: B027
+        self, context: Any, state_diff: dict[str, Any] | None = None
+    ) -> dict[str, Any] | bool:
+        """Hook called before state update or transaction commit."""
+        return True
+
+    def on_rollback(  # noqa: B027
+        self, context: Any, compensation_action: dict[str, Any] | None = None
+    ) -> bool:
+        """Hook called when executing a compensating rollback action."""
+        return True
+
+    def on_approval_request(  # noqa: B027
+        self, context: Any, approval_data: dict[str, Any] | None = None
+    ) -> dict[str, Any] | bool:
+        """Hook called before evaluating a human-in-the-loop approval."""
+        return True
+
 
 class PluginManager:
     """
@@ -460,6 +496,7 @@ class PluginManager:
         }
         """
         self.load_plugins()
+        self.last_rejection_reason = None
         mutations = {"allowed": True}
         has_mutation = False
 
@@ -467,34 +504,34 @@ class PluginManager:
             if hasattr(plugin, hook_name):
                 try:
                     hook = getattr(plugin, hook_name)
-                    # Support both standard args and mutated args if they were
-                    # modified by a previous plugin
-                    current_args = mutations.get("arguments", args[2] if len(args) > 2 else {})
-                    current_tool = mutations.get("tool_name", args[1] if len(args) > 1 else None)
-
-                    # We pass the original context (args[0]) but updated tool/args if applicable
                     call_args = list(args)
-                    if len(call_args) > 1:
-                        call_args[1] = current_tool
-                    if len(call_args) > 2:
-                        call_args[2] = current_args
+
+                    if hook_name == "on_tool_request":
+                        current_args = mutations.get("arguments", args[2] if len(args) > 2 else {})
+                        current_tool = mutations.get(
+                            "tool_name", args[1] if len(args) > 1 else None
+                        )
+                        if len(call_args) > 1:
+                            call_args[1] = current_tool
+                        if len(call_args) > 2:
+                            call_args[2] = current_args
+                    elif hook_name == "on_before_commit":
+                        current_diff = mutations.get("state_diff", args[1] if len(args) > 1 else {})
+                        if len(call_args) > 1:
+                            call_args[1] = current_diff
 
                     result = hook(*call_args, **kwargs)
 
                     if result is False:
+                        self.last_rejection_reason = "Blocked by plugin"
                         return False
 
                     if isinstance(result, dict):
                         has_mutation = True
+                        mutations.update(result)
                         if result.get("allowed") is False:
+                            self.last_rejection_reason = result.get("error", "Blocked by plugin")
                             return False
-                        # Consolidate mutations (sequential override)
-                        if "tool_name" in result:
-                            mutations["tool_name"] = result["tool_name"]
-                        if "arguments" in result:
-                            mutations["arguments"] = result["arguments"]
-                        if "short_circuit_result" in result:
-                            mutations["short_circuit_result"] = result["short_circuit_result"]
 
                 except Exception as e:
                     print(

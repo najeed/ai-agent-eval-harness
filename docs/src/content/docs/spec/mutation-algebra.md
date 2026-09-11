@@ -41,6 +41,7 @@ Specifies the exact subsystem or layer targeted by the mutation:
 | `IDENTITY` | `identity` | Agent/user identity claims, session tokens, and tenant markers. |
 | `AUTHORIZATION` | `authorization` | Scopes, permissions, capability tokens, and RBAC barriers. |
 | `POLICY` | `policy` | Safety rules, organizational constraints, and regulatory policies. |
+| `OBJECTIVE` | `objective` | Goal definitions, proxy rewards, constraint trade-offs, and metric gamification. |
 | `TIME` | `time` | Clocks, timestamps, timeouts, latency budgets, and durations. |
 | `CONCURRENCY` | `concurrency` | Parallel tasks, race conditions, shared resources, and lock interleavings. |
 | `DEPENDENCY` | `dependency` | Upstream service dependencies, external APIs, and network hops. |
@@ -241,3 +242,196 @@ To guarantee reproducible forensic audits:
    $$\text{sub\_seed} = \text{hash}(\text{master\_seed} \parallel \text{scenario\_id} \parallel \text{step\_index}) \pmod{2^{31}-1}$$
 3. All random branching, character jitter, and combinatorial probabilities execute against `MutationContext.rng`, eliminating stochastic evaluation non-determinism.
 4. Every applied mutation writes an immutable `MutationRecord` to `runs/<run_id>/run.jsonl`, binding directly into the trace's SHA3-256 seal and Verification Certificate.
+
+---
+
+## 6. 🏗️ Modular Vector Sub-Engines
+
+The mutation engine is organized into 9 domain-focused vector sub-engines inherited by `CoreMutator`:
+
+1. **`InputMutators`**: Prompt injections, delimiter hijacking, prompt truncation, semantic paraphrasing, and encoding corruption.
+2. **`ContextMutators`**: Context window overflowing, history pruning, persona subversion, and out-of-order turn insertion.
+3. **`MemoryMutators`**: Memory key deletion, stale memory overwrite, cross-session leakage, and memory poisoning.
+4. **`RetrievalMutators`**: RAG chunk corruption, document omission, semantic rank inversion, retrieval chunk splitting, and retrieval source swapping.
+5. **`ToolMutators`**: Parameter type swapping, required parameter dropping, malformed payloads, schema hallucination, latency boundary injection, and tool contract violations.
+6. **`StateMutators`**: VFS file deletion, permission tampering, transaction rollback failures, partial commits, stale commits, duplicate commits, and commit after cancellation.
+7. **`AuthorizationMutators`**: Scope stripping, token expiration, privilege escalation, stale approval reuse, approval payload mismatch, approval revocation, and approval race conditions.
+8. **`TemporalMutators`**: Clock skew, timeout boundaries, delay injection, cancel race conditions, and lease expiration.
+9. **`ObjectiveMutators`**: Metric gaming (exploiting proxy metrics), proxy goal substitution, constraint trade-offs, subgoal cannibalization, and reward hacking.
+
+All sub-engines export their primitives directly, while `CoreMutator` provides backwards-compatible unified dispatch across all mutation coordinates.
+
+---
+
+## 7. 🏛️ Southbound Fault Interception Architecture
+
+### Why Scenarios Must Remain Declarative
+A common architectural inquiry is: *Why can't we instantiate custom `BaseEvalPlugin` classes and inject them directly into scenario steps for workflow and state mutations?*
+
+The evaluation harness strictly enforces an **architectural separation of concerns** between scenario declarations and runtime fault execution:
+
+```
+┌────────────────────────────────────────────────────────┐
+│               Scenario Definition (AES)                │
+│    - Declarative JSON/YAML Schema                      │
+│    - RFC 8785 Canonical JSON Deterministic Hash        │
+│    - Portable, version-controlled, zero code execution │
+└──────────────────────────┬─────────────────────────────┘
+                           │ step.mutations (declarative)
+                           ▼
+┌────────────────────────────────────────────────────────┐
+│          Session & Southbound Runtime Engine           │
+│    - SessionOrchestrator._execute_node()               │
+│    - RuntimeMutationPlugin (BaseEvalPlugin)            │
+│         ├─ on_step_start(step_id, mutations)          │
+│         ├─ on_tool_request(tool_name, payload)         │
+│         ├─ on_before_commit(tx_id, state_diff)         │
+│         ├─ on_rollback(tx_id, reason)                  │
+│         └─ on_approval_request(action, payload)        │
+└────────────────────────────────────────────────────────┘
+```
+
+1. **Portability & Deterministic Hashing (RFC 8785)**: Scenarios must serialize canonically to enable cryptographic signing, SHA-256 certificate generation, and cross-language benchmarking. Embedding executable Python objects breaks serialization and prevents verification.
+2. **Security & Untrusted Scenarios**: Scenarios frequently originate from external benchmark datasets, third-party audits, or untrusted repositories. Permitting executable plugins directly within scenario step schemas creates an arbitrary Remote Code Execution (RCE) vulnerability.
+3. **Southbound Interception vs. Northbound Specification**:
+   - The **Scenario (Northbound)** declares *what* perturbations should occur:
+     ```json
+     {
+       "id": "step-3",
+       "mutations": [
+         {"type": "partial_commit", "parameters": {"fail_step": 1}},
+         {"type": "approval_race", "parameters": {"window_ms": 50}}
+       ]
+     }
+     ```
+   - The **Runtime Interceptor (`RuntimeMutationPlugin`, Southbound)** listens to lifecycle events (`on_step_start`, `on_tool_request`, `on_before_commit`, `on_approval_request`) and injects real faults into tool execution, database transactions, and human-in-the-loop approvals.
+
+---
+
+## 8. ⚙️ Engine Mechanics & Memory Model
+
+A critical architectural question is how mutations interact with scenario files and runtime memory:
+
+### 1. In-Place File Safety (Immutability Guarantee)
+The mutation engine **never** modifies the original scenario JSON/YAML file on disk:
+- Every invocation of `MutationService.mutate_scenario(scenario_data, ...)` immediately performs `safe_scenario = copy.deepcopy(scenario_data)`.
+- The source document remains pristine and unpolluted by synthetic perturbations.
+
+### 2. In-Memory Execution vs. Disk Materialization
+The engine supports two operational paths depending on whether evaluation is running dynamically or generating offline variants:
+
+| Path | Disk Mutation | In-Memory Mutation | Artifact Produced |
+| :--- | :---: | :---: | :--- |
+| **In-Run Evaluation** (`agentv eval`) | ❌ None | ✅ Active | Executed 100% in RAM via `copy.deepcopy()` and passed directly to `SessionOrchestrator`. No temporary scenario files are created. |
+| **CLI Scenario Mutation** (`agentv mutate`) | ❌ No source edits | ✅ Active | Writes the mutated scenario variant to a new file specified by `--output <path>`. |
+| **Synthetic Scenario Generation** (`SyntheticService.generate_variants`) | ❌ No source edits | ✅ Active | Materializes $N$ distinct mutated scenario JSON files to `scenarios/synthetic/{parent_id}_{strategy}_{idx}.json`. |
+
+---
+
+## 9. 🔀 Combinator Execution Semantics
+
+Mutator combinators compose mathematically to form complex stress pipelines:
+
+### 1. Sequential Chaining (`SequenceMutator` or `m1 + m2`)
+- **Execution**: Evaluated strictly in-memory in left-to-right order:
+  $$\text{Scenario}_{n} = m_n(\dots(m_2(m_1(\text{Scenario}_0))))$$
+- Each child mutator receives the deep-copied output of its predecessor.
+- If any mutator fails, a mandatory mutator raises a fail-closed `RuntimeError`, while optional mutators log a warning and pass intermediate state downstream.
+
+### 2. Iterative Repetition (`RepeatMutator` or `repeat(m, count)`)
+- Sequentially reapplies the target mutator $N$ times against the active context.
+- Used to compound character noise, cascade API latency, or prune multiple memory keys.
+
+### 3. Calibrated Probability (`ProbabilityMutator` or `probability(m, p)`)
+- Drives a Bernoulli trial $X \sim \text{Bernoulli}(p)$ using the deterministic `MutationContext.rng`.
+- If $X = 1$, the mutator applies; if $X = 0$, it returns a non-applied `MutationHandle(applied=False)` and preserves the scenario unchanged.
+
+### 4. Event & Temporal Predicates (`ConditionalMutator`)
+- Triggers mutations only when runtime execution context satisfies dynamic predicates:
+  - `after_event("auth_attempt")`: fires once the event appears in `MutationContext.history`.
+  - `before_commit()`: intercepts execution prior to state transition persistence.
+  - `between_steps(min, max)`: constrains the perturbation window to specific turn boundaries.
+
+### 5. Simulated Concurrency & Races (`ConcurrentMutator` or `concurrent(m1, m2)`)
+- Simulates race conditions by cloning context, applying conflicting mutations concurrently, and merging state changes with `simulated_race: True` markers.
+- Exercises an agent's ability to handle split-brain state, non-idempotent updates, and time-of-check to time-of-use (TOCTOU) anomalies.
+
+---
+
+## 10. 🧬 4-Layer Lineage & Provenance Tracking
+
+To ensure regulatory audit defensibility, every evaluation run is bound to its exact mutated scenario version through **four cryptographic and metadata lineage layers**:
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│ Layer 1: Authoritative RFC 8785 Canonical Scenario Hash                │
+│   scenario_hash = sha3_256(JCS(clean_scenario_data))                   │
+│   - Embedded in RUN_START event                                        │
+│   - Verified by TraceVerifier against package manifest                 │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │
+┌───────────────────────────────────▼────────────────────────────────────┐
+│ Layer 2: Parent-Child Scenario Lineage Metadata                        │
+│   - metadata.parent_scenario_id: root unmutated scenario ID            │
+│   - metadata.mutation_strategy: applied perturbation type              │
+│   - metadata.synthetic: true flag identifying synthetic variant        │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │
+┌───────────────────────────────────▼────────────────────────────────────┐
+│ Layer 3: Deterministic Seed Chaining & Reproducibility Contract        │
+│   sub_seed = hash(master_seed || scenario_id || step_index)            │
+│   reproducibility_fingerprint embedded in evaluation contract          │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │
+┌───────────────────────────────────▼────────────────────────────────────┐
+│ Layer 4: In-Trace Mutation Audit Records                               │
+│   MutationRecord(id, vector, operation, tier, target, step, timestamp) │
+│   - Emitted directly to runs/<run_id>/run.jsonl                        │
+│   - Sequentially bound into trace seal and Ed25519 signature envelope   │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+### 1. Canonical Scenario Hash (`scenario_hash`) via RFC 8785 JCS
+- Computed via `agentv_runtime.manifest.compute_scenario_hash()` using RFC 8785 JSON Canonicalization Scheme (JCS).
+- When a run initiates, `eval_runner/runner.py` emits the `RUN_START` event embedding the full scenario and its canonical `scenario_hash`.
+- `TraceVerifier` and `CertificationService` recompute the hash from the executed scenario data and require exact match:
+  ```python
+  if computed_scen_hash != pkg.scenario_hash:
+      raise ValueError(
+          f"ScenarioHashMismatch: package={pkg.scenario_hash} computed={computed_scen_hash}"
+      )
+  ```
+  Any tampering with mutated prompts, tools, or step directives causes immediate fail-closed certification rejection.
+
+### 2. Parent-Child Lineage Metadata
+- When synthetic mutant scenarios are generated via `SyntheticService.generate_variants()`:
+  - `scenario["id"]` becomes `{parent_id}_{strategy}_{idx}`.
+  - `scenario["metadata"]["parent_scenario_id"]` records the unmutated ancestor.
+  - `scenario["metadata"]["mutation_strategy"]` records the strategy (e.g. `context_bleed`, `partial_commit`).
+  - `scenario["metadata"]["synthetic"] = True` marks the file as synthetic.
+
+### 3. Deterministic Seed Derivation & Reproducibility Fingerprint
+- Evaluation runs accept a master `--seed <int>`.
+- The engine derives isolated sub-seeds:
+  $$\text{sub\_seed} = \text{hash}(\text{master\_seed} \parallel \text{scenario\_id} \parallel \text{step\_index}) \pmod{2^{31}-1}$$
+- The seed and configuration state are hashed into a `reproducibility_fingerprint` attached to the run manifest, ensuring any auditor can re-execute the exact same stochastic perturbations.
+
+### 4. In-Trace Cryptographic Mutation Records (`MutationRecord`)
+- During execution, every applied perturbation generates an authoritative `MutationRecord`:
+  ```python
+  @dataclass(frozen=True)
+  class MutationRecord:
+      mutation_id: str
+      name: str
+      vector: str
+      operation: str
+      tier: str
+      target: str
+      applied_at_step: int
+      timestamp: str
+      details: dict[str, Any]
+  ```
+- This record is written directly into `runs/<run_id>/run.jsonl`.
+- The `FlightRecorderPlugin` incorporates the event into the tamper-evident hash chain and detached Ed25519 trace seal (`.trace_seal`), proving unequivocally which run executed which specific mutations.
+
+

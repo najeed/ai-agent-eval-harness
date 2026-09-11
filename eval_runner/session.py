@@ -219,6 +219,7 @@ class SessionManager:
                 if self.resolved_config
                 else None,
             },
+            plugin_manager=self.plugin_manager,
         )
         self.tool_execution_coordinator = ToolExecutionCoordinator()
         self.metrics_calculator = SessionMetricsCalculator(session_manager=self)
@@ -229,6 +230,44 @@ class SessionManager:
 
         # Initialize plugins for this session
         self.plugin_manager.load_plugins()
+
+        # [Southbound Mutation Interception] Auto-activate RuntimeMutationPlugin
+        # if scenario has mutations
+        from .mutator_plugin import RuntimeMutationPlugin
+
+        wf = self.scenario.get("workflow")
+        if isinstance(wf, dict):
+            wf_nodes = wf.get("nodes", [])
+        elif isinstance(wf, list):
+            wf_nodes = wf
+        else:
+            wf_nodes = []
+
+        has_mutations = bool(
+            self.scenario.get("metadata", {}).get("applied_mutations")
+            or self.scenario.get("failure_policy", {}).get("rollback_handler_corrupted")
+            or any(
+                isinstance(n, dict)
+                and (
+                    n.get("mutations")
+                    or n.get("partial_commit_simulated")
+                    or n.get("timeout_boundary_ms")
+                    or n.get("cancel_at_boundary")
+                    or n.get("raw_payload_corrupted")
+                    or n.get("tool_contract_violation")
+                    or n.get("approval_token")
+                    or n.get("approval_status") == "REVOKED"
+                    or n.get("approval_race")
+                    or n.get("stale_commit")
+                )
+                for n in wf_nodes
+            )
+        )
+        if has_mutations and not any(
+            isinstance(p, RuntimeMutationPlugin) for p in self.plugin_manager.plugins
+        ):
+            self.mutation_plugin = RuntimeMutationPlugin(self.scenario)
+            self.plugin_manager.plugins.append(self.mutation_plugin)
 
         # [Industrial Synchronization] Import ad-hoc plugins from global manager (CLI injection)
         from . import plugins as global_plugins
@@ -1098,6 +1137,8 @@ class SessionManager:
         execution_context: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         node_id = node["id"]
+        # Trigger on_step_start interceptor hook
+        self.plugin_manager.trigger_interceptor("on_step_start", self, node_id, node)
         task_description = node.get("task_description", "Processing node...")
         current_message = task_description
         execution_context = execution_context or {}
@@ -1588,6 +1629,7 @@ class SessionManager:
             task_results["message"] = locals()["err_msg"]
 
         self.event_bus.emit(CoreEvents.MANEUVER_END, {"node_id": node_id})
+        self.plugin_manager.trigger_interceptor("on_step_end", self, node_id, verdict)
         return task_results
 
     async def teardown(self, sandbox: Any):

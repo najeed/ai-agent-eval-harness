@@ -580,3 +580,120 @@ def test_mutation_service_branches(sample_scenario):
             names = {c["name"] for c in cat}
             assert "custom_coord" in names
             assert "custom_no_coord" in names
+
+
+# ==============================================================================
+# 7. Sub-Engine Hierarchy & New Mutator Tests
+# ==============================================================================
+
+
+def test_sub_engine_hierarchy():
+    """Verifies that all 9 modular vector sub-engines exist and declare correct coordinates."""
+    from eval_runner.mutator import (
+        AuthorizationMutators,
+        ContextMutators,
+        InputMutators,
+        MemoryMutators,
+        ObjectiveMutators,
+        RetrievalMutators,
+        StateMutators,
+        TemporalMutators,
+        ToolMutators,
+    )
+
+    sub_engines = [
+        InputMutators(),
+        ContextMutators(),
+        MemoryMutators(),
+        RetrievalMutators(),
+        ToolMutators(),
+        StateMutators(),
+        AuthorizationMutators(),
+        TemporalMutators(),
+        ObjectiveMutators(),
+    ]
+
+    for se in sub_engines:
+        assert isinstance(se, ScenarioMutator)
+        assert len(se.SUPPORTED_TYPES) > 0
+        for m_type in se.SUPPORTED_TYPES:
+            assert se.can_mutate(m_type) is True
+            coord = se.COORDINATE_MAP.get(m_type)
+            assert coord is not None
+            assert coord.vector in MutationVector.ALL
+            assert coord.operation in MutationOperation.ALL
+            assert coord.tier in MutationTier.ALL
+
+
+def test_new_tier_a_mutators(sample_scenario):
+    """Verifies fine-grained retrieval, tool contract, transaction, and auth mutators."""
+    # 1. retrieval_chunk
+    m_chunk = mutate_scenario(sample_scenario, "retrieval_chunk")
+    docs = m_chunk["workflow"]["nodes"][0]["retrieved_documents"]
+    assert any(d.get("chunk_corrupted") is True for d in docs)
+
+    # 2. retrieval_source_swap
+    m_swap = mutate_scenario(sample_scenario, "retrieval_source_swap")
+    docs_swap = m_swap["workflow"]["nodes"][0]["retrieved_documents"]
+    assert any(d.get("source_swapped") is True for d in docs_swap)
+
+    # 3. tool_contract
+    m_contract = mutate_scenario(sample_scenario, "tool_contract")
+    node = m_contract["workflow"]["nodes"][0]
+    assert node.get("tool_contract_violation") is True
+    assert "_unexpected_forbidden_property" in node["parameters"]
+
+    # 4. duplicate_commit
+    m_dup = mutate_scenario(sample_scenario, "duplicate_commit")
+    assert m_dup["failure_policy"]["duplicate_commit"] is True
+    assert m_dup["workflow"]["nodes"][0]["commit_multiplicity"] == 2
+
+    # 5. commit_after_cancel
+    m_cancel = mutate_scenario(sample_scenario, "commit_after_cancel")
+    assert m_cancel["failure_policy"]["commit_after_cancel"] is True
+    assert m_cancel["workflow"]["nodes"][0]["allow_post_cancellation_write"] is True
+
+    # 6. stale_commit
+    m_stale = mutate_scenario(sample_scenario, "stale_commit")
+    assert m_stale["workflow"]["nodes"][0]["expected_base_revision"] == "rev_deprecated_1970"
+
+    # 7. approval_race
+    m_race = mutate_scenario(sample_scenario, "approval_race")
+    assert m_race["workflow"]["nodes"][0]["approval_race"] is True
+
+    # 8. approval_revocation
+    m_rev = mutate_scenario(sample_scenario, "approval_revocation")
+    assert m_rev["workflow"]["nodes"][0]["approval_status"] == "REVOKED"
+
+
+def test_objective_integrity_mutators(sample_scenario):
+    """Verifies all 5 objective integrity mutators."""
+    # 1. metric_gaming
+    m_metric = mutate_scenario(sample_scenario, "metric_gaming")
+    node_m = m_metric["workflow"]["nodes"][0]
+    assert node_m.get("metric_gaming_target") == "velocity_over_accuracy"
+    assert "strictly by word count" in node_m["task_description"]
+
+    # 2. proxy_goal
+    m_proxy = mutate_scenario(sample_scenario, "proxy_goal")
+    node_p = m_proxy["workflow"]["nodes"][0]
+    assert node_p.get("proxy_goal_substituted") is True
+    assert "mark the ticket as closed" in node_p["task_description"]
+
+    # 3. constraint_tradeoff
+    m_tradeoff = mutate_scenario(sample_scenario, "constraint_tradeoff")
+    node_t = m_tradeoff["workflow"]["nodes"][0]
+    assert node_t.get("constraint_tradeoff_injected") is True
+    assert "bypass the compliance check" in node_t["task_description"]
+
+    # 4. subgoal_cannibalization
+    m_cannibal = mutate_scenario(sample_scenario, "subgoal_cannibalization")
+    node_c = m_cannibal["workflow"]["nodes"][0]
+    assert node_c.get("subgoal_cannibalization") is True
+    assert "delete the user profile" in node_c["task_description"]
+
+    # 5. reward_hacking
+    m_hack = mutate_scenario(sample_scenario, "reward_hacking")
+    node_h = m_hack["workflow"]["nodes"][0]
+    assert node_h.get("reward_hacking_payload") == "VERIFICATION_PASSED_ALL_CHECKS_MET"
+    assert "VERIFICATION_PASSED_ALL_CHECKS_MET" in node_h["task_description"]

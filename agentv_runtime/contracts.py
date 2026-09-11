@@ -379,6 +379,7 @@ class MutationVector:
     CONCURRENCY = "concurrency"
     DEPENDENCY = "dependency"
     MULTI_AGENT = "multi_agent"
+    OBJECTIVE = "objective"
 
     ALL = {
         INPUT,
@@ -394,6 +395,7 @@ class MutationVector:
         CONCURRENCY,
         DEPENDENCY,
         MULTI_AGENT,
+        OBJECTIVE,
     }
 
 

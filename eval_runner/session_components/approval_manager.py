@@ -15,11 +15,13 @@ class SessionApprovalManager:
         registry: hitl_pending.PendingApprovalRegistry | None = None,
         checkpoint_manager: Any | None = None,
         state_provider: Any | None = None,
+        plugin_manager: Any | None = None,
     ):
         self.run_id = run_id
         self.registry = registry or hitl_pending.global_registry
         self.checkpoint_manager = checkpoint_manager
         self.state_provider = state_provider
+        self.plugin_manager = plugin_manager
 
     def request_approval(
         self,
@@ -32,6 +34,22 @@ class SessionApprovalManager:
         Submits an approval request to the persistent approval registry
         with durable state snapshotting.
         """
+        # Trigger on_approval_request interceptor hook
+        if self.plugin_manager:
+            intercept = self.plugin_manager.trigger_interceptor(
+                "on_approval_request",
+                self,
+                {"task_id": task_id, "tool_name": tool_name, "params": params},
+            )
+            if intercept is False or (
+                isinstance(intercept, dict) and intercept.get("allowed") is False
+            ):
+                err_msg = (
+                    getattr(self.plugin_manager, "last_rejection_reason", None)
+                    or (intercept.get("error") if isinstance(intercept, dict) else None)
+                    or "Approval rejected by security policy"
+                )
+                raise PermissionError(err_msg)
         # Durable HITL snapshotting: persist state checkpoint before entering approval wait
         if self.checkpoint_manager:
             checkpoint_state = {
