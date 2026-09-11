@@ -16,7 +16,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install dependencies
-        run: pip install -e ".[llm]"
+        run: pip install -e ".[provider-gemini]"
       - name: Run Acceptance Smoke Tests
         run: pytest -m "acceptance and not acceptance_release" --junitxml=reports/acceptance-smoke.xml
 
@@ -30,7 +30,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install dependencies
-        run: pip install -e ".[llm]"
+        run: pip install -e ".[provider-gemini]"
       - name: Run Release Acceptance Suite
         run: pytest -m acceptance_release --junitxml=reports/acceptance-release.xml
       - name: Enforce Release Certification Gate

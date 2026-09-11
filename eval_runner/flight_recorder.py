@@ -138,6 +138,15 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                 )
                 return
 
+        if run_id and run_id != "unknown":
+            from eval_runner.certification_lock import PerRunCertificationLock
+
+            if PerRunCertificationLock.is_locked(run_id):
+                raise RuntimeError(
+                    f"TracePersistenceError: Run '{run_id}' is locked for certification; "
+                    "concurrent trace writes are prohibited"
+                )
+
         # [Iteration 4: Compliance DNA]
         with self._lock:
             if run_id not in self._sequence_numbers:

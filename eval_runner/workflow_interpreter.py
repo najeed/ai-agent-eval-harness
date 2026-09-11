@@ -37,6 +37,7 @@ from .execution_ir import (
     EdgeType,
     ExecutionIdentity,
     FailurePolicy,
+    PredicateEvaluationError,
     PredicateIR,
     WorkflowPlan,
     WorkflowStatus,
@@ -171,6 +172,7 @@ class WorkflowOutcome:
     failed_node_ids: list[str] = field(default_factory=list)
     terminal_node_ids: list[str] = field(default_factory=list)
     steps_taken: int = 0
+    evaluation_valid: bool = True
 
     @property
     def success(self) -> bool:
@@ -180,6 +182,7 @@ class WorkflowOutcome:
         return {
             "status": self.status.value,
             "reason": self.reason,
+            "evaluation_valid": self.evaluation_valid,
             "node_executions": [n.to_dict() for n in self.node_executions],
             "transitions": [t.to_dict() for t in self.transitions],
             "skipped_node_ids": self.skipped_node_ids,
@@ -270,6 +273,7 @@ class WorkflowInterpreter:
         steps = 0
         halt_new_work = False
         outcome_status = WorkflowStatus.COMPLETED
+        outcome_evaluation_valid = True
         outcome_reason = ""
         terminal_ids: list[str] = []
 
@@ -425,8 +429,18 @@ class WorkflowInterpreter:
                         "failed",
                         record=record,
                     )
-                    next_ready, handled = await self._route_failure(node_id, item, result, state)
-                    ready.extend(next_ready)
+                    try:
+                        next_ready, handled = await self._route_failure(
+                            node_id, item, result, state
+                        )
+                        ready.extend(next_ready)
+                    except PredicateEvaluationError as pred_err:
+                        state.unhandled_failures.append(node_id)
+                        halt_new_work = True
+                        outcome_status = WorkflowStatus.FAILED
+                        outcome_evaluation_valid = False
+                        outcome_reason = f"Predicate evaluation error: {pred_err}"
+                        handled = False
                     if not handled:
                         state.unhandled_failures.append(node_id)
                         if self.plan.failure_policy in (
@@ -451,12 +465,19 @@ class WorkflowInterpreter:
                         record=record,
                     )
                     if not item.compensating:
-                        next_ready, reached_terminal = await self._route_success(
-                            node_id, item, result, state
-                        )
-                        ready.extend(next_ready)
-                        if reached_terminal:
-                            terminal_ids.append(node_id)
+                        try:
+                            next_ready, reached_terminal = await self._route_success(
+                                node_id, item, result, state
+                            )
+                            ready.extend(next_ready)
+                            if reached_terminal:
+                                terminal_ids.append(node_id)
+                        except PredicateEvaluationError as pred_err:
+                            state.unhandled_failures.append(node_id)
+                            halt_new_work = True
+                            outcome_status = WorkflowStatus.FAILED
+                            outcome_evaluation_valid = False
+                            outcome_reason = f"Predicate evaluation error: {pred_err}"
                     else:
                         state.compensated_nodes.add(node_id)
                         state.pending_compensations_decrement()
@@ -465,7 +486,17 @@ class WorkflowInterpreter:
                     # Fail-fast: drain everything except compensation work.
                     ready = [it for it in ready if it.compensating]
 
-        if outcome_status == WorkflowStatus.COMPLETED and not outcome_reason:
+        if state.dropped_after_cap:
+            if getattr(state, "pending_compensations", 0) > 0:
+                outcome_status = WorkflowStatus.FAILED
+                outcome_reason = "Compensation path did not complete"
+            else:
+                outcome_status = WorkflowStatus.FAILED
+                outcome_evaluation_valid = False
+                outcome_reason = (
+                    f"Active nodes dropped due to visitation cap: {sorted(state.dropped_after_cap)}"
+                )
+        elif outcome_status == WorkflowStatus.COMPLETED and not outcome_reason:
             if state.unhandled_failures:
                 outcome_status = WorkflowStatus.FAILED
                 outcome_reason = (
@@ -491,6 +522,7 @@ class WorkflowInterpreter:
             failed_node_ids=sorted(state.failed_nodes),
             terminal_node_ids=terminal_ids,
             steps_taken=steps,
+            evaluation_valid=outcome_evaluation_valid,
         )
         for nid in skipped:
             self._emit_node(nid, 1, None, "skipped")

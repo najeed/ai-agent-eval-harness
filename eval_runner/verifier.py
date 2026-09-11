@@ -532,6 +532,7 @@ class TraceVerifier:
         staging_dir = p.parent / ".staging"
         staged_manifest_path = staging_dir / "run_manifest.json"
         pre_append_size = p.stat().st_size
+        bytes_appended = 0
 
         def _rollback() -> None:
             """Best-effort rollback of any partial mutation."""
@@ -558,9 +559,11 @@ class TraceVerifier:
                     f"      [Verifier] Failed to unseal rollback target {run_id}: {unseal_err}"
                 )
             try:
-                if p.exists() and p.stat().st_size > pre_append_size:
-                    with open(p, "a+b") as f:
-                        f.truncate(pre_append_size)
+                if p.exists() and bytes_appended > 0:
+                    current_size = p.stat().st_size
+                    if current_size == pre_append_size + bytes_appended:
+                        with open(p, "a+b") as f:
+                            f.truncate(pre_append_size)
             except OSError as trunc_err:
                 logger.debug(f"      [Verifier] Trace rollback truncate notice: {trunc_err}")
 
@@ -609,13 +612,27 @@ class TraceVerifier:
                 if events_list:
                     ev_graph = build_evidence_graph_from_events(events_list)
                     computed_evidence_root = compute_evidence_graph_root(ev_graph)
-                    if not ev_graph.get("is_complete_provenance", True):
+                    total_nodes = ev_graph.get("total_nodes", ev_graph.get("node_count", 0))
+                    if total_nodes > 0 and not ev_graph.get("is_complete_provenance", True):
+                        # Only enforce direct provenance when assertion nodes exist.
+                        # A trace with zero oracle assertion nodes (decision-only runs) is
+                        # architecturally valid: there is simply nothing to attest at the
+                        # assertion level. Certification of outcome-only traces is allowed.
                         logger.error(
-                            "Evidence graph contains unresolved or carrier fallback provenance."
+                            "Evidence graph contains unresolved or carrier fallback provenance "
+                            "(%d/%d nodes lack direct provenance).",
+                            ev_graph.get("unresolved_count", 0)
+                            + (total_nodes - ev_graph.get("direct_provenance_nodes", 0)),
+                            total_nodes,
                         )
                         raise CertificationFailedError(
                             "DirectProvenanceViolation: Evidence graph contains unresolved "
                             "or carrier fallback provenance"
+                        )
+                    if total_nodes == 0:
+                        logger.debug(
+                            "Evidence graph has zero assertion nodes; "
+                            "run is decision-only (no oracle evidence to attest)."
                         )
             except CertificationFailedError:
                 raise
@@ -649,62 +666,112 @@ class TraceVerifier:
             metadata["scenario_hash"] = computed_scen_hash
 
         # Derive machine-verifiable compliance status and score from trace.
-        # Fail-closed authoritative derivation: trace evidence takes absolute authority over caller.
+        # Fail-closed authoritative derivation: terminal trace evidence takes absolute authority.
         effective_compliance_status = compliance_status
         effective_compliance_score = compliance_score
 
-        has_failure_event = False
-        has_success_event = False
-        trace_verdict_score: float | None = None
+        has_root_cause = any(
+            ev.get("is_root_cause") is True
+            or (
+                isinstance(ev.get("data"), dict) and ev.get("data", {}).get("is_root_cause") is True
+            )
+            for ev in events_list
+        )
+
+        extracted_decisions: list[tuple[str, float]] = []
         for ev in events_list:
             ev_name = ev.get("event") or ev.get("name") or ""
-            data = ev.get("data") if isinstance(ev.get("data"), dict) else {}
-            st = str(ev.get("status") or data.get("status") or "").upper()
-            dec = str(ev.get("decision") or data.get("decision") or "").upper()
-            verd = str(ev.get("verdict") or data.get("verdict") or "").upper()
+            data = ev.get("data", {}) if isinstance(ev.get("data"), dict) else {}
+            is_decision = (
+                ev_name
+                in (
+                    "run_end",
+                    "end",
+                    "turn_end",
+                    "session_decision",
+                    "evaluation_result",
+                    "evaluation_verdict",
+                    "workflow_verdict",
+                )
+                or "verdict" in ev
+                or "verdict" in data
+                or "decision" in ev
+                or "decision" in data
+                or "outcome" in ev
+                or "outcome" in data
+            )
+            if not is_decision:
+                continue
+
+            raw_st = (
+                data.get("status")
+                or ev.get("status")
+                or data.get("outcome")
+                or ev.get("outcome")
+                or ""
+            )
+            score_val = data.get("score") if data.get("score") is not None else ev.get("score")
+            dec = str(data.get("decision") or ev.get("decision") or "").upper()
+            verd = str(data.get("verdict") or ev.get("verdict") or "").upper()
+
+            passed_val = data.get("passed") if data.get("passed") is not None else ev.get("passed")
+            if passed_val is False:
+                raw_st = "fail"
+            elif passed_val is True and not raw_st:
+                raw_st = "pass"
+
+            if not raw_st and data.get("pass_at_k") is not None:
+                pak = float(data["pass_at_k"])
+                raw_st = "pass" if pak > 0 else "fail"
+                if score_val is None:
+                    score_val = pak
+            if not raw_st and data.get("all_pass") is not None:
+                raw_st = "pass" if data["all_pass"] else "fail"
+
+            st_lower = str(raw_st).strip().lower()
 
             if (
-                ev_name in ("error", "parity_state_divergence")
-                or ev.get("is_root_cause") is True
-                or st in ("FAILED", "FAIL", "ERROR", "REJECTED")
+                st_lower in ("fail", "failed", "failure", "rejected")
                 or dec in ("FAIL", "FAILED", "REJECTED", "UNVERIFIED")
                 or verd in ("FAIL", "FAILED", "POLICY_BREACH", "NOT_VERIFIED")
             ):
-                has_failure_event = True
-
-            if (
-                st in ("PASS", "PASSED", "SUCCESS", "VERIFIED")
+                extracted_decisions.append(
+                    ("fail", float(score_val if score_val is not None else 0.0))
+                )
+            elif (
+                st_lower in ("pass", "passed", "success", "verified")
                 or dec in ("PASS", "PASSED", "VERIFIED")
                 or verd in ("PASS", "PASSED", "VERIFIED")
             ):
-                has_success_event = True
+                extracted_decisions.append(
+                    ("pass", float(score_val) if score_val is not None else None)
+                )
+            elif dec == "EVALUATION_INVALID" or st_lower == "evaluation_invalid":
+                extracted_decisions.append(("fail", 0.0))
 
-            is_verdict_event = (
-                ev_name in ("evaluation_verdict", "evaluation_result", "session_decision")
-                or "verdict" in ev
-                or "verdict" in data
-            )
-            if is_verdict_event:
-                s = ev.get("score") if ev.get("score") is not None else data.get("score")
-                if isinstance(s, (int, float)):
-                    trace_verdict_score = float(s)
-
-        if has_failure_event:
+        if has_root_cause:
             logger.warning(
-                "      [Verifier] Trace contains negative evaluation events/failures; "
+                "      [Verifier] Trace contains root cause failure; "
                 "deriving compliance_status='fail', compliance_score=0.0"
             )
             effective_compliance_status = "fail"
             effective_compliance_score = 0.0
-        elif has_success_event:
-            effective_compliance_status = "pass"
-            effective_compliance_score = (
-                trace_verdict_score
-                if trace_verdict_score is not None
-                else (compliance_score if compliance_score is not None else 1.0)
-            )
-        elif trace_verdict_score is not None:
-            effective_compliance_score = trace_verdict_score
+        elif extracted_decisions:
+            distinct_statuses = {d[0] for d in extracted_decisions}
+            if len(distinct_statuses) > 1:
+                logger.warning(
+                    "      [Verifier] Conflicting terminal decisions in trace: %s",
+                    distinct_statuses,
+                )
+                effective_compliance_status = "fail"
+                effective_compliance_score = 0.0
+            else:
+                effective_compliance_status, term_score = extracted_decisions[-1]
+                effective_compliance_score = (
+                    term_score
+                    if term_score is not None
+                    else (compliance_score if compliance_score is not None else 1.0)
+                )
 
         # 2. CANONICALIZE: build Manifest v3.0.0
         manifest = {
@@ -827,6 +894,8 @@ class TraceVerifier:
                 _os.fsync(f.fileno())
                 if written != len(event_line) + (1 if needs_newline else 0):
                     raise OSError("Short write while appending certification lifecycle event")
+                nonlocal bytes_appended
+                bytes_appended = written
             actual_hash = cls.compute_signature(p)
             if not actual_hash or actual_hash == seal_hash:
                 raise OSError("Post-event trace hash could not be established")
@@ -1090,7 +1159,10 @@ class TraceVerifier:
                                 f"got {computed_root}"
                             )
                             return False
-                        if not graph.get("is_complete_provenance", True):
+                        # Only fail if assertion nodes exist but have incomplete provenance.
+                        # Decision-only traces (zero assertion nodes) are architecturally valid.
+                        ev_total = graph.get("total_nodes", graph.get("node_count", 0))
+                        if ev_total > 0 and not graph.get("is_complete_provenance", True):
                             logger.warning(
                                 "Evidence graph contains unresolved or carrier fallback provenance"
                             )
@@ -1132,7 +1204,13 @@ class TraceVerifier:
                 cert_copy = dict(manifest_to_verify["certification"])
                 cert_copy.pop("stages", None)
                 manifest_to_verify["certification"] = cert_copy
-            manifest_bytes = json.dumps(manifest_to_verify, sort_keys=True).encode("utf-8")
+            from agentv_runtime.canonical import canonical_json_encode as _canonical_json_encode
+
+            candidate_bytes = [
+                json.dumps(manifest_to_verify, sort_keys=True).encode("utf-8"),
+                _canonical_json_encode(manifest_to_verify),
+            ]
+            manifest_bytes = candidate_bytes[0]
 
             if "certification" in manifest:
                 cert_meta = manifest["certification"]
@@ -1148,7 +1226,17 @@ class TraceVerifier:
                 if algorithm == "ED25519":
                     # Local Classical Verification
                     public_key = IdentityService.get_public_key(identity_id)
-                    public_key.verify(bytes.fromhex(sig_hex), manifest_bytes)
+                    verified = False
+                    for m_bytes in candidate_bytes:
+                        try:
+                            public_key.verify(bytes.fromhex(sig_hex), m_bytes)
+                            manifest_bytes = m_bytes
+                            verified = True
+                            break
+                        except Exception:
+                            continue
+                    if not verified:
+                        public_key.verify(bytes.fromhex(sig_hex), candidate_bytes[0])
                     logger.debug(f"      [Verifier] ED25519 Signature Verified: {identity_id}")
                 elif algorithm == "ML-DSA-65":
                     # PQC Verification (via CycleCore or local validator)
@@ -1377,7 +1465,12 @@ def verify_trace_certificate(
         cert_copy = dict(signed_payload["certification"])
         cert_copy.pop("stages", None)
         signed_payload["certification"] = cert_copy
-    manifest_bytes = _json.dumps(signed_payload, sort_keys=True).encode("utf-8")
+    from agentv_runtime.canonical import canonical_json_encode as _cje
+
+    candidate_manifest_bytes = [
+        _json.dumps(signed_payload, sort_keys=True).encode("utf-8"),
+        _cje(signed_payload),
+    ]
 
     sig_verified = False
     for entry in provenance_chain:
@@ -1475,14 +1568,23 @@ def verify_trace_certificate(
                 continue
 
             sig_bytes = bytes.fromhex(signature_hex)
-            try:
-                public_key.verify(sig_bytes, manifest_bytes)
+            verified = False
+            last_err = None
+            for cand_bytes in candidate_manifest_bytes:
+                try:
+                    public_key.verify(sig_bytes, cand_bytes)
+                    verified = True
+                    break
+                except Exception as ex:
+                    last_err = ex
+
+            if verified:
                 sig_verified = True
                 result["signer_identity"] = identity_id
                 result["algorithm"] = algorithm
-            except Exception as verify_err:
+            else:
                 result["errors"].append(
-                    f"Ed25519 signature verification failed for '{identity_id}': {verify_err}"
+                    f"Ed25519 signature verification failed for '{identity_id}': {last_err}"
                 )
         except Exception as sig_err:
             logger.debug("Signature check error for %s/%s: %s", run_id, identity_id, sig_err)

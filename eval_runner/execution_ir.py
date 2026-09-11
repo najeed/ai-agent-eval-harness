@@ -463,13 +463,57 @@ def derive_oracle_id(
     return f"{node_id}:{kind}:{idx}"
 
 
+VALID_ORACLE_REQUIREDNESS = {"REQUIRED", "OPTIONAL", "INFORMATIONAL"}
+
+
+def _validate_oracle_requiredness(raw_item: dict[str, Any], context_label: str) -> tuple[bool, str]:
+    """
+    Validates requiredness declaration on an oracle definition.
+    Enforces requiredness in {REQUIRED, OPTIONAL, INFORMATIONAL} and consistency with 'required'.
+    Raises PlanValidationError on invalid or conflicting declarations.
+    """
+    raw_req = raw_item.get("required")
+    raw_req_level = raw_item.get("requiredness")
+
+    if raw_req_level is not None:
+        if not isinstance(raw_req_level, str):
+            val_type = type(raw_req_level).__name__
+            raise PlanValidationError(
+                f"{context_label}: 'requiredness' must be a string, got {val_type}"
+            )
+        req_level = raw_req_level.strip().upper()
+        if req_level not in VALID_ORACLE_REQUIREDNESS:
+            raise PlanValidationError(
+                f"{context_label}: Invalid requiredness '{raw_req_level}'. "
+                f"Must be one of {sorted(VALID_ORACLE_REQUIREDNESS)}"
+            )
+    else:
+        req_level = "REQUIRED" if (raw_req is None or bool(raw_req)) else "OPTIONAL"
+
+    if raw_req is not None:
+        req_bool = bool(raw_req)
+        if req_bool and req_level != "REQUIRED":
+            raise PlanValidationError(
+                f"{context_label}: Inconsistent oracle requirement declaration: "
+                f"'required=True' contradicts 'requiredness={req_level}'"
+            )
+        if not req_bool and req_level == "REQUIRED":
+            raise PlanValidationError(
+                f"{context_label}: Inconsistent oracle requirement declaration: "
+                f"'required=False' contradicts 'requiredness=REQUIRED'"
+            )
+
+    is_required = req_level == "REQUIRED"
+    return is_required, req_level
+
+
 def compile_evaluation_plan(
     scenario: dict[str, Any], plan: WorkflowPlan | None = None
 ) -> CompiledEvaluationPlan:
     """
     Compiles an authoritative evaluation plan containing every assertion, its
     resolver, evidence source, requiredness, and expected type.
-    Fails validation on duplicate oracle IDs or malformed assertion entries.
+    Fails validation on duplicate oracle IDs, invalid requiredness, or malformed assertion entries.
     """
     eval_plan = CompiledEvaluationPlan()
     nodes_to_inspect: dict[str, NodeIR] = {}
@@ -508,17 +552,16 @@ def compile_evaluation_plan(
                     or c.get("metric")
                     or "metric"
                 )
-                req = bool(c.get("required", True))
-                req_level = str(
-                    c.get("requiredness") or ("REQUIRED" if req else "OPTIONAL")
-                ).upper()
+                req, req_level = _validate_oracle_requiredness(
+                    c, f"Node '{node_id}' success_criteria[{idx}]"
+                )
                 compiled = CompiledOracle(
                     oracle_id=oid,
                     scenario_node_id=node_id,
                     source_type="success_criteria",
                     resolver="metrics_calculator",
                     evidence_source=target,
-                    required=req and req_level == "REQUIRED",
+                    required=req,
                     requiredness=req_level,
                     expected_type=str(c.get("type", "metric")),
                     definition=copy.deepcopy(c),
@@ -543,17 +586,16 @@ def compile_evaluation_plan(
                             "Oracle identifiers must be unique across all assertions."
                         )
                     path = str(r.get("path") or r.get("target") or "state")
-                    req = bool(r.get("required", True))
-                    req_level = str(
-                        r.get("requiredness") or ("REQUIRED" if req else "OPTIONAL")
-                    ).upper()
+                    req, req_level = _validate_oracle_requiredness(
+                        r, f"Node '{node_id}' state_hygiene rule[{idx}]"
+                    )
                     compiled = CompiledOracle(
                         oracle_id=oid,
                         scenario_node_id=node_id,
                         source_type="state_hygiene",
                         resolver="state_hygiene",
                         evidence_source=path,
-                        required=req and req_level == "REQUIRED",
+                        required=req,
                         requiredness=req_level,
                         expected_type=str(r.get("type", "hygiene_rule")),
                         definition=copy.deepcopy(r),
@@ -577,17 +619,16 @@ def compile_evaluation_plan(
                     )
 
                 target = str(o.get("target") or o.get("property") or "state")
-                req = bool(o.get("required", True))
-                req_level = str(
-                    o.get("requiredness") or ("REQUIRED" if req else "OPTIONAL")
-                ).upper()
+                req, req_level = _validate_oracle_requiredness(
+                    o, f"Node '{node_id}' expected_outcome[{idx}]"
+                )
                 compiled = CompiledOracle(
                     oracle_id=oid,
                     scenario_node_id=node_id,
                     source_type="expected_outcome",
                     resolver="state_parity",
                     evidence_source=target,
-                    required=req and req_level == "REQUIRED",
+                    required=req,
                     requiredness=req_level,
                     expected_type=str(o.get("mode", "exact")),
                     definition=copy.deepcopy(o),
@@ -1128,15 +1169,23 @@ def resolve_predicate_path(context: dict[str, Any], path: str | None) -> Any:
     return PathResolver.resolve(context.get("state", {}), path)
 
 
-def evaluate_predicate(predicate: PredicateIR, context: dict[str, Any]) -> tuple[bool, Any]:
+class PredicateEvaluationError(RuntimeError):
+    """Raised when structured predicate evaluation encounters type, path, or operator errors."""
+
+
+def evaluate_predicate(
+    predicate: PredicateIR, context: dict[str, Any], *, strict: bool = False
+) -> tuple[bool, Any]:
     """
     Evaluates a structured predicate against a transition context.
     Returns (result, observed_value) so evaluated predicates become evidence.
+    Raises PredicateEvaluationError on type, path, or operator errors when strict=True;
+    returns (False, observed) when strict=False to maintain fail-closed non-raising semantics.
     """
     import re as _re
 
     if predicate.op == "compound":
-        results = [evaluate_predicate(c, context) for c in predicate.clauses]
+        results = [evaluate_predicate(c, context, strict=strict) for c in predicate.clauses]
         observed = [{"passed": r, "observed": v} for r, v in results]
         passed = (
             all(r for r, _ in results) if predicate.logic == "all" else any(r for r, _ in results)
@@ -1150,15 +1199,32 @@ def evaluate_predicate(predicate: PredicateIR, context: dict[str, Any]) -> tuple
             return actual == predicate.value, actual
         if op == "ne":
             return actual != predicate.value, actual
-        if op == "gt":
-            return float(actual) > float(predicate.value), actual
-        if op == "gte":
-            return float(actual) >= float(predicate.value), actual
-        if op == "lt":
-            return float(actual) < float(predicate.value), actual
-        if op == "lte":
-            return float(actual) <= float(predicate.value), actual
+        if op in ("gt", "gte", "lt", "lte"):
+            if actual is None:
+                raise PredicateEvaluationError(
+                    f"Predicate comparison '{op}' path '{predicate.path}' resolved to None; "
+                    "numeric comparison requires non-null value"
+                )
+            if predicate.value is None:
+                raise PredicateEvaluationError(
+                    f"Predicate comparison '{op}' expected value is None; "
+                    "numeric comparison requires non-null value"
+                )
+            actual_f = float(actual)
+            val_f = float(predicate.value)
+            if op == "gt":
+                return actual_f > val_f, actual
+            if op == "gte":
+                return actual_f >= val_f, actual
+            if op == "lt":
+                return actual_f < val_f, actual
+            if op == "lte":
+                return actual_f <= val_f, actual
         if op == "contains":
+            if actual is None:
+                raise PredicateEvaluationError(
+                    f"Predicate 'contains' path '{predicate.path}' resolved to None"
+                )
             if isinstance(actual, (list, tuple, set)):
                 return predicate.value in actual, actual
             return str(predicate.value).lower() in str(actual).lower(), actual
@@ -1167,14 +1233,33 @@ def evaluate_predicate(predicate: PredicateIR, context: dict[str, Any]) -> tuple
         if op == "not_exists":
             return actual is None, actual
         if op == "in":
-            allowed = predicate.value if isinstance(predicate.value, list) else [predicate.value]
+            if not isinstance(predicate.value, (list, tuple, set)):
+                allowed = [predicate.value]
+            else:
+                allowed = predicate.value
             return actual in allowed, actual
         if op == "regex":
+            if actual is None:
+                raise PredicateEvaluationError(
+                    f"Predicate 'regex' path '{predicate.path}' resolved to None"
+                )
             return bool(_re.search(str(predicate.value), str(actual))), actual
         if op == "truthy":
             return bool(actual), actual
-    except (TypeError, ValueError):
+    except PredicateEvaluationError:
+        if strict:
+            raise
         return False, actual
+    except (TypeError, ValueError, _re.error) as err:
+        if strict:
+            raise PredicateEvaluationError(
+                f"Evaluation error for predicate op='{op}' path='{predicate.path}' "
+                f"value={predicate.value!r}: {err}"
+            ) from err
+        return False, actual
+
+    if strict:
+        raise PredicateEvaluationError(f"Unsupported predicate operator '{op}'")
     return False, actual
 
 
@@ -1190,7 +1275,9 @@ __all__ = [
     "NodeIR",
     "NodeVerdict",
     "PlanValidationError",
+    "PredicateEvaluationError",
     "PredicateIR",
+    "VALID_ORACLE_REQUIREDNESS",
     "WorkflowPlan",
     "WorkflowStatus",
     "compile_evaluation_plan",

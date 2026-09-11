@@ -1041,6 +1041,10 @@ class SessionManager:
                 for mo in missing_oracles:
                     because.append(f"Required oracle '{mo}' was missing from execution evaluation.")
 
+        if not getattr(outcome, "evaluation_valid", True):
+            evaluation_valid = False
+            because.append(f"Workflow execution invalid: {outcome.reason}")
+
         if not evaluation_valid:
             decision = "EVALUATION_INVALID"
             because.extend(f"Evaluator invalid: {r.get('reason')}" for r in invalid_assertions)

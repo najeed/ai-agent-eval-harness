@@ -13,7 +13,6 @@ Defines the immutable, single source of truth manifest shared across:
 from __future__ import annotations
 
 import hashlib
-import json
 import os
 import platform
 import sys
@@ -22,12 +21,12 @@ from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from typing import Any
 
+from agentv_runtime.canonical import canonical_json_encode
+
 
 def _canonical_json_bytes(data: Any) -> bytes:
-    """Serializes data to canonical JSON bytes (deterministic key ordering, UTF-8)."""
-    return json.dumps(data, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode(
-        "utf-8"
-    )
+    """Serializes data to canonical RFC 8785 JSON bytes (deterministic key ordering, UTF-8)."""
+    return canonical_json_encode(data)
 
 
 def compute_scenario_hash(scenario_data: Mapping[str, Any]) -> str:

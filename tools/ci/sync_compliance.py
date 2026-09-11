@@ -233,7 +233,7 @@ def scan_python_optional_packages(
         data = tomllib.loads(text)
         opt_deps = data.get("project", {}).get("optional-dependencies", {})
         # Filter out purely composite meta-extras
-        composite_groups = {"all", "frameworks", "langchain-all", "llm"}
+        composite_groups = {"all", "frameworks", "langchain-all"}
         for group, items in opt_deps.items():
             if group in composite_groups:
                 continue
@@ -313,6 +313,54 @@ def check_or_sync_requirements(
             content = header + "\n".join(pyproject_deps) + "\n"
             requirements_path.write_text(content, encoding="utf-8")
             print("  [UPDATED] requirements.txt has been refreshed from pyproject.toml.")
+    return has_drift
+
+
+def check_composite_extras_drift(pyproject_path: Path) -> bool:
+    """
+    Asserts zero version drift between standalone component extras and composed meta-extras.
+    Returns True if any composite extra contains a mismatched version constraint.
+    """
+    if not pyproject_path.exists():
+        return False
+    try:
+        data = tomllib.loads(pyproject_path.read_text(encoding="utf-8"))
+        opt_deps: dict[str, list[str]] = data.get("project", {}).get("optional-dependencies", {})
+    except Exception:
+        return False
+
+    composite_groups = {"all", "frameworks", "langchain-all"}
+    standalone_specs: dict[str, str] = {}
+
+    # 1. Harvest canonical standalone versions
+    for group, items in opt_deps.items():
+        if group in composite_groups:
+            continue
+        for item in items:
+            clean = item.split(";")[0].strip()
+            match = re.match(r"^([a-zA-Z0-9_\-\.]+)(.*)$", clean)
+            if match:
+                pkg = match.group(1).strip().lower()
+                spec = match.group(2).strip()
+                standalone_specs[pkg] = spec
+
+    # 2. Verify all composite extras match canonical versions exactly
+    has_drift = False
+    for group in sorted(composite_groups):
+        items = opt_deps.get(group, [])
+        for item in items:
+            clean = item.split(";")[0].strip()
+            match = re.match(r"^([a-zA-Z0-9_\-\.]+)(.*)$", clean)
+            if match:
+                pkg = match.group(1).strip().lower()
+                spec = match.group(2).strip()
+                if pkg in standalone_specs and standalone_specs[pkg] != spec:
+                    print(
+                        f"  [DRIFT] Package '{pkg}' in composite extra '[{group}]' ({spec}) "
+                        f"drifts from standalone definition ({standalone_specs[pkg]})."
+                    )
+                    has_drift = True
+
     return has_drift
 
 
@@ -440,8 +488,9 @@ def sync_compliance(check_mode: bool = False) -> int:
     """Main synchronization logic."""
     print("=== Scanning Dependencies Across AI Agent Eval Harness Ecosystem ===")
 
-    # 0. Check / sync requirements.txt against pyproject.toml
+    # 0. Check / sync requirements.txt and composite extras against pyproject.toml
     req_drift = check_or_sync_requirements(PYPROJECT_FILE, REQUIREMENTS_FILE, check_mode=check_mode)
+    extras_drift = check_composite_extras_drift(PYPROJECT_FILE)
 
     # 1. Scan all packages from authoritative sources
     python_core = scan_python_packages(PYPROJECT_FILE)
@@ -504,7 +553,7 @@ def sync_compliance(check_mode: bool = False) -> int:
     updated_notice = build_notice_file(all_pkgs)
 
     # 5. Check for drift
-    has_drift = req_drift
+    has_drift = req_drift or extras_drift
     if (
         compliance_content.replace("\r\n", "\n").strip()
         != updated_compliance.replace("\r\n", "\n").strip()

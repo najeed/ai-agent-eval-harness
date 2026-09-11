@@ -14,8 +14,9 @@ root (Merkle-style single-commit summary).
 from __future__ import annotations
 
 import hashlib
-import json
 from typing import Any
+
+from agentv_runtime.canonical import canonical_json_dumps, canonical_json_encode
 
 EVIDENCE_GRAPH_VERSION = "1.0.0"
 
@@ -51,7 +52,7 @@ def index_events_by_seq(events_with_lines: list[tuple[dict[str, Any], str]]) -> 
 
 
 def _canonical_row(row: Any) -> str:
-    return json.dumps(row, sort_keys=True, separators=(",", ":"), default=str)
+    return canonical_json_dumps(row)
 
 
 def link_assertion(
@@ -70,7 +71,14 @@ def link_assertion(
     provenance. Artifact references win only when explicitly declared via
     ``assertion["artifact"]``.
     """
+    oracle_id = (
+        assertion.get("oracle_id")
+        or assertion.get("metric")
+        or assertion.get("assertion")
+        or "unnamed"
+    )
     node: dict[str, Any] = {
+        "oracle_id": str(oracle_id),
         "kind": assertion.get("source", "metric"),
         "label": assertion.get("metric") or assertion.get("assertion") or "unnamed",
         "node_id": assertion.get("node"),
@@ -89,7 +97,7 @@ def link_assertion(
                 "resolved": True,
             }
         )
-        node["row_hash"] = _sha3_hex(_canonical_row({**node, "assertion": assertion}).encode())
+        node["row_hash"] = _sha3_hex(canonical_json_encode({**node, "assertion": assertion}))
         return node
 
     explicit_seq = assertion.get("event_seq", assertion.get("_seq"))
@@ -103,7 +111,7 @@ def link_assertion(
                 "is_direct_provenance": True,
             }
         )
-        node["row_hash"] = _sha3_hex(_canonical_row({**node, "assertion": assertion}).encode())
+        node["row_hash"] = _sha3_hex(canonical_json_encode({**node, "assertion": assertion}))
         return node
 
     if isinstance(fallback_seq, int) and fallback_seq in seq_index:
@@ -116,7 +124,7 @@ def link_assertion(
                 "is_direct_provenance": False,
             }
         )
-        node["row_hash"] = _sha3_hex(_canonical_row({**node, "assertion": assertion}).encode())
+        node["row_hash"] = _sha3_hex(canonical_json_encode({**node, "assertion": assertion}))
         return node
 
     node.update(
@@ -126,7 +134,7 @@ def link_assertion(
             "content_hash": None,
             "resolved": False,
             "is_direct_provenance": False,
-            "row_hash": _sha3_hex(_canonical_row({**node, "assertion": assertion}).encode()),
+            "row_hash": _sha3_hex(canonical_json_encode({**node, "assertion": assertion})),
         }
     )
     return node
@@ -138,12 +146,14 @@ def build_evidence_graph(
     *,
     carrier_seq: int | None = None,
     artifact_hashes: dict[str, str] | None = None,
+    required_oracle_ids: list[str] | None = None,
 ) -> dict[str, Any]:
     """
     Builds the Evidence Graph v1 document.
 
     ``carrier_seq``: the `_seq` of the terminal event that carried the
     assertion set (typically the run_end event), used as fallback provenance.
+    ``required_oracle_ids``: authoritative inventory of compiled required oracles.
     """
     seq_index = index_events_by_seq(events_with_lines)
 
@@ -153,11 +163,9 @@ def build_evidence_graph(
     ]
 
     node_hashes = sorted(n["row_hash"] for n in nodes)
-    root_payload = json.dumps(
-        {"graph_version": EVIDENCE_GRAPH_VERSION, "node_hashes": node_hashes},
-        sort_keys=True,
-        separators=(",", ":"),
-    ).encode("utf-8")
+    root_payload = canonical_json_encode(
+        {"graph_version": EVIDENCE_GRAPH_VERSION, "node_hashes": node_hashes}
+    )
 
     all_direct = (
         all(
@@ -167,6 +175,22 @@ def build_evidence_graph(
         if nodes
         else True
     )
+
+    resolved_oracle_ids = {
+        str(n.get("oracle_id") or n.get("label") or "")
+        for n in nodes
+        if n.get("resolved")
+        and (n.get("is_direct_provenance") or n.get("source_type") == "artifact")
+    }
+
+    if required_oracle_ids:
+        has_all_required = all(req in resolved_oracle_ids for req in required_oracle_ids) and (
+            len(nodes) > 0
+        )
+    else:
+        has_all_required = True
+
+    is_complete_provenance = bool(all_direct and has_all_required)
 
     return {
         "graph_version": EVIDENCE_GRAPH_VERSION,
@@ -178,7 +202,7 @@ def build_evidence_graph(
         "resolved_count": sum(1 for n in nodes if n.get("resolved")),
         "unresolved_count": sum(1 for n in nodes if not n.get("resolved")),
         "direct_provenance_nodes": sum(1 for n in nodes if n.get("is_direct_provenance")),
-        "is_complete_provenance": all_direct,
+        "is_complete_provenance": is_complete_provenance,
         "nodes": nodes,
     }
 
@@ -189,16 +213,17 @@ def decision_evidence_root_hash(decision_assertions: list[dict[str, Any]]) -> st
     Computed over canonical assertion rows so ANY change flips the root.
     """
     rows = sorted(_canonical_row(a) for a in decision_assertions)
-    payload = json.dumps({"assertions": rows}, sort_keys=True, separators=(",", ":")).encode()
+    payload = canonical_json_encode({"assertions": rows})
     return _sha3_hex(payload)
 
 
 def build_evidence_graph_from_events(
     events: list[dict[str, Any] | tuple[dict[str, Any], str]],
+    required_oracle_ids: list[str] | None = None,
 ) -> dict[str, Any]:
     """Reconstructs the Evidence Graph directly from a stream of parsed trace events."""
     events_with_lines: list[tuple[dict[str, Any], str]] = []
-    assertions: list[dict[str, Any]] = []
+    raw_assertions: list[dict[str, Any]] = []
     carrier_seq = None
 
     has_explicit_seq = any(
@@ -214,25 +239,91 @@ def build_evidence_graph_from_events(
             evt, line = item
         else:
             evt = item
-            line = json.dumps(evt, sort_keys=True, separators=(",", ":"))
+            line = canonical_json_dumps(evt)
         events_with_lines.append((evt, line))
 
         seq_val = evt.get("_seq") if has_explicit_seq else idx
+        ev_name = evt.get("event")
 
-        if evt.get("event") in ("metric_evaluated", "assertion_evaluated", "node_execution_end"):
-            assertions.append(
+        # 1. Authoritative oracle / metric / assertion events
+        if ev_name in (
+            "metric_evaluated",
+            "assertion_evaluated",
+            "node_execution_end",
+            "oracle_evaluated",
+        ):
+            raw_assertions.append(
                 {
                     "source": "trace_event",
+                    "oracle_id": (
+                        evt.get("oracle_id")
+                        or evt.get("metric")
+                        or evt.get("assertion")
+                        or evt.get("name")
+                    ),
                     "metric": evt.get("metric") or evt.get("assertion") or evt.get("name"),
-                    "node": evt.get("node_id") or evt.get("task_id"),
+                    "node": (
+                        evt.get("scenario_node_id") or evt.get("node_id") or evt.get("task_id")
+                    ),
                     "passed": bool(evt.get("passed", evt.get("success", False))),
                     "event_seq": seq_val,
                 }
             )
-        if evt.get("event") in ("run_end", "verification_decision"):
-            carrier_seq = seq_val
 
-    return build_evidence_graph(events_with_lines, assertions, carrier_seq=carrier_seq)
+        # 2. Authoritative workflow interpreter execution graph events
+        elif ev_name == "execution_graph_node":
+            data = evt.get("data") if isinstance(evt.get("data"), dict) else evt
+            node_id = evt.get("scenario_node_id") or evt.get("node_id") or data.get("node_id")
+            for m in data.get("metrics", []):
+                if isinstance(m, dict):
+                    raw_assertions.append(
+                        {
+                            "source": "execution_graph_node",
+                            "oracle_id": m.get("oracle_id") or m.get("metric") or m.get("name"),
+                            "metric": m.get("metric") or m.get("name"),
+                            "node": node_id,
+                            "passed": bool(m.get("success", m.get("passed", False))),
+                            "event_seq": seq_val,
+                        }
+                    )
+
+        # 3. Terminal/decision carrier events
+        elif ev_name in ("run_end", "verification_decision", "session_decision"):
+            carrier_seq = seq_val
+            data = evt.get("data") if isinstance(evt.get("data"), dict) else evt
+            for a in data.get("assertions", []):
+                if isinstance(a, dict):
+                    raw_assertions.append(
+                        {
+                            **a,
+                            "event_seq": a.get("event_seq") or seq_val,
+                        }
+                    )
+
+    # Deduplicate assertions while preserving explicit event_seq over carrier fallback
+    assertions: list[dict[str, Any]] = []
+    seen_oracles: dict[str, dict[str, Any]] = {}
+    for a in raw_assertions:
+        oid = str(a.get("oracle_id") or a.get("metric") or a.get("assertion") or "unnamed")
+        nid = str(a.get("node") or "")
+        key = f"{oid}::{nid}"
+        if key not in seen_oracles:
+            seen_oracles[key] = a
+            assertions.append(a)
+        else:
+            # If current has a direct event_seq distinct from carrier, upgrade it
+            prev = seen_oracles[key]
+            if not prev.get("event_seq") and a.get("event_seq"):
+                idx = assertions.index(prev)
+                assertions[idx] = a
+                seen_oracles[key] = a
+
+    return build_evidence_graph(
+        events_with_lines,
+        assertions,
+        carrier_seq=carrier_seq,
+        required_oracle_ids=required_oracle_ids,
+    )
 
 
 def compute_evidence_graph_root(graph: dict[str, Any]) -> str:
