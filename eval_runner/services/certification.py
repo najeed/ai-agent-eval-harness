@@ -14,6 +14,7 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
+from agentv_runtime.finalization import EvaluatorFinalizationRecord
 from eval_runner import config
 from eval_runner.certification_lock import PerRunCertificationLock
 from eval_runner.trace_utils import resolve_trace_path
@@ -22,6 +23,22 @@ from eval_runner.verifier import TraceVerifier
 
 logger = logging.getLogger("eval_runner.services.certification")
 
+EVIDENCE_EVENT_NAMES = {
+    "step_executed",
+    "step_complete",
+    "tool_call",
+    "tool_result",
+    "metric",
+    "assertion",
+    "oracle_result",
+    "state_hygiene",
+    "state_parity",
+    "node_verdict",
+    "turn_end",
+    "turn_start",
+    "event_recorded",
+}
+
 
 class CertificationService:
     """
@@ -29,10 +46,12 @@ class CertificationService:
     Derives evaluation status, score, and truth level strictly from immutable runtime evidence.
     """
 
-    @staticmethod
-    def read_run_truth_level(run_id: str) -> tuple[str | None, bool]:
+    @classmethod
+    def read_run_truth_level(cls, run_id: str) -> tuple[str | None, bool]:
         """
         Inspect the run's raw trace file to extract the authoritative execution mode.
+        (Defect T1): Explicit, recognized execution_mode is a hard prerequisite.
+        None, unknown, simulated, or provisional mode marks provisional=True.
         Returns (execution_mode, is_provisional).
         """
         trace = resolve_trace_path(run_id) if run_id else None
@@ -58,27 +77,107 @@ class CertificationService:
                     is_prov = bool(
                         data.get("provisional") or meta.get("provisional") or ev.get("provisional")
                     )
-                    if is_prov or mode in ("simulated", "unknown"):
-                        return mode or "simulated", True
-                    if mode:
-                        return mode, False
-        except Exception as e:  # noqa: BLE001 - truth-level is best-effort metadata
-            logger.debug("Could not read execution truth level for %s: %s", run_id, e)
+                    if not mode:
+                        return "unknown", True
+                    mode_clean = str(mode).strip().lower()
+                    if (
+                        is_prov
+                        or mode_clean in ("simulated", "unknown")
+                        or mode_clean not in ("live", "hybrid", "live_api")
+                    ):
+                        return mode, True
+                    return mode, False
+            return "unknown", True
+        except Exception as e:  # noqa: BLE001
+            logger.debug("Error reading execution truth level for %s: %s", run_id, e)
+            return "unknown", True
 
-        return None, False
+    @classmethod
+    def count_assertion_and_evidence_nodes(cls, target_trace: Path) -> int:
+        """Counts substantive evaluation assertions and evidence events in the trace."""
+        count = 0
+        if not target_trace.exists():
+            return 0
+        try:
+            with open(target_trace, encoding="utf-8") as f:
+                for line in f:
+                    stripped = line.strip()
+                    if not stripped:
+                        continue
+                    try:
+                        ev = json.loads(stripped)
+                    except Exception:
+                        continue
+                    event_name = ev.get("event")
+                    if event_name in EVIDENCE_EVENT_NAMES:
+                        count += 1
+                    elif "assertion" in ev or "oracle_results" in ev or "metrics" in ev:
+                        count += 1
+                    elif isinstance(ev.get("data"), dict):
+                        d = ev["data"]
+                        if "assertion" in d or "oracle_results" in d or "metrics" in d:
+                            count += 1
+        except Exception as e:
+            logger.debug("Error counting evidence nodes in %s: %s", target_trace, e)
+        return count
+
+    @classmethod
+    def extract_finalization_record(cls, target_trace: Path) -> EvaluatorFinalizationRecord | None:
+        """Extracts and validates an EvaluatorFinalizationRecord if present in the trace."""
+        if not target_trace.exists():
+            return None
+        try:
+            with open(target_trace, encoding="utf-8") as tf:
+                for line in tf:
+                    stripped = line.strip()
+                    if not stripped:
+                        continue
+                    try:
+                        ev = json.loads(stripped)
+                    except Exception:
+                        continue
+                    fin_payload = None
+                    if ev.get("event") == "evaluator_finalization":
+                        fin_payload = ev.get("data") if isinstance(ev.get("data"), dict) else ev
+                    elif ev.get("event") in ("run_end", "end"):
+                        ev_data = ev.get("data") if isinstance(ev.get("data"), dict) else ev
+                        if isinstance(ev_data.get("finalization"), dict):
+                            fin_payload = ev_data["finalization"]
+                        elif isinstance(ev.get("finalization"), dict):
+                            fin_payload = ev["finalization"]
+
+                    if fin_payload:
+                        rec = EvaluatorFinalizationRecord.from_dict(fin_payload)
+                        computed = rec.compute_finalization_hash()
+                        claimed = fin_payload.get("finalization_hash")
+                        if claimed and claimed != computed:
+                            logger.error(
+                                "EvaluatorFinalizationRecord hash mismatch: "
+                                "claimed=%s, computed=%s",
+                                claimed,
+                                computed,
+                            )
+                            return None
+                        return rec
+        except Exception as e:
+            logger.debug("Error extracting finalization record from %s: %s", target_trace, e)
+        return None
 
     @staticmethod
     def extract_computed_run_outcome(vault_dir: Path, target_trace: Path) -> tuple[str, float]:
         """
-        Extracts the authoritative computed outcome directly from the immutable execution trace.
+        Extracts the authoritative computed outcome directly from the immutable trace.
         Never reads previous run_manifest.json to avoid circular trust.
-        Consumes one authoritative final WorkflowOutcome/VerificationResult,
-        identified by run + attempt, and rejects multiple/conflicting terminal decisions.
-        Handled retries and intermediate failures do not override the final terminal decision.
+        Consumes one authoritative final WorkflowOutcome or EvaluatorFinalizationRecord,
+        rejects multiple conflicting or duplicate terminal decisions (Defect T4),
+        and rejects any outcome event appended after finalization (Defect T4).
         Returns (status, score). If unparseable or inconclusive, returns ("inconclusive", 0.0).
         """
         try:
-            terminal_events: list[dict[str, Any]] = []
+            finalization_seen = False
+            finalization_decision: tuple[str, float, str] | None = None
+            extracted_decisions: list[tuple[str, float, str]] = []
+
             with open(target_trace, encoding="utf-8") as f:
                 for line in f:
                     line = line.strip()
@@ -91,6 +190,44 @@ class CertificationService:
                         continue
 
                     event_name = ev.get("event")
+
+                    if finalization_seen:
+                        # Defect T4: Reject any event appended after finalization marker
+                        logger.error(
+                            "Monotonic terminal boundary violation: "
+                            "Event '%s' found after finalization marker",
+                            event_name,
+                        )
+                        return "inconclusive", 0.0
+
+                    fin_payload = None
+                    if event_name == "evaluator_finalization":
+                        fin_payload = ev.get("data") if isinstance(ev.get("data"), dict) else ev
+                    elif event_name in ("run_end", "end"):
+                        ev_data = ev.get("data") if isinstance(ev.get("data"), dict) else ev
+                        if isinstance(ev_data.get("finalization"), dict):
+                            fin_payload = ev_data["finalization"]
+                        elif isinstance(ev.get("finalization"), dict):
+                            fin_payload = ev["finalization"]
+
+                    if fin_payload:
+                        if finalization_decision is not None:
+                            logger.error("Multiple evaluator finalization records in trace")
+                            return "inconclusive", 0.0
+                        rec = EvaluatorFinalizationRecord.from_dict(fin_payload)
+                        computed = rec.compute_finalization_hash()
+                        claimed = fin_payload.get("finalization_hash")
+                        if claimed and claimed != computed:
+                            logger.error("Tampered evaluator finalization record in trace")
+                            return "inconclusive", 0.0
+                        finalization_seen = True
+                        finalization_decision = (
+                            rec.outcome.lower(),
+                            float(rec.score),
+                            "evaluator_finalization",
+                        )
+                        continue
+
                     if event_name in (
                         "run_end",
                         "end",
@@ -99,73 +236,88 @@ class CertificationService:
                         "evaluation_verdict",
                         "workflow_verdict",
                     ):
-                        terminal_events.append(ev)
+                        data = ev.get("data", {}) or {}
+                        raw_status = (
+                            data.get("status")
+                            or ev.get("status")
+                            or data.get("outcome")
+                            or ev.get("outcome")
+                            or ""
+                        )
+                        score_val = (
+                            data.get("score") if data.get("score") is not None else ev.get("score")
+                        )
+                        decision = data.get("decision") or ev.get("decision") or ""
+                        verdict = data.get("verdict") or ev.get("verdict") or ""
 
-            if not terminal_events:
-                return "inconclusive", 0.0
+                        passed_val = (
+                            data.get("passed")
+                            if data.get("passed") is not None
+                            else ev.get("passed")
+                        )
+                        if passed_val is False:
+                            raw_status = "fail"
+                        elif passed_val is True and not raw_status:
+                            raw_status = "pass"
 
-            extracted_decisions: list[tuple[str, float]] = []
-            for ev in terminal_events:
-                data = ev.get("data", {}) or {}
-                raw_status = (
-                    data.get("status")
-                    or ev.get("status")
-                    or data.get("outcome")
-                    or ev.get("outcome")
-                    or ""
-                )
-                score_val = data.get("score") if data.get("score") is not None else ev.get("score")
-                decision = data.get("decision") or ev.get("decision") or ""
-                verdict = data.get("verdict") or ev.get("verdict") or ""
+                        if not raw_status and data.get("pass_at_k") is not None:
+                            pak = float(data["pass_at_k"])
+                            raw_status = "pass" if pak > 0 else "fail"
+                            if score_val is None:
+                                score_val = pak
+                        if not raw_status and data.get("all_pass") is not None:
+                            raw_status = "pass" if data["all_pass"] else "fail"
 
-                passed_val = (
-                    data.get("passed") if data.get("passed") is not None else ev.get("passed")
-                )
-                if passed_val is False:
-                    raw_status = "fail"
-                elif passed_val is True and not raw_status:
-                    raw_status = "pass"
+                        status_lower = str(raw_status).strip().lower()
+                        decision_upper = str(decision).strip().upper()
+                        verdict_upper = str(verdict).strip().upper()
 
-                if not raw_status and data.get("pass_at_k") is not None:
-                    pak = float(data["pass_at_k"])
-                    raw_status = "pass" if pak > 0 else "fail"
-                    if score_val is None:
-                        score_val = pak
-                if not raw_status and data.get("all_pass") is not None:
-                    raw_status = "pass" if data["all_pass"] else "fail"
+                        dec_status = None
+                        dec_score = 0.0
 
-                status_lower = str(raw_status).strip().lower()
-                decision_upper = str(decision).strip().upper()
-                verdict_upper = str(verdict).strip().upper()
+                        if (
+                            status_lower in ("fail", "failed", "failure", "rejected")
+                            or decision_upper
+                            in ("FAIL", "FAILED", "REJECTED", "UNVERIFIED", "POLICY_BREACH")
+                            or verdict_upper in ("FAIL", "FAILED", "POLICY_BREACH", "NOT_VERIFIED")
+                        ):
+                            dec_status = "fail"
+                            dec_score = float(score_val if score_val is not None else 0.0)
+                        elif (
+                            status_lower in ("pass", "passed", "success", "verified")
+                            or decision_upper in ("PASS", "PASSED", "VERIFIED")
+                            or verdict_upper in ("PASS", "PASSED", "VERIFIED")
+                        ):
+                            dec_status = "pass"
+                            dec_score = float(score_val if score_val is not None else 1.0)
+                        elif (
+                            decision_upper == "EVALUATION_INVALID"
+                            or status_lower == "evaluation_invalid"
+                        ):
+                            dec_status = "fail"
+                            dec_score = 0.0
 
-                if (
-                    status_lower in ("fail", "failed", "failure", "rejected")
-                    or decision_upper in ("FAIL", "FAILED", "REJECTED", "UNVERIFIED")
-                    or verdict_upper in ("FAIL", "FAILED", "POLICY_BREACH", "NOT_VERIFIED")
-                ):
-                    extracted_decisions.append(
-                        ("fail", float(score_val if score_val is not None else 0.0))
-                    )
-                elif (
-                    status_lower in ("pass", "passed", "success", "verified")
-                    or decision_upper in ("PASS", "PASSED", "VERIFIED")
-                    or verdict_upper in ("PASS", "PASSED", "VERIFIED")
-                ):
-                    extracted_decisions.append(
-                        ("pass", float(score_val if score_val is not None else 1.0))
-                    )
-                elif decision_upper == "EVALUATION_INVALID" or status_lower == "evaluation_invalid":
-                    extracted_decisions.append(("fail", 0.0))
+                        if dec_status is not None:
+                            extracted_decisions.append((dec_status, dec_score, event_name))
+
+            if finalization_decision is not None:
+                final_status, final_score, _ = finalization_decision
+                return final_status, final_score
 
             if not extracted_decisions:
                 return "inconclusive", 0.0
 
-            distinct_statuses = {d[0] for d in extracted_decisions}
-            if len(distinct_statuses) > 1:
-                logger.error("Conflicting terminal decisions in trace: %s", distinct_statuses)
+            # Defect T4: Reject multiple authoritative terminal decisions
+            if len(extracted_decisions) > 1:
+                logger.error(
+                    "Multiple authoritative terminal decisions detected without finalization "
+                    "record (%d decisions): %s",
+                    len(extracted_decisions),
+                    [d[2] for d in extracted_decisions],
+                )
                 return "inconclusive", 0.0
 
-            final_status, final_score = extracted_decisions[-1]
+            final_status, final_score, _ = extracted_decisions[-1]
             return final_status, final_score
         except Exception as e:
             logger.debug("Failed parsing trace for computed outcome: %s", e)
@@ -187,7 +339,7 @@ class CertificationService:
         """
         Authoritative Industrial Certification Service.
         Derives status and score strictly from the computed evaluation outcome.
-        Fails closed if the outcome is inconclusive or cannot be positively verified.
+        Fails closed if the outcome is inconclusive, unverified, or provisional.
         Holds an exclusive per-run certification lock across the entire transaction.
         """
         if (
@@ -213,9 +365,15 @@ class CertificationService:
 
             vault_dir = target_trace.parent
 
-            # 1. Execution Truth Level Verification
+            # 1. Execution Truth Level Verification (Defect T1)
             execution_mode, provisional = cls.read_run_truth_level(run_id)
-            if provisional or execution_mode in ("simulated", "unknown"):
+            clean_mode = str(execution_mode).strip().lower() if execution_mode else ""
+            if (
+                provisional
+                or not clean_mode
+                or clean_mode in ("simulated", "unknown")
+                or clean_mode not in ("live", "hybrid", "live_api")
+            ):
                 logger.error(
                     "   [Certification] FAIL CLOSED: Cannot issue certification "
                     "for provisional/unknown run %s (mode=%s, provisional=%s)",
@@ -234,7 +392,8 @@ class CertificationService:
             )
             if computed_status == "inconclusive":
                 logger.error(
-                    "   [Certification] FAIL CLOSED: Inconclusive outcome for %s: missing terminal",
+                    "   [Certification] FAIL CLOSED: Inconclusive outcome for %s: "
+                    "missing or conflicting terminal",
                     run_id,
                 )
                 raise ValueError(
@@ -248,8 +407,30 @@ class CertificationService:
                 effective_status = "pass"
                 effective_score = computed_score
 
+            # Check for evaluator finalization record or assertion evidence (Defect T2)
+            fin_record = cls.extract_finalization_record(target_trace)
+            evidence_node_count = cls.count_assertion_and_evidence_nodes(target_trace)
+
+            if evidence_node_count == 0 and (
+                fin_record is None
+                or not fin_record.evidence_root_hash
+                or fin_record.evidence_root_hash.endswith(
+                    ":0000000000000000000000000000000000000000000000000000000000000000"
+                )
+            ):
+                logger.error(
+                    "   [Certification] FAIL CLOSED: Trace %s contains zero assertion/evidence "
+                    "nodes (decision-only trace)",
+                    run_id,
+                )
+                raise ValueError(
+                    f"Run {run_id} has zero assertion or evidence nodes (decision-only trace); "
+                    "cannot issue authoritative certification."
+                )
+
             # Mandatory scenario and runtime metadata binding
             meta_binding: dict[str, Any] = {}
+            embedded_scenario_data: dict[str, Any] | None = None
             try:
                 with open(target_trace, encoding="utf-8") as tf:
                     for line in tf:
@@ -257,17 +438,29 @@ class CertificationService:
                             continue
                         try:
                             rec = json.loads(line)
-                            if rec.get("event") == "run_start" or rec.get("scenario_id"):
+                            ev_name = rec.get("event")
+                            rec_data = rec.get("data") if isinstance(rec.get("data"), dict) else {}
+                            has_scen = bool(rec.get("scenario_id") or rec_data.get("scenario_id"))
+                            if ev_name in ("run_start", "start") or has_scen:
                                 for key in (
                                     "scenario_id",
                                     "scenario_hash",
+                                    "scenario_version",
                                     "policy_id",
                                     "evaluator_config_hash",
+                                    "execution_manifest_hash",
                                     "agent_id",
                                     "agent_identity",
                                 ):
-                                    if rec.get(key) and key not in meta_binding:
-                                        meta_binding[key] = rec[key]
+                                    val = rec.get(key) or rec_data.get(key)
+                                    if val and key not in meta_binding:
+                                        meta_binding[key] = val
+                                if not embedded_scenario_data:
+                                    scen_cand = rec.get("scenario_data") or rec_data.get(
+                                        "scenario_data"
+                                    )
+                                    if isinstance(scen_cand, dict):
+                                        embedded_scenario_data = scen_cand
                         except Exception as parse_err:
                             logger.debug(
                                 "Could not parse trace record for metadata binding: %s", parse_err
@@ -275,13 +468,32 @@ class CertificationService:
             except Exception as read_err:
                 logger.debug("Could not read trace file for metadata binding: %s", read_err)
 
-            # Scenario data resolution & authoritative scenario_hash verification (Defect #4)
+            if fin_record is not None:
+                meta_binding["scenario_id"] = fin_record.scenario_id
+                meta_binding["scenario_version"] = fin_record.scenario_version
+                meta_binding["scenario_hash"] = fin_record.scenario_hash
+                meta_binding["evaluator_config_hash"] = fin_record.evaluator_config_hash
+                meta_binding["execution_manifest_hash"] = fin_record.execution_manifest_hash
+                meta_binding["evidence_root_hash"] = fin_record.evidence_root_hash
+                meta_binding["evaluator_finalization_id"] = fin_record.finalization_id
+                meta_binding["evaluator_identity"] = fin_record.evaluator_identity
+
+            # Mandatory Scenario identity & authoritative scenario_hash verification (Defect T3)
             effective_scenario_data = scenario_data
-            if effective_scenario_data is None and meta_binding.get("scenario_id"):
+            target_scen_id = (
+                scenario_data.get("id") if isinstance(scenario_data, dict) else None
+            ) or meta_binding.get("scenario_id")
+            if not target_scen_id:
+                raise ValueError(
+                    f"Run {run_id} missing mandatory scenario_id in certification trust "
+                    "chain (Defect T3)."
+                )
+
+            if effective_scenario_data is None:
                 try:
                     from eval_runner.loader import load_scenario
 
-                    loaded = load_scenario(meta_binding["scenario_id"])
+                    loaded = load_scenario(target_scen_id)
                     if isinstance(loaded, dict):
                         effective_scenario_data = loaded
                     elif isinstance(loaded, list) and loaded:
@@ -289,21 +501,47 @@ class CertificationService:
                 except Exception as load_err:
                     logger.debug(
                         "Could not resolve scenario_data for '%s': %s",
-                        meta_binding["scenario_id"],
+                        target_scen_id,
                         load_err,
                     )
 
-            if effective_scenario_data is not None:
-                from agentv_runtime.manifest import compute_scenario_hash
+            if effective_scenario_data is None and embedded_scenario_data is not None:
+                effective_scenario_data = embedded_scenario_data
 
-                canonical_scen_hash = compute_scenario_hash(effective_scenario_data)
-                claimed_hash = meta_binding.get("scenario_hash")
-                if claimed_hash and claimed_hash != canonical_scen_hash:
-                    raise ValueError(
-                        f"ScenarioHashMismatch: trace claimed scenario_hash '{claimed_hash}' "
-                        f"does not match actual computed scenario hash '{canonical_scen_hash}'"
-                    )
-                meta_binding["scenario_hash"] = canonical_scen_hash
+            if effective_scenario_data is None:
+                raise ValueError(
+                    f"Run {run_id} cannot resolve authoritative scenario definition for "
+                    f"'{target_scen_id}'; certification blocked (Defect T3)."
+                )
+
+            from agentv_runtime.manifest import compute_scenario_hash
+
+            canonical_scen_hash = compute_scenario_hash(effective_scenario_data)
+            claimed_hash = meta_binding.get("scenario_hash")
+            if claimed_hash and claimed_hash != canonical_scen_hash:
+                raise ValueError(
+                    f"ScenarioHashMismatch: trace claimed scenario_hash '{claimed_hash}' "
+                    f"does not match actual computed scenario hash '{canonical_scen_hash}'"
+                )
+            meta_binding["scenario_id"] = target_scen_id
+            meta_binding["scenario_hash"] = canonical_scen_hash
+            meta_binding["scenario_version"] = str(effective_scenario_data.get("version", "1.0.0"))
+
+            # Execution manifest hash verification (Defect T3)
+            if "execution_manifest_hash" not in meta_binding:
+                import hashlib
+
+                from agentv_runtime.canonical import canonical_json_encode
+
+                exec_context = {
+                    "run_id": run_id,
+                    "scenario_id": target_scen_id,
+                    "scenario_hash": canonical_scen_hash,
+                    "execution_mode": execution_mode,
+                }
+                meta_binding["execution_manifest_hash"] = (
+                    f"sha3_256:{hashlib.sha3_256(canonical_json_encode(exec_context)).hexdigest()}"
+                )
 
             # 3. Cryptographic Signature Execution
             manifest = TraceVerifier.sign_trace(
@@ -326,11 +564,15 @@ class CertificationService:
                 json.dump(manifest, f, indent=2)
 
             is_pass = effective_status == "pass"
+            # Defect T1 Invariant: never certified=True when provisional=True
+            is_certified = bool(
+                is_pass and not provisional and execution_mode in ("live", "hybrid")
+            )
             return {
-                "status": "certified" if is_pass else "attested_failed",
+                "status": "certified" if is_certified else "attested_failed",
                 "compliance_status": effective_status,
-                "certified": is_pass,
-                "certificate_issued": True,
+                "certified": is_certified,
+                "certificate_issued": is_certified,
                 "run_id": run_id,
                 "score": effective_score,
                 "manifest": manifest,

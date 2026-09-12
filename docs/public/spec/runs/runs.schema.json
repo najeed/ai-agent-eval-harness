@@ -243,8 +243,88 @@
               "type": "integer"
             }
           }
+        },
+        "finalization": {
+          "type": "object",
+          "description": "Immutable attestation emitted strictly by the trusted evaluator at run termination (AgentV v2.0.0).",
+          "properties": {
+            "finalization_id": {
+              "type": "string"
+            },
+            "run_id": {
+              "type": "string"
+            },
+            "execution_manifest_hash": {
+              "type": "string"
+            },
+            "scenario_id": {
+              "type": "string"
+            },
+            "scenario_version": {
+              "type": "string"
+            },
+            "scenario_hash": {
+              "type": "string"
+            },
+            "evaluator_identity": {
+              "type": "string"
+            },
+            "evaluator_config_hash": {
+              "type": "string"
+            },
+            "required_oracle_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "evidence_root_hash": {
+              "type": "string"
+            },
+            "outcome": {
+              "type": "string",
+              "enum": [
+                "pass",
+                "fail"
+              ]
+            },
+            "score": {
+              "type": "number"
+            },
+            "finalized_at": {
+              "type": "string"
+            },
+            "terminal_seq": {
+              "type": "integer"
+            },
+            "schema_version": {
+              "type": "string"
+            },
+            "metadata": {
+              "type": "object"
+            },
+            "finalization_hash": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "finalization_id",
+            "run_id",
+            "execution_manifest_hash",
+            "scenario_id",
+            "scenario_hash",
+            "evaluator_identity",
+            "evaluator_config_hash",
+            "evidence_root_hash",
+            "outcome",
+            "score"
+          ]
         }
-      }
+      },
+      "required": [
+        "status",
+        "finalization"
+      ]
     },
     {
       "title": "System Diagnostics",

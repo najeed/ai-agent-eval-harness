@@ -33,6 +33,8 @@ def compute_scenario_hash(scenario_data: Mapping[str, Any]) -> str:
     """Computes a deterministic SHA3-256 hash of canonical scenario contents."""
     clean_data = dict(scenario_data)
     clean_data.pop("expected_revision_hash", None)
+    clean_data.pop("path", None)
+    clean_data.pop("span_context", None)
     if "metadata" in clean_data and isinstance(clean_data["metadata"], dict):
         clean_meta = dict(clean_data["metadata"])
         clean_meta.pop("content_hash", None)

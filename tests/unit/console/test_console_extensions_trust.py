@@ -105,16 +105,12 @@ def test_tampered_manifest_fails_verification(client):
 
 def test_unknown_publisher_is_fail_closed(client):
     manifest = _base_manifest()
-    sig = client.post(
-        "/api/v1/extensions/sign",
-        json={"manifest": manifest, "identity_id": "acme_publisher"},
-    ).get_json()["signature"]
-    manifest["signature"] = sig
+    manifest["publisher"] = "nobody_known"
+    manifest["signature"] = "a" * 128
 
-    # Verified against a DIFFERENT (unregistered) identity.
     body = client.post(
         "/api/v1/extensions/verify-publisher",
-        json={"manifest": manifest, "identity_id": "nobody_known"},
+        json={"manifest": manifest},
     ).get_json()
     assert body["valid"] is False
     assert body["tier"] == "unsigned-local"

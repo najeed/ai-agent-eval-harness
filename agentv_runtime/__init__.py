@@ -40,6 +40,7 @@ from agentv_runtime.extension_contract import (
     RuntimeExtension,
     is_compatible as extension_api_is_compatible,
 )
+from agentv_runtime.finalization import EvaluatorFinalizationRecord
 from agentv_runtime.interfaces import MutationEngine
 from agentv_runtime.manifest import ExecutionManifest, ManifestBuilder, compute_scenario_hash
 from agentv_runtime.package import VerificationPackage
@@ -75,6 +76,7 @@ __all__ = [
     "ExecutionManifest",
     "ManifestBuilder",
     "compute_scenario_hash",
+    "EvaluatorFinalizationRecord",
     "VerificationPackage",
     "canonical_json_dumps",
     "canonical_json_encode",

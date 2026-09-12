@@ -184,9 +184,7 @@ def build_evidence_graph(
     }
 
     if required_oracle_ids:
-        has_all_required = all(req in resolved_oracle_ids for req in required_oracle_ids) and (
-            len(nodes) > 0
-        )
+        has_all_required = all(req in resolved_oracle_ids for req in required_oracle_ids)
     else:
         has_all_required = True
 

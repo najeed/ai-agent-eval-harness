@@ -38,7 +38,7 @@ The execution engine records structured events across distinct lifecycle layers:
 
 #### 1. Lifecycle & Flow Boundaries
 * `run_start`: Initial session dispatch with target scenario and attempt quota.
-* `run_end`: Terminal run outcome and aggregated metrics.
+* `run_end`: Terminal run outcome, aggregated metrics, and mandatory cryptographic finalization attestation.
 * `phase_start` / `phase_end`: High-level workflow phase boundaries with span context.
 
 #### 2. Maneuver & Strategy Boundaries
@@ -68,6 +68,49 @@ The execution engine records structured events across distinct lifecycle layers:
 * `adapter_debug`: Low-level adapter logs.
 * `error`: System-level errors and execution exceptions.
 * `other`: Diagnostic telemetry.
+
+---
+
+### Chronological Emission Sequence (Start to Finish)
+
+During evaluation, events are emitted in a deterministic chronological sequence across distinct execution scopes:
+
+```
+1. [Run Initialization]
+   └── run_start
+   └── strategy_start (pass_at_k)
+   └── phase_start (pass_at_k_execution)
+
+2. [Per-Attempt Execution Loop (k = 1..attempts)]
+   └── routing_resolved (dynamic adapter discovery)
+   └── execution_graph_node (status="running")
+   └── maneuver_start
+   └── subtask_start
+       └── [Turn Loop (turn = 1..max_turns)]
+           ├── turn_start
+           ├── step_start (protocol handshake)
+           ├── tool_call & tool_result (if tools invoked)
+           ├── hitl_pause & hitl_resume (if intervention triggered)
+           └── turn_end
+   └── maneuver_end
+   └── execution_graph_node (status="completed" | "failed" | "skipped")
+   └── execution_graph_edge (evaluated edge predicates & routing evidence)
+   └── parallel_state_merged (deterministic state merge on parallel fan-in)
+
+3. [Aggregation & Wrap-up]
+   └── phase_end (pass_at_k_execution)
+   └── error (dispatched only on unhandled runtime exceptions)
+   └── strategy_end (mission telemetry verdict)
+
+4. [Authoritative Monotonic Terminal Boundary]
+   └── run_end (strictly last; embeds EvaluatorFinalizationRecord)
+```
+
+> [!IMPORTANT]
+> **Monotonic Terminal Boundary Invariant**:
+> `strategy_end` concludes strategy telemetry *before* `run_end`. `run_end` is the sole, immutable terminal record carrying the cryptographic `finalization` block. Any event appearing after `run_end` violates stream monotonicity and causes the `CertificationService` to fail closed with `"inconclusive"`.
+
+For persona-specific operational guides (Auditor, Integrator, Evaluator, Platform Builder), see [Event Lifecycle & Chronological Emission Specification](../../docs/src/content/docs/spec/event-lifecycle-sequence.md).
 
 ---
 
@@ -203,7 +246,7 @@ Legacy aliases retained for backward compatibility with historical traces: `cond
 
 ## Lesson 3: The Outcome Event (`run_end`)
 
-The terminal event of a trace is the `run_end` object. This event contains the authoritative summary of performance, correctness, and token expenditure. Aggregate statistics are computed over **actually executed attempts** — early cancellation never leaves a requested-but-unexecuted denominator in any metric.
+The terminal event of a trace is the `run_end` object. This event contains the authoritative summary of performance, correctness, and token expenditure, **as well as the mandatory `finalization` cryptographic commitment (`EvaluatorFinalizationRecord`)**. Aggregate statistics are computed over **actually executed attempts** — early cancellation never leaves a requested-but-unexecuted denominator in any metric.
 
 ```json
 {
@@ -225,23 +268,64 @@ The terminal event of a trace is the `run_end` object. This event contains the a
     "tool_correctness": 0.95,
     "avg_latency": 1.12,
     "total_tokens": 3480
+  },
+  "finalization": {
+    "finalization_id": "fin_eval-run-9021",
+    "run_id": "eval-run-9021",
+    "execution_manifest_hash": "sha3_256:32c04a00ac77d6b9df6cc91e2d1118383489633fdf69e0f9414b56de91b8b14a",
+    "scenario_id": "payment-refund-flow",
+    "scenario_version": "1.0.0",
+    "scenario_hash": "sha3_256:fa6c768784c6317e18e749764f65cc4233b0a11778119d8024b5b2dbfaa104e9",
+    "evaluator_identity": "eval_runner.runner.EvaluationKernel",
+    "evaluator_config_hash": "f3f72fff7ea43077ec4eec3b744f13c0c852bc1a17077c33649ea9e1ad7f254a",
+    "required_oracle_ids": ["process-payment:sc:generic_accuracy", "send-receipt:sc:delivery_check"],
+    "evidence_root_hash": "sha3_256:b1e52e41585c3375a32cc2f4b9d44c99c1bd89625a21eb5c28b5abdfd1a0303d",
+    "outcome": "pass",
+    "score": 1.0,
+    "finalized_at": "2026-08-22T06:26:38.895000+00:00",
+    "terminal_seq": 1,
+    "schema_version": "1.0.0",
+    "metadata": {},
+    "finalization_hash": "sha3_256:47ba2d8c45da03b89b86075ad2332de304a53947fcfa28768c67826bd390ff68"
   }
 }
 ```
 
 ### Property Table
-| Property | Type | Description |
-| :--- | :--- | :--- |
-| `status` | Enum | Final status: `success`, `failure`, `error`, `cancelled`. |
-| `pass_at_k` | Float | Standard **unbiased pass@k estimator**: `1 - Π_{i=0..k-1} (n-c-i)/(n-i)` over `n = executed_attempts`, clamped to `[1, n]`. Probability that at least one of k drawn samples passes. |
-| `attempt_success_rate` | Float | Raw proportion `c / executed_attempts`. Materially different from pass@k; never conflate. |
-| `all_pass` | Boolean | Conjunctive semantics: every executed attempt passed. |
-| `any_pass` | Boolean | Disjunctive semantics: at least one executed attempt passed. |
-| `successful_attempts` | Integer | Count of passing attempts (`c`). |
-| `total_attempts` | Integer | Requested attempt count (`k`). |
-| `executed_attempts` | Integer | Attempts actually executed (`n`) — the honest denominator for every statistic above. |
+| Property | Type | Presence | Description |
+| :--- | :--- | :--- | :--- |
+| `status` | Enum | **Required** | Final status: `success`, `failure`, `error`, `cancelled`. |
+| `finalization` | Object | **Required** | Authoritative cryptographic finalization record (`EvaluatorFinalizationRecord`). Sealing commitment binding execution manifest, scenario content hash, evaluator identity, required oracles, and evidence Merkle root. |
+| `pass_at_k` | Float | Optional | Standard **unbiased pass@k estimator**: `1 - Π_{i=0..k-1} (n-c-i)/(n-i)` over `n = executed_attempts`, clamped to `[1, n]`. Probability that at least one of k drawn samples passes. |
+| `attempt_success_rate` | Float | Optional | Raw proportion `c / executed_attempts`. Materially different from pass@k; never conflate. |
+| `all_pass` | Boolean | Optional | Conjunctive semantics: every executed attempt passed. |
+| `any_pass` | Boolean | Optional | Disjunctive semantics: at least one executed attempt passed. |
+| `successful_attempts` | Integer | Optional | Count of passing attempts (`c`). |
+| `total_attempts` | Integer | Optional | Requested attempt count (`k`). |
+| `executed_attempts` | Integer | Optional | Attempts actually executed (`n`) — the honest denominator for every statistic above. |
 
-> The full statistics contract (including Wilson-score confidence intervals and a `truncated_by_cancellation` flag) is published in the run manifest under `attempt_statistics`.
+### Evaluator Finalization Record Contract (`finalization`)
+The `finalization` block anchors the forensic integrity chain against decision-only traces and post-run tampering:
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `finalization_id` | String | Unique identifier (`fin_<run_id>`) for this evaluation attestation. |
+| `run_id` | String | Bound session run identifier. |
+| `execution_manifest_hash` | String | SHA3-256 canonical hash of `{run_id, scenario_id, scenario_hash, execution_mode}`. Binds run truth to execution mode. |
+| `scenario_id` | String | Authoritative scenario identifier (resolved across scenario DAG or metadata). |
+| `scenario_version` | String | Scenario revision/version string. |
+| `scenario_hash` | String | SHA3-256 canonical digest of the scenario specification (excluding volatile loader/runtime keys like `path` and `span_context`). |
+| `evaluator_identity` | String | Authoritative evaluator kernel identity (`eval_runner.runner.EvaluationKernel`). |
+| `evaluator_config_hash` | String | SHA3-256 digest of resolved evaluator configuration & metric registry fingerprint. |
+| `required_oracle_ids` | Array[String] | Complete inventory of all oracles and assertions required by the scenario control-flow DAG. |
+| `evidence_root_hash` | String | Cryptographic Merkle root hash of all evaluated assertion and evidence nodes. Zero assertions/evidence produces an invalid root, failing certification closed. |
+| `outcome` | Enum (`pass`, `fail`) | Authoritative evaluator verdict. |
+| `score` | Float | Authoritative normalized score (`0.0` - `1.0`). |
+| `finalized_at` | String | High-precision ISO-8601 UTC timestamp of evaluation termination. |
+| `terminal_seq` | Integer | Total count of executed attempt records. |
+| `finalization_hash` | String | Authoritative SHA3-256 digest over the canonical JSON representation of all fields above. |
+
+> **Single Terminal Record Invariant**: A run has exactly one terminal event (`run_end`), which atomically binds execution summary metrics and cryptographic finalization. A trace missing `finalization` is schema-invalid and categorically non-certifiable.
 
 ---
 

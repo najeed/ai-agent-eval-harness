@@ -1062,6 +1062,7 @@ class TraceVerifier:
         verify_ledger: bool = True,
         *,
         trace_only: bool = False,
+        scenario_data: Any | None = None,
     ) -> bool:
         """
         Verifies a trace file against its manifest (VC). Strictly enforces VC v3.0.0+.
@@ -1159,8 +1160,6 @@ class TraceVerifier:
                                 f"got {computed_root}"
                             )
                             return False
-                        # Only fail if assertion nodes exist but have incomplete provenance.
-                        # Decision-only traces (zero assertion nodes) are architecturally valid.
                         ev_total = graph.get("total_nodes", graph.get("node_count", 0))
                         if ev_total > 0 and not graph.get("is_complete_provenance", True):
                             logger.warning(
@@ -1169,6 +1168,22 @@ class TraceVerifier:
                             return False
                 except Exception as ev_v_err:
                     logger.warning(f"Failed to verify evidence graph root: {ev_v_err}")
+                    return False
+
+            # 2c. Authoritative Scenario Hash Check (Defect T3)
+            expected_scenario_hash = manifest.get("scenario_hash") or (
+                manifest.get("metadata", {}).get("scenario_hash")
+            )
+            if expected_scenario_hash and scenario_data is not None:
+                from agentv_runtime.manifest import compute_scenario_hash
+
+                actual_scen_hash = compute_scenario_hash(scenario_data)
+                if actual_scen_hash != expected_scenario_hash:
+                    logger.warning(
+                        "Scenario hash mismatch: expected %s, got %s",
+                        expected_scenario_hash,
+                        actual_scen_hash,
+                    )
                     return False
 
             # 3. Governance TTL Check (v3+)
@@ -1256,12 +1271,11 @@ class TraceVerifier:
                         )
                     else:
                         msg = (
-                            f"Skipping PQC verification for {identity_id} "
-                            "(PQC client not available)."
+                            f"Cannot verify ML-DSA-65 signature for {identity_id}: "
+                            "PQC client is not available. Missing verifier = UNVERIFIED."
                         )
-                        logger.warning(f"      [Verifier] {msg}")
-                        if config.PQC_STRICT_MODE:
-                            raise ValueError(f"PQC_STRICT_MODE Violation: {msg}")
+                        logger.error(f"      [Verifier] {msg}")
+                        raise ValueError(msg)
                 else:
                     msg = (
                         f"Unknown or unsupported signature algorithm '{algorithm}' "

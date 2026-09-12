@@ -146,8 +146,14 @@ class DefaultRunner(BaseRunner):
 
         from .session import SessionManager
 
+        scenario_identifier = (
+            scenario.get("id")
+            or (scenario.get("metadata") or {}).get("id")
+            or (scenario.get("metadata") or {}).get("name")
+            or "unknown"
+        )
         # Centralized Identifier Resolution
-        effective_run_id = run_id or new_run_id(scenario["id"])
+        effective_run_id = run_id or new_run_id(str(scenario_identifier))
 
         # Resolve OpenTelemetry parent context/span
         otel_ctx = None
@@ -163,11 +169,11 @@ class DefaultRunner(BaseRunner):
                 parent_context = propagation.extract(scenario["span_context"])
 
             span = tracer.start_span(
-                name=f"agentv.run.{scenario['id']}",
+                name=f"agentv.run.{scenario_identifier}",
                 context=parent_context,
             )
             span.set_attribute("agentv.run_id", effective_run_id)
-            span.set_attribute("agentv.scenario_id", scenario["id"])
+            span.set_attribute("agentv.scenario_id", str(scenario_identifier))
             span.set_attribute("agentv.attempts", attempts)
 
             otel_ctx = trace.set_span_in_context(span, parent_context)
@@ -177,7 +183,7 @@ class DefaultRunner(BaseRunner):
             sys.stderr.write(f"   [Telemetry] Warning: Failed to initialize OTel span: {e}\n")
 
         ctx = EvaluationContext(
-            identifier=scenario.get("id") or scenario.get("metadata", {}).get("name", "unknown"),
+            identifier=str(scenario_identifier),
             scenario_data=copy.deepcopy(scenario),
             run_id=effective_run_id,
             seed=seed,
@@ -210,6 +216,7 @@ class DefaultRunner(BaseRunner):
                 {
                     "run_id": effective_run_id,
                     "scenario": ctx.identifier,
+                    "scenario_id": str(scenario_identifier),
                     "k_attempts": attempts,
                     "workflow": ctx.scenario_data.get("workflow"),
                     "scenario_data": dict(ctx.scenario_data) if ctx.scenario_data else {},
@@ -325,6 +332,96 @@ class DefaultRunner(BaseRunner):
                 1 for res in all_attempt_results if self._is_attempt_successful(res)
             )
 
+            # Compute authoritative EvaluatorFinalizationRecord (Defect T2/T4)
+            import hashlib
+
+            from agentv_runtime.canonical import canonical_json_encode
+            from agentv_runtime.evidence_graph import decision_evidence_root_hash
+            from agentv_runtime.finalization import EvaluatorFinalizationRecord
+            from agentv_runtime.manifest import compute_scenario_hash
+
+            scen_hash = compute_scenario_hash(scenario)
+            exec_manifest_payload = {
+                "run_id": effective_run_id,
+                "scenario_id": str(scenario_identifier),
+                "scenario_hash": scen_hash,
+                "execution_mode": str(execution_mode),
+            }
+            exec_manifest_raw = hashlib.sha3_256(canonical_json_encode(exec_manifest_payload))
+            exec_manifest_hash = f"sha3_256:{exec_manifest_raw.hexdigest()}"
+
+            req_oracles: list[str] = []
+            collected_assertions: list[dict[str, Any]] = []
+            for attempt in all_attempt_results:
+                task_rows = (
+                    attempt
+                    if isinstance(attempt, list)
+                    else [attempt]
+                    if isinstance(attempt, dict)
+                    else []
+                )
+                for row in task_rows:
+                    if not isinstance(row, dict):
+                        continue
+                    for or_res in row.get("oracle_results") or []:
+                        if isinstance(or_res, dict):
+                            collected_assertions.append(or_res)
+                            oid = or_res.get("oracle_id") or or_res.get("id")
+                            if oid and str(oid) not in req_oracles:
+                                req_oracles.append(str(oid))
+                        elif isinstance(or_res, str):
+                            collected_assertions.append({"oracle_id": or_res, "passed": True})
+                            if or_res not in req_oracles:
+                                req_oracles.append(or_res)
+                    for m in row.get("metrics") or []:
+                        if isinstance(m, dict):
+                            collected_assertions.append(m)
+                            mid = m.get("name") or m.get("metric_id")
+                            if mid and str(mid) not in req_oracles:
+                                req_oracles.append(str(mid))
+                        elif isinstance(m, str):
+                            collected_assertions.append({"metric_id": m, "passed": True})
+                            if m not in req_oracles:
+                                req_oracles.append(m)
+
+            evidence_root = (
+                decision_evidence_root_hash(collected_assertions)
+                if collected_assertions
+                else f"sha3_256:{hashlib.sha3_256(b'empty_evidence_root').hexdigest()}"
+            )
+
+            finalization_record = EvaluatorFinalizationRecord(
+                finalization_id=f"fin_{effective_run_id}",
+                run_id=effective_run_id,
+                execution_manifest_hash=exec_manifest_hash,
+                scenario_id=str(scenario_identifier),
+                scenario_version=str(
+                    scenario.get("version")
+                    or (scenario.get("metadata") or {}).get("version")
+                    or "1.0.0"
+                ),
+                scenario_hash=scen_hash,
+                evaluator_identity="eval_runner.runner.EvaluationKernel",
+                evaluator_config_hash=getattr(self.resolved_config, "config_hash", "") or "none",
+                required_oracle_ids=req_oracles,
+                evidence_root_hash=evidence_root,
+                outcome="pass" if pass_at_k > 0 else "fail",
+                score=float(pass_at_k),
+                terminal_seq=len(all_attempt_results),
+            )
+            fin_dict = finalization_record.to_dict()
+            fin_dict["finalization_hash"] = finalization_record.compute_finalization_hash()
+
+            events.emit(
+                events.CoreEvents.STRATEGY_END,
+                {
+                    "run_id": effective_run_id,
+                    "strategy": "pass_at_k",
+                    "status": "success" if pass_at_k > 0 else "failure",
+                },
+                span_context=ctx.span_context,
+            )
+
             events.emit(
                 events.CoreEvents.RUN_END,
                 {
@@ -340,16 +437,7 @@ class DefaultRunner(BaseRunner):
                     "total_attempts": attempts,
                     "executed_attempts": len(all_attempt_results),
                     "metadata": dict(ctx.metadata),
-                },
-                span_context=ctx.span_context,
-            )
-
-            events.emit(
-                events.CoreEvents.STRATEGY_END,
-                {
-                    "run_id": effective_run_id,
-                    "strategy": "pass_at_k",
-                    "status": "success" if pass_at_k > 0 else "failure",
+                    "finalization": fin_dict,
                 },
                 span_context=ctx.span_context,
             )
@@ -361,7 +449,7 @@ class DefaultRunner(BaseRunner):
                 try:
                     manifest_data = {
                         "run_id": effective_run_id,
-                        "scenario_id": scenario.get("id"),
+                        "scenario_id": str(scenario_identifier),
                         "attempts": attempts,
                         "pass_at_k": pass_at_k,
                         "attempt_statistics": attempt_statistics,

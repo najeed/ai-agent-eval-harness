@@ -92,11 +92,12 @@ def test_inconclusive_run_cannot_be_certified_with_caller_status_override(cert_v
 def test_previous_run_manifest_cannot_circularly_influence_certification(cert_vault):
     """A prior run_manifest.json with fake PASS status must NOT influence new certification."""
     run_id = "run-no-circular-trust"
+    scen_data = {"id": "scen_fail", "version": "1.0.0"}
     # Raw trace indicates an authoritative FAIL
     events = [
-        {"event": "run_start", "execution_mode": "live"},
+        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_fail"},
+        {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": False},
         {"event": "session_decision", "data": {"decision": "FAIL", "score": 0.2}},
-        {"event": "run_end", "data": {"status": "FAILED", "score": 0.2}},
     ]
     vault, trace = _create_trace(cert_vault["runs"], run_id, events)
 
@@ -114,7 +115,10 @@ def test_previous_run_manifest_cannot_circularly_influence_certification(cert_va
     )
 
     # Certification must derive outcome from the trace, recognizing FAIL
-    res = CertificationService.execute_industrial_certification(run_id=run_id)
+    res = CertificationService.execute_industrial_certification(
+        run_id=run_id,
+        scenario_data=scen_data,
+    )
     assert res["certified"] is False
     assert res["status"] == "attested_failed"
     assert res["compliance_status"] == "fail"
@@ -124,14 +128,20 @@ def test_previous_run_manifest_cannot_circularly_influence_certification(cert_va
 def test_failed_evaluation_cannot_produce_pass_certificate(cert_vault):
     """Even if caller asks for status='pass', a failed evaluation fails closed."""
     run_id = "run-fail-closed-test"
+    scen_data = {"id": "scen_fail2", "version": "1.0.0"}
     events = [
-        {"event": "run_start", "execution_mode": "live"},
+        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_fail2"},
+        {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": False},
         {"event": "evaluation_result", "data": {"status": "FAIL", "score": 0.0}},
-        {"event": "run_end", "data": {"verdict": "FAIL"}},
     ]
     _create_trace(cert_vault["runs"], run_id, events)
 
-    res = execute_industrial_certification(run_id=run_id, status="pass", score=1.0)
+    res = execute_industrial_certification(
+        run_id=run_id,
+        status="pass",
+        score=1.0,
+        scenario_data=scen_data,
+    )
     assert res["certified"] is False
     assert res["status"] == "attested_failed"
     assert res["compliance_status"] == "fail"
@@ -141,24 +151,36 @@ def test_failed_evaluation_cannot_produce_pass_certificate(cert_vault):
 def test_provisional_simulated_mode_rejected_for_authoritative_certification(cert_vault):
     """Simulated or undeclared provisional runs cannot issue authoritative certificates."""
     run_id = "run-simulated-provisional"
+    scen_data = {"id": "scen_sim", "version": "1.0.0"}
     events = [
-        {"event": "run_start", "execution_mode": "simulated", "data": {"provisional": True}},
+        {
+            "event": "run_start",
+            "execution_mode": "simulated",
+            "scenario_id": "scen_sim",
+            "data": {"provisional": True},
+        },
+        {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": True},
         {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
-        {"event": "run_end", "data": {"status": "PASSED"}},
     ]
     _create_trace(cert_vault["runs"], run_id, events)
 
     with pytest.raises(ValueError, match="is provisional"):
-        execute_industrial_certification(run_id=run_id)
+        execute_industrial_certification(run_id=run_id, scenario_data=scen_data)
 
 
 def test_passing_authoritative_run_certified_successfully(cert_vault):
     """Passing live run is properly certified with genuine signature."""
     run_id = "run-passing-live"
+    scen_data = {"id": "scen_pass", "version": "1.0.0"}
     events = [
-        {"event": "run_start", "execution_mode": "live", "data": {"execution_mode_declared": True}},
+        {
+            "event": "run_start",
+            "execution_mode": "live",
+            "scenario_id": "scen_pass",
+            "data": {"execution_mode_declared": True},
+        },
+        {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": True},
         {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
-        {"event": "run_end", "data": {"status": "PASSED", "score": 1.0}},
     ]
     _create_trace(cert_vault["runs"], run_id, events)
 
@@ -166,6 +188,7 @@ def test_passing_authoritative_run_certified_successfully(cert_vault):
         run_id=run_id,
         identity_id="system_id",
         policy_ref="NIST-AI-100",
+        scenario_data=scen_data,
     )
     assert res["certified"] is True
     assert res["status"] == "certified"
@@ -182,14 +205,19 @@ def test_public_verification_endpoint_semantics(cert_vault):
     client = app.test_client()
 
     run_id = "run-verify-endpoint"
+    scen_data = {"id": "scen_verify", "version": "1.0.0"}
     events = [
-        {"event": "run_start", "execution_mode": "live"},
+        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_verify"},
+        {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": True},
         {"event": "session_decision", "data": {"decision": "PASS", "score": 0.98}},
-        {"event": "run_end", "data": {"status": "PASSED", "score": 0.98}},
     ]
     _create_trace(cert_vault["runs"], run_id, events)
 
-    execute_industrial_certification(run_id=run_id, identity_id="system_id")
+    execute_industrial_certification(
+        run_id=run_id,
+        identity_id="system_id",
+        scenario_data=scen_data,
+    )
 
     res = client.get(f"/api/v1/verify/{run_id}")
     assert res.status_code == 200
@@ -217,13 +245,17 @@ def test_metadata_binding_with_corrupt_lines_and_attributes(cert_vault):
         '{"event": "run_start", "execution_mode": "live", '
         '"scenario_id": "scen_1", "agent_id": "ag_1"}\n'
         "\n"
-        '{"event": "step_executed", "data": {"step": 1}}\n'
-        '{"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}}\n'
-        '{"event": "run_end", "data": {"status": "PASSED"}}\n',
+        '{"event": "assertion_evaluated", "assertion": "oracle_check", "passed": true}\n'
+        '{"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}}\n',
         encoding="utf-8",
     )
 
-    res = execute_industrial_certification(run_id=run_id, identity_id="system_id")
+    scen_data = {"id": "scen_1", "version": "1.0.0"}
+    res = execute_industrial_certification(
+        run_id=run_id,
+        identity_id="system_id",
+        scenario_data=scen_data,
+    )
     assert res["certified"] is True
     assert res["manifest"]["metadata"]["scenario_id"] == "scen_1"
     assert res["manifest"]["metadata"]["agent_id"] == "ag_1"

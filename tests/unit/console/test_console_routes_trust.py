@@ -62,14 +62,27 @@ def test_certify_run_success(client, console_jail):
     run_dir = console_jail["runs"] / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     start_ev = json.dumps(
-        {"event": "run_start", "data": {"execution_mode": "live", "execution_mode_declared": True}}
+        {
+            "event": "run_start",
+            "scenario_id": "scen_1",
+            "data": {"execution_mode": "live", "execution_mode_declared": True},
+        }
     )
+    assert_ev = json.dumps({"event": "assertion_evaluated", "assertion": "check_1", "passed": True})
     end_ev = json.dumps({"event": "run_end", "data": {"status": "pass", "score": 1.0}})
-    (run_dir / "run.jsonl").write_text(f"{start_ev}\n{end_ev}\n", encoding="utf-8")
+    (run_dir / "run.jsonl").write_text(f"{start_ev}\n{assert_ev}\n{end_ev}\n", encoding="utf-8")
 
-    with patch("eval_runner.verifier.TraceVerifier.sign_trace") as mock_sign:
+    with (
+        patch("eval_runner.verifier.TraceVerifier.sign_trace") as mock_sign,
+        patch(
+            "eval_runner.loader.load_scenario", return_value={"id": "scen_1", "version": "1.0.0"}
+        ),
+    ):
         mock_sign.return_value = {"trace_hash": "fake_hash"}
-        res = client.post("/api/v1/certify", json={"run_id": run_id})
+        res = client.post(
+            "/api/v1/certify",
+            json={"run_id": run_id, "scenario_data": {"id": "scen_1", "version": "1.0.0"}},
+        )
         assert res.status_code == 200
         assert res.get_json()["status"] == "certified"
         assert (run_dir / "run_manifest.json").exists()
@@ -94,15 +107,34 @@ def test_certify_run_fail_closed_computed_fail(client, console_jail):
     run_dir = console_jail["runs"] / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     start_ev = json.dumps(
-        {"event": "run_start", "data": {"execution_mode": "live", "execution_mode_declared": True}}
+        {
+            "event": "run_start",
+            "scenario_id": "scen_1",
+            "data": {"execution_mode": "live", "execution_mode_declared": True},
+        }
+    )
+    assert_ev = json.dumps(
+        {"event": "assertion_evaluated", "assertion": "check_1", "passed": False}
     )
     end_ev = json.dumps({"event": "run_end", "data": {"status": "fail", "score": 0.0}})
-    (run_dir / "run.jsonl").write_text(f"{start_ev}\n{end_ev}\n", encoding="utf-8")
+    (run_dir / "run.jsonl").write_text(f"{start_ev}\n{assert_ev}\n{end_ev}\n", encoding="utf-8")
 
-    with patch("eval_runner.verifier.TraceVerifier.sign_trace") as mock_sign:
+    with (
+        patch("eval_runner.verifier.TraceVerifier.sign_trace") as mock_sign,
+        patch(
+            "eval_runner.loader.load_scenario", return_value={"id": "scen_1", "version": "1.0.0"}
+        ),
+    ):
         mock_sign.return_value = {"trace_hash": "fake_hash"}
         # Attempt to override computed fail with pass
-        res = client.post("/api/v1/certify", json={"run_id": run_id, "status": "pass"})
+        res = client.post(
+            "/api/v1/certify",
+            json={
+                "run_id": run_id,
+                "status": "pass",
+                "scenario_data": {"id": "scen_1", "version": "1.0.0"},
+            },
+        )
         assert res.status_code == 200
         # Assert that sign_trace received fail
         assert mock_sign.call_args[1]["compliance_status"] == "fail"
@@ -213,15 +245,29 @@ def test_certify_run_generic_exception(client, console_jail):
     run_dir = console_jail["runs"] / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     start_ev = json.dumps(
-        {"event": "run_start", "data": {"execution_mode": "live", "execution_mode_declared": True}}
+        {
+            "event": "run_start",
+            "scenario_id": "scen_1",
+            "data": {"execution_mode": "live", "execution_mode_declared": True},
+        }
     )
+    assert_ev = json.dumps({"event": "assertion_evaluated", "assertion": "check_1", "passed": True})
     end_ev = json.dumps({"event": "run_end", "data": {"status": "pass", "score": 1.0}})
-    (run_dir / "run.jsonl").write_text(f"{start_ev}\n{end_ev}\n", encoding="utf-8")
+    (run_dir / "run.jsonl").write_text(f"{start_ev}\n{assert_ev}\n{end_ev}\n", encoding="utf-8")
 
-    with patch(
-        "eval_runner.verifier.TraceVerifier.sign_trace", side_effect=Exception("Critical Failure")
+    with (
+        patch(
+            "eval_runner.verifier.TraceVerifier.sign_trace",
+            side_effect=Exception("Critical Failure"),
+        ),
+        patch(
+            "eval_runner.loader.load_scenario", return_value={"id": "scen_1", "version": "1.0.0"}
+        ),
     ):
-        res = client.post("/api/v1/certify", json={"run_id": run_id})
+        res = client.post(
+            "/api/v1/certify",
+            json={"run_id": run_id, "scenario_data": {"id": "scen_1", "version": "1.0.0"}},
+        )
         assert res.status_code == 500
         assert "Critical Failure" in res.get_json()["error"]
 
@@ -301,7 +347,7 @@ def test_extension_signing_and_verification_endpoints(client, monkeypatch):
         "version": "1.0.0",
         "remote_entry": "http://127.0.0.1:8080/ext.js",
         "sri_hash": "sha3-256-dummy",
-        "publisher": "official_org",
+        "publisher": "dev_publisher",
         "capabilities": ["routes", "navigation"],
     }
     with patch(
@@ -352,8 +398,11 @@ def test_extension_signing_and_verification_endpoints(client, monkeypatch):
         res_ver_unknown = client.post(
             "/api/v1/extensions/verify-publisher",
             json={
-                "manifest": {**valid_manifest, "signature": sig_data["signature"]},
-                "identity_id": "ghost_pub",
+                "manifest": {
+                    **valid_manifest,
+                    "publisher": "ghost_pub",
+                    "signature": sig_data["signature"],
+                },
             },
         )
         assert res_ver_unknown.status_code == 200
@@ -364,7 +413,6 @@ def test_extension_signing_and_verification_endpoints(client, monkeypatch):
         "/api/v1/extensions/verify-publisher",
         json={
             "manifest": {**valid_manifest, "signature": "00" * 64},
-            "identity_id": "dev_publisher",
         },
     )
     assert res_ver_bad_sig.status_code == 200
@@ -377,7 +425,6 @@ def test_extension_signing_and_verification_endpoints(client, monkeypatch):
         "/api/v1/extensions/verify-publisher",
         json={
             "manifest": {**valid_manifest, "signature": sig_data["signature"]},
-            "identity_id": "dev_publisher",
         },
     )
     assert res_ver_comm.status_code == 200
@@ -385,12 +432,11 @@ def test_extension_signing_and_verification_endpoints(client, monkeypatch):
     assert res_ver_comm.get_json()["valid"] is True
 
     # Verify publisher official tier
-    monkeypatch.setenv("AGENTV_OFFICIAL_PUBLISHERS", "official_org,sec_corp")
+    monkeypatch.setenv("AGENTV_OFFICIAL_PUBLISHERS", "dev_publisher,sec_corp")
     res_ver_official = client.post(
         "/api/v1/extensions/verify-publisher",
         json={
             "manifest": {**valid_manifest, "signature": sig_data["signature"]},
-            "identity_id": "dev_publisher",
         },
     )
     assert res_ver_official.status_code == 200

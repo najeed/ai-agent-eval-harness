@@ -127,7 +127,7 @@ export const TrustCenter: React.FC = () => {
           run_id: certifyRunId.trim(),
           identity: identityId,
           policy_ref: policyRef,
-          ttl: 86400 * 365, // 1 year
+          ttl: 365, // 1 year (days)
         })
       });
       const data = await res.json();
@@ -224,44 +224,44 @@ export const TrustCenter: React.FC = () => {
                   <h3 className="text-base font-bold text-white font-mono">{verifyResult.run_id}</h3>
                 </div>
                 <div className="flex items-center gap-1.5 px-2 py-0.5 rounded border text-[10px] font-bold uppercase tracking-wider">
-                  {verifyResult.verified ? (
+                  {verifyResult.cryptographically_valid ? (
                     <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded flex items-center gap-1">
-                      <CheckCircle className="w-3 h-3" /> INTEGRITY VERIFIED
+                      <CheckCircle className="w-3 h-3" /> CRYPTOGRAPHIC SEAL VERIFIED
                     </span>
                   ) : (
                     <span className="bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded flex items-center gap-1">
-                      <XCircle className="w-3 h-3" /> INTEGRITY FAILED
+                      <XCircle className="w-3 h-3" /> CRYPTOGRAPHIC SEAL INVALID
                     </span>
                   )}
                 </div>
               </div>
 
-              {/* Tri-State Audit Verification Cards */}
+              {/* Tri-State Audit Verification Cards (Defect T8) */}
               <div className="grid grid-cols-3 gap-2 pt-1 text-[11px]">
                 <div className="bg-slate-950/60 p-2 rounded border border-slate-800 space-y-0.5">
                   <span className="text-[9px] text-slate-500 uppercase font-bold block">1. Cryptographic</span>
-                  <span className={`font-mono font-bold ${verifyResult.verified ? 'text-emerald-400' : 'text-red-400'}`}>
-                    {verifyResult.verified ? 'SEALED & VALID' : 'TAMPERED / INVALID'}
+                  <span className={`font-mono font-bold ${verifyResult.cryptographically_valid ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {verifyResult.cryptographically_valid ? 'SEALED & VALID' : 'TAMPERED / INVALID'}
                   </span>
                 </div>
                 <div className="bg-slate-950/60 p-2 rounded border border-slate-800 space-y-0.5">
                   <span className="text-[9px] text-slate-500 uppercase font-bold block">2. Evaluation</span>
                   <span className={`font-mono font-bold ${
-                    verifyResult.manifest?.compliance?.status === 'pass'
+                    verifyResult.evaluation_passed
                       ? 'text-emerald-400'
-                      : verifyResult.manifest?.compliance?.status === 'fail'
+                      : verifyResult.evaluation_verdict?.toLowerCase() === 'fail'
                         ? 'text-red-400'
                         : 'text-amber-400'
                   }`}>
-                    {verifyResult.manifest?.compliance?.status?.toUpperCase() || 'UNSCORED'}
+                    {verifyResult.evaluation_verdict?.toUpperCase() || (verifyResult.evaluation_passed ? 'PASSED' : 'FAILED')}
                   </span>
                 </div>
                 <div className="bg-slate-950/60 p-2 rounded border border-slate-800 space-y-0.5">
                   <span className="text-[9px] text-slate-500 uppercase font-bold block">3. Authority</span>
                   <span className={`font-mono font-bold ${
-                    verifyResult.manifest?.provisional ? 'text-amber-400' : 'text-indigo-400'
+                    verifyResult.certificate_authoritative ? 'text-indigo-400' : 'text-amber-400'
                   }`}>
-                    {verifyResult.manifest?.provisional ? 'PROVISIONAL' : (verifyResult.manifest?.execution_mode?.toUpperCase() || 'AUTHORITATIVE')}
+                    {verifyResult.certificate_authoritative ? (verifyResult.manifest?.execution_mode?.toUpperCase() || 'AUTHORITATIVE') : 'PROVISIONAL'}
                   </span>
                 </div>
               </div>

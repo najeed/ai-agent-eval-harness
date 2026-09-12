@@ -32,11 +32,21 @@ def pqc_env(tmp_path, monkeypatch):
     run_dir = runs_dir / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     trace_path = run_dir / "run.jsonl"
-    trace_path.write_text(
-        '{"event": "run_start", "run_id": "pqc_test_run"}\n'
-        '{"event": "summary_metrics", "metrics": {"success_rate": 1.0}}\n'
-        '{"event": "run_end", "outcome": "pass"}\n'
+    start_ev = json.dumps(
+        {
+            "event": "run_start",
+            "run_id": "pqc_test_run",
+            "scenario_id": "test_scenario",
+            "scenario_data": {"id": "test_scenario", "version": "1.0.0"},
+            "data": {"execution_mode": "live", "execution_mode_declared": True},
+        }
     )
+    assert_ev = json.dumps(
+        {"event": "assertion_evaluated", "assertion": "accuracy", "passed": True}
+    )
+    metrics_ev = json.dumps({"event": "summary_metrics", "metrics": {"success_rate": 1.0}})
+    end_ev = json.dumps({"event": "run_end", "outcome": "pass", "status": "pass", "score": 1.0})
+    trace_path.write_text(f"{start_ev}\n{assert_ev}\n{metrics_ev}\n{end_ev}\n", encoding="utf-8")
 
     return {
         "root": root,

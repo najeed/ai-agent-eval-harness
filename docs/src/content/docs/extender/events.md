@@ -25,8 +25,22 @@ Behavioral DNA markers allow the engine and agents to provide high-fidelity trac
 These events track the lifecycle of the evaluation run.
 
 ### `RUN_START` / `RUN_END`
-- **Trigger**: Called when a mission (multiple attempts) starts or finishes.
-- **Payload**: `run_id`, `id`, `k_attempts`.
+- **Trigger**: Called when an evaluation mission starts or finishes.
+- **`RUN_START` Payload**: `run_id`, `scenario_id`, `k_attempts`, `execution_mode`, `reproducibility_fingerprint`.
+- **`RUN_END` Payload**: `run_id`, `status`, `passed`, `score`, `pass_at_k`, `attempt_statistics`, and mandatory `finalization` (`EvaluatorFinalizationRecord`).
+- **Monotonic Terminal Boundary**: `run_end` is strictly the LAST event emitted. Intermediate strategy telemetry (`strategy_end`) must be dispatched *prior* to `run_end`. Emitting any event after `run_end` violates stream monotonicity and fails closed.
+
+### `STRATEGY_START` / `STRATEGY_END`
+- **Trigger**: Marks the exploration strategy lifecycle (e.g. `pass_at_k`). `strategy_end` concludes strategy telemetry before `run_end`.
+
+### `PHASE_START` / `PHASE_END`
+- **Trigger**: Demarcates the execution phase across all attempts (`phase="pass_at_k_execution"`).
+
+### `EXECUTION_GRAPH_NODE` / `EXECUTION_GRAPH_EDGE`
+- **Trigger**: Emitted by `WorkflowInterpreter` as DAG nodes activate, complete, or fail, and as typed edge predicates are evaluated.
+
+### `PARALLEL_STATE_MERGED`
+- **Trigger**: Emitted upon post-gather state merge when concurrent fork branches converge.
 
 ### `TASK_START` / `TASK_END`
 - **Trigger**: Called when a specific task node within a scenario starts.

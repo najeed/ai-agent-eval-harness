@@ -311,6 +311,7 @@ def reset():
 class CoreEvents:
     RUN_START = "run_start"
     RUN_END = "run_end"
+    EVALUATOR_FINALIZATION = "evaluator_finalization"
     TASK_START = "task_start"
     TASK_END = "task_end"
     TURN_START = "turn_start"

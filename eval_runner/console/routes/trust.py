@@ -168,9 +168,24 @@ DEFAULT_DEV_PUBLISHER_IDENTITY = "dev_publisher"
 def _private_key_pem_bytes(identity_id: str) -> bytes:
     from cryptography.hazmat.primitives import serialization
 
-    key = identity.IdentityService.get_private_key(identity_id, auto_provision=True)
-    if key is None:
-        raise ValueError(f"No signing identity available for '{identity_id}'")
+    # Defect T6: Disable automatic key provisioning for production signing
+    is_production = (
+        os.getenv("ENVIRONMENT", "").strip().lower() in ("prod", "production")
+        or os.getenv("ENV", "").strip().lower() in ("prod", "production")
+        or os.getenv("AGENTV_ENV", "").strip().lower() in ("prod", "production")
+    )
+    if is_production:
+        key = identity.IdentityService.get_private_key(identity_id, auto_provision=False)
+        if key is None:
+            raise ValueError(
+                "Automatic key provisioning is disabled in production for signing "
+                f"identity '{identity_id}'"
+            )
+    else:
+        key = identity.IdentityService.get_private_key(identity_id, auto_provision=True)
+        if key is None:
+            raise ValueError(f"No signing identity available for '{identity_id}'")
+
     return key.private_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PrivateFormat.PKCS8,
@@ -315,7 +330,21 @@ def verify_extension_publisher():
             }
         )
 
-    identity_id = str(data.get("identity_id") or publisher)
+    # Defect T6: Verification key MUST resolve exclusively from the verified publisher identity.
+    # Never accept an independent signer identity.
+    caller_identity = data.get("identity_id")
+    if caller_identity and caller_identity != publisher:
+        return jsonify(
+            {
+                "valid": False,
+                "tier": tier,
+                "reason": "signer-identity-mismatch",
+                "publisher": publisher,
+                "identity_id": caller_identity,
+            }
+        ), 400
+
+    identity_id = publisher
 
     pub_pem = _public_key_pem_bytes(identity_id)
     if pub_pem is None:

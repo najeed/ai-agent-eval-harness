@@ -19,7 +19,9 @@ def cli_env(tmp_path, isolated_trust, monkeypatch):
 
     trace_path = run_vault / "run.jsonl"
     trace_path.write_text(
-        '{"event":"run_start"}\n{"event":"run_end","outcome":"pass"}\n',
+        '{"event":"run_start","scenario_id":"test_scenario","scenario_data":{"id":"test_scenario","version":"1.0.0"},"data":{"execution_mode":"live","execution_mode_declared":true}}\n'
+        '{"event":"assertion_evaluated","assertion":"accuracy","passed":true}\n'
+        '{"event":"run_end","outcome":"pass","status":"pass","score":1.0}\n',
         encoding="utf-8",
     )
 
@@ -68,11 +70,12 @@ def test_cli_certify_success(cli_env, monkeypatch):
 
     # Explicitly pass PROJECT_ROOT to the subprocess to prevent pollution
     env = os.environ.copy()
+    env["PYTHONIOENCODING"] = "utf-8"
     env["PROJECT_ROOT"] = str(cli_env["tmp_path"])
     env["RUN_LOG_DIR"] = str(cli_env["runs_dir"])
     env["REPORTS_DIR"] = str(cli_env["tmp_path"] / "reports")
 
-    result = subprocess.run(cmd, capture_output=True, text=True, env=env)
+    result = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", env=env)
     assert result.returncode == 0
     assert f"Certified: {run_id}" in result.stdout or "Success" in result.stdout
 
@@ -93,6 +96,7 @@ def test_cli_gate_success(cli_env, monkeypatch):
 
     # Explicitly pass PROJECT_ROOT to the subprocess to prevent pollution
     env = os.environ.copy()
+    env["PYTHONIOENCODING"] = "utf-8"
     env["PROJECT_ROOT"] = str(cli_env["tmp_path"])
     env["RUN_LOG_DIR"] = str(cli_env["runs_dir"])
     env["REPORTS_DIR"] = str(cli_env["tmp_path"] / "reports")
@@ -108,7 +112,7 @@ def test_cli_gate_success(cli_env, monkeypatch):
     # 2. Gate using Run ID
     cmd = ["python", "-m", "eval_runner.cli", "gate", "--run-id", run_id, "--verify-ledger"]
 
-    result = subprocess.run(cmd, capture_output=True, text=True, env=env)
+    result = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", env=env)
     assert result.returncode == 0
     assert "SUCCESS" in result.stdout
 
@@ -120,6 +124,7 @@ def test_cli_gate_failure_tampered(cli_env, monkeypatch):
 
     # Explicitly pass PROJECT_ROOT to the subprocess to prevent pollution
     env = os.environ.copy()
+    env["PYTHONIOENCODING"] = "utf-8"
     env["PROJECT_ROOT"] = str(cli_env["tmp_path"])
     env["RUN_LOG_DIR"] = str(cli_env["runs_dir"])
     env["REPORTS_DIR"] = str(cli_env["tmp_path"] / "reports")

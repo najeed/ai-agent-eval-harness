@@ -25,7 +25,7 @@ dependencies = [
     "PyYAML==6.0.3",
     "pydantic==2.13.5",
     "numpy==2.5.3",
-    "PyJWT==2.13.0",
+    "PyJWT==2.14.0",
     "cryptography==50.0.1",
     "opentelemetry-api==1.44.0",
     "opentelemetry-sdk==1.44.0",
@@ -48,13 +48,13 @@ provider-gemini = [
 # 2. Framework Environments (Evaluated and verified agent architectures)
 framework-langchain = [
     "langchain==1.4.0",
-    "langchain-core>=1.6.2",
+    "langchain-core>=1.6.3",
 ]
 framework-langgraph = [
     "langgraph==1.2.11",
 ]
 framework-ag2 = [
-    "ag2==1.0.4",
+    "ag2==1.0.5",
 ]
 framework-crewai = [
 #    "crewai==1.15.21; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
@@ -96,14 +96,14 @@ vcs = [
 # 5. Composed Ecosystem Extras
 frameworks = [
     "langchain==1.4.0",
-    "langchain-core>=1.6.2",
+    "langchain-core>=1.6.3",
     "langgraph==1.2.11",
-    "ag2==1.0.4",
+    "ag2==1.0.5",
 #    "crewai==1.15.21; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
 ]
 langchain-all = [
     "langchain==1.4.0",
-    "langchain-core>=1.6.2",
+    "langchain-core>=1.6.3",
     "langchain-openai==1.6.2",
     "langchain-anthropic>=1.7.2",
     "langchain-google-genai>=4.4.0",
@@ -115,9 +115,9 @@ all = [
     "datasets==5.0.1",
     "google-genai==2.23.0",
     "langchain==1.4.0",
-    "langchain-core>=1.6.2",
+    "langchain-core>=1.6.3",
     "langgraph==1.2.11",
-    "ag2==1.0.4",
+    "ag2==1.0.5",
 #    "crewai==1.15.21; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
     "langchain-openai==1.6.2",
     "langchain-anthropic>=1.7.2",

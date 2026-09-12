@@ -1753,7 +1753,9 @@ def test_verifier_override_interceptor_already_removed_cleanup():
 
 
 def test_verifier_pqc_non_strict_mode_warning(clean_vault_setup):
-    """Verifies non-strict PQC verification bypass warning."""
+    """
+    Verifies that missing PQC client fails verification closed even in non-strict mode.
+    """
     manifest = {
         "vc_version": "3.0.0",
         "timestamp": "2026-08-30T00:00:00.000+0000",
@@ -1774,7 +1776,7 @@ def test_verifier_pqc_non_strict_mode_warning(clean_vault_setup):
     with patch.object(TraceVerifier, "compute_signature", return_value="sha3_256:dummy"):
         with patch.object(IdentityService, "get_pqc_client", return_value=None):
             with patch.object(config, "PQC_STRICT_MODE", False):
-                assert TraceVerifier.verify_trace(trace_file, manifest_path) is True
+                assert TraceVerifier.verify_trace(trace_file, manifest_path) is False
 
 
 def test_verify_run_directory_direct_certificate_json(clean_vault_setup):
