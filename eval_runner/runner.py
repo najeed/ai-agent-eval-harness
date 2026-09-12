@@ -438,6 +438,7 @@ class DefaultRunner(BaseRunner):
                     "executed_attempts": len(all_attempt_results),
                     "metadata": dict(ctx.metadata),
                     "finalization": fin_dict,
+                    "assertions": collected_assertions,
                 },
                 span_context=ctx.span_context,
             )

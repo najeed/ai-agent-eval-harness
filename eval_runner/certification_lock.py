@@ -5,23 +5,24 @@ Exclusive per-run certification lock spanning outcome extraction -> freeze -> si
 Guarantees transactional mutual exclusion during certification:
 1. Prevents concurrent trace appends/writes during certification.
 2. Eliminates TOCTOU race conditions between outcome extraction and trace sealing.
-3. Fails closed if another certification attempt is currently active on the run.
+3. Uses monotonic fencing tokens to prevent accidental lock stealing.
+4. Transitions the run lifecycle into FINALIZING upon acquisition.
 """
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 import threading
 import time
+import uuid
 from pathlib import Path
 from typing import Any, ClassVar
 
 from eval_runner import config
 
 logger = logging.getLogger(__name__)
-
-LOCK_LEASE_SECONDS = 60.0
 
 
 def _is_process_alive(pid: int) -> bool:
@@ -53,40 +54,52 @@ def _is_process_alive(pid: int) -> bool:
         return True
 
 
-def _check_stale_lock(lock_path: Path) -> bool:
-    """Returns True if the lock file is stale (owner process dead or lease expired)."""
-    if not lock_path.exists():
-        return False
+def _read_lock_data(lock_path: Path) -> dict[str, str]:
+    """Reads structured metadata from a lock file (supports key=value and JSON)."""
+    if not lock_path.is_file():
+        return {}
     try:
-        content = lock_path.read_text(encoding="utf-8")
+        content = lock_path.read_text(encoding="utf-8").strip()
+        if content.startswith("{") and content.endswith("}"):
+            try:
+                data = json.loads(content)
+                if isinstance(data, dict):
+                    return {str(k): str(v) for k, v in data.items()}
+            except (ValueError, UnicodeDecodeError) as json_err:
+                logger.debug(
+                    "Lock file at %s is not valid JSON, falling back to key=value: %s",
+                    lock_path,
+                    json_err,
+                )
         parsed: dict[str, str] = {}
         for line in content.splitlines():
             if "=" in line:
                 k, v = line.split("=", 1)
                 parsed[k.strip()] = v.strip()
-        pid = int(parsed.get("pid", 0))
-        ts = float(parsed.get("ts", 0.0))
-        # 1. Lease expiration check
-        if time.time() - ts > LOCK_LEASE_SECONDS:
-            return True
-        # 2. Dead process check
-        if pid > 0 and not _is_process_alive(pid):
-            return True
+        return parsed
     except Exception as e:
-        logger.debug("Error checking lock staleness for %s: %s", lock_path, e)
-        try:
-            if time.time() - lock_path.stat().st_mtime > 10.0:
-                return True
-        except (OSError, Exception) as mtime_err:
-            logger.debug("Error checking lock mtime for %s: %s", lock_path, mtime_err)
+        logger.debug("Error reading lock data from %s: %s", lock_path, e)
+        return {}
+
+
+def _is_lock_stale(lock_path: Path) -> bool:
+    """
+    Checks if a lock file belongs to a dead process.
+    Never steals a lock from an active running process.
+    """
+    data = _read_lock_data(lock_path)
+    if not data:
+        return False
+    pid = int(data.get("pid", 0))
+    if pid > 0 and not _is_process_alive(pid):
+        return True
     return False
 
 
 class PerRunCertificationLock:
     """
-    Exclusive per-run certification lock.
-    Thread-safe and process-safe lock using in-memory and filesystem markers.
-    Includes automated stale-owner recovery for process crashes and expired leases (T9).
+    Exclusive per-run certification lock with monotonic fencing tokens.
+    Guarantees that active holders cannot have their locks stolen.
     """
 
     _thread_locks: ClassVar[dict[str, threading.RLock]] = {}
@@ -97,6 +110,8 @@ class PerRunCertificationLock:
     def __init__(self, run_id: str, timeout_seconds: float = 10.0) -> None:
         self.run_id = run_id
         self.timeout_seconds = timeout_seconds
+        self.owner_id = f"pid_{os.getpid()}_th_{threading.get_ident()}_{uuid.uuid4().hex[:6]}"
+        self.fencing_token = f"fence_{int(time.time() * 1000)}_{uuid.uuid4().hex[:8]}"
         with self._meta_lock:
             if run_id not in self._thread_locks:
                 self._thread_locks[run_id] = threading.RLock()
@@ -116,13 +131,23 @@ class PerRunCertificationLock:
         lock_file = config.RUN_LOG_DIR / run_id / ".certification.lock"
         if not lock_file.exists():
             return False
-        if _check_stale_lock(lock_file):
+        if _is_lock_stale(lock_file):
             try:
                 lock_file.unlink(missing_ok=True)
             except OSError:
                 pass
             return False
         return True
+
+    def verify_active(self) -> None:
+        """Validates that this instance still owns the active lock."""
+        if not self._acquired:
+            raise RuntimeError(f"LockNotHeld: Lock for run '{self.run_id}' is not acquired")
+        data = _read_lock_data(self.lock_file)
+        if data.get("owner_id") != self.owner_id or data.get("fencing_token") != self.fencing_token:
+            raise RuntimeError(
+                f"CertificationLockStolen: Lock for run '{self.run_id}' was superseded or stolen"
+            )
 
     def acquire(self) -> None:
         thread_id = threading.get_ident()
@@ -144,10 +169,9 @@ class PerRunCertificationLock:
         try:
             self.lock_dir.mkdir(parents=True, exist_ok=True)
             while self.lock_file.exists():
-                if _check_stale_lock(self.lock_file):
+                if _is_lock_stale(self.lock_file):
                     logger.warning(
-                        "Breaking stale certification lock for run '%s' "
-                        "(owner PID died or lease expired)",
+                        "Reclaiming stale certification lock for run '%s' (owner PID died)",
                         self.run_id,
                     )
                     try:
@@ -157,16 +181,34 @@ class PerRunCertificationLock:
                         logger.debug("Failed breaking stale lock %s: %s", self.lock_file, e)
                 if time.monotonic() - start_time > self.timeout_seconds:
                     raise TimeoutError(
-                        f"CertificationLockConflict: timed out waiting for run '{self.run_id}'"
+                        f"CertificationLockConflict: timed out waiting for run '{self.run_id}' "
+                        f"(held by PID {_read_lock_data(self.lock_file).get('pid', 'unknown')})"
                     )
                 time.sleep(0.05)
 
-            temp_lock = self.lock_dir / f".certification.lock.{os.getpid()}.tmp"
-            temp_lock.write_text(
-                f"pid={os.getpid()}\nts={time.time()}\nrun_id={self.run_id}\n",
-                encoding="utf-8",
+            temp_lock = self.lock_dir / f".certification.lock.{self.fencing_token}.tmp"
+            content = (
+                f"owner_id={self.owner_id}\n"
+                f"fencing_token={self.fencing_token}\n"
+                f"pid={os.getpid()}\n"
+                f"ts={time.time()}\n"
+                f"run_id={self.run_id}\n"
             )
+            temp_lock.write_text(content, encoding="utf-8")
             temp_lock.replace(self.lock_file)
+
+            from eval_runner.run_lifecycle import RunLifecycleState, transition_run_lifecycle
+
+            try:
+                transition_run_lifecycle(
+                    self.run_id,
+                    RunLifecycleState.FINALIZING,
+                    metadata={"fencing_token": self.fencing_token, "owner_id": self.owner_id},
+                )
+            except Exception as tr_err:
+                logger.debug(
+                    "Failed transitioning lifecycle to FINALIZING for %s: %s", self.run_id, tr_err
+                )
 
             with self._meta_lock:
                 self._active_locks.add(self.run_id)
@@ -188,11 +230,20 @@ class PerRunCertificationLock:
 
         try:
             if self.lock_file.exists():
-                try:
-                    self.lock_file.unlink(missing_ok=True)
-                except OSError as e:
-                    logger.debug(
-                        "Failed unlinking certification lock file for %s: %s", self.run_id, e
+                data = _read_lock_data(self.lock_file)
+                # Fencing token / owner validation: only delete if WE own it
+                if (
+                    data.get("owner_id") == self.owner_id
+                    and data.get("fencing_token") == self.fencing_token
+                ):
+                    try:
+                        self.lock_file.unlink(missing_ok=True)
+                    except OSError as e:
+                        logger.debug("Failed unlinking lock for %s: %s", self.run_id, e)
+                else:
+                    logger.warning(
+                        "Cannot release certification lock for '%s': owned by another token",
+                        self.run_id,
                     )
             with self._meta_lock:
                 self._active_locks.discard(self.run_id)
@@ -207,3 +258,6 @@ class PerRunCertificationLock:
 
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         self.release()
+
+
+__all__ = ["PerRunCertificationLock"]

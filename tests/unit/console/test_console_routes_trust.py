@@ -1,3 +1,4 @@
+import hashlib
 import json
 import os
 import tempfile
@@ -7,11 +8,70 @@ from unittest.mock import MagicMock, patch
 import pytest
 from flask import Flask
 
+from agentv_runtime.canonical import canonical_json_encode
+from agentv_runtime.evidence_graph import build_evidence_graph_from_events
+from agentv_runtime.finalization import EvaluatorFinalizationRecord
+from agentv_runtime.manifest import compute_scenario_hash
 from eval_runner import config
 
 # SUT
 from eval_runner.console.routes.trust import trust_bp
 from eval_runner.utils import rmtree_resilient
+
+
+def _make_finalization_event(
+    run_id: str,
+    scenario_id: str,
+    events: list[str],
+    outcome: str = "pass",
+    score: float = 1.0,
+) -> str:
+    """Build a cryptographically-valid EvaluatorFinalizationRecord event."""
+    parsed = []
+    for line in events:
+        line = line.strip()
+        if line:
+            try:
+                parsed.append(json.loads(line))
+            except Exception:
+                pass
+
+    ev_graph = build_evidence_graph_from_events(parsed)
+    evidence_root = ev_graph.get(
+        "evidence_root_hash",
+        f"sha3_256:{hashlib.sha3_256(b'empty').hexdigest()}",
+    )
+
+    scenario_data = {"id": scenario_id, "version": "1.0.0"}
+    scen_hash = compute_scenario_hash(scenario_data)
+    exec_manifest_payload = {
+        "run_id": run_id,
+        "scenario_id": scenario_id,
+        "scenario_hash": scen_hash,
+        "execution_mode": "live",
+    }
+    exec_manifest_hash = (
+        f"sha3_256:{hashlib.sha3_256(canonical_json_encode(exec_manifest_payload)).hexdigest()}"
+    )
+
+    rec = EvaluatorFinalizationRecord(
+        finalization_id=f"fin_{run_id}",
+        run_id=run_id,
+        execution_manifest_hash=exec_manifest_hash,
+        scenario_id=scenario_id,
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+        evaluator_identity="test_evaluator",
+        evaluator_config_hash="sha3_256:abc123",
+        required_oracle_ids=[],
+        evidence_root_hash=evidence_root,
+        outcome=outcome,
+        score=score,
+        terminal_seq=1,
+    )
+    fin_dict = rec.to_dict()
+    fin_dict["finalization_hash"] = rec.compute_finalization_hash()
+    return json.dumps({"event": "evaluator_finalization", "data": fin_dict})
 
 
 @pytest.fixture(scope="module")
@@ -70,7 +130,9 @@ def test_certify_run_success(client, console_jail):
     )
     assert_ev = json.dumps({"event": "assertion_evaluated", "assertion": "check_1", "passed": True})
     end_ev = json.dumps({"event": "run_end", "data": {"status": "pass", "score": 1.0}})
-    (run_dir / "run.jsonl").write_text(f"{start_ev}\n{assert_ev}\n{end_ev}\n", encoding="utf-8")
+    core_events = [start_ev, assert_ev, end_ev]
+    fin_ev = _make_finalization_event(run_id, "scen_1", core_events)
+    (run_dir / "run.jsonl").write_text("\n".join(core_events + [fin_ev]) + "\n", encoding="utf-8")
 
     with (
         patch("eval_runner.verifier.TraceVerifier.sign_trace") as mock_sign,
@@ -117,7 +179,9 @@ def test_certify_run_fail_closed_computed_fail(client, console_jail):
         {"event": "assertion_evaluated", "assertion": "check_1", "passed": False}
     )
     end_ev = json.dumps({"event": "run_end", "data": {"status": "fail", "score": 0.0}})
-    (run_dir / "run.jsonl").write_text(f"{start_ev}\n{assert_ev}\n{end_ev}\n", encoding="utf-8")
+    core_events = [start_ev, assert_ev, end_ev]
+    fin_ev = _make_finalization_event(run_id, "scen_1", core_events, outcome="fail", score=0.0)
+    (run_dir / "run.jsonl").write_text("\n".join(core_events + [fin_ev]) + "\n", encoding="utf-8")
 
     with (
         patch("eval_runner.verifier.TraceVerifier.sign_trace") as mock_sign,
@@ -253,7 +317,9 @@ def test_certify_run_generic_exception(client, console_jail):
     )
     assert_ev = json.dumps({"event": "assertion_evaluated", "assertion": "check_1", "passed": True})
     end_ev = json.dumps({"event": "run_end", "data": {"status": "pass", "score": 1.0}})
-    (run_dir / "run.jsonl").write_text(f"{start_ev}\n{assert_ev}\n{end_ev}\n", encoding="utf-8")
+    core_events = [start_ev, assert_ev, end_ev]
+    fin_ev = _make_finalization_event(run_id, "scen_1", core_events)
+    (run_dir / "run.jsonl").write_text("\n".join(core_events + [fin_ev]) + "\n", encoding="utf-8")
 
     with (
         patch(
@@ -299,7 +365,9 @@ def test_read_run_truth_level_branches(client, console_jail):
     )
     mode, prov = _read_run_truth_level(run_id)
     assert mode == "LIVE_API"
-    assert prov is False
+    # LIVE_API is not a recognized canonical execution mode (only 'live' and 'hybrid' are);
+    # therefore it is correctly classified as provisional=True per the T1 contract.
+    assert prov is True
 
 
 def test_get_identity_public_key_none_and_private_key_none(client):

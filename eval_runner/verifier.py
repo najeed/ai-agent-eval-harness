@@ -610,14 +610,25 @@ class TraceVerifier:
                                     f"Malformed trace record at line {line_idx}: {ev_parse_err}"
                                 ) from ev_parse_err
                 if events_list:
-                    ev_graph = build_evidence_graph_from_events(events_list)
+                    req_oracles = (
+                        (metadata.get("required_oracle_ids") if metadata else None)
+                        or (
+                            scenario_data.get("required_oracles")
+                            if isinstance(scenario_data, dict)
+                            else None
+                        )
+                        or (
+                            scenario_data.get("metadata", {}).get("required_oracles")
+                            if isinstance(scenario_data, dict)
+                            else None
+                        )
+                    )
+                    ev_graph = build_evidence_graph_from_events(
+                        events_list, required_oracle_ids=req_oracles
+                    )
                     computed_evidence_root = compute_evidence_graph_root(ev_graph)
                     total_nodes = ev_graph.get("total_nodes", ev_graph.get("node_count", 0))
                     if total_nodes > 0 and not ev_graph.get("is_complete_provenance", True):
-                        # Only enforce direct provenance when assertion nodes exist.
-                        # A trace with zero oracle assertion nodes (decision-only runs) is
-                        # architecturally valid: there is simply nothing to attest at the
-                        # assertion level. Certification of outcome-only traces is allowed.
                         logger.error(
                             "Evidence graph contains unresolved or carrier fallback provenance "
                             "(%d/%d nodes lack direct provenance).",
@@ -628,6 +639,15 @@ class TraceVerifier:
                         raise CertificationFailedError(
                             "DirectProvenanceViolation: Evidence graph contains unresolved "
                             "or carrier fallback provenance"
+                        )
+                    if req_oracles and not ev_graph.get("has_all_required", True):
+                        logger.error(
+                            "Evidence graph missing required oracles: %s",
+                            ev_graph.get("missing_required_oracles"),
+                        )
+                        raise CertificationFailedError(
+                            f"RequiredOracleCompletenessViolation: Evidence graph missing "
+                            f"required oracles: {ev_graph.get('missing_required_oracles')}"
                         )
                     if total_nodes == 0:
                         logger.debug(
@@ -909,6 +929,117 @@ class TraceVerifier:
             }
             format_str = "hybrid" if config.PQC_ENABLED else "ED25519"
             try:
+                from agentv_runtime.package import VerificationPackage
+
+                scen_id_val = (
+                    manifest.get("scenario_id")
+                    or (scenario_data.get("id") if isinstance(scenario_data, dict) else "")
+                    or (metadata.get("scenario_id") if metadata else "")
+                    or ""
+                )
+                scen_ver_val = (
+                    manifest.get("scenario_version")
+                    or (
+                        str(scenario_data.get("version")) if isinstance(scenario_data, dict) else ""
+                    )
+                    or (metadata.get("scenario_version") if metadata else "")
+                    or "1.0.0"
+                )
+                scen_h_val = (
+                    manifest.get("scenario_hash")
+                    or (metadata.get("scenario_hash") if metadata else "")
+                    or ""
+                )
+                m_id_val = (
+                    manifest.get("manifest_id")
+                    or (metadata.get("manifest_id") if metadata else "")
+                    or f"man_{run_id}"
+                )
+                m_h_val = (
+                    manifest.get("execution_manifest_hash")
+                    or (metadata.get("execution_manifest_hash") if metadata else "")
+                    or ""
+                )
+                ev_root_val = manifest_evidence_root or ""
+                pkg_req_oracles = list(
+                    (metadata.get("required_oracle_ids") if metadata else None)
+                    or (
+                        scenario_data.get("required_oracles")
+                        if isinstance(scenario_data, dict)
+                        else None
+                    )
+                    or []
+                )
+                executed_oracles = [
+                    {
+                        "oracle_id": n.get("oracle_id"),
+                        "outcome": "PASS" if n.get("passed") else "FAIL",
+                        "passed": n.get("passed"),
+                        "source_type": n.get("source_type"),
+                        "source_ref": n.get("source_ref"),
+                        "content_hash": n.get("content_hash"),
+                        "is_direct_provenance": n.get("is_direct_provenance"),
+                    }
+                    for n in (ev_graph.get("nodes", []) if ev_graph else [])
+                ]
+                pkg = VerificationPackage(
+                    package_id=f"pkg_{run_id}",
+                    scenario_id=str(scen_id_val),
+                    scenario_version=str(scen_ver_val),
+                    scenario_hash=str(scen_h_val),
+                    manifest_id=str(m_id_val),
+                    manifest_hash=str(m_h_val),
+                    execution_identity={
+                        "run_id": run_id,
+                        "execution_mode": manifest.get("execution_mode", "live"),
+                        "agent_id": (metadata.get("agent_id") if metadata else None)
+                        or "system_agent",
+                    },
+                    trace_hash=manifest.get("trace_hash", ""),
+                    trace_seal={
+                        "trace_digest": manifest.get("trace_hash", ""),
+                        "algorithm": "sha3_256",
+                        "event_count": len(events_list) + (1 if bytes_appended > 0 else 0),
+                        "sealed_at": timestamp,
+                    },
+                    evidence_root_hash=ev_root_val,
+                    required_oracle_ids=pkg_req_oracles,
+                    executed_oracle_results=executed_oracles,
+                    decision={
+                        "decision": "PASS" if effective_compliance_status == "pass" else "FAIL",
+                        "status": effective_compliance_status,
+                        "score": effective_compliance_score,
+                    },
+                    package_version="1.0.0",
+                    signature=None,
+                    signer_identity=identity_id,
+                    algorithm="ed25519",
+                    metadata=manifest.get("metadata", {}),
+                )
+                from dataclasses import replace
+
+                from eval_runner.identity import IdentityService
+
+                priv_key = IdentityService.get_private_key(identity_id, auto_provision=False)
+                pkg_sig = None
+                pub_pem = None
+                if priv_key and hasattr(priv_key, "sign"):
+                    pkg_sig = priv_key.sign(pkg.canonical_payload_bytes()).hex()
+                    if hasattr(priv_key, "public_key"):
+                        from cryptography.hazmat.primitives import serialization
+
+                        pub_pem = (
+                            priv_key.public_key()
+                            .public_bytes(
+                                encoding=serialization.Encoding.PEM,
+                                format=serialization.PublicFormat.SubjectPublicKeyInfo,
+                            )
+                            .decode("utf-8")
+                        )
+                pkg = replace(pkg, signature=pkg_sig, public_key_pem=pub_pem)
+                manifest["verification_package"] = pkg.to_dict()
+                manifest["package_hash"] = pkg.compute_package_hash()
+
                 # NOTE: VerificationService.sign mutates and returns the SAME
                 # manifest object; rebinding/clearing here would destroy it.
                 verification_service.sign(manifest, format=format_str)
@@ -991,6 +1122,13 @@ class TraceVerifier:
             )
             shutil.rmtree(staging_dir, ignore_errors=True)
 
+            from eval_runner.run_lifecycle import RunLifecycleState, transition_run_lifecycle
+
+            try:
+                transition_run_lifecycle(run_id, RunLifecycleState.SEALED)
+            except Exception as sl_err:
+                logger.debug("Failed transitioning lifecycle to SEALED for %s: %s", run_id, sl_err)
+
         # --- TRANSACTION: hash -> sign -> persist(stage) -> verify -> publish(promote) -> seal ---
         # Any stage failure rolls back the trace mutation and partial artifacts,
         # then raises CertificationFailedError. No certificate is ever emitted
@@ -1063,6 +1201,9 @@ class TraceVerifier:
         *,
         trace_only: bool = False,
         scenario_data: Any | None = None,
+        trust_root: Any | None = None,
+        key_registry: Mapping[str, str] | None = None,
+        public_key_pem: str | None = None,
     ) -> bool:
         """
         Verifies a trace file against its manifest (VC). Strictly enforces VC v3.0.0+.
@@ -1151,8 +1292,15 @@ class TraceVerifier:
                                     )
                                     return False
 
+                    req_oracles = (
+                        (manifest.get("verification_package", {}) or {}).get("required_oracle_ids")
+                        or manifest.get("required_oracle_ids")
+                        or (manifest.get("metadata", {}) or {}).get("required_oracle_ids")
+                    )
                     if ev_list:
-                        graph = build_evidence_graph_from_events(ev_list)
+                        graph = build_evidence_graph_from_events(
+                            ev_list, required_oracle_ids=req_oracles
+                        )
                         computed_root = compute_evidence_graph_root(graph)
                         if computed_root != expected_evidence_root:
                             logger.warning(
@@ -1164,6 +1312,12 @@ class TraceVerifier:
                         if ev_total > 0 and not graph.get("is_complete_provenance", True):
                             logger.warning(
                                 "Evidence graph contains unresolved or carrier fallback provenance"
+                            )
+                            return False
+                        if req_oracles and not graph.get("has_all_required", True):
+                            logger.warning(
+                                "Evidence graph missing required oracles: %s",
+                                graph.get("missing_required_oracles"),
                             )
                             return False
                 except Exception as ev_v_err:
@@ -1239,8 +1393,46 @@ class TraceVerifier:
                 algorithm = node.get("algorithm", "ED25519")
 
                 if algorithm == "ED25519":
-                    # Local Classical Verification
-                    public_key = IdentityService.get_public_key(identity_id)
+                    from cryptography.hazmat.primitives import serialization
+
+                    public_key = None
+                    if public_key_pem:
+                        try:
+                            public_key = serialization.load_pem_public_key(
+                                public_key_pem.encode("utf-8")
+                            )
+                        except Exception:
+                            public_key = None
+                    elif key_registry and identity_id in key_registry:
+                        try:
+                            public_key = serialization.load_pem_public_key(
+                                key_registry[identity_id].encode("utf-8")
+                            )
+                        except Exception:
+                            public_key = None
+                    elif trust_root:
+                        if hasattr(trust_root, "get_public_key"):
+                            public_key = trust_root.get_public_key(identity_id)
+                        elif isinstance(trust_root, (str, Path)):
+                            cand = Path(trust_root) / identity_id / "public_key.pem"
+                            if not cand.is_file():
+                                cand = Path(trust_root) / f"{identity_id}.pem"
+                            if cand.is_file():
+                                try:
+                                    public_key = serialization.load_pem_public_key(
+                                        cand.read_bytes()
+                                    )
+                                except Exception:
+                                    public_key = None
+                    if public_key is None:
+                        public_key = IdentityService.get_public_key(
+                            identity_id, auto_provision=False
+                        )
+
+                    if public_key is None:
+                        logger.warning("No public key found for identity %s", identity_id)
+                        return False
+
                     verified = False
                     for m_bytes in candidate_bytes:
                         try:
@@ -1253,6 +1445,19 @@ class TraceVerifier:
                     if not verified:
                         public_key.verify(bytes.fromhex(sig_hex), candidate_bytes[0])
                     logger.debug(f"      [Verifier] ED25519 Signature Verified: {identity_id}")
+                    if manifest.get("verification_package"):
+                        from agentv_runtime.package import VerificationPackage
+
+                        pkg = VerificationPackage.from_dict(manifest["verification_package"])
+                        if pkg.signature:
+                            pkg_sig_ok = pkg.verify_signature(
+                                public_key_pem=public_key_pem,
+                                trust_root=trust_root or config.TRUST_ROOT,
+                                key_registry=key_registry,
+                            )
+                            if not pkg_sig_ok:
+                                logger.warning("VerificationPackage signature check failed")
+                                return False
                 elif algorithm == "ML-DSA-65":
                     # PQC Verification (via CycleCore or local validator)
                     pqc_client = IdentityService.get_pqc_client()

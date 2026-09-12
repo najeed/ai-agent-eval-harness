@@ -56,9 +56,17 @@ class TestPQCCLI(unittest.TestCase):
             self.assertTrue(config.PQC_ENABLED)
 
     def test_strict_mode_fail_closed_signing(self):
-        # Test TraceVerifier.sign_trace behavior across all strict mode combinations
+        # Test TraceVerifier.sign_trace behavior across all strict mode combinations.
+        # NOTE: sign_trace now includes a post-signature self-verification step.
+        # Classical (ED25519) signing must use a real provisioned identity — mock keys
+        # cannot produce a valid signature that the self-verify gate accepts.
+        # Only the PQC client is mocked.
+        from eval_runner.identity import IdentityService
+
         base_run_id = "test_strict_matrix"
         created_dirs = []
+        identity_id = "strict_mode_test_id"
+        IdentityService._provision_local_identity(identity_id)
 
         def _get_case_trace(suffix: str):
             rid = f"{base_run_id}_{suffix}"
@@ -70,74 +78,82 @@ class TestPQCCLI(unittest.TestCase):
             return rid, tpath
 
         try:
-            # Common mocks
+            # --- CASE 1: PQC ENABLED + STRICT ON + SIGNING FAILURE = FAIL CLOSED ---
+            # sign_trace raises RuntimeError before reaching self-verify
+            rid1, tpath1 = _get_case_trace("case1")
+            mock_client_failing = MagicMock()
+            mock_client_failing.sign_digest.side_effect = Exception("API Timeout")
+            mock_client_failing.verify_digest.return_value = True
+
             with (
-                patch("eval_runner.identity.IdentityService.get_private_key") as mock_get_priv,
-                patch("eval_runner.identity.IdentityService.get_pqc_client") as mock_get_client,
-                patch("eval_runner.identity.IdentityService.get_public_key") as mock_get_pub,
-                patch("eval_runner.config.PQC_IDENTITY_ID", "test_id"),
+                patch("eval_runner.config.PQC_ENABLED", True),
+                patch("eval_runner.config.PQC_STRICT_MODE", True),
+                patch("eval_runner.config.PQC_IDENTITY_ID", identity_id),
+                patch(
+                    "eval_runner.identity.IdentityService.get_pqc_client",
+                    return_value=mock_client_failing,
+                ),
             ):
-                # Certification is transactional and self-verifying,
-                # so the mocked classical signature must be well-formed bytes
-                # and the mocked public key must accept it.
-                mock_priv = MagicMock()
-                mock_priv.sign.return_value = b"\xca\xfe" * 32
-                mock_get_priv.return_value = mock_priv
-                mock_pub = MagicMock()
-                mock_get_pub.return_value = mock_pub
-                mock_client = MagicMock()
-                mock_client.verify_digest.return_value = True
+                with self.assertRaises(RuntimeError) as cm:
+                    verifier.TraceVerifier.sign_trace(
+                        str(tpath1), run_id=rid1, identity_id=identity_id
+                    )
+                self.assertIn("PQC_STRICT_MODE Violation", str(cm.exception))
 
-                # --- CASE 1: PQC ENABLED + STRICT ON + SIGNING FAILURE = FAIL CLOSED ---
-                rid1, tpath1 = _get_case_trace("case1")
-                with (
-                    patch("eval_runner.config.PQC_ENABLED", True),
-                    patch("eval_runner.config.PQC_STRICT_MODE", True),
-                ):
-                    mock_client.sign_digest.side_effect = Exception("API Timeout")
-                    mock_get_client.return_value = mock_client
+            # --- CASE 2: PQC ENABLED + STRICT OFF + SIGNING FAILURE = FAIL OPEN ---
+            rid2, tpath2 = _get_case_trace("case2")
+            mock_client_failing2 = MagicMock()
+            mock_client_failing2.sign_digest.side_effect = Exception("API Timeout")
+            mock_client_failing2.verify_digest.return_value = True
 
-                    with self.assertRaises(RuntimeError) as cm:
-                        verifier.TraceVerifier.sign_trace(str(tpath1), run_id=rid1)
-                    self.assertIn("PQC_STRICT_MODE Violation", str(cm.exception))
+            with (
+                patch("eval_runner.config.PQC_ENABLED", True),
+                patch("eval_runner.config.PQC_STRICT_MODE", False),
+                patch("eval_runner.config.PQC_IDENTITY_ID", identity_id),
+                patch(
+                    "eval_runner.identity.IdentityService.get_pqc_client",
+                    return_value=mock_client_failing2,
+                ),
+            ):
+                # Should NOT raise, should just log warning and continue with classical
+                manifest = verifier.TraceVerifier.sign_trace(
+                    str(tpath2), run_id=rid2, identity_id=identity_id
+                )
+                self.assertEqual(len(manifest["provenance_chain"]), 1)
+                self.assertEqual(manifest["provenance_chain"][0]["algorithm"], "ED25519")
 
-                # --- CASE 2: PQC ENABLED + STRICT OFF + SIGNING FAILURE = FAIL OPEN ---
-                rid2, tpath2 = _get_case_trace("case2")
-                with (
-                    patch("eval_runner.config.PQC_ENABLED", True),
-                    patch("eval_runner.config.PQC_STRICT_MODE", False),
-                ):
-                    mock_client.sign_digest.side_effect = Exception("API Timeout")
-                    mock_get_client.return_value = mock_client
+            # --- CASE 3: PQC ENABLED + STRICT ON + SIGNING SUCCESS = SUCCESS ---
+            rid3, tpath3 = _get_case_trace("case3")
+            mock_client_success = MagicMock()
+            mock_client_success.sign_digest.return_value = "pqc_sig"
+            mock_client_success.verify_digest.return_value = True
 
-                    # Should NOT raise, should just log warning and continue with classical
-                    manifest = verifier.TraceVerifier.sign_trace(str(tpath2), run_id=rid2)
-                    self.assertEqual(len(manifest["provenance_chain"]), 1)
-                    self.assertEqual(manifest["provenance_chain"][0]["algorithm"], "ED25519")
+            with (
+                patch("eval_runner.config.PQC_ENABLED", True),
+                patch("eval_runner.config.PQC_STRICT_MODE", True),
+                patch("eval_runner.config.PQC_IDENTITY_ID", identity_id),
+                patch(
+                    "eval_runner.identity.IdentityService.get_pqc_client",
+                    return_value=mock_client_success,
+                ),
+            ):
+                manifest = verifier.TraceVerifier.sign_trace(
+                    str(tpath3), run_id=rid3, identity_id=identity_id
+                )
+                self.assertEqual(len(manifest["provenance_chain"]), 2)
+                self.assertEqual(manifest["provenance_chain"][1]["algorithm"], "ML-DSA-65")
 
-                # --- CASE 3: PQC ENABLED + STRICT ON + SIGNING SUCCESS = SUCCESS ---
-                rid3, tpath3 = _get_case_trace("case3")
-                with (
-                    patch("eval_runner.config.PQC_ENABLED", True),
-                    patch("eval_runner.config.PQC_STRICT_MODE", True),
-                ):
-                    mock_client.sign_digest.side_effect = None
-                    mock_client.sign_digest.return_value = "pqc_sig"
-                    mock_get_client.return_value = mock_client
-
-                    manifest = verifier.TraceVerifier.sign_trace(str(tpath3), run_id=rid3)
-                    self.assertEqual(len(manifest["provenance_chain"]), 2)
-                    self.assertEqual(manifest["provenance_chain"][1]["algorithm"], "ML-DSA-65")
-
-                # --- CASE 4: PQC DISABLED + STRICT ON = SUCCESS (Classical Only) ---
-                rid4, tpath4 = _get_case_trace("case4")
-                with (
-                    patch("eval_runner.config.PQC_ENABLED", False),
-                    patch("eval_runner.config.PQC_STRICT_MODE", True),
-                ):
-                    manifest = verifier.TraceVerifier.sign_trace(str(tpath4), run_id=rid4)
-                    self.assertEqual(len(manifest["provenance_chain"]), 1)
-                    self.assertEqual(manifest["provenance_chain"][0]["algorithm"], "ED25519")
+            # --- CASE 4: PQC DISABLED + STRICT ON = SUCCESS (Classical Only) ---
+            rid4, tpath4 = _get_case_trace("case4")
+            with (
+                patch("eval_runner.config.PQC_ENABLED", False),
+                patch("eval_runner.config.PQC_STRICT_MODE", True),
+            ):
+                manifest = verifier.TraceVerifier.sign_trace(
+                    str(tpath4), run_id=rid4, identity_id=identity_id
+                )
+                self.assertEqual(len(manifest["provenance_chain"]), 1)
+                self.assertEqual(manifest["provenance_chain"][0]["algorithm"], "ED25519")
 
         finally:
             for d in created_dirs:

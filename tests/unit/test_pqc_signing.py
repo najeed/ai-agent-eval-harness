@@ -50,28 +50,23 @@ class TestPQCSigning(unittest.TestCase):
             logging.getLogger(__name__).debug(f"Tempdir cleanup notice: {cleanup_err}")
         config.RUN_LOG_DIR = self._orig_run_log_dir
 
-    @patch("eval_runner.identity.IdentityService.get_public_key")
-    @patch("eval_runner.identity.IdentityService.get_private_key")
-    def test_hybrid_signing_flow(self, mock_get_priv, mock_get_pub):
-        # Mock ED25519
-        mock_priv = MagicMock()
-        mock_priv.sign.return_value = b"classical_sig"
-        mock_get_priv.return_value = mock_priv
+    def test_hybrid_signing_flow(self):
+        """Hybrid signing (ED25519 + PQC) produces a 2-entry provenance chain."""
+        # Provision a real local identity so the self-verification step succeeds.
+        from eval_runner.identity import IdentityService
 
-        mock_pub = MagicMock()
-        mock_get_pub.return_value = mock_pub
+        identity_id = "pqc_test_signing_id"
+        IdentityService._provision_local_identity(identity_id)
 
-        # Mock CycleCore
+        # Mock CycleCore PQC client only
         mock_client = MagicMock()
         mock_client.sign_digest.return_value = "pqc_sig_hex"
         mock_client.verify_digest.return_value = True
-
-        # Force the client into the service
         identity.IdentityService._pqc_client = mock_client
 
-        # Execute signing
+        # Execute signing with a real identity
         manifest = verifier.TraceVerifier.sign_trace(
-            trace_path=str(self.test_trace), run_id=self.run_id, identity_id="system_id"
+            trace_path=str(self.test_trace), run_id=self.run_id, identity_id=identity_id
         )
 
         # Verify manifest structure
@@ -138,23 +133,22 @@ class TestPQCSigning(unittest.TestCase):
                 mock_client.verify_digest.assert_called_once()
 
     def test_pqc_disabled_fallback(self):
+        """When PQC is disabled, only a classical ED25519 signature is produced."""
         config.PQC_ENABLED = False
 
-        with patch("eval_runner.identity.IdentityService.get_public_key") as mock_get_pub:
-            mock_pub = MagicMock()
-            mock_get_pub.return_value = mock_pub
-            with patch("eval_runner.identity.IdentityService.get_private_key") as mock_get_priv:
-                mock_priv = MagicMock()
-                mock_priv.sign.return_value = b"classical_sig"
-                mock_get_priv.return_value = mock_priv
+        # Provision a real local identity so the self-verification step succeeds.
+        from eval_runner.identity import IdentityService
 
-                manifest = verifier.TraceVerifier.sign_trace(
-                    trace_path=str(self.test_trace), run_id=self.run_id, identity_id="system_id"
-                )
+        identity_id = "pqc_disabled_fallback_id"
+        IdentityService._provision_local_identity(identity_id)
 
-                # Should only have 1 signature
-                self.assertEqual(len(manifest["provenance_chain"]), 1)
-                self.assertEqual(manifest["provenance_chain"][0]["algorithm"], "ED25519")
+        manifest = verifier.TraceVerifier.sign_trace(
+            trace_path=str(self.test_trace), run_id=self.run_id, identity_id=identity_id
+        )
+
+        # Should only have 1 signature
+        self.assertEqual(len(manifest["provenance_chain"]), 1)
+        self.assertEqual(manifest["provenance_chain"][0]["algorithm"], "ED25519")
 
 
 if __name__ == "__main__":

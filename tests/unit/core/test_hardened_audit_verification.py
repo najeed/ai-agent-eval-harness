@@ -611,13 +611,18 @@ def test_verification_authority_split_and_manifest_tamper_detection():
     )
     m_hash = manifest.compute_manifest_hash()
 
-    raw_trace_bytes = b'{"event": "run_start", "_seq": 1}\n{"event": "run_end", "_seq": 2}\n'
+    raw_trace_bytes = (
+        b'{"event": "run_start", "_seq": 1}\n'
+        b'{"event": "assertion_evaluated", "_seq": 2, "assertion": "oracle_1", "passed": true}\n'
+        b'{"event": "run_end", "_seq": 3}\n'
+    )
     trace_hash = f"sha3_256:{hashlib.sha3_256(raw_trace_bytes).hexdigest()}"
     raw_events = [
         {"event": "run_start", "_seq": 1, "data": {}},
-        {"event": "run_end", "_seq": 2, "data": {}},
+        {"event": "assertion_evaluated", "_seq": 2, "assertion": "oracle_1", "passed": True},
+        {"event": "run_end", "_seq": 3, "data": {}},
     ]
-    ev_graph = build_evidence_graph_from_events(raw_events)
+    ev_graph = build_evidence_graph_from_events(raw_events, required_oracle_ids=["oracle_1"])
     ev_root = compute_evidence_graph_root(ev_graph)
 
     pkg = VerificationPackage(
@@ -657,7 +662,7 @@ def test_verification_authority_split_and_manifest_tamper_detection():
         scenario_data=scenario_data,
         require_signature=False,
     )
-    assert art_res["verified"] is True
+    assert art_res["verified"] is True, f"Failures: {art_res.get('failures')}"
     assert art_res["status"] == "CERTIFIED"
 
     # 3. Tamper manifest only: change tenant_id -> ManifestHashMismatch -> UNVERIFIED

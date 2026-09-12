@@ -13,11 +13,15 @@ and hardened trust boundary contracts:
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from pathlib import Path
+from typing import Any
 
 import pytest
 from flask import Flask
 
+from agentv_runtime.finalization import EvaluatorFinalizationRecord
+from agentv_runtime.manifest import compute_scenario_hash
 from eval_runner import config
 from eval_runner.console.routes.trust import trust_bp
 from eval_runner.identity import IdentityService
@@ -52,12 +56,86 @@ def _create_trace(
     runs_dir: Path,
     run_id: str,
     events: list[dict],
+    auto_finalize: bool = True,
+    scenario_data: Mapping[str, Any] | None = None,
 ) -> tuple[Path, Path]:
     vault = runs_dir / run_id
     vault.mkdir(parents=True, exist_ok=True)
     trace = vault / "run.jsonl"
+
+    final_events = list(events)
+    has_finalization = any(e.get("event") == "evaluator_finalization" for e in final_events)
+
+    terminal_count = sum(
+        1 for e in final_events if e.get("event") in ("session_decision", "evaluation_result")
+    )
+    if auto_finalize and not has_finalization and terminal_count == 1:
+        scen_id = "scen_1"
+        scen_hash = None
+        if scenario_data:
+            scen_id = scenario_data.get("id") or scenario_data.get("scenario_id") or scen_id
+            scen_hash = compute_scenario_hash(scenario_data)
+        else:
+            for e in final_events:
+                if e.get("event") in ("run_start", "start"):
+                    scen_id = e.get("scenario_id") or scen_id
+                    scen_hash = e.get("scenario_hash")
+            if not scen_hash:
+                scen_hash = compute_scenario_hash({"id": scen_id, "version": "1.0.0"})
+
+        from agentv_runtime.evidence_graph import (
+            build_evidence_graph_from_events,
+            compute_evidence_graph_root,
+        )
+        from agentv_runtime.manifest import ExecutionManifest
+
+        exec_manifest = ExecutionManifest(
+            manifest_id=f"man_{run_id}",
+            scenario_id=scen_id,
+            scenario_version="1.0.0",
+            scenario_hash=scen_hash,
+        )
+        exec_manifest_path = vault / "execution_manifest.json"
+        exec_manifest_path.write_text(json.dumps(exec_manifest.to_dict()), encoding="utf-8")
+        m_hash = exec_manifest.compute_manifest_hash()
+
+        ev_graph = build_evidence_graph_from_events(final_events)
+        ev_root = compute_evidence_graph_root(ev_graph)
+
+        term_ev = next(
+            e
+            for e in reversed(final_events)
+            if e.get("event") in ("session_decision", "evaluation_result")
+        )
+        data = term_ev.get("data", {}) if isinstance(term_ev.get("data"), dict) else term_ev
+        dec_str = str(data.get("decision") or data.get("status") or "").upper()
+        outcome = "pass" if dec_str == "PASS" else "fail"
+        score = float(
+            data.get("score")
+            if data.get("score") is not None
+            else (1.0 if outcome == "pass" else 0.0)
+        )
+
+        fin_rec = EvaluatorFinalizationRecord(
+            finalization_id=f"fin_{run_id}",
+            run_id=run_id,
+            execution_manifest_hash=m_hash,
+            scenario_id=scen_id,
+            scenario_version="1.0.0",
+            scenario_hash=scen_hash,
+            evaluator_identity="eval_kernel",
+            evaluator_config_hash="sha3_256:0000000000000000000000000000000000000000000000000000000000000000",
+            required_oracle_ids=[],
+            evidence_root_hash=ev_root,
+            outcome=outcome,
+            score=score,
+        )
+        fin_dict = fin_rec.to_dict()
+        fin_dict["finalization_hash"] = fin_rec.compute_finalization_hash()
+        final_events.append({"event": "evaluator_finalization", "data": fin_dict})
+
     with open(trace, "w", encoding="utf-8") as f:
-        for ev in events:
+        for ev in final_events:
             f.write(json.dumps(ev) + "\n")
     return vault, trace
 
@@ -99,7 +177,7 @@ def test_previous_run_manifest_cannot_circularly_influence_certification(cert_va
         {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": False},
         {"event": "session_decision", "data": {"decision": "FAIL", "score": 0.2}},
     ]
-    vault, trace = _create_trace(cert_vault["runs"], run_id, events)
+    vault, trace = _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
 
     # Write a malicious / stale manifest in the vault claiming "certified" and score 1.0
     stale_manifest = vault / "run_manifest.json"
@@ -134,7 +212,7 @@ def test_failed_evaluation_cannot_produce_pass_certificate(cert_vault):
         {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": False},
         {"event": "evaluation_result", "data": {"status": "FAIL", "score": 0.0}},
     ]
-    _create_trace(cert_vault["runs"], run_id, events)
+    _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
 
     res = execute_industrial_certification(
         run_id=run_id,
@@ -162,7 +240,7 @@ def test_provisional_simulated_mode_rejected_for_authoritative_certification(cer
         {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": True},
         {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
     ]
-    _create_trace(cert_vault["runs"], run_id, events)
+    _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
 
     with pytest.raises(ValueError, match="is provisional"):
         execute_industrial_certification(run_id=run_id, scenario_data=scen_data)
@@ -182,7 +260,7 @@ def test_passing_authoritative_run_certified_successfully(cert_vault):
         {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": True},
         {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
     ]
-    _create_trace(cert_vault["runs"], run_id, events)
+    _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
 
     res = execute_industrial_certification(
         run_id=run_id,
@@ -211,7 +289,7 @@ def test_public_verification_endpoint_semantics(cert_vault):
         {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": True},
         {"event": "session_decision", "data": {"decision": "PASS", "score": 0.98}},
     ]
-    _create_trace(cert_vault["runs"], run_id, events)
+    _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
 
     execute_industrial_certification(
         run_id=run_id,
@@ -238,19 +316,23 @@ def test_invalid_run_ids_rejected(cert_vault):
 def test_metadata_binding_with_corrupt_lines_and_attributes(cert_vault):
     """Verify metadata extraction extracts bound scenario and agent identity attributes."""
     run_id = "run-meta-binding"
-    vault = cert_vault["runs"] / run_id
-    vault.mkdir(parents=True, exist_ok=True)
-    trace = vault / "run.jsonl"
-    trace.write_text(
-        '{"event": "run_start", "execution_mode": "live", '
-        '"scenario_id": "scen_1", "agent_id": "ag_1"}\n'
-        "\n"
-        '{"event": "assertion_evaluated", "assertion": "oracle_check", "passed": true}\n'
-        '{"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}}\n',
-        encoding="utf-8",
-    )
-
     scen_data = {"id": "scen_1", "version": "1.0.0"}
+    events = [
+        {
+            "event": "run_start",
+            "execution_mode": "live",
+            "scenario_id": "scen_1",
+            "agent_id": "ag_1",
+        },
+        {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": True},
+        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
+    ]
+    vault, trace = _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
+
+    # Prepend empty lines to verify blank line resilience in trace parser
+    original_text = trace.read_text(encoding="utf-8")
+    trace.write_text("\n\n" + original_text, encoding="utf-8")
+
     res = execute_industrial_certification(
         run_id=run_id,
         identity_id="system_id",

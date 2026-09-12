@@ -401,6 +401,7 @@ class WorkflowInterpreter:
                         item.parent_exec_id,
                         "aborted",
                         record=record,
+                        result=result,
                     )
                     outcome_status = WorkflowStatus.ABORTED
                     outcome_reason = "Execution cancelled during node execution"
@@ -428,6 +429,7 @@ class WorkflowInterpreter:
                         item.parent_exec_id,
                         "failed",
                         record=record,
+                        result=result,
                     )
                     try:
                         next_ready, handled = await self._route_failure(
@@ -463,6 +465,7 @@ class WorkflowInterpreter:
                         item.parent_exec_id,
                         "completed",
                         record=record,
+                        result=result,
                     )
                     if not item.compensating:
                         try:
@@ -973,6 +976,7 @@ class WorkflowInterpreter:
         status: str,
         record: NodeExecutionRecord | None = None,
         generation: str | None = None,
+        result: dict[str, Any] | None = None,
     ) -> None:
         if not self.event_bus:
             return
@@ -1001,6 +1005,13 @@ class WorkflowInterpreter:
                 payload["failure_reason"] = record.failure_reason
             payload["parent_execution_id"] = record.parent_execution_id
             payload["timed_out"] = record.timed_out
+        if result:
+            if "metrics" in result and result["metrics"]:
+                payload["metrics"] = result["metrics"]
+            if "oracle_results" in result and result["oracle_results"]:
+                payload["oracle_results"] = result["oracle_results"]
+            if "node_verdict" in result and result["node_verdict"]:
+                payload["node_verdict"] = result["node_verdict"]
         try:
             from .events import CoreEvents
 

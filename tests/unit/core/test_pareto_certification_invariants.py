@@ -22,7 +22,9 @@ from __future__ import annotations
 
 import json
 import time
+from collections.abc import Mapping
 from pathlib import Path
+from typing import Any
 
 import pytest
 from flask import Flask
@@ -62,12 +64,90 @@ def cert_env(tmp_path, monkeypatch):
     return {"root": root, "runs": runs, "reports": reports, "trust": trust}
 
 
-def _create_trace(runs_dir: Path, run_id: str, events: list[dict]) -> tuple[Path, Path]:
+def _create_trace(
+    runs_dir: Path,
+    run_id: str,
+    events: list[dict],
+    auto_finalize: bool = True,
+    scenario_data: Mapping[str, Any] | None = None,
+) -> tuple[Path, Path]:
     vault = runs_dir / run_id
     vault.mkdir(parents=True, exist_ok=True)
     trace = vault / "run.jsonl"
+
+    final_events = list(events)
+    has_finalization = any(e.get("event") == "evaluator_finalization" for e in final_events)
+
+    terminal_count = sum(
+        1 for e in final_events if e.get("event") in ("session_decision", "evaluation_result")
+    )
+    if auto_finalize and not has_finalization and terminal_count == 1:
+        scen_id = "scen_1"
+        scen_hash = None
+        if scenario_data:
+            scen_id = scenario_data.get("id") or scenario_data.get("scenario_id") or scen_id
+            scen_hash = compute_scenario_hash(scenario_data)
+        else:
+            for e in final_events:
+                if e.get("event") in ("run_start", "start"):
+                    scen_id = e.get("scenario_id") or scen_id
+                    scen_hash = e.get("scenario_hash")
+            if not scen_hash:
+                scen_hash = compute_scenario_hash({"id": scen_id, "version": "1.0.0"})
+
+        from agentv_runtime.evidence_graph import (
+            build_evidence_graph_from_events,
+            compute_evidence_graph_root,
+        )
+        from agentv_runtime.manifest import ExecutionManifest
+
+        exec_manifest = ExecutionManifest(
+            manifest_id=f"man_{run_id}",
+            scenario_id=scen_id,
+            scenario_version="1.0.0",
+            scenario_hash=scen_hash,
+        )
+        exec_manifest_path = vault / "execution_manifest.json"
+        exec_manifest_path.write_text(json.dumps(exec_manifest.to_dict()), encoding="utf-8")
+        m_hash = exec_manifest.compute_manifest_hash()
+
+        ev_graph = build_evidence_graph_from_events(final_events)
+        ev_root = compute_evidence_graph_root(ev_graph)
+
+        term_ev = next(
+            e
+            for e in reversed(final_events)
+            if e.get("event") in ("session_decision", "evaluation_result")
+        )
+        data = term_ev.get("data", {}) if isinstance(term_ev.get("data"), dict) else term_ev
+        dec_str = str(data.get("decision") or data.get("status") or "").upper()
+        outcome = "pass" if dec_str == "PASS" else "fail"
+        score = float(
+            data.get("score")
+            if data.get("score") is not None
+            else (1.0 if outcome == "pass" else 0.0)
+        )
+
+        fin_rec = EvaluatorFinalizationRecord(
+            finalization_id=f"fin_{run_id}",
+            run_id=run_id,
+            execution_manifest_hash=m_hash,
+            scenario_id=scen_id,
+            scenario_version="1.0.0",
+            scenario_hash=scen_hash,
+            evaluator_identity="eval_kernel",
+            evaluator_config_hash="sha3_256:0000000000000000000000000000000000000000000000000000000000000000",
+            required_oracle_ids=[],
+            evidence_root_hash=ev_root,
+            outcome=outcome,
+            score=score,
+        )
+        fin_dict = fin_rec.to_dict()
+        fin_dict["finalization_hash"] = fin_rec.compute_finalization_hash()
+        final_events.append({"event": "evaluator_finalization", "data": fin_dict})
+
     with open(trace, "w", encoding="utf-8") as f:
-        for ev in events:
+        for ev in final_events:
             f.write(json.dumps(ev) + "\n")
     return vault, trace
 
@@ -172,7 +252,7 @@ def test_invariant_3_verification_fails_on_scenario_mismatch(cert_env):
         {"event": "assertion_evaluated", "assertion": "check_1", "passed": True},
         {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
     ]
-    vault, trace = _create_trace(cert_env["runs"], run_id, events)
+    vault, trace = _create_trace(cert_env["runs"], run_id, events, scenario_data=scen_original)
     res = execute_industrial_certification(run_id=run_id, scenario_data=scen_original)
     assert res["certified"] is True
 
@@ -379,7 +459,7 @@ def test_invariant_8_deterministic_certificate_reconstruction(cert_env):
         {"event": "assertion_evaluated", "assertion": "eval_node_1", "passed": True},
         {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
     ]
-    vault, trace = _create_trace(cert_env["runs"], run_id, events)
+    vault, trace = _create_trace(cert_env["runs"], run_id, events, scenario_data=scen_data)
 
     res1 = execute_industrial_certification(run_id=run_id, scenario_data=scen_data)
     manifest1 = res1["manifest"]

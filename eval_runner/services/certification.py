@@ -64,7 +64,10 @@ class CertificationService:
                     line = line.strip()
                     if not line:
                         continue
-                    ev = json.loads(line)
+                    try:
+                        ev = json.loads(line)
+                    except Exception:
+                        continue
                     if ev.get("event") not in ("run_start", "start"):
                         continue
                     data = ev.get("data", {}) or {}
@@ -83,7 +86,7 @@ class CertificationService:
                     if (
                         is_prov
                         or mode_clean in ("simulated", "unknown")
-                        or mode_clean not in ("live", "hybrid", "live_api")
+                        or mode_clean not in ("live", "hybrid")
                     ):
                         return mode, True
                     return mode, False
@@ -147,18 +150,19 @@ class CertificationService:
                             fin_payload = ev["finalization"]
 
                     if fin_payload:
-                        rec = EvaluatorFinalizationRecord.from_dict(fin_payload)
+                        rec = EvaluatorFinalizationRecord.from_dict(
+                            fin_payload, require_authoritative=True
+                        )
                         computed = rec.compute_finalization_hash()
                         claimed = fin_payload.get("finalization_hash")
-                        if claimed and claimed != computed:
-                            logger.error(
-                                "EvaluatorFinalizationRecord hash mismatch: "
-                                "claimed=%s, computed=%s",
-                                claimed,
-                                computed,
+                        if not claimed or claimed != computed:
+                            raise ValueError(
+                                "EvaluatorFinalizationRecord hash mismatch or missing: "
+                                f"claimed={claimed}, computed={computed}"
                             )
-                            return None
                         return rec
+        except ValueError:
+            raise
         except Exception as e:
             logger.debug("Error extracting finalization record from %s: %s", target_trace, e)
         return None
@@ -214,18 +218,26 @@ class CertificationService:
                         if finalization_decision is not None:
                             logger.error("Multiple evaluator finalization records in trace")
                             return "inconclusive", 0.0
-                        rec = EvaluatorFinalizationRecord.from_dict(fin_payload)
-                        computed = rec.compute_finalization_hash()
-                        claimed = fin_payload.get("finalization_hash")
-                        if claimed and claimed != computed:
-                            logger.error("Tampered evaluator finalization record in trace")
+                        try:
+                            rec = EvaluatorFinalizationRecord.from_dict(
+                                fin_payload, require_authoritative=True
+                            )
+                            computed = rec.compute_finalization_hash()
+                            claimed = fin_payload.get("finalization_hash")
+                            if not claimed or claimed != computed:
+                                logger.error("Tampered evaluator finalization record in trace")
+                                return "inconclusive", 0.0
+                            finalization_seen = True
+                            finalization_decision = (
+                                rec.outcome.lower(),
+                                float(rec.score),
+                                "evaluator_finalization",
+                            )
+                        except Exception as fin_err:
+                            logger.error(
+                                "Failed validating EvaluatorFinalizationRecord: %s", fin_err
+                            )
                             return "inconclusive", 0.0
-                        finalization_seen = True
-                        finalization_decision = (
-                            rec.outcome.lower(),
-                            float(rec.score),
-                            "evaluator_finalization",
-                        )
                         continue
 
                     if event_name in (
@@ -372,7 +384,7 @@ class CertificationService:
                 provisional
                 or not clean_mode
                 or clean_mode in ("simulated", "unknown")
-                or clean_mode not in ("live", "hybrid", "live_api")
+                or clean_mode not in ("live", "hybrid")
             ):
                 logger.error(
                     "   [Certification] FAIL CLOSED: Cannot issue certification "
@@ -400,44 +412,42 @@ class CertificationService:
                     f"Run {run_id} has inconclusive outcome: missing terminal evaluation events; "
                     "cannot issue authoritative certification."
                 )
-            elif computed_status == "fail":
-                effective_status = "fail"
-                effective_score = computed_score
-            else:
-                effective_status = "pass"
-                effective_score = computed_score
 
-            # Check for evaluator finalization record or assertion evidence (Defect T2)
+            # Mandatory EvaluatorFinalizationRecord check (P0)
             fin_record = cls.extract_finalization_record(target_trace)
-            evidence_node_count = cls.count_assertion_and_evidence_nodes(target_trace)
-
-            if evidence_node_count == 0 and (
-                fin_record is None
-                or not fin_record.evidence_root_hash
-                or fin_record.evidence_root_hash.endswith(
-                    ":0000000000000000000000000000000000000000000000000000000000000000"
-                )
-            ):
+            if fin_record is None:
                 logger.error(
-                    "   [Certification] FAIL CLOSED: Trace %s contains zero assertion/evidence "
-                    "nodes (decision-only trace)",
+                    "   [Certification] FAIL CLOSED: Trace %s missing mandatory "
+                    "EvaluatorFinalizationRecord",
                     run_id,
                 )
                 raise ValueError(
-                    f"Run {run_id} has zero assertion or evidence nodes (decision-only trace); "
-                    "cannot issue authoritative certification."
+                    f"Run {run_id} missing mandatory authoritative EvaluatorFinalizationRecord; "
+                    "cannot issue certification."
                 )
+
+            if fin_record.run_id != run_id:
+                raise ValueError(
+                    f"FinalizationRunIdMismatch: finalization record run_id '{fin_record.run_id}' "
+                    f"does not match run '{run_id}'"
+                )
+
+            effective_status = "pass" if fin_record.outcome.lower() == "pass" else "fail"
+            effective_score = float(fin_record.score)
 
             # Mandatory scenario and runtime metadata binding
             meta_binding: dict[str, Any] = {}
             embedded_scenario_data: dict[str, Any] | None = None
+            raw_events: list[dict[str, Any]] = []
             try:
                 with open(target_trace, encoding="utf-8") as tf:
                     for line in tf:
-                        if not line.strip():
+                        stripped = line.strip()
+                        if not stripped:
                             continue
                         try:
-                            rec = json.loads(line)
+                            rec = json.loads(stripped)
+                            raw_events.append(rec)
                             ev_name = rec.get("event")
                             rec_data = rec.get("data") if isinstance(rec.get("data"), dict) else {}
                             has_scen = bool(rec.get("scenario_id") or rec_data.get("scenario_id"))
@@ -468,26 +478,52 @@ class CertificationService:
             except Exception as read_err:
                 logger.debug("Could not read trace file for metadata binding: %s", read_err)
 
-            if fin_record is not None:
-                meta_binding["scenario_id"] = fin_record.scenario_id
-                meta_binding["scenario_version"] = fin_record.scenario_version
-                meta_binding["scenario_hash"] = fin_record.scenario_hash
-                meta_binding["evaluator_config_hash"] = fin_record.evaluator_config_hash
-                meta_binding["execution_manifest_hash"] = fin_record.execution_manifest_hash
-                meta_binding["evidence_root_hash"] = fin_record.evidence_root_hash
-                meta_binding["evaluator_finalization_id"] = fin_record.finalization_id
-                meta_binding["evaluator_identity"] = fin_record.evaluator_identity
+            # Reconstruct Evidence Graph using authoritative required_oracle_ids.
+            # NOTE: We do NOT cross-check ev_graph root against fin_record.evidence_root_hash
+            # here because the two computation paths use structurally different algorithms:
+            # - Runner: decision_evidence_root_hash() over in-memory oracle result dicts
+            # - Certification: build_evidence_graph_from_events() over raw JSONL events
+            # The finalization_hash already cryptographically commits to evidence_root_hash,
+            # so the cross-check would be redundant AND would produce false EvidenceRootMismatch
+            # errors. The substantive checks below (completeness, required oracles) are kept.
+            from agentv_runtime.evidence_graph import build_evidence_graph_from_events
+
+            ev_graph = build_evidence_graph_from_events(
+                raw_events, required_oracle_ids=fin_record.required_oracle_ids
+            )
+
+            if effective_status == "pass":
+                if not ev_graph.get("has_substantive_evidence", False):
+                    raise ValueError(
+                        f"Run {run_id} has zero assertion or evidence nodes (decision-only trace); "
+                        "cannot issue authoritative certification."
+                    )
+
+                if not ev_graph.get("has_all_required", True):
+                    missing_oracles = ev_graph.get("missing_required_oracles", [])
+                    raise ValueError(
+                        f"MissingRequiredOracles: trace missing required oracles: {missing_oracles}"
+                    )
+
+                if not ev_graph.get("is_complete_provenance", True):
+                    raise ValueError(
+                        "DirectProvenanceViolation: Evidence graph contains unresolved or "
+                        "carrier fallback provenance."
+                    )
 
             # Mandatory Scenario identity & authoritative scenario_hash verification (Defect T3)
             effective_scenario_data = scenario_data
-            target_scen_id = (
-                scenario_data.get("id") if isinstance(scenario_data, dict) else None
-            ) or meta_binding.get("scenario_id")
-            if not target_scen_id:
-                raise ValueError(
-                    f"Run {run_id} missing mandatory scenario_id in certification trust "
-                    "chain (Defect T3)."
-                )
+            target_scen_id = fin_record.scenario_id
+            if scenario_data and isinstance(scenario_data, dict):
+                scen_id_in_arg = scenario_data.get("id") or scenario_data.get("scenario_id")
+                if scen_id_in_arg and scen_id_in_arg != target_scen_id:
+                    raise ValueError(
+                        f"ScenarioIdMismatch: scenario_data id '{scen_id_in_arg}' does not match "
+                        f"finalization record scenario_id '{target_scen_id}'"
+                    )
+
+            if effective_scenario_data is None and embedded_scenario_data is not None:
+                effective_scenario_data = embedded_scenario_data
 
             if effective_scenario_data is None:
                 try:
@@ -505,9 +541,6 @@ class CertificationService:
                         load_err,
                     )
 
-            if effective_scenario_data is None and embedded_scenario_data is not None:
-                effective_scenario_data = embedded_scenario_data
-
             if effective_scenario_data is None:
                 raise ValueError(
                     f"Run {run_id} cannot resolve authoritative scenario definition for "
@@ -517,31 +550,53 @@ class CertificationService:
             from agentv_runtime.manifest import compute_scenario_hash
 
             canonical_scen_hash = compute_scenario_hash(effective_scenario_data)
-            claimed_hash = meta_binding.get("scenario_hash")
-            if claimed_hash and claimed_hash != canonical_scen_hash:
+            if fin_record.scenario_hash != canonical_scen_hash:
                 raise ValueError(
-                    f"ScenarioHashMismatch: trace claimed scenario_hash '{claimed_hash}' "
-                    f"does not match actual computed scenario hash '{canonical_scen_hash}'"
+                    f"ScenarioHashMismatch: trace claimed scenario_hash "
+                    f"'{fin_record.scenario_hash}' does not match actual computed scenario hash "
+                    f"'{canonical_scen_hash}'"
                 )
-            meta_binding["scenario_id"] = target_scen_id
-            meta_binding["scenario_hash"] = canonical_scen_hash
-            meta_binding["scenario_version"] = str(effective_scenario_data.get("version", "1.0.0"))
 
-            # Execution manifest hash verification (Defect T3)
-            if "execution_manifest_hash" not in meta_binding:
-                import hashlib
+            meta_binding["scenario_id"] = fin_record.scenario_id
+            meta_binding["scenario_version"] = fin_record.scenario_version
+            meta_binding["scenario_hash"] = fin_record.scenario_hash
+            meta_binding["evaluator_config_hash"] = fin_record.evaluator_config_hash
+            meta_binding["execution_manifest_hash"] = fin_record.execution_manifest_hash
+            meta_binding["evidence_root_hash"] = fin_record.evidence_root_hash
+            meta_binding["evaluator_finalization_id"] = fin_record.finalization_id
+            meta_binding["evaluator_identity"] = fin_record.evaluator_identity
+            meta_binding["required_oracle_ids"] = fin_record.required_oracle_ids
 
-                from agentv_runtime.canonical import canonical_json_encode
+            # Authoritative ExecutionManifest binding verification (Defect T3)
+            manifest_file = vault_dir / "execution_manifest.json"
+            if manifest_file.exists():
+                try:
+                    from agentv_runtime.manifest import ExecutionManifest
 
-                exec_context = {
-                    "run_id": run_id,
-                    "scenario_id": target_scen_id,
-                    "scenario_hash": canonical_scen_hash,
-                    "execution_mode": execution_mode,
-                }
-                meta_binding["execution_manifest_hash"] = (
-                    f"sha3_256:{hashlib.sha3_256(canonical_json_encode(exec_context)).hexdigest()}"
-                )
+                    with open(manifest_file, encoding="utf-8") as mf:
+                        m_data = json.load(mf)
+                    exec_manifest = ExecutionManifest.from_dict(m_data)
+                    actual_manifest_hash = exec_manifest.compute_manifest_hash()
+                    if actual_manifest_hash != fin_record.execution_manifest_hash:
+                        raise ValueError(
+                            f"ManifestHashMismatch: finalization record manifest_hash "
+                            f"'{fin_record.execution_manifest_hash}' does not match actual "
+                            f"execution manifest hash '{actual_manifest_hash}'"
+                        )
+                except ValueError:
+                    raise
+                except Exception as e:
+                    raise ValueError(f"Invalid execution manifest in {manifest_file}: {e}") from e
+            else:
+                claimed_manifest_hash = meta_binding.get("execution_manifest_hash")
+                if (
+                    not claimed_manifest_hash
+                    or claimed_manifest_hash != fin_record.execution_manifest_hash
+                ):
+                    raise ValueError(
+                        f"ExecutionManifestMissing: Run {run_id} missing authoritative execution "
+                        f"manifest binding for '{fin_record.execution_manifest_hash}'."
+                    )
 
             # 3. Cryptographic Signature Execution
             manifest = TraceVerifier.sign_trace(
@@ -553,7 +608,7 @@ class CertificationService:
                 policy_ref=policy_ref,
                 ttl_days=ttl or config.GOVERNANCE_TTL_DAYS,
                 metadata=meta_binding or None,
-                execution_mode=execution_mode,
+                execution_mode=clean_mode,
                 provisional=provisional,
                 behavioral_fingerprint_id=behavioral_fingerprint_id,
                 scenario_data=effective_scenario_data,
@@ -565,9 +620,7 @@ class CertificationService:
 
             is_pass = effective_status == "pass"
             # Defect T1 Invariant: never certified=True when provisional=True
-            is_certified = bool(
-                is_pass and not provisional and execution_mode in ("live", "hybrid")
-            )
+            is_certified = bool(is_pass and not provisional and clean_mode in ("live", "hybrid"))
             return {
                 "status": "certified" if is_certified else "attested_failed",
                 "compliance_status": effective_status,
@@ -576,6 +629,8 @@ class CertificationService:
                 "run_id": run_id,
                 "score": effective_score,
                 "manifest": manifest,
+                "package_hash": manifest.get("package_hash"),
+                "verification_package": manifest.get("verification_package"),
             }
 
 

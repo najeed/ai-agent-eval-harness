@@ -77,14 +77,27 @@ def link_assertion(
         or assertion.get("assertion")
         or "unnamed"
     )
+    has_res = bool(
+        assertion.get("has_result", False)
+        or "passed" in assertion
+        or "success" in assertion
+        or "outcome" in assertion
+        or "score" in assertion
+        or "status" in assertion
+    )
+    raw_sev = str(assertion.get("severity") or assertion.get("requiredness") or "required").lower()
+    sev = "informational" if raw_sev in ("informational", "optional") else "required"
     node: dict[str, Any] = {
         "oracle_id": str(oracle_id),
         "kind": assertion.get("source", "metric"),
         "label": assertion.get("metric") or assertion.get("assertion") or "unnamed",
-        "node_id": assertion.get("node"),
+        "node_id": (
+            assertion.get("node") or assertion.get("scenario_node_id") or assertion.get("task_id")
+        ),
         "passed": bool(assertion.get("passed", False)),
-        "severity": assertion.get("severity", "required"),
+        "severity": sev,
         "invalid": bool(assertion.get("invalid", False)),
+        "has_result": has_res,
     }
 
     artifact_name = assertion.get("artifact")
@@ -95,6 +108,7 @@ def link_assertion(
                 "source_ref": str(artifact_name),
                 "content_hash": artifact_hashes[artifact_name],
                 "resolved": True,
+                "is_direct_provenance": False,
             }
         )
         node["row_hash"] = _sha3_hex(canonical_json_encode({**node, "assertion": assertion}))
@@ -171,22 +185,33 @@ def build_evidence_graph(
         all(
             n.get("is_direct_provenance", False) or n.get("source_type") == "artifact"
             for n in nodes
+            if n.get("severity") != "informational"
         )
         if nodes
         else True
     )
 
-    resolved_oracle_ids = {
+    valid_direct_oracle_ids = {
         str(n.get("oracle_id") or n.get("label") or "")
         for n in nodes
         if n.get("resolved")
         and (n.get("is_direct_provenance") or n.get("source_type") == "artifact")
+        and not n.get("invalid")
+        and n.get("has_result")
     }
 
+    missing_required_oracles: list[str] = []
     if required_oracle_ids:
-        has_all_required = all(req in resolved_oracle_ids for req in required_oracle_ids)
+        for req in required_oracle_ids:
+            if str(req) not in valid_direct_oracle_ids:
+                missing_required_oracles.append(str(req))
+        has_all_required = len(missing_required_oracles) == 0
     else:
         has_all_required = True
+
+    has_substantive_evidence = bool(
+        nodes and any(n.get("has_result") and not n.get("invalid") for n in nodes)
+    )
 
     is_complete_provenance = bool(all_direct and has_all_required)
 
@@ -200,6 +225,9 @@ def build_evidence_graph(
         "resolved_count": sum(1 for n in nodes if n.get("resolved")),
         "unresolved_count": sum(1 for n in nodes if not n.get("resolved")),
         "direct_provenance_nodes": sum(1 for n in nodes if n.get("is_direct_provenance")),
+        "has_all_required": has_all_required,
+        "missing_required_oracles": missing_required_oracles,
+        "has_substantive_evidence": has_substantive_evidence,
         "is_complete_provenance": is_complete_provenance,
         "nodes": nodes,
     }
@@ -249,22 +277,51 @@ def build_evidence_graph_from_events(
             "assertion_evaluated",
             "node_execution_end",
             "oracle_evaluated",
+            "oracle_result",
+            "assertion",
+            "metric",
         ):
+            ev_data = evt.get("data") if isinstance(evt.get("data"), dict) else {}
+            oid = (
+                evt.get("oracle_id")
+                or evt.get("metric")
+                or evt.get("assertion")
+                or evt.get("name")
+                or ev_data.get("oracle_id")
+                or ev_data.get("metric")
+                or ev_data.get("assertion")
+            )
+            passed_val = (
+                evt.get("passed")
+                if evt.get("passed") is not None
+                else (
+                    evt.get("success")
+                    if evt.get("success") is not None
+                    else ev_data.get("passed", ev_data.get("success", False))
+                )
+            )
+            has_res = (
+                "passed" in evt
+                or "success" in evt
+                or "score" in evt
+                or "outcome" in evt
+                or "status" in evt
+                or any(k in ev_data for k in ("passed", "success", "score", "outcome", "status"))
+            )
             raw_assertions.append(
                 {
                     "source": "trace_event",
-                    "oracle_id": (
-                        evt.get("oracle_id")
-                        or evt.get("metric")
-                        or evt.get("assertion")
-                        or evt.get("name")
-                    ),
+                    "oracle_id": oid,
                     "metric": evt.get("metric") or evt.get("assertion") or evt.get("name"),
                     "node": (
-                        evt.get("scenario_node_id") or evt.get("node_id") or evt.get("task_id")
+                        evt.get("scenario_node_id")
+                        or evt.get("node_id")
+                        or evt.get("task_id")
+                        or ev_data.get("node_id")
                     ),
-                    "passed": bool(evt.get("passed", evt.get("success", False))),
+                    "passed": bool(passed_val),
                     "event_seq": seq_val,
+                    "has_result": has_res,
                 }
             )
 
@@ -280,8 +337,43 @@ def build_evidence_graph_from_events(
                             "oracle_id": m.get("oracle_id") or m.get("metric") or m.get("name"),
                             "metric": m.get("metric") or m.get("name"),
                             "node": node_id,
-                            "passed": bool(m.get("success", m.get("passed", False))),
+                            "passed": (m.get("outcome") == "PASS")
+                            if "outcome" in m
+                            else bool(m.get("success", m.get("passed", False))),
                             "event_seq": seq_val,
+                            "has_result": (
+                                "outcome" in m
+                                or "success" in m
+                                or "passed" in m
+                                or "score" in m
+                                or "status" in m
+                            ),
+                            "invalid": bool(m.get("invalid", False))
+                            or (m.get("status") == "EVALUATION_INVALID")
+                            or (m.get("outcome") == "INVALID"),
+                        }
+                    )
+            for or_res in data.get("oracle_results", []):
+                if isinstance(or_res, dict):
+                    raw_assertions.append(
+                        {
+                            "source": "execution_graph_node",
+                            "oracle_id": or_res.get("oracle_id") or or_res.get("id"),
+                            "metric": or_res.get("metric") or or_res.get("name"),
+                            "node": node_id,
+                            "passed": (or_res.get("outcome") == "PASS")
+                            if "outcome" in or_res
+                            else bool(or_res.get("success", or_res.get("passed", False))),
+                            "event_seq": seq_val,
+                            "has_result": (
+                                "outcome" in or_res
+                                or "success" in or_res
+                                or "passed" in or_res
+                                or "score" in or_res
+                                or "status" in or_res
+                            ),
+                            "invalid": bool(or_res.get("invalid", False))
+                            or (or_res.get("outcome") == "INVALID"),
                         }
                     )
 
@@ -294,7 +386,7 @@ def build_evidence_graph_from_events(
                     raw_assertions.append(
                         {
                             **a,
-                            "event_seq": a.get("event_seq") or seq_val,
+                            "event_seq": a.get("event_seq"),
                         }
                     )
 
@@ -303,18 +395,20 @@ def build_evidence_graph_from_events(
     seen_oracles: dict[str, dict[str, Any]] = {}
     for a in raw_assertions:
         oid = str(a.get("oracle_id") or a.get("metric") or a.get("assertion") or "unnamed")
-        nid = str(a.get("node") or "")
-        key = f"{oid}::{nid}"
-        if key not in seen_oracles:
+        nid = str(a.get("node") or a.get("scenario_node_id") or a.get("task_id") or "")
+        key = f"{oid}::{nid}" if nid else oid
+        existing_key = key if key in seen_oracles else (oid if oid in seen_oracles else None)
+        if existing_key is None:
             seen_oracles[key] = a
+            seen_oracles[oid] = a
             assertions.append(a)
         else:
-            # If current has a direct event_seq distinct from carrier, upgrade it
-            prev = seen_oracles[key]
+            prev = seen_oracles[existing_key]
             if not prev.get("event_seq") and a.get("event_seq"):
                 idx = assertions.index(prev)
                 assertions[idx] = a
                 seen_oracles[key] = a
+                seen_oracles[oid] = a
 
     return build_evidence_graph(
         events_with_lines,
@@ -327,3 +421,15 @@ def build_evidence_graph_from_events(
 def compute_evidence_graph_root(graph: dict[str, Any]) -> str:
     """Returns the single-commit root hash from an Evidence Graph dictionary."""
     return str(graph.get("evidence_root_hash") or graph.get("root_hash") or "")
+
+
+__all__ = [
+    "EVIDENCE_GRAPH_VERSION",
+    "build_evidence_graph",
+    "build_evidence_graph_from_events",
+    "compute_evidence_graph_root",
+    "decision_evidence_root_hash",
+    "hash_source_line",
+    "index_events_by_seq",
+    "link_assertion",
+]

@@ -84,8 +84,11 @@ async def record_interaction(agent_url: str):
 
     finally:
         # Save to canonical vault layout runs/<run_id>/run.jsonl
+        from eval_runner.run_lifecycle import assert_can_write_trace
+
         from .trace_utils import AESJsonEncoder
 
+        assert_can_write_trace(run_id)
         with open(log_file, "w", encoding="utf-8") as f:
             for e in events:
                 f.write(json.dumps(e, cls=AESJsonEncoder) + "\n")

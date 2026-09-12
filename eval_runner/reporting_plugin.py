@@ -43,6 +43,8 @@ class ReportingPlugin(BaseEvalPlugin):
                     "score": consistency_score,
                     "threshold": 0.0,
                     "success": True,
+                    "severity": "informational",
+                    "requiredness": "INFORMATIONAL",
                 }
             )
 

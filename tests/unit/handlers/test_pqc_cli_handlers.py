@@ -11,6 +11,66 @@ from eval_runner.identity import IdentityService
 from eval_runner.verifier import TraceVerifier
 
 
+def _make_finalization_event(
+    run_id: str, scenario_id: str, events: list[str], outcome: str = "pass", score: float = 1.0
+) -> str:
+    """
+    Build a valid EvaluatorFinalizationRecord event
+    from a list of already-serialized JSONL lines.
+    """
+    import hashlib
+
+    from agentv_runtime.canonical import canonical_json_encode
+    from agentv_runtime.evidence_graph import build_evidence_graph_from_events
+    from agentv_runtime.finalization import EvaluatorFinalizationRecord
+    from agentv_runtime.manifest import compute_scenario_hash
+
+    parsed = []
+    for line in events:
+        line = line.strip()
+        if line:
+            try:
+                parsed.append(json.loads(line))
+            except Exception:
+                pass
+
+    ev_graph = build_evidence_graph_from_events(parsed)
+    evidence_root = ev_graph.get(
+        "evidence_root_hash", f"sha3_256:{hashlib.sha3_256(b'empty').hexdigest()}"
+    )
+
+    scenario_data = {"id": scenario_id, "version": "1.0.0"}
+    scen_hash = compute_scenario_hash(scenario_data)
+    exec_manifest_payload = {
+        "run_id": run_id,
+        "scenario_id": scenario_id,
+        "scenario_hash": scen_hash,
+        "execution_mode": "live",
+    }
+    exec_manifest_hash = (
+        f"sha3_256:{hashlib.sha3_256(canonical_json_encode(exec_manifest_payload)).hexdigest()}"
+    )
+
+    rec = EvaluatorFinalizationRecord(
+        finalization_id=f"fin_{run_id}",
+        run_id=run_id,
+        execution_manifest_hash=exec_manifest_hash,
+        scenario_id=scenario_id,
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+        evaluator_identity="test_evaluator",
+        evaluator_config_hash="sha3_256:abc123",
+        required_oracle_ids=[],
+        evidence_root_hash=evidence_root,
+        outcome=outcome,
+        score=score,
+        terminal_seq=1,
+    )
+    fin_dict = rec.to_dict()
+    fin_dict["finalization_hash"] = rec.compute_finalization_hash()
+    return json.dumps({"event": "evaluator_finalization", "data": fin_dict})
+
+
 @pytest.fixture
 def pqc_env(tmp_path, monkeypatch):
     """Setup a physical context for PQC CLI testing."""
@@ -46,7 +106,10 @@ def pqc_env(tmp_path, monkeypatch):
     )
     metrics_ev = json.dumps({"event": "summary_metrics", "metrics": {"success_rate": 1.0}})
     end_ev = json.dumps({"event": "run_end", "outcome": "pass", "status": "pass", "score": 1.0})
-    trace_path.write_text(f"{start_ev}\n{assert_ev}\n{metrics_ev}\n{end_ev}\n", encoding="utf-8")
+
+    core_events = [start_ev, assert_ev, metrics_ev, end_ev]
+    fin_ev = _make_finalization_event(run_id, "test_scenario", core_events)
+    trace_path.write_text("\n".join(core_events + [fin_ev]) + "\n", encoding="utf-8")
 
     return {
         "root": root,
