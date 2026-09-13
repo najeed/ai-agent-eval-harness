@@ -153,12 +153,22 @@ class CertificationService:
                         rec = EvaluatorFinalizationRecord.from_dict(
                             fin_payload, require_authoritative=True
                         )
-                        computed = rec.compute_finalization_hash()
-                        claimed = fin_payload.get("finalization_hash")
-                        if not claimed or claimed != computed:
+
+                        # Authoritative Evaluator Signature Verification (Defect 1)
+                        from eval_runner.identity import IdentityService
+
+                        eval_pub = IdentityService.get_public_key(
+                            rec.evaluator_identity, auto_provision=False
+                        )
+                        if not eval_pub:
                             raise ValueError(
-                                "EvaluatorFinalizationRecord hash mismatch or missing: "
-                                f"claimed={claimed}, computed={computed}"
+                                f"EvaluatorIdentityUntrusted: evaluator '{rec.evaluator_identity}' "
+                                "is not authorized in external trust root."
+                            )
+                        if not rec.verify_signature(eval_pub):
+                            raise ValueError(
+                                f"EvaluatorSignatureInvalid: signature for "
+                                f"'{rec.evaluator_identity}' failed cryptographic verification."
                             )
                         return rec
         except ValueError:
@@ -195,15 +205,6 @@ class CertificationService:
 
                     event_name = ev.get("event")
 
-                    if finalization_seen:
-                        # Defect T4: Reject any event appended after finalization marker
-                        logger.error(
-                            "Monotonic terminal boundary violation: "
-                            "Event '%s' found after finalization marker",
-                            event_name,
-                        )
-                        return "inconclusive", 0.0
-
                     fin_payload = None
                     if event_name == "evaluator_finalization":
                         fin_payload = ev.get("data") if isinstance(ev.get("data"), dict) else ev
@@ -214,19 +215,37 @@ class CertificationService:
                         elif isinstance(ev.get("finalization"), dict):
                             fin_payload = ev["finalization"]
 
-                    if fin_payload:
-                        if finalization_decision is not None:
+                    if finalization_seen:
+                        # Defect T4: Reject any event appended after finalization marker
+                        if fin_payload or event_name == "evaluator_finalization":
                             logger.error("Multiple evaluator finalization records in trace")
-                            return "inconclusive", 0.0
+                        else:
+                            logger.error(
+                                "Monotonic terminal boundary violation: "
+                                "Event '%s' found after finalization marker",
+                                event_name,
+                            )
+                        return "inconclusive", 0.0
+
+                    if fin_payload:
                         try:
                             rec = EvaluatorFinalizationRecord.from_dict(
                                 fin_payload, require_authoritative=True
                             )
-                            computed = rec.compute_finalization_hash()
-                            claimed = fin_payload.get("finalization_hash")
-                            if not claimed or claimed != computed:
-                                logger.error("Tampered evaluator finalization record in trace")
+
+                            # Authoritative Evaluator Signature Verification (Defect 1)
+                            from eval_runner.identity import IdentityService
+
+                            eval_pub = IdentityService.get_public_key(
+                                rec.evaluator_identity, auto_provision=False
+                            )
+                            if not eval_pub or not rec.verify_signature(eval_pub):
+                                logger.error(
+                                    "Invalid evaluator signature for '%s' in trace",
+                                    rec.evaluator_identity,
+                                )
                                 return "inconclusive", 0.0
+
                             finalization_seen = True
                             finalization_decision = (
                                 rec.outcome.lower(),
@@ -314,6 +333,17 @@ class CertificationService:
 
             if finalization_decision is not None:
                 final_status, final_score, _ = finalization_decision
+                for prev_status, _prev_score, ev_name in extracted_decisions:
+                    if prev_status != final_status:
+                        logger.error(
+                            "Contradictory terminal decisions in trace: event '%s' declared '%s' "
+                            "while evaluator finalization declared '%s'. Finalization must confirm "
+                            "a consistent terminal decision, not override contradiction.",
+                            ev_name,
+                            prev_status,
+                            final_status,
+                        )
+                        return "inconclusive", 0.0
                 return final_status, final_score
 
             if not extracted_decisions:
@@ -479,18 +509,26 @@ class CertificationService:
                 logger.debug("Could not read trace file for metadata binding: %s", read_err)
 
             # Reconstruct Evidence Graph using authoritative required_oracle_ids.
-            # NOTE: We do NOT cross-check ev_graph root against fin_record.evidence_root_hash
-            # here because the two computation paths use structurally different algorithms:
-            # - Runner: decision_evidence_root_hash() over in-memory oracle result dicts
-            # - Certification: build_evidence_graph_from_events() over raw JSONL events
-            # The finalization_hash already cryptographically commits to evidence_root_hash,
-            # so the cross-check would be redundant AND would produce false EvidenceRootMismatch
-            # errors. The substantive checks below (completeness, required oracles) are kept.
             from agentv_runtime.evidence_graph import build_evidence_graph_from_events
 
             ev_graph = build_evidence_graph_from_events(
                 raw_events, required_oracle_ids=fin_record.required_oracle_ids
             )
+            recomputed_evidence_root = ev_graph.get("evidence_root_hash", "")
+
+            # Single Canonical Evidence-Root Cross-Check (Defect 2)
+            if fin_record.evidence_root_hash != recomputed_evidence_root:
+                raise ValueError(
+                    f"EvidenceRootMismatch: finalization record evidence_root_hash "
+                    f"'{fin_record.evidence_root_hash}' does not match recomputed "
+                    f"evidence graph root '{recomputed_evidence_root}'"
+                )
+
+            if not ev_graph.get("is_complete_provenance", True):
+                raise ValueError(
+                    "DirectProvenanceViolation: Evidence graph contains unresolved or "
+                    "carrier fallback provenance."
+                )
 
             if effective_status == "pass":
                 if not ev_graph.get("has_substantive_evidence", False):
@@ -503,12 +541,6 @@ class CertificationService:
                     missing_oracles = ev_graph.get("missing_required_oracles", [])
                     raise ValueError(
                         f"MissingRequiredOracles: trace missing required oracles: {missing_oracles}"
-                    )
-
-                if not ev_graph.get("is_complete_provenance", True):
-                    raise ValueError(
-                        "DirectProvenanceViolation: Evidence graph contains unresolved or "
-                        "carrier fallback provenance."
                     )
 
             # Mandatory Scenario identity & authoritative scenario_hash verification (Defect T3)
@@ -567,36 +599,31 @@ class CertificationService:
             meta_binding["evaluator_identity"] = fin_record.evaluator_identity
             meta_binding["required_oracle_ids"] = fin_record.required_oracle_ids
 
-            # Authoritative ExecutionManifest binding verification (Defect T3)
+            # Authoritative ExecutionManifest binding verification (Defect 5)
             manifest_file = vault_dir / "execution_manifest.json"
-            if manifest_file.exists():
-                try:
-                    from agentv_runtime.manifest import ExecutionManifest
+            if not manifest_file.exists():
+                raise ValueError(
+                    f"ExecutionManifestMissing: Run {run_id} missing mandatory "
+                    "execution_manifest.json artifact; cannot issue authoritative "
+                    "certification without physical manifest."
+                )
+            try:
+                from agentv_runtime.manifest import ExecutionManifest
 
-                    with open(manifest_file, encoding="utf-8") as mf:
-                        m_data = json.load(mf)
-                    exec_manifest = ExecutionManifest.from_dict(m_data)
-                    actual_manifest_hash = exec_manifest.compute_manifest_hash()
-                    if actual_manifest_hash != fin_record.execution_manifest_hash:
-                        raise ValueError(
-                            f"ManifestHashMismatch: finalization record manifest_hash "
-                            f"'{fin_record.execution_manifest_hash}' does not match actual "
-                            f"execution manifest hash '{actual_manifest_hash}'"
-                        )
-                except ValueError:
-                    raise
-                except Exception as e:
-                    raise ValueError(f"Invalid execution manifest in {manifest_file}: {e}") from e
-            else:
-                claimed_manifest_hash = meta_binding.get("execution_manifest_hash")
-                if (
-                    not claimed_manifest_hash
-                    or claimed_manifest_hash != fin_record.execution_manifest_hash
-                ):
+                with open(manifest_file, encoding="utf-8") as mf:
+                    m_data = json.load(mf)
+                exec_manifest = ExecutionManifest.from_dict(m_data)
+                actual_manifest_hash = exec_manifest.compute_manifest_hash()
+                if actual_manifest_hash != fin_record.execution_manifest_hash:
                     raise ValueError(
-                        f"ExecutionManifestMissing: Run {run_id} missing authoritative execution "
-                        f"manifest binding for '{fin_record.execution_manifest_hash}'."
+                        f"ManifestHashMismatch: finalization record manifest_hash "
+                        f"'{fin_record.execution_manifest_hash}' does not match actual "
+                        f"execution manifest hash '{actual_manifest_hash}'"
                     )
+            except ValueError:
+                raise
+            except Exception as e:
+                raise ValueError(f"Invalid execution manifest in {manifest_file}: {e}") from e
 
             # 3. Cryptographic Signature Execution
             manifest = TraceVerifier.sign_trace(

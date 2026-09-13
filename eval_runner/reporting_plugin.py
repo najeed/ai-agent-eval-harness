@@ -35,18 +35,20 @@ class ReportingPlugin(BaseEvalPlugin):
 
             consistency_score = metrics.calculate_consistency_score(summaries)
 
-            # Inject consistency metric into the last attempt's results for backward compat with tests, E501, E501  # noqa: E501
+            # Inject consistency metric into the last attempt's results for backward compat
             last_task_res = all_attempt_results[-1][t_idx]
-            last_task_res["metrics"].append(
-                {
-                    "metric": "consistency_score",
-                    "score": consistency_score,
-                    "threshold": 0.0,
-                    "success": True,
-                    "severity": "informational",
-                    "requiredness": "INFORMATIONAL",
-                }
-            )
+            metric_data = {
+                "metric": "consistency_score",
+                "oracle_id": "consistency_score",
+                "score": consistency_score,
+                "threshold": 0.0,
+                "success": True,
+                "passed": True,
+                "outcome": "PASS",
+                "severity": "informational",
+                "requiredness": "INFORMATIONAL",
+            }
+            last_task_res["metrics"].append(metric_data)
 
     def _extract_summary_from_history(self, history):
         agent_msgs = [m for m in history if m["role"] == "agent"]

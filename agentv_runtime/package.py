@@ -47,6 +47,57 @@ class VerificationPackage:
     algorithm: str = "ed25519"
     key_id: str | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
+    evaluation_hash: str = ""
+    verification_hash: str = ""
+    certificate_hash: str = ""
+    schema_version: str = PACKAGE_SCHEMA_VERSION
+    producer_identity: str = "agentv.packaging_engine"
+    producer_version: str = PACKAGE_SCHEMA_VERSION
+    parent_artifact_refs: list[str] = field(default_factory=list)
+
+    def __post_init__(self):
+        if not self.parent_artifact_refs:
+            refs = [
+                h
+                for h in [
+                    self.scenario_hash,
+                    self.manifest_hash,
+                    self.trace_hash,
+                    self.evidence_root_hash,
+                    self.evaluation_hash,
+                    self.verification_hash,
+                    self.certificate_hash,
+                ]
+                if h
+            ]
+            object.__setattr__(self, "parent_artifact_refs", refs)
+
+    @property
+    def content_hash(self) -> str:
+        return self.compute_package_hash()
+
+    def compute_content_hash(self) -> str:
+        """Alias for canonical content hash computation."""
+        return self.compute_package_hash()
+
+    def commitment_graph(self) -> dict[str, str]:
+        """
+        Returns the cryptographic commitment graph:
+        Scenario hash -> Execution Manifest hash -> Trace / Evidence root ->
+        Evaluation artifact hash -> Verification result hash -> Certificate signature
+        -> Package hash.
+        """
+        return {
+            "scenario_hash": self.scenario_hash,
+            "manifest_hash": self.manifest_hash,
+            "trace_hash": self.trace_hash,
+            "evidence_root_hash": self.evidence_root_hash,
+            "evaluation_hash": self.evaluation_hash,
+            "verification_hash": self.verification_hash,
+            "certificate_signature": self.signature or "",
+            "certificate_hash": self.certificate_hash,
+            "package_hash": self.compute_package_hash(),
+        }
 
     def canonical_payload_dict(self) -> dict[str, Any]:
         """Returns the canonical deterministic dictionary of the attestation payload."""
@@ -112,6 +163,13 @@ class VerificationPackage:
             key_id=key_id,
             public_key_pem=pub_key,
             metadata=self.metadata,
+            evaluation_hash=self.evaluation_hash,
+            verification_hash=self.verification_hash,
+            certificate_hash=self.certificate_hash,
+            schema_version=self.schema_version,
+            producer_identity=self.producer_identity,
+            producer_version=self.producer_version,
+            parent_artifact_refs=list(self.parent_artifact_refs),
         )
 
         payload_bytes = presigned.canonical_payload_bytes()
@@ -231,6 +289,8 @@ class VerificationPackage:
     def to_dict(self) -> dict[str, Any]:
         data = asdict(self)
         data["package_hash"] = self.compute_package_hash()
+        data["content_hash"] = self.compute_package_hash()
+        data["commitment_graph"] = self.commitment_graph()
         return data
 
     @classmethod
@@ -278,5 +338,12 @@ class VerificationPackage:
             "algorithm": algo,
             "key_id": key_id,
             "metadata": dict(data.get("metadata") or {}),
+            "evaluation_hash": str(data.get("evaluation_hash") or ""),
+            "verification_hash": str(data.get("verification_hash") or ""),
+            "certificate_hash": str(data.get("certificate_hash") or ""),
+            "schema_version": str(data.get("schema_version") or PACKAGE_SCHEMA_VERSION),
+            "producer_identity": str(data.get("producer_identity") or "agentv.packaging_engine"),
+            "producer_version": str(data.get("producer_version") or PACKAGE_SCHEMA_VERSION),
+            "parent_artifact_refs": list(data.get("parent_artifact_refs") or []),
         }
         return cls(**fields)

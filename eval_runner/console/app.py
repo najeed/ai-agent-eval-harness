@@ -12,12 +12,10 @@ from .auth import auth_bp
 from .routes import (
     agent_targets_bp,
     analyze_bp,
-    compliance_packs_bp,
     core_bp,
     demo_bp,
     evidence_bp,
     hitl_bp,
-    publish_bp,
     register_core_routes,
     run_bp,
     scenario_bp,
@@ -38,6 +36,9 @@ print(
 )
 
 
+UI_BUILD_DIR = None
+
+
 def create_app():
     # Eager Hydration: Ensure scenarios are loaded before the first request
     from eval_runner.catalog import ScenarioCatalog
@@ -51,10 +52,24 @@ def create_app():
     # visual-console/dist is the ONLY supported UI. The legacy
     # CDN-loaded prototype (ui/visual-debugger) was removed — silently
     # degrading to it broke air-gapped deployments and hid the missing build.
-    v2_ui_dist = os.path.abspath(config.PROJECT_ROOT / "ui" / "visual-console" / "dist")
-    if os.path.exists(v2_ui_dist):
-        ui_path = v2_ui_dist
-    else:
+    ui_target = (
+        UI_BUILD_DIR
+        or getattr(config, "UI_BUILD_DIR", None)
+        or (config.PROJECT_ROOT / "ui" / "visual-console" / "dist")
+    )
+    v2_ui_dist = os.path.abspath(ui_target)
+    is_prod = os.getenv("AGENTV_ENV", "").lower() == "production" or getattr(
+        config, "IS_PRODUCTION", False
+    )
+    ui_exists = os.path.isdir(v2_ui_dist) and os.path.exists(os.path.join(v2_ui_dist, "index.html"))
+    if not ui_exists:
+        if is_prod:
+            raise RuntimeError(
+                "[Console][CRITICAL] Production environment (AGENTV_ENV=production) "
+                "requires built visual-console artifact at ui/visual-console/dist. "
+                "Visual Console frontend bundle missing. "
+                "Failing closed because GUI assets are missing."
+            )
         ui_path = v2_ui_dist  # Flask tolerates an absent static dir at boot.
         print(
             "   [Console][WARN] ui/visual-console/dist is NOT BUILT. The "
@@ -62,6 +77,8 @@ def create_app():
             "with: cd ui/visual-console && npm ci && npm run build",
             flush=True,
         )
+    else:
+        ui_path = v2_ui_dist
     app = Flask(__name__, static_folder=ui_path, static_url_path="/static")
 
     # Bootstrap key initialization for zero-config non-production environments
@@ -152,12 +169,20 @@ def create_app():
     app.register_blueprint(scenario_bp, url_prefix="/api")
     app.register_blueprint(run_bp, url_prefix="/api")
     app.register_blueprint(analyze_bp, url_prefix="/api")
-    app.register_blueprint(publish_bp, url_prefix="/api")
     app.register_blueprint(suites_bp, url_prefix="/api")
-    app.register_blueprint(compliance_packs_bp, url_prefix="/api")
     app.register_blueprint(hitl_bp, url_prefix="/api")
     app.register_blueprint(evidence_bp, url_prefix="/api")
     app.register_blueprint(agent_targets_bp)
+
+    # Control plane management endpoints are omitted from default OSS runtime registration
+    # but can be enabled via configuration or extension plugins (P1.8)
+    if getattr(config, "ENABLE_CONTROL_PLANE", False) or os.getenv(
+        "AGENTV_ENABLE_CONTROL_PLANE", ""
+    ).lower() in ("1", "true"):
+        from .routes import compliance_packs_bp, publish_bp
+
+        app.register_blueprint(publish_bp, url_prefix="/api")
+        app.register_blueprint(compliance_packs_bp, url_prefix="/api")
     app.register_blueprint(trust_bp)
 
     # Demo blueprint is physically absent in production mode (ENABLE_DEMO=false).
@@ -351,6 +376,8 @@ def create_app():
     @app.route("/docs", strict_slashes=False)
     @app.route("/docs/api", strict_slashes=False)
     def index(path=""):
+        if not os.path.exists(os.path.join(ui_path, "index.html")):
+            return jsonify({"error": "Visual Console not built"}), 404
         return send_from_directory(ui_path, "index.html")
 
     # Demo routes are only registered when ENABLE_DEMO=true

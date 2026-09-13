@@ -651,6 +651,9 @@ def test_base_eval_plugin_all_hooks_are_noop():
     plugin.on_register_simulators(registry={})
     plugin.on_discover_metrics(registry=None)
     plugin.on_diagnose_failure(taxonomy=None)
+    assert plugin.on_before_commit(context={}) is True
+    assert plugin.on_rollback(context={}) is True
+    assert plugin.on_approval_request(context={}) is True
 
 
 def test_load_plugins_missing_branches(tmp_path, monkeypatch):
@@ -733,3 +736,103 @@ def test_plugins_manager_load_no_spec(tmp_path, monkeypatch):
         m.setattr(importlib.util, "spec_from_file_location", mock_spec)
         with pytest.raises(ImportError):
             pm.load(str(f))
+
+
+def test_invoke_with_timeout_executor_shutdown_cleanup_exception():
+    with patch(
+        "concurrent.futures.ThreadPoolExecutor.shutdown",
+        side_effect=RuntimeError("Shutdown failed"),
+    ):
+        res = _invoke_with_timeout(lambda: "success_value")
+        assert res == "success_value"
+
+
+def test_load_plugins_with_triage_plugin_import_and_instantiation_failure(monkeypatch):
+    import types
+
+    fake_mod = types.ModuleType("eval_runner.triage_plugin")
+
+    class FakeTroubleshootingPlugin(BaseEvalPlugin):
+        pass
+
+    fake_mod.TroubleshootingPlugin = FakeTroubleshootingPlugin
+    monkeypatch.setitem(sys.modules, "eval_runner.triage_plugin", fake_mod)
+
+    class CrashingPluginClass:
+        __name__ = "CrashingPluginClass"
+
+        def __init__(self):
+            raise RuntimeError("Instantiation crash")
+
+    pm = PluginManager()
+    with patch("importlib.metadata.entry_points", return_value=[]):
+        with patch("eval_runner.discovery.discover_plugins_in_directory", return_value=[]):
+            with patch("eval_runner.coverage_plugin.CoveragePlugin", CrashingPluginClass):
+                pm.load_plugins(force=True)
+                assert any(isinstance(p, FakeTroubleshootingPlugin) for p in pm.plugins)
+
+
+def test_trigger_interceptors_on_before_commit_mutated_state_diff():
+    pm = PluginManager()
+    received_diffs = []
+
+    class MutatingCommitPlugin(BaseEvalPlugin):
+        def on_before_commit(self, context, state_diff=None):
+            return {"state_diff": {"updated_key": 999}}
+
+    class InspectingCommitPlugin(BaseEvalPlugin):
+        def on_before_commit(self, context, state_diff=None):
+            received_diffs.append(state_diff)
+            return True
+
+    pm.register(MutatingCommitPlugin(), origin="CORE")
+    pm.register(InspectingCommitPlugin(), origin="CORE")
+
+    res = pm.trigger_interceptor("on_before_commit", None, {"initial": 1})
+    assert res is not False
+    assert received_diffs == [{"updated_key": 999}]
+
+
+def test_trigger_interceptor_on_tool_request_mutations():
+    pm = PluginManager()
+    received_tools = []
+    received_args = []
+
+    class MutatingToolPlugin(BaseEvalPlugin):
+        def on_tool_request(self, context, tool_name, arguments=None):
+            return {"tool_name": "mutated_tool", "arguments": {"mutated_arg": 42}}
+
+    class InspectingToolPlugin(BaseEvalPlugin):
+        def on_tool_request(self, context, tool_name, arguments=None):
+            received_tools.append(tool_name)
+            received_args.append(arguments)
+            return True
+
+    pm.register(MutatingToolPlugin(), origin="CORE")
+    pm.register(InspectingToolPlugin(), origin="CORE")
+
+    res = pm.trigger_interceptor("on_tool_request", None, "original_tool", {"original_arg": 1})
+    assert res is not False
+    assert received_tools == ["mutated_tool"]
+    assert received_args == [{"mutated_arg": 42}]
+
+
+def test_plugin_provenance_duplicate_and_root_discovery():
+    pm = PluginManager()
+
+    class RootSamplePlugin(BaseEvalPlugin):
+        pass
+
+    # 1. Root discovery appends plugin and records provenance
+    with patch(
+        "eval_runner.discovery.discover_plugins_in_directory",
+        return_value=[RootSamplePlugin()],
+    ):
+        with patch("importlib.metadata.entry_points", return_value=[]):
+            pm.load_plugins(force=True)
+            assert any(isinstance(p, RootSamplePlugin) for p in pm.plugins)
+
+    # 2. Duplicate _record_provenance returns early
+    prev_len = len(pm.provenance_map)
+    pm._record_provenance(RootSamplePlugin(), origin="PROJECT")
+    assert len(pm.provenance_map) == prev_len

@@ -25,7 +25,7 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-from agentv_runtime.evidence_graph import decision_evidence_root_hash  # noqa: E402
+from agentv_runtime.evidence_graph import compute_evidence_graph_root  # noqa: E402
 
 from . import config, events, metrics  # noqa: E402
 from .context import TurnContext  # noqa: E402
@@ -1119,7 +1119,7 @@ class SessionManager:
             "assertions": assertions,
             # Single-commit root over the assertion set: any change to any
             # assertion flips this hash, binding the decision to its evidence.
-            "evidence_root_hash": decision_evidence_root_hash(assertions),
+            "evidence_root_hash": compute_evidence_graph_root(assertions),
             "policy_checks": [],
             "evidence_refs": evidence_refs,
             "identity": {

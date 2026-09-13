@@ -74,6 +74,7 @@ def ent_client(tmp_path):
     with (
         patch.object(config, "PROJECT_ROOT", tmp_path),
         patch.object(config, "RUN_LOG_DIR", runs_dir),
+        patch.object(config, "ENABLE_CONTROL_PLANE", True, create=True),
     ):
         app = create_app()
         app.secret_key = "test_enterprise_secret_key"

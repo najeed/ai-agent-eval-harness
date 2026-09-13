@@ -16,6 +16,7 @@ from agentv_runtime import (
     manifest,
     package,
     results,
+    scenario,
 )
 from agentv_runtime.canonical import canonical_json_dumps, canonical_json_encode
 from agentv_runtime.config import ConfigResolver, ResolvedRuntimeConfig
@@ -48,8 +49,14 @@ from agentv_runtime.results import (
     Attestation,
     EvaluationResult,
     ExecutionResult,
+    RunTrace,
     VerificationCertificate,
     VerificationResult,
+)
+from agentv_runtime.scenario import (
+    CanonicalScenarioIR,
+    ScenarioDefinition,
+    ScenarioVersion,
 )
 
 __version__ = "2.0.0"
@@ -71,6 +78,11 @@ __all__ = [
     "extension_contract",
     "package",
     "canonical",
+    "scenario",
+    "ScenarioDefinition",
+    "CanonicalScenarioIR",
+    "ScenarioVersion",
+    "RunTrace",
     "ConfigResolver",
     "ResolvedRuntimeConfig",
     "ExecutionManifest",

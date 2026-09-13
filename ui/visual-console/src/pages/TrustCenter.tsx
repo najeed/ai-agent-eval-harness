@@ -9,6 +9,13 @@ interface VerifyResult {
   timestamp: string;
   method: string;
   manifest: any;
+  cryptographically_valid?: boolean;
+  certificate_valid?: boolean;
+  evaluation_passed?: boolean;
+  evaluation_verdict?: string;
+  compliance_score?: number | null;
+  policy_compliant?: boolean;
+  certificate_authoritative?: boolean;
 }
 
 export const TrustCenter: React.FC = () => {

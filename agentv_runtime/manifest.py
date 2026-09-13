@@ -64,19 +64,40 @@ class ExecutionManifest:
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     created_by: str = "system"
     metadata: dict[str, Any] = field(default_factory=dict)
+    schema_version: str = "2.0.0"
+    producer_identity: str = "agentv.manifest_builder"
+    producer_version: str = "2.0.0"
+    parent_artifact_refs: list[str] = field(default_factory=list)
+
+    def __post_init__(self):
+        if not self.parent_artifact_refs and self.scenario_hash:
+            object.__setattr__(self, "parent_artifact_refs", [self.scenario_hash])
+
+    @property
+    def content_hash(self) -> str:
+        """Content-addressed hash identical to canonical manifest hash."""
+        return self.compute_manifest_hash()
+
+    def compute_content_hash(self) -> str:
+        """Alias for canonical content hash computation."""
+        return self.compute_manifest_hash()
 
     def to_dict(self) -> dict[str, Any]:
         """Converts the execution manifest to a standard JSON-serializable dictionary."""
-        return asdict(self)
+        d = asdict(self)
+        d["content_hash"] = self.compute_manifest_hash()
+        return d
 
     @classmethod
     def from_dict(cls, data: Mapping[str, Any]) -> ExecutionManifest:
         """Constructs an immutable ExecutionManifest from a mapping."""
+        scen_hash = str(data.get("scenario_hash", ""))
+        parent_refs = list(data.get("parent_artifact_refs") or ([scen_hash] if scen_hash else []))
         return cls(
             manifest_id=str(data.get("manifest_id", "")),
             scenario_id=str(data.get("scenario_id", "")),
             scenario_version=str(data.get("scenario_version", "1.0.0")),
-            scenario_hash=str(data.get("scenario_hash", "")),
+            scenario_hash=scen_hash,
             tenant_id=str(data.get("tenant_id", "default")),
             workspace_id=str(data.get("workspace_id", "default")),
             agent_config=dict(data.get("agent_config") or {}),
@@ -85,6 +106,10 @@ class ExecutionManifest:
             created_at=str(data.get("created_at") or datetime.now(UTC).isoformat()),
             created_by=str(data.get("created_by", "system")),
             metadata=dict(data.get("metadata") or {}),
+            schema_version=str(data.get("schema_version", "2.0.0")),
+            producer_identity=str(data.get("producer_identity", "agentv.manifest_builder")),
+            producer_version=str(data.get("producer_version", "2.0.0")),
+            parent_artifact_refs=parent_refs,
         )
 
     def compute_manifest_hash(self) -> str:

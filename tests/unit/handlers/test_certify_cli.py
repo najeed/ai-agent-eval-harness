@@ -1,5 +1,6 @@
 import json
 from argparse import Namespace
+from typing import Any
 
 import pytest
 
@@ -8,17 +9,23 @@ from eval_runner.handlers import evaluation
 
 
 def _make_finalization_event(
-    run_id: str, scenario_id: str, events: list[str], outcome: str = "pass", score: float = 1.0
+    run_id: str,
+    scenario_id: str,
+    events: list[str],
+    outcome: str = "pass",
+    score: float = 1.0,
+    run_dir: Any = None,
 ) -> str:
     """
     Build a valid EvaluatorFinalizationRecord event
     from a list of already-serialized JSONL lines.
     """
     import hashlib
+    from pathlib import Path
 
     from agentv_runtime.evidence_graph import build_evidence_graph_from_events
     from agentv_runtime.finalization import EvaluatorFinalizationRecord
-    from agentv_runtime.manifest import compute_scenario_hash
+    from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
 
     parsed = []
     for line in events:
@@ -36,17 +43,17 @@ def _make_finalization_event(
 
     scenario_data = {"id": scenario_id, "version": "1.0.0"}
     scen_hash = compute_scenario_hash(scenario_data)
-    exec_manifest_payload = {
-        "run_id": run_id,
-        "scenario_id": scenario_id,
-        "scenario_hash": scen_hash,
-        "execution_mode": "live",
-    }
-    from agentv_runtime.canonical import canonical_json_encode
-
-    exec_manifest_hash = (
-        f"sha3_256:{hashlib.sha3_256(canonical_json_encode(exec_manifest_payload)).hexdigest()}"
+    exec_manifest = ExecutionManifest(
+        manifest_id=f"man_{run_id}",
+        scenario_id=scenario_id,
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
     )
+    exec_manifest_hash = exec_manifest.compute_manifest_hash()
+    if run_dir is not None:
+        (Path(run_dir) / "execution_manifest.json").write_text(
+            json.dumps(exec_manifest.to_dict()), encoding="utf-8"
+        )
 
     rec = EvaluatorFinalizationRecord(
         finalization_id=f"fin_{run_id}",
@@ -63,8 +70,8 @@ def _make_finalization_event(
         score=score,
         terminal_seq=1,
     )
+    rec = rec.sign()
     fin_dict = rec.to_dict()
-    fin_dict["finalization_hash"] = rec.compute_finalization_hash()
     return json.dumps({"event": "evaluator_finalization", "data": fin_dict})
 
 
@@ -115,7 +122,7 @@ def certify_env(tmp_path, monkeypatch):
     end_ev = json.dumps({"event": "run_end", "outcome": "pass", "status": "pass", "score": 1.0})
 
     core_events = [start_ev, assert_ev, metrics_ev, end_ev]
-    fin_ev = _make_finalization_event(run_id, "test_scenario", core_events)
+    fin_ev = _make_finalization_event(run_id, "test_scenario", core_events, run_dir=run_dir)
     trace_path.write_text("\n".join(core_events + [fin_ev]) + "\n", encoding="utf-8")
 
     return {"root": root, "run_id": run_id, "trace_path": trace_path}

@@ -163,3 +163,63 @@ def test_approval_interceptions_and_manager_integration(sample_node):
     plugin.on_step_start(None, "node_1", {"approval_race": True})
     with pytest.raises(PermissionError, match="ApprovalRaceCondition"):
         approval_mgr.request_approval("task_1", "wire_tool", {"amount": 100})
+
+
+def test_runtime_mutation_before_evaluation_and_clean_fallbacks():
+    # 1. context.scenario_data branch
+    class ContextData:
+        scenario_data = {"id": "scen_data_1"}
+
+    p1 = RuntimeMutationPlugin()
+    p1.before_evaluation(ContextData())
+    assert p1.scenario == {"id": "scen_data_1"}
+
+    # 2. context.scenario branch
+    class ContextScen:
+        scenario = {"id": "scen_fallback"}
+
+    p2 = RuntimeMutationPlugin()
+    p2.before_evaluation(ContextScen())
+    assert p2.scenario == {"id": "scen_fallback"}
+
+    # 3. on_tool_request default clean pass-through
+    p3 = RuntimeMutationPlugin()
+    p3.on_step_start(None, "n1", {})
+    assert p3.on_tool_request(None, "any_tool", {"k": "v"}) is True
+
+    # 4. on_before_commit with single-key diff in partial commit
+    p4 = RuntimeMutationPlugin()
+    p4.on_step_start(None, "n2", {"partial_commit_simulated": True})
+    res_single = p4.on_before_commit(None, {"single_key": 1})
+    assert isinstance(res_single, dict)
+    assert res_single["state_diff"] == {"single_key": 1}
+
+    # 5. on_before_commit commit_after_cancel fault
+    p5 = RuntimeMutationPlugin()
+    p5.on_step_start(None, "n3", {"commit_after_cancel": True})
+    res_cancel = p5.on_before_commit(None, {"any": 2})
+    assert isinstance(res_cancel, dict)
+    assert res_cancel["commit_after_cancel_tracked"] is True
+
+    # 6. on_before_commit clean pass-through
+    p6 = RuntimeMutationPlugin()
+    p6.on_step_start(None, "n4", {})
+    assert p6.on_before_commit(None, {"a": 1}) is True
+
+    # 7. on_rollback clean pass-through and scenario policy corruption
+    p7 = RuntimeMutationPlugin(scenario={"failure_policy": {"rollback_handler_corrupted": True}})
+    p7.on_step_start(None, "n5", {})
+    assert p7.on_rollback(None, {"action": "undo"}) is False
+
+    p7_meta = RuntimeMutationPlugin(scenario={"metadata": {"rollback_handler_corrupted": True}})
+    p7_meta.on_step_start(None, "n6", {})
+    assert p7_meta.on_rollback(None, {"action": "undo"}) is False
+
+    p7_clean = RuntimeMutationPlugin()
+    p7_clean.on_step_start(None, "n7", {})
+    assert p7_clean.on_rollback(None, {"action": "undo"}) is True
+
+    # 8. on_approval_request clean pass-through
+    p8 = RuntimeMutationPlugin()
+    p8.on_step_start(None, "n8", {})
+    assert p8.on_approval_request(None, {"token": "valid"}) is True

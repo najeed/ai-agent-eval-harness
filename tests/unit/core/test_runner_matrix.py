@@ -322,3 +322,80 @@ async def test_run_scenario_from_async_context():
         mock_default_run.return_value = MagicMock(pass_at_k=1.0)
         res = run_scenario(scenario, runner=None)
         assert res.pass_at_k == 1.0
+
+
+@pytest.mark.asyncio
+async def test_default_runner_manifest_persistence_failure(tmp_path, monkeypatch):
+    import json
+
+    runner = DefaultRunner()
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
+    scenario = {"id": "test_scen_fail", "version": "1.0.0"}
+    with patch("eval_runner.session.SessionManager") as mock_session:
+        mock_session.return_value.execute_tasks = AsyncMock(return_value=[])
+        original_dump = json.dump
+
+        def _failing_dump(obj, fp, *args, **kwargs):
+            if "execution_manifest.json" in getattr(fp, "name", ""):
+                raise OSError("Simulated disk error writing manifest")
+            return original_dump(obj, fp, *args, **kwargs)
+
+        with patch("json.dump", side_effect=_failing_dump):
+            res = await runner.run(scenario, attempts=1)
+            assert res is not None
+
+
+@pytest.mark.asyncio
+async def test_default_runner_trace_read_failure_and_assertion_fallbacks(tmp_path, monkeypatch):
+    runner = DefaultRunner()
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
+    scenario = {"id": "test_scen_assertions"}
+
+    run_dir = tmp_path / "run_assertions_test"
+    run_dir.mkdir(parents=True, exist_ok=True)
+    # Bad JSON line triggers JSONDecodeError on read
+    (run_dir / "run.jsonl").write_text("invalid json line\n", encoding="utf-8")
+
+    sample_attempt = [
+        123,  # non-dict inner row to hit line 380
+        {
+            "workflow_verdict": {"status": "completed"},
+            "oracle_results": [
+                "oracle_str_id",
+                {"oracle_id": "oracle_dict_id", "passed": True},
+            ],
+            "metrics": [
+                "metric_str_id",
+                {"name": "metric_dict_name", "passed": True},
+            ],
+        },
+    ]
+
+    with patch("eval_runner.session.SessionManager") as mock_session:
+        mock_session.return_value.execute_tasks = AsyncMock(return_value=sample_attempt)
+        res = await runner.run(scenario, attempts=1, run_id="run_assertions_test")
+        assert res is not None
+
+
+@pytest.mark.asyncio
+async def test_default_runner_evaluator_signing_none_key_and_exception(tmp_path, monkeypatch):
+    runner = DefaultRunner()
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
+    scenario = {"id": "test_scen_sign_exc"}
+
+    # 1. IdentityService returns None -> fallback self-signing
+    with patch("eval_runner.session.SessionManager") as mock_session:
+        mock_session.return_value.execute_tasks = AsyncMock(return_value=[])
+        with patch("eval_runner.identity.IdentityService.get_private_key", return_value=None):
+            res_none = await runner.run(scenario, attempts=1)
+            assert res_none is not None
+
+    # 2. IdentityService raises exception -> caught and logged
+    with patch("eval_runner.session.SessionManager") as mock_session:
+        mock_session.return_value.execute_tasks = AsyncMock(return_value=[])
+        with patch(
+            "eval_runner.identity.IdentityService.get_private_key",
+            side_effect=RuntimeError("KMS unavailable"),
+        ):
+            res_exc = await runner.run(scenario, attempts=1)
+            assert res_exc is not None

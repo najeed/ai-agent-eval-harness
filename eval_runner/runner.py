@@ -17,7 +17,7 @@ from typing import Any  # noqa: E402
 
 from agentv_runtime.results import EvaluationResult  # noqa: E402
 
-from . import events, plugins  # noqa: E402
+from . import config, events, plugins  # noqa: E402
 from .context import EvaluationContext  # noqa: E402
 from .execution_ir import WorkflowStatus  # noqa: E402
 from .reproducibility import (  # noqa: E402
@@ -332,23 +332,38 @@ class DefaultRunner(BaseRunner):
                 1 for res in all_attempt_results if self._is_attempt_successful(res)
             )
 
-            # Compute authoritative EvaluatorFinalizationRecord (Defect T2/T4)
-            import hashlib
+            # Compute authoritative EvaluatorFinalizationRecord & Manifest (Defect 1/2/5)
+            import json
 
-            from agentv_runtime.canonical import canonical_json_encode
-            from agentv_runtime.evidence_graph import decision_evidence_root_hash
+            from agentv_runtime.evidence_graph import build_evidence_graph_from_events
             from agentv_runtime.finalization import EvaluatorFinalizationRecord
-            from agentv_runtime.manifest import compute_scenario_hash
+            from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
 
             scen_hash = compute_scenario_hash(scenario)
-            exec_manifest_payload = {
-                "run_id": effective_run_id,
-                "scenario_id": str(scenario_identifier),
-                "scenario_hash": scen_hash,
-                "execution_mode": str(execution_mode),
-            }
-            exec_manifest_raw = hashlib.sha3_256(canonical_json_encode(exec_manifest_payload))
-            exec_manifest_hash = f"sha3_256:{exec_manifest_raw.hexdigest()}"
+            scen_ver = str(
+                scenario.get("version")
+                or (scenario.get("metadata") or {}).get("version")
+                or "1.0.0"
+            )
+
+            # 1. Authoritative physical ExecutionManifest artifact (Defect 5)
+            exec_manifest = ExecutionManifest(
+                manifest_id=f"man_{effective_run_id}",
+                scenario_id=str(scenario_identifier),
+                scenario_version=scen_ver,
+                scenario_hash=scen_hash,
+                runtime_config={"execution_mode": str(execution_mode)},
+            )
+            exec_manifest_hash = exec_manifest.compute_manifest_hash()
+
+            run_vault_dir = config.RUN_LOG_DIR / effective_run_id
+            run_vault_dir.mkdir(parents=True, exist_ok=True)
+            manifest_file = run_vault_dir / "execution_manifest.json"
+            try:
+                with open(manifest_file, "w", encoding="utf-8") as mf:
+                    json.dump(exec_manifest.to_dict(), mf, indent=2)
+            except Exception as e:
+                logger.debug("Failed saving execution_manifest.json to run vault: %s", e)
 
             req_oracles: list[str] = []
             collected_assertions: list[dict[str, Any]] = []
@@ -384,24 +399,38 @@ class DefaultRunner(BaseRunner):
                             if m not in req_oracles:
                                 req_oracles.append(m)
 
-            evidence_root = (
-                decision_evidence_root_hash(collected_assertions)
-                if collected_assertions
-                else f"sha3_256:{hashlib.sha3_256(b'empty_evidence_root').hexdigest()}"
-            )
+            # 2. Authoritative canonical evidence graph root (Defect 2)
+            final_trace_path = run_vault_dir / "run.jsonl"
+            trace_events: list[dict[str, Any]] = []
+            if final_trace_path.exists():
+                try:
+                    with open(final_trace_path, encoding="utf-8") as tf:
+                        for line in tf:
+                            s = line.strip()
+                            if s:
+                                trace_events.append(json.loads(s))
+                except Exception as read_err:
+                    logger.debug("Failed reading trace for evidence graph root: %s", read_err)
 
+            if not trace_events:
+                for a in collected_assertions:
+                    trace_events.append({"event": "assertion_evaluated", **a})
+
+            ev_graph = build_evidence_graph_from_events(
+                trace_events, required_oracle_ids=req_oracles
+            )
+            evidence_root = ev_graph["evidence_root_hash"]
+
+            # 3. Authenticated EvaluatorFinalizationRecord (Defect 1)
+            evaluator_id = "eval_runner.runner.EvaluationKernel"
             finalization_record = EvaluatorFinalizationRecord(
                 finalization_id=f"fin_{effective_run_id}",
                 run_id=effective_run_id,
                 execution_manifest_hash=exec_manifest_hash,
                 scenario_id=str(scenario_identifier),
-                scenario_version=str(
-                    scenario.get("version")
-                    or (scenario.get("metadata") or {}).get("version")
-                    or "1.0.0"
-                ),
+                scenario_version=scen_ver,
                 scenario_hash=scen_hash,
-                evaluator_identity="eval_runner.runner.EvaluationKernel",
+                evaluator_identity=evaluator_id,
                 evaluator_config_hash=getattr(self.resolved_config, "config_hash", "") or "none",
                 required_oracle_ids=req_oracles,
                 evidence_root_hash=evidence_root,
@@ -409,8 +438,18 @@ class DefaultRunner(BaseRunner):
                 score=float(pass_at_k),
                 terminal_seq=len(all_attempt_results),
             )
+            try:
+                from eval_runner.identity import IdentityService
+
+                eval_priv = IdentityService.get_private_key(evaluator_id, auto_provision=True)
+                if eval_priv:
+                    finalization_record = finalization_record.sign(eval_priv)
+                else:
+                    finalization_record = finalization_record.sign()
+            except Exception as sign_err:
+                logger.debug("Evaluator signing error in runner: %s", sign_err)
+
             fin_dict = finalization_record.to_dict()
-            fin_dict["finalization_hash"] = finalization_record.compute_finalization_hash()
 
             events.emit(
                 events.CoreEvents.STRATEGY_END,
@@ -508,7 +547,11 @@ class DefaultRunner(BaseRunner):
             return False
 
         # 1. Authoritative workflow verdict must exist and be COMPLETED.
-        verdict_rows = [r for r in attempt_results if isinstance(r.get("workflow_verdict"), dict)]
+        verdict_rows = [
+            r
+            for r in attempt_results
+            if isinstance(r, dict) and isinstance(r.get("workflow_verdict"), dict)
+        ]
         if not verdict_rows:
             return False
         for vr in verdict_rows:
@@ -517,6 +560,8 @@ class DefaultRunner(BaseRunner):
                 return False
 
         for res in attempt_results:
+            if not isinstance(res, dict):
+                continue
             # 2. Evaluation validity is non-negotiable.
             if res.get("triage_tag") == "EVALUATION_INVALID":
                 return False

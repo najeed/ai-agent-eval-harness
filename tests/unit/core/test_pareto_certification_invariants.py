@@ -60,6 +60,7 @@ def cert_env(tmp_path, monkeypatch):
 
     IdentityService._provision_local_identity("system_id")
     IdentityService._provision_local_identity("test_signer")
+    IdentityService._provision_local_identity("eval_kernel")
 
     return {"root": root, "runs": runs, "reports": reports, "trust": trust}
 
@@ -142,8 +143,8 @@ def _create_trace(
             outcome=outcome,
             score=score,
         )
+        fin_rec = fin_rec.sign()
         fin_dict = fin_rec.to_dict()
-        fin_dict["finalization_hash"] = fin_rec.compute_finalization_hash()
         final_events.append({"event": "evaluator_finalization", "data": fin_dict})
 
     with open(trace, "w", encoding="utf-8") as f:
@@ -314,8 +315,8 @@ def test_invariant_4_event_appended_after_finalization_blocks_certification(cert
         outcome="pass",
         score=1.0,
     )
+    fin_rec = fin_rec.sign()
     fin_dict = fin_rec.to_dict()
-    fin_dict["finalization_hash"] = fin_rec.compute_finalization_hash()
 
     events = [
         {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_fin"},
@@ -374,8 +375,13 @@ def test_invariant_5_claimed_pqc_proof_unavailable_fails_verification(cert_env, 
 # ==============================================================================
 
 
-def test_invariant_6_signer_identity_cannot_differ_from_declared_publisher(cert_env):
+def test_invariant_6_signer_identity_cannot_differ_from_declared_publisher(cert_env, monkeypatch):
     """Extension verify-publisher route rejects mismatched caller identity_id."""
+    test_key = "test_ci_service_key_12345"
+    monkeypatch.setattr(config, "SERVICE_API_KEY", test_key)
+    monkeypatch.setenv("SERVICE_API_KEY", test_key)
+    monkeypatch.setenv("AGENTV_TEST_AUTH_BYPASS", "1")
+
     app = Flask(__name__)
     app.register_blueprint(trust_bp)
     client = app.test_client()
@@ -393,7 +399,7 @@ def test_invariant_6_signer_identity_cannot_differ_from_declared_publisher(cert_
         "identity_id": "malicious_attacker_identity",
     }
 
-    headers = {"X-API-Key": config.SERVICE_API_KEY}
+    headers = {"X-API-Key": test_key}
     res = client.post("/api/v1/extensions/verify-publisher", json=payload, headers=headers)
     assert res.status_code == 400
     data = res.get_json()

@@ -1699,3 +1699,90 @@ async def test_workflow_interpreter_edge_branches_comprehensive():
     ):
         res_dq, out_dq = await interp_dq.run(mock_success_exec)
         assert "b1" in out_dq.dropped_after_cap_node_ids
+
+
+@pytest.mark.asyncio
+async def test_workflow_interpreter_predicate_error_in_route_failure():
+    from eval_runner.execution_ir import PredicateEvaluationError
+
+    plan = _plan({"workflow": {"nodes": [{"id": "n_fail"}], "edges": []}})
+    interp = WorkflowInterpreter(plan=plan, identity=_identity())
+
+    async def _failing_exec(*args, **kwargs):
+        return {"status": "failed"}
+
+    with patch.object(
+        interp, "_route_failure", side_effect=PredicateEvaluationError("Bad failure predicate")
+    ):
+        res, out = await interp.run(_failing_exec)
+        assert out.status == WorkflowStatus.FAILED
+        assert out.evaluation_valid is False
+        assert "Unhandled node failure" in out.reason
+
+
+@pytest.mark.asyncio
+async def test_workflow_interpreter_predicate_error_in_route_success():
+    from eval_runner.execution_ir import PredicateEvaluationError
+
+    plan = _plan({"workflow": {"nodes": [{"id": "n_ok"}], "edges": []}})
+    interp = WorkflowInterpreter(plan=plan, identity=_identity())
+
+    async def _success_exec(*args, **kwargs):
+        return {"status": "success"}
+
+    with patch.object(
+        interp, "_route_success", side_effect=PredicateEvaluationError("Bad success predicate")
+    ):
+        res, out = await interp.run(_success_exec)
+        assert out.status == WorkflowStatus.FAILED
+        assert out.evaluation_valid is False
+        assert "Predicate evaluation error" in out.reason
+
+
+@pytest.mark.asyncio
+async def test_workflow_interpreter_pending_compensations_fail_closed():
+    plan = _plan({"workflow": {"nodes": [{"id": "term_1"}], "edges": []}})
+    interp = WorkflowInterpreter(plan=plan, identity=_identity())
+
+    async def _success_exec(*args, **kwargs):
+        return {"status": "success"}
+
+    original_route_success = interp._route_success
+
+    async def _leak_route_success(node_id, item, result, state):
+        state.pending_compensations = 1
+        return await original_route_success(node_id, item, result, state)
+
+    with patch.object(interp, "_route_success", side_effect=_leak_route_success):
+        res, out = await interp.run(_success_exec)
+        assert out.status == WorkflowStatus.FAILED
+        assert out.reason == "Compensation path did not complete"
+
+
+def test_workflow_interpreter_emit_node_with_metrics_and_verdicts():
+    bus_mock = MagicMock()
+    interp = WorkflowInterpreter(
+        plan=_plan({"workflow": {"nodes": [{"id": "n1"}]}}),
+        identity=_identity(),
+        event_bus=bus_mock,
+    )
+    record = NodeExecutionRecord(
+        scenario_node_id="n1",
+        execution_instance_id="inst_1",
+        parent_execution_id=None,
+        iteration=1,
+        status="completed",
+        duration_ms=10.5,
+    )
+    result = {
+        "metrics": [{"metric": "m1"}],
+        "oracle_results": [{"oracle": "o1"}],
+        "node_verdict": {"overall": "success"},
+    }
+    interp._emit_node("n1", 1, None, "completed", record=record, result=result)
+    assert bus_mock.emit.called
+    call_args = bus_mock.emit.call_args[0]
+    payload = call_args[1]
+    assert payload["metrics"] == [{"metric": "m1"}]
+    assert payload["oracle_results"] == [{"oracle": "o1"}]
+    assert payload["node_verdict"] == {"overall": "success"}

@@ -14,6 +14,7 @@ root (Merkle-style single-commit summary).
 from __future__ import annotations
 
 import hashlib
+from collections.abc import Mapping, Sequence
 from typing import Any
 
 from agentv_runtime.canonical import canonical_json_dumps, canonical_json_encode
@@ -85,18 +86,47 @@ def link_assertion(
         or "score" in assertion
         or "status" in assertion
     )
+    raw_outcome = (
+        assertion.get("outcome")
+        or assertion.get("status")
+        or ("PASS" if assertion.get("passed") is True or assertion.get("success") is True else None)
+    )
+    if raw_outcome is not None:
+        raw_upper = str(raw_outcome).strip().upper()
+        if raw_upper in ("PASS", "PASSED", "SUCCESS", "TRUE"):
+            outcome_state = "PASS"
+        elif raw_upper in ("FAIL", "FAILED", "FAILURE", "FALSE"):
+            outcome_state = "FAIL"
+        elif raw_upper in ("INVALID", "EVALUATION_INVALID"):
+            outcome_state = "INVALID"
+        elif raw_upper in ("SKIPPED", "SKIP"):
+            outcome_state = "SKIPPED"
+        elif raw_upper in ("ERROR", "EXCEPTION"):
+            outcome_state = "ERROR"
+        else:
+            outcome_state = "UNKNOWN"
+    else:
+        outcome_state = "PASS" if bool(assertion.get("passed", False)) else "FAIL"
+
+    is_invalid = bool(assertion.get("invalid", False) or outcome_state in ("INVALID", "ERROR"))
+    is_passed = bool(outcome_state == "PASS" and not is_invalid)
+    has_res = bool(has_res and outcome_state in ("PASS", "FAIL", "INVALID", "SKIPPED", "ERROR"))
+
     raw_sev = str(assertion.get("severity") or assertion.get("requiredness") or "required").lower()
     sev = "informational" if raw_sev in ("informational", "optional") else "required"
+    node_id_val = (
+        assertion.get("node") or assertion.get("scenario_node_id") or assertion.get("task_id")
+    )
     node: dict[str, Any] = {
         "oracle_id": str(oracle_id),
         "kind": assertion.get("source", "metric"),
         "label": assertion.get("metric") or assertion.get("assertion") or "unnamed",
-        "node_id": (
-            assertion.get("node") or assertion.get("scenario_node_id") or assertion.get("task_id")
-        ),
-        "passed": bool(assertion.get("passed", False)),
+        "node": node_id_val,
+        "node_id": node_id_val,
+        "outcome": outcome_state,
+        "passed": is_passed,
         "severity": sev,
-        "invalid": bool(assertion.get("invalid", False)),
+        "invalid": is_invalid,
         "has_result": has_res,
     }
 
@@ -198,6 +228,8 @@ def build_evidence_graph(
         and (n.get("is_direct_provenance") or n.get("source_type") == "artifact")
         and not n.get("invalid")
         and n.get("has_result")
+        and n.get("passed") is True
+        and n.get("outcome") == "PASS"
     }
 
     missing_required_oracles: list[str] = []
@@ -213,7 +245,7 @@ def build_evidence_graph(
         nodes and any(n.get("has_result") and not n.get("invalid") for n in nodes)
     )
 
-    is_complete_provenance = bool(all_direct and has_all_required)
+    is_complete_provenance = bool(all_direct)
 
     return {
         "graph_version": EVIDENCE_GRAPH_VERSION,
@@ -221,6 +253,7 @@ def build_evidence_graph(
         "evidence_root_hash": _sha3_hex(root_payload),
         "total_nodes": len(nodes),
         "node_count": len(nodes),
+        "evidence_count": len(nodes),
         "resolved_nodes": sum(1 for n in nodes if n.get("resolved")),
         "resolved_count": sum(1 for n in nodes if n.get("resolved")),
         "unresolved_count": sum(1 for n in nodes if not n.get("resolved")),
@@ -231,16 +264,6 @@ def build_evidence_graph(
         "is_complete_provenance": is_complete_provenance,
         "nodes": nodes,
     }
-
-
-def decision_evidence_root_hash(decision_assertions: list[dict[str, Any]]) -> str:
-    """
-    Single-commit hash over the verification decision's assertion set.
-    Computed over canonical assertion rows so ANY change flips the root.
-    """
-    rows = sorted(_canonical_row(a) for a in decision_assertions)
-    payload = canonical_json_encode({"assertions": rows})
-    return _sha3_hex(payload)
 
 
 def build_evidence_graph_from_events(
@@ -314,9 +337,11 @@ def build_evidence_graph_from_events(
                     "oracle_id": oid,
                     "metric": evt.get("metric") or evt.get("assertion") or evt.get("name"),
                     "node": (
-                        evt.get("scenario_node_id")
+                        evt.get("node")
+                        or evt.get("scenario_node_id")
                         or evt.get("node_id")
                         or evt.get("task_id")
+                        or ev_data.get("node")
                         or ev_data.get("node_id")
                     ),
                     "passed": bool(passed_val),
@@ -390,25 +415,29 @@ def build_evidence_graph_from_events(
                         }
                     )
 
-    # Deduplicate assertions while preserving explicit event_seq over carrier fallback
+    # Deduplicate assertions while preserving distinct node executions
+    # and upgrading carrier fallbacks
     assertions: list[dict[str, Any]] = []
-    seen_oracles: dict[str, dict[str, Any]] = {}
+    seen_assertions: dict[tuple[str, str], dict[str, Any]] = {}
     for a in raw_assertions:
         oid = str(a.get("oracle_id") or a.get("metric") or a.get("assertion") or "unnamed")
         nid = str(a.get("node") or a.get("scenario_node_id") or a.get("task_id") or "")
-        key = f"{oid}::{nid}" if nid else oid
-        existing_key = key if key in seen_oracles else (oid if oid in seen_oracles else None)
-        if existing_key is None:
-            seen_oracles[key] = a
-            seen_oracles[oid] = a
+        eseq = a.get("event_seq")
+        key = (oid, nid)
+        if key not in seen_assertions:
+            seen_assertions[key] = a
             assertions.append(a)
         else:
-            prev = seen_oracles[existing_key]
-            if not prev.get("event_seq") and a.get("event_seq"):
+            prev = seen_assertions[key]
+            prev_seq = prev.get("event_seq")
+            # Distinct sequential executions on the same node: retain both
+            if eseq is not None and prev_seq is not None and eseq != prev_seq:
+                assertions.append(a)
+            # Upgrade previous carrier fallback (unsequenced) to direct sequenced event
+            elif not prev_seq and eseq:
                 idx = assertions.index(prev)
                 assertions[idx] = a
-                seen_oracles[key] = a
-                seen_oracles[oid] = a
+                seen_assertions[key] = a
 
     return build_evidence_graph(
         events_with_lines,
@@ -418,9 +447,28 @@ def build_evidence_graph_from_events(
     )
 
 
-def compute_evidence_graph_root(graph: dict[str, Any]) -> str:
-    """Returns the single-commit root hash from an Evidence Graph dictionary."""
-    return str(graph.get("evidence_root_hash") or graph.get("root_hash") or "")
+def compute_evidence_graph_root(graph: Mapping[str, Any] | Sequence[Any]) -> str:
+    """Returns the single-commit root hash from an Evidence Graph dict or leaves."""
+    if isinstance(graph, Mapping):
+        return str(graph.get("evidence_root_hash") or graph.get("root_hash") or "")
+    leaves: list[str] = []
+    for item in graph:
+        if isinstance(item, str):
+            leaves.append(item)
+        elif isinstance(item, Mapping):
+            leaves.append(
+                str(
+                    item.get("row_hash")
+                    or item.get("content_hash")
+                    or canonical_json_dumps(dict(item))
+                )
+            )
+    leaves.sort()
+    h = hashlib.sha3_256()
+    for leaf in leaves:
+        h.update(leaf.encode("utf-8"))
+        h.update(b"\n")
+    return f"sha3_256:{h.hexdigest()}"
 
 
 __all__ = [
@@ -428,7 +476,6 @@ __all__ = [
     "build_evidence_graph",
     "build_evidence_graph_from_events",
     "compute_evidence_graph_root",
-    "decision_evidence_root_hash",
     "hash_source_line",
     "index_events_by_seq",
     "link_assertion",

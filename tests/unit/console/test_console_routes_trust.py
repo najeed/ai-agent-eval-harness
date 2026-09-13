@@ -3,12 +3,12 @@ import json
 import os
 import tempfile
 from pathlib import Path
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
 from flask import Flask
 
-from agentv_runtime.canonical import canonical_json_encode
 from agentv_runtime.evidence_graph import build_evidence_graph_from_events
 from agentv_runtime.finalization import EvaluatorFinalizationRecord
 from agentv_runtime.manifest import compute_scenario_hash
@@ -25,8 +25,13 @@ def _make_finalization_event(
     events: list[str],
     outcome: str = "pass",
     score: float = 1.0,
+    run_dir: Any = None,
 ) -> str:
     """Build a cryptographically-valid EvaluatorFinalizationRecord event."""
+    from pathlib import Path
+
+    from agentv_runtime.manifest import ExecutionManifest
+
     parsed = []
     for line in events:
         line = line.strip()
@@ -44,15 +49,17 @@ def _make_finalization_event(
 
     scenario_data = {"id": scenario_id, "version": "1.0.0"}
     scen_hash = compute_scenario_hash(scenario_data)
-    exec_manifest_payload = {
-        "run_id": run_id,
-        "scenario_id": scenario_id,
-        "scenario_hash": scen_hash,
-        "execution_mode": "live",
-    }
-    exec_manifest_hash = (
-        f"sha3_256:{hashlib.sha3_256(canonical_json_encode(exec_manifest_payload)).hexdigest()}"
+    exec_manifest = ExecutionManifest(
+        manifest_id=f"man_{run_id}",
+        scenario_id=scenario_id,
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
     )
+    exec_manifest_hash = exec_manifest.compute_manifest_hash()
+    if run_dir is not None:
+        (Path(run_dir) / "execution_manifest.json").write_text(
+            json.dumps(exec_manifest.to_dict()), encoding="utf-8"
+        )
 
     rec = EvaluatorFinalizationRecord(
         finalization_id=f"fin_{run_id}",
@@ -69,8 +76,8 @@ def _make_finalization_event(
         score=score,
         terminal_seq=1,
     )
+    rec = rec.sign()
     fin_dict = rec.to_dict()
-    fin_dict["finalization_hash"] = rec.compute_finalization_hash()
     return json.dumps({"event": "evaluator_finalization", "data": fin_dict})
 
 
@@ -100,6 +107,9 @@ def client(console_jail, monkeypatch):
 
     monkeypatch.setattr(config, "PROJECT_ROOT", console_jail["root"])
     monkeypatch.setattr(config, "RUN_LOG_DIR", console_jail["runs"])
+    trust_root = console_jail["root"] / ".aes" / "keys"
+    trust_root.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr(config, "TRUST_ROOT", trust_root)
 
     with patch("eval_runner.console.auth_manager.require_permission", lambda _: lambda f: f):
         yield app.test_client()
@@ -131,7 +141,7 @@ def test_certify_run_success(client, console_jail):
     assert_ev = json.dumps({"event": "assertion_evaluated", "assertion": "check_1", "passed": True})
     end_ev = json.dumps({"event": "run_end", "data": {"status": "pass", "score": 1.0}})
     core_events = [start_ev, assert_ev, end_ev]
-    fin_ev = _make_finalization_event(run_id, "scen_1", core_events)
+    fin_ev = _make_finalization_event(run_id, "scen_1", core_events, run_dir=run_dir)
     (run_dir / "run.jsonl").write_text("\n".join(core_events + [fin_ev]) + "\n", encoding="utf-8")
 
     with (
@@ -180,7 +190,9 @@ def test_certify_run_fail_closed_computed_fail(client, console_jail):
     )
     end_ev = json.dumps({"event": "run_end", "data": {"status": "fail", "score": 0.0}})
     core_events = [start_ev, assert_ev, end_ev]
-    fin_ev = _make_finalization_event(run_id, "scen_1", core_events, outcome="fail", score=0.0)
+    fin_ev = _make_finalization_event(
+        run_id, "scen_1", core_events, outcome="fail", score=0.0, run_dir=run_dir
+    )
     (run_dir / "run.jsonl").write_text("\n".join(core_events + [fin_ev]) + "\n", encoding="utf-8")
 
     with (
@@ -318,7 +330,7 @@ def test_certify_run_generic_exception(client, console_jail):
     assert_ev = json.dumps({"event": "assertion_evaluated", "assertion": "check_1", "passed": True})
     end_ev = json.dumps({"event": "run_end", "data": {"status": "pass", "score": 1.0}})
     core_events = [start_ev, assert_ev, end_ev]
-    fin_ev = _make_finalization_event(run_id, "scen_1", core_events)
+    fin_ev = _make_finalization_event(run_id, "scen_1", core_events, run_dir=run_dir)
     (run_dir / "run.jsonl").write_text("\n".join(core_events + [fin_ev]) + "\n", encoding="utf-8")
 
     with (

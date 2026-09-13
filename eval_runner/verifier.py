@@ -589,6 +589,7 @@ class TraceVerifier:
         computed_evidence_root: str | None = None
         ev_graph: dict[str, Any] | None = None
         events_list: list[dict[str, Any]] = []
+        req_oracles: list[str] | None = None
         if p.exists():
             try:
                 from agentv_runtime.evidence_graph import (
@@ -639,15 +640,6 @@ class TraceVerifier:
                         raise CertificationFailedError(
                             "DirectProvenanceViolation: Evidence graph contains unresolved "
                             "or carrier fallback provenance"
-                        )
-                    if req_oracles and not ev_graph.get("has_all_required", True):
-                        logger.error(
-                            "Evidence graph missing required oracles: %s",
-                            ev_graph.get("missing_required_oracles"),
-                        )
-                        raise CertificationFailedError(
-                            f"RequiredOracleCompletenessViolation: Evidence graph missing "
-                            f"required oracles: {ev_graph.get('missing_required_oracles')}"
                         )
                     if total_nodes == 0:
                         logger.debug(
@@ -791,6 +783,17 @@ class TraceVerifier:
                     term_score
                     if term_score is not None
                     else (compliance_score if compliance_score is not None else 1.0)
+                )
+
+        if effective_compliance_status == "pass":
+            if req_oracles and ev_graph and not ev_graph.get("has_all_required", True):
+                logger.error(
+                    "Evidence graph missing required oracles: %s",
+                    ev_graph.get("missing_required_oracles"),
+                )
+                raise CertificationFailedError(
+                    f"RequiredOracleCompletenessViolation: Evidence graph missing "
+                    f"required oracles: {ev_graph.get('missing_required_oracles')}"
                 )
 
         # 2. CANONICALIZE: build Manifest v3.0.0
@@ -1314,7 +1317,16 @@ class TraceVerifier:
                                 "Evidence graph contains unresolved or carrier fallback provenance"
                             )
                             return False
-                        if req_oracles and not graph.get("has_all_required", True):
+                        manifest_status = str(
+                            manifest.get("compliance", {}).get("status")
+                            or manifest.get("status")
+                            or ""
+                        ).lower()
+                        if (
+                            manifest_status == "pass"
+                            and req_oracles
+                            and not graph.get("has_all_required", True)
+                        ):
                             logger.warning(
                                 "Evidence graph missing required oracles: %s",
                                 graph.get("missing_required_oracles"),

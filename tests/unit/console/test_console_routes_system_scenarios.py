@@ -474,6 +474,20 @@ def test_runtime_health_and_ollama_status_branches(client, monkeypatch):
         assert res_cat_fail.status_code == 200
         assert res_cat_fail.get_json()["status"] == "UNREACHABLE"
 
+    # Runtime health with GUI console present -> HEALTHY
+    gui_dir = Path(config.PROJECT_ROOT) / "ui" / "visual-console" / "dist"
+    gui_dir.mkdir(parents=True, exist_ok=True)
+    (gui_dir / "index.html").write_text("<html></html>", encoding="utf-8")
+    res_gui_ok = client.get("/api/status")
+    assert res_gui_ok.get_json()["dependencies"].get("gui_console") == "HEALTHY"
+
+    # Runtime health with missing GUI console in production fails closed
+    (gui_dir / "index.html").unlink()
+    with patch.dict(os.environ, {"AGENTV_ENV": "production"}):
+        res_prod_nogui = client.get("/api/status")
+        assert res_prod_nogui.status_code == 200
+        assert res_prod_nogui.get_json()["dependencies"].get("gui_console") == "FAILED"
+
     # Ollama status endpoint with active response
     mock_resp = MagicMock()
     mock_resp.status = 200

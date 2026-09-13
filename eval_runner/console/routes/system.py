@@ -409,6 +409,21 @@ def _runtime_health() -> dict[str, Any]:
         dependencies["scenario_catalog"] = "FAILED"
         details.append(f"Scenario catalog unavailable: {exc}")
 
+    # GUI console build artifact check (Defect 7)
+    gui_dist = Path(config.PROJECT_ROOT) / "ui" / "visual-console" / "dist"
+    gui_ok = gui_dist.is_dir() and (gui_dist / "index.html").exists()
+    is_prod = os.getenv("AGENTV_ENV", "").lower() == "production" or getattr(
+        config, "IS_PRODUCTION", False
+    )
+    if gui_ok:
+        dependencies["gui_console"] = "HEALTHY"
+    elif is_prod:
+        dependencies["gui_console"] = "FAILED"
+        details.append(
+            "Production environment requires built visual-console artifact at "
+            "ui/visual-console/dist."
+        )
+
     failed = [k for k, v in dependencies.items() if v == "FAILED"]
     degraded = [k for k, v in dependencies.items() if v == "DEGRADED"]
     if failed:

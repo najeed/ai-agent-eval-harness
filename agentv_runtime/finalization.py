@@ -47,6 +47,7 @@ class EvaluatorFinalizationRecord:
     finalized_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     terminal_seq: int = 0
     finalization_hash: str = ""
+    evaluator_signature: str = ""
     schema_version: str = FINALIZATION_SCHEMA_VERSION
     metadata: dict[str, Any] = field(default_factory=dict)
 
@@ -55,6 +56,7 @@ class EvaluatorFinalizationRecord:
         data = asdict(self)
         computed_hash = self.compute_finalization_hash()
         data["finalization_hash"] = self.finalization_hash or computed_hash
+        data["evaluator_signature"] = self.evaluator_signature
         data["manifest_hash"] = self.execution_manifest_hash
         return data
 
@@ -131,6 +133,13 @@ class EvaluatorFinalizationRecord:
                     "Missing mandatory 'finalization_hash' in EvaluatorFinalizationRecord."
                 )
 
+            claimed_sig = data.get("evaluator_signature") or data.get("signature")
+            if not claimed_sig or not isinstance(claimed_sig, str) or not str(claimed_sig).strip():
+                raise ValueError(
+                    "Missing mandatory finalization trust field 'evaluator_signature' "
+                    "in EvaluatorFinalizationRecord (must be signed by authoritative evaluator)."
+                )
+
             req_oracles = [str(o) for o in raw_oracles if o]
             record = cls(
                 finalization_id=str(data["finalization_id"]).strip(),
@@ -148,6 +157,7 @@ class EvaluatorFinalizationRecord:
                 finalized_at=str(data.get("finalized_at") or datetime.now(UTC).isoformat()),
                 terminal_seq=int(term_seq),
                 finalization_hash=str(claimed_hash).strip(),
+                evaluator_signature=str(claimed_sig).strip(),
                 schema_version=str(data.get("schema_version") or FINALIZATION_SCHEMA_VERSION),
                 metadata=dict(data.get("metadata") or {}),
             )
@@ -180,12 +190,13 @@ class EvaluatorFinalizationRecord:
             finalized_at=str(data.get("finalized_at") or datetime.now(UTC).isoformat()),
             terminal_seq=int(data.get("terminal_seq") or 0),
             finalization_hash=str(data.get("finalization_hash") or ""),
+            evaluator_signature=str(data.get("evaluator_signature") or data.get("signature") or ""),
             schema_version=str(data.get("schema_version") or FINALIZATION_SCHEMA_VERSION),
             metadata=dict(data.get("metadata") or {}),
         )
 
-    def compute_finalization_hash(self) -> str:
-        """Computes a deterministic cryptographic hash of the canonical finalization payload."""
+    def canonical_payload_bytes(self) -> bytes:
+        """Returns canonical RFC 8785 JSON bytes of the finalization attestation payload."""
         data = {
             "evaluator_config_hash": self.evaluator_config_hash,
             "evaluator_identity": self.evaluator_identity,
@@ -204,7 +215,94 @@ class EvaluatorFinalizationRecord:
             "score": self.score,
             "terminal_seq": self.terminal_seq,
         }
-        return _sha3_hex(canonical_json_encode(data))
+        return canonical_json_encode(data)
+
+    def compute_finalization_hash(self) -> str:
+        """Computes a deterministic cryptographic hash of the canonical finalization payload."""
+        return _sha3_hex(self.canonical_payload_bytes())
+
+    def sign(self, signer: Any = None) -> EvaluatorFinalizationRecord:
+        """
+        Signs the canonical finalization payload with an Ed25519 private key or signer.
+        If signer is None, attempts to resolve the evaluator's private key via IdentityService.
+        """
+        if signer is None:
+            try:
+                from eval_runner.identity import IdentityService
+
+                signer = IdentityService.get_private_key(
+                    self.evaluator_identity, auto_provision=True
+                )
+            except Exception as e:
+                raise ValueError(
+                    f"Could not resolve private key for '{self.evaluator_identity}': {e}"
+                ) from e
+
+        if not signer:
+            raise ValueError(
+                f"No private key available to sign finalization for '{self.evaluator_identity}'"
+            )
+
+        payload_bytes = self.canonical_payload_bytes()
+        if hasattr(signer, "sign") and callable(signer.sign):
+            sig_raw = signer.sign(payload_bytes)
+        else:
+            raise ValueError(f"Invalid signer object: {type(signer)}")
+
+        sig_hex = sig_raw.hex() if isinstance(sig_raw, bytes) else str(sig_raw)
+        data = asdict(self)
+        data["finalization_hash"] = self.compute_finalization_hash()
+        data["evaluator_signature"] = sig_hex
+        return EvaluatorFinalizationRecord.from_dict(data, require_authoritative=False)
+
+    def verify_signature(self, public_key: Any = None, trust_root: Any = None) -> bool:
+        """
+        Verifies evaluator_signature against an externally anchored public key.
+        Accepts an Ed25519PublicKey, PEM bytes/str, or resolves from IdentityService/trust_root.
+        """
+        if not self.evaluator_signature:
+            return False
+
+        try:
+            sig_bytes = bytes.fromhex(self.evaluator_signature)
+        except Exception:
+            return False
+
+        if public_key is None:
+            try:
+                from pathlib import Path
+
+                if trust_root and isinstance(trust_root, (str, Path)):
+                    key_file = Path(trust_root) / self.evaluator_identity / "public_key.pem"
+                    if key_file.is_file():
+                        from cryptography.hazmat.primitives import serialization
+
+                        public_key = serialization.load_pem_public_key(key_file.read_bytes())
+                if public_key is None:
+                    from eval_runner.identity import IdentityService
+
+                    public_key = IdentityService.get_public_key(
+                        self.evaluator_identity, auto_provision=False
+                    )
+            except Exception:
+                public_key = None
+
+        if not public_key:
+            return False
+
+        payload_bytes = self.canonical_payload_bytes()
+        try:
+            if hasattr(public_key, "verify") and callable(public_key.verify):
+                public_key.verify(sig_bytes, payload_bytes)
+                return True
+            from cryptography.hazmat.primitives import serialization
+
+            raw_pem = public_key.encode("utf-8") if isinstance(public_key, str) else public_key
+            pk = serialization.load_pem_public_key(raw_pem)
+            pk.verify(sig_bytes, payload_bytes)
+            return True
+        except Exception:
+            return False
 
 
 __all__ = [

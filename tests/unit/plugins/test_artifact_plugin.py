@@ -1,10 +1,16 @@
+import base64
 import json
 import zipfile
 from pathlib import Path
 
 import pytest
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import ed25519
 
+from agentv_runtime.canonical import canonical_json_encode
+from eval_runner import config
 from eval_runner.artifact_plugin import ArtifactPlugin
+from eval_runner.identity import IdentityService
 
 
 def test_calculate_hash(tmp_path):
@@ -357,3 +363,348 @@ def test_verify_integrity_zip_tampered_internal_bytes_detected(tmp_path):
     assert res_tampered["is_valid"] is False
     assert res_tampered["status"] == "INVALID"
     assert any(d["status"] == "mismatch" for d in res_tampered["details"])
+
+
+def test_artifact_plugin_on_discover_services():
+    """Verify registration of bundle_artifacts and verify_integrity in service registry."""
+
+    class DummyRegistry:
+        def __init__(self):
+            self.services = {}
+
+        def register_service(self, name, fn):
+            self.services[name] = fn
+
+    plugin = ArtifactPlugin()
+    registry = DummyRegistry()
+    plugin.on_discover_services(registry)
+    assert "bundle_artifacts" in registry.services
+    assert "verify_integrity" in registry.services
+
+
+def test_get_signing_key_priority3_persistent_file_fallback(tmp_path, monkeypatch):
+    """Verify Priority 3 persistent key loading when IdentityService has no key."""
+    monkeypatch.delenv("AES_PRIVATE_KEY", raising=False)
+    monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
+    monkeypatch.setattr(IdentityService, "get_private_key", lambda *args, **kwargs: None)
+
+    key_dir = tmp_path / ".aes" / "keys"
+    key_dir.mkdir(parents=True)
+    key_path = key_dir / "system_id.pem"
+
+    priv = ed25519.Ed25519PrivateKey.generate()
+    pem_bytes = priv.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption(),
+    )
+    key_path.write_bytes(pem_bytes)
+
+    plugin = ArtifactPlugin()
+    loaded_key = plugin._get_signing_key()
+    assert isinstance(loaded_key, ed25519.Ed25519PrivateKey)
+    assert loaded_key.public_key().public_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PublicFormat.Raw,
+    ) == priv.public_key().public_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PublicFormat.Raw,
+    )
+
+
+def test_verify_integrity_zip_bundle_missing_audit_manifest(tmp_path):
+    """Verify error returned when zip bundle does not contain audit_manifest.json."""
+    zip_path = tmp_path / "corrupt_bundle.zip"
+    with zipfile.ZipFile(zip_path, "w") as zf:
+        zf.writestr("some_file.txt", "content")
+
+    plugin = ArtifactPlugin()
+    res = plugin.verify_integrity(str(zip_path))
+    assert res["status"] == "error"
+    assert res["message"] == "No audit_manifest.json in bundle"
+    assert res["is_valid"] is False
+
+
+def test_verify_integrity_zip_bundle_unsafe_path_and_missing_file(tmp_path):
+    """Verify zip archive path traversal entries and missing files are flagged."""
+    priv = ed25519.Ed25519PrivateKey.generate()
+    manifest_data = {
+        "files": [
+            {"name": "../traversal.txt", "file_hash": "dummy"},
+            {"name": "non_existent.txt", "file_hash": "dummy"},
+        ],
+        "signer_identity": "test_signer",
+    }
+    canonical_bytes = canonical_json_encode(manifest_data)
+    manifest_data["signature_ed25519"] = base64.b64encode(priv.sign(canonical_bytes)).decode(
+        "ascii"
+    )
+
+    zip_path = tmp_path / "unsafe_bundle.zip"
+    with zipfile.ZipFile(zip_path, "w") as zf:
+        zf.writestr("audit_manifest.json", json.dumps(manifest_data))
+
+    plugin = ArtifactPlugin()
+    res = plugin.verify_integrity(str(zip_path), trusted_public_key=priv.public_key())
+    assert res["is_valid"] is False
+    assert res["status"] == "INVALID"
+    status_map = {d["file"]: d["status"] for d in res["details"]}
+    assert status_map["../traversal.txt"] == "unsafe_path"
+    assert status_map["non_existent.txt"] == "missing"
+
+
+def test_verify_integrity_missing_cryptographic_signature(tmp_path):
+    """Verify UNVERIFIED status when manifest completely lacks signature_ed25519."""
+    manifest_path = tmp_path / "unsigned_manifest.json"
+    manifest_path.write_text(
+        json.dumps({"files": [], "signer_identity": "tester"}), encoding="utf-8"
+    )
+
+    plugin = ArtifactPlugin()
+    res = plugin.verify_integrity(str(manifest_path))
+    assert res["is_valid"] is False
+    assert res["status"] == "UNVERIFIED"
+    assert res["message"] == "Manifest has no cryptographic signature"
+
+
+def _create_signed_manifest_bundle(priv, signer_id="test_signer"):
+    pub_raw = priv.public_key().public_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PublicFormat.Raw,
+    )
+    manifest = {
+        "files": [],
+        "signer_identity": signer_id,
+    }
+    canonical = canonical_json_encode(manifest)
+    manifest["signature_ed25519"] = base64.b64encode(priv.sign(canonical)).decode("ascii")
+    manifest["public_key"] = base64.b64encode(pub_raw).decode("ascii")
+    return manifest
+
+
+def test_verify_integrity_trusted_public_key_formats(tmp_path):
+    """Verify trusted_public_key accepts Ed25519PublicKey, str PEM, and bytes PEM."""
+    priv = ed25519.Ed25519PrivateKey.generate()
+    pub = priv.public_key()
+    pub_pem_bytes = pub.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )
+    pub_pem_str = pub_pem_bytes.decode("utf-8")
+
+    manifest = _create_signed_manifest_bundle(priv)
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    plugin = ArtifactPlugin()
+
+    # Case 1: Ed25519PublicKey
+    res1 = plugin.verify_integrity(str(manifest_path), trusted_public_key=pub)
+    assert res1["is_valid"] is True
+    assert res1["status"] == "VALID"
+
+    # Case 2: str PEM
+    res2 = plugin.verify_integrity(str(manifest_path), trusted_public_key=pub_pem_str)
+    assert res2["is_valid"] is True
+    assert res2["status"] == "VALID"
+
+    # Case 3: bytes PEM
+    res3 = plugin.verify_integrity(str(manifest_path), trusted_public_key=pub_pem_bytes)
+    assert res3["is_valid"] is True
+    assert res3["status"] == "VALID"
+
+
+def test_verify_integrity_public_key_pem_formats(tmp_path):
+    """Verify public_key_pem parameter accepts bytes and str."""
+    priv = ed25519.Ed25519PrivateKey.generate()
+    pub_pem_bytes = priv.public_key().public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )
+
+    manifest = _create_signed_manifest_bundle(priv)
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    plugin = ArtifactPlugin()
+    res_bytes = plugin.verify_integrity(str(manifest_path), public_key_pem=pub_pem_bytes)
+    assert res_bytes["is_valid"] is True
+
+    res_str = plugin.verify_integrity(
+        str(manifest_path), public_key_pem=pub_pem_bytes.decode("utf-8")
+    )
+    assert res_str["is_valid"] is True
+
+
+def test_verify_integrity_key_registry_branches(tmp_path):
+    """Verify key_registry resolution for signer_id, key_id, system_id, and unresolvable."""
+    priv = ed25519.Ed25519PrivateKey.generate()
+    pub = priv.public_key()
+    pub_pem_str = pub.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    ).decode("utf-8")
+
+    plugin = ArtifactPlugin()
+
+    # Sub-case A: key_registry matches signer_id as Ed25519PublicKey
+    m1 = _create_signed_manifest_bundle(priv, signer_id="signer_a")
+    p1 = tmp_path / "m1.json"
+    p1.write_text(json.dumps(m1), encoding="utf-8")
+    res1 = plugin.verify_integrity(str(p1), key_registry={"signer_a": pub})
+    assert res1["is_valid"] is True
+
+    # Sub-case B: key_registry matches key_id as str PEM
+    m2 = _create_signed_manifest_bundle(priv, signer_id="")
+    m2["key_id"] = "kid_123"
+    verify_part = {k: v for k, v in m2.items() if k not in ["signature_ed25519", "public_key"]}
+    m2["signature_ed25519"] = base64.b64encode(
+        priv.sign(canonical_json_encode(verify_part))
+    ).decode("ascii")
+    p2 = tmp_path / "m2.json"
+    p2.write_text(json.dumps(m2), encoding="utf-8")
+    res2 = plugin.verify_integrity(str(p2), key_registry={"kid_123": pub_pem_str})
+    assert res2["is_valid"] is True
+
+    # Sub-case C: key_registry matches system_id fallback
+    m3 = _create_signed_manifest_bundle(priv, signer_id="")
+    verify_part3 = {k: v for k, v in m3.items() if k not in ["signature_ed25519", "public_key"]}
+    m3["signature_ed25519"] = base64.b64encode(
+        priv.sign(canonical_json_encode(verify_part3))
+    ).decode("ascii")
+    p3 = tmp_path / "m3.json"
+    p3.write_text(json.dumps(m3), encoding="utf-8")
+    res3 = plugin.verify_integrity(str(p3), key_registry={"system_id": pub})
+    assert res3["is_valid"] is True
+
+    # Sub-case D: key_registry misses all -> UNVERIFIED
+    res4 = plugin.verify_integrity(str(p1), key_registry={"other_signer": pub})
+    assert res4["is_valid"] is False
+    assert res4["status"] == "UNVERIFIED"
+
+
+def test_verify_integrity_trust_root_branches(tmp_path):
+    """Verify trust_root resolution via object method and directory paths."""
+    priv = ed25519.Ed25519PrivateKey.generate()
+    pub = priv.public_key()
+    pub_pem_bytes = pub.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )
+    manifest = _create_signed_manifest_bundle(priv, signer_id="trust_signer")
+    m_path = tmp_path / "manifest.json"
+    m_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    plugin = ArtifactPlugin()
+
+    # Sub-case A: trust_root object with get_public_key returning Ed25519PublicKey
+    class TrustRootObjKey:
+        def get_public_key(self, sid):
+            return pub if sid == "trust_signer" else None
+
+    res1 = plugin.verify_integrity(str(m_path), trust_root=TrustRootObjKey())
+    assert res1["is_valid"] is True
+
+    # Sub-case B: trust_root object returning PEM bytes
+    class TrustRootObjBytes:
+        def get_public_key(self, sid):
+            return pub_pem_bytes if sid == "trust_signer" else None
+
+    res2 = plugin.verify_integrity(str(m_path), trust_root=TrustRootObjBytes())
+    assert res2["is_valid"] is True
+
+    # Sub-case C: trust_root directory path with signer_id/public_key.pem
+    trust_dir1 = tmp_path / "trust_root1"
+    sub_dir = trust_dir1 / "trust_signer"
+    sub_dir.mkdir(parents=True)
+    (sub_dir / "public_key.pem").write_bytes(pub_pem_bytes)
+
+    res3 = plugin.verify_integrity(str(m_path), trust_root=trust_dir1)
+    assert res3["is_valid"] is True
+
+    # Sub-case D: trust_root directory path with {signer_id}_public.pem
+    trust_dir2 = tmp_path / "trust_root2"
+    trust_dir2.mkdir(parents=True)
+    (trust_dir2 / "trust_signer_public.pem").write_bytes(pub_pem_bytes)
+
+    res4 = plugin.verify_integrity(str(m_path), trust_root=trust_dir2)
+    assert res4["is_valid"] is True
+
+
+def test_verify_integrity_candidate_trust_root_discovery(tmp_path, monkeypatch):
+    """Verify fallback discovery in candidate paths when IdentityService raises error."""
+    priv = ed25519.Ed25519PrivateKey.generate()
+    pub_pem_bytes = priv.public_key().public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )
+    manifest = _create_signed_manifest_bundle(priv, signer_id="candidate_signer")
+    m_path = tmp_path / "manifest.json"
+    m_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    def _raise_error(*args, **kwargs):
+        raise OSError("Identity backend unavailable")
+
+    monkeypatch.setattr(IdentityService, "get_public_key", _raise_error)
+
+    # Place candidate in config.TRUST_ROOT
+    trust_root_dir = tmp_path / "trust_root"
+    trust_root_dir.mkdir()
+    (trust_root_dir / "candidate_signer_public.pem").write_bytes(pub_pem_bytes)
+    monkeypatch.setattr(config, "TRUST_ROOT", trust_root_dir)
+    monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path / "empty_project")
+
+    plugin = ArtifactPlugin()
+    res = plugin.verify_integrity(str(m_path))
+    assert res["is_valid"] is True
+    assert res["status"] == "VALID"
+
+    # Test corrupted candidate key handling with recovery from PROJECT_ROOT/.aes/keys/
+    corrupt_trust_dir = tmp_path / "corrupt_trust"
+    corrupt_trust_dir.mkdir()
+    (corrupt_trust_dir / "candidate_signer_public.pem").write_text(
+        "NOT_VALID_PEM", encoding="utf-8"
+    )
+    monkeypatch.setattr(config, "TRUST_ROOT", corrupt_trust_dir)
+
+    keys_dir = tmp_path / "proj" / ".aes" / "keys"
+    keys_dir.mkdir(parents=True)
+    (keys_dir / "candidate_signer_public.pem").write_bytes(pub_pem_bytes)
+    monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path / "proj")
+
+    res_recovered = plugin.verify_integrity(str(m_path))
+    assert res_recovered["is_valid"] is True
+    assert res_recovered["status"] == "VALID"
+
+
+def test_verify_integrity_embedded_public_key_mismatch_and_malformed(tmp_path):
+    """Verify detection of embedded public key mismatch or malformed base64."""
+    priv = ed25519.Ed25519PrivateKey.generate()
+    other_priv = ed25519.Ed25519PrivateKey.generate()
+    other_pub_raw = other_priv.public_key().public_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PublicFormat.Raw,
+    )
+
+    manifest_mismatch = _create_signed_manifest_bundle(priv, signer_id="mismatch_signer")
+    manifest_mismatch["public_key"] = base64.b64encode(other_pub_raw).decode("ascii")
+    p1 = tmp_path / "mismatch.json"
+    p1.write_text(json.dumps(manifest_mismatch), encoding="utf-8")
+
+    plugin = ArtifactPlugin()
+    res1 = plugin.verify_integrity(str(p1), trusted_public_key=priv.public_key())
+    assert res1["is_valid"] is False
+    assert res1["status"] == "UNVERIFIED"
+    assert (
+        "Embedded public key does not match authoritative external trust anchor" in res1["message"]
+    )
+
+    manifest_malformed = _create_signed_manifest_bundle(priv, signer_id="malformed_signer")
+    manifest_malformed["public_key"] = 12345
+    p2 = tmp_path / "malformed.json"
+    p2.write_text(json.dumps(manifest_malformed), encoding="utf-8")
+
+    res2 = plugin.verify_integrity(str(p2), trusted_public_key=priv.public_key())
+    assert res2["is_valid"] is False
+    assert res2["status"] == "UNVERIFIED"
+    assert "Malformed embedded public key" in res2["message"]

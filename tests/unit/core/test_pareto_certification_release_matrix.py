@@ -63,6 +63,7 @@ def matrix_env(tmp_path, monkeypatch):
 
     IdentityService._provision_local_identity("system_id")
     IdentityService._provision_local_identity("attacker_id")
+    IdentityService._provision_local_identity("eval_kernel")
 
     return {"root": root, "runs": runs, "reports": reports, "trust": trust}
 
@@ -83,23 +84,29 @@ def _build_test_run(
     scen_ver = scenario_data.get("version") or scenario_data.get("scenario_version") or "1.0.0"
     scen_hash = compute_scenario_hash(scenario_data)
 
+    exec_manifest = ExecutionManifest(
+        manifest_id=f"man_{run_id}",
+        scenario_id=scen_id,
+        scenario_version=scen_ver,
+        scenario_hash=scen_hash,
+    )
     if write_manifest:
-        exec_manifest = ExecutionManifest(
-            manifest_id=f"man_{run_id}",
-            scenario_id=scen_id,
-            scenario_version=scen_ver,
-            scenario_hash=scen_hash,
-        )
         (vault / "execution_manifest.json").write_text(
             json.dumps(exec_manifest.to_dict()), encoding="utf-8"
         )
-        exec_manifest.compute_manifest_hash()
 
     final_events = list(events)
     if evaluator_finalization is not None:
+        if write_manifest and evaluator_finalization.execution_manifest_hash == "sha3_256:dummy":
+            from dataclasses import replace
+
+            evaluator_finalization = replace(
+                evaluator_finalization,
+                execution_manifest_hash=exec_manifest.compute_manifest_hash(),
+            )
+        if not evaluator_finalization.evaluator_signature:
+            evaluator_finalization = evaluator_finalization.sign()
         fin_dict = evaluator_finalization.to_dict()
-        if not fin_dict.get("finalization_hash"):
-            fin_dict["finalization_hash"] = evaluator_finalization.compute_finalization_hash()
         final_events.append({"event": "evaluator_finalization", "data": fin_dict})
 
     with open(trace, "w", encoding="utf-8") as f:
@@ -110,11 +117,11 @@ def _build_test_run(
 
 
 # ==============================================================================
-# Vector 1: Missing EvaluatorFinalizationRecord fails closed
+# Missing EvaluatorFinalizationRecord fails closed
 # ==============================================================================
 
 
-def test_matrix_vector_1_missing_evaluator_finalization_fails_closed(matrix_env):
+def test_missing_evaluator_finalization_fails_closed(matrix_env):
     run_id = "run-v1-missing-fin"
     scen_data = {"id": "scen_v1", "version": "1.0.0"}
     events = [
@@ -132,11 +139,11 @@ def test_matrix_vector_1_missing_evaluator_finalization_fails_closed(matrix_env)
 
 
 # ==============================================================================
-# Vector 2: EvaluatorFinalizationRecord with altered scenario_hash fails closed
+# EvaluatorFinalizationRecord with altered scenario_hash fails closed
 # ==============================================================================
 
 
-def test_matrix_vector_2_altered_scenario_hash_fails_closed(matrix_env):
+def test_altered_scenario_hash_fails_closed(matrix_env):
     run_id = "run-v2-tampered-scen-hash"
     scen_data = {"id": "scen_v2", "version": "1.0.0", "params": {"safe": True}}
     events = [
@@ -168,11 +175,11 @@ def test_matrix_vector_2_altered_scenario_hash_fails_closed(matrix_env):
 
 
 # ==============================================================================
-# Vector 3: EvaluatorFinalizationRecord with tampered finalization_hash fails closed
+# EvaluatorFinalizationRecord with tampered finalization_hash fails closed
 # ==============================================================================
 
 
-def test_matrix_vector_3_tampered_finalization_hash_fails_closed(matrix_env):
+def test_tampered_finalization_hash_fails_closed(matrix_env):
     run_id = "run-v3-tampered-fin-hash"
     scen_data = {"id": "scen_v3", "version": "1.0.0"}
     scen_hash = compute_scenario_hash(scen_data)
@@ -197,10 +204,21 @@ def test_matrix_vector_3_tampered_finalization_hash_fails_closed(matrix_env):
         evidence_root_hash=ev_root,
         outcome="pass",
         score=1.0,
+    )
+    # Sign legitimately first, then tamper the finalization_hash to simulate in-flight tampering
+    fin_rec = fin_rec.sign()
+    from dataclasses import replace
+
+    tampered_fin_rec = replace(
+        fin_rec,
         finalization_hash="sha3_256:forged_hash_value_that_does_not_match_computed",
     )
     vault, trace = _build_test_run(
-        matrix_env["runs"], run_id, events, scen_data, evaluator_finalization=fin_rec
+        matrix_env["runs"],
+        run_id,
+        events,
+        scen_data,
+        evaluator_finalization=tampered_fin_rec,
     )
 
     with pytest.raises(ValueError, match="inconclusive outcome"):
@@ -208,11 +226,11 @@ def test_matrix_vector_3_tampered_finalization_hash_fails_closed(matrix_env):
 
 
 # ==============================================================================
-# Vector 4: EvaluatorFinalizationRecord with missing required oracle fails closed
+# EvaluatorFinalizationRecord with missing required oracle fails closed
 # ==============================================================================
 
 
-def test_matrix_vector_4_missing_required_oracle_fails_closed(matrix_env):
+def test_missing_required_oracle_fails_closed(matrix_env):
     run_id = "run-v4-missing-oracle"
     scen_data = {"id": "scen_v4", "version": "1.0.0"}
     scen_hash = compute_scenario_hash(scen_data)
@@ -268,11 +286,11 @@ def test_matrix_vector_4_missing_required_oracle_fails_closed(matrix_env):
 
 
 # ==============================================================================
-# Vector 5: Trace append during FINALIZING / SEALED lifecycle state raises TraceClosedError
+# Trace append during FINALIZING / SEALED lifecycle state raises TraceClosedError
 # ==============================================================================
 
 
-def test_matrix_vector_5_trace_append_blocked_during_finalizing_or_sealed(matrix_env):
+def test_trace_append_blocked_during_finalizing_or_sealed(matrix_env):
     run_id = "run-v5-lifecycle-guard"
 
     # Initially OPEN: writes permitted
@@ -290,11 +308,11 @@ def test_matrix_vector_5_trace_append_blocked_during_finalizing_or_sealed(matrix
 
 
 # ==============================================================================
-# Vector 6: Per-run certification lock acquisition: active PID blocks, dead PID recovers
+# Per-run certification lock acquisition: active PID blocks, dead PID recovers
 # ==============================================================================
 
 
-def test_matrix_vector_6_lock_fencing_active_pid_blocks_and_dead_pid_recovers(matrix_env):
+def test_lock_fencing_active_pid_blocks_and_dead_pid_recovers(matrix_env):
     run_id = "run-v6-fenced-locking"
     vault = matrix_env["runs"] / run_id
     vault.mkdir(parents=True, exist_ok=True)
@@ -340,11 +358,11 @@ def test_matrix_vector_6_lock_fencing_active_pid_blocks_and_dead_pid_recovers(ma
 
 
 # ==============================================================================
-# Vector 7: VerificationPackage verification fails closed if scenario or manifest hash is altered
+# VerificationPackage verification fails closed if scenario or manifest hash is altered
 # ==============================================================================
 
 
-def test_matrix_vector_7_verification_package_fails_on_altered_scenario_or_manifest(matrix_env):
+def test_verification_package_fails_on_altered_scenario_or_manifest(matrix_env):
     run_id = "run-v7-pkg-tamper"
     scen_data = {"id": "scen_v7", "version": "1.0.0", "param_x": 100}
     scen_hash = compute_scenario_hash(scen_data)
@@ -447,11 +465,11 @@ def test_matrix_vector_7_verification_package_fails_on_altered_scenario_or_manif
 
 
 # ==============================================================================
-# Vector 8: VerificationPackage verification with authentic vs altered external trust anchor
+# VerificationPackage verification with authentic vs altered external trust anchor
 # ==============================================================================
 
 
-def test_matrix_vector_8_external_trust_anchor_verification(matrix_env):
+def test_external_trust_anchor_verification(matrix_env):
     run_id = "run-v8-anchor-verify"
     scen_data = {"id": "scen_v8", "version": "1.0.0"}
     scen_hash = compute_scenario_hash(scen_data)
@@ -554,3 +572,411 @@ def test_matrix_vector_8_external_trust_anchor_verification(matrix_env):
         public_key_pem=attacker_pub_pem,
     )
     assert sig_only_attacker["verified"] is False
+
+
+# ==============================================================================
+# Evaluator finalization must be authenticated; unauthorized identity
+#       or tampered signature fails closed.
+# ==============================================================================
+
+
+def test_untrusted_evaluator_identity_fails_closed(matrix_env):
+    run_id = "run-p0-1-untrusted-eval"
+    scen_data = {"id": "scen_p0_1", "version": "1.0.0"}
+    scen_hash = compute_scenario_hash(scen_data)
+    events = [
+        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_p0_1"},
+        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
+        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
+    ]
+    ev_graph = build_evidence_graph_from_events(events)
+    ev_root = compute_evidence_graph_root(ev_graph)
+
+    exec_manifest = ExecutionManifest(
+        manifest_id=f"man_{run_id}",
+        scenario_id="scen_p0_1",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+    )
+    m_hash = exec_manifest.compute_manifest_hash()
+
+    # Create a rogue identity outside the trust root
+    fin_rec = EvaluatorFinalizationRecord(
+        finalization_id=f"fin_{run_id}",
+        run_id=run_id,
+        execution_manifest_hash=m_hash,
+        scenario_id="scen_p0_1",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+        evaluator_identity="untrusted_attacker_evaluator",
+        evaluator_config_hash="sha3_256:0000000000000000000000000000000000000000000000000000000000000000",
+        required_oracle_ids=[],
+        evidence_root_hash=ev_root,
+        outcome="pass",
+        score=1.0,
+    )
+    # Manually sign with attacker key, but untrusted identity has no key in TRUST_ROOT
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+
+    rogue_priv = ed25519.Ed25519PrivateKey.generate()
+    fin_rec = fin_rec.sign(rogue_priv)
+
+    _build_test_run(
+        matrix_env["runs"],
+        run_id,
+        events,
+        scen_data,
+        evaluator_finalization=fin_rec,
+        write_manifest=True,
+    )
+
+    with pytest.raises(ValueError, match="inconclusive outcome"):
+        execute_industrial_certification(run_id=run_id, scenario_data=scen_data)
+
+
+def test_tampered_evaluator_signature_fails_closed(matrix_env):
+    run_id = "run-p0-1-tampered-sig"
+    scen_data = {"id": "scen_p0_1_sig", "version": "1.0.0"}
+    scen_hash = compute_scenario_hash(scen_data)
+    events = [
+        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_p0_1_sig"},
+        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
+        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
+    ]
+    ev_graph = build_evidence_graph_from_events(events)
+    ev_root = compute_evidence_graph_root(ev_graph)
+
+    exec_manifest = ExecutionManifest(
+        manifest_id=f"man_{run_id}",
+        scenario_id="scen_p0_1_sig",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+    )
+    m_hash = exec_manifest.compute_manifest_hash()
+
+    fin_rec = EvaluatorFinalizationRecord(
+        finalization_id=f"fin_{run_id}",
+        run_id=run_id,
+        execution_manifest_hash=m_hash,
+        scenario_id="scen_p0_1_sig",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+        evaluator_identity="eval_kernel",
+        evaluator_config_hash="sha3_256:0000000000000000000000000000000000000000000000000000000000000000",
+        required_oracle_ids=[],
+        evidence_root_hash=ev_root,
+        outcome="pass",
+        score=1.0,
+    )
+    fin_rec = fin_rec.sign()
+    from dataclasses import replace
+
+    # Tamper the signature bytes
+    corrupted_sig = "deadbeef" * 16
+    tampered_fin = replace(fin_rec, evaluator_signature=corrupted_sig)
+
+    _build_test_run(
+        matrix_env["runs"],
+        run_id,
+        events,
+        scen_data,
+        evaluator_finalization=tampered_fin,
+        write_manifest=True,
+    )
+
+    with pytest.raises(ValueError, match="inconclusive outcome"):
+        execute_industrial_certification(run_id=run_id, scenario_data=scen_data)
+
+
+# ==============================================================================
+# Evidence root cross-check must fail closed if evidence_root_hash != recomputed
+# ==============================================================================
+
+
+def test_evidence_root_mismatch_fails_closed(matrix_env):
+    run_id = "run-p0-2-root-mismatch"
+    scen_data = {"id": "scen_p0_2", "version": "1.0.0"}
+    scen_hash = compute_scenario_hash(scen_data)
+    events = [
+        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_p0_2"},
+        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
+        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
+    ]
+    exec_manifest = ExecutionManifest(
+        manifest_id=f"man_{run_id}",
+        scenario_id="scen_p0_2",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+    )
+    m_hash = exec_manifest.compute_manifest_hash()
+
+    fin_rec = EvaluatorFinalizationRecord(
+        finalization_id=f"fin_{run_id}",
+        run_id=run_id,
+        execution_manifest_hash=m_hash,
+        scenario_id="scen_p0_2",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+        evaluator_identity="eval_kernel",
+        evaluator_config_hash="sha3_256:0000000000000000000000000000000000000000000000000000000000000000",
+        required_oracle_ids=[],
+        evidence_root_hash="sha3_256:0000000000000000000000000000000000000000000000000000000000000000",
+        outcome="pass",
+        score=1.0,
+    )
+    fin_rec = fin_rec.sign()
+
+    _build_test_run(
+        matrix_env["runs"],
+        run_id,
+        events,
+        scen_data,
+        evaluator_finalization=fin_rec,
+        write_manifest=True,
+    )
+
+    with pytest.raises(ValueError, match="EvidenceRootMismatch"):
+        execute_industrial_certification(run_id=run_id, scenario_data=scen_data)
+
+
+# ==============================================================================
+# Required-oracle completeness must require explicit PASS result state
+# ==============================================================================
+
+
+def test_required_oracle_failed_outcome_blocks_certification(matrix_env):
+    run_id = "run-p0-3-oracle-failed"
+    scen_data = {"id": "scen_p0_3", "version": "1.0.0"}
+    scen_hash = compute_scenario_hash(scen_data)
+    # Required oracle is present but has outcome="FAIL"
+    events = [
+        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_p0_3"},
+        {
+            "event": "assertion_evaluated",
+            "assertion": "required_check_1",
+            "passed": False,
+            "outcome": "FAIL",
+        },
+        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
+    ]
+    ev_graph = build_evidence_graph_from_events(events, required_oracle_ids=["required_check_1"])
+    ev_root = compute_evidence_graph_root(ev_graph)
+
+    exec_manifest = ExecutionManifest(
+        manifest_id=f"man_{run_id}",
+        scenario_id="scen_p0_3",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+    )
+    m_hash = exec_manifest.compute_manifest_hash()
+
+    fin_rec = EvaluatorFinalizationRecord(
+        finalization_id=f"fin_{run_id}",
+        run_id=run_id,
+        execution_manifest_hash=m_hash,
+        scenario_id="scen_p0_3",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+        evaluator_identity="eval_kernel",
+        evaluator_config_hash="sha3_256:0000000000000000000000000000000000000000000000000000000000000000",
+        required_oracle_ids=["required_check_1"],
+        evidence_root_hash=ev_root,
+        outcome="pass",
+        score=1.0,
+    )
+    fin_rec = fin_rec.sign()
+
+    _build_test_run(
+        matrix_env["runs"],
+        run_id,
+        events,
+        scen_data,
+        evaluator_finalization=fin_rec,
+        write_manifest=True,
+    )
+
+    with pytest.raises(ValueError, match="MissingRequiredOracles"):
+        execute_industrial_certification(run_id=run_id, scenario_data=scen_data)
+
+
+# ==============================================================================
+# Multi-node evidence graph never collapses distinct node executions
+# ==============================================================================
+
+
+def test_multi_node_preserves_distinct_executions():
+    events = [
+        {"event": "run_start", "_seq": 1},
+        {
+            "event": "execution_graph_node",
+            "_seq": 2,
+            "data": {
+                "node_id": "node_A",
+                "oracle_results": [
+                    {
+                        "oracle_id": "check_latency",
+                        "passed": True,
+                        "outcome": "PASS",
+                    }
+                ],
+            },
+        },
+        {
+            "event": "execution_graph_node",
+            "_seq": 3,
+            "data": {
+                "node_id": "node_B",
+                "oracle_results": [
+                    {"oracle_id": "check_latency", "passed": True, "outcome": "PASS"}
+                ],
+            },
+        },
+        {"event": "run_end", "_seq": 4},
+    ]
+    graph = build_evidence_graph_from_events(events)
+    # Must contain 2 distinct nodes keyed by (check_latency, node_A) and (check_latency, node_B)
+    nodes = graph["nodes"]
+    assert len(nodes) == 2
+    node_ids = {n.get("node") for n in nodes}
+    assert node_ids == {"node_A", "node_B"}
+    assert graph["evidence_count"] == 2
+
+
+# ==============================================================================
+# Physical execution_manifest.json is mandatory; missing manifest fails closed
+# ==============================================================================
+
+
+def test_missing_execution_manifest_artifact_fails_closed(matrix_env):
+    run_id = "run-p0-5-missing-manifest-file"
+    scen_data = {"id": "scen_p0_5", "version": "1.0.0"}
+    scen_hash = compute_scenario_hash(scen_data)
+    events = [
+        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_p0_5"},
+        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
+        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
+    ]
+    ev_graph = build_evidence_graph_from_events(events)
+    ev_root = compute_evidence_graph_root(ev_graph)
+
+    fin_rec = EvaluatorFinalizationRecord(
+        finalization_id=f"fin_{run_id}",
+        run_id=run_id,
+        execution_manifest_hash="sha3_256:0000000000000000000000000000000000000000000000000000000000000000",
+        scenario_id="scen_p0_5",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+        evaluator_identity="eval_kernel",
+        evaluator_config_hash="sha3_256:0000000000000000000000000000000000000000000000000000000000000000",
+        required_oracle_ids=[],
+        evidence_root_hash=ev_root,
+        outcome="pass",
+        score=1.0,
+    )
+    fin_rec = fin_rec.sign()
+
+    vault, _ = _build_test_run(
+        matrix_env["runs"],
+        run_id,
+        events,
+        scen_data,
+        evaluator_finalization=fin_rec,
+        write_manifest=False,  # Deliberately omit physical execution_manifest.json
+    )
+    # Ensure physical file is absent
+    assert not (vault / "execution_manifest.json").exists()
+
+    with pytest.raises(ValueError, match="ExecutionManifestMissing"):
+        execute_industrial_certification(run_id=run_id, scenario_data=scen_data)
+
+
+# ==============================================================================
+# Terminal reconciliation rejects contradictory prior decisions
+# ==============================================================================
+
+
+def test_contradictory_terminal_decision_fails_as_inconclusive(matrix_env):
+    run_id = "run-p0-6-contradictory-terminal"
+    scen_data = {"id": "scen_p0_6", "version": "1.0.0"}
+    scen_hash = compute_scenario_hash(scen_data)
+    # Prior terminal event says "FAIL", but finalization record says "pass"
+    events = [
+        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_p0_6"},
+        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
+        {"event": "session_decision", "data": {"decision": "FAIL", "score": 0.0}},
+    ]
+    ev_graph = build_evidence_graph_from_events(events)
+    ev_root = compute_evidence_graph_root(ev_graph)
+
+    exec_manifest = ExecutionManifest(
+        manifest_id=f"man_{run_id}",
+        scenario_id="scen_p0_6",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+    )
+    m_hash = exec_manifest.compute_manifest_hash()
+
+    fin_rec = EvaluatorFinalizationRecord(
+        finalization_id=f"fin_{run_id}",
+        run_id=run_id,
+        execution_manifest_hash=m_hash,
+        scenario_id="scen_p0_6",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+        evaluator_identity="eval_kernel",
+        evaluator_config_hash="sha3_256:0000000000000000000000000000000000000000000000000000000000000000",
+        required_oracle_ids=[],
+        evidence_root_hash=ev_root,
+        outcome="pass",
+        score=1.0,
+    )
+    fin_rec = fin_rec.sign()
+
+    _build_test_run(
+        matrix_env["runs"],
+        run_id,
+        events,
+        scen_data,
+        evaluator_finalization=fin_rec,
+        write_manifest=True,
+    )
+
+    with pytest.raises(ValueError, match="inconclusive outcome"):
+        execute_industrial_certification(run_id=run_id, scenario_data=scen_data)
+
+
+# ==============================================================================
+# Production startup fails closed when Visual Console bundle is missing
+# ==============================================================================
+
+
+def test_production_mode_fails_closed_without_gui(monkeypatch, tmp_path):
+    from eval_runner.console.app import create_app
+
+    monkeypatch.setenv("AGENTV_ENV", "production")
+    # Point UI_BUILD_DIR to empty directory where dist/index.html does NOT exist
+    fake_empty_dist = tmp_path / "non_existent_dist"
+    monkeypatch.setattr("eval_runner.console.app.UI_BUILD_DIR", fake_empty_dist)
+
+    with pytest.raises(RuntimeError, match="Visual Console frontend bundle missing"):
+        create_app()
+
+
+# ==============================================================================
+# Control plane endpoints excluded from default OSS console registration
+# ==============================================================================
+
+
+def test_control_plane_endpoints_excluded_from_oss_console(monkeypatch):
+    from eval_runner.console.app import create_app
+
+    monkeypatch.delenv("AGENTV_ENV", raising=False)
+    app = create_app()
+
+    client = app.test_client()
+    # /api/v1/publish and /api/v1/compliance-packs should 404 (not registered in OSS console)
+    pub_res = client.post("/api/v1/publish", json={})
+    assert pub_res.status_code == 404
+
+    packs_res = client.get("/api/v1/compliance-packs")
+    assert packs_res.status_code == 404
