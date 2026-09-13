@@ -74,6 +74,7 @@ export const ScenarioComposer: React.FC = () => {
 
   // JSON/YAML Toggle
   const [viewMode, setViewMode] = useState<'canvas' | 'json'>('canvas');
+  const prevViewModeRef = React.useRef<'canvas' | 'json'>('canvas');
   const [rawJson, setRawJson] = useState('');
   // P0-1: synchronous JSON syntax error state. When set, Save/Run are blocked.
   const [jsonParseError, setJsonParseError] = useState<string | null>(null);
@@ -195,12 +196,14 @@ export const ScenarioComposer: React.FC = () => {
     setViewMode(mode);
   };
 
-  // Sync state to Monaco editor on toggle
+  // Sync state to Monaco editor ONLY when transitioning into JSON mode
   useEffect(() => {
-    if (viewMode === 'json') {
+    if (viewMode === 'json' && prevViewModeRef.current !== 'json') {
       setRawJson(JSON.stringify(getAESJson(), null, 2));
+      setJsonParseError(null);
     }
-  }, [viewMode, nodes, edges, scenarioId, title, version, lifecycleStatus, industry, complianceLevel, description]);
+    prevViewModeRef.current = viewMode;
+  }, [viewMode]);
 
   // Load canonical scenario document
   useEffect(() => {
@@ -288,6 +291,8 @@ export const ScenarioComposer: React.FC = () => {
           setRawDoc(parsed);
           if (parsed.metadata?.id) setScenarioId(parsed.metadata.id);
           if (parsed.metadata?.name) setTitle(parsed.metadata.name);
+          if (parsed.metadata?.version || parsed.version) setVersion(parsed.metadata?.version || parsed.version);
+          if (parsed.metadata?.status || parsed.status) setLifecycleStatus((parsed.metadata?.status || parsed.status) as any);
           if (parsed.industry) setIndustry(parsed.industry);
           if (parsed.metadata?.compliance_level) setComplianceLevel(parsed.metadata.compliance_level);
           if (parsed.metadata?.description) setDescription(parsed.metadata.description);
@@ -594,10 +599,32 @@ export const ScenarioComposer: React.FC = () => {
       return;
     }
 
-    const errs = validateScenario();
-    if (errs.length > 0) {
-      setMessage(`Validation Failed: ${errs.join(' | ')}`);
-      return;
+    if (viewMode === 'canvas') {
+      const errs = validateScenario();
+      if (errs.length > 0) {
+        setMessage(`Validation Failed: ${errs.join(' | ')}`);
+        return;
+      }
+    } else {
+      const docMeta = authoritativeDoc?.metadata || authoritativeDoc;
+      const docNodes = authoritativeDoc?.workflow?.nodes || authoritativeDoc?.workflow?.tasks || [];
+      const sId = authoritativeDoc?.id || docMeta?.id || scenarioId;
+      const docErrors: string[] = [];
+      if (!sId || !sId.trim()) {
+        docErrors.push('Scenario ID is required.');
+      } else if (!/^[a-zA-Z0-9_\-]+$/.test(sId.trim())) {
+        docErrors.push('Scenario ID must contain only alphanumeric characters, underscores, or hyphens.');
+      }
+      if (!authoritativeDoc?.title && !docMeta?.name && !title.trim()) {
+        docErrors.push('Scenario Name is required.');
+      }
+      if (!Array.isArray(docNodes) || docNodes.length === 0) {
+        docErrors.push('At least one workflow node is required in JSON document.');
+      }
+      if (docErrors.length > 0) {
+        setMessage(`Validation Failed: ${docErrors.join(' | ')}`);
+        return;
+      }
     }
 
     setSaving(true);
@@ -730,6 +757,8 @@ export const ScenarioComposer: React.FC = () => {
     setRawDoc(parsed);
     setScenarioId(parsed.metadata?.id || 'imported-scenario');
     setTitle(parsed.metadata?.name || 'Imported AES Scenario');
+    setVersion(parsed.metadata?.version || parsed.version || '1.0.0');
+    setLifecycleStatus((parsed.metadata?.status || parsed.status || 'Draft') as any);
     setIndustry(parsed.industry || 'generic');
     setComplianceLevel(parsed.metadata?.compliance_level || 'Standard');
     setDescription(parsed.metadata?.description || '');

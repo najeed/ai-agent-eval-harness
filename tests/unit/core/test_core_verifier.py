@@ -835,7 +835,7 @@ def test_verify_trace_ledger_missing_artifact():
 
 
 def test_sign_trace_lifecycle_event_failure():
-    """If appending the lifecycle event to trace fails, sign_trace continues."""
+    """If writing the certification receipt artifact fails, sign_trace aborts and rolls back."""
     run_id = "run-event-fail"
     vault_dir, trace_path = setup_vault(run_id)
     trace_path.write_text('{"event": "trace"}\n')
@@ -843,7 +843,7 @@ def test_sign_trace_lifecycle_event_failure():
     original_open = open
 
     def patched_open(path, mode="r", **kwargs):
-        if "ab" in str(mode):
+        if "ab" in str(mode) or "certification_receipt.json" in str(path):
             raise OSError("Write failure")
         return original_open(path, mode, **kwargs)
 

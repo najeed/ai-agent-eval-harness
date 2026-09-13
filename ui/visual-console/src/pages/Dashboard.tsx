@@ -97,6 +97,17 @@ export const Dashboard: React.FC = () => {
   const handleLaunchVerification = async () => {
     setIsLaunching(true);
     try {
+      const found = scenarios.find(
+        (s) => s.id === selectedScenarioId || s.metadata?.id === selectedScenarioId
+      );
+      const scenPath =
+        found?.path ||
+        (selectedScenarioId.endsWith('.json') ||
+        selectedScenarioId.includes('/') ||
+        selectedScenarioId.includes('\\')
+          ? selectedScenarioId
+          : `scenarios/${selectedScenarioId}.json`);
+
       // 1. Mandatory Preflight Readiness Gate (P0 #4)
       const preflightRes = await fetch('/api/scenarios/readiness', {
         method: 'POST',
@@ -108,21 +119,38 @@ export const Dashboard: React.FC = () => {
             endpoint: selectedProfile.endpoint,
             model: selectedProfile.model,
           },
-          runtime_config: { max_turns: 10 },
+          runtime_config: { max_turns: selectedProfile.maxTurns || 10 },
         }),
       });
       const preflightData = await preflightRes.json();
+      if (!preflightRes.ok || !preflightData?.ready) {
+        alert(
+          `Preflight readiness check failed: ${
+            preflightData?.checks?.map((c: any) => `${c.name}: ${c.detail || c.message || c.status}`).join('; ') ||
+            'Target or scenario not ready'
+          }`
+        );
+        return;
+      }
       const preflightFingerprint = preflightData?.preflight_fingerprint;
 
-      // 2. Governed Launch with preflight_fingerprint
+      // 2. Governed Launch with unified payload and preflight_fingerprint
       const res = await fetch('/api/v1/evaluate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          path: selectedScenarioId,
-          agent: selectedProfile.endpoint,
-          model: selectedProfile.model,
+          path: scenPath,
+          max_turns: selectedProfile.maxTurns || 10,
+          endpoint: selectedProfile.endpoint,
           protocol: selectedProfile.provider,
+          agent_config: {
+            protocol: selectedProfile.provider,
+            endpoint: selectedProfile.endpoint,
+            model: selectedProfile.model,
+          },
+          runtime_config: {
+            max_turns: selectedProfile.maxTurns || 10,
+          },
           tenant_id: tenantId,
           workspace_id: workspaceId,
           seed: 42,
@@ -133,9 +161,9 @@ export const Dashboard: React.FC = () => {
         }),
       });
       const data = await res.json();
-      if (res.ok) {
+      if (res.ok && data.run_id) {
         setShowManifestModal(false);
-        navigate(`/debugger?run_id=${data.run_id || 'latest'}`);
+        navigate(`/debugger?run_id=${data.run_id}`);
       } else {
         alert(`Evaluation launch failed: ${data.error || 'Unknown error'}`);
       }

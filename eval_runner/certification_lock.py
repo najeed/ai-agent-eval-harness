@@ -119,6 +119,7 @@ class PerRunCertificationLock:
         self.lock_dir = config.RUN_LOG_DIR / run_id
         self.lock_file = self.lock_dir / ".certification.lock"
         self._acquired = False
+        self._fd: int | None = None
 
     @classmethod
     def is_locked(cls, run_id: str) -> bool:
@@ -168,34 +169,71 @@ class PerRunCertificationLock:
 
         try:
             self.lock_dir.mkdir(parents=True, exist_ok=True)
-            while self.lock_file.exists():
-                if _is_lock_stale(self.lock_file):
-                    logger.warning(
-                        "Reclaiming stale certification lock for run '%s' (owner PID died)",
-                        self.run_id,
-                    )
-                    try:
-                        self.lock_file.unlink(missing_ok=True)
-                        break
-                    except OSError as e:
-                        logger.debug("Failed breaking stale lock %s: %s", self.lock_file, e)
-                if time.monotonic() - start_time > self.timeout_seconds:
-                    raise TimeoutError(
-                        f"CertificationLockConflict: timed out waiting for run '{self.run_id}' "
-                        f"(held by PID {_read_lock_data(self.lock_file).get('pid', 'unknown')})"
-                    )
-                time.sleep(0.05)
-
-            temp_lock = self.lock_dir / f".certification.lock.{self.fencing_token}.tmp"
             content = (
                 f"owner_id={self.owner_id}\n"
                 f"fencing_token={self.fencing_token}\n"
                 f"pid={os.getpid()}\n"
                 f"ts={time.time()}\n"
                 f"run_id={self.run_id}\n"
-            )
-            temp_lock.write_text(content, encoding="utf-8")
-            temp_lock.replace(self.lock_file)
+            ).encode()
+
+            fd: int | None = None
+            while True:
+                if self.lock_file.exists() and _is_lock_stale(self.lock_file):
+                    logger.warning(
+                        "Reclaiming stale certification lock for run '%s' (owner PID died)",
+                        self.run_id,
+                    )
+                    try:
+                        self.lock_file.unlink(missing_ok=True)
+                    except OSError as e:
+                        logger.debug("Failed breaking stale lock %s: %s", self.lock_file, e)
+
+                try:
+                    fd = os.open(
+                        str(self.lock_file),
+                        os.O_CREAT | os.O_EXCL | os.O_RDWR,
+                        0o600,
+                    )
+                    if os.name == "nt":
+                        import msvcrt
+
+                        try:
+                            os.lseek(fd, 1048576, os.SEEK_SET)
+                            msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
+                            os.lseek(fd, 0, os.SEEK_SET)
+                        except OSError as lock_err:
+                            os.close(fd)
+                            fd = None
+                            raise lock_err
+                    else:
+                        import fcntl
+
+                        try:
+                            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                        except OSError as lock_err:
+                            os.close(fd)
+                            fd = None
+                            raise lock_err
+
+                    os.write(fd, content)
+                    os.fsync(fd)
+                    self._fd = fd
+                    break
+                except (FileExistsError, OSError) as err:
+                    if fd is not None:
+                        try:
+                            os.close(fd)
+                        except OSError:
+                            pass
+                        fd = None
+
+                    if time.monotonic() - start_time > self.timeout_seconds:
+                        raise TimeoutError(
+                            f"CertificationLockConflict: timed out waiting for run '{self.run_id}' "
+                            f"(held by PID {_read_lock_data(self.lock_file).get('pid', 'unknown')})"
+                        ) from err
+                    time.sleep(0.05)
 
             from eval_runner.run_lifecycle import RunLifecycleState, transition_run_lifecycle
 
@@ -229,6 +267,30 @@ class PerRunCertificationLock:
             self._thread_depth.pop(key, None)
 
         try:
+            if self._fd is not None:
+                try:
+                    if os.name == "nt":
+                        import msvcrt
+
+                        try:
+                            os.lseek(self._fd, 1048576, os.SEEK_SET)
+                            msvcrt.locking(self._fd, msvcrt.LK_UNLCK, 1)
+                        except OSError:
+                            pass
+                    else:
+                        import fcntl
+
+                        try:
+                            fcntl.flock(self._fd, fcntl.LOCK_UN)
+                        except OSError:
+                            pass
+                finally:
+                    try:
+                        os.close(self._fd)
+                    except OSError:
+                        pass
+                    self._fd = None
+
             if self.lock_file.exists():
                 data = _read_lock_data(self.lock_file)
                 # Fencing token / owner validation: only delete if WE own it

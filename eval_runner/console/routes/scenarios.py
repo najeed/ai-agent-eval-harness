@@ -45,6 +45,27 @@ TRANSITION_REQUIRES_REASON: set[tuple[str, str]] = {
 scenario_bp = Blueprint("scenarios", __name__)
 
 
+def compute_preflight_fingerprint(
+    scenario_id: str,
+    scen_hash: str = "",
+    endpoint: str = "",
+    protocol: str = "",
+    max_turns: int = 10,
+) -> str:
+    """
+    Canonical preflight fingerprint calculation shared between
+    readiness probe and evaluation launch.
+    """
+    raw = {
+        "endpoint": str(endpoint or ""),
+        "max_turns": int(max_turns),
+        "protocol": str(protocol or "").lower(),
+        "scen_hash": str(scen_hash or ""),
+        "scenario_id": str(scenario_id or ""),
+    }
+    return hashlib.sha3_256(json.dumps(raw, sort_keys=True).encode("utf-8")).hexdigest()
+
+
 def get_catalog():
     return ScenarioCatalog.get_instance()
 
@@ -707,9 +728,14 @@ def check_execution_readiness():
         "checks": checks,
     }
 
-    import hashlib
-
-    pfp = hashlib.sha3_256(json.dumps(manifest, sort_keys=True).encode()).hexdigest()
+    scen_hash = compute_scenario_hash(scen_data) if scen_data else ""
+    pfp = compute_preflight_fingerprint(
+        scenario_id=scen_id,
+        scen_hash=scen_hash,
+        endpoint=endpoint,
+        protocol=proto,
+        max_turns=int((data.get("runtime_config") or {}).get("max_turns", 10) or 10),
+    )
 
     return jsonify(
         {
@@ -1066,16 +1092,13 @@ def evaluate_scenario():
     )
 
     scen_id = (scen.get("metadata") or {}).get("id") or scen.get("id") or Path(path).stem
-    fingerprint_raw = {
-        "scenario_id": scen_id,
-        "scen_hash": compute_scenario_hash(scen),
-        "endpoint": agent_config.get("endpoint"),
-        "protocol": agent_config.get("protocol"),
-        "max_turns": runtime_config.get("max_turns", 10),
-    }
-    expected_fingerprint = hashlib.sha3_256(
-        json.dumps(fingerprint_raw, sort_keys=True).encode("utf-8")
-    ).hexdigest()
+    expected_fingerprint = compute_preflight_fingerprint(
+        scenario_id=scen_id,
+        scen_hash=compute_scenario_hash(scen),
+        endpoint=agent_config.get("endpoint"),
+        protocol=agent_config.get("protocol"),
+        max_turns=runtime_config.get("max_turns", 10),
+    )
 
     if provided_fingerprint:
         if provided_fingerprint != expected_fingerprint:

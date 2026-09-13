@@ -107,6 +107,7 @@ class CanonicalScenarioIR:
     producer_version: str = "2.0.0"
     content_hash: str = ""
     parent_artifact_refs: list[str] = field(default_factory=list)
+    is_authoritative: bool = True
 
     def __post_init__(self):
         if not self.content_hash:
@@ -160,6 +161,7 @@ class CanonicalScenarioIR:
             producer_version=str(data.get("producer_version", "2.0.0")),
             content_hash=str(data.get("content_hash", "")),
             parent_artifact_refs=list(data.get("parent_artifact_refs") or []),
+            is_authoritative=bool(data.get("is_authoritative", True)),
         )
 
     @classmethod
@@ -178,6 +180,8 @@ class CanonicalScenarioIR:
         entry_node_ids: list[str] = []
         failure_policy = "fail_fast"
         eval_plan_dict: dict[str, Any] = {}
+        ir_version = "2.0.0"
+        is_authoritative = True
 
         try:
             from eval_runner.execution_ir import compile_workflow
@@ -205,8 +209,11 @@ class CanonicalScenarioIR:
             failure_policy = str(plan.failure_policy)
             if plan.evaluation_plan:
                 eval_plan_dict = plan.evaluation_plan.to_dict()
-        except (ImportError, Exception):
-            # Fallback direct normalization
+        except (ImportError, ModuleNotFoundError):
+            # Fallback direct normalization: ONLY when compiler is unavailable.
+            # Semantic and validation failures must NEVER be caught or downgraded.
+            ir_version = "0.1.0-nonauthoritative-fallback"
+            is_authoritative = False
             wf = scenario_data.get("workflow", {})
             if isinstance(wf, dict):
                 raw_nodes = wf.get("nodes", [])
@@ -249,7 +256,7 @@ class CanonicalScenarioIR:
         return cls(
             scenario_id=scen_id,
             scenario_version=scen_version,
-            ir_version="2.0.0",
+            ir_version=ir_version,
             nodes=nodes,
             edges=edges,
             entry_node_ids=entry_node_ids,
@@ -260,6 +267,7 @@ class CanonicalScenarioIR:
             producer_identity="agentv.execution_ir",
             producer_version="2.0.0",
             parent_artifact_refs=[scen_hash] if scen_hash else [],
+            is_authoritative=is_authoritative,
         )
 
 

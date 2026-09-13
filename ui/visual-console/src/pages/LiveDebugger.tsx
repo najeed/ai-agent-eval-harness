@@ -511,7 +511,7 @@ export const LiveDebugger: React.FC = () => {
       source.close();
       streamCtlRef.current.es = null;
 
-      const TERMINAL_STATUSES = new Set(['COMPLETED', 'FAILED', 'ABORTED', 'ERROR']);
+      const TERMINAL_STATUSES = new Set(['COMPLETED', 'FAILED', 'ABORTED', 'ERROR', 'SEALED', 'CERTIFIED']);
 
       fetch(`/api/v1/runs/${rid}`)
         .then(res => {
@@ -944,7 +944,7 @@ export const LiveDebugger: React.FC = () => {
     }
   };
 
-  const RUN_TERMINAL_STATUSES = new Set(['COMPLETED', 'FAILED', 'ABORTED', 'ERROR']);
+  const RUN_TERMINAL_STATUSES = new Set(['COMPLETED', 'FAILED', 'ABORTED', 'ERROR', 'SEALED', 'CERTIFIED']);
   const isTerminalRun = RUN_TERMINAL_STATUSES.has(status);
 
   useEffect(() => {

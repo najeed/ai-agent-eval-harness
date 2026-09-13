@@ -115,18 +115,22 @@ class ExecutionManifest:
     def compute_manifest_hash(self) -> str:
         """Computes a deterministic cryptographic hash of the canonical manifest payload."""
         data = {
-            "manifest_id": self.manifest_id,
-            "scenario_id": self.scenario_id,
-            "scenario_version": self.scenario_version,
-            "scenario_hash": self.scenario_hash,
-            "tenant_id": self.tenant_id,
-            "workspace_id": self.workspace_id,
             "agent_config": self.agent_config,
-            "runtime_config": self.runtime_config,
-            "environment": self.environment,
             "created_at": self.created_at,
             "created_by": self.created_by,
+            "environment": self.environment,
+            "manifest_id": self.manifest_id,
             "metadata": self.metadata,
+            "parent_artifact_refs": sorted(self.parent_artifact_refs),
+            "producer_identity": self.producer_identity,
+            "producer_version": self.producer_version,
+            "runtime_config": self.runtime_config,
+            "scenario_hash": self.scenario_hash,
+            "scenario_id": self.scenario_id,
+            "scenario_version": self.scenario_version,
+            "schema_version": self.schema_version,
+            "tenant_id": self.tenant_id,
+            "workspace_id": self.workspace_id,
         }
         return f"sha3_256:{hashlib.sha3_256(_canonical_json_bytes(data)).hexdigest()}"
 

@@ -37,7 +37,6 @@ _VALID_TRANSITIONS: dict[RunLifecycleState, set[RunLifecycleState]] = {
     RunLifecycleState.OPEN: {
         RunLifecycleState.OPEN,
         RunLifecycleState.FINALIZING,
-        RunLifecycleState.SEALED,
     },
     RunLifecycleState.FINALIZING: {RunLifecycleState.FINALIZING, RunLifecycleState.SEALED},
     RunLifecycleState.SEALED: {RunLifecycleState.SEALED},

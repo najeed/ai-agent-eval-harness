@@ -429,7 +429,12 @@ Usage: agentv <command> [options]
         "--path", "--run-id", dest="run_id", required=True, help="[SSOT] Mandatory Run ID"
     )
     gate_parser.add_argument("--hash")
-    gate_parser.add_argument("--verify-ledger", action="store_true")
+    gate_parser.add_argument(
+        "--verify-ledger",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Full forensic ledger verification (defaults to True)",
+    )
     _add_pqc_args(gate_parser)
 
     aes_parser = subparsers.add_parser("aes", help="AES tools")

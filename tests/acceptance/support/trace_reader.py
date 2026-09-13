@@ -122,8 +122,14 @@ class TraceReader:
 
     @property
     def certificate_issued(self) -> bool:
-        """Check whether verification_certificate_issued event is present."""
-        return any(ev.get("event") == "verification_certificate_issued" for ev in self.events)
+        """
+        Check whether verification_certificate_issued event
+        or certification_receipt.json is present.
+        """
+        if any(ev.get("event") == "verification_certificate_issued" for ev in self.events):
+            return True
+        receipt_path = self.path.parent / "certification_receipt.json"
+        return receipt_path.is_file()
 
 
 __all__ = ["TraceReader"]

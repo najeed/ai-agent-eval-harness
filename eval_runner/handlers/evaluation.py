@@ -545,7 +545,7 @@ async def handle_gate(args):
         # Canonical Verification Call (Pillars 1 & 2)
         # We now pass verify_ledger=True to ensure sidecar artifact integrity
         is_valid = await verifier.TraceVerifier.verify_trace_async(
-            str(trace_path), str(vc_path), verify_ledger=getattr(args, "verify_ledger", False)
+            str(trace_path), str(vc_path), verify_ledger=getattr(args, "verify_ledger", True)
         )
 
         if not is_valid:

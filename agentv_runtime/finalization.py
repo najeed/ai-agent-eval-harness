@@ -61,15 +61,18 @@ class EvaluatorFinalizationRecord:
         return data
 
     @classmethod
-    def from_dict(
-        cls, data: Mapping[str, Any], require_authoritative: bool = True
+    def parse_untrusted(
+        cls, data: Mapping[str, Any], strict: bool = True
     ) -> EvaluatorFinalizationRecord:
         """
-        Constructs an EvaluatorFinalizationRecord from a dictionary.
-        When require_authoritative is True (default), all 12 trust fields are mandatory
-        and zero defaulting is permitted.
+        Parses untrusted dictionary data into an EvaluatorFinalizationRecord.
+        When strict=True, all 12 schema fields are validated
+        and finalization_hash parity is enforced,
+        but cryptographic signature verification against an external trust root is NOT performed.
+        To verify cryptographic authenticity,
+        call record.verify_authoritative(public_key, trust_root).
         """
-        if require_authoritative:
+        if strict:
             mandatory_str_fields = [
                 ("finalization_id", "finalization_id"),
                 ("run_id", "run_id"),
@@ -194,6 +197,34 @@ class EvaluatorFinalizationRecord:
             schema_version=str(data.get("schema_version") or FINALIZATION_SCHEMA_VERSION),
             metadata=dict(data.get("metadata") or {}),
         )
+
+    def verify_authoritative(self, public_key: Any = None, trust_root: Any = None) -> bool:
+        """Alias for verify_signature that cryptographically validates external trust."""
+        return self.verify_signature(public_key=public_key, trust_root=trust_root)
+
+    @classmethod
+    def from_dict(
+        cls,
+        data: Mapping[str, Any],
+        require_authoritative: bool = True,
+        *,
+        trust_root: Any = None,
+        public_key: Any = None,
+    ) -> EvaluatorFinalizationRecord:
+        """
+        Constructs an EvaluatorFinalizationRecord from a dictionary.
+        When require_authoritative=True, strict field and hash validation is performed.
+        If trust_root or public_key is provided,
+        cryptographic verification against that root is required.
+        """
+        record = cls.parse_untrusted(data, strict=require_authoritative)
+        if require_authoritative and (trust_root is not None or public_key is not None):
+            if not record.verify_authoritative(public_key=public_key, trust_root=trust_root):
+                raise ValueError(
+                    f"EvaluatorSignatureVerificationFailed: signature for "
+                    f"'{record.evaluator_identity}' could not be verified against trust root."
+                )
+        return record
 
     def canonical_payload_bytes(self) -> bytes:
         """Returns canonical RFC 8785 JSON bytes of the finalization attestation payload."""

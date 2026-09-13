@@ -103,7 +103,9 @@ class VerificationPackage:
         """Returns the canonical deterministic dictionary of the attestation payload."""
         return {
             "algorithm": self.algorithm,
+            "certificate_hash": self.certificate_hash or "",
             "decision": self.decision,
+            "evaluation_hash": self.evaluation_hash or "",
             "evidence_root_hash": self.evidence_root_hash,
             "executed_oracle_results": self.executed_oracle_results,
             "execution_identity": self.execution_identity,
@@ -120,6 +122,7 @@ class VerificationPackage:
             "signer_identity": self.signer_identity or "",
             "trace_hash": self.trace_hash,
             "trace_seal": self.trace_seal,
+            "verification_hash": self.verification_hash or "",
         }
 
     def canonical_payload_bytes(self) -> bytes:

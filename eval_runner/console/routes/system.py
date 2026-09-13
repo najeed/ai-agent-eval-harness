@@ -466,6 +466,8 @@ def get_doctor_audit():
     an unconditional 'healthy'. Legacy diagnostic fields are preserved.
     """
     try:
+        from eval_runner.engine import AgentAdapterRegistry
+
         health = _runtime_health()
         audit = {
             **health,
@@ -473,6 +475,7 @@ def get_doctor_audit():
             "plugins_loaded": bool(getattr(manager, "_loaded", False)),
             "catalog_size": len(ScenarioCatalog.get_instance().scenarios),
             "simulator_count": len(get_simulator_registry()),
+            "available_protocols": AgentAdapterRegistry.get_available_protocols(),
             "pid": os.getpid(),
         }
         return jsonify(audit)

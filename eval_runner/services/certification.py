@@ -286,9 +286,18 @@ class CertificationService:
                             if data.get("passed") is not None
                             else ev.get("passed")
                         )
-                        if passed_val is False:
+                        verified_val = (
+                            data.get("verified")
+                            if data.get("verified") is not None
+                            else ev.get("verified")
+                        )
+                        if passed_val is False or verified_val is False:
                             raw_status = "fail"
-                        elif passed_val is True and not raw_status:
+                        elif (passed_val is True or verified_val is True) and (
+                            not raw_status
+                            or str(raw_status).strip().lower()
+                            in ("completed", "execution_completed", "done", "success")
+                        ):
                             raw_status = "pass"
 
                         if not raw_status and data.get("pass_at_k") is not None:
@@ -393,7 +402,8 @@ class CertificationService:
         ):
             raise ValueError(f"Invalid or unsafe run_id: {run_id}")
 
-        with PerRunCertificationLock(run_id):
+        lock = PerRunCertificationLock(run_id)
+        with lock:
             target_trace = resolve_trace_path(run_id)
             if (
                 not target_trace
@@ -625,6 +635,9 @@ class CertificationService:
             except Exception as e:
                 raise ValueError(f"Invalid execution manifest in {manifest_file}: {e}") from e
 
+            # Re-verify lock ownership prior to signing and sealing mutations
+            lock.verify_active()
+
             # 3. Cryptographic Signature Execution
             manifest = TraceVerifier.sign_trace(
                 str(target_trace),
@@ -641,6 +654,7 @@ class CertificationService:
                 scenario_data=effective_scenario_data,
             )
 
+            lock.verify_active()
             manifest_path = vault_dir / "run_manifest.json"
             with open(manifest_path, "w", encoding="utf-8") as f:
                 json.dump(manifest, f, indent=2)

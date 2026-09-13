@@ -10,6 +10,7 @@ import asyncio
 import json
 import re
 import shlex
+import sys
 from typing import Any, Dict, Optional  # noqa: F401, UP035
 
 import aiohttp
@@ -54,6 +55,8 @@ async def local_subprocess_adapter(payload: dict, endpoint: str, **kwargs):
     # Secure Remediation (R0.2): Eliminate shell=True/shell=True context
     # shlex.split transforms "python agent.py --arg" into ["python", "agent.py", "--arg"]
     cmd_args = shlex.split(endpoint)
+    if cmd_args and cmd_args[0].endswith(".py"):
+        cmd_args = [sys.executable] + cmd_args
     process = await asyncio.create_subprocess_exec(
         *cmd_args,
         stdin=asyncio.subprocess.PIPE,

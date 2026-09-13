@@ -208,31 +208,48 @@ export const VerificationWorkflow: React.FC = () => {
     setPreflightResult(null);
   };
 
-  const [availableProtocols, setAvailableProtocols] = useState<string[]>([
-
-    'http',
-    'http_rest',
-    'sse',
-    'socket',
-    'ollama',
-    'openai',
-    'anthropic',
-    'gemini',
-  ]);
+  const [availableProtocols, setAvailableProtocols] = useState<string[]>([]);
+  const [doctorError, setDoctorError] = useState<string | null>(null);
+  const [savedTargets, setSavedTargets] = useState<any[]>([]);
 
   useEffect(() => {
     // Dynamic protocol discovery from Runtime health
     fetch('/api/v1/doctor')
-      .then(res => res.ok ? res.json() : null)
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then(data => {
         if (data && Array.isArray(data.available_protocols) && data.available_protocols.length > 0) {
           setAvailableProtocols(data.available_protocols);
+          setDoctorError(null);
+          setProtocol(curr => data.available_protocols.includes(curr) ? curr : data.available_protocols[0]);
+        } else {
+          setAvailableProtocols([]);
+          setDoctorError('Runtime doctor returned no available protocols.');
+        }
+      })
+      .catch(err => {
+        setAvailableProtocols([]);
+        setDoctorError(`Failed to reach runtime doctor: ${err.message}`);
+      });
+
+    // Fetch saved reusable targets
+    fetch('/api/v1/agent-targets')
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data && Array.isArray(data.targets)) {
+          setSavedTargets(data.targets);
         }
       })
       .catch(() => { });
   }, []);
 
   const launchEvaluation = async () => {
+    if (availableProtocols.length === 0 || doctorError) {
+      setLaunchError('Cannot launch: runtime protocol registry is unavailable (fail-closed).');
+      return;
+    }
     if (!scenarioId || !endpoint.trim()) {
       setLaunchError('Please specify a valid Scenario ID and Agent Endpoint.');
       return;
@@ -345,17 +362,59 @@ export const VerificationWorkflow: React.FC = () => {
         <h2 className="text-sm font-bold text-white flex items-center gap-2">
           <Plug className="w-4 h-4 text-indigo-400" /> 1 · Connect Agent
         </h2>
+
+        {doctorError && (
+          <div className="p-3 rounded-lg bg-red-950/40 border border-red-900 text-xs text-red-300 flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
+            <span>Runtime protocol registry unavailable: {doctorError}. Verification launch is disabled until the runtime is healthy.</span>
+          </div>
+        )}
+
+        {savedTargets.length > 0 && (
+          <div>
+            <label className="text-[11px] uppercase tracking-wider text-slate-500 font-bold block mb-1">
+              Saved Reusable Target
+            </label>
+            <select
+              defaultValue=""
+              onChange={e => {
+                const tgt = savedTargets.find(t => t.id === e.target.value);
+                if (tgt) {
+                  setEndpoint(tgt.endpoint || '');
+                  if (tgt.protocol && availableProtocols.includes(tgt.protocol)) {
+                    setProtocol(tgt.protocol);
+                  }
+                  setPreflightResult(null);
+                }
+              }}
+              className="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1.5 text-xs text-slate-200"
+            >
+              <option value="" disabled>— Select a saved target to autofill endpoint & protocol —</option>
+              {savedTargets.map(t => (
+                <option key={t.id} value={t.id}>
+                  {t.name} ({t.protocol} · {t.endpoint})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <div className="grid grid-cols-[180px_1fr] gap-3 items-center">
           <label className="text-[11px] uppercase tracking-wider text-slate-500 font-bold">
             Protocol
             <select
               value={protocol}
+              disabled={availableProtocols.length === 0}
               onChange={e => onParamChange(setProtocol)(e.target.value)}
-              className="mt-1 w-full bg-slate-900 border border-slate-800 rounded px-2 py-1.5 text-xs text-slate-200"
+              className="mt-1 w-full bg-slate-900 border border-slate-800 rounded px-2 py-1.5 text-xs text-slate-200 disabled:opacity-50"
             >
-              {availableProtocols.map(p => (
-                <option key={p} value={p}>{p}</option>
-              ))}
+              {availableProtocols.length === 0 ? (
+                <option value="">No protocols available</option>
+              ) : (
+                availableProtocols.map(p => (
+                  <option key={p} value={p}>{p}</option>
+                ))
+              )}
             </select>
           </label>
 
@@ -527,7 +586,7 @@ export const VerificationWorkflow: React.FC = () => {
 
             <button
               onClick={launchEvaluation}
-              disabled={launching || !canRunEval || !preflightResult?.ready}
+              disabled={launching || !canRunEval || !preflightResult?.ready || availableProtocols.length === 0 || !!doctorError}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-600 text-white text-xs font-bold transition-colors"
             >
               <PlayCircle className="w-4 h-4" />

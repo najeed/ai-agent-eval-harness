@@ -365,9 +365,11 @@ def test_verifier_artifact_store_wiring(tmp_path, monkeypatch):
     )
 
     assert mock_store.store_artifact.called
-    call_args = mock_store.store_artifact.call_args[1]
-    assert call_args["run_id"] == "run-ver-art-001"
-    assert call_args["artifact_name"] == "run_manifest.json"
+    stored_artifacts = [
+        call[1]["artifact_name"] for call in mock_store.store_artifact.call_args_list
+    ]
+    assert "run_manifest.json" in stored_artifacts
+    assert "certification_receipt.json" in stored_artifacts
 
     # Transactional pipeline: sealing is part of the guaranteed wiring.
     assert mock_store.seal.called

@@ -119,7 +119,11 @@ export const RunsReports: React.FC = () => {
       r.scenario.toLowerCase().includes(search.toLowerCase());
     const matchesStatus =
       statusFilter === 'All' ||
-      r.verdict === statusFilter;
+      (statusFilter === 'VERIFIED_PROVISIONAL'
+        ? (r.provisional || r.verdict === 'VERIFIED_PROVISIONAL')
+        : statusFilter === 'VERIFIED'
+          ? (r.verdict === 'VERIFIED' && !r.provisional)
+          : r.verdict === statusFilter);
     return matchesSearch && matchesStatus;
   });
 
@@ -209,6 +213,7 @@ export const RunsReports: React.FC = () => {
               {[
                 { key: 'All', label: 'All' },
                 { key: 'VERIFIED', label: 'Verified' },
+                { key: 'VERIFIED_PROVISIONAL', label: 'Provisional' },
                 { key: 'FAILED_VERIFICATION', label: 'Failed Verification' },
                 { key: 'NOT_EXECUTED', label: 'Not Executed' },
                 { key: 'ERROR', label: 'Error' },

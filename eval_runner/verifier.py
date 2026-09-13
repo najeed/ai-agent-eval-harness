@@ -529,6 +529,7 @@ class TraceVerifier:
 
         sidecar_path = p.parent / "run_manifest.json"
         backup_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
+        receipt_path = p.parent / "certification_receipt.json"
         staging_dir = p.parent / ".staging"
         staged_manifest_path = staging_dir / "run_manifest.json"
         pre_append_size = p.stat().st_size
@@ -544,7 +545,7 @@ class TraceVerifier:
                 except Exception as s_err:
                     logger.debug(f"      [Verifier] Failed to remove staging directory: {s_err}")
 
-            for stray in (sidecar_path, backup_path):
+            for stray in (sidecar_path, backup_path, receipt_path):
                 try:
                     stray.unlink(missing_ok=True)
                 except OSError as unlink_err:
@@ -576,6 +577,7 @@ class TraceVerifier:
             "run_manifest.json.meta.json",
             "certificate.json",
             "trace_seal.json",
+            "certification_receipt.json",
             ".sealed",
         ]
         evidence_ledger = _stage("freeze")(
@@ -584,6 +586,34 @@ class TraceVerifier:
             )
         )
         seal_hash = _stage("freeze_seal_hash")(lambda: cls.compute_signature(p))
+
+        from eval_runner.run_lifecycle import (
+            RunLifecycleState,
+            get_run_lifecycle_state,
+            transition_run_lifecycle,
+        )
+
+        if get_run_lifecycle_state(run_id) == RunLifecycleState.OPEN:
+            try:
+                transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING)
+            except Exception as tr_err:
+                logger.debug("Failed transitioning lifecycle to FINALIZING: %s", tr_err)
+
+        # Write immutable certification receipt artifact and bind its hash into evidence ledger
+        receipt_data = {
+            "event": "verification_certificate_issued",
+            "identity": identity_id,
+            "receipt_id": f"rcpt_{run_id}",
+            "run_id": run_id,
+            "seal_hash": seal_hash,
+            "timestamp": timestamp,
+            "trace_hash": seal_hash,
+            "vc_version": VC_V3_SCHEMA_VERSION,
+        }
+        with open(receipt_path, "w", encoding="utf-8") as rf:
+            json.dump(receipt_data, rf, indent=4)
+        receipt_hash = cls.compute_signature(receipt_path)
+        evidence_ledger["certification_receipt.json"] = receipt_hash
 
         # Recompute deterministic evidence root hash from trace events
         computed_evidence_root: str | None = None
@@ -887,42 +917,11 @@ class TraceVerifier:
             manifest["provisional"] = True
         _stage("canonicalize")(lambda: manifest)
 
-        # 3. EMIT LIFECYCLE EVENT + HASH (mutation point; rolled back on failure)
+        # 3. EMIT LIFECYCLE EVENT + HASH (trace is immutable post-finalization)
         def _append_and_hash() -> str:
-            event = {
-                "event": "verification_certificate_issued",
-                "timestamp": timestamp,
-                "identity": identity_id,
-                "vc_version": manifest["vc_version"],
-                "seal_hash": seal_hash,
-            }
-            # [Append Safety] Guarantee JSONL line integrity: if the existing
-            # trace does not end with a newline, start a fresh line before
-            # appending so the final pre-certification event is never merged
-            # (and destroyed) by the concatenation.
-            needs_newline = False
-            if pre_append_size > 0:
-                with open(p, "rb") as f:
-                    f.seek(-1, 2)  # os.SEEK_END
-                    needs_newline = f.read(1) != b"\n"
-            with open(p, "ab") as f:
-                event_line = (json.dumps(event) + "\n").encode("utf-8")
-                if needs_newline:
-                    written = f.write(b"\n") + f.write(event_line)
-                else:
-                    written = f.write(event_line)
-                f.flush()
-                import os as _os
-
-                _os.fsync(f.fileno())
-                if written != len(event_line) + (1 if needs_newline else 0):
-                    raise OSError("Short write while appending certification lifecycle event")
-                nonlocal bytes_appended
-                bytes_appended = written
-            actual_hash = cls.compute_signature(p)
-            if not actual_hash or actual_hash == seal_hash:
-                raise OSError("Post-event trace hash could not be established")
-            return actual_hash
+            # Immutability invariant: run.jsonl is NEVER appended to or modified post-finalization.
+            # The certification receipt is securely written to certification_receipt.json.
+            return seal_hash
 
         # 3b. STAGE DEFINITIONS (executed transactionally below)
         def _sign() -> None:
@@ -932,6 +931,7 @@ class TraceVerifier:
             }
             format_str = "hybrid" if config.PQC_ENABLED else "ED25519"
             try:
+                from agentv_runtime.canonical import canonical_json_encode
                 from agentv_runtime.package import VerificationPackage
 
                 scen_id_val = (
@@ -985,6 +985,60 @@ class TraceVerifier:
                     }
                     for n in (ev_graph.get("nodes", []) if ev_graph else [])
                 ]
+
+                # Derive authoritative sub-hashes:
+                # evaluation_hash, verification_hash, certificate_hash
+                import hashlib
+
+                eval_hash = ""
+                for ev in reversed(events_list):
+                    if ev.get("event") == "evaluator_finalization":
+                        eval_hash = str(
+                            ev.get("finalization_hash")
+                            or (ev.get("data", {}) or {}).get("finalization_hash")
+                            or ""
+                        )
+                        if eval_hash:
+                            break
+                    elif ev.get("event") in ("evaluation_result", "run_end"):
+                        d = ev.get("data", {}) or {}
+                        eval_hash = str(d.get("content_hash") or ev.get("content_hash") or "")
+                        if eval_hash:
+                            break
+                if not eval_hash and metadata:
+                    eval_hash = str(
+                        metadata.get("evaluator_config_hash")
+                        or metadata.get("evaluation_hash")
+                        or ""
+                    )
+
+                verif_payload = {
+                    "decision": {
+                        "decision": "PASS" if effective_compliance_status == "pass" else "FAIL",
+                        "score": effective_compliance_score,
+                        "status": effective_compliance_status,
+                    },
+                    "evidence_root_hash": ev_root_val,
+                    "executed_oracle_results": executed_oracles,
+                    "required_oracle_ids": sorted(pkg_req_oracles),
+                }
+                verif_hash = (
+                    f"sha3_256:{hashlib.sha3_256(canonical_json_encode(verif_payload)).hexdigest()}"
+                )
+
+                cert_payload = {
+                    "compliance": manifest["compliance"],
+                    "evidence_root_hash": ev_root_val,
+                    "execution_mode": manifest.get("execution_mode", "unknown"),
+                    "run_id": run_id,
+                    "timestamp": timestamp,
+                    "trace_hash": manifest.get("trace_hash", seal_hash),
+                    "vc_version": manifest["vc_version"],
+                }
+                cert_hash = (
+                    f"sha3_256:{hashlib.sha3_256(canonical_json_encode(cert_payload)).hexdigest()}"
+                )
+
                 pkg = VerificationPackage(
                     package_id=f"pkg_{run_id}",
                     scenario_id=str(scen_id_val),
@@ -998,11 +1052,11 @@ class TraceVerifier:
                         "agent_id": (metadata.get("agent_id") if metadata else None)
                         or "system_agent",
                     },
-                    trace_hash=manifest.get("trace_hash", ""),
+                    trace_hash=manifest.get("trace_hash", seal_hash),
                     trace_seal={
-                        "trace_digest": manifest.get("trace_hash", ""),
+                        "trace_digest": manifest.get("trace_hash", seal_hash),
                         "algorithm": "sha3_256",
-                        "event_count": len(events_list) + (1 if bytes_appended > 0 else 0),
+                        "event_count": len(events_list),
                         "sealed_at": timestamp,
                     },
                     evidence_root_hash=ev_root_val,
@@ -1013,6 +1067,9 @@ class TraceVerifier:
                         "status": effective_compliance_status,
                         "score": effective_compliance_score,
                     },
+                    evaluation_hash=eval_hash,
+                    verification_hash=verif_hash,
+                    certificate_hash=cert_hash,
                     package_version="1.0.0",
                     signature=None,
                     signer_identity=identity_id,
@@ -1042,6 +1099,9 @@ class TraceVerifier:
                 pkg = replace(pkg, signature=pkg_sig, public_key_pem=pub_pem)
                 manifest["verification_package"] = pkg.to_dict()
                 manifest["package_hash"] = pkg.compute_package_hash()
+                manifest["evaluation_hash"] = eval_hash
+                manifest["verification_hash"] = verif_hash
+                manifest["certificate_hash"] = cert_hash
 
                 # NOTE: VerificationService.sign mutates and returns the SAME
                 # manifest object; rebinding/clearing here would destroy it.
@@ -1077,6 +1137,16 @@ class TraceVerifier:
                 run_id=run_id,
                 artifact_name="run_manifest.json",
                 content=json.dumps(manifest_to_write, indent=4),
+                content_type="application/json",
+                metadata={
+                    "status": effective_compliance_status,
+                    "vc_version": manifest["vc_version"],
+                },
+            )
+            store.store_artifact(
+                run_id=run_id,
+                artifact_name="certification_receipt.json",
+                content=json.dumps(receipt_data, indent=4),
                 content_type="application/json",
                 metadata={
                     "status": effective_compliance_status,
@@ -2223,6 +2293,81 @@ class VerificationAuthority:
         elif require_signature:
             failures.append("UnsignedPackage: package signature is required")
 
+        # 9. Sub-hash bindings: evaluation_hash, verification_hash, certificate_hash
+        if pkg.evaluation_hash and raw_trace_events is not None:
+            fin_ev = next(
+                (
+                    e
+                    for e in reversed(raw_trace_events)
+                    if e.get("event") == "evaluator_finalization"
+                ),
+                None,
+            )
+            if fin_ev:
+                fin_h = str(
+                    fin_ev.get("finalization_hash")
+                    or (fin_ev.get("data", {}) or {}).get("finalization_hash")
+                    or ""
+                )
+                if fin_h and fin_h != pkg.evaluation_hash:
+                    failures.append(
+                        f"EvaluationHashMismatch: package={pkg.evaluation_hash} actual={fin_h}"
+                    )
+
+        if pkg.verification_hash:
+            try:
+                from agentv_runtime.canonical import canonical_json_encode
+
+                exp_verif_payload = {
+                    "decision": pkg.decision,
+                    "evidence_root_hash": pkg.evidence_root_hash,
+                    "executed_oracle_results": pkg.executed_oracle_results,
+                    "required_oracle_ids": sorted(pkg.required_oracle_ids),
+                }
+                verif_bytes = canonical_json_encode(exp_verif_payload)
+                actual_verif_hash = f"sha3_256:{hashlib.sha3_256(verif_bytes).hexdigest()}"
+                if actual_verif_hash != pkg.verification_hash:
+                    failures.append(
+                        f"VerificationHashMismatch: package={pkg.verification_hash} "
+                        f"actual={actual_verif_hash}"
+                    )
+            except Exception as vh_err:
+                failures.append(f"VerificationHashError: {vh_err}")
+
+        if pkg.certificate_hash and canonical_manifest is not None:
+            try:
+                from agentv_runtime.canonical import canonical_json_encode
+
+                m_dict = None
+                if isinstance(canonical_manifest, dict) and "compliance" in canonical_manifest:
+                    m_dict = canonical_manifest
+                elif hasattr(canonical_manifest, "to_dict"):
+                    candidate = canonical_manifest.to_dict()
+                    if isinstance(candidate, dict) and "compliance" in candidate:
+                        m_dict = candidate
+
+                if m_dict:
+                    exp_cert_payload = {
+                        "compliance": m_dict.get("compliance", {}),
+                        "evidence_root_hash": m_dict.get(
+                            "evidence_root_hash", pkg.evidence_root_hash
+                        ),
+                        "execution_mode": m_dict.get("execution_mode", "unknown"),
+                        "run_id": m_dict.get("run_id", ""),
+                        "timestamp": m_dict.get("timestamp", ""),
+                        "trace_hash": m_dict.get("trace_hash", pkg.trace_hash),
+                        "vc_version": m_dict.get("vc_version", "3.0.0"),
+                    }
+                    cert_bytes = canonical_json_encode(exp_cert_payload)
+                    actual_cert_hash = f"sha3_256:{hashlib.sha3_256(cert_bytes).hexdigest()}"
+                    if actual_cert_hash != pkg.certificate_hash:
+                        failures.append(
+                            f"CertificateHashMismatch: package={pkg.certificate_hash} "
+                            f"actual={actual_cert_hash}"
+                        )
+            except Exception as ch_err:
+                failures.append(f"CertificateHashError: {ch_err}")
+
         is_valid = len(failures) == 0
         return {
             "verified": is_valid,
@@ -2589,6 +2734,82 @@ class VerificationAuthority:
         elif require_signature:
             failures.append("UnsignedPackage: package signature is required")
 
+        # 9. Sub-hash bindings: evaluation_hash, verification_hash, certificate_hash
+        if pkg.evaluation_hash and raw_trace_events is not None:
+            fin_ev = next(
+                (
+                    e
+                    for e in reversed(raw_trace_events)
+                    if e.get("event") == "evaluator_finalization"
+                ),
+                None,
+            )
+            if fin_ev:
+                fin_h = str(
+                    fin_ev.get("finalization_hash")
+                    or (fin_ev.get("data", {}) or {}).get("finalization_hash")
+                    or ""
+                )
+                if fin_h and fin_h != pkg.evaluation_hash:
+                    failures.append(
+                        f"EvaluationHashMismatch: package={pkg.evaluation_hash} actual={fin_h}"
+                    )
+
+        if pkg.verification_hash:
+            try:
+                from agentv_runtime.canonical import canonical_json_encode
+
+                exp_verif_payload = {
+                    "decision": pkg.decision,
+                    "evidence_root_hash": pkg.evidence_root_hash,
+                    "executed_oracle_results": pkg.executed_oracle_results,
+                    "required_oracle_ids": sorted(pkg.required_oracle_ids),
+                }
+                verif_bytes = canonical_json_encode(exp_verif_payload)
+                actual_verif_hash = f"sha3_256:{hashlib.sha3_256(verif_bytes).hexdigest()}"
+                if actual_verif_hash != pkg.verification_hash:
+                    failures.append(
+                        f"VerificationHashMismatch: package={pkg.verification_hash} "
+                        f"actual={actual_verif_hash}"
+                    )
+            except Exception as vh_err:
+                failures.append(f"VerificationHashError: {vh_err}")
+
+        if pkg.certificate_hash and canonical_manifest is not None:
+            try:
+                from agentv_runtime.canonical import canonical_json_encode
+
+                m_dict = (
+                    canonical_manifest
+                    if isinstance(canonical_manifest, dict)
+                    else (
+                        canonical_manifest.to_dict()
+                        if hasattr(canonical_manifest, "to_dict")
+                        else {}
+                    )
+                )
+                if m_dict:
+                    exp_cert_payload = {
+                        "compliance": m_dict.get("compliance", {}),
+                        "evidence_root_hash": m_dict.get(
+                            "evidence_root_hash", pkg.evidence_root_hash
+                        ),
+                        "execution_mode": m_dict.get("execution_mode", "unknown"),
+                        "run_id": m_dict.get("run_id", ""),
+                        "timestamp": m_dict.get("timestamp", ""),
+                        "trace_hash": m_dict.get("trace_hash", pkg.trace_hash),
+                        "vc_version": m_dict.get("vc_version", "3.0.0"),
+                    }
+                    cert_bytes = canonical_json_encode(exp_cert_payload)
+                    actual_cert_hash = f"sha3_256:{hashlib.sha3_256(cert_bytes).hexdigest()}"
+                    if actual_cert_hash != pkg.certificate_hash:
+                        failures.append(
+                            f"CertificateHashMismatch: package={pkg.certificate_hash} "
+                            f"actual={actual_cert_hash}"
+                        )
+            except Exception as ch_err:
+                failures.append(f"CertificateHashError: {ch_err}")
+
         is_valid = len(failures) == 0
         return {
             "verified": is_valid,
@@ -2598,6 +2819,11 @@ class VerificationAuthority:
             "scenario_id": pkg.scenario_id,
             "package_hash": pkg.compute_package_hash(),
         }
+
+
+TraceVerifier.verify_package = VerificationAuthority.verify_package
+TraceVerifier.verify_package_artifacts = VerificationAuthority.verify_package_artifacts
+TraceVerifier.verify_package_signature_only = VerificationAuthority.verify_package_signature_only
 
 
 def locate_certificate_file(run_id: str) -> Path | None:

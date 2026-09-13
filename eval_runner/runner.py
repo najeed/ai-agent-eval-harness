@@ -390,11 +390,18 @@ class DefaultRunner(BaseRunner):
                                 req_oracles.append(or_res)
                     for m in row.get("metrics") or []:
                         if isinstance(m, dict):
+                            if (
+                                m.get("metric") == "consistency_score"
+                                or m.get("oracle_id") == "consistency_score"
+                            ):
+                                continue
                             collected_assertions.append(m)
                             mid = m.get("name") or m.get("metric_id")
                             if mid and str(mid) not in req_oracles:
                                 req_oracles.append(str(mid))
                         elif isinstance(m, str):
+                            if m == "consistency_score":
+                                continue
                             collected_assertions.append({"metric_id": m, "passed": True})
                             if m not in req_oracles:
                                 req_oracles.append(m)

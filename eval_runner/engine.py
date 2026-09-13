@@ -89,6 +89,13 @@ class AgentAdapterRegistry:
         cls._adapters[protocol] = adapter_func
 
     @classmethod
+    def get_available_protocols(cls) -> list[str]:
+        """Returns sorted list of all active registered protocol adapters."""
+        if not cls._discovered:
+            cls._discover()
+        return sorted(list(cls._adapters.keys()))
+
+    @classmethod
     def reset(cls):
         """Resets the registry state for tests."""
         cls._discovered = False

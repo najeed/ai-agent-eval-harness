@@ -47,21 +47,24 @@ def test_forensic_seal_hash_integrity(vault_setup):
     # 1. Sign the trace
     manifest = TraceVerifier.sign_trace(str(trace_path), run_id=run_id, identity_id="test_auditor")
 
-    # 2. Check the trace content
+    # 2. Check the receipt and trace content
     trace_content = trace_path.read_bytes()
     trace_lines = trace_content.splitlines()
     last_line = json.loads(trace_lines[-1])
+    assert last_line["event"] == "start"
 
-    assert last_line["event"] == "verification_certificate_issued"
-    assert "seal_hash" in last_line
+    receipt_file = vault_dir / "certification_receipt.json"
+    assert receipt_file.exists()
+    receipt_data = json.loads(receipt_file.read_text(encoding="utf-8"))
+    assert receipt_data["event"] == "verification_certificate_issued"
+    assert "seal_hash" in receipt_data
 
-    # 3. Verify the seal_hash matches the trace BEFORE the event
-    # The trace only had one line before the event.
+    # 3. Verify the seal_hash matches the trace BEFORE any mutation
     from eval_runner.utils import crypto
 
     initial_content = b'{"event": "start"}\n'
     expected_seal = crypto.checksum(initial_content)
-    assert last_line["seal_hash"] == expected_seal
+    assert receipt_data["seal_hash"] == expected_seal
 
     # 4. Verify that the physical file hash matches the manifest
     actual_physical_hash = crypto.checksum(trace_content)

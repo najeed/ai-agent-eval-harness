@@ -91,9 +91,13 @@ def test_sign_trace_happy_path_is_fully_certified(cert_env):
     assert (env["vault"] / "run_manifest.json").exists()
     assert (env["reports"] / "certificates" / f"{env['run_id']}_vc.json").exists()
 
-    # Lifecycle event appended exactly once
+    # Certification receipt persisted in vault and trace remains immutable
+    receipt_file = env["vault"] / "certification_receipt.json"
+    assert receipt_file.exists()
+    receipt_data = json.loads(receipt_file.read_text(encoding="utf-8"))
+    assert receipt_data["event"] == "verification_certificate_issued"
     lines = [ln for ln in env["trace"].read_text(encoding="utf-8").splitlines() if ln]
-    assert json.loads(lines[-1])["event"] == "verification_certificate_issued"
+    assert json.loads(lines[-1])["event"] != "verification_certificate_issued"
 
     # Vault is sealed
     assert (env["vault"] / ".sealed").exists()

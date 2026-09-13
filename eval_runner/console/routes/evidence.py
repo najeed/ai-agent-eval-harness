@@ -161,40 +161,58 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
             logger.warning("Cryptographic verification failed for %s: %s", run_id, err)
             crypto_verification["errors"].append(str(err))
 
-    # Authoritative Verdict — determined by real verification, not artifact presence.
-    # Priority: policy_violation > crypto-verified > unverified > not-verified
-    if any(e.get("event") == "policy_violation" for e in events):
+    # Authoritative Verdict — determined by real verification and finalization,
+    # not artifact presence.
+    from eval_runner.services.certification import CertificationService
+
+    fin_record = CertificationService.extract_finalization_record(trace_path)
+    computed_status, computed_score = CertificationService.extract_computed_run_outcome(
+        vault_dir, trace_path
+    )
+    if fin_record is not None:
+        is_eval_pass = fin_record.outcome.lower() == "pass"
+    elif computed_status in ("pass", "fail"):
+        is_eval_pass = computed_status == "pass"
+    else:
+        is_eval_pass = bool(data_block.get("passed", False)) or bool(
+            data_block.get("verified", False)
+        )
+
+    # Priority: evidence_invalid > policy_violation > crypto-verified > unverified > not-verified
+    if corrupt_line_offsets:
+        verified_outcome = "EVIDENCE_INVALID"
+    elif any(e.get("event") == "policy_violation" for e in events):
         verified_outcome = "POLICY_BREACH"
     elif (
-        (data_block.get("passed", False) or data_block.get("verified", False))
+        is_eval_pass
         and crypto_verification.get("verified") is True
         and crypto_verification.get("manifest_hash_match") is True
     ):
         verified_outcome = "VERIFIED"
-    elif data_block.get("passed", False) or data_block.get("verified", False):
+    elif is_eval_pass or (data_block.get("passed", False) or data_block.get("verified", False)):
         # Execution passed but signature did not verify — report truthfully
         verified_outcome = "UNVERIFIED"
     else:
         verified_outcome = "NOT_VERIFIED"
 
-    # [E3] Corruption blocks certification: an unparseable trace can never
-    # back a VERIFIED package, regardless of signatures.
-    if corrupt_line_offsets:
-        verified_outcome = "EVIDENCE_INVALID"
-
     evidence_chain_valid: bool = verified_outcome == "VERIFIED" and not corrupt_line_offsets
 
-    # Score calculation from authentic assertions
     assertions = data_block.get("assertions", [])
-    if assertions:
-        passed_count = sum(1 for a in assertions if a.get("passed", False))
-        score = passed_count / len(assertions)
-    elif "score" in data_block:
-        score = float(data_block["score"])
-    elif verified_outcome == "VERIFIED":
-        score = 1.0
+    # Score calculation strictly from authoritative finalization or computed outcome
+    if fin_record is not None:
+        score = float(fin_record.score)
+    elif computed_status != "inconclusive":
+        score = float(computed_score)
     else:
-        score = 0.0
+        if assertions:
+            passed_count = sum(1 for a in assertions if a.get("passed", False))
+            score = passed_count / len(assertions)
+        elif "score" in data_block:
+            score = float(data_block["score"])
+        elif verified_outcome == "VERIFIED":
+            score = 1.0
+        else:
+            score = 0.0
 
     # Evidence Graph v1: every assertion linked to its source event
     # (by _seq + exact-line content hash) or reported UNRESOLVED.

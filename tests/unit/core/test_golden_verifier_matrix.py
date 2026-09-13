@@ -402,24 +402,30 @@ def test_verifier_nested_key_dir_creation(tmp_path):
 
 def test_verifier_trace_lifecycle_event_appended(clean_vault_setup):
     """
-    Mutation Assurance Test: Verifies sign_trace appends 'verification_certificate_issued'
-    event to trace file (kills + -> - mutation in lifecycle event recording).
+    Verifies sign_trace records 'verification_certificate_issued' in certification_receipt.json
+    and binds it in evidence_ledger while keeping run.jsonl immutable post-finalization.
     """
     run_id = clean_vault_setup["run_id"]
     trace_file = clean_vault_setup["trace_file"]
+    initial_content = trace_file.read_text(encoding="utf-8")
 
-    TraceVerifier.sign_trace(
+    manifest = TraceVerifier.sign_trace(
         trace_path=str(trace_file),
         identity_id="test_signer",
         compliance_status="pass",
         run_id=run_id,
     )
 
-    trace_content = trace_file.read_text(encoding="utf-8")
-    assert "verification_certificate_issued" in trace_content, (
-        "Expected sign_trace to append 'verification_certificate_issued' event to trace file"
-    )
-    assert "seal_hash" in trace_content
+    # run.jsonl remains completely immutable post-finalization
+    assert trace_file.read_text(encoding="utf-8") == initial_content
+
+    # certification receipt artifact is produced in vault
+    receipt_file = trace_file.parent / "certification_receipt.json"
+    assert receipt_file.exists()
+    receipt_data = json.loads(receipt_file.read_text(encoding="utf-8"))
+    assert receipt_data["event"] == "verification_certificate_issued"
+    assert "seal_hash" in receipt_data
+    assert "certification_receipt.json" in manifest["evidence_ledger"]
 
 
 def test_verifier_jail_escape_attempt(tmp_path):
@@ -907,26 +913,19 @@ def test_certification_failure_rolls_back_partial_mutation(clean_vault_setup):
 
 def test_lifecycle_event_never_merged_or_doubled(clean_vault_setup):
     """
-    The certification event must start on a fresh line whether or not the trace
-    ends with a newline, and must never introduce a doubled blank separator.
+    The certification receipt artifact is produced cleanly and trace is preserved.
     """
     run_id = clean_vault_setup["run_id"]
     trace_file = clean_vault_setup["trace_file"]
     manifest_path = trace_file.parent / "run_manifest.json"
-    event_marker = '{"event": "verification_certificate_issued"'
 
-    # Case 1: trace WITHOUT trailing newline -> exactly one separator inserted.
     content = trace_file.read_text(encoding="utf-8")
     trace_file.write_text(content.rstrip("\n"), encoding="utf-8")
     TraceVerifier.sign_trace(str(trace_file), identity_id="signer", run_id=run_id)
-    data = trace_file.read_text(encoding="utf-8")
-    idx = data.rindex(event_marker)
-    assert idx > 0
-    assert data[idx - 1] == "\n", "certification event must begin on a fresh line"
-    assert data[idx - 2] != "\n", "certification event must not introduce a doubled newline"
+    assert (trace_file.parent / "certification_receipt.json").exists()
     assert TraceVerifier.verify_trace(str(trace_file), str(manifest_path)) is True
 
-    # Case 2: newline-terminated trace -> appended directly, still no doubling.
+    # Case 2: newline-terminated trace
     run_id_2 = f"{run_id}_case2"
     run_dir_2 = trace_file.parent.parent / run_id_2
     run_dir_2.mkdir(parents=True, exist_ok=True)
@@ -934,17 +933,16 @@ def test_lifecycle_event_never_merged_or_doubled(clean_vault_setup):
     trace_file_2.write_text(content.rstrip("\n") + "\n", encoding="utf-8")
 
     TraceVerifier.sign_trace(str(trace_file_2), identity_id="signer", run_id=run_id_2)
-    data2 = trace_file_2.read_text(encoding="utf-8")
-    idx2 = data2.rindex(event_marker)
-    assert data2[idx2 - 1] == "\n"
-    assert data2[idx2 - 2] != "\n"
+    assert (run_dir_2 / "certification_receipt.json").exists()
+    assert (
+        TraceVerifier.verify_trace(str(trace_file_2), str(run_dir_2 / "run_manifest.json")) is True
+    )
 
 
 def test_lifecycle_event_on_empty_trace_starts_at_byte_zero(clean_vault_setup):
     """
-    Certifying a zero-byte vault must append the lifecycle event at byte 0 with
-    no synthetic leading newline (kills needs_newline initializer mutations that
-    are otherwise shadowed by the trailing-byte detection on non-empty traces).
+    Certifying a zero-byte vault creates valid certification receipt
+    while leaving empty trace intact.
     """
     run_id = "run-empty-001"
     empty_run_dir = clean_vault_setup["run_log_dir"] / run_id
@@ -954,12 +952,11 @@ def test_lifecycle_event_on_empty_trace_starts_at_byte_zero(clean_vault_setup):
 
     manifest = TraceVerifier.sign_trace(str(empty_trace), identity_id="signer", run_id=run_id)
     assert manifest["certification"]["outcome"] == "CERTIFIED"
-
-    raw = empty_trace.read_bytes()
-    assert raw.startswith(b'{"event": "verification_certificate_issued"'), (
-        "certification event must start at byte zero on an empty trace"
-    )
-    assert raw.endswith(b"\n")
+    assert empty_trace.read_bytes() == b""
+    receipt = empty_run_dir / "certification_receipt.json"
+    assert receipt.exists()
+    data = json.loads(receipt.read_text(encoding="utf-8"))
+    assert data["event"] == "verification_certificate_issued"
     assert (
         TraceVerifier.verify_trace(str(empty_trace), str(empty_trace.parent / "run_manifest.json"))
         is True

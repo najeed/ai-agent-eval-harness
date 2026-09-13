@@ -475,12 +475,19 @@ def stream_runs_list():
                                         or b'"level": "error"' in content
                                         or b'"status": "error"' in content
                                     )
+                                    run_dir = tp.parent
+                                    has_receipt = (
+                                        run_dir / "certification_receipt.json"
+                                    ).exists() or (run_dir / ".sealed").exists()
                                     has_end = (
                                         b'"event": "run_end"' in content
                                         or b'"event": "verification_certificate_issued"' in content
+                                        or has_receipt
                                     )
 
-                                    if has_error:
+                                    if has_receipt:
+                                        status = "SEALED"
+                                    elif has_error:
                                         status = "FAILED"
                                     elif not has_end:
                                         # Determine if stalled or still running
@@ -841,7 +848,7 @@ def tail_file_generator(log_path: Path, run_id: str, last_event_id: int = 0):
                 seq_id += 1
                 if seq_id > last_event_id:
                     yield f"id: {seq_id}\ndata: {stripped}\n\n"
-            if '"event": "run_end"' in line:
+            if '"event": "run_end"' in line or '"event": "run_completed"' in line:
                 return
 
         # Step B: Enter tail loop
@@ -907,11 +914,7 @@ def tail_file_generator(log_path: Path, run_id: str, last_event_id: int = 0):
                 if seq_id > last_event_id:
                     yield f"id: {seq_id}\ndata: {stripped}\n\n"
 
-            if (
-                '"event": "run_end"' in line
-                or '"event": "strategy_end"' in line
-                or '"event": "run_completed"' in line
-            ):
+            if '"event": "run_end"' in line or '"event": "run_completed"' in line:
                 break
 
 
