@@ -26,7 +26,6 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Install dependencies
-# NOTE: pip 26.0.1 is currently vulnerable to CVE-2026-3219 (concatenated archives).
 # Ensure all requirements and local sources are trusted before building.
 RUN pip install --no-cache-dir -r requirements.txt
 
