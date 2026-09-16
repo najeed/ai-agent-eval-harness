@@ -183,6 +183,7 @@ def create_app():
 
         app.register_blueprint(publish_bp, url_prefix="/api")
         app.register_blueprint(compliance_packs_bp, url_prefix="/api")
+
     app.register_blueprint(trust_bp)
 
     # Demo blueprint is physically absent in production mode (ENABLE_DEMO=false).

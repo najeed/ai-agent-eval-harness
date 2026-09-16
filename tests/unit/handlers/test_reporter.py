@@ -322,3 +322,167 @@ def test_reporter_truthfulness_no_file_existence_verification(tmp_path, monkeypa
     )
     html_verified = Path(out_file_verified).read_text(encoding="utf-8")
     assert "VERIFIED RUN" in html_verified
+
+
+def test_reporter_full_coverage_matrix(tmp_path, monkeypatch, capsys):
+    """Exhaustive test coverage for remaining branches in eval_runner/reporter.py."""
+    monkeypatch.setattr(config, "HTML_REPORTS_DIR", tmp_path / "html_reports")
+
+    # 1. _generate_mermaid_dag with short agent name (<= 20 chars) and non-standard role
+    res_short = {
+        "conversation_history": [
+            {"role": "agent", "content": {"action": "act"}, "agent": "http://short"},
+            {"role": "system", "content": "system prompt"},  # non-agent, non-environment
+            {"role": "environment", "content": {"status": "success"}},
+        ]
+    }
+    dag = reporter.generate_mermaid_trajectory(res_short)
+    assert "(short)" in dag
+    assert "..." not in dag
+
+    # 2. generate_html_report with verification_result as bool
+    scen = {"id": "s_bool", "title": "Bool Test"}
+    out_bool_t = reporter.generate_html_report(scen, [], metadata={"verification_result": True})
+    assert "VERIFIED RUN" in Path(out_bool_t).read_text(encoding="utf-8")
+    out_bool_f = reporter.generate_html_report(scen, [], metadata={"verification_result": False})
+    assert "VERIFIED RUN" not in Path(out_bool_f).read_text(encoding="utf-8")
+
+    # 3. generate_html_report with verification_package object and dict
+    class MockPkgSuccess:
+        def verify_completeness(self):
+            return True
+
+        def verify_signature(self):
+            return True
+
+    class MockPkgError:
+        def verify_completeness(self):
+            return True
+
+        def verify_signature(self):
+            raise RuntimeError("Signature verification crash")
+
+    out_pkg_ok = reporter.generate_html_report(
+        scen, [], metadata={"verification_package": MockPkgSuccess()}
+    )
+    assert "VERIFIED RUN" in Path(out_pkg_ok).read_text(encoding="utf-8")
+
+    out_pkg_err = reporter.generate_html_report(
+        scen, [], metadata={"verification_package": MockPkgError()}
+    )
+    assert "VERIFIED RUN" not in Path(out_pkg_err).read_text(encoding="utf-8")
+
+    out_pkg_str = reporter.generate_html_report(
+        scen, [], metadata={"verification_package": "string_not_pkg"}
+    )
+    assert "VERIFIED RUN" not in Path(out_pkg_str).read_text(encoding="utf-8")
+
+    out_pkg_dict = reporter.generate_html_report(
+        scen, [], metadata={"verification_package": {"status": "CERTIFIED", "verified": True}}
+    )
+    assert "VERIFIED RUN" in Path(out_pkg_dict).read_text(encoding="utf-8")
+
+    out_pkg_unverif = reporter.generate_html_report(
+        scen, [], metadata={"verification_package": {"status": "UNVERIFIED", "verified": False}}
+    )
+    assert "VERIFIED RUN" not in Path(out_pkg_unverif).read_text(encoding="utf-8")
+
+    # 4. generate_html_report with protocol local and socket, and agent discovery
+    monkeypatch.setenv("AGENT_LOCAL_CMD", "python agent.py")
+    monkeypatch.setenv("AGENT_SOCKET_ADDR", "localhost:9999")
+
+    results_with_agent = [
+        {
+            "task_id": "t1",
+            "metrics": [{"metric": "m1", "score": 1.0, "threshold": 0.5, "success": True}],
+            "conversation_history": [
+                {"role": "agent", "agent_name": "DiscoveredAgent", "content": {"action": "think"}}
+            ],
+        },
+        {"workflow_verdict": {"status": "completed"}},  # non-task verdict row (branch 236)
+    ]
+
+    out_local = reporter.generate_html_report(
+        scen, results_with_agent, metadata={"protocol": "local", "agent": "unknown"}
+    )
+    assert "DiscoveredAgent" in Path(out_local).read_text(encoding="utf-8")
+
+    out_socket = reporter.generate_html_report(
+        scen, results_with_agent, metadata={"protocol": "socket", "agent": None}
+    )
+    assert "DiscoveredAgent" in Path(out_socket).read_text(encoding="utf-8")
+
+    out_custom_proto = reporter.generate_html_report(
+        scen, results_with_agent, metadata={"protocol": "custom", "agent": None}
+    )
+    assert "DiscoveredAgent" in Path(out_custom_proto).read_text(encoding="utf-8")
+
+    # Explicit agent & agent_name already in metadata (branches 184->192, 201->210)
+    out_explicit = reporter.generate_html_report(
+        scen,
+        results_with_agent,
+        metadata={"agent": "ExplicitAgent", "agent_name": "ExplicitName", "protocol": "http"},
+    )
+    assert "ExplicitName" in Path(out_explicit).read_text(encoding="utf-8")
+
+    # 5. Multi-attempt HTML report
+    multi_results = [
+        [
+            {
+                "task_id": "t1",
+                "metrics": [{"metric": "m1", "score": 1.0, "threshold": 0.5, "success": True}],
+            },
+            {"synthetic": True},  # non-task verdict row
+        ],
+        [
+            {
+                "task_id": "t1",
+                "metrics": [{"metric": "m1", "score": 0.0, "threshold": 0.5, "success": False}],
+            },
+        ],
+    ]
+    out_multi = reporter.generate_html_report(scen, multi_results)
+    assert "Attempt 1 of 2" in Path(out_multi).read_text(encoding="utf-8")
+
+    # 6. generate_report with local/socket protocols, agent discovery, and multi-attempts
+    reporter.generate_report(
+        scen,
+        multi_results,
+        export_trajectory=False,
+        export_html=False,
+        metadata={"protocol": "local", "agent": "Unknown"},
+    )
+    out_term_local = capsys.readouterr().out
+    assert "Protocol: LOCAL" in out_term_local
+    assert "Total Attempts (N): 2" in out_term_local
+
+    reporter.generate_report(
+        scen,
+        [results_with_agent],
+        export_trajectory=False,
+        export_html=False,
+        metadata={"protocol": "socket", "agent": None},
+    )
+    out_term_sock = capsys.readouterr().out
+    assert "Protocol: SOCKET" in out_term_sock
+    assert "DiscoveredAgent" in out_term_sock
+
+    reporter.generate_report(
+        scen,
+        [results_with_agent],
+        export_trajectory=False,
+        export_html=False,
+        metadata={"protocol": "custom", "agent": None},
+    )
+    capsys.readouterr()
+
+    # Explicit agent & agent_name in metadata for terminal report (branches 454->462, 469->481)
+    reporter.generate_report(
+        scen,
+        [results_with_agent],
+        export_trajectory=False,
+        export_html=False,
+        metadata={"agent": "ExplicitAgent", "agent_name": "ExplicitName", "protocol": "http"},
+    )
+    out_term_exp = capsys.readouterr().out
+    assert "Agent: ExplicitName" in out_term_exp

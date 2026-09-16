@@ -630,6 +630,59 @@ class CertificationService:
                         f"'{fin_record.execution_manifest_hash}' does not match actual "
                         f"execution manifest hash '{actual_manifest_hash}'"
                     )
+
+                # Semantic cross-binding (P0-4 Fix)
+                if exec_manifest.scenario_id != fin_record.scenario_id:
+                    raise ValueError(
+                        f"ManifestScenarioIdMismatch: manifest scenario_id "
+                        f"'{exec_manifest.scenario_id}' does not match finalization record "
+                        f"scenario_id '{fin_record.scenario_id}'"
+                    )
+                if exec_manifest.scenario_version != fin_record.scenario_version:
+                    raise ValueError(
+                        f"ManifestScenarioVersionMismatch: manifest scenario_version "
+                        f"'{exec_manifest.scenario_version}' does not match finalization record "
+                        f"scenario_version '{fin_record.scenario_version}'"
+                    )
+                if exec_manifest.scenario_hash != fin_record.scenario_hash:
+                    raise ValueError(
+                        f"ManifestScenarioHashMismatch: manifest scenario_hash "
+                        f"'{exec_manifest.scenario_hash}' does not match finalization record "
+                        f"scenario_hash '{fin_record.scenario_hash}'"
+                    )
+                manifest_mode = exec_manifest.runtime_config.get(
+                    "execution_mode"
+                ) or exec_manifest.metadata.get("execution_mode")
+                if manifest_mode and clean_mode and manifest_mode != clean_mode:
+                    raise ValueError(
+                        f"ManifestExecutionModeMismatch: manifest execution_mode '{manifest_mode}' "
+                        f"does not match certified execution mode '{clean_mode}'"
+                    )
+                manifest_eval_cfg = exec_manifest.runtime_config.get(
+                    "evaluator_config_hash"
+                ) or exec_manifest.metadata.get("evaluator_config_hash")
+                if (
+                    manifest_eval_cfg
+                    and fin_record.evaluator_config_hash
+                    and manifest_eval_cfg != fin_record.evaluator_config_hash
+                ):
+                    raise ValueError(
+                        f"ManifestEvaluatorConfigHashMismatch: manifest evaluator_config_hash "
+                        f"'{manifest_eval_cfg}' does not match finalization record "
+                        f"evaluator_config_hash '{fin_record.evaluator_config_hash}'"
+                    )
+                manifest_reqs = set(
+                    exec_manifest.metadata.get("required_oracle_ids")
+                    or exec_manifest.runtime_config.get("required_oracle_ids")
+                    or []
+                )
+                fin_reqs = set(fin_record.required_oracle_ids or [])
+                if manifest_reqs and fin_reqs and manifest_reqs != fin_reqs:
+                    raise ValueError(
+                        f"ManifestRequiredOracleMismatch: manifest required oracles "
+                        f"{sorted(manifest_reqs)} do not match finalization record "
+                        f"required oracles {sorted(fin_reqs)}"
+                    )
             except ValueError:
                 raise
             except Exception as e:

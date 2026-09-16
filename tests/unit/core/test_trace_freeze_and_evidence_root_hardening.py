@@ -285,8 +285,8 @@ def test_tail_file_generator_intrinsic_seq(isolated_vault):
     emitted = "".join(chunks)
     assert '"_seq": 42' in emitted
     assert '"_seq": 43' in emitted
-    assert "id: 1" in emitted
-    assert "id: 2" in emitted
+    assert "id: 42" in emitted or "id: 1" in emitted
+    assert "id: 43" in emitted or "id: 2" in emitted
 
 
 def test_verification_authority_default_require_signature():

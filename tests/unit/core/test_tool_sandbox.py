@@ -6,6 +6,7 @@ Aligned with OpenCore modular architecture and explicit tool definitions.
 """
 
 from pathlib import Path
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -1133,3 +1134,437 @@ async def test_sandbox_policy_input_hash_sort_keys_determinism(tmp_path):
     hash2 = sb.policy_decisions[-1]["input_hash"]
 
     assert hash1 == hash2
+
+
+# --- Extended Full Branch Coverage Matrix ---
+
+
+def test_resource_registry_cleanup_error(tmp_path):
+    from eval_runner.tool_sandbox import ResourceRegistry
+
+    registry = ResourceRegistry()
+    test_dir = tmp_path / "test_dir_fail"
+    test_dir.mkdir()
+    registry.register(test_dir)
+
+    with patch(
+        "eval_runner.utils.rmtree_resilient", side_effect=PermissionError("Mocked Permission Error")
+    ):
+        registry.cleanup()
+
+
+@pytest.mark.asyncio
+async def test_tool_sandbox_setup_and_teardown_exceptions(tmp_path):
+    forensics = MagicMock()
+    forensics.snapshot_state.side_effect = RuntimeError("Forensic snapshot error")
+
+    sb = ToolSandbox(
+        {"id": "setup_test"},
+        workspace_root=tmp_path,
+        jail_root=tmp_path / "jail",
+        forensics=forensics,
+    )
+    await sb.setup()
+    assert forensics.snapshot_state.called
+
+    # Teardown with failing simulator cleanup
+    mock_sim = AsyncMock()
+    mock_sim.cleanup.side_effect = RuntimeError("Simulator cleanup error")
+    sb._simulator_cache = {"failing_sim": mock_sim}
+    await sb.teardown()
+
+
+@pytest.mark.asyncio
+async def test_abstract_sandbox_get_full_state_branches():
+    from eval_runner.tool_sandbox import AbstractSandbox
+
+    class CustomSandbox(AbstractSandbox):
+        def execute(self, tool_name, params, agent_name=None):
+            pass
+
+        def get_active_simulators(self):
+            return self._simulators
+
+    sb = CustomSandbox({"id": "test_env_state"})
+
+    # 1. External simulator with get_bounded_reference (sync with to_dict)
+    ext_sim_ref = MagicMock()
+    ext_sim_ref.is_external = True
+    mock_ref = MagicMock()
+    mock_ref.to_dict.return_value = {"bounded": True}
+    ext_sim_ref.get_bounded_reference.return_value = mock_ref
+
+    # 2. External simulator with async get_bounded_reference (without to_dict)
+    ext_sim_ref_async = MagicMock()
+    ext_sim_ref_async.is_external = True
+
+    async def _async_ref():
+        return "raw_ref"
+
+    ext_sim_ref_async.get_bounded_reference = _async_ref
+
+    # 3. External simulator with get_snapshot (async, with large tables and normal keys)
+    ext_sim_snap = MagicMock()
+    ext_sim_snap.is_external = True
+    delattr(ext_sim_snap, "get_bounded_reference")
+
+    async def _async_snap_tables():
+        return {
+            "normal_key": 1,
+            "tables": "x" * 20000,
+        }
+
+    ext_sim_snap.get_snapshot = _async_snap_tables
+
+    # 4. External simulator with get_snapshot (sync, without tables)
+    ext_sim_snap_notables = MagicMock()
+    ext_sim_snap_notables.is_external = True
+    delattr(ext_sim_snap_notables, "get_bounded_reference")
+    ext_sim_snap_notables.get_snapshot.return_value = {"meta_only": 123}
+
+    # 5. External simulator without ref or snapshot
+    ext_sim_bare = MagicMock()
+    ext_sim_bare.is_external = True
+    delattr(ext_sim_bare, "get_bounded_reference")
+    delattr(ext_sim_bare, "get_snapshot")
+
+    # 6. Local simulator with async get_snapshot
+    local_sim_snap_async = MagicMock()
+    local_sim_snap_async.is_external = False
+
+    async def _async_snap():
+        return {"snap": "ok"}
+
+    local_sim_snap_async.get_snapshot = _async_snap
+
+    # 7. Local simulator with sync get_snapshot
+    local_sim_snap_sync = MagicMock()
+    local_sim_snap_sync.is_external = False
+    local_sim_snap_sync.get_snapshot.return_value = {"sync_snap": "ok"}
+
+    # 8. Local simulator with state attribute
+    local_sim_state = MagicMock()
+    local_sim_state.is_external = False
+    delattr(local_sim_state, "get_snapshot")
+    local_sim_state.state = {"local_key": "val"}
+
+    # 9. Local simulator with neither snapshot nor state
+    local_sim_bare = MagicMock()
+    local_sim_bare.is_external = False
+    delattr(local_sim_bare, "get_snapshot")
+    delattr(local_sim_bare, "state")
+
+    # 10. Simulator raising exception
+    failing_sim = MagicMock()
+    failing_sim.is_external = True
+    failing_sim.get_bounded_reference.side_effect = RuntimeError("Snap fail")
+
+    sb._simulators = {
+        "ext_ref": ext_sim_ref,
+        "ext_ref_async": ext_sim_ref_async,
+        "ext_snap": ext_sim_snap,
+        "ext_snap_notables": ext_sim_snap_notables,
+        "ext_bare": ext_sim_bare,
+        "local_snap_async": local_sim_snap_async,
+        "local_snap_sync": local_sim_snap_sync,
+        "local_state": local_sim_state,
+        "local_bare": local_sim_bare,
+        "failing": failing_sim,
+    }
+
+    env_state = await sb.get_full_state()
+    assert env_state["ext_ref"] == {"bounded": True}
+    assert env_state["ext_ref_async"] == "raw_ref"
+    assert "tables" not in env_state["ext_snap"]
+    assert env_state["ext_snap_notables"] == {"meta_only": 123}
+    assert env_state["ext_bare"]["status"] == "EXTERNAL_BOUNDED"
+    assert env_state["local_snap_async"] == {"snap": "ok"}
+    assert env_state["local_snap_sync"] == {"sync_snap": "ok"}
+    assert env_state["local_state"] == {"local_key": "val"}
+    assert "local_bare" not in env_state
+    assert "error" in env_state["failing"]
+
+
+@pytest.mark.asyncio
+async def test_tool_sandbox_get_full_state_all_branches(tmp_path):
+    scenario = {"id": "full_state_test"}
+    sb = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+
+    ext_ref = MagicMock()
+    ext_ref.is_external = True
+    mock_ref = MagicMock()
+    mock_ref.to_dict.return_value = {"ref": 1}
+    ext_ref.get_bounded_reference.return_value = mock_ref
+
+    ext_ref_async = MagicMock()
+    ext_ref_async.is_external = True
+
+    async def _async_ref():
+        return "async_ref"
+
+    ext_ref_async.get_bounded_reference = _async_ref
+
+    ext_snap = MagicMock()
+    ext_snap.is_external = True
+    delattr(ext_snap, "get_bounded_reference")
+
+    async def _async_ext_snap():
+        return {"tables": "z" * 20000, "meta": "keep"}
+
+    ext_snap.get_snapshot = _async_ext_snap
+
+    ext_snap_notables = MagicMock()
+    ext_snap_notables.is_external = True
+    delattr(ext_snap_notables, "get_bounded_reference")
+    ext_snap_notables.get_snapshot.return_value = {"simple": "data"}
+
+    ext_bare = MagicMock()
+    ext_bare.is_external = True
+    delattr(ext_bare, "get_bounded_reference")
+    delattr(ext_bare, "get_snapshot")
+
+    loc_snap_async = MagicMock()
+    loc_snap_async.is_external = False
+
+    async def _loc_async_snap():
+        return {"loc": "snap"}
+
+    loc_snap_async.get_snapshot = _loc_async_snap
+
+    loc_snap_sync = MagicMock()
+    loc_snap_sync.is_external = False
+    loc_snap_sync.get_snapshot.return_value = {"loc_sync": "snap"}
+
+    loc_state = MagicMock()
+    loc_state.is_external = False
+    delattr(loc_state, "get_snapshot")
+    loc_state.state = {"loc": "state"}
+
+    loc_bare = MagicMock()
+    loc_bare.is_external = False
+    delattr(loc_bare, "get_snapshot")
+    delattr(loc_bare, "state")
+
+    fail_sim = MagicMock()
+    fail_sim.is_external = False
+    fail_sim.get_snapshot.side_effect = RuntimeError("Snapshot exception")
+
+    sb._simulator_cache = {
+        "ext_ref": ext_ref,
+        "ext_ref_async": ext_ref_async,
+        "ext_snap": ext_snap,
+        "ext_snap_notables": ext_snap_notables,
+        "ext_bare": ext_bare,
+        "loc_snap_async": loc_snap_async,
+        "loc_snap_sync": loc_snap_sync,
+        "loc_state": loc_state,
+        "loc_bare": loc_bare,
+        "fail_sim": fail_sim,
+    }
+
+    full_state = await sb.get_full_state()
+    assert full_state["shims"]["ext_ref"] == {"ref": 1}
+    assert full_state["shims"]["ext_ref_async"] == "async_ref"
+    assert "tables" not in full_state["shims"]["ext_snap"]
+    assert full_state["shims"]["ext_snap_notables"] == {"simple": "data"}
+    assert full_state["shims"]["ext_bare"]["status"] == "EXTERNAL_BOUNDED"
+    assert full_state["shims"]["loc_snap_async"] == {"loc": "snap"}
+    assert full_state["shims"]["loc_snap_sync"] == {"loc_sync": "snap"}
+    assert full_state["shims"]["loc_state"] == {"loc": "state"}
+    assert "loc_bare" not in full_state["shims"]
+    assert "error" in full_state["shims"]["fail_sim"]
+
+
+@pytest.mark.asyncio
+async def test_tool_sandbox_execution_quiesce_and_policy_branches(tmp_path):
+    scenario = {
+        "id": "quiesce_test",
+        "metadata": {
+            "policies": {
+                "limited_tool": {
+                    "rules": [{"field": "count", "operator": "lte", "value": 5}],
+                },
+            },
+        },
+        "tools": {
+            "limited_tool": {"output": {"status": "ok"}},
+        },
+    }
+    sb = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+
+    # 1. Tool execution via simulator with quiesce timeout
+    sim_timeout = AsyncMock()
+    sim_timeout.execute.return_value = {"status": "ok", "message": "done", "dna": {"model": "gpt"}}
+    sim_timeout.quiesce = AsyncMock(side_effect=TimeoutError("Timed out"))
+
+    sb._simulator_cache = {"simto": sim_timeout}
+
+    async def fake_wait_for(fut, timeout):
+        try:
+            await fut
+        except Exception:
+            pass
+        raise TimeoutError("Timed out")
+
+    with patch("asyncio.wait_for", side_effect=fake_wait_for):
+        res_to = await sb.execute("simto_action", {})
+        assert res_to.get("status") == "ok"
+        assert res_to.get_secure_metadata().get("model") == "gpt"
+
+    # 2. Tool execution via simulator with quiesce exception and without dna
+    sim_err = AsyncMock()
+    sim_err.execute.return_value = {"status": "ok_no_dna"}
+    sim_err.quiesce = AsyncMock(side_effect=RuntimeError("Quiesce failed"))
+    sb._simulator_cache = {"simerr": sim_err}
+    res_err = await sb.execute("simerr_action", {})
+    assert res_err.get("status") == "ok_no_dna"
+
+    # 3. Tool execution via simulator without quiesce (covers 465->482)
+    sim_no_q = AsyncMock()
+    sim_no_q.execute.return_value = {"status": "no_quiesce"}
+    del sim_no_q.quiesce
+    sb._simulator_cache = {"simnoq": sim_no_q}
+    res_no_q = await sb.execute("simnoq_action", {})
+    assert res_no_q.get("status") == "no_quiesce"
+
+    # 4. Policy violation with field and limit but no message (covers 523-524)
+    from agentv_runtime.interfaces import PolicyEvaluationResult
+
+    mock_eval = PolicyEvaluationResult(
+        allowed=False,
+        policy_id="count_policy",
+        violations=[{"field": "count", "limit": 5, "value": 10}],
+        reason="Exceeded",
+    )
+    with patch.object(sb.policy_evaluator, "evaluate_policy", return_value=mock_eval):
+        viol_res = await sb.execute("limited_tool", {"count": 10})
+        assert viol_res["status"] == "policy_violation"
+        assert "Parameter 'count' with value 10 exceeds limit of 5" in viol_res["violation"]
+
+    # 5. Policy violation with neither message nor field/limit (covers 523->532)
+    mock_eval_generic = PolicyEvaluationResult(
+        allowed=False,
+        policy_id="generic_policy",
+        violations=[{"custom_code": 99}],
+        reason="Generic violation reason",
+    )
+    with patch.object(sb.policy_evaluator, "evaluate_policy", return_value=mock_eval_generic):
+        viol_res_generic = await sb.execute("limited_tool", {"count": 10})
+        assert viol_res_generic["status"] == "policy_violation"
+        assert viol_res_generic["violation"] == "Generic violation reason"
+
+
+@pytest.mark.asyncio
+async def test_tool_sandbox_relevant_shims_and_instantiation_branches(tmp_path):
+    # 1. workflow as list
+    scen_list = {
+        "id": "list_wf",
+        "workflow": [
+            {
+                "id": "n1",
+                "required_tools": ["shell", "custom_tool"],
+                "expected_outcome": [
+                    {"target": "shim:mock_shim.inspect"},
+                    "not_a_dict_outcome",
+                ],
+            }
+        ],
+    }
+    sb_list = ToolSandbox(scen_list, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+    rel_list = sb_list._get_scenario_relevant_shims()
+    assert "mock_shim" in rel_list
+
+    # 2. workflow as invalid non-dict, non-list type
+    scen_invalid = {
+        "id": "invalid_wf",
+        "workflow": "invalid_workflow_type",
+        "tools": {"shell": {}},
+    }
+    sb_invalid = ToolSandbox(scen_invalid, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+    rel_invalid = sb_invalid._get_scenario_relevant_shims()
+    assert isinstance(rel_invalid, set)
+
+    # 3. workflow with expected_outcome as single dict
+    scen_dict_outcome = {
+        "id": "single_dict_outcome",
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "n2",
+                    "expected_outcome": {"target": "shim:dict_shim.query"},
+                }
+            ]
+        },
+    }
+    sb_dict = ToolSandbox(scen_dict_outcome, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+    assert "dict_shim" in sb_dict._get_scenario_relevant_shims()
+
+    # 4. Shim instantiation failure in get_active_simulators
+    failing_cls = MagicMock()
+    failing_cls.side_effect = RuntimeError("Shim init failure")
+    with patch(
+        "eval_runner.simulators.get_simulator_registry", return_value={"bad_shim": failing_cls}
+    ):
+        scen_bad = {
+            "id": "bad_shim_scen",
+            "shims": {"bad_shim": {"type": "bad_shim"}},
+        }
+        sb_bad = ToolSandbox(scen_bad, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+        sims = sb_bad.get_active_simulators()
+        assert "bad_shim" not in sims
+
+
+@pytest.mark.asyncio
+async def test_tool_sandbox_merge_branch_state_matrix(tmp_path):
+    sb = ToolSandbox({"id": "merge_test"}, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+    fork = ToolSandbox({"id": "merge_test"}, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+
+    # 1. Merge with keys, where one key is in fork and another is not
+    fork.state["key1"] = "val1"
+    sb.merge_branch_state(fork, keys=["key1", "missing_key"])
+    assert sb.state["key1"] == "val1"
+    assert "missing_key" not in sb.state
+
+    # 2. Merge with keys=None (full state update)
+    fork.state["key2"] = "val2"
+    sb.merge_branch_state(fork, keys=None)
+    assert sb.state["key2"] == "val2"
+
+    # 3. Merge policy decisions with deduplication and unhashed decisions
+    sb.policy_decisions = [{"input_hash": "hash_existing", "decision": "allow"}]
+    fork.policy_decisions = [
+        {"input_hash": "hash_existing", "decision": "allow_dup"},
+        {"input_hash": "hash_new", "decision": "allow_new"},
+        {"decision": "no_hash_decision"},
+    ]
+    sb.merge_branch_state(fork)
+    assert len(sb.policy_decisions) == 3
+    assert sb.policy_decisions[1]["input_hash"] == "hash_new"
+    assert "input_hash" not in sb.policy_decisions[2]
+
+
+@pytest.mark.asyncio
+async def test_tool_sandbox_event_bus_and_register_artifact(tmp_path):
+    scenario = {
+        "id": "bus_test",
+        "tools": {"test_tool": {"output": {"status": "ok"}}},
+    }
+    mock_bus = MagicMock()
+    forensics = MagicMock()
+    sb = ToolSandbox(
+        scenario,
+        workspace_root=tmp_path,
+        jail_root=tmp_path / "jail",
+        event_bus=mock_bus,
+        forensics=forensics,
+    )
+
+    # Register artifact
+    artifact_file = tmp_path / "artifact.txt"
+    artifact_file.write_text("content", encoding="utf-8")
+    sb.register_artifact(artifact_file)
+    assert forensics.register_artifact.called
+
+    # Event bus emit on execute
+    await sb.execute("test_tool", {})
+    assert mock_bus.emit.called

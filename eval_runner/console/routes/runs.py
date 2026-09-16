@@ -804,6 +804,45 @@ def is_run_alive(run_id: str) -> bool:
     return any(t.name == f"eval-{run_id}" for t in threading.enumerate())
 
 
+TERMINAL_TRACE_EVENTS = {
+    "run_end",
+    "run_completed",
+    "trace_sealed",
+    "verification_certificate_issued",
+    "certification_failed",
+}
+
+
+def _extract_canonical_event_info(line: str, fallback_seq: int) -> tuple[int, bool]:
+    """
+    Extracts authoritative event _seq and checks if terminal from raw JSONL line.
+    Never regenerates forensic identity at read time.
+    """
+    try:
+        ev = json.loads(line)
+    except Exception:
+        ev = None
+
+    if isinstance(ev, dict):
+        raw_seq = ev.get("_seq")
+        if raw_seq is None:
+            raw_seq = ev.get("seq_id") or ev.get("id")
+        if raw_seq is not None:
+            try:
+                seq = int(raw_seq)
+            except (ValueError, TypeError):
+                seq = fallback_seq
+        else:
+            seq = fallback_seq
+
+        ev_name = str(ev.get("event") or "")
+        is_term = ev_name in TERMINAL_TRACE_EVENTS
+        return seq, is_term
+
+    is_term = any(f'"event": "{name}"' in line for name in TERMINAL_TRACE_EVENTS)
+    return fallback_seq, is_term
+
+
 def tail_file_generator(log_path: Path, run_id: str, last_event_id: int = 0):
     # 1. Wait for log creation with a 10s safety threshold
     timeout = 10.0
@@ -846,10 +885,11 @@ def tail_file_generator(log_path: Path, run_id: str, last_event_id: int = 0):
             stripped = line.strip()
             if stripped:
                 seq_id += 1
+                _, is_term = _extract_canonical_event_info(stripped, seq_id)
                 if seq_id > last_event_id:
                     yield f"id: {seq_id}\ndata: {stripped}\n\n"
-            if '"event": "run_end"' in line or '"event": "run_completed"' in line:
-                return
+                if is_term:
+                    return
 
         # Step B: Enter tail loop
         idle_cycles = 0
@@ -911,11 +951,11 @@ def tail_file_generator(log_path: Path, run_id: str, last_event_id: int = 0):
             stripped = line.strip()
             if stripped:
                 seq_id += 1
+                _, is_term = _extract_canonical_event_info(stripped, seq_id)
                 if seq_id > last_event_id:
                     yield f"id: {seq_id}\ndata: {stripped}\n\n"
-
-            if '"event": "run_end"' in line or '"event": "run_completed"' in line:
-                break
+                if is_term:
+                    break
 
 
 @run_bp.route("/v1/runs/<path:run_id>/stream", methods=["GET"])

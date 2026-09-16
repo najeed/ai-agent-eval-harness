@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import asyncio
 import threading
+from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -399,3 +400,286 @@ async def test_default_runner_evaluator_signing_none_key_and_exception(tmp_path,
         ):
             res_exc = await runner.run(scenario, attempts=1)
             assert res_exc is not None
+
+
+@pytest.mark.asyncio
+async def test_runner_compile_required_oracle_ids_matrix():
+    from eval_runner.runner import compile_required_oracle_ids
+
+    # 1. Explicit declaration or-chain
+    assert compile_required_oracle_ids({"required_oracles": ["o1"]}) == ["o1"]
+    assert compile_required_oracle_ids({"required_oracle_ids": ["o2"]}) == ["o2"]
+    assert compile_required_oracle_ids({"metadata": {"required_oracles": ["o3"]}}) == ["o3"]
+    assert compile_required_oracle_ids({"metadata": {"required_oracle_ids": ["o4"]}}) == ["o4"]
+    assert compile_required_oracle_ids({"required_oracles": ["dup", "dup", "  "]}) == ["dup"]
+
+    # 2. Plan compilation exception
+    with patch(
+        "eval_runner.execution_ir.compile_evaluation_plan", side_effect=ValueError("Plan parse err")
+    ):
+        assert compile_required_oracle_ids({"id": "err_scen"}) == []
+
+    # 3. Plan compilation with required and non-required oracles and duplicates
+    mock_plan = MagicMock()
+    mock_plan.oracles = {
+        "req_oracle": MagicMock(required=True),
+        "opt_oracle": MagicMock(required=False),
+        "req_oracle_dup": MagicMock(required=True),
+    }
+    with patch("eval_runner.execution_ir.compile_evaluation_plan", return_value=mock_plan):
+        compiled_plan = compile_required_oracle_ids(
+            {"id": "plan_scen", "required_oracles": ["req_oracle_dup"]}
+        )
+        assert "req_oracle" in compiled_plan
+        assert "opt_oracle" not in compiled_plan
+        assert "req_oracle_dup" in compiled_plan
+
+    # 4. success_criteria, expected_outcome, and oracles
+    scen_criteria = {
+        "id": "crit_scen",
+        "success_criteria": [
+            {"oracle_id": "sc_req", "required": True},
+            {"id": "sc_opt", "required": False},
+            {"oracle_id": "sc_dup", "required": True},
+            "sc_str",
+            "sc_str",
+        ],
+        "expected_outcome": [
+            {"name": "eo_name", "required": True},
+            "eo_str",
+        ],
+        "oracles": [
+            {"oracle_id": "or_req", "required": True},
+            "or_str",
+        ],
+    }
+    compiled_crit = compile_required_oracle_ids(scen_criteria)
+    assert "sc_req" in compiled_crit
+    assert "sc_opt" not in compiled_crit
+    assert "sc_str" in compiled_crit
+    assert "eo_name" in compiled_crit
+    assert "eo_str" in compiled_crit
+    assert "or_req" in compiled_crit
+    assert "or_str" in compiled_crit
+
+
+@pytest.mark.asyncio
+async def test_runner_otel_and_seeding_branches(tmp_path, monkeypatch):
+    runner = DefaultRunner()
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
+
+    # 1. Metadata traceparent
+    with patch("eval_runner.session.SessionManager") as mock_session:
+        mock_session.return_value.execute_tasks = AsyncMock(return_value=[])
+        res_tp = await runner.run(
+            {"id": "otel_scen"},
+            metadata={"traceparent": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"},
+        )
+        assert res_tp is not None
+
+    # 2. Scenario span_context
+    with patch("eval_runner.session.SessionManager") as mock_session:
+        mock_session.return_value.execute_tasks = AsyncMock(return_value=[])
+        res_sc = await runner.run(
+            {
+                "id": "otel_scen_2",
+                "span_context": {
+                    "traceparent": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"
+                },
+            },
+        )
+        assert res_sc is not None
+
+    # 3. OTel init exception
+    with patch("eval_runner.session.SessionManager") as mock_session:
+        mock_session.return_value.execute_tasks = AsyncMock(return_value=[])
+        with patch("opentelemetry.trace.get_tracer", side_effect=RuntimeError("OTel init err")):
+            res_otel_err = await runner.run({"id": "otel_err_scen"})
+            assert res_otel_err is not None
+
+    # 4. OTel cleanup exception where span.end() raises
+    mock_span = MagicMock()
+    mock_span.end.side_effect = RuntimeError("OTel span end err")
+    mock_tracer = MagicMock()
+    mock_tracer.start_span.return_value = mock_span
+    with patch("eval_runner.session.SessionManager") as mock_session:
+        mock_session.return_value.execute_tasks = AsyncMock(return_value=[])
+        with patch("opentelemetry.trace.get_tracer", return_value=mock_tracer):
+            with patch("opentelemetry.trace.get_current_span", return_value=mock_span):
+                res_otel_clean_err = await runner.run({"id": "otel_clean_err_scen"})
+                assert res_otel_clean_err is not None
+
+    # 5. Deterministic seeding (ctx.seed is not None with multiple attempts)
+    with patch("eval_runner.session.SessionManager") as mock_session:
+        mock_session.return_value.execute_tasks = AsyncMock(return_value=[])
+        res_seed = await runner.run({"id": "seed_scen"}, attempts=2, seed=12345)
+        assert res_seed is not None
+
+
+@pytest.mark.asyncio
+async def test_runner_trace_and_assertion_branches(tmp_path, monkeypatch):
+    import json
+
+    runner = DefaultRunner()
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
+
+    # 1. Trace reading with blank lines, non-dict/non-string metric (12345),
+    # and consistency_score metric filtering
+    run_dir = tmp_path / "run_blank_lines"
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "run.jsonl").write_text(
+        "\n  \n" + json.dumps({"event": "node_started", "node_id": "n1"}) + "\n\n",
+        encoding="utf-8",
+    )
+    sample_attempt_with_metrics = [
+        {
+            "workflow_verdict": {"status": "workflow_completed"},
+            "metrics": [
+                {"metric": "consistency_score"},
+                {"oracle_id": "consistency_score"},
+                "consistency_score",
+                "regular_metric",
+                12345,  # non-dict, non-str to cover branch 530->522
+            ],
+        }
+    ]
+    with patch("eval_runner.session.SessionManager") as mock_session:
+        mock_session.return_value.execute_tasks = AsyncMock(
+            return_value=sample_attempt_with_metrics
+        )
+        res_blank = await runner.run({"id": "scen_blank"}, run_id="run_blank_lines")
+        assert res_blank is not None
+
+    # 2. Trace file does not exist (covers 541->551)
+    orig_exists = Path.exists
+
+    def _fake_exists(p):
+        if str(p).endswith("run.jsonl"):
+            return False
+        return orig_exists(p)
+
+    with patch("eval_runner.session.SessionManager") as mock_session:
+        mock_session.return_value.execute_tasks = AsyncMock(
+            return_value=sample_attempt_with_metrics
+        )
+        with patch.object(Path, "exists", _fake_exists):
+            res_no_trace = await runner.run({"id": "scen_no_trace"}, run_id="run_no_trace_dir")
+            assert res_no_trace is not None
+
+    # 3. Missing signature branch after signing attempt
+    with patch("eval_runner.session.SessionManager") as mock_session:
+        mock_session.return_value.execute_tasks = AsyncMock(return_value=[])
+        mock_fin = MagicMock()
+        mock_fin.evaluator_signature = None
+        mock_fin.signature = None
+        mock_fin.sign.return_value = mock_fin
+        with patch(
+            "agentv_runtime.finalization.EvaluatorFinalizationRecord", return_value=mock_fin
+        ):
+            res_nosig = await runner.run({"id": "scen_nosig"})
+            assert res_nosig is not None
+
+
+def test_runner_is_attempt_successful_branches():
+    runner = DefaultRunner()
+
+    # 1. Empty attempt results
+    assert runner._is_attempt_successful([]) is False
+
+    # 2. No verdict rows
+    assert runner._is_attempt_successful([{"no_verdict": 1}]) is False
+
+    # 3. Status not completed
+    assert runner._is_attempt_successful([{"workflow_verdict": {"status": "failed"}}]) is False
+
+    # 4. Successful attempt with all branches
+    successful_attempt = [
+        "not_a_dict_row",
+        {
+            "workflow_verdict": {"status": "workflow_completed"},
+            "evaluation_valid": True,
+            "node_verdict": {
+                "verification": "success",
+                "policy": "allowed",
+                "parity": "success",
+                "overall": "success",
+            },
+            "oracle_results": [
+                {"requiredness": "OPTIONAL", "outcome": "FAIL"},
+                {"requiredness": "REQUIRED", "outcome": "PASS"},
+            ],
+            "metrics": [
+                {"severity": "informational", "outcome": "FAIL"},
+                {"requiredness": "OPTIONAL", "outcome": "FAIL"},
+                {"metric": "m1", "success": True, "outcome": "PASS"},
+            ],
+            "state_hygiene": [
+                {"requiredness": "OPTIONAL", "outcome": "FAIL"},
+                {"check": "h1", "success": True, "outcome": "PASS"},
+            ],
+            "state_parity": [
+                {"requiredness": "OPTIONAL", "outcome": "FAIL"},
+                {"check": "p1", "success": True, "outcome": "PASS"},
+            ],
+            "policy_checks": [
+                {"check": "pc1", "decision": "allowed"},
+            ],
+        },
+    ]
+    assert runner._is_attempt_successful(successful_attempt) is True
+
+    # 5. Branch failures
+    base_success = {
+        "workflow_verdict": {"status": "workflow_completed"},
+        "evaluation_valid": True,
+    }
+    assert (
+        runner._is_attempt_successful([{**base_success, "triage_tag": "EVALUATION_INVALID"}])
+        is False
+    )
+    assert runner._is_attempt_successful([{**base_success, "evaluation_valid": False}]) is False
+    assert (
+        runner._is_attempt_successful([{**base_success, "node_verdict": {"verification": "fail"}}])
+        is False
+    )
+    assert (
+        runner._is_attempt_successful([{**base_success, "node_verdict": {"policy": "denied"}}])
+        is False
+    )
+    assert (
+        runner._is_attempt_successful([{**base_success, "node_verdict": {"parity": "fail"}}])
+        is False
+    )
+    assert (
+        runner._is_attempt_successful([{**base_success, "node_verdict": {"overall": "fail"}}])
+        is False
+    )
+    assert (
+        runner._is_attempt_successful(
+            [{**base_success, "oracle_results": [{"requiredness": "REQUIRED", "outcome": "FAIL"}]}]
+        )
+        is False
+    )
+    assert (
+        runner._is_attempt_successful([{**base_success, "metrics": [{"success": False}]}]) is False
+    )
+    assert (
+        runner._is_attempt_successful([{**base_success, "state_hygiene": [{"invalid": True}]}])
+        is False
+    )
+    assert (
+        runner._is_attempt_successful([{**base_success, "state_hygiene": [{"success": False}]}])
+        is False
+    )
+    assert (
+        runner._is_attempt_successful([{**base_success, "state_parity": [{"invalid": True}]}])
+        is False
+    )
+    assert (
+        runner._is_attempt_successful([{**base_success, "state_parity": [{"success": False}]}])
+        is False
+    )
+    assert (
+        runner._is_attempt_successful([{**base_success, "policy_checks": [{"decision": "denied"}]}])
+        is False
+    )

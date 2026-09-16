@@ -47,6 +47,7 @@ class VerificationPackage:
     algorithm: str = "ed25519"
     key_id: str | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
+    finalization_hash: str = ""
     evaluation_hash: str = ""
     verification_hash: str = ""
     certificate_hash: str = ""
@@ -64,6 +65,7 @@ class VerificationPackage:
                     self.manifest_hash,
                     self.trace_hash,
                     self.evidence_root_hash,
+                    self.finalization_hash,
                     self.evaluation_hash,
                     self.verification_hash,
                     self.certificate_hash,
@@ -82,22 +84,27 @@ class VerificationPackage:
 
     def commitment_graph(self) -> dict[str, str]:
         """
-        Returns the cryptographic commitment graph:
-        Scenario hash -> Execution Manifest hash -> Trace / Evidence root ->
-        Evaluation artifact hash -> Verification result hash -> Certificate signature
-        -> Package hash.
+        Returns the non-circular cryptographic commitment graph:
+        Scenario hash -> Execution Manifest hash -> Trace hash ->
+        Evidence root -> Finalization hash -> Package hash.
         """
-        return {
+        graph = {
             "scenario_hash": self.scenario_hash,
             "manifest_hash": self.manifest_hash,
             "trace_hash": self.trace_hash,
             "evidence_root_hash": self.evidence_root_hash,
-            "evaluation_hash": self.evaluation_hash,
-            "verification_hash": self.verification_hash,
-            "certificate_signature": self.signature or "",
-            "certificate_hash": self.certificate_hash,
-            "package_hash": self.compute_package_hash(),
+            "finalization_hash": self.finalization_hash or self.evaluation_hash or "",
         }
+        if self.evaluation_hash:
+            graph["evaluation_hash"] = self.evaluation_hash
+        if self.verification_hash:
+            graph["verification_hash"] = self.verification_hash
+        if self.certificate_hash:
+            graph["certificate_hash"] = self.certificate_hash
+        if self.signature:
+            graph["certificate_signature"] = self.signature
+        graph["package_hash"] = self.compute_package_hash()
+        return graph
 
     def canonical_payload_dict(self) -> dict[str, Any]:
         """Returns the canonical deterministic dictionary of the attestation payload."""
@@ -109,16 +116,21 @@ class VerificationPackage:
             "evidence_root_hash": self.evidence_root_hash,
             "executed_oracle_results": self.executed_oracle_results,
             "execution_identity": self.execution_identity,
+            "finalization_hash": self.finalization_hash or self.evaluation_hash or "",
             "key_id": self.key_id or "",
             "manifest_hash": self.manifest_hash,
             "manifest_id": self.manifest_id,
             "metadata": self.metadata,
             "package_id": self.package_id,
             "package_version": self.package_version,
+            "parent_artifact_refs": sorted(self.parent_artifact_refs),
+            "producer_identity": self.producer_identity,
+            "producer_version": self.producer_version,
             "required_oracle_ids": sorted(self.required_oracle_ids),
             "scenario_hash": self.scenario_hash,
             "scenario_id": self.scenario_id,
             "scenario_version": self.scenario_version,
+            "schema_version": self.schema_version,
             "signer_identity": self.signer_identity or "",
             "trace_hash": self.trace_hash,
             "trace_seal": self.trace_seal,
@@ -341,6 +353,9 @@ class VerificationPackage:
             "algorithm": algo,
             "key_id": key_id,
             "metadata": dict(data.get("metadata") or {}),
+            "finalization_hash": str(
+                data.get("finalization_hash") or data.get("evaluation_hash") or ""
+            ),
             "evaluation_hash": str(data.get("evaluation_hash") or ""),
             "verification_hash": str(data.get("verification_hash") or ""),
             "certificate_hash": str(data.get("certificate_hash") or ""),

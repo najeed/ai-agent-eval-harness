@@ -17,6 +17,7 @@ import {
   computeTraceIntegrity,
   filterEventsByTelemetryLevel,
   computeTelemetryDiagnostics,
+  normalizeEventSequence,
 } from '../lib/debuggerLogic';
 import type {
   LogEvent,
@@ -570,23 +571,10 @@ export const LiveDebugger: React.FC = () => {
   } => {
     const positions = nodePositionsRef.current;
 
-    // 0. Canonical event normalization: every consumer below
-    // (node status, attempt counts, edge decoration) derives from events
-    // ordered by server-assigned _seq — NEVER array arrival order, which
-    // replay/recovery reconnection can scramble. Events lacking _seq retain
-    // stable arrival position after all sequenced events.
-    const seqIndexed = allEvents.map((e, arrivalIdx) => ({
-      ev: e,
-      arrivalIdx,
-      seq: typeof e._seq === 'number' && Number.isFinite(e._seq) ? e._seq : null
-    }));
-    seqIndexed.sort((a, b) => {
-      if (a.seq !== null && b.seq !== null && a.seq !== b.seq) return a.seq - b.seq;
-      if (a.seq !== null && b.seq === null) return -1;
-      if (a.seq === null && b.seq !== null) return 1;
-      return a.arrivalIdx - b.arrivalIdx;
-    });
-    const normalizedEvents = seqIndexed.map(x => x.ev);
+    // 0. Canonical event normalization: uses the single shared normalization
+    // function to guarantee consistent event ordering across waterfall, graph,
+    // diagnostics, selection, and integrity checks.
+    const normalizedEvents = normalizeEventSequence(allEvents);
 
     // 1. Canonical sources only.
     const scenarioNodesRaw = scen?.workflow?.nodes || scen?.workflow?.tasks || [];

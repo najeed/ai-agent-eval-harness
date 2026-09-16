@@ -1067,6 +1067,7 @@ class TraceVerifier:
                         "status": effective_compliance_status,
                         "score": effective_compliance_score,
                     },
+                    finalization_hash=eval_hash,
                     evaluation_hash=eval_hash,
                     verification_hash=verif_hash,
                     certificate_hash=cert_hash,
@@ -2108,6 +2109,59 @@ class VerificationAuthority:
                     failures.append(
                         f"ManifestHashMismatch: package={exp_m_hash} actual={computed_m_hash}"
                     )
+
+                # Semantic cross-binding check between manifest and package (P0-4 Fix)
+                m_obj = None
+                if isinstance(canonical_manifest, dict):
+                    try:
+                        from agentv_runtime.manifest import ExecutionManifest
+
+                        m_obj = ExecutionManifest.from_dict(canonical_manifest)
+                    except Exception as exc:
+                        logger.debug(
+                            "Failed to instantiate ExecutionManifest from dict: %s",
+                            exc,
+                        )
+                elif hasattr(canonical_manifest, "scenario_id"):
+                    m_obj = canonical_manifest
+
+                if m_obj is not None:
+                    if (
+                        m_obj.scenario_id
+                        and pkg.scenario_id
+                        and m_obj.scenario_id != pkg.scenario_id
+                    ):
+                        failures.append(
+                            f"ManifestScenarioIdMismatch: manifest={m_obj.scenario_id} "
+                            f"package={pkg.scenario_id}"
+                        )
+                    if (
+                        m_obj.scenario_version
+                        and pkg.scenario_version
+                        and m_obj.scenario_version != pkg.scenario_version
+                    ):
+                        failures.append(
+                            f"ManifestScenarioVersionMismatch: manifest={m_obj.scenario_version} "
+                            f"package={pkg.scenario_version}"
+                        )
+                    if (
+                        m_obj.scenario_hash
+                        and pkg.scenario_hash
+                        and m_obj.scenario_hash != pkg.scenario_hash
+                    ):
+                        failures.append(
+                            f"ManifestScenarioHashMismatch: manifest={m_obj.scenario_hash} "
+                            f"package={pkg.scenario_hash}"
+                        )
+                    if (
+                        m_obj.manifest_id
+                        and pkg.manifest_id
+                        and m_obj.manifest_id != pkg.manifest_id
+                    ):
+                        failures.append(
+                            f"ManifestIdMismatch: manifest={m_obj.manifest_id} "
+                            f"package={pkg.manifest_id}"
+                        )
             except Exception as m_err:
                 failures.append(f"ManifestVerificationFailed: {m_err}")
 
@@ -2450,6 +2504,59 @@ class VerificationAuthority:
                     failures.append(
                         f"ManifestHashMismatch: package={exp_m_hash} actual={computed_m_hash}"
                     )
+
+                # Semantic cross-binding check between manifest and package (P0-4 Fix)
+                m_obj = None
+                if isinstance(canonical_manifest, dict):
+                    try:
+                        from agentv_runtime.manifest import ExecutionManifest
+
+                        m_obj = ExecutionManifest.from_dict(canonical_manifest)
+                    except Exception as exc:
+                        logger.debug(
+                            "Failed to instantiate ExecutionManifest from dict: %s",
+                            exc,
+                        )
+                elif hasattr(canonical_manifest, "scenario_id"):
+                    m_obj = canonical_manifest
+
+                if m_obj is not None:
+                    if (
+                        m_obj.scenario_id
+                        and pkg.scenario_id
+                        and m_obj.scenario_id != pkg.scenario_id
+                    ):
+                        failures.append(
+                            f"ManifestScenarioIdMismatch: manifest={m_obj.scenario_id} "
+                            f"package={pkg.scenario_id}"
+                        )
+                    if (
+                        m_obj.scenario_version
+                        and pkg.scenario_version
+                        and m_obj.scenario_version != pkg.scenario_version
+                    ):
+                        failures.append(
+                            f"ManifestScenarioVersionMismatch: manifest={m_obj.scenario_version} "
+                            f"package={pkg.scenario_version}"
+                        )
+                    if (
+                        m_obj.scenario_hash
+                        and pkg.scenario_hash
+                        and m_obj.scenario_hash != pkg.scenario_hash
+                    ):
+                        failures.append(
+                            f"ManifestScenarioHashMismatch: manifest={m_obj.scenario_hash} "
+                            f"package={pkg.scenario_hash}"
+                        )
+                    if (
+                        m_obj.manifest_id
+                        and pkg.manifest_id
+                        and m_obj.manifest_id != pkg.manifest_id
+                    ):
+                        failures.append(
+                            f"ManifestIdMismatch: manifest={m_obj.manifest_id} "
+                            f"package={pkg.manifest_id}"
+                        )
             except Exception as m_err:
                 failures.append(f"ManifestVerificationFailed: {m_err}")
         elif not pkg.manifest_hash or not pkg.manifest_id:

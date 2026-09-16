@@ -1,5 +1,4 @@
 import asyncio
-import hashlib
 import json
 import logging
 import os
@@ -14,7 +13,10 @@ from typing import Any
 from flask import Blueprint, jsonify, request
 
 import eval_runner
-from agentv_runtime.manifest import compute_scenario_hash
+from agentv_runtime.manifest import (
+    compute_preflight_fingerprint,
+    compute_scenario_hash,
+)
 from eval_runner import engine, loader, mutator, spec_parser, taxonomy  # noqa: F401
 from eval_runner.catalog import ScenarioCatalog
 
@@ -43,27 +45,6 @@ TRANSITION_REQUIRES_REASON: set[tuple[str, str]] = {
 }
 
 scenario_bp = Blueprint("scenarios", __name__)
-
-
-def compute_preflight_fingerprint(
-    scenario_id: str,
-    scen_hash: str = "",
-    endpoint: str = "",
-    protocol: str = "",
-    max_turns: int = 10,
-) -> str:
-    """
-    Canonical preflight fingerprint calculation shared between
-    readiness probe and evaluation launch.
-    """
-    raw = {
-        "endpoint": str(endpoint or ""),
-        "max_turns": int(max_turns),
-        "protocol": str(protocol or "").lower(),
-        "scen_hash": str(scen_hash or ""),
-        "scenario_id": str(scenario_id or ""),
-    }
-    return hashlib.sha3_256(json.dumps(raw, sort_keys=True).encode("utf-8")).hexdigest()
 
 
 def get_catalog():
@@ -215,6 +196,45 @@ def validate_scenario_structure(raw_data: dict[str, Any]) -> tuple[bool, list[st
                     errors.append(f"Edge {e_idx} references unknown source node '{src}'")
                 if not tgt or tgt not in seen_node_ids:
                     errors.append(f"Edge {e_idx} references unknown target node '{tgt}'")
+
+                # Validate canonical edge type
+                edge_type = (
+                    edge.get("type") if edge.get("type") is not None else edge.get("edge_type")
+                )
+                if edge_type is not None:
+                    valid_types = {
+                        "sequential",
+                        "condition",
+                        "conditional",
+                        "default",
+                        "error",
+                        "timeout",
+                        "retry",
+                        "compensation",
+                        "parallel",
+                        "join",
+                    }
+                    if str(edge_type).lower() not in valid_types:
+                        errors.append(
+                            f"Edge {e_idx} has unknown type '{edge_type}' "
+                            f"(valid: {', '.join(sorted(valid_types))})"
+                        )
+
+                # Validate numeric priority
+                if "priority" in edge and edge["priority"] is not None:
+                    p = edge["priority"]
+                    is_numeric = False
+                    if isinstance(p, (int, float)) and not isinstance(p, bool):
+                        is_numeric = True
+                    elif isinstance(p, str):
+                        try:
+                            float(p)
+                            is_numeric = True
+                        except ValueError:
+                            is_numeric = False
+                    if not is_numeric:
+                        errors.append(f"Edge {e_idx} has non-numeric priority '{p}'")
+
                 if src in adj and tgt:
                     adj[src].append(tgt)
 

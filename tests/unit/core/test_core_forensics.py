@@ -384,3 +384,133 @@ def test_snapshot_failure(tmp_path):
         with patch("eval_runner.forensics.logger.error") as mock_log:
             c.snapshot_state({"a": 1}, 0)
             mock_log.assert_called()
+
+
+def test_forensics_extended_coverage_matrix(tmp_path):
+    """Exhaustive test coverage for remaining branches in eval_runner/forensics.py."""
+    from eval_runner.forensics import _bound_interaction_payload, compute_shake256_digest
+
+    # 1. compute_shake256_digest
+    digest = compute_shake256_digest(b"hello world", length=16)
+    assert len(digest) == 16
+
+    # 2. _bound_interaction_payload: data is None
+    assert _bound_interaction_payload(None) is None
+
+    # 3. _bound_interaction_payload: small payload returns untouched
+    assert _bound_interaction_payload({"small": True}) == {"small": True}
+
+    # 4. _bound_interaction_payload: oversized list payload
+    oversized_list = [f"item_{i}" for i in range(2000)]
+    res_list = _bound_interaction_payload(oversized_list, max_bytes=100)
+    assert "__BOUNDED_INTERACTION__" in res_list
+    assert len(res_list["__BOUNDED_INTERACTION__"]["sample"]) <= 5
+
+    # 5. _bound_interaction_payload: oversized non-dict, non-list payload
+    oversized_str = "x" * 70000
+    res_str = _bound_interaction_payload(oversized_str, max_bytes=100)
+    assert "__BOUNDED_INTERACTION__" in res_str
+    assert isinstance(res_str["__BOUNDED_INTERACTION__"]["sample"], str)
+
+    # 6. _bound_interaction_payload: canonical_json_encode exception fallback
+    with patch(
+        "agentv_runtime.canonical.canonical_json_encode", side_effect=Exception("Encode err")
+    ):
+        res_fallback = _bound_interaction_payload({"large": "y" * 1000}, max_bytes=50)
+        assert "__BOUNDED_INTERACTION__" in res_fallback
+
+    # 7. _bound_interaction_payload: outer exception returns original data
+    with patch("json.dumps", side_effect=TypeError("Not serializable")):
+        raw_val = object()
+        assert _bound_interaction_payload(raw_val) is raw_val
+
+    # 8. list_diff: not old and len(new) > MAX_INLINE_ITEMS with canonical fallback
+    big_new = [f"val_{i}" for i in range(150)]
+    with patch(
+        "agentv_runtime.canonical.canonical_json_encode", side_effect=Exception("Encode err")
+    ):
+        bounded_res = list_diff([], big_new)
+        assert "__LIST_DIFF_BOUNDED__" in bounded_res
+
+    # 9. list_diff: non-dict items exceeding MAX_INLINE_ITEMS with canonical fallback
+    with patch(
+        "agentv_runtime.canonical.canonical_json_encode", side_effect=Exception("Encode err")
+    ):
+        bounded_nondict = list_diff([1, 2], [i for i in range(120)])
+        assert "__LIST_DIFF_BOUNDED__" in bounded_nondict
+
+    # 10. list_diff: dict items without PK exceeding MAX_INLINE_ITEMS with canonical fallback
+    unkeyed_old = [{"name": f"n_{i}"} for i in range(5)]
+    unkeyed_new = [{"name": f"n_{i}"} for i in range(120)]
+    with patch(
+        "agentv_runtime.canonical.canonical_json_encode", side_effect=Exception("Encode err")
+    ):
+        bounded_unkeyed = list_diff(unkeyed_old, unkeyed_new)
+        assert "__LIST_DIFF_BOUNDED__" in bounded_unkeyed
+
+    # 11. list_diff: Tier 3 mutations exceeding MAX_INLINE_ITEMS with canonical fallback
+    pk_old = [{"id": i, "val": i} for i in range(120)]
+    pk_new = [{"id": i, "val": i + 1} for i in range(120)]
+    with patch(
+        "agentv_runtime.canonical.canonical_json_encode", side_effect=Exception("Encode err")
+    ):
+        bounded_mutations = list_diff(pk_old, pk_new)
+        assert "__LIST_DIFF_BOUNDED__" in bounded_mutations
+        assert bounded_mutations["__LIST_DIFF_BOUNDED__"]["modified_count"] == 120
+
+    # 12. dict_diff: nested dict where sub_diff is empty
+    class WeirdEqualDict(dict):
+        def __ne__(self, other):
+            return True
+
+    d_old = {"k": WeirdEqualDict({"sub": 1})}
+    d_new = {"k": WeirdEqualDict({"sub": 1})}
+    res_dd = dict_diff(d_old, d_new)
+    assert "k" not in res_dd
+
+    # 13. dict_diff: nested list where old[k] != v but list_diff returns None (branch 225->214)
+    class UnequalList(list):
+        def __ne__(self, other):
+            return True
+
+    class BadDict(dict):
+        def __ne__(self, other):
+            return True
+
+    l_old = {"k": [{"id": 1, "v": 1}]}
+    l_new = {"k": UnequalList([BadDict({"id": 1, "v": 1})])}
+    res_ld = dict_diff(l_old, l_new)
+    assert "k" not in res_ld
+
+    # 14. ForensicCollector.snapshot_state with branch_id
+    collector = ForensicCollector("test_run_branch", tmp_path)
+    collector.snapshot_state({"branch_key": "v1"}, turn=1, branch_id="sub_branch_42")
+    assert (tmp_path / "forensics" / "state_turn_001_sub_branch_42_full.json").exists()
+
+    # 15. ForensicCollector.snapshot_state: oversized snapshot with canonical fallback
+    big_state = {f"k_{i}": "v" * 10000 for i in range(60)}
+    with patch(
+        "agentv_runtime.canonical.canonical_json_encode", side_effect=Exception("Encode err")
+    ):
+        collector.snapshot_state(big_state, turn=2)
+        diff_file = tmp_path / "forensics" / "state_turn_002_diff.json"
+        assert diff_file.exists()
+
+    # 16. ForensicCollector.collect: snapshot path does not exist on disk
+    collector._state_snapshots[99] = tmp_path / "forensics" / "nonexistent_turn_099.json"
+    ledger = collector.collect()
+    assert "forensics/nonexistent_turn_099.json" not in ledger
+
+    # 17. ForensicCollector.collect: src.resolve() == dest.resolve()
+    dest_path = tmp_path / "forensics" / "in_place.log"
+    dest_path.parent.mkdir(parents=True, exist_ok=True)
+    dest_path.write_text("in place data")
+    collector.register_artifact(dest_path, "in_place.log")
+    ledger_in_place = collector.collect()
+    assert "in_place.log" in ledger_in_place
+
+    # 18. is_relevant: is_dedicated_dir is True (branch 288->293)
+    engine = ForensicRelevanceEngine({"extensions": [".log"]})
+    test_log = tmp_path / "file.log"
+    test_log.write_text("sample log content")
+    assert engine.is_relevant(test_log, run_id="r1", is_dedicated_dir=True) is True

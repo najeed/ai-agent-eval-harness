@@ -184,6 +184,16 @@ class ScenarioCatalog:
                         continue
 
             disk_count = len(new_scenarios)
+            total_disk_count = 0
+            current_top_mtime = 0
+            for sp in search_paths:
+                try:
+                    if sp.exists():
+                        current_top_mtime = max(current_top_mtime, sp.stat().st_mtime)
+                        total_disk_count += len(list(sp.glob("**/*.json")))
+                except OSError:
+                    pass
+
             max_mtime = max((s.get("mtime", 0) for s in new_scenarios), default=0)
 
             try:
@@ -191,7 +201,9 @@ class ScenarioCatalog:
                 manifest = {
                     "metadata": {
                         "last_scanned_count": disk_count,
+                        "last_disk_count": total_disk_count,
                         "last_scanned_mtime": max_mtime,
+                        "last_top_mtime": current_top_mtime,
                         "updated_at": datetime.datetime.now().astimezone().isoformat(),
                     },
                     "scenarios": new_scenarios,
@@ -221,6 +233,14 @@ class ScenarioCatalog:
                         except OSError:
                             pass
 
+                # Preserve top-level directory mtime so writing index.json
+                # does not self-dirty the cache
+                if self.index_path.parent.exists() and current_top_mtime > 0:
+                    try:
+                        os.utime(self.index_path.parent, (current_top_mtime, current_top_mtime))
+                    except OSError:
+                        pass
+
                 self.scenarios = new_scenarios
                 self._disk_count = disk_count
                 self.manifest = manifest.get("metadata", {})
@@ -243,8 +263,11 @@ class ScenarioCatalog:
             # This is 100x faster than full os.walk on large datasets
             current_top_mtime = 0
             for sp in search_paths:
-                if sp.exists():
-                    current_top_mtime = max(current_top_mtime, sp.stat().st_mtime)
+                try:
+                    if sp.exists():
+                        current_top_mtime = max(current_top_mtime, sp.stat().st_mtime)
+                except OSError:
+                    pass
 
             cached_mtime = self.manifest.get("last_top_mtime", 1)
             if not force and current_top_mtime <= cached_mtime:
@@ -253,10 +276,14 @@ class ScenarioCatalog:
             # Industry standard fallback: Shallow scan count
             disk_count = 0
             for sp in search_paths:
-                if sp.exists():
-                    disk_count += len(list(sp.glob("**/*.json")))
+                try:
+                    if sp.exists():
+                        disk_count += len(list(sp.glob("**/*.json")))
+                except OSError:
+                    pass
 
-            stale = disk_count != len(self.scenarios)
+            expected_count = self.manifest.get("last_disk_count", len(self.scenarios))
+            stale = disk_count != expected_count
             if force or stale:
                 self.manifest["last_top_mtime"] = current_top_mtime
                 self.build_index()

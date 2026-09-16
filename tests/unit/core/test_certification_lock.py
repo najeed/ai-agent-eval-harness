@@ -249,7 +249,95 @@ def test_per_run_certification_lock_release_anomalies(tmp_path, monkeypatch):
     with patch.object(type(lock2.lock_file), "unlink", side_effect=OSError("Unlink fail")):
         lock2.release()
 
-    # 2. Release when lock owned by another owner logs warning
     lock_acquired = PerRunCertificationLock("release_foreign_run", timeout_seconds=1.0)
     with lock_acquired:
         lock_acquired.lock_file.write_text("owner_id=foreign_owner\n", encoding="utf-8")
+
+
+def test_per_run_certification_lock_full_branch_matrix(tmp_path, monkeypatch):
+    """Exhaustively cover remaining edge branches in certification_lock.py."""
+    import sys
+
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
+
+    # 1. _read_lock_data with non-dict JSON (json.loads returns non-dict)
+    nondict_file = tmp_path / "nondict_obj.lock"
+    nondict_file.write_text("{\nfallback_k=fallback_v\n}", encoding="utf-8")
+    with patch("json.loads", return_value="a string not a dict"):
+        res = _read_lock_data(nondict_file)
+        assert res.get("fallback_k") == "fallback_v"
+
+    # Corrupt JSON decode error
+    corrupt_json_file = tmp_path / "corrupt.lock"
+    corrupt_json_file.write_text("{not valid json: true}\nfallback_k=fallback_v", encoding="utf-8")
+    res = _read_lock_data(corrupt_json_file)
+    assert res.get("fallback_k") == "fallback_v"
+
+    # 2. Windows msvcrt.locking error during acquire and release
+    if os.name == "nt":
+        import msvcrt
+
+        lock_nt_fail = PerRunCertificationLock("nt_fail_run", timeout_seconds=0.1)
+        with patch.object(msvcrt, "locking", side_effect=OSError("Lock error")):
+            with pytest.raises(TimeoutError):
+                lock_nt_fail.acquire()
+
+        # Unlock OSError during release
+        lock_nt_unlock = PerRunCertificationLock("nt_unlock_run", timeout_seconds=1.0)
+        lock_nt_unlock.acquire()
+        orig_locking = msvcrt.locking
+
+        def _fail_unlock(fd, mode, nbytes):
+            if mode == msvcrt.LK_UNLCK:
+                raise OSError("Unlock failed")
+            return orig_locking(fd, mode, nbytes)
+
+        with patch.object(msvcrt, "locking", side_effect=_fail_unlock):
+            lock_nt_unlock.release()
+
+    # 3. POSIX flock path during acquire and release
+    mock_fcntl = MagicMock()
+    with patch.dict(sys.modules, {"fcntl": mock_fcntl}):
+        with patch("os.name", "posix"):
+            lock_posix = PerRunCertificationLock("posix_run", timeout_seconds=1.0)
+            lock_posix.acquire()
+            assert mock_fcntl.flock.called
+            lock_posix.release()
+
+            # POSIX flock error during acquire
+            lock_posix_fail = PerRunCertificationLock("posix_fail_run", timeout_seconds=0.1)
+            mock_fcntl.flock.side_effect = OSError("flock busy")
+            with pytest.raises(TimeoutError):
+                lock_posix_fail.acquire()
+
+            # POSIX flock error during release
+            lock_posix_rel = PerRunCertificationLock("posix_rel_err_run", timeout_seconds=1.0)
+            mock_fcntl.flock.side_effect = None
+            lock_posix_rel.acquire()
+            mock_fcntl.flock.side_effect = OSError("flock unlock error")
+            lock_posix_rel.release()
+
+    # 4. Error during write after open: fd is not None, close raises OSError
+    lock_write_err = PerRunCertificationLock("write_err_run", timeout_seconds=0.1)
+    with patch("os.write", side_effect=OSError("Disk write error")):
+        with patch("os.close", side_effect=OSError("Close error")):
+            with pytest.raises(TimeoutError):
+                lock_write_err.acquire()
+
+    # 5. Error closing fd during release finally
+    lock_rel_close_err = PerRunCertificationLock("rel_close_err_run", timeout_seconds=1.0)
+    lock_rel_close_err.acquire()
+    with patch("os.close", side_effect=OSError("Close error")):
+        lock_rel_close_err.release()
+
+    # 6. Release when lock file does not exist (branch 294 -> 310)
+    lock_missing_file = PerRunCertificationLock("missing_file_run", timeout_seconds=1.0)
+    lock_missing_file.acquire()
+    with patch.object(type(lock_missing_file.lock_file), "exists", return_value=False):
+        lock_missing_file.release()
+
+    # 7. Release when self._fd is None and lock._acquired is False (branches 270->294, 313->exit)
+    lock_unacquired = PerRunCertificationLock("unacquired_run", timeout_seconds=1.0)
+    assert lock_unacquired._fd is None
+    assert lock_unacquired._acquired is False
+    lock_unacquired.release()

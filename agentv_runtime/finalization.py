@@ -51,6 +51,11 @@ class EvaluatorFinalizationRecord:
     schema_version: str = FINALIZATION_SCHEMA_VERSION
     metadata: dict[str, Any] = field(default_factory=dict)
 
+    @property
+    def signature(self) -> str:
+        """Convenience alias for evaluator_signature."""
+        return self.evaluator_signature
+
     def to_dict(self) -> dict[str, Any]:
         """Converts the record to a standard JSON-serializable dictionary."""
         data = asdict(self)

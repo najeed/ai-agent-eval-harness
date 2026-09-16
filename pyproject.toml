@@ -42,12 +42,12 @@ dependencies = [
 # 1. Direct Native Provider SDKs
 # (OpenAI, Anthropic, Grok, Ollama connect directly via aiohttp; no external Python SDKs required)
 provider-gemini = [
-    "google-genai==2.23.0",
+    "google-genai==2.24.0",
 ]
 
 # 2. Framework Environments (Evaluated and verified agent architectures)
 framework-langchain = [
-    "langchain==1.4.0",
+    "langchain==1.4.1",
     "langchain-core>=1.6.3",
 ]
 framework-langgraph = [
@@ -57,7 +57,7 @@ framework-ag2 = [
     "ag2==1.0.5",
 ]
 framework-crewai = [
-#    "crewai==1.15.21; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
+#    "crewai==1.15.22; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
 ]
 
 # 3. Framework-to-Provider Integrations (LangChain Wrappers)
@@ -95,14 +95,14 @@ vcs = [
 
 # 5. Composed Ecosystem Extras
 frameworks = [
-    "langchain==1.4.0",
+    "langchain==1.4.1",
     "langchain-core>=1.6.3",
     "langgraph==1.2.11",
     "ag2==1.0.5",
-#    "crewai==1.15.21; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
+#    "crewai==1.15.22; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
 ]
 langchain-all = [
-    "langchain==1.4.0",
+    "langchain==1.4.1",
     "langchain-core>=1.6.3",
     "langchain-openai==1.6.2",
     "langchain-anthropic>=1.7.2",
@@ -113,12 +113,12 @@ langchain-all = [
 all = [
     "sentence-transformers==6.0.1",
     "datasets==5.0.1",
-    "google-genai==2.23.0",
-    "langchain==1.4.0",
+    "google-genai==2.24.0",
+    "langchain==1.4.1",
     "langchain-core>=1.6.3",
     "langgraph==1.2.11",
     "ag2==1.0.5",
-#    "crewai==1.15.21; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
+#    "crewai==1.15.22; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
     "langchain-openai==1.6.2",
     "langchain-anthropic>=1.7.2",
     "langchain-google-genai>=4.4.0",

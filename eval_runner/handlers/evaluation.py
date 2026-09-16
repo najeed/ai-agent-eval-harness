@@ -247,13 +247,14 @@ async def handle_run(args):
             if not isinstance(attempts, int):
                 attempts = 1
 
+            clean_args = {k: v for k, v in args_dict.items() if not callable(v)}
             await engine.run_evaluation(
                 scenario,
                 run_id=getattr(args, "run_id", None),
                 attempts=attempts,
                 seed=base_seed,
                 metadata={
-                    "args": args_dict,
+                    "args": clean_args,
                     "plugin_provenance": plugins.manager.provenance_map,
                     **agent_metadata,
                 },

@@ -12,6 +12,7 @@ import {
   PlusCircle,
   Eye,
   Activity,
+  AlertCircle,
 } from 'lucide-react';
 
 import { AgentTargetSelector, DEFAULT_PROFILES, type AgentTargetProfile } from '../components/AgentTargetSelector';
@@ -177,7 +178,7 @@ export const Dashboard: React.FC = () => {
   const selectedScenarioObj =
     scenarios.find(
       (s) => s.id === selectedScenarioId || s.metadata?.id === selectedScenarioId
-    ) || { id: selectedScenarioId || 'demo_scenario', title: 'Target Scenario' };
+    ) || null;
 
   return (
     <div className="p-8 space-y-8 max-w-7xl mx-auto">
@@ -261,21 +262,28 @@ export const Dashboard: React.FC = () => {
                 <label className="text-xs font-semibold text-slate-300 block">
                   Select Scenario from Catalog:
                 </label>
-                <select
-                  value={selectedScenarioId}
-                  onChange={(e) => setSelectedScenarioId(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-750 text-white rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500 font-mono"
-                >
-                  {scenarios.map((s) => {
-                    const sid = s.id || s.metadata?.id || 'scen';
-                    const stitle = s.title || s.metadata?.name || sid;
-                    return (
-                      <option key={sid} value={sid}>
-                        {stitle} ({sid})
-                      </option>
-                    );
-                  })}
-                </select>
+                {scenarios.length === 0 ? (
+                  <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 shrink-0 text-amber-400" />
+                    <span>No canonical scenarios found in catalog. Create or import a scenario to execute verification.</span>
+                  </div>
+                ) : (
+                  <select
+                    value={selectedScenarioId}
+                    onChange={(e) => setSelectedScenarioId(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-750 text-white rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500 font-mono"
+                  >
+                    {scenarios.map((s) => {
+                      const sid = s.id || s.metadata?.id || 'scen';
+                      const stitle = s.title || s.metadata?.name || sid;
+                      return (
+                        <option key={sid} value={sid}>
+                          {stitle} ({sid})
+                        </option>
+                      );
+                    })}
+                  </select>
+                )}
               </div>
             </div>
 
@@ -286,8 +294,13 @@ export const Dashboard: React.FC = () => {
               </span>
 
               <button
-                onClick={() => setShowManifestModal(true)}
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-lg shadow-emerald-500/20 flex items-center gap-2 transition"
+                onClick={() => selectedScenarioObj && setShowManifestModal(true)}
+                disabled={!selectedScenarioObj}
+                className={`px-6 py-2.5 rounded-xl font-bold text-xs shadow-lg flex items-center gap-2 transition ${
+                  selectedScenarioObj
+                    ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-emerald-500/20 cursor-pointer'
+                    : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
+                }`}
               >
                 <ShieldCheck className="w-4 h-4" />
                 Review Resolved Config & Execute
@@ -298,38 +311,40 @@ export const Dashboard: React.FC = () => {
       )}
 
       {/* Preflight Manifest Review Modal */}
-      <ResolvedManifestModal
-        isOpen={showManifestModal}
-        onClose={() => setShowManifestModal(false)}
-        onConfirmLaunch={handleLaunchVerification}
-        scenario={{
-          id: selectedScenarioObj.id || selectedScenarioId,
-          title: selectedScenarioObj.title || selectedScenarioObj.metadata?.name,
-          version: selectedScenarioObj.version || selectedScenarioObj.metadata?.version,
-          hash: selectedScenarioObj.metadata?.provisioning_hash,
-        }}
-        targetProfile={selectedProfile}
-        tenantId={tenantId}
-        workspaceId={workspaceId}
-        seed={selectedScenarioObj.metadata?.seed ?? null}
-        runtimeBoundary={
-          selectedScenarioObj.metadata?.execution_mode
-            ? `Declared: ${selectedScenarioObj.metadata.execution_mode}`
-            : 'Standard Sandbox'
-        }
-        evaluators={
-          Array.from(
-            new Set([
-              ...(selectedScenarioObj.evaluation?.metrics?.map((m: any) => m.metric || m) || []),
-              ...(selectedScenarioObj.workflow?.nodes?.flatMap(
-                (n: any) => n.success_criteria?.map((sc: any) => sc.metric) || []
-              ) || []),
-            ])
-          ).filter(Boolean) as string[]
-        }
-        signingBackend={null}
-        isLaunching={isLaunching}
-      />
+      {selectedScenarioObj && (
+        <ResolvedManifestModal
+          isOpen={showManifestModal}
+          onClose={() => setShowManifestModal(false)}
+          onConfirmLaunch={handleLaunchVerification}
+          scenario={{
+            id: selectedScenarioObj.id || selectedScenarioId,
+            title: selectedScenarioObj.title || selectedScenarioObj.metadata?.name || 'Target Scenario',
+            version: selectedScenarioObj.version || selectedScenarioObj.metadata?.version || '1.0.0',
+            hash: selectedScenarioObj.metadata?.provisioning_hash,
+          }}
+          targetProfile={selectedProfile}
+          tenantId={tenantId}
+          workspaceId={workspaceId}
+          seed={selectedScenarioObj.metadata?.seed ?? null}
+          runtimeBoundary={
+            selectedScenarioObj.metadata?.execution_mode
+              ? `Declared: ${selectedScenarioObj.metadata.execution_mode}`
+              : 'Standard Sandbox'
+          }
+          evaluators={
+            Array.from(
+              new Set([
+                ...(selectedScenarioObj.evaluation?.metrics?.map((m: any) => m.metric || m) || []),
+                ...(selectedScenarioObj.workflow?.nodes?.flatMap(
+                  (n: any) => n.success_criteria?.map((sc: any) => sc.metric) || []
+                ) || []),
+              ])
+            ).filter(Boolean) as string[]
+          }
+          signingBackend={null}
+          isLaunching={isLaunching}
+        />
+      )}
 
 
       {/* [Zero-state] Fastest path to first verified value */}

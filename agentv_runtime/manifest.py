@@ -24,9 +24,24 @@ from typing import Any
 from agentv_runtime.canonical import canonical_json_encode
 
 
+def _to_json_compatible(obj: Any) -> Any:
+    """Recursively converts objects to canonical JSON-compatible primitives, filtering callables."""
+    if obj is None or isinstance(obj, (str, int, float, bool)):
+        return obj
+    if callable(obj):
+        return None
+    if isinstance(obj, Mapping):
+        return {str(k): _to_json_compatible(v) for k, v in obj.items() if not callable(v)}
+    if isinstance(obj, (list, tuple, set)):
+        return [_to_json_compatible(v) for v in obj if not callable(v)]
+    if hasattr(obj, "to_dict") and callable(obj.to_dict):
+        return _to_json_compatible(obj.to_dict())
+    return str(obj)
+
+
 def _canonical_json_bytes(data: Any) -> bytes:
     """Serializes data to canonical RFC 8785 JSON bytes (deterministic key ordering, UTF-8)."""
-    return canonical_json_encode(data)
+    return canonical_json_encode(_to_json_compatible(data))
 
 
 def compute_scenario_hash(scenario_data: Mapping[str, Any]) -> str:
@@ -42,6 +57,29 @@ def compute_scenario_hash(scenario_data: Mapping[str, Any]) -> str:
         clean_data["metadata"] = clean_meta
     canonical_bytes = _canonical_json_bytes(clean_data)
     return f"sha3_256:{hashlib.sha3_256(canonical_bytes).hexdigest()}"
+
+
+def compute_preflight_fingerprint(
+    scenario_id: str,
+    scen_hash: str = "",
+    endpoint: str = "",
+    protocol: str = "",
+    max_turns: int = 10,
+) -> str:
+    """
+    Canonical preflight fingerprint calculation shared between
+    readiness probe, evaluation launch, and certification.
+    """
+    import json
+
+    raw = {
+        "endpoint": str(endpoint or ""),
+        "max_turns": int(max_turns),
+        "protocol": str(protocol or "").lower(),
+        "scen_hash": str(scen_hash or ""),
+        "scenario_id": str(scenario_id or ""),
+    }
+    return hashlib.sha3_256(json.dumps(raw, sort_keys=True).encode("utf-8")).hexdigest()
 
 
 @dataclass(frozen=True)
@@ -84,7 +122,7 @@ class ExecutionManifest:
 
     def to_dict(self) -> dict[str, Any]:
         """Converts the execution manifest to a standard JSON-serializable dictionary."""
-        d = asdict(self)
+        d = dict(_to_json_compatible(asdict(self)) or {})
         d["content_hash"] = self.compute_manifest_hash()
         return d
 
@@ -187,5 +225,6 @@ class ManifestBuilder:
 __all__ = [
     "ExecutionManifest",
     "ManifestBuilder",
+    "compute_preflight_fingerprint",
     "compute_scenario_hash",
 ]

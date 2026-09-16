@@ -42,19 +42,30 @@ export interface WaterfallRow {
   markers: WaterfallMarker[];
 }
 
-export const getSequenceOrderedEvents = (events: LogEvent[]): LogEvent[] => {
+export const normalizeEventSequence = (events: LogEvent[]): LogEvent[] => {
   if (!events || events.length <= 1) return events || [];
-  return [...events].sort((a, b) => {
-    const seqA = a._seq ?? a.seq;
-    const seqB = b._seq ?? b.seq;
-    if (typeof seqA === 'number' && typeof seqB === 'number' && seqA !== seqB) {
-      return seqA - seqB;
-    }
-    const tsA = Date.parse(a.timestamp || '') || 0;
-    const tsB = Date.parse(b.timestamp || '') || 0;
-    return tsA - tsB;
+  const seqIndexed = events.map((e, arrivalIdx) => {
+    const rawSeq = e._seq ?? e.seq;
+    const seqNum = typeof rawSeq === 'number' && Number.isFinite(rawSeq) ? rawSeq : null;
+    const ts = e.timestamp ? Date.parse(e.timestamp) : NaN;
+    return {
+      ev: e,
+      arrivalIdx,
+      seq: seqNum,
+      ts: Number.isFinite(ts) ? ts : null,
+    };
   });
+  seqIndexed.sort((a, b) => {
+    if (a.seq !== null && b.seq !== null && a.seq !== b.seq) return a.seq - b.seq;
+    if (a.seq !== null && b.seq === null) return -1;
+    if (a.seq === null && b.seq !== null) return 1;
+    if (a.ts !== null && b.ts !== null && a.ts !== b.ts) return a.ts - b.ts;
+    return a.arrivalIdx - b.arrivalIdx;
+  });
+  return seqIndexed.map(x => x.ev);
 };
+
+export const getSequenceOrderedEvents = normalizeEventSequence;
 
 export const buildWaterfall = (
   allEvents: LogEvent[]
@@ -362,10 +373,17 @@ export const computeTraceIntegrity = (
   }
 
   const hasStart = events.some(e => e.event === 'run_start');
-  const hasEnd = events.some(e => e.event === 'run_end');
+  const terminalEventTypes = new Set([
+    'run_end',
+    'run_completed',
+    'trace_sealed',
+    'verification_certificate_issued',
+    'certification_failed',
+  ]);
+  const hasEnd = events.some(e => terminalEventTypes.has(e.event));
   const missingStart = !hasStart;
   const missingEnd = !hasEnd;
-  if (missingEnd) issues.push('Missing terminal run_end event.');
+  if (missingEnd) issues.push('Missing terminal event (run_end, trace_sealed, or verification_certificate_issued).');
   else if (missingStart) issues.push('Missing run_start event.');
 
   return { hasEvents: true, recovered, gaps, reordered, missingStart, missingEnd, issues };

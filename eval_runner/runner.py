@@ -42,6 +42,56 @@ def new_run_id(scenario_id: str) -> str:
     return f"run-{scenario_id}-{unique_suffix}"
 
 
+def compile_required_oracle_ids(scenario: dict[str, Any], resolved_policy: Any = None) -> list[str]:
+    """
+    Compile required_oracle_ids BEFORE execution from the immutable
+    scenario/evaluation contract and resolved evaluator policy.
+    Guarantees that requirements are never derived from observed outputs.
+    """
+    req_oracles: list[str] = []
+
+    # 1. Explicit declaration in scenario or metadata
+    explicit = (
+        scenario.get("required_oracles")
+        or scenario.get("required_oracle_ids")
+        or (scenario.get("metadata") or {}).get("required_oracles")
+        or (scenario.get("metadata") or {}).get("required_oracle_ids")
+    )
+    if isinstance(explicit, (list, set, tuple)):
+        for item in explicit:
+            s_item = str(item).strip()
+            if s_item and s_item not in req_oracles:
+                req_oracles.append(s_item)
+
+    # 2. Compile from Workflow nodes / CompiledEvaluationPlan
+    try:
+        from eval_runner.execution_ir import compile_evaluation_plan
+
+        plan = compile_evaluation_plan(scenario)
+        for oid, compiled in plan.oracles.items():
+            if getattr(compiled, "required", True):
+                s_oid = str(oid).strip()
+                if s_oid and s_oid not in req_oracles:
+                    req_oracles.append(s_oid)
+    except Exception as e:
+        logger.debug("Plan compilation in required oracle discovery skipped: %s", e)
+
+    # 3. Top-level scenario success_criteria or expected_outcome
+    for key in ("success_criteria", "expected_outcome", "oracles"):
+        val_list = scenario.get(key)
+        if isinstance(val_list, list):
+            for item in val_list:
+                if isinstance(item, dict):
+                    oid = item.get("oracle_id") or item.get("id") or item.get("name")
+                    is_req = item.get("required", True)
+                    if oid and is_req and str(oid) not in req_oracles:
+                        req_oracles.append(str(oid))
+                elif isinstance(item, str) and item not in req_oracles:
+                    req_oracles.append(item)
+
+    return sorted(req_oracles)
+
+
 class BaseRunner(ABC):
     """Abstract interface for evaluation runners."""
 
@@ -210,6 +260,125 @@ class DefaultRunner(BaseRunner):
             plugin_provenance=dict(getattr(plugins.manager, "provenance_map", {}) or {}),
         )
 
+        # Compile required oracles BEFORE execution from immutable scenario contract (P0-1 Fix)
+        req_oracles = compile_required_oracle_ids(scenario, resolved_policy=self.policy_evaluator)
+
+        # Build authoritative physical ExecutionManifest upfront from resolved execution plan
+        import json
+        import os
+        import platform
+        import sys
+
+        from agentv_runtime.manifest import (
+            ExecutionManifest,
+            compute_preflight_fingerprint,
+            compute_scenario_hash,
+        )
+
+        scen_hash = compute_scenario_hash(scenario)
+        scen_ver = str(
+            scenario.get("version") or (scenario.get("metadata") or {}).get("version") or "1.0.0"
+        )
+        adapter_meta = dict(ctx.metadata)
+        scenario_meta = scenario.get("metadata", {}) if isinstance(scenario, dict) else {}
+        endpoint = (
+            adapter_meta.get("agent")
+            or adapter_meta.get("endpoint")
+            or (scenario.get("adapter") or {}).get("endpoint")
+            or scenario.get("endpoint")
+            or ""
+        )
+        protocol = (
+            adapter_meta.get("protocol")
+            or (scenario.get("adapter") or {}).get("protocol")
+            or scenario.get("protocol")
+            or ""
+        )
+        provider_model = (
+            adapter_meta.get("model")
+            or scenario_meta.get("model")
+            or (scenario.get("agent") or {}).get("model")
+            or ""
+        )
+        agent_id = (
+            adapter_meta.get("agent_id")
+            or (scenario.get("agent") or {}).get("id")
+            or scenario.get("agent_id")
+            or "default_agent"
+        )
+        agent_ver = (
+            adapter_meta.get("agent_version")
+            or (scenario.get("agent") or {}).get("version")
+            or "1.0.0"
+        )
+
+        resolved_agent_config = {
+            "agent_id": str(agent_id),
+            "version": str(agent_ver),
+            "endpoint": str(endpoint),
+            "protocol": str(protocol),
+            "model": str(provider_model),
+            "adapter_version": str(adapter_meta.get("adapter_version") or "standard"),
+            **dict(scenario.get("agent_config") or {}),
+            **dict(adapter_meta.get("agent_config") or {}),
+        }
+
+        canonical_preflight_fp = adapter_meta.get(
+            "preflight_fingerprint"
+        ) or compute_preflight_fingerprint(
+            scenario_id=str(scenario_identifier),
+            scen_hash=scen_hash,
+            endpoint=str(endpoint),
+            protocol=str(protocol),
+            max_turns=max_turns or 10,
+        )
+
+        env_dict = {
+            "platform": sys.platform,
+            "python_version": platform.python_version(),
+            "hostname": platform.node() or "localhost",
+            "pid": os.getpid(),
+        }
+
+        resolved_runtime_config = {
+            "execution_mode": str(execution_mode),
+            "attempts": attempts,
+            "seed": seed,
+            "max_turns": max_turns,
+            "evaluator_config_hash": getattr(self.resolved_config, "config_hash", "") or "none",
+            "reproducibility_fingerprint": fingerprint(repro_contract),
+            **dict(adapter_meta.get("runtime_config") or {}),
+        }
+
+        manifest_metadata = {
+            **dict(ctx.metadata),
+            "preflight_fingerprint": canonical_preflight_fp,
+            "plugin_provenance": dict(getattr(plugins.manager, "provenance_map", {}) or {}),
+            "evaluator_fingerprint": metric_registry_fingerprint(),
+            "required_oracle_ids": req_oracles,
+        }
+
+        exec_manifest = ExecutionManifest(
+            manifest_id=f"man_{effective_run_id}",
+            scenario_id=str(scenario_identifier),
+            scenario_version=scen_ver,
+            scenario_hash=scen_hash,
+            agent_config=resolved_agent_config,
+            runtime_config=resolved_runtime_config,
+            environment=env_dict,
+            metadata=manifest_metadata,
+        )
+        exec_manifest_hash = exec_manifest.compute_manifest_hash()
+
+        run_vault_dir = config.RUN_LOG_DIR / effective_run_id
+        run_vault_dir.mkdir(parents=True, exist_ok=True)
+        manifest_file = run_vault_dir / "execution_manifest.json"
+        try:
+            with open(manifest_file, "w", encoding="utf-8") as mf:
+                json.dump(exec_manifest.to_dict(), mf, indent=2)
+        except Exception as e:
+            logger.debug("Failed saving execution_manifest.json to run vault: %s", e)
+
         try:
             events.emit(
                 events.CoreEvents.RUN_START,
@@ -332,40 +501,7 @@ class DefaultRunner(BaseRunner):
                 1 for res in all_attempt_results if self._is_attempt_successful(res)
             )
 
-            # Compute authoritative EvaluatorFinalizationRecord & Manifest (Defect 1/2/5)
-            import json
-
-            from agentv_runtime.evidence_graph import build_evidence_graph_from_events
-            from agentv_runtime.finalization import EvaluatorFinalizationRecord
-            from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
-
-            scen_hash = compute_scenario_hash(scenario)
-            scen_ver = str(
-                scenario.get("version")
-                or (scenario.get("metadata") or {}).get("version")
-                or "1.0.0"
-            )
-
-            # 1. Authoritative physical ExecutionManifest artifact (Defect 5)
-            exec_manifest = ExecutionManifest(
-                manifest_id=f"man_{effective_run_id}",
-                scenario_id=str(scenario_identifier),
-                scenario_version=scen_ver,
-                scenario_hash=scen_hash,
-                runtime_config={"execution_mode": str(execution_mode)},
-            )
-            exec_manifest_hash = exec_manifest.compute_manifest_hash()
-
-            run_vault_dir = config.RUN_LOG_DIR / effective_run_id
-            run_vault_dir.mkdir(parents=True, exist_ok=True)
-            manifest_file = run_vault_dir / "execution_manifest.json"
-            try:
-                with open(manifest_file, "w", encoding="utf-8") as mf:
-                    json.dump(exec_manifest.to_dict(), mf, indent=2)
-            except Exception as e:
-                logger.debug("Failed saving execution_manifest.json to run vault: %s", e)
-
-            req_oracles: list[str] = []
+            # Collect observed assertions for evidence trace without mutating required_oracle_ids
             collected_assertions: list[dict[str, Any]] = []
             for attempt in all_attempt_results:
                 task_rows = (
@@ -381,13 +517,8 @@ class DefaultRunner(BaseRunner):
                     for or_res in row.get("oracle_results") or []:
                         if isinstance(or_res, dict):
                             collected_assertions.append(or_res)
-                            oid = or_res.get("oracle_id") or or_res.get("id")
-                            if oid and str(oid) not in req_oracles:
-                                req_oracles.append(str(oid))
                         elif isinstance(or_res, str):
                             collected_assertions.append({"oracle_id": or_res, "passed": True})
-                            if or_res not in req_oracles:
-                                req_oracles.append(or_res)
                     for m in row.get("metrics") or []:
                         if isinstance(m, dict):
                             if (
@@ -396,17 +527,15 @@ class DefaultRunner(BaseRunner):
                             ):
                                 continue
                             collected_assertions.append(m)
-                            mid = m.get("name") or m.get("metric_id")
-                            if mid and str(mid) not in req_oracles:
-                                req_oracles.append(str(mid))
                         elif isinstance(m, str):
                             if m == "consistency_score":
                                 continue
                             collected_assertions.append({"metric_id": m, "passed": True})
-                            if m not in req_oracles:
-                                req_oracles.append(m)
 
-            # 2. Authoritative canonical evidence graph root (Defect 2)
+            # Authoritative canonical evidence graph root (Defect 2)
+            from agentv_runtime.evidence_graph import build_evidence_graph_from_events
+            from agentv_runtime.finalization import EvaluatorFinalizationRecord
+
             final_trace_path = run_vault_dir / "run.jsonl"
             trace_events: list[dict[str, Any]] = []
             if final_trace_path.exists():
@@ -428,7 +557,7 @@ class DefaultRunner(BaseRunner):
             )
             evidence_root = ev_graph["evidence_root_hash"]
 
-            # 3. Authenticated EvaluatorFinalizationRecord (Defect 1)
+            # Authenticated EvaluatorFinalizationRecord bound to upfront manifest hash
             evaluator_id = "eval_runner.runner.EvaluationKernel"
             finalization_record = EvaluatorFinalizationRecord(
                 finalization_id=f"fin_{effective_run_id}",
@@ -445,6 +574,7 @@ class DefaultRunner(BaseRunner):
                 score=float(pass_at_k),
                 terminal_seq=len(all_attempt_results),
             )
+            sign_err_msg = None
             try:
                 from eval_runner.identity import IdentityService
 
@@ -453,8 +583,56 @@ class DefaultRunner(BaseRunner):
                     finalization_record = finalization_record.sign(eval_priv)
                 else:
                     finalization_record = finalization_record.sign()
+                sig = getattr(finalization_record, "evaluator_signature", None) or getattr(
+                    finalization_record, "signature", None
+                )
+                if not sig:
+                    sign_err_msg = "Signature missing after signing attempt"
             except Exception as sign_err:
-                logger.debug("Evaluator signing error in runner: %s", sign_err)
+                sign_err_msg = str(sign_err)
+                logger.error("Evaluator signing error in runner: %s", sign_err)
+
+            if sign_err_msg:
+                # Terminate authoritative evaluation finalization path immediately (P1 Fix)
+                events.emit(
+                    events.CoreEvents.CERTIFICATION_FAILED,
+                    {
+                        "run_id": effective_run_id,
+                        "status": "certification_failed",
+                        "error": (
+                            f"Authoritative evaluator finalization signing failed: {sign_err_msg}"
+                        ),
+                    },
+                    span_context=ctx.span_context,
+                )
+                events.emit(
+                    events.CoreEvents.RUN_END,
+                    {
+                        "run_id": effective_run_id,
+                        "status": "certification_failed",
+                        "passed": False,
+                        "score": 0.0,
+                        "pass_at_k": 0.0,
+                        "error": (
+                            f"Authoritative evaluator finalization signing failed: {sign_err_msg}"
+                        ),
+                        "finalization": None,
+                        "metadata": dict(ctx.metadata),
+                    },
+                    span_context=ctx.span_context,
+                )
+                return EvaluationResult(
+                    run_id=effective_run_id,
+                    scenario_id=str(scenario.get("id", "unknown")),
+                    pass_at_k=0.0,
+                    successful_attempts=0,
+                    total_attempts=attempts,
+                    attempts_results=all_attempt_results,
+                    metadata={
+                        "error": f"Evaluator signing failed: {sign_err_msg}",
+                        "uncertifiable": True,
+                    },
+                )
 
             fin_dict = finalization_record.to_dict()
 
@@ -599,6 +777,8 @@ class DefaultRunner(BaseRunner):
 
             # 3. Oracle rows: invalid or failed assertions veto the attempt.
             for m in res.get("metrics") or []:
+                if not isinstance(m, dict):
+                    continue
                 is_opt_or_info = m.get("severity") == "informational" or str(
                     m.get("requiredness", "")
                 ).upper() in ("OPTIONAL", "INFORMATIONAL")

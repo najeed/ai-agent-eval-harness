@@ -354,6 +354,11 @@ class CoreEvents:
     EXECUTION_GRAPH_NODE = "execution_graph_node"
     EXECUTION_GRAPH_EDGE = "execution_graph_edge"
 
+    # Terminal Trust & Certification Events
+    CERTIFICATION_FAILED = "certification_failed"
+    TRACE_SEALED = "trace_sealed"
+    VERIFICATION_CERTIFICATE_ISSUED = "verification_certificate_issued"
+
 
 class ExecutionEdgeType(StrEnum):
     """Authoritative edge causality types in the execution graph."""
