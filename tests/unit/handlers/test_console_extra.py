@@ -8,8 +8,13 @@ from eval_runner.console.routes import DebuggerStateStore
 
 
 @pytest.fixture
-def client(tmp_path):
-    # Pass tmp_path as testing directory if needed in future
+def client(tmp_path, monkeypatch):
+    dist_dir = tmp_path / "ui_dist"
+    dist_dir.mkdir(parents=True, exist_ok=True)
+    (dist_dir / "index.html").write_text(
+        "<!DOCTYPE html><html><body>Console</body></html>", encoding="utf-8"
+    )
+    monkeypatch.setattr("eval_runner.console.app.UI_BUILD_DIR", dist_dir)
     app = create_app()
     app.config["TESTING"] = True
     # Mock API Key for all console tests in this file

@@ -401,10 +401,59 @@ class MutationEngine(ABC):
         raise NotImplementedError
 
 
+# ==============================================================================
+# 10. BoundedStateProvider Contract
+# ==============================================================================
+
+
+class BoundedStateProvider(ABC):
+    """
+    Evidence Boundedness Contract interface for stateful enterprise providers.
+    Mandates query-driven, bounded access; strictly prohibits unbounded dumps.
+    """
+
+    @abstractmethod
+    def query_bounded_reference(
+        self,
+        scope: str,
+        selector: dict[str, Any] | str,
+        max_items: int | None = None,
+        max_bytes: int | None = None,
+        **kwargs: Any,
+    ) -> Any:
+        """Evaluates a bounded selector/query and returns an EvidenceReference."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def commit_state_transition(
+        self,
+        scope: str,
+        operation: str,
+        delta: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> Any:
+        """Captures a bounded state transition/mutation as an EvidenceReference."""
+        raise NotImplementedError
+
+    def get_all_state(self) -> Any:
+        """
+        Unrestricted full-state materialization is strictly prohibited under
+        the Evidence Boundedness Contract.
+        """
+        from agentv_runtime.contracts import EvidenceBoundednessViolationError
+
+        raise EvidenceBoundednessViolationError(
+            f"Unbounded state materialization prohibited on '{self.__class__.__name__}'. "
+            "External enterprise state must be selectively addressed via query_bounded_reference "
+            "or commit_state_transition."
+        )
+
+
 __all__ = [
     "ArtifactStore",
     "AuthPrincipal",
     "AuthorizationBackend",
+    "BoundedStateProvider",
     "CatalogStore",
     "CheckpointStore",
     "ExecutionBackend",

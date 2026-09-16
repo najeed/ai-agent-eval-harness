@@ -7,6 +7,8 @@ Updated with AbstractSandbox for pluggable implementation and lifecycle hooks.
 from __future__ import annotations
 
 import contextvars
+import copy
+import inspect
 import json
 import threading
 from abc import ABC, abstractmethod
@@ -169,14 +171,51 @@ class AbstractSandbox(ABC):
 
     async def get_full_state(self) -> dict[str, Any]:
         """
-        [Industrial Requirement] Aggregates the base world state and the snapshots
-        from all active shims (simulators).
+        Aggregates the base world state and bounded snapshots from active shims.
+        External state providers are never dumped in full.
         """
-        full_state = {"world": self.state}
+        full_state = {"world": copy.deepcopy(self.state)}
         simulators = self.get_active_simulators()
         for shim_name, shim_instance in simulators.items():
             try:
-                full_state[shim_name] = await shim_instance.get_snapshot()
+                is_ext = getattr(shim_instance, "is_external", False) is True
+                if is_ext:
+                    has_b_ref = hasattr(shim_instance, "get_bounded_reference") and callable(
+                        shim_instance.get_bounded_reference
+                    )
+                    has_snap = hasattr(shim_instance, "get_snapshot") and callable(
+                        shim_instance.get_snapshot
+                    )
+                    if has_b_ref:
+                        ref = shim_instance.get_bounded_reference()
+                        if inspect.isawaitable(ref):
+                            ref = await ref
+                        full_state[shim_name] = ref.to_dict() if hasattr(ref, "to_dict") else ref
+                    elif has_snap:
+                        sn = shim_instance.get_snapshot()
+                        if inspect.isawaitable(sn):
+                            sn = await sn
+                        if isinstance(sn, dict) and "tables" in sn:
+                            sn = {
+                                k: v for k, v in sn.items() if k != "tables" or len(str(v)) < 16384
+                            }
+                        full_state[shim_name] = sn
+                    else:
+                        full_state[shim_name] = {
+                            "status": "EXTERNAL_BOUNDED",
+                            "provider": shim_name,
+                            "message": "External state selectively addressed by EvidenceReference.",
+                        }
+                else:
+                    if hasattr(shim_instance, "get_snapshot") and callable(
+                        shim_instance.get_snapshot
+                    ):
+                        sn = shim_instance.get_snapshot()
+                        if inspect.isawaitable(sn):
+                            sn = await sn
+                        full_state[shim_name] = sn
+                    elif hasattr(shim_instance, "state"):
+                        full_state[shim_name] = copy.deepcopy(shim_instance.state)
             except Exception as e:
                 import sys
 
@@ -563,7 +602,8 @@ class ToolSandbox(AbstractSandbox):
     async def get_full_state(self) -> dict[str, Any]:
         """
         Deep State Aggregation.
-        Walks the simulator cache and performs a bulk snapshot of shims.
+        Walks the simulator cache and aggregates bounded state from shims.
+        External state providers are selectively addressed, never dumped in full.
         """
         full_state = {
             "world": self.state.copy(),
@@ -573,13 +613,49 @@ class ToolSandbox(AbstractSandbox):
         simulators = self.get_active_simulators()
         for name, sim in simulators.items():
             try:
-                full_state["shims"][name] = await sim.get_snapshot()
+                is_ext = getattr(sim, "is_external", False) is True
+                if is_ext:
+                    has_b_ref = hasattr(sim, "get_bounded_reference") and callable(
+                        sim.get_bounded_reference
+                    )
+                    has_snap = hasattr(sim, "get_snapshot") and callable(sim.get_snapshot)
+                    if has_b_ref:
+                        ref = sim.get_bounded_reference()
+                        if inspect.isawaitable(ref):
+                            ref = await ref
+                        full_state["shims"][name] = (
+                            ref.to_dict() if hasattr(ref, "to_dict") else ref
+                        )
+                    elif has_snap:
+                        sn = sim.get_snapshot()
+                        if inspect.isawaitable(sn):
+                            sn = await sn
+                        if isinstance(sn, dict) and "tables" in sn:
+                            sn = {
+                                k: v for k, v in sn.items() if k != "tables" or len(str(v)) < 16384
+                            }
+                        full_state["shims"][name] = sn
+                    else:
+                        full_state["shims"][name] = {
+                            "status": "EXTERNAL_BOUNDED",
+                            "provider": name,
+                            "message": "External state selectively addressed by EvidenceReference.",
+                        }
+                else:
+                    if hasattr(sim, "get_snapshot") and callable(sim.get_snapshot):
+                        sn = sim.get_snapshot()
+                        if inspect.isawaitable(sn):
+                            sn = await sn
+                        full_state["shims"][name] = sn
+                    elif hasattr(sim, "state"):
+                        full_state["shims"][name] = copy.deepcopy(sim.state)
             except Exception as e:
                 import sys
 
                 sys.stderr.write(
                     f"      [Sandbox] Warning: Failed to snapshot shim '{name}': {e}\n"
                 )
+                full_state["shims"][name] = {"error": str(e)}
         return full_state
 
     @staticmethod

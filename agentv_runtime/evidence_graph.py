@@ -130,6 +130,23 @@ def link_assertion(
         "has_result": has_res,
     }
 
+    ref = assertion.get("evidence_reference") or assertion.get("reference")
+    if ref:
+        ref_dict = ref.to_dict() if hasattr(ref, "to_dict") else ref
+        if isinstance(ref_dict, dict) and "result_hash" in ref_dict and "source_id" in ref_dict:
+            node.update(
+                {
+                    "source_type": "evidence_reference",
+                    "source_ref": f"{ref_dict.get('source_id')}#{ref_dict.get('scope', '')}",
+                    "content_hash": ref_dict.get("result_hash"),
+                    "reference": ref_dict,
+                    "resolved": True,
+                    "is_direct_provenance": True,
+                }
+            )
+            node["row_hash"] = _sha3_hex(canonical_json_encode({**node, "assertion": assertion}))
+            return node
+
     artifact_name = assertion.get("artifact")
     if artifact_name and artifact_hashes and artifact_name in artifact_hashes:
         node.update(

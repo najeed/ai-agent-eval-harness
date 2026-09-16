@@ -7,6 +7,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from agentv_runtime.canonical import canonical_json_encode
+from agentv_runtime.contracts import EvidenceBoundednessLimits, EvidenceReference
+from agentv_runtime.interfaces import BoundedStateProvider
+
 
 class SimulatorMiddleware(ABC):
     """
@@ -121,6 +125,8 @@ class ShimResultProxy(dict):
 
 class BaseSimulator:
     """Base class for all world shims with state management."""
+
+    is_external: bool = False
 
     def __init__(self, initial_state: dict[str, Any] = None, config: dict[str, Any] = None):
         self.state = initial_state or {}
@@ -450,8 +456,10 @@ class ApiSimulator(BaseSimulator):
         return await super().execute(action, params)
 
 
-class DatabaseSimulator(BaseSimulator):
-    """Simulates a dynamic secure SQL environment."""
+class DatabaseSimulator(BaseSimulator, BoundedStateProvider):
+    """Simulates a dynamic secure SQL environment conforming to Evidence Boundedness Contract."""
+
+    is_external: bool = True
 
     def __init__(self, *args, **kwargs):
         super().__init__(
@@ -461,6 +469,88 @@ class DatabaseSimulator(BaseSimulator):
         )
         self._engine = None
         self._forensics_provisioned = False
+
+    def query_bounded_reference(
+        self,
+        scope: str,
+        selector: dict[str, Any] | str,
+        max_items: int | None = None,
+        max_bytes: int | None = None,
+        **kwargs: Any,
+    ) -> EvidenceReference:
+        """
+        Executes a bounded query/selector against the database and returns an EvidenceReference.
+        Unbounded full-state materialization is strictly prevented.
+        """
+        import hashlib
+
+        from sqlalchemy import text
+
+        engine = self._get_engine()
+        query_str = selector if isinstance(selector, str) else str(selector.get("query", ""))
+        limit = min(
+            max_items or EvidenceBoundednessLimits.MAX_INLINE_ITEMS,
+            EvidenceBoundednessLimits.MAX_INLINE_ITEMS,
+        )
+
+        with engine.connect() as conn:
+            result = conn.execute(text(query_str))
+            rows = []
+            if result.returns_rows:
+                fetched = result.fetchmany(limit + 1)
+                for r in fetched:
+                    rows.append(dict(r._mapping))
+
+            result_count = len(rows)
+            sampled = rows[:limit]
+            raw_bytes = canonical_json_encode(sampled)
+            result_hash = hashlib.sha3_256(raw_bytes).hexdigest()
+            query_hash = hashlib.sha3_256(query_str.encode("utf-8")).hexdigest()
+
+            return EvidenceReference(
+                source_id=f"db://{scope}",
+                scope=scope,
+                selector_hash=query_hash,
+                query_or_operation_hash=query_hash,
+                result_hash=result_hash,
+                result_count=result_count,
+                sampled_result=sampled,
+                provenance={
+                    "engine": "sqlite",
+                    "bounded": True,
+                    "max_items": limit,
+                },
+            )
+
+    def commit_state_transition(
+        self,
+        scope: str,
+        operation: str,
+        delta: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> EvidenceReference:
+        """Captures a bounded state transition/mutation as an EvidenceReference."""
+        import hashlib
+
+        from agentv_runtime.canonical import canonical_json_encode
+
+        delta_bytes = canonical_json_encode(delta or {})
+        result_hash = hashlib.sha3_256(delta_bytes).hexdigest()
+        op_hash = hashlib.sha3_256(operation.encode("utf-8")).hexdigest()
+
+        return EvidenceReference(
+            source_id=f"db://{scope}",
+            scope=scope,
+            selector_hash=op_hash,
+            query_or_operation_hash=op_hash,
+            result_hash=result_hash,
+            result_count=1 if delta else 0,
+            sampled_result=delta,
+            provenance={
+                "operation": operation,
+                "bounded": True,
+            },
+        )
 
     def _get_engine(self):
         """Lazy initialization of SQLAlchemy engine inside the terminal_jail."""

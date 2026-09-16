@@ -358,6 +358,55 @@ class EvidenceArtifact:
         return asdict(self)
 
 
+@dataclass(frozen=True)
+class EvidenceReference:
+    """
+    Evidence Boundedness Contract primitive (v1.0.0).
+    Represents an immutable, cryptographic citation to an external system state,
+    query result, delta, or commitment without materializing unbounded datasets.
+    """
+
+    source_id: str
+    scope: str
+    selector_hash: str
+    query_or_operation_hash: str
+    result_hash: str
+    result_count: int
+    source_version: str | None = None
+    sampled_result: Any | None = None
+    provenance: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> EvidenceReference:
+        return cls(
+            source_id=data["source_id"],
+            scope=data["scope"],
+            selector_hash=data["selector_hash"],
+            query_or_operation_hash=data["query_or_operation_hash"],
+            result_hash=data["result_hash"],
+            result_count=data["result_count"],
+            source_version=data.get("source_version"),
+            sampled_result=data.get("sampled_result"),
+            provenance=data.get("provenance", {}),
+        )
+
+
+class EvidenceBoundednessLimits:
+    """Default runtime thresholds enforced across evidence channels."""
+
+    MAX_INLINE_ITEMS: int = 100
+    MAX_INLINE_BYTES: int = 65536  # 64 KB
+    MAX_SNAPSHOT_BYTES: int = 524288  # 512 KB
+    MAX_INTERACTION_BYTES: int = 65536  # 64 KB
+
+
+class EvidenceBoundednessViolationError(RuntimeError):
+    """Raised when an operation attempts to materialize unbounded external system state."""
+
+
 # ---------------------------------------------------------------------------
 # 3D Mutation Taxonomy Enums & Contracts
 # ---------------------------------------------------------------------------
@@ -555,6 +604,9 @@ __all__ = [
     "AssertionResult",
     "CONTRACTS_VERSION",
     "EvidenceArtifact",
+    "EvidenceBoundednessLimits",
+    "EvidenceBoundednessViolationError",
+    "EvidenceReference",
     "ExecutionMode",
     "MutationCampaignSpec",
     "MutationContext",

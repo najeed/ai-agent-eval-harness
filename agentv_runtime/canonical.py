@@ -151,6 +151,9 @@ def canonical_json_dumps(obj: Any) -> str:
             pairs.append(f"{k_escaped}:{v_serialized}")
         return "{" + ",".join(pairs) + "}"
 
+    if hasattr(obj, "to_dict") and callable(obj.to_dict):
+        return canonical_json_dumps(obj.to_dict())
+
     raise TypeError(f"RFC 8785 unsupported type: {type(obj).__name__}")
 
 
@@ -160,3 +163,11 @@ def canonical_json_encode(obj: Any) -> bytes:
     Suitable for cryptographic hashing (SHA3-256) and detached signature verification.
     """
     return canonical_json_dumps(obj).encode("utf-8")
+
+
+def compute_reference_hash(ref: Any) -> str:
+    """Computes deterministic SHA3-256 digest of an EvidenceReference or dict."""
+    import hashlib
+
+    raw_bytes = canonical_json_encode(ref)
+    return f"sha3_256:{hashlib.sha3_256(raw_bytes).hexdigest()}"

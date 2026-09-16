@@ -55,7 +55,7 @@ def test_console_app_secret_key_fallback(monkeypatch):
             assert len(app.secret_key) == 64  # Strictly 64-char SHA3-256 bootstrap checksum
 
 
-def test_console_app_production_missing_keys_fails(monkeypatch):
+def test_console_app_production_missing_keys_fails(monkeypatch, tmp_path):
     """In production, missing keys must raise RuntimeError without ephemeral fallback."""
     from eval_runner import config
 
@@ -64,6 +64,11 @@ def test_console_app_production_missing_keys_fails(monkeypatch):
     monkeypatch.delenv("DASHBOARD_API_KEY", raising=False)
     monkeypatch.delenv("SERVICE_API_KEY", raising=False)
     monkeypatch.setenv("AGENTV_ENV", "production")
+
+    fake_ui = tmp_path / "ui_dist"
+    fake_ui.mkdir(parents=True, exist_ok=True)
+    (fake_ui / "index.html").write_text("<!DOCTYPE html><html></html>", encoding="utf-8")
+    monkeypatch.setattr("eval_runner.console.app.UI_BUILD_DIR", fake_ui)
 
     with patch("eval_runner.plugins.manager.load_plugins"):
         with patch("eval_runner.catalog.ScenarioCatalog.get_instance"):

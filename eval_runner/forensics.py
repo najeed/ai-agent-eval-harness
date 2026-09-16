@@ -6,6 +6,8 @@ import shutil
 from pathlib import Path
 from typing import Any
 
+from agentv_runtime.contracts import EvidenceBoundednessLimits
+
 from . import config
 from .utils.crypto import file_hash as _file_hash, shake256_digest as _shake256_digest
 
@@ -22,17 +24,103 @@ def compute_shake256_digest(data: bytes, length: int = 32) -> bytes:
     return _shake256_digest(data, length=length)
 
 
+def _bound_interaction_payload(
+    data: Any, max_bytes: int = EvidenceBoundednessLimits.MAX_INTERACTION_BYTES
+) -> Any:
+    """
+    Evidence Boundedness Contract:
+    Ensures interaction payloads written to adapter_trace.jsonl never exceed max_bytes.
+    Large payloads are truncated with an RFC 8785 SHA3-256 digest commitment.
+    """
+    if data is None:
+        return None
+    try:
+        raw_str = json.dumps(data, default=str)
+        if len(raw_str.encode("utf-8")) <= max_bytes:
+            return data
+
+        import hashlib
+
+        from agentv_runtime.canonical import canonical_json_encode
+
+        try:
+            canonical_bytes = canonical_json_encode(data)
+        except Exception:
+            canonical_bytes = raw_str.encode("utf-8")
+
+        digest = f"sha3_256:{hashlib.sha3_256(canonical_bytes).hexdigest()}"
+
+        sample: Any
+        if isinstance(data, dict):
+            sample = {k: data[k] for k in list(data.keys())[:5]}
+        elif isinstance(data, list):
+            sample = data[:5]
+        else:
+            sample = str(data)[:256]
+
+        return {
+            "__BOUNDED_INTERACTION__": {
+                "content_hash": digest,
+                "byte_length": len(canonical_bytes),
+                "sample": sample,
+                "truncated": True,
+            }
+        }
+    except Exception as err:
+        logger.debug("Failed bounding interaction payload: %s", err)
+        return data
+
+
 def list_diff(old: list, new: list) -> list | dict:
     """
     Computes a differential between two lists, optimized for database-style row sets.
     Identifies primary keys (id, audit_id, etc.) to perform granular row tracking.
+    Enforces Evidence Boundedness Contract limits on unkeyed and oversized list changes.
     """
     if not old or not new:
+        if isinstance(new, list) and len(new) > EvidenceBoundednessLimits.MAX_INLINE_ITEMS:
+            import hashlib
+
+            from agentv_runtime.canonical import canonical_json_encode
+
+            try:
+                c_bytes = canonical_json_encode(new)
+            except Exception:
+                c_bytes = json.dumps(new, default=str).encode("utf-8")
+            digest = f"sha3_256:{hashlib.sha3_256(c_bytes).hexdigest()}"
+            return {
+                "__LIST_DIFF_BOUNDED__": {
+                    "total_items": len(new),
+                    "old_items": len(old) if old else 0,
+                    "result_hash": digest,
+                    "sample": new[:5],
+                    "truncated": True,
+                }
+            }
         return new
 
     # Tier 1: Check if this is a list of dictionaries (likely a DB table)
     if not all(isinstance(x, dict) for x in old) or not all(isinstance(x, dict) for x in new):
-        return new  # Full replacement for non-dictionary lists
+        if len(new) > EvidenceBoundednessLimits.MAX_INLINE_ITEMS:
+            import hashlib
+
+            from agentv_runtime.canonical import canonical_json_encode
+
+            try:
+                c_bytes = canonical_json_encode(new)
+            except Exception:
+                c_bytes = json.dumps(new, default=str).encode("utf-8")
+            digest = f"sha3_256:{hashlib.sha3_256(c_bytes).hexdigest()}"
+            return {
+                "__LIST_DIFF_BOUNDED__": {
+                    "total_items": len(new),
+                    "old_items": len(old),
+                    "result_hash": digest,
+                    "sample": new[:5],
+                    "truncated": True,
+                }
+            }
+        return new  # Full replacement for non-dictionary lists within bounds
 
     # Tier 2: Discover Authoritative Primary Key
     pk_candidates = ["id", "audit_id", "application_id", "applicant_id", "email"]
@@ -41,7 +129,26 @@ def list_diff(old: list, new: list) -> list | dict:
     )
 
     if not pk:
-        return new  # Full replacement if no reliable identity found
+        if len(new) > EvidenceBoundednessLimits.MAX_INLINE_ITEMS:
+            import hashlib
+
+            from agentv_runtime.canonical import canonical_json_encode
+
+            try:
+                c_bytes = canonical_json_encode(new)
+            except Exception:
+                c_bytes = json.dumps(new, default=str).encode("utf-8")
+            digest = f"sha3_256:{hashlib.sha3_256(c_bytes).hexdigest()}"
+            return {
+                "__LIST_DIFF_BOUNDED__": {
+                    "total_items": len(new),
+                    "old_items": len(old),
+                    "result_hash": digest,
+                    "sample": new[:5],
+                    "truncated": True,
+                }
+            }
+        return new  # Full replacement if no reliable identity found within bounds
 
     # Tier 3: Record-Level Differential Analysis
     old_map = {x[pk]: x for x in old}
@@ -67,6 +174,31 @@ def list_diff(old: list, new: list) -> list | dict:
     # Optimization: Return None if state is identical to prevent empty diff files
     if not any(diff.values()):
         return None
+
+    # Enforce bounded diff size
+    total_mutations = len(diff["added"]) + len(diff["modified"]) + len(diff["deleted"])
+    if total_mutations > EvidenceBoundednessLimits.MAX_INLINE_ITEMS:
+        import hashlib
+
+        from agentv_runtime.canonical import canonical_json_encode
+
+        try:
+            diff_bytes = canonical_json_encode(diff)
+        except Exception:
+            diff_bytes = json.dumps(diff, default=str).encode("utf-8")
+        diff_hash = f"sha3_256:{hashlib.sha3_256(diff_bytes).hexdigest()}"
+        return {
+            "__LIST_DIFF_BOUNDED__": {
+                "added_count": len(diff["added"]),
+                "modified_count": len(diff["modified"]),
+                "deleted_count": len(diff["deleted"]),
+                "added_sample": diff["added"][:3],
+                "modified_sample": diff["modified"][:3],
+                "deleted_sample": diff["deleted"][:3],
+                "diff_hash": diff_hash,
+                "truncated": True,
+            }
+        }
 
     return {"__LIST_DIFF__": diff}
 
@@ -318,9 +450,36 @@ class ForensicCollector:
                 # Zero-Change optimization: Don't write empty diffs
                 return
 
+        # Evidence Boundedness Contract: verify total snapshot size does not exceed ceiling
+        raw_content = json.dumps(content, indent=4, default=str)
+        if len(raw_content.encode("utf-8")) > EvidenceBoundednessLimits.MAX_SNAPSHOT_BYTES:
+            import hashlib
+
+            from agentv_runtime.canonical import canonical_json_encode
+
+            try:
+                c_bytes = canonical_json_encode(content)
+            except Exception:
+                c_bytes = raw_content.encode("utf-8")
+
+            snap_hash = f"sha3_256:{hashlib.sha3_256(c_bytes).hexdigest()}"
+            content = {
+                "__BOUNDED_SNAPSHOT__": {
+                    "status": "BOUNDED_SNAPSHOT",
+                    "keys": list(content.keys()) if isinstance(content, dict) else [],
+                    "snapshot_hash": snap_hash,
+                    "byte_size": len(c_bytes),
+                    "truncated": True,
+                    "summary": (
+                        "State snapshot exceeded EvidenceBoundednessLimits.MAX_SNAPSHOT_BYTES. "
+                        "Materialized bounded cryptographic commitment."
+                    ),
+                }
+            }
+
         try:
             with open(snapshot_path, "w", encoding="utf-8") as f:
-                json.dump(content, f, indent=4)
+                json.dump(content, f, indent=4, default=str)
 
             self._state_snapshots[turn] = snapshot_path
             self._branch_states[branch_key] = state
@@ -350,14 +509,22 @@ class ForensicCollector:
     def register_raw_interaction(self, payload: dict, response: dict):
         """
         Logs a raw adapter interaction (stimulus/response) to the forensic vault.
-        Ensures bit-for-bit auditability of agent-harness communication.
+        Ensures bit-for-bit auditability of agent-harness communication while
+        enforcing the Evidence Boundedness Contract to prevent unbounded dumps.
         """
         self.target_dir.mkdir(parents=True, exist_ok=True)
         trace_path = self.target_dir / "adapter_trace.jsonl"
 
         import time
 
-        entry = {"timestamp": time.time(), "payload": payload, "response": response}
+        bounded_payload = _bound_interaction_payload(payload)
+        bounded_response = _bound_interaction_payload(response)
+
+        entry = {
+            "timestamp": time.time(),
+            "payload": bounded_payload,
+            "response": bounded_response,
+        }
 
         try:
             with open(trace_path, "a", encoding="utf-8") as f:
