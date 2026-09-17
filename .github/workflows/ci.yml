@@ -138,6 +138,12 @@ jobs:
         cd ui/visual-console
         npm ci
         npm run build
+
+    - name: Run Document Model and Extension Contract tests
+      run: |
+        cd ui/visual-console
+        npm run test:docmodel
+
     - name: Verify UI production bundle exists
       shell: bash
       run: |
@@ -154,7 +160,8 @@ jobs:
         pip install -r requirements-dev.txt
         # Install playwright browsers
         python -m playwright install chromium
-    - name: Run Playwright UI tests
-      run: pytest tests/ui/ -v -s
+    - name: Run Playwright UI tests and Extension Host Contracts
+      run: pytest tests/ui/ tests/unit/console/test_extension_host_contracts.py -v -s
       env:
         TRAJECTORY_DIR: tests/data/mock_trajectories
+
