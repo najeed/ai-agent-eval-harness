@@ -1063,3 +1063,49 @@ def test_identity_env_and_default_signer(monkeypatch, tmp_path):
     monkeypatch.setenv("EVAL_SIGNING_KEY", str(key_file))
     signer_local = get_default_signer()
     assert signer_local is not None
+
+
+@pytest.mark.asyncio
+async def test_runner_sanitizes_callable_metadata(tmp_path, monkeypatch):
+    """Verify runner.run() strips callables from metadata to prevent LossyScenarioError."""
+    import eval_runner.config as config
+    from eval_runner.runner import DefaultRunner
+
+    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "runs")
+    runner = DefaultRunner()
+
+    scenario = {
+        "id": "scen_callable_test",
+        "workflow": {"nodes": []},
+        "success_criteria": {"mode": "all"},
+    }
+
+    # Pass metadata containing a callable dispatch function in args dict
+    def dummy_callback():
+        pass
+
+    metadata = {
+        "args": {
+            "func": dummy_callback,
+            "path": "industries/telecom/scenarios",
+            "format": "jsonl",
+        },
+        "extra_callable": dummy_callback,
+        "clean_meta": "valid_value",
+    }
+
+    results = await runner.run(
+        scenario,
+        attempts=1,
+        run_id="run-callable-sanitize-test",
+        metadata=metadata,
+    )
+    assert results is not None
+    # Verify manifest was written and has no callables
+    manifest_path = tmp_path / "runs" / "run-callable-sanitize-test" / "execution_manifest.json"
+    assert manifest_path.exists()
+    manifest_data = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert "func" not in manifest_data["metadata"]["args"]
+    assert "extra_callable" not in manifest_data["metadata"]
+    assert manifest_data["metadata"]["args"]["path"] == "industries/telecom/scenarios"
+    assert manifest_data["metadata"]["clean_meta"] == "valid_value"

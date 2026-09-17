@@ -733,3 +733,33 @@ async def test_handler_certify_unsafe_and_exception(tmp_path):
     ):
         res_exc = await evaluation.handle_certify(args)
         assert res_exc == 1
+
+
+@pytest.mark.asyncio
+async def test_handle_evaluate_filters_callable_args():
+    """Verify that handle_evaluate removes dispatch functions and other callables from args."""
+
+    def dummy_dispatch(a):
+        return a
+
+    args = MagicMock()
+    args.path = "scenarios/test"
+    args.format = "json"
+    args.attempts = 1
+    args.func = dummy_dispatch
+    args.other_callback = lambda x: x
+    args.clean_value = "hello"
+
+    with (
+        patch("eval_runner.loader.load_dataset", return_value=[{"id": "scen_1"}]),
+        patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock) as mock_run,
+    ):
+        mock_run.return_value = {"status": "completed"}
+        res = await evaluation.handle_evaluate(args)
+        assert res == 0
+        mock_run.assert_called_once()
+        passed_metadata = mock_run.call_args[1]["metadata"]
+        passed_args = passed_metadata["args"]
+        assert "func" not in passed_args
+        assert "other_callback" not in passed_args
+        assert passed_args.get("clean_value") == "hello"

@@ -358,6 +358,15 @@ class DefaultRunner(BaseRunner):
             "required_oracle_ids": req_oracles,
         }
 
+        # Defense-in-depth: Ensure metadata values (including nested CLI args dicts)
+        # do not retain dispatch callbacks or opaque runtime callables
+        cleaned_manifest_metadata: dict[str, Any] = {}
+        for mk, mv in manifest_metadata.items():
+            if isinstance(mv, dict):
+                cleaned_manifest_metadata[mk] = {k: v for k, v in mv.items() if not callable(v)}
+            elif not callable(mv):
+                cleaned_manifest_metadata[mk] = mv
+
         exec_manifest = ExecutionManifest(
             manifest_id=f"man_{effective_run_id}",
             scenario_id=str(scenario_identifier),
@@ -366,7 +375,7 @@ class DefaultRunner(BaseRunner):
             agent_config=resolved_agent_config,
             runtime_config=resolved_runtime_config,
             environment=env_dict,
-            metadata=manifest_metadata,
+            metadata=cleaned_manifest_metadata,
         )
         exec_manifest_hash = exec_manifest.compute_manifest_hash()
 
