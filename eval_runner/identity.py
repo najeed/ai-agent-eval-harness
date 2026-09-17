@@ -84,7 +84,8 @@ class IdentityService:
             except ImportError:
                 logger.error(
                     "   [Identity] FAIL: 'cyclecore-pq' package not found. "
-                    "Please install it to use PQC features."
+                    "Install with: pip install cyclecore-pq  "
+                    "(API keys: https://cyclecore.ai)"
                 )
             except Exception as e:
                 logger.error(f"   [Identity] FAIL: Failed to initialize CycleCore Client: {e}")
