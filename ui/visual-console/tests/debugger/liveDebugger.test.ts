@@ -11,6 +11,7 @@ import assert from 'node:assert/strict';
 import {
   buildWaterfall,
   computeTelemetryDiagnostics,
+  computeTraceIntegrity,
   mergeSeqGap,
   type LogEvent,
 } from '../../src/lib/debuggerLogic.js';
@@ -114,4 +115,86 @@ test('buildWaterfall handles zero-duration and single-event traces deterministic
   assert.equal(waterfall.rows.length, 1);
   assert.equal(waterfall.rows[0].execId, 'instant_node#1');
   assert.equal(waterfall.tMin, waterfall.tMax);
+});
+
+test('computeTraceIntegrity identifies absent sequence IDs and marks gaps & missingSequences', () => {
+  const eventsWithoutSeq: LogEvent[] = [
+    { event: 'run_start', timestamp: '2026-08-27T08:00:00.000Z' },
+    { event: 'tool_call', timestamp: '2026-08-27T08:00:01.000Z' },
+    { event: 'run_end', timestamp: '2026-08-27T08:00:02.000Z' },
+  ];
+  const res = computeTraceIntegrity(eventsWithoutSeq, false);
+  assert.equal(res.hasEvents, true);
+  assert.equal(res.missingSequences, true);
+  assert.equal(res.hasValidSequences, false);
+  assert.equal(res.gaps, true);
+  assert.ok(res.issues.some(i => i.includes('lack server-assigned _seq identifiers')));
+});
+
+test('computeTraceIntegrity identifies partially missing sequence IDs', () => {
+  const eventsPartialSeq: LogEvent[] = [
+    { _seq: 1, event: 'run_start', timestamp: '2026-08-27T08:00:00.000Z' },
+    { event: 'tool_call', timestamp: '2026-08-27T08:00:01.000Z' },
+    { _seq: 2, event: 'run_end', timestamp: '2026-08-27T08:00:02.000Z' },
+  ];
+  const res = computeTraceIntegrity(eventsPartialSeq, false);
+  assert.equal(res.missingSequences, true);
+  assert.equal(res.hasValidSequences, false);
+  assert.equal(res.gaps, true);
+  assert.ok(res.issues.some(i => i.includes('1 event(s) lack server-assigned _seq identifiers')));
+});
+
+test('computeTraceIntegrity identifies duplicate sequence IDs', () => {
+  const eventsWithDuplicates: LogEvent[] = [
+    { _seq: 1, event: 'run_start', timestamp: '2026-08-27T08:00:00.000Z' },
+    { _seq: 2, event: 'tool_call', timestamp: '2026-08-27T08:00:01.000Z' },
+    { _seq: 2, event: 'tool_result', timestamp: '2026-08-27T08:00:02.000Z' },
+    { _seq: 3, event: 'run_end', timestamp: '2026-08-27T08:00:03.000Z' },
+  ];
+  const res = computeTraceIntegrity(eventsWithDuplicates, false);
+  assert.equal(res.gaps, true);
+  assert.equal(res.hasValidSequences, false);
+  assert.ok(res.issues.some(i => i.includes('1 duplicate frame(s)')));
+});
+
+test('computeTraceIntegrity identifies reordered sequence IDs', () => {
+  const eventsReordered: LogEvent[] = [
+    { _seq: 1, event: 'run_start', timestamp: '2026-08-27T08:00:00.000Z' },
+    { _seq: 3, event: 'tool_call', timestamp: '2026-08-27T08:00:01.000Z' },
+    { _seq: 2, event: 'tool_result', timestamp: '2026-08-27T08:00:02.000Z' },
+    { _seq: 4, event: 'run_end', timestamp: '2026-08-27T08:00:03.000Z' },
+  ];
+  const res = computeTraceIntegrity(eventsReordered, false);
+  assert.equal(res.reordered, true);
+  assert.equal(res.hasValidSequences, false);
+  assert.ok(res.issues.some(i => i.includes('out of monotonic _seq order')));
+});
+
+test('computeTraceIntegrity identifies gapped sequence intervals', () => {
+  const eventsGapped: LogEvent[] = [
+    { _seq: 1, event: 'run_start', timestamp: '2026-08-27T08:00:00.000Z' },
+    { _seq: 2, event: 'tool_call', timestamp: '2026-08-27T08:00:01.000Z' },
+    { _seq: 5, event: 'run_end', timestamp: '2026-08-27T08:00:03.000Z' },
+  ];
+  const res = computeTraceIntegrity(eventsGapped, false);
+  assert.equal(res.gaps, true);
+  assert.equal(res.hasValidSequences, false);
+  assert.ok(res.issues.some(i => i.includes('missing _seq 3, 4')));
+});
+
+test('computeTraceIntegrity marks contiguous valid sequences as clean and valid', () => {
+  const eventsValid: LogEvent[] = [
+    { _seq: 1, event: 'run_start', timestamp: '2026-08-27T08:00:00.000Z' },
+    { _seq: 2, event: 'tool_call', timestamp: '2026-08-27T08:00:01.000Z' },
+    { _seq: 3, event: 'tool_result', timestamp: '2026-08-27T08:00:02.000Z' },
+    { _seq: 4, event: 'run_end', timestamp: '2026-08-27T08:00:03.000Z' },
+  ];
+  const res = computeTraceIntegrity(eventsValid, false);
+  assert.equal(res.gaps, false);
+  assert.equal(res.reordered, false);
+  assert.equal(res.missingSequences, false);
+  assert.equal(res.hasValidSequences, true);
+  assert.equal(res.missingStart, false);
+  assert.equal(res.missingEnd, false);
+  assert.equal(res.issues.length, 0);
 });

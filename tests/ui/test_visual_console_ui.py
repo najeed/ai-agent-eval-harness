@@ -49,11 +49,9 @@ def console_server(tmp_path_factory):
 
     dist_dir = config.PROJECT_ROOT / "ui" / "visual-console" / "dist"
     if not (dist_dir / "index.html").exists():
-        dist_dir.mkdir(parents=True, exist_ok=True)
-        (dist_dir / "index.html").write_text(
-            "<!DOCTYPE html><html><head><title>AgentV Visual Console</title></head>"
-            "<body><div id='root'><h1>AgentV Verification OS</h1></div></body></html>",
-            encoding="utf-8",
+        pytest.skip(
+            "Visual Console build artifact ui/visual-console/dist/index.html not found. "
+            "Run 'npm run build' first."
         )
 
     port = get_free_port()

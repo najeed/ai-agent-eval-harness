@@ -281,11 +281,15 @@ export const LiveDebugger: React.FC = () => {
   const traceIntegrity: TraceIntegrityFlags = computeTraceIntegrity(events, sourcedFromMaster);
 
   const integrityLabel = (() => {
-    // ONE authoritative integrity state: live SSE gaps
-    // participate in the verdict. An unreconciled gap can never coexist with
+    // ONE authoritative integrity state: live SSE gaps and sequence provenance
+    // participate in the verdict. An unreconciled gap or missing sequence can never coexist with
     // a green COMPLETE label.
     if (!traceIntegrity.hasEvents) return 'UNKNOWN';
+    if (traceIntegrity.missingSequences && (!events.length || events.every(e => e._seq === undefined || e._seq === null))) {
+      return 'UNKNOWN';
+    }
     const flags: string[] = [];
+    if (traceIntegrity.missingSequences) flags.push('NO_SEQ');
     if (traceIntegrity.recovered) flags.push('RECOVERED');
     if (traceIntegrity.reordered) flags.push('REORDERED');
     if (traceIntegrity.gaps || streamGaps.length > 0) flags.push('PARTIAL');
@@ -295,7 +299,12 @@ export const LiveDebugger: React.FC = () => {
 
   const integrityTone: 'clean' | 'recovered' | 'warn' | 'unknown' = (() => {
     if (!traceIntegrity.hasEvents) return 'unknown';
+    if (traceIntegrity.missingSequences && events.every(e => e._seq === undefined || e._seq === null)) {
+      return 'unknown';
+    }
     if (
+      traceIntegrity.missingSequences ||
+      !traceIntegrity.hasValidSequences ||
       traceIntegrity.gaps ||
       traceIntegrity.reordered ||
       traceIntegrity.missingEnd ||

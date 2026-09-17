@@ -551,23 +551,63 @@ def test_scenario_validation_rejects_invalid_edge_types_and_priority():
 
 
 def test_preflight_fingerprint_canonical_consistency():
-    """Canonical preflight fingerprint produces identical sorted-key SHA3-256 digest."""
+    """Canonical preflight fingerprint produces deterministic SHA3-256 digest over full manifest."""
+    from agentv_runtime.canonical import canonical_json_encode
+
     fp1 = compute_preflight_fingerprint(
         scenario_id="scen_01",
         scen_hash="sha3_256:abc",
         endpoint="http://localhost:8000",
         protocol="openai",
         max_turns=15,
+        agent_config={"model": "gpt-4o", "endpoint": "http://localhost:8000"},
+        runtime_config={"max_turns": 15},
+        scenario_version="1.2.0",
+        tenant_id="acme",
+        workspace_id="prod",
+        seed=42,
+        execution_mode="hermetic",
+        evaluators=["accuracy", "latency"],
     )
     raw = {
+        "agent_config": {
+            "endpoint": "http://localhost:8000",
+            "model": "gpt-4o",
+            "protocol": "openai",
+        },
         "endpoint": "http://localhost:8000",
+        "evaluators": ["accuracy", "latency"],
+        "execution_mode": "hermetic",
         "max_turns": 15,
         "protocol": "openai",
+        "runtime_config": {"max_turns": 15},
         "scen_hash": "sha3_256:abc",
         "scenario_id": "scen_01",
+        "scenario_version": "1.2.0",
+        "seed": 42,
+        "tenant_id": "acme",
+        "workspace_id": "prod",
     }
-    expected = hashlib.sha3_256(json.dumps(raw, sort_keys=True).encode("utf-8")).hexdigest()
+    expected = hashlib.sha3_256(canonical_json_encode(raw)).hexdigest()
     assert fp1 == expected
+
+    # Mutating model invalidates fingerprint
+    fp_mutated = compute_preflight_fingerprint(
+        scenario_id="scen_01",
+        scen_hash="sha3_256:abc",
+        endpoint="http://localhost:8000",
+        protocol="openai",
+        max_turns=15,
+        agent_config={"model": "gpt-3.5-turbo", "endpoint": "http://localhost:8000"},
+        runtime_config={"max_turns": 15},
+        scenario_version="1.2.0",
+        tenant_id="acme",
+        workspace_id="prod",
+        seed=42,
+        execution_mode="hermetic",
+        evaluators=["accuracy", "latency"],
+    )
+    assert fp_mutated != fp1
 
 
 def test_sse_stream_emits_canonical_trace_seq(tmp_path):

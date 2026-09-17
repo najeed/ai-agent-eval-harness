@@ -67,10 +67,10 @@ def get_run_lifecycle_state(run_id: str) -> RunLifecycleState:
         except OSError as e:
             logger.debug("Failed reading lifecycle marker for %s: %s", run_id, e)
 
-    # Check fallback markers: if sealed artifact or run_manifest.json exists, state is SEALED
+    # Check fallback markers: if sealed artifact exists, state is SEALED
     vault_dir = config.RUN_LOG_DIR / run_id
     if vault_dir.is_dir():
-        if (vault_dir / ".sealed").exists() or (vault_dir / "run_manifest.json").exists():
+        if (vault_dir / ".sealed").exists():
             return RunLifecycleState.SEALED
 
     return RunLifecycleState.OPEN

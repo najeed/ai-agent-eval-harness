@@ -211,19 +211,30 @@ def test_server_side_preflight_fingerprint_enforcement(tmp_path, monkeypatch):
     scen_file.write_text(json.dumps(scen_data), encoding="utf-8")
 
     import eval_runner.loader
-    from agentv_runtime.manifest import compute_scenario_hash
+    from agentv_runtime.manifest import compute_preflight_fingerprint, compute_scenario_hash
 
     loaded_scen = eval_runner.loader.load_scenario(str(scen_file))
 
+    from eval_runner.console.routes.scenarios import resolve_execution_configs
+
     # Compute expected fingerprint matching check_execution_readiness
-    raw_fp = {
-        "scenario_id": "sec_01",
-        "scen_hash": compute_scenario_hash(loaded_scen),
-        "endpoint": "http://localhost:8000",
-        "protocol": "http_rest",
-        "max_turns": 10,
-    }
-    valid_fp = hashlib.sha3_256(json.dumps(raw_fp, sort_keys=True).encode("utf-8")).hexdigest()
+    agent_cfg, runtime_cfg = resolve_execution_configs({}, loaded_scen)
+    scen_meta = loaded_scen.get("metadata") or {}
+    valid_fp = compute_preflight_fingerprint(
+        scenario_id="sec_01",
+        scen_hash=compute_scenario_hash(loaded_scen),
+        endpoint=agent_cfg.get("endpoint"),
+        protocol=agent_cfg.get("protocol"),
+        max_turns=runtime_cfg.get("max_turns", 10),
+        agent_config=agent_cfg,
+        runtime_config=runtime_cfg,
+        scenario_version=str(scen_meta.get("version", "1.0.0")),
+        tenant_id="default",
+        workspace_id="default",
+        seed=scen_meta.get("seed"),
+        execution_mode=str(scen_meta.get("execution_mode", "")),
+        evaluators=None,
+    )
 
     client = app.test_client()
 
@@ -579,8 +590,6 @@ def test_contracts_verification_result_fail_closed_defaults():
 
 def test_verification_authority_split_and_manifest_tamper_detection():
     """P0.3: Split package verification and manifest hash tamper detection."""
-    import hashlib
-
     from agentv_runtime.evidence_graph import (
         build_evidence_graph_from_events,
         compute_evidence_graph_root,
@@ -622,7 +631,12 @@ def test_verification_authority_split_and_manifest_tamper_detection():
         {"event": "assertion_evaluated", "_seq": 2, "assertion": "oracle_1", "passed": True},
         {"event": "run_end", "_seq": 3, "data": {}},
     ]
-    ev_graph = build_evidence_graph_from_events(raw_events, required_oracle_ids=["oracle_1"])
+    parsed_stream = [
+        (json.loads(line), line.decode("utf-8").strip())
+        for line in raw_trace_bytes.splitlines()
+        if line.strip()
+    ]
+    ev_graph = build_evidence_graph_from_events(parsed_stream, required_oracle_ids=["oracle_1"])
     ev_root = compute_evidence_graph_root(ev_graph)
 
     pkg = VerificationPackage(
@@ -875,7 +889,6 @@ def test_verification_authority_artifacts_missing_provenance_defaults_true():
     when missing from graph dict.
     Kills mutant 158: if not ev_graph.get('is_complete_provenance', True) -> False.
     """
-    import hashlib
     from unittest.mock import patch
 
     from agentv_runtime.package import VerificationPackage

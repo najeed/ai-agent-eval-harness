@@ -106,13 +106,17 @@ def test_package_signing_and_detached_verification():
 
 
 def test_verification_authority_full_verification_pass():
+    from agentv_runtime.canonical import canonical_json_dumps
     from agentv_runtime.manifest import compute_scenario_hash
 
     signer = MockEd25519Signer()
-    raw_trace = (
-        b'{"_seq": 1, "event": "run_start"}\n'
-        b'{"_seq": 2, "event": "metric_evaluated", "metric": "o1", "passed": true}\n'
-    )
+    raw_lines = [
+        canonical_json_dumps({"_seq": 1, "event": "run_start"}),
+        canonical_json_dumps(
+            {"_seq": 2, "event": "metric_evaluated", "metric": "o1", "passed": True}
+        ),
+    ]
+    raw_trace = ("\n".join(raw_lines) + "\n").encode("utf-8")
     actual_trace_hash = hashlib.sha3_256(raw_trace).hexdigest()
 
     events = [

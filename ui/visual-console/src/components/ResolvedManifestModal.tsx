@@ -22,6 +22,7 @@ interface ResolvedManifestModalProps {
   runtimeBoundary?: string;
   evaluators?: string[];
   signingBackend?: string | null;
+  preflightFingerprint?: string | null;
   isLaunching?: boolean;
 }
 
@@ -37,6 +38,7 @@ export const ResolvedManifestModal: React.FC<ResolvedManifestModalProps> = ({
   runtimeBoundary,
   evaluators = [],
   signingBackend,
+  preflightFingerprint,
   isLaunching = false,
 }) => {
   if (!isOpen) return null;
@@ -107,6 +109,11 @@ export const ResolvedManifestModal: React.FC<ResolvedManifestModalProps> = ({
             <div className="text-[11px] font-mono text-slate-400 break-all bg-slate-950 px-2.5 py-1.5 rounded border border-slate-800/80">
               Content Digest: {contentHash}
             </div>
+            {preflightFingerprint && (
+              <div className="text-[11px] font-mono text-emerald-400/90 break-all bg-emerald-950/20 px-2.5 py-1.5 rounded border border-emerald-500/30">
+                Preflight Fingerprint: {preflightFingerprint}
+              </div>
+            )}
           </div>
 
           {/* Agent Target Details */}

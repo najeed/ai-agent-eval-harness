@@ -25,15 +25,27 @@ from agentv_runtime.canonical import canonical_json_encode
 
 
 def _to_json_compatible(obj: Any) -> Any:
-    """Recursively converts objects to canonical JSON-compatible primitives, filtering callables."""
+    """Recursively converts objects to canonical JSON-compatible primitives,
+    rejecting callables and sorting sets.
+    """
     if obj is None or isinstance(obj, (str, int, float, bool)):
         return obj
     if callable(obj):
-        return None
+        raise ValueError(
+            f"LossyScenarioError: Unsupported callable object '{obj}' "
+            "encountered during canonicalization. Executable behavior must be "
+            "referenced by immutable artifact/digest or identifier, not opaque in-memory callables."
+        )
     if isinstance(obj, Mapping):
-        return {str(k): _to_json_compatible(v) for k, v in obj.items() if not callable(v)}
-    if isinstance(obj, (list, tuple, set)):
-        return [_to_json_compatible(v) for v in obj if not callable(v)]
+        return {str(k): _to_json_compatible(v) for k, v in obj.items()}
+    if isinstance(obj, set):
+        items = [_to_json_compatible(v) for v in obj]
+        return sorted(
+            items,
+            key=lambda x: canonical_json_encode(x).decode("utf-8", errors="replace"),
+        )
+    if isinstance(obj, (list, tuple)):
+        return [_to_json_compatible(v) for v in obj]
     if hasattr(obj, "to_dict") and callable(obj.to_dict):
         return _to_json_compatible(obj.to_dict())
     return str(obj)
@@ -65,21 +77,50 @@ def compute_preflight_fingerprint(
     endpoint: str = "",
     protocol: str = "",
     max_turns: int = 10,
+    *,
+    agent_config: Mapping[str, Any] | None = None,
+    runtime_config: Mapping[str, Any] | None = None,
+    scenario_version: str = "1.0.0",
+    tenant_id: str = "default",
+    workspace_id: str = "default",
+    seed: Any = None,
+    execution_mode: str = "",
+    evaluators: Any = None,
 ) -> str:
     """
     Canonical preflight fingerprint calculation shared between
     readiness probe, evaluation launch, and certification.
+    Binds the canonical resolved execution manifest:
+    scenario ID/version/hash, complete agent config (including model and endpoint),
+    runtime config, evaluators, execution mode, seed, and tenant/workspace context.
     """
-    import json
+    ac = dict(agent_config or {})
+    if endpoint and "endpoint" not in ac:
+        ac["endpoint"] = str(endpoint)
+    if protocol and "protocol" not in ac:
+        ac["protocol"] = str(protocol).lower()
+    rc = dict(runtime_config or {})
+    if max_turns and "max_turns" not in rc:
+        rc["max_turns"] = int(max_turns)
+
+    eval_list = sorted(str(e) for e in (evaluators or [])) if evaluators else []
 
     raw = {
-        "endpoint": str(endpoint or ""),
-        "max_turns": int(max_turns),
-        "protocol": str(protocol or "").lower(),
+        "agent_config": _to_json_compatible(ac),
+        "endpoint": str(ac.get("endpoint") or endpoint or ""),
+        "evaluators": eval_list,
+        "execution_mode": str(execution_mode or ""),
+        "max_turns": int(rc.get("max_turns", max_turns)),
+        "protocol": str(ac.get("protocol") or protocol or "").lower(),
+        "runtime_config": _to_json_compatible(rc),
         "scen_hash": str(scen_hash or ""),
         "scenario_id": str(scenario_id or ""),
+        "scenario_version": str(scenario_version or "1.0.0"),
+        "seed": seed,
+        "tenant_id": str(tenant_id or "default"),
+        "workspace_id": str(workspace_id or "default"),
     }
-    return hashlib.sha3_256(json.dumps(raw, sort_keys=True).encode("utf-8")).hexdigest()
+    return hashlib.sha3_256(canonical_json_encode(_to_json_compatible(raw))).hexdigest()
 
 
 @dataclass(frozen=True)

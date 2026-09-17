@@ -349,6 +349,78 @@ def validate_scenario_schema(scenario_id):
     )
 
 
+def resolve_execution_configs(
+    data: dict[str, Any],
+    scen_data: dict[str, Any] | None = None,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """
+    Authoritatively resolve execution configuration across payload and scenario defaults.
+    Single source of truth ensuring identical resolution for readiness probes
+    and execution launches.
+    """
+    meta = data.get("metadata") or {}
+    scen_meta = (scen_data.get("metadata") or {}) if isinstance(scen_data, dict) else {}
+    scen_agent_cfg = (scen_data.get("agent_config") or {}) if isinstance(scen_data, dict) else {}
+    scen_rt = scen_data.get("runtime_config") if isinstance(scen_data, dict) else None
+    scen_runtime_cfg = scen_rt or {}
+
+    raw_agent_config = data.get("agent_config") or {}
+    agent_config = {
+        "agent_name": raw_agent_config.get("agent_name")
+        or scen_agent_cfg.get("agent_name")
+        or data.get("agent_name")
+        or meta.get("agent_name")
+        or scen_meta.get("agent_name")
+        or "default_agent",
+        "protocol": raw_agent_config.get("protocol")
+        or scen_agent_cfg.get("protocol")
+        or data.get("protocol")
+        or meta.get("protocol")
+        or scen_meta.get("protocol")
+        or "http_rest",
+        "endpoint": raw_agent_config.get("endpoint")
+        or raw_agent_config.get("url")
+        or scen_agent_cfg.get("endpoint")
+        or scen_agent_cfg.get("url")
+        or data.get("endpoint")
+        or meta.get("agent_url")
+        or meta.get("endpoint")
+        or scen_meta.get("endpoint")
+        or "http://localhost:8000",
+        "model": raw_agent_config.get("model")
+        or scen_agent_cfg.get("model")
+        or data.get("model")
+        or meta.get("model")
+        or scen_meta.get("model")
+        or "gpt-4o",
+        **{
+            k: v
+            for k, v in {**scen_agent_cfg, **raw_agent_config}.items()
+            if k not in ("agent_name", "protocol", "endpoint", "url", "model")
+        },
+    }
+
+    raw_runtime_config = data.get("runtime_config") or {}
+    runtime_config = {
+        "max_turns": raw_runtime_config.get("max_turns")
+        or scen_runtime_cfg.get("max_turns")
+        or data.get("max_turns")
+        or 10,
+        "signing_backend": raw_runtime_config.get("signing_backend")
+        or scen_runtime_cfg.get("signing_backend")
+        or "ed25519",
+        "policy_evaluator": raw_runtime_config.get("policy_evaluator")
+        or scen_runtime_cfg.get("policy_evaluator")
+        or "standard",
+        **{
+            k: v
+            for k, v in {**scen_runtime_cfg, **raw_runtime_config}.items()
+            if k not in ("max_turns", "signing_backend", "policy_evaluator")
+        },
+    }
+    return agent_config, runtime_config
+
+
 @scenario_bp.route("/scenarios/readiness", methods=["POST"])
 @require_permission(Permission.SCENARIOS_READ)
 def check_execution_readiness():
@@ -363,7 +435,6 @@ def check_execution_readiness():
 
     data = request.json or {}
     scen_id = data.get("scenario_id") or data.get("path")
-    agent_config = data.get("agent_config") or {}
 
     checks: list[dict[str, Any]] = []
 
@@ -381,10 +452,16 @@ def check_execution_readiness():
 
     if not scen_data and abs_path and abs_path.exists():
         try:
-            with open(abs_path, encoding="utf-8") as f:
-                scen_data = json.load(f)
-        except Exception as e:
-            logger.debug(f"Failed to read scenario file for preflight: {e}")
+            import eval_runner.loader
+
+            loaded = eval_runner.loader.load_scenario(abs_path)
+            scen_data = loaded[0] if isinstance(loaded, list) else loaded
+        except Exception:
+            try:
+                with open(abs_path, encoding="utf-8") as f:
+                    scen_data = json.load(f)
+            except Exception as e:
+                logger.debug(f"Failed to read scenario file for preflight: {e}")
 
     if not scen_data:
         checks.append(
@@ -415,6 +492,9 @@ def check_execution_readiness():
                     "message": f"Scenario has structural issues: {'; '.join(issues[:3])}",
                 }
             )
+
+    scen_meta = (scen_data.get("metadata") or {}) if scen_data else {}
+    agent_config, runtime_config = resolve_execution_configs(data, scen_data)
 
     # 2. Agent Endpoint Probe
     endpoint = agent_config.get("endpoint") or agent_config.get("url") or ""
@@ -739,23 +819,39 @@ def check_execution_readiness():
         is_verifiable = False
         overall_status = "CONFIGURED" if has_warnings else "READY"
 
-    manifest = {
-        "scenario_id": scen_id,
-        "readiness_state": readiness_state,
-        "readiness_tier": overall_tier,
-        "is_executable": is_executable,
-        "is_verifiable": is_verifiable,
-        "checks": checks,
-    }
-
     scen_hash = compute_scenario_hash(scen_data) if scen_data else ""
+    signing_type = "ed25519" if signing_key else "ephemeral"
+
     pfp = compute_preflight_fingerprint(
         scenario_id=scen_id,
         scen_hash=scen_hash,
         endpoint=endpoint,
         protocol=proto,
-        max_turns=int((data.get("runtime_config") or {}).get("max_turns", 10) or 10),
+        max_turns=int(runtime_config.get("max_turns", 10) or 10),
+        agent_config=agent_config,
+        runtime_config=runtime_config,
+        scenario_version=str(scen_meta.get("version", "1.0.0")),
+        tenant_id=str(data.get("tenant_id", "default")),
+        workspace_id=str(data.get("workspace_id", "default")),
+        seed=data.get("seed") or scen_meta.get("seed"),
+        execution_mode=str(data.get("execution_mode") or scen_meta.get("execution_mode", "")),
+        evaluators=data.get("evaluators"),
     )
+
+    manifest = {
+        "scenario_id": scen_id,
+        "scenario_version": str(scen_meta.get("version", "1.0.0")),
+        "scenario_hash": scen_hash,
+        "readiness_state": readiness_state,
+        "readiness_tier": overall_tier,
+        "is_executable": is_executable,
+        "is_verifiable": is_verifiable,
+        "agent_config": agent_config,
+        "runtime_config": runtime_config,
+        "signing_backend": signing_type,
+        "preflight_fingerprint": pfp,
+        "checks": checks,
+    }
 
     return jsonify(
         {
@@ -765,6 +861,7 @@ def check_execution_readiness():
             "is_executable": is_executable,
             "is_verifiable": is_verifiable,
             "scenario_id": scen_id,
+            "scenario_hash": scen_hash,
             "overall_status": overall_status,
             "readiness_tier": overall_tier,
             "preflight_fingerprint": pfp,
@@ -1063,44 +1160,7 @@ def evaluate_scenario():
     run_id = f"run-{identifier}-{unique_suffix}"
 
     meta = data.get("metadata") or {}
-    raw_agent_config = data.get("agent_config") or {}
-
-    agent_config = {
-        "agent_name": raw_agent_config.get("agent_name")
-        or data.get("agent_name")
-        or meta.get("agent_name")
-        or "default_agent",
-        "protocol": raw_agent_config.get("protocol")
-        or data.get("protocol")
-        or meta.get("protocol")
-        or "http_rest",
-        "endpoint": raw_agent_config.get("endpoint")
-        or data.get("endpoint")
-        or meta.get("agent_url")
-        or meta.get("endpoint")
-        or "http://localhost:8000",
-        "model": raw_agent_config.get("model")
-        or data.get("model")
-        or meta.get("model")
-        or "gpt-4o",
-        **{
-            k: v
-            for k, v in raw_agent_config.items()
-            if k not in ("agent_name", "protocol", "endpoint", "model")
-        },
-    }
-
-    raw_runtime_config = data.get("runtime_config") or {}
-    runtime_config = {
-        "max_turns": raw_runtime_config.get("max_turns") or data.get("max_turns", 10),
-        "signing_backend": raw_runtime_config.get("signing_backend") or "ed25519",
-        "policy_evaluator": raw_runtime_config.get("policy_evaluator") or "standard",
-        **{
-            k: v
-            for k, v in raw_runtime_config.items()
-            if k not in ("max_turns", "signing_backend", "policy_evaluator")
-        },
-    }
+    agent_config, runtime_config = resolve_execution_configs(data, scen)
 
     # [N1 Server-Side Readiness Enforcement]
     meta = data.get("metadata") or {}
@@ -1111,13 +1171,22 @@ def evaluate_scenario():
         or meta.get("fingerprint")
     )
 
-    scen_id = (scen.get("metadata") or {}).get("id") or scen.get("id") or Path(path).stem
+    scen_meta = scen.get("metadata") or {}
+    scen_id = scen_meta.get("id") or scen.get("id") or Path(path).stem
     expected_fingerprint = compute_preflight_fingerprint(
         scenario_id=scen_id,
         scen_hash=compute_scenario_hash(scen),
         endpoint=agent_config.get("endpoint"),
         protocol=agent_config.get("protocol"),
         max_turns=runtime_config.get("max_turns", 10),
+        agent_config=agent_config,
+        runtime_config=runtime_config,
+        scenario_version=str(scen_meta.get("version", "1.0.0")),
+        tenant_id=str(data.get("tenant_id", "default")),
+        workspace_id=str(data.get("workspace_id", "default")),
+        seed=data.get("seed") or scen_meta.get("seed"),
+        execution_mode=str(data.get("execution_mode") or scen_meta.get("execution_mode", "")),
+        evaluators=data.get("evaluators"),
     )
 
     if provided_fingerprint:

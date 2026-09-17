@@ -226,14 +226,16 @@ def test_per_run_certification_lock_stale_reclaim_and_wait_timeout(tmp_path, mon
         with pytest.raises(TimeoutError, match="timed out waiting for run"):
             lock_timeout.acquire()
 
-    # 3. Lifecycle transition exception during acquire is safely caught and logged
+    # 3. Lifecycle transition exception during acquire fails closed
     lock_lifecycle = PerRunCertificationLock("lifecycle_run", timeout_seconds=1.0)
     with patch(
         "eval_runner.run_lifecycle.transition_run_lifecycle",
         side_effect=RuntimeError("Lifecycle crash"),
     ):
-        with lock_lifecycle:
-            assert lock_lifecycle._acquired is True
+        with pytest.raises(RuntimeError, match="Lifecycle crash"):
+            lock_lifecycle.acquire()
+        assert lock_lifecycle._acquired is False
+        assert lock_lifecycle._fd is None
 
 
 def test_per_run_certification_lock_release_anomalies(tmp_path, monkeypatch):

@@ -47,6 +47,9 @@ export const Dashboard: React.FC = () => {
   const [selectedScenarioId, setSelectedScenarioId] = useState<string>('');
   const [showManifestModal, setShowManifestModal] = useState(false);
   const [isLaunching, setIsLaunching] = useState(false);
+  const [manifestData, setManifestData] = useState<any>(null);
+  const [launchError, setLaunchError] = useState<{ code: string; message: string; details?: string } | null>(null);
+  const [isValidatingReadiness, setIsValidatingReadiness] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -95,8 +98,55 @@ export const Dashboard: React.FC = () => {
     fetchData();
   }, []);
 
+  const handleOpenReviewModal = async () => {
+    if (!selectedScenarioObj) return;
+    setLaunchError(null);
+    setIsValidatingReadiness(true);
+    try {
+      const res = await fetch('/api/scenarios/readiness', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scenario_id: selectedScenarioId,
+          agent_config: {
+            protocol: selectedProfile.provider,
+            endpoint: selectedProfile.endpoint,
+            model: selectedProfile.model,
+          },
+          runtime_config: { max_turns: selectedProfile.maxTurns || 10 },
+          tenant_id: tenantId,
+          workspace_id: workspaceId,
+          seed: selectedScenarioObj.metadata?.seed ?? null,
+          execution_mode: selectedScenarioObj.metadata?.execution_mode || '',
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data?.ready) {
+        const failedCheck = data?.checks?.find((c: any) => c.status === 'FAILED') || data?.checks?.[0];
+        setLaunchError({
+          code: failedCheck?.name ? `PREFLIGHT_${failedCheck.name.toUpperCase().replace(/\s+/g, '_')}_FAILED` : 'PREFLIGHT_READINESS_FAILED',
+          message: failedCheck?.message || data?.error || 'Preflight execution readiness check failed',
+          details: data?.checks?.map((c: any) => `${c.name} [${c.status}]: ${c.message}`).join('; '),
+        });
+        return;
+      }
+      setManifestData(data);
+      setShowManifestModal(true);
+    } catch (err: any) {
+      setLaunchError({
+        code: 'PREFLIGHT_NETWORK_ERROR',
+        message: 'Failed to communicate with runtime preflight service',
+        details: err?.message || String(err),
+      });
+    } finally {
+      setIsValidatingReadiness(false);
+    }
+  };
+
   const handleLaunchVerification = async () => {
+    if (!manifestData) return;
     setIsLaunching(true);
+    setLaunchError(null);
     try {
       const found = scenarios.find(
         (s) => s.id === selectedScenarioId || s.metadata?.id === selectedScenarioId
@@ -109,33 +159,6 @@ export const Dashboard: React.FC = () => {
           ? selectedScenarioId
           : `scenarios/${selectedScenarioId}.json`);
 
-      // 1. Mandatory Preflight Readiness Gate (P0 #4)
-      const preflightRes = await fetch('/api/scenarios/readiness', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          scenario_id: selectedScenarioId,
-          agent_config: {
-            protocol: selectedProfile.provider,
-            endpoint: selectedProfile.endpoint,
-            model: selectedProfile.model,
-          },
-          runtime_config: { max_turns: selectedProfile.maxTurns || 10 },
-        }),
-      });
-      const preflightData = await preflightRes.json();
-      if (!preflightRes.ok || !preflightData?.ready) {
-        alert(
-          `Preflight readiness check failed: ${
-            preflightData?.checks?.map((c: any) => `${c.name}: ${c.detail || c.message || c.status}`).join('; ') ||
-            'Target or scenario not ready'
-          }`
-        );
-        return;
-      }
-      const preflightFingerprint = preflightData?.preflight_fingerprint;
-
-      // 2. Governed Launch with unified payload and preflight_fingerprint
       const res = await fetch('/api/v1/evaluate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -144,20 +167,21 @@ export const Dashboard: React.FC = () => {
           max_turns: selectedProfile.maxTurns || 10,
           endpoint: selectedProfile.endpoint,
           protocol: selectedProfile.provider,
-          agent_config: {
+          agent_config: manifestData.manifest?.agent_config || manifestData.agent_config || {
             protocol: selectedProfile.provider,
             endpoint: selectedProfile.endpoint,
             model: selectedProfile.model,
           },
-          runtime_config: {
+          runtime_config: manifestData.manifest?.runtime_config || manifestData.runtime_config || {
             max_turns: selectedProfile.maxTurns || 10,
           },
           tenant_id: tenantId,
           workspace_id: workspaceId,
-          seed: 42,
-          preflight_fingerprint: preflightFingerprint,
+          seed: selectedScenarioObj?.metadata?.seed ?? null,
+          execution_mode: selectedScenarioObj?.metadata?.execution_mode || '',
+          preflight_fingerprint: manifestData.preflight_fingerprint,
           metadata: {
-            preflight_fingerprint: preflightFingerprint,
+            preflight_fingerprint: manifestData.preflight_fingerprint,
           },
         }),
       });
@@ -166,10 +190,17 @@ export const Dashboard: React.FC = () => {
         setShowManifestModal(false);
         navigate(`/debugger?run_id=${data.run_id}`);
       } else {
-        alert(`Evaluation launch failed: ${data.error || 'Unknown error'}`);
+        setLaunchError({
+          code: data?.error_code || 'LAUNCH_EXECUTION_REJECTED',
+          message: data?.error || data?.message || 'Evaluation launch failed',
+          details: data?.expected_fingerprint ? `Expected fingerprint: ${data.expected_fingerprint}` : undefined,
+        });
       }
     } catch (err: any) {
-      alert(`Error dispatching evaluation: ${err.message}`);
+      setLaunchError({
+        code: 'LAUNCH_DISPATCH_ERROR',
+        message: err?.message || 'Error dispatching evaluation',
+      });
     } finally {
       setIsLaunching(false);
     }
@@ -294,18 +325,44 @@ export const Dashboard: React.FC = () => {
               </span>
 
               <button
-                onClick={() => selectedScenarioObj && setShowManifestModal(true)}
-                disabled={!selectedScenarioObj}
+                onClick={handleOpenReviewModal}
+                disabled={!selectedScenarioObj || isValidatingReadiness}
                 className={`px-6 py-2.5 rounded-xl font-bold text-xs shadow-lg flex items-center gap-2 transition ${
-                  selectedScenarioObj
+                  selectedScenarioObj && !isValidatingReadiness
                     ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-emerald-500/20 cursor-pointer'
                     : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
                 }`}
               >
                 <ShieldCheck className="w-4 h-4" />
-                Review Resolved Config & Execute
+                {isValidatingReadiness ? 'Validating Preflight Readiness...' : 'Review Resolved Config & Execute'}
               </button>
             </div>
+
+            {/* Inline Error Surface */}
+            {launchError && (
+              <div className="p-4 rounded-xl bg-red-950/40 border border-red-500/30 text-red-200 text-xs flex items-start gap-3 animate-fade-in mt-3">
+                <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+                <div className="flex-1 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-500/20 text-red-300 border border-red-500/30">
+                      {launchError.code}
+                    </span>
+                    <span className="font-semibold text-slate-100">{launchError.message}</span>
+                  </div>
+                  {launchError.details && (
+                    <p className="text-slate-400 font-mono text-[11px] break-all leading-relaxed">
+                      {launchError.details}
+                    </p>
+                  )}
+                </div>
+                <button
+                  onClick={() => setLaunchError(null)}
+                  className="text-slate-400 hover:text-slate-200 text-sm font-mono px-2 py-1 rounded hover:bg-slate-800"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -320,16 +377,18 @@ export const Dashboard: React.FC = () => {
             id: selectedScenarioObj.id || selectedScenarioId,
             title: selectedScenarioObj.title || selectedScenarioObj.metadata?.name || 'Target Scenario',
             version: selectedScenarioObj.version || selectedScenarioObj.metadata?.version || '1.0.0',
-            hash: selectedScenarioObj.metadata?.provisioning_hash,
+            hash: manifestData?.scenario_hash || manifestData?.manifest?.scenario_hash,
           }}
           targetProfile={selectedProfile}
           tenantId={tenantId}
           workspaceId={workspaceId}
           seed={selectedScenarioObj.metadata?.seed ?? null}
           runtimeBoundary={
-            selectedScenarioObj.metadata?.execution_mode
-              ? `Declared: ${selectedScenarioObj.metadata.execution_mode}`
-              : 'Standard Sandbox'
+            manifestData?.readiness_tier
+              ? `${manifestData.readiness_tier} • ${manifestData.readiness_state || 'READY'}`
+              : selectedScenarioObj.metadata?.execution_mode
+                ? `Declared: ${selectedScenarioObj.metadata.execution_mode}`
+                : 'Standard Sandbox'
           }
           evaluators={
             Array.from(
@@ -341,7 +400,8 @@ export const Dashboard: React.FC = () => {
               ])
             ).filter(Boolean) as string[]
           }
-          signingBackend={null}
+          signingBackend={manifestData?.signing_backend || manifestData?.manifest?.signing_backend || 'ed25519'}
+          preflightFingerprint={manifestData?.preflight_fingerprint || manifestData?.manifest?.preflight_fingerprint}
           isLaunching={isLaunching}
         />
       )}

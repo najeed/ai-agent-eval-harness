@@ -130,6 +130,55 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             or "unknown"
         )
 
+        # Special handling for RUN_START to initialize environment and clean run state
+        if event.name == CoreEvents.RUN_START:
+            with self._lock:
+                # [Refresher] Re-read environment variables for dynamic runtime configuration
+                import eval_runner.config as config
+
+                self.log_dir = Path(os.getenv("RUN_LOG_DIR", str(config.RUN_LOG_DIR)))
+                self.per_run = os.getenv("RUN_LOG_PER_RUN", "true").lower() == "true"
+                self.master = os.getenv("RUN_LOG_MASTER", "true").lower() == "true"
+
+                self._enforce_safety_floor()
+
+                self.log_rotate_count = int(os.getenv("RUN_LOG_ROTATE_COUNT", "0"))
+                self.master_log_path = self.log_dir / "run.jsonl"
+
+                if run_id and run_id != "unknown":
+                    self._run_states[run_id] = "RUNNING"
+                    self._failed_runs.discard(run_id)
+                    self._sequence_numbers[run_id] = 0
+
+                    if self.per_run:
+                        run_vault_dir = self.log_dir / run_id
+                        target_path = str(run_vault_dir / "run.jsonl")
+                        old_handle = self._handles.pop(target_path, None)
+                        if old_handle:
+                            try:
+                                old_handle.flush()
+                                old_handle.close()
+                            except (OSError, ValueError) as close_err:
+                                logger.debug(
+                                    "Error closing stale handle on RUN_START: %s", close_err
+                                )
+
+                        p = Path(target_path)
+                        if p.exists():
+                            try:
+                                p.unlink()
+                            except OSError:
+                                try:
+                                    with open(p, "w", encoding="utf-8") as tf:
+                                        tf.truncate(0)
+                                except OSError as trunc_err:
+                                    logger.debug(
+                                        "Failed truncating stale trace on RUN_START: %s", trunc_err
+                                    )
+
+            if self.log_rotate_count > 0:
+                self.rotate_logs(is_new_run=True)
+
         with self._lock:
             run_state = self._run_states.get(run_id, "RUNNING")
             if run_state in ("FINALIZING", "SEALED"):
@@ -155,24 +204,6 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             self._sequence_numbers[run_id] += 1
             data["_seq"] = self._sequence_numbers[run_id]
             data["_ts_iso"] = datetime.now().astimezone().isoformat()
-
-        # Special handling for RUN_START to initialize environment
-        if event.name == CoreEvents.RUN_START:
-            with self._lock:
-                # [Refresher] Re-read environment variables for dynamic runtime configuration
-                import eval_runner.config as config
-
-                self.log_dir = Path(os.getenv("RUN_LOG_DIR", str(config.RUN_LOG_DIR)))
-                self.per_run = os.getenv("RUN_LOG_PER_RUN", "true").lower() == "true"
-                self.master = os.getenv("RUN_LOG_MASTER", "true").lower() == "true"
-
-                self._enforce_safety_floor()
-
-                self.log_rotate_count = int(os.getenv("RUN_LOG_ROTATE_COUNT", "0"))
-                self.master_log_path = self.log_dir / "run.jsonl"
-
-            if self.log_rotate_count > 0:
-                self.rotate_logs(is_new_run=True)
 
         # Resolve paths dynamically to support parallel runs in the same process
         per_run_log_path = None

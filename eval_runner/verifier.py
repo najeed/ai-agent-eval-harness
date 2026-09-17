@@ -597,7 +597,11 @@ class TraceVerifier:
             try:
                 transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING)
             except Exception as tr_err:
-                logger.debug("Failed transitioning lifecycle to FINALIZING: %s", tr_err)
+                logger.error("Failed transitioning lifecycle to FINALIZING: %s", tr_err)
+                raise CertificationFailedError(
+                    f"LifecycleTransitionFailed: could not transition run '{run_id}' "
+                    f"to FINALIZING: {tr_err}"
+                ) from tr_err
 
         # Write immutable certification receipt artifact and bind its hash into evidence ledger
         receipt_data = {
@@ -627,12 +631,15 @@ class TraceVerifier:
                     compute_evidence_graph_root,
                 )
 
+                events_list_with_lines: list[tuple[dict[str, Any], str]] = []
                 with open(p, encoding="utf-8") as tf:
                     for line_idx, line in enumerate(tf, start=1):
                         stripped = line.strip()
                         if stripped:
                             try:
-                                events_list.append(json.loads(stripped))
+                                parsed_ev = json.loads(stripped)
+                                events_list.append(parsed_ev)
+                                events_list_with_lines.append((parsed_ev, stripped))
                             except Exception as ev_parse_err:
                                 logger.error(
                                     f"Malformed trace record at line {line_idx}: {ev_parse_err}"
@@ -655,7 +662,7 @@ class TraceVerifier:
                         )
                     )
                     ev_graph = build_evidence_graph_from_events(
-                        events_list, required_oracle_ids=req_oracles
+                        events_list_with_lines, required_oracle_ids=req_oracles
                     )
                     computed_evidence_root = compute_evidence_graph_root(ev_graph)
                     total_nodes = ev_graph.get("total_nodes", ev_graph.get("node_count", 0))
@@ -1081,7 +1088,15 @@ class TraceVerifier:
 
                 from eval_runner.identity import IdentityService
 
-                priv_key = IdentityService.get_private_key(identity_id, auto_provision=False)
+                priv_key = IdentityService.get_private_key(identity_id)
+                if not (
+                    hasattr(priv_key, "sign")
+                    or (hasattr(priv_key, "private_bytes") and callable(priv_key.private_bytes))
+                ):
+                    raise CertificationFailedError(
+                        f"Identity '{identity_id}' exposes no usable signing capability "
+                        "(fail-closed: degenerate placeholder signatures are prohibited)"
+                    )
                 pkg_sig = None
                 pub_pem = None
                 if priv_key and hasattr(priv_key, "sign"):
@@ -1098,6 +1113,11 @@ class TraceVerifier:
                             .decode("utf-8")
                         )
                 pkg = replace(pkg, signature=pkg_sig, public_key_pem=pub_pem)
+                if not pkg_sig and format_str != "none":
+                    raise CertificationFailedError(
+                        f"UnsignedVerificationPackage: Could not cryptographically sign "
+                        f"VerificationPackage for identity '{identity_id}'"
+                    )
                 manifest["verification_package"] = pkg.to_dict()
                 manifest["package_hash"] = pkg.compute_package_hash()
                 manifest["evaluation_hash"] = eval_hash
@@ -1201,7 +1221,11 @@ class TraceVerifier:
             try:
                 transition_run_lifecycle(run_id, RunLifecycleState.SEALED)
             except Exception as sl_err:
-                logger.debug("Failed transitioning lifecycle to SEALED for %s: %s", run_id, sl_err)
+                logger.error("Failed transitioning lifecycle to SEALED for %s: %s", run_id, sl_err)
+                raise CertificationFailedError(
+                    f"LifecycleTransitionFailed: could not transition run '{run_id}' "
+                    f"to SEALED: {sl_err}"
+                ) from sl_err
 
         # --- TRANSACTION: hash -> sign -> persist(stage) -> verify -> publish(promote) -> seal ---
         # Any stage failure rolls back the trace mutation and partial artifacts,
@@ -1347,13 +1371,16 @@ class TraceVerifier:
                         compute_evidence_graph_root,
                     )
 
-                    ev_list = []
+                    ev_list: list[dict[str, Any]] = []
+                    ev_list_with_lines: list[tuple[dict[str, Any], str]] = []
                     with open(tp, encoding="utf-8") as tf:
                         for line_idx, line in enumerate(tf, start=1):
                             stripped = line.strip()
                             if stripped:
                                 try:
-                                    ev_list.append(json.loads(stripped))
+                                    parsed = json.loads(stripped)
+                                    ev_list.append(parsed)
+                                    ev_list_with_lines.append((parsed, stripped))
                                 except (
                                     json.JSONDecodeError,
                                     UnicodeDecodeError,
@@ -1371,9 +1398,9 @@ class TraceVerifier:
                         or manifest.get("required_oracle_ids")
                         or (manifest.get("metadata", {}) or {}).get("required_oracle_ids")
                     )
-                    if ev_list:
+                    if ev_list_with_lines:
                         graph = build_evidence_graph_from_events(
-                            ev_list, required_oracle_ids=req_oracles
+                            ev_list_with_lines, required_oracle_ids=req_oracles
                         )
                         computed_root = compute_evidence_graph_root(graph)
                         if computed_root != expected_evidence_root:
@@ -1532,15 +1559,17 @@ class TraceVerifier:
                         from agentv_runtime.package import VerificationPackage
 
                         pkg = VerificationPackage.from_dict(manifest["verification_package"])
-                        if pkg.signature:
-                            pkg_sig_ok = pkg.verify_signature(
-                                public_key_pem=public_key_pem,
-                                trust_root=trust_root or config.TRUST_ROOT,
-                                key_registry=key_registry,
-                            )
-                            if not pkg_sig_ok:
-                                logger.warning("VerificationPackage signature check failed")
-                                return False
+                        if not pkg.signature:
+                            logger.warning("VerificationPackage is unsigned (missing signature)")
+                            return False
+                        pkg_sig_ok = pkg.verify_signature(
+                            public_key_pem=public_key_pem,
+                            trust_root=trust_root or config.TRUST_ROOT,
+                            key_registry=key_registry,
+                        )
+                        if not pkg_sig_ok:
+                            logger.warning("VerificationPackage signature check failed")
+                            return False
                 elif algorithm == "ML-DSA-65":
                     # PQC Verification (via CycleCore or local validator)
                     pqc_client = IdentityService.get_pqc_client()
@@ -1912,11 +1941,14 @@ def verify_trace_certificate(
 
                 if trace_str:
                     has_line_error = False
+                    ev_list_with_lines: list[tuple[dict[str, Any], str]] = []
                     for line_idx, line in enumerate(trace_str.splitlines(), start=1):
                         stripped = line.strip()
                         if stripped:
                             try:
-                                ev_list.append(_json.loads(stripped))
+                                parsed_ev = _json.loads(stripped)
+                                ev_list.append(parsed_ev)
+                                ev_list_with_lines.append((parsed_ev, stripped))
                             except (
                                 json.JSONDecodeError,
                                 UnicodeDecodeError,
@@ -1928,8 +1960,15 @@ def verify_trace_certificate(
                                 )
                                 break
 
-                    if not has_line_error and ev_list:
-                        ev_graph = build_evidence_graph_from_events(ev_list)
+                    if not has_line_error and ev_list_with_lines:
+                        req_oracles = (
+                            cert_data.get("required_oracles")
+                            or cert_data.get("required_oracle_ids")
+                            or (cert_data.get("metadata", {}) or {}).get("required_oracle_ids")
+                        )
+                        ev_graph = build_evidence_graph_from_events(
+                            ev_list_with_lines, required_oracle_ids=req_oracles
+                        )
                         computed_ev_root = compute_evidence_graph_root(ev_graph)
                         expected_ev_root = cert_data["evidence_root_hash"]
                         if computed_ev_root == expected_ev_root:
@@ -2068,7 +2107,10 @@ class VerificationAuthority:
 
         failures: list[str] = []
 
-        # 1. Trace byte parity check
+        # 1. Trace byte parity check and internal line-by-line parsing
+        parsed_events_with_lines: list[tuple[dict[str, Any], str]] = []
+        parsed_events: list[dict[str, Any]] = []
+
         if raw_trace_bytes is None:
             failures.append("TraceBytesMissing: artifact verification requires raw trace bytes")
         else:
@@ -2080,6 +2122,40 @@ class VerificationAuthority:
                 failures.append(
                     f"TraceHashMismatch: package={pkg.trace_hash} actual={actual_trace_hash}"
                 )
+
+            try:
+                decoded = raw_trace_bytes.decode("utf-8")
+                for line in decoded.splitlines():
+                    trimmed = line.strip()
+                    if not trimmed:
+                        continue
+                    evt = json.loads(trimmed)
+                    parsed_events.append(evt)
+                    parsed_events_with_lines.append((evt, trimmed))
+            except Exception as parse_err:
+                failures.append(f"TraceStreamParsingFailed: {parse_err}")
+
+        # Derive authoritative event stream from parsed raw trace bytes
+        effective_events_with_lines = parsed_events_with_lines
+        effective_events = parsed_events
+
+        # Anti-split-chain validation: if caller supplied raw_trace_events,
+        # it MUST match the parsed byte stream
+        if raw_trace_events is not None:
+            if parsed_events and len(raw_trace_events) != len(parsed_events):
+                failures.append(
+                    "TraceStreamSplitChainViolation: Caller-supplied event count "
+                    f"({len(raw_trace_events)}) does not match byte-stream parsed "
+                    f"event count ({len(parsed_events)})"
+                )
+            elif not parsed_events:
+                from agentv_runtime.canonical import canonical_json_dumps
+
+                effective_events = raw_trace_events
+                effective_events_with_lines = [
+                    (e, canonical_json_dumps(e) if isinstance(e, dict) else str(e))
+                    for e in raw_trace_events
+                ]
 
         # 2. Manifest canonical hash binding
         if canonical_manifest is None:
@@ -2165,8 +2241,8 @@ class VerificationAuthority:
             except Exception as m_err:
                 failures.append(f"ManifestVerificationFailed: {m_err}")
 
-        # 3. Evidence root binding & reconstruction from raw events
-        if raw_trace_events is None:
+        # 3. Evidence root binding & reconstruction from stream events
+        if raw_trace_events is None or not effective_events_with_lines:
             failures.append("TraceEventsMissing: artifact verification requires raw trace events")
         else:
             try:
@@ -2175,7 +2251,7 @@ class VerificationAuthority:
                     compute_evidence_graph_root,
                 )
 
-                ev_graph = build_evidence_graph_from_events(raw_trace_events)
+                ev_graph = build_evidence_graph_from_events(effective_events_with_lines)
                 computed_root = compute_evidence_graph_root(ev_graph)
                 if computed_root != pkg.evidence_root_hash:
                     failures.append(
@@ -2348,11 +2424,11 @@ class VerificationAuthority:
             failures.append("UnsignedPackage: package signature is required")
 
         # 9. Sub-hash bindings: evaluation_hash, verification_hash, certificate_hash
-        if pkg.evaluation_hash and raw_trace_events is not None:
+        if pkg.evaluation_hash and effective_events:
             fin_ev = next(
                 (
                     e
-                    for e in reversed(raw_trace_events)
+                    for e in reversed(effective_events)
                     if e.get("event") == "evaluator_finalization"
                 ),
                 None,
@@ -2467,7 +2543,10 @@ class VerificationAuthority:
 
         failures: list[str] = []
 
-        # 1. Byte parity check if raw trace bytes supplied
+        # 1. Byte parity check and trace stream parsing if raw trace bytes supplied
+        parsed_events_with_lines: list[tuple[dict[str, Any], str]] = []
+        parsed_events: list[dict[str, Any]] = []
+
         if raw_trace_bytes is not None:
             actual_trace_hash = hashlib.sha3_256(raw_trace_bytes).hexdigest()
             expected_hash = (
@@ -2476,6 +2555,42 @@ class VerificationAuthority:
             if actual_trace_hash.lower() != expected_hash.lower():
                 failures.append(
                     f"TraceHashMismatch: package={pkg.trace_hash} actual={actual_trace_hash}"
+                )
+
+            try:
+                decoded = raw_trace_bytes.decode("utf-8")
+                for line in decoded.splitlines():
+                    trimmed = line.strip()
+                    if not trimmed:
+                        continue
+                    evt = json.loads(trimmed)
+                    parsed_events.append(evt)
+                    parsed_events_with_lines.append((evt, trimmed))
+            except Exception as parse_err:
+                failures.append(f"TraceStreamParsingFailed: {parse_err}")
+
+        from agentv_runtime.canonical import canonical_json_dumps
+
+        effective_events_with_lines = (
+            parsed_events_with_lines
+            if raw_trace_bytes is not None
+            else (
+                [
+                    (e, canonical_json_dumps(e) if isinstance(e, dict) else str(e))
+                    for e in (raw_trace_events or [])
+                ]
+                if raw_trace_events is not None
+                else None
+            )
+        )
+        effective_events = parsed_events if raw_trace_bytes is not None else raw_trace_events
+
+        if raw_trace_events is not None and parsed_events:
+            if len(raw_trace_events) != len(parsed_events):
+                failures.append(
+                    "TraceStreamSplitChainViolation: Caller-supplied event count "
+                    f"({len(raw_trace_events)}) does not match byte-stream parsed "
+                    f"event count ({len(parsed_events)})"
                 )
 
         # 2. Manifest binding
@@ -2574,7 +2689,12 @@ class VerificationAuthority:
                     compute_evidence_graph_root,
                 )
 
-                ev_graph = build_evidence_graph_from_events(raw_trace_events)
+                ev_source = (
+                    effective_events_with_lines
+                    if effective_events_with_lines is not None
+                    else raw_trace_events
+                )
+                ev_graph = build_evidence_graph_from_events(ev_source)
                 computed_root = compute_evidence_graph_root(ev_graph)
                 if computed_root != pkg.evidence_root_hash:
                     failures.append(
@@ -2613,13 +2733,13 @@ class VerificationAuthority:
                         f"trace hash '{pkg.trace_hash}'"
                     )
 
-            if raw_trace_events is not None and "event_count" in pkg.trace_seal:
+            if effective_events is not None and "event_count" in pkg.trace_seal:
                 try:
                     exp_count = int(pkg.trace_seal["event_count"])
-                    if len(raw_trace_events) != exp_count:
+                    if len(effective_events) != exp_count:
                         failures.append(
                             f"TraceSealEventCountMismatch: seal declared {exp_count} events "
-                            f"but actual trace contains {len(raw_trace_events)} events"
+                            f"but actual trace contains {len(effective_events)} events"
                         )
                 except (ValueError, TypeError):
                     pass
@@ -2842,11 +2962,11 @@ class VerificationAuthority:
             failures.append("UnsignedPackage: package signature is required")
 
         # 9. Sub-hash bindings: evaluation_hash, verification_hash, certificate_hash
-        if pkg.evaluation_hash and raw_trace_events is not None:
+        if pkg.evaluation_hash and effective_events is not None:
             fin_ev = next(
                 (
                     e
-                    for e in reversed(raw_trace_events)
+                    for e in reversed(effective_events)
                     if e.get("event") == "evaluator_finalization"
                 ),
                 None,

@@ -379,6 +379,31 @@ class DefaultRunner(BaseRunner):
         except Exception as e:
             logger.debug("Failed saving execution_manifest.json to run vault: %s", e)
 
+        # For fresh evaluation runs (non-resumed), ensure vault lifecycle and trace begin clean
+        if resumption_checkpoint is None:
+            final_trace_path = run_vault_dir / "run.jsonl"
+            if final_trace_path.exists():
+                try:
+                    final_trace_path.unlink()
+                except OSError:
+                    try:
+                        with open(final_trace_path, "w", encoding="utf-8") as tf:
+                            tf.truncate(0)
+                    except OSError as trunc_err:
+                        logger.debug("Failed truncating stale trace file in runner: %s", trunc_err)
+            lf_file = run_vault_dir / ".run_lifecycle"
+            if lf_file.exists():
+                try:
+                    lf_file.unlink()
+                except OSError as unl_err:
+                    logger.debug("Failed unlinking stale lifecycle marker in runner: %s", unl_err)
+            sealed_file = run_vault_dir / ".sealed"
+            if sealed_file.exists():
+                try:
+                    sealed_file.unlink()
+                except OSError as unl_err:
+                    logger.debug("Failed unlinking stale sealed marker in runner: %s", unl_err)
+
         try:
             events.emit(
                 events.CoreEvents.RUN_START,

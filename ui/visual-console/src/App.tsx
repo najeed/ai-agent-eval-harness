@@ -404,6 +404,45 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
             if (active) setLoadingState({ status: 'contract_violation', violations: preViolations });
             return;
           }
+
+          // Enforce binding between requested entryUrl/sriHash and preManifest declarations
+          const manifestRemoteEntry = (preManifest as any).remote_entry ?? (preManifest as any).remoteEntry;
+          const manifestSriHash = (preManifest as any).sri_hash ?? (preManifest as any).sriHash;
+
+          const bindingViolations: string[] = [];
+          if (manifestRemoteEntry) {
+            let matches = manifestRemoteEntry === entryUrl;
+            if (!matches) {
+              try {
+                const normReq = new URL(entryUrl, window.location.origin).pathname;
+                const normMan = new URL(manifestRemoteEntry, window.location.origin).pathname;
+                matches = normReq === normMan;
+              } catch {
+                matches = false;
+              }
+            }
+            if (!matches) {
+              bindingViolations.push(
+                `Manifest remote_entry mismatch: manifest declared '${manifestRemoteEntry}', but requested '${entryUrl}'`
+              );
+            }
+          }
+          if (manifestSriHash && sriHash && manifestSriHash !== sriHash) {
+            bindingViolations.push(
+              `Manifest sri_hash mismatch: manifest declared '${manifestSriHash}', but requested '${sriHash}'`
+            );
+          }
+
+          if (bindingViolations.length > 0) {
+            if (active) {
+              setLoadingState({
+                status: 'contract_violation',
+                violations: bindingViolations,
+              });
+            }
+            return;
+          }
+
           const tier = await resolveTier(preManifest);
 
           // Integrity and contract validated: instantiate via ephemeral Blob URL

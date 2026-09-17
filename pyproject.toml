@@ -35,7 +35,7 @@ dependencies = [
     "python-dotenv==1.2.3",
     "Authlib==1.8.0",
     "Pillow==12.3.0",
-    "idna==3.19",
+    "idna==3.20",
 ]
 
 [project.optional-dependencies]

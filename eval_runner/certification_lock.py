@@ -244,9 +244,20 @@ class PerRunCertificationLock:
                     metadata={"fencing_token": self.fencing_token, "owner_id": self.owner_id},
                 )
             except Exception as tr_err:
-                logger.debug(
+                logger.error(
                     "Failed transitioning lifecycle to FINALIZING for %s: %s", self.run_id, tr_err
                 )
+                if self._fd is not None:
+                    try:
+                        os.close(self._fd)
+                    except OSError:
+                        pass
+                    self._fd = None
+                    try:
+                        self.lock_file.unlink(missing_ok=True)
+                    except OSError:
+                        pass
+                raise
 
             with self._meta_lock:
                 self._active_locks.add(self.run_id)

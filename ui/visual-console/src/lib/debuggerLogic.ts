@@ -305,6 +305,8 @@ export interface TraceIntegrityFlags {
   reordered: boolean;
   missingStart: boolean;
   missingEnd: boolean;
+  missingSequences: boolean;
+  hasValidSequences: boolean;
   issues: string[];
 }
 
@@ -322,19 +324,33 @@ export const computeTraceIntegrity = (
       reordered: false,
       missingStart: false,
       missingEnd: false,
+      missingSequences: false,
+      hasValidSequences: false,
       issues: ['No events received.'],
     };
   }
 
   const issues: string[] = [];
-  const seqs = events.map(e => Number(e._seq)).filter(n => !Number.isNaN(n));
+  const validSeqEntries = events
+    .map((e, idx) => ({ seq: e._seq !== undefined && e._seq !== null ? Number(e._seq) : NaN, idx }))
+    .filter(item => !Number.isNaN(item.seq));
+  const seqs = validSeqEntries.map(item => item.seq);
 
   let reordered = false;
   let gaps = false;
+  let missingSequences = false;
 
   if (seqs.length === 0) {
+    missingSequences = true;
+    gaps = true;
     issues.push('Events lack server-assigned _seq identifiers.');
   } else {
+    if (seqs.length < events.length) {
+      missingSequences = true;
+      gaps = true;
+      issues.push(`${events.length - seqs.length} event(s) lack server-assigned _seq identifiers.`);
+    }
+
     const sorted = [...seqs].sort((a, b) => a - b);
     const uniq = Array.from(new Set(sorted));
 
@@ -343,10 +359,11 @@ export const computeTraceIntegrity = (
       issues.push('Events arrived out of monotonic _seq order (client-side reorder buffer applied).');
     }
 
-    gaps =
+    const hasGapsOrDups =
       uniq[uniq.length - 1] - uniq[0] + 1 !== uniq.length ||
       uniq.length !== sorted.length;
-    if (gaps) {
+    if (hasGapsOrDups) {
+      gaps = true;
       const missing: number[] = [];
       for (let s = uniq[0]; s <= uniq[uniq.length - 1]; s++) {
         if (!uniq.includes(s)) missing.push(s);
@@ -367,6 +384,8 @@ export const computeTraceIntegrity = (
     }
   }
 
+  const hasValidSequences = seqs.length === events.length && seqs.length > 0 && !gaps && !reordered;
+
   const recovered = !!sourcedFromMaster;
   if (recovered) {
     issues.push('Trace recovered from master log; per-run stream was incomplete.');
@@ -386,7 +405,17 @@ export const computeTraceIntegrity = (
   if (missingEnd) issues.push('Missing terminal event (run_end, trace_sealed, or verification_certificate_issued).');
   else if (missingStart) issues.push('Missing run_start event.');
 
-  return { hasEvents: true, recovered, gaps, reordered, missingStart, missingEnd, issues };
+  return {
+    hasEvents: true,
+    recovered,
+    gaps,
+    reordered,
+    missingStart,
+    missingEnd,
+    missingSequences,
+    hasValidSequences,
+    issues,
+  };
 };
 
 // ---------------------------------------------------------------------------

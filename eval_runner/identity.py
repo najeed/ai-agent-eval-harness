@@ -139,10 +139,19 @@ class IdentityService:
                 logger.error(f"Failed to load private key from {key_path}: {e}")
                 raise
 
-        # Security Guardrail: Block auto-provisioning for system_id in production
-        if identity_id == "system_id" and not config.ALLOW_SYSTEM_IDENTITY_PROVISIONING:
+        # Security Guardrail: Block auto-provisioning for certification identities in production
+        certification_identities = {
+            "system_id",
+            "eval_kernel",
+            "certification_authority",
+            "evaluator",
+            "attestation_signer",
+        }
+        if (
+            identity_id in certification_identities or identity_id.startswith("cert_")
+        ) and not config.ALLOW_SYSTEM_IDENTITY_PROVISIONING:
             raise PermissionError(
-                "Security Policy Violation: Auto-provisioning for 'system_id' is disabled. "
+                f"Security Policy Violation: Auto-provisioning for '{identity_id}' is disabled. "
                 "Please provide a valid private key via environment or TRUST_ROOT."
             )
 
@@ -247,7 +256,7 @@ def get_default_signer():
     if key_path:
         from eval_runner.reference.signing import LocalEd25519SigningBackend
 
-        return LocalEd25519SigningBackend(key_path=key_path)
+        return LocalEd25519SigningBackend()
     from eval_runner.reference.signing import NullSigningBackend
 
     return NullSigningBackend()
