@@ -23,7 +23,7 @@ def test_flight_recorder_init_signing_backends(tmp_path):
     assert fr_custom.signing_backend == mock_backend
 
     # 2. Private key path in environment initializes LocalEd25519SigningBackend
-    with patch.dict(os.environ, {"EVAL_SIGNING_KEY": "dummy_key_path"}):
+    with patch.dict(os.environ, {"FLIGHT_RECORDER_KEY_PATH": "dummy_key_path"}):
         with patch("eval_runner.flight_recorder.LocalEd25519SigningBackend") as mock_ed:
             FlightRecorderPlugin(log_dir=tmp_path / "logs")
             assert mock_ed.called

@@ -209,7 +209,7 @@ def test_flight_recorder_fail_closed_on_absence(monkeypatch):
     EVAL_REQUIRE_SIGNING=true and no key or SigningBackend is provided.
     """
     monkeypatch.setenv("EVAL_REQUIRE_SIGNING", "true")
-    monkeypatch.delenv("EVAL_SIGNING_KEY", raising=False)
+    monkeypatch.delenv("FLIGHT_RECORDER_KEY_PATH", raising=False)
 
     recorder = FlightRecorderPlugin()
     event = Event("test_event", {"run_id": "run-fail-closed-001", "data": "test"})
@@ -235,7 +235,7 @@ def test_flight_recorder_signing_backend_wiring(tmp_path, monkeypatch):
         )
     )
 
-    monkeypatch.setenv("EVAL_SIGNING_KEY", str(key_path))
+    monkeypatch.setenv("FLIGHT_RECORDER_KEY_PATH", str(key_path))
     monkeypatch.setenv("AUDIT_LEVEL", "2")
 
     mock_backend = MagicMock(spec=SigningBackend)

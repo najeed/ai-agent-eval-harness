@@ -21,7 +21,7 @@ The harness is agnostic by design, supporting any provider (Local, OpenAI, Anthr
 - Set your required provider keys:
   - `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, etc.
   - Set `JUDGE_PROVIDER` (e.g., `openai`, `ollama`) to define your default evaluator.
-- For high-stakes security, set your `AES_PRIVATE_KEY` (ED25519) to anchor your results.
+- For high-stakes security, set your `CORE_ARTIFACT_SIGNING_PEM` (ED25519) to anchor your results.
 
 ### 3. Verification
 Verify that the Scenario Catalog is accessible:

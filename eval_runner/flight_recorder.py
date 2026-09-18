@@ -67,7 +67,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
 
         # [Iteration 4: Compliance DNA]
         self._sequence_numbers = {}  # Per-run sequence counters
-        self._private_key_path = os.getenv("EVAL_SIGNING_KEY")
+        self._private_key_path = os.getenv("FLIGHT_RECORDER_KEY_PATH")
         self._audit_level = int(os.getenv("AUDIT_LEVEL", "2"))
 
         # Interface Wiring: ArtifactStore & SigningBackend

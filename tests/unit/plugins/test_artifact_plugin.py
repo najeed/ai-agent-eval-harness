@@ -125,7 +125,7 @@ def test_verify_integrity_non_existent_manifest():
 
 
 def test_get_signing_key_from_env(monkeypatch):
-    """Verify that private key can be loaded from AES_PRIVATE_KEY environment variable."""
+    """Verify that private key can be loaded from CORE_ARTIFACT_SIGNING_PEM environment variable."""
     from cryptography.hazmat.primitives import serialization
     from cryptography.hazmat.primitives.asymmetric import ed25519
 
@@ -136,7 +136,7 @@ def test_get_signing_key_from_env(monkeypatch):
         encryption_algorithm=serialization.NoEncryption(),
     ).decode()
 
-    monkeypatch.setenv("AES_PRIVATE_KEY", pem)
+    monkeypatch.setenv("CORE_ARTIFACT_SIGNING_PEM", pem)
     plugin = ArtifactPlugin()
     key = plugin._get_signing_key()
     assert isinstance(key, ed25519.Ed25519PrivateKey)
@@ -197,7 +197,7 @@ def test_get_signing_key_no_auto_generation(tmp_path, monkeypatch):
     plugin = ArtifactPlugin()
     monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
     monkeypatch.setattr(config, "TRUST_ROOT", tmp_path / "nonexistent_trust")
-    monkeypatch.delenv("AES_PRIVATE_KEY", raising=False)
+    monkeypatch.delenv("CORE_ARTIFACT_SIGNING_PEM", raising=False)
 
     key_path = tmp_path / ".aes" / "keys" / "system_id.pem"
     assert not key_path.exists()
@@ -263,10 +263,12 @@ def test_get_signing_key_invalid_env(tmp_path, monkeypatch):
     from eval_runner import config
 
     plugin = ArtifactPlugin()
-    monkeypatch.setenv("AES_PRIVATE_KEY", "NOT_A_PRIVATE_KEY")
+    monkeypatch.setenv("CORE_ARTIFACT_SIGNING_PEM", "NOT_A_PRIVATE_KEY")
     monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
 
-    with pytest.raises(RuntimeError, match="Failed to load signing key from AES_PRIVATE_KEY"):
+    with pytest.raises(
+        RuntimeError, match="Failed to load signing key from CORE_ARTIFACT_SIGNING_PEM"
+    ):
         plugin._get_signing_key()
 
 
@@ -384,7 +386,7 @@ def test_artifact_plugin_on_discover_services():
 
 def test_get_signing_key_priority3_persistent_file_fallback(tmp_path, monkeypatch):
     """Verify Priority 3 persistent key loading when IdentityService has no key."""
-    monkeypatch.delenv("AES_PRIVATE_KEY", raising=False)
+    monkeypatch.delenv("CORE_ARTIFACT_SIGNING_PEM", raising=False)
     monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
     monkeypatch.setattr(IdentityService, "get_private_key", lambda *args, **kwargs: None)
 

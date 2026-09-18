@@ -14,7 +14,7 @@ if not Path(key_dir).exists():
     from eval_runner.verifier import TraceVerifier
 
     TraceVerifier.generate_key_pair(key_dir)
-os.environ["EVAL_SIGNING_KEY"] = f"{key_dir}/private_key.pem"
+os.environ["FLIGHT_RECORDER_KEY_PATH"] = f"{key_dir}/private_key.pem"
 
 from eval_runner.events import CoreEvents, emit  # noqa: E402
 from eval_runner.flight_recorder import FlightRecorderPlugin  # noqa: E402

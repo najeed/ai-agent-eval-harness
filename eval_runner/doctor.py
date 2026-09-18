@@ -84,8 +84,8 @@ def check_signing_audit_posture():
     """Performs an audit of cryptographic trace signing and governance posture."""
     print("  --- Cryptographic Signing & Audit Posture ---")
 
-    signing_key = os.getenv("EVAL_SIGNING_KEY")
-    signing_key_path = os.getenv("EVAL_SIGNING_KEY_PATH")
+    signing_key = os.getenv("FLIGHT_RECORDER_KEY_PATH")
+    signing_key_path = os.getenv("FLIGHT_RECORDER_KEY_PATH_PATH")
     require_signing = os.getenv("EVAL_REQUIRE_SIGNING", "").lower() in ("true", "1", "yes")
     audit_level = int(os.getenv("AUDIT_LEVEL", "0") or 0)
     pqc_enabled = getattr(config, "PQC_ENABLED", False)
@@ -109,7 +109,7 @@ def check_signing_audit_posture():
         else:
             print(
                 "  ⚠ Cryptographic signing is not configured — evaluation traces are unsigned. "
-                "Set EVAL_SIGNING_KEY to enable."
+                "Set FLIGHT_RECORDER_KEY_PATH to enable."
             )
 
     # 2. Enforcement Posture

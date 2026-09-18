@@ -14,7 +14,7 @@ def test_golden_fail_closed_signing_on_invalid_key(tmp_path, monkeypatch):
     invalid_key_path = tmp_path / "non_existent_key.pem"
 
     monkeypatch.setenv("AUDIT_LEVEL", "2")
-    monkeypatch.setenv("EVAL_SIGNING_KEY", str(invalid_key_path))
+    monkeypatch.setenv("FLIGHT_RECORDER_KEY_PATH", str(invalid_key_path))
     monkeypatch.setenv("EVAL_SIGNING_FAIL_CLOSED", "true")
     monkeypatch.setenv("RUN_LOG_DIR", str(tmp_path / "runs"))
 

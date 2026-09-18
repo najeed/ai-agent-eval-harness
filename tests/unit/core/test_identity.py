@@ -217,7 +217,7 @@ def test_identity_service_env_var_key(tmp_path, monkeypatch):
         )
 
         identity_id = "env_agent"
-        env_var = f"AES_PRIVATE_KEY_{identity_id.upper()}"
+        env_var = f"CORE_ARTIFACT_SIGNING_PEM_{identity_id.upper()}"
         monkeypatch.setenv(env_var, pem_bytes.decode())
 
         resolved_key = IdentityService.get_private_key(identity_id)

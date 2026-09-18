@@ -455,8 +455,8 @@ def test_system_guide_file_and_system_info_branches(client, console_jail, monkey
 
 def test_runtime_health_and_ollama_status_branches(client, monkeypatch):
 
-    # Runtime health with EVAL_SIGNING_KEY
-    monkeypatch.setenv("EVAL_SIGNING_KEY", "dummy_key")
+    # Runtime health with FLIGHT_RECORDER_KEY_PATH
+    monkeypatch.setenv("FLIGHT_RECORDER_KEY_PATH", "dummy_key")
     res_status = client.get("/api/status")
     assert res_status.status_code == 200
     assert res_status.get_json()["signing_backend"] == "persistent"

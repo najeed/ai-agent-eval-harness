@@ -100,10 +100,10 @@ class IdentityService:
         """
         Resolves a private key by ID.
         Priority:
-        1. Environment Variable (AES_PRIVATE_KEY_{ID})
+        1. Environment Variable (CORE_ARTIFACT_SIGNING_PEM_{ID})
         2. Configured TRUST_ROOT
         """
-        env_var = f"AES_PRIVATE_KEY_{identity_id.upper()}"
+        env_var = f"CORE_ARTIFACT_SIGNING_PEM_{identity_id.upper()}"
         env_key = os.getenv(env_var)
 
         if env_key:
@@ -252,7 +252,7 @@ def get_default_signer():
     """
     Resolves the default SigningBackend based on environment configuration.
     """
-    key_path = os.getenv("EVAL_SIGNING_KEY")
+    key_path = os.getenv("FLIGHT_RECORDER_KEY_PATH")
     if key_path:
         from eval_runner.reference.signing import LocalEd25519SigningBackend
 

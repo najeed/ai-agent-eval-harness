@@ -46,7 +46,7 @@ class ArtifactPlugin(BaseEvalPlugin):
         is strictly forbidden to prevent self-attestation vulnerability.
         """
         # Priority 1: Environment variable
-        env_key = os.getenv("AES_PRIVATE_KEY")
+        env_key = os.getenv("CORE_ARTIFACT_SIGNING_PEM")
         if env_key:
             try:
                 return serialization.load_pem_private_key(env_key.encode(), password=None)
@@ -54,7 +54,7 @@ class ArtifactPlugin(BaseEvalPlugin):
                 print(f"      [ArtifactPlugin] Warning: Failed to load key from environment: {e}")
                 err_msg = (
                     "CryptographicSigningError: Failed to load signing key "
-                    f"from AES_PRIVATE_KEY: {e}"
+                    f"from CORE_ARTIFACT_SIGNING_PEM: {e}"
                 )
                 raise RuntimeError(err_msg) from e
 

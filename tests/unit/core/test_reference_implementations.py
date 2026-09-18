@@ -669,7 +669,7 @@ class TestConfigResolverAndResolvedRuntimeConfig:
         monkeypatch.setenv("EXECUTION_BACKEND", "in_process")
         monkeypatch.setenv("CHECKPOINT_STORE", "sqlite")
         monkeypatch.setenv("ARTIFACT_STORE", "local_file")
-        monkeypatch.setenv("EVAL_SIGNING_KEY", "/keys/test.pem")
+        monkeypatch.setenv("FLIGHT_RECORDER_KEY_PATH", "/keys/test.pem")
         monkeypatch.setenv("RUN_TIMEOUT_SECONDS", "invalid_int")
 
         # Runtime overrides

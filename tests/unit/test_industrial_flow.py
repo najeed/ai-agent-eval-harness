@@ -374,7 +374,7 @@ async def test_handler_scenarios_expansion(mock_config, monkeypatch):
 @pytest.mark.asyncio
 async def test_identity_coverage_gap_fill(mock_config, monkeypatch):
     # Line 40-43: Env key load fail
-    monkeypatch.setenv("AES_PRIVATE_KEY_SYSTEM_ID", "INVALID_PEM")
+    monkeypatch.setenv("CORE_ARTIFACT_SIGNING_PEM_SYSTEM_ID", "INVALID_PEM")
     # Should catch and log warning, then continue to file fallback
     # Since it is system_id and files don't exist, it will raise PermissionError
     # if provisioning blocked

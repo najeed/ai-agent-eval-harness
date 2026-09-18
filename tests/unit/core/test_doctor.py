@@ -120,7 +120,7 @@ def test_check_security_health_all_branches(monkeypatch):
 
 
 def test_check_signing_audit_posture_configured_key(monkeypatch):
-    monkeypatch.setenv("EVAL_SIGNING_KEY", "test_pem_key_content")
+    monkeypatch.setenv("FLIGHT_RECORDER_KEY_PATH", "test_pem_key_content")
     monkeypatch.setenv("AUDIT_LEVEL", "2")
     with patch("builtins.print") as mock_print:
         check_signing_audit_posture()
@@ -130,8 +130,8 @@ def test_check_signing_audit_posture_configured_key(monkeypatch):
 
 
 def test_check_signing_audit_posture_path_and_pqc(monkeypatch):
-    monkeypatch.delenv("EVAL_SIGNING_KEY", raising=False)
-    monkeypatch.setenv("EVAL_SIGNING_KEY_PATH", "/path/to/key.pem")
+    monkeypatch.delenv("FLIGHT_RECORDER_KEY_PATH", raising=False)
+    monkeypatch.setenv("FLIGHT_RECORDER_KEY_PATH_PATH", "/path/to/key.pem")
     monkeypatch.setattr("eval_runner.config.PQC_ENABLED", True)
     monkeypatch.setattr("eval_runner.config.PQC_STRICT_MODE", True)
     with patch("builtins.print") as mock_print:
@@ -142,8 +142,8 @@ def test_check_signing_audit_posture_path_and_pqc(monkeypatch):
 
 
 def test_check_signing_audit_posture_missing_fail_closed(monkeypatch):
-    monkeypatch.delenv("EVAL_SIGNING_KEY", raising=False)
-    monkeypatch.delenv("EVAL_SIGNING_KEY_PATH", raising=False)
+    monkeypatch.delenv("FLIGHT_RECORDER_KEY_PATH", raising=False)
+    monkeypatch.delenv("FLIGHT_RECORDER_KEY_PATH_PATH", raising=False)
     monkeypatch.setenv("EVAL_REQUIRE_SIGNING", "true")
     monkeypatch.setattr("eval_runner.config.PQC_ENABLED", False)
     with patch("builtins.print") as mock_print:
@@ -153,8 +153,8 @@ def test_check_signing_audit_posture_missing_fail_closed(monkeypatch):
 
 
 def test_check_signing_audit_posture_unsigned_warning(monkeypatch):
-    monkeypatch.delenv("EVAL_SIGNING_KEY", raising=False)
-    monkeypatch.delenv("EVAL_SIGNING_KEY_PATH", raising=False)
+    monkeypatch.delenv("FLIGHT_RECORDER_KEY_PATH", raising=False)
+    monkeypatch.delenv("FLIGHT_RECORDER_KEY_PATH_PATH", raising=False)
     monkeypatch.delenv("EVAL_REQUIRE_SIGNING", raising=False)
     monkeypatch.setenv("AUDIT_LEVEL", "0")
     monkeypatch.setattr("eval_runner.config.PQC_ENABLED", False)

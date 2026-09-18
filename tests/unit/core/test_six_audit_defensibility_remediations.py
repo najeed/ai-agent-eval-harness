@@ -200,7 +200,7 @@ def test_rem2_trace_seal_trust_envelope_tamper_detected(tmp_path: Path):
 # ---------------------------------------------------------------------------
 def test_rem3_artifact_plugin_no_auto_generation(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     """ArtifactPlugin._get_signing_key() raises RuntimeError when no key configured."""
-    monkeypatch.delenv("AES_PRIVATE_KEY", raising=False)
+    monkeypatch.delenv("CORE_ARTIFACT_SIGNING_PEM", raising=False)
     plugin = ArtifactPlugin()
 
     with patch("eval_runner.identity.IdentityService.get_private_key", return_value=None):
@@ -214,7 +214,7 @@ def test_rem3_verify_integrity_requires_external_trust_anchor(
 ):
     """verify_integrity() returns UNVERIFIED when no external trust root is provided."""
     priv_key, priv_pem, pub_pem = _generate_ed25519_pem_pair()
-    monkeypatch.setenv("AES_PRIVATE_KEY", priv_pem)
+    monkeypatch.setenv("CORE_ARTIFACT_SIGNING_PEM", priv_pem)
 
     plugin = ArtifactPlugin()
     data_file = tmp_path / "result.txt"
@@ -230,7 +230,7 @@ def test_rem3_verify_integrity_requires_external_trust_anchor(
     monkeypatch.setattr(config, "TRUST_ROOT", empty_trust)
     monkeypatch.delenv("AES_PUBLIC_KEY_SYSTEM_ID", raising=False)
     monkeypatch.delenv("AES_PUBLIC_KEY", raising=False)
-    monkeypatch.delenv("AES_PRIVATE_KEY", raising=False)
+    monkeypatch.delenv("CORE_ARTIFACT_SIGNING_PEM", raising=False)
 
     # Verify with NO external trust anchor
     result = plugin.verify_integrity(manifest_path)

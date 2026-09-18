@@ -131,5 +131,5 @@ In production environments (`AGENTV_ENV=production`):
 | `DASHBOARD_API_KEY` | Master API Key for console administrative operations | Auto-generated in dev at `.aes/keys/bootstrap.key`; must be set in `production`. |
 | `SERVICE_API_KEY` | API Key for headless engine service automation & CI/CD | Synced with `DASHBOARD_API_KEY` by default; required in `production`. |
 | `JWT_SECRET` | Secret key for signing console sessions and handoff JWTs | Falls back to `DASHBOARD_API_KEY` or fails in `production`. |
-| `EVAL_SIGNING_KEY` | Ed25519 private key path for Flight Recorder trace signing | Required when `EVAL_REQUIRE_SIGNING=true`. |
+| `FLIGHT_RECORDER_KEY_PATH` | Ed25519 private key path for Flight Recorder trace signing | Required when `EVAL_REQUIRE_SIGNING=true`. |
 | `DEV_PERSONA_SIMULATOR` | Enables local loopback persona switching for UI dev | Ignored in `production`. |

@@ -1053,14 +1053,14 @@ def test_identity_env_and_default_signer(monkeypatch, tmp_path):
     assert loaded_bad is None
 
     # 2. get_default_signer NullSigningBackend
-    monkeypatch.delenv("EVAL_SIGNING_KEY", raising=False)
+    monkeypatch.delenv("FLIGHT_RECORDER_KEY_PATH", raising=False)
     signer_null = get_default_signer()
     assert signer_null is not None
 
     # 3. get_default_signer with key_path
     key_file = tmp_path / "test.key"
     key_file.write_text("fake_key", encoding="utf-8")
-    monkeypatch.setenv("EVAL_SIGNING_KEY", str(key_file))
+    monkeypatch.setenv("FLIGHT_RECORDER_KEY_PATH", str(key_file))
     signer_local = get_default_signer()
     assert signer_local is not None
 

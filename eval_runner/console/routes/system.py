@@ -381,11 +381,11 @@ def _runtime_health() -> dict[str, Any]:
 
     # Signing backend: ephemeral in-memory signer is NOT audit-grade.
     signing_backend = "ephemeral"
-    if os.environ.get("EVAL_SIGNING_KEY") or getattr(config, "SIGNING_KEY", None):
+    if os.environ.get("FLIGHT_RECORDER_KEY_PATH") or getattr(config, "SIGNING_KEY", None):
         signing_backend = "persistent"
     else:
         details.append(
-            "Signing key not configured (SIGNING_KEY/EVAL_SIGNING_KEY): runs are "
+            "Signing key not configured (SIGNING_KEY/FLIGHT_RECORDER_KEY_PATH): runs are "
             "Executable/Verifiable but not Cryptographically Attested."
         )
     dependencies["signing"] = "HEALTHY" if signing_backend == "persistent" else "DEGRADED"

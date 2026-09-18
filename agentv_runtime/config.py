@@ -169,7 +169,7 @@ class ConfigResolver:
             "execution_backend": "in_process",
             "checkpoint_store": "sqlite",
             "artifact_store": "local_file",
-            "signing_key_path": os.getenv("EVAL_SIGNING_KEY"),
+            "signing_key_path": os.getenv("FLIGHT_RECORDER_KEY_PATH"),
             "fail_closed_signing": os.getenv("EVAL_SIGNING_FAIL_CLOSED", "true").lower() == "true",
             "timeout_seconds": default_timeout,
             "enable_hitl": os.getenv("ENABLE_HITL", "true").lower() == "true",
@@ -235,8 +235,8 @@ class ConfigResolver:
             raw_merged["checkpoint_store"] = os.environ["CHECKPOINT_STORE"]
         if "ARTIFACT_STORE" in os.environ:
             raw_merged["artifact_store"] = os.environ["ARTIFACT_STORE"]
-        if "EVAL_SIGNING_KEY" in os.environ:
-            raw_merged["signing_key_path"] = os.environ["EVAL_SIGNING_KEY"]
+        if "FLIGHT_RECORDER_KEY_PATH" in os.environ:
+            raw_merged["signing_key_path"] = os.environ["FLIGHT_RECORDER_KEY_PATH"]
         if "RUN_TIMEOUT_SECONDS" in os.environ:
             try:
                 raw_merged["timeout_seconds"] = int(os.environ["RUN_TIMEOUT_SECONDS"])
