@@ -76,7 +76,7 @@ langchain-ollama = [
 
 # 4. Domain & Task Extras
 nlp = [
-    "sentence-transformers==6.0.1",
+    "sentence-transformers==6.1.0",
     "datasets==5.0.1",
 ]
 docs = [
@@ -111,7 +111,7 @@ langchain-all = [
     "langsmith==0.12.4",
 ]
 all = [
-    "sentence-transformers==6.0.1",
+    "sentence-transformers==6.1.0",
     "datasets==5.0.1",
     "google-genai==2.24.0",
     "langchain==1.4.1",
