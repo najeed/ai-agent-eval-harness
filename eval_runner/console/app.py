@@ -132,14 +132,27 @@ def create_app():
             "================================================================================\n",
             flush=True,
         )
+    else:
+        if not getattr(config, "DASHBOARD_API_KEY", None):
+            config.DASHBOARD_API_KEY = (
+                os.getenv("DASHBOARD_API_KEY")
+                or getattr(config, "SERVICE_API_KEY", None)
+                or os.getenv("SERVICE_API_KEY")
+            )
 
     # Ensure session persistence via strict zero-config bootstrap or explicit secret
-    api_key = getattr(config, "DASHBOARD_API_KEY", None) or os.getenv("DASHBOARD_API_KEY")
+    api_key = (
+        getattr(config, "DASHBOARD_API_KEY", None)
+        or os.getenv("DASHBOARD_API_KEY")
+        or getattr(config, "SERVICE_API_KEY", None)
+        or os.getenv("SERVICE_API_KEY")
+    )
     secret_key_env = os.getenv("SECRET_KEY") or os.getenv("JWT_SECRET")
     if not (api_key or secret_key_env):
         raise RuntimeError(
             "[Console][CRITICAL] Missing API key or secret key for console session derivation. "
-            "In production, configure DASHBOARD_API_KEY, SECRET_KEY, or JWT_SECRET. "
+            "In production, configure DASHBOARD_API_KEY, SERVICE_API_KEY, "
+            "SECRET_KEY, or JWT_SECRET. "
             "In development, ensure zero-config bootstrap key is generated."
         )
 

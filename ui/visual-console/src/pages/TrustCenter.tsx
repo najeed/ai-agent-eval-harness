@@ -30,7 +30,6 @@ export const TrustCenter: React.FC = () => {
   
   // Certify State
   const [certifyRunId, setCertifyRunId] = useState('');
-  const [identityId, setIdentityId] = useState('system_id');
   const [policyRef, setPolicyRef] = useState('NIST-AI-100');
   const [inspectingRun, setInspectingRun] = useState(false);
   const [runDetails, setRunDetails] = useState<any>(null);
@@ -132,7 +131,6 @@ export const TrustCenter: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           run_id: certifyRunId.trim(),
-          identity: identityId,
           policy_ref: policyRef,
           ttl: 365, // 1 year (days)
         })
@@ -341,13 +339,11 @@ export const TrustCenter: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs text-slate-400">Signer Identity Key:</label>
-                  <input
-                    type="text"
-                    value={identityId}
-                    onChange={(e) => setIdentityId(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800/80 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-mono"
-                  />
+                  <label className="text-xs text-slate-400">Signer Authority:</label>
+                  <div className="w-full bg-slate-950 border border-slate-800/80 rounded-lg px-3 py-2 text-xs text-slate-400 font-mono flex items-center justify-between">
+                    <span>system_id (Server KMS / Anchor)</span>
+                    <span className="text-[10px] text-emerald-400 font-semibold uppercase">Configured</span>
+                  </div>
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs text-slate-400">Policy Reference:</label>
@@ -397,7 +393,7 @@ export const TrustCenter: React.FC = () => {
                     <div className="flex items-center justify-between pt-1 text-[11px]">
                       <span className="text-slate-400">Execution Mode:</span>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-slate-300">{runDetails.execution_mode || 'live'}</span>
+                        <span className="font-mono text-slate-300">{runDetails.execution_mode || 'UNKNOWN'}</span>
                         <ProvisionalBadge
                           provisional={runDetails.provisional || runDetails.verification_status === 'VERIFIED_PROVISIONAL'}
                           executionMode={runDetails.execution_mode}

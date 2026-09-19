@@ -412,11 +412,16 @@ def test_verify_ledger_tampered_artifact():
 
 
 def test_get_certificate_api_helper():
-    """Test get_certificate API wrapper returns the manifest dict."""
+    """Test get_certificate strictly delegates to CertificationService and fails closed."""
     run_id = "run-cert-helper"
     vault_dir, trace_path = setup_vault(run_id)
     trace_path.write_text('{"event": "cert"}\n')
-    cert = TraceVerifier.get_certificate(str(trace_path), run_id=run_id)
+    # Fail-closed: unfinalized/non-live trace cannot obtain authoritative certificate
+    with pytest.raises((ValueError, CertificationFailedError)):
+        TraceVerifier.get_certificate(str(trace_path), run_id=run_id)
+
+    # Low-level signing primitive produces signed manifest directly
+    cert = TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
     assert cert["run_id"] == run_id
     assert "trace_hash" in cert
 

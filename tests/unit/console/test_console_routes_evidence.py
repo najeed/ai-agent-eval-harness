@@ -438,12 +438,21 @@ def test_verify_verification_package_route(client):
         "decision": {"decision": "PASS"},
     }
 
+    # 2. Valid minimal package (explicit offline unsigned check)
     res_valid = client.post(
         "/api/v1/evidence/verify",
-        json={"package": pkg_payload},
+        json={"package": pkg_payload, "require_signature": False, "require_scenario": False},
     )
     assert res_valid.status_code == 200
     assert res_valid.get_json()["verified"] is True
+
+    # 2b. Fail-closed: default require_signature=True rejects missing trace bytes and signatures
+    res_default = client.post(
+        "/api/v1/evidence/verify",
+        json={"package": pkg_payload},
+    )
+    assert res_default.status_code == 422
+    assert res_default.get_json()["verified"] is False
 
     # 3. Trace byte parity check mismatch
     raw_b64 = base64.b64encode(b"some other trace content").decode("utf-8")

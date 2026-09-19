@@ -28,30 +28,9 @@ def list_metrics():
 
 
 def resolve_trace_path(run_id: str) -> Path | None:
-    """Resolves trace path across vaults and direct file conventions with path jail containment."""
-    if not run_id or not isinstance(run_id, str):
-        return None
+    from eval_runner.trace_utils import resolve_trace_path as _rtp
 
-    import re
-
-    from eval_runner.utils import is_path_safe
-
-    # Constrain run_id to safe identifier pattern
-    if not re.match(r"^[a-zA-Z0-9_\-]+$", run_id):
-        return None
-
-    runs_dir = Path(config.RUN_LOG_DIR).resolve()
-    candidates = [
-        runs_dir / run_id / "run.jsonl",
-        runs_dir / run_id / f"{run_id}.jsonl",
-        runs_dir / f"{run_id}.jsonl",
-        runs_dir / run_id,
-    ]
-    for candidate in candidates:
-        resolved = candidate.resolve()
-        if is_path_safe(str(resolved), str(runs_dir)) and resolved.is_file():
-            return resolved
-    return None
+    return _rtp(run_id, allow_master_recovery=False)
 
 
 @run_bp.route("/v1/explain/<run_id>", methods=["GET"])
@@ -476,16 +455,18 @@ def stream_runs_list():
                                         or b'"status": "error"' in content
                                     )
                                     run_dir = tp.parent
-                                    has_receipt = (
-                                        run_dir / "certification_receipt.json"
-                                    ).exists() or (run_dir / ".sealed").exists()
+                                    from eval_runner.verifier import locate_certificate_file
+
+                                    has_seal = (run_dir / ".sealed").exists()
+                                    has_cert = locate_certificate_file(run_id) is not None
+                                    is_sealed = bool(has_seal and has_cert)
                                     has_end = (
                                         b'"event": "run_end"' in content
                                         or b'"event": "verification_certificate_issued"' in content
-                                        or has_receipt
+                                        or is_sealed
                                     )
 
-                                    if has_receipt:
+                                    if is_sealed:
                                         status = "SEALED"
                                     elif has_error:
                                         status = "FAILED"
@@ -843,7 +824,9 @@ def _extract_canonical_event_info(line: str, fallback_seq: int) -> tuple[int, bo
     return fallback_seq, is_term
 
 
-def tail_file_generator(log_path: Path, run_id: str, last_event_id: int = 0):
+def tail_file_generator(
+    log_path: Path, run_id: str, last_event_id: int = 0, target_run_id: str | None = None
+):
     # 1. Wait for log creation with a 10s safety threshold
     timeout = 10.0
     start_time = time.time()
@@ -884,6 +867,13 @@ def tail_file_generator(log_path: Path, run_id: str, last_event_id: int = 0):
                 break
             stripped = line.strip()
             if stripped:
+                if target_run_id:
+                    try:
+                        ev = json.loads(stripped)
+                        if ev.get("run_id") != target_run_id:
+                            continue
+                    except Exception:
+                        continue
                 seq_id += 1
                 _, is_term = _extract_canonical_event_info(stripped, seq_id)
                 if seq_id > last_event_id:
@@ -950,6 +940,13 @@ def tail_file_generator(log_path: Path, run_id: str, last_event_id: int = 0):
             idle_cycles = 0
             stripped = line.strip()
             if stripped:
+                if target_run_id:
+                    try:
+                        ev = json.loads(stripped)
+                        if ev.get("run_id") != target_run_id:
+                            continue
+                    except Exception:
+                        continue
                 seq_id += 1
                 _, is_term = _extract_canonical_event_info(stripped, seq_id)
                 if seq_id > last_event_id:
@@ -1006,8 +1003,6 @@ def stream_run_logs(run_id):
             temp_path = config.RUN_LOG_DIR / f"temp_stream_{run_id}.jsonl"
             try:
                 with open(temp_path, "w", encoding="utf-8") as out:
-                    # Trailing newline is mandatory: the stream contract never
-                    # broadcasts an unterminated final line.
                     out.write("\n".join(filtered_lines) + "\n")
             except Exception as e:
                 logger.error(f"Failed to create temp stream file: {e}")

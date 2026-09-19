@@ -3890,7 +3890,10 @@ async def test_verifier_signer_and_utilities_full_coverage(clean_vault_setup):
     # 9. TraceVerifier get_certificate helper and verify_trace_async
     trace_file = clean_vault_setup["trace_file"]
     run_id = clean_vault_setup["run_id"]
-    cert = TraceVerifier.get_certificate(str(trace_file), run_id=run_id)
+    with pytest.raises((ValueError, CertificationFailedError)):
+        TraceVerifier.get_certificate(str(trace_file), run_id=run_id)
+
+    cert = TraceVerifier.sign_trace(str(trace_file), identity_id="system_id", run_id=run_id)
     assert cert is not None
 
     manifest_file = clean_vault_setup["run_dir"] / "run_manifest.json"

@@ -272,6 +272,10 @@ export const VerificationWorkflow: React.FC = () => {
       setLaunchError('Cannot launch: a passing preflight check is required.');
       return;
     }
+    if (executionMode === 'live' && !preflightResult.is_verifiable) {
+      setLaunchError('Cannot launch: Live production execution strictly requires verifiable preflight status (fail-closed).');
+      return;
+    }
     setLaunching(true);
     setLaunchError('');
     const found = scenarios.find(s => s.id === scenarioId);
@@ -634,7 +638,14 @@ export const VerificationWorkflow: React.FC = () => {
 
             <button
               onClick={launchEvaluation}
-              disabled={launching || !canRunEval || !preflightResult?.ready || availableProtocols.length === 0 || !!doctorError}
+              disabled={
+                launching ||
+                !canRunEval ||
+                !preflightResult?.ready ||
+                (executionMode === 'live' && preflightResult?.is_verifiable === false) ||
+                availableProtocols.length === 0 ||
+                !!doctorError
+              }
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-600 text-white text-xs font-bold transition-colors"
             >
               <PlayCircle className="w-4 h-4" />
@@ -647,7 +658,9 @@ export const VerificationWorkflow: React.FC = () => {
             )}
             {preflightResult?.ready && preflightResult?.is_verifiable === false && (
               <p className="text-[10px] text-amber-300 font-medium" data-testid="preflight-provisional-warning">
-                Note: No persistent Ed25519 signer active or simulated/hybrid mode selected. Run is executable, but generated certificates will be PROVISIONAL.
+                {executionMode === 'live'
+                  ? 'Launch blocked: Live mode requires certifiable preflight status (active Ed25519 signer and full verification readiness).'
+                  : 'Note: No persistent Ed25519 signer active or simulated/hybrid mode selected. Run is executable, but generated certificates will be PROVISIONAL.'}
               </p>
             )}
             {boundScenarioHash && (

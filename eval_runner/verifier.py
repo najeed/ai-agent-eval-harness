@@ -161,7 +161,13 @@ class CoreTraceSigner(TraceVerificationInterceptor):
 
             from eval_runner.reference.signing import LocalEd25519SigningBackend
 
-            private_key = IdentityService.get_private_key(identity_id)
+            private_key = IdentityService.get_private_key(identity_id, auto_provision=False)
+            if private_key is None:
+                raise CertificationFailedError(
+                    f"Pre-existing trusted private key not found for certification identity "
+                    f"'{identity_id}' "
+                    "(fail-closed: certification identities cannot be dynamically minted)."
+                )
             # Standard: Sign the manifest content (excluding transient fields like provenance_chain)
             manifest_to_sign = manifest.copy()
             manifest_to_sign.pop("provenance_chain", None)
@@ -623,7 +629,7 @@ class TraceVerifier:
                     f"to FINALIZING: {tr_err}"
                 ) from tr_err
 
-        # Write immutable certification receipt artifact and bind its hash into evidence ledger
+        # Stage immutable certification receipt artifact and bind its hash into evidence ledger
         receipt_data = {
             "event": "verification_certificate_issued",
             "identity": identity_id,
@@ -634,9 +640,11 @@ class TraceVerifier:
             "trace_hash": seal_hash,
             "vc_version": VC_V3_SCHEMA_VERSION,
         }
-        with open(receipt_path, "w", encoding="utf-8") as rf:
+        staging_dir.mkdir(parents=True, exist_ok=True)
+        staged_receipt_path = staging_dir / "certification_receipt.json"
+        with open(staged_receipt_path, "w", encoding="utf-8") as rf:
             json.dump(receipt_data, rf, indent=4)
-        receipt_hash = cls.compute_signature(receipt_path)
+        receipt_hash = cls.compute_signature(staged_receipt_path)
         evidence_ledger["certification_receipt.json"] = receipt_hash
 
         # Recompute deterministic evidence root hash from trace events
@@ -1416,9 +1424,12 @@ class TraceVerifier:
             manifest_to_write = copy.deepcopy(manifest)
             manifest_to_write["certification"]["stages"] = stages
 
-            # Persist to local run directory live sidecar
+            # Persist to local run directory live sidecar and receipt
             with open(sidecar_path, "w", encoding="utf-8") as f:
                 json.dump(manifest_to_write, f, indent=4)
+
+            with open(receipt_path, "w", encoding="utf-8") as rf:
+                json.dump(receipt_data, rf, indent=4)
 
             cert_dir = config.REPORTS_DIR / "certificates"
             cert_dir.mkdir(parents=True, exist_ok=True)
@@ -1511,25 +1522,22 @@ class TraceVerifier:
     ) -> dict[str, Any]:
         """
         Signs a trace and returns the certificate DICT directly (API Helper).
-        Routes through CertificationService.execute_industrial_certification.
+        Routes strictly through CertificationService.execute_industrial_certification.
+        Fails closed on any error (legacy fallback eliminated).
         """
-        try:
-            from eval_runner.services.certification import CertificationService
+        from eval_runner.services.certification import CertificationService
 
-            res = CertificationService.execute_industrial_certification(
-                run_id=run_id,
-                trace_path=trace_path,
-                identity_id=identity_id,
-            )
-            manifest = res.get("manifest")
-            if manifest and isinstance(manifest, dict) and "trace_hash" in manifest:
-                return manifest
-        except Exception as cert_err:
-            logger.debug(
-                "CertificationService failed in get_certificate, falling back to sign_trace: %s",
-                cert_err,
-            )
-        return cls.sign_trace(trace_path, run_id=run_id, identity_id=identity_id)
+        res = CertificationService.execute_industrial_certification(
+            run_id=run_id,
+            trace_path=trace_path,
+            identity_id=identity_id,
+        )
+        manifest = res.get("manifest")
+        if manifest and isinstance(manifest, dict) and "trace_hash" in manifest:
+            return manifest
+        raise CertificationFailedError(
+            f"CertificationService failed to produce a valid certificate manifest for {run_id}"
+        )
 
     @classmethod
     async def verify_trace_async(
@@ -1607,8 +1615,12 @@ class TraceVerifier:
                 for rel_path, expected_file_hash in ledger.items():
                     file_path = tp.parent / rel_path
                     if not file_path.exists():
-                        logger.warning(f"Forensic artifact missing: {rel_path}")
-                        return False
+                        staged_path = tp.parent / ".staging" / rel_path
+                        if staged_path.exists():
+                            file_path = staged_path
+                        else:
+                            logger.warning(f"Forensic artifact missing: {rel_path}")
+                            return False
                     if cls.compute_signature(file_path) != expected_file_hash:
                         logger.warning(f"Forensic artifact tampered: {rel_path}")
                         return False
@@ -1968,8 +1980,9 @@ class TraceVerifier:
 def verify_trace_certificate(
     run_id: str,
     trace_bytes: bytes,
-    cert_data: dict[str, Any],
+    cert_data: dict[str, Any] | None = None,
     scenario_data: dict[str, Any] | None = None,
+    manifest: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """
     Authoritative top-level certificate verifier invoked by the evidence package builder.
@@ -1991,6 +2004,9 @@ def verify_trace_certificate(
         if isinstance(value, str):
             return value.split(":", 1)[1] if value.startswith("sha3_256:") else value
         return None
+
+    if cert_data is None:
+        cert_data = manifest or {}
 
     result: dict[str, Any] = {
         "verified": False,
@@ -2064,11 +2080,14 @@ def verify_trace_certificate(
     candidate_manifest_bytes[0]
 
     sig_verified = False
+    all_signatures_valid = True
+    sig_count = 0
     for entry in provenance_chain:
         if not isinstance(entry, dict):
             result["errors"].append(
                 f"Malformed provenance entry (expected object, got {type(entry).__name__})."
             )
+            all_signatures_valid = False
             continue
         algorithm = entry.get("algorithm", "ED25519")
         signature_hex = entry.get("signature", "")
@@ -2078,6 +2097,7 @@ def verify_trace_certificate(
             result["errors"].append(
                 f"Signature entry for identity '{identity_id}' is empty or malformed."
             )
+            all_signatures_valid = False
             continue
 
         # Fail-closed: reject degenerate all-zero placeholder signatures.
@@ -2090,6 +2110,7 @@ def verify_trace_certificate(
                 f"Degenerate all-zero signature rejected for identity '{identity_id}' "
                 "(fail-closed: placeholder signatures cannot certify evidence)."
             )
+            all_signatures_valid = False
             continue
 
         try:
@@ -2105,13 +2126,14 @@ def verify_trace_certificate(
             # 1. Authoritative Anchor Key Lookup (Fail-closed: trust root must be anchored)
             anchor_pk = None
             try:
-                anchor_pk = IdentityService.get_public_key(identity_id)
+                anchor_pk = IdentityService.get_public_key(identity_id, auto_provision=False)
             except Exception as id_lookup_err:
                 logger.debug(f"IdentityService lookup error for {identity_id}: {id_lookup_err}")
                 result["errors"].append(
                     f"Signature check error for '{identity_id}': "
                     f"IdentityService error: {id_lookup_err}"
                 )
+                all_signatures_valid = False
                 continue
 
             if anchor_pk is None:
@@ -2120,6 +2142,7 @@ def verify_trace_certificate(
                     f"identity '{identity_id}' (No public key available in trust root; "
                     "unanchored embedded keys prohibited)."
                 )
+                all_signatures_valid = False
                 continue
 
             raw_pk = entry.get("public_key")
@@ -2141,6 +2164,7 @@ def verify_trace_certificate(
                                 f"Signer key mismatch: embedded key for '{identity_id}' "
                                 "does not match trusted IdentityService anchor."
                             )
+                            all_signatures_valid = False
                             continue
                 except Exception as pk_cmp_err:
                     logger.debug(f"Public key comparison error: {pk_cmp_err}")
@@ -2148,6 +2172,7 @@ def verify_trace_certificate(
                         f"Signature check error for '{identity_id}': "
                         f"No public key available ({pk_cmp_err})"
                     )
+                    all_signatures_valid = False
                     continue
 
             public_key = anchor_pk
@@ -2156,6 +2181,7 @@ def verify_trace_certificate(
                 result["errors"].append(
                     f"Unsupported key type for signer '{identity_id}': {type(public_key).__name__}"
                 )
+                all_signatures_valid = False
                 continue
 
             sig_bytes = bytes.fromhex(signature_hex)
@@ -2170,16 +2196,22 @@ def verify_trace_certificate(
                     last_err = ex
 
             if verified:
-                sig_verified = True
+                sig_count += 1
                 result["signer_identity"] = identity_id
                 result["algorithm"] = algorithm
             else:
                 result["errors"].append(
                     f"Ed25519 signature verification failed for '{identity_id}': {last_err}"
                 )
+                all_signatures_valid = False
         except Exception as sig_err:
             logger.debug("Signature check error for %s/%s: %s", run_id, identity_id, sig_err)
             result["errors"].append(f"Signature check error for '{identity_id}': {sig_err}")
+            all_signatures_valid = False
+
+    sig_verified = bool(
+        all_signatures_valid and sig_count > 0 and len(provenance_chain) == sig_count
+    )
 
     # 4. Check evidence_root_hash if present in certificate
     evidence_root_valid = True
@@ -2280,6 +2312,7 @@ def verify_trace_certificate(
 
     if (
         sig_verified
+        and not result["errors"]
         and result["manifest_hash_match"]
         and scenario_bound_valid
         and evidence_root_valid
@@ -2842,6 +2875,8 @@ class VerificationAuthority:
                     parsed_events_with_lines.append((evt, trimmed))
             except Exception as parse_err:
                 failures.append(f"TraceStreamParsingFailed: {parse_err}")
+        elif require_signature:
+            failures.append("TraceBytesMissing: artifact verification requires raw trace bytes")
 
         from agentv_runtime.canonical import canonical_json_dumps
 

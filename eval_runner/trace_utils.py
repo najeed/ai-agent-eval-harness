@@ -102,17 +102,18 @@ def reconstruct_results_from_events(events: list) -> list:
     return final_results
 
 
-def resolve_trace_path(run_id: str) -> Path | None:
+def resolve_trace_path(run_id: str, allow_master_recovery: bool = True) -> Path | None:
     """
-    Resolve the canonical path to a run's trace log within RUN_LOG_DIR.
-    Checks run directory structure (e.g. RUN_LOG_DIR / run_id / run.jsonl)
-    or direct file (e.g. RUN_LOG_DIR / f"{run_id}.jsonl").
+    Authoritative trace resolver for AgentV.
+    Resolves the canonical path to a run's trace log across vaults, direct files,
+    and master-log projection.
     """
     if not run_id or not isinstance(run_id, str):
         return None
     import re
 
     from . import config
+    from .utils import is_path_safe
 
     if not re.match(r"^[a-zA-Z0-9_\-]+$", run_id):
         return None
@@ -125,6 +126,46 @@ def resolve_trace_path(run_id: str) -> Path | None:
         base_dir / run_id,
     ]
     for c in candidates:
-        if c.exists() and c.is_file():
+        if c.exists() and c.is_file() and is_path_safe(c, base_dir):
             return c
-    return base_dir / run_id / "run.jsonl"
+
+    # Fallback / Recovery from master log (Defect 3)
+    if allow_master_recovery:
+        master_log = base_dir / "run.jsonl"
+        if master_log.exists() and master_log.is_file() and is_path_safe(master_log, base_dir):
+            matching_lines: list[str] = []
+            try:
+                with open(master_log, encoding="utf-8") as f:
+                    for line in f:
+                        line_str = line.strip()
+                        if not line_str:
+                            continue
+                        try:
+                            ev = json.loads(line_str)
+                            if ev.get("run_id") == run_id:
+                                matching_lines.append(line_str)
+                        except Exception:
+                            continue
+            except Exception as read_err:
+                import logging
+
+                logging.getLogger(__name__).debug(
+                    "Error reading master log for recovery: %s", read_err
+                )
+
+            if matching_lines:
+                vault_dir = base_dir / run_id
+                vault_dir.mkdir(parents=True, exist_ok=True)
+                vault_trace = vault_dir / "run.jsonl"
+                try:
+                    with open(vault_trace, "w", encoding="utf-8") as out:
+                        out.write("\n".join(matching_lines) + "\n")
+                    return vault_trace
+                except Exception as write_err:
+                    import logging
+
+                    logging.getLogger(__name__).error(
+                        "Failed projecting master log trace: %s", write_err
+                    )
+
+    return None

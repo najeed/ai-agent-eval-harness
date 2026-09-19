@@ -20,6 +20,8 @@ def explain_trace(trace_path: Path) -> dict:
 
     diagnosis = {
         "index": rc.get("index", -1),
+        "_seq": rc.get("_seq"),
+        "event_id": rc.get("event_id"),
         "confidence": rc.get("confidence", 0.0),
         "root_cause": rc.get("reason", "Unknown failure"),
         "suggestion": rc.get("suggestion", "No specific suggestion found."),

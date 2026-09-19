@@ -229,6 +229,7 @@ def test_public_verification_score_independence(isolated_vault):
         run_id=run_id,
         compliance_status="pass",
         compliance_score=0.96,  # Non-perfect passing score
+        execution_mode="live",
     )
 
     app = Flask(__name__)
@@ -352,3 +353,36 @@ def test_authoritative_verdict_execution(isolated_vault):
     # Tamper trace file -> FAILED_VERIFICATION
     trace_live.write_text("tampered_content\n", encoding="utf-8")
     assert _authoritative_verdict(run_id_live) == "FAILED_VERIFICATION"
+
+
+def test_resolve_trace_path_edge_cases(isolated_vault):
+    """Test resolve_trace_path invalid ID, master log read/write errors and corrupt lines."""
+    from eval_runner.trace_utils import resolve_trace_path
+
+    # 1. Invalid run_id
+    assert resolve_trace_path("../evil/path") is None
+    assert resolve_trace_path("") is None
+    assert resolve_trace_path(None) is None
+
+    # 2. Master log corrupt line & read error
+    master_log = isolated_vault["run_log_dir"] / "run.jsonl"
+    master_log.write_text("NOT_JSON\n" + json.dumps({"run_id": "r-corrupt"}) + "\n")
+    resolved = resolve_trace_path("r-corrupt")
+    assert resolved is not None
+    assert resolved.exists()
+
+    # 3. Master log read error
+    with patch("builtins.open", side_effect=OSError("master read error")):
+        assert resolve_trace_path("r-unreachable") is None
+
+    # 4. Master log projection write error
+    orig_open = open
+
+    def write_error(file, *args, **kwargs):
+        if "r-write-err" in str(file) and "w" in args:
+            raise OSError("disk full")
+        return orig_open(file, *args, **kwargs)
+
+    master_log.write_text(json.dumps({"run_id": "r-write-err", "event": "start"}) + "\n")
+    with patch("builtins.open", side_effect=write_error):
+        assert resolve_trace_path("r-write-err") is None

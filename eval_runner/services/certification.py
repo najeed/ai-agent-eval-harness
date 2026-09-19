@@ -386,6 +386,7 @@ class CertificationService:
         ttl: int | None = None,
         behavioral_fingerprint_id: str | None = None,
         scenario_data: Mapping[str, Any] | None = None,
+        trace_path: str | Path | None = None,
     ) -> dict[str, Any]:
         """
         Authoritative Industrial Certification Service.
@@ -404,37 +405,48 @@ class CertificationService:
 
         lock = PerRunCertificationLock(run_id)
         with lock:
-            target_trace = resolve_trace_path(run_id)
-            if (
-                not target_trace
-                or not is_path_safe(target_trace, config.RUN_LOG_DIR)
-                or not target_trace.exists()
-            ):
-                logger.error(
-                    f"   [Certification] 404 FAIL: Authoritative vault trace not found: {run_id}"
-                )
-                raise FileNotFoundError(f"Run vault not found for {run_id}")
+            if trace_path:
+                candidate_trace = Path(trace_path)
+                if not candidate_trace.is_absolute():
+                    candidate_trace = (config.RUN_LOG_DIR / candidate_trace).resolve()
+                if (
+                    not is_path_safe(candidate_trace, config.RUN_LOG_DIR)
+                    or not candidate_trace.exists()
+                ):
+                    logger.error(
+                        "   [Certification] 404 FAIL: Supplied trace path not found or unsafe: %s",
+                        trace_path,
+                    )
+                    raise FileNotFoundError(f"Run vault not found for {run_id}")
+                target_trace = candidate_trace
+            else:
+                target_trace = resolve_trace_path(run_id)
+                if (
+                    not target_trace
+                    or not is_path_safe(target_trace, config.RUN_LOG_DIR)
+                    or not target_trace.exists()
+                ):
+                    logger.error(
+                        "   [Certification] 404 FAIL: Authoritative vault trace not found: %s",
+                        run_id,
+                    )
+                    raise FileNotFoundError(f"Run vault not found for {run_id}")
 
             vault_dir = target_trace.parent
 
-            # 1. Execution Truth Level Verification (Defect T1)
+            # 1. Execution Truth Level Verification (Defect T1: 'live' execution only)
             execution_mode, provisional = cls.read_run_truth_level(run_id)
             clean_mode = str(execution_mode).strip().lower() if execution_mode else ""
-            if (
-                provisional
-                or not clean_mode
-                or clean_mode in ("simulated", "unknown")
-                or clean_mode not in ("live", "hybrid")
-            ):
+            if provisional or not clean_mode or clean_mode != "live":
                 logger.error(
-                    "   [Certification] FAIL CLOSED: Cannot issue certification "
-                    "for provisional/unknown run %s (mode=%s, provisional=%s)",
+                    "   [Certification] FAIL CLOSED: Cannot issue authoritative certification "
+                    "for non-live run %s (mode=%s, provisional=%s)",
                     run_id,
                     execution_mode,
                     provisional,
                 )
                 raise ValueError(
-                    f"Run {run_id} is provisional (execution mode undeclared or unknown); "
+                    f"Run {run_id} is provisional (execution mode '{clean_mode}' is not 'live'); "
                     "cannot issue authoritative certification."
                 )
 
@@ -568,6 +580,18 @@ class CertificationService:
                 effective_scenario_data = embedded_scenario_data
 
             if effective_scenario_data is None:
+                # Prefer per-run immutable snapshot first (P1-1)
+                resolved_snapshot = vault_dir / "scenario_resolved.json"
+                if resolved_snapshot.exists():
+                    try:
+                        with open(resolved_snapshot, encoding="utf-8") as rf:
+                            loaded_snap = json.load(rf)
+                            if isinstance(loaded_snap, dict):
+                                effective_scenario_data = loaded_snap
+                    except Exception as snap_err:
+                        logger.debug("Could not read scenario_resolved.json: %s", snap_err)
+
+            if effective_scenario_data is None:
                 try:
                     from eval_runner.loader import load_scenario
 
@@ -598,6 +622,18 @@ class CertificationService:
                     f"'{fin_record.scenario_hash}' does not match actual computed scenario hash "
                     f"'{canonical_scen_hash}'"
                 )
+
+            # Persist immutable per-run snapshot if not already present (P1-1)
+            scen_resolved_path = vault_dir / "scenario_resolved.json"
+            if not scen_resolved_path.exists():
+                try:
+                    scen_resolved_path.write_text(
+                        json.dumps(effective_scenario_data, indent=2), encoding="utf-8"
+                    )
+                except Exception as scen_save_err:
+                    logger.debug(
+                        "Failed to write scenario_resolved.json snapshot: %s", scen_save_err
+                    )
 
             meta_binding["scenario_id"] = fin_record.scenario_id
             meta_binding["scenario_version"] = fin_record.scenario_version
@@ -715,8 +751,9 @@ class CertificationService:
                     json.dump(manifest, f, indent=2)
 
             is_pass = effective_status == "pass"
-            # Defect T1 Invariant: never certified=True when provisional=True
-            is_certified = bool(is_pass and not provisional and clean_mode in ("live", "hybrid"))
+            # Defect T1 Invariant: never certified=True when provisional=True;
+            # live execution strictly required
+            is_certified = bool(is_pass and not provisional and clean_mode == "live")
             return {
                 "status": "certified" if is_certified else "attested_failed",
                 "compliance_status": effective_status,
@@ -739,6 +776,7 @@ def execute_industrial_certification(
     ttl: int | None = None,
     behavioral_fingerprint_id: str | None = None,
     scenario_data: Mapping[str, Any] | None = None,
+    trace_path: str | Path | None = None,
 ) -> dict[str, Any]:
     """Top-level convenience function delegating to CertificationService."""
     return CertificationService.execute_industrial_certification(
@@ -750,4 +788,5 @@ def execute_industrial_certification(
         ttl=ttl,
         behavioral_fingerprint_id=behavioral_fingerprint_id,
         scenario_data=scenario_data,
+        trace_path=trace_path,
     )

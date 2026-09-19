@@ -399,9 +399,28 @@ def verify_verification_package():
 
     raw_trace_events = data.get("raw_trace_events")
     public_key_pem = data.get("public_key_pem")
-    require_signature = bool(data.get("require_signature", False))
+    require_signature = bool(data.get("require_signature", True))
     scenario_data = data.get("scenario_data")
-    require_scenario = bool(data.get("require_scenario", False) or scenario_data is not None)
+    require_scenario = bool(data.get("require_scenario", True) or scenario_data is not None)
+
+    # Fail closed if raw_trace_bytes missing in production verification
+    if raw_trace_bytes is None and require_signature:
+        return (
+            jsonify(
+                {
+                    "verified": False,
+                    "status": "UNVERIFIED",
+                    "failures": [
+                        "TraceBytesMissing: production package verification "
+                        "requires raw trace bytes"
+                    ],
+                    "package_id": (
+                        package_data.get("package_id") if isinstance(package_data, dict) else None
+                    ),
+                }
+            ),
+            422,
+        )
 
     res = VerificationAuthority.verify_package(
         package_data,

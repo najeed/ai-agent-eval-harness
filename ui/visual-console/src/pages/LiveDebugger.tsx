@@ -448,7 +448,7 @@ export const LiveDebugger: React.FC = () => {
       try {
         data = JSON.parse(event.data);
         if (event.lastEventId) {
-          data._seq = parseInt(event.lastEventId, 10) || data._seq;
+          (data as any)._transport_cursor = parseInt(event.lastEventId, 10);
         }
       } catch (e) {
         console.error('Failed to parse SSE event data:', e);
@@ -1666,28 +1666,42 @@ export const LiveDebugger: React.FC = () => {
             </div>
 
             <div className="flex justify-between items-center pt-4 border-t border-slate-800/60 shrink-0">
-              {((analysisData?.index !== undefined && analysisData.index >= 0) || hasError) ? (
-                <button
-                  onClick={() => {
-                    let targetIdx = analysisData?.index;
-                    if (targetIdx === undefined || targetIdx < 0) {
-                      targetIdx = events.findIndex(e =>
-                        e.event === 'error' ||
-                        e.category === 'PARITY_STATE_DIVERGENCE' ||
-                        e.message?.toLowerCase().includes('error') ||
-                        e.message?.toLowerCase().includes('fail')
-                      );
-                    }
-                    if (targetIdx >= 0 && targetIdx < events.length) {
-                      setSelectedEvent(events[targetIdx]);
-                      setShowExplain(false);
-                    }
-                  }}
-                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-xs text-white font-bold uppercase tracking-wider rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
-                >
-                  <AlertTriangle className="w-3.5 h-3.5 animate-pulse" />
-                  <span>Go to Root Cause Turn</span>
-                </button>
+              {((analysisData?._seq !== undefined && analysisData._seq !== null) || analysisData?.event_id || (analysisData?.index !== undefined && analysisData.index >= 0) || hasError) ? (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      let targetEvent: LogEvent | null = null;
+                      if (analysisData?._seq !== undefined && analysisData._seq !== null) {
+                        targetEvent = events.find(e => e._seq === analysisData._seq) || null;
+                      } else if (analysisData?.event_id) {
+                        targetEvent = events.find(e => (e.event_id || e.id) === analysisData.event_id) || null;
+                      } else if (!isWindowed && analysisData?.index !== undefined && analysisData.index >= 0 && analysisData.index < events.length) {
+                        targetEvent = events[analysisData.index];
+                      } else {
+                        targetEvent = events.find(e =>
+                          e.event === 'error' ||
+                          e.category === 'PARITY_STATE_DIVERGENCE' ||
+                          e.message?.toLowerCase().includes('error') ||
+                          e.message?.toLowerCase().includes('fail')
+                        ) || null;
+                      }
+
+                      if (targetEvent) {
+                        setSelectedEvent(targetEvent);
+                        setShowExplain(false);
+                      } else {
+                        console.warn(`[LiveDebugger] Root cause event Seq #${analysisData?._seq} is outside active ${events.length}-event window.`);
+                      }
+                    }}
+                    className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-xs text-white font-bold uppercase tracking-wider rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <AlertTriangle className="w-3.5 h-3.5 animate-pulse" />
+                    <span>Go to Root Cause Turn</span>
+                  </button>
+                  {isWindowed && analysisData?._seq !== undefined && !events.some(e => e._seq === analysisData._seq) && (
+                    <span className="text-[10px] text-amber-400 italic">Event not loaded (outside 10k window)</span>
+                  )}
+                </div>
               ) : null}
               <button
                 onClick={() => setShowExplain(false)}

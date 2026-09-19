@@ -50,10 +50,13 @@ def certify_run():
     ):
         return jsonify({"error": "Valid run_id is required"}), 400
 
+    # Derive signer identity server-side from configured certification authority (P0-5 / Defect 6)
+    server_identity = getattr(config, "AES_CERTIFICATION_IDENTITY", "system_id")
+
     try:
         result = execute_industrial_certification(
             run_id=run_id,
-            identity_id=data.get("identity", "system_id"),
+            identity_id=server_identity,
             status=data.get("status"),
             score=float(data["score"]) if data.get("score") is not None else None,
             policy_ref=data.get("policy_ref"),
@@ -65,13 +68,18 @@ def certify_run():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     except Exception as e:
-        logger.error(f"   [Certification] 500 ERROR: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Certification error for run {run_id}: {e}")
+        return jsonify({"error": f"Internal certification failure: {e}"}), 500
 
 
 @trust_bp.route("/v1/verify/<path:run_id>", methods=["GET"])
-def verify_run_public(run_id):
-    """Public Verification API (Unprotected)."""
+@trust_bp.route("/verify/<path:run_id>", methods=["GET"])
+def public_verify_run(run_id):
+    """
+    Public Authoritative Verification Endpoint.
+    Validates trace integrity, cryptographic signature chain, EvaluatorFinalizationRecord,
+    execution truth (non-provisional), and policy compliance.
+    """
     if (
         not run_id
         or not isinstance(run_id, str)
@@ -94,14 +102,17 @@ def verify_run_public(run_id):
         return jsonify({"error": "Verification Failed: Trace or Certificate not found."}), 404
 
     try:
+        # 1. Authoritative verification check via TraceVerifier
         is_valid = TraceVerifier.verify_trace(str(trace_path), str(manifest_path))
-        method = "SHA3-256 integrity check"
+
         with open(manifest_path, encoding="utf-8") as f:
             manifest = json.load(f)
-            if manifest.get("provenance_chain"):
-                method = "ED25519 cryptographic signature proof"
 
-        # Disentangle cryptographic validity from threshold compliance
+        method = "SHA3-256 integrity check"
+        if manifest.get("provenance_chain"):
+            method = "ED25519 cryptographic signature proof"
+
+        # 2. Disentangle raw integrity from authoritative certification
         compliance = manifest.get("compliance", {})
         status = compliance.get("status") or manifest.get("compliance_status") or "UNKNOWN"
         score = compliance.get("score")
@@ -109,19 +120,31 @@ def verify_run_public(run_id):
             score = manifest.get("compliance_score")
 
         is_compliant = str(status).lower() in ["certified", "pass", "passed"]
+
+        # Authoritative certification requires:
+        # - cryptographic certificate verification passes
+        # - compliance passed
+        # - not provisional
+        # - execution_mode is not hybrid or simulated
+        clean_mode = str(manifest.get("execution_mode", "")).strip().lower()
+        is_authoritative = bool(
+            not manifest.get("provisional", False) and clean_mode not in ("hybrid", "simulated")
+        )
         verified = bool(is_valid and is_compliant)
 
         return jsonify(
             {
                 "run_id": run_id,
                 "verified": verified,
+                "file_integrity_valid": is_valid,
                 "cryptographically_valid": is_valid,
                 "certificate_valid": is_valid,
                 "evaluation_passed": is_compliant,
                 "evaluation_verdict": status,
                 "compliance_score": score,
                 "policy_compliant": is_compliant,
-                "certificate_authoritative": not manifest.get("provisional", False),
+                "certificate_authoritative": is_authoritative,
+                "execution_mode": clean_mode or "unknown",
                 "timestamp": datetime.now().astimezone().isoformat(),
                 "method": method,
                 "certificate_hash": (
@@ -132,7 +155,11 @@ def verify_run_public(run_id):
             }
         )
     except Exception as e:
+        logger.exception("Verification error for run %s: %s", run_id, e)
         return jsonify({"error": f"Verification failed: {str(e)}", "verified": False}), 500
+
+
+verify_run_public = public_verify_run
 
 
 @trust_bp.route("/v1/verify/<path:run_id>/manifest", methods=["GET"])
