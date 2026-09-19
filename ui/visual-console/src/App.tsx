@@ -462,7 +462,17 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
           const ResolvedComp = mod.default || mod[Object.keys(mod)[0]] || mod;
           if (active) setLoadingState({ status: 'ready', Component: ResolvedComp, tier, manifest: manifestObj });
         } else {
-          // Local/trusted-origin ESM without SRI pin.
+          if (import.meta.env.PROD) {
+            console.error(`[ExtensionHost] Unsigned remote extensions without SRI pin are forbidden in production: ${entryUrl}`);
+            if (active) {
+              setLoadingState({
+                status: 'load_error',
+                errorMessage: 'Unsigned extension rejected in production. Extensions must specify a valid SRI hash and cryptographic signature.',
+              });
+            }
+            return;
+          }
+          // Local/trusted-origin ESM without SRI pin (DEV mode only).
           // J1/P0 #5 Hardening: Pre-execution Manifest Validation.
           // Fetch source to parse statically declared manifest or .manifest.json BEFORE calling import().
           let preManifest: any = null;
@@ -1141,14 +1151,19 @@ const ConsoleLayout: React.FC = () => {
 
 const RemoteRouteGuard: React.FC<{ item: any }> = ({ item }) => {
   const { role, hasPermission } = useRBAC();
-  const requiredRole = item.required_role || item.role;
+  const rawRole = item.required_role || item.role;
+  const requiredRoles: string[] = Array.isArray(rawRole)
+    ? rawRole
+    : typeof rawRole === 'string'
+      ? [rawRole]
+      : [];
   const requiredPerm = item.required_permission || item.permission;
 
-  if (requiredRole && role !== 'System Admin' && role !== requiredRole) {
+  if (requiredRoles.length > 0 && role !== 'System Admin' && !requiredRoles.includes(role)) {
     return (
       <div className="p-8 text-center text-slate-400">
         <h3 className="text-lg font-bold text-red-400 mb-2">Access Denied</h3>
-        <p className="text-sm">Role '{requiredRole}' is required to access this extension view.</p>
+        <p className="text-sm">Role '{requiredRoles.join(' or ')}' is required to access this extension view.</p>
       </div>
     );
   }

@@ -120,7 +120,8 @@ def test_check_security_health_all_branches(monkeypatch):
 
 
 def test_check_signing_audit_posture_configured_key(monkeypatch):
-    monkeypatch.setenv("FLIGHT_RECORDER_KEY_PATH", "test_pem_key_content")
+    monkeypatch.delenv("FLIGHT_RECORDER_KEY_PATH", raising=False)
+    monkeypatch.setenv("CORE_ARTIFACT_SIGNING_PEM", "test_pem_key_content")
     monkeypatch.setenv("AUDIT_LEVEL", "2")
     with patch("builtins.print") as mock_print:
         check_signing_audit_posture()
@@ -130,8 +131,8 @@ def test_check_signing_audit_posture_configured_key(monkeypatch):
 
 
 def test_check_signing_audit_posture_path_and_pqc(monkeypatch):
-    monkeypatch.delenv("FLIGHT_RECORDER_KEY_PATH", raising=False)
-    monkeypatch.setenv("FLIGHT_RECORDER_KEY_PATH_PATH", "/path/to/key.pem")
+    monkeypatch.delenv("CORE_ARTIFACT_SIGNING_PEM", raising=False)
+    monkeypatch.setenv("FLIGHT_RECORDER_KEY_PATH", "/path/to/key.pem")
     monkeypatch.setattr("eval_runner.config.PQC_ENABLED", True)
     monkeypatch.setattr("eval_runner.config.PQC_STRICT_MODE", True)
     with patch("builtins.print") as mock_print:
@@ -143,7 +144,7 @@ def test_check_signing_audit_posture_path_and_pqc(monkeypatch):
 
 def test_check_signing_audit_posture_missing_fail_closed(monkeypatch):
     monkeypatch.delenv("FLIGHT_RECORDER_KEY_PATH", raising=False)
-    monkeypatch.delenv("FLIGHT_RECORDER_KEY_PATH_PATH", raising=False)
+    monkeypatch.delenv("CORE_ARTIFACT_SIGNING_PEM", raising=False)
     monkeypatch.setenv("EVAL_REQUIRE_SIGNING", "true")
     monkeypatch.setattr("eval_runner.config.PQC_ENABLED", False)
     with patch("builtins.print") as mock_print:
@@ -154,7 +155,7 @@ def test_check_signing_audit_posture_missing_fail_closed(monkeypatch):
 
 def test_check_signing_audit_posture_unsigned_warning(monkeypatch):
     monkeypatch.delenv("FLIGHT_RECORDER_KEY_PATH", raising=False)
-    monkeypatch.delenv("FLIGHT_RECORDER_KEY_PATH_PATH", raising=False)
+    monkeypatch.delenv("CORE_ARTIFACT_SIGNING_PEM", raising=False)
     monkeypatch.delenv("EVAL_REQUIRE_SIGNING", raising=False)
     monkeypatch.setenv("AUDIT_LEVEL", "0")
     monkeypatch.setattr("eval_runner.config.PQC_ENABLED", False)
@@ -212,3 +213,144 @@ def test_check_security_health_pbac_misconfigured():
             check_security_health()
             calls = [c[0][0] for c in mock_print.call_args_list if c[0]]
             assert any("PBAC Permission Nodes are misconfigured" in str(c) for c in calls)
+
+
+def test_signing_readiness_result_to_dict():
+    from eval_runner.signing_readiness import SigningReadinessResult
+
+    res = SigningReadinessResult(
+        is_ready=True,
+        is_verifiable=True,
+        signer_type="SIGNED",
+        key_identifier="test_key",
+        error_message=None,
+    )
+    d = res.to_dict()
+    assert d == {
+        "is_ready": True,
+        "is_verifiable": True,
+        "signer_type": "SIGNED",
+        "key_identifier": "test_key",
+        "error_message": None,
+    }
+
+
+def test_check_signing_readiness_corrupt_file_path(tmp_path, monkeypatch):
+    from eval_runner.signing_readiness import check_signing_readiness
+
+    corrupt_key = tmp_path / "corrupt.pem"
+    corrupt_key.write_text("NOT A REAL PEM KEY", encoding="utf-8")
+    monkeypatch.setenv("FLIGHT_RECORDER_KEY_PATH", str(corrupt_key))
+
+    res = check_signing_readiness()
+    assert res.is_ready is False
+    assert res.is_verifiable is False
+    assert res.signer_type == "FAILED"
+    assert "Failed to parse private key" in str(res.error_message)
+
+
+def test_check_signing_readiness_inline_pem_success_and_failure(monkeypatch):
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+
+    from eval_runner.signing_readiness import check_signing_readiness
+
+    monkeypatch.delenv("FLIGHT_RECORDER_KEY_PATH", raising=False)
+
+    # Valid inline PEM via CORE_ARTIFACT_SIGNING_PEM
+    key = ed25519.Ed25519PrivateKey.generate()
+    pem_str = key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption(),
+    ).decode("utf-8")
+    monkeypatch.setenv("CORE_ARTIFACT_SIGNING_PEM", pem_str)
+
+    res = check_signing_readiness()
+    assert res.is_ready is True
+    assert res.is_verifiable is True
+    assert res.signer_type == "SIGNED"
+    assert "inline:CORE_ARTIFACT_SIGNING_PEM" in str(res.key_identifier)
+
+    # Corrupt inline PEM via CORE_ARTIFACT_SIGNING_PEM_SYSTEM_ID
+    monkeypatch.delenv("CORE_ARTIFACT_SIGNING_PEM", raising=False)
+    monkeypatch.setenv("CORE_ARTIFACT_SIGNING_PEM_SYSTEM_ID", "CORRUPTED_INLINE_PEM")
+
+    res_fail = check_signing_readiness()
+    assert res_fail.is_ready is False
+    assert res_fail.is_verifiable is False
+    assert res_fail.signer_type == "FAILED"
+    assert "Failed to parse private key from CORE_ARTIFACT_SIGNING_PEM" in str(
+        res_fail.error_message
+    )
+
+
+def test_check_signing_readiness_probe_exception(tmp_path, monkeypatch):
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+
+    from eval_runner.signing_readiness import check_signing_readiness
+
+    key = ed25519.Ed25519PrivateKey.generate()
+    key_file = tmp_path / "probe_fail.key"
+    key_file.write_bytes(
+        key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption(),
+        )
+    )
+    monkeypatch.setenv("FLIGHT_RECORDER_KEY_PATH", str(key_file))
+
+    mock_key = MagicMock()
+    mock_key.sign.side_effect = RuntimeError("Cryptographic probe failed")
+    with patch(
+        "cryptography.hazmat.primitives.serialization.load_pem_private_key",
+        return_value=mock_key,
+    ):
+        res = check_signing_readiness()
+        assert res.is_ready is False
+        assert res.is_verifiable is False
+        assert res.signer_type == "FAILED"
+        assert "Cryptographic health probe failed on active key" in str(res.error_message)
+
+
+def test_check_signing_readiness_file_not_found(tmp_path, monkeypatch):
+    from eval_runner.signing_readiness import check_signing_readiness
+
+    monkeypatch.setenv("FLIGHT_RECORDER_KEY_PATH", str(tmp_path / "absent.pem"))
+    res = check_signing_readiness()
+    assert res.is_ready is False
+    assert res.is_verifiable is False
+    assert res.signer_type == "FAILED"
+    assert "Configured FLIGHT_RECORDER_KEY_PATH file not found" in str(res.error_message)
+
+
+def test_check_signing_readiness_identity_service_fallback_and_null(monkeypatch):
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+
+    from eval_runner.signing_readiness import check_signing_readiness
+
+    monkeypatch.delenv("FLIGHT_RECORDER_KEY_PATH", raising=False)
+    monkeypatch.delenv("CORE_ARTIFACT_SIGNING_PEM", raising=False)
+    monkeypatch.delenv("CORE_ARTIFACT_SIGNING_PEM_SYSTEM_ID", raising=False)
+
+    # 1. IdentityService success fallback
+    key = ed25519.Ed25519PrivateKey.generate()
+    with patch("eval_runner.identity.IdentityService.get_private_key", return_value=key):
+        res_id = check_signing_readiness()
+        assert res_id.is_ready is True
+        assert res_id.is_verifiable is True
+        assert res_id.signer_type == "SIGNED"
+        assert "identity_service:system_id" in str(res_id.key_identifier)
+
+    # 2. IdentityService exception fallback -> NULL signer
+    with patch(
+        "eval_runner.identity.IdentityService.get_private_key",
+        side_effect=Exception("Vault locked"),
+    ):
+        res_null = check_signing_readiness()
+        assert res_null.is_ready is True
+        assert res_null.is_verifiable is False
+        assert res_null.signer_type == "NULL"
+        assert "No persistent signing key configured" in str(res_null.error_message)

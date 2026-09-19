@@ -73,6 +73,7 @@ export const VerificationWorkflow: React.FC = () => {
   const [scenarioId, setScenarioId] = useState('');
   const [preflightResult, setPreflightResult] = useState<{
     ready: boolean;
+    is_verifiable?: boolean;
     checks: ReadinessCheck[];
     fingerprint?: string;
   } | null>(null);
@@ -162,14 +163,24 @@ export const VerificationWorkflow: React.FC = () => {
     ? 'UNREACHABLE'
     : ((healthQuery.data as any)?.status ?? 'UNREACHABLE');
 
+  const isFailedVerdict =
+    verdict === 'FAILED_VERIFICATION' ||
+    verdict === 'ERROR' ||
+    verdict === 'UNKNOWN' ||
+    verdict === 'NOT_VERIFIED' ||
+    verdict === 'POLICY_BREACH';
+
+  const isVerifiedVerdict =
+    verdict === 'VERIFIED' || verdict === 'VERIFIED_PROVISIONAL';
+
   const stepStates: Record<number, StepState> = {
     1: endpoint.trim() ? 'done' : 'active',
     2: scenarioId.trim() ? 'done' : endpoint.trim() ? 'active' : 'pending',
     3: preflightResult ? (preflightResult.ready ? 'done' : 'blocked') : scenarioId ? 'active' : 'pending',
     4: runId ? 'done' : preflightResult?.ready ? 'active' : 'blocked',
     5: verdict ? 'done' : runId ? 'active' : 'blocked',
-    6: verdict === 'NOT_VERIFIED' || verdict === 'POLICY_BREACH' ? 'active' : runId && verdict ? 'done' : 'blocked',
-    7: runId && verdict ? 'active' : 'blocked',
+    6: isFailedVerdict ? 'active' : isVerifiedVerdict ? 'done' : runId && verdict ? 'done' : 'blocked',
+    7: isVerifiedVerdict ? 'active' : isFailedVerdict ? 'blocked' : runId && verdict ? 'active' : 'blocked',
   };
 
   // [Chain binding] Deep-link preselection: /?scenario_id=<id> pre-fills the
@@ -595,6 +606,11 @@ export const VerificationWorkflow: React.FC = () => {
             {!preflightResult?.ready && (
               <p className="text-[10px] text-amber-400 font-medium">
                 Preflight validation required: complete and pass preflight check before launch.
+              </p>
+            )}
+            {preflightResult?.ready && preflightResult?.is_verifiable === false && (
+              <p className="text-[10px] text-amber-300 font-medium">
+                Note: No persistent Ed25519 signer active. Run is executable, but generated certificates will be PROVISIONAL.
               </p>
             )}
             {boundScenarioHash && (

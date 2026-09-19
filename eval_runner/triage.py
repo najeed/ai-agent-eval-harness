@@ -214,7 +214,13 @@ class TriageEngine:
 
         history = task_result.get("conversation_history", [])
         if not history:
-            return {"index": -1, "confidence": Confidence.INCONCLUSIVE, "reason": "No history"}
+            return {
+                "index": -1,
+                "_seq": None,
+                "event_id": None,
+                "confidence": Confidence.INCONCLUSIVE,
+                "reason": "No history",
+            }
 
         # Evidence Collection Pool
         evidence_pool: list[dict[str, Any]] = []
@@ -307,6 +313,11 @@ class TriageEngine:
         top_match["suggestion"] = SUGGESTION_TEMPLATES.get(
             cat, SUGGESTION_TEMPLATES[FailureCategory.UNKNOWN_FAILURE]
         ).format(**format_args)
+
+        idx = top_match.get("index", -1)
+        target_item = history[idx] if isinstance(idx, int) and 0 <= idx < len(history) else {}
+        top_match["_seq"] = target_item.get("_seq")
+        top_match["event_id"] = target_item.get("event_id") or target_item.get("id")
 
         return top_match
 
@@ -510,9 +521,15 @@ class TriageEngine:
                 fallback_idx = i
                 break
 
+        target_item = history[fallback_idx] if 0 <= fallback_idx < len(history) else {}
+        fb_seq = target_item.get("_seq")
+        fb_eid = target_item.get("event_id") or target_item.get("id")
+
         if has_failure:
             return {
                 "index": fallback_idx,
+                "_seq": fb_seq,
+                "event_id": fb_eid,
                 "confidence": Confidence.LOW,
                 "category": FailureCategory.UNKNOWN_FAILURE,
                 "reason": "Target Task Not Completed (Unexpected Termination).",
@@ -520,6 +537,8 @@ class TriageEngine:
 
         return {
             "index": fallback_idx,
+            "_seq": fb_seq,
+            "event_id": fb_eid,
             "confidence": Confidence.INCONCLUSIVE,
             "category": FailureCategory.UNKNOWN_FAILURE,
             "reason": "Inconclusive results; no clear deviation point found.",

@@ -550,10 +550,12 @@ class ForensicCollector:
             dest = self.target_dir / alias
 
             try:
+                dest.parent.mkdir(parents=True, exist_ok=True)
                 if src.resolve() != dest.resolve():
                     shutil.copy2(src, dest)
                 ledger[alias] = compute_file_hash(dest)
             except Exception as e:
+                self.evidence_incomplete = True
                 logger.error(f"[Forensics] Failed to collect artifact {alias}: {e}")
 
         # 2. Add snapshots to ledger

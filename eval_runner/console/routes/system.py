@@ -380,15 +380,20 @@ def _runtime_health() -> dict[str, Any]:
     details: list[str] = []
 
     # Signing backend: ephemeral in-memory signer is NOT audit-grade.
-    signing_backend = "ephemeral"
-    if os.environ.get("FLIGHT_RECORDER_KEY_PATH") or getattr(config, "SIGNING_KEY", None):
-        signing_backend = "persistent"
+    from eval_runner.signing_readiness import check_signing_readiness
+
+    signing_state = check_signing_readiness()
+    signing_backend = "persistent" if signing_state.is_verifiable else "ephemeral"
+    if signing_state.is_verifiable:
+        dependencies["signing"] = "HEALTHY"
+    elif signing_state.signer_type == "FAILED":
+        dependencies["signing"] = "FAILED"
+        if signing_state.error_message:
+            details.append(signing_state.error_message)
     else:
-        details.append(
-            "Signing key not configured (SIGNING_KEY/FLIGHT_RECORDER_KEY_PATH): runs are "
-            "Executable/Verifiable but not Cryptographically Attested."
-        )
-    dependencies["signing"] = "HEALTHY" if signing_backend == "persistent" else "DEGRADED"
+        dependencies["signing"] = "DEGRADED"
+        if signing_state.error_message:
+            details.append(signing_state.error_message)
 
     # Run vault writability
     try:

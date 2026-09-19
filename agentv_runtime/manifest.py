@@ -182,7 +182,9 @@ class ExecutionManifest:
             agent_config=dict(data.get("agent_config") or {}),
             runtime_config=dict(data.get("runtime_config") or {}),
             environment=dict(data.get("environment") or {}),
-            created_at=str(data.get("created_at") or datetime.now(UTC).isoformat()),
+            created_at=str(
+                data.get("created_at") or data.get("timestamp") or datetime.now(UTC).isoformat()
+            ),
             created_by=str(data.get("created_by", "system")),
             metadata=dict(data.get("metadata") or {}),
             schema_version=str(data.get("schema_version", "2.0.0")),

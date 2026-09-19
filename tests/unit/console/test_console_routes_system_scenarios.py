@@ -453,14 +453,32 @@ def test_system_guide_file_and_system_info_branches(client, console_jail, monkey
     assert res_nav.status_code == 200
 
 
-def test_runtime_health_and_ollama_status_branches(client, monkeypatch):
+def test_runtime_health_and_ollama_status_branches(client, monkeypatch, tmp_path):
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import ed25519
 
-    # Runtime health with FLIGHT_RECORDER_KEY_PATH
-    monkeypatch.setenv("FLIGHT_RECORDER_KEY_PATH", "dummy_key")
+    # Runtime health with FLIGHT_RECORDER_KEY_PATH pointing to valid key
+    key = ed25519.Ed25519PrivateKey.generate()
+    key_file = tmp_path / "valid_flight_recorder.key"
+    key_file.write_bytes(
+        key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption(),
+        )
+    )
+    monkeypatch.setenv("FLIGHT_RECORDER_KEY_PATH", str(key_file))
     res_status = client.get("/api/status")
     assert res_status.status_code == 200
     assert res_status.get_json()["signing_backend"] == "persistent"
     assert res_status.get_json()["status"] == "HEALTHY"
+
+    # Runtime health with missing FLIGHT_RECORDER_KEY_PATH fails closed
+    monkeypatch.setenv("FLIGHT_RECORDER_KEY_PATH", str(tmp_path / "nonexistent.key"))
+    res_status_fail = client.get("/api/status")
+    assert res_status_fail.status_code == 200
+    assert res_status_fail.get_json()["dependencies"]["signing"] == "FAILED"
+    monkeypatch.delenv("FLIGHT_RECORDER_KEY_PATH", raising=False)
 
     # Runtime health with run vault write failure
     with patch("pathlib.Path.write_text", side_effect=OSError("Read-only filesystem")):

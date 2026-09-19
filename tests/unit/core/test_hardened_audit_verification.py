@@ -149,8 +149,11 @@ def test_evidence_graph_rejects_duplicate_sequence_numbers():
         index_events_by_seq(duplicate_events)
 
 
-def test_flight_recorder_cryptographic_trace_seal(tmp_path):
+def test_flight_recorder_cryptographic_trace_seal(tmp_path, monkeypatch):
     """finalize_run creates a genuine cryptographic trace digest in trace_seal.json."""
+    from eval_runner import config
+
+    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path)
     fr = FlightRecorderPlugin(log_dir=tmp_path)
     run_id = "run-crypto-seal-01"
 
@@ -932,8 +935,11 @@ def test_verification_authority_artifacts_missing_provenance_defaults_true():
         assert not any("DirectProvenanceViolation" in f for f in res["failures"])
 
 
-def test_trace_seal_trust_envelope_tamper_detected(tmp_path):
+def test_trace_seal_trust_envelope_tamper_detected(tmp_path, monkeypatch):
     """Tampering with signer_identity or key_id in trace_seal.json breaks verification."""
+    from eval_runner import config
+
+    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path)
     priv = ed25519.Ed25519PrivateKey.generate()
     pub_pem = (
         priv.public_key()
@@ -957,7 +963,7 @@ def test_trace_seal_trust_envelope_tamper_detected(tmp_path):
 
     backend = _MockSigner()
     recorder = FlightRecorderPlugin(log_dir=tmp_path, signing_backend=backend)
-    run_id = "run-seal-001"
+    run_id = "run-seal-tamper-001"
 
     event = Event("step_start", {"run_id": run_id, "step": 1})
     recorder.handle_event(event)

@@ -588,6 +588,12 @@ class SessionManager:
                 )
                 instance_contexts[exec_id] = ctx
 
+                parent_node_id = (
+                    instance_contexts[parent_exec_id].scenario_node_id
+                    if parent_exec_id and parent_exec_id in instance_contexts
+                    else None
+                )
+
                 result = await self._execute_node(
                     node_def,
                     attempt_number,
@@ -599,6 +605,7 @@ class SessionManager:
                     execution_context={
                         "execution_instance_id": exec_id,
                         "parent_execution_id": parent_exec_id,
+                        "from_scenario_node_id": parent_node_id,
                         "attempt_id": identity.attempt_id,
                         "evaluation_run_id": identity.evaluation_run_id,
                         "evaluation_plan": plan.evaluation_plan,
@@ -1153,6 +1160,31 @@ class SessionManager:
 
         # 1. Forensic Maneuver Start
         print(f"      [Node Execution] ID: {node_id} | Task: {task_description[:50]}...")
+        node_start_time = time.time()
+        exec_inst_id = (
+            execution_context.get("execution_instance_id")
+            if execution_context
+            else f"{node_id}:attempt:{attempt_number}"
+        )
+        parent_exec_id = execution_context.get("parent_execution_id") if execution_context else None
+
+        self.event_bus.emit(
+            CoreEvents.EXECUTION_GRAPH_NODE,
+            {
+                "run_id": self.run_id,
+                "scenario_node_id": node_id,
+                "execution_instance_id": exec_inst_id,
+                "parent_execution_id": parent_exec_id,
+                "label": task_description,
+                "status": "running",
+                "attempt": attempt_number,
+                "attempt_id": getattr(self, "attempt_id", f"att-{self.run_id}-{attempt_number}"),
+                "iteration": attempt_number,
+                "task_description": task_description,
+            },
+            span_context=self.session_metadata.get("span_context"),
+        )
+
         self.event_bus.emit(
             CoreEvents.MANEUVER_START,
             {"node_id": node_id, "task": task_description},
@@ -1636,6 +1668,42 @@ class SessionManager:
             task_results["message"] = locals()["err_msg"]
 
         self.event_bus.emit(CoreEvents.MANEUVER_END, {"node_id": node_id})
+        node_final_status = "completed" if verdict.success else "failed"
+        node_event_payload = {
+            "run_id": self.run_id,
+            "scenario_node_id": node_id,
+            "execution_instance_id": exec_inst_id,
+            "parent_execution_id": parent_exec_id,
+            "label": task_description,
+            "status": node_final_status,
+            "attempt": attempt_number,
+            "attempt_id": getattr(self, "attempt_id", f"att-{self.run_id}-{attempt_number}"),
+            "iteration": attempt_number,
+        }
+        if "node_start_time" in locals() and node_start_time is not None:
+            node_event_payload["duration_ms"] = int((time.time() - node_start_time) * 1000)
+        if node_final_status == "failed":
+            node_event_payload["failure_class"] = str(
+                task_results.get("triage_tag") or "node_execution_failed"
+            )
+            node_event_payload["failure_reason"] = str(
+                task_results.get("message")
+                or task_results.get("summary")
+                or "Node execution failed"
+            )
+        else:
+            if task_results.get("triage_tag"):
+                node_event_payload["failure_class"] = str(task_results["triage_tag"])
+            if task_results.get("message"):
+                node_event_payload["failure_reason"] = str(task_results["message"])
+        if task_results.get("metrics"):
+            node_event_payload["metrics"] = task_results["metrics"]
+
+        self.event_bus.emit(
+            CoreEvents.EXECUTION_GRAPH_NODE,
+            node_event_payload,
+            span_context=self.session_metadata.get("span_context"),
+        )
         self.plugin_manager.trigger_interceptor("on_step_end", self, node_id, verdict)
         return task_results
 
@@ -1655,6 +1723,19 @@ class SessionManager:
                 self.forensics.register_artifact(jail_log, "terminal.log")
 
         self.forensics.collect()
+        if getattr(self.forensics, "evidence_incomplete", False):
+            logger.warning(
+                "      [Session] Forensic collection flagged incomplete evidence for run_id: %s",
+                self.run_id,
+            )
+            self.event_bus.emit(
+                CoreEvents.RUN_ERROR,
+                {
+                    "run_id": self.run_id,
+                    "error": "Forensic evidence collection incomplete",
+                    "evidence_incomplete": True,
+                },
+            )
 
         # 3. Lifecycle Defense: Detach Bridge & Reset Bus (Ghost Listener Prevention)
         self.event_bus.unsubscribe(self._bridge_ref)

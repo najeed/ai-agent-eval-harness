@@ -94,8 +94,10 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
   }, [run?.run_id]);
 
   // Strict Authoritative Verdict Resolution: Never Fabricate or Infer from Field Existence
-  const verdict = auditResult?.verification_status || run.verdict || 'UNVERIFIED';
-  const isProvisional = auditResult?.provisional || verdict === 'VERIFIED_PROVISIONAL' || run.provisional || false;
+  const verdict = auditLoading
+    ? 'VERIFYING'
+    : (auditResult?.verification_status || 'UNVERIFIED');
+  const isProvisional = auditResult?.provisional || verdict === 'VERIFIED_PROVISIONAL' || false;
   const isVerified = verdict === 'VERIFIED' || verdict === 'VERIFIED_PROVISIONAL';
   const isBreach = verdict === 'POLICY_BREACH';
   const isNotVerified = verdict === 'FAILED_VERIFICATION' || verdict === 'NOT_VERIFIED';

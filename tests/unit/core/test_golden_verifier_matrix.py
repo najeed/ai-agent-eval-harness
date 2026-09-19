@@ -73,7 +73,12 @@ class IndependentTraceOracle:
             cert_copy = dict(manifest_copy["certification"])
             cert_copy.pop("stages", None)
             manifest_copy["certification"] = cert_copy
-        manifest_bytes = json.dumps(manifest_copy, sort_keys=True).encode("utf-8")
+        from agentv_runtime.canonical import canonical_json_encode
+
+        candidate_manifest_bytes = [
+            canonical_json_encode(manifest_copy),
+            json.dumps(manifest_copy, sort_keys=True).encode("utf-8"),
+        ]
 
         for node in chain:
             identity_id = node.get("identity")
@@ -83,7 +88,16 @@ class IndependentTraceOracle:
             if algorithm == "ED25519":
                 try:
                     pub_key = IdentityService.get_public_key(identity_id)
-                    pub_key.verify(bytes.fromhex(sig_hex), manifest_bytes)
+                    verified = False
+                    for b in candidate_manifest_bytes:
+                        try:
+                            pub_key.verify(bytes.fromhex(sig_hex), b)
+                            verified = True
+                            break
+                        except Exception:
+                            continue
+                    if not verified:
+                        return False
                 except Exception:
                     return False
             elif algorithm == "ML-DSA-65":
@@ -91,12 +105,16 @@ class IndependentTraceOracle:
                 if pqc_client:
                     from eval_runner import forensics
 
-                    shake_digest = forensics.compute_shake256_digest(manifest_bytes)
-                    is_valid = pqc_client.verify_digest(
-                        signature=sig_hex,
-                        digest=shake_digest,
-                        identity_id=config.PQC_IDENTITY_ID,
-                    )
+                    is_valid = False
+                    for b in candidate_manifest_bytes:
+                        shake_digest = forensics.compute_shake256_digest(b)
+                        if pqc_client.verify_digest(
+                            signature=sig_hex,
+                            digest=shake_digest,
+                            identity_id=config.PQC_IDENTITY_ID,
+                        ):
+                            is_valid = True
+                            break
                     if not is_valid:
                         return False
         return True

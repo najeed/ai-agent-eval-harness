@@ -320,6 +320,15 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                         "cannot produce trace seal, certificate, or verification package."
                     )
                 self._run_states[run_id] = "FINALIZING"
+                try:
+                    from eval_runner.run_lifecycle import (
+                        RunLifecycleState,
+                        transition_run_lifecycle,
+                    )
+
+                    transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING)
+                except Exception as lc_err:
+                    logger.debug("Lifecycle transition to FINALIZING notice: %s", lc_err)
 
             # Determine which handles to close
             if run_id and run_id != "unknown":
@@ -451,6 +460,15 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             with self._lock:
                 if self._run_states.get(run_id) != "CERTIFICATION_FAILED":
                     self._run_states[run_id] = "SEALED"
+                    try:
+                        from eval_runner.run_lifecycle import (
+                            RunLifecycleState,
+                            transition_run_lifecycle,
+                        )
+
+                        transition_run_lifecycle(run_id, RunLifecycleState.SEALED)
+                    except Exception as lc_err:
+                        logger.debug("Lifecycle transition to SEALED notice: %s", lc_err)
             self._sequence_numbers.pop(run_id, None)
 
     def freeze_run(self, run_id: str) -> None:
@@ -459,6 +477,15 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             return
         with self._lock:
             self._run_states[run_id] = "FINALIZING"
+            try:
+                from eval_runner.run_lifecycle import (
+                    RunLifecycleState,
+                    transition_run_lifecycle,
+                )
+
+                transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING)
+            except Exception as lc_err:
+                logger.debug("Lifecycle transition to FINALIZING notice in freeze_run: %s", lc_err)
         self.finalize_run(run_id=run_id)
 
     def get_run_state(self, run_id: str) -> str:

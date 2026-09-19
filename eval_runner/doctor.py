@@ -84,20 +84,22 @@ def check_signing_audit_posture():
     """Performs an audit of cryptographic trace signing and governance posture."""
     print("  --- Cryptographic Signing & Audit Posture ---")
 
-    signing_key = os.getenv("FLIGHT_RECORDER_KEY_PATH")
-    signing_key_path = os.getenv("FLIGHT_RECORDER_KEY_PATH_PATH")
+    signing_key_path = os.getenv("FLIGHT_RECORDER_KEY_PATH")
+    signing_key_pem = os.getenv("CORE_ARTIFACT_SIGNING_PEM") or os.getenv(
+        "CORE_ARTIFACT_SIGNING_PEM_SYSTEM_ID"
+    )
     require_signing = os.getenv("EVAL_REQUIRE_SIGNING", "").lower() in ("true", "1", "yes")
     audit_level = int(os.getenv("AUDIT_LEVEL", "0") or 0)
     pqc_enabled = getattr(config, "PQC_ENABLED", False)
     pqc_strict = getattr(config, "PQC_STRICT_MODE", False)
 
     # 1. Key Configuration Check
-    configured_key = signing_key_path or signing_key
+    configured_key = signing_key_path or signing_key_pem
     if configured_key:
         key_desc = (
             f"Path: {signing_key_path}"
             if signing_key_path
-            else f"Inline PEM ({len(signing_key)} chars)"
+            else f"Inline PEM ({len(signing_key_pem)} chars)"
         )
         print(f"  ✔ Cryptographic Signing Key configured ({key_desc})")
     else:

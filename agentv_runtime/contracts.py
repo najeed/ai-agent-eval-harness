@@ -285,8 +285,6 @@ class VerificationResult:
             sig_verified = bool(decision["signature_verified"])
         elif "signature_verified" in identity:
             sig_verified = bool(identity["signature_verified"])
-        elif decision.get("signatures") and not decision.get("signature_error"):
-            sig_verified = True
 
         evidence_complete = False
         if "evidence_complete" in decision:

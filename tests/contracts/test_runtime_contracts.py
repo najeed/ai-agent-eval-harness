@@ -387,6 +387,29 @@ class TestVerificationResultFromSessionDecision:
         assert vr.attempt_number == 1
         assert vr.verdict == Verdict.VERIFIED
 
+    def test_signature_verified_and_evidence_complete_from_decision(self):
+        decision = self._minimal_decision("PASS")
+        decision["signature_verified"] = True
+        decision["evidence_complete"] = True
+        vr = VerificationResult.from_session_decision(decision)
+        assert vr.signature_verified is True
+        assert vr.evidence_complete is True
+
+    def test_signature_verified_and_evidence_complete_from_identity(self):
+        decision = self._minimal_decision("PASS")
+        decision["identity"]["signature_verified"] = True
+        decision["identity"]["evidence_complete"] = True
+        vr = VerificationResult.from_session_decision(decision)
+        assert vr.signature_verified is True
+        assert vr.evidence_complete is True
+
+    def test_evidence_missing_forces_evidence_complete_false(self):
+        decision = self._minimal_decision("PASS")
+        decision["evidence_complete"] = True
+        decision["evidence_missing"] = True
+        vr = VerificationResult.from_session_decision(decision)
+        assert vr.evidence_complete is False
+
 
 class TestRCAResult:
     def test_to_dict_without_violated_assertion(self):

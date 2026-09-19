@@ -151,11 +151,33 @@ def assert_can_write_trace(run_id: str) -> None:
         raise TraceClosedError(reason)
 
 
+def rollback_run_lifecycle_to_open(run_id: str) -> RunLifecycleState:
+    """
+    Rolls back run lifecycle from FINALIZING back to OPEN if certification failed prior to SEALED.
+    SEALED runs are immutable and cannot be rolled back.
+    """
+    if not run_id or run_id == "unknown":
+        return RunLifecycleState.OPEN
+
+    current = get_run_lifecycle_state(run_id)
+    if current == RunLifecycleState.SEALED:
+        raise ValueError(f"Cannot rollback lifecycle for SEALED run '{run_id}'.")
+
+    lf_path = _lifecycle_file_path(run_id)
+    try:
+        lf_path.unlink(missing_ok=True)
+    except OSError as e:
+        logger.debug("Failed unlinking lifecycle marker during rollback: %s", e)
+
+    return RunLifecycleState.OPEN
+
+
 __all__ = [
     "RunLifecycleState",
     "TraceClosedError",
     "assert_can_write_trace",
     "can_write_trace",
     "get_run_lifecycle_state",
+    "rollback_run_lifecycle_to_open",
     "transition_run_lifecycle",
 ]

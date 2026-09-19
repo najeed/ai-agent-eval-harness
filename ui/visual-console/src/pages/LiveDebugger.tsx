@@ -235,44 +235,57 @@ export const LiveDebugger: React.FC = () => {
   const handleIsolateRootCause = async () => {
     if (!runId) return;
     const reqId = ++explainReqIdRef.current;
-    // [P0-11] Strict priority: authoritative flag > heuristic analysis index >
-    // correlated-error heuristic. Whatever route matched is surfaced in the
-    // UI as Confirmed vs Suspected; never collapsed into one label.
-    let targetIdx = -1;
+    // Strict priority: authoritative flag > analyzer-provided stable ID (_seq/event_id) >
+    // correlated-error heuristic. Never selects by raw array index on long/sliding traces.
+    let targetEvent: any = null;
 
     // 1. Authoritative runtime designation
-    targetIdx = events.findIndex(e => e.is_root_cause === true);
+    targetEvent = events.find(e => e.is_root_cause === true) || null;
 
-    // 2. Analyzer-provided index (heuristic)
-    if (targetIdx < 0 && analysisData && analysisData.index !== undefined && analysisData.index >= 0) {
-      targetIdx = analysisData.index;
-    } else if (targetIdx < 0) {
+    // 2. Analyzer-provided stable identity (_seq / event_id)
+    let currentAnalysis = analysisData;
+    if (!targetEvent && !currentAnalysis) {
       try {
         const res = await fetch(`/api/v1/explain/${runId}`);
         if (explainReqIdRef.current !== reqId || streamCtlRef.current.run !== runId) return;
         const data = await res.json();
         if (explainReqIdRef.current !== reqId || streamCtlRef.current.run !== runId) return;
-        if (res.ok && data.analysis && data.analysis.index !== undefined) {
+        if (res.ok && data.analysis) {
           setAnalysisData(data.analysis);
-          targetIdx = data.analysis.index;
+          currentAnalysis = data.analysis;
         }
       } catch (e) {
         console.error('Failed to isolate root cause via API:', e);
       }
     }
 
+    if (!targetEvent && currentAnalysis) {
+      if (currentAnalysis._seq !== undefined && currentAnalysis._seq !== null) {
+        targetEvent = events.find(e => e._seq === currentAnalysis._seq) || null;
+      }
+      if (!targetEvent && currentAnalysis.event_id) {
+        targetEvent = events.find(e => (e.event_id || e.id) === currentAnalysis.event_id) || null;
+      }
+      if (!targetEvent && currentAnalysis.index !== undefined && currentAnalysis.index >= 0) {
+        // Positional fallback only if within active unshifted window
+        if (events.length <= 10000 && currentAnalysis.index < events.length) {
+          targetEvent = events[currentAnalysis.index];
+        }
+      }
+    }
 
     // 3. First-correlated-failure heuristic (explicitly labeled as suspected)
-    if (targetIdx < 0) {
-      targetIdx = events.findIndex(e =>
+    if (!targetEvent) {
+      targetEvent = events.find(e =>
         e.event === 'error' ||
         e.category === 'PARITY_STATE_DIVERGENCE' ||
         e.message?.toLowerCase().includes('error') ||
         e.message?.toLowerCase().includes('fail')
-      );
+      ) || null;
     }
-    if (targetIdx >= 0 && targetIdx < events.length) {
-      setSelectedEvent(events[targetIdx]);
+
+    if (targetEvent) {
+      setSelectedEvent(targetEvent);
     }
   };
 

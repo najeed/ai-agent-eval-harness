@@ -722,16 +722,30 @@ def check_execution_readiness():
         )
 
     # 4. Signing Backend & Vault
-    signing_key = getattr(config, "SIGNING_KEY", None)
-    if signing_key:
-        key_snippet = str(signing_key)[:12]
+    from eval_runner.signing_readiness import check_signing_readiness
+
+    signing_state = check_signing_readiness()
+    if signing_state.is_verifiable:
         checks.append(
             {
                 "name": "Cryptographic Sealer",
                 "status": "PASSED",
                 "tier": "VERIFIABLE",
                 "signer_type": "SIGNED",
-                "message": f"Configured persistent Ed25519 signer active ({key_snippet}...).",
+                "message": (
+                    f"Configured persistent Ed25519 signer active ({signing_state.key_identifier})."
+                ),
+            }
+        )
+    elif signing_state.signer_type == "FAILED":
+        checks.append(
+            {
+                "name": "Cryptographic Sealer",
+                "status": "FAILED",
+                "tier": "CONFIGURED",
+                "signer_type": "FAILED",
+                "message": signing_state.error_message
+                or "Cryptographic signer health probe failed.",
             }
         )
     else:
@@ -742,7 +756,8 @@ def check_execution_readiness():
                 "tier": "PROVISIONAL",
                 "signer_type": "NULL",
                 "message": (
-                    "No SIGNING_KEY configured. Running with ephemeral/null signer. "
+                    signing_state.error_message
+                    or "No persistent signing key configured. Running with ephemeral/null signer. "
                     "Generated certificates will be PROVISIONAL."
                 ),
             }
@@ -777,7 +792,7 @@ def check_execution_readiness():
     )
 
     can_execute = scenario_ok and agent_ok and sim_ok and not has_failed
-    has_trusted_signer = signing_key is not None
+    has_trusted_signer = signing_state.is_verifiable
     post_run_evidence_complete = bool(
         data.get("post_run_evidence")
         or data.get("evidence_complete")
@@ -820,7 +835,7 @@ def check_execution_readiness():
         overall_status = "CONFIGURED" if has_warnings else "READY"
 
     scen_hash = compute_scenario_hash(scen_data) if scen_data else ""
-    signing_type = "ed25519" if signing_key else "ephemeral"
+    signing_type = "ed25519" if signing_state.is_verifiable else "ephemeral"
 
     pfp = compute_preflight_fingerprint(
         scenario_id=scen_id,
