@@ -48,7 +48,9 @@ class ComplianceService:
                     for k, v in manifest.items()
                     if k not in ("provenance_chain", "certification", "signing_context")
                 }
-                manifest_bytes = json.dumps(manifest_to_verify, sort_keys=True).encode("utf-8")
+                from agentv_runtime.canonical import canonical_json_encode
+
+                manifest_bytes = canonical_json_encode(manifest_to_verify)
                 shake_digest = forensics.compute_shake256_digest(manifest_bytes)
 
                 pqc_client = IdentityService.get_pqc_client()

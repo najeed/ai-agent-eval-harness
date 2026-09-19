@@ -228,6 +228,7 @@ class ManifestBuilder:
         workspace_id: str = "default",
         created_by: str = "system",
         metadata: Mapping[str, Any] | None = None,
+        execution_mode: str | None = None,
     ) -> ExecutionManifest:
         meta = dict(scenario_data.get("metadata") or {})
         scen_id = meta.get("id") or str(scenario_data.get("id", "unnamed_scenario"))
@@ -244,6 +245,19 @@ class ManifestBuilder:
         # Deterministic Manifest ID derived from scenario hash, agent config, and timestamp
         agent_dict = dict(agent_config or {})
         runtime_dict = dict(runtime_config or {})
+        meta_dict = dict(metadata or {})
+
+        resolved_mode = (
+            execution_mode
+            or meta_dict.get("execution_mode")
+            or runtime_dict.get("execution_mode")
+            or meta.get("execution_mode")
+            or scenario_data.get("execution_mode")
+        )
+        if resolved_mode:
+            runtime_dict["execution_mode"] = str(resolved_mode)
+            meta_dict["execution_mode"] = str(resolved_mode)
+
         now_iso = datetime.now(UTC).isoformat()
         agent_hex = _canonical_json_bytes(agent_dict).hex()
         seed = f"{tenant_id}:{workspace_id}:{scen_hash}:{agent_hex}:{now_iso}"
@@ -261,7 +275,7 @@ class ManifestBuilder:
             environment=env,
             created_at=now_iso,
             created_by=created_by,
-            metadata=dict(metadata or {}),
+            metadata=meta_dict,
         )
 
 

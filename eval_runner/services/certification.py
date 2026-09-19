@@ -705,12 +705,14 @@ class CertificationService:
                 provisional=provisional,
                 behavioral_fingerprint_id=behavioral_fingerprint_id,
                 scenario_data=effective_scenario_data,
+                require_finalization=True,
             )
 
             lock.verify_active()
             manifest_path = vault_dir / "run_manifest.json"
-            with open(manifest_path, "w", encoding="utf-8") as f:
-                json.dump(manifest, f, indent=2)
+            if not manifest_path.exists() and manifest:
+                with open(manifest_path, "w", encoding="utf-8") as f:
+                    json.dump(manifest, f, indent=2)
 
             is_pass = effective_status == "pass"
             # Defect T1 Invariant: never certified=True when provisional=True

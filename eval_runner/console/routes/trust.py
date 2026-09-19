@@ -124,11 +124,40 @@ def verify_run_public(run_id):
                 "certificate_authoritative": not manifest.get("provisional", False),
                 "timestamp": datetime.now().astimezone().isoformat(),
                 "method": method,
-                "manifest": manifest,
+                "certificate_hash": (
+                    manifest.get("certificate_hash") or manifest.get("package_hash")
+                ),
+                "package_hash": manifest.get("package_hash"),
+                "trace_hash": manifest.get("trace_hash"),
             }
         )
     except Exception as e:
         return jsonify({"error": f"Verification failed: {str(e)}", "verified": False}), 500
+
+
+@trust_bp.route("/v1/verify/<path:run_id>/manifest", methods=["GET"])
+@require_permission(Permission.RUNS_READ)
+def get_verified_run_manifest(run_id):
+    """Authenticated endpoint for audit-level manifest inspection."""
+    if (
+        not run_id
+        or not isinstance(run_id, str)
+        or ".." in run_id
+        or "/" in run_id
+        or "\\" in run_id
+    ):
+        return jsonify({"error": "Invalid or unsafe run_id"}), 400
+
+    manifest_path = locate_certificate_file(run_id)
+    if not manifest_path or not manifest_path.exists():
+        return jsonify({"error": "Manifest not found for run."}), 404
+
+    try:
+        with open(manifest_path, encoding="utf-8") as f:
+            manifest = json.load(f)
+        return jsonify(manifest), 200
+    except Exception as e:
+        return jsonify({"error": f"Failed to load manifest: {str(e)}"}), 500
 
 
 @trust_bp.route("/v1/identity/<identity_id>/public_key", methods=["GET"])

@@ -201,9 +201,12 @@ export function mergeNavManifest(
 }
 
 // ---------------------------------------------------------------------------
-// [D2] Extension host API surface. Extensions receive ONLY the APIs their
-// trust tier grants: unsigned/local extensions are restricted to read-only
-// host APIs; there is deliberately no escape hatch client-side.
+// [D2] Extension host API surface.
+// SECURITY NOTICE: Dynamic extensions execute directly within the console origin
+// as trusted privileged ESM code. ExtensionHostContext defines host API allowances
+// and feature gates, NOT an isolated iframe or browser process sandbox.
+// In production builds (import.meta.env.PROD), unsigned extensions are strictly
+// rejected and cannot be loaded under any circumstance.
 // ---------------------------------------------------------------------------
 
 interface ExtensionHostApiInfo {
@@ -312,6 +315,9 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
         //                        'unsigned-local' (read-only host APIs).
         async function resolveTier(manifestObj: any): Promise<ExtensionTier> {
           if (!manifestObj.signature) {
+            if (import.meta.env.PROD) {
+              throw { kind: 'publisher', reason: 'unsigned-extensions-prohibited-in-production' };
+            }
             if (!isRemotePinned) return 'unsigned-local';
             throw { kind: 'publisher', reason: 'remote-without-signature' };
           }
@@ -336,7 +342,7 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
             if (err && err.kind === 'publisher') throw err;
             // Server unreachable: fail-closed for remote modules; local dev
             // degrades to the restricted unsigned-local surface.
-            if (!isRemotePinned) return 'unsigned-local';
+            if (!isRemotePinned && !import.meta.env.PROD) return 'unsigned-local';
             throw { kind: 'publisher', reason: 'verification-unavailable' };
           }
         }

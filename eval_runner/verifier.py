@@ -444,6 +444,7 @@ class TraceVerifier:
         rubrics: dict[str, Any] | None = None,
         consensus: dict[str, Any] | None = None,
         scenario_data: Mapping[str, Any] | None = None,
+        require_finalization: bool = False,
     ) -> dict[str, Any]:
         """
         Signs a trace file and issues a standardized Verification Certificate (VC) v3
@@ -732,6 +733,25 @@ class TraceVerifier:
                     raise CertificationFailedError(
                         f"AuthoritativeEvaluatorRecordInvalid: {fin_err}"
                     ) from fin_err
+            elif ev.get("event") in ("run_end", "end"):
+                ev_data = ev.get("data") if isinstance(ev.get("data"), dict) else ev
+                candidate = None
+                if isinstance(ev_data.get("finalization"), dict):
+                    candidate = ev_data["finalization"]
+                elif isinstance(ev.get("finalization"), dict):
+                    candidate = ev.get("finalization")
+                if candidate:
+                    try:
+                        from agentv_runtime.finalization import EvaluatorFinalizationRecord
+
+                        fin_record = EvaluatorFinalizationRecord.from_dict(
+                            candidate, require_authoritative=True
+                        )
+                        break
+                    except Exception as fin_err:
+                        raise CertificationFailedError(
+                            f"AuthoritativeEvaluatorRecordInvalid: {fin_err}"
+                        ) from fin_err
 
         if fin_record:
             if fin_record.run_id != run_id:
@@ -766,8 +786,10 @@ class TraceVerifier:
                         f"'{fin_record.execution_manifest_hash}' != "
                         f"'{metadata['execution_manifest_hash']}'"
                     )
-        elif os.environ.get("AES_CERTIFICATION_MODE") == "1" or getattr(
-            config, "AES_CERTIFICATION_MODE", False
+        elif (
+            require_finalization
+            or os.environ.get("AES_CERTIFICATION_MODE") == "1"
+            or getattr(config, "AES_CERTIFICATION_MODE", False)
         ):
             raise CertificationFailedError(
                 "MissingEvaluatorFinalization: trace missing mandatory authoritative "
@@ -1413,7 +1435,11 @@ class TraceVerifier:
             store.seal(
                 run_id=run_id,
                 metadata={
-                    "certificate_hash": manifest.get("trace_hash", ""),
+                    "certificate_hash": (
+                        manifest.get("package_hash")
+                        or manifest.get("certificate_hash")
+                        or manifest.get("trace_hash", "")
+                    ),
                     "vc_version": manifest.get("vc_version", VC_V3_SCHEMA_VERSION),
                     "timestamp": timestamp,
                     "compliance_status": compliance_status,
@@ -1448,6 +1474,7 @@ class TraceVerifier:
                     "pipeline_version": "1.0.0",
                     "transactional": True,
                     "outcome": "CERTIFIED",
+                    "stages": stages,
                 }
 
                 _stage("sign")(_sign)
@@ -1464,7 +1491,6 @@ class TraceVerifier:
                 _rollback()
                 raise
 
-        manifest["certification"]["stages"] = stages
         return manifest
 
     @staticmethod
@@ -1485,7 +1511,24 @@ class TraceVerifier:
     ) -> dict[str, Any]:
         """
         Signs a trace and returns the certificate DICT directly (API Helper).
+        Routes through CertificationService.execute_industrial_certification.
         """
+        try:
+            from eval_runner.services.certification import CertificationService
+
+            res = CertificationService.execute_industrial_certification(
+                run_id=run_id,
+                trace_path=trace_path,
+                identity_id=identity_id,
+            )
+            manifest = res.get("manifest")
+            if manifest and isinstance(manifest, dict) and "trace_hash" in manifest:
+                return manifest
+        except Exception as cert_err:
+            logger.debug(
+                "CertificationService failed in get_certificate, falling back to sign_trace: %s",
+                cert_err,
+            )
         return cls.sign_trace(trace_path, run_id=run_id, identity_id=identity_id)
 
     @classmethod
@@ -1701,11 +1744,7 @@ class TraceVerifier:
                 manifest_to_verify["certification"] = cert_copy
             from agentv_runtime.canonical import canonical_json_encode as _canonical_json_encode
 
-            candidate_manifest_bytes = [
-                _canonical_json_encode(manifest_to_verify),
-                json.dumps(manifest_to_verify, sort_keys=True).encode("utf-8"),
-            ]
-            manifest_bytes = candidate_manifest_bytes[0]
+            manifest_bytes = _canonical_json_encode(manifest_to_verify)
 
             if "certification" in manifest:
                 cert_meta = manifest["certification"]
@@ -1761,14 +1800,11 @@ class TraceVerifier:
 
                     verified = False
                     last_sig_err = None
-                    for m_cand in candidate_manifest_bytes:
-                        try:
-                            public_key.verify(bytes.fromhex(sig_hex), m_cand)
-                            verified = True
-                            manifest_bytes = m_cand
-                            break
-                        except Exception as sig_err:
-                            last_sig_err = sig_err
+                    try:
+                        public_key.verify(bytes.fromhex(sig_hex), manifest_bytes)
+                        verified = True
+                    except Exception as sig_err:
+                        last_sig_err = sig_err
                     if not verified:
                         logger.warning(
                             "Verification Failure: ED25519 signature "
@@ -2025,6 +2061,7 @@ def verify_trace_certificate(
         _cje(signed_payload),
         json.dumps(signed_payload, sort_keys=True).encode("utf-8"),
     ]
+    candidate_manifest_bytes[0]
 
     sig_verified = False
     for entry in provenance_chain:
@@ -3290,10 +3327,217 @@ class VerificationAuthority:
             "package_hash": pkg.compute_package_hash(),
         }
 
+    @classmethod
+    def verify_certification_artifact(
+        cls,
+        package: Any,
+        raw_trace_bytes: bytes,
+        raw_trace_events: list[dict[str, Any]] | None = None,
+        canonical_manifest: Any = None,
+        scenario_data: Any | None = None,
+        public_key_pem: str | None = None,
+        trust_root: Any | None = None,
+        key_registry: Mapping[str, str] | None = None,
+        require_signature: bool = True,
+    ) -> dict[str, Any]:
+        """
+        Industrial-grade authoritative verification authority for AgentV evaluation
+        runs and certification artifacts.
+        Enforces the complete end-to-end verification contract:
+        1. EvaluatorFinalizationRecord present in trace with valid cryptographic signature
+        2. Execution mode is authoritative ('live' or 'hybrid') and not provisional/simulated
+        3. Raw trace byte parity (SHA3-256 vs pkg.trace_hash)
+        4. Canonical manifest hash binding & semantic cross-bindings
+        5. Evidence graph deterministic root reconstruction & direct provenance
+        6. Trace seal integrity & event count
+        7. Scenario hash binding against canonical scenario definition
+        8. Decision verdict conformance (PASS / VERIFIED)
+        9. Required oracle inventory completeness and PASS outcomes
+        10. Verification package cryptographic signature against trust root
+        11. Sub-hash bindings (evaluation_hash, verification_hash, certificate_hash)
+        """
+        from agentv_runtime.package import VerificationPackage
+
+        if isinstance(package, dict):
+            pkg = VerificationPackage.from_dict(package)
+        else:
+            pkg = package
+
+        failures: list[str] = []
+
+        # Parse trace events from raw_trace_bytes
+        parsed_events: list[dict[str, Any]] = []
+        if raw_trace_bytes is None:
+            failures.append(
+                "TraceBytesMissing: certification verification requires raw trace bytes"
+            )
+        else:
+            try:
+                decoded = raw_trace_bytes.decode("utf-8")
+                for line in decoded.splitlines():
+                    trimmed = line.strip()
+                    if trimmed:
+                        parsed_events.append(json.loads(trimmed))
+            except Exception as parse_err:
+                failures.append(f"TraceStreamParsingFailed: {parse_err}")
+
+        effective_events = parsed_events if parsed_events else (raw_trace_events or [])
+
+        # 1. Authoritative EvaluatorFinalizationRecord validation
+        fin_record: Any | None = None
+        for ev in reversed(effective_events):
+            if ev.get("event") == "evaluator_finalization":
+                fin_data = ev.get("data") or ev
+                try:
+                    from agentv_runtime.finalization import EvaluatorFinalizationRecord
+
+                    fin_record = EvaluatorFinalizationRecord.from_dict(
+                        fin_data, require_authoritative=True
+                    )
+                    break
+                except Exception as fin_err:
+                    failures.append(f"AuthoritativeEvaluatorRecordInvalid: {fin_err}")
+            elif ev.get("event") in ("run_end", "end"):
+                ev_data = ev.get("data") if isinstance(ev.get("data"), dict) else ev
+                candidate = None
+                if isinstance(ev_data.get("finalization"), dict):
+                    candidate = ev_data["finalization"]
+                elif isinstance(ev.get("finalization"), dict):
+                    candidate = ev.get("finalization")
+                if candidate:
+                    try:
+                        from agentv_runtime.finalization import EvaluatorFinalizationRecord
+
+                        fin_record = EvaluatorFinalizationRecord.from_dict(
+                            candidate, require_authoritative=True
+                        )
+                        break
+                    except Exception as fin_err:
+                        failures.append(f"AuthoritativeEvaluatorRecordInvalid: {fin_err}")
+
+        if fin_record is None:
+            if not any("AuthoritativeEvaluatorRecordInvalid" in f for f in failures):
+                failures.append(
+                    "MissingEvaluatorFinalization: trace missing mandatory authoritative "
+                    "EvaluatorFinalizationRecord"
+                )
+        else:
+            # Cryptographic signature validation of EvaluatorFinalizationRecord
+            eval_pub = None
+            if public_key_pem:
+                eval_pub = public_key_pem
+            elif key_registry and fin_record.evaluator_identity in key_registry:
+                eval_pub = key_registry[fin_record.evaluator_identity]
+            else:
+                from eval_runner.identity import IdentityService
+
+                eval_pub = IdentityService.get_public_key(
+                    fin_record.evaluator_identity, auto_provision=False
+                )
+
+            if eval_pub is None:
+                failures.append(
+                    f"EvaluatorKeyMissing: no public key found for evaluator identity "
+                    f"'{fin_record.evaluator_identity}' (auto-provisioning disabled)"
+                )
+            else:
+                try:
+                    if not fin_record.verify_authoritative(
+                        public_key=eval_pub, trust_root=trust_root
+                    ):
+                        failures.append(
+                            f"EvaluatorSignatureVerificationFailed: signature for "
+                            f"'{fin_record.evaluator_identity}' failed verification"
+                        )
+                except Exception as esig_err:
+                    failures.append(f"EvaluatorSignatureVerificationFailed: {esig_err}")
+
+            # Cross-field consistency with execution manifest and package
+            man_run_id = (
+                canonical_manifest.get("run_id") if isinstance(canonical_manifest, dict) else None
+            )
+            exp_run_id = (
+                (pkg.execution_identity or {}).get("run_id")
+                or man_run_id
+                or (pkg.package_id[4:] if pkg.package_id.startswith("pkg_") else pkg.package_id)
+            )
+            if exp_run_id and fin_record.run_id != exp_run_id:
+                failures.append(
+                    f"RunIdMismatch: EvaluatorFinalizationRecord run_id "
+                    f"'{fin_record.run_id}' != expected '{exp_run_id}'"
+                )
+            if pkg.evidence_root_hash and fin_record.evidence_root_hash != pkg.evidence_root_hash:
+                failures.append(
+                    f"EvidenceRootMismatch: EvaluatorFinalizationRecord evidence_root_hash "
+                    f"'{fin_record.evidence_root_hash}' != package '{pkg.evidence_root_hash}'"
+                )
+            if pkg.scenario_hash and fin_record.scenario_hash != pkg.scenario_hash:
+                failures.append(
+                    f"ScenarioHashMismatch: EvaluatorFinalizationRecord scenario_hash "
+                    f"'{fin_record.scenario_hash}' != package '{pkg.scenario_hash}'"
+                )
+            if pkg.manifest_hash and fin_record.execution_manifest_hash != pkg.manifest_hash:
+                failures.append(
+                    f"ManifestHashMismatch: EvaluatorFinalizationRecord execution_manifest_hash "
+                    f"'{fin_record.execution_manifest_hash}' != package '{pkg.manifest_hash}'"
+                )
+
+        # 2. Execution Mode Enforcement (Fail-closed on simulated/provisional)
+        man_mode = (
+            canonical_manifest.get("execution_mode")
+            if isinstance(canonical_manifest, dict)
+            else None
+        )
+        exec_mode = (
+            ((pkg.execution_identity or {}).get("execution_mode") or man_mode or "").lower().strip()
+        )
+
+        if exec_mode not in ("live", "hybrid"):
+            failures.append(
+                f"UncertifiedExecutionMode: authoritative certification requires "
+                f"'live' or 'hybrid' execution mode, got '{exec_mode or 'undeclared'}'"
+            )
+
+        man_provisional = (
+            canonical_manifest.get("provisional") if isinstance(canonical_manifest, dict) else False
+        )
+        is_provisional = bool(man_provisional or (pkg.metadata or {}).get("provisional") is True)
+        if is_provisional:
+            failures.append(
+                "ProvisionalExecutionCertificationProhibited: provisional runs cannot be certified"
+            )
+
+        # 3. Complete underlying artifact validation
+        pkg_art_res = cls.verify_package_artifacts(
+            package=pkg,
+            raw_trace_bytes=raw_trace_bytes,
+            raw_trace_events=raw_trace_events or effective_events,
+            canonical_manifest=canonical_manifest,
+            scenario_data=scenario_data,
+            public_key_pem=public_key_pem,
+            trust_root=trust_root,
+            key_registry=key_registry,
+            require_signature=require_signature,
+        )
+        for f in pkg_art_res.get("failures", []):
+            if f not in failures:
+                failures.append(f)
+
+        is_valid = len(failures) == 0
+        return {
+            "verified": is_valid,
+            "status": "CERTIFIED" if is_valid else "UNVERIFIED",
+            "failures": failures,
+            "package_id": pkg.package_id,
+            "scenario_id": pkg.scenario_id,
+            "package_hash": pkg.compute_package_hash(),
+        }
+
 
 TraceVerifier.verify_package = VerificationAuthority.verify_package
 TraceVerifier.verify_package_artifacts = VerificationAuthority.verify_package_artifacts
 TraceVerifier.verify_package_signature_only = VerificationAuthority.verify_package_signature_only
+TraceVerifier.verify_certification_artifact = VerificationAuthority.verify_certification_artifact
 
 
 def locate_certificate_file(run_id: str) -> Path | None:

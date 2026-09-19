@@ -200,7 +200,32 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         # [Iteration 4: Compliance DNA]
         with self._lock:
             if run_id not in self._sequence_numbers:
-                self._sequence_numbers[run_id] = 0
+                initial_seq = 0
+                if run_id and run_id != "unknown":
+                    run_vault_dir = self.log_dir / run_id
+                    target_trace = run_vault_dir / "run.jsonl"
+                    if target_trace.exists():
+                        try:
+                            with open(target_trace, encoding="utf-8") as tf:
+                                for line in tf:
+                                    s = line.strip()
+                                    if s:
+                                        try:
+                                            entry = json.loads(s)
+                                            s_num = entry.get("_seq")
+                                            if isinstance(s_num, int) and s_num > initial_seq:
+                                                initial_seq = s_num
+                                        except Exception as line_parse_err:
+                                            logger.debug(
+                                                "Failed parsing trace line during sequence scan: "
+                                                f"{line_parse_err}"
+                                            )
+                        except Exception as trace_read_err:
+                            logger.debug(
+                                "Failed reading target trace during sequence scan: "
+                                f"{trace_read_err}"
+                            )
+                self._sequence_numbers[run_id] = initial_seq
             self._sequence_numbers[run_id] += 1
             data["_seq"] = self._sequence_numbers[run_id]
             data["_ts_iso"] = datetime.now().astimezone().isoformat()

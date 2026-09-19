@@ -198,6 +198,13 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
     evidence_chain_valid: bool = verified_outcome == "VERIFIED" and not corrupt_line_offsets
 
     assertions = data_block.get("assertions", [])
+    if not assertions:
+        for ev in reversed(events):
+            ev_data = ev.get("data", {}) if isinstance(ev.get("data"), dict) else {}
+            ev_asserts = ev_data.get("assertions") or ev.get("assertions")
+            if isinstance(ev_asserts, list) and ev_asserts:
+                assertions = ev_asserts
+                break
     # Score calculation strictly from authoritative finalization or computed outcome
     if fin_record is not None:
         score = float(fin_record.score)
@@ -286,6 +293,7 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
             "verified_outcome": verified_outcome,
             "duration_seconds": data_block.get("duration", 0),
             "score": score,
+            "assertions": assertions,
         },
         "evidence_chain_valid": evidence_chain_valid,
         "cryptographic_verification": crypto_verification,

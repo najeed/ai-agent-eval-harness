@@ -837,6 +837,12 @@ def check_execution_readiness():
     scen_hash = compute_scenario_hash(scen_data) if scen_data else ""
     signing_type = "ed25519" if signing_state.is_verifiable else "ephemeral"
 
+    exec_mode = str(
+        data.get("execution_mode")
+        or (data.get("runtime_config") or {}).get("execution_mode")
+        or scen_meta.get("execution_mode")
+        or ""
+    )
     pfp = compute_preflight_fingerprint(
         scenario_id=scen_id,
         scen_hash=scen_hash,
@@ -849,7 +855,7 @@ def check_execution_readiness():
         tenant_id=str(data.get("tenant_id", "default")),
         workspace_id=str(data.get("workspace_id", "default")),
         seed=data.get("seed") or scen_meta.get("seed"),
-        execution_mode=str(data.get("execution_mode") or scen_meta.get("execution_mode", "")),
+        execution_mode=exec_mode,
         evaluators=data.get("evaluators"),
     )
 
@@ -861,6 +867,7 @@ def check_execution_readiness():
         "readiness_tier": overall_tier,
         "is_executable": is_executable,
         "is_verifiable": is_verifiable,
+        "execution_mode": exec_mode,
         "agent_config": agent_config,
         "runtime_config": runtime_config,
         "signing_backend": signing_type,
@@ -875,6 +882,7 @@ def check_execution_readiness():
             "state": readiness_state,
             "is_executable": is_executable,
             "is_verifiable": is_verifiable,
+            "execution_mode": exec_mode,
             "scenario_id": scen_id,
             "scenario_hash": scen_hash,
             "overall_status": overall_status,
@@ -1187,9 +1195,15 @@ def evaluate_scenario():
     )
 
     scen_meta = scen.get("metadata") or {}
-    scen_id = scen_meta.get("id") or scen.get("id") or Path(path).stem
+    exec_mode = str(
+        data.get("execution_mode")
+        or (data.get("runtime_config") or {}).get("execution_mode")
+        or meta.get("execution_mode")
+        or scen_meta.get("execution_mode")
+        or ""
+    )
     expected_fingerprint = compute_preflight_fingerprint(
-        scenario_id=scen_id,
+        scenario_id=str(scen.get("id") or scen_meta.get("id") or identifier),
         scen_hash=compute_scenario_hash(scen),
         endpoint=agent_config.get("endpoint"),
         protocol=agent_config.get("protocol"),
@@ -1200,7 +1214,7 @@ def evaluate_scenario():
         tenant_id=str(data.get("tenant_id", "default")),
         workspace_id=str(data.get("workspace_id", "default")),
         seed=data.get("seed") or scen_meta.get("seed"),
-        execution_mode=str(data.get("execution_mode") or scen_meta.get("execution_mode", "")),
+        execution_mode=exec_mode,
         evaluators=data.get("evaluators"),
     )
 
@@ -1245,6 +1259,7 @@ def evaluate_scenario():
         workspace_id=data.get("workspace_id", "default"),
         created_by=request.headers.get("X-User-Id", "system"),
         metadata=data.get("metadata"),
+        execution_mode=exec_mode,
     )
 
     backend = InProcessExecutionBackend.get_instance()
@@ -1253,7 +1268,12 @@ def evaluate_scenario():
         scenario_data=scen,
         background=True,
         max_turns=data.get("max_turns", 10),
-        metadata={**data.get("metadata", {}), "execution_manifest": manifest.to_dict()},
+        metadata={
+            **data.get("metadata", {}),
+            "execution_mode": exec_mode,
+            "execution_mode_declared": True,
+            "execution_manifest": manifest.to_dict(),
+        },
     )
 
     return jsonify(

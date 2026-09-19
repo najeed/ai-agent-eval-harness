@@ -147,8 +147,11 @@ class IdentityService:
             "evaluator",
             "attestation_signer",
         }
+        is_prod = os.getenv("AGENTV_ENV", "").lower() == "production" or getattr(
+            config, "IS_PRODUCTION", False
+        )
         if (
-            identity_id in certification_identities or identity_id.startswith("cert_")
+            (identity_id in certification_identities or identity_id.startswith("cert_")) or is_prod
         ) and not config.ALLOW_SYSTEM_IDENTITY_PROVISIONING:
             raise PermissionError(
                 f"Security Policy Violation: Auto-provisioning for '{identity_id}' is disabled. "

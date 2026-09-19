@@ -1044,8 +1044,8 @@ def test_certification_metadata_binding_read_and_parse_error(cert_vault, monkeyp
             frame = next(
                 (s for s in stack if s.function == "execute_industrial_certification"), None
             )
-            # Lines 465-515 represent the metadata binding read block
-            if frame and frame.lineno in range(465, 515):
+            # Lines 490-532 represent the metadata binding read block
+            if frame and frame.lineno in range(490, 532):
                 raise OSError("Simulated metadata read error")
         return orig_open(file, *args, **kwargs)
 

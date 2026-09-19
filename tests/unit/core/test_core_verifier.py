@@ -984,6 +984,7 @@ class MockPreemptiveInterceptor(TraceVerificationInterceptor):
         return format in ["preempt", "ED25519", "hybrid"]
 
     def sign(self, manifest: dict, next_signer) -> dict:
+        from agentv_runtime.canonical import canonical_json_encode
         from eval_runner.identity import IdentityService
 
         identity = "preempted_signer"
@@ -991,7 +992,14 @@ class MockPreemptiveInterceptor(TraceVerificationInterceptor):
         manifest_to_sign = manifest.copy()
         manifest_to_sign.pop("provenance_chain", None)
         manifest_to_sign.pop("signing_context", None)
-        manifest_bytes = json.dumps(manifest_to_sign, sort_keys=True).encode("utf-8")
+        manifest_to_sign.pop("certification_diagnostics", None)
+        if "certification" in manifest_to_sign and isinstance(
+            manifest_to_sign["certification"], dict
+        ):
+            cert_copy = dict(manifest_to_sign["certification"])
+            cert_copy.pop("stages", None)
+            manifest_to_sign["certification"] = cert_copy
+        manifest_bytes = canonical_json_encode(manifest_to_sign)
         sig_bytes = priv_key.sign(manifest_bytes)
         manifest["provenance_chain"] = [
             {
@@ -1016,6 +1024,7 @@ class MockAugmentingInterceptor(TraceVerificationInterceptor):
         return True
 
     def sign(self, manifest: dict, next_signer) -> dict:
+        from agentv_runtime.canonical import canonical_json_encode
         from eval_runner.identity import IdentityService
 
         manifest = next_signer(manifest)
@@ -1024,7 +1033,14 @@ class MockAugmentingInterceptor(TraceVerificationInterceptor):
         manifest_to_sign = manifest.copy()
         manifest_to_sign.pop("provenance_chain", None)
         manifest_to_sign.pop("signing_context", None)
-        manifest_bytes = json.dumps(manifest_to_sign, sort_keys=True).encode("utf-8")
+        manifest_to_sign.pop("certification_diagnostics", None)
+        if "certification" in manifest_to_sign and isinstance(
+            manifest_to_sign["certification"], dict
+        ):
+            cert_copy = dict(manifest_to_sign["certification"])
+            cert_copy.pop("stages", None)
+            manifest_to_sign["certification"] = cert_copy
+        manifest_bytes = canonical_json_encode(manifest_to_sign)
         sig_bytes = priv_key.sign(manifest_bytes)
         manifest["provenance_chain"].append(
             {

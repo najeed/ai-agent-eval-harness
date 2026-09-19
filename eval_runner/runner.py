@@ -243,12 +243,17 @@ class DefaultRunner(BaseRunner):
         )
 
         # [AgentV v2.0.0] Explicit execution truth mode
-        execution_mode = (
+        declared_mode = (
             scenario.get("execution_mode")
             or (metadata or {}).get("execution_mode")
             or scenario.get("metadata", {}).get("execution_mode")
-            or "simulated"
         )
+        execution_mode = str(declared_mode) if declared_mode else "simulated"
+        execution_mode_declared = bool(declared_mode)
+        if isinstance(ctx.metadata, dict):
+            ctx.metadata["execution_mode"] = execution_mode
+            ctx.metadata["execution_mode_declared"] = execution_mode_declared
+
         repro_contract = build_reproducibility_contract(
             scenario,
             resolved_config=self.resolved_config,
@@ -613,15 +618,19 @@ class DefaultRunner(BaseRunner):
                 from eval_runner.identity import IdentityService
 
                 eval_priv = IdentityService.get_private_key(evaluator_id, auto_provision=True)
-                if eval_priv:
-                    finalization_record = finalization_record.sign(eval_priv)
+                if not eval_priv:
+                    sign_err_msg = (
+                        f"Evaluator private key for '{evaluator_id}' not found "
+                        "(auto-provisioning disabled in production)"
+                    )
+                    logger.error(sign_err_msg)
                 else:
-                    finalization_record = finalization_record.sign()
-                sig = getattr(finalization_record, "evaluator_signature", None) or getattr(
-                    finalization_record, "signature", None
-                )
-                if not sig:
-                    sign_err_msg = "Signature missing after signing attempt"
+                    finalization_record = finalization_record.sign(eval_priv)
+                    sig = getattr(finalization_record, "evaluator_signature", None) or getattr(
+                        finalization_record, "signature", None
+                    )
+                    if not sig:
+                        sign_err_msg = "Signature missing after signing attempt"
             except Exception as sign_err:
                 sign_err_msg = str(sign_err)
                 logger.error("Evaluator signing error in runner: %s", sign_err)

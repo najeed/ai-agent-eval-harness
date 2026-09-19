@@ -441,45 +441,84 @@ export const TrustCenter: React.FC = () => {
 
           {/* Certify Result Card */}
           {certifyResult && (
-            <div className="border border-indigo-500/30 bg-slate-900/50 rounded-xl p-6 space-y-4 shadow-2xl relative">
-              <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400 uppercase tracking-wider">
-                <CheckCircle className="w-4 h-4" />
-                <span>Evaluation Cryptographically Certified</span>
-              </div>
+            certifyResult.certified === true && certifyResult.certificate_issued === true ? (
+              <div data-testid="certify-result-success" className="border border-indigo-500/30 bg-slate-900/50 rounded-xl p-6 space-y-4 shadow-2xl relative">
+                <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400 uppercase tracking-wider">
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Evaluation Cryptographically Certified</span>
+                </div>
 
-              <div className="p-6 bg-slate-950/60 border border-slate-850 rounded-lg space-y-4 text-xs font-mono relative overflow-hidden">
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-500/5 via-transparent to-transparent pointer-events-none" />
-                
-                <div className="flex justify-between items-center border-b border-slate-800/50 pb-3">
-                  <div className="flex items-center gap-2">
-                    <Award className="w-5 h-5 text-indigo-400" />
-                    <span className="font-bold text-slate-200 text-xs">Verification Certificate</span>
+                <div className="p-6 bg-slate-950/60 border border-slate-850 rounded-lg space-y-4 text-xs font-mono relative overflow-hidden">
+                  <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-500/5 via-transparent to-transparent pointer-events-none" />
+                  
+                  <div className="flex justify-between items-center border-b border-slate-800/50 pb-3">
+                    <div className="flex items-center gap-2">
+                      <Award className="w-5 h-5 text-indigo-400" />
+                      <span className="font-bold text-slate-200 text-xs">Verification Certificate</span>
+                    </div>
+                    <span className="text-[10px] text-slate-500">v3.0.0</span>
                   </div>
-                  <span className="text-[10px] text-slate-500">v3.0.0</span>
-                </div>
 
-                <div className="space-y-1">
-                  <span className="text-[9px] text-slate-500 uppercase tracking-wider font-bold">Target Identity (Run ID)</span>
-                  <p className="text-slate-350 text-xs leading-tight truncate">{certifyResult.run_id}</p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <span className="text-[9px] text-slate-500 uppercase tracking-wider font-bold">Status</span>
-                    <p className="text-emerald-400 text-xs font-bold uppercase tracking-wider">{certifyResult.status}</p>
+                    <span className="text-[9px] text-slate-500 uppercase tracking-wider font-bold">Target Identity (Run ID)</span>
+                    <p className="text-slate-350 text-xs leading-tight truncate">{certifyResult.run_id}</p>
                   </div>
-                  <div className="space-y-1">
-                    <span className="text-[9px] text-slate-500 uppercase tracking-wider font-bold">SHA3 Trace Hash</span>
-                    <p className="text-slate-400 text-[10px] truncate">{certifyResult.manifest?.trace_hash || 'Verified'}</p>
-                  </div>
-                </div>
 
-                <div className="space-y-1 border-t border-slate-800/50 pt-3">
-                  <span className="text-[9px] text-slate-500 uppercase tracking-wider font-bold">Manifest Vault Path</span>
-                  <p className="text-slate-400 text-[10px] truncate select-all">{certifyResult.manifest?.manifest_path}</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <span className="text-[9px] text-slate-500 uppercase tracking-wider font-bold">Status</span>
+                      <p className="text-emerald-400 text-xs font-bold uppercase tracking-wider">{certifyResult.status}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[9px] text-slate-500 uppercase tracking-wider font-bold">SHA3 Trace Hash</span>
+                      <p className="text-slate-400 text-[10px] truncate">{certifyResult.manifest?.trace_hash || 'Verified'}</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1 border-t border-slate-800/50 pt-3">
+                    <span className="text-[9px] text-slate-500 uppercase tracking-wider font-bold">Manifest Vault Path</span>
+                    <p className="text-slate-400 text-[10px] truncate select-all">{certifyResult.manifest?.manifest_path}</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div data-testid="certify-result-failed" className="border border-red-500/30 bg-slate-900/50 rounded-xl p-6 space-y-4 shadow-2xl relative">
+                <div className="flex items-center gap-2 text-xs font-semibold text-rose-400 uppercase tracking-wider">
+                  <ShieldAlert className="w-4 h-4" />
+                  <span>NOT CERTIFIED / ATTESTATION FAILED</span>
+                </div>
+
+                <div className="p-6 bg-slate-950/60 border border-slate-850 rounded-lg space-y-4 text-xs font-mono relative overflow-hidden">
+                  <div className="flex justify-between items-center border-b border-slate-800/50 pb-3">
+                    <div className="flex items-center gap-2">
+                      <ShieldAlert className="w-5 h-5 text-rose-400" />
+                      <span className="font-bold text-slate-200 text-xs">Certification Denied</span>
+                    </div>
+                    <span className="text-[10px] text-rose-500 font-bold uppercase tracking-wider">Uncertified</span>
+                  </div>
+
+                  <div className="space-y-1">
+                    <span className="text-[9px] text-slate-500 uppercase tracking-wider font-bold">Target Identity (Run ID)</span>
+                    <p className="text-slate-350 text-xs leading-tight truncate">{certifyResult.run_id}</p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <span className="text-[9px] text-slate-500 uppercase tracking-wider font-bold">Status</span>
+                      <p className="text-rose-400 text-xs font-bold uppercase tracking-wider">{certifyResult.status || 'ATTESTATION_FAILED'}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[9px] text-slate-500 uppercase tracking-wider font-bold">Compliance Status</span>
+                      <p className="text-rose-400 text-xs uppercase tracking-wider">{certifyResult.compliance_status || 'failed'}</p>
+                    </div>
+                  </div>
+
+                  <p className="text-[11px] text-rose-300/80 bg-rose-500/5 border border-rose-500/20 p-2.5 rounded-lg">
+                    This evaluation cannot be certified. Authoritative certification requires passed assertions, verified policy compliance, and live/hybrid execution mode.
+                  </p>
+                </div>
+              </div>
+            )
           )}
         </div>
       )}

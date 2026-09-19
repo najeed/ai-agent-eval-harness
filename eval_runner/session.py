@@ -148,7 +148,10 @@ class SessionManager:
             or self.metadata.get("execution_mode")
             or scenario.get("metadata", {}).get("execution_mode")
         )
-        execution_mode_declared = bool(mode_raw)
+        if "execution_mode_declared" in self.metadata:
+            execution_mode_declared = bool(self.metadata["execution_mode_declared"])
+        else:
+            execution_mode_declared = bool(mode_raw)
         if not mode_raw:
             mode_raw = ExecutionMode.SIMULATED.value
             # Silent SIMULATED default is LOUD: operators get an

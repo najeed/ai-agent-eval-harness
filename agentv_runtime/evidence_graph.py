@@ -129,6 +129,12 @@ def link_assertion(
         "invalid": is_invalid,
         "has_result": has_res,
     }
+    if "expected" in assertion:
+        node["expected"] = assertion["expected"]
+    if "actual" in assertion:
+        node["actual"] = assertion["actual"]
+    elif "actual_after" in assertion:
+        node["actual"] = assertion["actual_after"]
 
     ref = assertion.get("evidence_reference") or assertion.get("reference")
     if ref:

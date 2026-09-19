@@ -75,12 +75,16 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
 
   const [auditResult, setAuditResult] = useState<any>(null);
   const [auditLoading, setAuditLoading] = useState(false);
-  // Authoritative evidence package (P1-13): the ONLY source for "why".
+  // Authoritative evidence package: the primary source for "why".
   const [evidencePackage, setEvidencePackage] = useState<any>(null);
+  const [streamEvents, setStreamEvents] = useState<any[]>([]);
+  const [streamLoading, setStreamLoading] = useState(true);
 
   useEffect(() => {
     if (!run?.run_id) return;
     setAuditLoading(true);
+    setStreamLoading(true);
+
     fetch(`/api/v1/runs/${run.run_id}/verify`)
       .then(res => res.json())
       .then(data => setAuditResult(data))
@@ -91,7 +95,187 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
       .then(res => (res.ok ? res.json() : null))
       .then(data => setEvidencePackage(data))
       .catch(() => setEvidencePackage(null));
+
+    // Authoritative trace hydration via SSE endpoint
+    const accumulatedEvents: any[] = [];
+    let es: EventSource | null = null;
+    try {
+      es = new EventSource(`/api/v1/runs/${run.run_id}/stream`);
+      es.onmessage = (e) => {
+        try {
+          const ev = JSON.parse(e.data);
+          accumulatedEvents.push(ev);
+          if (ev.event === 'run_end' || ev.event === 'trace_sealed' || ev.event === 'verification_certificate_issued') {
+            setStreamEvents([...accumulatedEvents]);
+            setStreamLoading(false);
+          }
+        } catch {}
+      };
+      es.onerror = () => {
+        setStreamEvents([...accumulatedEvents]);
+        setStreamLoading(false);
+        if (es) es.close();
+      };
+    } catch {
+      setStreamLoading(false);
+    }
+
+    return () => {
+      if (es) es.close();
+    };
   }, [run?.run_id]);
+
+  // Hydrated Assertions: from evidencePackage (verdict/graph) or trace events
+  const assertions = React.useMemo(() => {
+    if (evidencePackage?.verdict?.assertions && Array.isArray(evidencePackage.verdict.assertions) && evidencePackage.verdict.assertions.length > 0) {
+      return evidencePackage.verdict.assertions;
+    }
+    if (evidencePackage?.assertions && Array.isArray(evidencePackage.assertions) && evidencePackage.assertions.length > 0) {
+      return evidencePackage.assertions;
+    }
+    if (evidencePackage?.evidence_graph?.nodes && Array.isArray(evidencePackage.evidence_graph.nodes) && evidencePackage.evidence_graph.nodes.length > 0) {
+      return evidencePackage.evidence_graph.nodes.map((n: any) => ({
+        name: n.label || n.oracle_id || n.metric || n.node || 'assertion',
+        passed: n.passed === true,
+        expected: n.expected != null ? String(n.expected) : undefined,
+        actual: n.actual != null ? String(n.actual) : undefined,
+        description: n.description || `Node: ${n.node || n.node_id || 'unknown'} (${n.kind || 'metric'})`,
+        node: n.node || n.node_id,
+        metric: n.label || n.oracle_id,
+      }));
+    }
+    for (let i = streamEvents.length - 1; i >= 0; i--) {
+      const evData = streamEvents[i]?.data;
+      if (evData && Array.isArray(evData.assertions) && evData.assertions.length > 0) {
+        return evData.assertions.map((a: any) => ({
+          name: a.metric || a.assertion || a.name || a.oracle_id || 'assertion',
+          passed: a.passed === true,
+          expected: a.expected != null ? String(a.expected) : undefined,
+          actual: a.actual != null ? String(a.actual) : undefined,
+          description: a.description,
+          node: a.node || a.node_id,
+          metric: a.metric || a.assertion,
+        }));
+      }
+    }
+    return run.assertions || [];
+  }, [evidencePackage, streamEvents, run.assertions]);
+
+  // Hydrated Tool Calls
+  const toolCalls = React.useMemo(() => {
+    const tools: Array<{
+      turn: number;
+      tool: string;
+      parameters: Record<string, any>;
+      result: any;
+      duration_ms?: number;
+    }> = [];
+    streamEvents.forEach((ev, idx) => {
+      const evType = ev.event || ev.type;
+      if (evType === 'tool_call' || evType === 'agent_tool_call') {
+        const d = ev.data || ev;
+        tools.push({
+          turn: d.turn || d.step || idx + 1,
+          tool: d.tool || d.name || d.tool_name || 'unknown_tool',
+          parameters: d.parameters || d.params || d.arguments || d.input || {},
+          result: d.result || d.output || {},
+          duration_ms: d.duration_ms || d.latency_ms,
+        });
+      }
+    });
+    return tools.length > 0 ? tools : (run.tool_calls || []);
+  }, [streamEvents, run.tool_calls]);
+
+  // Hydrated State Diff
+  const stateDiff = React.useMemo(() => {
+    if (run.state_diff) return run.state_diff;
+    if (evidencePackage?.state_diff) return evidencePackage.state_diff;
+    const mutations: string[] = [];
+    let initial: Record<string, any> = {};
+    let final: Record<string, any> = {};
+    streamEvents.forEach(ev => {
+      const evType = ev.event || ev.type;
+      const d = ev.data || {};
+      if (evType === 'state_delta' || evType === 'state_mutation') {
+        if (d.path || d.mutation) mutations.push(d.path || d.mutation || JSON.stringify(d));
+      }
+      if (evType === 'run_start' && d.initial_state) initial = d.initial_state;
+      if (evType === 'run_end' && d.final_state) final = d.final_state;
+    });
+    if (mutations.length > 0 || Object.keys(initial).length > 0 || Object.keys(final).length > 0) {
+      return { initial, final, mutations };
+    }
+    return null;
+  }, [run.state_diff, evidencePackage, streamEvents]);
+
+  // Hydrated Policy Evidence: 3 STRICT STATES
+  const policyEvidence = React.useMemo(() => {
+    const violations: Array<{
+      rule: string;
+      severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+      message: string;
+    }> = [];
+    const evaluations: Array<{
+      policy_id: string;
+      decision: string;
+      reason?: string;
+    }> = [];
+
+    if (run.policy_violations && run.policy_violations.length > 0) {
+      violations.push(...run.policy_violations);
+    }
+
+    streamEvents.forEach(ev => {
+      const evType = ev.event || ev.type;
+      const d = ev.data || {};
+      if (evType === 'policy_violation' || d.status === 'policy_violation' || ev.status === 'policy_violation') {
+        violations.push({
+          rule: d.rule || d.policy_id || ev.rule || 'Guardrail Policy',
+          severity: (d.severity || ev.severity || 'HIGH').toUpperCase() as any,
+          message: d.message || d.violation || ev.message || 'Policy violation detected',
+        });
+      }
+      if (evType === 'policy_check' || d.decision === 'allowed' || (d.policy_id && d.decision)) {
+        evaluations.push({
+          policy_id: d.policy_id || 'guardrail',
+          decision: d.decision || 'allowed',
+          reason: d.reason,
+        });
+      }
+    });
+
+    assertions.forEach((a: any) => {
+      const isPolicy = a.kind === 'policy' || (typeof a.name === 'string' && a.name.toLowerCase().includes('policy')) || (typeof a.metric === 'string' && a.metric.toLowerCase().includes('policy'));
+      if (isPolicy) {
+        if (!a.passed) {
+          violations.push({
+            rule: a.name || a.metric || 'Policy Assertion',
+            severity: 'HIGH',
+            message: `Policy assertion failed: expected ${a.expected ?? 'pass'}, actual ${a.actual ?? 'fail'}`,
+          });
+        } else {
+          evaluations.push({
+            policy_id: a.name || a.metric || 'Policy Assertion',
+            decision: 'allowed',
+            reason: 'Assertion passed',
+          });
+        }
+      }
+    });
+
+    let state: 'FAIL' | 'PASS' | 'NOT_VERIFIED' = 'NOT_VERIFIED';
+    if (violations.length > 0) {
+      state = 'FAIL';
+    } else if (evaluations.length > 0) {
+      state = 'PASS';
+    } else {
+      state = 'NOT_VERIFIED';
+    }
+
+    return { state, violations, evaluations };
+  }, [run.policy_violations, streamEvents, assertions]);
+
+  const allEvents = streamEvents.length > 0 ? streamEvents : (run.events || []);
 
   // Strict Authoritative Verdict Resolution: Never Fabricate or Infer from Field Existence
   const verdict = auditLoading
@@ -99,22 +283,24 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
     : (auditResult?.verification_status || 'UNVERIFIED');
   const isProvisional = auditResult?.provisional || verdict === 'VERIFIED_PROVISIONAL' || false;
   const isVerified = verdict === 'VERIFIED' || verdict === 'VERIFIED_PROVISIONAL';
-  const isBreach = verdict === 'POLICY_BREACH';
+  const isBreach = verdict === 'POLICY_BREACH' || policyEvidence.state === 'FAIL';
   const isNotVerified = verdict === 'FAILED_VERIFICATION' || verdict === 'NOT_VERIFIED';
 
-  // [P0-2] Every claim below is traceable to the authoritative evidence
-  // package / VerificationResult. The UI never invents verification claims.
+  // [P0-2, P0-4] Authoritative failed assertions for "What failed" / RCA
   const crypto = evidencePackage?.cryptographic_verification;
-  const failedAssertions: any[] = (evidencePackage?.verdict?.assertions ?? []).filter(
-    (a: any) => a && a.passed === false
-  );
+  const failedAssertions: any[] = (
+    evidencePackage?.verdict?.assertions ??
+    evidencePackage?.assertions ??
+    assertions
+  ).filter((a: any) => a && a.passed === false);
+
   const whyLine: string = isVerified
     ? `PASS; ${crypto?.verified ? 'signature verified and evidence chain intact' : 'runtime verification decision: PASS'}.`
     : isBreach
       ? 'FAIL; authoritative policy_violation event in the certified trace.'
       : failedAssertions.length > 0
-        ? `FAIL; ${failedAssertions.length} assertion(s) failed. First failure: ${failedAssertions[0].metric ?? failedAssertions[0].assertion ?? 'unnamed'
-        } on node '${failedAssertions[0].node ?? '?'}'.`
+        ? `FAIL; ${failedAssertions.length} assertion(s) failed. First failure: ${failedAssertions[0].metric ?? failedAssertions[0].assertion ?? failedAssertions[0].name ?? 'unnamed'
+        } on node '${failedAssertions[0].node ?? failedAssertions[0].node_id ?? '?'}'.`
         : crypto && crypto.errors?.length > 0
           ? `NOT VERIFIED; ${crypto.errors[0]}`
           : isNotVerified
@@ -253,7 +439,7 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
                 {whyLine}
               </p>
               {failedAssertions.length > 0 && (
-                <div className="mt-3 space-y-1">
+                <div className="mt-3 space-y-1" data-testid="rca-failure-summary">
                   <span className="text-[10px] uppercase font-mono tracking-wider text-rose-400 font-bold">
                     What failed ({failedAssertions.length})
                   </span>
@@ -262,9 +448,10 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
                       <li
                         key={i}
                         className="text-[11px] font-mono text-rose-300 bg-rose-950/20 border border-rose-500/20 rounded px-2 py-1"
+                        data-testid="failed-assertion-item"
                       >
-                        ✖ {a.metric ?? a.assertion ?? 'assertion'} on node '
-                        {a.node ?? '?'}'
+                        ✖ {a.metric ?? a.assertion ?? a.name ?? a.label ?? a.oracle_id ?? 'assertion'} on node '
+                        {a.node ?? a.node_id ?? '?'}'
                         {a.expected !== undefined && (
                           <span className="text-slate-500">
                             {' '}
@@ -331,9 +518,9 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
               </p>
             </div>
 
-            {run.assertions && run.assertions.length > 0 ? (
+            {assertions && assertions.length > 0 ? (
               <div className="space-y-2.5">
-                {run.assertions.map((a, idx) => (
+                {assertions.map((a: any, idx: number) => (
                   <div
                     key={idx}
                     className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800 flex items-start justify-between gap-4 font-mono"
@@ -363,7 +550,7 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
               </div>
             ) : (
               <div className="p-8 rounded-xl bg-slate-950/40 border border-slate-800/80 text-center font-mono text-slate-500">
-                NO ASSERTION EVIDENCE RECORDED FOR THIS RUN
+                {streamLoading ? 'HYDRATING TRACE AND ASSERTIONS...' : 'NO ASSERTION EVIDENCE RECORDED FOR THIS RUN'}
               </div>
             )}
           </div>
@@ -379,9 +566,9 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
               </p>
             </div>
 
-            {run.tool_calls && run.tool_calls.length > 0 ? (
+            {toolCalls && toolCalls.length > 0 ? (
               <div className="space-y-3">
-                {run.tool_calls.map((t, idx) => (
+                {toolCalls.map((t, idx) => (
                   <div key={idx} className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-2 font-mono">
                     <div className="flex items-center justify-between text-slate-400">
                       <span className="text-indigo-400 font-bold">Turn {t.turn}: {t.tool}()</span>
@@ -402,7 +589,7 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
               </div>
             ) : (
               <div className="p-8 rounded-xl bg-slate-950/40 border border-slate-800/80 text-center font-mono text-slate-500">
-                NO TOOL INVOCATIONS RECORDED FOR THIS RUN
+                {streamLoading ? 'HYDRATING TOOL INVOCATIONS...' : 'NO TOOL INVOCATIONS RECORDED FOR THIS RUN'}
               </div>
             )}
           </div>
@@ -413,19 +600,19 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
           <div className="space-y-4">
             <h3 className="text-sm font-bold text-white">Full Telemetry Execution Flow</h3>
             <p className="text-xs text-slate-400">Chronological OpenTelemetry-aligned event stream.</p>
-            {run.events && run.events.length > 0 ? (
+            {allEvents && allEvents.length > 0 ? (
               <div className="p-4 rounded-xl bg-slate-950 font-mono text-[11px] text-slate-300 border border-slate-800 max-h-96 overflow-y-auto space-y-1">
-                {run.events.map((ev, i) => (
+                {allEvents.map((ev, i) => (
                   <div key={i} className="flex items-start gap-3 py-1 border-b border-slate-900">
                     <span className="text-slate-500 shrink-0">{ev.timestamp?.slice(11, 19) || '00:00:00'}</span>
-                    <span className="text-indigo-400 font-semibold shrink-0">{ev.event}</span>
-                    <span className="text-slate-400 truncate">{JSON.stringify(ev.data)}</span>
+                    <span className="text-indigo-400 font-semibold shrink-0">{ev.event || ev.type}</span>
+                    <span className="text-slate-400 truncate">{JSON.stringify(ev.data || ev)}</span>
                   </div>
                 ))}
               </div>
             ) : (
               <div className="p-8 rounded-xl bg-slate-950/40 border border-slate-800/80 text-center font-mono text-slate-500">
-                NO TELEMETRY TRACE RECORDED FOR THIS RUN
+                {streamLoading ? 'HYDRATING TELEMETRY STREAM...' : 'NO TELEMETRY TRACE RECORDED FOR THIS RUN'}
               </div>
             )}
           </div>
@@ -436,14 +623,14 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
           <div className="space-y-4">
             <h3 className="text-sm font-bold text-white">VFS Sandbox State Delta</h3>
             <p className="text-xs text-slate-400">Virtual isolated environment mutations.</p>
-            {run.state_diff ? (
+            {stateDiff ? (
               <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2 font-mono text-xs">
-                <div className="text-emerald-400 font-bold">State Mutations Recorded: {run.state_diff.mutations?.length || 0}</div>
-                <pre className="text-slate-400 whitespace-pre-wrap">{JSON.stringify(run.state_diff, null, 2)}</pre>
+                <div className="text-emerald-400 font-bold">State Mutations Recorded: {stateDiff.mutations?.length || 0}</div>
+                <pre className="text-slate-400 whitespace-pre-wrap">{JSON.stringify(stateDiff, null, 2)}</pre>
               </div>
             ) : (
               <div className="p-8 rounded-xl bg-slate-950/40 border border-slate-800/80 text-center font-mono text-slate-500">
-                NO STATE MUTATIONS RECORDED FOR THIS RUN
+                {streamLoading ? 'HYDRATING STATE MUTATIONS...' : 'NO STATE MUTATIONS RECORDED FOR THIS RUN'}
               </div>
             )}
           </div>
@@ -454,21 +641,48 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
           <div className="space-y-4">
             <h3 className="text-sm font-bold text-white">Policy & Compliance Audit</h3>
             <p className="text-xs text-slate-400">Safety boundaries and guardrail enforcement status.</p>
-            {run.policy_violations && run.policy_violations.length > 0 ? (
-              <div className="space-y-2">
-                {run.policy_violations.map((v, i) => (
-                  <div key={i} className="p-3.5 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-300 font-mono">
-                    <span className="font-bold">[{v.severity}] {v.rule}:</span> {v.message}
-                  </div>
-                ))}
+            {policyEvidence.state === 'FAIL' ? (
+              <div className="space-y-3" data-testid="policy-state-fail">
+                <div className="p-4 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-300 space-y-1">
+                  <span className="font-bold flex items-center gap-1.5 text-rose-400">
+                    <XCircle className="w-4 h-4" /> POLICY BREACH DETECTED ({policyEvidence.violations.length} Violation{policyEvidence.violations.length === 1 ? '' : 's'})
+                  </span>
+                  <p className="text-xs text-rose-200">
+                    Authoritative policy breach recorded in certified trace. Execution violated declared guardrails.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  {policyEvidence.violations.map((v, i) => (
+                    <div key={i} className="p-3.5 rounded-xl bg-slate-950/60 border border-rose-500/20 text-rose-300 font-mono text-xs">
+                      <span className="font-bold">[{v.severity}] {v.rule}:</span> {v.message}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : policyEvidence.state === 'PASS' ? (
+              <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3" data-testid="policy-state-pass">
+                <span className="text-emerald-400 font-bold flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4" /> PASS — Authoritative Policy Evidence Verified
+                </span>
+                <p className="text-xs text-slate-300">
+                  {policyEvidence.evaluations.length} declared guardrail check{policyEvidence.evaluations.length === 1 ? '' : 's'} evaluated with 0 safety breaches.
+                </p>
+                <div className="space-y-1.5 pt-2">
+                  {policyEvidence.evaluations.slice(0, 5).map((ev, i) => (
+                    <div key={i} className="text-[11px] font-mono text-slate-400 bg-slate-900/60 border border-slate-800 rounded px-2.5 py-1 flex items-center justify-between">
+                      <span>✓ {ev.policy_id}</span>
+                      <span className="text-emerald-400 text-[10px] font-bold uppercase">{ev.decision}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             ) : (
-              <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-2">
-                <span className="text-emerald-400 font-bold flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4" /> 0 Safety Breaches Detected
+              <div className="p-5 rounded-xl bg-slate-950/40 border border-amber-500/20 space-y-2" data-testid="policy-state-not-verified">
+                <span className="text-amber-400 font-bold flex items-center gap-1.5">
+                  <HelpCircle className="w-4 h-4" /> NOT VERIFIED / NO POLICY EVIDENCE
                 </span>
-                <p className="text-xs text-slate-400">
-                  Execution completed within declared safety boundaries.
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  No guardrails, sandbox policy checks, or security invariant assertions were recorded for this scenario run. Absence of violation records cannot be derived as affirmative compliance evidence.
                 </p>
               </div>
             )}

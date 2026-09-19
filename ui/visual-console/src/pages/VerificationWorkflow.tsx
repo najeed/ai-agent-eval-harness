@@ -71,6 +71,7 @@ export const VerificationWorkflow: React.FC = () => {
   const [protocol, setProtocol] = useState('http_rest');
   const [endpoint, setEndpoint] = useState('');
   const [scenarioId, setScenarioId] = useState('');
+  const [executionMode, setExecutionMode] = useState<'live' | 'hybrid'>('live');
   const [preflightResult, setPreflightResult] = useState<{
     ready: boolean;
     is_verifiable?: boolean;
@@ -199,12 +200,14 @@ export const VerificationWorkflow: React.FC = () => {
         body: JSON.stringify({
           scenario_id: scenarioId || undefined,
           agent_config: { protocol, endpoint },
-          runtime_config: { max_turns: parseInt(maxTurns) || 10 },
+          runtime_config: { max_turns: parseInt(maxTurns) || 10, execution_mode: executionMode },
+          execution_mode: executionMode,
         }),
       });
       const data = await res.json();
       setPreflightResult({
         ready: !!data.ready,
+        is_verifiable: !!data.is_verifiable,
         checks: data.checks ?? [],
         fingerprint: data.preflight_fingerprint,
       });
@@ -282,12 +285,15 @@ export const VerificationWorkflow: React.FC = () => {
           max_turns: parseInt(maxTurns) || 10,
           protocol,
           endpoint,
+          execution_mode: executionMode,
           agent_config: { protocol, endpoint },
-          runtime_config: { max_turns: parseInt(maxTurns) || 10 },
+          runtime_config: { max_turns: parseInt(maxTurns) || 10, execution_mode: executionMode },
           preflight_fingerprint: preflightResult.fingerprint,
           metadata: {
             notes: sessionNotes || undefined,
             preflight_fingerprint: preflightResult.fingerprint,
+            execution_mode: executionMode,
+            execution_mode_declared: true,
           },
         }),
       });
@@ -438,6 +444,21 @@ export const VerificationWorkflow: React.FC = () => {
               className="mt-1 w-full bg-slate-900 border border-slate-800 rounded px-3 py-1.5 text-xs text-slate-200 font-mono"
             />
           </label>
+
+          <label className="text-[11px] uppercase tracking-wider text-slate-500 font-bold sm:col-span-2">
+            Execution Mode (Declared Truth)
+            <select
+              value={executionMode}
+              onChange={e => {
+                setExecutionMode(e.target.value as 'live' | 'hybrid');
+                setPreflightResult(null);
+              }}
+              className="mt-1 w-full bg-slate-900 border border-slate-800 rounded px-3 py-1.5 text-xs text-slate-200 font-mono"
+            >
+              <option value="live">live — Authoritative live evaluation (produces certifiable evidence)</option>
+              <option value="hybrid">hybrid — Simulated / mock environment (produces provisional certificates)</option>
+            </select>
+          </label>
         </div>
         {!endpoint.trim() && (
           <p className="text-[11px] text-slate-500">
@@ -494,7 +515,22 @@ export const VerificationWorkflow: React.FC = () => {
           </button>
         </div>
         {preflightResult && (
-          <ul className="space-y-1.5">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-900/80 border border-slate-800">
+              <span className="text-xs text-slate-400 font-medium">Cryptographic Verification Status:</span>
+              {preflightResult.is_verifiable ? (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[11px] font-semibold bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-mono" data-testid="preflight-verifiable-badge">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                  VERIFIABLE / CERTIFIABLE
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[11px] font-semibold bg-amber-500/10 border border-amber-500/30 text-amber-300 font-mono" data-testid="preflight-provisional-badge">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse shrink-0" />
+                  EXECUTABLE / PROVISIONAL
+                </span>
+              )}
+            </div>
+            <ul className="space-y-1.5">
             {preflightResult.checks.map(c => (
               <li
                 key={c.name}
@@ -519,7 +555,8 @@ export const VerificationWorkflow: React.FC = () => {
                 )}
               </li>
             ))}
-          </ul>
+            </ul>
+          </div>
         )}
       </section>
 
@@ -609,8 +646,8 @@ export const VerificationWorkflow: React.FC = () => {
               </p>
             )}
             {preflightResult?.ready && preflightResult?.is_verifiable === false && (
-              <p className="text-[10px] text-amber-300 font-medium">
-                Note: No persistent Ed25519 signer active. Run is executable, but generated certificates will be PROVISIONAL.
+              <p className="text-[10px] text-amber-300 font-medium" data-testid="preflight-provisional-warning">
+                Note: No persistent Ed25519 signer active or simulated/hybrid mode selected. Run is executable, but generated certificates will be PROVISIONAL.
               </p>
             )}
             {boundScenarioHash && (

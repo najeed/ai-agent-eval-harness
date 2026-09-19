@@ -310,11 +310,14 @@ def test_auth_manager_delegates_to_authorization_backend():
 # ==============================================================================
 
 
-def test_flight_recorder_artifact_store_wiring(tmp_path):
+def test_flight_recorder_artifact_store_wiring(tmp_path, monkeypatch):
     """
     Contract Test: FlightRecorderPlugin actively invokes ArtifactStore.store_artifact
     for trace writes and run finalization.
     """
+    from eval_runner import config
+
+    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path)
     mock_store = MagicMock(spec=LocalFileArtifactStore)
     recorder = FlightRecorderPlugin(artifact_store=mock_store, log_dir=tmp_path)
 
