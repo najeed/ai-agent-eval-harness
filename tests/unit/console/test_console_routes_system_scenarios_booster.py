@@ -515,8 +515,9 @@ def test_scenarios_evaluate_by_id(client, console_jail):
 
 
 def test_scenarios_evaluate_async_eval_fails(client, console_jail):
-    """Cover lines 144-145: async evaluation failure thread logger error."""
+    """Cover evaluate scenario route with mocked backend submission to prevent thread leak."""
     from eval_runner.catalog import ScenarioCatalog
+    from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
 
     ScenarioCatalog.get_instance()
     scen_dir = console_jail["root"] / "scenarios"
@@ -524,15 +525,17 @@ def test_scenarios_evaluate_async_eval_fails(client, console_jail):
     scen_file = scen_dir / "scen_eval_fail.json"
     scen_file.write_text('{"id": "scen_eval_fail"}', encoding="utf-8")
 
-    import time
-
-    # Mock engine.run_evaluation to raise exception
-    with patch("eval_runner.engine.run_evaluation", side_effect=ValueError("Async engine crash")):
-        with patch("eval_runner.loader.load_scenario", return_value={"id": "scen_eval_fail"}):
-            res = client.post("/api/v1/evaluate", json={"path": str(scen_file)})
-            assert res.status_code == 200
-            # Wait for thread to finish
-            time.sleep(0.5)
+    backend = InProcessExecutionBackend.get_instance()
+    with (
+        patch("eval_runner.loader.load_scenario", return_value={"id": "scen_eval_fail"}),
+        patch.object(
+            backend, "submit", return_value={"status": "started", "run_id": "run-test"}
+        ) as mock_submit,
+    ):
+        res = client.post("/api/v1/evaluate", json={"path": str(scen_file)})
+        assert res.status_code == 200
+        assert res.get_json()["status"] == "started"
+        assert mock_submit.called
 
 
 def test_scenarios_mutate_by_id_success(client, console_jail):

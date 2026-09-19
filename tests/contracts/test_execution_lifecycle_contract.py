@@ -184,3 +184,48 @@ class TestExecutionLifecycleContract:
         status = backend.status(run_id)
         assert status["resumption_token"] == "tok_approval"
         assert status["status"] in ("COMPLETED", "RUNNING")
+
+    def test_background_submit_failure_records_failed_status_without_unhandled_exception(
+        self,
+    ):
+        """
+        Contract: When background=True and execution raises, InProcessExecutionBackend
+        must transition run status to FAILED, record the error, and NOT escape
+        into threading.excepthook.
+        """
+        from unittest.mock import patch
+
+        backend = InProcessExecutionBackend()
+        run_id = "bg_fail_test_001"
+
+        with patch("eval_runner.runner.run_scenario", side_effect=RuntimeError("Engine crash")):
+            res = backend.submit(run_id, _STUB_SCENARIO, background=True)
+            assert res == {"status": "started", "run_id": run_id}
+
+            thread = backend._threads.get(run_id)
+            if thread:
+                thread.join(timeout=2.0)
+
+            status = backend.status(run_id)
+            assert status["status"] == "FAILED"
+            assert "Engine crash" in status.get("error", "")
+
+    def test_synchronous_submit_failure_re_raises_to_caller(self):
+        """
+        Contract: When background=False and execution raises, InProcessExecutionBackend
+        must re-raise the exception synchronously to the caller.
+        """
+        from unittest.mock import patch
+
+        backend = InProcessExecutionBackend()
+        run_id = "sync_fail_test_001"
+
+        with patch(
+            "eval_runner.runner.run_scenario", side_effect=RuntimeError("Sync engine crash")
+        ):
+            with pytest.raises(RuntimeError, match="Sync engine crash"):
+                backend.submit(run_id, _STUB_SCENARIO, background=False)
+
+            status = backend.status(run_id)
+            assert status["status"] == "FAILED"
+            assert "Sync engine crash" in status.get("error", "")

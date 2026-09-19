@@ -108,9 +108,13 @@ def test_evaluate_endpoint_security_dash_key_fallback(client, tmp_path):
 
     # We need to ensure config.SERVICE_API_KEY is updated for this test
     # because it was set at module load time.
+    from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+
+    backend = InProcessExecutionBackend.get_instance()
     with (
         patch("eval_runner.config.SERVICE_API_KEY", "fallback_dash_key"),
         patch("eval_runner.config.PROJECT_ROOT", tmp_path),
+        patch.object(backend, "submit", return_value={"status": "started", "run_id": "run-test"}),
     ):
         app = create_app()
         app.config["TESTING"] = True

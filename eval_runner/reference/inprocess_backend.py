@@ -8,12 +8,15 @@ strict execution state machine enforcement, and full dependency graph injection.
 
 from __future__ import annotations
 
+import logging
 import threading
 from collections.abc import Callable
 from typing import Any
 
 from eval_runner.interfaces.backend import ExecutionBackend
 from eval_runner.reference.sqlite_checkpoint import SQLiteCheckpointStore
+
+logger = logging.getLogger(__name__)
 
 
 def get_execution_backend() -> InProcessExecutionBackend:
@@ -233,11 +236,13 @@ class InProcessExecutionBackend(ExecutionBackend):
                         self._active_runs[run_id]["results"] = results
                 return results
             except Exception as e:
+                logger.error("Execution failed for run %s: %s", run_id, e, exc_info=True)
                 with self._lock:
                     if run_id in self._active_runs:
                         self._active_runs[run_id]["status"] = "FAILED"
                         self._active_runs[run_id]["error"] = str(e)
-                raise
+                if not background:
+                    raise
 
         if background:
             t = threading.Thread(target=_execute, name=f"eval-{run_id}", daemon=True)

@@ -107,10 +107,19 @@ def test_evaluate_scenario_absolute_path(client, console_jail):
     scen_path = console_jail["root"] / "my.json"
     scen_path.write_text('{"id": "s1"}', encoding="utf-8")
 
-    with patch("eval_runner.loader.load_scenario", return_value={"id": "s1"}):
+    from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+
+    backend = InProcessExecutionBackend.get_instance()
+    with (
+        patch("eval_runner.loader.load_scenario", return_value={"id": "s1"}),
+        patch.object(
+            backend, "submit", return_value={"status": "started", "run_id": "run-test"}
+        ) as mock_submit,
+    ):
         res = client.post("/api/v1/evaluate", json={"path": str(scen_path)})
         assert res.status_code == 200
         assert "run-my" in res.get_json()["run_id"]
+        assert mock_submit.called
 
 
 def test_mutate_scenario_raw(client):
