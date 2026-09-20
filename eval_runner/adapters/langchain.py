@@ -5,15 +5,23 @@ from __future__ import annotations
 import asyncio
 import importlib
 import importlib.metadata
+import inspect
 import json
 import logging
 from collections.abc import AsyncIterator, Mapping
 from typing import Any
 from urllib.parse import urlparse
 
+import aiohttp
+
 from ..events import CoreEvents, emit
 from ..plugins import BaseEvalPlugin
-from .common import AESCallbackHandler, BaseAdapter, DualNormalizationHub, SessionManager
+from .common import (
+    AdapterSessionPool,
+    AESCallbackHandler,
+    BaseAdapter,
+    DualNormalizationHub,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -23,29 +31,38 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
     Production LangChain adapter.
 
     Supported execution modes:
-      1. Local native Runnable execution via metadata.chain_path
-      2. Direct local Runnable object supplied through metadata.runnable
-      3. Remote LangServe execution via HTTP /invoke
-      4. Remote LangServe streaming via HTTP /stream
 
-    The adapter never fabricates an execution result. A missing target is an error.
+      Local:
+        - Runnable / ainvoke
+        - Runnable / invoke
+        - Runnable / astream
 
-    Expected local binding:
-        metadata:
-          chain_path: "my_package.my_chain:chain"
+      Remote:
+        - LangServe /invoke
+        - LangServe /stream
 
-    The resolved object may be:
-      - a LangChain Runnable
-      - a zero-argument factory returning a Runnable
-      - a zero-argument callable returning a compatible object
+    Resolution order:
 
-    Expected remote binding:
-        url: "https://agent.example.com/my_chain"
-        or
-        metadata:
-          langserve_url: "https://agent.example.com/my_chain"
+      1. Explicit endpoint argument / payload URL -> remote LangServe
+      2. metadata.langserve_url -> remote LangServe
+      3. metadata.runnable -> local Runnable
+      4. metadata.chain_path -> imported Runnable/factory
+      5. fail closed
+
+    The adapter accepts both simple task strings and richer payloads:
+
+      input
+      input_payload
+      messages
+      task_description
+      task
+      message
+
+    For multi-turn/local callers, history may also be supplied through:
+      history
 
     Canonical return contract:
+
         {
             "status": "success" | "error",
             "output": <JSON-compatible output>,
@@ -54,11 +71,17 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         }
     """
 
-    def __init__(self) -> None:
-        BaseAdapter.__init__(self, name="langchain")
+    def __init__(
+        self,
+        session_pool: AdapterSessionPool | None = None,
+    ) -> None:
+        BaseAdapter.__init__(
+            self,
+            name="langchain",
+            session_pool=session_pool,
+        )
 
     def on_discover_adapters(self, registry: Any) -> None:
-        """Register LangChain protocols."""
         registry.register("langchain", self.execute_langchain_query)
         registry.register("langchain:v1", self.execute_langchain_query)
 
@@ -67,7 +90,6 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         payload: dict[str, Any],
         endpoint: str | None = None,
     ) -> dict[str, Any]:
-        """Backward-compatible entry point for legacy LangServe callers."""
         return await self.execute_langchain_query(payload, endpoint)
 
     async def execute_langchain_query(
@@ -75,16 +97,6 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         payload: dict[str, Any],
         endpoint: str | None = None,
     ) -> dict[str, Any]:
-        """
-        Execute a real LangChain target.
-
-        Resolution order:
-          1. Explicit endpoint argument / payload URL -> remote LangServe
-          2. metadata.langserve_url -> remote LangServe
-          3. metadata.runnable -> local Runnable
-          4. metadata.chain_path -> local imported Runnable
-          5. otherwise fail closed
-        """
         if not isinstance(payload, dict):
             return self._error("LangChain adapter payload must be a dictionary.")
 
@@ -96,7 +108,10 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         )
 
         try:
-            target_url = self._resolve_remote_url(payload, endpoint)
+            target_url = self._resolve_remote_url(
+                payload=payload,
+                endpoint=endpoint,
+            )
 
             if target_url:
                 return await self._execute_remote(
@@ -124,16 +139,20 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             raise
         except Exception as exc:
             logger.exception("LangChain adapter execution failed")
-            emit(
-                CoreEvents.ERROR,
-                {
-                    "adapter": "langchain",
-                    "task_id": task_id,
-                    "message": str(exc),
-                },
-                span_context=payload.get("span_context"),
+            self._emit_error(
+                task_id=task_id,
+                mode="dispatch",
+                exc=exc,
+                payload=payload,
             )
-            return self._error(f"LangChain execution failed: {exc}")
+            return self._error(
+                f"LangChain execution failed: {exc}",
+                metadata={
+                    "framework": "langchain",
+                    "protocol": "v1",
+                    "task_id": task_id,
+                },
+            )
 
     # ------------------------------------------------------------------
     # Local execution
@@ -143,15 +162,7 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         self,
         payload: dict[str, Any],
     ) -> Any | None:
-        """
-        Resolve an actual LangChain Runnable.
-
-        A direct object injection is supported for embedded/in-process use.
-        For durable scenario definitions, chain_path is preferred because it
-        is serializable and reproducible.
-        """
-        metadata = payload.get("metadata")
-        metadata = metadata if isinstance(metadata, dict) else {}
+        metadata = self._metadata(payload)
 
         direct = metadata.get("runnable")
         if direct is not None:
@@ -171,15 +182,10 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         self._validate_runnable(runnable)
         return runnable
 
-    async def _load_object_path(self, object_path: str) -> Any:
-        """
-        Resolve module:attribute, including nested attributes.
-
-        Example:
-            my_agent.graph:compiled_chain
-            my_agent.chains:factory
-            my_agent.graph:workflow.invoke_target
-        """
+    async def _load_object_path(
+        self,
+        object_path: str,
+    ) -> Any:
         if ":" not in object_path:
             raise ValueError(
                 f"Invalid LangChain target '{object_path}'. Expected 'module:attribute'."
@@ -200,57 +206,56 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
 
         for part in attr_path.split("."):
             part = part.strip()
+
             if not part:
                 raise ValueError(f"Invalid LangChain attribute path '{object_path}'.")
+
             value = getattr(value, part)
 
         return value
 
-    async def _materialize_runnable(self, target: Any) -> Any:
-        """
-        Materialize a Runnable or a zero-argument factory.
-
-        We deliberately do not invoke arbitrary functions with evaluation
-        payloads. Application-specific target construction must be explicit.
-        """
+    async def _materialize_runnable(
+        self,
+        target: Any,
+    ) -> Any:
         runnable_type = self._langchain_runnable_type()
 
         if runnable_type is not None and isinstance(target, runnable_type):
             return target
 
-        if inspect_is_class(target):
+        if inspect.isclass(target):
             instance = target()
-            if inspect_is_awaitable(instance):
+
+            if inspect.isawaitable(instance):
                 instance = await instance
+
             return instance
 
         if callable(target):
-            # Only invoke zero-argument factories. We do not pass the
-            # evaluation payload to arbitrary application callables.
             try:
                 result = target()
             except TypeError:
                 return target
 
-            if inspect_is_awaitable(result):
+            if inspect.isawaitable(result):
                 result = await result
 
             return result
 
         return target
 
-    def _validate_runnable(self, runnable: Any) -> None:
-        """
-        Validate the concrete execution seam.
-
-        LangChain's canonical Runnable execution API is ainvoke/invoke.
-        """
-        if not callable(getattr(runnable, "ainvoke", None)) and not callable(
-            getattr(runnable, "invoke", None)
+    def _validate_runnable(
+        self,
+        runnable: Any,
+    ) -> None:
+        if (
+            not callable(getattr(runnable, "ainvoke", None))
+            and not callable(getattr(runnable, "invoke", None))
+            and not callable(getattr(runnable, "astream", None))
         ):
             raise TypeError(
                 "Configured LangChain target is not executable. "
-                "Expected a Runnable exposing ainvoke() or invoke()."
+                "Expected ainvoke(), invoke(), or astream()."
             )
 
     async def _execute_local(
@@ -259,15 +264,13 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         payload: dict[str, Any],
         runnable: Any,
     ) -> dict[str, Any]:
-        """Execute a real local LangChain Runnable."""
-        metadata = payload.get("metadata")
-        metadata = metadata if isinstance(metadata, dict) else {}
-
+        metadata = self._metadata(payload)
         input_data = self._resolve_input(payload)
 
         callback_handler = AESCallbackHandler(
             adapter_name="langchain",
             identifier=task_id,
+            span_context=self._span_context(payload),
         )
 
         runnable_config = self._build_runnable_config(
@@ -275,25 +278,42 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             callback_handler=callback_handler,
         )
 
+        requested_mode = self._execution_mode(
+            payload=payload,
+            metadata=metadata,
+        )
+
         self._emit_chain_start(
             task_id=task_id,
-            mode="local",
+            mode=f"local_{requested_mode}",
             payload=payload,
         )
 
         try:
-            output = await self._invoke_runnable(
-                runnable=runnable,
-                input_data=input_data,
-                runnable_config=runnable_config,
-            )
+            if requested_mode == "stream":
+                output = await self._stream_local(
+                    runnable=runnable,
+                    input_data=input_data,
+                    runnable_config=runnable_config,
+                    payload=payload,
+                    task_id=task_id,
+                )
+            else:
+                output = await self._invoke_local(
+                    runnable=runnable,
+                    input_data=input_data,
+                    runnable_config=runnable_config,
+                )
 
             normalized_output = self._to_jsonable(output)
-            action = self._normalize_output(normalized_output, status_code=200)
+            action = self._normalize_output(
+                normalized_output,
+                status_code=200,
+            )
 
             self._emit_chain_end(
                 task_id=task_id,
-                mode="local",
+                mode=f"local_{requested_mode}",
                 action=action,
                 payload=payload,
             )
@@ -304,47 +324,57 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
                 "action": action,
                 "metadata": {
                     "framework": "langchain",
-                    "version": self._package_version("langchain"),
-                    "langchain_core_version": self._package_version("langchain-core"),
                     "protocol": "v1",
                     "mode": "local",
+                    "execution_mode": requested_mode,
                     "task_id": task_id,
-                    "target": metadata.get("chain_path") or "in_process_runnable",
+                    "target": (
+                        metadata.get("chain_path")
+                        or metadata.get("runnable_path")
+                        or "in_process_runnable"
+                    ),
+                    "version": self._package_version("langchain"),
+                    "langchain_core_version": self._package_version("langchain-core"),
                 },
             }
 
         except asyncio.CancelledError:
             raise
         except Exception as exc:
-            self._emit_error(task_id, "local", exc, payload)
+            self._emit_error(
+                task_id=task_id,
+                mode=f"local_{requested_mode}",
+                exc=exc,
+                payload=payload,
+            )
+
             return self._error(
                 f"LangChain local execution failed: {exc}",
                 metadata={
                     "framework": "langchain",
+                    "protocol": "v1",
                     "mode": "local",
+                    "execution_mode": requested_mode,
                     "task_id": task_id,
                 },
             )
 
-    async def _invoke_runnable(
+    async def _invoke_local(
         self,
         runnable: Any,
         input_data: Any,
         runnable_config: dict[str, Any],
     ) -> Any:
-        """
-        Invoke without blindly retrying the workflow.
-
-        Retrying a whole agent execution can duplicate side effects. Transport
-        retries belong below the agent execution boundary unless the target
-        explicitly supplies idempotency guarantees.
-        """
         ainvoke = getattr(runnable, "ainvoke", None)
 
         if callable(ainvoke):
-            return await ainvoke(input_data, config=runnable_config)
+            return await ainvoke(
+                input_data,
+                config=runnable_config,
+            )
 
         invoke = getattr(runnable, "invoke", None)
+
         if not callable(invoke):
             raise TypeError("LangChain target exposes neither ainvoke() nor invoke().")
 
@@ -354,8 +384,51 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             config=runnable_config,
         )
 
+    async def _stream_local(
+        self,
+        runnable: Any,
+        input_data: Any,
+        runnable_config: dict[str, Any],
+        payload: dict[str, Any],
+        task_id: str,
+    ) -> Any:
+        astream = getattr(runnable, "astream", None)
+
+        if not callable(astream):
+            raise TypeError(
+                "LangChain streaming was requested but the configured "
+                "Runnable does not expose astream()."
+            )
+
+        chunks: list[Any] = []
+
+        async for chunk in astream(
+            input_data,
+            config=runnable_config,
+        ):
+            chunks.append(chunk)
+
+            emit(
+                CoreEvents.ADAPTER_DEBUG,
+                {
+                    "adapter": "langchain",
+                    "task_id": task_id,
+                    "event": "stream_chunk",
+                    "chunk_type": type(chunk).__name__,
+                },
+                span_context=self._span_context(payload),
+            )
+
+        if not chunks:
+            raise ValueError("LangChain streaming completed without emitting any chunks.")
+
+        if self._all_textual(chunks):
+            return "".join(self._extract_text(chunk) for chunk in chunks)
+
+        return {"chunks": [self._to_jsonable(chunk) for chunk in chunks]}
+
     # ------------------------------------------------------------------
-    # Remote LangServe execution
+    # Remote LangServe
     # ------------------------------------------------------------------
 
     async def _execute_remote(
@@ -364,31 +437,39 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         payload: dict[str, Any],
         url: str,
     ) -> dict[str, Any]:
-        """Execute a remote LangServe deployment."""
-        metadata = payload.get("metadata")
-        metadata = metadata if isinstance(metadata, dict) else {}
+        metadata = self._metadata(payload)
 
-        mode = str(metadata.get("langserve_mode") or payload.get("mode") or "invoke").lower()
+        mode = self._execution_mode(
+            payload=payload,
+            metadata=metadata,
+            remote=True,
+        )
+
         if mode not in {"invoke", "stream"}:
             return self._error(
                 f"Unsupported LangServe mode '{mode}'. Expected 'invoke' or 'stream'."
             )
 
-        endpoint = self._resolve_langserve_endpoint(url, mode)
+        endpoint = self._resolve_langserve_endpoint(
+            url=url,
+            mode=mode,
+        )
+
         input_data = self._resolve_input(payload)
 
-        request_body = {
+        request_body: dict[str, Any] = {
             "input": input_data,
         }
 
-        # Preserve explicit LangServe configuration when provided.
         config_data = metadata.get("config")
-        if isinstance(config_data, dict) and config_data:
-            request_body["config"] = config_data
+
+        if isinstance(config_data, Mapping) and config_data:
+            request_body["config"] = dict(config_data)
 
         kwargs_data = metadata.get("kwargs")
-        if isinstance(kwargs_data, dict) and kwargs_data:
-            request_body["kwargs"] = kwargs_data
+
+        if isinstance(kwargs_data, Mapping) and kwargs_data:
+            request_body["kwargs"] = dict(kwargs_data)
 
         headers = self._build_remote_headers(payload)
 
@@ -400,20 +481,20 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         )
 
         try:
-            if mode == "stream":
+            if mode == "invoke":
+                response = await self._remote_invoke(
+                    endpoint=endpoint,
+                    request_body=request_body,
+                    headers=headers,
+                    payload=payload,
+                )
+            else:
                 response = await self._remote_stream(
                     endpoint=endpoint,
                     request_body=request_body,
                     headers=headers,
                     payload=payload,
                     task_id=task_id,
-                )
-            else:
-                response = await self._remote_invoke(
-                    endpoint=endpoint,
-                    request_body=request_body,
-                    headers=headers,
-                    payload=payload,
                 )
 
             normalized_output = self._extract_langserve_output(response)
@@ -436,27 +517,36 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
                 "action": action,
                 "metadata": {
                     "framework": "langchain",
-                    "version": self._package_version("langchain"),
-                    "langchain_core_version": self._package_version("langchain-core"),
                     "protocol": "v1",
                     "mode": "remote",
                     "transport": "langserve",
-                    "request_mode": mode,
+                    "execution_mode": mode,
                     "endpoint": endpoint,
                     "task_id": task_id,
+                    "version": self._package_version("langchain"),
+                    "langchain_core_version": self._package_version("langchain-core"),
                 },
             }
 
         except asyncio.CancelledError:
             raise
         except Exception as exc:
-            self._emit_error(task_id, f"remote_{mode}", exc, payload, endpoint)
+            self._emit_error(
+                task_id=task_id,
+                mode=f"remote_{mode}",
+                exc=exc,
+                payload=payload,
+                url=endpoint,
+            )
+
             return self._error(
                 f"LangServe execution failed: {exc}",
                 metadata={
                     "framework": "langchain",
+                    "protocol": "v1",
                     "mode": "remote",
                     "transport": "langserve",
+                    "execution_mode": mode,
                     "task_id": task_id,
                     "endpoint": endpoint,
                 },
@@ -469,9 +559,7 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         headers: dict[str, str],
         payload: dict[str, Any],
     ) -> Any:
-        """Execute LangServe /invoke."""
-        session = await SessionManager.get_session()
-
+        session = await self.get_session()
         timeout = self._request_timeout(payload)
 
         async def _call() -> Any:
@@ -491,10 +579,11 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
 
                 return response_data
 
-        # Whole-agent invocation is not retried by default because it can
-        # create duplicate side effects. Opt-in only when explicitly declared.
         if self._retry_enabled(payload):
-            return await self.call_with_retry(_call)
+            return await self.call_with_retry(
+                _call,
+                deadline=self._retry_deadline(payload),
+            )
 
         return await _call()
 
@@ -506,8 +595,7 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         payload: dict[str, Any],
         task_id: str,
     ) -> dict[str, Any]:
-        """Execute LangServe /stream and aggregate the resulting stream."""
-        session = await SessionManager.get_session()
+        session = await self.get_session()
 
         stream_headers = dict(headers)
         stream_headers["Accept"] = "text/event-stream"
@@ -521,92 +609,86 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             timeout=timeout,
         ) as response:
             if response.status >= 400:
-                data = await self._read_json_or_text(response)
-                self._raise_http_error(response.status, data)
+                response_data = await self._read_json_or_text(response)
+                self._raise_http_error(
+                    response.status,
+                    response_data,
+                )
 
             chunks: list[Any] = []
             text_parts: list[str] = []
-            terminal_metadata: dict[str, Any] = {}
+            event_metadata: dict[str, Any] = {}
 
             async for event in self._iter_sse_events(response.content):
-                event_name = str(event.get("event") or "")
-                data = event.get("data")
+                event_name = str(event.get("event") or "message")
+                raw_data = event.get("data")
 
-                if data in (None, ""):
+                if raw_data in (None, ""):
                     continue
 
-                if data == "[DONE]":
+                if raw_data == "[DONE]":
                     break
 
-                parsed = self._decode_json_if_possible(data)
+                parsed = self._decode_json_if_possible(raw_data)
 
                 emit(
                     CoreEvents.ADAPTER_DEBUG,
                     {
                         "adapter": "langchain",
                         "task_id": task_id,
-                        "event": event_name or "message",
+                        "event": event_name,
                     },
-                    span_context=payload.get("span_context"),
+                    span_context=self._span_context(payload),
                 )
 
-                chunk = parsed
+                chunk, metadata = self._normalize_stream_event(parsed)
 
-                if isinstance(parsed, dict):
-                    # LangServe stream events can contain structured data
-                    # alongside chunk output.
-                    if "data" in parsed:
-                        chunk = parsed["data"]
+                if metadata:
+                    event_metadata.update(metadata)
 
-                    if isinstance(parsed.get("metadata"), dict):
-                        terminal_metadata.update(parsed["metadata"])
+                if chunk is None:
+                    continue
 
                 chunks.append(chunk)
 
                 text = self._extract_text(chunk)
+
                 if text:
                     text_parts.append(text)
 
-            output: Any
+            if not chunks:
+                raise ValueError("LangServe stream completed without emitting usable output.")
 
-            if len(chunks) == 1:
+            if self._all_textual(chunks):
+                output: Any = "".join(text_parts)
+            elif len(chunks) == 1:
                 output = chunks[0]
-            elif self._all_textual(chunks):
-                output = "".join(text_parts)
             else:
                 output = {
-                    "chunks": chunks,
+                    "chunks": [self._to_jsonable(chunk) for chunk in chunks],
                     "content": "".join(text_parts),
-                    "metadata": terminal_metadata,
+                    "metadata": event_metadata,
                 }
 
             return {
                 "output": output,
-                "metadata": terminal_metadata,
+                "metadata": event_metadata,
             }
 
     async def _iter_sse_events(
         self,
         content: Any,
     ) -> AsyncIterator[dict[str, str]]:
-        """
-        Minimal standards-tolerant SSE parser.
-
-        Handles:
-          - event:
-          - data:
-          - id:
-          - retry:
-          - multiline data fields
-          - blank-line event termination
-        """
         event_name = "message"
         event_id = ""
         retry = ""
         data_lines: list[str] = []
 
         async for raw_line in content:
-            line = raw_line.decode("utf-8", errors="replace").rstrip("\r\n")
+            line = raw_line.decode(
+                "utf-8",
+                errors="replace",
+            ).rstrip("\r\n")
 
             if line == "":
                 if data_lines:
@@ -627,17 +709,18 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
                 continue
 
             field, separator, value = line.partition(":")
-            if separator:
-                value = value[1:] if value.startswith(" ") else value
+
+            if separator and value.startswith(" "):
+                value = value[1:]
 
             if field == "event":
                 event_name = value
-            elif field == "data":
-                data_lines.append(value)
             elif field == "id":
                 event_id = value
             elif field == "retry":
                 retry = value
+            elif field == "data":
+                data_lines.append(value)
 
         if data_lines:
             yield {
@@ -647,23 +730,53 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
                 "data": "\n".join(data_lines),
             }
 
+    def _normalize_stream_event(
+        self,
+        event: Any,
+    ) -> tuple[Any, dict[str, Any]]:
+        if not isinstance(event, Mapping):
+            return event, {}
+
+        metadata: dict[str, Any] = {}
+
+        raw_metadata = event.get("metadata")
+
+        if isinstance(raw_metadata, Mapping):
+            metadata.update(raw_metadata)
+
+        if "data" in event:
+            data = event["data"]
+
+            if isinstance(data, Mapping):
+                nested_metadata = data.get("metadata")
+
+                if isinstance(nested_metadata, Mapping):
+                    metadata.update(nested_metadata)
+
+                if "chunk" in data:
+                    return data["chunk"], metadata
+
+                if "output" in data:
+                    return data["output"], metadata
+
+            return data, metadata
+
+        if "chunk" in event:
+            return event["chunk"], metadata
+
+        if "output" in event:
+            return event["output"], metadata
+
+        return dict(event), metadata
+
     # ------------------------------------------------------------------
-    # Input / config
+    # Input / execution config
     # ------------------------------------------------------------------
 
-    def _resolve_input(self, payload: dict[str, Any]) -> Any:
-        """
-        Resolve the agent input without assuming one universal LangChain
-        Runnable schema.
-
-        Precedence:
-          input
-          input_payload
-          messages
-          task_description
-          task
-          message
-        """
+    def _resolve_input(
+        self,
+        payload: dict[str, Any],
+    ) -> Any:
         if "input" in payload:
             return payload["input"]
 
@@ -673,15 +786,33 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         if "messages" in payload:
             return payload["messages"]
 
-        for key in ("task_description", "task", "message"):
+        if "history" in payload:
+            current = payload.get("task_description")
+
+            history = payload.get("history")
+            if isinstance(history, list) and history:
+                if current is None:
+                    return history
+
+                return {
+                    "history": history,
+                    "input": current,
+                }
+
+        for key in (
+            "task_description",
+            "task",
+            "message",
+        ):
             value = payload.get(key)
+
             if value is not None:
                 return value
 
         raise ValueError(
             "LangChain adapter received no executable input. "
             "Expected one of: input, input_payload, messages, "
-            "task_description, task, message."
+            "history, task_description, task, message."
         )
 
     def _build_runnable_config(
@@ -689,41 +820,45 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         payload: dict[str, Any],
         callback_handler: AESCallbackHandler,
     ) -> dict[str, Any]:
-        """
-        Construct LangChain RunnableConfig while preserving application-
-        supplied configuration and enforcing AgentV telemetry.
-        """
-        metadata = payload.get("metadata")
-        metadata = metadata if isinstance(metadata, dict) else {}
+        metadata = self._metadata(payload)
 
         raw_config = metadata.get("config")
-        config_data = dict(raw_config) if isinstance(raw_config, Mapping) else {}
+
+        config_data: dict[str, Any] = dict(raw_config) if isinstance(raw_config, Mapping) else {}
 
         callbacks = config_data.get("callbacks")
+
         if callbacks is None:
             callbacks = []
-
         elif not isinstance(callbacks, list):
             callbacks = [callbacks]
 
-        # AgentV telemetry cannot be omitted from an execution.
-        callbacks = [*callbacks, callback_handler]
+        if not any(callback is callback_handler for callback in callbacks):
+            callbacks.append(callback_handler)
+
         config_data["callbacks"] = callbacks
 
         tags = config_data.get("tags")
+
         if tags is None:
             tags = []
         elif not isinstance(tags, list):
             tags = [tags]
 
-        tags = [*tags, "agentv", "verification"]
+        if "agentv" not in tags:
+            tags.append("agentv")
+
+        if "verification" not in tags:
+            tags.append("verification")
+
         config_data["tags"] = tags
 
-        agentv_metadata = config_data.get("metadata")
-        if not isinstance(agentv_metadata, dict):
-            agentv_metadata = {}
+        callback_metadata = config_data.get("metadata")
 
-        agentv_metadata.update(
+        if not isinstance(callback_metadata, dict):
+            callback_metadata = {}
+
+        callback_metadata.update(
             {
                 "agentv.adapter": "langchain",
                 "agentv.task_id": str(
@@ -733,18 +868,16 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         )
 
         if payload.get("run_id") is not None:
-            agentv_metadata["agentv.run_id"] = str(payload["run_id"])
+            callback_metadata["agentv.run_id"] = str(payload["run_id"])
 
         if payload.get("scenario_id") is not None:
-            agentv_metadata["agentv.scenario_id"] = str(payload["scenario_id"])
+            callback_metadata["agentv.scenario_id"] = str(payload["scenario_id"])
 
-        config_data["metadata"] = agentv_metadata
+        config_data["metadata"] = callback_metadata
 
-        # Allow standard LangChain RunnableConfig controls.
         for key in (
             "max_concurrency",
             "recursion_limit",
-            "max_concurrency",
             "run_name",
             "configurable",
         ):
@@ -752,6 +885,37 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
                 config_data[key] = metadata[key]
 
         return config_data
+
+    def _execution_mode(
+        self,
+        payload: dict[str, Any],
+        metadata: Mapping[str, Any],
+        *,
+        remote: bool = False,
+    ) -> str:
+        raw_mode = (
+            metadata.get("langserve_mode" if remote else "langchain_mode")
+            or metadata.get("execution_mode")
+            or payload.get("mode")
+            or payload.get("stream_mode")
+            or "invoke"
+        )
+
+        mode = str(raw_mode).strip().lower()
+
+        aliases = {
+            "async": "invoke",
+            "ainvoke": "invoke",
+            "sync": "invoke",
+            "invoke": "invoke",
+            "stream": "stream",
+            "astream": "stream",
+        }
+
+        if mode not in aliases:
+            raise ValueError(f"Unsupported LangChain execution mode '{mode}'.")
+
+        return aliases[mode]
 
     # ------------------------------------------------------------------
     # Remote transport
@@ -762,8 +926,7 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         payload: dict[str, Any],
         endpoint: str | None,
     ) -> str | None:
-        metadata = payload.get("metadata")
-        metadata = metadata if isinstance(metadata, dict) else {}
+        metadata = self._metadata(payload)
 
         candidate = (
             endpoint
@@ -772,16 +935,24 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             or metadata.get("langserve_url")
         )
 
-        if not candidate:
+        if candidate is None:
             return None
 
         candidate = str(candidate).strip()
+
         if not candidate:
             return None
 
         parsed = urlparse(candidate)
 
-        if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        if (
+            parsed.scheme
+            not in {
+                "http",
+                "https",
+            }
+            or not parsed.netloc
+        ):
             raise ValueError(
                 f"Invalid LangServe endpoint '{candidate}'. Expected an http:// or https:// URL."
             )
@@ -796,22 +967,23 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         parsed = urlparse(url)
         path = parsed.path.rstrip("/")
 
-        if path.endswith("/invoke") or path.endswith("/stream"):
-            if mode == "stream" and not path.endswith("/stream"):
-                path = f"{path}/stream"
-            elif mode == "invoke" and not path.endswith("/invoke"):
-                path = f"{path}/invoke"
-        else:
-            path = f"{path}/{mode}"
+        if path.endswith("/invoke"):
+            path = path[: -len("/invoke")]
 
-        return parsed._replace(path=path).geturl()
+        if path.endswith("/stream"):
+            path = path[: -len("/stream")]
+
+        path = f"{path}/{mode}"
+
+        return parsed._replace(
+            path=path,
+        ).geturl()
 
     def _build_remote_headers(
         self,
         payload: dict[str, Any],
     ) -> dict[str, str]:
-        metadata = payload.get("metadata")
-        metadata = metadata if isinstance(metadata, dict) else {}
+        metadata = self._metadata(payload)
 
         headers: dict[str, str] = {
             "Content-Type": "application/json",
@@ -819,10 +991,13 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         }
 
         custom_headers = metadata.get("headers")
-        if isinstance(custom_headers, dict):
+
+        if isinstance(custom_headers, Mapping):
             for key, value in custom_headers.items():
-                if value is not None:
-                    headers[str(key)] = str(value)
+                if value is None:
+                    continue
+
+                headers[str(key)] = str(value)
 
         api_key = (
             payload.get("api_key") or metadata.get("api_key") or metadata.get("langserve_api_key")
@@ -831,11 +1006,13 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         if api_key and "Authorization" not in headers and "X-API-Key" not in headers:
             headers["Authorization"] = f"Bearer {api_key}"
 
-        bearer = metadata.get("bearer_token")
-        if bearer and "Authorization" not in headers:
-            headers["Authorization"] = f"Bearer {bearer}"
+        bearer_token = metadata.get("bearer_token")
+
+        if bearer_token and "Authorization" not in headers:
+            headers["Authorization"] = f"Bearer {bearer_token}"
 
         traceparent = self._validated_traceparent(payload)
+
         if traceparent:
             headers["traceparent"] = traceparent
 
@@ -845,12 +1022,11 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
     # Output normalization
     # ------------------------------------------------------------------
 
-    def _extract_langserve_output(self, response: Any) -> Any:
-        """
-        Unwrap canonical LangServe response envelopes while preserving
-        structured application output.
-        """
-        if isinstance(response, dict):
+    def _extract_langserve_output(
+        self,
+        response: Any,
+    ) -> Any:
+        if isinstance(response, Mapping):
             if "output" in response:
                 return response["output"]
 
@@ -867,10 +1043,7 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         output: Any,
         status_code: int,
     ) -> str:
-        """
-        Normalize structured or textual output into an AgentV action.
-        """
-        if isinstance(output, dict):
+        if isinstance(output, Mapping):
             return DualNormalizationHub.normalize(
                 output,
                 status_code,
@@ -883,8 +1056,10 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
 
         return DualNormalizationHub.normalize_text(text)
 
-    def _extract_text(self, value: Any) -> str:
-        """Extract textual content without discarding structured output."""
+    def _extract_text(
+        self,
+        value: Any,
+    ) -> str:
         if value is None:
             return ""
 
@@ -892,10 +1067,12 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             return value
 
         if isinstance(value, bytes):
-            return value.decode("utf-8", errors="replace")
+            return value.decode(
+                "utf-8",
+                errors="replace",
+            )
 
         if isinstance(value, Mapping):
-            # Prefer canonical textual fields.
             for key in (
                 "content",
                 "text",
@@ -904,55 +1081,96 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
                 "answer",
                 "result",
             ):
-                if key in value:
-                    extracted = self._extract_text(value[key])
-                    if extracted:
-                        return extracted
+                if key not in value:
+                    continue
 
-            # Common LangChain message representation.
+                extracted = self._extract_text(value[key])
+
+                if extracted:
+                    return extracted
+
             if "content_blocks" in value:
                 return self._extract_text(value["content_blocks"])
 
             return ""
 
         if isinstance(value, (list, tuple)):
-            parts = [self._extract_text(item) for item in value if self._extract_text(item)]
+            parts: list[str] = []
+
+            for item in value:
+                text = self._extract_text(item)
+
+                if text:
+                    parts.append(text)
+
             return "".join(parts)
 
-        content = getattr(value, "content", None)
+        content = getattr(
+            value,
+            "content",
+            None,
+        )
+
         if content is not None:
             return self._extract_text(content)
 
-        text_attr = getattr(value, "text", None)
+        text_attr = getattr(
+            value,
+            "text",
+            None,
+        )
+
         if callable(text_attr):
             try:
                 return self._extract_text(text_attr())
             except Exception:
-                pass
+                return ""
 
         if text_attr is not None:
             return self._extract_text(text_attr)
 
         return str(value)
 
-    def _to_jsonable(self, value: Any) -> Any:
-        """
-        Convert common LangChain/Pydantic objects into deterministic,
-        JSON-compatible evidence without stringifying structured results.
-        """
-        if value is None or isinstance(value, (str, int, float, bool)):
+    def _to_jsonable(
+        self,
+        value: Any,
+    ) -> Any:
+        if value is None or isinstance(
+            value,
+            (
+                str,
+                int,
+                float,
+                bool,
+            ),
+        ):
             return value
 
         if isinstance(value, bytes):
-            return value.decode("utf-8", errors="replace")
+            return value.decode(
+                "utf-8",
+                errors="replace",
+            )
 
         if isinstance(value, Mapping):
             return {str(key): self._to_jsonable(item) for key, item in value.items()}
 
-        if isinstance(value, (list, tuple, set)):
+        if isinstance(
+            value,
+            (
+                list,
+                tuple,
+                set,
+            ),
+        ):
             return [self._to_jsonable(item) for item in value]
 
-        model_dump = getattr(value, "model_dump", None)
+        model_dump = getattr(
+            value,
+            "model_dump",
+            None,
+        )
+
         if callable(model_dump):
             try:
                 return self._to_jsonable(model_dump(mode="json"))
@@ -964,49 +1182,69 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             except Exception:
                 pass
 
-        dict_method = getattr(value, "dict", None)
+        dict_method = getattr(
+            value,
+            "dict",
+            None,
+        )
+
         if callable(dict_method):
             try:
                 return self._to_jsonable(dict_method())
             except Exception:
                 pass
 
-        content = getattr(value, "content", None)
+        result: dict[str, Any] = {}
+
+        content = getattr(
+            value,
+            "content",
+            None,
+        )
+
         if content is not None:
-            result: dict[str, Any] = {
-                "content": self._to_jsonable(content),
-            }
+            result["content"] = self._to_jsonable(content)
 
-            response_metadata = getattr(value, "response_metadata", None)
-            if response_metadata:
-                result["response_metadata"] = self._to_jsonable(response_metadata)
+            for attribute in (
+                "response_metadata",
+                "usage_metadata",
+                "tool_calls",
+                "additional_kwargs",
+            ):
+                attribute_value = getattr(
+                    value,
+                    attribute,
+                    None,
+                )
 
-            usage_metadata = getattr(value, "usage_metadata", None)
-            if usage_metadata:
-                result["usage_metadata"] = self._to_jsonable(usage_metadata)
-
-            tool_calls = getattr(value, "tool_calls", None)
-            if tool_calls:
-                result["tool_calls"] = self._to_jsonable(tool_calls)
-
-            additional_kwargs = getattr(value, "additional_kwargs", None)
-            if additional_kwargs:
-                result["additional_kwargs"] = self._to_jsonable(additional_kwargs)
+                if attribute_value:
+                    result[attribute] = self._to_jsonable(attribute_value)
 
             return result
 
         try:
             json.dumps(value)
             return value
-        except (TypeError, ValueError):
+        except (
+            TypeError,
+            ValueError,
+        ):
             return str(value)
 
     # ------------------------------------------------------------------
-    # HTTP helpers
+    # HTTP
     # ------------------------------------------------------------------
 
-    async def _read_json_or_text(self, response: Any) -> Any:
-        content_type = str(response.headers.get("Content-Type", "")).lower()
+    async def _read_json_or_text(
+        self,
+        response: aiohttp.ClientResponse,
+    ) -> Any:
+        content_type = str(
+            response.headers.get(
+                "Content-Type",
+                "",
+            )
+        ).lower()
 
         if "json" in content_type:
             try:
@@ -1015,18 +1253,25 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
                 pass
 
         text = await response.text()
+
         if not text:
             return {}
 
         return self._decode_json_if_possible(text)
 
-    def _decode_json_if_possible(self, value: Any) -> Any:
+    def _decode_json_if_possible(
+        self,
+        value: Any,
+    ) -> Any:
         if not isinstance(value, str):
             return value
 
         try:
             return json.loads(value)
-        except (TypeError, ValueError):
+        except (
+            TypeError,
+            ValueError,
+        ):
             return value
 
     def _raise_http_error(
@@ -1034,7 +1279,7 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         status_code: int,
         response_data: Any,
     ) -> None:
-        if isinstance(response_data, dict):
+        if isinstance(response_data, Mapping):
             detail = (
                 response_data.get("detail")
                 or response_data.get("message")
@@ -1043,34 +1288,27 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         else:
             detail = response_data
 
-        detail = str(detail or f"HTTP {status_code}")
-
-        # Construct the same typed aiohttp exception family consumed by
-        # BaseAdapter.call_with_retry.
-        import aiohttp
+        message = str(detail or f"HTTP {status_code}")
 
         raise aiohttp.ClientResponseError(
             request_info=None,
             history=(),
             status=int(status_code),
-            message=detail[:1000],
+            message=message[:1000],
         )
 
     def _request_timeout(
         self,
         payload: dict[str, Any],
-    ):
-        import aiohttp
-
-        metadata = payload.get("metadata")
-        metadata = metadata if isinstance(metadata, dict) else {}
+    ) -> aiohttp.ClientTimeout:
+        metadata = self._metadata(payload)
 
         raw_timeout = metadata.get("timeout") or payload.get("timeout")
 
         if raw_timeout is None:
-            return aiohttp.ClientTimeout(total=30.0)
-
-        timeout = float(raw_timeout)
+            timeout = 30.0
+        else:
+            timeout = float(raw_timeout)
 
         if timeout <= 0:
             raise ValueError("LangChain adapter timeout must be greater than zero.")
@@ -1081,25 +1319,50 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         self,
         payload: dict[str, Any],
     ) -> bool:
-        metadata = payload.get("metadata")
-        metadata = metadata if isinstance(metadata, dict) else {}
+        metadata = self._metadata(payload)
 
         return bool(metadata.get("retry_idempotent") or payload.get("retry_idempotent"))
+
+    def _retry_deadline(
+        self,
+        payload: dict[str, Any],
+    ) -> float | None:
+        metadata = self._metadata(payload)
+
+        raw_deadline = metadata.get("retry_deadline") or payload.get("retry_deadline")
+
+        if raw_deadline is None:
+            return None
+
+        deadline = float(raw_deadline)
+
+        if deadline <= 0:
+            raise ValueError("LangChain retry_deadline must be greater than zero.")
+
+        return deadline
 
     def _validated_traceparent(
         self,
         payload: dict[str, Any],
     ) -> str | None:
         span_context = payload.get("span_context")
-        if not isinstance(span_context, dict):
+
+        if not isinstance(
+            span_context,
+            Mapping,
+        ):
             return None
 
         traceparent = span_context.get("traceparent")
-        if not isinstance(traceparent, str):
+
+        if not isinstance(
+            traceparent,
+            str,
+        ):
             return None
 
-        # Reuse the W3C validation semantics used by the base transport.
         parts = traceparent.split("-")
+
         if len(parts) != 4:
             return None
 
@@ -1107,7 +1370,14 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             return None
 
         allowed = "0123456789abcdef"
-        if any(ch not in allowed for part in parts[1:] for ch in part):
+
+        if any(character not in allowed for part in parts[1:] for character in part):
+            return None
+
+        if set(parts[1]) == {"0"}:
+            return None
+
+        if set(parts[2]) == {"0"}:
             return None
 
         return traceparent
@@ -1136,7 +1406,7 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         emit(
             CoreEvents.CHAIN_START,
             data,
-            span_context=payload.get("span_context"),
+            span_context=self._span_context(payload),
         )
 
     def _emit_chain_end(
@@ -1161,7 +1431,7 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         emit(
             CoreEvents.CHAIN_END,
             data,
-            span_context=payload.get("span_context"),
+            span_context=self._span_context(payload),
         )
 
     def _emit_error(
@@ -1186,12 +1456,35 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         emit(
             CoreEvents.ERROR,
             data,
-            span_context=payload.get("span_context"),
+            span_context=self._span_context(payload),
         )
 
     # ------------------------------------------------------------------
-    # Utility helpers
+    # Utilities
     # ------------------------------------------------------------------
+
+    @staticmethod
+    def _metadata(
+        payload: Mapping[str, Any],
+    ) -> dict[str, Any]:
+        metadata = payload.get("metadata")
+
+        return dict(metadata) if isinstance(metadata, Mapping) else {}
+
+    @staticmethod
+    def _span_context(
+        payload: Mapping[str, Any],
+    ) -> dict[str, Any] | None:
+        span_context = payload.get("span_context")
+
+        return (
+            dict(span_context)
+            if isinstance(
+                span_context,
+                Mapping,
+            )
+            else None
+        )
 
     def _error(
         self,
@@ -1209,7 +1502,9 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
 
         return result
 
-    def _langchain_runnable_type(self) -> type | None:
+    def _langchain_runnable_type(
+        self,
+    ) -> type | None:
         try:
             from langchain_core.runnables import Runnable
 
@@ -1217,13 +1512,19 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         except ImportError:
             return None
 
-    def _package_version(self, package_name: str) -> str:
+    def _package_version(
+        self,
+        package_name: str,
+    ) -> str:
         try:
             return importlib.metadata.version(package_name)
         except importlib.metadata.PackageNotFoundError:
             return "unknown"
 
-    def _all_textual(self, chunks: list[Any]) -> bool:
+    def _all_textual(
+        self,
+        chunks: list[Any],
+    ) -> bool:
         if not chunks:
             return True
 
@@ -1231,22 +1532,10 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             if isinstance(chunk, str):
                 continue
 
-            text = self._extract_text(chunk)
-            if not text:
+            if not self._extract_text(chunk):
                 return False
 
         return True
-
-
-def inspect_is_awaitable(value: Any) -> bool:
-    return hasattr(value, "__await__")
-
-
-def inspect_is_class(value: Any) -> bool:
-    try:
-        return isinstance(value, type)
-    except Exception:
-        return False
 
 
 async def adapter(
@@ -1256,30 +1545,43 @@ async def adapter(
 ) -> dict[str, Any]:
     """
     Compatibility wrapper for module-level adapter discovery.
-
-    Adapter discovery expects a callable named ``adapter`` in the module.
     """
-    plugin = LangChainAdapterPlugin()
-
     merged_payload = dict(payload or {})
 
-    # Preserve dispatcher-provided keyword context without modifying the
-    # canonical wire payload contract.
-    if kwargs:
-        metadata = merged_payload.get("metadata")
-        metadata = dict(metadata) if isinstance(metadata, dict) else {}
+    metadata = merged_payload.get("metadata")
+    metadata = dict(metadata) if isinstance(metadata, Mapping) else {}
 
-        for key in (
-            "langserve_url",
-            "chain_path",
-            "runnable",
-            "config",
-            "headers",
-        ):
-            if key in kwargs and key not in metadata:
-                metadata[key] = kwargs[key]
+    for key in (
+        "langserve_url",
+        "chain_path",
+        "runnable",
+        "config",
+        "headers",
+        "history",
+        "messages",
+        "input",
+        "input_payload",
+        "langchain_mode",
+        "execution_mode",
+    ):
+        if key in kwargs and key not in metadata:
+            metadata[key] = kwargs[key]
 
+    if metadata:
         merged_payload["metadata"] = metadata
+
+    session_pool = kwargs.get("session_pool")
+
+    plugin = LangChainAdapterPlugin(
+        session_pool=(
+            session_pool
+            if isinstance(
+                session_pool,
+                AdapterSessionPool,
+            )
+            else None
+        )
+    )
 
     return await plugin.execute_langchain_query(
         merged_payload,
