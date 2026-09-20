@@ -13,7 +13,13 @@ import aiohttp
 from .. import config
 from ..events import emit
 from ..plugins import BaseEvalPlugin
-from .common import AdapterSessionPool, BaseAdapter, DualNormalizationHub
+from .common import (
+    DEFAULT_MAX_RESPONSE_BYTES,
+    AdapterSessionPool,
+    BaseAdapter,
+    DualNormalizationHub,
+    read_response_bytes,
+)
 
 
 class GrokAdapterPlugin(BaseEvalPlugin, BaseAdapter):
@@ -62,6 +68,7 @@ class GrokAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         self,
         payload: dict[str, Any],
         url: str | None = None,
+        **kwargs: Any,
     ) -> dict[str, Any]:
         """Execute one xAI inference request and return an AgentV response."""
         if not isinstance(payload, dict):
@@ -220,7 +227,10 @@ class GrokAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             if stream:
                 return await self._read_stream(response, api_mode=api_mode)
 
-            raw = await response.content.read(self._MAX_ERROR_BODY)
+            raw = await read_response_bytes(
+                response,
+                max_bytes=DEFAULT_MAX_RESPONSE_BYTES,
+            )
             if not raw:
                 raise ValueError("xAI returned an empty response body.")
 

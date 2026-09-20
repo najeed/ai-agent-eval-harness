@@ -39,3 +39,36 @@ async def test_grok_adapter():
         result = await adapter.execute_grok_query(payload)
         assert result["status"] == "success"
         assert result["output"] == "grok response"
+
+
+@pytest.mark.asyncio
+async def test_grok_success_response_uses_bounded_common_reader():
+    adapter = GrokAdapterPlugin()
+    response = MagicMock(status=200)
+
+    class RequestContext:
+        async def __aenter__(self):
+            return response
+
+        async def __aexit__(self, exc_type, exc_value, traceback):
+            return False
+
+    session = MagicMock()
+    session.post.return_value = RequestContext()
+    adapter.session_pool.get_session = AsyncMock(return_value=session)
+
+    with patch(
+        "eval_runner.adapters.grok.read_response_bytes",
+        new=AsyncMock(return_value=b'{"output": "complete"}'),
+    ) as read_body:
+        result = await adapter._request(
+            endpoint="https://api.x.ai/v1/responses",
+            headers={},
+            body={},
+            stream=False,
+            timeout_seconds=1,
+            api_mode="responses",
+        )
+
+    assert result == {"output": "complete"}
+    assert read_body.await_count == 1

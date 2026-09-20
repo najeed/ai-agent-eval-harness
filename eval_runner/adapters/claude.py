@@ -1250,6 +1250,7 @@ class ClaudeAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         self,
         payload: dict[str, Any],
         url: str | None = None,
+        **kwargs: Any,
     ) -> dict[str, Any]:
         try:
             if not isinstance(payload, dict):

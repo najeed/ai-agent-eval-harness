@@ -97,6 +97,7 @@ class GeminiAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         self,
         payload: dict[str, Any],
         url: str | None = None,
+        **kwargs: Any,
     ) -> dict[str, Any]:
         """
         Execute one Gemini interaction.

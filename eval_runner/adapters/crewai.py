@@ -57,6 +57,7 @@ class CrewAIAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         self,
         payload: dict[str, Any],
         endpoint: str | None = None,
+        **kwargs: Any,
     ) -> dict[str, Any]:
         """
         Execute a real CrewAI Crew.

@@ -96,6 +96,7 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         self,
         payload: dict[str, Any],
         endpoint: str | None = None,
+        **kwargs: Any,
     ) -> dict[str, Any]:
         if not isinstance(payload, dict):
             return self._error("LangChain adapter payload must be a dictionary.")

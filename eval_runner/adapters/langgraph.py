@@ -491,6 +491,7 @@ class LangGraphAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         self,
         payload: dict[str, Any],
         endpoint: str | None = None,
+        **kwargs: Any,
     ) -> dict[str, Any]:
         """Execute a real LangGraph application and return an AgentV result."""
         if not isinstance(payload, dict):
