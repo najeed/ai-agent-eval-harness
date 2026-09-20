@@ -165,6 +165,10 @@ def test_handoff_endpoint_invalid_plugin_id(client):
 
 def test_handoff_required_production_rejects_query_token(app, monkeypatch):
     """In production, query-string token in handoff_required must be rejected."""
+    # A real production deployment always has a stable signing secret.
+    # Provide one alongside AGENTV_ENV=production so get_jwt_secret() doesn't
+    # raise before we reach the query-token rejection logic under test.
+    monkeypatch.setenv("JWT_SECRET", "stable-test-secret-for-production-mode")
     monkeypatch.setenv("AGENTV_ENV", "production")
 
     @app.route("/protected-prod-ext")
