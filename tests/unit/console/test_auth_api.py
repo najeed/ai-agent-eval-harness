@@ -90,26 +90,116 @@ def test_handoff_token_expired(app):
     assert "Token expired" in resp.json["error"]
 
 
-def test_handoff_endpoint(client):
-    """Test the /handoff endpoint for token retrieval."""
+def test_handoff_endpoint_unauthenticated(client):
+    """Anonymous/unauthenticated handoff request must be rejected with 401."""
     resp = client.get("/api/auth/handoff")
+    assert resp.status_code == 401
+    assert "Unauthorized" in resp.json["error"]
+
+
+def test_handoff_endpoint_unauthorized_permission(client):
+    """Authenticated user without EXTENSIONS_RUN permission must be rejected with 403."""
+    with client.session_transaction() as sess:
+        sess["user"] = {"id": "viewer-user", "name": "Viewer", "permissions": ["runs:read"]}
+
+    resp = client.post("/api/auth/handoff", json={"plugin_id": "my-extension"})
+    assert resp.status_code == 403
+    assert "Forbidden" in resp.json["error"]
+
+
+def test_handoff_endpoint_authenticated_success(client):
+    """Authenticated operator with EXTENSIONS_RUN gets a cryptographically signed token."""
+    from eval_runner.console.auth_manager import Permission
+
+    with client.session_transaction() as sess:
+        sess["user"] = {
+            "id": "operator-1",
+            "name": "Operator",
+            "permissions": [Permission.EXTENSIONS_RUN],
+        }
+
+    resp = client.post("/api/auth/handoff", json={"plugin_id": "my-extension"})
     assert resp.status_code == 200
     assert "token" in resp.json
     token = resp.json["token"]
     decoded = jwt.decode(token, get_jwt_secret(), algorithms=["HS256"], audience="agentv-plugin")
     assert decoded["aud"] == "agentv-plugin"
-
-
-def test_handoff_endpoint_custom_plugin(client):
-    """Handoff endpoint stamps the requested plugin_id into the token."""
-    resp = client.get("/api/auth/handoff?plugin_id=my-extension")
-    assert resp.status_code == 200
-    token = resp.json["token"]
-    decoded = jwt.decode(token, get_jwt_secret(), algorithms=["HS256"], audience="agentv-plugin")
     assert decoded["plugin_id"] == "my-extension"
+    assert decoded["sub"] == "operator-1"
     assert decoded["scope"] == "console-handoff"
     assert resp.json["expires_in"] == 900
-    assert resp.json["audience"] == "agentv-plugin"
+
+
+def test_handoff_endpoint_production_rejects_get(client, monkeypatch):
+    """In production, GET /api/auth/handoff must be rejected with 405 (POST required)."""
+    from eval_runner.console.auth_manager import Permission
+
+    monkeypatch.setenv("AGENTV_ENV", "production")
+    with client.session_transaction() as sess:
+        sess["user"] = {
+            "id": "operator-1",
+            "name": "Operator",
+            "permissions": [Permission.EXTENSIONS_RUN],
+        }
+
+    resp = client.get("/api/auth/handoff")
+    assert resp.status_code == 405
+    assert "POST required" in resp.json["error"]
+
+
+def test_handoff_endpoint_invalid_plugin_id(client):
+    """Invalid plugin_id format must be rejected with 400."""
+    from eval_runner.console.auth_manager import Permission
+
+    with client.session_transaction() as sess:
+        sess["user"] = {
+            "id": "operator-1",
+            "name": "Operator",
+            "permissions": [Permission.EXTENSIONS_RUN],
+        }
+
+    resp = client.post("/api/auth/handoff", json={"plugin_id": "../../malicious/path"})
+    assert resp.status_code == 400
+    assert "Invalid plugin_id format" in resp.json["error"]
+
+
+def test_handoff_required_production_rejects_query_token(app, monkeypatch):
+    """In production, query-string token in handoff_required must be rejected."""
+    monkeypatch.setenv("AGENTV_ENV", "production")
+
+    @app.route("/protected-prod-ext")
+    @handoff_required
+    def protected_prod():
+        return jsonify({"status": "ok"})
+
+    client = app.test_client()
+    token = generate_handoff_token()
+    resp = client.get(f"/protected-prod-ext?token={token}")
+    assert resp.status_code == 400
+    assert "Query parameter tokens are disabled in production" in resp.json["error"]
+
+
+def test_handoff_required_plugin_binding_and_scope(app):
+    """handoff_required validates plugin_id binding and scope."""
+
+    @app.route("/protected-plugin-ext")
+    @handoff_required(plugin_id="expected-plugin")
+    def protected_plugin():
+        return jsonify({"status": "ok"})
+
+    client = app.test_client()
+
+    # Mismatched plugin token -> 403
+    token_wrong_plugin = generate_handoff_token(plugin_id="different-plugin")
+    resp = client.get("/protected-plugin-ext", headers={"X-Handoff-Token": token_wrong_plugin})
+    assert resp.status_code == 403
+    assert "PluginIdMismatch" in resp.json["error"]
+
+    # Matching plugin token -> 200
+    token_correct = generate_handoff_token(plugin_id="expected-plugin")
+    resp = client.get("/protected-plugin-ext", headers={"X-Handoff-Token": token_correct})
+    assert resp.status_code == 200
+    assert resp.json["status"] == "ok"
 
 
 def test_auth_me_endpoint(client):

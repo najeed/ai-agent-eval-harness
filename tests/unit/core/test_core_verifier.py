@@ -48,10 +48,13 @@ def vault_context(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "REPORTS_DIR", reports_dir)
     monkeypatch.setattr(config, "TRUST_ROOT", trust_dir)
 
-    # Provision system_id keypair for signing
+    # Provision system_id and eval_kernel keypairs for signing
     identity_dir = trust_dir / "system_id"
     identity_dir.mkdir(parents=True, exist_ok=True)
     TraceVerifier.generate_key_pair(output_dir=str(identity_dir))
+    eval_kernel_dir = trust_dir / "eval_kernel"
+    eval_kernel_dir.mkdir(parents=True, exist_ok=True)
+    TraceVerifier.generate_key_pair(output_dir=str(eval_kernel_dir))
 
     verification_service.reset()
     yield root
@@ -1941,3 +1944,137 @@ def test_verification_authority_verify_package_seal_and_trust_root_matrix(tmp_pa
     )
     res = VerificationAuthority.verify_package(pkg_missing_req, require_signature=False)
     assert any("MissingRequiredOracles" in f for f in res["failures"])
+
+
+def test_sign_trace_rejects_shared_master_log(tmp_path):
+    """Verify TraceVerifier.sign_trace raises ValueError when given master log."""
+    master_log = tmp_path / "run.jsonl"
+    master_log.write_text('{"event": "start", "run_id": "run-master"}\n', encoding="utf-8")
+    with patch.object(config, "RUN_LOG_DIR", tmp_path):
+        with pytest.raises(ValueError, match="SharedMasterLogCertificationForbidden"):
+            TraceVerifier.sign_trace(str(master_log), run_id="run-master")
+
+
+def test_sign_trace_rejects_invalid_lifecycle_state(tmp_path):
+    """Verify sign_trace raises CertificationFailedError if run lifecycle is INVALID."""
+    from eval_runner.verifier import CertificationFailedError
+
+    run_id = "run-invalid-state"
+    vault_dir, trace_path = setup_vault(run_id)
+    trace_path.write_text('{"event": "start", "run_id": "' + run_id + '"}\n', encoding="utf-8")
+    (vault_dir / ".run_lifecycle").write_text("{corrupt json", encoding="utf-8")
+
+    with patch.object(config, "RUN_LOG_DIR", vault_dir.parent):
+        with pytest.raises(CertificationFailedError, match="InvalidLifecycleState"):
+            TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
+
+
+def test_sign_trace_outcome_taxonomy():
+    """Verify certification outcome reflects CERTIFIED_PASS, PROVISIONAL_PASS, or ATTESTED_FAIL."""
+    # 1. Live mode + pass -> CERTIFIED_PASS
+    run_id_live = "run-outcome-live"
+    vault_dir_l, trace_path_l = setup_vault(run_id_live)
+    trace_path_l.write_text(
+        '{"event": "start", "run_id": "' + run_id_live + '", "execution_mode": "live"}\n',
+        encoding="utf-8",
+    )
+    m_live = TraceVerifier.sign_trace(
+        str(trace_path_l), run_id=run_id_live, compliance_status="pass", execution_mode="live"
+    )
+    assert m_live["certification"]["outcome"] == "CERTIFIED_PASS"
+
+    # 2. Hybrid mode + pass -> PROVISIONAL_PASS
+    run_id_hyb = "run-outcome-hyb"
+    vault_dir_h, trace_path_h = setup_vault(run_id_hyb)
+    trace_path_h.write_text(
+        '{"event": "start", "run_id": "' + run_id_hyb + '", "execution_mode": "hybrid"}\n',
+        encoding="utf-8",
+    )
+    m_hyb = TraceVerifier.sign_trace(
+        str(trace_path_h), run_id=run_id_hyb, compliance_status="pass", execution_mode="hybrid"
+    )
+    assert m_hyb["certification"]["outcome"] == "PROVISIONAL_PASS"
+
+    # 3. Fail status -> ATTESTED_FAIL
+    run_id_fail = "run-outcome-fail"
+    vault_dir_f, trace_path_f = setup_vault(run_id_fail)
+    trace_path_f.write_text(
+        '{"event": "start", "run_id": "' + run_id_fail + '", "execution_mode": "live"}\n',
+        encoding="utf-8",
+    )
+    m_fail = TraceVerifier.sign_trace(
+        str(trace_path_f), run_id=run_id_fail, compliance_status="fail", execution_mode="live"
+    )
+    assert m_fail["certification"]["outcome"] == "ATTESTED_FAIL"
+
+
+def test_verify_trace_sealed_state_enforcement():
+    """Verify verify_trace requires SEALED state when require_sealed=True."""
+    run_id = "run-sealed-check"
+    vault_dir, trace_path = setup_vault(run_id)
+    trace_path.write_text('{"event": "start", "run_id": "' + run_id + '"}\n', encoding="utf-8")
+
+    manifest = TraceVerifier.sign_trace(str(trace_path), run_id=run_id, compliance_status="pass")
+    manifest_path = vault_dir / "trace_manifest.json"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    # Revert state markers to FINALIZING for uncommitted check
+    (vault_dir / ".sealed").unlink(missing_ok=True)
+    (vault_dir / "trace_seal.json").unlink(missing_ok=True)
+    (vault_dir / ".run_lifecycle").write_text(
+        json.dumps({"run_id": run_id, "state": "FINALIZING"}), encoding="utf-8"
+    )
+
+    with patch.object(config, "RUN_LOG_DIR", vault_dir.parent):
+        # When require_sealed=True, rejected
+        assert not TraceVerifier.verify_trace(
+            str(trace_path), str(manifest_path), require_sealed=True
+        )
+        # When require_sealed=False (internal verification), allowed
+        assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path), require_sealed=False)
+
+
+def test_certification_service_fail_closed_validations(tmp_path):
+    """Verify CertificationService master log rejection and snapshot persistence fail-closed."""
+    from eval_runner.services.certification import CertificationService
+    from tests.unit.core.test_certification_service_and_trust_boundary import _create_trace
+
+    master_log = tmp_path / "run.jsonl"
+    master_log.write_text('{"event": "start", "run_id": "run-master"}\n', encoding="utf-8")
+
+    with patch.object(config, "RUN_LOG_DIR", tmp_path):
+        with pytest.raises(ValueError, match="SharedMasterLogCertificationForbidden"):
+            CertificationService.execute_industrial_certification(
+                run_id="run-master", trace_path=master_log
+            )
+
+    run_id = "run-snap-fail"
+    scen_data = {"id": "scen-1", "version": "1.0.0"}
+    events = [
+        {
+            "event": "run_start",
+            "execution_mode": "live",
+            "scenario_id": "scen-1",
+            "data": {"execution_mode_declared": True},
+        },
+        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": False},
+        {"event": "evaluation_result", "data": {"status": "FAIL", "score": 0.0}},
+    ]
+    vault_dir, trace_p = _create_trace(tmp_path, run_id, events, scenario_data=scen_data)
+
+    orig_write_text = Path.write_text
+
+    def selective_write_text(self, *args, **kwargs):
+        if self.name == "scenario_resolved.json":
+            raise OSError("Disk write error")
+        return orig_write_text(self, *args, **kwargs)
+
+    with patch.object(config, "RUN_LOG_DIR", tmp_path):
+        # Simulate snapshot write failure
+        with patch.object(Path, "write_text", selective_write_text):
+            with pytest.raises(ValueError, match="FailedToPersistScenarioSnapshot"):
+                CertificationService.execute_industrial_certification(
+                    run_id=run_id,
+                    trace_path=trace_p,
+                    scenario_data=scen_data,
+                )

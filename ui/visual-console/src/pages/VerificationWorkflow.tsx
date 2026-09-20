@@ -460,7 +460,9 @@ export const VerificationWorkflow: React.FC = () => {
               className="mt-1 w-full bg-slate-900 border border-slate-800 rounded px-3 py-1.5 text-xs text-slate-200 font-mono"
             >
               <option value="live">live — Authoritative live evaluation (produces certifiable evidence)</option>
-              <option value="hybrid">hybrid — Simulated / mock environment (produces provisional certificates)</option>
+              <option value="hybrid" disabled={import.meta.env.PROD}>
+                hybrid — {import.meta.env.PROD ? 'Prohibited in Production (provisional/non-certifiable)' : 'Simulated / mock environment (produces provisional certificates)'}
+              </option>
             </select>
           </label>
         </div>

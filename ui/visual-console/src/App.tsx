@@ -381,7 +381,7 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
             // Sidecar manifest fetch failed
           }
 
-          if (!preManifest) {
+          if (!preManifest && !import.meta.env.PROD) {
             try {
               const sourceText = new TextDecoder().decode(buffer);
               const match = sourceText.match(/(?:export\s+)?(?:const|let|var)?\s*manifest\s*=\s*(\{[\s\S]*?\n\s*\});?/);
@@ -398,7 +398,9 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
               setLoadingState({
                 status: 'contract_violation',
                 violations: [
-                  "Pre-execution verification failed: Remote extension must supply a statically verifiable signed manifest prior to module execution."
+                  import.meta.env.PROD
+                    ? "Production extension security policy strictly requires an external signed sidecar manifest (.manifest.json)."
+                    : "Pre-execution verification failed: Remote extension must supply a statically verifiable signed manifest prior to module execution."
                 ]
               });
             }

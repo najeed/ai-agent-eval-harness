@@ -653,6 +653,8 @@ def test_stream_run_logs_master_log_fallback(runs_jail, runs_client):
 
     with patch("eval_runner.console.routes.runs.resolve_trace_path", return_value=None):
         res = runs_client.get(f"/api/v1/runs/{rid}/stream")
+        _ = res.data
+        res.close()
 
     master.unlink(missing_ok=True)
     assert res.status_code == 200
@@ -669,6 +671,8 @@ def test_stream_run_logs_master_log_corrupt_line(runs_jail, runs_client):
 
     with patch("eval_runner.console.routes.runs.resolve_trace_path", return_value=None):
         res = runs_client.get(f"/api/v1/runs/{rid}/stream")
+        _ = res.data
+        res.close()
 
     master.unlink(missing_ok=True)
     assert res.status_code == 200
@@ -690,6 +694,8 @@ def test_stream_run_logs_master_log_read_error(runs_jail, runs_client):
     with patch("eval_runner.console.routes.runs.resolve_trace_path", return_value=None):
         with patch("builtins.open", side_effect=boom):
             res = runs_client.get(f"/api/v1/runs/{rid}/stream")
+            _ = res.data
+            res.close()
 
     master.unlink(missing_ok=True)
     # No events found → SSE stream with "not found" message, still HTTP 200
@@ -706,31 +712,30 @@ def test_stream_run_logs_master_log_no_events(runs_jail, runs_client):
 
     with patch("eval_runner.console.routes.runs.resolve_trace_path", return_value=None):
         res = runs_client.get(f"/api/v1/runs/{rid}/stream")
+        _ = res.data
+        res.close()
 
     master.unlink(missing_ok=True)
     # SSE route always returns 200; body contains "not found" message
     assert res.status_code == 200
 
 
-def test_stream_run_logs_temp_write_failure(runs_jail, runs_client):
-    """stream_run_logs: temp file write fails → 500."""
-    rid = "stream-temp-fail-2"
+def test_stream_run_logs_direct_master_no_temp_files(runs_jail, runs_client):
+    """stream_run_logs: streams directly from master log without creating temp files."""
+    rid = "stream-direct-no-temp"
     master = runs_jail["runs"] / "run.jsonl"
     master.write_text(json.dumps({"run_id": rid, "event": "run_start"}) + "\n", encoding="utf-8")
 
-    orig_open = open
-
-    def boom_write(file, *args, **kwargs):
-        if f"temp_stream_{rid}" in str(file):
-            raise OSError("disk full")
-        return orig_open(file, *args, **kwargs)
-
     with patch("eval_runner.console.routes.runs.resolve_trace_path", return_value=None):
-        with patch("builtins.open", side_effect=boom_write):
-            res = runs_client.get(f"/api/v1/runs/{rid}/stream")
+        res = runs_client.get(f"/api/v1/runs/{rid}/stream")
+        data = res.get_data(as_text=True)
+        res.close()
 
     master.unlink(missing_ok=True)
-    assert res.status_code == 500
+    assert res.status_code == 200
+    assert rid in data
+    temp_files = list(runs_jail["runs"].glob("temp_stream_*"))
+    assert len(temp_files) == 0
 
 
 # ---------------------------------------------------------------------------
@@ -941,11 +946,13 @@ def test_stream_run_logs_cleanup_on_complete(runs_jail, runs_client):
 
     with patch("eval_runner.console.routes.runs.resolve_trace_path", return_value=None):
         res = runs_client.get(f"/api/v1/runs/{rid}/stream")
+        data = res.data
+        res.close()
 
     master.unlink(missing_ok=True)
-    # Route returns 200 SSE stream; finally block in stream_and_cleanup ran cleanup
+    # Route returns 200 SSE stream; closes cleanly
     assert res.status_code == 200
-    assert b"run_end" in res.data
+    assert b"run_end" in data
 
 
 # ---------------------------------------------------------------------------

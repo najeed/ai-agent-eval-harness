@@ -119,8 +119,8 @@ def test_get_verification_package_success_with_cert_and_provenance(crypto_client
     # Produce a REAL, cryptographically verifiable certificate
     from eval_runner.verifier import TraceVerifier
 
-    manifest = TraceVerifier.sign_trace(str(trace_file), run_id=run_id)
-    assert manifest["certification"]["outcome"] == "CERTIFIED"
+    manifest = TraceVerifier.sign_trace(str(trace_file), run_id=run_id, execution_mode="live")
+    assert manifest["certification"]["outcome"] in ("CERTIFIED", "CERTIFIED_PASS")
 
     # Query API
     res = crypto_client.get(f"/api/v1/evidence/packages/{run_id}")

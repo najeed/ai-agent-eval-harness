@@ -601,6 +601,32 @@ class TestLocalFileArtifactStore:
 
         assert store.list_artifacts("non_existent_run_dir") == []
 
+    def test_seal_and_unseal_lifecycle(self, tmp_path, monkeypatch):
+        store = LocalFileArtifactStore(base_dir=str(tmp_path))
+        run_id = "run-seal-test"
+
+        store.store_artifact(run_id, "data.txt", b"hello world")
+        assert not store.is_sealed(run_id)
+
+        store.seal(run_id)
+        assert store.is_sealed(run_id)
+
+        # In dev mode, unseal succeeds
+        monkeypatch.delenv("AGENTV_ENV", raising=False)
+        store.unseal(run_id)
+        assert not store.is_sealed(run_id)
+
+        # In production mode when run is SEALED, unseal raises PermissionError
+        from eval_runner.run_lifecycle import RunLifecycleState, transition_run_lifecycle
+
+        monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path)
+        transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING)
+        transition_run_lifecycle(run_id, RunLifecycleState.SEALED)
+        store.seal(run_id)
+        monkeypatch.setenv("AGENTV_ENV", "production")
+        with pytest.raises(PermissionError, match="ProductionImmutabilityViolation"):
+            store.unseal(run_id)
+
 
 # ==============================================================================
 # 10. ConfigResolver and ResolvedRuntimeConfig Tests

@@ -115,7 +115,15 @@ def test_get_jwt_secret_resolution():
 
 def test_handoff_token_endpoint(ent_client):
     """Handoff endpoint issues a valid scoped JWT and stamps plugin_id."""
+    from eval_runner.console.auth_manager import Permission
+
     client, _ = ent_client
+    with client.session_transaction() as sess:
+        sess["user"] = {
+            "id": "operator-1",
+            "name": "Operator",
+            "permissions": [Permission.EXTENSIONS_RUN],
+        }
 
     res = client.get("/api/auth/handoff?plugin_id=custom-p")
     assert res.status_code == 200
@@ -479,6 +487,15 @@ def test_nav_registry_and_extension_metadata(ent_client):
     assert isinstance(data["nav"], list)
 
     # Verify handoff token with explicit plugin_id
+    from eval_runner.console.auth_manager import Permission
+
+    with client.session_transaction() as sess:
+        sess["user"] = {
+            "id": "operator-1",
+            "name": "Operator",
+            "permissions": [Permission.EXTENSIONS_RUN],
+        }
+
     handoff_res = client.get("/api/auth/handoff?plugin_id=control-plane")
     assert handoff_res.status_code == 200
     handoff_data = handoff_res.get_json()

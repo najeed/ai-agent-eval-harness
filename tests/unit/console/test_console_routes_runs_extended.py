@@ -924,24 +924,26 @@ def test_runs_route_stream_run_logs_not_found(client, console_jail):
     assert "Execution log file not found" in data
 
 
-def test_runs_route_stream_run_logs_temp_write_error(client, console_jail):
-    """stream_run_logs handling temp write error (500)."""
+def test_runs_route_stream_run_logs_direct_master_tailing(client, console_jail):
+    """Verify stream_run_logs streams directly from master log without creating temp files."""
     runs_dir = console_jail["runs"]
     master_log = runs_dir / "run.jsonl"
-    master_log.write_text('{"event": "run_start", "run_id": "r_temp_err"}\n', encoding="utf-8")
+    master_log.write_text(
+        '{"event": "run_start", "run_id": "r_direct_master"}\n'
+        '{"event": "other_event", "run_id": "other_run"}\n'
+        '{"event": "run_end", "run_id": "r_direct_master"}\n',
+        encoding="utf-8",
+    )
 
-    # Patch open to raise an exception ONLY when writing the temp file
-    orig_open = open
+    res = client.get("/api/v1/runs/r_direct_master/stream")
+    assert res.status_code == 200
+    data = res.get_data(as_text=True)
+    assert "r_direct_master" in data
+    assert "other_run" not in data
 
-    def mock_open(file, mode="r", *args, **kwargs):
-        if "temp_stream_" in str(file) and "w" in mode:
-            raise OSError("Temp file disk full")
-        return orig_open(file, mode, *args, **kwargs)
-
-    with patch("builtins.open", side_effect=mock_open):
-        res = client.get("/api/v1/runs/r_temp_err/stream")
-        assert res.status_code == 500
-        assert "Failed to resolve stream log" in res.get_json()["error"]
+    # Verify zero temporary files were created
+    temp_files = list(runs_dir.glob("temp_stream_*"))
+    assert len(temp_files) == 0
 
 
 def test_runs_route_resolve_trace_path_variants(client, console_jail):

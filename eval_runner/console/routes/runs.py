@@ -848,11 +848,19 @@ def tail_file_generator(
     seq_id = 0
 
     # 2. Open and Stream with Catch-up Replay
-    with open(log_path, encoding="utf-8") as f:
+    try:
+        f = open(log_path, encoding="utf-8")
+    except OSError as e:
+        logger.warning(f"[Streaming] Failed to open {log_path} for tailing: {e}")
+        yield f"event: error\ndata: {json.dumps({'error': str(e)})}\n\n"
+        return
+
+    with f:
         # Step A: Stream historical events, skipping events received before last_event_id.
         # Contract: an unterminated trailing line (mid-write) is NEVER broadcast.
         # We rewind to its start offset so the tail loop re-reads it once the
         # writer has flushed the complete JSONL frame.
+        matched_any = False
         while True:
             try:
                 pos = f.tell()
@@ -874,12 +882,24 @@ def tail_file_generator(
                             continue
                     except Exception:
                         continue
+                matched_any = True
                 seq_id += 1
                 _, is_term = _extract_canonical_event_info(stripped, seq_id)
                 if seq_id > last_event_id:
                     yield f"id: {seq_id}\ndata: {stripped}\n\n"
                 if is_term:
                     return
+
+        # If target_run_id specified, but no events exist and process is dead, return not_found
+        if target_run_id and not matched_any and not is_run_alive(target_run_id):
+            payload = json.dumps(
+                {
+                    "event": "not_found",
+                    "message": "Execution log file not found. Waiting for trace data.",
+                }
+            )
+            yield f"data: {payload}\n\n"
+            return
 
         # Step B: Enter tail loop
         idle_cycles = 0
@@ -981,52 +1001,20 @@ def stream_run_logs(run_id):
             },
         )
 
-    # Fallback: extract matching events from master log runs/run.jsonl
+    # Fallback: stream matching events from master log runs/run.jsonl directly
     master_log = config.RUN_LOG_DIR / "run.jsonl"
     if master_log.exists():
-        filtered_lines = []
-        try:
-            with open(master_log, encoding="utf-8") as f:
-                for line in f:
-                    line_str = line.strip()
-                    if line_str:
-                        try:
-                            ev = json.loads(line_str)
-                            if ev.get("run_id") == run_id:
-                                filtered_lines.append(line_str)
-                        except Exception as e:
-                            logger.debug(f"Parsing run line warning: {e}")
-        except Exception as e:
-            logger.warning(f"Error reading master log: {e}")
-
-        if filtered_lines:
-            temp_path = config.RUN_LOG_DIR / f"temp_stream_{run_id}.jsonl"
-            try:
-                with open(temp_path, "w", encoding="utf-8") as out:
-                    out.write("\n".join(filtered_lines) + "\n")
-            except Exception as e:
-                logger.error(f"Failed to create temp stream file: {e}")
-                return jsonify({"error": "Failed to resolve stream log"}), 500
-
-            def stream_and_cleanup():
-                try:
-                    yield from tail_file_generator(temp_path, run_id, last_event_id=last_event_id)
-                finally:
-                    if temp_path.exists():
-                        try:
-                            temp_path.unlink()
-                        except Exception as e:
-                            logger.warning(f"Failed to clean up temp stream file {temp_path}: {e}")
-
-            return Response(
-                stream_and_cleanup(),
-                mimetype="text/event-stream",
-                headers={
-                    "Cache-Control": "no-cache",
-                    "X-Accel-Buffering": "no",
-                    "Connection": "keep-alive",
-                },
-            )
+        return Response(
+            tail_file_generator(
+                master_log, run_id, target_run_id=run_id, last_event_id=last_event_id
+            ),
+            mimetype="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "X-Accel-Buffering": "no",
+                "Connection": "keep-alive",
+            },
+        )
 
     def stream_not_found():
         import json as _json

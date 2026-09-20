@@ -221,8 +221,9 @@ def test_verify_run_public_404(client):
     assert res.status_code == 404
 
 
-def test_verify_run_public_compliant(client, console_jail):
-    run_id = "verify_ok"
+def test_verify_run_public_unsealed_rejected(client, console_jail):
+    """Verify that unsealed runs return 400 with unsealed error."""
+    run_id = "verify_unsealed"
     run_dir = console_jail["runs"] / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     (run_dir / "run.jsonl").write_text("trace", encoding="utf-8")
@@ -231,6 +232,29 @@ def test_verify_run_public_compliant(client, console_jail):
         "compliance_score": 1.0,
         "trace_hash": "h",
         "hash_algorithm": "sha3_256",
+        "execution_mode": "live",
+    }
+    (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+
+    res = client.get(f"/api/v1/verify/{run_id}")
+    assert res.status_code == 400
+    data = res.get_json()
+    assert data["verified"] is False
+    assert "is not sealed" in data["error"]
+
+
+def test_verify_run_public_compliant(client, console_jail):
+    run_id = "verify_ok"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "run.jsonl").write_text("trace", encoding="utf-8")
+    (run_dir / ".sealed").touch()
+    manifest = {
+        "compliance_status": "pass",
+        "compliance_score": 1.0,
+        "trace_hash": "h",
+        "hash_algorithm": "sha3_256",
+        "execution_mode": "live",
     }
     (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
 
@@ -238,6 +262,7 @@ def test_verify_run_public_compliant(client, console_jail):
         res = client.get(f"/api/v1/verify/{run_id}")
         assert res.status_code == 200
         assert res.get_json()["verified"] is True
+        assert res.get_json()["terminal_verdict"] == "CERTIFIED_PASS"
 
 
 def test_verify_run_public_non_compliant_score(client, console_jail):
@@ -245,10 +270,12 @@ def test_verify_run_public_non_compliant_score(client, console_jail):
     run_dir = console_jail["runs"] / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     (run_dir / "run.jsonl").write_text("trace", encoding="utf-8")
+    (run_dir / ".sealed").touch()
     manifest = {
         "compliance": {"status": "fail", "score": 0.5},
         "trace_hash": "h",
         "hash_algorithm": "sha3_256",
+        "execution_mode": "live",
     }
     (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
 
@@ -260,6 +287,7 @@ def test_verify_run_public_non_compliant_score(client, console_jail):
         assert data["policy_compliant"] is False
         assert data["compliance_score"] == 0.5
         assert data["cryptographically_valid"] is True
+        assert data["terminal_verdict"] == "ATTESTED_FAIL"
 
 
 def test_verify_run_exception(client, console_jail):
@@ -267,6 +295,7 @@ def test_verify_run_exception(client, console_jail):
     run_dir = console_jail["runs"] / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     (run_dir / "run.jsonl").write_text("trace", encoding="utf-8")
+    (run_dir / ".sealed").touch()
     (run_dir / "run_manifest.json").write_text("bad data", encoding="utf-8")
 
     res = client.get(f"/api/v1/verify/{run_id}")
@@ -301,10 +330,12 @@ def test_verify_run_cryptographic_proof(client, console_jail):
     run_dir = console_jail["runs"] / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     (run_dir / "run.jsonl").write_text("trace", encoding="utf-8")
+    (run_dir / ".sealed").touch()
     manifest = {
         "compliance": {"status": "pass", "score": 1.0},
         "trace_hash": "h",
         "hash_algorithm": "sha3_256",
+        "execution_mode": "live",
         "provenance_chain": [{"signer": "sys1"}],
     }
     (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
@@ -526,3 +557,233 @@ def test_extension_signing_and_verification_endpoints(client, monkeypatch):
     assert res_ver_official.status_code == 200
     assert res_ver_official.get_json()["tier"] == "official"
     assert res_ver_official.get_json()["valid"] is True
+
+
+def test_verify_run_trace_parse_error_fallback(client, console_jail):
+    """Lines 140-141: bad UTF-8 trace bytes still proceed (events_data stays empty)."""
+    run_id = "verify_parse_err"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    # Write invalid UTF-8 bytes
+    (run_dir / "run.jsonl").write_bytes(b"\xff\xfe not utf-8")
+    (run_dir / ".sealed").touch()
+    manifest = {
+        "compliance_status": "pass",
+        "compliance_score": 1.0,
+        "trace_hash": "h",
+        "hash_algorithm": "sha3_256",
+        "execution_mode": "live",
+        "verification_package": {
+            "scenario_id": "s1",
+            "scenario_version": "1.0.0",
+            "scenario_hash": "sha3_256:abc",
+            "manifest_id": "m1",
+            "manifest_hash": "sha3_256:def",
+            "execution_identity": {},
+            "trace_hash": "sha3_256:abc",
+            "trace_seal": {},
+            "evidence_root_hash": "sha3_256:ev",
+            "required_oracle_ids": [],
+            "executed_oracle_results": [],
+            "decision": {"decision": "PASS", "verdict": "VERIFIED"},
+            "signature": None,
+            "signer_identity": "sys",
+        },
+    }
+    (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+
+    with (
+        patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True),
+        patch(
+            "eval_runner.verifier.VerificationAuthority.verify_package_artifacts",
+            return_value={"verified": False, "failures": ["TraceEventsMissing: ..."]},
+        ),
+    ):
+        res = client.get(f"/api/v1/verify/{run_id}")
+    # Should not crash; is_valid becomes False due to failed pkg artifacts
+    assert res.status_code == 200
+    assert res.get_json()["verified"] is False
+
+
+def test_verify_run_exec_manifest_read_error_fallback(client, console_jail):
+    """Lines 148-149: corrupt execution_manifest.json silently falls back to main manifest."""
+    run_id = "verify_exec_manifest_err"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    trace_event = json.dumps({"event": "start", "_seq": 1})
+    (run_dir / "run.jsonl").write_text(trace_event + "\n", encoding="utf-8")
+    (run_dir / ".sealed").touch()
+    # Write corrupt execution_manifest.json (not valid JSON)
+    (run_dir / "execution_manifest.json").write_bytes(b"\xff\xfe corrupt")
+    manifest = {
+        "compliance_status": "pass",
+        "compliance_score": 1.0,
+        "trace_hash": "h",
+        "hash_algorithm": "sha3_256",
+        "execution_mode": "live",
+        "verification_package": {
+            "scenario_id": "s1",
+            "scenario_version": "1.0.0",
+            "scenario_hash": "sha3_256:abc",
+            "manifest_id": "m1",
+            "manifest_hash": "sha3_256:def",
+            "execution_identity": {},
+            "trace_hash": "sha3_256:abc",
+            "trace_seal": {},
+            "evidence_root_hash": "sha3_256:ev",
+            "required_oracle_ids": [],
+            "executed_oracle_results": [],
+            "decision": {"decision": "PASS", "verdict": "VERIFIED"},
+            "signature": None,
+            "signer_identity": "sys",
+        },
+    }
+    (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+
+    with (
+        patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True),
+        patch(
+            "eval_runner.verifier.VerificationAuthority.verify_package_artifacts",
+            return_value={"verified": True, "failures": []},
+        ),
+    ):
+        res = client.get(f"/api/v1/verify/{run_id}")
+    # Falls back to main manifest for canonical_m; verification should proceed
+    assert res.status_code == 200
+
+
+def test_verify_run_scenario_resolved_read_error_fallback(client, console_jail):
+    """Lines 156-157: corrupt scenario_resolved.json silently falls back (scen_data=None)."""
+    run_id = "verify_scen_resolved_err"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    trace_event = json.dumps({"event": "start", "_seq": 1})
+    (run_dir / "run.jsonl").write_text(trace_event + "\n", encoding="utf-8")
+    (run_dir / ".sealed").touch()
+    # Write corrupt scenario_resolved.json
+    (run_dir / "scenario_resolved.json").write_bytes(b"\xff\xfe corrupt")
+    manifest = {
+        "compliance_status": "pass",
+        "compliance_score": 1.0,
+        "trace_hash": "h",
+        "hash_algorithm": "sha3_256",
+        "execution_mode": "live",
+        "verification_package": {
+            "scenario_id": "s1",
+            "scenario_version": "1.0.0",
+            "scenario_hash": "sha3_256:abc",
+            "manifest_id": "m1",
+            "manifest_hash": "sha3_256:def",
+            "execution_identity": {},
+            "trace_hash": "sha3_256:abc",
+            "trace_seal": {},
+            "evidence_root_hash": "sha3_256:ev",
+            "required_oracle_ids": [],
+            "executed_oracle_results": [],
+            "decision": {"decision": "PASS", "verdict": "VERIFIED"},
+            "signature": None,
+            "signer_identity": "sys",
+        },
+    }
+    (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+
+    with (
+        patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True),
+        patch(
+            "eval_runner.verifier.VerificationAuthority.verify_package_artifacts",
+            return_value={"verified": True, "failures": []},
+        ),
+    ):
+        res = client.get(f"/api/v1/verify/{run_id}")
+    # scen_data falls back to None; no crash
+    assert res.status_code == 200
+
+
+def test_verify_run_pkg_artifacts_fail_marks_invalid(client, console_jail):
+    """Lines 168-172: verify_package_artifacts returning verified=False sets is_valid=False."""
+    run_id = "verify_pkg_fail"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    trace_event = json.dumps({"event": "start", "_seq": 1})
+    (run_dir / "run.jsonl").write_text(trace_event + "\n", encoding="utf-8")
+    (run_dir / ".sealed").touch()
+    manifest = {
+        "compliance_status": "pass",
+        "compliance_score": 1.0,
+        "trace_hash": "h",
+        "hash_algorithm": "sha3_256",
+        "execution_mode": "live",
+        "verification_package": {
+            "scenario_id": "s1",
+            "scenario_version": "1.0.0",
+            "scenario_hash": "sha3_256:abc",
+            "manifest_id": "m1",
+            "manifest_hash": "sha3_256:def",
+            "execution_identity": {},
+            "trace_hash": "sha3_256:abc",
+            "trace_seal": {},
+            "evidence_root_hash": "sha3_256:ev",
+            "required_oracle_ids": [],
+            "executed_oracle_results": [],
+            "decision": {"decision": "PASS", "verdict": "VERIFIED"},
+            "signature": None,
+            "signer_identity": "sys",
+        },
+    }
+    (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+
+    with (
+        patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True),
+        patch(
+            "eval_runner.verifier.VerificationAuthority.verify_package_artifacts",
+            return_value={
+                "verified": False,
+                "failures": ["EvidenceRootMismatch: package=X actual=Y"],
+            },
+        ),
+    ):
+        res = client.get(f"/api/v1/verify/{run_id}")
+    # is_valid=False means verified=False and UNVERIFIED terminal verdict
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["verified"] is False
+    assert data["terminal_verdict"] in ("UNVERIFIED", "ATTESTED_FAIL", "PROVISIONAL")
+
+
+def test_get_verified_run_manifest_invalid_run_id(client):
+    """Lines 247-254: path traversal run_id blocked with 400."""
+    res = client.get("/api/v1/verify/../etc/passwd/manifest")
+    assert res.status_code == 400
+    assert "Invalid or unsafe run_id" in res.get_json()["error"]
+
+
+def test_get_verified_run_manifest_not_found(client):
+    """Lines 256-258: non-existent manifest returns 404."""
+    res = client.get("/api/v1/verify/ghost_run_no_manifest/manifest")
+    assert res.status_code == 404
+    assert "not found" in res.get_json()["error"]
+
+
+def test_get_verified_run_manifest_success(client, console_jail):
+    """Lines 260-263: existing manifest returns 200 with manifest contents."""
+    run_id = "manifest_ok"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    manifest = {"compliance_status": "pass", "run_id": run_id}
+    (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+
+    res = client.get(f"/api/v1/verify/{run_id}/manifest")
+    assert res.status_code == 200
+    assert res.get_json()["run_id"] == run_id
+
+
+def test_get_verified_run_manifest_corrupt_file(client, console_jail):
+    """Lines 264-265: corrupt manifest JSON returns 500."""
+    run_id = "manifest_corrupt"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "run_manifest.json").write_text("not json {{", encoding="utf-8")
+
+    res = client.get(f"/api/v1/verify/{run_id}/manifest")
+    assert res.status_code == 500
+    assert "Failed to load manifest" in res.get_json()["error"]

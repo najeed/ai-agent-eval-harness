@@ -368,6 +368,7 @@ export const LiveDebugger: React.FC = () => {
     setActiveScenario(null);
     setEvents([]);
     setSelectedEvent(null);
+    setIsWindowed(false);
     setNodes([]);
     setEdges([]);
     cursorRef.current = 0;
@@ -958,17 +959,20 @@ export const LiveDebugger: React.FC = () => {
   const isTerminalRun = RUN_TERMINAL_STATUSES.has(status);
 
   useEffect(() => {
-    const result = buildTraceGraph(events, activeScenario, selectedEvent, layerMode, isTerminalRun);
-    setNodes(result.flowNodes);
-    setEdges(result.flowEdges);
-    setTopologyProvenance({
-      source: result.provenance,
-      scenarioNodeCount: result.scenarioNodeCount,
-      runtimeNodeCount: result.runtimeNodeCount,
-      droppedEdgeCount: result.droppedEdgeCount
-    });
-    // Heuristic findings are computed for the diagnostics panel only.
-    setDiagnostics(computeTelemetryDiagnostics(events));
+    const timer = setTimeout(() => {
+      const result = buildTraceGraph(events, activeScenario, selectedEvent, layerMode, isTerminalRun);
+      setNodes(result.flowNodes);
+      setEdges(result.flowEdges);
+      setTopologyProvenance({
+        source: result.provenance,
+        scenarioNodeCount: result.scenarioNodeCount,
+        runtimeNodeCount: result.runtimeNodeCount,
+        droppedEdgeCount: result.droppedEdgeCount
+      });
+      // Heuristic findings are computed for the diagnostics panel only.
+      setDiagnostics(computeTelemetryDiagnostics(events));
+    }, 60);
+    return () => clearTimeout(timer);
   }, [events, activeScenario, selectedEvent, layerMode, isTerminalRun, runId, scenarioHash]);
 
   // Filter events by selected telemetry level via typed taxonomy

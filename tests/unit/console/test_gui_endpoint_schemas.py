@@ -11,7 +11,6 @@ AGENTV_TEST_AUTH_BYPASS=1 supplied by tests/unit/console/conftest.py.
 """
 
 import json
-import tempfile
 from pathlib import Path
 
 import pytest
@@ -25,7 +24,6 @@ from eval_runner.console.routes.evidence import evidence_bp
 from eval_runner.console.routes.runs import run_bp, runs_cache
 from eval_runner.console.routes.scenarios import scenario_bp
 from eval_runner.console.routes.system import system_bp
-from eval_runner.utils import rmtree_resilient
 
 SCHEMA_DIR = Path(__file__).resolve().parents[3] / "spec" / "console-api"
 
@@ -36,22 +34,18 @@ SCHEMA_DIR = Path(__file__).resolve().parents[3] / "spec" / "console-api"
 
 
 @pytest.fixture(scope="module")
-def api_jail(request):
-    worker_id = getattr(request.config, "workerinput", {}).get("workerid", "master")
-    tmp_root = Path(tempfile.gettempdir()) / f"aes_endpoint_schema_jail_{worker_id}"
+def api_jail(tmp_path_factory):
+    # tmp_path_factory.mktemp() generates a guaranteed-unique directory per
+    # fixture instantiation — no collision across xdist workers or module
+    # re-runs that share the same worker_id.
+    tmp_root = tmp_path_factory.mktemp("aes_endpoint_schema_jail")
     root = tmp_root / "root"
     runs = root / "results"
     reports = root / "reports"
 
-    if tmp_root.exists():
-        rmtree_resilient(tmp_root)
-
     (reports / "certificates").mkdir(parents=True)
     runs.mkdir(parents=True)
-    yield {"root": root, "runs": runs, "reports": reports}
-
-    if tmp_root.exists():
-        rmtree_resilient(tmp_root)
+    return {"root": root, "runs": runs, "reports": reports}
 
 
 @pytest.fixture

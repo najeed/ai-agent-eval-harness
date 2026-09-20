@@ -766,7 +766,7 @@ def test_manifest_content_hash_properties():
 
 def test_run_lifecycle_os_error_handling(tmp_path):
     """
-    Verify get_run_lifecycle_state logs debug and falls through
+    Verify get_run_lifecycle_state logs error and fails closed to INVALID
     when marker read raises OSError.
     """
     run_id = "run-os-err-test"
@@ -778,7 +778,7 @@ def test_run_lifecycle_os_error_handling(tmp_path):
     with patch.object(config, "RUN_LOG_DIR", tmp_path):
         with patch("pathlib.Path.read_text", side_effect=OSError("Disk read error")):
             state = get_run_lifecycle_state(run_id)
-            assert state == RunLifecycleState.OPEN
+            assert state == RunLifecycleState.INVALID
 
 
 def test_identity_provisioning_allowed_in_dev(monkeypatch, tmp_path):
@@ -1028,6 +1028,47 @@ def test_run_lifecycle_comprehensive_coverage(tmp_path):
         assert can_w5 is True
         assert reason5 == ""
         assert_can_write_trace(run_id4)
+
+        # 11. Corrupt/empty/invalid marker files fail closed to RunLifecycleState.INVALID
+        run_corrupt = "run-corrupt-marker"
+        corrupt_dir = tmp_path / run_corrupt
+        corrupt_dir.mkdir(parents=True, exist_ok=True)
+        (corrupt_dir / ".run_lifecycle").write_text("{not: valid json!", encoding="utf-8")
+        assert get_run_lifecycle_state(run_corrupt) == RunLifecycleState.INVALID
+
+        run_empty = "run-empty-marker"
+        empty_dir = tmp_path / run_empty
+        empty_dir.mkdir(parents=True, exist_ok=True)
+        (empty_dir / ".run_lifecycle").write_text("   ", encoding="utf-8")
+        assert get_run_lifecycle_state(run_empty) == RunLifecycleState.INVALID
+
+        run_nondict = "run-nondict-marker"
+        nondict_dir = tmp_path / run_nondict
+        nondict_dir.mkdir(parents=True, exist_ok=True)
+        (nondict_dir / ".run_lifecycle").write_text('["item1", "item2"]', encoding="utf-8")
+        assert get_run_lifecycle_state(run_nondict) == RunLifecycleState.INVALID
+
+        run_badstate = "run-badstate-marker"
+        badstate_dir = tmp_path / run_badstate
+        badstate_dir.mkdir(parents=True, exist_ok=True)
+        (badstate_dir / ".run_lifecycle").write_text('{"state": "NON_EXISTENT"}', encoding="utf-8")
+        assert get_run_lifecycle_state(run_badstate) == RunLifecycleState.INVALID
+
+        run_dir_marker = "run-dir-marker"
+        dir_marker_dir = tmp_path / run_dir_marker
+        (dir_marker_dir / ".run_lifecycle").mkdir(parents=True, exist_ok=True)
+        assert get_run_lifecycle_state(run_dir_marker) == RunLifecycleState.INVALID
+
+        # 12. Cannot transition out of INVALID state
+        with pytest.raises(ValueError, match="IllegalLifecycleTransition.*corrupted/untrusted"):
+            transition_run_lifecycle(run_corrupt, RunLifecycleState.FINALIZING)
+
+        # 13. Cannot write trace when in INVALID state
+        can_w_inv, reason_inv = can_write_trace(run_corrupt)
+        assert can_w_inv is False
+        assert "INVALID" in reason_inv
+        with pytest.raises(TraceClosedError, match="INVALID"):
+            assert_can_write_trace(run_corrupt)
 
 
 def test_identity_env_and_default_signer(monkeypatch, tmp_path):

@@ -376,7 +376,7 @@ def test_verifier_artifact_store_wiring(tmp_path, monkeypatch):
 
     # Transactional pipeline: sealing is part of the guaranteed wiring.
     assert mock_store.seal.called
-    assert manifest["certification"]["outcome"] == "CERTIFIED"
+    assert manifest["certification"]["outcome"] == "PROVISIONAL_PASS"
 
 
 # ==============================================================================

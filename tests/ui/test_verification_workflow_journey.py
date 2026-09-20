@@ -195,6 +195,10 @@ def journey_console_server(tmp_path_factory):
     }
     manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
+    # Sealed marker — required by hardened lifecycle check; without this
+    # get_run_lifecycle_state() returns OPEN and public_verify_run returns 400.
+    (run_vault / ".sealed").write_text("SEALED", encoding="utf-8")
+
     # Launch server with patched config
     port = get_free_port()
     with (

@@ -26,6 +26,7 @@ class Permission:
     CERTIFY_WRITE = "certify:write"
     HITL_RESOLVE = "hitl:resolve"
     RUNS_WRITE = "runs:write"
+    EXTENSIONS_RUN = "extensions:run"
 
     # 3. Admin Nodes (Destructive / Config)
     SCENARIOS_WRITE = "scenarios:write"
@@ -49,6 +50,7 @@ class Permission:
             cls.CERTIFY_WRITE,
             cls.HITL_RESOLVE,
             cls.RUNS_WRITE,
+            cls.EXTENSIONS_RUN,
             cls.SCENARIOS_WRITE,
             cls.SCENARIOS_DELETE,
             cls.DEBUG_RESET,

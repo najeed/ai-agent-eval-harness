@@ -227,13 +227,17 @@ def test_scenario_save_and_lifecycle_state_machine(client, tmp_path):
     assert res_demote.status_code == 200
     assert res_demote.get_json()["lifecycle_status"] == "Draft"
 
-    # 3. save_scenario optimistic concurrency conflict (409)
+    # 3. save_scenario returns scenario and handles optimistic concurrency conflict (409)
     good_sc = {
         "id": "sc_concurrency",
         "status": "Draft",
         "workflow": {"nodes": [{"id": "n1", "task_description": "task"}]},
     }
-    client.post("/scenarios", json=good_sc)
+    res_good = client.post("/scenarios", json=good_sc)
+    assert res_good.status_code == 200
+    assert "scenario" in res_good.get_json()
+    assert res_good.get_json()["scenario"]["id"] == "sc_concurrency"
+
     res_conflict = client.post(
         "/scenarios",
         json={**good_sc, "expected_revision_hash": "sha3_256:stale_hash_value"},
@@ -344,6 +348,21 @@ def test_evaluate_scenario_fingerprint_enforcement(client, tmp_path):
         res_ok = client.post("/v1/evaluate", json={"path": str(sc_file), "force_launch": True})
         assert res_ok.status_code == 200
         assert res_ok.get_json()["status"] == "started"
+
+    # 4. Production default preflight enforcement
+    with patch.dict(os.environ, {"AGENTV_ENV": "production"}):
+        res_prod = client.post("/v1/evaluate", json={"path": str(sc_file)})
+        assert res_prod.status_code == 400
+        assert "PreflightRequired" in res_prod.get_json()["error"]
+
+    # 5. Production force_launch forbidden without SYSTEM_CONFIG
+    with patch.dict(os.environ, {"AGENTV_ENV": "production"}):
+        res_force_forbidden = client.post(
+            "/v1/evaluate",
+            json={"path": str(sc_file), "force_launch": True},
+        )
+        assert res_force_forbidden.status_code == 403
+        assert "force_launch is prohibited in production" in res_force_forbidden.get_json()["error"]
 
 
 def test_taxonomy_mutate_and_spec_endpoints(client, tmp_path):

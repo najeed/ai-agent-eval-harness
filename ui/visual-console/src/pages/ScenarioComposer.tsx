@@ -95,6 +95,19 @@ export const ScenarioComposer: React.FC = () => {
   const [message, setMessage] = useState('');
   const [saving, setSaving] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
+  const [transitionModal, setTransitionModal] = useState<{ target: string; reason: string } | null>(null);
+  const [isDirty, setIsDirty] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isDirty]);
 
   // [C3b] True once the scenario exists in the catalog (loaded by id, or
   // saved at least once). Lifecycle transitions require a server-side
@@ -379,6 +392,7 @@ export const ScenarioComposer: React.FC = () => {
         eds
       )
     );
+    setIsDirty(true);
   }, [setEdges]);
 
   // Handle node selection in React Flow
@@ -403,6 +417,7 @@ export const ScenarioComposer: React.FC = () => {
       if (e.id !== edgeId) return e;
       return { ...e, data: { ...e.data, [field]: value } };
     }));
+    setIsDirty(true);
   };
 
   // Save updates from panel back to Node object
@@ -422,6 +437,7 @@ export const ScenarioComposer: React.FC = () => {
       }
       return n;
     }));
+    setIsDirty(true);
     setMessage('Node changes staged. Don\'t forget to save to Catalog.');
   };
 
@@ -454,44 +470,10 @@ export const ScenarioComposer: React.FC = () => {
       }
     };
     setNodes(nds => [...nds, newNode]);
+    setIsDirty(true);
   };
 
-  // [C3b] Lifecycle transitions go through the server state machine
-  // (POST /api/scenarios/<id>/transition). The server validates legality,
-  // requires audit reasons for sensitive regressions, and appends transition
-  // history — the client never mutates lifecycle status locally.
-  const handleLifecycleTransition = async (target: string) => {
-    if (target === lifecycleStatus) return;
-    if (!isPersistedScenario) {
-      setMessage('Lifecycle transitions require a saved catalog scenario. Save first.');
-      return;
-    }
-    const legal = LEGAL_TRANSITIONS[lifecycleStatus] || [];
-    if (!legal.includes(target)) {
-      setMessage(
-        `Illegal transition: '${lifecycleStatus}' → '${target}'. Legal next states: ${legal.length ? legal.join(', ') : '(none — terminal state)'
-        }.`
-      );
-      return;
-    }
-
-    const requiresReason =
-      target === 'Deprecated' ||
-      (lifecycleStatus === 'Validated' && target === 'Draft') ||
-      (lifecycleStatus === 'Ready' && target === 'Published');
-
-    let reason = '';
-    if (requiresReason) {
-      const inputReason = window.prompt(
-        `Please provide a mandatory audit reason for transition '${lifecycleStatus}' → '${target}':`
-      );
-      if (!inputReason || !inputReason.trim()) {
-        setMessage(`Transition cancelled: A non-empty reason is mandatory for audit traceability.`);
-        return;
-      }
-      reason = inputReason.trim();
-    }
-
+  const executeLifecycleTransition = async (target: string, reason: string) => {
     setTransitioning(true);
     setMessage('');
     try {
@@ -517,6 +499,7 @@ export const ScenarioComposer: React.FC = () => {
           });
         }
         setMessage(`Lifecycle transitioned to ${data.lifecycle_status} (server-authoritative).`);
+        setTransitionModal(null);
       } else {
         const legalFromServer: string[] = data.legal_transitions || [];
         setMessage(
@@ -528,6 +511,37 @@ export const ScenarioComposer: React.FC = () => {
       setMessage(`Transition request failed: ${e.message}`);
     } finally {
       setTransitioning(false);
+    }
+  };
+
+  // [C3b] Lifecycle transitions go through the server state machine
+  // (POST /api/scenarios/<id>/transition). The server validates legality,
+  // requires audit reasons for sensitive regressions, and appends transition
+  // history — the client never mutates lifecycle status locally.
+  const handleLifecycleTransition = (target: string) => {
+    if (target === lifecycleStatus) return;
+    if (!isPersistedScenario) {
+      setMessage('Lifecycle transitions require a saved catalog scenario. Save first.');
+      return;
+    }
+    const legal = LEGAL_TRANSITIONS[lifecycleStatus] || [];
+    if (!legal.includes(target)) {
+      setMessage(
+        `Illegal transition: '${lifecycleStatus}' → '${target}'. Legal next states: ${legal.length ? legal.join(', ') : '(none — terminal state)'
+        }.`
+      );
+      return;
+    }
+
+    const requiresReason =
+      target === 'Deprecated' ||
+      (lifecycleStatus === 'Validated' && target === 'Draft') ||
+      (lifecycleStatus === 'Ready' && target === 'Published');
+
+    if (requiresReason) {
+      setTransitionModal({ target, reason: '' });
+    } else {
+      executeLifecycleTransition(target, '');
     }
   };
 
@@ -657,6 +671,7 @@ export const ScenarioComposer: React.FC = () => {
           });
         }
         setMessage(`Success: Scenario saved successfully (Hash: ${data.scenario_hash?.slice(0, 12) || 'OK'}).`);
+        setIsDirty(false);
       } else {
         setMessage(`Error: ${data.error || 'Failed to save.'}`);
       }
@@ -1301,6 +1316,47 @@ export const ScenarioComposer: React.FC = () => {
                 className="px-4 py-2 bg-indigo-600 rounded-lg hover:bg-indigo-500 text-white font-bold transition-colors"
               >
                 Review in canvas
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {transitionModal && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl max-w-md w-full p-6 space-y-4 text-slate-100 shadow-2xl">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-amber-400" />
+              <h3 className="text-base font-bold text-white uppercase tracking-wider">
+                Audit Reason Required
+              </h3>
+            </div>
+            <p className="text-slate-400 text-xs leading-relaxed">
+              Transitioning lifecycle state from <b className="text-white">{lifecycleStatus}</b> to <b className="text-white">{transitionModal.target}</b> requires an audit reason for traceability.
+            </p>
+            <div>
+              <label className="text-[11px] uppercase tracking-wider text-slate-400 font-bold block mb-1">
+                Reason
+              </label>
+              <textarea
+                value={transitionModal.reason}
+                onChange={(e) => setTransitionModal({ ...transitionModal, reason: e.target.value })}
+                placeholder="Enter mandatory reason for audit log..."
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500 font-mono h-20 resize-none"
+              />
+            </div>
+            <div className="flex justify-end gap-3 pt-2 text-xs">
+              <button
+                onClick={() => setTransitionModal(null)}
+                className="px-4 py-2 bg-slate-800 rounded-lg hover:bg-slate-700 text-slate-300 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                disabled={!transitionModal.reason.trim() || transitioning}
+                onClick={() => executeLifecycleTransition(transitionModal.target, transitionModal.reason.trim())}
+                className="px-4 py-2 bg-indigo-600 rounded-lg hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold transition-colors"
+              >
+                {transitioning ? 'Transitioning...' : 'Confirm Transition'}
               </button>
             </div>
           </div>

@@ -72,7 +72,7 @@ def test_sign_trace_happy_path_is_fully_certified(cert_env):
         str(env["trace"]), run_id=env["run_id"], identity_id="system_id"
     )
 
-    assert manifest["certification"]["outcome"] == "CERTIFIED"
+    assert manifest["certification"]["outcome"] == "PROVISIONAL_PASS"
     assert all(s["status"] == "ok" for s in manifest["certification"]["stages"])
     expected_stages = [s["stage"] for s in manifest["certification"]["stages"]]
     assert expected_stages == [
@@ -83,8 +83,8 @@ def test_sign_trace_happy_path_is_fully_certified(cert_env):
         "sign",
         "persist",
         "verify",
-        "publish",
         "seal",
+        "publish",
     ]
 
     # Sidecar manifest persisted and certificate backup published

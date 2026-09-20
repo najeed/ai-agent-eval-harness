@@ -102,17 +102,80 @@ def public_verify_run(run_id):
         return jsonify({"error": "Verification Failed: Trace or Certificate not found."}), 404
 
     try:
+        from eval_runner.run_lifecycle import RunLifecycleState, get_run_lifecycle_state
+
+        lifecycle_state = get_run_lifecycle_state(run_id)
+        if lifecycle_state != RunLifecycleState.SEALED:
+            return (
+                jsonify(
+                    {
+                        "error": (
+                            f"Verification Failed: Run '{run_id}' is not sealed "
+                            f"(state: {lifecycle_state.value})."
+                        ),
+                        "verified": False,
+                        "lifecycle_state": lifecycle_state.value,
+                    }
+                ),
+                400,
+            )
+
         # 1. Authoritative verification check via TraceVerifier
         is_valid = TraceVerifier.verify_trace(str(trace_path), str(manifest_path))
 
         with open(manifest_path, encoding="utf-8") as f:
             manifest = json.load(f)
 
+        # 2. Independent Package Artifacts Verification if package is present
+        if is_valid and manifest.get("verification_package"):
+            from eval_runner.verifier import VerificationAuthority
+
+            raw_bytes = trace_path.read_bytes()
+            events_data: list[dict[str, Any]] = []
+            try:
+                for line in raw_bytes.decode("utf-8").splitlines():
+                    trimmed = line.strip()
+                    if trimmed:
+                        events_data.append(json.loads(trimmed))
+            except Exception as ev_err:
+                logger.debug("Failed parsing trace events in public_verify_run: %s", ev_err)
+
+            exec_m_path = trace_path.parent / "execution_manifest.json"
+            canonical_m = manifest
+            if exec_m_path.exists():
+                try:
+                    canonical_m = json.loads(exec_m_path.read_text(encoding="utf-8"))
+                except Exception as em_err:
+                    logger.debug("Failed reading execution manifest: %s", em_err)
+
+            scen_data = None
+            scen_resolved_p = trace_path.parent / "scenario_resolved.json"
+            if scen_resolved_p.exists():
+                try:
+                    scen_data = json.loads(scen_resolved_p.read_text(encoding="utf-8"))
+                except Exception as s_err:
+                    logger.debug("Failed reading scenario_resolved.json: %s", s_err)
+
+            pkg_res = VerificationAuthority.verify_package_artifacts(
+                package=manifest["verification_package"],
+                raw_trace_bytes=raw_bytes,
+                raw_trace_events=events_data,
+                canonical_manifest=canonical_m,
+                scenario_data=scen_data,
+                require_signature=True,
+            )
+            if not pkg_res.get("verified"):
+                logger.warning(
+                    "Public verify package artifact verification failed: %s",
+                    pkg_res.get("failures"),
+                )
+                is_valid = False
+
         method = "SHA3-256 integrity check"
         if manifest.get("provenance_chain"):
             method = "ED25519 cryptographic signature proof"
 
-        # 2. Disentangle raw integrity from authoritative certification
+        # 3. Disentangle raw integrity from authoritative certification
         compliance = manifest.get("compliance", {})
         status = compliance.get("status") or manifest.get("compliance_status") or "UNKNOWN"
         score = compliance.get("score")
@@ -122,20 +185,34 @@ def public_verify_run(run_id):
         is_compliant = str(status).lower() in ["certified", "pass", "passed"]
 
         # Authoritative certification requires:
-        # - cryptographic certificate verification passes
+        # - cryptographic certificate and package verification passes
         # - compliance passed
         # - not provisional
-        # - execution_mode is not hybrid or simulated
+        # - execution_mode is strictly 'live'
+        # - run lifecycle is SEALED
         clean_mode = str(manifest.get("execution_mode", "")).strip().lower()
-        is_authoritative = bool(
-            not manifest.get("provisional", False) and clean_mode not in ("hybrid", "simulated")
+        is_authoritative = bool(not manifest.get("provisional", False) and clean_mode == "live")
+        verified = bool(
+            is_valid
+            and is_compliant
+            and is_authoritative
+            and lifecycle_state == RunLifecycleState.SEALED
         )
-        verified = bool(is_valid and is_compliant)
+
+        if verified:
+            terminal_verdict = "CERTIFIED_PASS"
+        elif is_valid and not is_compliant:
+            terminal_verdict = "ATTESTED_FAIL"
+        elif not is_authoritative:
+            terminal_verdict = "PROVISIONAL"
+        else:
+            terminal_verdict = "UNVERIFIED"
 
         return jsonify(
             {
                 "run_id": run_id,
                 "verified": verified,
+                "terminal_verdict": terminal_verdict,
                 "file_integrity_valid": is_valid,
                 "cryptographically_valid": is_valid,
                 "certificate_valid": is_valid,
@@ -145,6 +222,7 @@ def public_verify_run(run_id):
                 "policy_compliant": is_compliant,
                 "certificate_authoritative": is_authoritative,
                 "execution_mode": clean_mode or "unknown",
+                "lifecycle_state": lifecycle_state.value,
                 "timestamp": datetime.now().astimezone().isoformat(),
                 "method": method,
                 "certificate_hash": (

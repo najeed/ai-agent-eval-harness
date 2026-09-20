@@ -515,22 +515,24 @@ class TraceVerifier:
         master_path = (config.RUN_LOG_DIR / "run.jsonl").resolve()
         resolved_p = p.resolve()
 
-        is_vault = resolved_p == vault_path
-        is_master = resolved_p == master_path
-        if not (is_vault or is_master):
+        if resolved_p == master_path:
+            logger.error("   [Verifier] FAIL: Shared Master Log Certification Forbidden.")
+            raise ValueError(
+                f"SharedMasterLogCertificationForbidden: Trace at '{p}' is the shared "
+                "master log. Certification requires the isolated canonical per-run vault "
+                "trace (runs/<id>/run.jsonl)."
+            )
+
+        if resolved_p != vault_path:
             logger.error("   [Verifier] FAIL: Forensic Pollution - Path mismatch.")
             logger.error(f"      Provided: {resolved_p}")
             logger.error(f"      Expected (Vault): {vault_path}")
-            logger.error(f"      Expected (Master): {master_path}")
             raise ValueError(
                 f"Forensic Pollution: Trace at '{p}' resides in a non-compliant location. "
-                "Traces must be standard vaults (runs/<id>/run.jsonl) or the master log."
+                "Traces must be standard vaults (runs/<id>/run.jsonl)."
             )
 
-        logger.info(
-            f"      [Identity] Identity Basis Confirmed: {run_id} "
-            f"(Type: {'Vault' if is_vault else 'Master'})"
-        )
+        logger.info(f"      [Identity] Identity Basis Confirmed: {run_id} (Type: Vault)")
 
         now = datetime.now().astimezone()
         ts_base = now.strftime("%Y-%m-%dT%H:%M:%S")
@@ -619,7 +621,13 @@ class TraceVerifier:
             transition_run_lifecycle,
         )
 
-        if get_run_lifecycle_state(run_id) == RunLifecycleState.OPEN:
+        lifecycle_st = get_run_lifecycle_state(run_id)
+        if lifecycle_st in (RunLifecycleState.INVALID, RunLifecycleState.UNKNOWN):
+            raise CertificationFailedError(
+                f"InvalidLifecycleState: Run '{run_id}' has {lifecycle_st.value} "
+                "lifecycle state; certification blocked."
+            )
+        if lifecycle_st == RunLifecycleState.OPEN:
             try:
                 transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING)
             except Exception as tr_err:
@@ -1362,7 +1370,7 @@ class TraceVerifier:
             Also execute VerificationAuthority.verify_package_artifacts() as pre-seal gate.
             """
             target = staged_manifest_path if staged_manifest_path.exists() else sidecar_path
-            ok = cls.verify_trace(str(p), str(target), verify_ledger=True)
+            ok = cls.verify_trace(str(p), str(target), verify_ledger=True, require_sealed=False)
             if not ok:
                 raise ValueError("Post-signature self-verification rejected the certificate")
 
@@ -1481,10 +1489,23 @@ class TraceVerifier:
                 manifest["hash_algorithm"] = "sha3_256"
 
                 # Semantically authoritative certification metadata is signed
+                clean_mode = str(manifest.get("execution_mode", "")).strip().lower()
+                is_pass = str(effective_compliance_status).lower() in (
+                    "pass",
+                    "passed",
+                    "certified",
+                )
+                if is_pass and clean_mode == "live" and not provisional:
+                    cert_outcome = "CERTIFIED_PASS"
+                elif is_pass:
+                    cert_outcome = "PROVISIONAL_PASS"
+                else:
+                    cert_outcome = "ATTESTED_FAIL"
+
                 manifest["certification"] = {
                     "pipeline_version": "1.0.0",
                     "transactional": True,
-                    "outcome": "CERTIFIED",
+                    "outcome": cert_outcome,
                     "stages": stages,
                 }
 
@@ -1494,9 +1515,9 @@ class TraceVerifier:
 
                 _stage("verify")(_verify)
 
-                _stage("publish")(_publish)
-
                 _stage("seal")(_seal)
+
+                _stage("publish")(_publish)
                 logger.info(f"      [Verifier] Evidence vault sealed for run '{run_id}'")
             except CertificationFailedError:
                 _rollback()
@@ -1561,6 +1582,7 @@ class TraceVerifier:
         trust_root: Any | None = None,
         key_registry: Mapping[str, str] | None = None,
         public_key_pem: str | None = None,
+        require_sealed: bool = True,
     ) -> bool:
         """
         Verifies a trace file against its manifest (VC). Strictly enforces VC v3.0.0+.
@@ -1760,9 +1782,30 @@ class TraceVerifier:
 
             if "certification" in manifest:
                 cert_meta = manifest["certification"]
-                if isinstance(cert_meta, dict) and cert_meta.get("outcome") != "CERTIFIED":
-                    logger.warning("Uncertified manifest: certification outcome is not CERTIFIED")
+                outcome_val = cert_meta.get("outcome") if isinstance(cert_meta, dict) else None
+                if outcome_val not in (
+                    "CERTIFIED_PASS",
+                    "PROVISIONAL_PASS",
+                    "ATTESTED_FAIL",
+                    "CERTIFIED",
+                ):
+                    logger.warning("Uncertified manifest: certification outcome is %s", outcome_val)
                     return False
+
+            if require_sealed:
+                run_id_cand = manifest.get("run_id") or tp.parent.name
+                if run_id_cand and run_id_cand != config.RUN_LOG_DIR.name:
+                    from eval_runner.run_lifecycle import RunLifecycleState, get_run_lifecycle_state
+
+                    st = get_run_lifecycle_state(run_id_cand)
+                    if st in (RunLifecycleState.FINALIZING, RunLifecycleState.INVALID):
+                        logger.warning(
+                            "Unsealed/uncommitted run rejected: run '%s' lifecycle is %s "
+                            "(SEALED required)",
+                            run_id_cand,
+                            st,
+                        )
+                        return False
 
             for node in chain:
                 identity_id = node.get("identity")
@@ -2378,8 +2421,8 @@ class VerificationAuthority:
     def verify_package_artifacts(
         package: Any,
         raw_trace_bytes: bytes,
-        raw_trace_events: list[dict[str, Any]],
-        canonical_manifest: Any,
+        raw_trace_events: list[dict[str, Any]] | None = None,
+        canonical_manifest: Any = None,
         scenario_data: Any | None = None,
         public_key_pem: str | None = None,
         trust_root: Any | None = None,
@@ -2543,7 +2586,9 @@ class VerificationAuthority:
                 failures.append(f"ManifestVerificationFailed: {m_err}")
 
         # 3. Evidence root binding & reconstruction from stream events
-        if raw_trace_events is None or not effective_events_with_lines:
+        if raw_trace_events is None:
+            failures.append("TraceEventsMissing: artifact verification requires raw trace events")
+        elif not effective_events_with_lines and not raw_trace_events:
             failures.append("TraceEventsMissing: artifact verification requires raw trace events")
         else:
             try:
@@ -2554,12 +2599,14 @@ class VerificationAuthority:
 
                 ev_graph = build_evidence_graph_from_events(effective_events_with_lines)
                 computed_root = compute_evidence_graph_root(ev_graph)
-                if computed_root != pkg.evidence_root_hash and raw_trace_events:
-                    ev_graph_canon = build_evidence_graph_from_events(raw_trace_events)
-                    computed_root_canon = compute_evidence_graph_root(ev_graph_canon)
-                    if computed_root_canon == pkg.evidence_root_hash:
-                        ev_graph = ev_graph_canon
-                        computed_root = computed_root_canon
+                if computed_root != pkg.evidence_root_hash:
+                    cand_events = raw_trace_events or effective_events
+                    if cand_events:
+                        ev_graph_canon = build_evidence_graph_from_events(cand_events)
+                        computed_root_canon = compute_evidence_graph_root(ev_graph_canon)
+                        if computed_root_canon == pkg.evidence_root_hash:
+                            ev_graph = ev_graph_canon
+                            computed_root = computed_root_canon
                 if computed_root != pkg.evidence_root_hash:
                     failures.append(
                         f"EvidenceRootMismatch: package={pkg.evidence_root_hash} "
@@ -2611,9 +2658,11 @@ class VerificationAuthority:
 
         # 5. Scenario artifact binding check
         if scenario_data is None:
-            failures.append(
-                "ScenarioArtifactMissing: package certification requires bound scenario artifact"
-            )
+            if pkg.scenario_hash:
+                failures.append(
+                    "ScenarioArtifactMissing: package certification requires "
+                    "bound scenario artifact"
+                )
         else:
             try:
                 from agentv_runtime.manifest import compute_scenario_hash

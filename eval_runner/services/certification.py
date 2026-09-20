@@ -387,6 +387,7 @@ class CertificationService:
         behavioral_fingerprint_id: str | None = None,
         scenario_data: Mapping[str, Any] | None = None,
         trace_path: str | Path | None = None,
+        artifact_store: Any | None = None,
     ) -> dict[str, Any]:
         """
         Authoritative Industrial Certification Service.
@@ -418,9 +419,18 @@ class CertificationService:
                         trace_path,
                     )
                     raise FileNotFoundError(f"Run vault not found for {run_id}")
+                if (
+                    candidate_trace.name == "run.jsonl"
+                    and candidate_trace.parent == Path(config.RUN_LOG_DIR).resolve()
+                ):
+                    raise ValueError(
+                        f"SharedMasterLogCertificationForbidden: Cannot certify shared "
+                        f"master log '{trace_path}'. Only canonical per-run vault traces "
+                        "are certifiable."
+                    )
                 target_trace = candidate_trace
             else:
-                target_trace = resolve_trace_path(run_id)
+                target_trace = resolve_trace_path(run_id, allow_master_recovery=False)
                 if (
                     not target_trace
                     or not is_path_safe(target_trace, config.RUN_LOG_DIR)
@@ -623,7 +633,7 @@ class CertificationService:
                     f"'{canonical_scen_hash}'"
                 )
 
-            # Persist immutable per-run snapshot if not already present (P1-1)
+            # Persist immutable per-run snapshot if not already present (P1-1 & P0-6)
             scen_resolved_path = vault_dir / "scenario_resolved.json"
             if not scen_resolved_path.exists():
                 try:
@@ -631,9 +641,15 @@ class CertificationService:
                         json.dumps(effective_scenario_data, indent=2), encoding="utf-8"
                     )
                 except Exception as scen_save_err:
-                    logger.debug(
-                        "Failed to write scenario_resolved.json snapshot: %s", scen_save_err
+                    logger.error(
+                        "Failed to persist mandatory scenario_resolved.json snapshot for %s: %s",
+                        run_id,
+                        scen_save_err,
                     )
+                    raise ValueError(
+                        f"FailedToPersistScenarioSnapshot: Mandatory scenario_resolved.json "
+                        f"snapshot could not be persisted for run '{run_id}': {scen_save_err}"
+                    ) from scen_save_err
 
             meta_binding["scenario_id"] = fin_record.scenario_id
             meta_binding["scenario_version"] = fin_record.scenario_version
@@ -742,6 +758,7 @@ class CertificationService:
                 behavioral_fingerprint_id=behavioral_fingerprint_id,
                 scenario_data=effective_scenario_data,
                 require_finalization=True,
+                artifact_store=artifact_store,
             )
 
             lock.verify_active()
@@ -777,6 +794,7 @@ def execute_industrial_certification(
     behavioral_fingerprint_id: str | None = None,
     scenario_data: Mapping[str, Any] | None = None,
     trace_path: str | Path | None = None,
+    artifact_store: Any | None = None,
 ) -> dict[str, Any]:
     """Top-level convenience function delegating to CertificationService."""
     return CertificationService.execute_industrial_certification(
@@ -789,4 +807,5 @@ def execute_industrial_certification(
         behavioral_fingerprint_id=behavioral_fingerprint_id,
         scenario_data=scenario_data,
         trace_path=trace_path,
+        artifact_store=artifact_store,
     )

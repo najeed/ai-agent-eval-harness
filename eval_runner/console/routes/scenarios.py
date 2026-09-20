@@ -10,7 +10,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, session
 
 import eval_runner
 from agentv_runtime.manifest import (
@@ -1004,6 +1004,7 @@ def save_scenario():
             "scenario_hash": scen_hash,
             "version": meta["version"],
             "lifecycle_status": meta["status"],
+            "scenario": data,
         }
     )
 
@@ -1194,6 +1195,27 @@ def evaluate_scenario():
         or meta.get("fingerprint")
     )
 
+    is_prod = os.getenv("AGENTV_ENV", "").strip().lower() in ("production", "prod")
+    require_preflight = is_prod or os.getenv("EVAL_REQUIRE_PREFLIGHT", "false").lower() == "true"
+
+    if force_launch and is_prod:
+        from eval_runner.console.auth_manager import Permission, get_auth_provider
+
+        provider = get_auth_provider()
+        user = session.get("user")
+        if not user or not provider.has_permission(user, Permission.SYSTEM_CONFIG):
+            return (
+                jsonify(
+                    {
+                        "error": (
+                            "Forbidden: force_launch is prohibited in production without "
+                            "system administration privileges."
+                        )
+                    }
+                ),
+                403,
+            )
+
     scen_meta = scen.get("metadata") or {}
     exec_mode = str(
         data.get("execution_mode")
@@ -1236,7 +1258,7 @@ def evaluate_scenario():
                 ),
                 400,
             )
-    elif os.getenv("EVAL_REQUIRE_PREFLIGHT", "false").lower() == "true" and not force_launch:
+    elif require_preflight and not force_launch:
         return (
             jsonify(
                 {

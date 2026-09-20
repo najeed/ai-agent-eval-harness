@@ -2,6 +2,7 @@ import datetime
 import functools
 import logging
 import os
+import re
 import secrets
 import threading
 import time
@@ -87,65 +88,173 @@ def generate_handoff_token(
     return jwt.encode(payload, get_jwt_secret(), algorithm="HS256")
 
 
-def handoff_required(f: Any) -> Any:
+def handoff_required(
+    f: Any = None,
+    *,
+    plugin_id: str | None = None,
+    scope: str | None = None,
+) -> Any:
     """
     Route decorator that enforces a valid audience-bound handoff token on any
     route it protects.
 
-    Usage (extension / enterprise control-plane routes):
-        @app.route("/my-extension/secure-endpoint")
-        @handoff_required
-        def my_endpoint():
-            ...
-
     Accepts the token via:
-      - Query parameter:  ``?token=<jwt>``
-      - Request header:   ``X-Handoff-Token: <jwt>``
+      - Request header:   ``X-Handoff-Token: <jwt>`` or ``Authorization: Bearer <jwt>``
+      - Query parameter:  ``?token=<jwt>`` (development/non-production only)
 
-    Validates audience (``agentv-plugin``), signature, and expiration against
-    the same ``JWT_SECRET`` used by ``generate_handoff_token``.
-
-    This decorator is part of the published AgentV extension API contract
-    (see AUTHENTICATION.md § 4).  It is intentionally provided by the OSS
-    runtime for extensions to consume on their own routes; OSS-internal routes
-    do not use it because the OSS layer does not host extension-owned endpoints.
+    Validates audience (``agentv-plugin``), signature, expiration, scope, and plugin binding.
     """
 
-    @functools.wraps(f)
-    def decorated(*args: Any, **kwargs: Any) -> Any:
-        token = request.args.get("token") or request.headers.get("X-Handoff-Token")
+    def decorator(func: Any) -> Any:
+        @functools.wraps(func)
+        def decorated(*args: Any, **kwargs: Any) -> Any:
+            is_prod = os.getenv("AGENTV_ENV", "").strip().lower() in ("production", "prod")
 
-        if not token:
-            return jsonify({"error": "Handoff token required"}), 401
+            token = request.headers.get("X-Handoff-Token")
+            if not token:
+                auth_header = request.headers.get("Authorization", "")
+                if auth_header.startswith("Bearer "):
+                    token = auth_header[7:].strip()
 
-        try:
-            jwt.decode(
-                token,
-                get_jwt_secret(),
-                algorithms=["HS256"],
-                audience="agentv-plugin",
-            )
-        except jwt.ExpiredSignatureError:
-            return jsonify({"error": "Token expired"}), 401
-        except jwt.InvalidTokenError as e:
-            return jsonify({"error": f"Invalid token: {e}"}), 401
+            query_token = request.args.get("token")
+            if query_token:
+                if is_prod:
+                    return (
+                        jsonify(
+                            {
+                                "error": (
+                                    "Forbidden: Query parameter tokens are disabled in production. "
+                                    "Use 'X-Handoff-Token' header."
+                                )
+                            }
+                        ),
+                        400,
+                    )
+                if not token:
+                    token = query_token
 
-        return f(*args, **kwargs)
+            if not token:
+                return jsonify({"error": "Handoff token required"}), 401
 
-    return decorated
+            try:
+                decoded = jwt.decode(
+                    token,
+                    get_jwt_secret(),
+                    algorithms=["HS256"],
+                    audience="agentv-plugin",
+                )
+            except jwt.ExpiredSignatureError:
+                return jsonify({"error": "Token expired"}), 401
+            except jwt.InvalidTokenError as e:
+                return jsonify({"error": f"Invalid token: {e}"}), 401
+
+            # Validate scope binding
+            token_scope = decoded.get("scope")
+            expected_scope = scope or "console-handoff"
+            if token_scope != expected_scope:
+                return (
+                    jsonify(
+                        {
+                            "error": (
+                                f"Invalid token scope: expected '{expected_scope}', "
+                                f"got '{token_scope}'"
+                            )
+                        }
+                    ),
+                    403,
+                )
+
+            # Validate plugin binding if required by decorator
+            if plugin_id is not None:
+                token_plugin_id = decoded.get("plugin_id")
+                if token_plugin_id != plugin_id:
+                    return (
+                        jsonify(
+                            {
+                                "error": (
+                                    f"PluginIdMismatch: token issued for plugin "
+                                    f"'{token_plugin_id}', cannot access endpoint for "
+                                    f"plugin '{plugin_id}'"
+                                )
+                            }
+                        ),
+                        403,
+                    )
+
+            return func(*args, **kwargs)
+
+        return decorated
+
+    if f is not None and callable(f):
+        return decorator(f)
+    return decorator
 
 
-@auth_bp.route("/handoff", methods=["GET"])
+@auth_bp.route("/handoff", methods=["GET", "POST"])
 def get_handoff_token():
     """
     Endpoint for plugin/extension runtime handoff.
+    Requires authenticated operator with EXTENSIONS_RUN permission.
     Issues short-lived audience-bound token with explicit plugin identity.
     """
-    user = session.get("user") or {}
-    sub = user.get("id", "admin-user")
-    plugin_id = request.args.get("plugin_id", "control-plane")
+    is_prod = os.getenv("AGENTV_ENV", "").strip().lower() in ("production", "prod")
+    if is_prod and request.method != "POST":
+        return (
+            jsonify(
+                {
+                    "error": (
+                        "Method Not Allowed: POST required for handoff token issuance in production"
+                    )
+                }
+            ),
+            405,
+        )
+
+    from .auth_manager import Permission, extract_credentials_from_context, get_auth_provider
+
+    provider = get_auth_provider()
+    user = session.get("user")
+    if not user:
+        bearer_token, api_key = extract_credentials_from_context(
+            dict(request.headers), dict(request.args)
+        )
+        if bearer_token:
+            user = provider.verify_token(bearer_token)
+        elif api_key:
+            user = provider.authenticate(api_key)
+
+    if not user:
+        return jsonify(
+            {"error": "Unauthorized: authenticated operator session or API key required"}
+        ), 401
+
+    if not provider.has_permission(user, Permission.EXTENSIONS_RUN):
+        return jsonify(
+            {"error": f"Forbidden: Permission '{Permission.EXTENSIONS_RUN}' required"}
+        ), 403
+
+    payload_data = request.get_json(silent=True) or {}
+    plugin_id = payload_data.get("plugin_id") or request.args.get("plugin_id", "control-plane")
+    if (
+        not plugin_id
+        or not isinstance(plugin_id, str)
+        or not re.match(r"^[a-zA-Z0-9_\-]+$", plugin_id)
+    ):
+        return jsonify(
+            {"error": "Invalid plugin_id format: alphanumeric, underscore, hyphen only"}
+        ), 400
+
+    sub = user.get("id") or "authenticated-user"
     token = generate_handoff_token(sub=sub, plugin_id=plugin_id)
-    return jsonify({"token": token, "expires_in": 900, "audience": "agentv-plugin"})
+    return jsonify(
+        {
+            "token": token,
+            "expires_in": 900,
+            "audience": "agentv-plugin",
+            "plugin_id": plugin_id,
+            "principal": sub,
+        }
+    )
 
 
 @auth_bp.route("/me", methods=["GET"])

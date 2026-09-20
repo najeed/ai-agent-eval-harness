@@ -37,7 +37,7 @@ def test_public_verify_endpoint_v3(client, tmp_path, monkeypatch):
     monkeypatch.setattr(config, "REPORTS_DIR", tmp_path / "reports")
 
     # 2. Sign the trace
-    TraceVerifier.sign_trace(trace_path=str(trace_path), run_id=run_id)
+    TraceVerifier.sign_trace(trace_path=str(trace_path), run_id=run_id, execution_mode="live")
 
     # 3. Test API Verification (New /v1/ Path)
     response = client.get(f"/v1/verify/{run_id}")

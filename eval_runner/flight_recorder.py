@@ -191,7 +191,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             from eval_runner.run_lifecycle import assert_can_write_trace
 
             try:
-                assert_can_write_trace(run_id)
+                assert_can_write_trace(run_id, log_dir=self.log_dir)
             except Exception as w_err:
                 raise RuntimeError(
                     f"TracePersistenceError: Run '{run_id}' cannot accept trace writes: {w_err}"
@@ -351,7 +351,9 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                         transition_run_lifecycle,
                     )
 
-                    transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING)
+                    transition_run_lifecycle(
+                        run_id, RunLifecycleState.FINALIZING, log_dir=self.log_dir
+                    )
                 except Exception as lc_err:
                     logger.debug("Lifecycle transition to FINALIZING notice: %s", lc_err)
 
@@ -491,7 +493,9 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                             transition_run_lifecycle,
                         )
 
-                        transition_run_lifecycle(run_id, RunLifecycleState.SEALED)
+                        transition_run_lifecycle(
+                            run_id, RunLifecycleState.SEALED, log_dir=self.log_dir
+                        )
                     except Exception as lc_err:
                         logger.debug("Lifecycle transition to SEALED notice: %s", lc_err)
             self._sequence_numbers.pop(run_id, None)
@@ -508,7 +512,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                     transition_run_lifecycle,
                 )
 
-                transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING)
+                transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING, log_dir=self.log_dir)
             except Exception as lc_err:
                 logger.debug("Lifecycle transition to FINALIZING notice in freeze_run: %s", lc_err)
         self.finalize_run(run_id=run_id)
