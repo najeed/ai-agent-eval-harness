@@ -339,8 +339,8 @@ def test_flight_recorder_artifact_store_wiring(tmp_path, monkeypatch):
 def test_verifier_artifact_store_wiring(tmp_path, monkeypatch):
     """
     Contract Test: TraceVerifier.sign_trace invokes ArtifactStore.store_artifact
-    to persist the sidecar manifest and ArtifactStore.seal to immutabilize the
-    vault — via the transactional certification pipeline.
+    to persist the sidecar manifest and commits the authoritative local
+    lifecycle seal only after publication.
     """
     from eval_runner import config
     from eval_runner.identity import IdentityService
@@ -374,8 +374,13 @@ def test_verifier_artifact_store_wiring(tmp_path, monkeypatch):
     assert "run_manifest.json" in stored_artifacts
     assert "certification_receipt.json" in stored_artifacts
 
-    # Transactional pipeline: sealing is part of the guaranteed wiring.
-    assert mock_store.seal.called
+    # Local-file stores are sealed by the authoritative lifecycle transition;
+    # invoking their separate ``seal`` method would create a second irreversible
+    # write before that final transaction commit.
+    from eval_runner.run_lifecycle import RunLifecycleState, get_run_lifecycle_state
+
+    assert get_run_lifecycle_state("run-ver-art-001") is RunLifecycleState.SEALED
+    assert not mock_store.seal.called
     assert manifest["certification"]["outcome"] == "PROVISIONAL_PASS"
 
 

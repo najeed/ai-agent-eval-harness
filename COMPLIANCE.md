@@ -79,7 +79,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 ### 2.6 Optional Ecosystem & Framework Integrations (`pyproject.toml [project.optional-dependencies]`)
 | Package | Version | License | License File |
 | :--- | :--- | :--- | :--- |
-| **ag2** | 1.0.5 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **ag2** | 1.0.6 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **cyclecore-pq** | 0.3.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **datasets** | 5.0.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **GitPython** | 3.1.62 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |

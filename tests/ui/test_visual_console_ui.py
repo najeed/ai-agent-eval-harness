@@ -6,10 +6,10 @@ Tests canonical SPA routing, navigation links, and dynamic component rendering.
 
 import http.client
 import json
+import os
 import socket
 import threading
 import time
-from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -49,6 +49,10 @@ def console_server(tmp_path_factory):
 
     dist_dir = config.PROJECT_ROOT / "ui" / "visual-console" / "dist"
     if not (dist_dir / "index.html").exists():
+        if os.getenv("AGENTV_REQUIRE_BROWSER_ACCEPTANCE") == "1":
+            pytest.fail(
+                "Required browser acceptance build is missing: ui/visual-console/dist/index.html"
+            )
         pytest.skip(
             "Visual Console build artifact ui/visual-console/dist/index.html not found. "
             "Run 'npm run build' first."
@@ -129,16 +133,15 @@ def test_console_api_routes_reachability(console_server):
     conn.close()
 
 
-@pytest.mark.skipif(
-    not Path(config.PROJECT_ROOT / "ui" / "visual-console" / "dist" / "index.html").exists(),
-    reason="UI production bundle dist/index.html not built",
-)
+@pytest.mark.acceptance_release
 def test_playwright_e2e_navigation(console_server):
     """End-to-end browser test using Playwright if chromium is installed."""
     base_url, _ = console_server
     try:
         from playwright.sync_api import sync_playwright
-    except ImportError:
+    except ImportError as exc:
+        if os.getenv("AGENTV_REQUIRE_BROWSER_ACCEPTANCE") == "1":
+            pytest.fail(f"Required browser acceptance dependency missing: {exc}")
         pytest.skip("playwright not installed in current environment")
 
     try:
@@ -148,27 +151,29 @@ def test_playwright_e2e_navigation(console_server):
 
             # 1. Load Canonical Root
             page.goto(base_url, wait_until="domcontentloaded", timeout=20000)
-            assert "AgentV" in page.title() or page.locator("#root").count() > 0
+            assert page.locator("#root").count() == 1
 
             # 2. Navigate to /scenarios
             page.goto(f"{base_url}/scenarios", wait_until="domcontentloaded", timeout=20000)
-            assert page.locator("#root").count() > 0
+            assert page.locator("#root").count() == 1
 
             # 3. Navigate to /reports
             page.goto(f"{base_url}/reports", wait_until="domcontentloaded", timeout=20000)
-            assert page.locator("#root").count() > 0
+            assert page.locator("#root").count() == 1
 
             # 4. Navigate to /debugger
             page.goto(f"{base_url}/debugger", wait_until="domcontentloaded", timeout=20000)
-            assert page.locator("#root").count() > 0
+            assert page.locator("#root").count() == 1
 
             # 5. Navigate to /v2 (backward compatibility)
             page.goto(f"{base_url}/v2", wait_until="domcontentloaded", timeout=20000)
-            assert page.locator("#root").count() > 0
+            assert page.locator("#root").count() == 1
 
             browser.close()
 
     except Exception as e:
+        if os.getenv("AGENTV_REQUIRE_BROWSER_ACCEPTANCE") == "1":
+            raise
         if "Executable doesn't exist" in str(e) or "browserType.launch" in str(e):
             pytest.skip(f"Chromium browser binary not downloaded: {e}")
         else:

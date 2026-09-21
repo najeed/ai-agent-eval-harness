@@ -17,7 +17,7 @@ import os
 import platform
 import sys
 from collections.abc import Mapping
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, fields
 from datetime import UTC, datetime
 from typing import Any
 
@@ -48,7 +48,11 @@ def _to_json_compatible(obj: Any) -> Any:
         return [_to_json_compatible(v) for v in obj]
     if hasattr(obj, "to_dict") and callable(obj.to_dict):
         return _to_json_compatible(obj.to_dict())
-    return str(obj)
+    raise TypeError(
+        f"Unsupported non-canonical value of type {type(obj).__name__}; "
+        "manifest fingerprints accept only JSON primitives, containers, "
+        "or explicit to_dict serializers."
+    )
 
 
 def _canonical_json_bytes(data: Any) -> bytes:
@@ -169,7 +173,11 @@ class ExecutionManifest:
 
     @classmethod
     def from_dict(cls, data: Mapping[str, Any]) -> ExecutionManifest:
-        """Constructs an immutable ExecutionManifest from a mapping."""
+        """Constructs an immutable ExecutionManifest from a closed mapping."""
+        allowed = {f.name for f in fields(cls)} | {"content_hash", "timestamp"}
+        unknown = set(data) - allowed
+        if unknown:
+            raise ValueError(f"ExecutionManifestUnknownFields: {sorted(unknown)}")
         scen_hash = str(data.get("scenario_hash", ""))
         parent_refs = list(data.get("parent_artifact_refs") or ([scen_hash] if scen_hash else []))
         return cls(

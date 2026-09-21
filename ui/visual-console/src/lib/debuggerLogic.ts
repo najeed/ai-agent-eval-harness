@@ -200,6 +200,16 @@ export const mergeSeqGap = (existing: SeqGap[], next: SeqGap): SeqGap[] => {
   return out.slice(-10);
 };
 
+/** Remove one recovered sequence from a gap interval, retaining both sides. */
+export const subtractSeqFromGaps = (gaps: SeqGap[], seq: number): SeqGap[] =>
+  gaps.flatMap(gap => {
+    if (seq < gap.from || seq > gap.to) return [{ ...gap }];
+    const result: SeqGap[] = [];
+    if (gap.from < seq) result.push({ from: gap.from, to: seq - 1 });
+    if (seq < gap.to) result.push({ from: seq + 1, to: gap.to });
+    return result;
+  });
+
 export interface NodeDiagnostic {
   nodeId: string;
   suspectedStatus: 'failed' | 'completed' | 'running';

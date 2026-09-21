@@ -13,6 +13,7 @@ import {
   computeTelemetryDiagnostics,
   computeTraceIntegrity,
   mergeSeqGap,
+  subtractSeqFromGaps,
   type LogEvent,
 } from '../../src/lib/debuggerLogic.js';
 
@@ -96,6 +97,22 @@ test('mergeSeqGap merges contiguous sequence intervals', () => {
   assert.equal(merged.length, 1);
   assert.equal(merged[0].from, 1);
   assert.equal(merged[0].to, 15);
+});
+
+test('gap recovery subtracts a middle sequence into two exact intervals', () => {
+  assert.deepEqual(subtractSeqFromGaps([{ from: 2, to: 4 }], 3), [
+    { from: 2, to: 2 }, { from: 4, to: 4 },
+  ]);
+});
+
+test('gap subtraction is order-independent for arbitrary recovered members', () => {
+  const recover = (order: number[]) => order.reduce(
+    (gaps, seq) => subtractSeqFromGaps(gaps, seq), [{ from: 2, to: 9 }]
+  );
+  assert.deepEqual(recover([3, 6, 8]), recover([8, 3, 6]));
+  assert.deepEqual(recover([3, 6, 8]), [
+    { from: 2, to: 2 }, { from: 4, to: 5 }, { from: 7, to: 7 }, { from: 9, to: 9 },
+  ]);
 });
 
 test('buildWaterfall handles zero-duration and single-event traces deterministically', () => {

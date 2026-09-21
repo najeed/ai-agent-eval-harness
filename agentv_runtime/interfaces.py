@@ -167,6 +167,15 @@ class ArtifactStore(ABC):
         """Returns True if the run artifact vault has been sealed against further mutations."""
         raise NotImplementedError
 
+    def supports_transactional_seal(self) -> bool:
+        """Whether this store can participate in certification's atomic seal commit.
+
+        Stores which only expose a one-way ``seal`` operation must return False:
+        certification refuses them rather than risking a partially committed
+        certificate when a second durable authority fails.
+        """
+        return False
+
 
 # ==============================================================================
 # 5. PolicyEvaluator & PolicyEvaluationResult Contract

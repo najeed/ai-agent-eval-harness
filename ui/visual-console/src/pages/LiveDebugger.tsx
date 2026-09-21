@@ -14,6 +14,7 @@ import { computeScenarioHash } from '../lib/aesDocument';
 import {
   buildWaterfall,
   mergeSeqGap,
+  subtractSeqFromGaps,
   computeTraceIntegrity,
   filterEventsByTelemetryLevel,
   computeTelemetryDiagnostics,
@@ -119,8 +120,10 @@ export const LiveDebugger: React.FC = () => {
     attempt: number;
   }
   const streamCtlRef = useRef<StreamCtl>({ es: null, timer: null, scenarioTimer: null, run: null, attempt: 0 });
-  // Server-generated monotonic event ids: dedupe set + monotonic cursor + contiguous prefix cursor.
+  // SSE IDs are opaque transport cursors; forensic _seq never controls replay.
+  const seenTransportCursorsRef = useRef<Set<number>>(new Set());
   const seenSeqsRef = useRef<Set<number>>(new Set());
+  const forensicHighestRef = useRef<number>(0);
   const cursorRef = useRef<number>(0);
   const contiguousCursorRef = useRef<number>(0);
   const explainReqIdRef = useRef<number>(0);
@@ -137,6 +140,18 @@ export const LiveDebugger: React.FC = () => {
         }
       });
   }, []);
+
+  // A failed run opens on authoritative failure evidence by default. The
+  // operator can still select any other trace event afterwards.
+  useEffect(() => {
+    if (selectedEvent) return;
+    const failure = events.find(e =>
+      e.is_root_cause === true || e.event === 'error' ||
+      e.category === 'PARITY_STATE_DIVERGENCE' || e.passed === false ||
+      String(e.status || '').toLowerCase() === 'failed'
+    );
+    if (failure) setSelectedEvent(failure);
+  }, [events, selectedEvent]);
 
   // Run status checker; only responsible for status/scenario state.
   // Graph derivation is handled exclusively by the reactive useEffect below.
@@ -373,7 +388,9 @@ export const LiveDebugger: React.FC = () => {
     setEdges([]);
     cursorRef.current = 0;
     contiguousCursorRef.current = 0;
+    seenTransportCursorsRef.current.clear();
     seenSeqsRef.current.clear();
+    forensicHighestRef.current = 0;
     setStreamGaps([]);
     setReconnectCount(0);
     streamCtlRef.current.attempt = 0;
@@ -465,39 +482,31 @@ export const LiveDebugger: React.FC = () => {
         return;
       }
 
-      // Dedupe + gap detection & reconciliation BEFORE an event may enter state.
+      // Resume and dedupe exclusively with the opaque SSE cursor.
+      const transportCursor = Number((data as any)._transport_cursor);
+      if (!Number.isSafeInteger(transportCursor) || transportCursor <= 0) return;
+      if (seenTransportCursorsRef.current.has(transportCursor)) return;
+      seenTransportCursorsRef.current.add(transportCursor);
+      cursorRef.current = Math.max(cursorRef.current, transportCursor);
+      if (transportCursor === contiguousCursorRef.current + 1) {
+        contiguousCursorRef.current = transportCursor;
+        while (seenTransportCursorsRef.current.has(contiguousCursorRef.current + 1)) {
+          contiguousCursorRef.current += 1;
+        }
+      }
+
+      // _seq remains forensic evidence ordering/integrity only.
       const seq = typeof data._seq === 'number' ? data._seq : 0;
       if (seq > 0) {
         if (seenSeqsRef.current.has(seq)) return;
         seenSeqsRef.current.add(seq);
-        const prev = cursorRef.current;
+        const prev = forensicHighestRef.current;
         if (prev > 0 && seq > prev + 1) {
           setStreamGaps(g => mergeSeqGap(g, { from: prev + 1, to: seq - 1 }));
         } else {
-          // Reconcile gap: If this incoming seq fills an existing gap range, update/remove it
-          setStreamGaps(gaps => {
-            if (!gaps.length) return gaps;
-            return gaps
-              .map(gap => {
-                if (seq >= gap.from && seq <= gap.to) {
-                  if (gap.from === gap.to) return null; // exact single-seq gap filled
-                  if (seq === gap.from) return { from: gap.from + 1, to: gap.to };
-                  if (seq === gap.to) return { from: gap.from, to: gap.to - 1 };
-                  return gap;
-                }
-                return gap;
-              })
-              .filter(Boolean) as { from: number; to: number }[];
-          });
+          setStreamGaps(gaps => subtractSeqFromGaps(gaps, seq));
         }
-        if (seq > cursorRef.current) cursorRef.current = seq;
-        // Monotonically advance unbroken contiguous sequence prefix
-        if (seq === contiguousCursorRef.current + 1) {
-          contiguousCursorRef.current = seq;
-          while (seenSeqsRef.current.has(contiguousCursorRef.current + 1)) {
-            contiguousCursorRef.current += 1;
-          }
-        }
+        if (seq > forensicHighestRef.current) forensicHighestRef.current = seq;
       }
 
 

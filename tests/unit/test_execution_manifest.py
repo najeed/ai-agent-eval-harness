@@ -67,3 +67,12 @@ def test_manifest_builder_and_immutability():
     restored = ExecutionManifest.from_dict(manifest_dict)
     assert restored == manifest
     assert restored.compute_manifest_hash() == manifest.compute_manifest_hash()
+
+
+def test_execution_manifest_rejects_unknown_physical_fields():
+    manifest = ExecutionManifest(
+        manifest_id="m-closed", scenario_id="s", scenario_version="1", scenario_hash="sha3_256:x"
+    ).to_dict()
+    manifest["unbound_execution_override"] = "unsafe"
+    with pytest.raises(ValueError, match="ExecutionManifestUnknownFields"):
+        ExecutionManifest.from_dict(manifest)

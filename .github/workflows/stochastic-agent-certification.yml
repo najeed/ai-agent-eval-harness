@@ -1,0 +1,52 @@
+name: Stochastic Agent Certification
+
+on:
+  workflow_dispatch:
+
+jobs:
+  loan-agent:
+    name: Repeated live loan-agent certification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check live-provider credential
+        id: credential
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        run: |
+          if [ -n "$GOOGLE_API_KEY" ]; then echo "ready=true" >> "$GITHUB_OUTPUT"; else echo "ready=false" >> "$GITHUB_OUTPUT"; fi
+      - name: Install harness and loan-agent dependencies
+        if: steps.credential.outputs.ready == 'true'
+        run: pip install -r requirements-dev.txt '.[langchain-all]'
+      - name: Start fixed stochastic loan agent
+        if: steps.credential.outputs.ready == 'true'
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        run: |
+          python sample_agent/loan_agent_demo/loan_agent_fixed.py --server --port 8000 > loan-agent.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            curl --fail --silent http://127.0.0.1:8000/ && exit 0
+            sleep 1
+          done
+          cat loan-agent.log
+          exit 1
+      - name: Certify repeated live behavior
+        if: steps.credential.outputs.ready == 'true'
+        env:
+          AGENTV_STOCHASTIC_CERTIFICATION: '1'
+          AGENTV_STOCHASTIC_AGENT_URL: http://127.0.0.1:8000
+        run: pytest tests/integration/test_stochastic_loan_agent.py -q -rs
+      - name: Report unavailable credential
+        if: steps.credential.outputs.ready != 'true'
+        run: echo 'Live stochastic certification was not run because GOOGLE_API_KEY is not configured.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload stochastic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stochastic-loan-agent-evidence
+          path: |
+            reports/stochastic-loan-agent-results.json
+            loan-agent.log

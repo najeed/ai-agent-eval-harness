@@ -365,6 +365,20 @@ def resolve_execution_configs(
     scen_runtime_cfg = scen_rt or {}
 
     raw_agent_config = data.get("agent_config") or {}
+    resolved_protocol = (
+        raw_agent_config.get("protocol")
+        or scen_agent_cfg.get("protocol")
+        or data.get("protocol")
+        or meta.get("protocol")
+        or scen_meta.get("protocol")
+        or "http_rest"
+    )
+    # The Console labels a generic REST target as ``custom_http``.  That is
+    # a UI/profile label, not a runner transport; normalize it at the
+    # execution boundary so a user-selected custom agent is actually invoked.
+    if resolved_protocol == "custom_http":
+        resolved_protocol = "http"
+
     agent_config = {
         "agent_name": raw_agent_config.get("agent_name")
         or scen_agent_cfg.get("agent_name")
@@ -372,12 +386,7 @@ def resolve_execution_configs(
         or meta.get("agent_name")
         or scen_meta.get("agent_name")
         or "default_agent",
-        "protocol": raw_agent_config.get("protocol")
-        or scen_agent_cfg.get("protocol")
-        or data.get("protocol")
-        or meta.get("protocol")
-        or scen_meta.get("protocol")
-        or "http_rest",
+        "protocol": resolved_protocol,
         "endpoint": raw_agent_config.get("endpoint")
         or raw_agent_config.get("url")
         or scen_agent_cfg.get("endpoint")
@@ -503,6 +512,7 @@ def check_execution_readiness():
     agent_check = {"name": "Agent Endpoint", "protocol": proto, "endpoint": endpoint}
 
     _http_probed_protocols = {
+        "http",
         "http_rest",
         "custom",
         "openai_assistants",
@@ -1292,6 +1302,13 @@ def evaluate_scenario():
         max_turns=data.get("max_turns", 10),
         metadata={
             **data.get("metadata", {}),
+            # The execution manifest already records this resolved target, but
+            # the runner also needs it at dispatch time.  Without these fields
+            # a console-launched run silently falls back to AGENT_API_URL and
+            # cannot evaluate the operator-selected real agent.
+            "agent": agent_config.get("endpoint"),
+            "protocol": agent_config.get("protocol"),
+            "agent_config": agent_config,
             "execution_mode": exec_mode,
             "execution_mode_declared": True,
             "execution_manifest": manifest.to_dict(),

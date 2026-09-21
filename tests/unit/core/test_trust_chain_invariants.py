@@ -610,9 +610,10 @@ def test_preflight_fingerprint_canonical_consistency():
     assert fp_mutated != fp1
 
 
-def test_sse_stream_emits_canonical_trace_seq(tmp_path):
+def test_sse_stream_uses_transport_cursor_not_forensic_sequence(tmp_path):
     """
-    SSE trace streamer emits the canonical trace _seq as event id and terminates on terminal events.
+    SSE event IDs are opaque file-stream cursors; immutable _seq stays in the
+    payload as forensic evidence and must never control replay.
     """
     trace_file = tmp_path / "test_run.jsonl"
     events_to_write = [
@@ -627,8 +628,10 @@ def test_sse_stream_emits_canonical_trace_seq(tmp_path):
     full_sse = "".join(chunks)
 
     # Must contain event id and payload data:
-    assert "id: 42\n" in full_sse or "id: 1\n" in full_sse
-    assert "id: 108\n" in full_sse or "id: 2\n" in full_sse
+    assert "id: 1\n" in full_sse
+    assert "id: 2\n" in full_sse
+    assert "id: 42\n" not in full_sse
+    assert "id: 108\n" not in full_sse
     assert '"_seq": 42' in full_sse
     assert '"_seq": 108' in full_sse
     assert '"event": "trace_sealed"' in full_sse

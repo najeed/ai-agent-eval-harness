@@ -57,7 +57,7 @@ framework-langgraph = [
     "langgraph==1.2.12",
 ]
 framework-ag2 = [
-    "ag2==1.0.5",
+    "ag2==1.0.6",
 ]
 framework-crewai = [
 #    "crewai==1.15.22; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
@@ -102,7 +102,7 @@ frameworks = [
     "langchain-core>=1.6.4",
     "langserve>=0.3.3",
     "langgraph==1.2.12",
-    "ag2==1.0.5",
+    "ag2==1.0.6",
 #    "crewai==1.15.22; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
 ]
 langchain-all = [
@@ -123,7 +123,7 @@ all = [
     "langchain-core>=1.6.4",
     "langserve>=0.3.3",
     "langgraph==1.2.12",
-    "ag2==1.0.5",
+    "ag2==1.0.6",
 #    "crewai==1.15.22; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
     "langchain-openai==1.6.3",
     "langchain-anthropic>=1.7.2",
@@ -159,9 +159,9 @@ coverage = "eval_runner.coverage_plugin:CoveragePlugin"
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "dataproc_engine/tests"]
-# Keep test cache state in the writable project scratch directory
-# so successful tests do not emit cache I/O warnings.
-addopts = "-ra --dist loadfile -o cache_dir=.tmp/pytest-cache"
+# xdist workers race when sharing a pytest cache on Windows/OneDrive.  The
+# cache is only an optimization, so disable it for deterministic parallel CI.
+addopts = "-ra --dist loadfile -p no:cacheprovider"
 python_files = ["test_*.py"]
 pythonpath = ["."]
 asyncio_mode = "auto"
@@ -171,6 +171,7 @@ markers = [
     "asyncio: mark test as an asyncio test",
     "live: environment-gated integration tests running against CycleCore",
     "adapter_certification: opt-in real provider and framework interoperability tests",
+    "stochastic_certification: opt-in repeated live-agent behavioral certification tests",
     "release_packaging: build and install the distributable artifact in an isolated environment",
     "acceptance: AgentV product acceptance tests",
     "acceptance_release: release-blocking acceptance tests",

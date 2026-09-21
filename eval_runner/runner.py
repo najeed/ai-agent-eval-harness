@@ -457,6 +457,10 @@ class DefaultRunner(BaseRunner):
                 session = SessionManager(
                     effective_run_id,
                     scenario_copy,
+                    # Bind the persisted scenario snapshot to the exact
+                    # pre-execution contract hashed above. ``scenario_copy``
+                    # carries runtime-only controls such as max_turns.
+                    scenario_contract=scenario,
                     metadata=ctx.metadata,
                     seed=current_seed,
                     cancellation_event=cancellation_event,

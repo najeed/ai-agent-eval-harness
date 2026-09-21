@@ -3251,7 +3251,7 @@ def test_verify_package_artifacts_manifest_types_and_errors():
 
 def test_verify_package_artifacts_events_and_provenance_branches():
     """
-    Exercises raw_trace_events=None, incomplete direct provenance,
+    Exercises raw-byte event parsing, incomplete direct provenance,
     evidence graph exception, and missing trace seal in verify_package_artifacts.
     """
     trace_bytes = b'{"event": "start", "_seq": 1}\n'
@@ -3277,7 +3277,8 @@ def test_verify_package_artifacts_events_and_provenance_branches():
     )
 
     with patch.object(VerificationPackage, "verify_signature", return_value=True):
-        # 1. raw_trace_events is None
+        # 1. Raw bytes are authoritative.  Caller events are optional and
+        # cannot be required when an exact JSONL stream was supplied.
         res_none = VerificationAuthority.verify_package_artifacts(
             package=pkg,
             raw_trace_bytes=trace_bytes,
@@ -3285,7 +3286,8 @@ def test_verify_package_artifacts_events_and_provenance_branches():
             canonical_manifest=m_bytes,
             require_signature=False,
         )
-        assert any("TraceEventsMissing" in f for f in res_none["failures"])
+        assert not any("TraceEventsMissing" in f for f in res_none["failures"])
+        assert any("EvidenceRootMismatch" in f for f in res_none["failures"])
 
         # 2. Evidence graph with incomplete provenance
         events = [{"event": "start", "_seq": 1}]

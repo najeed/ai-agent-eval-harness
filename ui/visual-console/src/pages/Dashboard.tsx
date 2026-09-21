@@ -508,14 +508,14 @@ export const Dashboard: React.FC = () => {
               <tr className="border-b border-slate-800 text-[10px] text-slate-500 uppercase tracking-wider">
                 <th className="pb-3 font-semibold">Run ID</th>
                 <th className="pb-3 font-semibold">Scenario Target</th>
-                <th className="pb-3 font-semibold">Status / Verdict</th>
+                <th className="pb-3 font-semibold">Evaluation / Evidence status</th>
                 <th className="pb-3 font-semibold text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/50">
               {runs.map((r) => {
                 const isProv = r.provisional || r.verdict === 'VERIFIED_PROVISIONAL';
-                const isVer = r.verdict === 'VERIFIED' || isProv;
+                const isVer = r.verdict === 'VERIFIED';
                 const isFailed = r.verdict === 'FAILED_VERIFICATION';
 
                 return (
@@ -542,7 +542,7 @@ export const Dashboard: React.FC = () => {
                       <span
                         title={
                           isProv
-                            ? 'Certificate is valid, but the run was marked provisional.'
+                            ? 'Provisional evidence verification only; this is not authoritative certification.'
                             : isVer
                               ? 'Certificate trace-hash matches the current trace (server-verified).'
                               : isFailed
@@ -559,7 +559,13 @@ export const Dashboard: React.FC = () => {
                           }`}
                       >
                         {isVer ? <ShieldCheck className="w-3 h-3" /> : <CheckCircle2 className="w-3 h-3" />}
-                        {isProv ? 'VERIFIED (PROVISIONAL)' : r.verdict === 'UNKNOWN' ? r.status : r.verdict}
+                        {isProv
+                          ? 'EVIDENCE VERIFIED — PROVISIONAL (NOT CERTIFIED)'
+                          : r.verdict === 'UNKNOWN'
+                            ? `EVALUATION ${r.status}`
+                            : r.verdict === 'VERIFIED'
+                              ? 'EVIDENCE VERIFIED'
+                              : r.verdict}
                       </span>
                     </td>
                   <td className="py-3 text-right">

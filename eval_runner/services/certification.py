@@ -509,9 +509,21 @@ class CertificationService:
                             continue
                         try:
                             rec = json.loads(stripped)
-                            raw_events.append((rec, line.rstrip("\r\n")))
                             ev_name = rec.get("event")
                             rec_data = rec.get("data") if isinstance(rec.get("data"), dict) else {}
+                            # Finalization is computed before the terminal RUN_END
+                            # record is emitted.  That record embeds the signed
+                            # finalization itself and its assertion carrier; feeding
+                            # it back into graph reconstruction would create a
+                            # self-referential second evidence root.  Bind the root
+                            # to the exact pre-finalization raw JSONL lines instead.
+                            if not (
+                                ev_name in ("run_end", "verification_decision", "session_decision")
+                                and isinstance(
+                                    rec.get("finalization") or rec_data.get("finalization"), dict
+                                )
+                            ):
+                                raw_events.append((rec, line.rstrip("\r\n")))
                             has_scen = bool(rec.get("scenario_id") or rec_data.get("scenario_id"))
                             if ev_name in ("run_start", "start") or has_scen:
                                 for key in (

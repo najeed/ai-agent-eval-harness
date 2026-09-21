@@ -112,6 +112,21 @@ def test_contract_replay_resumes_after_last_event_id(run_log_dir):
     assert frames[-1][1]["event"] == "run_end"
 
 
+def test_reconnect_uses_transport_cursor_not_forensic_sequence(run_log_dir):
+    """A global/non-contiguous _seq must never be sent back as Last-Event-ID."""
+    lines = [ev_line(42, "run_start"), ev_line(108, "run_end")]
+    write_vault(run_log_dir, "run-opaque-cursor", lines)
+    trace = run_log_dir / "run-opaque-cursor" / "run.jsonl"
+
+    first = sse_frames(tail_file_generator(trace, "run-opaque-cursor"))
+    assert [frame[0] for frame in first] == [1, 2]
+    assert [frame[1]["_seq"] for frame in first] == [42, 108]
+
+    # Reconnecting with the acknowledged transport cursor replays nothing;
+    # reconnecting with forensic _seq would be an invalid cursor domain.
+    assert sse_frames(tail_file_generator(trace, "run-opaque-cursor", last_event_id=2)) == []
+
+
 # ---------------------------------------------------------------------------
 # reorder — transport is verbatim; ordering truth is in _seq payloads
 # ---------------------------------------------------------------------------
