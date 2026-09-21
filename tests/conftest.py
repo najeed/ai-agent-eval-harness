@@ -271,6 +271,10 @@ def pytest_configure(config):
         "markers",
         "adapter_certification: opt-in real provider and framework interoperability tests",
     )
+    config.addinivalue_line(
+        "markers",
+        "release_packaging: build & install the distributable artifact in an isolated environment",
+    )
 
     if os.getenv(_MEMORY_FORENSICS_ENV, "").strip().lower() in {"1", "true", "yes", "on"}:
         try:

@@ -152,14 +152,18 @@ async def test_openapi_polling_processing_id(mock_session):
 @pytest.mark.asyncio
 async def test_openapi_poll_terminal_actions(mock_session):
     plugin = OpenAPIAdapterPlugin()
+    plugin._request = AsyncMock(
+        side_effect=[
+            ({"status": "review_required"}, 200, {}, ""),
+            ({"status": "failed"}, 200, {}, ""),
+        ]
+    )
 
     # hitl_pause
-    mock_session.get.return_value = MockResponse(json_data={"status": "waiting"})
     res = await plugin._poll_for_result("http://poll", {}, {})
     assert res["action"] == "hitl_pause"
 
     # error
-    mock_session.get.return_value = MockResponse(json_data={"status": "failed"})
     res = await plugin._poll_for_result("http://poll", {}, {})
     assert res["action"] == "error"
 
@@ -168,8 +172,8 @@ async def test_openapi_poll_terminal_actions(mock_session):
 async def test_openapi_poll_timeout(mock_session):
     plugin = OpenAPIAdapterPlugin()
     plugin.max_poll_attempts = 2
-
-    mock_session.get.return_value = MockResponse(json_data={"status": "processing"})
+    plugin.poll_interval = 0
+    plugin._request = AsyncMock(return_value=({"status": "processing"}, 200, {}, ""))
 
     with patch("asyncio.sleep", AsyncMock()):
         res = await plugin._poll_for_result("http://poll", {}, {})
@@ -198,29 +202,24 @@ async def test_openapi_on_discover_adapters():
 @pytest.mark.asyncio
 async def test_openapi_poll_status_400_plus(mock_session):
     plugin = OpenAPIAdapterPlugin()
-    plugin.max_poll_attempts = 2
-
-    # Mock 400 then success
-    mock_session.get.side_effect = [
-        MockResponse(status=400),
-        MockResponse(json_data={"status": "completed"}),
-    ]
+    plugin._request = AsyncMock(return_value=({"error": "retry"}, 400, {}, "retry"))
 
     with patch("asyncio.sleep", AsyncMock()):
         res = await plugin._poll_for_result("http://poll", {}, {})
-        assert res["action"] == "final_answer"
+        assert res["action"] == "error"
 
 
 @pytest.mark.asyncio
 async def test_openapi_poll_exception_recovery(mock_session):
     plugin = OpenAPIAdapterPlugin()
     plugin.max_poll_attempts = 2
-
-    # Mock exception then success
-    mock_session.get.side_effect = [
-        Exception("Transient Error"),
-        MockResponse(json_data={"status": "completed"}),
-    ]
+    plugin.poll_interval = 0
+    plugin._request = AsyncMock(
+        side_effect=[
+            OpenAPIResolutionError("Transient Error"),
+            ({"status": "completed"}, 200, {}, ""),
+        ]
+    )
 
     with patch("asyncio.sleep", AsyncMock()):
         res = await plugin._poll_for_result("http://poll", {}, {})

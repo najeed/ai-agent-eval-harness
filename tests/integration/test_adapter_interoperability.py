@@ -15,14 +15,18 @@ from types import ModuleType
 from typing import Any
 
 import pytest
+from aiohttp import web
 
+from eval_runner.adapters.ag2 import AG2AdapterPlugin
 from eval_runner.adapters.claude import ClaudeAdapterPlugin
+from eval_runner.adapters.crewai import CrewAIAdapterPlugin
 from eval_runner.adapters.gemini import GeminiAdapterPlugin
 from eval_runner.adapters.grok import GrokAdapterPlugin
 from eval_runner.adapters.langchain import LangChainAdapterPlugin
 from eval_runner.adapters.langgraph import LangGraphAdapterPlugin
 from eval_runner.adapters.ollama import OllamaAdapterPlugin
 from eval_runner.adapters.openai import OpenAIAdapterPlugin
+from eval_runner.adapters.openapi import OpenAPIAdapterPlugin
 
 _CERTIFICATION_ENV = "AGENTV_ADAPTER_CERTIFICATION"
 
@@ -131,6 +135,19 @@ async def test_real_langchain_runnable_interoperability(
 
 
 @pytest.mark.adapter_certification
+@pytest.mark.live
+@pytest.mark.asyncio
+async def test_real_langserve_interoperability(adapter_certification_enabled: None) -> None:
+    """Execute against a release-owned LangServe deployment without an HTTP substitute."""
+    environment = _require_environment("LANGSERVE_CERTIFICATION_URL")
+    result = await LangChainAdapterPlugin().execute_langchain_query(
+        {"input": {"message": "CERTIFIED"}, "timeout": 45},
+        endpoint=environment["LANGSERVE_CERTIFICATION_URL"],
+    )
+    _assert_provider_success(result)
+
+
+@pytest.mark.adapter_certification
 @pytest.mark.asyncio
 async def test_real_langgraph_compiled_graph_interoperability(
     adapter_certification_enabled: None,
@@ -158,3 +175,118 @@ async def test_real_langgraph_compiled_graph_interoperability(
 
     assert result["status"] == "success", result
     assert result["output"]["answer"] == "CERTIFIED"
+
+
+@pytest.mark.adapter_certification
+@pytest.mark.live
+@pytest.mark.asyncio
+async def test_real_remote_langgraph_interoperability(
+    adapter_certification_enabled: None,
+) -> None:
+    """Execute against a release-owned LangGraph Server RemoteGraph deployment."""
+    environment = _require_environment(
+        "LANGGRAPH_CERTIFICATION_URL",
+        "LANGGRAPH_CERTIFICATION_ASSISTANT_ID",
+    )
+    result = await LangGraphAdapterPlugin().execute_langgraph_node(
+        {
+            "input": {"message": "CERTIFIED"},
+            "assistant_id": environment["LANGGRAPH_CERTIFICATION_ASSISTANT_ID"],
+            "timeout": 45,
+        },
+        endpoint=environment["LANGGRAPH_CERTIFICATION_URL"],
+    )
+    _assert_provider_success(result)
+
+
+@pytest.mark.adapter_certification
+@pytest.mark.live
+@pytest.mark.asyncio
+async def test_real_ag2_agent_interoperability(adapter_certification_enabled: None) -> None:
+    """Execute a release-owned AG2 agent through its native async ask API."""
+    environment = _require_environment("AG2_CERTIFICATION_AGENT_PATH")
+    result = await AG2AdapterPlugin().execute_ag2_query(
+        {
+            "message": "Reply with the single word CERTIFIED.",
+            "metadata": {"agent_path": environment["AG2_CERTIFICATION_AGENT_PATH"]},
+            "timeout": 45,
+        }
+    )
+    _assert_provider_success(result)
+
+
+@pytest.mark.adapter_certification
+@pytest.mark.live
+@pytest.mark.asyncio
+async def test_real_crewai_crew_interoperability(adapter_certification_enabled: None) -> None:
+    """Execute a release-owned CrewAI Crew through native async kickoff."""
+    environment = _require_environment("CREWAI_CERTIFICATION_CREW_PATH")
+    result = await CrewAIAdapterPlugin().execute_crewai_task(
+        {
+            "task_description": "Reply with the single word CERTIFIED.",
+            "metadata": {"crew_path": environment["CREWAI_CERTIFICATION_CREW_PATH"]},
+            "timeout": 45,
+        }
+    )
+    _assert_provider_success(result)
+
+
+@pytest.mark.adapter_certification
+@pytest.mark.asyncio
+async def test_openapi_reference_service_interoperability(
+    adapter_certification_enabled: None,
+    aiohttp_server: Any,
+) -> None:
+    """Exercise discovery, bearer auth, request construction, 202 polling, and normalization."""
+    observed: dict[str, Any] = {"polls": 0}
+    app = web.Application()
+
+    async def openapi_document(request: web.Request) -> web.Response:
+        origin = f"{request.scheme}://{request.host}"
+        return web.json_response(
+            {
+                "openapi": "3.1.0",
+                "servers": [{"url": origin}],
+                "components": {"securitySchemes": {"bearer": {"type": "http", "scheme": "bearer"}}},
+                "paths": {
+                    "/apply": {
+                        "post": {
+                            "operationId": "apply",
+                            "security": [{"bearer": []}],
+                            "requestBody": {
+                                "content": {"application/json": {"schema": {"type": "object"}}}
+                            },
+                        }
+                    }
+                },
+            }
+        )
+
+    async def apply(request: web.Request) -> web.Response:
+        assert request.headers["Authorization"] == "Bearer certification-token"
+        assert await request.json() == {"message": "CERTIFIED"}
+        return web.json_response({}, status=202, headers={"Location": "/status/42"})
+
+    async def status(request: web.Request) -> web.Response:
+        observed["polls"] += 1
+        return web.json_response({"status": "completed", "result": "CERTIFIED"})
+
+    app.router.add_get("/openapi.json", openapi_document)
+    app.router.add_post("/apply", apply)
+    app.router.add_get("/status/42", status)
+    server = await aiohttp_server(app)
+    endpoint = str(server.make_url("/apply"))
+
+    result = await OpenAPIAdapterPlugin().execute_openapi_query(
+        {
+            "spec_url": str(server.make_url("/openapi.json")),
+            "operation_id": "apply",
+            "input_payload": {"message": "CERTIFIED"},
+            "metadata": {"auth": {"token": "certification-token"}},
+        },
+        endpoint=endpoint,
+    )
+
+    assert result["status"] == "success", result
+    assert result["action"] == "final_answer", result
+    assert observed["polls"] == 1

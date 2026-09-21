@@ -1,34 +1,50 @@
-import sys
-from types import ModuleType
-from unittest.mock import AsyncMock
-
 import pytest
 
+from eval_runner.adapters import ag2
 from eval_runner.adapters.ag2 import AG2AdapterPlugin
 
 
-@pytest.mark.asyncio
-async def test_ag2_adapter_real_integration():
-    """Verify that the adapter works with a logic_path module when ag2 is present."""
+def test_ag2_observer_stream_uses_installed_memory_stream():
+    """Use the pinned AG2 stream class rather than a synthetic SDK substitute."""
     pytest.importorskip("ag2")
-
-    # Register a mock module with a chat handler
-    async def mock_chat():
-        return AsyncMock(chat_history=[{"role": "assistant", "content": "real ag2 success"}])
-
-    mock_module = ModuleType("real_ag2")
-    mock_module.start_chat = mock_chat
-    sys.modules["real_ag2"] = mock_module
+    from ag2 import stream as ag2_stream
 
     adapter = AG2AdapterPlugin()
-    payload = {
-        "task_id": "ag2_integration_test",
-        "metadata": {"logic_path": "real_ag2:start_chat"},
-    }
+    installed_ag2 = adapter._import_ag2()
 
-    try:
-        result = await adapter.execute_ag2_query(payload)
-        assert result["status"] == "success"
-        assert "real ag2 success" in result["output"]
-    finally:
-        del sys.modules["real_ag2"]
+    assert isinstance(adapter._build_observer_stream(installed_ag2), ag2_stream.MemoryStream)
+
+
+def test_ag2_observer_stream_uses_root_compatibility_fallback(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Preserve compatibility with AG2 releases exporting MemoryStream at the root."""
+
+    class RootMemoryStream:
+        pass
+
+    def unavailable_stream_module(name: str):
+        assert name == "ag2.stream"
+        raise ImportError("stream module unavailable")
+
+    monkeypatch.setattr(ag2.importlib, "import_module", unavailable_stream_module)
+    root_ag2 = type("RootAG2", (), {"MemoryStream": RootMemoryStream})()
+
+    assert isinstance(AG2AdapterPlugin._build_observer_stream(root_ag2), RootMemoryStream)
+
+
+def test_ag2_observer_stream_logs_constructor_failure(
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """An unusable observer stream is observable without breaking agent execution."""
+
+    class BrokenMemoryStream:
+        def __init__(self) -> None:
+            raise TypeError("unsupported constructor")
+
+    stream_module = type("StreamModule", (), {"MemoryStream": BrokenMemoryStream})()
+    monkeypatch.setattr(ag2.importlib, "import_module", lambda name: stream_module)
+
+    assert AG2AdapterPlugin._build_observer_stream(object()) is None
+    assert "AG2 MemoryStream construction failed" in caplog.text

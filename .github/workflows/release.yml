@@ -29,6 +29,11 @@ jobs:
         run: |
           python -m build
 
+      - name: Verify wheel adapter distribution
+        run: |
+          pip install pytest
+          AGENTV_RELEASE_PACKAGING=1 pytest -m release_packaging -q
+
       - name: Publish to GitHub Packages
         run: |
           twine upload --repository-url https://pypi.pkg.github.com/${{ github.repository_owner }} dist/*

@@ -6,6 +6,7 @@ import hashlib
 import importlib
 import inspect
 import json
+import logging
 import os
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
@@ -16,6 +17,8 @@ from .. import config
 from ..events import CoreEvents, emit
 from ..plugins import BaseEvalPlugin
 from .common import BaseAdapter, DualNormalizationHub
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -865,14 +868,21 @@ class AG2AdapterPlugin(BaseEvalPlugin, BaseAdapter):
         is carried by AgentReply.ask(...), avoiding the original per-call
         MemoryStream reset.
         """
-        stream_cls = getattr(ag2, "MemoryStream", None)
+        try:
+            stream_module = importlib.import_module("ag2.stream")
+            stream_cls = stream_module.MemoryStream
+        except (ImportError, AttributeError):
+            # AG2 versions predating the stream module exposed MemoryStream
+            # at the package root. Keep that compatibility path explicit.
+            stream_cls = getattr(ag2, "MemoryStream", None)
 
         if stream_cls is None:
             return None
 
         try:
             return stream_cls()
-        except Exception:
+        except (RuntimeError, TypeError, ValueError) as exc:
+            logger.warning("AG2 MemoryStream construction failed: %s", exc)
             return None
 
     @staticmethod
