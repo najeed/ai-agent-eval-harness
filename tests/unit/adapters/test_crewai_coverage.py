@@ -101,3 +101,14 @@ async def test_crewai_executes_kickoff_async_when_native_async_is_absent(
 
     assert result["status"] == "success", result
     crew.kickoff_async.assert_awaited_once_with(inputs={"message": "hello"})
+
+
+def test_crewai_certification_requires_native_akickoff() -> None:
+    class LegacyCrew:
+        async def kickoff_async(self, *, inputs: dict[str, object]) -> object:
+            return inputs
+
+    with pytest.raises(RuntimeError, match="certification requires native"):
+        CrewAIAdapterPlugin._select_execution_method(
+            LegacyCrew(), timeout=None, require_native_async=True
+        )

@@ -6,6 +6,7 @@ import importlib
 import inspect
 import logging
 import math
+import os
 import re
 from typing import Any
 
@@ -145,6 +146,11 @@ class CrewAIAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             execution_method = self._select_execution_method(
                 crew,
                 timeout=timeout,
+                require_native_async=(
+                    bool(metadata.get("require_native_async"))
+                    or os.getenv("AGENTV_ADAPTER_CERTIFICATION", "").strip().lower()
+                    in {"1", "true", "yes", "on"}
+                ),
             )
 
             telemetry = _CrewAITelemetry(
@@ -545,6 +551,8 @@ class CrewAIAdapterPlugin(BaseEvalPlugin, BaseAdapter):
     def _select_execution_method(
         crew: Any,
         timeout: float | None,
+        *,
+        require_native_async: bool = False,
     ) -> str:
         """
         Select the strongest available native execution path.
@@ -558,6 +566,12 @@ class CrewAIAdapterPlugin(BaseEvalPlugin, BaseAdapter):
 
         if callable(akickoff):
             return "native_async"
+
+        if require_native_async:
+            raise RuntimeError(
+                "CrewAI certification requires native Crew.akickoff(); "
+                "thread-backed compatibility execution is disabled."
+            )
 
         kickoff_async = getattr(crew, "kickoff_async", None)
 

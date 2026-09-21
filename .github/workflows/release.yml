@@ -95,6 +95,29 @@ jobs:
           pip install pytest
           AGENTV_RELEASE_PACKAGING=1 pytest -m release_packaging -q
 
+      - name: Verify advertised adapter extras install independently
+        run: |
+          declare -A adapters=(
+            [provider-gemini]=eval_runner.adapters.gemini
+            [framework-langchain]=eval_runner.adapters.langchain
+            [framework-langgraph]=eval_runner.adapters.langgraph
+            [framework-ag2]=eval_runner.adapters.ag2
+            [framework-crewai]=eval_runner.adapters.crewai
+            [langchain-openai]=eval_runner.adapters.langchain
+            [langchain-anthropic]=eval_runner.adapters.langchain
+            [langchain-gemini]=eval_runner.adapters.langchain
+            [langchain-ollama]=eval_runner.adapters.langchain
+          )
+          wheel="$(find dist -maxdepth 1 -name '*.whl' -print -quit)"
+          test -n "$wheel"
+          for extra in "${!adapters[@]}"; do
+            python -m venv ".venv-extra-${extra}"
+            ".venv-extra-${extra}/bin/python" -m pip install --upgrade pip
+            ".venv-extra-${extra}/bin/python" -m pip install "${wheel}[${extra}]"
+            ".venv-extra-${extra}/bin/python" -c "import importlib; importlib.import_module('${adapters[$extra]}')"
+            rm -rf ".venv-extra-${extra}"
+          done
+
       - name: Publish to GitHub Packages
         run: |
           twine upload --repository-url https://pypi.pkg.github.com/${{ github.repository_owner }} dist/*
