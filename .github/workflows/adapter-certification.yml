@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install declared development and adapter dependencies
-        run: pip install -r requirements-dev.txt
+        run: pip install -r requirements-dev.txt '.[provider-gemini,frameworks]'
       - name: Detect protected certification targets
         id: targets
         env:
