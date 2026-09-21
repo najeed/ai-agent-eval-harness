@@ -1141,6 +1141,33 @@ class BaseAdapter:
         """Resolve the adapter's lifecycle-owned HTTP session."""
         return await self.get_pool().get_session()
 
+    def provider_retry_attempts(
+        self,
+        payload: Mapping[str, Any],
+        *,
+        stream: bool = False,
+    ) -> int:
+        """Return a replay-safe attempt count for provider generation calls.
+
+        Generation POSTs can have side effects even when a transport error is
+        reported to the caller.  They are therefore single-attempt unless the
+        caller explicitly marks the request replay-safe with an idempotency
+        key or ``retry_idempotent``.  Streams are never replayed because a
+        partial stream may already have been observed.
+        """
+        if stream:
+            return 1
+
+        metadata = payload.get("metadata")
+        metadata = metadata if isinstance(metadata, Mapping) else {}
+        replay_safe = bool(
+            payload.get("retry_idempotent")
+            or metadata.get("retry_idempotent")
+            or payload.get("idempotency_key")
+            or metadata.get("idempotency_key")
+        )
+        return self.max_retries + 1 if replay_safe else 1
+
     @staticmethod
     def _retry_after_seconds(
         exc: aiohttp.ClientResponseError,

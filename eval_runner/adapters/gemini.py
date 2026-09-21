@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 import os
 import random
 from collections.abc import AsyncIterator, Mapping
@@ -12,6 +13,8 @@ from .. import config
 from ..events import CoreEvents, emit
 from ..plugins import BaseEvalPlugin
 from .common import BaseAdapter, DualNormalizationHub
+
+logger = logging.getLogger(__name__)
 
 
 class GeminiAdapterPlugin(BaseEvalPlugin, BaseAdapter):
@@ -69,15 +72,10 @@ class GeminiAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         "top_p",
         "top_k",
         "max_output_tokens",
-        "candidate_count",
         "stop_sequences",
-        "presence_penalty",
-        "frequency_penalty",
         "seed",
         "thinking_level",
         "thinking_summaries",
-        "response_logprobs",
-        "logprobs",
         "include_thoughts",
     )
 
@@ -358,7 +356,7 @@ class GeminiAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         timeout_seconds: float,
         payload: dict[str, Any],
     ) -> Any:
-        attempts = self._resolve_max_attempts(payload)
+        attempts = self.provider_retry_attempts(payload)
 
         async def _invoke() -> Any:
             async_call = client.aio.interactions.create(**request)
@@ -418,7 +416,7 @@ class GeminiAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         The SDK's streaming API is intentionally consumed here rather than
         exposing provider-specific event objects to the runtime.
         """
-        attempts = self._resolve_max_attempts(payload)
+        attempts = self.provider_retry_attempts(payload, stream=True)
 
         for attempt in range(attempts):
             try:
@@ -649,12 +647,6 @@ class GeminiAdapterPlugin(BaseEvalPlugin, BaseAdapter):
 
         if response_format is not None:
             request["response_format"] = response_format
-
-            response_mime_type = (
-                payload.get("response_mime_type") or payload.get("mime_type") or "application/json"
-            )
-
-            request["response_mime_type"] = response_mime_type
 
         response_modalities = payload.get("response_modalities")
         if response_modalities is not None:
@@ -1470,6 +1462,24 @@ class GeminiAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         steps = self._serialize(self._value(response, "steps"))
 
         if not text and not function_calls:
+            if str(status or "").strip().lower() in {"in_progress", "queued", "pending"}:
+                return {
+                    "status": "processing",
+                    "action": "processing",
+                    "output": None,
+                    "metadata": {
+                        "framework": "gemini",
+                        "model": model,
+                        "agent": agent,
+                        "vertexai": vertexai,
+                        "project": project if vertexai else None,
+                        "location": location if vertexai else None,
+                        "usage": usage,
+                        "interaction_id": interaction_id,
+                        "status": status,
+                        "steps": steps,
+                    },
+                }
             return self._error(
                 "Gemini interaction contained no usable text or tool call.",
                 metadata={
@@ -1889,7 +1899,10 @@ class GeminiAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         schema = payload.get("response_json_schema") or payload.get("response_schema")
 
         if schema is not None:
-            return deepcopy(schema)
+            return {
+                "type": "json_schema",
+                "json_schema": deepcopy(schema),
+            }
 
         return None
 
@@ -2697,8 +2710,8 @@ class GeminiAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             if callable(method):
                 try:
                     return cls._serialize(method())
-                except Exception:
-                    pass
+                except (AttributeError, TypeError, ValueError) as exc:
+                    logger.debug("Gemini object serialization failed: %s", exc)
 
         try:
             return {

@@ -132,6 +132,7 @@ class GrokAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         try:
             data = await self.call_with_retry(
                 _call,
+                max_attempts=self.provider_retry_attempts(payload, stream=stream),
                 deadline=deadline,
             )
 

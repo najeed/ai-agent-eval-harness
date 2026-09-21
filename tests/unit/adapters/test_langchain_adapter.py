@@ -66,8 +66,8 @@ async def test_langchain_adapter_missing_url():
     payload = {"input": "hello"}
     result = await adapter.execute_langserve_query(payload)
 
-    assert result["status"] == "success"
-    assert "Simulation" in result["output"]
+    assert result["status"] == "error"
+    assert "No LangChain execution target configured" in result["message"]
 
 
 @pytest.mark.asyncio
@@ -90,6 +90,29 @@ async def test_langchain_adapter_error_status(aiohttp_client):
 
     assert result["status"] == "error"
     assert "500" in result["message"]
+
+
+@pytest.mark.asyncio
+async def test_langchain_adapter_stream_error_status(aiohttp_client):
+    from aiohttp import web
+
+    async def mock_handler(request):
+        return web.Response(status=503, text="Unavailable")
+
+    app = web.Application()
+    app.router.add_post("/stream", mock_handler)
+    client = await aiohttp_client(app)
+
+    result = await LangChainAdapterPlugin().execute_langserve_query(
+        {
+            "input": "hello",
+            "url": str(client.make_url("/stream")),
+            "metadata": {"langserve_mode": "stream"},
+        }
+    )
+
+    assert result["status"] == "error"
+    assert "503" in result["message"]
 
 
 @pytest.mark.asyncio

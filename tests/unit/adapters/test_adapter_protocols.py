@@ -44,14 +44,12 @@ async def test_openai_adapter_success():
     """Test successful OpenAI query execution."""
     adapter = OpenAIAdapterPlugin()
 
-    mock_response = MockResponse(json_data={"choices": [{"message": {"content": "Hello world"}}]})
-
-    with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
-        session_instance = MagicMock()
-        mock_get_session.return_value = session_instance
-        session_instance.post.return_value = mock_response
-
-        payload = {"api_key": "test", "task": "hi"}
+    with patch.object(adapter, "_post_json", new_callable=AsyncMock) as post_json:
+        post_json.return_value = (
+            {"choices": [{"message": {"content": "Hello world"}}]},
+            {},
+        )
+        payload = {"api_key": "test", "task": "hi", "api_mode": "chat_completions"}
         res = await adapter.execute_openai_query(payload)
 
         assert res["status"] == "success"
@@ -63,18 +61,16 @@ async def test_openai_adapter_error():
     """Test OpenAI error handling (401 Unauthorized)."""
     adapter = OpenAIAdapterPlugin()
 
-    mock_response = MockResponse(status=401, text_data="Invalid API Key")
+    with patch.object(adapter, "_post_json", new_callable=AsyncMock) as post_json:
+        import aiohttp
 
-    with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
-        session_instance = MagicMock()
-        mock_get_session.return_value = session_instance
-        session_instance.post.return_value = mock_response
+        post_json.side_effect = aiohttp.ClientResponseError(
+            request_info=MagicMock(), history=(), status=401, message="Invalid API Key", headers={}
+        )
+        res = await adapter.execute_openai_query({"api_key": "wrong", "task": "hi"})
 
-        # Patch retries so it fails fast
-        with patch.object(adapter, "max_retries", 1), patch("asyncio.sleep", AsyncMock()):
-            res = await adapter.execute_openai_query({"api_key": "wrong"})
-            assert res["status"] == "error"
-            assert "401" in res["message"]
+    assert res["status"] == "error"
+    assert "401" in res["message"]
 
 
 @pytest.mark.asyncio
@@ -82,16 +78,15 @@ async def test_claude_adapter_success():
     """Test Anthropic Claude adapter."""
     adapter = ClaudeAdapterPlugin()
 
-    mock_response = MockResponse(json_data={"content": [{"text": "Claude response"}]})
-
-    with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
-        session_instance = MagicMock()
-        mock_get_session.return_value = session_instance
-        session_instance.post.return_value = mock_response
-
+    with patch.object(adapter, "_post", new_callable=AsyncMock) as post:
+        post.return_value = {
+            "__claude_response__": {"content": [{"type": "text", "text": "Claude response"}]},
+            "__response_headers__": {},
+        }
         res = await adapter.execute_claude_query({"api_key": "test", "task": "hi"})
-        assert res["status"] == "success"
-        assert "Claude" in res["output"]
+
+    assert res["status"] == "success"
+    assert "Claude" in res["output"]
 
 
 @pytest.mark.asyncio

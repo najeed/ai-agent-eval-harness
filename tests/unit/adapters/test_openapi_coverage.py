@@ -13,7 +13,7 @@ def test_normalization_hub_invalid_action(caplog):
     overrides = {"STATUS_X": "invalid_action"}
     res = DualNormalizationHub.normalize({"status": "STATUS_X"}, 200, overrides=overrides)
 
-    assert "Invalid override action 'invalid_action'" in caplog.text
+    assert "Ignoring invalid adapter override action 'invalid_action'" in caplog.text
     # Should fall through to heuristics
     assert res == "final_answer"
 

@@ -93,8 +93,11 @@ async def test_traceparent_injection_in_http_adapter():
 
     mock_session = mock.Mock()
     mock_response = mock.AsyncMock()
+    mock_response.status = 200
+    mock_response.headers = {}
     mock_response.raise_for_status = mock.MagicMock()  # aiohttp raise_for_status is sync
     mock_response.json = mock.AsyncMock(return_value={"status": "ok"})
+    mock_response.read = mock.AsyncMock(return_value=b'{"status": "ok"}')
 
     mock_post_context = mock.MagicMock()
     mock_post_context.__aenter__ = mock.AsyncMock(return_value=mock_response)
@@ -119,11 +122,13 @@ async def test_traceparent_injection_in_sse_adapter():
 
     mock_session = mock.Mock()
     mock_response = mock.AsyncMock()
+    mock_response.status = 200
+    mock_response.headers = {"Content-Type": "text/event-stream"}
     mock_response.raise_for_status = mock.MagicMock()  # aiohttp raise_for_status is sync
 
     async def mock_content_iter():
-        yield b'data: {"content": "hello"}\n'
-        yield b"data: [DONE]\n"
+        yield b'data: {"content": "hello"}\n\n'
+        yield b"data: [DONE]\n\n"
 
     mock_response.content = mock_content_iter()
     mock_post_context = mock.MagicMock()
@@ -134,7 +139,8 @@ async def test_traceparent_injection_in_sse_adapter():
     patch_path = "eval_runner.adapters.common.SessionManager.get_session"
     with mock.patch(patch_path, return_value=mock_session):
         res = await sse_http_adapter(payload, "http://localhost:5001/execute")
-        assert res == {"content": "hello"}
+        assert res["content"] == "hello"
+        assert res["status"] == "completed"
 
         _, kwargs = mock_session.post.call_args
         expected = "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"

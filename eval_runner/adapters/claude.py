@@ -1324,6 +1324,7 @@ class ClaudeAdapterPlugin(BaseEvalPlugin, BaseAdapter):
 
             response_wrapper = await self.call_with_retry(
                 _call,
+                max_attempts=self.provider_retry_attempts(payload, stream=stream),
                 retry_codes=set(_RETRYABLE_HTTP_STATUS_CODES),
                 deadline=payload.get("retry_deadline"),
             )

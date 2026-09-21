@@ -1390,8 +1390,8 @@ def _safe_jsonable(value: Any) -> Any:
     if callable(model_dump):
         try:
             return _safe_jsonable(model_dump(mode="json"))
-        except Exception:
-            pass
+        except (AttributeError, TypeError, ValueError) as exc:
+            logger.debug("CrewAI model_dump serialization failed: %s", exc)
 
     dict_method = getattr(
         value,
@@ -1402,14 +1402,14 @@ def _safe_jsonable(value: Any) -> Any:
     if callable(dict_method):
         try:
             return _safe_jsonable(dict_method())
-        except Exception:
-            pass
+        except (AttributeError, TypeError, ValueError) as exc:
+            logger.debug("CrewAI dict serialization failed: %s", exc)
 
     if hasattr(value, "isoformat"):
         try:
             return value.isoformat()
-        except Exception:
-            pass
+        except (AttributeError, TypeError, ValueError) as exc:
+            logger.debug("CrewAI isoformat serialization failed: %s", exc)
 
     return str(value)
 
@@ -1435,8 +1435,8 @@ def _serialize_usage(
     if callable(model_dump):
         try:
             return _safe_jsonable(model_dump(mode="json"))
-        except Exception:
-            pass
+        except (AttributeError, TypeError, ValueError) as exc:
+            logger.debug("CrewAI usage model_dump serialization failed: %s", exc)
 
     dict_method = getattr(
         usage,
@@ -1447,8 +1447,8 @@ def _serialize_usage(
     if callable(dict_method):
         try:
             return _safe_jsonable(dict_method())
-        except Exception:
-            pass
+        except (AttributeError, TypeError, ValueError) as exc:
+            logger.debug("CrewAI usage dict serialization failed: %s", exc)
 
     result: dict[str, Any] = {}
 

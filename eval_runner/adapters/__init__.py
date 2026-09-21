@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 import os
 import shlex
 import sys
@@ -43,6 +44,8 @@ from .common import (
     iter_sse_events,
     validate_http_endpoint,
 )
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_MAX_RESPONSE_BYTES = int(os.getenv("ADAPTER_MAX_RESPONSE_BYTES", str(16 * 1024 * 1024)))
 DEFAULT_MAX_REQUEST_BYTES = int(os.getenv("ADAPTER_MAX_REQUEST_BYTES", str(4 * 1024 * 1024)))
@@ -322,6 +325,15 @@ def _resolve_local_command(endpoint: str | None) -> list[str]:
     """Parse a subprocess command without invoking a shell."""
     command = _resolve_local_endpoint(endpoint)
     args = shlex.split(command, posix=(os.name != "nt"))
+
+    # ``shlex.split(..., posix=False)`` retains quote characters on Windows.
+    # argv entries must not retain those quotes when passed to
+    # create_subprocess_exec, or quoted executable paths fail with WinError 2.
+    if os.name == "nt":
+        args = [
+            arg[1:-1] if len(arg) >= 2 and arg[0] == arg[-1] and arg[0] in {'"', "'"} else arg
+            for arg in args
+        ]
 
     if not args:
         raise ValueError("Local adapter command resolved to an empty argument list")
@@ -669,8 +681,8 @@ async def socket_adapter(
 
         try:
             await writer.wait_closed()
-        except Exception:
-            pass
+        except (ConnectionError, OSError) as exc:
+            logger.debug("Socket writer close failed: %s", exc)
 
 
 # ---------------------------------------------------------------------------
@@ -680,8 +692,6 @@ async def socket_adapter(
 
 async def _consume_sse(
     content: aiohttp.StreamReader,
-    *,
-    timeout: float,
 ) -> dict[str, Any]:
     """
     Consume an SSE stream without reconnecting.
@@ -698,10 +708,7 @@ async def _consume_sse(
     last_event_id: str | None = None
     total_event_bytes = 0
 
-    async for event in iter_sse_events(
-        content,
-        timeout=timeout,
-    ):
+    async for event in iter_sse_events(content):
         if not isinstance(event, Mapping):
             continue
 
@@ -884,10 +891,7 @@ async def sse_http_adapter(
                     + (f". Body: {preview}" if preview else "")
                 )
 
-            return await _consume_sse(
-                response.content,
-                timeout=timeout,
-            )
+            return await _consume_sse(response.content)
 
     return await _execute_with_retry(
         adapter_name="sse",

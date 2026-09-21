@@ -119,33 +119,38 @@ class OllamaAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             headers = self._build_headers(payload)
 
             async def _call() -> dict[str, Any]:
-                # BaseAdapter.get_session() is lifecycle-aware and resolves
-                # the session against the active event loop.
-                async with self.get_session() as session:
-                    async with session.post(
-                        endpoint,
-                        json=request_payload,
-                        headers=headers,
-                        timeout=timeout,
-                    ) as response:
-                        if response.status >= 400:
-                            body = await self._safe_response_text(response)
+                # BaseAdapter.get_session() resolves the lifecycle-owned
+                # session asynchronously; only the returned session owns an
+                # async request context manager.
+                session = await self.get_session()
+                async with session.post(
+                    endpoint,
+                    json=request_payload,
+                    headers=headers,
+                    timeout=timeout,
+                ) as response:
+                    if response.status >= 400:
+                        body = await self._safe_response_text(response)
 
-                            raise aiohttp.ClientResponseError(
-                                response.request_info,
-                                response.history,
-                                status=response.status,
-                                message=body,
-                                headers=response.headers,
-                            )
+                        raise aiohttp.ClientResponseError(
+                            response.request_info,
+                            response.history,
+                            status=response.status,
+                            message=body,
+                            headers=response.headers,
+                        )
 
-                        if request_payload["stream"]:
-                            return await self._read_streaming_response(response)
+                    if request_payload["stream"]:
+                        return await self._read_streaming_response(response)
 
-                        return await self._read_json_response(response)
+                    return await self._read_json_response(response)
 
             response_data = await self.call_with_retry(
                 _call,
+                max_attempts=self.provider_retry_attempts(
+                    payload,
+                    stream=bool(request_payload["stream"]),
+                ),
                 retry_codes=self._DEFAULT_RETRY_CODES,
             )
 
@@ -194,7 +199,7 @@ class OllamaAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             return {
                 "status": "error",
                 "action": "error",
-                "message": f"Ollama request failed: {bounded_text(str(exc), 2_000)}",
+                "message": f"Ollama request failed: {bounded_text(str(exc), max_bytes=2_000)}",
                 "metadata": {
                     "framework": "ollama",
                     "endpoint": endpoint,
@@ -557,7 +562,8 @@ class OllamaAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             body = await cls._safe_response_text(response)
 
             raise ValueError(
-                f"Ollama returned invalid JSON: {bounded_text(body, cls._MAX_ERROR_BODY_CHARS)}"
+                "Ollama returned invalid JSON: "
+                f"{bounded_text(body, max_bytes=cls._MAX_ERROR_BODY_CHARS)}"
             ) from exc
 
         if not isinstance(data, dict):

@@ -1,5 +1,3 @@
-import pytest
-
 from eval_runner.adapters.openapi import DualNormalizationHub
 
 
@@ -52,11 +50,3 @@ def test_normalization_hub_overrides():
         DualNormalizationHub.normalize({"status": "INVALID_ACTION"}, 200, overrides=overrides)
         == "final_answer"
     )
-
-
-@pytest.mark.asyncio
-async def test_openapi_adapter_polling_mock():
-    """Verify the logic of the polling loop in mock conditions."""
-    # This would require patching aiohttp. Wait, I'll focus on the Hub for now
-    # as the adapter itself is mostly glue code around the Hub.
-    pass

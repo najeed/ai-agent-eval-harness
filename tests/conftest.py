@@ -5,9 +5,107 @@ Shared fixtures and configuration for the AgentV test suite.
 """
 
 import asyncio
+import gc
+import json
+import logging
+import os
+import tracemalloc
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
 import pytest
 import pytest_asyncio
+
+_MEMORY_FORENSICS_ENV = "AGENTV_TEST_MEMORY_FORENSICS"
+_MEMORY_FORENSICS_DIR_ENV = "AGENTV_TEST_MEMORY_FORENSICS_DIR"
+_MEMORY_FORENSICS_THRESHOLD_ENV = "AGENTV_TEST_MEMORY_THRESHOLD_MB"
+_MEMORY_FORENSICS_TRACEMALLOC_ENV = "AGENTV_TEST_MEMORY_TRACEMALLOC"
+
+
+@dataclass
+class _MemoryForensicsRecorder:
+    """Opt-in per-worker RSS and Python-allocation forensic recorder."""
+
+    path: Path
+    threshold_bytes: int
+    process: Any
+    previous_rss: int
+    previous_snapshot: tracemalloc.Snapshot | None
+    trace_allocations: bool
+    sequence: int = 0
+
+    @classmethod
+    def create(cls) -> "_MemoryForensicsRecorder":
+        import psutil
+
+        worker_id = os.getenv("PYTEST_XDIST_WORKER", "master")
+        output_dir = Path(os.getenv(_MEMORY_FORENSICS_DIR_ENV, ".tmp/memory-forensics"))
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        try:
+            threshold_mb = max(1, int(os.getenv(_MEMORY_FORENSICS_THRESHOLD_ENV, "256")))
+        except ValueError:
+            threshold_mb = 256
+
+        trace_allocations = os.getenv(_MEMORY_FORENSICS_TRACEMALLOC_ENV, "").strip().lower() in {
+            "1",
+            "true",
+            "yes",
+            "on",
+        }
+        if trace_allocations and not tracemalloc.is_tracing():
+            tracemalloc.start(25)
+
+        process = psutil.Process(os.getpid())
+        return cls(
+            path=output_dir / f"{worker_id}-pid{process.pid}.jsonl",
+            threshold_bytes=threshold_mb * 1024 * 1024,
+            process=process,
+            previous_rss=process.memory_info().rss,
+            previous_snapshot=tracemalloc.take_snapshot() if trace_allocations else None,
+            trace_allocations=trace_allocations,
+        )
+
+    def record(self, nodeid: str) -> None:
+        gc.collect()
+        current_rss = self.process.memory_info().rss
+        rss_delta = current_rss - self.previous_rss
+
+        self.sequence += 1
+        event: dict[str, Any] = {
+            "sequence": self.sequence,
+            "nodeid": nodeid,
+            "pid": self.process.pid,
+            "rss_bytes": current_rss,
+            "rss_delta_bytes": rss_delta,
+        }
+
+        if rss_delta >= self.threshold_bytes and self.trace_allocations:
+            current_snapshot = tracemalloc.take_snapshot()
+            if self.previous_snapshot is None:
+                self.previous_snapshot = current_snapshot
+            allocations = current_snapshot.compare_to(self.previous_snapshot, "lineno")
+            traced_delta = sum(stat.size_diff for stat in allocations)
+            event["traced_delta_bytes"] = traced_delta
+            event["top_allocations"] = [
+                {
+                    "size_delta_bytes": stat.size_diff,
+                    "count_delta": stat.count_diff,
+                    "traceback": stat.traceback.format(),
+                }
+                for stat in allocations[:20]
+                if stat.size_diff > 0
+            ]
+            self.previous_snapshot = current_snapshot
+        elif rss_delta >= self.threshold_bytes:
+            event["tracemalloc"] = "disabled"
+
+        with self.path.open("a", encoding="utf-8") as stream:
+            stream.write(json.dumps(event, sort_keys=True) + "\n")
+
+        self.previous_rss = current_rss
+
 
 try:
     from opentelemetry import trace
@@ -45,13 +143,15 @@ async def reset_sessions():
 
     try:
         await SessionManager.close_all()
-        # Cleanly await any pending background tasks (such as aiohttp's _wait_for_close)
-        # to ensure no unawaited coroutine warnings under Python 3.14+
-        await asyncio.sleep(0.25)
+        # Await only tasks that actually remain after explicit session close.
         loop = asyncio.get_running_loop()
         pending = [t for t in asyncio.all_tasks(loop) if t is not asyncio.current_task(loop)]
         if pending:
-            await asyncio.wait(pending, timeout=0.25)
+            _, still_pending = await asyncio.wait(pending, timeout=0.25)
+            for task in still_pending:
+                task.cancel()
+            if still_pending:
+                await asyncio.gather(*still_pending, return_exceptions=True)
     except (TimeoutError, asyncio.CancelledError, RuntimeError, OSError) as session_err:
         import logging
 
@@ -167,6 +267,26 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "live: environment-gated integration tests running against CycleCore"
     )
+
+    if os.getenv(_MEMORY_FORENSICS_ENV, "").strip().lower() in {"1", "true", "yes", "on"}:
+        try:
+            config._agentv_memory_forensics = _MemoryForensicsRecorder.create()
+        except (ImportError, OSError, RuntimeError, ValueError) as error:
+            logging.getLogger(__name__).warning("Memory forensics recorder disabled: %s", error)
+
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_teardown(item, nextitem):
+    """Record worker memory after fixture teardown when explicitly enabled."""
+    yield
+    recorder = getattr(item.config, "_agentv_memory_forensics", None)
+    if recorder is None:
+        return
+
+    try:
+        recorder.record(item.nodeid)
+    except (OSError, RuntimeError, ValueError, TypeError) as error:
+        logging.getLogger(__name__).warning("Memory forensics sample failed: %s", error)
 
 
 @pytest.fixture(autouse=True)

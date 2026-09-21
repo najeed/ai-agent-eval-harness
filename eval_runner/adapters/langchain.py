@@ -574,7 +574,7 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
 
                 if response.status >= 400:
                     self._raise_http_error(
-                        response.status,
+                        response,
                         response_data,
                     )
 
@@ -612,7 +612,7 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             if response.status >= 400:
                 response_data = await self._read_json_or_text(response)
                 self._raise_http_error(
-                    response.status,
+                    response,
                     response_data,
                 )
 
@@ -1178,10 +1178,10 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             except TypeError:
                 try:
                     return self._to_jsonable(model_dump())
-                except Exception:
-                    pass
-            except Exception:
-                pass
+                except (AttributeError, TypeError, ValueError) as exc:
+                    logger.debug("LangChain model_dump serialization failed: %s", exc)
+            except (AttributeError, ValueError) as exc:
+                logger.debug("LangChain model_dump serialization failed: %s", exc)
 
         dict_method = getattr(
             value,
@@ -1192,8 +1192,8 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         if callable(dict_method):
             try:
                 return self._to_jsonable(dict_method())
-            except Exception:
-                pass
+            except (AttributeError, TypeError, ValueError) as exc:
+                logger.debug("LangChain dict serialization failed: %s", exc)
 
         result: dict[str, Any] = {}
 
@@ -1250,8 +1250,8 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         if "json" in content_type:
             try:
                 return await response.json()
-            except Exception:
-                pass
+            except (AttributeError, TypeError, ValueError) as exc:
+                logger.debug("LangChain metadata serialization failed: %s", exc)
 
         text = await response.text()
 
@@ -1277,7 +1277,7 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
 
     def _raise_http_error(
         self,
-        status_code: int,
+        response: aiohttp.ClientResponse,
         response_data: Any,
     ) -> None:
         if isinstance(response_data, Mapping):
@@ -1289,13 +1289,14 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         else:
             detail = response_data
 
-        message = str(detail or f"HTTP {status_code}")
+        message = str(detail or f"HTTP {response.status}")
 
         raise aiohttp.ClientResponseError(
-            request_info=None,
+            request_info=response.request_info,
             history=(),
-            status=int(status_code),
+            status=int(response.status),
             message=message[:1000],
+            headers=response.headers,
         )
 
     def _request_timeout(

@@ -13,7 +13,7 @@
 
 AgentV sits inside the execution loop and verifies state parity, policy adherence, and business outcomes before your agent earns the right to act. Cryptographically signed traces (Ed25519), deterministic policy verification, CI/CD hard gating, NIST AI-100-1 aligned, and built for regulated industries.
 
-*[5,000+ OOTB scenarios] • [50+ verticals] • [Apache 2.0] • [AgentV Control Plane available]*
+*[5,000+ OOTB scenarios] • [50+ verticals] • [Apache 2.0] • [AgentV Control Plane (Enterprise Edition) available]*
 
 ## Architecture Overview
 

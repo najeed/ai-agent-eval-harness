@@ -173,4 +173,4 @@ async def test_adapter_guards():
 
         crew_res = await crew_plugin.execute_crewai_task({"task_id": "test"})
         assert crew_res["status"] == "error"
-        assert "not installed" in crew_res["message"]
+    assert "unavailable" in crew_res["message"]

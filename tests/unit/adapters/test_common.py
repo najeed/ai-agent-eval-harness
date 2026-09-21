@@ -198,8 +198,8 @@ def test_aes_on_chain_start_serialization_error(aes_handler):
         aes_handler.on_chain_start({}, {"key": object()})
         mock_emit.assert_called_once()
         _, payload = mock_emit.call_args[0]
-        assert payload["state_hash"] == "error_hashing"
-        assert payload["inputs_summary"] == {"error": "serialization_failed"}
+        assert len(payload["state_hash"]) == 64
+        assert payload["inputs_summary"] == {"key": "object"}
 
 
 def test_aes_on_chain_end(aes_handler):
@@ -250,7 +250,7 @@ def test_aes_on_llm_start(aes_handler):
         aes_handler.on_llm_start({}, ["prompt1", "prompt2"])
         mock_emit.assert_called_once()
         _, payload = mock_emit.call_args[0]
-        assert "2 prompts" in payload["message"]
+        assert "2 prompt(s)" in payload["message"]
 
 
 def test_aes_on_llm_end_with_usage(aes_handler):
@@ -496,3 +496,19 @@ async def test_base_adapter_non_retry_code():
     )
     with pytest.raises(aiohttp.ClientResponseError):
         await adapter.call_with_retry(mock_func, max_attempts=1)
+
+
+@pytest.mark.parametrize(
+    ("payload", "stream", "expected_attempts"),
+    [
+        ({}, False, 1),
+        ({"idempotency_key": "request-1"}, False, 4),
+        ({"metadata": {"retry_idempotent": True}}, False, 4),
+        ({"idempotency_key": "request-1"}, True, 1),
+    ],
+)
+def test_provider_retry_attempts_require_explicit_replay_safety(payload, stream, expected_attempts):
+    adapter = BaseAdapter("provider")
+    adapter.max_retries = 3
+
+    assert adapter.provider_retry_attempts(payload, stream=stream) == expected_attempts

@@ -350,7 +350,7 @@ def test_scenarios_taxonomy_and_refresh_error(client):
         assert res_refresh.status_code == 500
 
 
-def test_scenarios_mutate_endpoints(client, tmp_path):
+def test_scenarios_mutate_endpoints(client, console_jail):
     """Verify /v1/mutate endpoint edge cases."""
     # 1. Missing fields
     res = client.post("/api/v1/mutate", json={})
@@ -361,7 +361,10 @@ def test_scenarios_mutate_endpoints(client, tmp_path):
     assert res.status_code == 403
 
     # 3. Path non-existent
-    res = client.post("/api/v1/mutate", json={"input_path": str(tmp_path / "non_existent.json")})
+    res = client.post(
+        "/api/v1/mutate",
+        json={"input_path": str(console_jail["root"] / "non_existent.json")},
+    )
     assert res.status_code == 400
 
     # 4. Mutate with raw JSON success
@@ -373,7 +376,7 @@ def test_scenarios_mutate_endpoints(client, tmp_path):
     assert res.get_json()["status"] == "success"
 
 
-def test_scenarios_spec_to_eval_endpoints(client, tmp_path):
+def test_scenarios_spec_to_eval_endpoints(client, console_jail):
     """Verify /v1/spec-to-eval endpoint edge cases."""
     # 1. Missing fields
     res = client.post("/api/v1/spec-to-eval", json={})
@@ -384,7 +387,10 @@ def test_scenarios_spec_to_eval_endpoints(client, tmp_path):
     assert res.status_code == 403
 
     # 3. Path non-existent
-    res = client.post("/api/v1/spec-to-eval", json={"input_path": str(tmp_path / "missing.md")})
+    res = client.post(
+        "/api/v1/spec-to-eval",
+        json={"input_path": str(console_jail["root"] / "missing.md")},
+    )
     assert res.status_code == 400
 
     # 4. Success with markdown text

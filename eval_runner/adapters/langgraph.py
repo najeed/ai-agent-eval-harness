@@ -223,15 +223,15 @@ def _stream_chunk_summary(
 
     if isinstance(chunk, Mapping):
         if "name" in chunk:
-            summary["name"] = bounded_text(str(chunk["name"]), 256)
+            summary["name"] = bounded_text(str(chunk["name"]), max_bytes=256)
         if "node" in chunk:
-            summary["node"] = bounded_text(str(chunk["node"]), 256)
+            summary["node"] = bounded_text(str(chunk["node"]), max_bytes=256)
 
     if hasattr(chunk, "id"):
         try:
-            summary["id"] = bounded_text(str(chunk.id), 256)
-        except Exception:
-            pass
+            summary["id"] = bounded_text(str(chunk.id), max_bytes=256)
+        except (AttributeError, TypeError, ValueError) as exc:
+            logger.debug("LangGraph stream chunk ID serialization failed: %s", exc)
 
     return summary
 
@@ -246,7 +246,7 @@ def _summarize_state_field(value: Any) -> dict[str, Any]:
         keys = list(value.keys())
         summary["kind"] = "mapping"
         summary["size"] = len(keys)
-        summary["keys"] = [bounded_text(str(key), 256) for key in keys[:_MAX_STATE_KEYS]]
+        summary["keys"] = [bounded_text(str(key), max_bytes=256) for key in keys[:_MAX_STATE_KEYS]]
         summary["keys_truncated"] = len(keys) > _MAX_STATE_KEYS
         return summary
 
@@ -388,7 +388,7 @@ class _LangGraphTelemetryHandler(AESCallbackHandler):
             {
                 "adapter": "langgraph",
                 "error_type": type(error).__name__,
-                "message": bounded_text(str(error), _MAX_ERROR_LENGTH),
+                "message": bounded_text(str(error), max_bytes=_MAX_ERROR_LENGTH),
             },
         )
 
@@ -408,7 +408,7 @@ class _LangGraphTelemetryHandler(AESCallbackHandler):
                 "adapter": "langgraph",
                 "tool_name": bounded_text(
                     str(tool_name or "unknown"),
-                    256,
+                    max_bytes=256,
                 ),
                 "input_type": type(input_str).__name__,
             },
@@ -444,7 +444,7 @@ class _LangGraphTelemetryHandler(AESCallbackHandler):
                 "event": "node_start",
                 "node": bounded_text(
                     str(node_name or "unknown"),
-                    256,
+                    max_bytes=256,
                 ),
             },
         )
@@ -1235,7 +1235,7 @@ class LangGraphAdapterPlugin(BaseEvalPlugin, BaseAdapter):
                         "type": type(exc).__name__,
                         "message": bounded_text(
                             str(exc),
-                            _MAX_ERROR_LENGTH,
+                            max_bytes=_MAX_ERROR_LENGTH,
                         ),
                     }
 
@@ -1250,7 +1250,7 @@ class LangGraphAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             return {
                 "error": bounded_text(
                     str(exc),
-                    _MAX_ERROR_LENGTH,
+                    max_bytes=_MAX_ERROR_LENGTH,
                 ),
                 "error_type": type(exc).__name__,
             }
@@ -1373,7 +1373,7 @@ class LangGraphAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         """Emit bounded error telemetry and return a normalized error result."""
         safe_message = bounded_text(
             message,
-            _MAX_ERROR_LENGTH,
+            max_bytes=_MAX_ERROR_LENGTH,
         )
 
         emit(

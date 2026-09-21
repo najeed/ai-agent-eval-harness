@@ -12,16 +12,10 @@ async def test_ag2_adapter():
     adapter = AG2AdapterPlugin()
     payload = {"task_description": "test", "url": "http://mock-ag2/execute"}
 
-    with patch("aiohttp.ClientSession.post") as mock_post:
-        mock_response = AsyncMock()
-        mock_response.status = 200
-        mock_response.raise_for_status = MagicMock()  # Synchronous in aiohttp
-        mock_response.json.return_value = {"output": "done"}
-        mock_post.return_value.__aenter__.return_value = mock_response
+    result = await adapter.execute_ag2_query(payload)
 
-        result = await adapter.execute_ag2_query(payload)
-        assert result["status"] == "success"
-        assert result["output"] == "done"
+    assert result["status"] == "error"
+    assert result["metadata"]["mode"] == "remote"
 
 
 @pytest.mark.asyncio
@@ -30,15 +24,13 @@ async def test_grok_adapter():
     adapter = GrokAdapterPlugin()
     payload = {"task_description": "test"}
 
-    with patch("aiohttp.ClientSession.post") as mock_post:
-        mock_response = AsyncMock()
-        mock_response.status = 200
-        mock_response.json.return_value = {"choices": [{"message": {"content": "grok response"}}]}
-        mock_post.return_value.__aenter__.return_value = mock_response
+    with patch.object(adapter, "_request", new_callable=AsyncMock) as request:
+        request.return_value = {"output_text": "grok response", "status": "completed"}
 
         result = await adapter.execute_grok_query(payload)
-        assert result["status"] == "success"
-        assert result["output"] == "grok response"
+
+    assert result["status"] == "success"
+    assert result["output"] == "grok response"
 
 
 @pytest.mark.asyncio

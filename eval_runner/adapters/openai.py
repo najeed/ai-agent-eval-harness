@@ -161,7 +161,7 @@ class OpenAIAdapterPlugin(BaseEvalPlugin, BaseAdapter):
                     headers,
                     request_body,
                     api_mode,
-                    max_attempts=self.max_retries + 1,
+                    max_attempts=self.provider_retry_attempts(effective_payload, stream=True),
                     retry_codes=_RETRYABLE_STATUS_CODES,
                 )
             else:
@@ -170,7 +170,7 @@ class OpenAIAdapterPlugin(BaseEvalPlugin, BaseAdapter):
                     endpoint,
                     headers,
                     request_body,
-                    max_attempts=self.max_retries + 1,
+                    max_attempts=self.provider_retry_attempts(effective_payload),
                     retry_codes=_RETRYABLE_STATUS_CODES,
                 )
 

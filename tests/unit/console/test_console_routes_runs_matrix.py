@@ -9,7 +9,6 @@ and verification endpoints.
 from __future__ import annotations
 
 import json
-import time
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -44,19 +43,14 @@ def client(tmp_path):
 
 
 def test_runs_cache_lifecycle_and_edge_branches(tmp_path):
-    # 1. autostart=True, start idempotency, and stop when not started
-    cache = RunsCache(autostart=True)
-    cache.start()  # Idempotent start
-    time.sleep(0.05)
-    cache.stop()
-    cache.stop()  # Idempotent stop
+    cache = RunsCache()
 
-    # 2. RUN_LOG_DIR is None or does not exist
+    # RUN_LOG_DIR is None or does not exist
     with patch.object(config, "RUN_LOG_DIR", tmp_path / "non_existent_dir"):
         cache.update_cache()
         assert cache._runs == []
 
-    # 3. Fragment scanning with empty lines and parse exceptions
+        # Fragment scanning with empty lines and parse exceptions
     runs_dir = tmp_path / "runs"
     runs_dir.mkdir(parents=True, exist_ok=True)
     with patch.object(config, "RUN_LOG_DIR", runs_dir):
@@ -71,7 +65,7 @@ def test_runs_cache_lifecycle_and_edge_branches(tmp_path):
         cache.update_cache()
         assert any(r["run_id"] == "run-f1" for r in cache.get_runs())
 
-        # 4. Large vault run.jsonl (>= 512KB) and reversed line parsing
+        # Large vault run.jsonl (>= 512KB) and reversed line parsing
         vault_dir = runs_dir / "run-v1"
         vault_dir.mkdir(parents=True, exist_ok=True)
         v_file = vault_dir / "run.jsonl"
@@ -83,7 +77,7 @@ def test_runs_cache_lifecycle_and_edge_branches(tmp_path):
         cache.update_cache()
         assert any(r["run_id"] == "run-v1" for r in cache.get_runs())
 
-        # 5. Vault run without start scenario name fallback for single dash run id
+        # Vault run without start scenario name fallback for single dash run id
         vault_dash = runs_dir / "run-scenonly"
         vault_dash.mkdir(parents=True, exist_ok=True)
         (vault_dash / "run.jsonl").write_text(

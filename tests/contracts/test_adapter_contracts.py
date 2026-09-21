@@ -98,6 +98,10 @@ async def test_base_adapter_exponential_backoff_timing_contract(monkeypatch):
         sleep_calls.append(delay)
 
     monkeypatch.setattr("eval_runner.adapters.common.asyncio.sleep", mock_sleep)
+    monkeypatch.setattr(
+        "eval_runner.adapters.common.random.SystemRandom.uniform",
+        lambda _self, _lower, upper: upper,
+    )
 
     adapter = BaseAdapter(name="timing_contract_adapter")
     attempts = 0
@@ -117,12 +121,11 @@ async def test_base_adapter_exponential_backoff_timing_contract(monkeypatch):
 
     assert result["status"] == "success"
     assert attempts == 3
-    # Formula: base_delay * (2 ** attempt), where attempt increments before sleep.
-    # Retry 1: attempt=1 → delay = 1.0 * 2^1 = 2.0
-    # Retry 2: attempt=2 → delay = 1.0 * 2^2 = 4.0
+    # Full jitter samples from [0, base_delay * 2 ** (retry_number - 1)].
+    # The patched sampler deterministically chooses each upper bound.
     assert len(sleep_calls) == 2
-    assert sleep_calls[0] == pytest.approx(2.0)
-    assert sleep_calls[1] == pytest.approx(4.0)
+    assert sleep_calls[0] == pytest.approx(1.0)
+    assert sleep_calls[1] == pytest.approx(2.0)
 
 
 @pytest.mark.asyncio

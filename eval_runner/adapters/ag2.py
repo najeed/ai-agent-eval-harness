@@ -1207,6 +1207,12 @@ class AG2AdapterPlugin(BaseEvalPlugin, BaseAdapter):
         if headers:
             config_kwargs["headers"] = headers
 
+        card_signature_verifier = metadata.get("card_signature_verifier") or payload.get(
+            "card_signature_verifier"
+        )
+        if card_signature_verifier is not None:
+            config_kwargs["card_signature_verifier"] = card_signature_verifier
+
         config_kwargs = {key: value for key, value in config_kwargs.items() if value is not None}
 
         remote_config = a2a_config_cls(**config_kwargs)

@@ -41,9 +41,8 @@ async def test_sse_http_adapter_empty_stream(aiohttp_server):
     server = await aiohttp_server(app)
 
     url = f"http://{server.host}:{server.port}/agent"
-    result = await sse_http_adapter({}, url)
-
-    assert result == {}
+    with pytest.raises(RuntimeError, match="no usable events"):
+        await sse_http_adapter({}, url)
 
 
 @pytest.mark.asyncio
