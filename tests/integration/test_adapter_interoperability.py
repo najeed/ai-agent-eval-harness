@@ -98,6 +98,156 @@ async def test_real_provider_streaming_history_interoperability(
 @pytest.mark.adapter_certification
 @pytest.mark.live
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("provider", "key_name", "model_name"),
+    [
+        ("openai", "OPENAI_API_KEY", "OPENAI_MODEL"),
+        ("claude", "ANTHROPIC_API_KEY", "ANTHROPIC_MODEL"),
+        ("gemini", "GOOGLE_API_KEY", "GEMINI_MODEL"),
+        ("grok", "XAI_API_KEY", "XAI_MODEL"),
+    ],
+)
+async def test_real_provider_native_tool_interoperability(
+    adapter_certification_enabled: None,
+    provider: str,
+    key_name: str,
+    model_name: str,
+) -> None:
+    """Certify provider-native function/tool-call normalization, not just text transport."""
+    environment = _require_environment(key_name, model_name)
+    function = {
+        "name": "release_check",
+        "description": "Return the supplied certification value.",
+        "parameters": {
+            "type": "object",
+            "properties": {"value": {"type": "string"}},
+            "required": ["value"],
+            "additionalProperties": False,
+        },
+    }
+    payload: dict[str, Any] = {
+        "api_key": environment[key_name],
+        "model": environment[model_name],
+        "task_description": "Call release_check with value CERTIFIED. Do not answer with text.",
+        "timeout": 45,
+    }
+
+    if provider == "openai":
+        payload.update(
+            {
+                "api_mode": "responses",
+                "tools": [{"type": "function", **function}],
+                "tool_choice": {"type": "function", "name": "release_check"},
+            }
+        )
+        result = await OpenAIAdapterPlugin().execute_openai_query(payload)
+    elif provider == "claude":
+        payload.update(
+            {
+                "tools": [
+                    {
+                        "name": function["name"],
+                        "description": function["description"],
+                        "input_schema": function["parameters"],
+                    }
+                ],
+                "tool_choice": {"type": "tool", "name": "release_check"},
+            }
+        )
+        result = await ClaudeAdapterPlugin().execute_claude_query(payload)
+    elif provider == "gemini":
+        payload.update(
+            {"api_mode": "interactions", "tools": [{"function_declarations": [function]}]}
+        )
+        result = await GeminiAdapterPlugin().execute_gemini_query(payload)
+    else:
+        payload.update(
+            {
+                "api_mode": "responses",
+                "tools": [{"type": "function", **function}],
+                "tool_choice": {"type": "function", "name": "release_check"},
+            }
+        )
+        result = await GrokAdapterPlugin().execute_grok_query(payload)
+
+    assert result["status"] == "success", result
+    assert result["action"] in {"call_tool", "call_multiple_tools"}, result
+
+
+@pytest.mark.adapter_certification
+@pytest.mark.live
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("provider", "key_name", "model_name"),
+    [
+        ("openai", "OPENAI_API_KEY", "OPENAI_MODEL"),
+        ("claude", "ANTHROPIC_API_KEY", "ANTHROPIC_MODEL"),
+        ("gemini", "GOOGLE_API_KEY", "GEMINI_MODEL"),
+        ("grok", "XAI_API_KEY", "XAI_MODEL"),
+    ],
+)
+async def test_real_provider_structured_output_interoperability(
+    adapter_certification_enabled: None,
+    provider: str,
+    key_name: str,
+    model_name: str,
+) -> None:
+    """Certify the provider-specific structured-output request path."""
+    environment = _require_environment(key_name, model_name)
+    schema = {
+        "type": "object",
+        "properties": {"result": {"type": "string"}},
+        "required": ["result"],
+        "additionalProperties": False,
+    }
+    payload: dict[str, Any] = {
+        "api_key": environment[key_name],
+        "model": environment[model_name],
+        "task_description": 'Return exactly {"result":"CERTIFIED"}.',
+        "response_json_schema": schema,
+        "timeout": 45,
+    }
+    if provider == "openai":
+        payload.update(
+            {
+                "api_mode": "responses",
+                "response_format": {
+                    "type": "json_schema",
+                    "json_schema": {"name": "release_check", "schema": schema, "strict": True},
+                },
+            }
+        )
+        result = await OpenAIAdapterPlugin().execute_openai_query(payload)
+    elif provider == "claude":
+        payload["output_config"] = {"format": {"type": "json_schema", "schema": schema}}
+        result = await ClaudeAdapterPlugin().execute_claude_query(payload)
+    elif provider == "gemini":
+        payload.update(
+            {
+                "api_mode": "generate_content",
+                "response_mime_type": "application/json",
+                "response_schema": schema,
+            }
+        )
+        result = await GeminiAdapterPlugin().execute_gemini_query(payload)
+    else:
+        payload.update(
+            {
+                "api_mode": "responses",
+                "response_format": {
+                    "type": "json_schema",
+                    "json_schema": {"name": "release_check", "schema": schema, "strict": True},
+                },
+            }
+        )
+        result = await GrokAdapterPlugin().execute_grok_query(payload)
+    _assert_provider_success(result)
+    assert "CERTIFIED" in str(result.get("output") or result.get("content")), result
+
+
+@pytest.mark.adapter_certification
+@pytest.mark.live
+@pytest.mark.asyncio
 async def test_real_ollama_streaming_history_interoperability(
     adapter_certification_enabled: None,
 ) -> None:
@@ -125,13 +275,26 @@ async def test_real_langchain_runnable_interoperability(
     pytest.importorskip("langchain_core")
     from langchain_core.runnables import RunnableLambda
 
-    runnable = RunnableLambda(lambda value: {"answer": value["message"], "action": "final_answer"})
+    def reference_tool(value: str) -> str:
+        return value.upper()
+
+    def reference_agent(value: dict[str, Any]) -> dict[str, Any]:
+        tool_result = reference_tool(value["message"])
+        return {
+            "answer": tool_result,
+            "tool_calls": [{"name": "reference_tool", "input": value["message"]}],
+            "state_mutated": True,
+            "action": "final_answer",
+        }
+
+    runnable = RunnableLambda(reference_agent)
     result = await LangChainAdapterPlugin().execute_langchain_query(
         {"input": {"message": "CERTIFIED"}, "metadata": {"runnable": runnable}}
     )
 
     assert result["status"] == "success", result
     assert result["output"]["answer"] == "CERTIFIED"
+    assert result["output"]["state_mutated"] is True
 
 
 @pytest.mark.adapter_certification
@@ -158,8 +321,19 @@ async def test_real_langgraph_compiled_graph_interoperability(
     from langgraph.graph import END, StateGraph
 
     workflow = StateGraph(dict)
-    workflow.add_node("respond", lambda state: {"answer": state["message"]})
-    workflow.set_entry_point("respond")
+    workflow.add_node(
+        "tool",
+        lambda state: {
+            "tool_calls": [{"name": "reference_tool", "input": state["message"]}],
+            "tool_result": state["message"].upper(),
+        },
+    )
+    workflow.add_node(
+        "respond",
+        lambda state: {"answer": state["tool_result"], "state_mutated": True},
+    )
+    workflow.set_entry_point("tool")
+    workflow.add_edge("tool", "respond")
     workflow.add_edge("respond", END)
 
     module = ModuleType("adapter_certification_graph")
@@ -175,6 +349,7 @@ async def test_real_langgraph_compiled_graph_interoperability(
 
     assert result["status"] == "success", result
     assert result["output"]["answer"] == "CERTIFIED"
+    assert result["output"]["state_mutated"] is True
 
 
 @pytest.mark.adapter_certification
