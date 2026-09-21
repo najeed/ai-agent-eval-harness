@@ -1,0 +1,59 @@
+name: Package Compatibility
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'pyproject.toml'
+      - 'requirements*.txt'
+      - 'eval_runner/adapters/**'
+      - 'agentv_runtime/**'
+      - 'tests/integration/test_wheel_adapter_distribution.py'
+      - '.github/workflows/package-compatibility.yml'
+  push:
+    branches: [main, dev]
+    paths:
+      - 'pyproject.toml'
+      - 'requirements*.txt'
+      - 'eval_runner/adapters/**'
+      - 'agentv_runtime/**'
+      - 'tests/integration/test_wheel_adapter_distribution.py'
+      - '.github/workflows/package-compatibility.yml'
+
+jobs:
+  wheel-and-extras:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install packaging test dependencies
+        run: pip install build pytest
+      - name: Verify wheel adapter distribution
+        run: AGENTV_RELEASE_PACKAGING=1 pytest tests/integration/test_wheel_adapter_distribution.py -q
+      - name: Build distribution
+        run: python -m build
+      - name: Verify advertised adapter extras install independently
+        shell: bash
+        run: |
+          declare -A adapters=(
+            [provider-gemini]=eval_runner.adapters.gemini
+            [framework-langchain]=eval_runner.adapters.langchain
+            [framework-langgraph]=eval_runner.adapters.langgraph
+            [framework-ag2]=eval_runner.adapters.ag2
+            [framework-crewai]=eval_runner.adapters.crewai
+            [langchain-openai]=eval_runner.adapters.langchain
+            [langchain-anthropic]=eval_runner.adapters.langchain
+            [langchain-gemini]=eval_runner.adapters.langchain
+            [langchain-ollama]=eval_runner.adapters.langchain
+          )
+          wheel="$(find dist -maxdepth 1 -name '*.whl' -print -quit)"
+          test -n "$wheel"
+          for extra in "${!adapters[@]}"; do
+            python -m venv ".venv-extra-${extra}"
+            ".venv-extra-${extra}/bin/python" -m pip install --upgrade pip
+            ".venv-extra-${extra}/bin/python" -m pip install "${wheel}[${extra}]"
+            ".venv-extra-${extra}/bin/python" -c "import importlib; importlib.import_module('${adapters[$extra]}')"
+            rm -rf ".venv-extra-${extra}"
+          done
