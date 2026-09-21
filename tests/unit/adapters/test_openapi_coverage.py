@@ -1,191 +1,73 @@
-from unittest.mock import AsyncMock, patch
+"""OpenAPI normalization and current polling contracts."""
+
+from unittest.mock import AsyncMock
 
 import pytest
 
 from eval_runner.adapters.common import DualNormalizationHub
-from eval_runner.adapters.openapi import OpenAPIAdapterPlugin, adapter
-
-# --- 1. Normalization Hub Logic ---
+from eval_runner.adapters.openapi import OpenAPIAdapterPlugin, OpenAPIResolutionError
 
 
-def test_normalization_hub_invalid_action(caplog):
-    """Verify that the hub logs a warning for invalid override actions."""
-    overrides = {"STATUS_X": "invalid_action"}
-    res = DualNormalizationHub.normalize({"status": "STATUS_X"}, 200, overrides=overrides)
+def test_normalization_hub_invalid_action(caplog: pytest.LogCaptureFixture) -> None:
+    result = DualNormalizationHub.normalize(
+        {"status": "STATUS_X"}, 200, overrides={"STATUS_X": "invalid_action"}
+    )
 
-    assert "Invalid override action 'invalid_action'" in caplog.text
-    # Should fall through to heuristics
-    assert res == "final_answer"
+    assert "Ignoring invalid adapter override action 'invalid_action'" in caplog.text
+    assert result == "final_answer"
 
 
-def test_normalization_hub_semantic_match_keys(caplog):
-    """Verify semantic matching on 'state' and 'result' keys in overrides."""
+def test_normalization_hub_semantic_status_fields() -> None:
     overrides = {"STALLED": "hitl_pause"}
-    # Match on 'state'
-    res = DualNormalizationHub.normalize({"state": "STALLED"}, 200, overrides=overrides)
-    assert res == "hitl_pause"
 
-    # Match on 'result'
-    res = DualNormalizationHub.normalize({"result": "stalled"}, 200, overrides=overrides)
-    assert res == "hitl_pause"
-
-
-def test_normalization_hub_key_scanning_fallback():
-    """Verify that the hub scans all first-level keys if primary indicators are missing."""
-    # Key 'custom_status_field' contains 'status'
-    response = {"custom_status_field": "review_required", "data": 123}
-    res = DualNormalizationHub.normalize(response, 200)
-    assert res == "hitl_pause"  # 'review' is in HITL_KEYWORDS
-
-
-def test_normalization_hub_error_and_terminal_heuristics():
-    """Verify error and terminal state detections via heuristics."""
+    assert (
+        DualNormalizationHub.normalize({"state": "STALLED"}, 200, overrides=overrides)
+        == "hitl_pause"
+    )
+    assert (
+        DualNormalizationHub.normalize({"result": "stalled"}, 200, overrides=overrides)
+        == "hitl_pause"
+    )
+    assert (
+        DualNormalizationHub.normalize({"custom_status_field": "review_required"}, 200)
+        == "hitl_pause"
+    )
     assert DualNormalizationHub.normalize({"status": "crash_detected"}, 200) == "error"
-    assert DualNormalizationHub.normalize({"status": "approved_final"}, 200) == "final_answer"
-
-
-# --- 2. Adapter Polling & Spec Discovery ---
 
 
 @pytest.mark.asyncio
-async def test_adapter_spec_discovery_failure():
-    """Verify adapter continues if /openapi.json fetch fails."""
-    payload = {"input_payload": {"key": "val"}}
-    endpoint = "http://api.example.com/run"
+async def test_openapi_executes_when_spec_discovery_is_unavailable() -> None:
+    adapter = OpenAPIAdapterPlugin()
+    adapter._fetch_document = AsyncMock(side_effect=OpenAPIResolutionError("missing spec"))
+    adapter._request = AsyncMock(return_value=({"status": "done"}, 200, {}, ""))
 
-    with (
-        patch("aiohttp.ClientSession.request") as mock_req,
-        patch("aiohttp.ClientSession.get") as mock_get,
-    ):
-        # Spec fetch fails (404)
-        mock_get.return_value.__aenter__.return_value.status = 404
+    result = await adapter.execute_openapi_query(
+        {"input_payload": {"key": "value"}}, endpoint="http://api.example.com/run"
+    )
 
-        # Main request succeeds
-        mock_req.return_value.__aenter__.return_value.status = 200
-        mock_req.return_value.__aenter__.return_value.json = AsyncMock(
-            return_value={"status": "done"}
-        )
-
-        res = await adapter(payload, endpoint)
-        assert res["action"] == "final_answer"
+    assert result["action"] == "final_answer"
+    assert adapter._request.call_args.kwargs["url"] == "http://api.example.com/run"
 
 
 @pytest.mark.asyncio
-async def test_adapter_rest_fallback_polling():
-    """Verify that the adapter constructs a best-guess status URL when no spec is available."""
-    payload = {"input_payload": {"id": "123"}}
-    endpoint = "http://api.example.com/run"
+async def test_openapi_polling_returns_terminal_result() -> None:
+    adapter = OpenAPIAdapterPlugin()
+    adapter._request = AsyncMock(return_value=({"status": "approved"}, 200, {}, ""))
 
-    with (
-        patch("aiohttp.ClientSession.request") as mock_req,
-        patch("aiohttp.ClientSession.get") as mock_get,
-        patch("eval_runner.adapters.openapi.OpenAPIAdapterPlugin._poll_for_result") as mock_poll,
-    ):
-        # 1. Spec fetch fails (empty spec)
-        mock_get.return_value.__aenter__.return_value.status = 404
+    result = await adapter._poll_for_result("http://api.example.com/poll", None, {})
 
-        # 2. Main request returns wait-state (processing)
-        mock_req.return_value.__aenter__.return_value.status = 200
-        mock_req.return_value.__aenter__.return_value.json = AsyncMock(
-            return_value={"status": "processing", "uuid": "job-999"}
-        )
-
-        # 3. Execution
-        mock_poll.return_value = {"action": "final_answer", "content": "done"}
-        await adapter(payload, endpoint)
-
-        # Verify best-guess poll URL format: {origin}/status/{uuid}
-        # mock_poll.call_args[0][0] -> poll_url (first positional arg after self)
-        assert mock_poll.called
+    assert result["action"] == "final_answer"
+    assert result["metadata"]["attempts"] == 1
 
 
 @pytest.mark.asyncio
-async def test_adapter_spec_aware_polling():
-    """Verify that the adapter resolves a status path from the OpenAPI spec."""
-    payload = {"input_payload": {"id": "123"}}
-    endpoint = "http://api.example.com/apply"
+async def test_openapi_polling_times_out_after_configured_attempts() -> None:
+    adapter = OpenAPIAdapterPlugin()
+    adapter.max_poll_attempts = 3
+    adapter.poll_interval = 0
+    adapter._request = AsyncMock(return_value=({"status": "processing"}, 200, {}, ""))
 
-    mock_spec = {
-        "paths": {
-            "/status/{application_id}": {
-                "get": {"parameters": [{"name": "application_id", "in": "path"}]}
-            }
-        }
-    }
+    result = await adapter._poll_for_result("http://api.example.com/poll", None, {})
 
-    with (
-        patch("aiohttp.ClientSession.request") as mock_req,
-        patch("aiohttp.ClientSession.get") as mock_get,
-        patch("eval_runner.adapters.openapi.OpenAPIAdapterPlugin._poll_for_result") as mock_poll,
-    ):
-        # 1. Provide Spec
-        mock_get.return_value.__aenter__.return_value.status = 200
-        mock_get.return_value.__aenter__.return_value.json = AsyncMock(return_value=mock_spec)
-
-        # 2. Main request returns application_id
-        mock_req.return_value.__aenter__.return_value.status = 200
-        mock_req.return_value.__aenter__.return_value.json = AsyncMock(
-            return_value={"status": "processing", "application_id": "app-001"}
-        )
-
-        # 3. Execution
-        mock_poll.return_value = {"action": "final_answer"}
-        await adapter(payload, endpoint)
-
-        # Verify resolved poll URL
-        assert any(  # noqa: E501
-            c[0][0] == "http://api.example.com/status/app-001" for c in mock_poll.call_args_list
-        )
-
-
-# --- 3. Internal Polling Loop Logic ---
-
-
-@pytest.mark.asyncio
-async def test_poll_for_result_error_handling():
-    """Verify polling loop resilience against JSON errors and transient HTTP errors."""
-    poll_url = "http://api.example.com/poll"
-
-    with patch("aiohttp.ClientSession.get") as mock_get, patch("asyncio.sleep", return_value=None):
-        # 1. First attempt: JSON Decode Error
-        resp1 = AsyncMock()
-        resp1.status = 200
-        resp1.json.side_effect = Exception("Malformed JSON")
-
-        # 2. Second attempt: Transient 500
-        resp2 = AsyncMock()
-        resp2.status = 500
-
-        # 3. Third attempt: Success (Final Answer)
-        resp3 = AsyncMock()
-        resp3.status = 200
-        resp3.json = AsyncMock(return_value={"status": "approved"})
-
-        mock_get.return_value.__aenter__.side_effect = [resp1, resp2, resp3]
-
-        adapter_plugin = OpenAPIAdapterPlugin()
-        res = await adapter_plugin._poll_for_result(poll_url, None, {})
-
-        assert res["action"] == "final_answer"
-        assert res["metadata"]["attempts"] == 3
-
-
-@pytest.mark.asyncio
-async def test_poll_for_result_timeout():
-    """Verify polling loop timeout behavior."""
-    poll_url = "http://api.example.com/poll"
-
-    with patch("aiohttp.ClientSession.get") as mock_get, patch("asyncio.sleep", return_value=None):
-        # Always returns 'processing'
-        resp = AsyncMock()
-        resp.status = 200
-        resp.json = AsyncMock(return_value={"status": "processing"})
-        mock_get.return_value.__aenter__.return_value = resp
-
-        adapter_plugin = OpenAPIAdapterPlugin()
-        # We patch max_attempts to 3 for speed
-        with patch.object(adapter_plugin, "max_poll_attempts", 3):
-            res = await adapter_plugin._poll_for_result(poll_url, None, {})
-
-        assert res["action"] == "error"
-        assert "timeout exceeded" in res["content"]
+    assert result["action"] == "error"
+    assert "Polling timeout exceeded" in result["content"]

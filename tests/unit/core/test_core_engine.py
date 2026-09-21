@@ -769,7 +769,7 @@ async def test_engine_dispatcher_otel_carrier():
     def mock_inject(carrier, context=None):
         carrier["traceparent"] = "mock-traceparent"
 
-    async def mock_adapter(payload, endpoint):
+    async def mock_adapter(payload, endpoint, **kwargs):
         return {"status": "success", "action": "test"}
 
     AgentAdapterRegistry.register("openapi", mock_adapter, allow_override=True)
@@ -778,6 +778,9 @@ async def test_engine_dispatcher_otel_carrier():
         turn_number = 1
         metadata = {}
         input_payload = {}
+        history = []
+        span_context = None
+        task_id = "test-task"
         otel_context = None
 
     turn_ctx = DummyTurnCtx()
@@ -794,7 +797,7 @@ async def test_engine_dispatcher_otel_carrier():
 async def test_engine_dispatcher_adapter_exception():
     from eval_runner.engine import AgentAdapterRegistry
 
-    async def mock_adapter_fail(payload, endpoint):
+    async def mock_adapter_fail(payload, endpoint, **kwargs):
         raise ValueError("Adapter execution crashed")
 
     AgentAdapterRegistry.register("openapi", mock_adapter_fail, allow_override=True)
@@ -803,6 +806,9 @@ async def test_engine_dispatcher_adapter_exception():
         turn_number = 1
         metadata = {}
         input_payload = {}
+        history = []
+        span_context = None
+        task_id = "test-task"
         otel_context = None
 
     turn_ctx = DummyTurnCtx()
@@ -817,7 +823,7 @@ async def test_engine_dispatcher_span_end_exception():
 
     from eval_runner.engine import AgentAdapterRegistry
 
-    async def mock_adapter(payload, endpoint):
+    async def mock_adapter(payload, endpoint, **kwargs):
         return {"status": "success", "action": "test_action"}
 
     AgentAdapterRegistry.register("openapi", mock_adapter, allow_override=True)
@@ -826,6 +832,9 @@ async def test_engine_dispatcher_span_end_exception():
         turn_number = 1
         metadata = {}
         input_payload = {}
+        history = []
+        span_context = None
+        task_id = "test-task"
         otel_context = None
 
     turn_ctx = DummyTurnCtx()

@@ -1,5 +1,5 @@
 from types import ModuleType
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -7,24 +7,15 @@ from eval_runner.adapters.langchain import LangChainAdapterPlugin
 
 
 @pytest.mark.asyncio
-async def test_langchain_adapter_simulation():
-    """Verify that LangChain adapter falls back to simulation when no chain_path is provided."""
+async def test_langchain_adapter_requires_execution_target():
+    """LangChain fails closed when no runnable or LangServe endpoint is configured."""
     adapter = LangChainAdapterPlugin()
     payload = {"task_id": "test_sim", "input": {"query": "hello"}}
 
-    with patch("eval_runner.adapters.langchain.AESCallbackHandler") as mock_handler_cls:
-        mock_handler = MagicMock()
-        mock_handler_cls.return_value = mock_handler
+    result = await adapter.execute_langchain_query(payload)
 
-        result = await adapter.execute_langchain_query(payload)
-
-        assert result["status"] == "success"
-        assert "Simulation" in result["output"]
-        assert result["metadata"]["mode"] == "simulated"
-
-        # Verify callback simulation
-        mock_handler.on_chain_start.assert_called()
-        mock_handler.on_chain_end.assert_called()
+    assert result["status"] == "error"
+    assert "No LangChain execution target" in result["message"]
 
 
 @pytest.mark.asyncio
@@ -33,8 +24,10 @@ async def test_langchain_adapter_local_execution():
     adapter = LangChainAdapterPlugin()
 
     # Mock a chain object
-    mock_chain = AsyncMock()
-    mock_chain.ainvoke.return_value = {"status": "success", "data": "real_output"}
+    class Runnable:
+        ainvoke = AsyncMock(return_value={"status": "success", "data": "real_output"})
+
+    mock_chain = Runnable()
 
     # Mock a module containing the chain using patch.dict for isolation
     mock_module = ModuleType("mock_chains")
@@ -67,23 +60,11 @@ async def test_langchain_adapter_remote_langserve():
 
     mock_response_data = {"output": "remote_output"}
 
-    with patch(
-        "eval_runner.adapters.common.SessionManager.get_session", new_callable=AsyncMock
-    ) as mock_get_session:
-        mock_session = MagicMock()
-        mock_get_session.return_value = mock_session
-
-        mock_resp = MagicMock()
-        mock_resp.status = 200
-        mock_resp.json = AsyncMock(return_value=mock_response_data)
-        mock_resp.__aenter__ = AsyncMock(return_value=mock_resp)
-        mock_resp.__aexit__ = AsyncMock(return_value=None)
-
-        mock_session.post.return_value = mock_resp
+    with patch.object(adapter, "_remote_invoke", new_callable=AsyncMock) as remote_invoke:
+        remote_invoke.return_value = mock_response_data
 
         result = await adapter.execute_langchain_query(payload)
 
         assert result["status"] == "success"
         assert result["output"] == "remote_output"
-        assert mock_session.post.call_count == 1
-        assert "http://langserve/invoke" in mock_session.post.call_args[0][0]
+        assert "http://langserve/invoke" in remote_invoke.call_args.kwargs["endpoint"]

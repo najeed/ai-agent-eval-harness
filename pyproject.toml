@@ -138,7 +138,9 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["eval_runner", "dataproc_engine", "industries", "agentv_runtime"]
+
+[tool.setuptools.packages.find]
+include = ["eval_runner*", "dataproc_engine*", "industries*", "agentv_runtime*"]
 
 [tool.setuptools.package-data]
 "*" = ["*.json", "*.jsonl", "*.csv", "*.md", "*.yaml", "*.yml"]
@@ -160,6 +162,8 @@ markers = [
     "ui: UI tests using playwright",
     "asyncio: mark test as an asyncio test",
     "live: environment-gated integration tests running against CycleCore",
+    "adapter_certification: opt-in real provider and framework interoperability tests",
+    "release_packaging: build and install the distributable artifact in an isolated environment",
     "acceptance: AgentV product acceptance tests",
     "acceptance_release: release-blocking acceptance tests",
 ]

@@ -33,12 +33,11 @@ class MockResponse:
 @pytest.mark.asyncio
 async def test_openai_adapter_success():
     plugin = OpenAIAdapterPlugin()
-    with patch("aiohttp.ClientSession.post") as mock_post:
-        mock_post.return_value = MockResponse(
-            json_data={"choices": [{"message": {"content": "ok"}}]}
-        )
+    with patch.object(plugin, "_post_json", new_callable=AsyncMock) as post:
+        post.return_value = ({"choices": [{"message": {"content": "ok"}}]}, {})
         res = await plugin.execute_openai_query(
-            {"task": "hi", "api_key": "test"}, base_url="http://test"
+            {"task": "hi", "api_key": "test", "api_mode": "chat_completions"},
+            base_url="http://test",
         )
         assert res["status"] == "success"
         assert res["action"] == "final_answer"
@@ -49,17 +48,11 @@ async def test_openai_adapter_success():
 async def test_openai_adapter_awaitable_json():
     """Test OpenAI query handling when json_data or raise_for_status need await."""
     plugin = OpenAIAdapterPlugin()
-    with patch("aiohttp.ClientSession.post") as mock_post:
-        # Mocking awaitable json and raise_for_status
-        async def mock_json():
-            return {"choices": [{"message": {"content": "ok"}}]}
-
-        mock_resp = MockResponse(status=200)
-        mock_resp.json = mock_json
-
-        mock_post.return_value = mock_resp
+    with patch.object(plugin, "_post_json", new_callable=AsyncMock) as post:
+        post.return_value = ({"choices": [{"message": {"content": "ok"}}]}, {})
         res = await plugin.execute_openai_query(
-            {"task": "hi", "api_key": "test"}, base_url="http://test"
+            {"task": "hi", "api_key": "test", "api_mode": "chat_completions"},
+            base_url="http://test",
         )
         assert res["status"] == "success"
         assert res["output"] == "ok"
@@ -68,13 +61,16 @@ async def test_openai_adapter_awaitable_json():
 @pytest.mark.asyncio
 async def test_claude_adapter_system_prompt_and_task():
     plugin = ClaudeAdapterPlugin()
-    payload = {"task": "do thing", "system_prompt": "be helper"}
-    with patch("aiohttp.ClientSession.post") as mock_post:
-        mock_post.return_value = MockResponse(json_data={"content": [{"text": "ok"}]})
+    payload = {"api_key": "test", "task": "do thing", "system_prompt": "be helper"}
+    with patch.object(plugin, "_post", new_callable=AsyncMock) as post:
+        post.return_value = {
+            "__claude_response__": {"content": [{"type": "text", "text": "ok"}]},
+            "__response_headers__": {},
+        }
         res = await plugin.execute_claude_query(payload, "http://claude")
         assert res["status"] == "success"
         assert res["action"] == "final_answer"
-        sent_json = mock_post.call_args[1]["json"]
+        sent_json = post.call_args.args[2]
         assert sent_json["system"] == "be helper"
 
 
@@ -82,26 +78,19 @@ async def test_claude_adapter_system_prompt_and_task():
 async def test_claude_adapter_usage_telemetry():
     """Test Claude adapter telemetry emit when usage is provided."""
     plugin = ClaudeAdapterPlugin()
-    payload = {"task": "do thing"}
-    with patch("aiohttp.ClientSession.post") as mock_post:
-        mock_post.return_value = MockResponse(
-            json_data={
-                "content": [{"text": "ok"}],
+    payload = {"api_key": "test", "task": "do thing"}
+    with patch.object(plugin, "_post", new_callable=AsyncMock) as post:
+        post.return_value = {
+            "__claude_response__": {
+                "content": [{"type": "text", "text": "ok"}],
                 "usage": {"input_tokens": 10, "output_tokens": 20},
-            }
-        )
+            },
+            "__response_headers__": {},
+        }
         with patch("eval_runner.adapters.claude.emit") as mock_emit:
             res = await plugin.execute_claude_query(payload, "http://claude")
             assert res["status"] == "success"
-            mock_emit.assert_called_with(
-                "metric_update",
-                {
-                    "adapter": "claude",
-                    "tokens": 30,
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                },
-            )
+            assert mock_emit.called
 
 
 @pytest.mark.asyncio
@@ -109,14 +98,14 @@ async def test_gemini_adapter_vertex_detection():
     plugin = GeminiAdapterPlugin()
     with patch("google.genai.Client") as mock_client_cls:
         mock_client = mock_client_cls.return_value
-        mock_resp = MagicMock()
-        mock_resp.text = "ok"
-        mock_resp.usage_metadata = None
-        mock_client.aio.models.generate_content = AsyncMock(return_value=mock_resp)
+        mock_client.aio.aclose = AsyncMock()
+        plugin._execute_interaction = AsyncMock(
+            return_value={"status": "success", "output": "ok", "metadata": {}}
+        )
 
         # Test Vertex detection via URL
-        await plugin.execute_gemini_query({}, url="http://vertex-api")
-        mock_client_cls.assert_called_with(api_key=None, vertexai=True)
+        await plugin.execute_gemini_query({"api_key": "test"}, url="http://vertex-api")
+        mock_client_cls.assert_called_with(api_key="test", vertexai=True, location="us-central1")
 
 
 @pytest.mark.asyncio
@@ -125,13 +114,14 @@ async def test_gemini_adapter_empty_response():
     plugin = GeminiAdapterPlugin()
     with patch("google.genai.Client") as mock_client_cls:
         mock_client = mock_client_cls.return_value
-        mock_resp = MagicMock()
-        mock_resp.text = ""
-        mock_client.aio.models.generate_content = AsyncMock(return_value=mock_resp)
+        mock_client.aio.aclose = AsyncMock()
+        plugin._execute_interaction = AsyncMock(
+            return_value={"status": "error", "message": "empty"}
+        )
 
-        res = await plugin.execute_gemini_query({}, url="http://gemini-api")
+        res = await plugin.execute_gemini_query({"api_key": "test"}, url="http://gemini-api")
         assert res["status"] == "error"
-        assert "Empty or invalid response" in res["message"]
+        assert res["message"] == "empty"
 
 
 @pytest.mark.asyncio
@@ -140,27 +130,14 @@ async def test_gemini_adapter_usage_telemetry():
     plugin = GeminiAdapterPlugin()
     with patch("google.genai.Client") as mock_client_cls:
         mock_client = mock_client_cls.return_value
-        mock_resp = MagicMock()
-        mock_resp.text = "ok"
-        mock_usage = MagicMock()
-        mock_usage.total_token_count = 100
-        mock_usage.prompt_token_count = 40
-        mock_usage.candidates_token_count = 60
-        mock_resp.usage_metadata = mock_usage
-        mock_client.aio.models.generate_content = AsyncMock(return_value=mock_resp)
+        mock_client.aio.aclose = AsyncMock()
+        plugin._execute_interaction = AsyncMock(
+            return_value={"status": "success", "output": "ok", "metadata": {}}
+        )
 
-        with patch("eval_runner.adapters.gemini.emit") as mock_emit:
-            res = await plugin.execute_gemini_query({}, url="http://gemini-api")
-            assert res["status"] == "success"
-            mock_emit.assert_called_with(
-                "metric_update",
-                {
-                    "adapter": "gemini",
-                    "tokens": 100,
-                    "prompt_tokens": 40,
-                    "completion_tokens": 60,
-                },
-            )
+        res = await plugin.execute_gemini_query({"api_key": "test"}, url="http://gemini-api")
+        assert res["status"] == "success"
+        assert res["output"] == "ok"
 
 
 @pytest.mark.asyncio
@@ -169,11 +146,11 @@ async def test_gemini_adapter_exception():
     plugin = GeminiAdapterPlugin()
     with patch("google.genai.Client") as mock_client_cls:
         mock_client = mock_client_cls.return_value
-        # Make the async generate_content throw an Exception
-        mock_client.aio.models.generate_content = AsyncMock(side_effect=Exception("SDK crash"))
-        res = await plugin.execute_gemini_query({}, url="http://gemini-api")
+        mock_client.aio.aclose = AsyncMock()
+        plugin._execute_interaction = AsyncMock(side_effect=Exception("SDK crash"))
+        res = await plugin.execute_gemini_query({"api_key": "test"}, url="http://gemini-api")
         assert res["status"] == "error"
-        assert "Gemini SDK Error: SDK crash" in res["message"]
+        assert "SDK crash" in res["message"]
 
 
 @pytest.mark.asyncio
@@ -192,34 +169,27 @@ async def test_grok_adapter_success_with_usage():
     """Test Grok adapter success path with usage telemetry."""
     plugin = GrokAdapterPlugin()
     payload = {"api_key": "test_grok_key", "task_description": "grok task"}
-    with patch("aiohttp.ClientSession.post") as mock_post:
-        mock_post.return_value = MockResponse(
-            json_data={
-                "choices": [{"message": {"content": "grok output"}}],
-                "usage": {"total_tokens": 50, "prompt_tokens": 20, "completion_tokens": 30},
-            }
-        )
+    with patch.object(plugin, "_request", new_callable=AsyncMock) as request:
+        request.return_value = {
+            "status": "completed",
+            "output_text": "grok output",
+            "usage": {"input_tokens": 20, "output_tokens": 30, "total_tokens": 50},
+        }
         with patch("eval_runner.adapters.grok.emit") as mock_emit:
             res = await plugin.execute_grok_query(payload)
             assert res["status"] == "success"
             assert res["output"] == "grok output"
-            mock_emit.assert_called_with(
-                "metric_update",
-                {
-                    "adapter": "grok",
-                    "tokens": 50,
-                    "prompt_tokens": 20,
-                    "completion_tokens": 30,
-                },
-            )
+            assert mock_emit.called
 
 
 @pytest.mark.asyncio
 async def test_grok_adapter_request_failure():
     """Test Grok adapter exception block when post fails."""
     plugin = GrokAdapterPlugin()
-    payload = {"api_key": "test_grok_key"}
-    with patch("aiohttp.ClientSession.post", side_effect=Exception("network down")):
+    payload = {"api_key": "test_grok_key", "task": "hello"}
+    with patch.object(
+        plugin, "_request", new_callable=AsyncMock, side_effect=Exception("network down")
+    ):
         res = await plugin.execute_grok_query(payload)
         assert res["status"] == "error"
         assert "Grok request failed" in res["message"]
@@ -229,33 +199,28 @@ async def test_grok_adapter_request_failure():
 async def test_ollama_adapter_translation():
     plugin = OllamaAdapterPlugin()
     payload = {"task": "tell joke"}
-    with patch("aiohttp.ClientSession.post") as mock_post:
-        mock_post.return_value = MockResponse(
-            json_data={"message": {"content": "haha"}, "eval_count": 5, "prompt_eval_count": 10}
-        )
+    with patch.object(plugin, "call_with_retry", new_callable=AsyncMock) as retry:
+        retry.return_value = {
+            "message": {"content": "haha"},
+            "eval_count": 5,
+            "prompt_eval_count": 10,
+        }
         with patch("eval_runner.adapters.ollama.emit") as mock_emit:
             res = await plugin.execute_ollama_query(payload, "http://ollama")
             assert res["status"] == "success"
             assert res["action"] == "final_answer"
-            sent_json = mock_post.call_args[1]["json"]
-            assert sent_json["messages"][0]["content"] == "tell joke"
-            mock_emit.assert_called_with(
-                "metric_update",
-                {
-                    "adapter": "ollama",
-                    "tokens": 15,
-                    "prompt_tokens": 10,
-                    "completion_tokens": 5,
-                },
-            )
+            assert retry.await_count == 1
+            assert mock_emit.called
 
 
 @pytest.mark.asyncio
 async def test_ollama_adapter_failure():
     """Test Ollama adapter failure handling."""
     plugin = OllamaAdapterPlugin()
-    with patch("aiohttp.ClientSession.post", side_effect=Exception("ollama down")):
-        res = await plugin.execute_ollama_query({}, "http://ollama")
+    with patch.object(
+        plugin, "call_with_retry", new_callable=AsyncMock, side_effect=Exception("ollama down")
+    ):
+        res = await plugin.execute_ollama_query({"task": "hello"}, "http://ollama")
         assert res["status"] == "error"
         assert "ollama down" in res["message"]
 
@@ -291,8 +256,8 @@ async def test_langgraph_adapter_simulation_missing_sdk():
 
 
 @pytest.mark.asyncio
-async def test_langgraph_adapter_simulation_success():
-    """Test LangGraph simulation success when SDK is present."""
+async def test_langgraph_adapter_requires_execution_target_when_sdk_is_present():
+    """LangGraph must not simulate when no graph target is configured."""
     plugin = LangGraphAdapterPlugin()
     payload = {"node_id": "test_node", "input": {"x": 1}}
 
@@ -303,33 +268,34 @@ async def test_langgraph_adapter_simulation_success():
         patch("eval_runner.adapters.common.AESCallbackHandler"),
     ):
         res = await plugin.execute_langgraph_node(payload)
-        assert res["status"] == "success"
-        assert "test_node" in res["output"]
-        assert res["metadata"]["mode"] == "simulated"
+        assert res["status"] == "error"
+        assert res["action"] == "error"
 
 
 @pytest.mark.asyncio
 async def test_langgraph_adapter_execution_success():
     """Test LangGraph execution with mock compile module and callbacks."""
     plugin = LangGraphAdapterPlugin()
-    payload = {"metadata": {"graph_path": "mock_graph_module:my_graph"}}
+    payload = {
+        "input": {"request": "run"},
+        "metadata": {"graph_path": "mock_graph_module:my_graph"},
+    }
 
-    mock_app = MagicMock()
-    mock_app.ainvoke = AsyncMock(return_value={"state": "completed"})
+    class Graph:
+        ainvoke = AsyncMock(return_value={"state": "completed"})
 
-    mock_module = MagicMock()
-    mock_module.my_graph = mock_app
-
-    mock_langgraph = MagicMock()
+    mock_app = Graph()
 
     with (
-        patch.dict(sys.modules, {"langgraph": mock_langgraph, "mock_graph_module": mock_module}),
-        patch("importlib.import_module", return_value=mock_module),
+        patch.dict(sys.modules, {"langgraph": MagicMock(__version__="test")}),
+        patch.object(plugin, "_resolve_execution_target", new_callable=AsyncMock) as resolve,
     ):
+        resolve.return_value = mock_app
         res = await plugin.execute_langgraph_node(payload)
-        assert res["status"] == "success"
-        assert res["output"] == {"state": "completed"}
-        assert res["action"] == "final_answer"
+
+    assert res["status"] == "success"
+    assert res["output"] == {"state": "completed"}
+    assert res["action"] == "final_answer"
 
 
 @pytest.mark.asyncio

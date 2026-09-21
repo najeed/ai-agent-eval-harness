@@ -44,14 +44,12 @@ async def test_openai_adapter_success():
     """Test successful OpenAI query execution."""
     adapter = OpenAIAdapterPlugin()
 
-    mock_response = MockResponse(json_data={"choices": [{"message": {"content": "Hello world"}}]})
-
-    with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
-        session_instance = MagicMock()
-        mock_get_session.return_value = session_instance
-        session_instance.post.return_value = mock_response
-
-        payload = {"api_key": "test", "task": "hi"}
+    with patch.object(adapter, "_post_json", new_callable=AsyncMock) as post_json:
+        post_json.return_value = (
+            {"choices": [{"message": {"content": "Hello world"}}]},
+            {},
+        )
+        payload = {"api_key": "test", "task": "hi", "api_mode": "chat_completions"}
         res = await adapter.execute_openai_query(payload)
 
         assert res["status"] == "success"
@@ -63,18 +61,16 @@ async def test_openai_adapter_error():
     """Test OpenAI error handling (401 Unauthorized)."""
     adapter = OpenAIAdapterPlugin()
 
-    mock_response = MockResponse(status=401, text_data="Invalid API Key")
+    with patch.object(adapter, "_post_json", new_callable=AsyncMock) as post_json:
+        import aiohttp
 
-    with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
-        session_instance = MagicMock()
-        mock_get_session.return_value = session_instance
-        session_instance.post.return_value = mock_response
+        post_json.side_effect = aiohttp.ClientResponseError(
+            request_info=MagicMock(), history=(), status=401, message="Invalid API Key", headers={}
+        )
+        res = await adapter.execute_openai_query({"api_key": "wrong", "task": "hi"})
 
-        # Patch retries so it fails fast
-        with patch.object(adapter, "max_retries", 1), patch("asyncio.sleep", AsyncMock()):
-            res = await adapter.execute_openai_query({"api_key": "wrong"})
-            assert res["status"] == "error"
-            assert "401" in res["message"]
+    assert res["status"] == "error"
+    assert "401" in res["message"]
 
 
 @pytest.mark.asyncio
@@ -82,16 +78,15 @@ async def test_claude_adapter_success():
     """Test Anthropic Claude adapter."""
     adapter = ClaudeAdapterPlugin()
 
-    mock_response = MockResponse(json_data={"content": [{"text": "Claude response"}]})
-
-    with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
-        session_instance = MagicMock()
-        mock_get_session.return_value = session_instance
-        session_instance.post.return_value = mock_response
-
+    with patch.object(adapter, "_post", new_callable=AsyncMock) as post:
+        post.return_value = {
+            "__claude_response__": {"content": [{"type": "text", "text": "Claude response"}]},
+            "__response_headers__": {},
+        }
         res = await adapter.execute_claude_query({"api_key": "test", "task": "hi"})
-        assert res["status"] == "success"
-        assert "Claude" in res["output"]
+
+    assert res["status"] == "success"
+    assert "Claude" in res["output"]
 
 
 @pytest.mark.asyncio
@@ -99,19 +94,14 @@ async def test_gemini_adapter_success():
     """Test Google Gemini adapter."""
     adapter = GeminiAdapterPlugin()
 
-    # Mocking semantic mapping for Gemini SDK
-    mock_client = MagicMock()
-    mock_response = MagicMock()
-    mock_response.text = "Gemini response"
-    mock_response.usage_metadata = None
-
-    # generate_content is async in the SDK's aio namespace
-    mock_client.aio.models.generate_content = AsyncMock(return_value=mock_response)
-
-    with patch("google.genai.Client", return_value=mock_client):
+    with patch("google.genai.Client") as mock_client_cls:
+        mock_client_cls.return_value.aio.aclose = AsyncMock()
+        adapter._execute_interaction = AsyncMock(
+            return_value={"status": "success", "output": "Gemini response", "metadata": {}}
+        )
         res = await adapter.execute_gemini_query({"api_key": "test", "task_description": "hi"})
-        assert res["status"] == "success"
-        assert "Gemini" in res["output"]
+    assert res["status"] == "success"
+    assert "Gemini" in res["output"]
 
 
 @pytest.mark.asyncio
@@ -119,14 +109,10 @@ async def test_ollama_adapter_success():
     """Test Ollama local adapter."""
     adapter = OllamaAdapterPlugin()
 
-    mock_response = MockResponse(json_data={"message": {"content": "Ollama response"}})
-
-    with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
-        session_instance = MagicMock()
-        mock_get_session.return_value = session_instance
-        session_instance.post.return_value = mock_response
+    with patch.object(adapter, "call_with_retry", new_callable=AsyncMock) as call_with_retry:
+        call_with_retry.return_value = {"message": {"content": "Ollama response"}}
         res = await adapter.execute_ollama_query({"task": "hi"})
-        assert res["status"] == "success"
+    assert res["status"] == "success"
 
 
 @pytest.mark.asyncio
@@ -134,14 +120,10 @@ async def test_grok_adapter_success():
     """Test xAI Grok adapter."""
     adapter = GrokAdapterPlugin()
 
-    mock_response = MockResponse(json_data={"choices": [{"message": {"content": "Grok response"}}]})
-
-    with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
-        session_instance = MagicMock()
-        mock_get_session.return_value = session_instance
-        session_instance.post.return_value = mock_response
+    with patch.object(adapter, "_request", new_callable=AsyncMock) as request:
+        request.return_value = {"status": "completed", "output_text": "Grok response"}
         res = await adapter.execute_grok_query({"api_key": "test", "task": "hi"})
-        assert res["status"] == "success"
+    assert res["status"] == "success"
 
 
 def test_adapter_discovery_hooks():
@@ -168,11 +150,7 @@ async def test_ag2_adapter_fallback():
     reg.register.assert_any_call("ag2", adapter.execute_ag2_query)
 
     # Test entry point error handling (fallback path when SDK is missing)
-    with (
-        patch.dict("sys.modules", {"ag2": None}),
-        patch("eval_runner.adapters.ag2.config") as mock_cfg,
-    ):
-        mock_cfg.AG2_API_URL = None
+    with patch.object(adapter, "_import_ag2", side_effect=ImportError("AG2 SDK not installed")):
         res = await adapter.execute_ag2_query({"message": "hi"})
         assert res["status"] == "error"
         assert "not installed" in res["message"]

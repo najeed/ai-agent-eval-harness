@@ -1,8 +1,15 @@
+import json
+import sys
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from eval_runner.adapters import http_adapter, local_subprocess_adapter, socket_adapter
+from eval_runner.adapters import (
+    _resolve_local_command,
+    _run_local_process,
+    http_adapter,
+    socket_adapter,
+)
 
 
 class MockAsyncContextManager:
@@ -12,6 +19,9 @@ class MockAsyncContextManager:
 
     async def json(self):
         return self._json_data
+
+    async def read(self):
+        return json.dumps(self._json_data).encode("utf-8")
 
     def raise_for_status(self):
         pass
@@ -38,12 +48,20 @@ async def test_http_adapter_core():
 
 @pytest.mark.asyncio
 async def test_local_subprocess_adapter():
-    mock_proc = AsyncMock()
-    mock_proc.communicate.return_value = (b'{"test": "pass"}', b"")
-    mock_proc.returncode = 0
-    with patch("asyncio.create_subprocess_exec", return_value=mock_proc):
-        res = await local_subprocess_adapter({}, "python agent.py")
-        assert res["test"] == "pass"
+    script = 'import sys; sys.stdout.write(\'{"test": "pass"}\')'
+    res = await _run_local_process(
+        command=[sys.executable, "-c", script],
+        payload={},
+        timeout=5,
+    )
+    assert res == {"test": "pass"}
+
+
+def test_local_command_removes_windows_argument_quotes():
+    with patch("eval_runner.adapters.os.name", "nt"):
+        command = _resolve_local_command('"C:\\Program Files\\Agent\\agent.exe" --mode test')
+
+    assert command == ["C:\\Program Files\\Agent\\agent.exe", "--mode", "test"]
 
 
 @pytest.mark.asyncio

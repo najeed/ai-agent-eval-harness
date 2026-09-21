@@ -7,6 +7,7 @@ Core evaluation engine.
 Updated for universal extensibility via registries, hooks, and typed contexts.
 """
 
+import inspect  # noqa: E402
 import logging  # noqa: E402
 import sys  # noqa: E402
 from collections.abc import Callable  # noqa: E402
@@ -15,12 +16,64 @@ from typing import Any  # noqa: E402
 from eval_runner import plugins  # noqa: E402
 
 from . import config  # noqa: E402
+from .context import AdapterInvocationContext  # noqa: E402
 
 logger = logging.getLogger(__name__)
 
 # Security Guardrails
 MAX_ENGINE_ATTEMPTS = config.MAX_ENGINE_ATTEMPTS
 MAX_TURNS = config.EVAL_MAX_TURNS
+
+
+def _internal_adapter_payload(
+    wire_payload: dict[str, Any], context: AdapterInvocationContext
+) -> dict[str, Any]:
+    """Materialize context for a native adapter without changing wire payloads."""
+    payload = dict(wire_payload)
+    payload["history"] = [dict(item) for item in context.history]
+    payload["input_payload"] = dict(context.input_payload)
+    payload["metadata"] = dict(context.metadata)
+    if context.task_id:
+        payload.setdefault("task_id", context.task_id)
+    if context.turn_number is not None:
+        payload.setdefault("turn_number", context.turn_number)
+    if context.span_context:
+        payload["span_context"] = dict(context.span_context)
+    return payload
+
+
+def _adapter_endpoint_kwargs(adapter_func: Callable, endpoint: str | None) -> dict[str, Any]:
+    """Use the endpoint spelling accepted by legacy adapter entry points."""
+    parameters = inspect.signature(adapter_func).parameters
+    for name in ("endpoint", "url", "base_url"):
+        if name in parameters:
+            return {name: endpoint}
+    # Generic/plugin adapters conventionally accept endpoint through **kwargs.
+    if any(p.kind is inspect.Parameter.VAR_KEYWORD for p in parameters.values()):
+        return {"endpoint": endpoint}
+    return {}
+
+
+def _adapter_context_kwargs(
+    adapter_func: Callable,
+    context: AdapterInvocationContext,
+    turn_ctx: Any | None,
+) -> dict[str, Any]:
+    """Pass internal context only to adapters that opt into it.
+
+    This preserves compatibility with existing third-party adapters whose
+    callable contract is limited to ``(payload, endpoint)``.
+    """
+    parameters = inspect.signature(adapter_func).parameters
+    accepts_kwargs = any(
+        parameter.kind is inspect.Parameter.VAR_KEYWORD for parameter in parameters.values()
+    )
+    kwargs: dict[str, Any] = {}
+    if accepts_kwargs or "context" in parameters:
+        kwargs["context"] = context
+    if accepts_kwargs or "turn_ctx" in parameters:
+        kwargs["turn_ctx"] = turn_ctx
+    return kwargs
 
 
 # Dynamic Adapter Registry for Agent Communication
@@ -201,7 +254,9 @@ class AgentAdapterRegistry:
                 "task_description": message,
             }
 
-        # Resolve OpenTelemetry child span context
+        # Resolve OpenTelemetry child span context. Keep it in the internal
+        # invocation context rather than in a remote application's payload.
+        invocation_context = AdapterInvocationContext.from_turn_context(message, turn_ctx)
         child_otel_ctx = None
         span = None
         parent_context = getattr(turn_ctx, "otel_context", None)
@@ -225,15 +280,35 @@ class AgentAdapterRegistry:
             carrier = {}
             propagation.inject(carrier, context=child_otel_ctx)
             if "traceparent" in carrier:
-                payload["span_context"] = {"traceparent": carrier["traceparent"]}
+                span_context = {"traceparent": carrier["traceparent"]}
                 if turn_ctx:
-                    object.__setattr__(turn_ctx, "span_context", payload["span_context"])
+                    object.__setattr__(turn_ctx, "span_context", span_context)
+                invocation_context = AdapterInvocationContext(
+                    message=invocation_context.message,
+                    history=invocation_context.history,
+                    input_payload=invocation_context.input_payload,
+                    metadata=invocation_context.metadata,
+                    span_context=span_context,
+                    task_id=invocation_context.task_id,
+                    turn_number=invocation_context.turn_number,
+                    turn_context=invocation_context.turn_context,
+                )
         except Exception as _e:
             logger.debug("Span context injection skipped: %s", _e, exc_info=True)
 
         # 3. Execution (with Industrial Protection)
         try:
-            response = await adapter_func(payload, endpoint=endpoint)
+            category = cls.ADAPTER_TAXONOMY.get(normalized_proto.split(":", 1)[0])
+            adapter_payload = (
+                _internal_adapter_payload(payload, invocation_context)
+                if category in {"providers", "frameworks"}
+                else payload
+            )
+            response = await adapter_func(
+                adapter_payload,
+                **_adapter_endpoint_kwargs(adapter_func, endpoint),
+                **_adapter_context_kwargs(adapter_func, invocation_context, turn_ctx),
+            )
             if span and span.is_recording():
                 span.set_attribute("agentv.action", response.get("action", "unknown"))
             return response

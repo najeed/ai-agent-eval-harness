@@ -36,7 +36,7 @@ async def adapter_stub(aiohttp_server):
         if "v1/messages" in path:
             if data.get("force_error"):
                 return web.Response(text="Claude internal error", status=500)
-            return web.json_response({"content": [{"text": "claude response"}]})
+            return web.json_response({"content": [{"type": "text", "text": "claude response"}]})
 
         if "v1beta/models" in path:
             if data.get("force_error"):
@@ -75,6 +75,11 @@ class MockAsyncContextManager:
     async def text(self):
         return self._text_data
 
+    async def read(self):
+        import json
+
+        return json.dumps(self._json_data).encode("utf-8")
+
     def raise_for_status(self):
         if self.status >= 400:
             raise Exception("HTTP Error")
@@ -112,10 +117,13 @@ async def test_gemini_success_stub():
     plugin = GeminiAdapterPlugin()
     with patch("google.genai.Client") as mock_client_class:
         mock_client = mock_client_class.return_value
-        mock_response = AsyncMock()
-        mock_response.text = "gemini response"
-        mock_response.usage_metadata = None
-        mock_client.aio.models.generate_content = AsyncMock(return_value=mock_response)
+        mock_client.aio.interactions.create = AsyncMock(
+            return_value={
+                "id": "interaction-1",
+                "status": "completed",
+                "output_text": "gemini response",
+            }
+        )
 
         res = await plugin.execute_gemini_query(
             {"api_key": "test", "messages": [{"role": "user", "content": "hi"}]}
@@ -136,22 +144,25 @@ async def test_ollama_success_stub(adapter_stub):
 
 @pytest.mark.asyncio
 async def test_openai_success(mock_aiohttp_session):
-    mock_aiohttp_session.post.return_value = MockAsyncContextManager(
-        json_data={"choices": [{"message": {"content": "openai_success"}}]}
-    )
     plugin = OpenAIAdapterPlugin()
-    res = await plugin.execute_openai_query({"task_description": "hello", "api_key": "test"})
+    with patch.object(plugin, "_post_json", new_callable=AsyncMock) as post_json:
+        post_json.return_value = (
+            {"choices": [{"message": {"content": "openai_success"}}]},
+            {},
+        )
+        res = await plugin.execute_openai_query(
+            {"task_description": "hello", "api_key": "test", "api_mode": "chat_completions"}
+        )
     assert res["status"] == "success"
     assert res["output"] == "openai_success"
 
 
 @pytest.mark.asyncio
 async def test_grok_success(mock_aiohttp_session):
-    mock_aiohttp_session.post.return_value = MockAsyncContextManager(
-        json_data={"choices": [{"message": {"content": "grok_success"}}]}
-    )
     plugin = GrokAdapterPlugin()
-    res = await plugin.execute_grok_query({"api_key": "test"})
+    with patch.object(plugin, "_request", new_callable=AsyncMock) as request:
+        request.return_value = {"status": "completed", "output_text": "grok_success"}
+        res = await plugin.execute_grok_query({"api_key": "test", "task": "hello"})
     assert res["status"] == "success"
 
 
@@ -160,7 +171,7 @@ async def test_crewai_mocks():
     plugin = CrewAIAdapterPlugin()
     with patch.dict("sys.modules", {"crewai": MagicMock(__version__="1.0")}):
         res = await plugin.execute_crewai_task({"task_description": "x"})
-        assert res["status"] == "success"
+        assert res["status"] == "error"
 
 
 @pytest.mark.asyncio
@@ -168,7 +179,7 @@ async def test_langgraph_mocks():
     plugin = LangGraphAdapterPlugin()
     with patch.dict("sys.modules", {"langgraph": MagicMock(__version__="2.0")}):
         res = await plugin.execute_langgraph_node({"task_description": "x"})
-        assert res["status"] == "success"
+        assert res["status"] == "error"
 
 
 @pytest.mark.asyncio
@@ -180,9 +191,30 @@ async def test_http_adapter_core(mock_aiohttp_session):
 
 @pytest.mark.asyncio
 async def test_local_subprocess_adapter():
-    mock_proc = AsyncMock()
-    mock_proc.communicate.return_value = (b'{"test": "pass"}', b"")
+    # 1. Create the main process mock
+    mock_proc = MagicMock()
     mock_proc.returncode = 0
+    mock_proc.wait = AsyncMock(return_value=0)
+
+    # 2. Mock stdin stream behaviors
+    mock_stdin = MagicMock()
+    mock_stdin.drain = AsyncMock(return_value=None)
+    mock_proc.stdin = mock_stdin
+
+    # 3. Mock stdout stream to return JSON payload on the first read, then EOF
+    mock_stdout = AsyncMock()
+    # If reader uses .read(n) or .readline(), return the bytes, then b""
+    mock_stdout.read.side_effect = [b'{"test": "pass"}', b""]
+    mock_stdout.readline.side_effect = [b'{"test": "pass"}', b""]
+    mock_proc.stdout = mock_stdout
+
+    # 4. Mock stderr stream to immediately return EOF
+    mock_stderr = AsyncMock()
+    mock_stderr.read.return_value = b""
+    mock_stderr.readline.return_value = b""
+    mock_proc.stderr = mock_stderr
+
+    # 5. Patch and execute
     with patch("asyncio.create_subprocess_exec", return_value=mock_proc):
         res = await local_subprocess_adapter({}, "python agent.py")
         assert res["test"] == "pass"

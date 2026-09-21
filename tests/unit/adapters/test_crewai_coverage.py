@@ -1,165 +1,114 @@
-import sys
-from unittest.mock import ANY, AsyncMock, MagicMock, patch
+"""Current CrewAI adapter native binding and fail-closed contracts."""
+
+from types import SimpleNamespace
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
+from eval_runner.adapters import crewai
 from eval_runner.adapters.crewai import CrewAIAdapterPlugin
-from eval_runner.events import CoreEvents
 
 
-@pytest.mark.asyncio
-async def test_crewai_on_discover_adapters():
+def test_crewai_registers_current_protocols() -> None:
     adapter = CrewAIAdapterPlugin()
     registry = MagicMock()
+
     adapter.on_discover_adapters(registry)
+
     registry.register.assert_any_call("crewai", adapter.execute_crewai_task)
     registry.register.assert_any_call("crewai:v1", adapter.execute_crewai_task)
 
 
 @pytest.mark.asyncio
-async def test_crewai_sdk_missing():
-    adapter = CrewAIAdapterPlugin()
-    payload = {"task_id": "test_task"}
+async def test_crewai_rejects_simulation_mode() -> None:
+    result = await CrewAIAdapterPlugin().execute_crewai_task(
+        {"task_id": "test-task", "metadata": {"execution_mode": "simulation"}}
+    )
 
-    orig_import = __import__
-
-    with patch("eval_runner.adapters.crewai.emit") as mock_emit:
-        # Simulate crewai not installed
-        def mock_import(name, *args, **kwargs):
-            if name == "crewai":
-                raise ImportError("SDK not installed")
-            return orig_import(name, *args, **kwargs)
-
-        with patch("builtins.__import__", side_effect=mock_import):
-            result = await adapter.execute_crewai_task(payload)
-            assert result["status"] == "error"
-            assert "SDK not installed" in result["message"]
-            mock_emit.assert_any_call(CoreEvents.ERROR, {"message": ANY})
+    assert result["status"] == "error"
+    assert "synthetic execution mode" in result["message"]
 
 
 @pytest.mark.asyncio
-async def test_crewai_simulation_mode():
+async def test_crewai_missing_sdk_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None:
     adapter = CrewAIAdapterPlugin()
-    payload = {"task_id": "test_task"}  # No crew_path
 
-    mock_crewai = MagicMock()
-    mock_crewai.__version__ = "0.1.0"
+    def missing_crewai(name: str) -> object:
+        assert name == "crewai"
+        raise ImportError("CrewAI unavailable")
 
-    with (
-        patch.dict(sys.modules, {"crewai": mock_crewai}),
-        patch("eval_runner.adapters.crewai.emit") as mock_emit,
-    ):
-        result = await adapter.execute_crewai_task(payload)
+    monkeypatch.setattr(crewai.importlib, "import_module", missing_crewai)
+    result = await adapter.execute_crewai_task({"task_id": "test-task"})
 
-        assert result["status"] == "success"
-        assert result["metadata"]["mode"] == "simulated"
-        mock_emit.assert_any_call(CoreEvents.CHAIN_START, ANY)
+    assert result["status"] == "error"
+    assert "CrewAI SDK unavailable" in result["message"]
 
 
 @pytest.mark.asyncio
-async def test_crewai_direct_object_kickoff_sync():
-    adapter = CrewAIAdapterPlugin()
-    payload = {"task_id": "test_task", "metadata": {"crew_path": "mock_module:mock_crew"}}
+async def test_crewai_executes_native_akickoff(monkeypatch: pytest.MonkeyPatch) -> None:
+    class NativeCrew:
+        def __init__(self) -> None:
+            self.akickoff = AsyncMock(return_value=SimpleNamespace(raw="CERTIFIED"))
 
-    class MockCrew:
-        def kickoff(self, inputs=None):
-            return "Sync Success"
+    crew = NativeCrew()
+    crewai_module = SimpleNamespace(Crew=NativeCrew, __version__="1.15.22")
+    monkeypatch.setattr(crewai.importlib, "import_module", lambda name: crewai_module)
 
-    mock_crewai = MagicMock()
-    mock_crewai.Crew = MockCrew
+    result = await CrewAIAdapterPlugin().execute_crewai_task(
+        {"task_id": "test-task", "metadata": {"crew": crew}, "inputs": {"message": "hello"}}
+    )
 
-    mock_crew = MockCrew()
-
-    mock_module = MagicMock()
-    mock_module.mock_crew = mock_crew
-
-    with (
-        patch.dict(sys.modules, {"crewai": mock_crewai}),
-        patch("importlib.import_module", return_value=mock_module),
-        patch("eval_runner.adapters.crewai.emit"),
-    ):
-        result = await adapter.execute_crewai_task(payload)
-
-        assert result["status"] == "success"
-        assert result["output"] == "Sync Success"
+    assert result["status"] == "success", result
+    assert result["output"] == "CERTIFIED"
+    crew.akickoff.assert_awaited_once_with(inputs={"message": "hello"})
 
 
 @pytest.mark.asyncio
-async def test_crewai_factory_kickoff_async():
-    adapter = CrewAIAdapterPlugin()
-    payload = {"task_id": "test_task", "metadata": {"crew_path": "mock_module:crew_factory"}}
+async def test_crewai_allows_synchronous_kickoff_without_timeout(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class SyncOnlyCrew:
+        def kickoff(self, inputs: dict[str, str]) -> SimpleNamespace:
+            return SimpleNamespace(raw=inputs["message"])
 
-    class MockCrew:
-        pass
+    crew = SyncOnlyCrew()
+    crewai_module = SimpleNamespace(Crew=SyncOnlyCrew, __version__="1.15.22")
+    monkeypatch.setattr(crewai.importlib, "import_module", lambda name: crewai_module)
 
-    mock_crewai = MagicMock()
-    mock_crewai.Crew = MockCrew
+    result = await CrewAIAdapterPlugin().execute_crewai_task(
+        {"task_id": "test-task", "metadata": {"crew": crew}, "inputs": {"message": "hello"}}
+    )
 
-    mock_crew = MagicMock()  # Use MagicMock for the instance returned by factory
-    mock_crew.kickoff_async = AsyncMock(return_value="Async Success")
-
-    def crew_factory():
-        return mock_crew
-
-    mock_module = MagicMock()
-    mock_module.crew_factory = crew_factory
-
-    with (
-        patch.dict(sys.modules, {"crewai": mock_crewai}),
-        patch("importlib.import_module", return_value=mock_module),
-        patch("eval_runner.adapters.crewai.emit"),
-    ):
-        result = await adapter.execute_crewai_task(payload)
-
-        assert result["status"] == "success"
-        assert result["output"] == "Async Success"
-        mock_crew.kickoff_async.assert_called_once()
+    assert result["status"] == "success", result
+    assert result["output"] == "hello"
 
 
 @pytest.mark.asyncio
-async def test_crewai_simulation_sdk_missing():
-    adapter = CrewAIAdapterPlugin()
+async def test_crewai_executes_kickoff_async_when_native_async_is_absent(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class LegacyAsyncCrew:
+        def __init__(self) -> None:
+            self.kickoff_async = AsyncMock(return_value=SimpleNamespace(raw="CERTIFIED"))
 
-    def mock_import(name, *args, **kwargs):
-        if name == "crewai":
-            raise ImportError("CrewAI SDK not installed")
-        return MagicMock()
+    crew = LegacyAsyncCrew()
+    crewai_module = SimpleNamespace(Crew=LegacyAsyncCrew, __version__="1.15.22")
+    monkeypatch.setattr(crewai.importlib, "import_module", lambda name: crewai_module)
 
-    with patch("builtins.__import__", side_effect=mock_import):
-        with pytest.raises(ImportError, match="CrewAI SDK not installed"):
-            await adapter._execute_simulation("test_task")
+    result = await CrewAIAdapterPlugin().execute_crewai_task(
+        {"task_id": "test-task", "metadata": {"crew": crew}, "inputs": {"message": "hello"}}
+    )
 
-
-@pytest.mark.asyncio
-async def test_crewai_attribute_error_handling():
-    adapter = CrewAIAdapterPlugin()
-    payload = {"task_id": "test_task", "metadata": {"crew_path": "mock_module:missing_attr"}}
-
-    mock_module = MagicMock(spec=[])  # No attributes allowed
-
-    with (
-        patch.dict(sys.modules, {"crewai": MagicMock()}),
-        patch("importlib.import_module", return_value=mock_module),
-        patch("eval_runner.adapters.crewai.emit", create=True),
-    ):
-        result = await adapter.execute_crewai_task(payload)
-        assert result["status"] == "error"
-        assert "CrewAI execution failed" in result["message"]
+    assert result["status"] == "success", result
+    crew.kickoff_async.assert_awaited_once_with(inputs={"message": "hello"})
 
 
-@pytest.mark.asyncio
-async def test_crewai_value_error_handling():
-    adapter = CrewAIAdapterPlugin()
-    payload = {
-        "task_id": "test_task",
-        "metadata": {"crew_path": "bad_path"},  # Missing colon
-    }
+def test_crewai_certification_requires_native_akickoff() -> None:
+    class LegacyCrew:
+        async def kickoff_async(self, *, inputs: dict[str, object]) -> object:
+            return inputs
 
-    with (
-        patch.dict(sys.modules, {"crewai": MagicMock()}),
-        patch("eval_runner.adapters.crewai.emit") as mock_emit,
-    ):
-        result = await adapter.execute_crewai_task(payload)
-        assert result["status"] == "error"
-        assert "CrewAI execution failed" in result["message"]
-        mock_emit.assert_any_call(CoreEvents.ERROR, {"message": ANY})
+    with pytest.raises(RuntimeError, match="certification requires native"):
+        CrewAIAdapterPlugin._select_execution_method(
+            LegacyCrew(), timeout=None, require_native_async=True
+        )

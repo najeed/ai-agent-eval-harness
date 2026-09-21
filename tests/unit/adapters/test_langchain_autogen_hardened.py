@@ -1,5 +1,5 @@
 import asyncio
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -34,54 +34,41 @@ class MockResponse:
 
 
 @pytest.mark.asyncio
-async def test_langchain_adapter_simulation_fallback():
+async def test_langchain_adapter_missing_target_fails_closed():
     plugin = LangChainAdapterPlugin()
-    # Missing both URL and chain_path -> simulation fallback
+    # Missing both URL and chain_path must not synthesize a response.
     res = await plugin.execute_langchain_query({"input": {}})
-    assert res["status"] == "success"
-    assert "Simulation" in res["output"]
+    assert res["status"] == "error"
+    assert "No LangChain execution target" in res["message"]
 
 
 @pytest.mark.asyncio
-async def test_langchain_adapter_sdk_fallback_error():
+async def test_langchain_adapter_invalid_local_target_error():
     plugin = LangChainAdapterPlugin()
-    # Mock SDK missing
-    with patch.dict("sys.modules", {"langchain": None}):
-        res = await plugin._execute_local_sdk("id", {}, "module:chain")
-        assert res["status"] == "error"
-        assert "SDK not installed" in res["message"]
+    res = await plugin.execute_langchain_query({"metadata": {"chain_path": "invalid"}})
+    assert res["status"] == "error"
+    assert "Invalid LangChain target" in res["message"]
 
 
 @pytest.mark.asyncio
 async def test_langchain_adapter_remote_error():
     plugin = LangChainAdapterPlugin()
-    with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
-        session_instance = MagicMock()
-        mock_get_session.return_value = session_instance
-        # Mock immediate 500 error after retries (or just one failure for test)
-        session_instance.post.return_value = MockResponse(status=500)
+    with patch.object(plugin, "_remote_invoke", new_callable=AsyncMock) as remote_invoke:
+        remote_invoke.side_effect = RuntimeError("HTTP 500")
+        res = await plugin.execute_langchain_query({"input": {}, "url": "http://langserve"})
 
-        # We patch retries to 1 for speed
-        with patch.object(plugin, "max_retries", 1), patch("asyncio.sleep", AsyncMock()):
-            res = await plugin._execute_remote_langserve("http://langserve", {}, {})
-            assert res["status"] == "error"
-            assert "500" in res["message"] or "Error" in res["message"]
+    assert res["status"] == "error"
+    assert "HTTP 500" in res["message"]
 
 
 @pytest.mark.asyncio
-async def test_ag2_adapter_sdk_fallback_to_remote():
+async def test_ag2_adapter_remote_requires_native_a2a_client():
     plugin = AG2AdapterPlugin()
-    # Mock SDK missing, trigger remote fallback
+    # AG2 endpoints are A2A Agent Cards, never generic JSON HTTP fallbacks.
     with patch.dict("sys.modules", {"ag2": None}):
-        with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
-            session_instance = MagicMock()
-            mock_get_session.return_value = session_instance
-            session_instance.post.return_value = MockResponse(
-                json_data={"output": "remote_success"}
-            )
+        with patch("eval_runner.adapters.common.SessionManager.get_session"):
             res = await plugin.execute_ag2_query({"message": "hi"}, url="http://ag2-api")
-            assert res["status"] == "success"
-            assert res["output"] == "remote_success"
+            assert res["status"] == "error"
 
 
 @pytest.mark.asyncio
@@ -91,7 +78,7 @@ async def test_ag2_adapter_missing_all():
         with patch("eval_runner.config.AG2_API_URL", None):
             res = await plugin.execute_ag2_query({"message": "hi"})
             assert res["status"] == "error"
-            assert "Native execution failed" in res["message"]
+            assert "AG2 SDK is not installed" in res["message"]
 
 
 def test_registry_edge_cases():

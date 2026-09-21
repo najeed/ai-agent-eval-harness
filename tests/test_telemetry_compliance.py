@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 from unittest.mock import patch
 
@@ -83,47 +84,17 @@ def test_context_objects_telemetry_fields():
 
 @pytest.mark.asyncio
 async def test_ag2_adapter_instrumentation():
-    """Verify AG2 adapter emits TURN and CHAIN events with context."""
-
-    original_import = __builtins__["__import__"]
+    """Verify AG2 fails closed when no native SDK or A2A endpoint is available."""
 
     adapter = AG2AdapterPlugin()
     payload = {"agent_id": "test_agent", "message": "hello"}
     span_ctx = {"adapter_trace": "xyz"}
 
-    def mock_import(name, *args, **kwargs):
-        if name == "ag2":
-            raise ImportError(f"No module named '{name}'")
-        return original_import(name, *args, **kwargs)
+    with patch.dict(sys.modules, {"ag2": None, "autogen": None}):
+        result = await adapter.execute_ag2_query(payload, span_context=span_ctx)
 
-    with patch("eval_runner.events.EventEmitter.emit") as mock_emit:
-        with patch("builtins.__import__", side_effect=mock_import):
-            try:
-                await adapter.execute_ag2_query(payload, span_context=span_ctx)
-            except ImportError:
-                pass
-
-            mock_emit.assert_any_call(
-                CoreEvents.TURN_START,
-                {
-                    "adapter": "ag2",
-                    "agent_id": "test_agent",
-                    "message": "hello",
-                    "mode": "remote-fallback",
-                },
-                span_context=span_ctx,
-            )
-
-            mock_emit.assert_any_call(
-                CoreEvents.CHAIN_START,
-                {
-                    "adapter": "ag2",
-                    "agent_id": "test_agent",
-                    "protocol": "v1",
-                    "mode": "remote",
-                },
-                span_context=span_ctx,
-            )
+    assert result["status"] == "error"
+    assert "not installed" in result["message"]
 
 
 def test_base_verifier_interface():

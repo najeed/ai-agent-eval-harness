@@ -66,3 +66,40 @@ class TurnContext:
         # Convert history list to tuple if passed as list
         if isinstance(self.history, list):
             object.__setattr__(self, "history", tuple(copy.deepcopy(self.history)))
+
+
+@dataclass(frozen=True)
+class AdapterInvocationContext:
+    """Internal-only data made available to an adapter for one invocation.
+
+    This is deliberately separate from the adapter's wire payload.  Protocol
+    adapters must serialize only their protocol contract, while native
+    framework and provider adapters can use the evaluation context to resolve
+    bindings and continue a conversation.
+    """
+
+    message: str
+    history: tuple[dict[str, Any], ...]
+    input_payload: dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
+    span_context: dict[str, Any] | None = None
+    task_id: str | None = None
+    turn_number: int | None = None
+    turn_context: TurnContext | None = None
+
+    @classmethod
+    def from_turn_context(
+        cls, message: str, turn_context: TurnContext | None
+    ) -> AdapterInvocationContext:
+        if turn_context is None:
+            return cls(message=message, history=())
+        return cls(
+            message=message,
+            history=tuple(copy.deepcopy(turn_context.history)),
+            input_payload=copy.deepcopy(turn_context.input_payload),
+            metadata=copy.deepcopy(turn_context.metadata),
+            span_context=copy.deepcopy(turn_context.span_context),
+            task_id=turn_context.task_id,
+            turn_number=turn_context.turn_number,
+            turn_context=turn_context,
+        )

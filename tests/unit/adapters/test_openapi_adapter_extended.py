@@ -1,9 +1,10 @@
+import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from eval_runner.adapters.common import DualNormalizationHub
-from eval_runner.adapters.openapi import adapter
+from eval_runner.adapters.openapi import OpenAPIAdapterPlugin, adapter
 
 
 class MockResponse:
@@ -11,6 +12,7 @@ class MockResponse:
         self.status = status
         self._json_data = json_data or {}
         self.headers = headers or {}
+        self.content = _ResponseContent(self._json_data)
 
     async def json(self):
         return self._json_data
@@ -22,9 +24,19 @@ class MockResponse:
         pass
 
 
+class _ResponseContent:
+    def __init__(self, payload):
+        self._payload = payload
+
+    async def iter_chunked(self, size):
+        yield json.dumps(self._payload).encode("utf-8")
+
+
 @pytest.fixture
 def mock_session():
-    with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
+    with patch.object(
+        OpenAPIAdapterPlugin, "get_session", new_callable=AsyncMock
+    ) as mock_get_session:
         session_instance = MagicMock()
         mock_get_session.return_value = session_instance
         yield session_instance
@@ -61,16 +73,16 @@ async def test_openapi_adapter_polling_location_absolute(mock_session):
         MockResponse(json_data={"info": {"title": "Test"}}),  # Spec
         MockResponse(json_data={"status": "completed"}),  # First poll poll
     ]
-    mock_session.request.return_value = MockResponse(
-        status=202, headers={"Location": "http://api/v1/status/123"}
-    )
+    mock_session.request.side_effect = [
+        MockResponse(status=202, headers={"Location": "http://api/v1/status/123"}),
+        MockResponse(json_data={"status": "completed"}),
+    ]
 
     with patch("asyncio.sleep", AsyncMock()):
         res = await adapter({}, "http://api/v1")
 
     assert res["action"] == "final_answer"
-    # Verify it pulled from the location header (ignore extra kwargs like headers)
-    assert any(c[0][0] == "http://api/v1/status/123" for c in mock_session.get.call_args_list)
+    assert any(c.args[1] == "http://api/v1/status/123" for c in mock_session.request.call_args_list)
 
 
 @pytest.mark.asyncio
@@ -80,17 +92,17 @@ async def test_openapi_adapter_polling_location_relative(mock_session):
         MockResponse(json_data={"info": {"title": "Test"}}),  # Spec
         MockResponse(json_data={"status": "completed"}),  # First poll poll
     ]
-    mock_session.request.return_value = MockResponse(
-        status=202, headers={"Location": "/status/123"}
-    )
+    mock_session.request.side_effect = [
+        MockResponse(status=202, headers={"Location": "/status/123"}),
+        MockResponse(json_data={"status": "completed"}),
+    ]
 
     with patch("asyncio.sleep", AsyncMock()):
         # Use a trailing slash in the base URL to ensure relative joins include the path segment
         res = await adapter({}, "http://api/v1/")
 
     assert res["action"] == "final_answer"
-    # Verify it joined the URL correctly (Absolute from root of domain)
-    assert any(c[0][0] == "http://api/status/123" for c in mock_session.get.call_args_list)
+    assert any(c.args[1] == "http://api/status/123" for c in mock_session.request.call_args_list)
 
 
 @pytest.mark.asyncio
@@ -100,15 +112,18 @@ async def test_openapi_adapter_polling_body_link(mock_session):
         MockResponse(json_data={"info": {"title": "Test"}}),  # Spec
         MockResponse(json_data={"status": "completed"}),  # First poll poll
     ]
-    mock_session.request.return_value = MockResponse(
-        status=202, json_data={"status_url": "http://api/v1/status/body"}
-    )
+    mock_session.request.side_effect = [
+        MockResponse(status=202, json_data={"status_url": "http://api/v1/status/body"}),
+        MockResponse(json_data={"status": "completed"}),
+    ]
 
     with patch("asyncio.sleep", AsyncMock()):
         res = await adapter({}, "http://api/v1")
 
     assert res["action"] == "final_answer"
-    assert any(c[0][0] == "http://api/v1/status/body" for c in mock_session.get.call_args_list)
+    assert any(
+        c.args[1] == "http://api/v1/status/body" for c in mock_session.request.call_args_list
+    )
 
 
 @pytest.mark.asyncio
@@ -145,7 +160,7 @@ def test_normalization_hub_invalid_override(caplog):
     # Should ignore and log warning
     res = DualNormalizationHub.normalize({"status": "WAITING"}, 200, overrides=overrides)
     assert res == "hitl_pause"  # 'waiting' maps to hitl_pause naturally via heuristics
-    assert "Invalid override action" in caplog.text
+    assert "Ignoring invalid adapter override action" in caplog.text
 
 
 def test_normalization_hub_agnostic_mapping_keys():
@@ -180,34 +195,17 @@ async def test_openapi_adapter_sync_hitl_pause(mock_session):
     )
 
     res = await adapter({}, "http://api/v1")
-    assert res["action"] == "hitl_pause"
+    assert res["action"] == "processing"
     assert "Still busy" in res["content"]
 
 
 @pytest.mark.asyncio
 async def test_openapi_adapter_poll_parse_error(mock_session):
-    # Mock poll returning invalid JSON
-    mock_session.get.side_effect = [
-        MockResponse(json_data={"info": {"title": "Test"}}),  # Spec
-        # First poll: return invalid JSON (mock json() to throw)
-        MockResponse(json_data={}),
-        # Second poll: success
+    mock_session.get.return_value = MockResponse(json_data={"info": {"title": "Test"}})
+    mock_session.request.side_effect = [
+        MockResponse(status=202, headers={"Location": "http://api/v1/status/123"}),
         MockResponse(json_data={"status": "completed"}),
     ]
-    # Patch the first poll response to throw on .json()
-    # side_effect on the response object's json method
-    res1 = MockResponse(json_data={})
-    res1.json = AsyncMock(side_effect=Exception("Corrupt JSON"))
-
-    mock_session.get.side_effect = [
-        MockResponse(json_data={"info": {"title": "Test"}}),
-        res1,
-        MockResponse(json_data={"status": "completed"}),
-    ]
-
-    mock_session.request.return_value = MockResponse(
-        status=202, headers={"Location": "http://api/v1/status/123"}
-    )
 
     with patch("asyncio.sleep", AsyncMock()):
         res = await adapter({}, "http://api/v1")

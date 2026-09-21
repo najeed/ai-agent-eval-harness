@@ -1,10 +1,11 @@
 import base64
+import json
 import os
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from eval_runner.adapters.openapi import OpenAPIAdapterPlugin
+from eval_runner.adapters.openapi import OpenAPIAdapterPlugin, OpenAPIResolutionError
 
 
 class MockResponse:
@@ -12,6 +13,7 @@ class MockResponse:
         self.status = status
         self._json_data = json_data or {}
         self.headers = headers or {}
+        self.content = _ResponseContent(self._json_data)
 
     async def json(self):
         return self._json_data
@@ -27,9 +29,19 @@ class MockResponse:
             raise Exception(f"HTTP {self.status}")
 
 
+class _ResponseContent:
+    def __init__(self, payload):
+        self._payload = payload
+
+    async def iter_chunked(self, size):
+        yield json.dumps(self._payload).encode("utf-8")
+
+
 @pytest.fixture
 def mock_session():
-    with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
+    with patch.object(
+        OpenAPIAdapterPlugin, "get_session", new_callable=AsyncMock
+    ) as mock_get_session:
         session_instance = MagicMock()
         mock_get_session.return_value = session_instance
         yield session_instance
@@ -71,12 +83,10 @@ async def test_openapi_auth_oauth2_failure(mock_session):
     }
 
     # Mock failure
-    mock_session.post.side_effect = Exception("Auth Failed")
+    mock_session.post.side_effect = OpenAPIResolutionError("Auth Failed")
 
-    with patch("eval_runner.adapters.openapi.logger") as mock_logger:
-        headers = await plugin._get_auth_header(payload)
-        assert "Authorization" not in headers
-        assert mock_logger.warning.called
+    with pytest.raises(OpenAPIResolutionError, match="Auth Failed"):
+        await plugin._get_auth_header(payload)
 
 
 @pytest.mark.asyncio
@@ -101,10 +111,15 @@ async def test_openapi_query_missing_url():
 async def test_openapi_spec_path_discovery(mock_session):
     plugin = OpenAPIAdapterPlugin()
     # Mock spec with a custom path
-    mock_session.get.return_value = MockResponse(json_data={"paths": {"/v1/apply": {"post": {}}}})
+    mock_session.get.return_value = MockResponse(
+        json_data={
+            "openapi": "3.1.0",
+            "paths": {"/v1/apply": {"post": {"operationId": "apply"}}},
+        }
+    )
     mock_session.request.return_value = MockResponse(json_data={"status": "ok"})
 
-    await plugin.execute_openapi_query({}, endpoint="http://api")
+    await plugin.execute_openapi_query({"path": "/v1/apply"}, endpoint="http://api")
     # Verify request was sent to /v1/apply
     called_url = mock_session.request.call_args[0][1]
     assert called_url == "http://api/v1/apply"
@@ -119,28 +134,36 @@ async def test_openapi_polling_processing_id(mock_session):
         MockResponse(json_data={"status": "completed"}),  # Poll success
     ]
     mock_session.request.return_value = MockResponse(
-        json_data={"status": "processing", "application_id": "app-123"}
+        json_data={"status": "processing", "application_id": "app-123"},
+        headers={"Location": "http://api/status/app-123"},
     )
 
-    with patch("asyncio.sleep", AsyncMock()):
+    with patch.object(
+        plugin,
+        "_poll_for_result",
+        new=AsyncMock(return_value={"action": "final_answer"}),
+    ) as mock_poll:
         res = await plugin.execute_openapi_query({}, endpoint="http://api")
 
     assert res["action"] == "final_answer"
-    # Verify polling URL was constructed correctly
-    assert any("http://api/status/app-123" in str(c) for c in mock_session.get.call_args_list)
+    assert mock_poll.call_args.args[0] == "http://api/status/app-123"
 
 
 @pytest.mark.asyncio
 async def test_openapi_poll_terminal_actions(mock_session):
     plugin = OpenAPIAdapterPlugin()
+    plugin._request = AsyncMock(
+        side_effect=[
+            ({"status": "review_required"}, 200, {}, ""),
+            ({"status": "failed"}, 200, {}, ""),
+        ]
+    )
 
     # hitl_pause
-    mock_session.get.return_value = MockResponse(json_data={"status": "waiting"})
     res = await plugin._poll_for_result("http://poll", {}, {})
     assert res["action"] == "hitl_pause"
 
     # error
-    mock_session.get.return_value = MockResponse(json_data={"status": "failed"})
     res = await plugin._poll_for_result("http://poll", {}, {})
     assert res["action"] == "error"
 
@@ -149,8 +172,8 @@ async def test_openapi_poll_terminal_actions(mock_session):
 async def test_openapi_poll_timeout(mock_session):
     plugin = OpenAPIAdapterPlugin()
     plugin.max_poll_attempts = 2
-
-    mock_session.get.return_value = MockResponse(json_data={"status": "processing"})
+    plugin.poll_interval = 0
+    plugin._request = AsyncMock(return_value=({"status": "processing"}, 200, {}, ""))
 
     with patch("asyncio.sleep", AsyncMock()):
         res = await plugin._poll_for_result("http://poll", {}, {})
@@ -179,29 +202,24 @@ async def test_openapi_on_discover_adapters():
 @pytest.mark.asyncio
 async def test_openapi_poll_status_400_plus(mock_session):
     plugin = OpenAPIAdapterPlugin()
-    plugin.max_poll_attempts = 2
-
-    # Mock 400 then success
-    mock_session.get.side_effect = [
-        MockResponse(status=400),
-        MockResponse(json_data={"status": "completed"}),
-    ]
+    plugin._request = AsyncMock(return_value=({"error": "retry"}, 400, {}, "retry"))
 
     with patch("asyncio.sleep", AsyncMock()):
         res = await plugin._poll_for_result("http://poll", {}, {})
-        assert res["action"] == "final_answer"
+        assert res["action"] == "error"
 
 
 @pytest.mark.asyncio
 async def test_openapi_poll_exception_recovery(mock_session):
     plugin = OpenAPIAdapterPlugin()
     plugin.max_poll_attempts = 2
-
-    # Mock exception then success
-    mock_session.get.side_effect = [
-        Exception("Transient Error"),
-        MockResponse(json_data={"status": "completed"}),
-    ]
+    plugin.poll_interval = 0
+    plugin._request = AsyncMock(
+        side_effect=[
+            OpenAPIResolutionError("Transient Error"),
+            ({"status": "completed"}, 200, {}, ""),
+        ]
+    )
 
     with patch("asyncio.sleep", AsyncMock()):
         res = await plugin._poll_for_result("http://poll", {}, {})
