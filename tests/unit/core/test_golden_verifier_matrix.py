@@ -2719,11 +2719,13 @@ def test_verification_authority_package_artifacts_and_signature_only():
 
     raw_trace_bytes = b'{"event": "run_start", "_seq": 1}\n{"event": "run_end", "_seq": 2}\n'
     trace_hash = f"sha3_256:{hashlib.sha3_256(raw_trace_bytes).hexdigest()}"
-    raw_events = [
-        {"event": "run_start", "_seq": 1, "data": {}},
-        {"event": "run_end", "_seq": 2, "data": {}},
-    ]
-    ev_graph = build_evidence_graph_from_events(raw_events)
+    raw_events = [json.loads(line) for line in raw_trace_bytes.splitlines() if line.strip()]
+    ev_graph = build_evidence_graph_from_events(
+        [
+            (event, line.decode("utf-8"))
+            for event, line in zip(raw_events, raw_trace_bytes.splitlines(), strict=False)
+        ]
+    )
     ev_root = compute_evidence_graph_root(ev_graph)
 
     pkg = VerificationPackage(
@@ -2937,7 +2939,10 @@ def test_verify_trace_blank_lines_and_empty_events(clean_vault_setup):
     mock_pk = MagicMock()
     with patch.object(IdentityService, "get_public_key", return_value=mock_pk):
         assert (
-            TraceVerifier.verify_trace(str(trace_empty), str(m_empty_path), trace_only=True) is True
+            TraceVerifier.verify_trace(
+                str(trace_empty), str(m_empty_path), trace_only=True, require_sealed=False
+            )
+            is True
         )
 
 
@@ -4185,9 +4190,10 @@ def test_verify_package_and_artifacts_cross_binding_matrix(clean_vault_setup):
         {"event": "start", "_seq": 1},
         {"event": "evaluator_finalization", "finalization_hash": "sha3_256:different_eval_hash"},
     ]
+    raw_trace_bytes = ("\n".join(json.dumps(event) for event in raw_events) + "\n").encode("utf-8")
     res_art = VerificationAuthority.verify_package_artifacts(
         base_pkg,
-        raw_trace_bytes=b"raw_trace_content",
+        raw_trace_bytes=raw_trace_bytes,
         raw_trace_events=raw_events,
         canonical_manifest=manifest_mismatch,
         require_signature=False,

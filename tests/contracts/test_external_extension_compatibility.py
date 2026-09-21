@@ -129,6 +129,9 @@ class TestZeroTouchExternalPluginCompatibility:
         ext_policy = EnterprisePolicyEvaluator()
         ext_signing = EnterpriseSigningBackend()
         ext_run_store = EnterpriseRunStore()
+        from uuid import uuid4
+
+        run_id = f"run-zero-touch-e2e-{uuid4().hex}"
 
         runner = DefaultRunner(
             artifact_store=ext_art_store,
@@ -188,12 +191,12 @@ class TestZeroTouchExternalPluginCompatibility:
             eval_result = await runner.run(
                 scenario=scenario,
                 attempts=1,
-                run_id="run-zero-touch-e2e-001",
+                run_id=run_id,
             )
 
         # 1. Assert first-class EvaluationResult contract
         assert isinstance(eval_result, EvaluationResult)
-        assert eval_result.run_id == "run-zero-touch-e2e-001"
+        assert eval_result.run_id == run_id
         assert eval_result.scenario_id == "external_plugin_e2e_scen"
         assert eval_result.pass_at_k == 1.0
 
@@ -203,8 +206,8 @@ class TestZeroTouchExternalPluginCompatibility:
 
         # 3. Assert Run Manifest persisted into external RunStore
         assert ext_run_store.manifest_count >= 1
-        assert "run-zero-touch-e2e-001" in ext_run_store.runs
-        manifest = ext_run_store.runs["run-zero-touch-e2e-001"]
+        assert run_id in ext_run_store.runs
+        manifest = ext_run_store.runs[run_id]
         assert manifest["pass_at_k"] == 1.0
 
     def test_zero_touch_semver_upgrade_backward_compatibility(self):

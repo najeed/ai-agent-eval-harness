@@ -48,10 +48,13 @@ provider-gemini = [
 # 2. Framework Environments (Evaluated and verified agent architectures)
 framework-langchain = [
     "langchain==1.4.2",
-    "langchain-core>=1.6.3",
+    "langchain-core>=1.6.4",
+]
+framework-langserve = [
+    "langserve>=0.3.3",
 ]
 framework-langgraph = [
-    "langgraph==1.2.11",
+    "langgraph==1.2.12",
 ]
 framework-ag2 = [
     "ag2==1.0.5",
@@ -62,7 +65,7 @@ framework-crewai = [
 
 # 3. Framework-to-Provider Integrations (LangChain Wrappers)
 langchain-openai = [
-    "langchain-openai==1.6.2",
+    "langchain-openai==1.6.3",
 ]
 langchain-anthropic = [
     "langchain-anthropic>=1.7.2",
@@ -96,15 +99,16 @@ vcs = [
 # 5. Composed Ecosystem Extras
 frameworks = [
     "langchain==1.4.2",
-    "langchain-core>=1.6.3",
-    "langgraph==1.2.11",
+    "langchain-core>=1.6.4",
+    "langserve>=0.3.3",
+    "langgraph==1.2.12",
     "ag2==1.0.5",
 #    "crewai==1.15.22; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
 ]
 langchain-all = [
     "langchain==1.4.2",
-    "langchain-core>=1.6.3",
-    "langchain-openai==1.6.2",
+    "langchain-core>=1.6.4",
+    "langchain-openai==1.6.3",
     "langchain-anthropic>=1.7.2",
     "langchain-google-genai>=4.4.0",
     "langchain-ollama>=1.1.0",
@@ -116,11 +120,12 @@ all = [
     "datasets==5.0.1",
     "google-genai==2.24.0",
     "langchain==1.4.2",
-    "langchain-core>=1.6.3",
-    "langgraph==1.2.11",
+    "langchain-core>=1.6.4",
+    "langserve>=0.3.3",
+    "langgraph==1.2.12",
     "ag2==1.0.5",
 #    "crewai==1.15.22; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
-    "langchain-openai==1.6.2",
+    "langchain-openai==1.6.3",
     "langchain-anthropic>=1.7.2",
     "langchain-google-genai>=4.4.0",
     "langchain-ollama>=1.1.0",
@@ -154,7 +159,9 @@ coverage = "eval_runner.coverage_plugin:CoveragePlugin"
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "dataproc_engine/tests"]
-addopts = "-ra --dist loadfile"
+# Keep test cache state in the writable project scratch directory
+# so successful tests do not emit cache I/O warnings.
+addopts = "-ra --dist loadfile -o cache_dir=.tmp/pytest-cache"
 python_files = ["test_*.py"]
 pythonpath = ["."]
 asyncio_mode = "auto"

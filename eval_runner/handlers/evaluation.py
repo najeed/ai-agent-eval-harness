@@ -176,6 +176,12 @@ async def handle_evaluate(args):
                     args_dict = {}
 
                 clean_args = {k: v for k, v in args_dict.items() if not callable(v)}
+                execution_mode = getattr(args, "execution_mode", None)
+                if execution_mode:
+                    # The mode is declared before execution and becomes part of
+                    # the immutable RUN_START provenance record.
+                    scenario = dict(scenario)
+                    scenario["execution_mode"] = execution_mode
                 await engine.run_evaluation(
                     scenario,
                     run_id=getattr(args, "run_id", None),
@@ -249,6 +255,10 @@ async def handle_run(args):
                 attempts = 1
 
             clean_args = {k: v for k, v in args_dict.items() if not callable(v)}
+            execution_mode = getattr(args, "execution_mode", None)
+            if execution_mode:
+                scenario = dict(scenario)
+                scenario["execution_mode"] = execution_mode
             await engine.run_evaluation(
                 scenario,
                 run_id=getattr(args, "run_id", None),

@@ -493,15 +493,6 @@ class TraceVerifier:
 
         # --- Precondition validation (pre-transaction; no mutation possible) ---
         p = Path(trace_path)
-        if not utils.is_path_safe(p, config.PROJECT_ROOT):
-            raise PermissionError(
-                f"Security violation: Trace file outside project jail: {trace_path}"
-            )
-        if not p.exists():
-            raise FileNotFoundError(f"Trace file not found: {trace_path}")
-
-        cls.compute_signature(p)
-
         if not run_id:
             logger.error(
                 "   [Verifier] FAIL: Missing explicit Run ID. Inference "
@@ -522,6 +513,15 @@ class TraceVerifier:
                 "master log. Certification requires the isolated canonical per-run vault "
                 "trace (runs/<id>/run.jsonl)."
             )
+
+        if not utils.is_path_safe(p, config.PROJECT_ROOT):
+            raise PermissionError(
+                f"Security violation: Trace file outside project jail: {trace_path}"
+            )
+        if not p.exists():
+            raise FileNotFoundError(f"Trace file not found: {trace_path}")
+
+        cls.compute_signature(p)
 
         if resolved_p != vault_path:
             logger.error("   [Verifier] FAIL: Forensic Pollution - Path mismatch.")
@@ -677,7 +677,7 @@ class TraceVerifier:
                             try:
                                 parsed_ev = json.loads(stripped)
                                 events_list.append(parsed_ev)
-                                events_list_with_lines.append((parsed_ev, stripped))
+                                events_list_with_lines.append((parsed_ev, line.rstrip("\r\n")))
                             except Exception as ev_parse_err:
                                 logger.error(
                                     f"Malformed trace record at line {line_idx}: {ev_parse_err}"
@@ -703,10 +703,6 @@ class TraceVerifier:
                         events_list_with_lines, required_oracle_ids=req_oracles
                     )
                     computed_evidence_root = compute_evidence_graph_root(ev_graph)
-                    ev_graph_canon = build_evidence_graph_from_events(
-                        events_list, required_oracle_ids=req_oracles
-                    )
-                    computed_evidence_root_canon = compute_evidence_graph_root(ev_graph_canon)
                     total_nodes = ev_graph.get("total_nodes", ev_graph.get("node_count", 0))
                     if total_nodes > 0 and not ev_graph.get("is_complete_provenance", True):
                         logger.error(
@@ -1665,7 +1661,9 @@ class TraceVerifier:
                                 try:
                                     parsed = json.loads(stripped)
                                     ev_list.append(parsed)
-                                    ev_list_with_lines.append((parsed, stripped))
+                                    # Preserve the JSONL payload exactly as recorded; only
+                                    # the line terminator is transport framing, not JSON.
+                                    ev_list_with_lines.append((parsed, line.rstrip("\r\n")))
                                 except (
                                     json.JSONDecodeError,
                                     UnicodeDecodeError,
@@ -1688,14 +1686,6 @@ class TraceVerifier:
                             ev_list_with_lines, required_oracle_ids=req_oracles
                         )
                         computed_root = compute_evidence_graph_root(graph)
-                        if computed_root != expected_evidence_root and ev_list:
-                            graph_canon = build_evidence_graph_from_events(
-                                ev_list, required_oracle_ids=req_oracles
-                            )
-                            computed_root_canon = compute_evidence_graph_root(graph_canon)
-                            if computed_root_canon == expected_evidence_root:
-                                graph = graph_canon
-                                computed_root = computed_root_canon
                         if computed_root != expected_evidence_root:
                             logger.warning(
                                 f"Evidence root mismatch: expected {expected_evidence_root}, "
@@ -1798,7 +1788,7 @@ class TraceVerifier:
                     from eval_runner.run_lifecycle import RunLifecycleState, get_run_lifecycle_state
 
                     st = get_run_lifecycle_state(run_id_cand)
-                    if st in (RunLifecycleState.FINALIZING, RunLifecycleState.INVALID):
+                    if st != RunLifecycleState.SEALED:
                         logger.warning(
                             "Unsealed/uncommitted run rejected: run '%s' lifecycle is %s "
                             "(SEALED required)",
@@ -2475,7 +2465,9 @@ class VerificationAuthority:
                         continue
                     evt = json.loads(trimmed)
                     parsed_events.append(evt)
-                    parsed_events_with_lines.append((evt, trimmed))
+                    # Preserve all JSON whitespace from the recorded line; the
+                    # evidence graph commits to raw JSONL, not a reserialization.
+                    parsed_events_with_lines.append((evt, line.rstrip("\r\n")))
             except Exception as parse_err:
                 failures.append(f"TraceStreamParsingFailed: {parse_err}")
 
@@ -2483,8 +2475,8 @@ class VerificationAuthority:
         effective_events_with_lines = parsed_events_with_lines
         effective_events = parsed_events
 
-        # Anti-split-chain validation: if caller supplied raw_trace_events,
-        # it MUST match the parsed byte stream
+        # Raw JSONL is the only authoritative event source.  Caller events are
+        # useful only as an anti-split-chain assertion and must never replace it.
         if raw_trace_events is not None:
             if parsed_events and len(raw_trace_events) != len(parsed_events):
                 failures.append(
@@ -2492,14 +2484,16 @@ class VerificationAuthority:
                     f"({len(raw_trace_events)}) does not match byte-stream parsed "
                     f"event count ({len(parsed_events)})"
                 )
+            elif parsed_events and list(raw_trace_events) != parsed_events:
+                failures.append(
+                    "TraceStreamSplitChainViolation: caller-supplied events do not "
+                    "exactly match the raw JSONL event stream"
+                )
             elif not parsed_events:
-                from agentv_runtime.canonical import canonical_json_dumps
-
-                effective_events = raw_trace_events
-                effective_events_with_lines = [
-                    (e, canonical_json_dumps(e) if isinstance(e, dict) else str(e))
-                    for e in raw_trace_events
-                ]
+                failures.append(
+                    "TraceStreamSplitChainViolation: empty raw trace cannot be "
+                    "supplemented by caller-supplied events"
+                )
 
         # 2. Manifest canonical hash binding
         if canonical_manifest is None:
@@ -3465,7 +3459,13 @@ class VerificationAuthority:
             except Exception as parse_err:
                 failures.append(f"TraceStreamParsingFailed: {parse_err}")
 
-        effective_events = parsed_events if parsed_events else (raw_trace_events or [])
+        # Never substitute caller-supplied events for the recorded raw JSONL.
+        if raw_trace_events is not None and not parsed_events:
+            failures.append(
+                "TraceStreamSplitChainViolation: empty raw trace cannot be "
+                "supplemented by caller-supplied events"
+            )
+        effective_events = parsed_events
 
         # 1. Authoritative EvaluatorFinalizationRecord validation
         fin_record: Any | None = None
@@ -3564,6 +3564,32 @@ class VerificationAuthority:
                 failures.append(
                     f"ManifestHashMismatch: EvaluatorFinalizationRecord execution_manifest_hash "
                     f"'{fin_record.execution_manifest_hash}' != package '{pkg.manifest_hash}'"
+                )
+            if pkg.finalization_hash != fin_record.finalization_hash:
+                failures.append(
+                    f"FinalizationHashMismatch: package={pkg.finalization_hash} "
+                    f"evaluator={fin_record.finalization_hash}"
+                )
+            if pkg.evaluation_hash != fin_record.finalization_hash:
+                failures.append(
+                    f"EvaluationHashMismatch: package={pkg.evaluation_hash} "
+                    f"evaluator={fin_record.finalization_hash}"
+                )
+            package_decision = str((pkg.decision or {}).get("decision") or "").lower()
+            expected_decision = "pass" if fin_record.outcome == "pass" else "fail"
+            if package_decision != expected_decision:
+                failures.append(
+                    f"DecisionMismatch: package={package_decision or 'missing'} "
+                    f"evaluator={expected_decision}"
+                )
+            package_score = (pkg.decision or {}).get("score")
+            if (
+                not isinstance(package_score, (int, float))
+                or isinstance(package_score, bool)
+                or float(package_score) != float(fin_record.score)
+            ):
+                failures.append(
+                    f"ScoreMismatch: package={package_score!r} evaluator={fin_record.score!r}"
                 )
 
         # 2. Execution Mode Enforcement (Fail-closed on simulated/provisional)

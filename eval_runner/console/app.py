@@ -15,12 +15,10 @@ from .routes import (
     core_bp,
     demo_bp,
     evidence_bp,
-    hitl_bp,
     register_core_routes,
     run_bp,
     scenario_bp,
     subscribe_debugger,
-    suites_bp,
     system_bp,
     trust_bp,
 )
@@ -182,8 +180,8 @@ def create_app():
     app.register_blueprint(scenario_bp, url_prefix="/api")
     app.register_blueprint(run_bp, url_prefix="/api")
     app.register_blueprint(analyze_bp, url_prefix="/api")
-    app.register_blueprint(suites_bp, url_prefix="/api")
-    app.register_blueprint(hitl_bp, url_prefix="/api")
+    # /suites and /hitl are Control Plane extension routes.  OSS Runtime keeps
+    # the signed extension seam but does not mount enterprise endpoints itself.
     app.register_blueprint(evidence_bp, url_prefix="/api")
     app.register_blueprint(agent_targets_bp)
 

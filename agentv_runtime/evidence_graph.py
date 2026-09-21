@@ -14,12 +14,44 @@ root (Merkle-style single-commit summary).
 from __future__ import annotations
 
 import hashlib
+import json
 from collections.abc import Mapping, Sequence
 from typing import Any
 
 from agentv_runtime.canonical import canonical_json_dumps, canonical_json_encode
 
 EVIDENCE_GRAPH_VERSION = "1.0.0"
+# These are the evaluator's declared result states.  Keeping the complete enum
+# here is strict schema validation, not permissive string coercion.
+_DECLARED_OUTCOMES = frozenset(
+    {"PASS", "FAIL", "INVALID", "SKIPPED", "ERROR", "NOT_APPLICABLE", "NOT_EVALUATED"}
+)
+
+
+def _strict_result_value(result: Mapping[str, Any]) -> bool:
+    """Validate an evaluator result at the evidence trust boundary.
+
+    Evidence must preserve schema semantics; Python truthiness (notably
+    ``bool('false')``) is not an evaluator result.
+    """
+    has_passed = "passed" in result or "success" in result
+    if has_passed:
+        value = result.get("passed") if "passed" in result else result.get("success")
+        if not isinstance(value, bool):
+            raise ValueError("EvidenceResultTypeError: passed/success must be a boolean")
+    else:
+        value = None
+    if "outcome" in result and result.get("outcome") is not None:
+        outcome = result["outcome"]
+        if not isinstance(outcome, str) or outcome.upper() not in _DECLARED_OUTCOMES:
+            raise ValueError(
+                f"EvidenceResultTypeError: outcome must be one of {sorted(_DECLARED_OUTCOMES)}"
+            )
+        outcome_passed = outcome.upper() == "PASS"
+        if value is not None and value != outcome_passed:
+            raise ValueError("EvidenceResultTypeError: passed/success conflicts with outcome")
+        return outcome_passed
+    return bool(value) if value is not None else False
 
 
 def _sha3_hex(data: bytes) -> str:
@@ -311,7 +343,10 @@ def build_evidence_graph_from_events(
             evt, line = item
         else:
             evt = item
-            line = canonical_json_dumps(evt)
+            # This draft-only convenience path mirrors the runtime JSONL writer.
+            # Certification verification never reaches it when raw trace bytes
+            # are available; it always supplies (event, exact_raw_line) tuples.
+            line = json.dumps(evt)
         events_with_lines.append((evt, line))
 
         seq_val = evt.get("_seq") if has_explicit_seq else idx
@@ -337,7 +372,7 @@ def build_evidence_graph_from_events(
                 or ev_data.get("metric")
                 or ev_data.get("assertion")
             )
-            passed_val = (
+            (
                 evt.get("passed")
                 if evt.get("passed") is not None
                 else (
@@ -354,6 +389,8 @@ def build_evidence_graph_from_events(
                 or "status" in evt
                 or any(k in ev_data for k in ("passed", "success", "score", "outcome", "status"))
             )
+            result_fields = dict(ev_data)
+            result_fields.update({k: evt[k] for k in ("passed", "success", "outcome") if k in evt})
             raw_assertions.append(
                 {
                     "source": "trace_event",
@@ -367,7 +404,7 @@ def build_evidence_graph_from_events(
                         or ev_data.get("node")
                         or ev_data.get("node_id")
                     ),
-                    "passed": bool(passed_val),
+                    "passed": _strict_result_value(result_fields),
                     "event_seq": seq_val,
                     "has_result": has_res,
                 }
@@ -385,9 +422,7 @@ def build_evidence_graph_from_events(
                             "oracle_id": m.get("oracle_id") or m.get("metric") or m.get("name"),
                             "metric": m.get("metric") or m.get("name"),
                             "node": node_id,
-                            "passed": (m.get("outcome") == "PASS")
-                            if "outcome" in m
-                            else bool(m.get("success", m.get("passed", False))),
+                            "passed": _strict_result_value(m),
                             "event_seq": seq_val,
                             "has_result": (
                                 "outcome" in m
@@ -409,9 +444,7 @@ def build_evidence_graph_from_events(
                             "oracle_id": or_res.get("oracle_id") or or_res.get("id"),
                             "metric": or_res.get("metric") or or_res.get("name"),
                             "node": node_id,
-                            "passed": (or_res.get("outcome") == "PASS")
-                            if "outcome" in or_res
-                            else bool(or_res.get("success", or_res.get("passed", False))),
+                            "passed": _strict_result_value(or_res),
                             "event_seq": seq_val,
                             "has_result": (
                                 "outcome" in or_res
@@ -431,6 +464,7 @@ def build_evidence_graph_from_events(
             data = evt.get("data") if isinstance(evt.get("data"), dict) else evt
             for a in data.get("assertions", []):
                 if isinstance(a, dict):
+                    _strict_result_value(a)
                     raw_assertions.append(
                         {
                             **a,

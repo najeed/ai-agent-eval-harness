@@ -342,8 +342,8 @@ async def test_default_runner_manifest_persistence_failure(tmp_path, monkeypatch
             return original_dump(obj, fp, *args, **kwargs)
 
         with patch("json.dump", side_effect=_failing_dump):
-            res = await runner.run(scenario, attempts=1)
-            assert res is not None
+            with pytest.raises(OSError, match="Simulated disk error writing manifest"):
+                await runner.run(scenario, attempts=1)
 
 
 @pytest.mark.asyncio
@@ -351,11 +351,6 @@ async def test_default_runner_trace_read_failure_and_assertion_fallbacks(tmp_pat
     runner = DefaultRunner()
     monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
     scenario = {"id": "test_scen_assertions"}
-
-    run_dir = tmp_path / "run_assertions_test"
-    run_dir.mkdir(parents=True, exist_ok=True)
-    # Bad JSON line triggers JSONDecodeError on read
-    (run_dir / "run.jsonl").write_text("invalid json line\n", encoding="utf-8")
 
     sample_attempt = [
         123,  # non-dict inner row to hit line 380
@@ -518,19 +513,12 @@ async def test_runner_otel_and_seeding_branches(tmp_path, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_runner_trace_and_assertion_branches(tmp_path, monkeypatch):
-    import json
 
     runner = DefaultRunner()
     monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
 
     # 1. Trace reading with blank lines, non-dict/non-string metric (12345),
     # and consistency_score metric filtering
-    run_dir = tmp_path / "run_blank_lines"
-    run_dir.mkdir(parents=True, exist_ok=True)
-    (run_dir / "run.jsonl").write_text(
-        "\n  \n" + json.dumps({"event": "node_started", "node_id": "n1"}) + "\n\n",
-        encoding="utf-8",
-    )
     sample_attempt_with_metrics = [
         {
             "workflow_verdict": {"status": "workflow_completed"},

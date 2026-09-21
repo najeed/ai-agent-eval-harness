@@ -290,8 +290,10 @@ class TestInProcessExecutionBackend:
     """Tests for InProcessExecutionBackend."""
 
     def test_inprocess_execution_lifecycle_and_error_handling(self):
+        from uuid import uuid4
+
         backend = InProcessExecutionBackend()
-        run_id = "test-inprocess-exec-run"
+        run_id = f"test-inprocess-exec-run-{uuid4().hex}"
 
         scenario = {
             "id": "mock_exec_scenario",
@@ -901,6 +903,7 @@ class TestAuthAndCatalogExtraBranches:
 
     def test_inprocess_backend_complete_branches(self, tmp_path):
         import threading
+        from uuid import uuid4
 
         from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
 
@@ -914,7 +917,7 @@ class TestAuthAndCatalogExtraBranches:
         assert ev.is_set()
 
         # Line 86: Complete execution while cancel_ev is set
-        run_id_aborted = "run-aborted-001"
+        run_id_aborted = f"run-aborted-{uuid4().hex}"
         ev_aborted = threading.Event()
         ev_aborted.set()
         scenario_data = {"id": "scen_aborted", "metadata": {"name": "Aborted Scen"}}
@@ -941,7 +944,7 @@ class TestAuthAndCatalogExtraBranches:
         assert res is not None
 
         # Resume with checkpoint dict and background=False
-        run_id_chk = "run-chk-resume-003"
+        run_id_chk = f"run-chk-resume-{uuid4().hex}"
         chk_dict = {
             "scenario_data": {"id": "scen_chk", "metadata": {"name": "From Checkpoint"}},
             "checkpoint_id": "c1",

@@ -385,38 +385,11 @@ class DefaultRunner(BaseRunner):
         exec_manifest_hash = exec_manifest.compute_manifest_hash()
 
         run_vault_dir = config.RUN_LOG_DIR / effective_run_id
-        run_vault_dir.mkdir(parents=True, exist_ok=True)
+        if run_vault_dir.exists():
+            raise RuntimeError(
+                f"RunIdCollision: evidence vault already exists for run '{effective_run_id}'"
+            )
         manifest_file = run_vault_dir / "execution_manifest.json"
-        try:
-            with open(manifest_file, "w", encoding="utf-8") as mf:
-                json.dump(exec_manifest.to_dict(), mf, indent=2)
-        except Exception as e:
-            logger.debug("Failed saving execution_manifest.json to run vault: %s", e)
-
-        # For fresh evaluation runs (non-resumed), ensure vault lifecycle and trace begin clean
-        if resumption_checkpoint is None:
-            final_trace_path = run_vault_dir / "run.jsonl"
-            if final_trace_path.exists():
-                try:
-                    final_trace_path.unlink()
-                except OSError:
-                    try:
-                        with open(final_trace_path, "w", encoding="utf-8") as tf:
-                            tf.truncate(0)
-                    except OSError as trunc_err:
-                        logger.debug("Failed truncating stale trace file in runner: %s", trunc_err)
-            lf_file = run_vault_dir / ".run_lifecycle"
-            if lf_file.exists():
-                try:
-                    lf_file.unlink()
-                except OSError as unl_err:
-                    logger.debug("Failed unlinking stale lifecycle marker in runner: %s", unl_err)
-            sealed_file = run_vault_dir / ".sealed"
-            if sealed_file.exists():
-                try:
-                    sealed_file.unlink()
-                except OSError as unl_err:
-                    logger.debug("Failed unlinking stale sealed marker in runner: %s", unl_err)
 
         try:
             events.emit(
@@ -440,6 +413,12 @@ class DefaultRunner(BaseRunner):
                 },
                 span_context=ctx.span_context,
             )
+
+            # The recorder owns creation of a new vault at RUN_START.  The
+            # execution manifest is persisted only after that trace exists.
+            run_vault_dir.mkdir(parents=True, exist_ok=True)
+            with open(manifest_file, "w", encoding="utf-8") as mf:
+                json.dump(exec_manifest.to_dict(), mf, indent=2)
 
             plugins.manager.trigger("before_evaluation", ctx)
 
@@ -576,20 +555,25 @@ class DefaultRunner(BaseRunner):
             from agentv_runtime.finalization import EvaluatorFinalizationRecord
 
             final_trace_path = run_vault_dir / "run.jsonl"
-            trace_events: list[dict[str, Any]] = []
+            trace_events: list[tuple[dict[str, Any], str]] = []
             if final_trace_path.exists():
                 try:
                     with open(final_trace_path, encoding="utf-8") as tf:
                         for line in tf:
                             s = line.strip()
                             if s:
-                                trace_events.append(json.loads(s))
+                                # Evidence roots commit to the recorded JSONL payload,
+                                # not a canonical reserialization of the event object.
+                                trace_events.append((json.loads(s), line.rstrip("\r\n")))
                 except Exception as read_err:
                     logger.debug("Failed reading trace for evidence graph root: %s", read_err)
 
             if not trace_events:
                 for a in collected_assertions:
-                    trace_events.append({"event": "assertion_evaluated", **a})
+                    synthetic_event = {"event": "assertion_evaluated", **a}
+                    from agentv_runtime.canonical import canonical_json_dumps
+
+                    trace_events.append((synthetic_event, canonical_json_dumps(synthetic_event)))
 
             ev_graph = build_evidence_graph_from_events(
                 trace_events, required_oracle_ids=req_oracles

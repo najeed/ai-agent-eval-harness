@@ -500,7 +500,7 @@ class CertificationService:
             # Mandatory scenario and runtime metadata binding
             meta_binding: dict[str, Any] = {}
             embedded_scenario_data: dict[str, Any] | None = None
-            raw_events: list[dict[str, Any]] = []
+            raw_events: list[tuple[dict[str, Any], str]] = []
             try:
                 with open(target_trace, encoding="utf-8") as tf:
                     for line in tf:
@@ -509,7 +509,7 @@ class CertificationService:
                             continue
                         try:
                             rec = json.loads(stripped)
-                            raw_events.append(rec)
+                            raw_events.append((rec, line.rstrip("\r\n")))
                             ev_name = rec.get("event")
                             rec_data = rec.get("data") if isinstance(rec.get("data"), dict) else {}
                             has_scen = bool(rec.get("scenario_id") or rec_data.get("scenario_id"))

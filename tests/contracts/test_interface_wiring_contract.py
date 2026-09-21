@@ -586,6 +586,8 @@ async def test_all_extension_families_exclusive_injection_contract(tmp_path):
     Architectural Contract Test: Assert that injecting custom extension backends
     results in 100% exclusive execution through the injected backends without bypasses.
     """
+    from uuid import uuid4
+
     from agentv_runtime.results import EvaluationResult
     from eval_runner.config_resolver import ConfigResolver, ResolvedRuntimeConfig
     from eval_runner.interfaces.artifact import ArtifactStore
@@ -664,7 +666,7 @@ async def test_all_extension_families_exclusive_injection_contract(tmp_path):
     with patch(
         "eval_runner.session.AgentAdapterRegistry.call_agent", AsyncMock(side_effect=_agent_mock_1)
     ):
-        results = await runner.run(scenario, attempts=1, run_id="run-exclusive-001")
+        results = await runner.run(scenario, attempts=1, run_id=f"run-exclusive-{uuid4().hex}")
 
     assert isinstance(results, EvaluationResult)
     assert results.pass_at_k == 1.0
@@ -681,6 +683,8 @@ def test_inprocess_backend_executes_injected_dependency_graph():
     Contract Test: InProcessExecutionBackend.submit() executes using the injected
     dependency graph, never bypassing injected enterprise implementations.
     """
+    from uuid import uuid4
+
     from eval_runner.interfaces.artifact import ArtifactStore
     from eval_runner.interfaces.policy import PolicyEvaluationResult, PolicyEvaluator
     from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
@@ -733,7 +737,7 @@ def test_inprocess_backend_executes_injected_dependency_graph():
     with patch(
         "eval_runner.session.AgentAdapterRegistry.call_agent", AsyncMock(side_effect=_agent_mock_2)
     ):
-        results = backend.submit("injected_run_001", scenario, background=False)
+        results = backend.submit(f"injected-run-{uuid4().hex}", scenario, background=False)
 
     assert results is not None
     assert mock_policy.evaluate_policy.called

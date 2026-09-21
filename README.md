@@ -48,10 +48,10 @@ graph TD
 | Attribute | Specification |
 | :--- | :--- |
 | **License** | Apache License 2.0 |
-| **Status** | 🟢 Production-Ready (NIST AI-100-1 & 2026 Audit Ready) |
-| **Version** | v2.0.0 (September 2026 Release) |
+| **Status** | 🟢 RC1 (NIST AI-100-1 & 2026 Audit Hardened) |
+| **Version** | v2.0.0 RC1 (September 2026 Release) |
 | **Trust Model** | [Behavioral DNA & VC v3.0.0](docs/src/content/docs/spec/trust_v3.md) |
-| **Architecture** | [3-Pillar Enterprise Verification OS](docs/src/content/docs/evaluator/visual-suite.md) |
+| **Architecture** | [3-Pillar Enterprise Verification OS](docs/src/content/docs/builder/architecture.md) |
 | **Quick Links** | [Quickstart](#zero-key-quickstart-get-running-now) • [AES v1.4 Spec](docs/src/content/docs/spec/aes_schema.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
 
 

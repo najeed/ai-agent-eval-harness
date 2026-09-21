@@ -25,12 +25,12 @@ def _make_finalization_event(
 
     from agentv_runtime.manifest import ExecutionManifest
 
-    parsed = []
+    parsed: list[tuple[dict[str, Any], str]] = []
     for line in events:
-        line = line.strip()
-        if line:
+        raw_line = line.rstrip("\r\n")
+        if raw_line.strip():
             try:
-                parsed.append(json.loads(line))
+                parsed.append((json.loads(raw_line), raw_line))
             except Exception:
                 pass
 

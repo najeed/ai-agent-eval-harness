@@ -629,11 +629,7 @@ def test_verification_authority_split_and_manifest_tamper_detection():
         b'{"event": "run_end", "_seq": 3}\n'
     )
     trace_hash = f"sha3_256:{hashlib.sha3_256(raw_trace_bytes).hexdigest()}"
-    raw_events = [
-        {"event": "run_start", "_seq": 1, "data": {}},
-        {"event": "assertion_evaluated", "_seq": 2, "assertion": "oracle_1", "passed": True},
-        {"event": "run_end", "_seq": 3, "data": {}},
-    ]
+    raw_events = [json.loads(line) for line in raw_trace_bytes.splitlines() if line.strip()]
     parsed_stream = [
         (json.loads(line), line.decode("utf-8").strip())
         for line in raw_trace_bytes.splitlines()

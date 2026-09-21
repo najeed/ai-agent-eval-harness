@@ -317,6 +317,11 @@ Usage: agentv <command> [options]
     run_parser.add_argument("-f", "--force", action="store_true")
     run_parser.add_argument("--output")
     run_parser.add_argument("--run-log-dir")
+    run_parser.add_argument(
+        "--execution-mode",
+        choices=["live", "hybrid", "simulated"],
+        help="Authoritative execution mode recorded in the immutable run trace",
+    )
     run_parser.add_argument("--plugin", "--plugins", action="append")
     _add_pqc_args(run_parser)
 
