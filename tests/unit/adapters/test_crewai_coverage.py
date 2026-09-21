@@ -81,3 +81,23 @@ async def test_crewai_allows_synchronous_kickoff_without_timeout(
 
     assert result["status"] == "success", result
     assert result["output"] == "hello"
+
+
+@pytest.mark.asyncio
+async def test_crewai_executes_kickoff_async_when_native_async_is_absent(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class LegacyAsyncCrew:
+        def __init__(self) -> None:
+            self.kickoff_async = AsyncMock(return_value=SimpleNamespace(raw="CERTIFIED"))
+
+    crew = LegacyAsyncCrew()
+    crewai_module = SimpleNamespace(Crew=LegacyAsyncCrew, __version__="1.15.22")
+    monkeypatch.setattr(crewai.importlib, "import_module", lambda name: crewai_module)
+
+    result = await CrewAIAdapterPlugin().execute_crewai_task(
+        {"task_id": "test-task", "metadata": {"crew": crew}, "inputs": {"message": "hello"}}
+    )
+
+    assert result["status"] == "success", result
+    crew.kickoff_async.assert_awaited_once_with(inputs={"message": "hello"})

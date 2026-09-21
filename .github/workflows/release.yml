@@ -9,7 +9,68 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
+  adapter-certification:
+    name: Release adapter interoperability certification
+    runs-on: ubuntu-latest
+    environment: adapter-certification
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install pinned adapter dependencies
+        run: |
+          pip install '.[provider-gemini,frameworks]' pytest pytest-asyncio pytest-aiohttp
+
+      - name: Require protected certification targets
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          XAI_MODEL: ${{ vars.XAI_MODEL }}
+          OLLAMA_API_URL: ${{ vars.OLLAMA_API_URL }}
+          OLLAMA_MODEL: ${{ vars.OLLAMA_MODEL }}
+          LANGSERVE_CERTIFICATION_URL: ${{ vars.LANGSERVE_CERTIFICATION_URL }}
+          LANGGRAPH_CERTIFICATION_URL: ${{ vars.LANGGRAPH_CERTIFICATION_URL }}
+          LANGGRAPH_CERTIFICATION_ASSISTANT_ID: ${{ vars.LANGGRAPH_CERTIFICATION_ASSISTANT_ID }}
+          AG2_CERTIFICATION_AGENT_PATH: ${{ vars.AG2_CERTIFICATION_AGENT_PATH }}
+          CREWAI_CERTIFICATION_CREW_PATH: ${{ vars.CREWAI_CERTIFICATION_CREW_PATH }}
+        run: |
+          required=(OPENAI_API_KEY OPENAI_MODEL ANTHROPIC_API_KEY ANTHROPIC_MODEL GOOGLE_API_KEY GEMINI_MODEL XAI_API_KEY XAI_MODEL OLLAMA_API_URL OLLAMA_MODEL LANGSERVE_CERTIFICATION_URL LANGGRAPH_CERTIFICATION_URL LANGGRAPH_CERTIFICATION_ASSISTANT_ID AG2_CERTIFICATION_AGENT_PATH CREWAI_CERTIFICATION_CREW_PATH)
+          for name in "${required[@]}"; do
+            test -n "${!name}" || { echo "Missing protected adapter certification setting: $name"; exit 1; }
+          done
+
+      - name: Certify real provider and framework interoperability
+        env:
+          AGENTV_ADAPTER_CERTIFICATION: '1'
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          XAI_MODEL: ${{ vars.XAI_MODEL }}
+          OLLAMA_API_URL: ${{ vars.OLLAMA_API_URL }}
+          OLLAMA_MODEL: ${{ vars.OLLAMA_MODEL }}
+          LANGSERVE_CERTIFICATION_URL: ${{ vars.LANGSERVE_CERTIFICATION_URL }}
+          LANGGRAPH_CERTIFICATION_URL: ${{ vars.LANGGRAPH_CERTIFICATION_URL }}
+          LANGGRAPH_CERTIFICATION_ASSISTANT_ID: ${{ vars.LANGGRAPH_CERTIFICATION_ASSISTANT_ID }}
+          AG2_CERTIFICATION_AGENT_PATH: ${{ vars.AG2_CERTIFICATION_AGENT_PATH }}
+          CREWAI_CERTIFICATION_CREW_PATH: ${{ vars.CREWAI_CERTIFICATION_CREW_PATH }}
+        run: pytest tests/integration/test_adapter_interoperability.py -m adapter_certification -q -rs
+
   build-and-publish:
+    needs: adapter-certification
     runs-on: ubuntu-latest
 
     steps:

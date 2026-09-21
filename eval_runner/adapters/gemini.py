@@ -654,7 +654,10 @@ class GeminiAdapterPlugin(BaseEvalPlugin, BaseAdapter):
 
         safety_settings = payload.get("safety_settings")
         if safety_settings is not None:
-            request["safety_settings"] = deepcopy(safety_settings)
+            raise ValueError(
+                "Gemini Interactions API does not support custom safety_settings. "
+                "Use api_mode='generate_content' when custom safety settings are required."
+            )
 
         generation_config = self._build_generation_config(payload)
 

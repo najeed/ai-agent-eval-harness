@@ -15,17 +15,424 @@ Covers:
     (all primary keys, secondary substring scan, no match, emit on non-final)
 """
 
+from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import aiohttp
 import pytest
 
 from eval_runner.adapters.common import (
+    AdapterExecutionContext,
+    AdapterRetryError,
+    AdapterSessionPool,
     AESCallbackHandler,
     BaseAdapter,
     DualNormalizationHub,
     SessionManager,
+    bounded_text,
+    build_request_headers,
+    canonical_json,
+    coerce_timeout,
+    is_mapping,
+    is_retryable_http_status,
+    iter_sse_events,
+    json_safe,
+    read_response_bytes,
+    read_response_json,
+    read_response_text,
+    redact_mapping,
+    request_json,
+    retry_after_seconds,
+    serialize_json_bytes,
+    traceparent_from_payload,
+    validate_http_endpoint,
 )
+
+
+def test_common_serialization_and_timeout_utilities() -> None:
+    class Model:
+        def model_dump(self, *, mode: str) -> dict[str, object]:
+            assert mode == "json"
+            return {"value": {"nested": "ok"}}
+
+    assert is_mapping({})
+    assert not is_mapping([])
+    assert coerce_timeout("2.5", default=10) == 2.5
+    assert coerce_timeout(0, default=10) == 10
+    assert coerce_timeout("invalid", default=10) == 10
+    assert json_safe(Model()) == {"value": {"nested": "ok"}}
+    assert json_safe({"x": [1, 2]}) == {"x": [1, 2]}
+    assert canonical_json({"b": 1, "a": 2}) == '{"a":2,"b":1}'
+    assert serialize_json_bytes({"a": "é"}) == b'{"a":"\xc3\xa9"}'
+    assert bounded_text("éé", max_bytes=3) == "é�"
+
+
+@pytest.mark.parametrize("endpoint", ["", "ftp://example.com", "http:///missing-host"])
+def test_validate_http_endpoint_rejects_invalid_values(endpoint: str) -> None:
+    with pytest.raises(ValueError):
+        validate_http_endpoint(endpoint)
+
+
+def test_headers_trace_context_redaction_and_retry_after() -> None:
+    traceparent = "00-0123456789abcdef0123456789abcdef-0123456789abcdef-01"
+    payload = {"span_context": {"traceparent": traceparent}}
+
+    assert traceparent_from_payload(payload) == traceparent
+    assert traceparent_from_payload({"span_context": {"traceparent": "invalid"}}) is None
+    headers = build_request_headers(
+        payload,
+        headers={"X-Test": "value", "X-Unsafe": "line\nbreak"},
+        accept="application/json",
+        content_type="application/json",
+    )
+    assert headers == {
+        "traceparent": traceparent,
+        "X-Test": "value",
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+    }
+    assert redact_mapping({"token": "secret", "nested": {"safe": "ok"}})["token"] == "<redacted>"
+    assert retry_after_seconds(SimpleNamespace(headers={"Retry-After": "2"})) == 2.0
+    assert retry_after_seconds(SimpleNamespace(headers={"Retry-After": "invalid"})) is None
+
+
+def test_execution_context_and_callback_error_tool_contracts() -> None:
+    pool = MagicMock()
+    context = AdapterExecutionContext(
+        pool=pool,
+        payload={"headers": {"X-Request": "ok"}, "task": "run"},
+        metadata={"openai": {"model": "metadata-model"}},
+        span_context={"traceparent": "trace"},
+        timeout="2",
+    )
+    assert context.timeout == 2.0
+    assert context.request_headers == {"X-Request": "ok"}
+    assert context.provider_config("openai") == {
+        "model": "metadata-model",
+        "headers": {"X-Request": "ok"},
+        "task": "run",
+    }
+
+    callback = AESCallbackHandler("langgraph", "graph", {"trace": "context"})
+    with patch("eval_runner.adapters.common.emit") as emit:
+        callback.on_chain_error(ValueError("chain"))
+        callback.on_node_error(ValueError("node"))
+        callback.on_llm_error(ValueError("llm"))
+        callback.on_tool_start({"name": "lookup"}, "secret input")
+        callback.on_tool_end({"ok": True})
+        callback.on_tool_error(ValueError("tool"))
+        callback.on_agent_action(SimpleNamespace(tool="lookup", tool_input={"q": "x"}))
+        callback.on_agent_finish(SimpleNamespace(return_values={"done": True}))
+    assert emit.call_count == 8
+    assert all(call.kwargs["span_context"] == {"trace": "context"} for call in emit.call_args_list)
+
+
+def test_common_utility_failure_and_fallback_paths() -> None:
+    class BrokenModel:
+        def __str__(self) -> str:
+            return "broken-model"
+
+        def model_dump(self, *, mode: str) -> object:
+            raise RuntimeError(mode)
+
+        def dict(self) -> object:
+            raise RuntimeError("dict")
+
+    assert json_safe(BrokenModel()) == "broken-model"
+    assert json_safe({"deep": {"more": "value"}}, max_depth=1) == {"deep": "<max-depth>"}
+    assert redact_mapping({"values": list(range(1002))})["values"][-1] == 999
+    assert validate_http_endpoint(" https://example.test/path ") == "https://example.test/path"
+    assert is_mapping(SimpleNamespace()) is False
+
+
+def test_callback_and_normalizer_remaining_contract_branches() -> None:
+    callback = AESCallbackHandler("adapter", "id")
+    assert callback._safe_type_summary(None) == "NoneType"
+    assert callback._summarize_inputs([1, "two"]) == {
+        "container": "list",
+        "length": 2,
+        "item_types": ["int", "str"],
+    }
+    assert callback._extract_usage(
+        SimpleNamespace(response_metadata={"usage": {"input_tokens": 2, "output_token_count": 3}})
+    ) == {"prompt_tokens": 2, "completion_tokens": 3, "total_tokens": 5}
+    with patch("eval_runner.adapters.common.canonical_json", side_effect=ValueError("bad")):
+        assert callback._state_hash_and_summary({"x": 1}) == (
+            None,
+            {"error": "serialization_failed"},
+        )
+    with patch("eval_runner.adapters.common.emit") as emit:
+        callback.on_node_start({"id": ["graph", "node"]}, [1])
+        callback.on_node_start({"name": "named"}, {})
+        callback.on_llm_start({"id": "model"}, [])
+    assert emit.call_count == 3
+
+    assert DualNormalizationHub.normalize(None) == "error"
+    assert DualNormalizationHub.normalize(["not-a-mapping"]) == "error"
+    assert DualNormalizationHub.normalize({"content": ""}) == "final_answer"
+    assert DualNormalizationHub.normalize({"answer": 0}) == "final_answer"
+    assert DualNormalizationHub.normalize({"other_status": "processing"}) == "processing"
+    assert (
+        DualNormalizationHub.normalize({"status": "waiting"}, overrides={"waiting": "hitl_pause"})
+        == "hitl_pause"
+    )
+    assert (
+        DualNormalizationHub.normalize(
+            {"phase": "done"}, schema={"status_field": "phase", "mapping": {"done": "completed"}}
+        )
+        == "completed"
+    )
+
+
+@pytest.mark.asyncio
+async def test_common_remaining_utility_and_lifecycle_boundaries() -> None:
+    assert traceparent_from_payload(None) is None
+    assert traceparent_from_payload({"span_context": {"traceparent": 3}}) is None
+    zero_traceparent = "00-" + "0" * 32 + "-0123456789abcdef-01"
+    assert traceparent_from_payload({"span_context": {"traceparent": zero_traceparent}}) is None
+    assert build_request_headers(headers={2: "ignored", "X-Int": 3}) == {"X-Int": "3"}
+    assert redact_mapping({"nested": {"value": "x"}}, max_depth=1) == {"nested": "<max-depth>"}
+    assert retry_after_seconds(SimpleNamespace(headers={})) is None
+    assert retry_after_seconds(SimpleNamespace(headers={"X-Other": "value"})) is None
+    retry_date = SimpleNamespace(headers={"Retry-After": "Sun, 06 Nov 1994 08:49:37 GMT"})
+    assert retry_after_seconds(retry_date) == 0.0
+    assert not is_retryable_http_status("bad")
+
+    with pytest.raises(RuntimeError, match="valid UTF-8"):
+        await read_response_json(SimpleNamespace(content=_Chunks([b"\xff"])))
+
+    async def sse_chunks():
+        yield b"retry: 100\n"
+        yield b"data: final\n"
+
+    assert [event async for event in iter_sse_events(sse_chunks())] == [
+        {"event": "message", "id": "", "retry": "100", "data": "final"}
+    ]
+
+    SessionManager.reset()
+    assert isinstance(SessionManager.pool(), AdapterSessionPool)
+    injected = MagicMock()
+    injected.get_session = AsyncMock(return_value="session")
+    adapter = BaseAdapter("injected", session_pool=injected)
+    assert adapter.get_pool() is injected
+    assert await adapter.get_session() == "session"
+    with pytest.raises(ValueError, match="non-empty"):
+        BaseAdapter(" ")
+
+
+@pytest.mark.asyncio
+async def test_common_remaining_bounded_pool_retry_and_callback_branches() -> None:
+    with pytest.raises(ValueError, match="not a valid URL"):
+        validate_http_endpoint("http://[bad")
+    assert build_request_headers(headers={"X-Large": "x" * 20000})["X-Large"]
+    short_traceparent = {"span_context": {"traceparent": "00-short-0123456789abcdef-01"}}
+    invalid_hex_traceparent = {
+        "span_context": {"traceparent": "zz-0123456789abcdef0123456789abcdef-0123456789abcdef-01"}
+    }
+    assert traceparent_from_payload(short_traceparent) is None
+    assert traceparent_from_payload(invalid_hex_traceparent) is None
+    assert retry_after_seconds(SimpleNamespace(headers={"Retry-After": " "})) is None
+    assert retry_after_seconds(SimpleNamespace(headers={"Retry-After": "invalid-date"})) is None
+
+    assert await read_response_bytes(SimpleNamespace(content=_Chunks([b"", b"ok"]))) == b"ok"
+
+    bad_utf8 = SimpleNamespace(content=_Chunks([b"\xff"]), headers={}, status=200)
+    bad_utf8.request_info = None
+    bad_utf8.history = ()
+    bad_utf8.reason = "ok"
+    with pytest.raises(RuntimeError, match="valid UTF-8"):
+        await request_json(
+            _RequestPool(bad_utf8), method="GET", url="https://example.test", max_attempts=1
+        )
+    bad_json = SimpleNamespace(content=_Chunks([b"nope"]), headers={}, status=200)
+    bad_json.request_info = None
+    bad_json.history = ()
+    bad_json.reason = "ok"
+    with pytest.raises(RuntimeError, match="valid JSON"):
+        await request_json(
+            _RequestPool(bad_json), method="GET", url="https://example.test", max_attempts=1
+        )
+
+    async def sse_edges():
+        yield b""
+        yield b"event: edge\n"
+        yield b"id: event-1\nretry: 7\ndata: tail"
+
+    assert [event async for event in iter_sse_events(sse_edges())] == [
+        {"event": "edge", "id": "event-1", "retry": "7", "data": "tail"}
+    ]
+
+    pool = AdapterSessionPool()
+    assert pool._current_loop() is not None
+    assert pool._session_loop(None) is None
+    closed = MagicMock(closed=True)
+    assert not pool._is_usable(closed, None)
+    failing = MagicMock(closed=False)
+    failing.close = AsyncMock(side_effect=RuntimeError("close"))
+    await pool._close_session(failing)
+    timeout = aiohttp.ClientTimeout(total=3)
+    explicit_timeout_pool = AdapterSessionPool(timeout=timeout)
+    assert explicit_timeout_pool._timeout is timeout
+
+    adapter = BaseAdapter("branches")
+    assert adapter._backoff_seconds(1, base_delay=0, max_delay=1) == 0
+    assert adapter._is_retryable_exception(TimeoutError(), set())
+    assert not adapter._is_retryable_exception(ValueError(), set())
+    callback = AESCallbackHandler("adapter", "id")
+    assert callback._summarize_inputs(object()) == "object"
+    callback.on_node_start({"id": "node"}, {})
+    callback.on_tool_start({}, "input")
+    assert DualNormalizationHub.normalize_text(None) == "error"
+    assert DualNormalizationHub.validate_action(None) is None
+
+
+class _Chunks:
+    def __init__(self, chunks: list[bytes]) -> None:
+        self._chunks = chunks
+
+    async def iter_chunked(self, _size: int):
+        for chunk in self._chunks:
+            yield chunk
+
+
+class _ResponseContext:
+    def __init__(self, response: object) -> None:
+        self.response = response
+        self.exited = False
+
+    async def __aenter__(self):
+        return self.response
+
+    async def __aexit__(self, *_args: object) -> bool:
+        self.exited = True
+        return False
+
+
+class _RequestPool:
+    def __init__(self, response: object) -> None:
+        self.context = _ResponseContext(response)
+        self.calls: list[tuple[object, ...]] = []
+
+    def session_request(self, *args: object, **kwargs: object) -> _ResponseContext:
+        self.calls.append((*args, kwargs))
+        return self.context
+
+
+@pytest.mark.asyncio
+async def test_bounded_response_readers_and_sse_parser() -> None:
+    response = SimpleNamespace(content=_Chunks([b'{"value":', b" 1}"]))
+    assert await read_response_bytes(response, max_bytes=32) == b'{"value": 1}'
+    assert await read_response_text(SimpleNamespace(content=_Chunks([b"text"]))) == "text"
+    json_response = SimpleNamespace(content=_Chunks([b'{"ok":true}']))
+    assert await read_response_json(json_response) == {"ok": True}
+    assert await read_response_json(SimpleNamespace(content=_Chunks([])), allow_empty=True) is None
+
+    async def events():
+        yield b": comment\n"
+        yield b"event: update\nid: 7\ndata: first\ndata: second\n\n"
+        yield b"data: tail\n"
+
+    assert [event async for event in iter_sse_events(events())] == [
+        {"event": "update", "id": "7", "retry": "", "data": "first\nsecond"},
+        {"event": "message", "id": "", "retry": "", "data": "tail"},
+    ]
+
+
+@pytest.mark.asyncio
+async def test_bounded_response_readers_reject_invalid_or_oversized_bodies() -> None:
+    with pytest.raises(ValueError, match="max_bytes"):
+        await read_response_bytes(SimpleNamespace(content=_Chunks([])), max_bytes=0)
+    with pytest.raises(RuntimeError, match="exceeded"):
+        await read_response_bytes(SimpleNamespace(content=_Chunks([b"abcd"])), max_bytes=3)
+    with pytest.raises(RuntimeError, match="empty"):
+        await read_response_json(SimpleNamespace(content=_Chunks([])))
+    with pytest.raises(RuntimeError, match="valid JSON"):
+        await read_response_json(SimpleNamespace(content=_Chunks([b"not json"])))
+
+    async def too_large_event():
+        yield b"data: abcdef\n"
+
+    with pytest.raises(RuntimeError, match="SSE event exceeded"):
+        _ = [event async for event in iter_sse_events(too_large_event(), max_event_bytes=2)]
+
+
+@pytest.mark.asyncio
+async def test_session_pool_lifecycle_request_context_and_retry_boundaries() -> None:
+    pool = AdapterSessionPool(connection_limit=0, dns_cache_ttl=-1, keepalive_timeout=-1)
+    loop = __import__("asyncio").get_running_loop()
+    response = object()
+    request_context = _ResponseContext(response)
+    session = MagicMock(closed=False, _loop=loop)
+    session.request.return_value = request_context
+    session.close = AsyncMock()
+    with patch.object(pool, "_build_session", return_value=session):
+        assert await pool.get_session() is session
+        async with pool.session_request("GET", "https://example.test", marker=True) as actual:
+            assert actual is response
+        session.request.assert_called_once_with("GET", "https://example.test", marker=True)
+        session.request = AsyncMock(return_value=response)
+        assert await pool.request("POST", "https://example.test") is response
+        await pool.close()
+    session.close.assert_awaited_once()
+    assert pool.session is None
+
+    adapter = BaseAdapter("retry")
+    with pytest.raises(ValueError, match="max_attempts"):
+        await adapter.call_with_retry(AsyncMock(), max_attempts=0)
+    timeout = AsyncMock(side_effect=TimeoutError("temporary"))
+    with (
+        patch.object(adapter, "_backoff_seconds", return_value=0),
+        pytest.raises(AdapterRetryError),
+    ):
+        await adapter.call_with_retry(timeout, max_attempts=2, deadline=0)
+
+
+@pytest.mark.asyncio
+async def test_request_json_builds_bounded_request_and_surfaces_http_error() -> None:
+    response = SimpleNamespace(
+        content=_Chunks([b'{"answer":42}']),
+        headers={"X-Result": "yes"},
+        status=201,
+        request_info=None,
+        history=(),
+        reason="created",
+    )
+    pool = _RequestPool(response)
+    decoded, status, headers = await request_json(
+        pool,
+        method="POST",
+        url="https://example.test/v1",
+        payload={"q": 1},
+        headers={"X-Test": 1},
+        cookies={"cookie": 2},
+        expected_statuses={201},
+        max_attempts=1,
+    )
+    assert (decoded, status, headers) == ({"answer": 42}, 201, {"X-Result": "yes"})
+    assert pool.context.exited
+    assert pool.calls[0][0:2] == ("POST", "https://example.test/v1")
+    request_kwargs = pool.calls[0][2]
+    assert request_kwargs["json"] == {"q": 1}
+    assert request_kwargs["headers"] == {"X-Test": "1"}
+    assert request_kwargs["cookies"] == {"cookie": "2"}
+
+    error_response = SimpleNamespace(
+        content=_Chunks([b'{"error":"no"}']),
+        headers={},
+        status=400,
+        request_info=None,
+        history=(),
+        reason="bad request",
+    )
+    with pytest.raises(aiohttp.ClientResponseError) as exc:
+        await request_json(
+            _RequestPool(error_response),
+            method="GET",
+            url="https://example.test",
+            max_attempts=1,
+        )
+    assert exc.value.status == 400
+
 
 # ---------------------------------------------------------------------------
 # SessionManager

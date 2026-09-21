@@ -1,6 +1,6 @@
 import sys
 from types import ModuleType
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -46,13 +46,17 @@ async def test_crewai_adapter_real_integration():
 
     subscribe(listener)
     try:
-        # We need to mock the actual execution of the crew to avoid needing an LLM
-        # but we want to verify the adapter calls kickoff() correctly.
-        with patch.object(Crew, "kickoff", return_value="real crew success"):
+        # Preserve real Crew construction while replacing only the model-executing
+        # native boundary. Current CrewAI exposes akickoff(), which is the
+        # adapter's preferred path and must be the method verified here.
+        with patch.object(
+            Crew, "akickoff", new=AsyncMock(return_value="real crew success")
+        ) as akickoff:
             result = await adapter.execute_crewai_task(payload)
 
             assert result["status"] == "success"
             assert "real crew success" in result["output"]
+            akickoff.assert_awaited_once()
             # Verify telemetry via event bus subscription
             assert "chain_start" in events_captured
             assert "chain_end" in events_captured
