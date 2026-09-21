@@ -160,6 +160,7 @@ markers = [
     "ui: UI tests using playwright",
     "asyncio: mark test as an asyncio test",
     "live: environment-gated integration tests running against CycleCore",
+    "adapter_certification: opt-in real provider and framework interoperability tests",
     "acceptance: AgentV product acceptance tests",
     "acceptance_release: release-blocking acceptance tests",
 ]

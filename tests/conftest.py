@@ -267,6 +267,10 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "live: environment-gated integration tests running against CycleCore"
     )
+    config.addinivalue_line(
+        "markers",
+        "adapter_certification: opt-in real provider and framework interoperability tests",
+    )
 
     if os.getenv(_MEMORY_FORENSICS_ENV, "").strip().lower() in {"1", "true", "yes", "on"}:
         try:
