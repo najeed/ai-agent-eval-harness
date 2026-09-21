@@ -17,8 +17,8 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-      - name: Install pinned adapter dependencies
-        run: pip install '.[provider-gemini,frameworks]' pytest pytest-asyncio pytest-aiohttp
+      - name: Install declared development and adapter dependencies
+        run: pip install -r requirements-dev.txt
       - name: Detect protected certification targets
         id: targets
         env:
