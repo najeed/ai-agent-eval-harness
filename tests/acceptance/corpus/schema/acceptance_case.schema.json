@@ -86,9 +86,13 @@
             },
             "final_state": {
               "type": "object"
+            },
+            "oracle_url": {
+              "type": "string",
+              "format": "uri"
             }
           },
-          "additionalProperties": true
+          "additionalProperties": false
         },
         "policy": {
           "type": "object",
@@ -103,7 +107,7 @@
               ]
             }
           },
-          "additionalProperties": true
+          "additionalProperties": false
         },
         "evidence": {
           "type": "object",

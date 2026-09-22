@@ -22,14 +22,21 @@ class TraceReader:
         if not self.trace_path.exists():
             return
         with open(self.trace_path, encoding="utf-8") as f:
-            for line in f:
+            for line_number, line in enumerate(f, start=1):
                 line = line.strip()
                 if not line:
                     continue
                 try:
-                    self.events.append(json.loads(line))
-                except json.JSONDecodeError:
-                    continue
+                    event = json.loads(line)
+                except json.JSONDecodeError as exc:
+                    raise ValueError(
+                        f"Malformed JSONL evidence at {self.trace_path}:{line_number}"
+                    ) from exc
+                if not isinstance(event, dict):
+                    raise ValueError(
+                        f"Trace record at {self.trace_path}:{line_number} must be a JSON object"
+                    )
+                self.events.append(event)
 
     @property
     def run_end_event(self) -> dict[str, Any] | None:
@@ -128,7 +135,7 @@ class TraceReader:
         """
         if any(ev.get("event") == "verification_certificate_issued" for ev in self.events):
             return True
-        receipt_path = self.path.parent / "certification_receipt.json"
+        receipt_path = self.trace_path.parent / "certification_receipt.json"
         return receipt_path.is_file()
 
 

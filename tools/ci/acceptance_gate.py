@@ -21,6 +21,8 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
+import yaml
+
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
 
@@ -38,7 +40,7 @@ class GateDecision:
     reasons: list[str]
 
 
-def evaluate_summary(summary: dict[str, Any]) -> GateDecision:
+def evaluate_summary(summary: dict[str, Any], suite: dict[str, Any] | None = None) -> GateDecision:
     """Evaluates acceptance summary against strict release certification thresholds."""
     total = int(summary.get("total_cases", 0))
     passed_cases = int(summary.get("passed_cases", 0))
@@ -49,21 +51,30 @@ def evaluate_summary(summary: dict[str, Any]) -> GateDecision:
     evid = int(summary.get("evidence_failures", 0))
     err = int(summary.get("execution_errors", 0))
 
+    thresholds = (suite or {}).get("thresholds", {})
+    expected_case_ids = {Path(str(case)).stem for case in (suite or {}).get("cases", [])}
+    observed_case_ids = {str(result.get("case_id", "")) for result in summary.get("results", [])}
     reasons: list[str] = []
 
     if total == 0:
         reasons.append("Zero acceptance cases evaluated; suite cannot be empty.")
     if failed_cases > 0:
         reasons.append(f"{failed_cases} acceptance test case(s) failed.")
-    if fn > 0:
+    if expected_case_ids != observed_case_ids:
+        reasons.append(
+            "Suite membership mismatch: "
+            f"missing={sorted(expected_case_ids - observed_case_ids)}, "
+            f"unexpected={sorted(observed_case_ids - expected_case_ids)}."
+        )
+    if fn > int(thresholds.get("allow_false_negatives", 0)):
         reasons.append(f"CRITICAL: {fn} False Negative(s) detected. Release blocked.")
-    if fp > 0:
+    if fp > int(thresholds.get("allow_false_positives", 0)):
         reasons.append(f"CRITICAL: {fp} False Positive(s) detected. Release blocked.")
-    if sec > 0:
+    if sec > int(thresholds.get("allow_security_failures", 0)):
         reasons.append(f"CRITICAL: {sec} Security Failure(s) detected. Release blocked.")
-    if evid > 0:
+    if evid > int(thresholds.get("allow_evidence_failures", 0)):
         reasons.append(f"CRITICAL: {evid} Evidence Integrity Failure(s) detected. Release blocked.")
-    if err > 0:
+    if err > int(thresholds.get("allow_execution_errors", 0)):
         reasons.append(f"CRITICAL: {err} Execution Error(s) detected. Release blocked.")
 
     gate_passed = len(reasons) == 0
@@ -93,6 +104,11 @@ def main() -> int:
         help="Path to directory containing acceptance-summary.json",
     )
     parser.add_argument(
+        "--manifest",
+        default="tests/acceptance/manifests/release.yaml",
+        help="Authoritative acceptance suite manifest defining cases and thresholds",
+    )
+    parser.add_argument(
         "--json",
         action="store_true",
         help="Output machine-readable JSON gate evaluation",
@@ -116,7 +132,15 @@ def main() -> int:
         print(f"[ACCEPTANCE GATE] ERROR: Failed to parse summary: {e}", file=sys.stderr)
         return 1
 
-    decision = evaluate_summary(summary)
+    manifest_path = Path(args.manifest)
+    if not manifest_path.is_absolute():
+        manifest_path = (REPO_ROOT / manifest_path).resolve()
+    try:
+        suite = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        print(f"[ACCEPTANCE GATE] ERROR: Invalid suite manifest: {exc}", file=sys.stderr)
+        return 1
+    decision = evaluate_summary(summary, suite)
 
     if args.json:
         print(json.dumps(asdict(decision), indent=2))

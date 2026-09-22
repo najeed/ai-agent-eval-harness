@@ -29,15 +29,43 @@ jobs:
 
   acceptance-release:
     name: Acceptance Release Certification Gate
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Require pinned independent oracle source
+        env:
+          TESTER_REPOSITORY: ${{ vars.AGENTV_TESTER_REPOSITORY }}
+          TESTER_SHA: ${{ vars.AGENTV_TESTER_SHA }}
+          TESTER_TOKEN: ${{ secrets.AGENTV_TESTER_READ_TOKEN }}
+        run: |
+          test -n "$TESTER_REPOSITORY" || { echo 'AGENTV_TESTER_REPOSITORY is required.' >&2; exit 1; }
+          test -n "$TESTER_SHA" || { echo 'AGENTV_TESTER_SHA is required.' >&2; exit 1; }
+          test -n "$TESTER_TOKEN" || { echo 'AGENTV_TESTER_READ_TOKEN is required.' >&2; exit 1; }
+      - name: Checkout pinned independent oracle
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.AGENTV_TESTER_REPOSITORY }}
+          ref: ${{ vars.AGENTV_TESTER_SHA }}
+          token: ${{ secrets.AGENTV_TESTER_READ_TOKEN }}
+          path: .ci/agentv-tester
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
+      - name: Start and prove independent acceptance oracle
+        env:
+          ACCEPTANCE_ORACLE_DB: ${{ github.workspace }}/.ci/oracle.sqlite
+        run: |
+          python -m pip install flask
+          PYTHONPATH="$GITHUB_WORKSPACE/.ci/agentv-tester" python "$GITHUB_WORKSPACE/.ci/agentv-tester/server/run_acceptance_oracle.py" > oracle.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            curl --fail --silent http://127.0.0.1:8099/acceptance-oracle/state && exit 0
+            sleep 1
+          done
+          cat oracle.log
+          exit 1
       - name: Build Visual Console and install Chromium
         run: |
           npm ci --prefix ui/visual-console
@@ -47,8 +75,10 @@ jobs:
         run: pytest -m acceptance_release tests/ui/test_visual_console_ui.py tests/ui/test_verification_workflow_journey.py --junitxml=reports/acceptance-release.xml
         env:
           AGENTV_REQUIRE_BROWSER_ACCEPTANCE: '1'
+          AGENTV_REQUIRE_EXTERNAL_ORACLE: '1'
+          AGENTV_ACCEPTANCE_ORACLE_URL: http://127.0.0.1:8099/acceptance-oracle
       - name: Enforce Release Certification Gate
-        run: python tools/ci/acceptance_gate.py --report-dir reports/acceptance/latest
+        run: python tools/ci/acceptance_gate.py --report-dir reports/acceptance/latest --manifest tests/acceptance/manifests/release.yaml
       - name: Upload Acceptance Artifacts
         uses: actions/upload-artifact@v4
         if: always()

@@ -30,7 +30,8 @@ class AcceptanceReportAggregator:
         passed = sum(1 for r in self.results if r.accepted)
         failed = sum(1 for r in self.results if not r.accepted)
 
-        # Categorized failures
+        # Typed confusion-matrix accounting.  Never classify a failure by
+        # scanning its human-readable message.
         false_negatives = 0
         false_positives = 0
         security_failures = 0
@@ -39,20 +40,25 @@ class AcceptanceReportAggregator:
 
         for r in self.results:
             if not r.accepted:
-                for f in r.failures:
-                    f_lower = f.lower()
-                    if "false_negative" in f_lower:
-                        false_negatives += 1
-                    elif "false_positive" in f_lower:
-                        false_positives += 1
-                    elif (
-                        "security" in f_lower or "unauthorized" in f_lower or "injection" in f_lower
-                    ):
-                        security_failures += 1
-                    elif "evidence" in f_lower or "certificate" in f_lower or "sealed" in f_lower:
-                        evidence_failures += 1
-                    elif "execution_status" in f_lower or "error" in f_lower:
-                        execution_errors += 1
+                expected_decision = str(r.expected.get("policy", {}).get("decision", "")).upper()
+                observed_decision = str(r.actual.get("policy", {}).get("decision", "")).upper()
+                if (
+                    expected_decision in {"BLOCK", "REJECT", "REQUIRE_HITL"}
+                    and observed_decision == "ALLOW"
+                ):
+                    false_negatives += 1
+                elif expected_decision == "ALLOW" and observed_decision in {
+                    "BLOCK",
+                    "REJECT",
+                    "REQUIRE_HITL",
+                }:
+                    false_positives += 1
+                if r.category == "security":
+                    security_failures += 1
+                if any(f.startswith("Required evidence") for f in r.failures):
+                    evidence_failures += 1
+                if any(f.startswith("Expected execution_status") for f in r.failures):
+                    execution_errors += 1
 
         return {
             "timestamp": datetime.now(UTC).isoformat(),

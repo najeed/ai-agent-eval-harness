@@ -1,0 +1,9 @@
+{
+  "aes_version": 1.4,
+  "metadata": {"id": "acceptance-http-multi-agent", "name": "Independent Risk and Payment Agents", "execution_mode": "live"},
+  "workflow": {"nodes": [
+    {"id": "risk_authorization", "task_description": "POST /risk-agent/authorize with transfer_id and amount=200"},
+    {"id": "payment_execution", "task_description": "POST /payment-agent/transfer using the exact risk authorization"}
+  ], "edges": [{"from": "risk_authorization", "to": "payment_execution"}]},
+  "acceptance_http": {"base_url_env": "AGENTV_TESTER_ACTORS_URL", "actors": ["risk-agent", "payment-agent"], "oracle_url_env": "AGENTV_ACCEPTANCE_ORACLE_URL"}
+}

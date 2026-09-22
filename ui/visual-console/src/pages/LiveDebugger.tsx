@@ -632,7 +632,15 @@ export const LiveDebugger: React.FC = () => {
       }
     }
 
-    const workflowNodes = [...scenarioNodesRaw, ...runtimeDiscoveredNodes];
+    // Executed is a forensic projection, never a dimmed plan.  Only
+    // execution_graph_node evidence may place a node in this layer.
+    const plannedNodes = [...scenarioNodesRaw, ...runtimeDiscoveredNodes];
+    const workflowNodes = mode === 'executed'
+      ? plannedNodes.filter((node: any) => {
+          const id = String(node.id || node.scenario_node_id || node.task_id);
+          return executedNodeIds.has(id) || !!node.__runtime_discovered;
+        })
+      : plannedNodes;
 
     if (workflowNodes.length === 0) {
       return {
@@ -870,7 +878,7 @@ export const LiveDebugger: React.FC = () => {
       .filter(e => {
         const plannedEdge = e.id.startsWith('scen-edge-');
         if (mode === 'planned') return plannedEdge;
-        // In executed and divergence modes, keep both planned and executed edges for topology context
+        if (mode === 'executed') return !plannedEdge;
         return true;
       })
       .map(e => {
