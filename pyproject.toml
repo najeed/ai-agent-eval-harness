@@ -42,7 +42,7 @@ dependencies = [
 # 1. Direct Native Provider SDKs
 # (OpenAI, Anthropic, Grok, Ollama connect directly via aiohttp; no external Python SDKs required)
 provider-gemini = [
-    "google-genai==2.24.0",
+    "google-genai==2.25.0",
 ]
 
 # 2. Framework Environments (Evaluated and verified agent architectures)
@@ -65,10 +65,10 @@ framework-crewai = [
 
 # 3. Framework-to-Provider Integrations (LangChain Wrappers)
 langchain-openai = [
-    "langchain-openai==1.6.3",
+    "langchain-openai==1.6.4",
 ]
 langchain-anthropic = [
-    "langchain-anthropic>=1.7.2",
+    "langchain-anthropic>=1.7.3",
 ]
 langchain-gemini = [
     "langchain-google-genai>=4.4.0",
@@ -108,8 +108,8 @@ frameworks = [
 langchain-all = [
     "langchain==1.4.2",
     "langchain-core>=1.6.4",
-    "langchain-openai==1.6.3",
-    "langchain-anthropic>=1.7.2",
+    "langchain-openai==1.6.4",
+    "langchain-anthropic>=1.7.3",
     "langchain-google-genai>=4.4.0",
     "langchain-ollama>=1.1.0",
     "langsmith==0.12.4",
@@ -118,15 +118,15 @@ langchain-all = [
 all = [
     "sentence-transformers==6.1.0",
     "datasets==5.0.1",
-    "google-genai==2.24.0",
+    "google-genai==2.25.0",
     "langchain==1.4.2",
     "langchain-core>=1.6.4",
     "langserve>=0.3.3",
     "langgraph==1.2.12",
     "ag2==1.0.6",
 #    "crewai==1.15.22; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
-    "langchain-openai==1.6.3",
-    "langchain-anthropic>=1.7.2",
+    "langchain-openai==1.6.4",
+    "langchain-anthropic>=1.7.3",
     "langchain-google-genai>=4.4.0",
     "langchain-ollama>=1.1.0",
     "langsmith==0.12.4",
