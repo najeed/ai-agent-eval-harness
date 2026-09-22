@@ -1,6 +1,10 @@
 name: Adapter Certification
 
 on:
+  pull_request:
+    branches: [main, dev]
+  push:
+    branches: [main]
   workflow_dispatch:
   schedule:
     - cron: '0 3 * * 1-5'
@@ -9,6 +13,23 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
 jobs:
+  local-contracts:
+    name: Dependency-backed adapter contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install declared development and framework dependencies
+        run: pip install -r requirements-dev.txt '.[provider-gemini,frameworks]'
+      - name: Verify local adapter contracts
+        env:
+          AGENTV_ADAPTER_CERTIFICATION: '1'
+        run: >-
+          pytest tests/unit/adapters tests/integration/test_adapter_interoperability.py
+          -m 'not live' -q -rs
+
   interoperability:
     name: Live adapter interoperability certification
     runs-on: ubuntu-latest

@@ -8,16 +8,6 @@ omit =
     eval_runner/console/demo_logic.py
     eval_runner/console/gen_demo_assets.py
     eval_runner/console/routes/demo.py
-    # Optional framework adapters are integration surfaces with separately
-    # gated dependency-backed certification suites.  Do not let unavailable
-    # vendor/framework stacks dilute the core-runtime coverage gate.
-    eval_runner/adapters/ag2.py
-    eval_runner/adapters/crewai.py
-    eval_runner/adapters/grok.py
-    eval_runner/adapters/langchain.py
-    eval_runner/adapters/langgraph.py
-    eval_runner/adapters/ollama.py
-    eval_runner/adapters/openapi.py
     tests/*
     tools/*
     */__init__.py
@@ -27,14 +17,6 @@ omit =
 show_missing = True
 precision = 2
 fail_under = 90
-omit =
-    eval_runner/adapters/ag2.py
-    eval_runner/adapters/crewai.py
-    eval_runner/adapters/grok.py
-    eval_runner/adapters/langchain.py
-    eval_runner/adapters/langgraph.py
-    eval_runner/adapters/ollama.py
-    eval_runner/adapters/openapi.py
 exclude_lines =
     pragma: no cover
     def __repr__

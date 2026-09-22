@@ -92,17 +92,55 @@ def journey_console_server(tmp_path_factory):
             "timestamp": "2026-09-19T10:00:00.000Z",
         },
         {
-            "event": "assertion_evaluated",
+            "event": "execution_graph_node",
             "run_id": RUN_ID,
-            "node": "checkout_node",
-            "metric": "db_state_invariance",
-            "oracle_id": "db_state_invariance",
-            "passed": False,
-            "expected": "100",
-            "actual": "80",
-            "causal_node": "checkout_node",
+            "scenario_node_id": "intake",
+            "status": "completed",
             "_seq": 2,
             "timestamp": "2026-09-19T10:00:01.000Z",
+        },
+        {
+            "event": "execution_graph_node",
+            "run_id": RUN_ID,
+            "scenario_node_id": "eligibility",
+            "status": "completed",
+            "_seq": 3,
+            "timestamp": "2026-09-19T10:00:01.100Z",
+        },
+        {
+            "event": "execution_graph_node",
+            "run_id": RUN_ID,
+            "scenario_node_id": "decision",
+            "status": "failed",
+            "failure_class": "STATE_DIVERGENCE",
+            "failure_reason": "db_state_invariance",
+            "_seq": 4,
+            "timestamp": "2026-09-19T10:00:01.200Z",
+        },
+        {
+            "event": "execution_graph_edge",
+            "run_id": RUN_ID,
+            "from_scenario_node_id": "intake",
+            "to_scenario_node_id": "eligibility",
+            "_seq": 5,
+            "timestamp": "2026-09-19T10:00:01.300Z",
+        },
+        {
+            "event": "execution_graph_edge",
+            "run_id": RUN_ID,
+            "from_scenario_node_id": "eligibility",
+            "to_scenario_node_id": "decision",
+            "_seq": 6,
+            "timestamp": "2026-09-19T10:00:01.400Z",
+        },
+        {
+            "event": "PARITY_STATE_DIVERGENCE",
+            "run_id": RUN_ID,
+            "scenario_node_id": "decision",
+            "is_root_cause": True,
+            "state_comparison": {"expected": {"balance": 100}, "actual": {"balance": 80}},
+            "_seq": 7,
+            "timestamp": "2026-09-19T10:00:01.500Z",
         },
         {
             "event": "run_end",
@@ -122,13 +160,35 @@ def journey_console_server(tmp_path_factory):
                     "causal_node": "checkout_node",
                 }
             ],
-            "_seq": 3,
+            "_seq": 8,
             "timestamp": "2026-09-19T10:00:02.000Z",
         },
     ]
     with open(trace_path, "w", encoding="utf-8") as f:
         for ev in events:
             f.write(json.dumps(ev) + "\n")
+
+    (run_vault / "scenario_resolved.json").write_text(
+        json.dumps(
+            {
+                "metadata": {"id": "journey_scenario", "name": "Debugger topology contract"},
+                "workflow": {
+                    "nodes": [
+                        {"id": "intake", "task_description": "Intake"},
+                        {"id": "eligibility", "task_description": "Eligibility"},
+                        {"id": "decision", "task_description": "Decision"},
+                        {"id": "notify", "task_description": "Notify customer"},
+                    ],
+                    "edges": [
+                        {"from": "intake", "to": "eligibility"},
+                        {"from": "eligibility", "to": "decision"},
+                        {"from": "decision", "to": "notify"},
+                    ],
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
 
     # evidence_package.json
     evidence_pkg_path = run_vault / "evidence_package.json"
@@ -337,17 +397,13 @@ def test_verification_workflow_journey_playwright(journey_console_server):
             # ------------------------------------------------------------------
             # Select execution mode: "live"
             mode_select = page.locator("select:has-text('live')")
-            if os.getenv("AGENTV_REQUIRE_BROWSER_ACCEPTANCE") == "1":
-                assert mode_select.count() > 0
-            if mode_select.count() > 0:
-                mode_select.first.select_option("live")
+            assert mode_select.count() > 0
+            mode_select.first.select_option("live")
 
             # Fill in agent endpoint
             endpoint_input = page.locator("input[placeholder*='your-agent']")
-            if os.getenv("AGENTV_REQUIRE_BROWSER_ACCEPTANCE") == "1":
-                assert endpoint_input.count() > 0
-            if endpoint_input.count() > 0:
-                endpoint_input.first.fill("http://127.0.0.1:5001/agent")
+            assert endpoint_input.count() > 0
+            endpoint_input.first.fill("http://127.0.0.1:5001/agent")
 
             # ------------------------------------------------------------------
             # Step 3: Verify Preflight Readiness Probe
@@ -357,8 +413,7 @@ def test_verification_workflow_journey_playwright(journey_console_server):
             assert preflight_btn.count() > 0
 
             # Test switching mode to hybrid updates badge/warning
-            if mode_select.count() > 0:
-                mode_select.first.select_option("hybrid")
+            mode_select.first.select_option("hybrid")
             # When hybrid is selected, it should produce provisional indicators
 
             # ------------------------------------------------------------------
@@ -366,9 +421,33 @@ def test_verification_workflow_journey_playwright(journey_console_server):
             # ------------------------------------------------------------------
             debugger_url = f"{base_url}/debugger?run_id={RUN_ID}"
             page.goto(debugger_url, wait_until="domcontentloaded", timeout=20000)
-            page.wait_for_selector("#root", timeout=10000)
-            # Verify debugger view mounted
-            assert page.locator("#root").count() == 1
+            page.get_by_text("Topology: CANONICAL").wait_for(state="visible", timeout=10000)
+            page.get_by_role("button", name="planned").click()
+            page.wait_for_timeout(250)
+            # Planned topology: exact canonical DAG nodes and branch edges.
+            for node_id in ("intake", "eligibility", "decision", "notify"):
+                page.get_by_test_id(f"rf__node-{node_id}").wait_for(state="visible", timeout=10000)
+            assert page.locator(".react-flow__edge").count() == 3
+
+            # Executed topology derives solely from execution_graph evidence.
+            page.get_by_role("button", name="executed").click()
+            page.get_by_test_id("rf__node-decision").get_by_text(
+                "STATE_DIVERGENCE", exact=True
+            ).wait_for(state="visible", timeout=10000)
+
+            # Divergence layer must expose the terminal planned-but-unexecuted node.
+            page.get_by_role("button", name="divergence", exact=True).click()
+            page.get_by_text("SKIPPED", exact=True).wait_for(state="visible", timeout=10000)
+
+            # Selecting the authoritative root-cause event exposes its structured
+            # expected/actual evidence and does not relabel it as merely suspected.
+            page.locator("button:has-text('PARITY_STATE_DIVERGENCE')").click()
+            page.get_by_text("State Divergence Detected").wait_for(state="visible", timeout=10000)
+            assert page.get_by_text("Root Cause (Confirmed)").is_visible()
+            # ReactDiffViewer may decorate numeric tokens, so assert their
+            # rendered text rather than an implementation-specific text node.
+            assert page.locator("text=100").count() > 0
+            assert page.locator("text=80").count() > 0
 
             # ------------------------------------------------------------------
             # Step 5: Reports / RunDetailView — RCA Failure Summary & Policy Tab
@@ -379,12 +458,8 @@ def test_verification_workflow_journey_playwright(journey_console_server):
 
             # Check for RCA Failure Summary element
             rca_summary = page.locator("[data-testid='rca-failure-summary']")
-            if os.getenv("AGENTV_REQUIRE_BROWSER_ACCEPTANCE") == "1":
-                rca_summary.wait_for(state="visible", timeout=10000)
-                assert rca_summary.count() == 1
-            elif rca_summary.count() == 0:
-                browser.close()
-                return
+            rca_summary.wait_for(state="visible", timeout=10000)
+            assert rca_summary.count() == 1
             text = rca_summary.inner_text()
             assert "checkout_node" in text or "db_state_invariance" in text
             # Verify expected vs actual is rendered
@@ -392,11 +467,7 @@ def test_verification_workflow_journey_playwright(journey_console_server):
 
             # Check Policy Tab: Click Policy & Guardrails
             policy_tab_btn = page.locator("button:has-text('Policy & Guardrails')")
-            if os.getenv("AGENTV_REQUIRE_BROWSER_ACCEPTANCE") == "1":
-                assert policy_tab_btn.count() > 0
-            elif policy_tab_btn.count() == 0:
-                browser.close()
-                return
+            assert policy_tab_btn.count() > 0
             policy_tab_btn.first.click()
             time.sleep(0.3)
 

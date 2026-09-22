@@ -11,6 +11,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock
+from uuid import uuid4
 
 import pytest
 from cryptography.hazmat.primitives import serialization
@@ -476,7 +477,17 @@ def test_inprocess_execution_backend_lifecycle_and_singleton():
     backend2 = InProcessExecutionBackend.get_instance()
     assert backend1 is backend2
 
-    run_id = "run-exec-contract-001"
+    # Keep this backend lifecycle test self-contained.  It verifies background
+    # execution/cancellation state, not the full plugin execution pipeline.
+    def controlled_runner(_scenario: dict[str, Any], *, cancellation_event: Any, **_kwargs: Any):
+        cancellation_event.wait(timeout=2)
+        return {"status": "cancelled" if cancellation_event.is_set() else "completed"}
+
+    backend1.set_dependency_graph(runner_callable=controlled_runner)
+
+    # The Flight Recorder now correctly rejects any pre-existing evidence vault.
+    # A unique ID keeps this lifecycle contract isolated from previous test runs.
+    run_id = f"run-exec-contract-{uuid4().hex}"
     scenario = {
         "id": "exec_test",
         "metadata": {"name": "Execution Contract"},
@@ -513,6 +524,10 @@ def test_inprocess_execution_backend_lifecycle_and_singleton():
     cancelled = backend1.cancel(run_id, reason="Test cancellation")
     assert cancelled is True
     assert backend1.status(run_id)["status"] == "ABORTED"
+    thread = backend1._threads.get(run_id)
+    if thread is not None:
+        thread.join(timeout=5)
+        assert not thread.is_alive(), "background evaluation did not stop after cancellation"
     InProcessExecutionBackend.clear_instance()
 
 
