@@ -131,7 +131,7 @@
 <li><strong><code dir="auto">TraceVerifier</code> &#x26; <code dir="auto">VerificationAuthority</code></strong>: Content-addressable streaming hashing (<code dir="auto">hashlib.sha3_256</code>), Split Package Verification API (<code dir="auto">verify_package_signature_only</code>, <code dir="auto">verify_package_artifacts</code>), canonical scenario hash binding, and Evidence Graph direct provenance enforcement.</li>
 <li><strong><code dir="auto">CertificationService</code></strong>: Authoritative evaluation outcome extraction ensuring terminal execution failures take absolute precedence over caller overrides or heuristic counters.</li>
 <li><strong><code dir="auto">IdentityService</code></strong>: Dual-mode cryptographic signing (Classical Ed25519 and Post-Quantum ML-DSA-65) with strict trust root jail protection.</li>
-<li>Detached Verification Certificate v3 (<code dir="auto">run_manifest.json</code>), Verification Packages (<code dir="auto">.agentv-package.json</code>), and WORM audit trail sealing (<code dir="auto">audit_chain.jsonl</code>).</li>
+<li>Detached Verification Certificate v3 (<code dir="auto">run_manifest.json</code>), Verification Packages (<code dir="auto">.agentv-package.json</code>), and cryptographically tamper-evident audit-chain sealing (<code dir="auto">audit_chain.jsonl</code>). OSS local storage is not WORM; immutable retention requires an external ArtifactStore.</li>
 </ul>
 </li>
 </ol>
