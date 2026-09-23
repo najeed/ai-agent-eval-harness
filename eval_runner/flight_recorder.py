@@ -314,14 +314,12 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                 if run_id and run_id != "unknown":
                     self._run_states[run_id] = "CERTIFICATION_FAILED"
                     self._failed_runs.add(run_id)
-            is_fail_closed = self.is_certification_mode(run_id) or (
-                os.getenv("EVAL_PERSISTENCE_FAIL_CLOSED", "false").lower() == "true"
-            )
-            if is_fail_closed:
-                raise RuntimeError(
-                    f"TracePersistenceError: Failed to persist telemetry "
-                    f"event for run '{run_id}': {e}"
-                ) from e
+            # Losing forensic evidence invalidates the evaluation, regardless
+            # of runtime mode.  Continuing would allow an apparently completed
+            # run with an incomplete audit record.
+            raise RuntimeError(
+                f"TracePersistenceError: Failed to persist telemetry event for run '{run_id}': {e}"
+            ) from e
 
     def finalize_run(self, run_id: str | None = None):
         """
@@ -539,6 +537,47 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                 ) from lc_err
         self.finalize_run(run_id=run_id)
 
+    def close_execution_writes(self, run_id: str | None = None) -> None:
+        """Flush and close a run's trace without changing its certification lifecycle.
+
+        Evaluation owns the end of execution I/O.  Certification alone owns the
+        irreversible ``FINALIZING -> SEALED`` transition; closing a file must not
+        pre-empt that transaction by sealing the run.
+        """
+        with self._lock:
+            if run_id and run_id != "unknown":
+                run_vault_dir = self.log_dir / run_id
+                target_path = str(run_vault_dir / "run.jsonl")
+                # A recorder can additionally hold the configured master stream
+                # (or a legacy flat stream in an embedded runtime).  Close only
+                # handles attributable to this completed evaluation; do not rely
+                # solely on the current per_run flag, which may be environment
+                # configured after the handle was opened.
+                paths_to_close = [
+                    path_str
+                    for path_str in self._handles
+                    if path_str == target_path or Path(path_str).parent == run_vault_dir
+                ]
+            else:
+                paths_to_close = list(self._handles.keys())
+
+            for path_str in paths_to_close:
+                handle = self._handles.pop(path_str, None)
+                if not handle:
+                    continue
+                try:
+                    handle.flush()
+                    os.fsync(handle.fileno())
+                    handle.close()
+                except Exception as exc:
+                    if run_id and run_id != "unknown":
+                        self._run_states[run_id] = "CERTIFICATION_FAILED"
+                        self._failed_runs.add(run_id)
+                    raise RuntimeError(
+                        "TracePersistenceError: failed closing execution trace "
+                        f"for run '{run_id}': {exc}"
+                    ) from exc
+
     def get_run_state(self, run_id: str) -> str:
         """Returns the current lifecycle state for run_id (RUNNING, FINALIZING, SEALED)."""
         with self._lock:
@@ -548,10 +587,12 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         self, context: Any, results: list, span_context: dict[str, Any] | None = None
     ):
         """
-        Core Hook: Lifecycle aware finalization.
-        This is called by the engine before the evaluator returns control.
+        Core Hook: close execution writes only.
+
+        This hook is called by the evaluator.  It deliberately does not seal: the
+        certification transaction is the sole lifecycle owner for final sealing.
         """
-        self.finalize_run(run_id=getattr(context, "run_id", None))
+        self.close_execution_writes(run_id=getattr(context, "run_id", None))
 
     def rotate_logs(self, is_new_run: bool = False):
         """

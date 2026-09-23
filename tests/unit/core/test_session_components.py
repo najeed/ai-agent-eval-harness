@@ -327,10 +327,10 @@ async def test_tool_execution_coordinator_all_branches():
     res2 = coord2.execute("add", {"x": 10, "y": 20}, handler=custom_handler)
     assert res2 == 30
 
-    # 3. Fallback
+    # 3. No sandbox/handler is never represented as a successful invocation.
     coord3 = ToolExecutionCoordinator()
-    res3 = coord3.execute("echo", {"text": "hi"})
-    assert "Executed echo" in res3["result"]
+    with pytest.raises(RuntimeError, match="ToolUnavailable"):
+        coord3.execute("echo", {"text": "hi"})
     snap3 = coord3.snapshot()
     assert snap3["executed_count"] == 1
     assert snap3["tool_names"] == ["echo"]

@@ -438,7 +438,7 @@ This project follows an **Open Core** model. The open-source AgentV OS Runtime c
 | **Simulation** | 🔶 Real API required | ✅ High-Fidelity Labs (Bank, EHR/HL7, CRM) |
 | **Compliance Suites** | ❌ No | ✅ Production-Ready (HIPAA, FINRA, GDPR, PCI) |
 | **Observability** | 🔶 Terminal output | ✅ OTEL Drift Gauges & Dashboard Feed |
-| **Defensibility Governance**| ❌ No | ✅ Tamper-evident chained integrity (external WORM optional) |
+| **Defensibility Governance**| ❌ No | ✅ Tamper-evident chained integrity (external WORM required where immutable retention is mandated) |
 | **Integrity Checks** | ✅ Ed25519 Trace Validation | ✅ AES Scenario Merkle Sync (Root Verify) |
 | **Visual Debugger & GUI** | ✅ Local React Native App | ✅ Enterprise Dashboard & Secure Handoff |
 | **Reproduction Workflow** | 🔶 JSONL Only | ✅ Interactive Flight Recorder & Jupyter Repro |

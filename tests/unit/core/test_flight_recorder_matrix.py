@@ -71,17 +71,16 @@ def test_flight_recorder_io_modes_and_persistence_fail_closed(tmp_path):
     fr_no_art.flush()
     fr_no_art.finalize_run("run-direct-io")
 
-    # 2. Write error with EVAL_PERSISTENCE_FAIL_CLOSED=true
+    # 2. Any persistence failure is terminal; no environment opt-in exists.
     fr_err = FlightRecorderPlugin(log_dir=tmp_path / "logs")
     event_err = Event("test_event", {"run_id": "run-io-err"})
     with patch.object(
         fr_err.artifact_store, "store_artifact", side_effect=OSError("Disk write failed")
     ):
-        with patch.dict(os.environ, {"EVAL_PERSISTENCE_FAIL_CLOSED": "true"}):
-            with pytest.raises(
-                RuntimeError, match="TracePersistenceError: Failed to persist telemetry"
-            ):
-                fr_err.handle_event(event_err)
+        with pytest.raises(
+            RuntimeError, match="TracePersistenceError: Failed to persist telemetry"
+        ):
+            fr_err.handle_event(event_err)
 
 
 def test_flight_recorder_finalize_run_variations(tmp_path):

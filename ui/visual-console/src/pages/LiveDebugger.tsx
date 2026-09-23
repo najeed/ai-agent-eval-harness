@@ -634,13 +634,14 @@ export const LiveDebugger: React.FC = () => {
 
     // Executed is a forensic projection, never a dimmed plan.  Only
     // execution_graph_node evidence may place a node in this layer.
-    const plannedNodes = [...scenarioNodesRaw, ...runtimeDiscoveredNodes];
+    const plannedNodes = [...scenarioNodesRaw];
+    const allKnownNodes = [...scenarioNodesRaw, ...runtimeDiscoveredNodes];
     const workflowNodes = mode === 'executed'
-      ? plannedNodes.filter((node: any) => {
+      ? allKnownNodes.filter((node: any) => {
           const id = String(node.id || node.scenario_node_id || node.task_id);
           return executedNodeIds.has(id) || !!node.__runtime_discovered;
         })
-      : plannedNodes;
+      : mode === 'divergence' ? allKnownNodes : plannedNodes;
 
     if (workflowNodes.length === 0) {
       return {
@@ -813,6 +814,7 @@ export const LiveDebugger: React.FC = () => {
           source,
           target,
           label: e.condition || e.label || undefined,
+          provenance: 'planned',
           animated: true,
           style: { stroke: '#6366f1', strokeWidth: 2 }
         });
@@ -852,6 +854,7 @@ export const LiveDebugger: React.FC = () => {
           source,
           target,
           label,
+          provenance: 'executed',
           animated: true,
           style: {
             stroke: e.edge_type === 'retry' ? '#f59e0b' : '#6366f1',
@@ -876,13 +879,13 @@ export const LiveDebugger: React.FC = () => {
 
     const flowEdges = allEdges
       .filter(e => {
-        const plannedEdge = e.id.startsWith('scen-edge-');
+        const plannedEdge = e.provenance === 'planned';
         if (mode === 'planned') return plannedEdge;
         if (mode === 'executed') return !plannedEdge;
         return true;
       })
       .map(e => {
-        const plannedEdge = e.id.startsWith('scen-edge-');
+        const plannedEdge = e.provenance === 'planned';
         const pair = `${e.source}->${e.target}`;
         const total = edgePairCounts.get(pair) || 1;
         const cur = edgePairCurrent.get(pair) || 0;
@@ -1339,7 +1342,7 @@ export const LiveDebugger: React.FC = () => {
                 layerMode === 'planned'
                   ? 'Planned layer: the scenario DAG as defined; the design-time control-flow contract.'
                   : layerMode === 'executed'
-                    ? 'Executed layer: authoritative execution_graph_edge transitions over a dimmed plan skeleton.'
+                    ? 'Executed layer: only authoritative execution_graph_node and execution_graph_edge evidence.'
                     : 'Divergence overlay: planned-vs-executed differences (SKIPPED planned nodes, UNPLANNED executions).'
               }
               className="flex bg-slate-950 border border-slate-800 rounded-lg p-0.5 font-mono text-[9px] font-bold uppercase tracking-wider cursor-help"

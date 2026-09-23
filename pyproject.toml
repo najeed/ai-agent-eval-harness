@@ -25,7 +25,7 @@ dependencies = [
     "PyYAML==6.0.3",
     "pydantic==2.13.5",
     "numpy==2.5.3",
-    "PyJWT==2.14.0",
+    "PyJWT==2.15.0",
     "cryptography==50.0.1",
     "opentelemetry-api==1.44.0",
     "opentelemetry-sdk==1.44.0",
@@ -65,10 +65,10 @@ framework-crewai = [
 
 # 3. Framework-to-Provider Integrations (LangChain Wrappers)
 langchain-openai = [
-    "langchain-openai==1.6.4",
+    "langchain-openai==1.6.5",
 ]
 langchain-anthropic = [
-    "langchain-anthropic>=1.7.3",
+    "langchain-anthropic>=1.7.4",
 ]
 langchain-gemini = [
     "langchain-google-genai>=4.4.0",
@@ -108,8 +108,8 @@ frameworks = [
 langchain-all = [
     "langchain==1.4.2",
     "langchain-core>=1.6.4",
-    "langchain-openai==1.6.4",
-    "langchain-anthropic>=1.7.3",
+    "langchain-openai==1.6.5",
+    "langchain-anthropic>=1.7.4",
     "langchain-google-genai>=4.4.0",
     "langchain-ollama>=1.1.0",
     "langsmith==0.12.4",
@@ -125,8 +125,8 @@ all = [
     "langgraph==1.2.12",
     "ag2==1.0.6",
 #    "crewai==1.15.22; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
-    "langchain-openai==1.6.4",
-    "langchain-anthropic>=1.7.3",
+    "langchain-openai==1.6.5",
+    "langchain-anthropic>=1.7.4",
     "langchain-google-genai>=4.4.0",
     "langchain-ollama>=1.1.0",
     "langsmith==0.12.4",
@@ -200,13 +200,6 @@ filterwarnings = [
 # Standardize on industrial 100-character line length (2026 upgrade)
 line-length = 100
 target-version = "py312"
-
-[tool.ruff.lint]
-# Select E (Error), F (Pyflakes), UP (Upgrade), B (Bugbear), I (Isort)
-select = ["E", "F", "UP", "B", "I"]
-ignore = ["E203"]
-
-# Exclude auxiliary/educational directories from core linting
 exclude = [
     ".git",
     "__pycache__",
@@ -222,7 +215,17 @@ exclude = [
     "reports",
     "results",
     "runs",
+    "workspace",
+    ".pytest-work",
+    ".tmp",
+    ".pytest_cache",
+    ".hypothesis",
 ]
+
+[tool.ruff.lint]
+# Select E (Error), F (Pyflakes), UP (Upgrade), B (Bugbear), I (Isort)
+select = ["E", "F", "UP", "B", "I"]
+ignore = ["E203"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["eval_runner", "dataproc_engine", "agentv_runtime"]

@@ -87,9 +87,14 @@ def _build_valid_test_vault(
 
     req_oracles = required_oracles if required_oracles is not None else ["oracle_alpha"]
     scenario_data = {
-        "metadata": {"id": scenario_id, "version": scenario_version},
+        "metadata": {
+            "id": scenario_id,
+            "version": scenario_version,
+            "required_oracles": req_oracles,
+        },
         "id": scenario_id,
         "version": scenario_version,
+        "required_oracles": req_oracles,
     }
     scen_hash = compute_scenario_hash(scenario_data)
 

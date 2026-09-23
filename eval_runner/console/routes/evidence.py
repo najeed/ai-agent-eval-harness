@@ -165,10 +165,19 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
     # not artifact presence.
     from eval_runner.services.certification import CertificationService
 
-    fin_record = CertificationService.extract_finalization_record(trace_path)
-    computed_status, computed_score = CertificationService.extract_computed_run_outcome(
-        vault_dir, trace_path
-    )
+    fin_record = None
+    computed_status, computed_score = None, None
+    if not corrupt_line_offsets and trace_path and trace_path.exists():
+        try:
+            fin_record = CertificationService.extract_finalization_record(trace_path)
+        except Exception as err:
+            logger.debug("Failed extracting finalization record for %s: %s", run_id, err)
+        try:
+            computed_status, computed_score = CertificationService.extract_computed_run_outcome(
+                vault_dir, trace_path
+            )
+        except Exception as err:
+            logger.debug("Failed extracting computed run outcome for %s: %s", run_id, err)
     if fin_record is not None:
         is_eval_pass = fin_record.outcome.lower() == "pass"
     elif computed_status in ("pass", "fail"):
@@ -208,7 +217,7 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
     # Score calculation strictly from authoritative finalization or computed outcome
     if fin_record is not None:
         score = float(fin_record.score)
-    elif computed_status != "inconclusive":
+    elif computed_status not in (None, "inconclusive") and computed_score is not None:
         score = float(computed_score)
     else:
         if assertions:

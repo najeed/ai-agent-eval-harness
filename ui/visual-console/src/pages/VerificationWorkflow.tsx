@@ -622,8 +622,8 @@ export const VerificationWorkflow: React.FC = () => {
                     />
                   </label>
                   <p className="text-[10px] text-slate-500">
-                    Changing these values invalidates the current preflight result; re-run preflight
-                    before launching.
+                    Changing Max Execution Turns invalidates preflight. Evaluation Metadata Notes are
+                    recorded with the run but do not change execution readiness.
                   </p>
                 </div>
               )}

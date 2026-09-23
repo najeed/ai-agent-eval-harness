@@ -106,6 +106,9 @@ def test_deterministic_evidence_root_derivation_and_mismatch(isolated_vault):
     derived_root = manifest.get("evidence_root_hash")
     assert derived_root is not None
     assert derived_root.startswith("sha3_256:")
+    # The low-level primitive has no signed evaluator finalization, so its
+    # package is diagnostic only and cannot represent authoritative outcome.
+    assert manifest["provisional"] is True
 
     # 2. sign_trace with mismatched evidence_root_hash -> fails closed
     bogus_root = "sha3_256:" + "0" * 64

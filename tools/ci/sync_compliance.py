@@ -11,7 +11,6 @@ Usage:
 """
 
 import argparse
-import importlib.metadata
 import json
 import re
 import sys
@@ -192,11 +191,10 @@ def scan_python_packages(
         seen.add(name.lower())
 
         ver = req_ver
+        # Never resolve an unconstrained requirement from installed metadata:
+        # that makes generated compliance artifacts platform-dependent.
         if ver == "latest" or not ver:
-            try:
-                ver = importlib.metadata.version(name)
-            except Exception:
-                ver = "latest"
+            ver = "latest"
 
         if name in PYTHON_LICENSE_MAP:
             lic_name, lic_file = PYTHON_LICENSE_MAP[name]
@@ -252,19 +250,12 @@ def scan_python_optional_packages(
 
         ver = req_ver
         if ver == "latest" or not ver:
-            try:
-                ver = importlib.metadata.version(name)
-            except Exception:
-                ver = "latest"
+            ver = "latest"
 
         if name in PYTHON_LICENSE_MAP:
             lic_name, lic_file = PYTHON_LICENSE_MAP[name]
         else:
-            try:
-                raw_lic = importlib.metadata.metadata(name).get("License", "MIT")
-                lic_name, lic_file = normalize_license(raw_lic)
-            except Exception:
-                lic_name, lic_file = ("MIT", "MIT.txt")
+            lic_name, lic_file = ("MIT", "MIT.txt")
 
         packages.append(
             {

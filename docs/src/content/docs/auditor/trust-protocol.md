@@ -3,7 +3,7 @@ title: Trust Protocol Standard
 description: The industrial standard for non-repudiable evaluation traces and forensic integrity.
 ---
 
-The Trust Protocol (v3.0.0) provides **immutable proof of run integrity** for the AgentV Harness. It employs a "Detached Signature" architecture that separates bulky execution data from metadata certificates.
+The Trust Protocol (v3.0.0) provides **cryptographically tamper-evident proof of run integrity** for the AgentV Harness. It employs a "Detached Signature" architecture that separates bulky execution data from metadata certificates; immutable retention requires an external retention-enforcing ArtifactStore.
 
 
 ## 1. Forensic Architecture
@@ -84,7 +84,7 @@ To enable robust, customizable enterprise key routing and in-flight auditing, Ag
 1.  **`TraceVerificationInterceptor`**: An abstract interface representing custom signing and verification interceptor classes.
 2.  **`VerificationService` (`verification_service`)**: A thread-safe registry containing active trace interceptors. If a registered interceptor's `can_sign()` or `can_verify()` method returns `True`, operations are routed through that interceptor; otherwise, the pipeline falls back to standard core routines.
 3.  **KMS / HSM Gating**: Allows enterprise plugins to delegate signing to an external hardware security module (HSM) or secure KMS vault without ever exposing raw private key bytes to the local filesystem or running memory.
-4.  **WORM (Write Once, Read Many) Audit Trail Sealing**: Interceptors can write immutable execution proofs in-flight directly to `audit_chain.jsonl` as part of the sign sequence, locking results instantly against post-run tamper attempts.
+4.  **Tamper-evident audit-chain sealing**: Interceptors can bind execution proofs in-flight to `audit_chain.jsonl` as part of the sign sequence. In OSS this detects later modification during verification; it is not physical WORM retention. Deployments requiring immutable retention must use an external WORM/retention-enforcing ArtifactStore.
 
 ---
 

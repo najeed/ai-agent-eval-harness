@@ -558,6 +558,18 @@ class DefaultRunner(BaseRunner):
             from agentv_runtime.evidence_graph import build_evidence_graph_from_events
             from agentv_runtime.finalization import EvaluatorFinalizationRecord
 
+            # This event is part of the pre-finalization trace and therefore
+            # must be persisted before computing the root bound by finalization.
+            events.emit(
+                events.CoreEvents.STRATEGY_END,
+                {
+                    "run_id": effective_run_id,
+                    "strategy": "pass_at_k",
+                    "status": "success" if pass_at_k > 0 else "failure",
+                },
+                span_context=ctx.span_context,
+            )
+
             final_trace_path = run_vault_dir / "run.jsonl"
             trace_events: list[tuple[dict[str, Any], str]] = []
             if final_trace_path.exists():
@@ -666,16 +678,6 @@ class DefaultRunner(BaseRunner):
                 )
 
             fin_dict = finalization_record.to_dict()
-
-            events.emit(
-                events.CoreEvents.STRATEGY_END,
-                {
-                    "run_id": effective_run_id,
-                    "strategy": "pass_at_k",
-                    "status": "success" if pass_at_k > 0 else "failure",
-                },
-                span_context=ctx.span_context,
-            )
 
             events.emit(
                 events.CoreEvents.RUN_END,

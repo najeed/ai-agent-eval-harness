@@ -1,7 +1,11 @@
 import os
+from types import SimpleNamespace
+
+import pytest
 
 from eval_runner.events import CoreEvents, Event
 from eval_runner.flight_recorder import FlightRecorderPlugin as FlightRecorder
+from eval_runner.run_lifecycle import RunLifecycleState, get_run_lifecycle_state
 
 
 def test_flight_recorder_per_run_false(tmp_path):
@@ -35,7 +39,8 @@ def test_flight_recorder_write_exception(tmp_path, monkeypatch, capsys):
 
     with monkeypatch.context() as m:
         m.setattr(builtins, "open", raise_open)
-        fr.handle_event(Event(name=CoreEvents.RUN_START, data={"run_id": "r1"}))
+        with pytest.raises(RuntimeError, match="TracePersistenceError"):
+            fr.handle_event(Event(name=CoreEvents.RUN_START, data={"run_id": "r1"}))
 
     assert "File I/O Error" in capsys.readouterr().err
 
@@ -79,6 +84,21 @@ def test_flight_recorder_after_evaluation(tmp_path):
     assert len(fr._handles) > 0
     fr.after_evaluation({}, [])
     assert len(fr._handles) == 0
+
+
+def test_after_evaluation_closes_trace_without_sealing_lifecycle(tmp_path, monkeypatch):
+    """Only certification may perform the irreversible seal transition."""
+    fr = FlightRecorder()
+    fr.log_dir = tmp_path
+    monkeypatch.setenv("RUN_LOG_PER_RUN", "true")
+    monkeypatch.setenv("RUN_LOG_MASTER", "false")
+    run_id = "evaluation-close-only"
+    fr.handle_event(Event(name=CoreEvents.RUN_START, data={"run_id": run_id}))
+
+    fr.after_evaluation(SimpleNamespace(run_id=run_id), [])
+
+    assert not fr._handles
+    assert get_run_lifecycle_state(run_id, log_dir=tmp_path) == RunLifecycleState.OPEN
 
 
 def test_flight_recorder_rotation_exception(tmp_path, monkeypatch, capsys):

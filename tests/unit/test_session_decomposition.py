@@ -95,11 +95,11 @@ def test_tool_execution_coordinator_branches():
     assert len(coord.executed_tools) == 1
     assert coord.executed_tools[0]["status"] == "success"
 
-    # 2. Default fallback branch (no sandbox, no handler)
-    res2 = coord.execute("default_action", {"param_x": 1})
-    assert res2 == {"status": "success", "result": "Executed default_action"}
+    # 2. An unbound tool is a typed, fail-closed execution failure.
+    with pytest.raises(RuntimeError, match="ToolUnavailable"):
+        coord.execute("default_action", {"param_x": 1})
     assert len(coord.executed_tools) == 2
-    assert coord.executed_tools[1]["status"] == "success"
+    assert coord.executed_tools[1]["status"] == "error"
 
     # 3. Sandbox execution branch
     mock_sandbox = MagicMock()

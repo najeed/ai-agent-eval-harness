@@ -84,11 +84,21 @@ def _build_test_run(
     scen_ver = scenario_data.get("version") or scenario_data.get("scenario_version") or "1.0.0"
     scen_hash = compute_scenario_hash(scenario_data)
 
+    req_oracles = list(
+        scenario_data.get("required_oracles")
+        or scenario_data.get("required_oracle_ids")
+        or (scenario_data.get("metadata") or {}).get("required_oracles")
+        or (scenario_data.get("metadata") or {}).get("required_oracle_ids")
+        or (evaluator_finalization.required_oracle_ids if evaluator_finalization else [])
+        or []
+    )
     exec_manifest = ExecutionManifest(
         manifest_id=f"man_{run_id}",
         scenario_id=scen_id,
         scenario_version=scen_ver,
         scenario_hash=scen_hash,
+        metadata={"required_oracle_ids": req_oracles} if req_oracles else {},
+        runtime_config={"required_oracle_ids": req_oracles} if req_oracles else {},
     )
     if write_manifest:
         (vault / "execution_manifest.json").write_text(
@@ -232,7 +242,11 @@ def test_tampered_finalization_hash_fails_closed(matrix_env):
 
 def test_missing_required_oracle_fails_closed(matrix_env):
     run_id = "run-v4-missing-oracle"
-    scen_data = {"id": "scen_v4", "version": "1.0.0"}
+    scen_data = {
+        "id": "scen_v4",
+        "version": "1.0.0",
+        "required_oracles": ["oracle_1", "oracle_2_missing"],
+    }
     scen_hash = compute_scenario_hash(scen_data)
     events = [
         {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_v4"},
@@ -250,6 +264,8 @@ def test_missing_required_oracle_fails_closed(matrix_env):
         scenario_id="scen_v4",
         scenario_version="1.0.0",
         scenario_hash=scen_hash,
+        metadata={"required_oracle_ids": ["oracle_1", "oracle_2_missing"]},
+        runtime_config={"required_oracle_ids": ["oracle_1", "oracle_2_missing"]},
     )
     vault = matrix_env["runs"] / run_id
     vault.mkdir(parents=True, exist_ok=True)
@@ -746,7 +762,11 @@ def test_evidence_root_mismatch_fails_closed(matrix_env):
 
 def test_required_oracle_failed_outcome_blocks_certification(matrix_env):
     run_id = "run-p0-3-oracle-failed"
-    scen_data = {"id": "scen_p0_3", "version": "1.0.0"}
+    scen_data = {
+        "id": "scen_p0_3",
+        "version": "1.0.0",
+        "required_oracles": ["required_check_1"],
+    }
     scen_hash = compute_scenario_hash(scen_data)
     # Required oracle is present but has outcome="FAIL"
     events = [
@@ -767,6 +787,8 @@ def test_required_oracle_failed_outcome_blocks_certification(matrix_env):
         scenario_id="scen_p0_3",
         scenario_version="1.0.0",
         scenario_hash=scen_hash,
+        metadata={"required_oracle_ids": ["required_check_1"]},
+        runtime_config={"required_oracle_ids": ["required_check_1"]},
     )
     m_hash = exec_manifest.compute_manifest_hash()
 
@@ -786,13 +808,19 @@ def test_required_oracle_failed_outcome_blocks_certification(matrix_env):
     )
     fin_rec = fin_rec.sign()
 
+    vault = matrix_env["runs"] / run_id
+    vault.mkdir(parents=True, exist_ok=True)
+    (vault / "execution_manifest.json").write_text(
+        json.dumps(exec_manifest.to_dict()), encoding="utf-8"
+    )
+
     _build_test_run(
         matrix_env["runs"],
         run_id,
         events,
         scen_data,
         evaluator_finalization=fin_rec,
-        write_manifest=True,
+        write_manifest=False,
     )
 
     with pytest.raises(ValueError, match="MissingRequiredOracles"):

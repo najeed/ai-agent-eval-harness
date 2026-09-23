@@ -1,0 +1,200 @@
+{
+    "vc_version": "3.0.0",
+    "harness_version": "2.0.0",
+    "timestamp": "2026-09-23T23:24:03.120+0530",
+    "run_id": "run-journey_live_healthcare_pass-01a0cf672cd573ba803dc591d17134a3",
+    "trace_file": "run.jsonl",
+    "compliance": {
+        "status": "pass",
+        "score": 1.0,
+        "policy_ref": "NIST-AI-100"
+    },
+    "evidence_ledger": {
+        "run.jsonl.meta.json": "848600a9485610395fad5904f22e6927b616765b7c9e41c37c5ac371e2cd2ac6",
+        "scenario_original.json": "5d304b954b42341c02353cc2f3960ca128313f48e050316d8df7a6362d851f02",
+        "scenario_resolved.json": "d1e0113147f47f9a70c9a33f0d99f316039f80f78ffde357656940bc162dd774",
+        "forensics/state_turn_000_full.json": "5b54fd0715478f3d378c928185736f2e004ce6dedefcb50bc9fee15d27eaff50",
+        "forensics/telemetry.csv": "f92413e7b40eb1cddad490c6f51e8fd30f769e591bb66ca53da520ae76ed74fa",
+        "certification_receipt.json": "9994603087e61e0fdcd33bda7e8b2565d9d3d71364cfecc895775315ee567199"
+    },
+    "provenance_chain": [
+        {
+            "identity": "system_id",
+            "role": "Evaluator",
+            "timestamp": "2026-09-23T23:24:03.120+0530",
+            "signature": "6792d4b76acaf7470d4e8c6b7410cff748f9a72580c5e8035c9cd64a740472d38e97bb9cbaeda710471e3c6625a2256527b4b88a016ee527149fbad19ae04701",
+            "algorithm": "ED25519"
+        }
+    ],
+    "governance_ttl": 365,
+    "metadata": {
+        "scenario_id": "journey_live_healthcare_pass",
+        "scenario_version": "1.0.0",
+        "scenario_hash": "sha3_256:a9e9aaf4fa69e9d4fb20622ee2058a471b7abec4848d3416962b5f5b3e332f5b",
+        "evaluator_config_hash": "798edf1f653f972bbeecf5dc4929a4d7adf51d37b17451ff1438586944667cbb",
+        "execution_manifest_hash": "sha3_256:4b01f66e11923914b2d30b54e190d75d4a0b0441b95ea1ef369eabe6ede18dd0",
+        "evidence_root_hash": "sha3_256:277a1f268f30d8fbc246d98d79cb4d1c14ea276728ee7c64bc61fea5bf7a2058",
+        "evaluator_finalization_id": "fin_run-journey_live_healthcare_pass-01a0cf672cd573ba803dc591d17134a3",
+        "evaluator_identity": "eval_runner.runner.EvaluationKernel",
+        "required_oracle_ids": [
+            "emergency_triage:parity:message"
+        ]
+    },
+    "behavioral_fingerprint_id": "default_v1",
+    "evidence_root_hash": "sha3_256:277a1f268f30d8fbc246d98d79cb4d1c14ea276728ee7c64bc61fea5bf7a2058",
+    "scenario_id": "journey_live_healthcare_pass",
+    "scenario_hash": "sha3_256:a9e9aaf4fa69e9d4fb20622ee2058a471b7abec4848d3416962b5f5b3e332f5b",
+    "evaluator_config_hash": "798edf1f653f972bbeecf5dc4929a4d7adf51d37b17451ff1438586944667cbb",
+    "execution_mode": "live",
+    "trace_hash": "1ab315db8a4eb4d0016dc02e4b02b1b1ec616beaa892ee3575c328839999b526",
+    "hash_algorithm": "sha3_256",
+    "certification": {
+        "pipeline_version": "1.0.0",
+        "transactional": true,
+        "outcome": "CERTIFIED_PASS",
+        "stages": [
+            {
+                "stage": "freeze",
+                "status": "ok",
+                "ts": "2026-09-23T23:24:03.121059"
+            },
+            {
+                "stage": "freeze_seal_hash",
+                "status": "ok",
+                "ts": "2026-09-23T23:24:03.148570"
+            },
+            {
+                "stage": "canonicalize",
+                "status": "ok",
+                "ts": "2026-09-23T23:24:03.183083"
+            },
+            {
+                "stage": "hash",
+                "status": "ok",
+                "ts": "2026-09-23T23:24:03.183184"
+            },
+            {
+                "stage": "sign",
+                "status": "ok",
+                "ts": "2026-09-23T23:24:03.183196"
+            },
+            {
+                "stage": "persist",
+                "status": "ok",
+                "ts": "2026-09-23T23:24:03.190486"
+            },
+            {
+                "stage": "verify",
+                "status": "ok",
+                "ts": "2026-09-23T23:24:03.210266"
+            },
+            {
+                "stage": "publish",
+                "status": "running",
+                "ts": "2026-09-23T23:24:03.252305"
+            }
+        ]
+    },
+    "created_at": "2026-09-23T23:24:03.120+0530",
+    "scenario_version": "1.0.0",
+    "manifest_id": "man_run-journey_live_healthcare_pass-01a0cf672cd573ba803dc591d17134a3",
+    "execution_manifest_hash": "sha3_256:4b01f66e11923914b2d30b54e190d75d4a0b0441b95ea1ef369eabe6ede18dd0",
+    "verification_package": {
+        "scenario_id": "journey_live_healthcare_pass",
+        "scenario_version": "1.0.0",
+        "scenario_hash": "sha3_256:a9e9aaf4fa69e9d4fb20622ee2058a471b7abec4848d3416962b5f5b3e332f5b",
+        "manifest_id": "man_run-journey_live_healthcare_pass-01a0cf672cd573ba803dc591d17134a3",
+        "manifest_hash": "sha3_256:4b01f66e11923914b2d30b54e190d75d4a0b0441b95ea1ef369eabe6ede18dd0",
+        "execution_identity": {
+            "run_id": "run-journey_live_healthcare_pass-01a0cf672cd573ba803dc591d17134a3",
+            "execution_mode": "live",
+            "agent_id": "system_agent"
+        },
+        "trace_hash": "1ab315db8a4eb4d0016dc02e4b02b1b1ec616beaa892ee3575c328839999b526",
+        "trace_seal": {
+            "trace_digest": "1ab315db8a4eb4d0016dc02e4b02b1b1ec616beaa892ee3575c328839999b526",
+            "algorithm": "sha3_256",
+            "event_count": 15,
+            "sealed_at": "2026-09-23T23:24:03.120+0530"
+        },
+        "evidence_root_hash": "sha3_256:277a1f268f30d8fbc246d98d79cb4d1c14ea276728ee7c64bc61fea5bf7a2058",
+        "required_oracle_ids": [
+            "emergency_triage:parity:message"
+        ],
+        "executed_oracle_results": [
+            {
+                "oracle_id": "emergency_triage:parity:message",
+                "outcome": "PASS",
+                "passed": true,
+                "resolver": "execution_graph_node",
+                "evidence_refs": [
+                    "run.jsonl#seq=13"
+                ],
+                "source_type": "trace_event",
+                "source_ref": "run.jsonl#seq=13",
+                "content_hash": "sha3_256:7e1b2437a0d7ac540f252c89fbc4be85c028929d7955c46079a2a498ed8700f3",
+                "is_direct_provenance": true
+            }
+        ],
+        "decision": {
+            "decision": "PASS",
+            "status": "pass",
+            "score": 1.0
+        },
+        "package_version": "1.0.0",
+        "package_id": "pkg_run-journey_live_healthcare_pass-01a0cf672cd573ba803dc591d17134a3",
+        "signature": "6ce837fd89af2cbc56aff9b561a3218e105612f822fbbb297e868e134766543f51be863b7068a4b2ae542120e80989f2bee2e71813a30c07ea0aa08407b64f0e",
+        "signer_identity": "system_id",
+        "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA4eTvhF9mQ0SIwtqu2BhcmGdko2MnIP5S7saIDvMN9GQ=\n-----END PUBLIC KEY-----\n",
+        "algorithm": "ed25519",
+        "key_id": null,
+        "metadata": {
+            "scenario_id": "journey_live_healthcare_pass",
+            "scenario_version": "1.0.0",
+            "scenario_hash": "sha3_256:a9e9aaf4fa69e9d4fb20622ee2058a471b7abec4848d3416962b5f5b3e332f5b",
+            "evaluator_config_hash": "798edf1f653f972bbeecf5dc4929a4d7adf51d37b17451ff1438586944667cbb",
+            "execution_manifest_hash": "sha3_256:4b01f66e11923914b2d30b54e190d75d4a0b0441b95ea1ef369eabe6ede18dd0",
+            "evidence_root_hash": "sha3_256:277a1f268f30d8fbc246d98d79cb4d1c14ea276728ee7c64bc61fea5bf7a2058",
+            "evaluator_finalization_id": "fin_run-journey_live_healthcare_pass-01a0cf672cd573ba803dc591d17134a3",
+            "evaluator_identity": "eval_runner.runner.EvaluationKernel",
+            "required_oracle_ids": [
+                "emergency_triage:parity:message"
+            ]
+        },
+        "finalization_hash": "798edf1f653f972bbeecf5dc4929a4d7adf51d37b17451ff1438586944667cbb",
+        "evaluation_hash": "798edf1f653f972bbeecf5dc4929a4d7adf51d37b17451ff1438586944667cbb",
+        "verification_hash": "sha3_256:86cd384370578a2006c95e204744571477319895979ca89935d7439d3c1f0e42",
+        "certificate_hash": "sha3_256:6f431e6c58d7df84bbda979533039ce847bf7529866f75437e1380d18b1e62ba",
+        "schema_version": "1.0.0",
+        "producer_identity": "agentv.packaging_engine",
+        "producer_version": "1.0.0",
+        "parent_artifact_refs": [
+            "sha3_256:a9e9aaf4fa69e9d4fb20622ee2058a471b7abec4848d3416962b5f5b3e332f5b",
+            "sha3_256:4b01f66e11923914b2d30b54e190d75d4a0b0441b95ea1ef369eabe6ede18dd0",
+            "1ab315db8a4eb4d0016dc02e4b02b1b1ec616beaa892ee3575c328839999b526",
+            "sha3_256:277a1f268f30d8fbc246d98d79cb4d1c14ea276728ee7c64bc61fea5bf7a2058",
+            "798edf1f653f972bbeecf5dc4929a4d7adf51d37b17451ff1438586944667cbb",
+            "798edf1f653f972bbeecf5dc4929a4d7adf51d37b17451ff1438586944667cbb",
+            "sha3_256:86cd384370578a2006c95e204744571477319895979ca89935d7439d3c1f0e42",
+            "sha3_256:6f431e6c58d7df84bbda979533039ce847bf7529866f75437e1380d18b1e62ba"
+        ],
+        "package_hash": "393a46b50da527e4af0ef22c63120f24f82874658ceccf4b09f441b775f481a6",
+        "content_hash": "393a46b50da527e4af0ef22c63120f24f82874658ceccf4b09f441b775f481a6",
+        "commitment_graph": {
+            "scenario_hash": "sha3_256:a9e9aaf4fa69e9d4fb20622ee2058a471b7abec4848d3416962b5f5b3e332f5b",
+            "manifest_hash": "sha3_256:4b01f66e11923914b2d30b54e190d75d4a0b0441b95ea1ef369eabe6ede18dd0",
+            "trace_hash": "1ab315db8a4eb4d0016dc02e4b02b1b1ec616beaa892ee3575c328839999b526",
+            "evidence_root_hash": "sha3_256:277a1f268f30d8fbc246d98d79cb4d1c14ea276728ee7c64bc61fea5bf7a2058",
+            "finalization_hash": "798edf1f653f972bbeecf5dc4929a4d7adf51d37b17451ff1438586944667cbb",
+            "evaluation_hash": "798edf1f653f972bbeecf5dc4929a4d7adf51d37b17451ff1438586944667cbb",
+            "verification_hash": "sha3_256:86cd384370578a2006c95e204744571477319895979ca89935d7439d3c1f0e42",
+            "certificate_hash": "sha3_256:6f431e6c58d7df84bbda979533039ce847bf7529866f75437e1380d18b1e62ba",
+            "certificate_signature": "6ce837fd89af2cbc56aff9b561a3218e105612f822fbbb297e868e134766543f51be863b7068a4b2ae542120e80989f2bee2e71813a30c07ea0aa08407b64f0e",
+            "package_hash": "393a46b50da527e4af0ef22c63120f24f82874658ceccf4b09f441b775f481a6"
+        }
+    },
+    "package_hash": "393a46b50da527e4af0ef22c63120f24f82874658ceccf4b09f441b775f481a6",
+    "evaluation_hash": "798edf1f653f972bbeecf5dc4929a4d7adf51d37b17451ff1438586944667cbb",
+    "verification_hash": "sha3_256:86cd384370578a2006c95e204744571477319895979ca89935d7439d3c1f0e42",
+    "certificate_hash": "sha3_256:6f431e6c58d7df84bbda979533039ce847bf7529866f75437e1380d18b1e62ba"
+}

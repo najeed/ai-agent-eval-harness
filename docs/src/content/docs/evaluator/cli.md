@@ -407,7 +407,7 @@ agentv verify-package runs/run_fintech_2026_01.agentv-package.json \
 Generate an immutable, cryptographically signed Verification Certificate (VC v3) and sidecar manifest for a completed evaluation run.
 
 :::note
-**Server-Authoritative Derivation**: The certification engine extracts status, score, and execution mode directly from terminal execution events in the immutable trace (`run.jsonl`). Caller overrides are strictly prohibited to prevent forged certificates; provisional, simulated, or inconclusive runs fail closed.
+**Server-Authoritative Derivation**: The certification engine extracts status, score, and execution mode directly from terminal execution events in the cryptographically sealed, tamper-evident trace (`run.jsonl`). Caller overrides are strictly prohibited to prevent forged certificates; provisional, simulated, or inconclusive runs fail closed.
 :::
 
 ```bash
@@ -426,7 +426,7 @@ agentv certify \
 - `--ttl`: Certificate validity time-to-live in days.
 - `--fingerprint`: Custom execution environment fingerprint digest.
 - `--pqc`: Sign with Hybrid PQC (ML-DSA Dilithium + Ed25519).
-- `--status`, `--score`: Historical parameters. Evaluation verdict (`pass`/`fail`) and score are strictly derived from the immutable trace by the Certification Authority.
+- `--status`, `--score`: Historical parameters. Evaluation verdict (`pass`/`fail`) and score are strictly derived from the cryptographically sealed trace by the Certification Authority.
 
 ---
 
