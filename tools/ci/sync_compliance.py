@@ -46,9 +46,9 @@ KNOWN_LICENSE_FILES: dict[str, str] = {
 # Fallback known licenses for Python packages when metadata is generic
 PYTHON_LICENSE_MAP: dict[str, tuple[str, str]] = {
     "aiohttp": ("Apache 2.0", "Apache-2.0.txt"),
-    "Flask": ("BSD", "BSD-3-Clause.txt"),
+    "Flask": ("BSD-3-Clause", "BSD-3-Clause.txt"),
     "flask-cors": ("MIT", "MIT.txt"),
-    "Werkzeug": ("BSD", "BSD-3-Clause.txt"),
+    "Werkzeug": ("BSD-3-Clause", "BSD-3-Clause.txt"),
     "requests": ("Apache 2.0", "Apache-2.0.txt"),
     "jsonschema": ("MIT", "MIT.txt"),
     "PyYAML": ("MIT", "MIT.txt"),
@@ -66,7 +66,7 @@ PYTHON_LICENSE_MAP: dict[str, tuple[str, str]] = {
     "python-dotenv": ("BSD-3-Clause", "BSD-3-Clause.txt"),
     "psutil": ("BSD-3-Clause", "BSD-3-Clause.txt"),
     "pandas": ("BSD-3-Clause", "BSD-3-Clause.txt"),
-    "click": ("BSD", "BSD-3-Clause.txt"),
+    "click": ("BSD-3-Clause", "BSD-3-Clause.txt"),
     "pydantic": ("MIT", "MIT.txt"),
     "pyarrow": ("Apache 2.0", "Apache-2.0.txt"),
     "httpx": ("BSD-3-Clause", "BSD-3-Clause.txt"),
@@ -80,6 +80,7 @@ PYTHON_LICENSE_MAP: dict[str, tuple[str, str]] = {
     "langchain-google-genai": ("Apache 2.0", "Apache-2.0.txt"),
     "langchain-ollama": ("MIT", "MIT.txt"),
     "langgraph": ("MIT", "MIT.txt"),
+    "langserve": ("MIT", "MIT.txt"),
     "ag2": ("Apache 2.0", "Apache-2.0.txt"),
     "crewai": ("MIT", "MIT.txt"),
     "dulwich": ("Apache 2.0", "Apache-2.0.txt"),
@@ -94,6 +95,7 @@ PYTHON_LICENSE_MAP: dict[str, tuple[str, str]] = {
 
 # Fallback known licenses for NPM packages
 NPM_LICENSE_MAP: dict[str, tuple[str, str]] = {
+    "@astrojs/markdown-remark": ("MIT", "MIT.txt"),
     "@monaco-editor/react": ("MIT", "MIT.txt"),
     "@tanstack/react-query": ("MIT", "MIT.txt"),
     "@xyflow/react": ("MIT", "MIT.txt"),
@@ -239,6 +241,18 @@ def scan_python_optional_packages(
                 match = re.match(r"^([a-zA-Z0-9_\-\.]+)(?:==|>=|<=|~=|>|<)?(.*)$", base_item)
                 if match:
                     names.append((match.group(1).strip(), match.group(2).strip() or "latest"))
+
+        # Also harvest any extras defined only within composite groups
+        existing_names = {n.lower() for n, _ in names}
+        for group in sorted(composite_groups):
+            for item in opt_deps.get(group, []):
+                base_item = item.split(";")[0].strip()
+                match = re.match(r"^([a-zA-Z0-9_\-\.]+)(?:==|>=|<=|~=|>|<)?(.*)$", base_item)
+                if match:
+                    pkg_name = match.group(1).strip()
+                    if pkg_name.lower() not in existing_names:
+                        names.append((pkg_name, match.group(2).strip() or "latest"))
+                        existing_names.add(pkg_name.lower())
     except Exception:
         pass
 
