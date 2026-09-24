@@ -65,7 +65,7 @@ framework-crewai = [
 
 # 3. Framework-to-Provider Integrations (LangChain Wrappers)
 langchain-openai = [
-    "langchain-openai==1.6.5",
+    "langchain-openai==1.6.6",
 ]
 langchain-anthropic = [
     "langchain-anthropic>=1.7.4",
@@ -108,7 +108,7 @@ frameworks = [
 langchain-all = [
     "langchain==1.4.2",
     "langchain-core>=1.6.4",
-    "langchain-openai==1.6.5",
+    "langchain-openai==1.6.6",
     "langchain-anthropic>=1.7.4",
     "langchain-google-genai>=4.4.0",
     "langchain-ollama>=1.1.0",
@@ -125,7 +125,7 @@ all = [
     "langgraph==1.2.12",
     "ag2==1.0.6",
 #    "crewai==1.15.22; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
-    "langchain-openai==1.6.5",
+    "langchain-openai==1.6.6",
     "langchain-anthropic>=1.7.4",
     "langchain-google-genai>=4.4.0",
     "langchain-ollama>=1.1.0",
