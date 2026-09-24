@@ -22,7 +22,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install declared development and framework dependencies
-        run: pip install -r requirements-dev.txt '.[provider-gemini,frameworks]'
+        run: pip install -r requirements-dev.txt && pip install -e '.[provider-gemini,frameworks]' --no-deps
       - name: Verify local adapter contracts
         env:
           AGENTV_ADAPTER_CERTIFICATION: '1'
@@ -39,7 +39,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install declared development and adapter dependencies
-        run: pip install -r requirements-dev.txt '.[provider-gemini,frameworks]'
+        run: pip install -r requirements-dev.txt && pip install -e '.[provider-gemini,frameworks]' --no-deps
       - name: Detect protected certification targets
         id: targets
         env:
