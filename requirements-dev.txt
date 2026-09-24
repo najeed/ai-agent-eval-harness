@@ -23,7 +23,7 @@ pygments>=2.21.0
 pyasn1>=0.6.4
 
 # --- Code Quality & Security ---
-ruff==0.16.8
+ruff==0.16.9
 black>=26.5.1
 flake8>=7.4.1
 isort>=9.0.1

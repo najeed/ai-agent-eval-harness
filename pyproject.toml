@@ -31,7 +31,7 @@ dependencies = [
     "opentelemetry-sdk==1.44.0",
     "psutil==7.2.2",
     "httpx==0.28.1",
-    "sqlalchemy==2.0.54",
+    "sqlalchemy==2.1.0",
     "python-dotenv==1.2.3",
     "Authlib==1.8.0",
     "Pillow==12.3.0",
@@ -77,7 +77,7 @@ langchain-ollama = [
     "langchain-ollama>=1.1.0",
 ]
 langsmith = [
-    "langsmith==0.12.4",
+    "langsmith==0.14.0",
 ]
 
 # 4. Domain & Task Extras
@@ -115,7 +115,7 @@ langchain-all = [
     "langchain-anthropic>=1.7.4",
     "langchain-google-genai>=4.4.0",
     "langchain-ollama>=1.1.0",
-    "langsmith==0.12.4",
+    "langsmith==0.14.0",
 ]
 
 all = [
@@ -132,7 +132,7 @@ all = [
     "langchain-anthropic>=1.7.4",
     "langchain-google-genai>=4.4.0",
     "langchain-ollama>=1.1.0",
-    "langsmith==0.12.4",
+    "langsmith==0.14.0",
     "pypdf==6.19.0",
     "python-docx==1.2.0",
     "lxml==6.1.3",
