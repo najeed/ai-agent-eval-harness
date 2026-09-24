@@ -10,6 +10,7 @@ Returns first-class EvaluationResult contracts.
 
 import asyncio  # noqa: E402
 import logging  # noqa: E402
+import os  # noqa: E402
 import uuid  # noqa: E402
 from abc import ABC, abstractmethod  # noqa: E402
 from pathlib import Path  # noqa: E402
@@ -110,6 +111,63 @@ class BaseRunner(ABC):
 
 class DefaultRunner(BaseRunner):
     """Standard implementation of the evaluation loop."""
+
+    @staticmethod
+    def _resolve_source_commit(adapter_meta: dict[str, Any]) -> str:
+        commit = (
+            adapter_meta.get("source_commit")
+            or os.environ.get("AGENT_SOURCE_COMMIT")
+            or os.environ.get("GITHUB_SHA")
+        )
+        if commit:
+            return str(commit)
+        try:
+            import subprocess
+
+            res = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                capture_output=True,
+                text=True,
+                timeout=2,
+            )
+            if res.returncode == 0 and res.stdout.strip():
+                return res.stdout.strip()
+        except (OSError, subprocess.SubprocessError) as exc:
+            logger.debug("Failed resolving git commit for provenance: %s", exc)
+        return "unknown"
+
+    @staticmethod
+    def _resolve_model_provider(m: str, adapter_meta: dict[str, Any]) -> str:
+        if adapter_meta.get("provider"):
+            return str(adapter_meta["provider"])
+        m_lower = (m or "").lower()
+        if any(k in m_lower for k in ("gpt", "openai", "o1", "o3", "davinci")):
+            return "openai"
+        if any(k in m_lower for k in ("claude", "anthropic")):
+            return "anthropic"
+        if any(k in m_lower for k in ("gemini", "google", "palm")):
+            return "google"
+        if any(k in m_lower for k in ("llama", "mistral", "qwen", "deepseek", "local", "ollama")):
+            return "local"
+        return str(adapter_meta.get("framework") or "custom")
+
+    @staticmethod
+    def _resolve_tool_versions(
+        scenario: dict[str, Any], adapter_meta: dict[str, Any]
+    ) -> dict[str, str]:
+        t_vers: dict[str, str] = {}
+        scen_tools = scenario.get("tools") or []
+        if isinstance(scen_tools, list):
+            for i, t in enumerate(scen_tools):
+                if isinstance(t, dict):
+                    t_name = str(t.get("name") or f"tool_{i}")
+                    t_vers[t_name] = str(t.get("version") or "1.0.0")
+                elif isinstance(t, str):
+                    t_vers[t] = "1.0.0"
+        if isinstance(adapter_meta.get("tools"), dict):
+            for k, v in adapter_meta["tools"].items():
+                t_vers[k] = str(v)
+        return t_vers
 
     def __init__(
         self,
@@ -317,13 +375,51 @@ class DefaultRunner(BaseRunner):
             or "1.0.0"
         )
 
+        # Rich Provenance Extraction
+        import hashlib
+
+        from agentv_runtime.canonical import canonical_json_encode
+        from eval_runner import __version__ as runtime_pkg_version
+
+        source_commit = self._resolve_source_commit(adapter_meta)
+        model_prov = self._resolve_model_provider(str(provider_model), adapter_meta)
+        tool_versions = self._resolve_tool_versions(scenario, adapter_meta)
+
+        prompt_data = (
+            scenario.get("prompt")
+            or scenario.get("instruction")
+            or scenario.get("system_prompt")
+            or ""
+        )
+        prompt_rev = f"sha3_256:{hashlib.sha3_256(canonical_json_encode(prompt_data)).hexdigest()}"
+        cfg_obj = scenario.get("config") or scenario.get("agent_config") or {}
+        config_rev = f"sha3_256:{hashlib.sha3_256(canonical_json_encode(cfg_obj)).hexdigest()}"
+        policy_data = (
+            scenario.get("policy") or scenario.get("rules") or scenario.get("assertions") or []
+        )
+        policy_h = f"sha3_256:{hashlib.sha3_256(canonical_json_encode(policy_data)).hexdigest()}"
+        oracle_h = f"sha3_256:{hashlib.sha3_256(canonical_json_encode(req_oracles)).hexdigest()}"
+        env_raw = (
+            f"{sys.platform}:{platform.python_version()}:{platform.node()}:{runtime_pkg_version}"
+        )
+        env_fp = f"sha3_256:{hashlib.sha3_256(env_raw.encode('utf-8')).hexdigest()}"
+
+        framework_name = str(adapter_meta.get("framework") or scenario.get("framework") or "agentv")
         resolved_agent_config = {
             "agent_id": str(agent_id),
             "version": str(agent_ver),
+            "source_commit": source_commit,
+            "model_provider": model_prov,
+            "model": str(provider_model),
+            "configured_model_id": str(provider_model),
             "endpoint": str(endpoint),
             "protocol": str(protocol),
-            "model": str(provider_model),
+            "framework": framework_name,
+            "framework_version": str(adapter_meta.get("framework_version") or "2.0.0"),
             "adapter_version": str(adapter_meta.get("adapter_version") or "standard"),
+            "tool_versions": tool_versions,
+            "prompt_revision": prompt_rev,
+            "config_revision": config_rev,
             **dict(scenario.get("agent_config") or {}),
             **dict(adapter_meta.get("agent_config") or {}),
         }
@@ -343,6 +439,8 @@ class DefaultRunner(BaseRunner):
             "python_version": platform.python_version(),
             "hostname": platform.node() or "localhost",
             "pid": os.getpid(),
+            "runtime_version": str(runtime_pkg_version),
+            "environment_fingerprint": env_fp,
         }
 
         resolved_runtime_config = {
@@ -350,7 +448,11 @@ class DefaultRunner(BaseRunner):
             "attempts": attempts,
             "seed": seed,
             "max_turns": max_turns,
+            "runtime_version": str(runtime_pkg_version),
             "evaluator_config_hash": getattr(self.resolved_config, "config_hash", "") or "none",
+            "scenario_hash": scen_hash,
+            "policy_hash": policy_h,
+            "oracle_hash": oracle_h,
             "reproducibility_fingerprint": fingerprint(repro_contract),
             **dict(adapter_meta.get("runtime_config") or {}),
         }
@@ -361,6 +463,10 @@ class DefaultRunner(BaseRunner):
             "plugin_provenance": dict(getattr(plugins.manager, "provenance_map", {}) or {}),
             "evaluator_fingerprint": metric_registry_fingerprint(),
             "required_oracle_ids": req_oracles,
+            "scenario_hash": scen_hash,
+            "policy_hash": policy_h,
+            "oracle_hash": oracle_h,
+            "environment_fingerprint": env_fp,
         }
 
         # Defense-in-depth: Ensure metadata values (including nested CLI args dicts)

@@ -41,26 +41,58 @@ class GateDecision:
 
 
 def evaluate_summary(summary: dict[str, Any], suite: dict[str, Any] | None = None) -> GateDecision:
-    """Evaluates acceptance summary against strict release certification thresholds."""
-    total = int(summary.get("total_cases", 0))
-    passed_cases = int(summary.get("passed_cases", 0))
-    failed_cases = int(summary.get("failed_cases", 0))
-    fn = int(summary.get("false_negatives", 0))
-    fp = int(summary.get("false_positives", 0))
-    sec = int(summary.get("security_failures", 0))
-    evid = int(summary.get("evidence_failures", 0))
-    err = int(summary.get("execution_errors", 0))
+    """
+    Evaluates acceptance summary against strict release certification thresholds
+    by independently recomputing all metrics from individual result records.
+    """
+    raw_results = summary.get("results", [])
+    total = len(raw_results)
+    passed_cases = sum(1 for r in raw_results if r.get("accepted") is True)
+    failed_cases = sum(1 for r in raw_results if not r.get("accepted"))
+
+    fn = 0
+    fp = 0
+    sec = 0
+    evid = 0
+    err = 0
+
+    for r in raw_results:
+        if not r.get("accepted"):
+            exp = r.get("expected", {})
+            act = r.get("actual", {})
+            exp_dec = str(exp.get("policy", {}).get("decision", "")).upper()
+            act_dec = str(act.get("policy", {}).get("decision", "")).upper()
+            if exp_dec in {"BLOCK", "REJECT", "REQUIRE_HITL"} and act_dec == "ALLOW":
+                fn += 1
+            elif exp_dec == "ALLOW" and act_dec in {"BLOCK", "REJECT", "REQUIRE_HITL"}:
+                fp += 1
+            if r.get("category") == "security":
+                sec += 1
+            failures = r.get("failures", [])
+            if any("evidence" in f.lower() or f.startswith("Required evidence") for f in failures):
+                evid += 1
+            if any(
+                "execution_status" in f.lower() or f.startswith("Expected execution_status")
+                for f in failures
+            ):
+                err += 1
 
     thresholds = (suite or {}).get("thresholds", {})
     expected_case_ids = {Path(str(case)).stem for case in (suite or {}).get("cases", [])}
-    observed_case_ids = {str(result.get("case_id", "")) for result in summary.get("results", [])}
+    observed_case_ids = {str(result.get("case_id", "")) for result in raw_results}
     reasons: list[str] = []
+
+    claimed_total = int(summary.get("total_cases", 0))
+    if claimed_total != total and claimed_total != 0:
+        reasons.append(
+            f"Summary integrity breach: claimed total_cases={claimed_total} != computed {total}."
+        )
 
     if total == 0:
         reasons.append("Zero acceptance cases evaluated; suite cannot be empty.")
     if failed_cases > 0:
         reasons.append(f"{failed_cases} acceptance test case(s) failed.")
-    if expected_case_ids != observed_case_ids:
+    if expected_case_ids and expected_case_ids != observed_case_ids:
         reasons.append(
             "Suite membership mismatch: "
             f"missing={sorted(expected_case_ids - observed_case_ids)}, "

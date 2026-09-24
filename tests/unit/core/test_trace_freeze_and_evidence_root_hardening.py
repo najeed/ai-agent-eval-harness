@@ -226,6 +226,10 @@ def test_public_verification_score_independence(isolated_vault):
     trace_file = run_dir / "run.jsonl"
     trace_file.write_text(json.dumps({"event": "start", "_seq": 1}) + "\n", encoding="utf-8")
 
+    from tests.conftest import append_authoritative_finalization
+
+    append_authoritative_finalization(trace_file, run_id, run_dir, outcome="pass", score=0.96)
+
     TraceVerifier.sign_trace(
         trace_path=str(trace_file),
         identity_id="test_signer",
@@ -342,6 +346,12 @@ def test_authoritative_verdict_execution(isolated_vault):
     run_dir_live.mkdir(parents=True, exist_ok=True)
     trace_live = run_dir_live / "run.jsonl"
     trace_live.write_text(json.dumps({"event": "start", "_seq": 1}) + "\n", encoding="utf-8")
+
+    from tests.conftest import append_authoritative_finalization
+
+    append_authoritative_finalization(
+        trace_live, run_id_live, run_dir_live, outcome="pass", score=1.0
+    )
 
     TraceVerifier.sign_trace(
         trace_path=str(trace_live),

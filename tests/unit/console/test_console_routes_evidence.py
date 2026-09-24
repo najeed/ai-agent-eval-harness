@@ -118,7 +118,9 @@ def test_get_verification_package_success_with_cert_and_provenance(crypto_client
 
     # Produce a REAL, cryptographically verifiable certificate
     from eval_runner.verifier import TraceVerifier
+    from tests.conftest import append_authoritative_finalization
 
+    append_authoritative_finalization(trace_file, run_id, run_vault)
     manifest = TraceVerifier.sign_trace(str(trace_file), run_id=run_id, execution_mode="live")
     assert manifest["certification"]["outcome"] in ("CERTIFIED", "CERTIFIED_PASS")
 

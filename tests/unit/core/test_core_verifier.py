@@ -1971,12 +1971,17 @@ def test_sign_trace_rejects_invalid_lifecycle_state(tmp_path):
 
 def test_sign_trace_outcome_taxonomy():
     """Verify certification outcome reflects CERTIFIED_PASS, PROVISIONAL_PASS, or ATTESTED_FAIL."""
+    from tests.conftest import append_authoritative_finalization
+
     # 1. Live mode + pass -> CERTIFIED_PASS
     run_id_live = "run-outcome-live"
     vault_dir_l, trace_path_l = setup_vault(run_id_live)
     trace_path_l.write_text(
         '{"event": "start", "run_id": "' + run_id_live + '", "execution_mode": "live"}\n',
         encoding="utf-8",
+    )
+    append_authoritative_finalization(
+        trace_path_l, run_id_live, vault_dir_l, outcome="pass", score=1.0
     )
     m_live = TraceVerifier.sign_trace(
         str(trace_path_l), run_id=run_id_live, compliance_status="pass", execution_mode="live"
@@ -1990,6 +1995,9 @@ def test_sign_trace_outcome_taxonomy():
         '{"event": "start", "run_id": "' + run_id_hyb + '", "execution_mode": "hybrid"}\n',
         encoding="utf-8",
     )
+    append_authoritative_finalization(
+        trace_path_h, run_id_hyb, vault_dir_h, outcome="pass", score=1.0
+    )
     m_hyb = TraceVerifier.sign_trace(
         str(trace_path_h), run_id=run_id_hyb, compliance_status="pass", execution_mode="hybrid"
     )
@@ -2001,6 +2009,9 @@ def test_sign_trace_outcome_taxonomy():
     trace_path_f.write_text(
         '{"event": "start", "run_id": "' + run_id_fail + '", "execution_mode": "live"}\n',
         encoding="utf-8",
+    )
+    append_authoritative_finalization(
+        trace_path_f, run_id_fail, vault_dir_f, outcome="fail", score=0.0
     )
     m_fail = TraceVerifier.sign_trace(
         str(trace_path_f), run_id=run_id_fail, compliance_status="fail", execution_mode="live"

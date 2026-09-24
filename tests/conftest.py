@@ -392,3 +392,88 @@ def pqc_client():
         # Restore mock objects in sys.modules to prevent breaking other tests
         for mod_name, mod_obj in saved_modules.items():
             sys.modules[mod_name] = mod_obj
+
+
+def append_authoritative_finalization(
+    trace_file: Path,
+    run_id: str,
+    run_dir: Path | None = None,
+    outcome: str = "pass",
+    score: float = 1.0,
+    evaluator_identity: str = "authoritative_evaluator",
+) -> None:
+    """Helper for test suites to append an authoritative EvaluatorFinalizationRecord."""
+
+    from agentv_runtime.evidence_graph import (
+        build_evidence_graph_from_events,
+        compute_evidence_graph_root,
+    )
+    from agentv_runtime.finalization import EvaluatorFinalizationRecord
+    from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
+
+    target_dir = run_dir or trace_file.parent
+    content = trace_file.read_text(encoding="utf-8") if trace_file.exists() else ""
+    if content and not content.endswith("\n"):
+        trace_file.write_text(content + "\n", encoding="utf-8")
+        content += "\n"
+    parsed = []
+    events_with_lines = []
+    for line in content.splitlines():
+        trimmed = line.strip()
+        if trimmed:
+            try:
+                ev = json.loads(trimmed)
+                parsed.append(ev)
+                events_with_lines.append((ev, trimmed))
+            except (json.JSONDecodeError, ValueError):
+                pass
+    ev_graph = build_evidence_graph_from_events(events_with_lines)
+    ev_root = ev_graph.get("evidence_root_hash") or compute_evidence_graph_root(ev_graph)
+
+    scen_file = target_dir / "scenario.json"
+    scen_res_file = target_dir / "scenario_resolved.json"
+    if scen_res_file.exists():
+        scen_data = json.loads(scen_res_file.read_text(encoding="utf-8"))
+    elif scen_file.exists():
+        scen_data = json.loads(scen_file.read_text(encoding="utf-8"))
+        scen_res_file.write_text(json.dumps(scen_data), encoding="utf-8")
+    else:
+        scen_data = {"id": f"scen_{run_id}", "version": "1.0.0"}
+        scen_file.write_text(json.dumps(scen_data), encoding="utf-8")
+        scen_res_file.write_text(json.dumps(scen_data), encoding="utf-8")
+
+    scen_h = compute_scenario_hash(scen_data)
+
+    man_file = target_dir / "execution_manifest.json"
+    if man_file.exists():
+        man_data = json.loads(man_file.read_text(encoding="utf-8"))
+        man_h = ExecutionManifest.from_dict(man_data).compute_manifest_hash()
+    else:
+        eman = ExecutionManifest(
+            manifest_id=f"man_{run_id}",
+            scenario_id=scen_data.get("id", f"scen_{run_id}"),
+            scenario_version=scen_data.get("version", "1.0.0"),
+            scenario_hash=scen_h,
+        )
+        man_file.write_text(json.dumps(eman.to_dict()), encoding="utf-8")
+        man_h = eman.compute_manifest_hash()
+
+    fin = EvaluatorFinalizationRecord(
+        finalization_id=f"fin_{run_id}",
+        run_id=run_id,
+        execution_manifest_hash=man_h,
+        scenario_id=scen_data.get("id", f"scen_{run_id}"),
+        scenario_version=scen_data.get("version", "1.0.0"),
+        scenario_hash=scen_h,
+        evaluator_identity=evaluator_identity,
+        evaluator_config_hash="sha3_256:abc",
+        required_oracle_ids=[],
+        evidence_root_hash=ev_root,
+        outcome=outcome,
+        score=score,
+        terminal_seq=len(parsed) + 1,
+    ).sign()
+
+    fin_line = json.dumps({"event": "evaluator_finalization", "data": fin.to_dict()})
+    with open(trace_file, "a", encoding="utf-8") as f:
+        f.write(fin_line + "\n")

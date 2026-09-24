@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main, dev]
   push:
-    branches: [main]
+    branches: [main, dev]
 
 jobs:
   acceptance-smoke:
@@ -72,7 +72,9 @@ jobs:
           npm run build --prefix ui/visual-console
           python -m playwright install --with-deps chromium
       - name: Run Release Acceptance Suite
-        run: pytest -m acceptance_release tests/ui/test_visual_console_ui.py tests/ui/test_verification_workflow_journey.py --junitxml=reports/acceptance-release.xml
+        run: |
+          pytest -m acceptance_release tests/acceptance/test_acceptance_corpus.py --junitxml=reports/acceptance-corpus.xml
+          pytest -m acceptance_release tests/ui/test_visual_console_ui.py tests/ui/test_verification_workflow_journey.py --junitxml=reports/acceptance-release.xml
         env:
           AGENTV_REQUIRE_BROWSER_ACCEPTANCE: '1'
           AGENTV_REQUIRE_EXTERNAL_ORACLE: '1'

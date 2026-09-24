@@ -20,6 +20,10 @@ def _sign_tmp_trace(tmp_path, monkeypatch, **kwargs) -> dict:
     trace.write_text('{"event": "run_start"}\n', encoding="utf-8")
     monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "runs")
 
+    from tests.conftest import append_authoritative_finalization
+
+    append_authoritative_finalization(trace, "vc-truth-run", vault)
+
     return TraceVerifier.sign_trace(
         str(trace),
         run_id="vc-truth-run",

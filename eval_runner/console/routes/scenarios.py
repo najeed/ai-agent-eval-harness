@@ -916,7 +916,23 @@ def save_scenario():
     from agentv_runtime.manifest import compute_scenario_hash
     from eval_runner import config
 
-    data = request.json or {}
+    body = request.json or {}
+    expected_rev = None
+    if isinstance(body, dict) and "scenario" in body and isinstance(body["scenario"], dict):
+        data = body["scenario"]
+        expected_rev = body.get("expected_revision_hash")
+    else:
+        data = body
+
+    if isinstance(data, dict):
+        popped_rev = data.pop("expected_revision_hash", None)
+        expected_rev = expected_rev or popped_rev
+        if isinstance(data.get("metadata"), dict):
+            popped_meta_rev = data["metadata"].pop("expected_revision_hash", None)
+            expected_rev = expected_rev or popped_meta_rev
+    else:
+        return jsonify({"error": "Invalid payload: expected scenario JSON object"}), 400
+
     meta = data.setdefault("metadata", {})
     scen_id = meta.get("id") or data.get("id")
     industry = data.get("industry") or meta.get("industry") or "generic"
@@ -963,7 +979,6 @@ def save_scenario():
     meta["content_hash"] = scen_hash
 
     # Optimistic concurrency check
-    expected_rev = data.get("expected_revision_hash") or meta.get("expected_revision_hash")
     if expected_rev and save_path.exists():
         try:
             with open(save_path, encoding="utf-8") as f_ex:

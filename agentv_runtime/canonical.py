@@ -68,6 +68,12 @@ def _serialize_number(val: int | float) -> str:
         raise ValueError(f"RFC 8785 non-finite number violation: {val} is not permitted in JSON")
 
     if isinstance(val, int) and not isinstance(val, bool):
+        if val < -9007199254740991 or val > 9007199254740991:
+            raise ValueError(
+                f"RFC 8785 / IEEE-754 integer range violation: {val} exceeds safe integer bounds "
+                "[-9007199254740991, 9007199254740991] ([-(2**53 - 1), 2**53 - 1]). "
+                "Integers outside this range must be represented as strings under schema control."
+            )
         return str(val)
 
     # Float handling

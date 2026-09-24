@@ -150,11 +150,13 @@ def public_verify_run(run_id):
 
             scen_data = None
             scen_resolved_p = trace_path.parent / "scenario_resolved.json"
+            if not scen_resolved_p.exists():
+                scen_resolved_p = trace_path.parent / "scenario.json"
             if scen_resolved_p.exists():
                 try:
                     scen_data = json.loads(scen_resolved_p.read_text(encoding="utf-8"))
                 except Exception as s_err:
-                    logger.debug("Failed reading scenario_resolved.json: %s", s_err)
+                    logger.debug("Failed reading scenario artifact: %s", s_err)
 
             pkg_res = VerificationAuthority.verify_package_artifacts(
                 package=manifest["verification_package"],

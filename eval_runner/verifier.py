@@ -539,6 +539,13 @@ class TraceVerifier:
 
         logger.info(f"      [Identity] Identity Basis Confirmed: {run_id} (Type: Vault)")
 
+        from .execution_ir import ExecutionMode
+
+        _valid_modes = {m.value for m in ExecutionMode}
+        _mode_in = str(execution_mode) if execution_mode else ""
+        if _mode_in not in _valid_modes:
+            provisional = True
+
         now = datetime.now().astimezone()
         ts_base = now.strftime("%Y-%m-%dT%H:%M:%S")
         ms = f".{now.microsecond // 1000:03d}"
@@ -827,6 +834,11 @@ class TraceVerifier:
                         f"'{fin_record.execution_manifest_hash}' != "
                         f"'{metadata['execution_manifest_hash']}'"
                     )
+        elif not provisional:
+            raise CertificationFailedError(
+                "MissingEvaluatorFinalization: trace missing mandatory authoritative "
+                "EvaluatorFinalizationRecord"
+            )
         elif (
             require_finalization
             or os.environ.get("AES_CERTIFICATION_MODE") == "1"

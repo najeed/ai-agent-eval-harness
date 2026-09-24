@@ -8,16 +8,101 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
-jobs:
-  build-and-publish:
-    runs-on: ubuntu-latest
+permissions:
+  contents: write
+  packages: write
 
+jobs:
+  acceptance-release-gate:
+    name: Acceptance Release Certification Gate
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
+      - name: Checkout exact tagged SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Checkout pinned independent oracle (if configured)
+        if: vars.AGENTV_TESTER_REPOSITORY != ''
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.AGENTV_TESTER_REPOSITORY }}
+          ref: ${{ vars.AGENTV_TESTER_SHA }}
+          token: ${{ secrets.AGENTV_TESTER_READ_TOKEN }}
+          path: .ci/agentv-tester
+
+      - name: Start independent acceptance oracle (if configured)
+        if: vars.AGENTV_TESTER_REPOSITORY != ''
+        env:
+          ACCEPTANCE_ORACLE_DB: ${{ github.workspace }}/.ci/oracle.sqlite
+        run: |
+          python -m pip install flask
+          PYTHONPATH="$GITHUB_WORKSPACE/.ci/agentv-tester" python "$GITHUB_WORKSPACE/.ci/agentv-tester/server/run_acceptance_oracle.py" > oracle.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            curl --fail --silent http://127.0.0.1:8099/acceptance-oracle/state && exit 0
+            sleep 1
+          done
+          cat oracle.log
+          exit 1
+
+      - name: Build Visual Console and install Chromium
+        run: |
+          npm ci --prefix ui/visual-console
+          npm run build --prefix ui/visual-console
+          python -m playwright install --with-deps chromium
+
+      - name: Run Authoritative Acceptance Corpus Suite
+        run: pytest -m acceptance_release tests/acceptance/test_acceptance_corpus.py --junitxml=reports/acceptance-corpus.xml
+        env:
+          AGENTV_REQUIRE_EXTERNAL_ORACLE: ${{ vars.AGENTV_TESTER_REPOSITORY != '' && '1' || '0' }}
+          AGENTV_ACCEPTANCE_ORACLE_URL: http://127.0.0.1:8099/acceptance-oracle
+
+      - name: Run Release Acceptance UI Suite
+        run: pytest -m acceptance_release tests/ui/test_visual_console_ui.py tests/ui/test_verification_workflow_journey.py --junitxml=reports/acceptance-release.xml
+        env:
+          AGENTV_REQUIRE_BROWSER_ACCEPTANCE: '1'
+          AGENTV_REQUIRE_EXTERNAL_ORACLE: ${{ vars.AGENTV_TESTER_REPOSITORY != '' && '1' || '0' }}
+          AGENTV_ACCEPTANCE_ORACLE_URL: http://127.0.0.1:8099/acceptance-oracle
+
+      - name: Enforce Release Certification Gate
+        run: python tools/ci/acceptance_gate.py --report-dir reports/acceptance/latest --manifest tests/acceptance/manifests/release.yaml
+
+      - name: Upload Certified Acceptance Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-acceptance-artifacts
+          path: reports/acceptance/
+
+  build-and-publish:
+    name: Build and Publish Package
+    needs: [acceptance-release-gate]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact tagged SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Download certified acceptance artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-acceptance-artifacts
+          path: reports/acceptance/
+
+      - name: Verify acceptance gate attestation before release
+        run: python tools/ci/acceptance_gate.py --report-dir reports/acceptance/latest --manifest tests/acceptance/manifests/release.yaml
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 

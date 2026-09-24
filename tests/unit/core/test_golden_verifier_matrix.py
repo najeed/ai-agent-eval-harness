@@ -12,6 +12,7 @@ import copy
 import hashlib
 import json
 from datetime import datetime
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -1173,6 +1174,60 @@ def test_verify_certificate_provenance_chain_defects(certified_manifest):
     assert any("empty or malformed" in e for e in r3["errors"])
 
 
+def _append_authoritative_finalization(trace_file: Path, run_id: str, run_dir: Path) -> None:
+    from agentv_runtime.evidence_graph import build_evidence_graph_from_events
+    from agentv_runtime.finalization import EvaluatorFinalizationRecord
+    from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
+
+    content = trace_file.read_text(encoding="utf-8") if trace_file.exists() else ""
+    parsed = []
+    events_with_lines = []
+    for line in content.splitlines():
+        trimmed = line.strip()
+        if trimmed:
+            try:
+                ev = json.loads(trimmed)
+                parsed.append(ev)
+                events_with_lines.append((ev, trimmed))
+            except Exception:
+                pass
+    ev_graph = build_evidence_graph_from_events(events_with_lines)
+    ev_root = ev_graph.get(
+        "evidence_root_hash", f"sha3_256:{hashlib.sha3_256(b'empty').hexdigest()}"
+    )
+    scen_data = {"id": f"scen_{run_id}", "version": "1.0.0"}
+    scen_h = compute_scenario_hash(scen_data)
+    (run_dir / "scenario.json").write_text(json.dumps(scen_data), encoding="utf-8")
+
+    eman = ExecutionManifest(
+        manifest_id=f"man_{run_id}",
+        scenario_id=f"scen_{run_id}",
+        scenario_version="1.0.0",
+        scenario_hash=scen_h,
+    )
+    (run_dir / "execution_manifest.json").write_text(json.dumps(eman.to_dict()), encoding="utf-8")
+
+    fin = EvaluatorFinalizationRecord(
+        finalization_id=f"fin_{run_id}",
+        run_id=run_id,
+        execution_manifest_hash=eman.compute_manifest_hash(),
+        scenario_id=f"scen_{run_id}",
+        scenario_version="1.0.0",
+        scenario_hash=scen_h,
+        evaluator_identity="authoritative_evaluator",
+        evaluator_config_hash="sha3_256:abc",
+        required_oracle_ids=[],
+        evidence_root_hash=ev_root,
+        outcome="pass",
+        score=1.0,
+        terminal_seq=len(parsed) + 1,
+    ).sign()
+
+    fin_line = json.dumps({"event": "evaluator_finalization", "data": fin.to_dict()})
+    with open(trace_file, "a", encoding="utf-8") as f:
+        f.write(fin_line + "\n")
+
+
 def test_verify_run_directory_status_matrix(clean_vault_setup):
     """Every verify_run_directory terminal state reports exact, truthful fields."""
     project_root = clean_vault_setup["project_root"]
@@ -1209,6 +1264,7 @@ def test_verify_run_directory_status_matrix(clean_vault_setup):
 
     # VERIFIED: freshly certified vault passes with full chain validation.
     trace_file.write_text(VC_EVENT_LINE, encoding="utf-8")
+    _append_authoritative_finalization(trace_file, run_id, run_dir)
     TraceVerifier.sign_trace(
         str(trace_file), identity_id="test_signer", run_id=run_id, execution_mode="live"
     )
@@ -1267,6 +1323,7 @@ def test_verify_run_directory_enforces_full_evidence_chain(clean_vault_setup):
 
     evidence = trace_file.parent / f"{run_id}_artifact.txt"
     evidence.write_text("original content", encoding="utf-8")
+    _append_authoritative_finalization(trace_file, run_id, run_dir)
     TraceVerifier.sign_trace(
         str(trace_file), identity_id="test_signer", run_id=run_id, execution_mode="live"
     )

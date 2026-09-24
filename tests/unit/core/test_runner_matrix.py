@@ -671,3 +671,136 @@ def test_runner_is_attempt_successful_branches():
         runner._is_attempt_successful([{**base_success, "policy_checks": [{"decision": "denied"}]}])
         is False
     )
+
+
+def test_default_runner_resolve_source_commit(monkeypatch):
+    """Test all branches of _resolve_source_commit."""
+    # 1. From adapter_meta
+    meta = {"source_commit": "sha-from-meta"}
+    assert DefaultRunner._resolve_source_commit(meta) == "sha-from-meta"
+
+    # 2. From AGENT_SOURCE_COMMIT env
+    monkeypatch.setenv("AGENT_SOURCE_COMMIT", "sha-from-env")
+    assert DefaultRunner._resolve_source_commit({}) == "sha-from-env"
+    monkeypatch.delenv("AGENT_SOURCE_COMMIT")
+
+    # 3. From GITHUB_SHA env
+    monkeypatch.setenv("GITHUB_SHA", "sha-from-github")
+    assert DefaultRunner._resolve_source_commit({}) == "sha-from-github"
+    monkeypatch.delenv("GITHUB_SHA")
+
+    # 4. From git rev-parse HEAD
+    with patch("subprocess.run") as mock_subproc:
+        mock_res = MagicMock()
+        mock_res.returncode = 0
+        mock_res.stdout = "a1b2c3d4e5f6\n"
+        mock_subproc.return_value = mock_res
+        assert DefaultRunner._resolve_source_commit({}) == "a1b2c3d4e5f6"
+
+    # 5. Fallback on subprocess error
+    with patch("subprocess.run", side_effect=OSError("git not found")):
+        assert DefaultRunner._resolve_source_commit({}) == "unknown"
+
+
+def test_default_runner_resolve_model_provider():
+    """Test all branches of _resolve_model_provider."""
+    # 1. Explicit provider in adapter_meta
+    prov_meta = {"provider": "my-provider"}
+    assert DefaultRunner._resolve_model_provider("foo", prov_meta) == "my-provider"
+
+    # 2. Model keyword inferences
+    assert DefaultRunner._resolve_model_provider("gpt-4o-mini", {}) == "openai"
+    assert DefaultRunner._resolve_model_provider("o1-preview", {}) == "openai"
+    assert DefaultRunner._resolve_model_provider("claude-3-5-sonnet", {}) == "anthropic"
+    assert DefaultRunner._resolve_model_provider("gemini-2.5-pro", {}) == "google"
+    assert DefaultRunner._resolve_model_provider("llama-3.3-70b", {}) == "local"
+    assert DefaultRunner._resolve_model_provider("ollama-qwen", {}) == "local"
+
+    # 3. Framework fallback and custom
+    fw_meta = {"framework": "crewai"}
+    assert DefaultRunner._resolve_model_provider("unknown-model", fw_meta) == "crewai"
+    assert DefaultRunner._resolve_model_provider("unknown-model", {}) == "custom"
+
+
+def test_default_runner_resolve_tool_versions():
+    """Test all branches of _resolve_tool_versions."""
+    scenario = {
+        "tools": [
+            {"name": "search", "version": "2.1.0"},
+            {"version": "1.2.0"},  # fallback to tool_1
+            "calculator",
+        ]
+    }
+    adapter_meta = {"tools": {"adapter_tool": "3.0.0"}}
+    t_vers = DefaultRunner._resolve_tool_versions(scenario, adapter_meta)
+    assert t_vers["search"] == "2.1.0"
+    assert t_vers["tool_1"] == "1.2.0"
+    assert t_vers["calculator"] == "1.0.0"
+    assert t_vers["adapter_tool"] == "3.0.0"
+
+
+@pytest.mark.asyncio
+async def test_default_runner_run_scenario_rich_provenance(tmp_path, monkeypatch):
+    """Test run_scenario generates and persists complete rich provenance in ExecutionManifest."""
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
+    monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", tmp_path)
+
+    runner = DefaultRunner()
+    scenario = {
+        "id": "provenance_test_scen",
+        "version": "1.5.0",
+        "prompt": "You are a helpful test assistant.",
+        "config": {"temperature": 0.2},
+        "policy": [{"rule": "safety_first"}],
+        "tools": [{"name": "web_search", "version": "1.0.0"}],
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "start",
+                    "task_description": "Initial task",
+                    "success_criteria": [{"metric": "exact_match", "required": True}],
+                }
+            ]
+        },
+    }
+
+    mock_exec_backend = MagicMock()
+    mock_exec_backend.run = AsyncMock(
+        return_value=MagicMock(
+            pass_at_k=1.0,
+            all_results=[[{"workflow_verdict": {"status": "COMPLETED"}, "evaluation_valid": True}]],
+            metadata={},
+        )
+    )
+    runner.execution_backend = mock_exec_backend
+
+    res = await runner.run(
+        scenario,
+        attempts=1,
+        metadata={"source_commit": "commit_123", "provider": "openai", "model": "gpt-4o"},
+    )
+    assert res is not None
+
+    manifest_p = tmp_path / "runs" / res.run_id / "execution_manifest.json"
+    assert manifest_p.exists()
+    import json
+
+    data = json.loads(manifest_p.read_text(encoding="utf-8"))
+
+    agent_cfg = data["agent_config"]
+    assert agent_cfg["source_commit"] == "commit_123"
+    assert agent_cfg["model_provider"] == "openai"
+    assert agent_cfg["configured_model_id"] == "gpt-4o"
+    assert agent_cfg["tool_versions"] == {"web_search": "1.0.0"}
+    assert agent_cfg["prompt_revision"].startswith("sha3_256:")
+    assert agent_cfg["config_revision"].startswith("sha3_256:")
+
+    rt_cfg = data["runtime_config"]
+    assert rt_cfg["scenario_hash"].startswith("sha3_256:")
+    assert rt_cfg["policy_hash"].startswith("sha3_256:")
+    assert rt_cfg["oracle_hash"].startswith("sha3_256:")
+    assert "runtime_version" in rt_cfg
+
+    env = data["environment"]
+    assert "runtime_version" in env
+    assert env["environment_fingerprint"].startswith("sha3_256:")

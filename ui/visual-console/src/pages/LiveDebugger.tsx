@@ -891,12 +891,23 @@ export const LiveDebugger: React.FC = () => {
         const cur = edgePairCurrent.get(pair) || 0;
         edgePairCurrent.set(pair, cur + 1);
 
+        // Deterministic offset geometry for parallel / retry edges
+        const pathOffset = total > 1 ? Math.round(20 + cur * 16) : undefined;
+        const pathOptions = total > 1 ? { offset: pathOffset, borderRadius: 8 } : undefined;
+
         if (!plannedEdge) {
           const isDivergence = mode === 'divergence';
           return {
             ...e,
             type: total > 1 ? 'smoothstep' : undefined,
+            pathOptions,
             animated: mode !== 'planned',
+            data: {
+              ...e.data,
+              parallelIndex: cur,
+              parallelTotal: total,
+              pathOffset,
+            },
             style: {
               stroke: isDivergence ? '#f59e0b' : '#10b981',
               strokeWidth: isDivergence ? 2.5 : 2,
@@ -907,7 +918,14 @@ export const LiveDebugger: React.FC = () => {
           return {
             ...e,
             type: total > 1 ? 'smoothstep' : undefined,
+            pathOptions,
             animated: true,
+            data: {
+              ...e.data,
+              parallelIndex: cur,
+              parallelTotal: total,
+              pathOffset,
+            },
             style: { stroke: '#6366f1', strokeWidth: 2 },
           };
         }
@@ -915,7 +933,14 @@ export const LiveDebugger: React.FC = () => {
         return {
           ...e,
           type: total > 1 ? 'smoothstep' : undefined,
+          pathOptions,
           animated: false,
+          data: {
+            ...e.data,
+            parallelIndex: cur,
+            parallelTotal: total,
+            pathOffset,
+          },
           style: {
             stroke: '#334155',
             strokeWidth: 1,

@@ -37,6 +37,9 @@ def test_public_verify_endpoint_v3(client, tmp_path, monkeypatch):
     monkeypatch.setattr(config, "REPORTS_DIR", tmp_path / "reports")
 
     # 2. Sign the trace
+    from tests.conftest import append_authoritative_finalization
+
+    append_authoritative_finalization(trace_path, run_id, run_dir)
     TraceVerifier.sign_trace(trace_path=str(trace_path), run_id=run_id, execution_mode="live")
 
     # 3. Test API Verification (New /v1/ Path)
