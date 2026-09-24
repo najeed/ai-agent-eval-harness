@@ -91,6 +91,7 @@ class AgentVAcceptanceRunner:
         attempts: int = 1,
         run_id: str | None = None,
         run_log_dir: str | Path | None = None,
+        execution_mode: str = "live",
     ) -> CommandResult:
         """Execute: agentv run --scenario ..."""
         args = ["run", "--scenario", str(scenario_path)]
@@ -112,6 +113,8 @@ class AgentVAcceptanceRunner:
             args.extend(["--run-id", run_id])
         if run_log_dir:
             args.extend(["--run-log-dir", str(run_log_dir)])
+        if execution_mode:
+            args.extend(["--execution-mode", execution_mode])
         return self._exec(args)
 
     def certify(self, run_id: str, identity: str = "system_id") -> CommandResult:

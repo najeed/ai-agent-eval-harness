@@ -5,18 +5,25 @@ Authoritative End-to-End Acceptance Test Suite and Corpus Sentinel.
 
 from __future__ import annotations
 
+import os
 import uuid
 from pathlib import Path
 
 import pytest
 
 from tests.acceptance.result import AcceptanceResult
-from tests.acceptance.support.artifact_reader import load_run_artifacts, normalize_actual_result
+from tests.acceptance.support.artifact_reader import (
+    load_run_artifacts,
+    normalize_actual_result,
+    read_external_state_oracle,
+)
 from tests.acceptance.support.case_loader import discover_corpus_cases, load_manifest
 from tests.acceptance.support.oracle import compare_expectations
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 ALL_CASES = discover_corpus_cases()
+RELEASE_MANIFEST_PATH = REPO_ROOT / "tests" / "acceptance" / "manifests" / "release.yaml"
+RELEASE_CASES = load_manifest(RELEASE_MANIFEST_PATH)["loaded_cases"]
 
 
 # ---------------------------------------------------------------------------
@@ -71,10 +78,11 @@ def test_acceptance_corpus_inventory():
             )
 
     # Manifest validity check
-    release_manifest_path = REPO_ROOT / "tests" / "acceptance" / "manifests" / "release.yaml"
-    assert release_manifest_path.exists(), f"Missing release manifest: {release_manifest_path}"
-    manifest = load_manifest(release_manifest_path)
+    assert RELEASE_MANIFEST_PATH.exists(), f"Missing release manifest: {RELEASE_MANIFEST_PATH}"
+    manifest = load_manifest(RELEASE_MANIFEST_PATH)
     assert len(manifest["loaded_cases"]) >= 4, "Release manifest contains fewer than 4 cases"
+    release_ids = [case["id"] for case in manifest["loaded_cases"]]
+    assert len(release_ids) == len(set(release_ids)), "Release manifest contains duplicate case IDs"
 
 
 # ---------------------------------------------------------------------------
@@ -84,7 +92,7 @@ def test_acceptance_corpus_inventory():
 
 @pytest.mark.acceptance
 @pytest.mark.acceptance_release
-@pytest.mark.parametrize("case", ALL_CASES, ids=[c["id"] for c in ALL_CASES])
+@pytest.mark.parametrize("case", RELEASE_CASES, ids=[c["id"] for c in RELEASE_CASES])
 def test_agentv_acceptance_case(case, isolated_acceptance_env, acceptance_aggregator):
     """
     Executes an acceptance test case against the observable AgentV product contract.
@@ -98,6 +106,18 @@ def test_agentv_acceptance_case(case, isolated_acceptance_env, acceptance_aggreg
     scenario_full_path = REPO_ROOT / scenario_rel_path
     agent_path = (REPO_ROOT / scenario_cfg["agent"]) if scenario_cfg.get("agent") else None
     run_id = f"at-{case['id'].lower()}-{uuid.uuid4().hex[:8]}"
+    oracle_url = expect_cfg = case["expect"]
+    oracle_url = expect_cfg.get("state", {}).get("oracle_url", "")
+    if oracle_url.startswith("${") and oracle_url.endswith("}"):
+        oracle_url = os.environ.get(oracle_url[2:-1], "")
+    if case["expect"].get("state", {}).get("oracle_url") and not oracle_url:
+        if os.environ.get("AGENTV_REQUIRE_EXTERNAL_ORACLE") == "1":
+            pytest.fail("Required independent acceptance oracle is unavailable")
+        pytest.skip("Independent acceptance oracle is not configured for this non-release run")
+    if oracle_url:
+        from tests.acceptance.support.artifact_reader import reset_external_state_oracle
+
+        reset_external_state_oracle(oracle_url, {"operating": 1000, "recipient": 0})
 
     # 2. Execute Scenario via CLI
     run_res = runner.run(
@@ -133,6 +153,15 @@ def test_agentv_acceptance_case(case, isolated_acceptance_env, acceptance_aggreg
         cli_gate_exit_code=gate_res.exit_code,
         cli_verify_exit_code=0 if (cert_res and cert_res.exit_code == 0) else None,
     )
+    oracle_url = expect_cfg.get("state", {}).get("oracle_url")
+    if isinstance(oracle_url, str) and oracle_url.startswith("${") and oracle_url.endswith("}"):
+        oracle_url = os.environ.get(oracle_url[2:-1], "")
+    if oracle_url:
+        # State/commit facts come from the separately deployed tester authority,
+        # never from AgentV telemetry or manifests.
+        external_observation = read_external_state_oracle(oracle_url)
+        actual["state"]["final_state"] = external_observation["state"]
+        actual["state"]["oracle_receipt_hash"] = external_observation["receipt_hash"]
 
     # 7. Independent Oracle Evaluation
     oracle_failures = compare_expectations(expected=expect_cfg, actual=actual)
@@ -142,13 +171,18 @@ def test_agentv_acceptance_case(case, isolated_acceptance_env, acceptance_aggreg
     # 8. Record Acceptance Result
     result = AcceptanceResult(
         case_id=case["id"],
+        category=case["category"],
         accepted=is_accepted,
         expected=expect_cfg,
         actual=actual,
         failures=failure_messages,
         run_id=run_id,
         agentv_version="2.0.0",
-        git_commit="head",
+        git_commit=(
+            __import__("subprocess")
+            .check_output(["git", "rev-parse", "HEAD"], cwd=REPO_ROOT, text=True)
+            .strip()
+        ),
         evidence_verified=artifacts.has_trace,
         certificate_verified=artifacts.has_certificate and gate_res.exit_code == 0,
         ledger_verified=gate_res.exit_code == 0,

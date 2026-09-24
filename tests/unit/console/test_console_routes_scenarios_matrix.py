@@ -227,6 +227,10 @@ def test_scenario_save_and_lifecycle_state_machine(client, tmp_path):
     assert res_demote.status_code == 200
     assert res_demote.get_json()["lifecycle_status"] == "Draft"
 
+    # Non-dict payload check
+    res_non_dict = client.post("/scenarios", json="not-a-dict")
+    assert res_non_dict.status_code == 400
+
     # 3. save_scenario returns scenario and handles optimistic concurrency conflict (409)
     good_sc = {
         "id": "sc_concurrency",
@@ -235,14 +239,48 @@ def test_scenario_save_and_lifecycle_state_machine(client, tmp_path):
     }
     res_good = client.post("/scenarios", json=good_sc)
     assert res_good.status_code == 200
-    assert "scenario" in res_good.get_json()
-    assert res_good.get_json()["scenario"]["id"] == "sc_concurrency"
+    res_data = res_good.get_json()
+    assert "scenario" in res_data
+    assert res_data["scenario"]["id"] == "sc_concurrency"
+    current_rev = res_data["scenario"]["metadata"]["content_hash"]
 
+    # Concurrency conflict with stale hash
     res_conflict = client.post(
         "/scenarios",
         json={**good_sc, "expected_revision_hash": "sha3_256:stale_hash_value"},
     )
     assert res_conflict.status_code == 409
+
+    # Wrapped envelope save with matching expected_revision_hash
+    envelope_sc = {
+        "scenario": {
+            "id": "sc_concurrency",
+            "status": "Draft",
+            "workflow": {"nodes": [{"id": "n1", "task_description": "updated task"}]},
+            "expected_revision_hash": current_rev,
+        },
+        "expected_revision_hash": current_rev,
+    }
+    res_envelope = client.post("/scenarios", json=envelope_sc)
+    assert res_envelope.status_code == 200
+    saved_doc = res_envelope.get_json()["scenario"]
+    assert "expected_revision_hash" not in saved_doc
+    assert "expected_revision_hash" not in saved_doc.get("metadata", {})
+    new_rev = saved_doc["metadata"]["content_hash"]
+
+    # Metadata expected_revision_hash popping check
+    meta_rev_sc = {
+        "scenario": {
+            "id": "sc_concurrency",
+            "status": "Draft",
+            "workflow": {"nodes": [{"id": "n1", "task_description": "meta task"}]},
+            "metadata": {"expected_revision_hash": new_rev},
+        }
+    }
+    res_meta_rev = client.post("/scenarios", json=meta_rev_sc)
+    assert res_meta_rev.status_code == 200
+    saved_meta_doc = res_meta_rev.get_json()["scenario"]
+    assert "expected_revision_hash" not in saved_meta_doc.get("metadata", {})
 
     # 4. transition_scenario_lifecycle: invalid target_status, illegal transition, reason required
     sc_file = tmp_path / "industries" / "generic" / "scenarios" / "sc_trans.json"

@@ -478,8 +478,13 @@ class TraceVerifier:
                     result = fn()
                     entry["status"] = "ok"
                     return result
-                except CertificationFailedError:
+                except CertificationFailedError as exc:
                     entry["status"] = "failed"
+                    # Helpers may raise a domain error directly.  Preserve the
+                    # complete transaction record rather than losing the stage
+                    # that failed (notably the final seal operation).
+                    if not exc.stage_log:
+                        exc.stage_log = stages
                     raise
                 except Exception as exc:
                     entry["status"] = "failed"
@@ -493,15 +498,6 @@ class TraceVerifier:
 
         # --- Precondition validation (pre-transaction; no mutation possible) ---
         p = Path(trace_path)
-        if not utils.is_path_safe(p, config.PROJECT_ROOT):
-            raise PermissionError(
-                f"Security violation: Trace file outside project jail: {trace_path}"
-            )
-        if not p.exists():
-            raise FileNotFoundError(f"Trace file not found: {trace_path}")
-
-        cls.compute_signature(p)
-
         if not run_id:
             logger.error(
                 "   [Verifier] FAIL: Missing explicit Run ID. Inference "
@@ -523,6 +519,15 @@ class TraceVerifier:
                 "trace (runs/<id>/run.jsonl)."
             )
 
+        if not utils.is_path_safe(p, config.PROJECT_ROOT):
+            raise PermissionError(
+                f"Security violation: Trace file outside project jail: {trace_path}"
+            )
+        if not p.exists():
+            raise FileNotFoundError(f"Trace file not found: {trace_path}")
+
+        cls.compute_signature(p)
+
         if resolved_p != vault_path:
             logger.error("   [Verifier] FAIL: Forensic Pollution - Path mismatch.")
             logger.error(f"      Provided: {resolved_p}")
@@ -533,6 +538,13 @@ class TraceVerifier:
             )
 
         logger.info(f"      [Identity] Identity Basis Confirmed: {run_id} (Type: Vault)")
+
+        from .execution_ir import ExecutionMode
+
+        _valid_modes = {m.value for m in ExecutionMode}
+        _mode_in = str(execution_mode) if execution_mode else ""
+        if _mode_in not in _valid_modes:
+            provisional = True
 
         now = datetime.now().astimezone()
         ts_base = now.strftime("%Y-%m-%dT%H:%M:%S")
@@ -661,6 +673,7 @@ class TraceVerifier:
         ev_graph: dict[str, Any] | None = None
         ev_graph_canon: dict[str, Any] | None = None
         events_list: list[dict[str, Any]] = []
+        terminal_events: list[dict[str, Any]] = []
         req_oracles: list[str] | None = None
         if p.exists():
             try:
@@ -676,8 +689,28 @@ class TraceVerifier:
                         if stripped:
                             try:
                                 parsed_ev = json.loads(stripped)
-                                events_list.append(parsed_ev)
-                                events_list_with_lines.append((parsed_ev, stripped))
+                                terminal_finalization = parsed_ev.get("event") in (
+                                    "run_end",
+                                    "verification_decision",
+                                    "session_decision",
+                                ) and isinstance(
+                                    parsed_ev.get("finalization")
+                                    or (
+                                        parsed_ev.get("data", {}).get("finalization")
+                                        if isinstance(parsed_ev.get("data"), dict)
+                                        else None
+                                    ),
+                                    dict,
+                                )
+                                # The evaluator finalization record binds the
+                                # pre-finalization evidence stream.  Its own
+                                # terminal carrier cannot be included without
+                                # creating a self-referential graph root.
+                                if not terminal_finalization:
+                                    events_list.append(parsed_ev)
+                                    events_list_with_lines.append((parsed_ev, line.rstrip("\r\n")))
+                                else:
+                                    terminal_events.append(parsed_ev)
                             except Exception as ev_parse_err:
                                 logger.error(
                                     f"Malformed trace record at line {line_idx}: {ev_parse_err}"
@@ -703,10 +736,6 @@ class TraceVerifier:
                         events_list_with_lines, required_oracle_ids=req_oracles
                     )
                     computed_evidence_root = compute_evidence_graph_root(ev_graph)
-                    ev_graph_canon = build_evidence_graph_from_events(
-                        events_list, required_oracle_ids=req_oracles
-                    )
-                    computed_evidence_root_canon = compute_evidence_graph_root(ev_graph_canon)
                     total_nodes = ev_graph.get("total_nodes", ev_graph.get("node_count", 0))
                     if total_nodes > 0 and not ev_graph.get("is_complete_provenance", True):
                         logger.error(
@@ -735,7 +764,10 @@ class TraceVerifier:
 
         # Authoritative EvaluatorFinalizationRecord validation (Defect 1)
         fin_record: Any | None = None
-        for ev in reversed(events_list):
+        # The terminal carrier is excluded from the evidence graph to avoid a
+        # circular finalization root, but remains the authoritative container
+        # for the signed finalization record itself.
+        for ev in reversed(events_list + terminal_events):
             if ev.get("event") == "evaluator_finalization":
                 fin_data = ev.get("data") or ev
                 try:
@@ -802,6 +834,11 @@ class TraceVerifier:
                         f"'{fin_record.execution_manifest_hash}' != "
                         f"'{metadata['execution_manifest_hash']}'"
                     )
+        elif not provisional:
+            raise CertificationFailedError(
+                "MissingEvaluatorFinalization: trace missing mandatory authoritative "
+                "EvaluatorFinalizationRecord"
+            )
         elif (
             require_finalization
             or os.environ.get("AES_CERTIFICATION_MODE") == "1"
@@ -1390,7 +1427,6 @@ class TraceVerifier:
                 verif_res = VerificationAuthority.verify_package_artifacts(
                     package=manifest["verification_package"],
                     raw_trace_bytes=raw_bytes,
-                    raw_trace_events=events_list,
                     canonical_manifest=canonical_manifest_target,
                     scenario_data=scenario_data,
                     require_signature=True,
@@ -1449,26 +1485,37 @@ class TraceVerifier:
             Final Irreversible Operation:
             Seal vault only after all artifacts are verified and published.
             """
-            import shutil
-
-            store.seal(
-                run_id=run_id,
-                metadata={
-                    "certificate_hash": (
-                        manifest.get("package_hash")
-                        or manifest.get("certificate_hash")
-                        or manifest.get("trace_hash", "")
-                    ),
-                    "vc_version": manifest.get("vc_version", VC_V3_SCHEMA_VERSION),
-                    "timestamp": timestamp,
-                    "compliance_status": compliance_status,
-                },
-            )
-            shutil.rmtree(staging_dir, ignore_errors=True)
-
+            from eval_runner.reference.local_artifact import LocalFileArtifactStore
             from eval_runner.run_lifecycle import RunLifecycleState, transition_run_lifecycle
 
             try:
+                # Local lifecycle owns .sealed.  Calling LocalFileArtifactStore.seal
+                # first created a second irreversible write, so a subsequent
+                # lifecycle persistence failure could leave a sealed-but-unpublished
+                # vault.  The lifecycle transition is the one final local commit.
+                if not isinstance(store, LocalFileArtifactStore):
+                    if not store.supports_transactional_seal():
+                        raise CertificationFailedError(
+                            "NonAtomicArtifactStore: remote artifact stores must explicitly "
+                            "support transactional sealing before certification can commit."
+                        )
+                    # A remote/object store can reject its immutable-write
+                    # operation.  Attempt it before the local irreversible
+                    # lifecycle marker so that rejection leaves the run OPEN
+                    # and rollback remains possible.
+                    store.seal(
+                        run_id=run_id,
+                        metadata={
+                            "certificate_hash": (
+                                manifest.get("package_hash")
+                                or manifest.get("certificate_hash")
+                                or manifest.get("trace_hash", "")
+                            ),
+                            "vc_version": manifest.get("vc_version", VC_V3_SCHEMA_VERSION),
+                            "timestamp": timestamp,
+                            "compliance_status": compliance_status,
+                        },
+                    )
                 transition_run_lifecycle(run_id, RunLifecycleState.SEALED)
             except Exception as sl_err:
                 logger.error("Failed transitioning lifecycle to SEALED for %s: %s", run_id, sl_err)
@@ -1476,6 +1523,9 @@ class TraceVerifier:
                     f"LifecycleTransitionFailed: could not transition run '{run_id}' "
                     f"to SEALED: {sl_err}"
                 ) from sl_err
+            import shutil
+
+            shutil.rmtree(staging_dir, ignore_errors=True)
 
         # --- TRANSACTION: hash -> sign -> persist(stage) -> verify -> publish(promote) -> seal ---
         # Any stage failure rolls back the trace mutation and partial artifacts,
@@ -1515,9 +1565,8 @@ class TraceVerifier:
 
                 _stage("verify")(_verify)
 
-                _stage("seal")(_seal)
-
                 _stage("publish")(_publish)
+                _stage("seal")(_seal)
                 logger.info(f"      [Verifier] Evidence vault sealed for run '{run_id}'")
             except CertificationFailedError:
                 _rollback()
@@ -1664,8 +1713,25 @@ class TraceVerifier:
                             if stripped:
                                 try:
                                     parsed = json.loads(stripped)
+                                    terminal_finalization = parsed.get("event") in (
+                                        "run_end",
+                                        "verification_decision",
+                                        "session_decision",
+                                    ) and isinstance(
+                                        parsed.get("finalization")
+                                        or (
+                                            parsed.get("data", {}).get("finalization")
+                                            if isinstance(parsed.get("data"), dict)
+                                            else None
+                                        ),
+                                        dict,
+                                    )
+                                    if terminal_finalization:
+                                        continue
                                     ev_list.append(parsed)
-                                    ev_list_with_lines.append((parsed, stripped))
+                                    # Preserve the JSONL payload exactly as recorded; only
+                                    # the line terminator is transport framing, not JSON.
+                                    ev_list_with_lines.append((parsed, line.rstrip("\r\n")))
                                 except (
                                     json.JSONDecodeError,
                                     UnicodeDecodeError,
@@ -1688,14 +1754,6 @@ class TraceVerifier:
                             ev_list_with_lines, required_oracle_ids=req_oracles
                         )
                         computed_root = compute_evidence_graph_root(graph)
-                        if computed_root != expected_evidence_root and ev_list:
-                            graph_canon = build_evidence_graph_from_events(
-                                ev_list, required_oracle_ids=req_oracles
-                            )
-                            computed_root_canon = compute_evidence_graph_root(graph_canon)
-                            if computed_root_canon == expected_evidence_root:
-                                graph = graph_canon
-                                computed_root = computed_root_canon
                         if computed_root != expected_evidence_root:
                             logger.warning(
                                 f"Evidence root mismatch: expected {expected_evidence_root}, "
@@ -1798,7 +1856,7 @@ class TraceVerifier:
                     from eval_runner.run_lifecycle import RunLifecycleState, get_run_lifecycle_state
 
                     st = get_run_lifecycle_state(run_id_cand)
-                    if st in (RunLifecycleState.FINALIZING, RunLifecycleState.INVALID):
+                    if st != RunLifecycleState.SEALED:
                         logger.warning(
                             "Unsealed/uncommitted run rejected: run '%s' lifecycle is %s "
                             "(SEALED required)",
@@ -2475,16 +2533,36 @@ class VerificationAuthority:
                         continue
                     evt = json.loads(trimmed)
                     parsed_events.append(evt)
-                    parsed_events_with_lines.append((evt, trimmed))
+                    # Preserve all JSON whitespace from the recorded line; the
+                    # evidence graph commits to raw JSONL, not a reserialization.
+                    parsed_events_with_lines.append((evt, line.rstrip("\r\n")))
             except Exception as parse_err:
                 failures.append(f"TraceStreamParsingFailed: {parse_err}")
 
         # Derive authoritative event stream from parsed raw trace bytes
-        effective_events_with_lines = parsed_events_with_lines
-        effective_events = parsed_events
+        def _is_finalization_carrier(event: dict[str, Any]) -> bool:
+            return bool(
+                event.get("event") in ("run_end", "verification_decision", "session_decision")
+                and isinstance(
+                    event.get("finalization")
+                    or (
+                        event.get("data", {}).get("finalization")
+                        if isinstance(event.get("data"), dict)
+                        else None
+                    ),
+                    dict,
+                )
+            )
 
-        # Anti-split-chain validation: if caller supplied raw_trace_events,
-        # it MUST match the parsed byte stream
+        # Parse every raw line, then exclude only the terminal self-referential
+        # finalization carrier from evidence-root reconstruction.
+        effective_events_with_lines = [
+            item for item in parsed_events_with_lines if not _is_finalization_carrier(item[0])
+        ]
+        effective_events = [evt for evt in parsed_events if not _is_finalization_carrier(evt)]
+
+        # Raw JSONL is the only authoritative event source.  Caller events are
+        # useful only as an anti-split-chain assertion and must never replace it.
         if raw_trace_events is not None:
             if parsed_events and len(raw_trace_events) != len(parsed_events):
                 failures.append(
@@ -2492,28 +2570,51 @@ class VerificationAuthority:
                     f"({len(raw_trace_events)}) does not match byte-stream parsed "
                     f"event count ({len(parsed_events)})"
                 )
+            elif parsed_events and list(raw_trace_events) != parsed_events:
+                failures.append(
+                    "TraceStreamSplitChainViolation: caller-supplied events do not "
+                    "exactly match the raw JSONL event stream"
+                )
             elif not parsed_events:
-                from agentv_runtime.canonical import canonical_json_dumps
-
-                effective_events = raw_trace_events
-                effective_events_with_lines = [
-                    (e, canonical_json_dumps(e) if isinstance(e, dict) else str(e))
-                    for e in raw_trace_events
-                ]
+                failures.append(
+                    "TraceStreamSplitChainViolation: empty raw trace cannot be "
+                    "supplemented by caller-supplied events"
+                )
 
         # 2. Manifest canonical hash binding
         if canonical_manifest is None:
             failures.append("ManifestMissing: artifact verification requires canonical manifest")
         else:
             try:
+                physical = False
+                generic_vc_envelope = False
+                source = None
                 if hasattr(canonical_manifest, "compute_manifest_hash"):
+                    physical = True
                     computed_m_hash = canonical_manifest.compute_manifest_hash()
                 elif isinstance(canonical_manifest, dict):
                     from agentv_runtime.manifest import ExecutionManifest
 
-                    computed_m_hash = ExecutionManifest.from_dict(
+                    # A VC envelope is not a physical ExecutionManifest.  Only
+                    # a physical manifest is subject to the closed-schema parser;
+                    # preserve legacy VC package binding through its declared
+                    # execution-manifest projection.
+                    physical = {"agent_config", "runtime_config", "environment"}.issubset(
                         canonical_manifest
-                    ).compute_manifest_hash()
+                    )
+                    generic_vc_envelope = not physical and "vc_version" in canonical_manifest
+                    source = (
+                        canonical_manifest
+                        if physical
+                        else {
+                            key: canonical_manifest[key]
+                            for key in {
+                                f.name for f in __import__("dataclasses").fields(ExecutionManifest)
+                            }
+                            if key in canonical_manifest
+                        }
+                    )
+                    computed_m_hash = ExecutionManifest.from_dict(source).compute_manifest_hash()
                 elif isinstance(canonical_manifest, (bytes, str)):
                     c_bytes = (
                         canonical_manifest
@@ -2525,7 +2626,9 @@ class VerificationAuthority:
                     computed_m_hash = ""
 
                 exp_m_hash = pkg.manifest_hash
-                if not exp_m_hash or computed_m_hash != exp_m_hash:
+                if not (generic_vc_envelope and not exp_m_hash) and (
+                    not exp_m_hash or computed_m_hash != exp_m_hash
+                ):
                     failures.append(
                         f"ManifestHashMismatch: package={exp_m_hash} actual={computed_m_hash}"
                     )
@@ -2536,7 +2639,7 @@ class VerificationAuthority:
                     try:
                         from agentv_runtime.manifest import ExecutionManifest
 
-                        m_obj = ExecutionManifest.from_dict(canonical_manifest)
+                        m_obj = ExecutionManifest.from_dict(source or canonical_manifest)
                     except Exception as exc:
                         logger.debug(
                             "Failed to instantiate ExecutionManifest from dict: %s",
@@ -2586,9 +2689,7 @@ class VerificationAuthority:
                 failures.append(f"ManifestVerificationFailed: {m_err}")
 
         # 3. Evidence root binding & reconstruction from stream events
-        if raw_trace_events is None:
-            failures.append("TraceEventsMissing: artifact verification requires raw trace events")
-        elif not effective_events_with_lines and not raw_trace_events:
+        if not effective_events_with_lines:
             failures.append("TraceEventsMissing: artifact verification requires raw trace events")
         else:
             try:
@@ -2599,14 +2700,6 @@ class VerificationAuthority:
 
                 ev_graph = build_evidence_graph_from_events(effective_events_with_lines)
                 computed_root = compute_evidence_graph_root(ev_graph)
-                if computed_root != pkg.evidence_root_hash:
-                    cand_events = raw_trace_events or effective_events
-                    if cand_events:
-                        ev_graph_canon = build_evidence_graph_from_events(cand_events)
-                        computed_root_canon = compute_evidence_graph_root(ev_graph_canon)
-                        if computed_root_canon == pkg.evidence_root_hash:
-                            ev_graph = ev_graph_canon
-                            computed_root = computed_root_canon
                 if computed_root != pkg.evidence_root_hash:
                     failures.append(
                         f"EvidenceRootMismatch: package={pkg.evidence_root_hash} "
@@ -2645,13 +2738,13 @@ class VerificationAuthority:
                         f"trace hash '{pkg.trace_hash}'"
                     )
 
-            if raw_trace_events is not None and "event_count" in pkg.trace_seal:
+            if "event_count" in pkg.trace_seal:
                 try:
                     exp_count = int(pkg.trace_seal["event_count"])
-                    if len(raw_trace_events) != exp_count:
+                    if len(effective_events) != exp_count:
                         failures.append(
                             f"TraceSealEventCountMismatch: seal declared {exp_count} events "
-                            f"but actual trace contains {len(raw_trace_events)} events"
+                            f"but actual trace contains {len(effective_events)} evidence events"
                         )
                 except (ValueError, TypeError):
                     pass
@@ -2954,14 +3047,31 @@ class VerificationAuthority:
         # 2. Manifest binding
         if canonical_manifest is not None:
             try:
+                physical = False
+                generic_vc_envelope = False
+                source = None
                 if hasattr(canonical_manifest, "compute_manifest_hash"):
+                    physical = True
                     computed_m_hash = canonical_manifest.compute_manifest_hash()
                 elif isinstance(canonical_manifest, dict):
                     from agentv_runtime.manifest import ExecutionManifest
 
-                    computed_m_hash = ExecutionManifest.from_dict(
+                    physical = {"agent_config", "runtime_config", "environment"}.issubset(
                         canonical_manifest
-                    ).compute_manifest_hash()
+                    )
+                    generic_vc_envelope = not physical and "vc_version" in canonical_manifest
+                    source = (
+                        canonical_manifest
+                        if physical
+                        else {
+                            key: canonical_manifest[key]
+                            for key in {
+                                f.name for f in __import__("dataclasses").fields(ExecutionManifest)
+                            }
+                            if key in canonical_manifest
+                        }
+                    )
+                    computed_m_hash = ExecutionManifest.from_dict(source).compute_manifest_hash()
                 elif isinstance(canonical_manifest, (bytes, str)):
                     c_bytes = (
                         canonical_manifest
@@ -2973,7 +3083,9 @@ class VerificationAuthority:
                     computed_m_hash = ""
 
                 exp_m_hash = pkg.manifest_hash
-                if not exp_m_hash or computed_m_hash != exp_m_hash:
+                if not (generic_vc_envelope and not exp_m_hash) and (
+                    not exp_m_hash or computed_m_hash != exp_m_hash
+                ):
                     failures.append(
                         f"ManifestHashMismatch: package={exp_m_hash} actual={computed_m_hash}"
                     )
@@ -2984,7 +3096,7 @@ class VerificationAuthority:
                     try:
                         from agentv_runtime.manifest import ExecutionManifest
 
-                        m_obj = ExecutionManifest.from_dict(canonical_manifest)
+                        m_obj = ExecutionManifest.from_dict(source or canonical_manifest)
                     except Exception as exc:
                         logger.debug(
                             "Failed to instantiate ExecutionManifest from dict: %s",
@@ -3465,7 +3577,13 @@ class VerificationAuthority:
             except Exception as parse_err:
                 failures.append(f"TraceStreamParsingFailed: {parse_err}")
 
-        effective_events = parsed_events if parsed_events else (raw_trace_events or [])
+        # Never substitute caller-supplied events for the recorded raw JSONL.
+        if raw_trace_events is not None and not parsed_events:
+            failures.append(
+                "TraceStreamSplitChainViolation: empty raw trace cannot be "
+                "supplemented by caller-supplied events"
+            )
+        effective_events = parsed_events
 
         # 1. Authoritative EvaluatorFinalizationRecord validation
         fin_record: Any | None = None
@@ -3564,6 +3682,32 @@ class VerificationAuthority:
                 failures.append(
                     f"ManifestHashMismatch: EvaluatorFinalizationRecord execution_manifest_hash "
                     f"'{fin_record.execution_manifest_hash}' != package '{pkg.manifest_hash}'"
+                )
+            if pkg.finalization_hash != fin_record.finalization_hash:
+                failures.append(
+                    f"FinalizationHashMismatch: package={pkg.finalization_hash} "
+                    f"evaluator={fin_record.finalization_hash}"
+                )
+            if pkg.evaluation_hash != fin_record.finalization_hash:
+                failures.append(
+                    f"EvaluationHashMismatch: package={pkg.evaluation_hash} "
+                    f"evaluator={fin_record.finalization_hash}"
+                )
+            package_decision = str((pkg.decision or {}).get("decision") or "").lower()
+            expected_decision = "pass" if fin_record.outcome == "pass" else "fail"
+            if package_decision != expected_decision:
+                failures.append(
+                    f"DecisionMismatch: package={package_decision or 'missing'} "
+                    f"evaluator={expected_decision}"
+                )
+            package_score = (pkg.decision or {}).get("score")
+            if (
+                not isinstance(package_score, (int, float))
+                or isinstance(package_score, bool)
+                or float(package_score) != float(fin_record.score)
+            ):
+                failures.append(
+                    f"ScoreMismatch: package={package_score!r} evaluator={fin_record.score!r}"
                 )
 
         # 2. Execution Mode Enforcement (Fail-closed on simulated/provisional)

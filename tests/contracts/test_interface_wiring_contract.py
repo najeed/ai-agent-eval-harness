@@ -11,6 +11,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock
+from uuid import uuid4
 
 import pytest
 from cryptography.hazmat.primitives import serialization
@@ -339,8 +340,8 @@ def test_flight_recorder_artifact_store_wiring(tmp_path, monkeypatch):
 def test_verifier_artifact_store_wiring(tmp_path, monkeypatch):
     """
     Contract Test: TraceVerifier.sign_trace invokes ArtifactStore.store_artifact
-    to persist the sidecar manifest and ArtifactStore.seal to immutabilize the
-    vault — via the transactional certification pipeline.
+    to persist the sidecar manifest and commits the authoritative local
+    lifecycle seal only after publication.
     """
     from eval_runner import config
     from eval_runner.identity import IdentityService
@@ -374,8 +375,13 @@ def test_verifier_artifact_store_wiring(tmp_path, monkeypatch):
     assert "run_manifest.json" in stored_artifacts
     assert "certification_receipt.json" in stored_artifacts
 
-    # Transactional pipeline: sealing is part of the guaranteed wiring.
-    assert mock_store.seal.called
+    # Local-file stores are sealed by the authoritative lifecycle transition;
+    # invoking their separate ``seal`` method would create a second irreversible
+    # write before that final transaction commit.
+    from eval_runner.run_lifecycle import RunLifecycleState, get_run_lifecycle_state
+
+    assert get_run_lifecycle_state("run-ver-art-001") is RunLifecycleState.SEALED
+    assert not mock_store.seal.called
     assert manifest["certification"]["outcome"] == "PROVISIONAL_PASS"
 
 
@@ -471,7 +477,17 @@ def test_inprocess_execution_backend_lifecycle_and_singleton():
     backend2 = InProcessExecutionBackend.get_instance()
     assert backend1 is backend2
 
-    run_id = "run-exec-contract-001"
+    # Keep this backend lifecycle test self-contained.  It verifies background
+    # execution/cancellation state, not the full plugin execution pipeline.
+    def controlled_runner(_scenario: dict[str, Any], *, cancellation_event: Any, **_kwargs: Any):
+        cancellation_event.wait(timeout=2)
+        return {"status": "cancelled" if cancellation_event.is_set() else "completed"}
+
+    backend1.set_dependency_graph(runner_callable=controlled_runner)
+
+    # The Flight Recorder now correctly rejects any pre-existing evidence vault.
+    # A unique ID keeps this lifecycle contract isolated from previous test runs.
+    run_id = f"run-exec-contract-{uuid4().hex}"
     scenario = {
         "id": "exec_test",
         "metadata": {"name": "Execution Contract"},
@@ -508,6 +524,10 @@ def test_inprocess_execution_backend_lifecycle_and_singleton():
     cancelled = backend1.cancel(run_id, reason="Test cancellation")
     assert cancelled is True
     assert backend1.status(run_id)["status"] == "ABORTED"
+    thread = backend1._threads.get(run_id)
+    if thread is not None:
+        thread.join(timeout=5)
+        assert not thread.is_alive(), "background evaluation did not stop after cancellation"
     InProcessExecutionBackend.clear_instance()
 
 
@@ -586,6 +606,8 @@ async def test_all_extension_families_exclusive_injection_contract(tmp_path):
     Architectural Contract Test: Assert that injecting custom extension backends
     results in 100% exclusive execution through the injected backends without bypasses.
     """
+    from uuid import uuid4
+
     from agentv_runtime.results import EvaluationResult
     from eval_runner.config_resolver import ConfigResolver, ResolvedRuntimeConfig
     from eval_runner.interfaces.artifact import ArtifactStore
@@ -664,7 +686,7 @@ async def test_all_extension_families_exclusive_injection_contract(tmp_path):
     with patch(
         "eval_runner.session.AgentAdapterRegistry.call_agent", AsyncMock(side_effect=_agent_mock_1)
     ):
-        results = await runner.run(scenario, attempts=1, run_id="run-exclusive-001")
+        results = await runner.run(scenario, attempts=1, run_id=f"run-exclusive-{uuid4().hex}")
 
     assert isinstance(results, EvaluationResult)
     assert results.pass_at_k == 1.0
@@ -681,6 +703,8 @@ def test_inprocess_backend_executes_injected_dependency_graph():
     Contract Test: InProcessExecutionBackend.submit() executes using the injected
     dependency graph, never bypassing injected enterprise implementations.
     """
+    from uuid import uuid4
+
     from eval_runner.interfaces.artifact import ArtifactStore
     from eval_runner.interfaces.policy import PolicyEvaluationResult, PolicyEvaluator
     from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
@@ -733,7 +757,7 @@ def test_inprocess_backend_executes_injected_dependency_graph():
     with patch(
         "eval_runner.session.AgentAdapterRegistry.call_agent", AsyncMock(side_effect=_agent_mock_2)
     ):
-        results = backend.submit("injected_run_001", scenario, background=False)
+        results = backend.submit(f"injected-run-{uuid4().hex}", scenario, background=False)
 
     assert results is not None
     assert mock_policy.evaluate_policy.called

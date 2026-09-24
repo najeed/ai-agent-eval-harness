@@ -11,7 +11,6 @@ Usage:
 """
 
 import argparse
-import importlib.metadata
 import json
 import re
 import sys
@@ -47,9 +46,9 @@ KNOWN_LICENSE_FILES: dict[str, str] = {
 # Fallback known licenses for Python packages when metadata is generic
 PYTHON_LICENSE_MAP: dict[str, tuple[str, str]] = {
     "aiohttp": ("Apache 2.0", "Apache-2.0.txt"),
-    "Flask": ("BSD", "BSD-3-Clause.txt"),
+    "Flask": ("BSD-3-Clause", "BSD-3-Clause.txt"),
     "flask-cors": ("MIT", "MIT.txt"),
-    "Werkzeug": ("BSD", "BSD-3-Clause.txt"),
+    "Werkzeug": ("BSD-3-Clause", "BSD-3-Clause.txt"),
     "requests": ("Apache 2.0", "Apache-2.0.txt"),
     "jsonschema": ("MIT", "MIT.txt"),
     "PyYAML": ("MIT", "MIT.txt"),
@@ -67,7 +66,7 @@ PYTHON_LICENSE_MAP: dict[str, tuple[str, str]] = {
     "python-dotenv": ("BSD-3-Clause", "BSD-3-Clause.txt"),
     "psutil": ("BSD-3-Clause", "BSD-3-Clause.txt"),
     "pandas": ("BSD-3-Clause", "BSD-3-Clause.txt"),
-    "click": ("BSD", "BSD-3-Clause.txt"),
+    "click": ("BSD-3-Clause", "BSD-3-Clause.txt"),
     "pydantic": ("MIT", "MIT.txt"),
     "pyarrow": ("Apache 2.0", "Apache-2.0.txt"),
     "httpx": ("BSD-3-Clause", "BSD-3-Clause.txt"),
@@ -81,6 +80,7 @@ PYTHON_LICENSE_MAP: dict[str, tuple[str, str]] = {
     "langchain-google-genai": ("Apache 2.0", "Apache-2.0.txt"),
     "langchain-ollama": ("MIT", "MIT.txt"),
     "langgraph": ("MIT", "MIT.txt"),
+    "langserve": ("MIT", "MIT.txt"),
     "ag2": ("Apache 2.0", "Apache-2.0.txt"),
     "crewai": ("MIT", "MIT.txt"),
     "dulwich": ("Apache 2.0", "Apache-2.0.txt"),
@@ -95,6 +95,7 @@ PYTHON_LICENSE_MAP: dict[str, tuple[str, str]] = {
 
 # Fallback known licenses for NPM packages
 NPM_LICENSE_MAP: dict[str, tuple[str, str]] = {
+    "@astrojs/markdown-remark": ("MIT", "MIT.txt"),
     "@monaco-editor/react": ("MIT", "MIT.txt"),
     "@tanstack/react-query": ("MIT", "MIT.txt"),
     "@xyflow/react": ("MIT", "MIT.txt"),
@@ -192,20 +193,18 @@ def scan_python_packages(
         seen.add(name.lower())
 
         ver = req_ver
+        # Never resolve an unconstrained requirement from installed metadata:
+        # that makes generated compliance artifacts platform-dependent.
         if ver == "latest" or not ver:
-            try:
-                ver = importlib.metadata.version(name)
-            except Exception:
-                ver = "latest"
+            ver = "latest"
 
         if name in PYTHON_LICENSE_MAP:
             lic_name, lic_file = PYTHON_LICENSE_MAP[name]
         else:
-            try:
-                raw_lic = importlib.metadata.metadata(name).get("License", "MIT")
-                lic_name, lic_file = normalize_license(raw_lic)
-            except Exception:
-                lic_name, lic_file = ("MIT", "MIT.txt")
+            # Compliance output must be a pure function of committed inputs.
+            # Installed package metadata differs across CI images and may be
+            # absent entirely, so it cannot be an authoritative license source.
+            lic_name, lic_file = ("MIT", "MIT.txt")
 
         packages.append(
             {
@@ -242,6 +241,18 @@ def scan_python_optional_packages(
                 match = re.match(r"^([a-zA-Z0-9_\-\.]+)(?:==|>=|<=|~=|>|<)?(.*)$", base_item)
                 if match:
                     names.append((match.group(1).strip(), match.group(2).strip() or "latest"))
+
+        # Also harvest any extras defined only within composite groups
+        existing_names = {n.lower() for n, _ in names}
+        for group in sorted(composite_groups):
+            for item in opt_deps.get(group, []):
+                base_item = item.split(";")[0].strip()
+                match = re.match(r"^([a-zA-Z0-9_\-\.]+)(?:==|>=|<=|~=|>|<)?(.*)$", base_item)
+                if match:
+                    pkg_name = match.group(1).strip()
+                    if pkg_name.lower() not in existing_names:
+                        names.append((pkg_name, match.group(2).strip() or "latest"))
+                        existing_names.add(pkg_name.lower())
     except Exception:
         pass
 
@@ -253,19 +264,12 @@ def scan_python_optional_packages(
 
         ver = req_ver
         if ver == "latest" or not ver:
-            try:
-                ver = importlib.metadata.version(name)
-            except Exception:
-                ver = "latest"
+            ver = "latest"
 
         if name in PYTHON_LICENSE_MAP:
             lic_name, lic_file = PYTHON_LICENSE_MAP[name]
         else:
-            try:
-                raw_lic = importlib.metadata.metadata(name).get("License", "MIT")
-                lic_name, lic_file = normalize_license(raw_lic)
-            except Exception:
-                lic_name, lic_file = ("MIT", "MIT.txt")
+            lic_name, lic_file = ("MIT", "MIT.txt")
 
         packages.append(
             {
@@ -373,22 +377,8 @@ def scan_npm_packages(package_json_path: Path) -> list[dict[str, str]]:
     data = json.loads(package_json_path.read_text(encoding="utf-8"))
     deps: dict[str, str] = data.get("dependencies", {})
 
-    node_modules_dir = package_json_path.parent / "node_modules"
-
     for name, ver in deps.items():
         lic_name, lic_file = NPM_LICENSE_MAP.get(name, (None, None))
-        if not lic_name and node_modules_dir.exists():
-            pkg_pkg_json = node_modules_dir / name / "package.json"
-            if pkg_pkg_json.exists():
-                try:
-                    pkg_data = json.loads(pkg_pkg_json.read_text(encoding="utf-8"))
-                    raw_lic = pkg_data.get("license")
-                    if isinstance(raw_lic, dict):
-                        raw_lic = raw_lic.get("type", "MIT")
-                    lic_name, lic_file = normalize_license(str(raw_lic))
-                except Exception:
-                    pass
-
         if not lic_name:
             lic_name, lic_file = ("MIT", "MIT.txt")
 

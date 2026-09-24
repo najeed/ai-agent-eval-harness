@@ -5,7 +5,7 @@ description: "Auditor guide to trace ordering, monotonic terminal boundaries, fi
 
 # Event Stream Forensic Integrity & Monotonic Boundaries
 
-In the AgentV Forensic Trust Protocol, an evaluation trace (`run.jsonl`) serves as the foundational evidentiary artifact. Auditors must verify not only the correctness of individual events, but also the mathematical integrity, ordering monotonicity, and immutability of the entire event sequence.
+In the AgentV Forensic Trust Protocol, an evaluation trace (`run.jsonl`) serves as the foundational evidentiary artifact. Auditors must verify not only the correctness of individual events, but also the mathematical integrity, ordering monotonicity, and cryptographic tamper evidence of the entire event sequence. OSS local storage is not physical immutability.
 
 ---
 

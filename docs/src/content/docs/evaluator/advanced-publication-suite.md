@@ -90,7 +90,7 @@ Every execution creates a unique batch directory in `results/batch_YYYYMMDD_HHMM
 - **`run_XXX.jsonl`**: Individual Flight Recorder traces for every single run.
 - **`aggregated_results.json`**: Statistical summary (pass@k, CI 95%, cost, taxonomy).
 - **`leaderboard.html`**: Professional visual report.
-- **`publication_artifact_bundle.zip`**: The signed, immutable package for regulatory submission.
+- **`publication_artifact_bundle.zip`**: The signed, tamper-evident package for regulatory submission. Use external retention where immutable storage is required.
 
 :::note[Important]
 Because this bundling logic is part of the **Zero-Touch Core**, it serves as an immutable "Source of Truth" for regulatory or public disclosures.

@@ -1,2 +1,4 @@
 require:
   members: false
+  users: 
+    - najeed

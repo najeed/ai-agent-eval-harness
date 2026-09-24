@@ -6,128 +6,192 @@ on:
       - 'v*'
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+permissions:
+  contents: read
 
 jobs:
-  adapter-certification:
-    name: Release adapter interoperability certification
+  build-release-artifact:
+    name: Build Release Package
     runs-on: ubuntu-latest
-    environment: adapter-certification
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
+      - name: Checkout exact tagged SHA
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
-          python-version: '3.12'
-
-      - name: Install pinned adapter dependencies
-        run: |
-          pip install '.[provider-gemini,frameworks]' pytest pytest-asyncio pytest-aiohttp
-
-      - name: Require protected certification targets
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
-          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
-          XAI_MODEL: ${{ vars.XAI_MODEL }}
-          OLLAMA_API_URL: ${{ vars.OLLAMA_API_URL }}
-          OLLAMA_MODEL: ${{ vars.OLLAMA_MODEL }}
-          LANGSERVE_CERTIFICATION_URL: ${{ vars.LANGSERVE_CERTIFICATION_URL }}
-          LANGGRAPH_CERTIFICATION_URL: ${{ vars.LANGGRAPH_CERTIFICATION_URL }}
-          LANGGRAPH_CERTIFICATION_ASSISTANT_ID: ${{ vars.LANGGRAPH_CERTIFICATION_ASSISTANT_ID }}
-          AG2_CERTIFICATION_AGENT_PATH: ${{ vars.AG2_CERTIFICATION_AGENT_PATH }}
-          CREWAI_CERTIFICATION_CREW_PATH: ${{ vars.CREWAI_CERTIFICATION_CREW_PATH }}
-        run: |
-          required=(OPENAI_API_KEY OPENAI_MODEL ANTHROPIC_API_KEY ANTHROPIC_MODEL GOOGLE_API_KEY GEMINI_MODEL XAI_API_KEY XAI_MODEL OLLAMA_API_URL OLLAMA_MODEL LANGSERVE_CERTIFICATION_URL LANGGRAPH_CERTIFICATION_URL LANGGRAPH_CERTIFICATION_ASSISTANT_ID AG2_CERTIFICATION_AGENT_PATH CREWAI_CERTIFICATION_CREW_PATH)
-          for name in "${required[@]}"; do
-            test -n "${!name}" || { echo "Missing protected adapter certification setting: $name"; exit 1; }
-          done
-
-      - name: Certify real provider and framework interoperability
-        env:
-          AGENTV_ADAPTER_CERTIFICATION: '1'
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
-          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
-          XAI_MODEL: ${{ vars.XAI_MODEL }}
-          OLLAMA_API_URL: ${{ vars.OLLAMA_API_URL }}
-          OLLAMA_MODEL: ${{ vars.OLLAMA_MODEL }}
-          LANGSERVE_CERTIFICATION_URL: ${{ vars.LANGSERVE_CERTIFICATION_URL }}
-          LANGGRAPH_CERTIFICATION_URL: ${{ vars.LANGGRAPH_CERTIFICATION_URL }}
-          LANGGRAPH_CERTIFICATION_ASSISTANT_ID: ${{ vars.LANGGRAPH_CERTIFICATION_ASSISTANT_ID }}
-          AG2_CERTIFICATION_AGENT_PATH: ${{ vars.AG2_CERTIFICATION_AGENT_PATH }}
-          CREWAI_CERTIFICATION_CREW_PATH: ${{ vars.CREWAI_CERTIFICATION_CREW_PATH }}
-        run: pytest tests/integration/test_adapter_interoperability.py -m adapter_certification -q -rs
-
-  build-and-publish:
-    needs: adapter-certification
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
+          ref: ${{ github.sha }}
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@0a5c61591373683505ea898e09a6004c8ab57373 # v5.0.0
         with:
           python-version: '3.12'
 
       - name: Install build tools
-        run: |
-          pip install build twine
+        run: pip install build
 
-      - name: Build package
+      - name: Build package once
         run: |
           python -m build
+          sha256sum dist/* > dist/SHA256SUMS
+          cat dist/SHA256SUMS
 
-      - name: Verify wheel adapter distribution
-        run: |
-          pip install pytest
-          AGENTV_RELEASE_PACKAGING=1 pytest -m release_packaging -q
+      - name: Upload built release distribution artifact
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
+        with:
+          name: release-dist
+          path: dist/
+          retention-days: 2
 
-      - name: Verify advertised adapter extras install independently
+  acceptance-release-gate:
+    name: Acceptance Release Certification Gate
+    needs: [build-release-artifact]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact tagged SHA
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Download built release distribution artifact
+        uses: actions/download-artifact@c850b08b15ce7b270f74c06e83c4f72b16401045 # v4.1.4
+        with:
+          name: release-dist
+          path: dist/
+
+      - name: Set up Python
+        uses: actions/setup-python@0a5c61591373683505ea898e09a6004c8ab57373 # v5.0.0
+        with:
+          python-version: '3.12'
+
+      - name: Install built wheel and dev dependencies
         run: |
-          declare -A adapters=(
-            [provider-gemini]=eval_runner.adapters.gemini
-            [framework-langchain]=eval_runner.adapters.langchain
-            [framework-langgraph]=eval_runner.adapters.langgraph
-            [framework-ag2]=eval_runner.adapters.ag2
-            [framework-crewai]=eval_runner.adapters.crewai
-            [langchain-openai]=eval_runner.adapters.langchain
-            [langchain-anthropic]=eval_runner.adapters.langchain
-            [langchain-gemini]=eval_runner.adapters.langchain
-            [langchain-ollama]=eval_runner.adapters.langchain
-          )
-          wheel="$(find dist -maxdepth 1 -name '*.whl' -print -quit)"
-          test -n "$wheel"
-          for extra in "${!adapters[@]}"; do
-            python -m venv ".venv-extra-${extra}"
-            ".venv-extra-${extra}/bin/python" -m pip install --upgrade pip
-            ".venv-extra-${extra}/bin/python" -m pip install "${wheel}[${extra}]"
-            ".venv-extra-${extra}/bin/python" -c "import importlib; importlib.import_module('${adapters[$extra]}')"
-            rm -rf ".venv-extra-${extra}"
+          pip install dist/*.whl
+          pip install -r requirements-dev.txt
+
+      - name: Validate mandatory external oracle configuration
+        run: |
+          if [ -z "${{ vars.AGENTV_TESTER_REPOSITORY }}" ]; then
+            echo "::error::Mandatory AGENTV_TESTER_REPOSITORY variable is not configured for release certification."
+            exit 1
+          fi
+          if [ -z "${{ vars.AGENTV_TESTER_SHA }}" ]; then
+            echo "::error::Mandatory AGENTV_TESTER_SHA variable is not configured for release certification."
+            exit 1
+          fi
+
+      - name: Checkout pinned independent oracle
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          repository: ${{ vars.AGENTV_TESTER_REPOSITORY }}
+          ref: ${{ vars.AGENTV_TESTER_SHA }}
+          token: ${{ secrets.AGENTV_TESTER_READ_TOKEN }}
+          path: .ci/agentv-tester
+
+      - name: Start independent acceptance oracle
+        env:
+          ACCEPTANCE_ORACLE_DB: ${{ github.workspace }}/.ci/oracle.sqlite
+        run: |
+          python -m pip install flask
+          PYTHONPATH="$GITHUB_WORKSPACE/.ci/agentv-tester" python "$GITHUB_WORKSPACE/.ci/agentv-tester/server/run_acceptance_oracle.py" > oracle.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            curl --fail --silent http://127.0.0.1:8099/acceptance-oracle/state && exit 0
+            sleep 1
           done
+          echo "::error::Independent acceptance oracle failed to start."
+          cat oracle.log
+          exit 1
 
-      - name: Publish to GitHub Packages
+      - name: Build Visual Console and install Chromium
         run: |
+          npm ci --prefix ui/visual-console
+          npm run build --prefix ui/visual-console
+          python -m playwright install --with-deps chromium
+
+      - name: Run Complete Release Acceptance Suites (Corpus, Security, Evidence, UI)
+        run: |
+          pytest -m acceptance_release tests/acceptance tests/ui --junitxml=reports/acceptance-release.xml
+        env:
+          AGENTV_REQUIRE_EXTERNAL_ORACLE: '1'
+          AGENTV_REQUIRE_BROWSER_ACCEPTANCE: '1'
+          AGENTV_ACCEPTANCE_ORACLE_URL: http://127.0.0.1:8099/acceptance-oracle
+
+      - name: Enforce Release Certification Gate
+        run: python tools/ci/acceptance_gate.py --report-dir reports/acceptance/latest --manifest tests/acceptance/manifests/release.yaml
+
+      - name: Create Acceptance Attestation
+        run: |
+          python tools/ci/create_acceptance_attestation.py \
+            --summary reports/acceptance/latest/acceptance-summary.json \
+            --manifest tests/acceptance/manifests/release.yaml \
+            --wheel "$(ls dist/*.whl | head -n 1)" \
+            --source-commit "${{ github.sha }}" \
+            --oracle-repo "${{ vars.AGENTV_TESTER_REPOSITORY }}" \
+            --oracle-sha "${{ vars.AGENTV_TESTER_SHA }}" \
+            --output reports/acceptance/latest/acceptance-attestation.json
+
+      - name: Upload Certified Acceptance Artifacts
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
+        if: always()
+        with:
+          name: release-acceptance-artifacts
+          path: reports/acceptance/
+          retention-days: 7
+
+  publish-certified-package:
+    name: Publish Certified Package
+    needs: [acceptance-release-gate, build-release-artifact]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Checkout exact tagged SHA
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Download built release distribution
+        uses: actions/download-artifact@c850b08b15ce7b270f74c06e83c4f72b16401045 # v4.1.4
+        with:
+          name: release-dist
+          path: dist/
+
+      - name: Download certified acceptance artifacts
+        uses: actions/download-artifact@c850b08b15ce7b270f74c06e83c4f72b16401045 # v4.1.4
+        with:
+          name: release-acceptance-artifacts
+          path: reports/acceptance/
+
+      - name: Set up Python
+        uses: actions/setup-python@0a5c61591373683505ea898e09a6004c8ab57373 # v5.0.0
+        with:
+          python-version: '3.12'
+
+      - name: Verify acceptance gate attestation against built package
+        run: |
+          pip install jsonschema pyyaml
+          python tools/ci/verify_acceptance_attestation.py \
+            --attestation reports/acceptance/latest/acceptance-attestation.json \
+            --manifest tests/acceptance/manifests/release.yaml \
+            --wheel "$(ls dist/*.whl | head -n 1)" \
+            --expected-commit "${{ github.sha }}" \
+            --expected-oracle-repo "${{ vars.AGENTV_TESTER_REPOSITORY }}" \
+            --expected-oracle-sha "${{ vars.AGENTV_TESTER_SHA }}"
+
+      - name: Publish exact accepted wheel/sdist to GitHub Packages
+        run: |
+          pip install twine
           twine upload --repository-url https://pypi.pkg.github.com/${{ github.repository_owner }} dist/*
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create GitHub Release with assets
-        uses: softprops/action-gh-release@v2
+      - name: Create GitHub Release with exact accepted assets
+        uses: softprops/action-gh-release@c062e08bd532815e2082a85e87e3ef29c3e6d191 # v2.0.4
         with:
-          files: dist/*
+          files: |
+            dist/*
+            reports/acceptance/latest/acceptance-attestation.json
+            reports/acceptance/latest/acceptance-summary.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

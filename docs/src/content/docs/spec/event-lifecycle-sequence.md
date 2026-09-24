@@ -92,7 +92,7 @@ An evaluation session transitions through five distinct phases:
      - `finalization_hash`: Cryptographic digest of the finalization record itself.
    - **Audit Guard**: If any event appears after `run_end`, the `CertificationService` flags a *Monotonic Terminal Boundary Violation* and fails closed with outcome `"inconclusive"`. No certificate is issued.
 
-2. **Immutable Trace Sealing**:
+2. **Cryptographic Trace Sealing**:
    - Post-run execution of `agentv certify` computes a SHA3-256 digest over the raw `run.jsonl`.
    - The resulting hash is signed using Ed25519 (`system_id` or enterprise KMS/HSM).
    - Writes the `.sealed` sentinel marker. Any modification to `run.jsonl` breaks hash verification during `agentv verify` or release gate checks (`agentv gate`).

@@ -365,6 +365,20 @@ def resolve_execution_configs(
     scen_runtime_cfg = scen_rt or {}
 
     raw_agent_config = data.get("agent_config") or {}
+    resolved_protocol = (
+        raw_agent_config.get("protocol")
+        or scen_agent_cfg.get("protocol")
+        or data.get("protocol")
+        or meta.get("protocol")
+        or scen_meta.get("protocol")
+        or "http_rest"
+    )
+    # The Console labels a generic REST target as ``custom_http``.  That is
+    # a UI/profile label, not a runner transport; normalize it at the
+    # execution boundary so a user-selected custom agent is actually invoked.
+    if resolved_protocol == "custom_http":
+        resolved_protocol = "http"
+
     agent_config = {
         "agent_name": raw_agent_config.get("agent_name")
         or scen_agent_cfg.get("agent_name")
@@ -372,12 +386,7 @@ def resolve_execution_configs(
         or meta.get("agent_name")
         or scen_meta.get("agent_name")
         or "default_agent",
-        "protocol": raw_agent_config.get("protocol")
-        or scen_agent_cfg.get("protocol")
-        or data.get("protocol")
-        or meta.get("protocol")
-        or scen_meta.get("protocol")
-        or "http_rest",
+        "protocol": resolved_protocol,
         "endpoint": raw_agent_config.get("endpoint")
         or raw_agent_config.get("url")
         or scen_agent_cfg.get("endpoint")
@@ -503,6 +512,7 @@ def check_execution_readiness():
     agent_check = {"name": "Agent Endpoint", "protocol": proto, "endpoint": endpoint}
 
     _http_probed_protocols = {
+        "http",
         "http_rest",
         "custom",
         "openai_assistants",
@@ -906,7 +916,23 @@ def save_scenario():
     from agentv_runtime.manifest import compute_scenario_hash
     from eval_runner import config
 
-    data = request.json or {}
+    body = request.json or {}
+    expected_rev = None
+    if isinstance(body, dict) and "scenario" in body and isinstance(body["scenario"], dict):
+        data = body["scenario"]
+        expected_rev = body.get("expected_revision_hash")
+    else:
+        data = body
+
+    if isinstance(data, dict):
+        popped_rev = data.pop("expected_revision_hash", None)
+        expected_rev = expected_rev or popped_rev
+        if isinstance(data.get("metadata"), dict):
+            popped_meta_rev = data["metadata"].pop("expected_revision_hash", None)
+            expected_rev = expected_rev or popped_meta_rev
+    else:
+        return jsonify({"error": "Invalid payload: expected scenario JSON object"}), 400
+
     meta = data.setdefault("metadata", {})
     scen_id = meta.get("id") or data.get("id")
     industry = data.get("industry") or meta.get("industry") or "generic"
@@ -953,7 +979,6 @@ def save_scenario():
     meta["content_hash"] = scen_hash
 
     # Optimistic concurrency check
-    expected_rev = data.get("expected_revision_hash") or meta.get("expected_revision_hash")
     if expected_rev and save_path.exists():
         try:
             with open(save_path, encoding="utf-8") as f_ex:
@@ -1292,6 +1317,13 @@ def evaluate_scenario():
         max_turns=data.get("max_turns", 10),
         metadata={
             **data.get("metadata", {}),
+            # The execution manifest already records this resolved target, but
+            # the runner also needs it at dispatch time.  Without these fields
+            # a console-launched run silently falls back to AGENT_API_URL and
+            # cannot evaluate the operator-selected real agent.
+            "agent": agent_config.get("endpoint"),
+            "protocol": agent_config.get("protocol"),
+            "agent_config": agent_config,
             "execution_mode": exec_mode,
             "execution_mode_declared": True,
             "execution_manifest": manifest.to_dict(),

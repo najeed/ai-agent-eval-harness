@@ -357,6 +357,8 @@ class CoreEvents:
 
     # Terminal Trust & Certification Events
     CERTIFICATION_FAILED = "certification_failed"
+    EVALUATION_INVALID = "evaluation_invalid"
+    PARITY_STATE_DIVERGENCE = "parity_state_divergence"
     TRACE_SEALED = "trace_sealed"
     VERIFICATION_CERTIFICATE_ISSUED = "verification_certificate_issued"
 

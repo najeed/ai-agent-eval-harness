@@ -14,6 +14,7 @@ import { computeScenarioHash } from '../lib/aesDocument';
 import {
   buildWaterfall,
   mergeSeqGap,
+  subtractSeqFromGaps,
   computeTraceIntegrity,
   filterEventsByTelemetryLevel,
   computeTelemetryDiagnostics,
@@ -119,8 +120,10 @@ export const LiveDebugger: React.FC = () => {
     attempt: number;
   }
   const streamCtlRef = useRef<StreamCtl>({ es: null, timer: null, scenarioTimer: null, run: null, attempt: 0 });
-  // Server-generated monotonic event ids: dedupe set + monotonic cursor + contiguous prefix cursor.
+  // SSE IDs are opaque transport cursors; forensic _seq never controls replay.
+  const seenTransportCursorsRef = useRef<Set<number>>(new Set());
   const seenSeqsRef = useRef<Set<number>>(new Set());
+  const forensicHighestRef = useRef<number>(0);
   const cursorRef = useRef<number>(0);
   const contiguousCursorRef = useRef<number>(0);
   const explainReqIdRef = useRef<number>(0);
@@ -137,6 +140,18 @@ export const LiveDebugger: React.FC = () => {
         }
       });
   }, []);
+
+  // A failed run opens on authoritative failure evidence by default. The
+  // operator can still select any other trace event afterwards.
+  useEffect(() => {
+    if (selectedEvent) return;
+    const failure = events.find(e =>
+      e.is_root_cause === true || e.event === 'error' ||
+      e.category === 'PARITY_STATE_DIVERGENCE' || e.passed === false ||
+      String(e.status || '').toLowerCase() === 'failed'
+    );
+    if (failure) setSelectedEvent(failure);
+  }, [events, selectedEvent]);
 
   // Run status checker; only responsible for status/scenario state.
   // Graph derivation is handled exclusively by the reactive useEffect below.
@@ -161,10 +176,12 @@ export const LiveDebugger: React.FC = () => {
     }
   };
 
-  // Independent scenario topology fetcher with exponential backoff retry.
-  // Decoupled from stream connect to close the race window against session
-  // startup; stale-guarded against run switches and capped attempts.
-  const fetchScenarioWithRetry = async (rid: string, attempt = 0) => {
+  const TERMINAL_RUN_STATUSES = new Set(['COMPLETED', 'FAILED', 'ABORTED', 'ERROR', 'SEALED', 'CERTIFIED']);
+
+  // Lifecycle-bound scenario topology fetcher with exponential backoff retry.
+  // Coupled to run lifecycle: continues retrying while run is nonterminal,
+  // then performs one mandatory terminal refresh to ensure late-resolved scenarios hydrate.
+  const fetchScenarioWithRetry = async (rid: string, attempt = 0, isTerminalRefresh = false) => {
     const staleAfterFetch = () => streamCtlRef.current.run !== rid;
     try {
       const res = await fetch(`/api/v1/runs/${rid}`);
@@ -174,16 +191,25 @@ export const LiveDebugger: React.FC = () => {
           setActiveScenario(data.scenario);
           return;
         }
+        const runStatus = String(data.status || '').toUpperCase();
+        if (TERMINAL_RUN_STATUSES.has(runStatus) && !isTerminalRefresh) {
+          // Perform one mandatory terminal refresh
+          setTimeout(() => {
+            if (!staleAfterFetch()) fetchScenarioWithRetry(rid, attempt + 1, true);
+          }, 500);
+          return;
+        }
       }
-    } catch (e) {
+    } catch {
       // fall through to retry scheduling
     }
-    if (!staleAfterFetch() && attempt < 5) {
+    if (!staleAfterFetch() && !isTerminalRefresh) {
       const ctl = streamCtlRef.current;
       if (ctl.scenarioTimer) clearTimeout(ctl.scenarioTimer);
+      const delay = Math.min(500 * (attempt + 1), 3000);
       ctl.scenarioTimer = setTimeout(() => {
-        if (streamCtlRef.current.run === rid) fetchScenarioWithRetry(rid, attempt + 1);
-      }, 500 * (attempt + 1));
+        if (streamCtlRef.current.run === rid) fetchScenarioWithRetry(rid, attempt + 1, false);
+      }, delay);
     }
   };
 
@@ -373,7 +399,9 @@ export const LiveDebugger: React.FC = () => {
     setEdges([]);
     cursorRef.current = 0;
     contiguousCursorRef.current = 0;
+    seenTransportCursorsRef.current.clear();
     seenSeqsRef.current.clear();
+    forensicHighestRef.current = 0;
     setStreamGaps([]);
     setReconnectCount(0);
     streamCtlRef.current.attempt = 0;
@@ -465,39 +493,31 @@ export const LiveDebugger: React.FC = () => {
         return;
       }
 
-      // Dedupe + gap detection & reconciliation BEFORE an event may enter state.
+      // Resume and dedupe exclusively with the opaque SSE cursor.
+      const transportCursor = Number((data as any)._transport_cursor);
+      if (!Number.isSafeInteger(transportCursor) || transportCursor <= 0) return;
+      if (seenTransportCursorsRef.current.has(transportCursor)) return;
+      seenTransportCursorsRef.current.add(transportCursor);
+      cursorRef.current = Math.max(cursorRef.current, transportCursor);
+      if (transportCursor === contiguousCursorRef.current + 1) {
+        contiguousCursorRef.current = transportCursor;
+        while (seenTransportCursorsRef.current.has(contiguousCursorRef.current + 1)) {
+          contiguousCursorRef.current += 1;
+        }
+      }
+
+      // _seq remains forensic evidence ordering/integrity only.
       const seq = typeof data._seq === 'number' ? data._seq : 0;
       if (seq > 0) {
         if (seenSeqsRef.current.has(seq)) return;
         seenSeqsRef.current.add(seq);
-        const prev = cursorRef.current;
+        const prev = forensicHighestRef.current;
         if (prev > 0 && seq > prev + 1) {
           setStreamGaps(g => mergeSeqGap(g, { from: prev + 1, to: seq - 1 }));
         } else {
-          // Reconcile gap: If this incoming seq fills an existing gap range, update/remove it
-          setStreamGaps(gaps => {
-            if (!gaps.length) return gaps;
-            return gaps
-              .map(gap => {
-                if (seq >= gap.from && seq <= gap.to) {
-                  if (gap.from === gap.to) return null; // exact single-seq gap filled
-                  if (seq === gap.from) return { from: gap.from + 1, to: gap.to };
-                  if (seq === gap.to) return { from: gap.from, to: gap.to - 1 };
-                  return gap;
-                }
-                return gap;
-              })
-              .filter(Boolean) as { from: number; to: number }[];
-          });
+          setStreamGaps(gaps => subtractSeqFromGaps(gaps, seq));
         }
-        if (seq > cursorRef.current) cursorRef.current = seq;
-        // Monotonically advance unbroken contiguous sequence prefix
-        if (seq === contiguousCursorRef.current + 1) {
-          contiguousCursorRef.current = seq;
-          while (seenSeqsRef.current.has(contiguousCursorRef.current + 1)) {
-            contiguousCursorRef.current += 1;
-          }
-        }
+        if (seq > forensicHighestRef.current) forensicHighestRef.current = seq;
       }
 
 
@@ -517,6 +537,10 @@ export const LiveDebugger: React.FC = () => {
             };
           });
         }
+      }
+
+      if (data.event === 'run_end' || (data as any).name === 'run_end') {
+        fetchScenarioWithRetry(rid, 0, true);
       }
 
       setEvents(prevEvents => {
@@ -551,6 +575,7 @@ export const LiveDebugger: React.FC = () => {
           if (TERMINAL_STATUSES.has(runStatus)) {
             // Explicit terminal state: the run is over; no retries are scheduled.
             setConnectionStatus('FINISHED');
+            fetchScenarioWithRetry(rid, 0, true);
           } else {
             scheduleRetry(rid);
           }
@@ -623,7 +648,16 @@ export const LiveDebugger: React.FC = () => {
       }
     }
 
-    const workflowNodes = [...scenarioNodesRaw, ...runtimeDiscoveredNodes];
+    // Executed is a forensic projection, never a dimmed plan.  Only
+    // execution_graph_node evidence may place a node in this layer.
+    const plannedNodes = [...scenarioNodesRaw];
+    const allKnownNodes = [...scenarioNodesRaw, ...runtimeDiscoveredNodes];
+    const workflowNodes = mode === 'executed'
+      ? allKnownNodes.filter((node: any) => {
+          const id = String(node.id || node.scenario_node_id || node.task_id);
+          return executedNodeIds.has(id) || !!node.__runtime_discovered;
+        })
+      : mode === 'divergence' ? allKnownNodes : plannedNodes;
 
     if (workflowNodes.length === 0) {
       return {
@@ -796,6 +830,7 @@ export const LiveDebugger: React.FC = () => {
           source,
           target,
           label: e.condition || e.label || undefined,
+          provenance: 'planned',
           animated: true,
           style: { stroke: '#6366f1', strokeWidth: 2 }
         });
@@ -835,6 +870,7 @@ export const LiveDebugger: React.FC = () => {
           source,
           target,
           label,
+          provenance: 'executed',
           animated: true,
           style: {
             stroke: e.edge_type === 'retry' ? '#f59e0b' : '#6366f1',
@@ -859,24 +895,35 @@ export const LiveDebugger: React.FC = () => {
 
     const flowEdges = allEdges
       .filter(e => {
-        const plannedEdge = e.id.startsWith('scen-edge-');
+        const plannedEdge = e.provenance === 'planned';
         if (mode === 'planned') return plannedEdge;
-        // In executed and divergence modes, keep both planned and executed edges for topology context
+        if (mode === 'executed') return !plannedEdge;
         return true;
       })
       .map(e => {
-        const plannedEdge = e.id.startsWith('scen-edge-');
+        const plannedEdge = e.provenance === 'planned';
         const pair = `${e.source}->${e.target}`;
         const total = edgePairCounts.get(pair) || 1;
         const cur = edgePairCurrent.get(pair) || 0;
         edgePairCurrent.set(pair, cur + 1);
+
+        // Deterministic offset geometry for parallel / retry edges
+        const pathOffset = total > 1 ? Math.round(20 + cur * 16) : undefined;
+        const pathOptions = total > 1 ? { offset: pathOffset, borderRadius: 8 } : undefined;
 
         if (!plannedEdge) {
           const isDivergence = mode === 'divergence';
           return {
             ...e,
             type: total > 1 ? 'smoothstep' : undefined,
+            pathOptions,
             animated: mode !== 'planned',
+            data: {
+              ...e.data,
+              parallelIndex: cur,
+              parallelTotal: total,
+              pathOffset,
+            },
             style: {
               stroke: isDivergence ? '#f59e0b' : '#10b981',
               strokeWidth: isDivergence ? 2.5 : 2,
@@ -887,7 +934,14 @@ export const LiveDebugger: React.FC = () => {
           return {
             ...e,
             type: total > 1 ? 'smoothstep' : undefined,
+            pathOptions,
             animated: true,
+            data: {
+              ...e.data,
+              parallelIndex: cur,
+              parallelTotal: total,
+              pathOffset,
+            },
             style: { stroke: '#6366f1', strokeWidth: 2 },
           };
         }
@@ -895,7 +949,14 @@ export const LiveDebugger: React.FC = () => {
         return {
           ...e,
           type: total > 1 ? 'smoothstep' : undefined,
+          pathOptions,
           animated: false,
+          data: {
+            ...e.data,
+            parallelIndex: cur,
+            parallelTotal: total,
+            pathOffset,
+          },
           style: {
             stroke: '#334155',
             strokeWidth: 1,
@@ -955,7 +1016,7 @@ export const LiveDebugger: React.FC = () => {
     }
   };
 
-  const RUN_TERMINAL_STATUSES = new Set(['COMPLETED', 'FAILED', 'ABORTED', 'ERROR', 'SEALED', 'CERTIFIED']);
+  const RUN_TERMINAL_STATUSES = new Set(['COMPLETED', 'PASSED', 'FAILED', 'ABORTED', 'ERROR', 'SEALED', 'CERTIFIED']);
   const isTerminalRun = RUN_TERMINAL_STATUSES.has(status);
 
   useEffect(() => {
@@ -1322,7 +1383,7 @@ export const LiveDebugger: React.FC = () => {
                 layerMode === 'planned'
                   ? 'Planned layer: the scenario DAG as defined; the design-time control-flow contract.'
                   : layerMode === 'executed'
-                    ? 'Executed layer: authoritative execution_graph_edge transitions over a dimmed plan skeleton.'
+                    ? 'Executed layer: only authoritative execution_graph_node and execution_graph_edge evidence.'
                     : 'Divergence overlay: planned-vs-executed differences (SKIPPED planned nodes, UNPLANNED executions).'
               }
               className="flex bg-slate-950 border border-slate-800 rounded-lg p-0.5 font-mono text-[9px] font-bold uppercase tracking-wider cursor-help"

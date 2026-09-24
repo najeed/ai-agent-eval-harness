@@ -21,6 +21,9 @@ expect:
 
   state:
     commit_allowed: false
+    oracle_url: "${AGENTV_ACCEPTANCE_ORACLE_URL}"
+    final_state:
+      balances: {operating: 1000, recipient: 0}
 
   policy:
     decision: BLOCK

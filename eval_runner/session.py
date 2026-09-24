@@ -105,6 +105,7 @@ class SessionManager:
         checkpoint_store: Any | None = None,
         policy_evaluator: Any | None = None,
         signing_backend: Any | None = None,
+        scenario_contract: dict | None = None,
     ):
         from .plugins import PluginManager
 
@@ -116,6 +117,16 @@ class SessionManager:
         self.policy_evaluator = policy_evaluator
         self.signing_backend = signing_backend
         self.resumption_checkpoint = resumption_checkpoint
+        # Preserve the immutable evaluation contract separately from the working
+        # scenario.  The runner hashes this supplied contract into the
+        # EvaluatorFinalizationRecord.  Runtime routing below intentionally adds
+        # run-local details (run_id, resolved endpoint/protocol), which must not
+        # leak into ``scenario_resolved.json`` or verification will be comparing
+        # two different scenario domains.
+        self._scenario_contract = copy.deepcopy(
+            scenario_contract if scenario_contract is not None else scenario
+        )
+
         # [Forensic Isolation] Ensure parallel runs don't mutate shared scenario state
         self.scenario = copy.deepcopy(scenario)
         # Authoritatively inject run_id for downstream forensic affinity (e.g., ToolSandbox)
@@ -396,9 +407,11 @@ class SessionManager:
             self.scenario["metadata"]["protocol"] = self.metadata["protocol"]
             self.scenario["metadata"]["agent"] = self.metadata["agent"]
 
-        # [Industrial Persistence] Save RESOLVED scenario (post-routing discovery)
+        # Persist the immutable scenario contract that was hashed at evaluation
+        # start, not the mutable execution copy.  Routing and run affinity are
+        # recorded separately in the execution manifest and trace.
         with open(self.run_vault / "scenario_resolved.json", "w", encoding="utf-8") as f:
-            json.dump(self.scenario, f, indent=2)
+            json.dump(self._scenario_contract, f, indent=2)
 
         # 🚀 [Forensic Hardening] Protocol Trace capture
         self.protocol_sequence: list[str] = []

@@ -125,7 +125,9 @@ class TestPQCSigning(unittest.TestCase):
 
                 # Execute verification
                 success = verifier.TraceVerifier.verify_trace(
-                    trace_path=str(self.test_trace), manifest_path=str(manifest_path)
+                    trace_path=str(self.test_trace),
+                    manifest_path=str(manifest_path),
+                    require_sealed=False,
                 )
 
                 self.assertTrue(success)

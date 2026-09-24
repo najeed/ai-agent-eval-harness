@@ -108,3 +108,96 @@ def test_rfc8785_structures():
         b'{"a":{"b":"nested","c":3},"empty_dict":{},"empty_list":[],"z":[1,2,false,true,null]}'
     )
     assert encoded == expected
+
+
+def test_rfc8785_ieee754_safe_integer_boundaries():
+    """
+    RFC 8785 & I-JSON (RFC 7493) IEEE-754 64-bit safe integer boundaries.
+    Integers within [-(2**53 - 1), 2**53 - 1] ([-9007199254740991, 9007199254740991])
+    must serialize accurately without precision loss across Python and JavaScript.
+    """
+    min_safe = -9007199254740991
+    max_safe = 9007199254740991
+
+    assert canonical_json_dumps(min_safe) == "-9007199254740991"
+    assert canonical_json_dumps(max_safe) == "9007199254740991"
+    assert canonical_json_dumps({"id": max_safe}) == '{"id":9007199254740991}'
+    assert canonical_json_dumps({"id": min_safe}) == '{"id":-9007199254740991}'
+
+
+def test_rfc8785_ieee754_unsafe_integers_fail():
+    """
+    Integers outside the safe IEEE-754 bounds must fail closed to prevent
+    incompatible cryptographic commitments between Python and ECMAScript engines.
+    """
+    unsafe_high = 9007199254740992  # 2**53
+    unsafe_low = -9007199254740992  # -(2**53)
+    arbitrary_large = 10**30
+
+    for unsafe_val in [unsafe_high, unsafe_low, arbitrary_large, -arbitrary_large]:
+        with pytest.raises(ValueError, match="RFC 8785 / IEEE-754 integer range violation"):
+            canonical_json_dumps(unsafe_val)
+
+        with pytest.raises(ValueError, match="RFC 8785 / IEEE-754 integer range violation"):
+            canonical_json_dumps({"amount": unsafe_val})
+
+
+def test_rfc8785_official_spec_vectors():
+    """
+    Official RFC 8785 Section 3 Example Vectors:
+    - Escapes and control characters
+    - Property sorting
+    - Whitespace stripping
+    """
+    # Vector: RFC 8785 Section 3.2.2.2 Escaping
+    raw = {
+        "\t": "tab",
+        "\n": "newline",
+        "\r": "return",
+        '"': "quote",
+        "\\": "backslash",
+        "/": "solidus",
+        "\u20ac": "euro",
+    }
+    dumped = canonical_json_dumps(raw)
+    expected = (
+        r'{"\t":"tab","\n":"newline","\r":"return","\"":"quote",'
+        r'"/":"solidus","\\":"backslash","'
+        "\u20ac"
+        r'":"euro"}'
+    )
+    assert dumped == expected
+
+
+def test_rfc8785_custom_object_with_to_dict():
+    """Objects with a to_dict method serialize via to_dict."""
+
+    class CustomPayload:
+        def to_dict(self):
+            return {"status": "ok", "count": 42}
+
+    assert canonical_json_dumps(CustomPayload()) == '{"count":42,"status":"ok"}'
+
+
+def test_rfc8785_unsupported_type_raises_type_error():
+    """Objects without JSON/to_dict serialization raise TypeError."""
+
+    class Unserializable:
+        pass
+
+    with pytest.raises(TypeError, match="RFC 8785 unsupported type: Unserializable"):
+        canonical_json_dumps(Unserializable())
+
+
+def test_rfc8785_compute_reference_hash():
+    """Computes deterministic SHA3-256 digest of reference objects."""
+    from agentv_runtime.canonical import compute_reference_hash
+
+    ref1 = {"id": "ref_01", "type": "artifact", "hash": "sha3_256:abc"}
+    ref2 = {"type": "artifact", "hash": "sha3_256:abc", "id": "ref_01"}
+
+    h1 = compute_reference_hash(ref1)
+    h2 = compute_reference_hash(ref2)
+
+    assert h1.startswith("sha3_256:")
+    assert h1 == h2

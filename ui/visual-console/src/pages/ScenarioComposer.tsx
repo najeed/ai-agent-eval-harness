@@ -644,22 +644,23 @@ export const ScenarioComposer: React.FC = () => {
     setSaving(true);
     setMessage('');
     try {
-      const payload = viewMode === 'json' ? authoritativeDoc : getAESJson();
-      // Attach expected revision hash for optimistic concurrency
-      if (rawDoc?.metadata?.content_hash && !payload.expected_revision_hash) {
-        payload.expected_revision_hash = rawDoc.metadata.content_hash;
-      }
+      const docPayload = viewMode === 'json' ? authoritativeDoc : getAESJson();
+      const expectedRev = rawDoc?.metadata?.content_hash || docPayload?.metadata?.content_hash || undefined;
+      const envelope = {
+        scenario: docPayload,
+        expected_revision_hash: expectedRev
+      };
 
       const res = await fetch('/api/scenarios', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(envelope)
       });
       const data = await res.json();
       if (res.ok) {
         // Re-sync canvas FROM the server-echoed canonical document (never
         // from stale client-side state).
-        const savedDoc = data.scenario || payload;
+        const savedDoc = data.scenario || docPayload;
         syncJsonToCanvas(JSON.stringify(savedDoc));
         if (savedDoc?.metadata?.content_hash || data.scenario_hash) {
           setRawDoc({

@@ -59,7 +59,8 @@ def test_flight_recorder_error_handling(tmp_path, capsys):
     fr.log_dir = tmp_path
 
     with patch("builtins.open", side_effect=OSError("Access Denied")):
-        fr.handle_event(Event(name=CoreEvents.RUN_START, data={"run_id": "r1"}))
+        with pytest.raises(RuntimeError, match="TracePersistenceError"):
+            fr.handle_event(Event(name=CoreEvents.RUN_START, data={"run_id": "r1"}))
 
     assert "File I/O Error" in capsys.readouterr().err
 

@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any
+from urllib.request import Request, urlopen
 
 from .trace_reader import TraceReader
 
@@ -155,6 +156,31 @@ def normalize_actual_result(
             "sealed_required": artifacts.is_sealed,
         },
     }
+
+
+def read_external_state_oracle(oracle_url: str) -> dict[str, Any]:
+    """Read a state receipt from a non-AgentV acceptance authority."""
+    with urlopen(oracle_url.rstrip("/") + "/state", timeout=5) as response:  # nosec B310 - test-controlled URL
+        observation = json.loads(response.read().decode("utf-8"))
+    if (
+        not isinstance(observation, dict)
+        or "state" not in observation
+        or "receipt_hash" not in observation
+    ):
+        raise ValueError("External state oracle returned an invalid observation receipt")
+    return observation
+
+
+def reset_external_state_oracle(oracle_url: str, balances: dict[str, int]) -> None:
+    request = Request(
+        oracle_url.rstrip("/") + "/reset",
+        data=json.dumps({"balances": balances}).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urlopen(request, timeout=5) as response:  # nosec B310 - CI-pinned oracle URL
+        if response.status != 200:
+            raise RuntimeError("independent state oracle reset failed")
 
 
 __all__ = ["RunArtifacts", "load_run_artifacts", "normalize_actual_result"]

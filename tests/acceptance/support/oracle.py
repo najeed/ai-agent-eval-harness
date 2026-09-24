@@ -71,6 +71,29 @@ def compare_expectations(
                 )
             )
 
+    if "state" in expected and "final_state" in expected["state"]:
+        exp_state = expected["state"]["final_state"]
+        act_state = actual.get("state", {}).get("final_state")
+
+        def contains(expected_value: Any, actual_value: Any) -> bool:
+            if isinstance(expected_value, dict) and isinstance(actual_value, dict):
+                return all(
+                    key in actual_value and contains(value, actual_value[key])
+                    for key, value in expected_value.items()
+                )
+            return expected_value == actual_value
+
+        if not contains(exp_state, act_state):
+            failures.append(
+                OracleFailure(
+                    dimension="state.final_state",
+                    expected=exp_state,
+                    actual=act_state,
+                    reason="External authoritative final state did not match "
+                    "the acceptance contract",
+                )
+            )
+
     # 4. Policy Decision Dimension
     if "policy" in expected and "decision" in expected["policy"]:
         exp_decision = expected["policy"]["decision"].upper()

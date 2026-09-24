@@ -60,7 +60,7 @@ At the start of every turn, before calling the agent adapter, AgentV emits:
   "timestamp": "2026-09-12T05:00:00.000000Z"
 }
 ```
-This guarantees an immutable audit trail of protocol transitions across attempts.
+This produces a cryptographically tamper-evident audit trail of protocol transitions across attempts; immutable retention requires an external retention-enforcing ArtifactStore.
 
 ---
 

@@ -130,13 +130,19 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             or "unknown"
         )
 
-        # Special handling for RUN_START to initialize environment and clean run state
+        # RUN_START must never reset an existing evidence vault.  A run id is a
+        # single-use provenance identifier: any pre-existing vault or trace is a
+        # collision, even if its lifecycle marker has not yet been written.
         if event.name == CoreEvents.RUN_START:
             with self._lock:
                 # [Refresher] Re-read environment variables for dynamic runtime configuration
-                import eval_runner.config as config
 
-                self.log_dir = Path(os.getenv("RUN_LOG_DIR", str(config.RUN_LOG_DIR)))
+                # Preserve an explicitly injected recorder vault (notably test
+                # and embedded runtimes).  Only an explicit environment value
+                # may reconfigure a live recorder at RUN_START.
+                configured_log_dir = os.getenv("RUN_LOG_DIR")
+                if configured_log_dir:
+                    self.log_dir = Path(configured_log_dir)
                 self.per_run = os.getenv("RUN_LOG_PER_RUN", "true").lower() == "true"
                 self.master = os.getenv("RUN_LOG_MASTER", "true").lower() == "true"
 
@@ -146,35 +152,26 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                 self.master_log_path = self.log_dir / "run.jsonl"
 
                 if run_id and run_id != "unknown":
+                    from eval_runner.run_lifecycle import (
+                        RunLifecycleState,
+                        get_run_lifecycle_state,
+                    )
+
+                    run_vault_dir = self.log_dir / run_id
+                    trace_path = run_vault_dir / "run.jsonl"
+                    lifecycle_state = get_run_lifecycle_state(run_id, log_dir=self.log_dir)
+                    if (
+                        run_vault_dir.exists()
+                        or trace_path.exists()
+                        or lifecycle_state != RunLifecycleState.OPEN
+                    ):
+                        raise RuntimeError(
+                            f"RunIdCollision: run '{run_id}' already has persistent "
+                            "trace or lifecycle state; refusing to overwrite evidence."
+                        )
                     self._run_states[run_id] = "RUNNING"
                     self._failed_runs.discard(run_id)
                     self._sequence_numbers[run_id] = 0
-
-                    if self.per_run:
-                        run_vault_dir = self.log_dir / run_id
-                        target_path = str(run_vault_dir / "run.jsonl")
-                        old_handle = self._handles.pop(target_path, None)
-                        if old_handle:
-                            try:
-                                old_handle.flush()
-                                old_handle.close()
-                            except (OSError, ValueError) as close_err:
-                                logger.debug(
-                                    "Error closing stale handle on RUN_START: %s", close_err
-                                )
-
-                        p = Path(target_path)
-                        if p.exists():
-                            try:
-                                p.unlink()
-                            except OSError:
-                                try:
-                                    with open(p, "w", encoding="utf-8") as tf:
-                                        tf.truncate(0)
-                                except OSError as trunc_err:
-                                    logger.debug(
-                                        "Failed truncating stale trace on RUN_START: %s", trunc_err
-                                    )
 
             if self.log_rotate_count > 0:
                 self.rotate_logs(is_new_run=True)
@@ -317,14 +314,12 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                 if run_id and run_id != "unknown":
                     self._run_states[run_id] = "CERTIFICATION_FAILED"
                     self._failed_runs.add(run_id)
-            is_fail_closed = self.is_certification_mode(run_id) or (
-                os.getenv("EVAL_PERSISTENCE_FAIL_CLOSED", "false").lower() == "true"
-            )
-            if is_fail_closed:
-                raise RuntimeError(
-                    f"TracePersistenceError: Failed to persist telemetry "
-                    f"event for run '{run_id}': {e}"
-                ) from e
+            # Losing forensic evidence invalidates the evaluation, regardless
+            # of runtime mode.  Continuing would allow an apparently completed
+            # run with an incomplete audit record.
+            raise RuntimeError(
+                f"TracePersistenceError: Failed to persist telemetry event for run '{run_id}': {e}"
+            ) from e
 
     def finalize_run(self, run_id: str | None = None):
         """
@@ -334,6 +329,16 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         """
         with self._lock:
             if run_id and run_id != "unknown":
+                from eval_runner.run_lifecycle import RunLifecycleState, get_run_lifecycle_state
+
+                # Finalization is safely idempotent after an authoritative seal;
+                # it must never attempt an illegal backward transition.
+                if (
+                    get_run_lifecycle_state(run_id, log_dir=self.log_dir)
+                    == RunLifecycleState.SEALED
+                ):
+                    self._run_states[run_id] = "SEALED"
+                    return
                 if (
                     run_id in self._failed_runs
                     or self._run_states.get(run_id) == "CERTIFICATION_FAILED"
@@ -355,7 +360,12 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                         run_id, RunLifecycleState.FINALIZING, log_dir=self.log_dir
                     )
                 except Exception as lc_err:
-                    logger.debug("Lifecycle transition to FINALIZING notice: %s", lc_err)
+                    self._run_states[run_id] = "CERTIFICATION_FAILED"
+                    self._failed_runs.add(run_id)
+                    raise RuntimeError(
+                        f"TracePersistenceError: failed to persist FINALIZING lifecycle "
+                        f"transition for run '{run_id}': {lc_err}"
+                    ) from lc_err
 
             # Determine which handles to close
             if run_id and run_id != "unknown":
@@ -486,7 +496,6 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         if run_id:
             with self._lock:
                 if self._run_states.get(run_id) != "CERTIFICATION_FAILED":
-                    self._run_states[run_id] = "SEALED"
                     try:
                         from eval_runner.run_lifecycle import (
                             RunLifecycleState,
@@ -497,7 +506,13 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                             run_id, RunLifecycleState.SEALED, log_dir=self.log_dir
                         )
                     except Exception as lc_err:
-                        logger.debug("Lifecycle transition to SEALED notice: %s", lc_err)
+                        self._run_states[run_id] = "CERTIFICATION_FAILED"
+                        self._failed_runs.add(run_id)
+                        raise RuntimeError(
+                            f"TracePersistenceError: failed to persist SEALED lifecycle "
+                            f"transition for run '{run_id}': {lc_err}"
+                        ) from lc_err
+                    self._run_states[run_id] = "SEALED"
             self._sequence_numbers.pop(run_id, None)
 
     def freeze_run(self, run_id: str) -> None:
@@ -514,8 +529,54 @@ class FlightRecorderPlugin(BaseEvalPlugin):
 
                 transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING, log_dir=self.log_dir)
             except Exception as lc_err:
-                logger.debug("Lifecycle transition to FINALIZING notice in freeze_run: %s", lc_err)
+                self._run_states[run_id] = "CERTIFICATION_FAILED"
+                self._failed_runs.add(run_id)
+                raise RuntimeError(
+                    f"TracePersistenceError: failed to persist FINALIZING lifecycle "
+                    f"transition for run '{run_id}': {lc_err}"
+                ) from lc_err
         self.finalize_run(run_id=run_id)
+
+    def close_execution_writes(self, run_id: str | None = None) -> None:
+        """Flush and close a run's trace without changing its certification lifecycle.
+
+        Evaluation owns the end of execution I/O.  Certification alone owns the
+        irreversible ``FINALIZING -> SEALED`` transition; closing a file must not
+        pre-empt that transaction by sealing the run.
+        """
+        with self._lock:
+            if run_id and run_id != "unknown":
+                run_vault_dir = self.log_dir / run_id
+                target_path = str(run_vault_dir / "run.jsonl")
+                # A recorder can additionally hold the configured master stream
+                # (or a legacy flat stream in an embedded runtime).  Close only
+                # handles attributable to this completed evaluation; do not rely
+                # solely on the current per_run flag, which may be environment
+                # configured after the handle was opened.
+                paths_to_close = [
+                    path_str
+                    for path_str in self._handles
+                    if path_str == target_path or Path(path_str).parent == run_vault_dir
+                ]
+            else:
+                paths_to_close = list(self._handles.keys())
+
+            for path_str in paths_to_close:
+                handle = self._handles.pop(path_str, None)
+                if not handle:
+                    continue
+                try:
+                    handle.flush()
+                    os.fsync(handle.fileno())
+                    handle.close()
+                except Exception as exc:
+                    if run_id and run_id != "unknown":
+                        self._run_states[run_id] = "CERTIFICATION_FAILED"
+                        self._failed_runs.add(run_id)
+                    raise RuntimeError(
+                        "TracePersistenceError: failed closing execution trace "
+                        f"for run '{run_id}': {exc}"
+                    ) from exc
 
     def get_run_state(self, run_id: str) -> str:
         """Returns the current lifecycle state for run_id (RUNNING, FINALIZING, SEALED)."""
@@ -526,10 +587,12 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         self, context: Any, results: list, span_context: dict[str, Any] | None = None
     ):
         """
-        Core Hook: Lifecycle aware finalization.
-        This is called by the engine before the evaluator returns control.
+        Core Hook: close execution writes only.
+
+        This hook is called by the evaluator.  It deliberately does not seal: the
+        certification transaction is the sole lifecycle owner for final sealing.
         """
-        self.finalize_run(run_id=getattr(context, "run_id", None))
+        self.close_execution_writes(run_id=getattr(context, "run_id", None))
 
     def rotate_logs(self, is_new_run: bool = False):
         """

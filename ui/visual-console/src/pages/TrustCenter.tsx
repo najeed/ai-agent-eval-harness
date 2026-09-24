@@ -211,7 +211,7 @@ export const TrustCenter: React.FC = () => {
             </form>
 
             {verifyError && (
-              <div className="p-3 bg-red-500/5 border border-red-500/20 text-red-400 rounded-lg text-xs leading-relaxed flex gap-2">
+              <div data-testid="certify-result-error" className="p-3 bg-red-500/5 border border-red-500/20 text-red-400 rounded-lg text-xs leading-relaxed flex gap-2">
                 <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5" />
                 <span>{verifyError}</span>
               </div>

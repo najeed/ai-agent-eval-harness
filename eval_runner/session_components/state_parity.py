@@ -300,30 +300,51 @@ class SessionStateParityVerifier:
                     f"      [Session] [Parity-Audit] TIMEOUT reached. Last failure: {failed_reason}"
                 )
                 if hasattr(sm, "event_bus"):
-                    sm.event_bus.emit(
-                        CoreEvents.ADAPTER_DEBUG,
-                        {
-                            "message": f"Parity FAILED after {timeout}s: {failed_reason}",
-                            "category": "PARITY_STATE_DIVERGENCE",
-                            "is_root_cause": True,
-                            # [Strict StateComparison contract] Structured,
-                            # fallback-free evidence for debugger rendering.
-                            # Consumers must render ONLY these fields; absence
-                            # of this object means no structured comparison
-                            # exists — never guess from message text.
-                            "state_comparison": {
-                                "expected": [row.get("expected") for row in evidence_rows],
-                                "actual": [row.get("actual_after") for row in evidence_rows],
-                                "comparison": {
-                                    "kind": "transition_verification",
-                                    "failed_assertion": failed_reason,
-                                },
-                                "assertions": evidence_rows,
-                                "source": "state_parity.transition_verification",
-                                "timestamp": datetime.now().isoformat(),
-                            },
-                        },
+                    from agentv_runtime.state_comparison import StateComparison
+
+                    node_id = str(node.get("id") or node.get("node_id") or "unknown_node")
+                    exec_instance_id = getattr(
+                        sm, "current_execution_instance_id", None
+                    ) or getattr(sm, "run_id", "unknown_instance")
+                    first_failing = next((r for r in evidence_rows if not r.get("passed")), None)
+                    assertion_id = (
+                        (
+                            (first_failing.get("assertion", {}) or {}).get("id")
+                            or (first_failing.get("assertion", {}) or {}).get("target")
+                            or (first_failing.get("assertion", {}) or {}).get("property")
+                            or "parity_assertion"
+                        )
+                        if first_failing
+                        else "parity_assertion"
                     )
+
+                    st_comp = StateComparison(
+                        scenario_node_id=node_id,
+                        execution_instance_id=exec_instance_id,
+                        assertion_id=str(assertion_id),
+                        expected=[row.get("expected") for row in evidence_rows],
+                        actual=[row.get("actual_after") for row in evidence_rows],
+                        comparison_result="diverged",
+                        evidence_ref="run.jsonl",
+                        comparison={
+                            "kind": "transition_verification",
+                            "failed_assertion": failed_reason,
+                        },
+                        assertions=evidence_rows,
+                        source="state_parity.transition_verification",
+                        timestamp=datetime.now().isoformat(),
+                    )
+                    divergence_payload = {
+                        "message": f"Parity FAILED after {timeout}s: {failed_reason}",
+                        "category": "PARITY_STATE_DIVERGENCE",
+                        "is_root_cause": True,
+                        "scenario_node_id": node_id,
+                        "execution_instance_id": exec_instance_id,
+                        "assertion_id": str(assertion_id),
+                        "state_comparison": st_comp.to_dict(),
+                    }
+                    sm.event_bus.emit(CoreEvents.PARITY_STATE_DIVERGENCE, divergence_payload)
+                    sm.event_bus.emit(CoreEvents.ADAPTER_DEBUG, divergence_payload)
                 return False, evidence_rows
 
             await asyncio.sleep(interval)

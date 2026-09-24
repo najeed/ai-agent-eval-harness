@@ -3,7 +3,6 @@ import logging
 import os
 import threading
 import time
-from datetime import datetime
 from pathlib import Path
 
 from flask import Blueprint, Response, jsonify, request
@@ -12,6 +11,7 @@ from eval_runner import config
 from eval_runner.explainer import explain_trace
 from eval_runner.metrics import MetricRegistry
 from eval_runner.services.certification import CertificationService
+from eval_runner.services.run_summary import RunSummaryService
 
 from ..auth_manager import Permission, require_permission
 
@@ -331,83 +331,18 @@ def list_runs():
     runs = runs_cache.get_runs(query=query)
     enriched = []
     for run in runs[:200]:
-        row = dict(run)
         rid = run.get("run_id") or ""
-        row["verification_status"] = _authoritative_verdict(rid)
-        # [Provenance surfacing] Cheap, truthful integrity badge derived from
-        # the SAME evidence the cache already inspected: a terminal run_end
-        # means COMPLETE; vault without terminal event is PARTIAL; fragments
-        # recovered from the master log are RECOVERED.
-        if row.get("result_status"):
-            row["trace_integrity"] = "COMPLETE"
-        elif row.get("_fragment_path"):
-            row["trace_integrity"] = "RECOVERED"
-        else:
-            row["trace_integrity"] = "PARTIAL"
-        # Enrich with truth-level fields if not already captured by the cache.
-        # CertificationService.read_run_truth_level is the single canonical source
-        # for execution_mode/provisional so Dashboard/RunsReports badges are correct.
-        if not row.get("execution_mode"):
-            em, prov = CertificationService.read_run_truth_level(rid)
-            row["execution_mode"] = em
-            row["provisional"] = prov
-        else:
-            # execution_mode was cached from the trace; derive provisional from it.
-            em = row["execution_mode"]
-            row["provisional"] = bool(not em or em in ("simulated", "unknown"))
-        enriched.append(row)
+        summary = RunSummaryService.compute_summary(rid, cached_entry=run)
+        enriched.append(summary)
     return jsonify({"runs": enriched})
 
 
 def _authoritative_verdict(run_id: str) -> str:
     """
     Authoritative verification computation. Full literal set:
-
         VERIFIED | VERIFIED_PROVISIONAL | FAILED_VERIFICATION | NOT_EXECUTED | ERROR | UNKNOWN
-
-      NOT_EXECUTED         — no trace exists for the run id (nothing to verify).
-      ERROR                — the verification procedure itself failed; truth is
-                             unavailable and must never masquerade as UNKNOWN-by-
-                             absence-of-certificate.
-      UNKNOWN              — trace exists but no certificate could be checked.
-      VERIFIED_PROVISIONAL — cryptographically valid certificate exists, but the run
-                             was marked provisional (undeclared or simulated execution mode).
-      VERIFIED             — cryptographically valid, authoritative certificate.
     """
-    if not run_id:
-        return "NOT_EXECUTED"
-
-    tp = resolve_trace_path(run_id)
-    if not tp or not tp.exists():
-        return "NOT_EXECUTED"
-
-    from eval_runner.verifier import TraceVerifier, locate_certificate_file
-
-    manifest_path = locate_certificate_file(run_id)
-    if manifest_path is None or not manifest_path.exists():
-        return "UNKNOWN"
-
-    try:
-        is_valid = TraceVerifier.verify_trace(str(tp), str(manifest_path), verify_ledger=True)
-        if not is_valid:
-            return "FAILED_VERIFICATION"
-
-        # Check if the certificate is provisional
-        try:
-            with open(manifest_path, encoding="utf-8") as f_m:
-                m_data = json.load(f_m)
-                if m_data.get("provisional") is True or m_data.get("execution_mode") in (
-                    "simulated",
-                    "unknown",
-                ):
-                    return "VERIFIED_PROVISIONAL"
-        except Exception as prov_err:
-            logger.debug(f"Provisional manifest check note for {run_id}: {prov_err}")
-
-        return "VERIFIED"
-    except Exception as err:  # noqa: BLE001 - verdict failures degrade to ERROR, not UNKNOWN
-        logger.debug(f"Authoritative verdict check failed for {run_id}: {err}")
-        return "ERROR"
+    return RunSummaryService.get_authoritative_verdict(run_id)
 
 
 @run_bp.route("/v1/runs/stream-list", methods=["GET"])
@@ -423,103 +358,18 @@ def stream_runs_list():
             resolved_chunk = []
             for run in chunk:
                 run_id = run["run_id"]
-                cert_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
-                vault_manifest = config.RUN_LOG_DIR / run_id / "run_manifest.json"
-
-                status = "PASSED"
-                # Check status via full authoritative verdict (Defect #3)
-                if cert_path.exists() or vault_manifest.exists():
-                    auth_verdict = _authoritative_verdict(run_id)
-                    if auth_verdict == "VERIFIED":
-                        status = "CERTIFIED"
-                    elif auth_verdict == "VERIFIED_PROVISIONAL":
-                        status = "PROVISIONAL"
-                    else:
-                        status = "ARTIFACT_PRESENT"
-                else:
-                    tp = resolve_trace_path(run_id)
-                    if tp and tp.exists():
-                        try:
-                            # Read the entire log file (vault logs are usually very small, <100KB)
-                            size = os.path.getsize(tp)
-                            if size > 0:
-                                with open(tp, "rb") as f:
-                                    # Read up to the last 32KB
-                                    if size > 32 * 1024:
-                                        f.seek(size - 32 * 1024)
-                                    content = f.read()
-
-                                    has_error = (
-                                        b'"event": "error"' in content
-                                        or b'"level": "error"' in content
-                                        or b'"status": "error"' in content
-                                    )
-                                    run_dir = tp.parent
-                                    from eval_runner.verifier import locate_certificate_file
-
-                                    has_seal = (run_dir / ".sealed").exists()
-                                    has_cert = locate_certificate_file(run_id) is not None
-                                    is_sealed = bool(has_seal and has_cert)
-                                    has_end = (
-                                        b'"event": "run_end"' in content
-                                        or b'"event": "verification_certificate_issued"' in content
-                                        or is_sealed
-                                    )
-
-                                    if is_sealed:
-                                        status = "SEALED"
-                                    elif has_error:
-                                        status = "FAILED"
-                                    elif not has_end:
-                                        # Determine if stalled or still running
-                                        has_newline = b"\n" in content
-                                        last_line = (
-                                            content.split(b"\n")[-2] if has_newline else content
-                                        )
-                                        try:
-                                            decoded_line = last_line.decode(
-                                                "utf-8", errors="ignore"
-                                            ).strip()
-                                            last_event = json.loads(decoded_line)
-                                            ts_str = last_event.get("timestamp") or last_event.get(
-                                                "_ts_iso"
-                                            )
-                                            if ts_str:
-                                                ts_str_clean = ts_str.split("+")[0].split("Z")[0]
-                                                last_ts = datetime.fromisoformat(
-                                                    ts_str_clean
-                                                ).timestamp()
-                                                if time.time() - last_ts > 300:
-                                                    status = "STALLED"
-                                                else:
-                                                    status = "RUNNING"
-                                        except Exception as e:
-                                            logger.debug(f"Error parsing timestamp: {e}")
-                                            status = "RUNNING"
-                                    else:
-                                        status = "PASSED"
-                        except Exception as e:
-                            logger.debug(f"Error reading file status: {e}")
-                            status = "FAILED"
-                    else:
-                        # Aborted/stalled before writing any vault folder
-                        status = "STALLED"
-                        try:
-                            ts_str = run.get("timestamp") or ""
-                            if ts_str:
-                                ts_str_clean = ts_str.split("+")[0].split("Z")[0]
-                                run_ts = datetime.fromisoformat(ts_str_clean).timestamp()
-                                if time.time() - run_ts < 300:
-                                    status = "RUNNING"
-                        except Exception as e:
-                            logger.debug(f"Error calculating time: {e}")
-
+                summary = RunSummaryService.compute_summary(run_id, cached_entry=run)
                 resolved_chunk.append(
                     {
                         "run_id": run_id,
-                        "scenario": run["scenario"],
-                        "timestamp": run["timestamp"],
-                        "status": status,
+                        "scenario": summary.get("scenario", run.get("scenario")),
+                        "timestamp": summary.get("timestamp", run.get("timestamp")),
+                        "status": summary["status"],
+                        "lifecycle": summary["lifecycle"],
+                        "verification_status": summary["verification_status"],
+                        "trace_integrity": summary["trace_integrity"],
+                        "execution_mode": summary["execution_mode"],
+                        "provisional": summary["provisional"],
                     }
                 )
             yield f"data: {json.dumps(resolved_chunk)}\n\n"
@@ -537,8 +387,6 @@ def get_run_status(run_id):
 
     if vault_trace:
         is_finished = False
-        has_failed = False
-        is_sealed = False
         size = 0
         mtime = 0
         try:
@@ -571,26 +419,14 @@ def get_run_status(run_id):
                     data = ev.get("data", {}) or {}
                     raw_status = data.get("status") or ev.get("status") or ""
                     if str(raw_status).lower() in ("fail", "failed", "failure", "error"):
-                        has_failed = True
+                        pass
                 elif event_type in ("verification_certificate_issued", "trace_sealed"):
-                    is_sealed = True
                     is_finished = True
         except Exception as e:
             logger.warning(f"Error parsing run trace for status of {run_id}: {e}")
 
-        import time
-
-        status = "RUNNING"
-        if is_sealed:
-            status = "SEALED"
-        elif is_finished:
-            status = "FAILED" if has_failed else "COMPLETED"
-        elif mtime > 0 and time.time() - mtime > 300:
-            status = "STALLED"
-
-        cert_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
-        vault_manifest = config.RUN_LOG_DIR / run_id / "run_manifest.json"
-        has_certificate = cert_path.exists() or vault_manifest.exists()
+        summary = RunSummaryService.compute_summary(run_id)
+        status = "COMPLETED" if summary["status"] == "PASSED" else summary["status"]
 
         resolved_scen_path = config.RUN_LOG_DIR / run_id / "scenario_resolved.json"
         orig_scen_path = config.RUN_LOG_DIR / run_id / "scenario_original.json"
@@ -603,21 +439,18 @@ def get_run_status(run_id):
                 except Exception as e:
                     logger.debug(f"Error parsing resolved scenario: {e}")
 
-        # O1 fix: surface truth-level fields so VerificationWorkflow and TrustCenter
-        # can render ProvisionalBadge correctly on direct/deep-linked navigation.
-        em, prov = CertificationService.read_run_truth_level(run_id)
         return jsonify(
             {
                 "run_id": run_id,
                 "status": status,
                 "size": size,
                 "mtime": mtime,
-                "has_certificate": has_certificate,
+                "has_certificate": summary["has_certificate"],
                 "sourced_from_master": False,
                 "scenario": scenario_data,
-                "execution_mode": em,
-                "provisional": prov,
-                "verification_status": _authoritative_verdict(run_id),
+                "execution_mode": summary["execution_mode"],
+                "provisional": summary["provisional"],
+                "verification_status": summary["verification_status"],
             }
         )
 

@@ -73,6 +73,10 @@ def _write_manifest(
     provisional: bool = False,
 ):
     from eval_runner.verifier import TraceVerifier
+    from tests.conftest import append_authoritative_finalization
+
+    if not provisional and execution_mode in ("live", "hybrid"):
+        append_authoritative_finalization(trace_path, trace_path.parent.name, trace_path.parent)
 
     TraceVerifier.sign_trace(
         str(trace_path),

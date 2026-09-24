@@ -81,7 +81,7 @@ If foundational **Safety** or **Security** scores fall below **0.5**, the aggreg
 
 ## 📑 Trust Protocol Fingerprinting
 
-The [Trust Protocol](/auditor/trust-protocol/) provides immutable proof of run integrity.
+The [Trust Protocol](/auditor/trust-protocol/) provides cryptographically tamper-evident proof of run integrity; it does not make OSS local files physically immutable.
 
 1. **Behavioral Fingerprinting**: Uses **SHA3-256** content hashing to sign raw `.jsonl` trace files.
 2. **Certification API**: Serves as a public "Trust Anchor" for external CI/CD gates via `GET /v1/certificates/<run_id>`.
@@ -150,6 +150,6 @@ AgentV incorporates continuous governance controls directly aligned with AICPA S
 | **Common Criteria 6.3 (Least Privilege)** | `CC6.3.2` | Workspace isolation, terminal jail sandboxing, and non-root execution boundaries. | `is_path_safe` path safety enforcement. |
 | **Common Criteria 6.6 (Boundary Protection)** | `CC6.6.1` | SSRF IP blocklists, cloud metadata (IMDSv2) access neutralization, and local subnet isolation. | Network security tests in `tests/security/`. |
 | **Common Criteria 6.7 (Data Transmission & Signing)** | `CC6.7.3` | Asymmetric Ed25519 trace signing with SHA3-256 digests and Fail-Closed Cryptography. | Verifiable Credentials (VC v3.0.0) generated via `TraceVerifier`. |
-| **Common Criteria 7.2 (Security Monitoring)** | `CC7.2.1` | Real-time audit logging via `FlightRecorder` with SHA3-256 fingerprinting and telemetry event bus. | Immutable `run.jsonl` trace vaults. |
+| **Common Criteria 7.2 (Security Monitoring)** | `CC7.2.1` | Real-time audit logging via `FlightRecorder` with SHA3-256 fingerprinting and telemetry event bus. | Tamper-evident `run.jsonl` trace vaults; external retention is required for WORM. |
 | **Common Criteria 8.1 (Change & Config Management)** | `CC8.1.1` | Schema-validated `ResolvedRuntimeConfig` model with deterministic `config_hash`. | Sealed configuration snapshots per evaluation run. |
 

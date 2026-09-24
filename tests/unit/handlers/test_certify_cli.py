@@ -229,3 +229,71 @@ async def test_handle_certify_success(certify_env, capsys):
         vc_data = json.load(vf)
 
     validate(instance=vc_data, schema=schema)
+
+
+def test_sign_trace_unconditional_finalization_mandate(tmp_path, monkeypatch):
+    """
+    P0 Certification Completeness Sentinel:
+    Non-provisional certification unconditionally requires EvaluatorFinalizationRecord.
+    Caller discretion via require_finalization=False cannot bypass it.
+    Only explicit provisional=True permits non-certifying diagnostic signing.
+    """
+    from eval_runner.identity import IdentityService
+    from eval_runner.verifier import CertificationFailedError, TraceVerifier
+
+    root = tmp_path / "finalization_mandate_test"
+    root.mkdir()
+    runs_dir = root / "runs"
+    runs_dir.mkdir()
+    reports_dir = root / "reports"
+    reports_dir.mkdir()
+    (reports_dir / "certificates").mkdir()
+
+    monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", root)
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", runs_dir)
+    monkeypatch.setattr("eval_runner.config.REPORTS_DIR", reports_dir)
+    monkeypatch.setattr("eval_runner.config.TRUST_ROOT", root / ".aes" / "keys")
+    IdentityService._provision_local_identity("system_id")
+
+    run_id = "run-mandate-test"
+    run_dir = runs_dir / run_id
+    run_dir.mkdir()
+    trace_file = run_dir / "run.jsonl"
+    # Bare trace without EvaluatorFinalizationRecord
+    trace_file.write_text(
+        json.dumps({"event": "start", "run_id": run_id, "turn": 1})
+        + "\n"
+        + json.dumps({"event": "stop", "run_id": run_id, "turn": 2})
+        + "\n",
+        encoding="utf-8",
+    )
+
+    # 1. Non-provisional with default require_finalization -> FAILS
+    with pytest.raises(CertificationFailedError, match="MissingEvaluatorFinalization"):
+        TraceVerifier.sign_trace(
+            trace_path=str(trace_file),
+            run_id=run_id,
+            execution_mode="live",
+            provisional=False,
+        )
+
+    # 2. Non-provisional attempting caller discretion (require_finalization=False) -> STILL FAILS
+    with pytest.raises(CertificationFailedError, match="MissingEvaluatorFinalization"):
+        TraceVerifier.sign_trace(
+            trace_path=str(trace_file),
+            run_id=run_id,
+            execution_mode="live",
+            provisional=False,
+            require_finalization=False,
+        )
+
+    # 3. Explicit provisional=True (non-certifying diagnostic) -> ALLOWED
+    diag_res = TraceVerifier.sign_trace(
+        trace_path=str(trace_file),
+        run_id=run_id,
+        execution_mode="live",
+        provisional=True,
+        require_finalization=False,
+    )
+    assert diag_res is not None
+    assert diag_res.get("provisional") is True

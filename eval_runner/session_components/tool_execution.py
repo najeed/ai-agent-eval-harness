@@ -34,7 +34,9 @@ class ToolExecutionCoordinator:
             elif handler:
                 res = handler(**params)
             else:
-                res = {"status": "success", "result": f"Executed {tool_name}"}
+                raise RuntimeError(
+                    f"ToolUnavailable: no sandbox or executable handler is bound for '{tool_name}'"
+                )
 
             record["result"] = res
             record["status"] = "success"

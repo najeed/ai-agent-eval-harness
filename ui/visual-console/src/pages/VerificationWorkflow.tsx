@@ -66,7 +66,7 @@ const tierBadge = (tier?: string) => {
 
 export const VerificationWorkflow: React.FC = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { canRunEval } = useRBAC();
   const [protocol, setProtocol] = useState('http_rest');
   const [endpoint, setEndpoint] = useState('');
@@ -304,6 +304,11 @@ export const VerificationWorkflow: React.FC = () => {
       const data = await res.json();
       if (res.ok && data.run_id) {
         if (data.scenario_hash) setBoundScenarioHash(data.scenario_hash);
+        setRunId(data.run_id);
+        setSearchParams(current => {
+          current.set('run_id', data.run_id);
+          return current;
+        }, { replace: true });
         navigate(`/debugger?run_id=${data.run_id}`);
       } else {
         setLaunchError(data.error || 'Failed to initialize evaluation.');
@@ -617,8 +622,8 @@ export const VerificationWorkflow: React.FC = () => {
                     />
                   </label>
                   <p className="text-[10px] text-slate-500">
-                    Changing these values invalidates the current preflight result; re-run preflight
-                    before launching.
+                    Changing Max Execution Turns invalidates preflight. Evaluation Metadata Notes are
+                    recorded with the run but do not change execution readiness.
                   </p>
                 </div>
               )}
@@ -703,6 +708,15 @@ export const VerificationWorkflow: React.FC = () => {
                   }`}
               >
                 <Bug className="w-3.5 h-3.5" /> Diagnose in debugger
+              </Link>
+              <Link
+                to={`/trust?run_id=${encodeURIComponent(runId)}`}
+                className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-xs font-semibold ${runId
+                  ? 'border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/10'
+                  : 'border-slate-800 text-slate-600 pointer-events-none'
+                  }`}
+              >
+                <PackageCheck className="w-3.5 h-3.5" /> Evidence & certificate
               </Link>
             </div>
           </>

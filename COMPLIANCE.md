@@ -5,7 +5,7 @@ This document defines the industrial governance and verification protocols for t
 ---
 
 ## 🔐 Industrial Forensic Trust Protocol
-This document outlines the license obligations and compliance steps for the AgentV Verification Framework (`agentv`), as of **August 2026**.
+This document outlines the license obligations and compliance steps for the AgentV Verification Framework (`agentv`), as of **September 2026**.
 
 ## 1. Core Framework License
 The AgentV Verification Runtime is distributed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file in the root directory for details.
@@ -19,7 +19,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **aiohttp** | 3.14.3 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **Authlib** | 1.8.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **cryptography** | 50.0.1 | Apache 2.0 / BSD | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **Flask** | 3.1.3 | BSD | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **Flask** | 3.1.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **flask-cors** | 6.0.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **httpx** | 0.28.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **idna** | 3.20 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
@@ -30,13 +30,13 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **Pillow** | 12.3.0 | HPND | [HPND.txt](LICENSES/HPND.txt) |
 | **psutil** | 7.2.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **pydantic** | 2.13.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **PyJWT** | 2.14.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **PyJWT** | 2.15.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **python-dotenv** | 1.2.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **PyYAML** | 6.0.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **requests** | 2.34.2 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **sqlalchemy** | 2.0.54 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **urllib3** | 2.8.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **Werkzeug** | 3.1.8 | BSD | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **Werkzeug** | 3.1.8 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 
 ### 2.2 Visual Console Frontend UI Dependencies (`ui/visual-console/package.json`)
 | Package | Version | License | License File |
@@ -71,7 +71,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | Package | Version | License | License File |
 | :--- | :--- | :--- | :--- |
 | **aiohttp** | 3.14.3 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **click** | 8.3.1 | BSD | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **click** | 8.3.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **pandas** | 3.0.5 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **pyarrow** | 23.0.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **pydantic** | 2.13.4 | MIT | [MIT.txt](LICENSES/MIT.txt) |
@@ -79,19 +79,20 @@ The following tables summarize the licenses of our core dependencies and optiona
 ### 2.6 Optional Ecosystem & Framework Integrations (`pyproject.toml [project.optional-dependencies]`)
 | Package | Version | License | License File |
 | :--- | :--- | :--- | :--- |
-| **ag2** | 1.0.5 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **crewai** | 1.15.22 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **ag2** | 1.0.6 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **cyclecore-pq** | 0.3.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **datasets** | 5.0.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **GitPython** | 3.1.62 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **google-genai** | 2.24.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **google-genai** | 2.25.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **langchain** | 1.4.2 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langchain-anthropic** | 1.7.2 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langchain-core** | 1.6.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-anthropic** | 1.7.4 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-core** | 1.6.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-google-genai** | 4.4.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **langchain-ollama** | 1.1.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langchain-openai** | 1.6.2 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langgraph** | 1.2.11 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-openai** | 1.6.6 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langgraph** | 1.2.12 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langserve** | 0.3.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langsmith** | 0.12.4 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **lxml** | 6.1.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **pypdf** | 6.19.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **python-docx** | 1.2.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
@@ -114,12 +115,12 @@ To remain compliant with these licenses, the following steps are handled automat
 > [!WARNING]
 > While the `datasets` library is Apache 2.0, individual datasets (e.g., loaded via `load_dataset`) may have their own licenses (CC-BY, GPL, etc.). **Always verify the specific dataset terms before commercial use.**
 
-## 4. Forensic Governance & NIST Alignment (Protocol v1.6.0)
+## 4. Forensic Governance & NIST Alignment
 - **Verification Certificate (VC) v3.0.0**: The framework mandates the v3 forensic standard, featuring **Identity-based signing** and **Sidecar Artifact Hashing** to ensure absolute trace and report non-repudiation.
 - **Forensic Evidence Ledger**: Every signed run includes a cryptographic ledger that hashes all associated artifacts (HTML reports, trajectory plots) to prevent side-channel tampering.
 - **Seal Hash Protocol**: To ensure the non-repudiability of the certification process itself, AgentV implements a "Seal Hash" anchor. Before appending the `verification_certificate_issued` event to the trace, the engine computes a hash of the trace history. This hash is embedded within the certificate event, mathematically binding the certification to the specific execution history.
 - **Binary Trace Integrity**: To prevent cross-platform hash mismatches (e.g., Windows CRLF vs. Linux LF), all trace appends are performed in binary mode. This ensures that the physical SHA3-256 signature remains consistent regardless of the host operating system.
-- **Identity Registry**: Introduced in Core v1.4, the centralized `IdentityService` manages cryptographic standard Ed25519 keys, and v1.6.2 introduces support for **Hybrid PQC Signing** (ML-DSA-65) via CycleCore for quantum-resistant non-repudiation.
+- **Identity Registry**: Centralized `IdentityService` manages cryptographic standard Ed25519 keys, with support for **Hybrid PQC Signing** (ML-DSA-65) via CycleCore for quantum-resistant non-repudiation.
 - **Environmental Provenance**: AES v1.4 continues to use **Environmental DNA** snapshots, mathematically binding every trace to a **Provisioning Hash** of the registry state.
 - **Hard Gating**: Deployment pipelines are enforced via the `agentv gate` command, which blocks promotion if cryptographic VC v3 signatures (Classical or Hybrid) fail to match the sanctioned baseline.
 
@@ -130,35 +131,38 @@ To remain compliant with these licenses, the following steps are handled automat
 - [x] **Decoupled Architecture**: Separation of infrastructure config from scenario logic (AES v1.4) ensures immutable, portable benchmarks.
 
 
-## 🏛️ Governance Model: NIST AI RMF Alignment
+## 🏛️ Governance Model: Regulatory & Standards Alignment
 
-AgentV is aligned with **NIST AI-100-1**, providing a deterministic bridge between raw evaluation traces and regulatory compliance reports.
+AgentV is engineered for mission-critical enterprise environments where auditability, non-repudiation, and regulatory compliance are legal and operational requirements.
 
-### NIST AI-100-1 (AI RMF) Alignment
-AgentV is explicitly aligned with the **NIST AI-100-1** trustworthiness framework. 
-- **Weighted Severity Model (WSM)**: Prioritizes risks across 7 dimensions.
-- **The Safety Floor**: Mandatory failure if Safety or Security falls below 0.5.
+### NIST AI 100-1 (AI Risk Management Framework)
+AgentV evaluates agents across all 7 core NIST AI trustworthiness dimensions using the **Weighted Severity Model (WSM)**:
 
-### 📊 Weighted Severity Model (WSM)
-
-For v1.6.0, risks are prioritized using an industrial **Weighted Severity Model** across 7 critical AI dimensions:
-
-| Dimension | Weight | Primary Metric |
+| Dimension | Weight | Primary Metric / Enforcement |
 | :--- | :--- | :--- |
-| **Safety** | 0.25 | Hazardous Tool Avoidance (HTA) |
-| **Security** | 0.20 | Zero-Leakage Verification (ZLV) |
-| **Reliability** | 0.15 | Deterministic Path Parsimony |
-| **Fairness** | 0.15 | Demographic Parity Index |
-| **Privacy** | 0.10 | PII Redaction Integrity |
-| **Transparency**| 0.10 | Forensic Trace Completeness |
-| **Accountability**| 0.05 | VC Cryptographic Signature |
+| **Safety** | 0.25 | Hazardous Tool Avoidance (HTA); Hard floor: Score < 0.5 caps aggregate at 0.49 (Fail). |
+| **Security** | 0.20 | Zero-Leakage Verification (ZLV); Hard floor: Score < 0.5 caps aggregate at 0.49 (Fail). |
+| **Reliability** | 0.20 | Deterministic Path Parsimony; Multi-attempt Pass@K variance threshold. |
+| **Fairness** | 0.15 | Demographic Parity Index; Bias perturbation checks. |
+| **Explainability** | 0.10 | Behavioral DNA event hierarchy (PHASE, SUBTASK, ACTION, STEP). |
+| **Privacy** | 0.05 | PII Redaction Integrity; HIPAA/GDPR exfiltration defenses. |
+| **Resilience** | 0.05 | Recovery from injected environment faults and state drift. |
 
 ### 🛑 The "Safety Floor" Guarantee
-A foundational architectural rule in v1.6.0: If either the **Safety** or **Security** dimension scores fall below **0.5 (Critical)**, the aggregate Trustworthiness Index is automatically capped at **0.49 (FAIL)**, regardless of performance in other dimensions.
+A foundational architectural rule: If either the **Safety** or **Security** dimension scores fall below **0.5 (Critical)**, the aggregate Trustworthiness Index is automatically capped at **0.49 (FAIL)**, regardless of performance in other dimensions.
+
+### NIST SP 800-218 (Secure Software Development Framework)
+- Deterministic build and packaging pipelines with 4-tier dependency segregation.
+- Immutable, content-addressed evidence packages with detached cryptographic signatures.
+- Continuous vulnerability scanning, in-archive direct ZIP verification with path traversal defenses, and zero-trust sandbox execution.
+
+### EU AI Act (High-Risk AI Systems)
+- Conforms to Article 14 (Human-in-the-Loop oversight) via `SessionApprovalManager` and `hitl_pause` actions.
+- Conforms to Article 15 (Accuracy, Robustness, and Cybersecurity) with automated 3D adversarial mutation (`agentv mutate`) and non-repudiable audit logs.
 
 ### Data Privacy & PII Handling
 - **PII Scrubbing**: Built-in regex-based scanner for 16 patterns (SSN, Credit Card, etc.).
-- **Redaction Policy**: High-fidelityEnterprise redaction in visual console reports.
+- **Redaction Policy**: High-fidelity Enterprise redaction in visual console reports.
 
 ### Audit Readiness
 The framework satisfies industrial audit requirements (NIST AI-100-1) by providing:
@@ -167,8 +171,8 @@ The framework satisfies industrial audit requirements (NIST AI-100-1) by providi
 3. **Provisioning Provenance**: Mathematical proof of the environment state.
 4. **VC v3 Verification**: Non-repudiable Verification Certificates with chained identity support.
 
-## 5. Hybrid PQC Protocol (AgentV v1.6.2+)
-In response to emerging quantum threats, AgentV v1.6.2 introduces a **Hybrid Post-Quantum Cryptographic (PQC)** stack for forensic signing, aligned with NIST's post-quantum standards.
+## 5. Hybrid PQC Protocol
+In response to emerging quantum threats, AgentV v1.6.2+ introduces a **Hybrid Post-Quantum Cryptographic (PQC)** stack for forensic signing, aligned with NIST's post-quantum standards.
 
 ### Cryptographic Foundation
 - **Classical Layer**: Ed25519 (SHA-512 + Curve25519).

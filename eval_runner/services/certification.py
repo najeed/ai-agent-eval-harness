@@ -46,6 +46,27 @@ class CertificationService:
     Derives evaluation status, score, and truth level strictly from immutable runtime evidence.
     """
 
+    @staticmethod
+    def parse_trace_strict(target_trace: Path, run_id: str | None = None) -> list[dict[str, Any]]:
+        """Parse every nonblank JSONL record once; malformed/foreign records fail closed."""
+        events: list[dict[str, Any]] = []
+        with open(target_trace, encoding="utf-8") as trace_file:
+            for line_number, line in enumerate(trace_file, start=1):
+                raw = line.strip()
+                if not raw:
+                    continue
+                try:
+                    event = json.loads(raw)
+                except json.JSONDecodeError as exc:
+                    raise ValueError(f"MalformedTraceRecord:{line_number}") from exc
+                if not isinstance(event, dict):
+                    raise ValueError(f"InvalidTraceRecord:{line_number}: expected object")
+                event_run_id = event.get("run_id") or (event.get("data") or {}).get("run_id")
+                if run_id and event_run_id and str(event_run_id) != run_id:
+                    raise ValueError(f"ForeignTraceRecord:{line_number}: run_id mismatch")
+                events.append(event)
+        return events
+
     @classmethod
     def read_run_truth_level(cls, run_id: str) -> tuple[str | None, bool]:
         """
@@ -59,37 +80,29 @@ class CertificationService:
             return None, False
 
         try:
-            with open(trace, encoding="utf-8") as f:
-                for line in f:
-                    line = line.strip()
-                    if not line:
-                        continue
-                    try:
-                        ev = json.loads(line)
-                    except Exception:
-                        continue
-                    if ev.get("event") not in ("run_start", "start"):
-                        continue
-                    data = ev.get("data", {}) or {}
-                    meta = data.get("metadata") or ev.get("metadata") or {}
-                    mode = (
-                        data.get("execution_mode")
-                        or meta.get("execution_mode")
-                        or ev.get("execution_mode")
-                    )
-                    is_prov = bool(
-                        data.get("provisional") or meta.get("provisional") or ev.get("provisional")
-                    )
-                    if not mode:
-                        return "unknown", True
-                    mode_clean = str(mode).strip().lower()
-                    if (
-                        is_prov
-                        or mode_clean in ("simulated", "unknown")
-                        or mode_clean not in ("live", "hybrid")
-                    ):
-                        return mode, True
-                    return mode, False
+            for ev in cls.parse_trace_strict(trace, run_id):
+                if ev.get("event") not in ("run_start", "start"):
+                    continue
+                data = ev.get("data", {}) or {}
+                meta = data.get("metadata") or ev.get("metadata") or {}
+                mode = (
+                    data.get("execution_mode")
+                    or meta.get("execution_mode")
+                    or ev.get("execution_mode")
+                )
+                is_prov = bool(
+                    data.get("provisional") or meta.get("provisional") or ev.get("provisional")
+                )
+                if not mode:
+                    return "unknown", True
+                mode_clean = str(mode).strip().lower()
+                if (
+                    is_prov
+                    or mode_clean in ("simulated", "unknown")
+                    or mode_clean not in ("live", "hybrid")
+                ):
+                    return mode, True
+                return mode, False
             return "unknown", True
         except Exception as e:  # noqa: BLE001
             logger.debug("Error reading execution truth level for %s: %s", run_id, e)
@@ -102,24 +115,16 @@ class CertificationService:
         if not target_trace.exists():
             return 0
         try:
-            with open(target_trace, encoding="utf-8") as f:
-                for line in f:
-                    stripped = line.strip()
-                    if not stripped:
-                        continue
-                    try:
-                        ev = json.loads(stripped)
-                    except Exception:
-                        continue
-                    event_name = ev.get("event")
-                    if event_name in EVIDENCE_EVENT_NAMES:
+            for ev in cls.parse_trace_strict(target_trace):
+                event_name = ev.get("event")
+                if event_name in EVIDENCE_EVENT_NAMES:
+                    count += 1
+                elif "assertion" in ev or "oracle_results" in ev or "metrics" in ev:
+                    count += 1
+                elif isinstance(ev.get("data"), dict):
+                    d = ev["data"]
+                    if "assertion" in d or "oracle_results" in d or "metrics" in d:
                         count += 1
-                    elif "assertion" in ev or "oracle_results" in ev or "metrics" in ev:
-                        count += 1
-                    elif isinstance(ev.get("data"), dict):
-                        d = ev["data"]
-                        if "assertion" in d or "oracle_results" in d or "metrics" in d:
-                            count += 1
         except Exception as e:
             logger.debug("Error counting evidence nodes in %s: %s", target_trace, e)
         return count
@@ -130,6 +135,8 @@ class CertificationService:
         if not target_trace.exists():
             return None
         try:
+            # Validate the complete raw stream before any selective derivation.
+            cls.parse_trace_strict(target_trace)
             with open(target_trace, encoding="utf-8") as tf:
                 for line in tf:
                     stripped = line.strip()
@@ -188,6 +195,7 @@ class CertificationService:
         Returns (status, score). If unparseable or inconclusive, returns ("inconclusive", 0.0).
         """
         try:
+            CertificationService.parse_trace_strict(target_trace)
             finalization_seen = False
             finalization_decision: tuple[str, float, str] | None = None
             extracted_decisions: list[tuple[str, float, str]] = []
@@ -444,6 +452,12 @@ class CertificationService:
 
             vault_dir = target_trace.parent
 
+            # Validate the complete physical JSONL stream before any decision,
+            # metadata, or evidence derivation.  Later projections may select
+            # records for their own purposes, but none may silently discard a
+            # malformed or cross-run record.
+            cls.parse_trace_strict(target_trace, run_id)
+
             # 1. Execution Truth Level Verification (Defect T1: 'live' execution only)
             execution_mode, provisional = cls.read_run_truth_level(run_id)
             clean_mode = str(execution_mode).strip().lower() if execution_mode else ""
@@ -500,7 +514,7 @@ class CertificationService:
             # Mandatory scenario and runtime metadata binding
             meta_binding: dict[str, Any] = {}
             embedded_scenario_data: dict[str, Any] | None = None
-            raw_events: list[dict[str, Any]] = []
+            raw_events: list[tuple[dict[str, Any], str]] = []
             try:
                 with open(target_trace, encoding="utf-8") as tf:
                     for line in tf:
@@ -509,9 +523,21 @@ class CertificationService:
                             continue
                         try:
                             rec = json.loads(stripped)
-                            raw_events.append(rec)
                             ev_name = rec.get("event")
                             rec_data = rec.get("data") if isinstance(rec.get("data"), dict) else {}
+                            # Finalization is computed before the terminal RUN_END
+                            # record is emitted.  That record embeds the signed
+                            # finalization itself and its assertion carrier; feeding
+                            # it back into graph reconstruction would create a
+                            # self-referential second evidence root.  Bind the root
+                            # to the exact pre-finalization raw JSONL lines instead.
+                            if not (
+                                ev_name in ("run_end", "verification_decision", "session_decision")
+                                and isinstance(
+                                    rec.get("finalization") or rec_data.get("finalization"), dict
+                                )
+                            ):
+                                raw_events.append((rec, line.rstrip("\r\n")))
                             has_scen = bool(rec.get("scenario_id") or rec_data.get("scenario_id"))
                             if ev_name in ("run_start", "start") or has_scen:
                                 for key in (
@@ -561,19 +587,6 @@ class CertificationService:
                     "DirectProvenanceViolation: Evidence graph contains unresolved or "
                     "carrier fallback provenance."
                 )
-
-            if effective_status == "pass":
-                if not ev_graph.get("has_substantive_evidence", False):
-                    raise ValueError(
-                        f"Run {run_id} has zero assertion or evidence nodes (decision-only trace); "
-                        "cannot issue authoritative certification."
-                    )
-
-                if not ev_graph.get("has_all_required", True):
-                    missing_oracles = ev_graph.get("missing_required_oracles", [])
-                    raise ValueError(
-                        f"MissingRequiredOracles: trace missing required oracles: {missing_oracles}"
-                    )
 
             # Mandatory Scenario identity & authoritative scenario_hash verification (Defect T3)
             effective_scenario_data = scenario_data
@@ -729,12 +742,44 @@ class CertificationService:
                     or []
                 )
                 fin_reqs = set(fin_record.required_oracle_ids or [])
-                if manifest_reqs and fin_reqs and manifest_reqs != fin_reqs:
+                from eval_runner.runner import compile_required_oracle_ids
+
+                scenario_reqs = set(
+                    compile_required_oracle_ids(effective_scenario_data)
+                    if isinstance(effective_scenario_data, dict)
+                    else []
+                )
+                # Empty is meaningful: a manifest/finalization disagreement must
+                # never erase mandatory evidence by intersection.
+                if manifest_reqs != fin_reqs:
                     raise ValueError(
-                        f"ManifestRequiredOracleMismatch: manifest required oracles "
-                        f"{sorted(manifest_reqs)} do not match finalization record "
-                        f"required oracles {sorted(fin_reqs)}"
+                        "ManifestRequiredOracleMismatch: execution manifest and "
+                        f"finalization inventories differ: manifest={sorted(manifest_reqs)}, "
+                        f"finalization={sorted(fin_reqs)}"
                     )
+                if not (scenario_reqs == manifest_reqs == fin_reqs):
+                    raise ValueError(
+                        "RequiredOracleInventoryMismatch: scenario, execution manifest, and "
+                        f"finalization inventories differ: scenario={sorted(scenario_reqs)}, "
+                        f"manifest={sorted(manifest_reqs)}, finalization={sorted(fin_reqs)}"
+                    )
+
+                # Only evaluate evidence completeness after the independently
+                # resolved scenario, physical manifest, and signed finalization
+                # agree on the full mandatory inventory.
+                if effective_status == "pass":
+                    if not ev_graph.get("has_substantive_evidence", False):
+                        raise ValueError(
+                            f"Run {run_id} has zero assertion or evidence nodes "
+                            "(decision-only trace); "
+                            "cannot issue authoritative certification."
+                        )
+                    if not ev_graph.get("has_all_required", True):
+                        missing_oracles = ev_graph.get("missing_required_oracles", [])
+                        raise ValueError(
+                            "MissingRequiredOracles: trace missing required oracles: "
+                            f"{missing_oracles}"
+                        )
             except ValueError:
                 raise
             except Exception as e:

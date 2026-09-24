@@ -20,12 +20,18 @@ class LocalFileArtifactStore(ArtifactStore):
     """
     Local filesystem-backed reference artifact store.
     Saves artifacts directly to individual run directories under RUN_LOG_DIR
-    with strict path-safety boundary verification and optional immutability enforcement.
+    with strict path-safety boundaries and cryptographic tamper evidence.
+
+    This OSS store is logically sealed through the ArtifactStore API; it is
+    not a physical WORM or retention-enforcing filesystem. Deployments that
+    require immutable retention must supply an ArtifactStore backed by an
+    external WORM/retention system (for example Object Lock).
     """
 
     def __init__(self, base_dir: str | Path | None = None):
         self.base_dir = Path(base_dir or config.RUN_LOG_DIR).resolve()
         self.base_dir.mkdir(parents=True, exist_ok=True)
+        self.immutability_guarantee = "TAMPER_EVIDENT_LOGICAL_SEAL"
 
     def _get_run_dir(self, run_id: str, create: bool = False) -> Path:
         return SafeRunPathResolver.resolve_run_dir(self.base_dir, run_id, create=create)

@@ -13,7 +13,8 @@ import jsonschema
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
-SCHEMA_PATH = (
+SCHEMA_PATH = REPO_ROOT / "tests" / "acceptance" / "schemas" / "acceptance_case.schema.json"
+LEGACY_SCHEMA_PATH = (
     REPO_ROOT / "tests" / "acceptance" / "corpus" / "schema" / "acceptance_case.schema.json"
 )
 
@@ -24,9 +25,10 @@ def get_acceptance_schema() -> dict[str, Any]:
     """Load and cache the canonical acceptance-case JSON schema."""
     global _SCHEMA
     if _SCHEMA is None:
-        if not SCHEMA_PATH.exists():
+        target_path = SCHEMA_PATH if SCHEMA_PATH.exists() else LEGACY_SCHEMA_PATH
+        if not target_path.exists():
             raise FileNotFoundError(f"Acceptance case schema not found: {SCHEMA_PATH}")
-        with open(SCHEMA_PATH, encoding="utf-8") as f:
+        with open(target_path, encoding="utf-8") as f:
             _SCHEMA = json.load(f)
     return _SCHEMA
 

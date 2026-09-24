@@ -10,6 +10,7 @@ wall-clock finish latency.
 import asyncio
 import copy
 from unittest.mock import AsyncMock, patch
+from uuid import uuid4
 
 import pytest
 
@@ -98,7 +99,9 @@ async def test_parallel_branch_deterministic_state_merge_order():
         "eval_runner.session.AgentAdapterRegistry.call_agent",
         AsyncMock(side_effect=_agent_side_effect_run1),
     ):
-        res1 = await runner1.run(copy.deepcopy(scenario), attempts=1, run_id="run_det_001")
+        res1 = await runner1.run(
+            copy.deepcopy(scenario), attempts=1, run_id=f"run-det-{uuid4().hex}"
+        )
 
     # Run 2: Beta has 50ms delay, Alpha has 0ms delay (Alpha coroutine finishes first)
     async def _agent_side_effect_run2(protocol, endpoint, message, history, turn_ctx):
@@ -117,7 +120,9 @@ async def test_parallel_branch_deterministic_state_merge_order():
         "eval_runner.session.AgentAdapterRegistry.call_agent",
         AsyncMock(side_effect=_agent_side_effect_run2),
     ):
-        res2 = await runner2.run(copy.deepcopy(scenario), attempts=1, run_id="run_det_002")
+        res2 = await runner2.run(
+            copy.deepcopy(scenario), attempts=1, run_id=f"run-det-{uuid4().hex}"
+        )
 
     # Assert both runs succeeded
     assert res1.pass_at_k == 1.0

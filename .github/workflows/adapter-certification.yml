@@ -1,0 +1,92 @@
+name: Adapter Certification
+
+on:
+  pull_request:
+    branches: [main, dev]
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * 1-5'
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+jobs:
+  local-contracts:
+    name: Dependency-backed adapter contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install declared development and framework dependencies
+        run: pip install -r requirements-dev.txt '.[provider-gemini,frameworks]'
+      - name: Verify local adapter contracts
+        env:
+          AGENTV_ADAPTER_CERTIFICATION: '1'
+        run: >-
+          pytest tests/unit/adapters tests/integration/test_adapter_interoperability.py
+          -m 'not live' -q -rs
+
+  interoperability:
+    name: Live adapter interoperability certification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install declared development and adapter dependencies
+        run: pip install -r requirements-dev.txt '.[provider-gemini,frameworks]'
+      - name: Detect protected certification targets
+        id: targets
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          XAI_MODEL: ${{ vars.XAI_MODEL }}
+          OLLAMA_API_URL: ${{ vars.OLLAMA_API_URL }}
+          OLLAMA_MODEL: ${{ vars.OLLAMA_MODEL }}
+          LANGSERVE_CERTIFICATION_URL: ${{ vars.LANGSERVE_CERTIFICATION_URL }}
+          LANGGRAPH_CERTIFICATION_URL: ${{ vars.LANGGRAPH_CERTIFICATION_URL }}
+          LANGGRAPH_CERTIFICATION_ASSISTANT_ID: ${{ vars.LANGGRAPH_CERTIFICATION_ASSISTANT_ID }}
+          AG2_CERTIFICATION_AGENT_PATH: ${{ vars.AG2_CERTIFICATION_AGENT_PATH }}
+          CREWAI_CERTIFICATION_CREW_PATH: ${{ vars.CREWAI_CERTIFICATION_CREW_PATH }}
+        run: |
+          required=(OPENAI_API_KEY OPENAI_MODEL ANTHROPIC_API_KEY ANTHROPIC_MODEL GOOGLE_API_KEY GEMINI_MODEL XAI_API_KEY XAI_MODEL OLLAMA_API_URL OLLAMA_MODEL LANGSERVE_CERTIFICATION_URL LANGGRAPH_CERTIFICATION_URL LANGGRAPH_CERTIFICATION_ASSISTANT_ID AG2_CERTIFICATION_AGENT_PATH CREWAI_CERTIFICATION_CREW_PATH)
+          missing=()
+          for name in "${required[@]}"; do
+            test -n "${!name}" || missing+=("$name")
+          done
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "Live adapter certification skipped; missing protected settings: ${missing[*]}" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Certify real providers and frameworks
+        if: steps.targets.outputs.ready == 'true'
+        env:
+          AGENTV_ADAPTER_CERTIFICATION: '1'
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          XAI_MODEL: ${{ vars.XAI_MODEL }}
+          OLLAMA_API_URL: ${{ vars.OLLAMA_API_URL }}
+          OLLAMA_MODEL: ${{ vars.OLLAMA_MODEL }}
+          LANGSERVE_CERTIFICATION_URL: ${{ vars.LANGSERVE_CERTIFICATION_URL }}
+          LANGGRAPH_CERTIFICATION_URL: ${{ vars.LANGGRAPH_CERTIFICATION_URL }}
+          LANGGRAPH_CERTIFICATION_ASSISTANT_ID: ${{ vars.LANGGRAPH_CERTIFICATION_ASSISTANT_ID }}
+          AG2_CERTIFICATION_AGENT_PATH: ${{ vars.AG2_CERTIFICATION_AGENT_PATH }}
+          CREWAI_CERTIFICATION_CREW_PATH: ${{ vars.CREWAI_CERTIFICATION_CREW_PATH }}
+        run: pytest tests/integration/test_adapter_interoperability.py -m adapter_certification -q -rs

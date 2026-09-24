@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AgentVAcceptanceSuiteManifest",
+  "type": "object",
+  "required": [
+    "manifest_version",
+    "name",
+    "thresholds",
+    "cases"
+  ],
+  "properties": {
+    "manifest_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "require_external_oracle": {
+      "type": "boolean"
+    },
+    "thresholds": {
+      "type": "object",
+      "required": [
+        "allow_false_negatives",
+        "allow_false_positives",
+        "allow_security_failures",
+        "allow_evidence_failures",
+        "allow_execution_errors"
+      ],
+      "properties": {
+        "allow_false_negatives": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "allow_false_positives": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "allow_security_failures": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "allow_evidence_failures": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "allow_execution_errors": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    }
+  },
+  "additionalProperties": false
+}

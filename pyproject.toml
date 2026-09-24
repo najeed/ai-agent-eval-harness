@@ -25,7 +25,7 @@ dependencies = [
     "PyYAML==6.0.3",
     "pydantic==2.13.5",
     "numpy==2.5.3",
-    "PyJWT==2.14.0",
+    "PyJWT==2.15.0",
     "cryptography==50.0.1",
     "opentelemetry-api==1.44.0",
     "opentelemetry-sdk==1.44.0",
@@ -42,36 +42,42 @@ dependencies = [
 # 1. Direct Native Provider SDKs
 # (OpenAI, Anthropic, Grok, Ollama connect directly via aiohttp; no external Python SDKs required)
 provider-gemini = [
-    "google-genai==2.24.0",
+    "google-genai==2.25.0",
 ]
 
 # 2. Framework Environments (Evaluated and verified agent architectures)
 framework-langchain = [
     "langchain==1.4.2",
-    "langchain-core>=1.6.3",
+    "langchain-core>=1.6.5",
+]
+framework-langserve = [
+    "langserve>=0.3.3",
 ]
 framework-langgraph = [
-    "langgraph==1.2.11",
+    "langgraph==1.2.12",
 ]
 framework-ag2 = [
-    "ag2==1.0.5",
+    "ag2==1.0.6",
 ]
 framework-crewai = [
-    "crewai==1.15.22; python_version < '3.14'",
+#    "crewai==1.15.22; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
 ]
 
 # 3. Framework-to-Provider Integrations (LangChain Wrappers)
 langchain-openai = [
-    "langchain-openai==1.6.2",
+    "langchain-openai==1.6.6",
 ]
 langchain-anthropic = [
-    "langchain-anthropic>=1.7.2",
+    "langchain-anthropic>=1.7.4",
 ]
 langchain-gemini = [
     "langchain-google-genai>=4.4.0",
 ]
 langchain-ollama = [
     "langchain-ollama>=1.1.0",
+]
+langsmith = [
+    "langsmith==0.12.4",
 ]
 
 # 4. Domain & Task Extras
@@ -96,31 +102,34 @@ vcs = [
 # 5. Composed Ecosystem Extras
 frameworks = [
     "langchain==1.4.2",
-    "langchain-core>=1.6.3",
-    "langgraph==1.2.11",
-    "ag2==1.0.5",
-    "crewai==1.15.22; python_version < '3.14'",
+    "langchain-core>=1.6.5",
+    "langserve>=0.3.3",
+    "langgraph==1.2.12",
+    "ag2==1.0.6",
+#    "crewai==1.15.22; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
 ]
 langchain-all = [
     "langchain==1.4.2",
-    "langchain-core>=1.6.3",
-    "langchain-openai==1.6.2",
-    "langchain-anthropic>=1.7.2",
+    "langchain-core>=1.6.5",
+    "langchain-openai==1.6.6",
+    "langchain-anthropic>=1.7.4",
     "langchain-google-genai>=4.4.0",
     "langchain-ollama>=1.1.0",
     "langsmith==0.12.4",
 ]
+
 all = [
     "sentence-transformers==6.1.0",
     "datasets==5.0.1",
-    "google-genai==2.24.0",
+    "google-genai==2.25.0",
     "langchain==1.4.2",
-    "langchain-core>=1.6.3",
-    "langgraph==1.2.11",
-    "ag2==1.0.5",
-    "crewai==1.15.22; python_version < '3.14'",
-    "langchain-openai==1.6.2",
-    "langchain-anthropic>=1.7.2",
+    "langchain-core>=1.6.5",
+    "langserve>=0.3.3",
+    "langgraph==1.2.12",
+    "ag2==1.0.6",
+#    "crewai==1.15.22; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
+    "langchain-openai==1.6.6",
+    "langchain-anthropic>=1.7.4",
     "langchain-google-genai>=4.4.0",
     "langchain-ollama>=1.1.0",
     "langsmith==0.12.4",
@@ -153,7 +162,9 @@ coverage = "eval_runner.coverage_plugin:CoveragePlugin"
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "dataproc_engine/tests"]
-addopts = "-ra --dist loadfile"
+# xdist workers race when sharing a pytest cache on Windows/OneDrive.  The
+# cache is only an optimization, so disable it for deterministic parallel CI.
+addopts = "-ra --dist loadfile -p no:cacheprovider"
 python_files = ["test_*.py"]
 pythonpath = ["."]
 asyncio_mode = "auto"
@@ -163,6 +174,7 @@ markers = [
     "asyncio: mark test as an asyncio test",
     "live: environment-gated integration tests running against CycleCore",
     "adapter_certification: opt-in real provider and framework interoperability tests",
+    "stochastic_certification: opt-in repeated live-agent behavioral certification tests",
     "release_packaging: build and install the distributable artifact in an isolated environment",
     "acceptance: AgentV product acceptance tests",
     "acceptance_release: release-blocking acceptance tests",
@@ -191,13 +203,6 @@ filterwarnings = [
 # Standardize on industrial 100-character line length (2026 upgrade)
 line-length = 100
 target-version = "py312"
-
-[tool.ruff.lint]
-# Select E (Error), F (Pyflakes), UP (Upgrade), B (Bugbear), I (Isort)
-select = ["E", "F", "UP", "B", "I"]
-ignore = ["E203"]
-
-# Exclude auxiliary/educational directories from core linting
 exclude = [
     ".git",
     "__pycache__",
@@ -213,7 +218,17 @@ exclude = [
     "reports",
     "results",
     "runs",
+    "workspace",
+    ".pytest-work",
+    ".tmp",
+    ".pytest_cache",
+    ".hypothesis",
 ]
+
+[tool.ruff.lint]
+# Select E (Error), F (Pyflakes), UP (Upgrade), B (Bugbear), I (Isort)
+select = ["E", "F", "UP", "B", "I"]
+ignore = ["E203"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["eval_runner", "dataproc_engine", "agentv_runtime"]

@@ -39,7 +39,9 @@ def test_wheel_installs_and_discovers_all_adapter_modules(tmp_path: Path) -> Non
         ],
         cwd=project_root,
         check=True,
-        timeout=180,
+        # Source distributions can take several minutes to build on slower CI
+        # workers; this check validates wheel contents, not build throughput.
+        timeout=600,
     )
     subprocess.run(
         [sys.executable, "-m", "venv", str(venv_dir)],

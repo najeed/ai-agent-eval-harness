@@ -297,12 +297,14 @@ def test_manifest_to_json_compatible_types_and_errors():
     res_dict = _to_json_compatible(CustomObj())
     assert res_dict == {"key": "val", "nested_set": ["a", "z"]}
 
-    # 4. Handle other arbitrary types via str()
+    # 4. Reject arbitrary objects: their string representation is not a
+    # cross-process canonical certification input.
     class Arbitrary:
         def __str__(self):
             return "arbitrary_value"
 
-    assert _to_json_compatible(Arbitrary()) == "arbitrary_value"
+    with pytest.raises(TypeError, match="Unsupported non-canonical value"):
+        _to_json_compatible(Arbitrary())
 
 
 def test_compute_preflight_fingerprint_all_fields_and_permutations():

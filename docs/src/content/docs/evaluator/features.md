@@ -26,7 +26,7 @@ Enterprise-grade protection and regulatory audit tools.
 - **Shell Metacharacter Filtering**: Multi-layered defense against command injection in tool parameters.
 - **Credential Stripping**: Automated logic to strip sensitive keys from metadata before trace signing.
 - **In-Archive Direct ZIP Verification**: Verifies internal bundle byte streams directly without disk extraction, enforcing strict path traversal guards (`..`, absolute paths, drive prefixes).
-- **WORM Audit Logs**: Write-Once-Read-Many event streaming for immutable regulatory compliance.
+- **Tamper-evident audit logs**: Cryptographically sealed event streaming. OSS local storage is logically sealed; physical WORM retention requires an external ArtifactStore.
 - **Enterprise Identity & PBAC**: Extender-ready provider pattern with support for SSO and granular permission nodes.
 
 ## 3. Semantic Bridge & Drift Management

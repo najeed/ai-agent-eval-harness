@@ -110,8 +110,8 @@ The harness uses an **Ed25519 / PQC (ML-DSA-65) asymmetric signing protocol** an
 - **Manifests & Certificates**: Every completed run generates a signed `audit_manifest.json` and a VC v3.0.0 verification certificate.
 - **Gating**: Use `agentv gate` in the CI/CD pipeline to enforce signature verification and safety floor adherence.
 
-### WORM Audit Trail Sealing
-For enterprise verification, AgentV writes cryptographic hashes to a Write-Once-Read-Many (WORM) log file named `audit_chain.jsonl` in the run trace directory. 
+### Tamper-evident Audit Trail Sealing
+For enterprise verification, AgentV writes cryptographic hashes to `audit_chain.jsonl` in the run trace directory. The OSS filesystem store is tamper-evident and logically sealed; use an external retention-enforcing ArtifactStore for WORM guarantees.
 *   **Sign-on-turn**: Every tool call and state change appended to the execution trace is immediately signed and chained to the previous turn's SHA3-256 hash.
 *   **Interceptors**: Interceptors registered under `TraceVerificationInterceptor` can securely decorate this chain (e.g. logging to external Ledger nodes or cloud vaults) in real-time.
 

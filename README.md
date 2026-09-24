@@ -48,10 +48,10 @@ graph TD
 | Attribute | Specification |
 | :--- | :--- |
 | **License** | Apache License 2.0 |
-| **Status** | 🟢 Production-Ready (NIST AI-100-1 & 2026 Audit Ready) |
-| **Version** | v2.0.0 (September 2026 Release) |
+| **Status** | 🟢 RC1 (NIST AI-100-1 & 2026 Audit Hardened) |
+| **Version** | v2.0.0 RC1 (September 2026 Release) |
 | **Trust Model** | [Behavioral DNA & VC v3.0.0](docs/src/content/docs/spec/trust_v3.md) |
-| **Architecture** | [3-Pillar Enterprise Verification OS](docs/src/content/docs/evaluator/visual-suite.md) |
+| **Architecture** | [3-Pillar Enterprise Verification OS](docs/src/content/docs/builder/architecture.md) |
 | **Quick Links** | [Quickstart](#zero-key-quickstart-get-running-now) • [AES v1.4 Spec](docs/src/content/docs/spec/aes_schema.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
 
 
@@ -163,7 +163,7 @@ The harness is organized into the following key components:
 The **v2.0.0 September 2026 GA Release** establishes AgentV as the open verification operating system for autonomous agents, introducing a primary visual verification environment, deterministic cryptographic packaging, enterprise audit defensibility, a 3D mutation algebra, and a zero-trust extensible runtime:
 
 - 🖥️ **Interactive Visual Console & Zero-Config Bootstrap**: Canonical React SPA mounted at `/` featuring Dagre LR execution DAG topology rendering, Monaco editor source-of-truth document sync with typed assertions (`exact`, `regex`, `numerical_tolerance`, `json_schema`), resilient SSE streaming with `Last-Event-ID` trace replay, persistent zero-config bootstrap authentication (`.aes/keys/bootstrap.key`), non-blocking `Viewer` role, and sliding-window IP rate limiting.
-- 🛡️ **Audit-Defensible Trust Architecture & RFC 8785 JCS**: Pure RFC 8785 JSON Canonicalization Scheme (`agentv_runtime.canonical`), whole-envelope detached trace sealing, external trust root mandate, in-archive ZIP bundle verification with path traversal defenses, Split Package Verification API (`verify_package_signature_only`, `verify_package_artifacts`), and standalone CLI `agentv verify-package`. Single-file immutable `.agentv-package.json` bundles conforming to NIST SP 800-218 and EU AI Act standards, backed by detached VC v3 certificates, immutable hard-freeze lifecycle boundaries (`RUNNING` → `FINALIZING` → `SEALED`), deterministic `evidence_root_hash` assertion binding, hybrid Post-Quantum Cryptography (ML-DSA-65 + Ed25519), WORM audit logs (`audit_chain.jsonl`), and server-authoritative verification (`/api/v1/runs/<run_id>/verify`).
+- 🛡️ **Audit-Defensible Trust Architecture & RFC 8785 JCS**: Pure RFC 8785 JSON Canonicalization Scheme (`agentv_runtime.canonical`), whole-envelope detached trace sealing, external trust root mandate, in-archive ZIP bundle verification with path traversal defenses, Split Package Verification API (`verify_package_signature_only`, `verify_package_artifacts`), and standalone CLI `agentv verify-package`. Verification packages are cryptographically tamper-evident; OSS local vaults are logically sealed, while WORM retention requires an external ArtifactStore. The lifecycle (`RUNNING` → `FINALIZING` → `SEALED`) binds deterministic `evidence_root_hash` assertions and server-authoritative verification (`/api/v1/runs/<run_id>/verify`).
 - ⚖️ **Server-Authoritative Outcome Derivation & Atomic Certification**: Certification Authority deriving verdicts and scores authoritatively from terminal execution events (`run_end`, `session_decision`, `evaluation_result`), strict prohibition of caller status/score overrides, 4-state fail-closed readiness (`BLOCKED`, `READY_TO_EXECUTE`, `READY_TO_CERTIFY`, `CERTIFIABLE`), and atomic two-phase certification transactions with rollback.
 - 🧬 **OSS Core Runtime 3D Mutation Engine**: Formal 3D taxonomy coordinates ($V \times O \times T$ across 13 target vectors, 13 operations, and 6 risk tiers), composable algebraic combinators (`sequence` / `+`, `repeat`, `probability`, `after_event`, `before_commit`, `between_steps`, `concurrent`), and dynamic in-run perturbation engine with deterministic seed chaining and audit lineage binding.
 - 🌐 **Centralized LLM Resilience & Zero-SDK Direct Transports**: Centralized error classifier (`eval_runner.llm_resilience`) mapping typed domain errors (`LLMQuotaExceededError`, `LLMRateLimitError`, etc.) with full-jitter exponential backoff retries, direct `aiohttp` REST transports (Anthropic, OpenAI, Grok, Ollama) and official `google-genai` SDK support.
@@ -360,7 +360,7 @@ The platform is built with a **Secure-by-Design** philosophy, complying with ent
 - **PII/Secret Redaction**: Automatic, recursive scanning and redaction of JWTs, AWS keys, and PII from all event logs.
 - **Secure Handoff Architecture**: JWT-based authentication for between the core console and enterprise plugins.
 - **Tool Sandboxing**: Path traversal protection and shell-character neutralization for all tool executions.
-- **WORM Logs**: Write-Once-Read-Many immutable flight recorder traces (`run.jsonl`).
+- **Tamper-evident logs**: Cryptographically sealed flight recorder traces (`run.jsonl`). OSS local storage is logically sealed; WORM retention requires an external ArtifactStore.
 - **Audit Controls**: Defense-in-depth security controls (DoS caps, Fork Bomb prevention, RCE guards, and jail isolation). See the [Security Guide](docs/src/content/docs/auditor/security.md) for generation and configuration instructions.
 - **Mandatory Authentication**: Protection of all console and bridge routes via the `DASHBOARD_API_KEY`.
 
@@ -438,7 +438,7 @@ This project follows an **Open Core** model. The open-source AgentV OS Runtime c
 | **Simulation** | 🔶 Real API required | ✅ High-Fidelity Labs (Bank, EHR/HL7, CRM) |
 | **Compliance Suites** | ❌ No | ✅ Production-Ready (HIPAA, FINRA, GDPR, PCI) |
 | **Observability** | 🔶 Terminal output | ✅ OTEL Drift Gauges & Dashboard Feed |
-| **Defensibility Governance**| ❌ No | ✅ WORM Audit Logs & Chained Integrity |
+| **Defensibility Governance**| ❌ No | ✅ Tamper-evident chained integrity (external WORM required where immutable retention is mandated) |
 | **Integrity Checks** | ✅ Ed25519 Trace Validation | ✅ AES Scenario Merkle Sync (Root Verify) |
 | **Visual Debugger & GUI** | ✅ Local React Native App | ✅ Enterprise Dashboard & Secure Handoff |
 | **Reproduction Workflow** | 🔶 JSONL Only | ✅ Interactive Flight Recorder & Jupyter Repro |
@@ -469,7 +469,7 @@ Alternatively, link directly to our high-fidelity SVG asset:
 
 ---
 
-Ready for production-grade verification? The AgentV Control Plane delivers WORM audit logs, OIDC SSO, PBAC, HIPAA/FINRA/GDPR compliance packs, and Docker-sandboxed isolation, everything regulated industries need before autonomous agents earn the right to act.
+Ready for production-grade verification? The AgentV Control Plane can supply externally retained WORM audit storage, OIDC SSO, PBAC, HIPAA/FINRA/GDPR compliance packs, and Docker-sandboxed isolation.
 
 👉 Book a 30-minute call: [AgentVOS.ai](https://agentvos.ai)
 

@@ -17,6 +17,7 @@ class AcceptanceResult:
     """
 
     case_id: str
+    category: str
     accepted: bool
     expected: dict[str, Any]
     actual: dict[str, Any]
@@ -39,6 +40,7 @@ class AcceptanceResult:
         """Construct AcceptanceResult from dictionary representation."""
         return cls(
             case_id=str(data["case_id"]),
+            category=str(data.get("category", "unknown")),
             accepted=bool(data["accepted"]),
             expected=dict(data.get("expected", {})),
             actual=dict(data.get("actual", {})),

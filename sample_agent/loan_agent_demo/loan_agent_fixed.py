@@ -191,6 +191,49 @@ app = Flask(__name__)
 RESULTS = {}
 
 
+@app.route("/agent", methods=["POST"])
+def agentv_agent_contract():
+    """AgentV HTTP adapter contract for live stochastic certification.
+
+    The harness sends only ``task_description``.  Preserve the richer trace in
+    the response while returning the canonical action/summary envelope used by
+    the generic HTTP adapter.
+    """
+    data = request.get_json(silent=True) or {}
+    task = data.get("task_description")
+    if not isinstance(task, str) or not task.strip():
+        return jsonify({"action": "error", "summary": "Missing task_description"}), 400
+
+    trace_id = str(uuid.uuid4())
+    logger = TraceLogger()
+    started = time.time()
+    try:
+        decision = run_agent(task, logger)
+        return jsonify(
+            {
+                "action": "final_answer",
+                "summary": decision,
+                "message": decision,
+                "name": "loan_agent_fixed",
+                "trace_id": trace_id,
+                "latency": time.time() - started,
+                "trace": logger.get(),
+            }
+        )
+    except Exception as exc:
+        logger.log("error", str(exc))
+        return jsonify(
+            {
+                "action": "error",
+                "summary": str(exc),
+                "message": str(exc),
+                "name": "loan_agent_fixed",
+                "trace_id": trace_id,
+                "trace": logger.get(),
+            }
+        ), 500
+
+
 @app.route("/apply", methods=["POST"])
 def apply():
     data = request.json or {}

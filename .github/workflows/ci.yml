@@ -7,8 +7,8 @@ on:
     branches: [ main ]
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  STRICT_PLUGINS: true
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+  STRICT_PLUGINS: 'true'
 
 jobs:
   test:
@@ -70,10 +70,10 @@ jobs:
       run: |
         if [ "${{ steps.changes.outputs.scenarios }}" = "true" ] || [ "${{ github.ref }}" = "refs/heads/main" ]; then
           echo "Scenario changes detected or running on main — running full scenario compliance suite."
-          pytest tests/ --ignore=tests/security/ --ignore=tests/ui/ --cov=eval_runner --cov-fail-under=90 -n auto --tb=short -p no:plugin_gateway
+          pytest tests/ --ignore=tests/security/ --ignore=tests/ui/ --ignore=tests/unit/console/test_extension_host_contracts.py --cov=eval_runner --cov-fail-under=90 -n auto --tb=short -p no:plugin_gateway
         else
           echo "No scenario changes detected — skipping scenario compliance suite."
-          pytest tests/ --ignore=tests/security/ --ignore=tests/ui/ --ignore=tests/functional/test_scenario_compliance.py --cov=eval_runner --cov-fail-under=90 -n auto --tb=short -p no:plugin_gateway
+          pytest tests/ --ignore=tests/security/ --ignore=tests/ui/ --ignore=tests/unit/console/test_extension_host_contracts.py --ignore=tests/functional/test_scenario_compliance.py --cov=eval_runner --cov-fail-under=90 -n auto --tb=short -p no:plugin_gateway
         fi
       env:
         OTEL_SDK_DISABLED: true

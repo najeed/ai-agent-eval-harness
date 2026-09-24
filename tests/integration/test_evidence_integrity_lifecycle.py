@@ -83,8 +83,8 @@ def test_sign_trace_happy_path_is_fully_certified(cert_env):
         "sign",
         "persist",
         "verify",
-        "seal",
         "publish",
+        "seal",
     ]
 
     # Sidecar manifest persisted and certificate backup published
@@ -134,6 +134,9 @@ def test_seal_failure_rolls_back_and_raises(cert_env):
     from eval_runner.interfaces.artifact import ArtifactStore
 
     class _SealFailsStore(ArtifactStore):
+        def supports_transactional_seal(self):
+            return True
+
         def store_artifact(self, run_id, artifact_name, content, **kwargs):
             return f"mock://{run_id}/{artifact_name}"
 
@@ -165,6 +168,37 @@ def test_seal_failure_rolls_back_and_raises(cert_env):
     assert any(s["stage"] == "seal" and s["status"] == "failed" for s in excinfo.value.stage_log)
     # No certificate may survive an incomplete sealing operation.
     assert not (env["reports"] / "certificates" / f"{env['run_id']}_vc.json").exists()
+    assert not (env["vault"] / ".sealed").exists()
+
+
+def test_non_transactional_artifact_store_is_rejected_before_sealing(cert_env):
+    from eval_runner.interfaces.artifact import ArtifactStore
+
+    class _LegacyOneWayStore(ArtifactStore):
+        def store_artifact(self, run_id, artifact_name, content, **kwargs):
+            return f"mock://{run_id}/{artifact_name}"
+
+        def get_artifact(self, run_id, artifact_name):
+            return None
+
+        def exists(self, run_id, artifact_name):
+            return False
+
+        def list_artifacts(self, run_id):
+            return []
+
+        def seal(self, run_id, metadata=None):
+            raise AssertionError("must not attempt a non-transactional seal")
+
+        def is_sealed(self, run_id):
+            return False
+
+    env = cert_env
+    with pytest.raises(CertificationFailedError, match="NonAtomicArtifactStore"):
+        TraceVerifier.sign_trace(
+            str(env["trace"]), run_id=env["run_id"], artifact_store=_LegacyOneWayStore()
+        )
+
     assert not (env["vault"] / ".sealed").exists()
 
 

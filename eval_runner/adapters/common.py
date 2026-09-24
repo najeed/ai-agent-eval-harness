@@ -889,7 +889,6 @@ class AdapterSessionPool:
             limit=self._connection_limit,
             ttl_dns_cache=self._dns_cache_ttl,
             keepalive_timeout=self._keepalive_timeout,
-            enable_cleanup_closed=True,
         )
 
         return aiohttp.ClientSession(

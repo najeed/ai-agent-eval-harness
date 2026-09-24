@@ -21,6 +21,11 @@ expect:
 
   state:
     commit_allowed: true
+    oracle_url: "${AGENTV_ACCEPTANCE_ORACLE_URL}"
+    final_state:
+      balances:
+        operating: 800
+        recipient: 200
 
   policy:
     decision: ALLOW

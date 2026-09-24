@@ -36,19 +36,6 @@ export const Settings: React.FC = () => {
   const [message, setMessage] = useState('');
   const [extensions, setExtensions] = useState<ExtensionNavItem[] | null>(null);
 
-  if (!canAccessSettings) {
-    return (
-      <div className="p-6 max-w-lg mx-auto mt-12 border border-red-500/20 bg-red-950/10 rounded-xl space-y-4 text-center">
-        <ShieldAlert className="w-12 h-12 text-red-500 mx-auto" />
-        <h2 className="text-lg font-bold text-white uppercase tracking-wider">Access Denied</h2>
-        <p className="text-slate-400 text-xs leading-relaxed">
-          Your current active role (<span className="text-indigo-400 font-bold">{role}</span>) does not have privileges to view or modify System Settings. 
-          Please contact your administrator or switch to <span className="text-slate-350 font-bold">System Admin</span> or <span className="text-slate-350 font-bold">MultiAgentOps Eng.</span> in the header layout toolbar.
-        </p>
-      </div>
-    );
-  }
-
   const fetchDoctor = async () => {
     setLoading(true);
     try {
@@ -71,6 +58,7 @@ export const Settings: React.FC = () => {
   };
 
   useEffect(() => {
+    if (!canAccessSettings) return;
     fetchDoctor();
     // [D2] Read-only Extension Host inventory: remote-capable nav entries.
     // Trust tier + api version are advisory here; verify-publisher (server)
@@ -84,7 +72,20 @@ export const Settings: React.FC = () => {
         setExtensions(items);
       })
       .catch(() => setExtensions([]));
-  }, []);
+  }, [canAccessSettings]);
+
+  if (!canAccessSettings) {
+    return (
+      <div className="p-6 max-w-lg mx-auto mt-12 border border-red-500/20 bg-red-950/10 rounded-xl space-y-4 text-center">
+        <ShieldAlert className="w-12 h-12 text-red-500 mx-auto" />
+        <h2 className="text-lg font-bold text-white uppercase tracking-wider">Access Denied</h2>
+        <p className="text-slate-400 text-xs leading-relaxed">
+          Your current active role (<span className="text-indigo-400 font-bold">{role}</span>) does not have privileges to view or modify System Settings. 
+          Please contact your administrator or switch to <span className="text-slate-350 font-bold">System Admin</span> or <span className="text-slate-350 font-bold">MultiAgentOps Eng.</span> in the header layout toolbar.
+        </p>
+      </div>
+    );
+  }
 
   const handleCleanup = async () => {
     setCleaning(true);
