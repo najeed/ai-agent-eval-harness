@@ -176,10 +176,12 @@ export const LiveDebugger: React.FC = () => {
     }
   };
 
-  // Independent scenario topology fetcher with exponential backoff retry.
-  // Decoupled from stream connect to close the race window against session
-  // startup; stale-guarded against run switches and capped attempts.
-  const fetchScenarioWithRetry = async (rid: string, attempt = 0) => {
+  const TERMINAL_RUN_STATUSES = new Set(['COMPLETED', 'FAILED', 'ABORTED', 'ERROR', 'SEALED', 'CERTIFIED']);
+
+  // Lifecycle-bound scenario topology fetcher with exponential backoff retry.
+  // Coupled to run lifecycle: continues retrying while run is nonterminal,
+  // then performs one mandatory terminal refresh to ensure late-resolved scenarios hydrate.
+  const fetchScenarioWithRetry = async (rid: string, attempt = 0, isTerminalRefresh = false) => {
     const staleAfterFetch = () => streamCtlRef.current.run !== rid;
     try {
       const res = await fetch(`/api/v1/runs/${rid}`);
@@ -189,16 +191,25 @@ export const LiveDebugger: React.FC = () => {
           setActiveScenario(data.scenario);
           return;
         }
+        const runStatus = String(data.status || '').toUpperCase();
+        if (TERMINAL_RUN_STATUSES.has(runStatus) && !isTerminalRefresh) {
+          // Perform one mandatory terminal refresh
+          setTimeout(() => {
+            if (!staleAfterFetch()) fetchScenarioWithRetry(rid, attempt + 1, true);
+          }, 500);
+          return;
+        }
       }
-    } catch (e) {
+    } catch {
       // fall through to retry scheduling
     }
-    if (!staleAfterFetch() && attempt < 5) {
+    if (!staleAfterFetch() && !isTerminalRefresh) {
       const ctl = streamCtlRef.current;
       if (ctl.scenarioTimer) clearTimeout(ctl.scenarioTimer);
+      const delay = Math.min(500 * (attempt + 1), 3000);
       ctl.scenarioTimer = setTimeout(() => {
-        if (streamCtlRef.current.run === rid) fetchScenarioWithRetry(rid, attempt + 1);
-      }, 500 * (attempt + 1));
+        if (streamCtlRef.current.run === rid) fetchScenarioWithRetry(rid, attempt + 1, false);
+      }, delay);
     }
   };
 
@@ -528,6 +539,10 @@ export const LiveDebugger: React.FC = () => {
         }
       }
 
+      if (data.event === 'run_end' || (data as any).name === 'run_end') {
+        fetchScenarioWithRetry(rid, 0, true);
+      }
+
       setEvents(prevEvents => {
         const next = [...prevEvents, data];
         // Bounded client-side memory: keep sliding window up to 10,000 events
@@ -560,6 +575,7 @@ export const LiveDebugger: React.FC = () => {
           if (TERMINAL_STATUSES.has(runStatus)) {
             // Explicit terminal state: the run is over; no retries are scheduled.
             setConnectionStatus('FINISHED');
+            fetchScenarioWithRetry(rid, 0, true);
           } else {
             scheduleRetry(rid);
           }
@@ -1000,7 +1016,7 @@ export const LiveDebugger: React.FC = () => {
     }
   };
 
-  const RUN_TERMINAL_STATUSES = new Set(['COMPLETED', 'FAILED', 'ABORTED', 'ERROR', 'SEALED', 'CERTIFIED']);
+  const RUN_TERMINAL_STATUSES = new Set(['COMPLETED', 'PASSED', 'FAILED', 'ABORTED', 'ERROR', 'SEALED', 'CERTIFIED']);
   const isTerminalRun = RUN_TERMINAL_STATUSES.has(status);
 
   useEffect(() => {

@@ -297,3 +297,53 @@ def test_main_dunder_entrypoint(tmp_path, monkeypatch):
         with pytest.raises(SystemExit) as exc_info:
             runpy.run_module("tools.ci.acceptance_gate", run_name="__main__")
         assert exc_info.value.code == 0
+
+
+def test_evaluate_summary_skipped_cases_rejected():
+    """Verify that skipped cases immediately breach zero-tolerance release gate."""
+    summary = {
+        "total_cases": 1,
+        "results": [{"case_id": "AT-01", "accepted": True, "skipped": True}],
+    }
+    decision = evaluate_summary(summary, None)
+    assert decision.passed is False
+    assert any("skipped acceptance test case(s) detected" in r for r in decision.reasons)
+
+
+def test_evaluate_summary_mandatory_oracle_branches(monkeypatch):
+    """Verify mandatory oracle evaluation branches."""
+    suite = {
+        "require_external_oracle": True,
+        "thresholds": {},
+        "cases": ["tests/acceptance/corpus/AT-01.yaml"],
+    }
+    # 1. Missing receipt hash when oracle required -> gate fails
+    summary_no_receipt = {
+        "total_cases": 1,
+        "results": [
+            {
+                "case_id": "AT-01",
+                "accepted": True,
+                "expected": {"state": {"oracle_url": "http://127.0.0.1:8099"}},
+                "actual": {"state": {"oracle_receipt_hash": ""}},
+            }
+        ],
+    }
+    decision = evaluate_summary(summary_no_receipt, suite)
+    assert decision.passed is False
+    assert any("Mandatory external acceptance oracle was required" in r for r in decision.reasons)
+
+    # 2. Present receipt hash when oracle required -> passes
+    summary_with_receipt = {
+        "total_cases": 1,
+        "results": [
+            {
+                "case_id": "AT-01",
+                "accepted": True,
+                "expected": {"state": {"oracle_url": "http://127.0.0.1:8099"}},
+                "actual": {"state": {"oracle_receipt_hash": "sha256:abc1234"}},
+            }
+        ],
+    }
+    decision_ok = evaluate_summary(summary_with_receipt, suite)
+    assert decision_ok.passed is True

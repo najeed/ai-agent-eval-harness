@@ -113,60 +113,83 @@ class DefaultRunner(BaseRunner):
     """Standard implementation of the evaluation loop."""
 
     @staticmethod
-    def _resolve_source_commit(adapter_meta: dict[str, Any]) -> str:
-        commit = (
-            adapter_meta.get("source_commit")
-            or os.environ.get("AGENT_SOURCE_COMMIT")
-            or os.environ.get("GITHUB_SHA")
-        )
+    def _resolve_source_commit_attribution(adapter_meta: dict[str, Any]) -> tuple[str, str, bool]:
+        commit = adapter_meta.get("source_commit") or os.environ.get("AGENT_SOURCE_COMMIT")
         if commit:
-            return str(commit)
-        try:
-            import subprocess
+            return str(commit), "declared", False
+        github_sha = os.environ.get("GITHUB_SHA")
+        if github_sha and adapter_meta.get("source_repository"):
+            return str(github_sha), "declared", False
+        return "unknown", "unknown", False
 
-            res = subprocess.run(
-                ["git", "rev-parse", "HEAD"],
-                capture_output=True,
-                text=True,
-                timeout=2,
-            )
-            if res.returncode == 0 and res.stdout.strip():
-                return res.stdout.strip()
-        except (OSError, subprocess.SubprocessError) as exc:
-            logger.debug("Failed resolving git commit for provenance: %s", exc)
-        return "unknown"
+    @staticmethod
+    def _resolve_source_commit(adapter_meta: dict[str, Any]) -> str:
+        val, _, _ = DefaultRunner._resolve_source_commit_attribution(adapter_meta)
+        return val
+
+    @staticmethod
+    def _resolve_model_provider_attribution(
+        m: str, adapter_meta: dict[str, Any]
+    ) -> tuple[str, str, bool]:
+        if adapter_meta.get("provider"):
+            return str(adapter_meta["provider"]), "declared", True
+        if adapter_meta.get("model_provider"):
+            return str(adapter_meta["model_provider"]), "declared", True
+        m_lower = (m or "").lower()
+        if any(k in m_lower for k in ("gpt", "openai", "o1", "o3", "davinci")):
+            return "openai", "derived", False
+        if any(k in m_lower for k in ("claude", "anthropic")):
+            return "anthropic", "derived", False
+        if any(k in m_lower for k in ("gemini", "google", "palm")):
+            return "google", "derived", False
+        if any(k in m_lower for k in ("llama", "mistral", "qwen", "deepseek", "local", "ollama")):
+            return "local", "derived", False
+        if adapter_meta.get("framework"):
+            return str(adapter_meta["framework"]), "declared", False
+        return "unknown", "unknown", False
 
     @staticmethod
     def _resolve_model_provider(m: str, adapter_meta: dict[str, Any]) -> str:
-        if adapter_meta.get("provider"):
-            return str(adapter_meta["provider"])
-        m_lower = (m or "").lower()
-        if any(k in m_lower for k in ("gpt", "openai", "o1", "o3", "davinci")):
-            return "openai"
-        if any(k in m_lower for k in ("claude", "anthropic")):
-            return "anthropic"
-        if any(k in m_lower for k in ("gemini", "google", "palm")):
-            return "google"
-        if any(k in m_lower for k in ("llama", "mistral", "qwen", "deepseek", "local", "ollama")):
-            return "local"
-        return str(adapter_meta.get("framework") or "custom")
+        val, _, _ = DefaultRunner._resolve_model_provider_attribution(m, adapter_meta)
+        return val
 
     @staticmethod
-    def _resolve_tool_versions(
+    def _resolve_tool_versions_attribution(
         scenario: dict[str, Any], adapter_meta: dict[str, Any]
-    ) -> dict[str, str]:
+    ) -> tuple[dict[str, str], dict[str, dict[str, Any]]]:
         t_vers: dict[str, str] = {}
+        t_prov: dict[str, dict[str, Any]] = {}
         scen_tools = scenario.get("tools") or []
         if isinstance(scen_tools, list):
             for i, t in enumerate(scen_tools):
                 if isinstance(t, dict):
                     t_name = str(t.get("name") or f"tool_{i}")
-                    t_vers[t_name] = str(t.get("version") or "1.0.0")
+                    if t.get("version"):
+                        ver_str = str(t["version"])
+                        t_vers[t_name] = ver_str
+                        t_prov[t_name] = {"value": ver_str, "source": "declared", "verified": False}
+                    else:
+                        t_vers[t_name] = "unknown"
+                        t_prov[t_name] = {
+                            "value": "unknown",
+                            "source": "unknown",
+                            "verified": False,
+                        }
                 elif isinstance(t, str):
-                    t_vers[t] = "1.0.0"
+                    t_vers[t] = "unknown"
+                    t_prov[t] = {"value": "unknown", "source": "unknown", "verified": False}
         if isinstance(adapter_meta.get("tools"), dict):
             for k, v in adapter_meta["tools"].items():
-                t_vers[k] = str(v)
+                v_str = str(v)
+                t_vers[k] = v_str
+                t_prov[k] = {"value": v_str, "source": "declared", "verified": False}
+        return t_vers, t_prov
+
+    @staticmethod
+    def _resolve_tool_versions(
+        scenario: dict[str, Any], adapter_meta: dict[str, Any]
+    ) -> dict[str, str]:
+        t_vers, _ = DefaultRunner._resolve_tool_versions_attribution(scenario, adapter_meta)
         return t_vers
 
     def __init__(
@@ -369,11 +392,23 @@ class DefaultRunner(BaseRunner):
             or scenario.get("agent_id")
             or "default_agent"
         )
-        agent_ver = (
-            adapter_meta.get("agent_version")
-            or (scenario.get("agent") or {}).get("version")
-            or "1.0.0"
+        raw_agent_ver = adapter_meta.get("agent_version") or (scenario.get("agent") or {}).get(
+            "version"
         )
+        agent_ver = str(raw_agent_ver) if raw_agent_ver else "unknown"
+        agent_ver_src = "declared" if raw_agent_ver else "unknown"
+
+        raw_fw = adapter_meta.get("framework") or scenario.get("framework")
+        framework_name = str(raw_fw) if raw_fw else "unknown"
+        framework_src = "declared" if raw_fw else "unknown"
+
+        raw_fw_ver = adapter_meta.get("framework_version")
+        framework_version = str(raw_fw_ver) if raw_fw_ver else "unknown"
+        framework_ver_src = "declared" if raw_fw_ver else "unknown"
+
+        raw_adapt_ver = adapter_meta.get("adapter_version")
+        adapter_version = str(raw_adapt_ver) if raw_adapt_ver else "unknown"
+        adapter_ver_src = "declared" if raw_adapt_ver else "unknown"
 
         # Rich Provenance Extraction
         import hashlib
@@ -381,9 +416,13 @@ class DefaultRunner(BaseRunner):
         from agentv_runtime.canonical import canonical_json_encode
         from eval_runner import __version__ as runtime_pkg_version
 
-        source_commit = self._resolve_source_commit(adapter_meta)
-        model_prov = self._resolve_model_provider(str(provider_model), adapter_meta)
-        tool_versions = self._resolve_tool_versions(scenario, adapter_meta)
+        source_commit, source_commit_src, source_commit_ver = (
+            self._resolve_source_commit_attribution(adapter_meta)
+        )
+        model_prov, model_prov_src, model_prov_ver = self._resolve_model_provider_attribution(
+            str(provider_model), adapter_meta
+        )
+        tool_versions, tool_prov = self._resolve_tool_versions_attribution(scenario, adapter_meta)
 
         prompt_data = (
             scenario.get("prompt")
@@ -404,7 +443,143 @@ class DefaultRunner(BaseRunner):
         )
         env_fp = f"sha3_256:{hashlib.sha3_256(env_raw.encode('utf-8')).hexdigest()}"
 
-        framework_name = str(adapter_meta.get("framework") or scenario.get("framework") or "agentv")
+        is_certification = bool(
+            execution_mode in ("live", "hybrid")
+            and execution_mode_declared
+            and not (metadata or {}).get("provisional")
+            and not scenario.get("provisional")
+            and not (metadata or {}).get("debug")
+            and not scenario.get("debug")
+        )
+
+        if is_certification:
+            missing_cert_fields = []
+            if not scen_hash or scen_hash == "unknown":
+                missing_cert_fields.append("scenario_hash")
+            if not policy_h or policy_h == "unknown":
+                missing_cert_fields.append("policy_hash")
+            eval_cfg_hash = getattr(self.resolved_config, "config_hash", "")
+            if not eval_cfg_hash or eval_cfg_hash in ("none", "unknown"):
+                missing_cert_fields.append("evaluator_config_hash")
+            if scenario.get("tools"):
+                unresolved_tools = [k for k, v in tool_versions.items() if v == "unknown"]
+                if unresolved_tools:
+                    missing_cert_fields.append(f"tool_versions:{unresolved_tools}")
+
+            has_adapter = bool(
+                scenario.get("adapter")
+                or adapter_meta.get("adapter")
+                or protocol in ("openai", "gemini", "claude", "bedrock", "ollama")
+                or provider_model
+                or (metadata or {}).get("require_model_provenance")
+                or scenario.get("require_model_provenance")
+            )
+            if has_adapter:
+                if not provider_model or provider_model == "unknown":
+                    missing_cert_fields.append("configured_model_id")
+                if not model_prov or model_prov == "unknown":
+                    missing_cert_fields.append("model_provider")
+                if adapter_version == "unknown":
+                    missing_cert_fields.append("adapter_version")
+
+            if missing_cert_fields:
+                missing_str = ", ".join(missing_cert_fields)
+                fail_err = (
+                    "Certification run failed closed: missing authoritative provenance for "
+                    f"required identity fields: {missing_str}. "
+                    "Unknown fields must not be defaulted."
+                )
+                logger.error(fail_err)
+                events.emit(
+                    events.CoreEvents.CERTIFICATION_FAILED,
+                    {
+                        "run_id": effective_run_id,
+                        "status": "certification_failed",
+                        "error": fail_err,
+                        "missing_provenance": missing_cert_fields,
+                    },
+                    span_context=ctx.span_context,
+                )
+                events.emit(
+                    events.CoreEvents.RUN_END,
+                    {
+                        "run_id": effective_run_id,
+                        "status": "certification_failed",
+                        "passed": False,
+                        "score": 0.0,
+                        "pass_at_k": 0.0,
+                        "error": fail_err,
+                        "finalization": None,
+                        "metadata": {**dict(ctx.metadata), "uncertifiable": True},
+                    },
+                    span_context=ctx.span_context,
+                )
+                return EvaluationResult(
+                    run_id=effective_run_id,
+                    scenario_id=str(scenario.get("id", "unknown")),
+                    pass_at_k=0.0,
+                    successful_attempts=0,
+                    total_attempts=attempts,
+                    attempts_results=[],
+                    metadata={
+                        "error": fail_err,
+                        "uncertifiable": True,
+                        "missing_provenance": missing_cert_fields,
+                    },
+                )
+
+        provenance_dict = {
+            "agent_id": {"value": str(agent_id), "source": "declared", "verified": False},
+            "agent_version": {"value": agent_ver, "source": agent_ver_src, "verified": False},
+            "source_commit": {
+                "value": source_commit,
+                "source": source_commit_src,
+                "verified": source_commit_ver,
+            },
+            "model_provider": {
+                "value": model_prov,
+                "source": model_prov_src,
+                "verified": model_prov_ver,
+            },
+            "model": {
+                "value": str(provider_model),
+                "source": "declared" if provider_model else "unknown",
+                "verified": False,
+            },
+            "configured_model_id": {
+                "value": str(provider_model),
+                "source": "declared" if provider_model else "unknown",
+                "verified": False,
+            },
+            "endpoint": {
+                "value": str(endpoint),
+                "source": "declared" if endpoint else "unknown",
+                "verified": False,
+            },
+            "protocol": {
+                "value": str(protocol),
+                "source": "declared" if protocol else "unknown",
+                "verified": False,
+            },
+            "framework": {"value": framework_name, "source": framework_src, "verified": False},
+            "framework_version": {
+                "value": framework_version,
+                "source": framework_ver_src,
+                "verified": False,
+            },
+            "adapter_version": {
+                "value": adapter_version,
+                "source": adapter_ver_src,
+                "verified": False,
+            },
+            "tool_versions": tool_prov,
+            "prompt_revision": {"value": prompt_rev, "source": "observed", "verified": True},
+            "config_revision": {"value": config_rev, "source": "observed", "verified": True},
+            "scenario_hash": {"value": scen_hash, "source": "observed", "verified": True},
+            "policy_hash": {"value": policy_h, "source": "observed", "verified": True},
+            "oracle_hash": {"value": oracle_h, "source": "observed", "verified": True},
+        }
+
         resolved_agent_config = {
             "agent_id": str(agent_id),
             "version": str(agent_ver),
@@ -415,11 +590,12 @@ class DefaultRunner(BaseRunner):
             "endpoint": str(endpoint),
             "protocol": str(protocol),
             "framework": framework_name,
-            "framework_version": str(adapter_meta.get("framework_version") or "2.0.0"),
-            "adapter_version": str(adapter_meta.get("adapter_version") or "standard"),
+            "framework_version": framework_version,
+            "adapter_version": adapter_version,
             "tool_versions": tool_versions,
             "prompt_revision": prompt_rev,
             "config_revision": config_rev,
+            "provenance": provenance_dict,
             **dict(scenario.get("agent_config") or {}),
             **dict(adapter_meta.get("agent_config") or {}),
         }
@@ -596,6 +772,7 @@ class DefaultRunner(BaseRunner):
 
             pass_at_k = 0.0
             attempt_statistics: dict[str, Any] = {}
+            post_process_error = None
             try:
                 # Cross-attempt aggregation
                 if attempts > 1:
@@ -614,14 +791,68 @@ class DefaultRunner(BaseRunner):
                 import traceback
 
                 tb = traceback.format_exc()
-                print(f"      [Runner Error] Failed to generate reports or calculate pass@k: {e}")
-                print(tb)
+                post_process_error = f"Evaluator post-processing / statistics failure: {e}"
+                logger.error("Runner Post-Process Error: %s\n%s", e, tb)
                 events.emit(
                     events.CoreEvents.ERROR,
                     {
                         "run_id": effective_run_id,
-                        "message": f"Runner Post-Process Error: {e}",
+                        "message": post_process_error,
                         "traceback": tb,
+                    },
+                )
+
+            if post_process_error is not None:
+                # [Item 3: P0 Fail-Closed Post-Processing]
+                # Any failure in statistics or aggregator processing must transition to
+                # EVALUATION_INVALID, certifiable=False, and forbid standard finalization.
+                events.emit(
+                    events.CoreEvents.EVALUATION_INVALID,
+                    {
+                        "run_id": effective_run_id,
+                        "status": "evaluation_invalid",
+                        "error": post_process_error,
+                        "outcome": "EVALUATION_INVALID",
+                    },
+                    span_context=ctx.span_context,
+                )
+                events.emit(
+                    events.CoreEvents.RUN_END,
+                    {
+                        "run_id": effective_run_id,
+                        "status": "evaluation_invalid",
+                        "passed": False,
+                        "score": 0.0,
+                        "pass_at_k": 0.0,
+                        "evaluation_valid": False,
+                        "outcome": "EVALUATION_INVALID",
+                        "certifiable": False,
+                        "error": post_process_error,
+                        "finalization": None,
+                        "metadata": {
+                            **dict(ctx.metadata),
+                            "evaluation_valid": False,
+                            "outcome": "EVALUATION_INVALID",
+                            "uncertifiable": True,
+                            "certifiable": False,
+                            "error": post_process_error,
+                        },
+                    },
+                    span_context=ctx.span_context,
+                )
+                return EvaluationResult(
+                    run_id=effective_run_id,
+                    scenario_id=str(scenario.get("id", "unknown")),
+                    pass_at_k=0.0,
+                    successful_attempts=0,
+                    total_attempts=attempts,
+                    attempts_results=all_attempt_results,
+                    metadata={
+                        "error": post_process_error,
+                        "evaluation_valid": False,
+                        "outcome": "EVALUATION_INVALID",
+                        "uncertifiable": True,
+                        "certifiable": False,
                     },
                 )
 
@@ -678,19 +909,78 @@ class DefaultRunner(BaseRunner):
 
             final_trace_path = run_vault_dir / "run.jsonl"
             trace_events: list[tuple[dict[str, Any], str]] = []
+            trace_read_error: str | None = None
+            last_read_idx = 0
             if final_trace_path.exists():
                 try:
                     with open(final_trace_path, encoding="utf-8") as tf:
-                        for line in tf:
+                        for line_idx, line in enumerate(tf, start=1):
+                            last_read_idx = line_idx
                             s = line.strip()
                             if s:
                                 # Evidence roots commit to the recorded JSONL payload,
                                 # not a canonical reserialization of the event object.
                                 trace_events.append((json.loads(s), line.rstrip("\r\n")))
                 except Exception as read_err:
+                    trace_read_error = (
+                        f"Physical trace read failure at line {last_read_idx}: {read_err}"
+                    )
                     logger.debug("Failed reading trace for evidence graph root: %s", read_err)
+            else:
+                trace_read_error = f"Physical trace '{final_trace_path}' not found."
+
+            # [Item 2: P0 Physical Trace Exclusivity]
+            if is_certification and (trace_read_error is not None or not trace_events):
+                fail_msg = (
+                    f"Authoritative physical trace unreadable or missing for certification: "
+                    f"{trace_read_error or 'trace stream was empty'}. "
+                    "Synthetic evidence reconstruction is prohibited in certification mode."
+                )
+                logger.error(fail_msg)
+                events.emit(
+                    events.CoreEvents.CERTIFICATION_FAILED,
+                    {
+                        "run_id": effective_run_id,
+                        "status": "certification_failed",
+                        "error": fail_msg,
+                    },
+                    span_context=ctx.span_context,
+                )
+                events.emit(
+                    events.CoreEvents.RUN_END,
+                    {
+                        "run_id": effective_run_id,
+                        "status": "certification_failed",
+                        "passed": False,
+                        "score": 0.0,
+                        "pass_at_k": 0.0,
+                        "error": fail_msg,
+                        "finalization": None,
+                        "metadata": {**dict(ctx.metadata), "uncertifiable": True},
+                    },
+                    span_context=ctx.span_context,
+                )
+                return EvaluationResult(
+                    run_id=effective_run_id,
+                    scenario_id=str(scenario.get("id", "unknown")),
+                    pass_at_k=0.0,
+                    successful_attempts=0,
+                    total_attempts=attempts,
+                    attempts_results=all_attempt_results,
+                    metadata={
+                        "error": fail_msg,
+                        "uncertifiable": True,
+                    },
+                )
 
             if not trace_events:
+                # DEBUG / TEST: synthetic reconstruction permitted, certificate prohibited
+                from .context import _freeze_dict
+
+                meta_dict = dict(ctx.metadata)
+                meta_dict["uncertifiable"] = True
+                meta_dict["provisional"] = True
+                object.__setattr__(ctx, "metadata", _freeze_dict(meta_dict))
                 for a in collected_assertions:
                     synthetic_event = {"event": "assertion_evaluated", **a}
                     from agentv_runtime.canonical import canonical_json_dumps
@@ -703,7 +993,34 @@ class DefaultRunner(BaseRunner):
             evidence_root = ev_graph["evidence_root_hash"]
 
             # Authenticated EvaluatorFinalizationRecord bound to upfront manifest hash
-            evaluator_id = "eval_runner.runner.EvaluationKernel"
+            evaluator_id = getattr(self, "evaluator_identity", None) or "system_id"
+            sign_err_msg = None
+            eval_priv = None
+            try:
+                from eval_runner.identity import IdentityService
+
+                # [Item 4: P0 External Trust Root for Evaluator Signing]
+                # Auto-provisioning is disabled for certification runs; keys must be pre-provisioned
+                eval_priv = IdentityService.get_private_key(
+                    evaluator_id, auto_provision=not is_certification
+                )
+                if not eval_priv and evaluator_id != "eval_runner.runner.EvaluationKernel":
+                    eval_priv = IdentityService.get_private_key(
+                        "eval_runner.runner.EvaluationKernel", auto_provision=not is_certification
+                    )
+                    if eval_priv:
+                        evaluator_id = "eval_runner.runner.EvaluationKernel"
+                if not eval_priv:
+                    sign_err_msg = (
+                        f"Evaluator private key for '{evaluator_id}' not found in TRUST_ROOT or "
+                        f"environment (auto-provisioning prohibited for certification: "
+                        f"is_certification={is_certification})"
+                    )
+                    logger.error(sign_err_msg)
+            except Exception as key_err:
+                sign_err_msg = str(key_err)
+                logger.error("Evaluator private key retrieval error: %s", key_err)
+
             finalization_record = EvaluatorFinalizationRecord(
                 finalization_id=f"fin_{effective_run_id}",
                 run_id=effective_run_id,
@@ -719,18 +1036,8 @@ class DefaultRunner(BaseRunner):
                 score=float(pass_at_k),
                 terminal_seq=len(all_attempt_results),
             )
-            sign_err_msg = None
             try:
-                from eval_runner.identity import IdentityService
-
-                eval_priv = IdentityService.get_private_key(evaluator_id, auto_provision=True)
-                if not eval_priv:
-                    sign_err_msg = (
-                        f"Evaluator private key for '{evaluator_id}' not found "
-                        "(auto-provisioning disabled in production)"
-                    )
-                    logger.error(sign_err_msg)
-                else:
+                if eval_priv:
                     finalization_record = finalization_record.sign(eval_priv)
                     sig = getattr(finalization_record, "evaluator_signature", None) or getattr(
                         finalization_record, "signature", None

@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AgentVAcceptanceResult",
+  "type": "object",
+  "required": [
+    "case_id",
+    "category",
+    "accepted",
+    "expected",
+    "actual",
+    "failures",
+    "run_id",
+    "agentv_version",
+    "git_commit",
+    "evidence_verified",
+    "certificate_verified",
+    "ledger_verified"
+  ],
+  "properties": {
+    "case_id": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "accepted": {
+      "type": "boolean"
+    },
+    "expected": {
+      "type": "object"
+    },
+    "actual": {
+      "type": "object"
+    },
+    "failures": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "agentv_version": {
+      "type": "string"
+    },
+    "git_commit": {
+      "type": "string"
+    },
+    "evidence_verified": {
+      "type": "boolean"
+    },
+    "certificate_verified": {
+      "type": "boolean"
+    },
+    "ledger_verified": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": true
+}

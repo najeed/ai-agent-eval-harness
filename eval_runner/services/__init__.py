@@ -6,5 +6,6 @@ and CLI presentation layers.
 """
 
 from .certification import CertificationService, execute_industrial_certification
+from .run_summary import RunSummaryService
 
-__all__ = ["CertificationService", "execute_industrial_certification"]
+__all__ = ["CertificationService", "RunSummaryService", "execute_industrial_certification"]

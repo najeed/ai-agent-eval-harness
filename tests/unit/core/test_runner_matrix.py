@@ -16,6 +16,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from agentv_runtime.config import ResolvedRuntimeConfig
+from eval_runner.events import CoreEvents
 from eval_runner.execution_ir import WorkflowStatus
 from eval_runner.runner import DefaultRunner, run_scenario
 
@@ -678,52 +679,87 @@ def test_default_runner_resolve_source_commit(monkeypatch):
     # 1. From adapter_meta
     meta = {"source_commit": "sha-from-meta"}
     assert DefaultRunner._resolve_source_commit(meta) == "sha-from-meta"
+    val, src, ver = DefaultRunner._resolve_source_commit_attribution(meta)
+    assert val == "sha-from-meta"
+    assert src == "declared"
+    assert ver is False
 
     # 2. From AGENT_SOURCE_COMMIT env
     monkeypatch.setenv("AGENT_SOURCE_COMMIT", "sha-from-env")
     assert DefaultRunner._resolve_source_commit({}) == "sha-from-env"
+    val, src, ver = DefaultRunner._resolve_source_commit_attribution({})
+    assert val == "sha-from-env"
+    assert src == "declared"
     monkeypatch.delenv("AGENT_SOURCE_COMMIT")
 
-    # 3. From GITHUB_SHA env
+    # 3. From GITHUB_SHA env (with declared source_repository)
     monkeypatch.setenv("GITHUB_SHA", "sha-from-github")
-    assert DefaultRunner._resolve_source_commit({}) == "sha-from-github"
+    assert (
+        DefaultRunner._resolve_source_commit({"source_repository": "agent-org/agent"})
+        == "sha-from-github"
+    )
+    val, src, ver = DefaultRunner._resolve_source_commit_attribution(
+        {"source_repository": "agent-org/agent"}
+    )
+    assert val == "sha-from-github"
+    assert src == "declared"
+
+    # 4. Without source_repository, GITHUB_SHA is ignored (unknown must remain unknown)
+    assert DefaultRunner._resolve_source_commit({}) == "unknown"
+    val, src, ver = DefaultRunner._resolve_source_commit_attribution({})
+    assert val == "unknown"
+    assert src == "unknown"
+    assert ver is False
     monkeypatch.delenv("GITHUB_SHA")
-
-    # 4. From git rev-parse HEAD
-    with patch("subprocess.run") as mock_subproc:
-        mock_res = MagicMock()
-        mock_res.returncode = 0
-        mock_res.stdout = "a1b2c3d4e5f6\n"
-        mock_subproc.return_value = mock_res
-        assert DefaultRunner._resolve_source_commit({}) == "a1b2c3d4e5f6"
-
-    # 5. Fallback on subprocess error
-    with patch("subprocess.run", side_effect=OSError("git not found")):
-        assert DefaultRunner._resolve_source_commit({}) == "unknown"
 
 
 def test_default_runner_resolve_model_provider():
-    """Test all branches of _resolve_model_provider."""
+    """Test all branches of _resolve_model_provider and attribution."""
     # 1. Explicit provider in adapter_meta
     prov_meta = {"provider": "my-provider"}
     assert DefaultRunner._resolve_model_provider("foo", prov_meta) == "my-provider"
+    val, src, ver = DefaultRunner._resolve_model_provider_attribution("foo", prov_meta)
+    assert val == "my-provider"
+    assert src == "declared"
+    assert ver is True
 
-    # 2. Model keyword inferences
+    # 1b. model_provider in adapter_meta
+    mp_meta = {"model_provider": "alt-provider"}
+    assert DefaultRunner._resolve_model_provider("foo", mp_meta) == "alt-provider"
+    val, src, ver = DefaultRunner._resolve_model_provider_attribution("foo", mp_meta)
+    assert val == "alt-provider"
+    assert src == "declared"
+    assert ver is True
+
+    # 2. Model keyword inferences (derived, unverified)
     assert DefaultRunner._resolve_model_provider("gpt-4o-mini", {}) == "openai"
+    val, src, ver = DefaultRunner._resolve_model_provider_attribution("gpt-4o-mini", {})
+    assert val == "openai"
+    assert src == "derived"
+    assert ver is False
+
     assert DefaultRunner._resolve_model_provider("o1-preview", {}) == "openai"
     assert DefaultRunner._resolve_model_provider("claude-3-5-sonnet", {}) == "anthropic"
     assert DefaultRunner._resolve_model_provider("gemini-2.5-pro", {}) == "google"
     assert DefaultRunner._resolve_model_provider("llama-3.3-70b", {}) == "local"
     assert DefaultRunner._resolve_model_provider("ollama-qwen", {}) == "local"
 
-    # 3. Framework fallback and custom
+    # 3. Framework fallback and unknown (never manufactured 'custom')
     fw_meta = {"framework": "crewai"}
     assert DefaultRunner._resolve_model_provider("unknown-model", fw_meta) == "crewai"
-    assert DefaultRunner._resolve_model_provider("unknown-model", {}) == "custom"
+    val, src, ver = DefaultRunner._resolve_model_provider_attribution("unknown-model", fw_meta)
+    assert val == "crewai"
+    assert src == "declared"
+
+    assert DefaultRunner._resolve_model_provider("unknown-model", {}) == "unknown"
+    val, src, ver = DefaultRunner._resolve_model_provider_attribution("unknown-model", {})
+    assert val == "unknown"
+    assert src == "unknown"
+    assert ver is False
 
 
 def test_default_runner_resolve_tool_versions():
-    """Test all branches of _resolve_tool_versions."""
+    """Test all branches of _resolve_tool_versions and attribution."""
     scenario = {
         "tools": [
             {"name": "search", "version": "2.1.0"},
@@ -732,11 +768,17 @@ def test_default_runner_resolve_tool_versions():
         ]
     }
     adapter_meta = {"tools": {"adapter_tool": "3.0.0"}}
-    t_vers = DefaultRunner._resolve_tool_versions(scenario, adapter_meta)
+    t_vers, t_prov = DefaultRunner._resolve_tool_versions_attribution(scenario, adapter_meta)
     assert t_vers["search"] == "2.1.0"
+    assert t_prov["search"] == {"value": "2.1.0", "source": "declared", "verified": False}
     assert t_vers["tool_1"] == "1.2.0"
-    assert t_vers["calculator"] == "1.0.0"
+    assert t_prov["tool_1"] == {"value": "1.2.0", "source": "declared", "verified": False}
+    # Unversioned tool must remain unknown, never defaulted to 1.0.0
+    assert t_vers["calculator"] == "unknown"
+    assert t_prov["calculator"] == {"value": "unknown", "source": "unknown", "verified": False}
     assert t_vers["adapter_tool"] == "3.0.0"
+    assert t_prov["adapter_tool"] == {"value": "3.0.0", "source": "declared", "verified": False}
+    assert DefaultRunner._resolve_tool_versions(scenario, adapter_meta) == t_vers
 
 
 @pytest.mark.asyncio
@@ -794,6 +836,11 @@ async def test_default_runner_run_scenario_rich_provenance(tmp_path, monkeypatch
     assert agent_cfg["tool_versions"] == {"web_search": "1.0.0"}
     assert agent_cfg["prompt_revision"].startswith("sha3_256:")
     assert agent_cfg["config_revision"].startswith("sha3_256:")
+    assert "provenance" in agent_cfg
+    prov = agent_cfg["provenance"]
+    assert prov["source_commit"]["source"] == "declared"
+    assert prov["model_provider"]["source"] == "declared"
+    assert prov["prompt_revision"]["source"] == "observed"
 
     rt_cfg = data["runtime_config"]
     assert rt_cfg["scenario_hash"].startswith("sha3_256:")
@@ -804,3 +851,266 @@ async def test_default_runner_run_scenario_rich_provenance(tmp_path, monkeypatch
     env = data["environment"]
     assert "runtime_version" in env
     assert env["environment_fingerprint"].startswith("sha3_256:")
+
+
+@pytest.mark.asyncio
+async def test_certification_run_fails_closed_on_missing_provenance_identity(tmp_path, monkeypatch):
+    """[Item 1: P0 Provenance] Certification runs fail closed on missing required identity."""
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
+    monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", tmp_path)
+
+    runner = DefaultRunner()
+    scenario = {
+        "id": "cert_provenance_fail_scen",
+        "version": "1.0.0",
+        "execution_mode": "live",
+        "adapter": {"name": "openai"},
+        "workflow": {"nodes": [{"id": "n1"}]},
+        # Omit model, provider, adapter_version
+    }
+
+    emitted = []
+
+    def mock_emit(ev, payload, *args, **kwargs):
+        emitted.append((ev, payload))
+
+    monkeypatch.setattr("eval_runner.events.emit", mock_emit)
+
+    res = await runner.run(scenario, attempts=1)
+    assert res is not None
+    assert res.metadata.get("uncertifiable") is True
+    assert res.pass_at_k == 0.0
+
+    ev_names = [e[0] for e in emitted]
+    assert CoreEvents.CERTIFICATION_FAILED in ev_names
+    assert CoreEvents.RUN_END in ev_names
+    run_end_payload = next(p for e, p in emitted if e == CoreEvents.RUN_END)
+    assert run_end_payload["status"] == "certification_failed"
+    assert run_end_payload["finalization"] is None
+
+
+@pytest.mark.asyncio
+async def test_certification_run_fails_closed_on_missing_or_corrupt_trace(tmp_path, monkeypatch):
+    """[Item 2: P0 Evidence] Certification runs fail closed if trace is unreadable or missing."""
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
+    monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", tmp_path)
+
+    runner = DefaultRunner()
+    scenario = {
+        "id": "cert_trace_fail_scen",
+        "version": "1.0.0",
+        "execution_mode": "live",
+        "adapter": {"endpoint": "http://localhost:8000", "protocol": "http_rest"},
+        "tools": [{"name": "tool1", "version": "1.0.0"}],
+        "workflow": {"nodes": [{"id": "n1"}]},
+    }
+    meta = {
+        "model": "gpt-4o",
+        "provider": "openai",
+        "adapter_version": "1.0.0",
+        "source_commit": "abc1234",
+    }
+
+    emitted = []
+
+    def mock_emit(ev, payload, *args, **kwargs):
+        emitted.append((ev, payload))
+
+    monkeypatch.setattr("eval_runner.events.emit", mock_emit)
+
+    # Mock SessionManager.execute_tasks to not write any trace events
+    async def mock_exec(*args, **kwargs):
+        return [
+            {
+                "workflow_verdict": {"status": "COMPLETED"},
+                "oracle_results": [{"oracle_id": "or1", "passed": True}],
+            }
+        ]
+
+    monkeypatch.setattr("eval_runner.session.SessionManager.execute_tasks", mock_exec)
+
+    res = await runner.run(scenario, attempts=1, metadata=meta)
+    assert res is not None
+    assert res.metadata.get("uncertifiable") is True
+    assert res.pass_at_k == 0.0
+
+    ev_names = [e[0] for e in emitted]
+    assert CoreEvents.CERTIFICATION_FAILED in ev_names
+    run_end = next(p for e, p in emitted if e == CoreEvents.RUN_END)
+    assert run_end["status"] == "certification_failed"
+    assert run_end["finalization"] is None
+
+
+@pytest.mark.asyncio
+async def test_evaluator_post_processing_exception_fails_closed_to_evaluation_invalid(
+    tmp_path, monkeypatch
+):
+    """[Item 3: P0 Evaluation] Upstream errors fail closed to EVALUATION_INVALID."""
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
+    monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", tmp_path)
+
+    runner = DefaultRunner()
+    scenario = {
+        "id": "post_process_fail_scen",
+        "version": "1.0.0",
+        "workflow": {"nodes": [{"id": "n1"}]},
+    }
+
+    # Mock compute_attempt_statistics to raise RuntimeError
+    def failing_stats(*args, **kwargs):
+        raise RuntimeError("Math domain error during statistics computation")
+
+    monkeypatch.setattr("eval_runner.runner.compute_attempt_statistics", failing_stats)
+
+    emitted = []
+
+    def mock_emit(ev, payload, *args, **kwargs):
+        emitted.append((ev, payload))
+
+    monkeypatch.setattr("eval_runner.events.emit", mock_emit)
+
+    async def mock_exec(*args, **kwargs):
+        return [{"workflow_verdict": {"status": "COMPLETED"}}]
+
+    monkeypatch.setattr("eval_runner.session.SessionManager.execute_tasks", mock_exec)
+
+    res = await runner.run(scenario, attempts=1)
+    assert res is not None
+    assert res.metadata.get("outcome") == "EVALUATION_INVALID"
+    assert res.metadata.get("evaluation_valid") is False
+    assert res.metadata.get("certifiable") is False
+    assert res.pass_at_k == 0.0
+
+    ev_names = [e[0] for e in emitted]
+    assert CoreEvents.EVALUATION_INVALID in ev_names
+    run_end = next(p for e, p in emitted if e == CoreEvents.RUN_END)
+    assert run_end["status"] == "evaluation_invalid"
+    assert run_end["outcome"] == "EVALUATION_INVALID"
+    assert run_end["evaluation_valid"] is False
+    assert run_end["finalization"] is None
+
+
+@pytest.mark.asyncio
+async def test_evaluator_signing_auto_provision_prohibited_for_certification(tmp_path, monkeypatch):
+    """[Item 4: P0 Trust] Key cannot be dynamically auto-provisioned during certification."""
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
+    monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", tmp_path)
+
+    runner = DefaultRunner()
+    scenario = {
+        "id": "cert_key_fail_scen",
+        "version": "1.0.0",
+        "execution_mode": "live",
+        "adapter": {"endpoint": "http://localhost:8000", "protocol": "http_rest"},
+        "tools": [{"name": "tool1", "version": "1.0.0"}],
+        "workflow": {"nodes": [{"id": "n1"}]},
+    }
+    meta = {
+        "model": "gpt-4o",
+        "provider": "openai",
+        "adapter_version": "1.0.0",
+        "source_commit": "abc1234",
+    }
+
+    emitted = []
+
+    def mock_emit(ev, payload, *args, **kwargs):
+        emitted.append((ev, payload))
+
+    monkeypatch.setattr("eval_runner.events.emit", mock_emit)
+
+    # Create dummy trace file so trace read succeeds
+    async def mock_exec(*args, **kwargs):
+        vault = tmp_path / "runs" / runner_run_id / "run.jsonl"
+        vault.parent.mkdir(parents=True, exist_ok=True)
+        vault.write_text('{"event": "task_completed", "_seq": 1}\n', encoding="utf-8")
+        return [{"workflow_verdict": {"status": "COMPLETED"}}]
+
+    runner_run_id = "test_run_cert_key"
+    monkeypatch.setattr("eval_runner.session.SessionManager.execute_tasks", mock_exec)
+
+    # Force IdentityService.get_private_key to return None when auto_provision=False
+    from eval_runner.identity import IdentityService
+
+    orig_get_key = IdentityService.get_private_key
+
+    def mock_get_key(id_id, auto_provision=True):
+        if not auto_provision:
+            return None
+        return orig_get_key(id_id, auto_provision=auto_provision)
+
+    monkeypatch.setattr(IdentityService, "get_private_key", mock_get_key)
+
+    res = await runner.run(scenario, attempts=1, run_id=runner_run_id, metadata=meta)
+    assert res is not None
+    assert res.metadata.get("uncertifiable") is True
+    assert res.pass_at_k == 0.0
+
+    ev_names = [e[0] for e in emitted]
+    assert CoreEvents.CERTIFICATION_FAILED in ev_names
+    run_end = next(p for e, p in emitted if e == CoreEvents.RUN_END)
+    assert run_end["status"] == "certification_failed"
+    assert run_end["finalization"] is None
+
+
+@pytest.mark.asyncio
+async def test_certification_run_fails_closed_on_corrupt_trace_content(tmp_path, monkeypatch):
+    """[Item 2: P0 Evidence] Corrupted trace lines fail closed in certification mode."""
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
+    monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", tmp_path)
+
+    runner = DefaultRunner()
+    scenario = {
+        "id": "cert_corrupt_trace_scen",
+        "version": "1.0.0",
+        "execution_mode": "live",
+        "adapter": {"endpoint": "http://localhost:8000", "protocol": "http_rest"},
+        "tools": [{"name": "tool1", "version": "1.0.0"}],
+        "workflow": {"nodes": [{"id": "n1"}]},
+    }
+    meta = {
+        "model": "gpt-4o",
+        "provider": "openai",
+        "adapter_version": "1.0.0",
+        "source_commit": "abc1234",
+    }
+    emitted = []
+    monkeypatch.setattr(
+        "eval_runner.events.emit",
+        lambda ev, payload, *a, **k: emitted.append((ev, payload)),
+    )
+
+    async def mock_exec(*args, **kwargs):
+        t_file = tmp_path / "runs" / "test_corrupt_run" / "run.jsonl"
+        t_file.parent.mkdir(parents=True, exist_ok=True)
+        t_file.write_text("invalid corrupt { json\n", encoding="utf-8")
+        return [{"workflow_verdict": {"status": "COMPLETED"}}]
+
+    monkeypatch.setattr("eval_runner.session.SessionManager.execute_tasks", mock_exec)
+    res = await runner.run(scenario, attempts=1, run_id="test_corrupt_run", metadata=meta)
+    assert res.metadata.get("uncertifiable") is True
+    assert CoreEvents.CERTIFICATION_FAILED in [e[0] for e in emitted]
+
+
+@pytest.mark.asyncio
+async def test_certification_fails_closed_on_missing_hashes_or_tools(tmp_path, monkeypatch):
+    """Missing scenario_hash, policy_hash, or unresolved tool versions fail closed."""
+    runner = DefaultRunner()
+    scenario = {
+        "id": "cert_missing_hash_scen",
+        "version": "1.0.0",
+        "execution_mode": "live",
+        "adapter": {"endpoint": "http://localhost:8000", "protocol": "http_rest"},
+        "tools": [{"name": "tool1"}],  # missing version -> unknown
+        "workflow": {"nodes": [{"id": "n1"}]},
+    }
+    meta = {
+        "model": "gpt-4o",
+        "provider": "openai",
+        "adapter_version": "1.0.0",
+        "source_commit": "abc1234",
+    }
+    # Mock resolved_config.config_hash to 'none'
+    monkeypatch.setattr(runner.resolved_config, "config_hash", "none")
+    res = await runner.run(scenario, metadata=meta)
+    assert res.metadata.get("uncertifiable") is True

@@ -332,8 +332,16 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
               // [Trust hardening] The BACKEND's classification is the ONLY
               // authority. A signed manifest cannot self-promote to
               // 'official' via its own tier field — that field is ignored.
-              if (data.tier === 'official' || data.tier === 'community') {
-                return data.tier;
+              // In production OSS, community remote execution is disabled until
+              // an isolation boundary exists. Only backend-verified official extensions mount.
+              if (data.tier === 'official') {
+                return 'official';
+              }
+              if (data.tier === 'community') {
+                if (import.meta.env.PROD) {
+                  throw { kind: 'publisher', reason: 'community-extensions-prohibited-in-production' };
+                }
+                return 'community';
               }
               throw { kind: 'publisher', reason: 'unrecognized-backend-tier' };
             }
@@ -599,7 +607,11 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
         title="Publisher Verification Failed"
         entryUrl={entryUrl}
         violations={[`Reason: ${loadingState.publisherReason}`]}
-        message="The manifest signature could not be verified against the runtime trust root. Unsigned LOCAL extensions are limited to read-only APIs; remote extensions require a verified publisher."
+        message={
+          loadingState.publisherReason === 'community-extensions-prohibited-in-production'
+            ? 'Production console strictly enforces official signed extensions only. Community remote extensions are disabled until an isolation boundary exists.'
+            : 'The manifest signature could not be verified against the runtime trust root. Unsigned LOCAL extensions are limited to read-only APIs; remote extensions require a verified publisher.'
+        }
       />
     );
   }

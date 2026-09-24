@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AgentVAcceptanceAttestation",
+  "type": "object",
+  "required": [
+    "attestation_version",
+    "source_commit",
+    "wheel_sha256",
+    "suite_hash",
+    "manifest_hash",
+    "oracle_repo",
+    "oracle_sha",
+    "case_result_root",
+    "timestamp",
+    "gate_status"
+  ],
+  "properties": {
+    "attestation_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "source_commit": {
+      "type": "string"
+    },
+    "wheel_sha256": {
+      "type": "string"
+    },
+    "suite_hash": {
+      "type": "string"
+    },
+    "manifest_hash": {
+      "type": "string"
+    },
+    "oracle_repo": {
+      "type": "string"
+    },
+    "oracle_sha": {
+      "type": "string"
+    },
+    "case_result_root": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "workflow_run_id": {
+      "type": "string"
+    },
+    "gate_status": {
+      "type": "string",
+      "enum": [
+        "PASSED",
+        "FAILED"
+      ]
+    },
+    "signature": {
+      "type": "string"
+    },
+    "signer_id": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

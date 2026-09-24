@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -108,6 +109,29 @@ def evaluate_summary(summary: dict[str, Any], suite: dict[str, Any] | None = Non
         reasons.append(f"CRITICAL: {evid} Evidence Integrity Failure(s) detected. Release blocked.")
     if err > int(thresholds.get("allow_execution_errors", 0)):
         reasons.append(f"CRITICAL: {err} Execution Error(s) detected. Release blocked.")
+    skipped = sum(
+        1 for r in raw_results if r.get("skipped") is True or r.get("status") == "skipped"
+    )
+    if skipped > 0:
+        reasons.append(
+            f"CRITICAL: {skipped} skipped acceptance test case(s) detected. "
+            "Release gate strictly forbids skipped cases."
+        )
+
+    require_oracle = (suite or {}).get("require_external_oracle", False) or os.environ.get(
+        "AGENTV_REQUIRE_EXTERNAL_ORACLE"
+    ) == "1"
+    if require_oracle:
+        oracle_seen = any(
+            bool(r.get("actual", {}).get("state", {}).get("oracle_receipt_hash"))
+            for r in raw_results
+            if r.get("expected", {}).get("state", {}).get("oracle_url")
+        )
+        if not oracle_seen:
+            reasons.append(
+                "CRITICAL: Mandatory external acceptance oracle was required, "
+                "but no valid oracle observations/receipts were recorded."
+            )
 
     gate_passed = len(reasons) == 0
     return GateDecision(

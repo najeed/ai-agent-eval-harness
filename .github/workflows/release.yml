@@ -9,38 +9,85 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
 permissions:
-  contents: write
-  packages: write
+  contents: read
 
 jobs:
-  acceptance-release-gate:
-    name: Acceptance Release Certification Gate
+  build-release-artifact:
+    name: Build Release Package
     runs-on: ubuntu-latest
     steps:
       - name: Checkout exact tagged SHA
-        uses: actions/checkout@v4
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           ref: ${{ github.sha }}
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@0a5c61591373683505ea898e09a6004c8ab57373 # v5.0.0
         with:
           python-version: '3.12'
 
-      - name: Install dependencies
-        run: pip install -r requirements-dev.txt
+      - name: Install build tools
+        run: pip install build
 
-      - name: Checkout pinned independent oracle (if configured)
-        if: vars.AGENTV_TESTER_REPOSITORY != ''
-        uses: actions/checkout@v4
+      - name: Build package once
+        run: |
+          python -m build
+          sha256sum dist/* > dist/SHA256SUMS
+          cat dist/SHA256SUMS
+
+      - name: Upload built release distribution artifact
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
+        with:
+          name: release-dist
+          path: dist/
+          retention-days: 2
+
+  acceptance-release-gate:
+    name: Acceptance Release Certification Gate
+    needs: [build-release-artifact]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact tagged SHA
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Download built release distribution artifact
+        uses: actions/download-artifact@c850b08b15ce7b270f74c06e83c4f72b16401045 # v4.1.4
+        with:
+          name: release-dist
+          path: dist/
+
+      - name: Set up Python
+        uses: actions/setup-python@0a5c61591373683505ea898e09a6004c8ab57373 # v5.0.0
+        with:
+          python-version: '3.12'
+
+      - name: Install built wheel and dev dependencies
+        run: |
+          pip install dist/*.whl
+          pip install -r requirements-dev.txt
+
+      - name: Validate mandatory external oracle configuration
+        run: |
+          if [ -z "${{ vars.AGENTV_TESTER_REPOSITORY }}" ]; then
+            echo "::error::Mandatory AGENTV_TESTER_REPOSITORY variable is not configured for release certification."
+            exit 1
+          fi
+          if [ -z "${{ vars.AGENTV_TESTER_SHA }}" ]; then
+            echo "::error::Mandatory AGENTV_TESTER_SHA variable is not configured for release certification."
+            exit 1
+          fi
+
+      - name: Checkout pinned independent oracle
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           repository: ${{ vars.AGENTV_TESTER_REPOSITORY }}
           ref: ${{ vars.AGENTV_TESTER_SHA }}
           token: ${{ secrets.AGENTV_TESTER_READ_TOKEN }}
           path: .ci/agentv-tester
 
-      - name: Start independent acceptance oracle (if configured)
-        if: vars.AGENTV_TESTER_REPOSITORY != ''
+      - name: Start independent acceptance oracle
         env:
           ACCEPTANCE_ORACLE_DB: ${{ github.workspace }}/.ci/oracle.sqlite
         run: |
@@ -50,6 +97,7 @@ jobs:
             curl --fail --silent http://127.0.0.1:8099/acceptance-oracle/state && exit 0
             sleep 1
           done
+          echo "::error::Independent acceptance oracle failed to start."
           cat oracle.log
           exit 1
 
@@ -59,71 +107,91 @@ jobs:
           npm run build --prefix ui/visual-console
           python -m playwright install --with-deps chromium
 
-      - name: Run Authoritative Acceptance Corpus Suite
-        run: pytest -m acceptance_release tests/acceptance/test_acceptance_corpus.py --junitxml=reports/acceptance-corpus.xml
+      - name: Run Complete Release Acceptance Suites (Corpus, Security, Evidence, UI)
+        run: |
+          pytest -m acceptance_release tests/acceptance tests/ui --junitxml=reports/acceptance-release.xml
         env:
-          AGENTV_REQUIRE_EXTERNAL_ORACLE: ${{ vars.AGENTV_TESTER_REPOSITORY != '' && '1' || '0' }}
-          AGENTV_ACCEPTANCE_ORACLE_URL: http://127.0.0.1:8099/acceptance-oracle
-
-      - name: Run Release Acceptance UI Suite
-        run: pytest -m acceptance_release tests/ui/test_visual_console_ui.py tests/ui/test_verification_workflow_journey.py --junitxml=reports/acceptance-release.xml
-        env:
+          AGENTV_REQUIRE_EXTERNAL_ORACLE: '1'
           AGENTV_REQUIRE_BROWSER_ACCEPTANCE: '1'
-          AGENTV_REQUIRE_EXTERNAL_ORACLE: ${{ vars.AGENTV_TESTER_REPOSITORY != '' && '1' || '0' }}
           AGENTV_ACCEPTANCE_ORACLE_URL: http://127.0.0.1:8099/acceptance-oracle
 
       - name: Enforce Release Certification Gate
         run: python tools/ci/acceptance_gate.py --report-dir reports/acceptance/latest --manifest tests/acceptance/manifests/release.yaml
 
+      - name: Create Acceptance Attestation
+        run: |
+          python tools/ci/create_acceptance_attestation.py \
+            --summary reports/acceptance/latest/acceptance-summary.json \
+            --manifest tests/acceptance/manifests/release.yaml \
+            --wheel "$(ls dist/*.whl | head -n 1)" \
+            --source-commit "${{ github.sha }}" \
+            --oracle-repo "${{ vars.AGENTV_TESTER_REPOSITORY }}" \
+            --oracle-sha "${{ vars.AGENTV_TESTER_SHA }}" \
+            --output reports/acceptance/latest/acceptance-attestation.json
+
       - name: Upload Certified Acceptance Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
         if: always()
         with:
           name: release-acceptance-artifacts
           path: reports/acceptance/
+          retention-days: 7
 
-  build-and-publish:
-    name: Build and Publish Package
-    needs: [acceptance-release-gate]
+  publish-certified-package:
+    name: Publish Certified Package
+    needs: [acceptance-release-gate, build-release-artifact]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
     steps:
       - name: Checkout exact tagged SHA
-        uses: actions/checkout@v4
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           ref: ${{ github.sha }}
 
+      - name: Download built release distribution
+        uses: actions/download-artifact@c850b08b15ce7b270f74c06e83c4f72b16401045 # v4.1.4
+        with:
+          name: release-dist
+          path: dist/
+
       - name: Download certified acceptance artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@c850b08b15ce7b270f74c06e83c4f72b16401045 # v4.1.4
         with:
           name: release-acceptance-artifacts
           path: reports/acceptance/
 
-      - name: Verify acceptance gate attestation before release
-        run: python tools/ci/acceptance_gate.py --report-dir reports/acceptance/latest --manifest tests/acceptance/manifests/release.yaml
-
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@0a5c61591373683505ea898e09a6004c8ab57373 # v5.0.0
         with:
           python-version: '3.12'
 
-      - name: Install build tools
+      - name: Verify acceptance gate attestation against built package
         run: |
-          pip install build twine
+          pip install jsonschema pyyaml
+          python tools/ci/verify_acceptance_attestation.py \
+            --attestation reports/acceptance/latest/acceptance-attestation.json \
+            --manifest tests/acceptance/manifests/release.yaml \
+            --wheel "$(ls dist/*.whl | head -n 1)" \
+            --expected-commit "${{ github.sha }}" \
+            --expected-oracle-repo "${{ vars.AGENTV_TESTER_REPOSITORY }}" \
+            --expected-oracle-sha "${{ vars.AGENTV_TESTER_SHA }}"
 
-      - name: Build package
+      - name: Publish exact accepted wheel/sdist to GitHub Packages
         run: |
-          python -m build
-
-      - name: Publish to GitHub Packages
-        run: |
+          pip install twine
           twine upload --repository-url https://pypi.pkg.github.com/${{ github.repository_owner }} dist/*
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create GitHub Release with assets
-        uses: softprops/action-gh-release@v2
+      - name: Create GitHub Release with exact accepted assets
+        uses: softprops/action-gh-release@c062e08bd532815e2082a85e87e3ef29c3e6d191 # v2.0.4
         with:
-          files: dist/*
+          files: |
+            dist/*
+            reports/acceptance/latest/acceptance-attestation.json
+            reports/acceptance/latest/acceptance-summary.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

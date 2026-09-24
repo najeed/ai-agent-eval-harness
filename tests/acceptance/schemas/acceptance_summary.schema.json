@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AgentVAcceptanceSummary",
+  "type": "object",
+  "required": [
+    "timestamp",
+    "total_cases",
+    "passed_cases",
+    "failed_cases",
+    "false_negatives",
+    "false_positives",
+    "security_failures",
+    "evidence_failures",
+    "execution_errors",
+    "results"
+  ],
+  "properties": {
+    "timestamp": {
+      "type": "string"
+    },
+    "total_cases": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "passed_cases": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "failed_cases": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "false_negatives": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "false_positives": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "security_failures": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "evidence_failures": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "execution_errors": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "additionalProperties": true
+}

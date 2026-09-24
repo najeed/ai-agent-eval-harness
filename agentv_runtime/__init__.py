@@ -17,6 +17,7 @@ from agentv_runtime import (
     package,
     results,
     scenario,
+    state_comparison,
 )
 from agentv_runtime.canonical import canonical_json_dumps, canonical_json_encode
 from agentv_runtime.config import ConfigResolver, ResolvedRuntimeConfig
@@ -58,6 +59,7 @@ from agentv_runtime.scenario import (
     ScenarioDefinition,
     ScenarioVersion,
 )
+from agentv_runtime.state_comparison import StateComparison
 
 __version__ = "2.0.0"
 __runtime_api_version__ = "2.0"
@@ -79,6 +81,8 @@ __all__ = [
     "package",
     "canonical",
     "scenario",
+    "state_comparison",
+    "StateComparison",
     "ScenarioDefinition",
     "CanonicalScenarioIR",
     "ScenarioVersion",

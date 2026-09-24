@@ -146,6 +146,7 @@ class IdentityService:
             "certification_authority",
             "evaluator",
             "attestation_signer",
+            "eval_runner.runner.EvaluationKernel",
         }
         is_prod = os.getenv("AGENTV_ENV", "").lower() == "production" or getattr(
             config, "IS_PRODUCTION", False
