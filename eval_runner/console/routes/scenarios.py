@@ -444,6 +444,7 @@ def check_execution_readiness():
 
     data = request.json or {}
     scen_id = data.get("scenario_id") or data.get("path")
+    logger.info("   [Preflight] Checking execution readiness for scenario='%s'", scen_id)
 
     checks: list[dict[str, Any]] = []
 
@@ -508,10 +509,11 @@ def check_execution_readiness():
     # 2. Agent Endpoint Probe
     endpoint = agent_config.get("endpoint") or agent_config.get("url") or ""
     proto = str(agent_config.get("protocol", "http_rest")).lower()
+    proto_base = proto.split(":")[0]
 
     agent_check = {"name": "Agent Endpoint", "protocol": proto, "endpoint": endpoint}
 
-    _http_probed_protocols = {
+    _network_protocols = {
         "http",
         "http_rest",
         "openapi",
@@ -519,11 +521,17 @@ def check_execution_readiness():
         "openai_assistants",
         "crewai",
         "langgraph",
+        "langchain",
         "autogen",
+        "ag2",
+        "ollama",
+        "sse",
+        "socket",
     }
+    _http_probed_protocols = _network_protocols
 
     if not endpoint:
-        if proto in ("stdio", "in_process"):
+        if proto_base in ("stdio", "in_process", "local"):
             agent_check.update(
                 {
                     "status": "PASSED",
@@ -539,7 +547,7 @@ def check_execution_readiness():
                     "message": "No endpoint configured for network agent. Execution blocked.",
                 }
             )
-    elif proto in ("stdio", "in_process"):
+    elif proto_base in ("stdio", "in_process", "local"):
         agent_check.update(
             {
                 "status": "PASSED",
@@ -547,26 +555,31 @@ def check_execution_readiness():
                 "message": f"Agent protocol '{proto}' uses local in-process execution.",
             }
         )
-    elif proto in (
+    elif proto_base in (
         "gemini",
         "google",
         "openai",
         "anthropic",
+        "claude",
         "azure_openai",
         "mistral",
         "bedrock",
         "groq",
+        "grok",
     ):
         key_env_vars = {
             "gemini": ["GOOGLE_API_KEY", "GEMINI_API_KEY"],
             "google": ["GOOGLE_API_KEY", "GEMINI_API_KEY"],
             "openai": ["OPENAI_API_KEY"],
             "anthropic": ["ANTHROPIC_API_KEY"],
+            "claude": ["ANTHROPIC_API_KEY"],
             "azure_openai": ["AZURE_OPENAI_API_KEY"],
             "mistral": ["MISTRAL_API_KEY"],
+            "bedrock": ["AWS_ACCESS_KEY_ID"],
             "groq": ["GROQ_API_KEY"],
+            "grok": ["GROQ_API_KEY", "XAI_API_KEY"],
         }
-        needed_vars = key_env_vars.get(proto, [])
+        needed_vars = key_env_vars.get(proto_base, [])
         has_key = any(os.getenv(v) for v in needed_vars) if needed_vars else True
         if has_key:
             agent_check.update(
@@ -587,7 +600,7 @@ def check_execution_readiness():
                     ),
                 }
             )
-    elif proto in _http_probed_protocols:
+    elif proto_base in _network_protocols:
         # Attempt real HTTP HEAD probe with strict status code tiering
         t0 = _time.monotonic()
         probe_status = "FAILED"
@@ -844,7 +857,7 @@ def check_execution_readiness():
     # custom protocol has an endpoint configured
     agent_status = agent_check.get("status")
     agent_ok = (agent_status == "PASSED") or (
-        agent_status == "WARNING" and proto not in _http_probed_protocols and bool(endpoint)
+        agent_status == "WARNING" and proto_base not in _http_probed_protocols and bool(endpoint)
     )
     sim_ok = any(
         c.get("name") == "Simulator Environment" and c.get("status") == "PASSED" for c in checks
@@ -933,6 +946,16 @@ def check_execution_readiness():
         "preflight_fingerprint": pfp,
         "checks": checks,
     }
+
+    logger.info(
+        "   [Preflight] Readiness complete for '%s': "
+        "state=%s, tier=%s, executable=%s, verifiable=%s",
+        scen_id,
+        readiness_state,
+        overall_tier,
+        is_executable,
+        is_verifiable,
+    )
 
     return jsonify(
         {

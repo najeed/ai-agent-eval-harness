@@ -1204,6 +1204,13 @@ export const ScenarioComposer: React.FC = () => {
               defaultLanguage="json"
               theme="vs-dark"
               value={rawJson}
+              onMount={(_editor, monaco) => {
+                if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) {
+                  document.fonts.ready.then(() => {
+                    monaco.editor.remeasureFonts();
+                  });
+                }
+              }}
               onChange={(val) => {
                 const text = val || '';
                 setRawJson(text);
@@ -1218,9 +1225,26 @@ export const ScenarioComposer: React.FC = () => {
               }}
               options={{
                 minimap: { enabled: false },
-                fontSize: 12,
-                fontFamily: 'JetBrains Mono',
-                automaticLayout: true
+                fontSize: 13,
+                lineHeight: 20,
+                letterSpacing: 0,
+                fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, Menlo, Monaco, 'Courier New', monospace",
+                fontLigatures: false,
+                automaticLayout: true,
+                fixedOverflowWidgets: true,
+                contextmenu: true,
+                scrollBeyondLastLine: false,
+                smoothScrolling: true,
+                cursorBlinking: 'smooth',
+                cursorSmoothCaretAnimation: 'on',
+                formatOnPaste: true,
+                renderLineHighlight: 'all',
+                tabSize: 2,
+                scrollbar: {
+                  verticalScrollbarSize: 10,
+                  horizontalScrollbarSize: 10,
+                  alwaysConsumeMouseWheel: false,
+                },
               }}
             />
           </div>

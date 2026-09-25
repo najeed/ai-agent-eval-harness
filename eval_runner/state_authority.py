@@ -12,7 +12,6 @@ import json
 import logging
 from abc import ABC, abstractmethod
 from typing import Any
-from urllib.parse import urlparse
 
 import aiohttp
 
@@ -221,9 +220,7 @@ class ExternalStateAuthorityRegistry:
 
         # 3. Dynamic HTTP URL target
         if target_name_or_url.startswith("http://") or target_name_or_url.startswith("https://"):
-            parsed = urlparse(target_name_or_url)
-            base_url = f"{parsed.scheme}://{parsed.netloc}"
-            connector = HttpStateAuthorityConnector(base_url=base_url)
+            connector = HttpStateAuthorityConnector(base_url=target_name_or_url)
             self._connectors[target_name_or_url] = connector
             return connector
 

@@ -1249,17 +1249,102 @@ def test_session_ingest_external_tool_receipts(base_scenario, tmp_path):
     assert len(receipts_meta) == 1
     assert receipts_meta[0]["tool"] == "step_calc"
 
-    # 3. Non-dict or empty response
-    assert session._ingest_external_tool_receipts("raw_string", 3, node, "http", None) == []
-    assert session._ingest_external_tool_receipts({}, 3, node, "http", None) == []
+    # 3. Direct execution_receipt with steps dict and result_summary
+    agent_resp_receipt_dict = {
+        "execution_receipt": {
+            "steps": [
+                {
+                    "action": "request_human_review",
+                    "input": {"patient_id": "PAT-002"},
+                    "result_summary": "Review pending physician review",
+                }
+            ]
+        }
+    }
+    receipts_dict = session._ingest_external_tool_receipts(
+        agent_response=agent_resp_receipt_dict,
+        turn=3,
+        node=node,
+        protocol="openapi",
+        endpoint="http://agent.local",
+    )
+    assert len(receipts_dict) == 1
+    assert receipts_dict[0]["tool"] == "request_human_review"
+    res_events = [e for e in events_emitted if e.name == CoreEvents.EXTERNAL_TOOL_RESULT]
+    assert any(
+        e.data.get("result_summary") == "Review pending physician review" for e in res_events
+    )
 
-    # 4. Fallback on canonical json failure
+    # 4. Direct execution_receipt as a list
+    agent_resp_receipt_list = {
+        "execution_receipt": [
+            {
+                "tool_name": "check_criteria",
+                "tool_params": {"cpt": "CPT-33510"},
+                "summary": "Criteria unmet",
+            }
+        ]
+    }
+    receipts_list = session._ingest_external_tool_receipts(
+        agent_response=agent_resp_receipt_list,
+        turn=4,
+        node=node,
+        protocol="openapi",
+        endpoint="http://agent.local",
+    )
+    assert len(receipts_list) == 1
+    assert receipts_list[0]["tool"] == "check_criteria"
+
+    # 5. Metadata raw_response execution_receipt dict and list
+    agent_resp_meta_receipt = {
+        "metadata": {
+            "raw_response": {
+                "execution_receipt": {
+                    "steps": [{"name": "submit_decision", "arguments": {}, "result": "DENIED"}]
+                }
+            }
+        }
+    }
+    receipts_meta_dict = session._ingest_external_tool_receipts(
+        agent_response=agent_resp_meta_receipt,
+        turn=5,
+        node=node,
+        protocol="openapi",
+        endpoint="http://agent.local",
+    )
+    assert len(receipts_meta_dict) == 1
+    assert receipts_meta_dict[0]["tool"] == "submit_decision"
+
+    agent_resp_meta_list = {
+        "metadata": {
+            "raw_response": {
+                "execution_receipt": [
+                    {"name": "send_notification", "arguments": {}, "result": "SENT"}
+                ]
+            }
+        }
+    }
+    receipts_meta_list = session._ingest_external_tool_receipts(
+        agent_response=agent_resp_meta_list,
+        turn=6,
+        node=node,
+        protocol="openapi",
+        endpoint="http://agent.local",
+    )
+    assert len(receipts_meta_list) == 1
+    assert receipts_meta_list[0]["tool"] == "send_notification"
+
+    # 6. Non-dict or empty response
+    assert session._ingest_external_tool_receipts("raw_string", 7, node, "http", None) == []
+    assert session._ingest_external_tool_receipts({}, 7, node, "http", None) == []
+
+    # 7. Fallback on canonical json failure
     with patch(
         "agentv_runtime.canonical.canonical_json_encode", side_effect=Exception("encode fail")
     ):
         receipts_fallback = session._ingest_external_tool_receipts(
             agent_response={"tool_calls": [{"tool": "t_fb", "arguments": {}}]},
-            turn=4,
+            turn=8,
             node=node,
             protocol="http",
             endpoint=None,

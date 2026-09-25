@@ -202,7 +202,13 @@ class TestExternalStateAuthorityRegistry:
         reg = ExternalStateAuthorityRegistry()
         conn = reg.get_connector("http://127.0.0.1:9090/state")
         assert isinstance(conn, HttpStateAuthorityConnector)
-        assert conn.base_url == "http://127.0.0.1:9090"
+        assert conn.base_url == "http://127.0.0.1:9090/state"
+
+    def test_registry_get_dynamic_url_path_preservation(self):
+        reg = ExternalStateAuthorityRegistry()
+        conn = reg.get_connector("http://127.0.0.1:8080/healthcare/state")
+        assert isinstance(conn, HttpStateAuthorityConnector)
+        assert conn.base_url == "http://127.0.0.1:8080/healthcare/state"
 
     def test_registry_key_error_for_unknown(self):
         reg = ExternalStateAuthorityRegistry()

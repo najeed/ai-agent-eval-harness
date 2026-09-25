@@ -28,6 +28,8 @@ EVIDENCE_EVENT_NAMES = {
     "step_complete",
     "tool_call",
     "tool_result",
+    "external_tool_call",
+    "external_tool_result",
     "metric",
     "assertion",
     "oracle_result",

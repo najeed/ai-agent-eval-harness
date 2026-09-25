@@ -1813,12 +1813,23 @@ class SessionManager:
             return []
 
         tool_calls = agent_response.get("tool_calls")
+        if not tool_calls and isinstance(agent_response.get("execution_receipt"), dict):
+            tool_calls = agent_response["execution_receipt"].get("steps")
+        elif not tool_calls and isinstance(agent_response.get("execution_receipt"), list):
+            tool_calls = agent_response["execution_receipt"]
+
         if not tool_calls and isinstance(agent_response.get("metadata"), dict):
             raw = agent_response["metadata"].get("raw_response", {})
             if isinstance(raw, dict):
-                tool_calls = (
-                    raw.get("tool_calls") or raw.get("steps") or raw.get("intermediate_steps")
-                )
+                receipt = raw.get("execution_receipt")
+                if isinstance(receipt, dict):
+                    tool_calls = receipt.get("steps")
+                elif isinstance(receipt, list):
+                    tool_calls = receipt
+                if not tool_calls:
+                    tool_calls = (
+                        raw.get("tool_calls") or raw.get("steps") or raw.get("intermediate_steps")
+                    )
 
         if not isinstance(tool_calls, list) or not tool_calls:
             return []
@@ -1836,7 +1847,9 @@ class SessionManager:
 
             tool_name = (
                 call.get("tool")
+                or call.get("tool_name")
                 or call.get("name")
+                or call.get("action")
                 or (
                     call.get("function", {}).get("name")
                     if isinstance(call.get("function"), dict)
@@ -1849,9 +1862,15 @@ class SessionManager:
                 or call.get("args")
                 or call.get("parameters")
                 or call.get("tool_params")
+                or call.get("input")
                 or {}
             )
-            result = call.get("result") or call.get("output")
+            result = (
+                call.get("result")
+                or call.get("output")
+                or call.get("result_summary")
+                or call.get("summary")
+            )
 
             receipt_data = {
                 "order": idx,
@@ -1899,6 +1918,8 @@ class SessionManager:
                     "endpoint": endpoint or "external",
                     "receipt_hash": receipt_hash,
                 }
+                if "result_summary" in call and "result_summary" not in result_payload:
+                    result_payload["result_summary"] = call["result_summary"]
                 self.event_bus.emit(CoreEvents.EXTERNAL_TOOL_RESULT, result_payload)
 
             receipts.append(call_payload)
