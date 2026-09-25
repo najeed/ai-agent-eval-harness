@@ -187,6 +187,69 @@ async def test_http_adapter_core(mock_aiohttp_session):
     mock_aiohttp_session.post.return_value = MockAsyncContextManager(json_data={"k": "v"})
     out = await http_adapter({}, "http://url")
     assert out["k"] == "v"
+    assert out["action"] == "final_answer"
+
+
+@pytest.mark.asyncio
+async def test_http_adapter_arbitrary_agent_normalization(mock_aiohttp_session):
+    """External agent returning standard status/output/tool_calls without AgentV action."""
+    mock_aiohttp_session.post.return_value = MockAsyncContextManager(
+        json_data={
+            "status": "success",
+            "output": "Prior authorization approved for patient PAT-001.",
+            "tool_calls": [
+                {
+                    "tool": "verify_clinical_criteria",
+                    "arguments": {"patient_id": "PAT-001"},
+                    "result": {"met": True},
+                }
+            ],
+        }
+    )
+    out = await http_adapter({"task_description": "Evaluate PA"}, "http://agent/execute_task")
+    assert out["action"] == "final_answer"
+    assert out["status"] == "success"
+    assert out["content"] == "Prior authorization approved for patient PAT-001."
+    assert len(out["tool_calls"]) == 1
+    assert out["tool_calls"][0]["tool"] == "verify_clinical_criteria"
+    assert "raw_response" in out["metadata"]
+    assert (
+        out["metadata"]["raw_response"]["output"]
+        == "Prior authorization approved for patient PAT-001."
+    )
+
+
+@pytest.mark.asyncio
+async def test_http_adapter_error_and_native_action(mock_aiohttp_session):
+    """Verify error status normalization and preservation of native AgentV action."""
+    # 1. Error status mapping
+    mock_aiohttp_session.post.return_value = MockAsyncContextManager(
+        json_data={"status": "failed", "detail": "Criteria not satisfied"}
+    )
+    err_out = await http_adapter({}, "http://agent/execute_task")
+    assert err_out["action"] == "error"
+    assert err_out["status"] == "error"
+
+    # 2. Native action preservation
+    mock_aiohttp_session.post.return_value = MockAsyncContextManager(
+        json_data={"action": "call_tool", "tool_name": "lookup", "tool_params": {"id": 1}}
+    )
+    native_out = await http_adapter({}, "http://agent/execute_task")
+    assert native_out["action"] == "call_tool"
+    assert native_out["tool_name"] == "lookup"
+
+    # 3. DualNormalizationHub direct edge cases (non-dict, non-string output, call_multiple_tools)
+    from eval_runner.adapters.common import DualNormalizationHub
+
+    non_dict_out = DualNormalizationHub.normalize_response("raw string error")
+    assert non_dict_out["action"] == "error"
+    assert non_dict_out["content"] == "raw string error"
+
+    dict_output_obj = DualNormalizationHub.normalize_response(
+        {"output": {"result_code": 200}, "action": "call_multiple_tools"}
+    )
+    assert dict_output_obj["action"] == "call_multiple_tools"
+    assert '{"result_code": 200}' in dict_output_obj["content"]
 
 
 @pytest.mark.asyncio

@@ -320,6 +320,8 @@ class CoreEvents:
     AGENT_RESPONSE = "agent_response"
     TOOL_CALL = "tool_call"
     TOOL_RESULT = "tool_result"
+    EXTERNAL_TOOL_CALL = "external_tool_call"
+    EXTERNAL_TOOL_RESULT = "external_tool_result"
     EVALUATION = "evaluation"
     HITL_PAUSE = "hitl_pause"
     HITL_RESUME = "hitl_resume"

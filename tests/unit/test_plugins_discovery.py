@@ -82,3 +82,21 @@ def test_path_aware_unregistration(isolated_registry, tmp_path):
     with open(isolated_registry) as f:
         data = json.load(f)
         assert len(data["plugins"]) == 0
+
+
+def test_plugin_manager_external_plugins_env_switch(monkeypatch):
+    """Verify AGENTV_DISABLE_EXTERNAL_PLUGINS suppresses external entry point loading."""
+    from unittest.mock import patch
+
+    pm = PluginManager()
+    with patch("importlib.metadata.entry_points") as mock_ep:
+        # When disabled via env var
+        monkeypatch.setenv("AGENTV_DISABLE_EXTERNAL_PLUGINS", "1")
+        pm.load_plugins(force=True)
+        mock_ep.assert_not_called()
+
+        # When enabled (env var removed)
+        mock_ep.return_value = []
+        monkeypatch.delenv("AGENTV_DISABLE_EXTERNAL_PLUGINS", raising=False)
+        pm.load_plugins(force=True)
+        mock_ep.assert_called_once_with(group="eval_runner.plugins")

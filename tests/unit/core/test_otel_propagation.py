@@ -74,10 +74,22 @@ def test_otel_telemetry_bridge():
 
         # Verify event records on mock_span
         mock_span.add_event.assert_any_call(
-            "tool.call", {"tool.name": "calculator", "tool.arguments": "{'expression': '2+2'}"}
+            "tool.call",
+            {
+                "tool.name": "calculator",
+                "tool.arguments": "{'expression': '2+2'}",
+                "source": "sandbox",
+                "provenance": "authoritative",
+            },
         )
         mock_span.add_event.assert_any_call(
-            "tool.result", {"tool.name": "calculator", "tool.result": "4"}
+            "tool.result",
+            {
+                "tool.name": "calculator",
+                "tool.result": "4",
+                "source": "sandbox",
+                "provenance": "authoritative",
+            },
         )
         mock_span.add_event.assert_any_call(
             "error", {"error.message": "Database disconnected", "error.traceback": "Traceback..."}
@@ -107,7 +119,8 @@ async def test_traceparent_injection_in_http_adapter():
     patch_path = "eval_runner.adapters.common.SessionManager.get_session"
     with mock.patch(patch_path, return_value=mock_session):
         res = await http_adapter(payload, "http://localhost:5001/execute")
-        assert res == {"status": "ok"}
+        assert res["status"] == "ok"
+        assert res["action"] == "final_answer"
 
         _, kwargs = mock_session.post.call_args
         expected = "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"
@@ -158,6 +171,46 @@ def test_otel_bridge_error_handling_graceful():
 
     # Trigger line 93 (unhandled exception inside handle_event try-except)
     bridge.handle_event(None)
+
+
+def test_otel_bridge_external_tool_events_recording():
+    """Verify OTel telemetry bridge records external_tool.call and external_tool.result spans."""
+    mock_span = mock.MagicMock()
+    mock_span.is_recording.return_value = True
+
+    bridge = OTelTelemetryBridge()
+    with mock.patch("opentelemetry.trace.get_current_span", return_value=mock_span):
+        bridge.handle_event(
+            Event(
+                name=CoreEvents.EXTERNAL_TOOL_CALL,
+                data={"name": "external_calc", "arguments": {"x": 1}, "source": "external_agent"},
+            )
+        )
+        mock_span.add_event.assert_called_with(
+            "external_tool.call",
+            {
+                "tool.name": "external_calc",
+                "tool.arguments": "{'x': 1}",
+                "source": "external_agent",
+                "provenance": "authoritative",
+            },
+        )
+
+        bridge.handle_event(
+            Event(
+                name=CoreEvents.EXTERNAL_TOOL_RESULT,
+                data={"name": "external_calc", "result": 2, "source": "external_agent"},
+            )
+        )
+        mock_span.add_event.assert_called_with(
+            "external_tool.result",
+            {
+                "tool.name": "external_calc",
+                "tool.result": "2",
+                "source": "external_agent",
+                "provenance": "authoritative",
+            },
+        )
 
 
 def test_otel_bridge_initialization_with_endpoint():

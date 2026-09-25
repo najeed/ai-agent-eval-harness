@@ -426,6 +426,25 @@ class ForensicCollector:
 
         return file_hash
 
+    def record_external_receipts(self, receipts: list[dict[str, Any]], turn: int, node_id: str):
+        """
+        Record external agent execution receipts into forensic artifacts.
+        Preserves provenance ('external_agent_telemetry' / 'reported') and binds receipt hashes.
+        """
+        if not receipts:
+            return
+        if not hasattr(self, "_external_receipts"):
+            self._external_receipts = []
+        self._external_receipts.extend(receipts)
+        self.target_dir.mkdir(parents=True, exist_ok=True)
+        receipt_filename = f"external_receipts_turn_{turn:03d}_{node_id}.json"
+        target_path = self.target_dir / receipt_filename
+        try:
+            target_path.write_text(json.dumps(receipts, indent=2, default=str), encoding="utf-8")
+            self.register_artifact(target_path, f"receipts/{receipt_filename}")
+        except OSError as e:
+            logger.debug("Failed writing receipt artifact: %s", e)
+
     def snapshot_state(self, state: dict[str, Any], turn: int, branch_id: str | None = None):
         """
         Saves a JSON snapshot of the world state to disk.

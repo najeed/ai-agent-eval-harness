@@ -674,7 +674,6 @@ def test_extract_computed_run_outcome_edge_cases(cert_vault):
 
     # Sub-case A: Non-finalization event appended after finalization marker
     with open(trace, "w", encoding="utf-8") as f:
-        f.write("corrupt-line\n")
         f.write(json.dumps({"event": "evaluator_finalization", "data": fin_rec.to_dict()}) + "\n")
         f.write(json.dumps({"event": "tamper_post_final", "data": {}}) + "\n")
 
@@ -1018,22 +1017,438 @@ def test_certification_metadata_binding_read_and_parse_error(cert_vault, monkeyp
         auto_finalize=True,
         scenario_data={"id": "scen_1", "version": "1.0.0"},
     )
-    # Remove execution_manifest so certification fails safely at line 617 after metadata binding
-    (vault / "execution_manifest.json").unlink()
-
-    # Case 1: Corrupt line during metadata binding pass
     trace = vault / "run.jsonl"
     lines = trace.read_text(encoding="utf-8").splitlines()
     lines.insert(1, "corrupt-non-json-line")
     trace.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
-    with pytest.raises(ValueError, match="MalformedTraceRecord"):
-        execute_industrial_certification(run_id, scenario_data={"id": "scen_1", "version": "1.0.0"})
+    from eval_runner.verifier import TraceVerifier
 
-    # Case 2: Read error during metadata binding pass
-    trace.write_text(
-        "\n".join(line for line in lines if line != "corrupt-non-json-line") + "\n",
-        encoding="utf-8",
+    monkeypatch.setattr(CertificationService, "parse_trace_strict", lambda *a, **kw: events)
+    monkeypatch.setattr(
+        TraceVerifier,
+        "sign_trace",
+        lambda *a, **kw: {
+            "status": "certified",
+            "package_hash": "dummy_pkg",
+            "verification_package": "dummy_vp",
+        },
     )
-    with pytest.raises(ValueError, match="ExecutionManifestMissing"):
-        execute_industrial_certification(run_id, scenario_data={"id": "scen_1", "version": "1.0.0"})
+    res = execute_industrial_certification(
+        run_id, scenario_data={"id": "scen_1", "version": "1.0.0"}
+    )
+    assert res["status"] == "certified"
+
+    run_id_read_err = "run-meta-read-err"
+    _create_trace(
+        cert_vault["runs"],
+        run_id_read_err,
+        events,
+        auto_finalize=True,
+        scenario_data={"id": "scen_1", "version": "1.0.0"},
+    )
+    original_open = open
+    trace_err_path = (cert_vault["runs"] / run_id_read_err / "run.jsonl").resolve()
+
+    import inspect
+
+    def _mock_open(file, *args, **kwargs):
+        try:
+            if Path(file).resolve() == trace_err_path:
+                frame = inspect.currentframe().f_back
+                if frame and frame.f_code.co_name == "execute_industrial_certification":
+                    raise OSError("Metadata read failed")
+        except (ValueError, OSError) as e:
+            if str(e) == "Metadata read failed":
+                raise
+        return original_open(file, *args, **kwargs)
+
+    monkeypatch.setattr("builtins.open", _mock_open)
+    with pytest.raises(ValueError, match="EvidenceRootMismatch"):
+        execute_industrial_certification(
+            run_id_read_err, scenario_data={"id": "scen_1", "version": "1.0.0"}
+        )
+
+
+def test_parse_trace_strict_non_dict_record(tmp_path):
+    trace = tmp_path / "non_dict.jsonl"
+    trace.write_text('"a string record"\n', encoding="utf-8")
+    with pytest.raises(ValueError, match="InvalidTraceRecord:1: expected object"):
+        CertificationService.parse_trace_strict(trace)
+
+
+def test_count_assertion_and_evidence_nodes_various_structures(tmp_path):
+    trace = tmp_path / "evidence_count.jsonl"
+    events = [
+        {"event": "step_executed", "outcome": "PASS"},
+        {"event": "custom_event_1", "assertion": "custom_assert"},
+        {"event": "custom_event_2", "oracle_results": [{"passed": True}]},
+        {"event": "custom_event_3", "metrics": [{"score": 1.0}]},
+        {"event": "step_data_1", "data": {"assertion": "nested_assert"}},
+        {"event": "step_data_2", "data": {"oracle_results": [{"passed": True}]}},
+        {"event": "step_data_3", "data": {"metrics": [{"score": 1.0}]}},
+        {"event": "other_event", "data": {"unrelated": 123}},
+        {"event": "other_non_dict_data", "unrelated": 456},
+    ]
+    trace.write_text("\n".join(json.dumps(e) for e in events) + "\n", encoding="utf-8")
+    count = CertificationService.count_assertion_and_evidence_nodes(trace)
+    assert count == 7
+
+
+def test_execute_industrial_certification_trace_path_variations(cert_vault):
+    run_id_shared = "run-tp-shared"
+    scen_data = {"id": "scen_tp", "version": "1.0.0"}
+    events = [
+        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_tp"},
+        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
+        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
+    ]
+    _create_trace(cert_vault["runs"], run_id_shared, events, scenario_data=scen_data)
+
+    master_log = cert_vault["runs"] / "run.jsonl"
+    master_log.write_text('{"event": "start"}\n', encoding="utf-8")
+    with pytest.raises(ValueError, match="SharedMasterLogCertificationForbidden"):
+        execute_industrial_certification(
+            run_id_shared, trace_path=master_log, scenario_data=scen_data
+        )
+
+    run_id_rel = "run-tp-rel"
+    _create_trace(cert_vault["runs"], run_id_rel, events, scenario_data=scen_data)
+    rel_path = f"{run_id_rel}/run.jsonl"
+    res_rel = execute_industrial_certification(
+        run_id_rel, trace_path=rel_path, scenario_data=scen_data
+    )
+    assert res_rel["status"] == "certified"
+
+    run_id_404 = "run-tp-404"
+    with pytest.raises(FileNotFoundError, match="Run vault not found"):
+        execute_industrial_certification(
+            run_id_404, trace_path="nonexistent_vault/run.jsonl", scenario_data=scen_data
+        )
+
+
+def test_execute_industrial_certification_finalization_run_id_mismatch(cert_vault):
+    run_id = "run-fin-mismatch"
+    scen_data = {"id": "scen_fin_m", "version": "1.0.0"}
+    events = [
+        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_fin_m"},
+        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
+        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
+    ]
+    vault, _ = _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
+
+    from agentv_runtime.evidence_graph import (
+        build_evidence_graph_from_events,
+        compute_evidence_graph_root,
+    )
+    from agentv_runtime.manifest import ExecutionManifest
+
+    m_path = vault / "execution_manifest.json"
+    m_obj = ExecutionManifest.from_dict(json.loads(m_path.read_text(encoding="utf-8")))
+    m_hash = m_obj.compute_manifest_hash()
+
+    ev_graph = build_evidence_graph_from_events(events)
+    ev_root = compute_evidence_graph_root(ev_graph)
+
+    fin_rec = EvaluatorFinalizationRecord(
+        finalization_id="fin_id_mismatch",
+        run_id="OTHER_RUN_ID",
+        execution_manifest_hash=m_hash,
+        scenario_id="scen_fin_m",
+        scenario_version="1.0.0",
+        scenario_hash=compute_scenario_hash(scen_data),
+        evaluator_identity="eval_kernel",
+        evaluator_config_hash="sha3_256:" + "0" * 64,
+        required_oracle_ids=[],
+        evidence_root_hash=ev_root,
+        outcome="pass",
+        score=1.0,
+    ).sign()
+
+    trace_file = vault / "run.jsonl"
+    with open(trace_file, "w", encoding="utf-8") as f:
+        for ev in events:
+            f.write(json.dumps(ev) + "\n")
+        f.write(
+            json.dumps(
+                {
+                    "event": "run_end",
+                    "run_id": run_id,
+                    "data": {"finalization": fin_rec.to_dict()},
+                }
+            )
+            + "\n"
+        )
+
+    with pytest.raises(ValueError, match="FinalizationRunIdMismatch"):
+        execute_industrial_certification(run_id, scenario_data=scen_data)
+
+
+def test_execute_industrial_certification_scenario_resolved_and_snapshot_error(cert_vault):
+    from unittest.mock import patch
+
+    run_id = "run-scen-snapshot-test"
+    scen_data = {"id": "scen_snap", "version": "1.0.0"}
+    events = [
+        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_snap"},
+        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
+        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
+    ]
+    vault, _ = _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
+
+    snap_path = vault / "scenario_resolved.json"
+    snap_path.write_text(json.dumps(scen_data, indent=2), encoding="utf-8")
+
+    res = execute_industrial_certification(run_id, scenario_data=None)
+    assert res["status"] == "certified"
+
+    from eval_runner import loader
+
+    snap_path.unlink()
+    run_id_fallback = "run-scen-snap-fallback"
+    vault_fb, _ = _create_trace(
+        cert_vault["runs"], run_id_fallback, events, scenario_data=scen_data
+    )
+    snap_fb = vault_fb / "scenario_resolved.json"
+    snap_fb.write_text("invalid json content", encoding="utf-8")
+    with patch.object(loader, "load_scenario", return_value=scen_data):
+        res_fb = execute_industrial_certification(run_id_fallback, scenario_data=None)
+        assert res_fb["status"] == "certified"
+
+    run_id_nondict = "run-scen-snap-nondict"
+    vault_nd, _ = _create_trace(cert_vault["runs"], run_id_nondict, events, scenario_data=scen_data)
+    snap_nd = vault_nd / "scenario_resolved.json"
+    snap_nd.write_text("[1, 2, 3]", encoding="utf-8")
+    with patch.object(loader, "load_scenario", return_value=scen_data):
+        res_nd = execute_industrial_certification(run_id_nondict, scenario_data=None)
+        assert res_nd["status"] == "certified"
+
+    run_id2 = "run-scen-snap-fail"
+    vault2, _ = _create_trace(cert_vault["runs"], run_id2, events, scenario_data=scen_data)
+    (vault2 / "scenario_resolved.json").unlink(missing_ok=True)
+
+    orig_write = Path.write_text
+
+    def _mock_write(self, *args, **kwargs):
+        if "scenario_resolved.json" in str(self):
+            raise OSError("Disk write protected")
+        return orig_write(self, *args, **kwargs)
+
+    with patch.object(Path, "write_text", _mock_write):
+        with pytest.raises(ValueError, match="FailedToPersistScenarioSnapshot"):
+            execute_industrial_certification(run_id2, scenario_data=scen_data)
+
+
+def test_execute_industrial_certification_empty_scenario_loader(cert_vault, monkeypatch):
+    run_id = "run-empty-scen-loader"
+    events = [
+        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_empty"},
+        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
+        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
+    ]
+    _create_trace(
+        cert_vault["runs"],
+        run_id,
+        events,
+        auto_finalize=True,
+        scenario_data={"id": "scen_empty", "version": "1.0.0"},
+    )
+    (cert_vault["runs"] / run_id / "scenario_resolved.json").unlink(missing_ok=True)
+
+    from eval_runner import loader
+
+    monkeypatch.setattr(loader, "load_scenario", lambda sid: [])
+    with pytest.raises(ValueError, match="cannot resolve authoritative scenario definition"):
+        execute_industrial_certification(run_id, scenario_data=None)
+
+
+def test_read_run_truth_level_non_start_events_and_no_start(cert_vault):
+    run_id = "run-truth-no-start"
+    vault = cert_vault["runs"] / run_id
+    vault.mkdir(parents=True, exist_ok=True)
+    trace = vault / "run.jsonl"
+    with open(trace, "w", encoding="utf-8") as f:
+        f.write(json.dumps({"event": "heartbeat", "data": {}}) + "\n")
+        f.write(json.dumps({"event": "step_executed", "data": {}}) + "\n")
+
+    mode, is_prov = CertificationService.read_run_truth_level(run_id)
+    assert mode == "unknown"
+    assert is_prov is True
+
+
+def test_extract_finalization_record_corrupt_line_and_non_dict_run_end(cert_vault, monkeypatch):
+    run_id = "run-fin-rec-branches"
+    vault = cert_vault["runs"] / run_id
+    vault.mkdir(parents=True, exist_ok=True)
+    trace = vault / "run.jsonl"
+    with open(trace, "w", encoding="utf-8") as f:
+        f.write("corrupt non json line\n")
+        f.write(
+            json.dumps(
+                {
+                    "event": "run_end",
+                    "data": {"finalization": "not_a_dict"},
+                    "finalization": 123,
+                }
+            )
+            + "\n"
+        )
+
+    monkeypatch.setattr(CertificationService, "parse_trace_strict", lambda *a, **kw: [])
+    rec = CertificationService.extract_finalization_record(trace)
+    assert rec is None
+
+
+def test_extract_computed_run_outcome_branches(cert_vault, monkeypatch):
+    run_id = "run-outcome-branches"
+    vault = cert_vault["runs"] / run_id
+    vault.mkdir(parents=True, exist_ok=True)
+    trace = vault / "run.jsonl"
+    with open(trace, "w", encoding="utf-8") as f:
+        f.write("corrupt non json line\n")
+        f.write(
+            json.dumps(
+                {
+                    "event": "run_end",
+                    "data": {"finalization": "not_dict"},
+                    "finalization": 123,
+                }
+            )
+            + "\n"
+        )
+        f.write(json.dumps({"event": "custom_empty", "data": {"foo": "bar"}}) + "\n")
+        f.write(
+            json.dumps({"event": "session_decision", "data": {"status": "evaluation_invalid"}})
+            + "\n"
+        )
+
+    monkeypatch.setattr(CertificationService, "parse_trace_strict", lambda *a, **kw: [])
+    status, score = CertificationService.extract_computed_run_outcome(vault, trace)
+    assert status == "fail"
+    assert score == 0.0
+
+
+def test_execute_industrial_certification_unwritten_manifest_fallback(cert_vault, monkeypatch):
+    from eval_runner.verifier import TraceVerifier
+
+    run_id = "run-manifest-fallback-write"
+    scen_data = {"id": "scen_mf", "version": "1.0.0"}
+    events = [
+        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_mf"},
+        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
+        {
+            "event": "session_decision",
+            "data": {"decision": "PASS", "score": 1.0, "finalization": {"dummy": True}},
+        },
+    ]
+    vault, _ = _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
+
+    original_sign = TraceVerifier.sign_trace
+
+    def _mock_sign(*args, **kwargs):
+        manifest = original_sign(*args, **kwargs)
+        manifest_path = vault / "run_manifest.json"
+        if manifest_path.exists():
+            manifest_path.unlink()
+        return manifest
+
+    monkeypatch.setattr(TraceVerifier, "sign_trace", _mock_sign)
+    res = execute_industrial_certification(run_id, scenario_data=scen_data)
+    assert res["status"] == "certified"
+    assert (vault / "run_manifest.json").exists()
+
+
+def test_execute_industrial_certification_manifest_semantic_mismatches(cert_vault):
+    run_id = "run-manifest-semantic-test"
+    scen_data = {"id": "scen_sem", "version": "1.0.0"}
+    events = [
+        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_sem"},
+        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
+        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
+    ]
+    vault, _ = _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
+    manifest_path = vault / "execution_manifest.json"
+    original_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+    from agentv_runtime.evidence_graph import (
+        build_evidence_graph_from_events,
+        compute_evidence_graph_root,
+    )
+    from agentv_runtime.manifest import ExecutionManifest
+
+    def _update_fin_and_manifest(m_dict, fin_kwargs_override=None):
+        m_obj = ExecutionManifest.from_dict(m_dict)
+        manifest_path.write_text(json.dumps(m_obj.to_dict()), encoding="utf-8")
+        m_hash = m_obj.compute_manifest_hash()
+
+        ev_graph = build_evidence_graph_from_events(events)
+        ev_root = compute_evidence_graph_root(ev_graph)
+
+        fin_kwargs = {
+            "finalization_id": f"fin_{run_id}",
+            "run_id": run_id,
+            "execution_manifest_hash": m_hash,
+            "scenario_id": "scen_sem",
+            "scenario_version": "1.0.0",
+            "scenario_hash": compute_scenario_hash(scen_data),
+            "evaluator_identity": "eval_kernel",
+            "evaluator_config_hash": "sha3_256:" + "0" * 64,
+            "required_oracle_ids": [],
+            "evidence_root_hash": ev_root,
+            "outcome": "pass",
+            "score": 1.0,
+        }
+        if fin_kwargs_override:
+            fin_kwargs.update(fin_kwargs_override)
+        fin = EvaluatorFinalizationRecord(**fin_kwargs).sign()
+
+        trace_file = vault / "run.jsonl"
+        with open(trace_file, "w", encoding="utf-8") as f:
+            for ev in events:
+                f.write(json.dumps(ev) + "\n")
+            f.write(json.dumps({"event": "evaluator_finalization", "data": fin.to_dict()}) + "\n")
+
+    m0 = dict(original_manifest)
+    m0["scenario_id"] = "scen_mismatch"
+    _update_fin_and_manifest(m0)
+    with pytest.raises(ValueError, match="ManifestScenarioIdMismatch"):
+        execute_industrial_certification(run_id, scenario_data=scen_data)
+
+    m1 = dict(original_manifest)
+    m1["scenario_version"] = "2.0.0"
+    _update_fin_and_manifest(m1)
+    with pytest.raises(ValueError, match="ManifestScenarioVersionMismatch"):
+        execute_industrial_certification(run_id, scenario_data=scen_data)
+
+    m2 = dict(original_manifest)
+    m2["scenario_hash"] = "sha3_256:" + "a" * 64
+    _update_fin_and_manifest(m2)
+    with pytest.raises(ValueError, match="ManifestScenarioHashMismatch"):
+        execute_industrial_certification(run_id, scenario_data=scen_data)
+
+    m3 = dict(original_manifest)
+    m3["runtime_config"] = {"execution_mode": "hybrid"}
+    _update_fin_and_manifest(m3)
+    with pytest.raises(ValueError, match="ManifestExecutionModeMismatch"):
+        execute_industrial_certification(run_id, scenario_data=scen_data)
+
+    m4 = dict(original_manifest)
+    m4["runtime_config"] = {
+        "execution_mode": "live",
+        "evaluator_config_hash": "sha3_256:" + "b" * 64,
+    }
+    _update_fin_and_manifest(m4)
+    with pytest.raises(ValueError, match="ManifestEvaluatorConfigHashMismatch"):
+        execute_industrial_certification(run_id, scenario_data=scen_data)
+
+    m5 = dict(original_manifest)
+    m5["metadata"] = {"required_oracle_ids": ["oracle_extra"]}
+    _update_fin_and_manifest(m5, {"required_oracle_ids": ["oracle_extra"]})
+    with pytest.raises(ValueError, match="RequiredOracleInventoryMismatch"):
+        execute_industrial_certification(run_id, scenario_data=scen_data)
+
+    m6 = dict(original_manifest)
+    m6["metadata"] = {"required_oracle_ids": ["oracle_manifest_only"]}
+    _update_fin_and_manifest(m6, {"required_oracle_ids": ["oracle_fin_only"]})
+    with pytest.raises(ValueError, match="ManifestRequiredOracleMismatch"):
+        execute_industrial_certification(run_id, scenario_data=scen_data)

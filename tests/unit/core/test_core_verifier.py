@@ -13,8 +13,19 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import ed25519
+from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 
+from agentv_runtime.canonical import canonical_json_encode
+from agentv_runtime.evidence_graph import (
+    build_evidence_graph_from_events,
+    compute_evidence_graph_root,
+)
+from agentv_runtime.finalization import EvaluatorFinalizationRecord
+from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
+from agentv_runtime.package import VerificationPackage
 from eval_runner import config
+from eval_runner.identity import IdentityService
 from eval_runner.verifier import (
     BaseVerifier,
     CertificationFailedError,
@@ -26,6 +37,7 @@ from eval_runner.verifier import (
     VerificationService,
     locate_certificate_file,
     verification_service,
+    verify_trace_certificate,
 )
 
 # --- 1. Fixtures & Scaffolding ---
@@ -992,7 +1004,6 @@ class MockPreemptiveInterceptor(TraceVerificationInterceptor):
         return format in ["preempt", "ED25519", "hybrid"]
 
     def sign(self, manifest: dict, next_signer) -> dict:
-        from agentv_runtime.canonical import canonical_json_encode
         from eval_runner.identity import IdentityService
 
         identity = "preempted_signer"
@@ -1032,7 +1043,6 @@ class MockAugmentingInterceptor(TraceVerificationInterceptor):
         return True
 
     def sign(self, manifest: dict, next_signer) -> dict:
-        from agentv_runtime.canonical import canonical_json_encode
         from eval_runner.identity import IdentityService
 
         manifest = next_signer(manifest)
@@ -1199,10 +1209,6 @@ def test_mandatory_vs_optional_interceptor_classification():
 
 def test_verify_trace_certificate_rejects_unanchored_embedded_key(tmp_path):
     """Fail-closed: verify_trace_certificate must never accept an embedded key as the trust root."""
-    from cryptography.hazmat.primitives.asymmetric import ed25519
-    from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
-
-    from eval_runner.verifier import verify_trace_certificate
 
     # Generate an untrusted keypair
     untrusted_priv = ed25519.Ed25519PrivateKey.generate()
@@ -1270,7 +1276,6 @@ def test_sign_and_verify_trace_fails_closed_on_malformed_records(tmp_path):
 
 def test_core_trace_signer_raises_certification_failed_on_signing_error():
     """CoreTraceSigner must raise CertificationFailedError on signing failures."""
-    from eval_runner.identity import IdentityService
     from eval_runner.verifier import CertificationFailedError, CoreTraceSigner
 
     signer = CoreTraceSigner()
@@ -1351,7 +1356,6 @@ def test_verify_trace_provenance_and_scenario_and_outcome_checks():
 
 def test_verify_trace_key_resolution_and_package_signature(tmp_path):
     """Verify key resolution fallbacks (PEM, registry, trust root) and package signature."""
-    from agentv_runtime.package import VerificationPackage
     from eval_runner.identity import IdentityService
 
     run_id = "key_res_test_run"
@@ -1471,11 +1475,6 @@ def test_verification_authority_verify_package_artifacts_failures():
     """Verify failure paths in VerificationAuthority.verify_package_artifacts."""
     from dataclasses import replace
 
-    from agentv_runtime.evidence_graph import (
-        build_evidence_graph_from_events,
-        compute_evidence_graph_root,
-    )
-    from agentv_runtime.manifest import compute_scenario_hash
     from agentv_runtime.package import VerificationPackage
 
     trace_bytes = b'{"event": "start", "run_id": "r1"}\n'
@@ -1705,7 +1704,6 @@ def test_verification_authority_verify_package_seal_and_trust_root_matrix(tmp_pa
     from cryptography.hazmat.primitives.asymmetric import rsa
     from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
-    from agentv_runtime.canonical import canonical_json_encode
     from agentv_runtime.package import VerificationPackage
     from eval_runner.identity import IdentityService
 
@@ -2089,3 +2087,864 @@ def test_certification_service_fail_closed_validations(tmp_path):
                     trace_path=trace_p,
                     scenario_data=scen_data,
                 )
+
+
+# ============================================================================
+# Section: Consolidated Authoritative Verification & Certification Tests
+# ============================================================================
+
+
+def _make_canonical_package(**overrides) -> VerificationPackage:
+    defaults = {
+        "scenario_id": "s1",
+        "scenario_version": "1.0.0",
+        "scenario_hash": "sh_default",
+        "manifest_id": "m1",
+        "manifest_hash": "mh_default",
+        "execution_identity": {"run_id": "r1"},
+        "trace_hash": "th_default",
+        "trace_seal": {"trace_digest": "th_default"},
+        "evidence_root_hash": "erh_default",
+        "required_oracle_ids": [],
+        "executed_oracle_results": [],
+        "decision": {"decision": "PASS", "verdict": "VERIFIED"},
+    }
+    defaults.update(overrides)
+    return VerificationPackage(**defaults)
+
+
+def _sha3_256_digest(data: bytes) -> str:
+    return f"sha3_256:{hashlib.sha3_256(data).hexdigest()}"
+
+
+def test_trace_signer_missing_private_key_fails_closed():
+    manifest = {
+        "run_id": "test_missing_key",
+        "signing_context": {"identity_id": "nonexistent_identity"},
+    }
+    with patch.object(IdentityService, "get_private_key", return_value=None):
+        with pytest.raises(
+            CertificationFailedError, match="Pre-existing trusted private key not found"
+        ):
+            CoreTraceSigner().sign(manifest, next_signer=lambda m: m)
+
+
+def test_get_certificate_empty_or_invalid_manifest_fails_closed(tmp_path):
+    trace_file = str(tmp_path / "fake_trace.jsonl")
+    with patch(
+        "eval_runner.services.certification.CertificationService.execute_industrial_certification",
+        return_value={"manifest": None},
+    ):
+        with pytest.raises(
+            CertificationFailedError, match="failed to produce a valid certificate manifest"
+        ):
+            TraceVerifier.get_certificate(run_id="run_bad", trace_path=trace_file)
+
+    with patch(
+        "eval_runner.services.certification.CertificationService.execute_industrial_certification",
+        return_value={"manifest": {"no_trace_hash": True}},
+    ):
+        with pytest.raises(
+            CertificationFailedError, match="failed to produce a valid certificate manifest"
+        ):
+            TraceVerifier.get_certificate(run_id="run_bad2", trace_path=trace_file)
+
+
+def test_get_certificate_success_returns_manifest(tmp_path):
+    trace_file = str(tmp_path / "fake_trace.jsonl")
+    expected_manifest = {
+        "run_id": "run_success",
+        "trace_hash": "sha3_256:abc12345",
+        "vc_version": "3.0.0",
+    }
+    with patch(
+        "eval_runner.services.certification.CertificationService.execute_industrial_certification",
+        return_value={"manifest": expected_manifest},
+    ):
+        result = TraceVerifier.get_certificate(run_id="run_success", trace_path=trace_file)
+        assert result == expected_manifest
+
+
+def test_verify_trace_discovers_staged_artifact(tmp_path):
+    priv = ed25519.Ed25519PrivateKey.generate()
+    pub = priv.public_key()
+    run_dir = tmp_path / "run_staging"
+    run_dir.mkdir(parents=True)
+    staging_dir = run_dir / ".staging" / "artifacts"
+    staging_dir.mkdir(parents=True)
+
+    art_file = staging_dir / "output.txt"
+    art_file.write_text("forensic staged content", encoding="utf-8")
+    art_hash = TraceVerifier.compute_signature(art_file)
+
+    trace_file = run_dir / "trace.jsonl"
+    trace_file.write_text('{"event": "start", "_seq": 1}\n', encoding="utf-8")
+    trace_hash = TraceVerifier.compute_signature(trace_file)
+
+    manifest_data = {
+        "run_id": "run_staging",
+        "vc_version": "3.0.0",
+        "trace_hash": trace_hash,
+        "evidence_ledger": {"artifacts/output.txt": art_hash},
+        "timestamp": "2026-09-01T00:00:00Z",
+    }
+    to_sign = manifest_data.copy()
+    sig_hex = priv.sign(canonical_json_encode(to_sign)).hex()
+    manifest_data["provenance_chain"] = [
+        {"identity": "system_id", "signature": sig_hex, "algorithm": "ED25519"}
+    ]
+
+    manifest_file = run_dir / "manifest.json"
+    manifest_file.write_text(json.dumps(manifest_data), encoding="utf-8")
+
+    with patch.object(IdentityService, "get_public_key", return_value=pub):
+        ok = TraceVerifier.verify_trace(
+            str(trace_file), str(manifest_file), verify_ledger=True, require_sealed=False
+        )
+        assert ok is True
+
+
+def test_verify_trace_skips_terminal_finalization_carrier(tmp_path):
+    priv = ed25519.Ed25519PrivateKey.generate()
+    pub = priv.public_key()
+    run_dir = tmp_path / "run_term"
+    run_dir.mkdir(parents=True)
+
+    ev1 = {"event": "run_start", "_seq": 1}
+    ev_terminal = {"event": "run_end", "_seq": 2, "finalization": {"score": 1.0}}
+    ev3 = {"event": "user_metric", "_seq": 3, "score": 1.0}
+
+    effective_events_with_lines = [
+        (ev1, json.dumps(ev1)),
+        (ev3, json.dumps(ev3)),
+    ]
+    ev_graph = build_evidence_graph_from_events(effective_events_with_lines)
+    ev_root = compute_evidence_graph_root(ev_graph)
+
+    trace_file = run_dir / "trace.jsonl"
+    trace_file.write_text(
+        f"{json.dumps(ev1)}\n{json.dumps(ev_terminal)}\n{json.dumps(ev3)}\n",
+        encoding="utf-8",
+    )
+    trace_hash = TraceVerifier.compute_signature(trace_file)
+
+    scenario_data = {"id": "scen_term", "version": "1.0.0", "nodes": []}
+    scen_hash = compute_scenario_hash(scenario_data)
+
+    manifest_data = {
+        "run_id": "run_term",
+        "vc_version": "3.0.0",
+        "trace_hash": trace_hash,
+        "evidence_root_hash": ev_root,
+        "metadata": {"scenario_hash": scen_hash},
+        "timestamp": "2026-09-01T00:00:00Z",
+    }
+    sig_hex = priv.sign(canonical_json_encode(manifest_data)).hex()
+    manifest_data["provenance_chain"] = [
+        {"identity": "system_id", "signature": sig_hex, "algorithm": "ED25519"}
+    ]
+    manifest_file = run_dir / "manifest.json"
+    manifest_file.write_text(json.dumps(manifest_data), encoding="utf-8")
+
+    with patch.object(IdentityService, "get_public_key", return_value=pub):
+        ok = TraceVerifier.verify_trace(
+            str(trace_file),
+            str(manifest_file),
+            scenario_data=scenario_data,
+            verify_ledger=False,
+            require_sealed=False,
+        )
+        assert ok is True
+
+
+def test_verify_trace_sealed_run_matching_run_log_dir(tmp_path, monkeypatch):
+    priv = ed25519.Ed25519PrivateKey.generate()
+    pub = priv.public_key()
+    run_dir = tmp_path / "runs"
+    run_dir.mkdir(parents=True)
+    monkeypatch.setattr(config, "RUN_LOG_DIR", run_dir)
+
+    trace_file = run_dir / "trace.jsonl"
+    trace_file.write_text('{"event": "start"}\n', encoding="utf-8")
+    trace_hash = TraceVerifier.compute_signature(trace_file)
+
+    manifest_data = {
+        "run_id": "runs",
+        "vc_version": "3.0.0",
+        "trace_hash": trace_hash,
+        "timestamp": "2026-09-01T00:00:00Z",
+    }
+    sig_hex = priv.sign(canonical_json_encode(manifest_data)).hex()
+    manifest_data["provenance_chain"] = [
+        {"identity": "system_id", "signature": sig_hex, "algorithm": "ED25519"}
+    ]
+    manifest_file = run_dir / "manifest.json"
+    manifest_file.write_text(json.dumps(manifest_data), encoding="utf-8")
+
+    with patch.object(IdentityService, "get_public_key", return_value=pub):
+        ok = TraceVerifier.verify_trace(
+            str(trace_file),
+            str(manifest_file),
+            verify_ledger=False,
+            require_sealed=True,
+        )
+        assert ok is True
+
+
+def test_verify_trace_trust_root_object_resolution(tmp_path):
+    priv = ed25519.Ed25519PrivateKey.generate()
+    pub = priv.public_key()
+    run_dir = tmp_path / "run_trust_obj"
+    run_dir.mkdir(parents=True)
+    trace_file = run_dir / "trace.jsonl"
+    trace_file.write_text('{"event": "start"}\n', encoding="utf-8")
+    trace_hash = TraceVerifier.compute_signature(trace_file)
+
+    manifest_data = {
+        "run_id": "run_trust_obj",
+        "vc_version": "3.0.0",
+        "trace_hash": trace_hash,
+        "timestamp": "2026-09-01T00:00:00Z",
+    }
+    sig_hex = priv.sign(canonical_json_encode(manifest_data)).hex()
+    manifest_data["provenance_chain"] = [
+        {"identity": "custom_resolver_id", "signature": sig_hex, "algorithm": "ED25519"}
+    ]
+    manifest_file = run_dir / "manifest.json"
+    manifest_file.write_text(json.dumps(manifest_data), encoding="utf-8")
+
+    trust_root_obj = MagicMock()
+    trust_root_obj.get_public_key.return_value = pub
+
+    ok = TraceVerifier.verify_trace(
+        str(trace_file),
+        str(manifest_file),
+        trust_root=trust_root_obj,
+        verify_ledger=False,
+        require_sealed=False,
+    )
+    assert ok is True
+
+
+def test_verify_trace_rejects_unsigned_verification_package(tmp_path):
+    priv = ed25519.Ed25519PrivateKey.generate()
+    pub = priv.public_key()
+    run_dir = tmp_path / "run_unsigned_pkg"
+    run_dir.mkdir(parents=True)
+    trace_file = run_dir / "trace.jsonl"
+    trace_file.write_text('{"event": "start"}\n', encoding="utf-8")
+    trace_hash = TraceVerifier.compute_signature(trace_file)
+
+    unsigned_pkg = _make_canonical_package(
+        trace_hash=trace_hash,
+        signature=None,
+    )
+
+    manifest_data = {
+        "run_id": "run_unsigned_pkg",
+        "vc_version": "3.0.0",
+        "trace_hash": trace_hash,
+        "timestamp": "2026-09-01T00:00:00Z",
+        "verification_package": unsigned_pkg.to_dict(),
+    }
+    to_sign = manifest_data.copy()
+    to_sign.pop("provenance_chain", None)
+    sig_hex = priv.sign(canonical_json_encode(to_sign)).hex()
+    manifest_data["provenance_chain"] = [
+        {"identity": "system_id", "signature": sig_hex, "algorithm": "ED25519"}
+    ]
+    manifest_file = run_dir / "manifest.json"
+    manifest_file.write_text(json.dumps(manifest_data), encoding="utf-8")
+
+    with patch.object(IdentityService, "get_public_key", return_value=pub):
+        ok = TraceVerifier.verify_trace(
+            str(trace_file),
+            str(manifest_file),
+            verify_ledger=False,
+            require_sealed=False,
+        )
+        assert ok is False
+
+
+def test_verify_trace_trust_root_directory_and_opaque_object_fallbacks(tmp_path):
+    priv = ed25519.Ed25519PrivateKey.generate()
+    pub = priv.public_key()
+
+    run_dir = tmp_path / "run_trust_root_fallbacks"
+    run_dir.mkdir(parents=True)
+    trace_file = run_dir / "trace.jsonl"
+    trace_file.write_text('{"event": "start"}\n', encoding="utf-8")
+    trace_hash = TraceVerifier.compute_signature(trace_file)
+
+    manifest_data = {
+        "run_id": "run_trust_root_fallbacks",
+        "vc_version": "3.0.0",
+        "trace_hash": trace_hash,
+        "timestamp": "2026-09-01T00:00:00Z",
+    }
+    to_sign = manifest_data.copy()
+    sig_hex = priv.sign(canonical_json_encode(to_sign)).hex()
+    manifest_data["provenance_chain"] = [
+        {"identity": "system_id", "signature": sig_hex, "algorithm": "ED25519"}
+    ]
+    manifest_file = run_dir / "manifest.json"
+    manifest_file.write_text(json.dumps(manifest_data), encoding="utf-8")
+
+    empty_dir = tmp_path / "empty_keys_dir"
+    empty_dir.mkdir(parents=True, exist_ok=True)
+
+    class OpaqueObject:
+        pass
+
+    opaque_root = OpaqueObject()
+
+    with patch.object(IdentityService, "get_public_key", return_value=pub):
+        ok1 = TraceVerifier.verify_trace(
+            str(trace_file),
+            str(manifest_file),
+            trust_root=str(empty_dir),
+            verify_ledger=False,
+            require_sealed=False,
+        )
+        assert ok1 is True
+
+        ok2 = TraceVerifier.verify_trace(
+            str(trace_file),
+            str(manifest_file),
+            trust_root=opaque_root,
+            verify_ledger=False,
+            require_sealed=False,
+        )
+        assert ok2 is True
+
+
+def test_verify_trace_certificate_cert_data_none_and_canonical_fallback():
+    ev1 = {"event": "start", "_seq": 1}
+    ev2 = {
+        "event": "oracle_evaluated",
+        "_seq": 2,
+        "oracle_id": "o1",
+        "outcome": "PASS",
+    }
+    ev_list = [ev1, ev2]
+
+    ev_graph_canon = build_evidence_graph_from_events(ev_list)
+    canon_ev_root = compute_evidence_graph_root(ev_graph_canon)
+
+    raw_trace_bytes = (
+        b'{"event": "start", "_seq": 1}\n'
+        b'{"event":   "oracle_evaluated",   "_seq": 2, "oracle_id": "o1", '
+        b'"outcome": "PASS"}\n'
+    )
+    trace_hash = hashlib.sha3_256(raw_trace_bytes).hexdigest()
+
+    manifest = {
+        "trace_hash": trace_hash,
+        "evidence_root_hash": canon_ev_root,
+        "provenance_chain": [],
+    }
+
+    res_none = verify_trace_certificate(
+        run_id="run_cert_none",
+        trace_bytes=raw_trace_bytes,
+        cert_data=None,
+        manifest=manifest,
+    )
+    assert res_none["manifest_hash_match"] is True
+
+    cert_data = {
+        "trace_hash": trace_hash,
+        "evidence_root_hash": canon_ev_root,
+    }
+    res_canon = verify_trace_certificate(
+        run_id="run_cert_fallback",
+        trace_bytes=raw_trace_bytes,
+        cert_data=cert_data,
+        manifest=manifest,
+    )
+    assert res_canon["manifest_hash_match"] is True
+    assert not any("Evidence root hash mismatch" in e for e in res_canon["errors"])
+
+
+def test_verify_package_artifacts_empty_lines_and_split_chain_detection():
+    raw_trace = b'\n\n{"event": "start"}\n\n{"event": "end"}\n\n'
+    actual_hash = _sha3_256_digest(raw_trace)
+
+    pkg = _make_canonical_package(
+        scenario_hash=None,
+        trace_hash=actual_hash,
+        evaluation_hash="eval_hash_no_finalization",
+    )
+
+    res1 = VerificationAuthority.verify_package_artifacts(
+        package=pkg,
+        raw_trace_bytes=raw_trace,
+        raw_trace_events=[{"event": "start"}],
+        canonical_manifest=None,
+        scenario_data=None,
+        require_signature=False,
+    )
+    assert any("Caller-supplied event count" in f for f in res1["failures"])
+
+    res2 = VerificationAuthority.verify_package_artifacts(
+        package=pkg,
+        raw_trace_bytes=raw_trace,
+        raw_trace_events=[{"event": "tampered_start"}, {"event": "end"}],
+        canonical_manifest=None,
+        scenario_data=None,
+        require_signature=False,
+    )
+    assert any("caller-supplied events do not exactly match" in f for f in res2["failures"])
+
+
+def test_verify_package_artifacts_manifest_to_dict_without_compliance():
+    raw_trace = b'{"event": "start"}\n'
+    actual_hash = _sha3_256_digest(raw_trace)
+
+    class ManifestNoCompliance:
+        def to_dict(self):
+            return {"run_id": "r1"}
+
+    pkg = _make_canonical_package(
+        trace_hash=actual_hash,
+        certificate_hash="fake_cert_hash",
+    )
+    res = VerificationAuthority.verify_package_artifacts(
+        package=pkg,
+        raw_trace_bytes=raw_trace,
+        canonical_manifest=ManifestNoCompliance(),
+        scenario_data=None,
+        require_signature=False,
+    )
+    assert isinstance(res, dict)
+
+
+def test_verify_package_canonical_evidence_graph_fallback():
+    ev1 = {"event": "start", "_seq": 1}
+    ev2 = {
+        "event": "oracle_evaluated",
+        "_seq": 2,
+        "oracle_id": "o1",
+        "outcome": "PASS",
+    }
+    raw_trace_spaced = (
+        b'\n\n{"event": "start", "_seq": 1}\n\n'
+        b'{"event":   "oracle_evaluated",   "_seq": 2, "oracle_id": "o1", '
+        b'"outcome": "PASS"}\n\n'
+    )
+
+    ev_graph_canon = build_evidence_graph_from_events([ev1, ev2])
+    canon_ev_root = compute_evidence_graph_root(ev_graph_canon)
+    trace_hash_spaced = _sha3_256_digest(raw_trace_spaced)
+
+    scenario_data = {"id": "scen_test", "version": "1.0", "metadata": {}}
+    scen_hash = compute_scenario_hash(scenario_data)
+
+    pkg = _make_canonical_package(
+        scenario_id="scen_test",
+        scenario_version="1.0",
+        scenario_hash=scen_hash,
+        trace_hash=trace_hash_spaced,
+        evidence_root_hash=canon_ev_root,
+    )
+
+    res = VerificationAuthority.verify_package(
+        package=pkg,
+        raw_trace_bytes=raw_trace_spaced,
+        raw_trace_events=[ev1, ev2],
+        scenario_data=scenario_data,
+        require_signature=False,
+    )
+    assert not any("EvidenceRootMismatch" in f for f in res["failures"])
+    assert not any("ScenarioHashMismatch" in f for f in res["failures"])
+
+
+def test_verify_certification_artifact_trace_bytes_and_events_validation():
+    pkg = _make_canonical_package()
+
+    r1 = TraceVerifier.verify_certification_artifact(package=pkg, raw_trace_bytes=None)
+    assert (
+        "TraceBytesMissing: certification verification requires raw trace bytes" in r1["failures"]
+    )
+
+    r2 = TraceVerifier.verify_certification_artifact(package=pkg, raw_trace_bytes=b"invalid json\n")
+    assert any("TraceStreamParsingFailed" in f for f in r2["failures"])
+
+    r3 = TraceVerifier.verify_certification_artifact(
+        package=pkg, raw_trace_bytes=b"\n\n", raw_trace_events=[{"event": "start"}]
+    )
+    assert any("TraceStreamSplitChainViolation" in f for f in r3["failures"])
+
+
+def test_verify_certification_artifact_missing_or_invalid_finalization_record():
+    pkg = _make_canonical_package()
+
+    trace_no_fin = b'{"event": "start"}\n{"event": "end"}\n'
+    r1 = TraceVerifier.verify_certification_artifact(package=pkg, raw_trace_bytes=trace_no_fin)
+    assert any("MissingEvaluatorFinalization" in f for f in r1["failures"])
+
+    trace_bad_fin = b'{"event": "evaluator_finalization", "data": {"bad_field": 123}}\n'
+    r2 = TraceVerifier.verify_certification_artifact(package=pkg, raw_trace_bytes=trace_bad_fin)
+    assert any("AuthoritativeEvaluatorRecordInvalid" in f for f in r2["failures"])
+
+    trace_bad_end = b'{"event": "run_end", "finalization": {"bad_field": 123}}\n'
+    r3 = TraceVerifier.verify_certification_artifact(package=pkg, raw_trace_bytes=trace_bad_end)
+    assert any("AuthoritativeEvaluatorRecordInvalid" in f for f in r3["failures"])
+
+
+def test_verify_certification_artifact_finalization_in_event_root():
+    priv = ed25519.Ed25519PrivateKey.generate()
+    pub_pem = (
+        priv.public_key()
+        .public_bytes(encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo)
+        .decode("utf-8")
+    )
+
+    fin = EvaluatorFinalizationRecord(
+        finalization_id="fin_root_001",
+        run_id="run_root",
+        execution_manifest_hash="sha3_256:man_hash",
+        scenario_id="scen_root",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen_hash",
+        evaluator_identity="eval_agent",
+        evaluator_config_hash="sha3_256:cfg_hash",
+        required_oracle_ids=[],
+        evidence_root_hash="sha3_256:ev_root",
+        outcome="pass",
+        score=1.0,
+    )
+    signed_fin = fin.sign(priv)
+
+    ev_end = {
+        "event": "run_end",
+        "data": {"status": "finished"},
+        "finalization": signed_fin.to_dict(),
+    }
+    raw_trace = f"{json.dumps(ev_end)}\n".encode()
+
+    pkg = _make_canonical_package(
+        scenario_id="scen_root",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen_hash",
+        manifest_id="m1",
+        manifest_hash="sha3_256:man_hash",
+        trace_hash=_sha3_256_digest(raw_trace),
+        evidence_root_hash="sha3_256:ev_root",
+        finalization_hash=signed_fin.finalization_hash,
+        evaluation_hash=signed_fin.finalization_hash,
+        execution_identity={"run_id": "run_root", "execution_mode": "live"},
+        decision={"decision": "PASS", "score": 1.0},
+    )
+
+    res = TraceVerifier.verify_certification_artifact(
+        package=pkg,
+        raw_trace_bytes=raw_trace,
+        public_key_pem=pub_pem,
+        require_signature=False,
+    )
+    assert not any("MissingEvaluatorFinalization" in f for f in res["failures"])
+    assert not any("AuthoritativeEvaluatorRecordInvalid" in f for f in res["failures"])
+
+
+def test_verify_certification_artifact_resolves_evaluator_key_from_registry():
+    priv = ed25519.Ed25519PrivateKey.generate()
+    pub_pem = (
+        priv.public_key()
+        .public_bytes(encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo)
+        .decode("utf-8")
+    )
+
+    fin = EvaluatorFinalizationRecord(
+        finalization_id="fin_reg_001",
+        run_id="run_reg",
+        execution_manifest_hash="sha3_256:man_hash",
+        scenario_id="scen_reg",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen_hash",
+        evaluator_identity="custom_evaluator_identity",
+        evaluator_config_hash="sha3_256:cfg_hash",
+        required_oracle_ids=[],
+        evidence_root_hash="sha3_256:ev_root",
+        outcome="pass",
+        score=1.0,
+    )
+    signed_fin = fin.sign(priv)
+
+    ev_fin = {
+        "event": "evaluator_finalization",
+        "data": signed_fin.to_dict(),
+    }
+    raw_trace = f"{json.dumps(ev_fin)}\n".encode()
+
+    pkg = _make_canonical_package(
+        scenario_id="scen_reg",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen_hash",
+        manifest_id="m1",
+        manifest_hash="sha3_256:man_hash",
+        trace_hash=_sha3_256_digest(raw_trace),
+        evidence_root_hash="sha3_256:ev_root",
+        finalization_hash=signed_fin.finalization_hash,
+        evaluation_hash=signed_fin.finalization_hash,
+        execution_identity={"run_id": "run_reg", "execution_mode": "live"},
+        decision={"decision": "PASS", "score": 1.0},
+    )
+
+    res = TraceVerifier.verify_certification_artifact(
+        package=pkg,
+        raw_trace_bytes=raw_trace,
+        public_key_pem=None,
+        key_registry={"custom_evaluator_identity": pub_pem},
+        require_signature=False,
+    )
+    assert not any("EvaluatorKeyMissing" in f for f in res["failures"])
+    assert not any("EvaluatorSignatureVerificationFailed" in f for f in res["failures"])
+
+
+def test_verify_certification_artifact_handles_authoritative_verification_exception():
+    priv = ed25519.Ed25519PrivateKey.generate()
+    pub_pem = (
+        priv.public_key()
+        .public_bytes(encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo)
+        .decode("utf-8")
+    )
+
+    fin = EvaluatorFinalizationRecord(
+        finalization_id="fin_err_001",
+        run_id="run_err",
+        execution_manifest_hash="sha3_256:man_hash",
+        scenario_id="scen_err",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen_hash",
+        evaluator_identity="eval_agent",
+        evaluator_config_hash="sha3_256:cfg_hash",
+        required_oracle_ids=[],
+        evidence_root_hash="sha3_256:ev_root",
+        outcome="pass",
+        score=1.0,
+    )
+    signed_fin = fin.sign(priv)
+
+    ev_fin = {
+        "event": "evaluator_finalization",
+        "data": signed_fin.to_dict(),
+    }
+    raw_trace = f"{json.dumps(ev_fin)}\n".encode()
+
+    pkg = _make_canonical_package(
+        scenario_id="scen_err",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen_hash",
+        manifest_id="m1",
+        manifest_hash="sha3_256:man_hash",
+        trace_hash=_sha3_256_digest(raw_trace),
+        evidence_root_hash="sha3_256:ev_root",
+        finalization_hash=signed_fin.finalization_hash,
+        evaluation_hash=signed_fin.finalization_hash,
+        execution_identity={"run_id": "run_err", "execution_mode": "live"},
+        decision={"decision": "PASS", "score": 1.0},
+    )
+
+    with patch.object(
+        EvaluatorFinalizationRecord,
+        "verify_authoritative",
+        side_effect=RuntimeError("Cryptographic engine internal failure"),
+    ):
+        res = TraceVerifier.verify_certification_artifact(
+            package=pkg,
+            raw_trace_bytes=raw_trace,
+            public_key_pem=pub_pem,
+            require_signature=False,
+        )
+        assert any("Cryptographic engine internal failure" in f for f in res["failures"])
+
+
+def test_verify_certification_artifact_mismatches_and_uncertified_modes():
+    priv = ed25519.Ed25519PrivateKey.generate()
+    pub_pem = (
+        priv.public_key()
+        .public_bytes(encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo)
+        .decode("utf-8")
+    )
+
+    fin = EvaluatorFinalizationRecord(
+        finalization_id="fin_001",
+        run_id="run_100",
+        execution_manifest_hash="sha3_256:man_hash",
+        scenario_id="scen_auth",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen_hash",
+        evaluator_identity="eval_agent",
+        evaluator_config_hash="sha3_256:cfg_hash",
+        required_oracle_ids=["oracle_1"],
+        evidence_root_hash="sha3_256:ev_root",
+        outcome="pass",
+        score=1.0,
+    )
+    signed_fin = fin.sign(priv)
+
+    ev_fin = {
+        "event": "evaluator_finalization",
+        "data": signed_fin.to_dict(),
+    }
+    raw_trace = f"{json.dumps(ev_fin)}\n".encode()
+
+    pkg = _make_canonical_package(
+        package_id="pkg_different_run",
+        scenario_id="scen_auth",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:mismatched_scen",
+        manifest_id="m1",
+        manifest_hash="sha3_256:mismatched_manifest",
+        trace_hash=_sha3_256_digest(raw_trace),
+        evidence_root_hash="sha3_256:mismatched_ev",
+        finalization_hash="sha3_256:mismatched_fin",
+        evaluation_hash="sha3_256:mismatched_eval",
+        required_oracle_ids=["oracle_1"],
+        executed_oracle_results=[{"oracle_id": "oracle_1", "outcome": "PASS"}],
+        decision={"decision": "FAIL", "score": 0.5},
+        execution_identity={"execution_mode": "simulated"},
+        metadata={"provisional": True},
+    )
+
+    r_no_key = TraceVerifier.verify_certification_artifact(
+        package=pkg,
+        raw_trace_bytes=raw_trace,
+        public_key_pem=None,
+        key_registry={},
+    )
+    assert any("EvaluatorKeyMissing" in f for f in r_no_key["failures"])
+
+    other_priv = ed25519.Ed25519PrivateKey.generate()
+    other_pub_pem = (
+        other_priv.public_key()
+        .public_bytes(encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo)
+        .decode("utf-8")
+    )
+    r_bad_sig = TraceVerifier.verify_certification_artifact(
+        package=pkg,
+        raw_trace_bytes=raw_trace,
+        public_key_pem=other_pub_pem,
+    )
+    assert any("EvaluatorSignatureVerificationFailed" in f for f in r_bad_sig["failures"])
+
+    r_mismatches = TraceVerifier.verify_certification_artifact(
+        package=pkg,
+        raw_trace_bytes=raw_trace,
+        public_key_pem=pub_pem,
+    )
+    failures = r_mismatches["failures"]
+    assert any("RunIdMismatch" in f for f in failures)
+    assert any("EvidenceRootMismatch" in f for f in failures)
+    assert any("ScenarioHashMismatch" in f for f in failures)
+    assert any("ManifestHashMismatch" in f for f in failures)
+    assert any("FinalizationHashMismatch" in f for f in failures)
+    assert any("EvaluationHashMismatch" in f for f in failures)
+    assert any("DecisionMismatch" in f for f in failures)
+    assert any("ScoreMismatch" in f for f in failures)
+    assert any("UncertifiedExecutionMode" in f for f in failures)
+    assert any("ProvisionalExecutionCertificationProhibited" in f for f in failures)
+
+
+def test_verify_certification_artifact_successful_authoritative_certification():
+    priv = ed25519.Ed25519PrivateKey.generate()
+    pub_pem = (
+        priv.public_key()
+        .public_bytes(encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo)
+        .decode("utf-8")
+    )
+
+    run_id = "run_auth_pass"
+    scen_data = {"id": "scen_100", "version": "1.0.0", "metadata": {}}
+    scen_hash = compute_scenario_hash(scen_data)
+
+    man_manifest_obj = ExecutionManifest(
+        manifest_id="man_001",
+        scenario_id="scen_100",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+    )
+    man_hash = man_manifest_obj.compute_manifest_hash()
+
+    ev1 = {"event": "start", "_seq": 1}
+    raw_ev1_str = json.dumps(ev1)
+
+    ev_graph = build_evidence_graph_from_events([(ev1, raw_ev1_str)])
+    ev_root = compute_evidence_graph_root(ev_graph)
+
+    fin = EvaluatorFinalizationRecord(
+        finalization_id="fin_pass_001",
+        run_id=run_id,
+        execution_manifest_hash=man_hash,
+        scenario_id="scen_100",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+        evaluator_identity="eval_agent",
+        evaluator_config_hash="sha3_256:cfg_100",
+        required_oracle_ids=["oracle_auth"],
+        evidence_root_hash=ev_root,
+        outcome="pass",
+        score=1.0,
+    )
+    signed_fin = fin.sign(priv)
+
+    ev_end = {
+        "event": "run_end",
+        "_seq": 2,
+        "finalization": signed_fin.to_dict(),
+    }
+    raw_ev_end_str = json.dumps(ev_end)
+
+    raw_trace_bytes = f"{raw_ev1_str}\n{raw_ev_end_str}\n".encode()
+    trace_hash = _sha3_256_digest(raw_trace_bytes)
+
+    pkg = _make_canonical_package(
+        package_id=f"pkg_{run_id}",
+        scenario_id="scen_100",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+        manifest_id="man_001",
+        manifest_hash=man_hash,
+        trace_hash=trace_hash,
+        trace_seal={"trace_digest": trace_hash, "signer_identity": "eval_agent"},
+        evidence_root_hash=ev_root,
+        finalization_hash=signed_fin.finalization_hash,
+        evaluation_hash=signed_fin.finalization_hash,
+        required_oracle_ids=["oracle_auth"],
+        executed_oracle_results=[
+            {
+                "oracle_id": "oracle_auth",
+                "outcome": "PASS",
+                "resolver": "deterministic_rule",
+            }
+        ],
+        decision={"decision": "PASS", "score": 1.0, "verdict": "VERIFIED"},
+        execution_identity={"run_id": run_id, "execution_mode": "live"},
+        metadata={"provisional": False},
+        signer_identity="eval_agent",
+    )
+    signed_pkg = pkg.sign(priv)
+
+    res_dict = TraceVerifier.verify_certification_artifact(
+        package=signed_pkg.to_dict(),
+        raw_trace_bytes=raw_trace_bytes,
+        canonical_manifest=man_manifest_obj,
+        scenario_data=scen_data,
+        public_key_pem=pub_pem,
+        require_signature=True,
+    )
+    assert res_dict["failures"] == []
+    assert res_dict["verified"] is True
+    assert res_dict["status"] == "CERTIFIED"
+
+    res_obj = TraceVerifier.verify_certification_artifact(
+        package=signed_pkg,
+        raw_trace_bytes=raw_trace_bytes,
+        canonical_manifest=man_manifest_obj,
+        scenario_data=scen_data,
+        public_key_pem=pub_pem,
+        require_signature=True,
+    )
+    assert res_obj["verified"] is True
+    assert res_obj["status"] == "CERTIFIED"

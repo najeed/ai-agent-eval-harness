@@ -123,6 +123,7 @@ tmp_test/
 /scripts/
 /workspace/
 /.test_staging/
+/.agentv/
 
 # --- Dependencies ---
 node_modules/

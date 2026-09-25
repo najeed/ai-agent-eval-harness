@@ -902,3 +902,118 @@ async def test_runner_finally_span_end_failure():
     ):
         await run_evaluation(scenario)
         mock_span.end.assert_called_once()
+
+
+def test_render_outbound_payload_interpolation_and_hash_binding():
+    """Verify deep parameter interpolation and SHA3-256 payload hash binding (P0-04)."""
+    from types import SimpleNamespace
+
+    from eval_runner.engine import render_outbound_payload
+
+    # 1. Template interpolation
+    ctx1 = SimpleNamespace(
+        metadata={
+            "payload_template": {
+                "query": "{task_description}",
+                "node": "{node_id}",
+                "run": "{run_id}",
+                "data": "{input_payload}",
+                "constant": "active",
+            }
+        },
+        input_payload={"item_id": 42},
+        node_id="node-99",
+        run_id="run-777",
+    )
+    payload1, hash1 = render_outbound_payload("Perform adverse denial", ctx1, "http")
+    assert payload1["query"] == "Perform adverse denial"
+    assert payload1["node"] == "node-99"
+    assert payload1["run"] == "run-777"
+    assert payload1["data"] == {"item_id": 42}
+    assert payload1["constant"] == "active"
+    assert hash1.startswith("sha3_256:")
+
+    # 2. Mutated message produces distinct hash
+    _, hash1_mutant = render_outbound_payload("Perform adverse approval", ctx1, "http")
+    assert hash1 != hash1_mutant
+
+    # 3. OpenAPI protocol with prompt key replacement
+    ctx2 = SimpleNamespace(
+        metadata={},
+        input_payload={"prompt": "Original prompt", "temperature": 0.2},
+        node={"id": "node-open-1"},
+    )
+    payload2, hash2 = render_outbound_payload("Mutated prompt", ctx2, "openapi")
+    assert payload2["prompt"] == "Mutated prompt"
+    assert payload2["temperature"] == 0.2
+
+    # 4. OpenAPI protocol without matched prompt key
+    ctx3 = SimpleNamespace(
+        metadata={},
+        input_payload={"unrelated_key": "val"},
+        node={},
+    )
+    payload3, _ = render_outbound_payload("New task", ctx3, "openapi")
+    assert payload3["task_description"] == "New task"
+    assert payload3["unrelated_key"] == "val"
+
+    # 5. Fallback on canonical encoding failure
+    with patch(
+        "agentv_runtime.canonical.canonical_json_encode", side_effect=Exception("mock fail")
+    ):
+        payload4, hash4 = render_outbound_payload("Fallback test", None, "http")
+        assert payload4 == {"task_description": "Fallback test"}
+        assert hash4.startswith("sha3_256:")
+
+    # 6. OpenAPI protocol with empty or non-dict input_payload
+    ctx_empty_openapi = SimpleNamespace(metadata={}, input_payload={})
+    payload5, _ = render_outbound_payload("Empty openapi test", ctx_empty_openapi, "openapi")
+    assert payload5 == {"task_description": "Empty openapi test"}
+
+    # 7. Payload template with exact "{task_description}" and non-string/int values
+    ctx_exact_tmpl = SimpleNamespace(
+        metadata={
+            "payload_template": {
+                "direct_task": "{task_description}",
+                "int_val": 123,
+                "list_val": ["static", 1],
+            }
+        },
+        input_payload={},
+    )
+    payload6, _ = render_outbound_payload("Direct task message", ctx_exact_tmpl, "http")
+    assert payload6["direct_task"] == "Direct task message"
+    assert payload6["int_val"] == 123
+    assert payload6["list_val"] == ["static", 1]
+
+
+@pytest.mark.asyncio
+async def test_agent_adapter_registry_dispatch_metadata_edge_cases():
+    """Verify AgentAdapterRegistry.dispatch handles turn_ctx without metadata dict."""
+    from eval_runner.engine import AgentAdapterRegistry
+
+    # Create dummy adapter
+    mock_adapter = AsyncMock(return_value={"action": "final_answer", "content": "done"})
+    AgentAdapterRegistry.register("mock_proto_edge", mock_adapter)
+
+    # Class with read-only metadata property that raises AttributeError when setattr attempted
+    class ReadOnlyMetadataContext:
+        history = ()
+        input_payload = {}
+        span_context = None
+        task_id = "t1"
+        turn_number = 1
+
+        @property
+        def metadata(self):
+            return "not-a-dict"
+
+    ctx = ReadOnlyMetadataContext()
+    res = await AgentAdapterRegistry.call_agent(
+        protocol="mock_proto_edge",
+        endpoint="http://mock-agent.internal",
+        message="Test message",
+        history=[],
+        turn_ctx=ctx,
+    )
+    assert res["action"] == "final_answer"

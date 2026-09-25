@@ -5,6 +5,8 @@ Re-exported from authoritative agentv_runtime.interfaces.
 """
 
 from agentv_runtime.interfaces import (
+    ApprovalRequest,
+    ApprovalStore,
     ArtifactStore,
     AuthorizationBackend,
     AuthPrincipal,
@@ -19,6 +21,8 @@ from agentv_runtime.interfaces import (
 )
 
 __all__ = [
+    "ApprovalRequest",
+    "ApprovalStore",
     "ExecutionBackend",
     "CheckpointStore",
     "SigningBackend",

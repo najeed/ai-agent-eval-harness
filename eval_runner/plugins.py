@@ -258,19 +258,20 @@ class PluginManager:
         self._last_load_time = now
 
         # 1. Discover external plugins via entry points (standard install)
-        for entry_point in importlib.metadata.entry_points(group="eval_runner.plugins"):
-            try:
-                plugin_cls = entry_point.load()
-                if not any(isinstance(p, plugin_cls) for p in self.plugins):
-                    instance = plugin_cls()
-                    self.plugins.append(instance)
-                    self._record_provenance(instance, origin="MEMBER")
-            except Exception as e:
-                # Forensic Transparency: Log all entry-point failures
-                print(
-                    f"   [PluginManager] Warning: Entry-point load failure "
-                    f"({entry_point.name}): {e}"
-                )
+        if not os.getenv("AGENTV_DISABLE_EXTERNAL_PLUGINS"):
+            for entry_point in importlib.metadata.entry_points(group="eval_runner.plugins"):
+                try:
+                    plugin_cls = entry_point.load()
+                    if not any(isinstance(p, plugin_cls) for p in self.plugins):
+                        instance = plugin_cls()
+                        self.plugins.append(instance)
+                        self._record_provenance(instance, origin="MEMBER")
+                except Exception as e:
+                    # Forensic Transparency: Log all entry-point failures
+                    print(
+                        f"   [PluginManager] Warning: Entry-point load failure "
+                        f"({entry_point.name}): {e}"
+                    )
 
         # 2. Load manually registered persistent plugins (Industrial Dictionary Schema Only)
         if PERSISTENT_PLUGINS_PATH.exists():
@@ -321,7 +322,7 @@ class PluginManager:
                             is_trusted = plugin_def.get("trusted", False)
                             self._record_provenance(instance, origin="MEMBER")
                             self.provenance_map[class_name]["trusted"] = is_trusted
-                    except Exception as e:
+                    except (Exception, SystemExit) as e:
                         msg = (
                             f"   [PluginManager] Failed to load plugin "
                             f"{module_name}.{class_name}: {e}"

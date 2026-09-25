@@ -113,6 +113,22 @@ def test_debugger_state_store_post_event_non_dict_data_handling():
     assert len(DebuggerStateStore._events) == 2
 
 
+def test_debugger_state_external_tool_call_provenance():
+    """Verify DebuggerStateStore tags external_reported provenance on EXTERNAL_TOOL_CALL."""
+    from eval_runner.events import CoreEvents
+
+    DebuggerStateStore.reset()
+    DebuggerStateStore.handle_event(
+        {
+            "event": CoreEvents.EXTERNAL_TOOL_CALL,
+            "data": {"name": "verify_external_coverage", "arguments": {"patient_id": "P-101"}},
+        }
+    )
+    state = DebuggerStateStore.get_state()
+    assert state["summary"]["last_tool"] == "verify_external_coverage"
+    assert state["summary"]["last_tool_provenance"] == "external_reported"
+
+
 def test_debugger_state_loan_narrative_formatting(client):
     """Verify loan narrative summary formatting for industrial demo runs."""
     from eval_runner.events import CoreEvents
@@ -639,6 +655,193 @@ def test_check_execution_readiness_branches(client, console_jail, monkeypatch):
     assert agent_check["status"] == "WARNING"
     assert agent_check["tier"] == "CONFIGURED"
     assert "custom_agent_protocol" in agent_check["message"]
+
+
+def test_check_execution_readiness_openapi_success(client, console_jail, monkeypatch):
+    """Verify openapi protocol probes origin /health and passes readiness."""
+    import urllib.request
+
+    from eval_runner import config
+
+    monkeypatch.setattr(config, "SIGNING_KEY", "ed25519_sk_0123456789abcdef", raising=False)
+
+    scen_data = {
+        "metadata": {"id": "scen_openapi_ready", "status": "Ready"},
+        "workflow": {"nodes": [{"id": "n1", "prompt": "task 1"}]},
+    }
+    scen_path = console_jail["root"] / "scenarios" / "scen_openapi_ready.json"
+    scen_path.parent.mkdir(parents=True, exist_ok=True)
+    scen_path.write_text(json.dumps(scen_data), encoding="utf-8")
+
+    class MockResp:
+        def __init__(self, status=200):
+            self.status = status
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+    probed_urls = []
+
+    def mock_urlopen(req, timeout=3):
+        url = req.full_url if hasattr(req, "full_url") else str(req)
+        probed_urls.append(url)
+        return MockResp(200)
+
+    monkeypatch.setattr(urllib.request, "urlopen", mock_urlopen)
+
+    res = client.post(
+        "/api/scenarios/readiness",
+        json={
+            "scenario_id": "scen_openapi_ready",
+            "scenario_data": scen_data,
+            "agent_config": {"protocol": "openapi", "endpoint": "http://tester:8000/execute_task"},
+        },
+    )
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["ready"] is True
+    assert "http://tester:8000/health" in probed_urls
+
+    checks = {c["name"]: c for c in data["checks"]}
+    agent_check = checks["Agent Endpoint"]
+    assert agent_check["status"] == "PASSED"
+    assert agent_check["tier"] == "HEALTHY"
+
+
+def test_check_execution_readiness_openapi_negative_health_fails_closed(
+    client, console_jail, monkeypatch
+):
+    """Verify negative health (HTTP 500/503) fails closed and blocks readiness."""
+    import urllib.error
+    import urllib.request
+
+    scen_data = {
+        "metadata": {"id": "scen_openapi_fail", "status": "Ready"},
+        "workflow": {"nodes": [{"id": "n1", "prompt": "task 1"}]},
+    }
+
+    def mock_urlopen_fail(req, timeout=3):
+        raise urllib.error.HTTPError(
+            url="http://tester:8000/health",
+            code=503,
+            msg="Service Unavailable",
+            hdrs={},
+            fp=None,
+        )
+
+    monkeypatch.setattr(urllib.request, "urlopen", mock_urlopen_fail)
+
+    res = client.post(
+        "/api/scenarios/readiness",
+        json={
+            "scenario_id": "scen_openapi_fail",
+            "scenario_data": scen_data,
+            "agent_config": {"protocol": "openapi", "endpoint": "http://tester:8000/execute_task"},
+        },
+    )
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["ready"] is False
+    assert data["readiness_state"] == "BLOCKED"
+
+    checks = {c["name"]: c for c in data["checks"]}
+    agent_check = checks["Agent Endpoint"]
+    assert agent_check["status"] == "FAILED"
+    assert "HTTP 503" in agent_check["message"]
+
+
+def test_check_execution_readiness_declared_health_endpoint(client, console_jail, monkeypatch):
+    """
+    Verify explicit health_endpoint configuration takes precedence
+    over default origin /health.
+    """
+    import urllib.request
+
+    scen_data = {
+        "metadata": {"id": "scen_declared_health", "status": "Ready"},
+        "workflow": {"nodes": [{"id": "n1", "prompt": "task 1"}]},
+    }
+
+    class MockResp:
+        def __init__(self, status=200):
+            self.status = status
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+    probed_urls = []
+
+    def mock_urlopen(req, timeout=3):
+        url = req.full_url if hasattr(req, "full_url") else str(req)
+        probed_urls.append(url)
+        return MockResp(200)
+
+    monkeypatch.setattr(urllib.request, "urlopen", mock_urlopen)
+
+    res = client.post(
+        "/api/scenarios/readiness",
+        json={
+            "scenario_id": "scen_declared_health",
+            "scenario_data": scen_data,
+            "agent_config": {
+                "protocol": "openapi",
+                "endpoint": "http://tester:8000/execute_task",
+                "health_endpoint": "/custom/probe",
+            },
+        },
+    )
+    assert res.status_code == 200
+    assert "http://tester:8000/custom/probe" in probed_urls
+
+
+def test_check_execution_readiness_fallback_to_endpoint_head_405(client, console_jail, monkeypatch):
+    """
+    Verify when /health returns 404, probing endpoint returns 405
+    (HEAD on POST) passes as REACHABLE.
+    """
+    import urllib.error
+    import urllib.request
+
+    scen_data = {
+        "metadata": {"id": "scen_fallback_405", "status": "Ready"},
+        "workflow": {"nodes": [{"id": "n1", "prompt": "task 1"}]},
+    }
+
+    probed_urls = []
+
+    def mock_urlopen_fallback(req, timeout=3):
+        url = req.full_url if hasattr(req, "full_url") else str(req)
+        probed_urls.append(url)
+        if "/health" in url:
+            raise urllib.error.HTTPError(url=url, code=404, msg="Not Found", hdrs={}, fp=None)
+        raise urllib.error.HTTPError(url=url, code=405, msg="Method Not Allowed", hdrs={}, fp=None)
+
+    monkeypatch.setattr(urllib.request, "urlopen", mock_urlopen_fallback)
+
+    res = client.post(
+        "/api/scenarios/readiness",
+        json={
+            "scenario_id": "scen_fallback_405",
+            "scenario_data": scen_data,
+            "agent_config": {
+                "protocol": "openapi",
+                "endpoint": "http://tester:8000/execute_task",
+            },
+        },
+    )
+    assert res.status_code == 200
+    data = res.get_json()
+    checks = {c["name"]: c for c in data["checks"]}
+    agent_check = checks["Agent Endpoint"]
+    assert agent_check["status"] == "PASSED"
+    assert agent_check["tier"] == "REACHABLE"
+    assert "http://tester:8000/execute_task" in probed_urls
 
 
 def test_debugger_state_path_traversal_and_auth_hardening(client, console_jail, monkeypatch):

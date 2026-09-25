@@ -7,7 +7,10 @@ Core evaluation engine.
 Updated for universal extensibility via registries, hooks, and typed contexts.
 """
 
+import copy  # noqa: E402
+import hashlib  # noqa: E402
 import inspect  # noqa: E402
+import json  # noqa: E402
 import logging  # noqa: E402
 import sys  # noqa: E402
 from collections.abc import Callable  # noqa: E402
@@ -23,6 +26,78 @@ logger = logging.getLogger(__name__)
 # Security Guardrails
 MAX_ENGINE_ATTEMPTS = config.MAX_ENGINE_ATTEMPTS
 MAX_TURNS = config.EVAL_MAX_TURNS
+
+
+def render_outbound_payload(
+    message: str,
+    turn_ctx: Any,
+    protocol: str,
+) -> tuple[dict[str, Any], str]:
+    """
+    Renders the exact wire payload and computes its cryptographic hash (P0-04).
+    Ensures that mutations on the prompt alter the actual transmitted request body.
+    """
+    metadata = getattr(turn_ctx, "metadata", {}) if turn_ctx else {}
+    if not isinstance(metadata, dict):
+        metadata = {}
+    payload_template = metadata.get("payload_template")
+    input_payload = getattr(turn_ctx, "input_payload", {}) or {}
+    node = getattr(turn_ctx, "node", {}) or {}
+    node_id = str(
+        getattr(turn_ctx, "node_id", "") or (node.get("id", "") if isinstance(node, dict) else "")
+    )
+    run_id = str(getattr(turn_ctx, "run_id", "") or "")
+
+    if payload_template and isinstance(payload_template, dict):
+        payload = {}
+        for k, v in payload_template.items():
+            if isinstance(v, str):
+                rendered = v.replace("{task_description}", message)
+                rendered = rendered.replace("{node_id}", node_id)
+                rendered = rendered.replace("{run_id}", run_id)
+                if v == "{input_payload}":
+                    payload[k] = copy.deepcopy(input_payload)
+                elif v == "{task_description}":
+                    payload[k] = message
+                else:
+                    payload[k] = rendered
+            else:
+                payload[k] = copy.deepcopy(v)
+    elif protocol == "openapi":
+        if isinstance(input_payload, dict) and input_payload:
+            payload = copy.deepcopy(input_payload)
+            # Propagate prompt mutation to common prompt keys if present
+            prompt_keys = (
+                "task_description",
+                "task",
+                "prompt",
+                "input",
+                "query",
+                "message",
+                "instruction",
+            )
+            matched = False
+            for pk in prompt_keys:
+                if pk in payload:
+                    payload[pk] = message
+                    matched = True
+                    break
+            if not matched:
+                payload["task_description"] = message
+        else:
+            payload = {"task_description": message}
+    else:
+        payload = {"task_description": message}
+
+    from agentv_runtime.canonical import canonical_json_encode
+
+    try:
+        c_bytes = canonical_json_encode(payload)
+    except Exception:
+        c_bytes = json.dumps(payload, sort_keys=True, default=str).encode("utf-8")
+
+    payload_hash = f"sha3_256:{hashlib.sha3_256(c_bytes).hexdigest()}"
+    return payload, payload_hash
 
 
 def _internal_adapter_payload(
@@ -228,31 +303,21 @@ class AgentAdapterRegistry:
             raise ValueError(f"Unsupported protocol '{protocol}'. Available: {available}")
 
         # 2. Wire Payload — only what an agent in the wild would receive from a human caller.
-        # Harness-internal fields (input_payload, metadata, protocol, turn, history)
-        # must NOT cross the network boundary. The agent's wire contract is defined by
-        # the scenario's task_description, not by harness plumbing.
-        # However, for the openapi protocol/adapter, we need to pass input_payload
-        # as the payload body. Alternatively, if a declarative payload_template
-        # is provided in the registry config metadata, render it.
-        metadata = getattr(turn_ctx, "metadata", {}) if turn_ctx else {}
-        payload_template = metadata.get("payload_template")
-
-        if payload_template and isinstance(payload_template, dict):
-            payload = {}
-            for k, v in payload_template.items():
-                if v == "{task_description}":
-                    payload[k] = message
-                elif v == "{input_payload}":
-                    payload[k] = getattr(turn_ctx, "input_payload", {})
-                else:
-                    payload[k] = v
-        elif protocol == "openapi":
-            input_payload = getattr(turn_ctx, "input_payload", {})
-            payload = input_payload if input_payload else {"task_description": message}
-        else:
-            payload = {
-                "task_description": message,
-            }
+        # Renders the exact outbound request and computes its cryptographic hash (P0-04).
+        payload, outbound_payload_hash = render_outbound_payload(
+            message, turn_ctx, normalized_proto
+        )
+        if turn_ctx:
+            if not hasattr(turn_ctx, "metadata") or not isinstance(
+                getattr(turn_ctx, "metadata", None), dict
+            ):
+                try:
+                    object.__setattr__(turn_ctx, "metadata", {})
+                except (AttributeError, TypeError) as meta_err:
+                    logger.debug("Failed setting turn_ctx metadata dict: %s", meta_err)
+            if hasattr(turn_ctx, "metadata") and isinstance(turn_ctx.metadata, dict):
+                turn_ctx.metadata["outbound_payload_hash"] = outbound_payload_hash
+                turn_ctx.metadata["rendered_outbound_payload"] = payload
 
         # Resolve OpenTelemetry child span context. Keep it in the internal
         # invocation context rather than in a remote application's payload.

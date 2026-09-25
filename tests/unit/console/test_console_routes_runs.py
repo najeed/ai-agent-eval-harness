@@ -1148,6 +1148,51 @@ def test_runs_cancel_and_resume_endpoints(runs_client):
         assert res.status_code == 200
         assert res.get_json()["status"] == "RUNNING"
 
+    # Resume with approval_token and REJECTED decision
+    from agentv_runtime.interfaces import ApprovalRequest
+    from eval_runner.reference.approval_store import get_default_approval_store
+
+    store = get_default_approval_store()
+    store.create_request(
+        ApprovalRequest(
+            approval_token="tok_console_rej",
+            run_id="run-console-rej",
+            turn_index=1,
+            outbound_payload_hash="h1",
+        )
+    )
+    res_rej = runs_client.post(
+        "/api/v1/runs/run-console-rej/resume",
+        json={
+            "approval_token": "tok_console_rej",
+            "decision": "REJECTED",
+            "reason": "Rejected via console",
+        },
+    )
+    assert res_rej.status_code == 200
+    assert res_rej.get_json()["status"] == "REJECTED"
+    assert res_rej.get_json()["reason"] == "Rejected via console"
+
+    # Resume with approval_token and APPROVED decision
+    store.create_request(
+        ApprovalRequest(
+            approval_token="tok_console_appr",
+            run_id="run-console-appr",
+            turn_index=1,
+            outbound_payload_hash="h1",
+        )
+    )
+    with patch.object(backend, "resume", return_value={"resumed": True}):
+        res_appr = runs_client.post(
+            "/api/v1/runs/run-console-appr/resume",
+            json={
+                "approval_token": "tok_console_appr",
+                "decision": "APPROVED",
+            },
+        )
+        assert res_appr.status_code == 200
+        assert res_appr.get_json()["status"] == "RUNNING"
+
 
 def test_runs_backend_status_fallback_when_trace_missing(runs_client):
     """Verify GET /v1/runs/<run_id> returns in-memory status if trace file is not on disk."""

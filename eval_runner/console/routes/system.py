@@ -107,8 +107,12 @@ class DebuggerStateStore:
 
             if name == CoreEvents.TURN_START and isinstance(data, dict):
                 last_state["current_agent"] = f"Agent {data.get('agent_name', 'Unknown')}"
-            elif name == CoreEvents.TOOL_CALL and isinstance(data, dict):
-                last_state["last_tool"] = data.get("tool")
+            elif name in (CoreEvents.TOOL_CALL, CoreEvents.EXTERNAL_TOOL_CALL) and isinstance(
+                data, dict
+            ):
+                last_state["last_tool"] = data.get("tool") or data.get("name")
+                if name == CoreEvents.EXTERNAL_TOOL_CALL:
+                    last_state["last_tool_provenance"] = "external_reported"
             elif name == CoreEvents.RUN_END and isinstance(data, dict):
                 last_state["message"] = f"Evaluation complete. Status: {data.get('status')}"
                 r_id = data.get("run_id") or effective_run_id

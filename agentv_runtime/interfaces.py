@@ -8,6 +8,7 @@ for AgentV OS Runtime and Control Plane seams.
 
 from __future__ import annotations
 
+import time
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any
@@ -458,7 +459,147 @@ class BoundedStateProvider(ABC):
         )
 
 
+# ==============================================================================
+# 13. ApprovalStore & ApprovalRequest Contract (HITL Queue)
+# ==============================================================================
+
+
+class ApprovalRequest:
+    """
+    Durable record for Human-In-The-Loop approval requests in neutral runtime.
+    Captures cryptographic bindings to the outbound action and session state.
+    """
+
+    def __init__(
+        self,
+        approval_token: str,
+        run_id: str,
+        turn_index: int,
+        outbound_payload_hash: str,
+        required_role: str | None = None,
+        reviewer_credentials: dict[str, Any] | None = None,
+        status: str = "PENDING",
+        rule_id: str | None = None,
+        checkpoint_id: str | None = None,
+        action_payload: dict[str, Any] | None = None,
+        prompt: str | None = None,
+        created_at: float | None = None,
+        decision: str | None = None,
+        decision_reason: str | None = None,
+        decided_by: str | None = None,
+        decided_at: float | None = None,
+        metadata: dict[str, Any] | None = None,
+    ):
+        self.approval_token = approval_token
+        self.run_id = run_id
+        self.turn_index = turn_index
+        self.outbound_payload_hash = outbound_payload_hash
+        self.required_role = required_role
+        self.reviewer_credentials = reviewer_credentials or {}
+        self.status = status
+        self.rule_id = rule_id
+        self.checkpoint_id = checkpoint_id
+        self.action_payload = action_payload or {}
+        self.prompt = prompt or f"Approval required for run '{run_id}' turn {turn_index}"
+        self.created_at = created_at if created_at is not None else time.time()
+        self.decision = decision
+        self.decision_reason = decision_reason
+        self.decided_by = decided_by
+        self.decided_at = decided_at
+        self.metadata = metadata or {}
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "approval_token": self.approval_token,
+            "run_id": self.run_id,
+            "turn_index": self.turn_index,
+            "outbound_payload_hash": self.outbound_payload_hash,
+            "required_role": self.required_role,
+            "reviewer_credentials": self.reviewer_credentials,
+            "status": self.status,
+            "rule_id": self.rule_id,
+            "checkpoint_id": self.checkpoint_id,
+            "action_payload": self.action_payload,
+            "prompt": self.prompt,
+            "created_at": self.created_at,
+            "decision": self.decision,
+            "decision_reason": self.decision_reason,
+            "decided_by": self.decided_by,
+            "decided_at": self.decided_at,
+            "metadata": self.metadata,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> ApprovalRequest:
+        return cls(
+            approval_token=data.get("approval_token", ""),
+            run_id=data.get("run_id", ""),
+            turn_index=data.get("turn_index", 0),
+            outbound_payload_hash=data.get("outbound_payload_hash", ""),
+            required_role=data.get("required_role"),
+            reviewer_credentials=data.get("reviewer_credentials"),
+            status=data.get("status", "PENDING"),
+            rule_id=data.get("rule_id"),
+            checkpoint_id=data.get("checkpoint_id"),
+            action_payload=data.get("action_payload"),
+            prompt=data.get("prompt"),
+            created_at=data.get("created_at"),
+            decision=data.get("decision"),
+            decision_reason=data.get("decision_reason"),
+            decided_by=data.get("decided_by"),
+            decided_at=data.get("decided_at"),
+            metadata=data.get("metadata"),
+        )
+
+
+class ApprovalStore(ABC):
+    """
+    Abstract storage interface for durable human-in-the-loop approval queues.
+    Enables neutral, decoupling from external workflow orchestrators (Temporal/Step Functions).
+    OSS Reference: FileApprovalStore (local JSON) / SQLiteApprovalStore
+    Control Plane / Enterprise: PostgresApprovalStore / WebhookApprovalStore
+    """
+
+    @abstractmethod
+    def create_request(self, request: ApprovalRequest) -> ApprovalRequest:
+        """Persists a new pending approval request record."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_request(self, approval_token: str) -> ApprovalRequest | None:
+        """Retrieves an approval request by its unique approval token."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_request_by_run_id(self, run_id: str) -> ApprovalRequest | None:
+        """Retrieves the latest approval request associated with a run ID."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def resolve_request(
+        self,
+        approval_token: str,
+        decision: str,
+        decided_by: str | None = None,
+        decision_reason: str | None = None,
+    ) -> ApprovalRequest:
+        """Resolves an approval request (APPROVED / REJECTED)."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_pending(self, run_id: str | None = None) -> list[ApprovalRequest]:
+        """Lists active PENDING approval requests."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete_request(self, approval_token: str) -> bool:
+        """Deletes an approval request record."""
+        raise NotImplementedError
+
+
 __all__ = [
+    "ApprovalRequest",
+    "ApprovalStore",
     "ArtifactStore",
     "AuthPrincipal",
     "AuthorizationBackend",

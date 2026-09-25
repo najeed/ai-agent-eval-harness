@@ -73,24 +73,40 @@ class OTelTelemetryBridge(BaseEvalPlugin):
             ev_data = event.data
 
             # Map events to OTel Spans or Events on active Spans
-            if ev_name == CoreEvents.TOOL_CALL:
+            if ev_name in (CoreEvents.TOOL_CALL, CoreEvents.EXTERNAL_TOOL_CALL):
                 current_span = trace.get_current_span()
                 if current_span and current_span.is_recording():
+                    span_event_name = (
+                        "tool.call" if ev_name == CoreEvents.TOOL_CALL else "external_tool.call"
+                    )
                     current_span.add_event(
-                        "tool.call",
+                        span_event_name,
                         {
-                            "tool.name": ev_data.get("tool", "unknown"),
+                            "tool.name": str(
+                                ev_data.get("tool") or ev_data.get("name") or "unknown"
+                            ),
                             "tool.arguments": str(ev_data.get("arguments", {})),
+                            "source": str(ev_data.get("source", "sandbox")),
+                            "provenance": str(ev_data.get("provenance", "authoritative")),
                         },
                     )
-            elif ev_name == CoreEvents.TOOL_RESULT:
+            elif ev_name in (CoreEvents.TOOL_RESULT, CoreEvents.EXTERNAL_TOOL_RESULT):
                 current_span = trace.get_current_span()
                 if current_span and current_span.is_recording():
+                    span_event_name = (
+                        "tool.result"
+                        if ev_name == CoreEvents.TOOL_RESULT
+                        else "external_tool.result"
+                    )
                     current_span.add_event(
-                        "tool.result",
+                        span_event_name,
                         {
-                            "tool.name": ev_data.get("tool", "unknown"),
+                            "tool.name": str(
+                                ev_data.get("tool") or ev_data.get("name") or "unknown"
+                            ),
                             "tool.result": str(ev_data.get("result", "")),
+                            "source": str(ev_data.get("source", "sandbox")),
+                            "provenance": str(ev_data.get("provenance", "authoritative")),
                         },
                     )
             elif ev_name == CoreEvents.ERROR:

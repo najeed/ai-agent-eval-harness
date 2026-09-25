@@ -51,6 +51,7 @@ from .session_components import (  # noqa: E402
     ToolExecutionCoordinator,
     TurnStateManager,
 )
+from .state_authority import bound_state_snapshot  # noqa: E402
 from .tool_sandbox import ToolSandbox  # noqa: E402
 from .utils import crypto  # noqa: E402
 from .workflow_interpreter import WorkflowInterpreter  # noqa: E402
@@ -580,11 +581,13 @@ class SessionManager:
                 branch_actions: dict[str, Any] = {"used_tools": []}
 
                 try:
-                    state_before = (
+                    raw_state_before = (
                         await branch_sandbox.get_full_state()
                         if hasattr(branch_sandbox, "get_full_state")
                         else copy.deepcopy(getattr(branch_sandbox, "state", {}))
                     )
+                    proj = node_def.get("state_projection") if isinstance(node_def, dict) else None
+                    state_before, _ = bound_state_snapshot(raw_state_before, projection=proj)
                 except Exception:  # noqa: BLE001 - evidence capture must not break execution
                     state_before = None
                 if state_before is not None:
@@ -1266,8 +1269,10 @@ class SessionManager:
                     protocol, endpoint, turn_ctx.current_message, turn_ctx.history, turn_ctx
                 )
 
-                # [Forensic Persistence] Snapshoting state after turn completion
-                full_state = await sandbox.get_full_state()
+                # [Forensic Persistence] Snapshoting state after turn completion (P0-06 Bounded)
+                raw_full_state = await sandbox.get_full_state()
+                proj = node.get("state_projection") if isinstance(node, dict) else None
+                full_state, _ = bound_state_snapshot(raw_full_state, projection=proj)
                 self.forensics.snapshot_state(full_state, turn)
                 self._capture_telemetry()
 
@@ -1279,6 +1284,15 @@ class SessionManager:
 
                 conversation_history.append(
                     {"role": "agent", "content": self._sanitize_for_history(agent_response)}
+                )
+
+                # Ingest external tool execution receipts (P0-03)
+                self._ingest_external_tool_receipts(
+                    agent_response=agent_response,
+                    turn=turn,
+                    node=node,
+                    protocol=protocol,
+                    endpoint=endpoint,
                 )
 
                 action = agent_response.get("action", "")
@@ -1376,11 +1390,13 @@ class SessionManager:
         if parity_evidence:
             state_after_for_hash = None
             try:
-                state_after_for_hash = (
+                raw_state_after = (
                     await sandbox.get_full_state()
                     if hasattr(sandbox, "get_full_state")
                     else copy.deepcopy(getattr(sandbox, "state", {}))
                 )
+                proj = node.get("state_projection") if isinstance(node, dict) else None
+                state_after_for_hash, _ = bound_state_snapshot(raw_state_after, projection=proj)
             except Exception:  # noqa: BLE001
                 state_after_for_hash = None
 
@@ -1424,6 +1440,8 @@ class SessionManager:
                 return "PASS"
             if row.get("success") is False or row.get("passed") is False:
                 return "FAIL"
+            if row.get("outcome"):
+                return str(row.get("outcome"))
             return "NOT_APPLICABLE"
 
         declared_criteria = node.get("success_criteria") or []
@@ -1592,7 +1610,11 @@ class SessionManager:
             verification = "invalid"
         elif required_failed:
             verification = "fail"
-        elif required_total > 0 and required_pass_count == (required_total - required_na_count):
+        elif (
+            required_total > 0
+            and required_pass_count > 0
+            and required_pass_count == (required_total - required_na_count)
+        ):
             verification = "pass"
         elif required_total > 0 and required_na_count == required_total:
             verification = "not_applicable"
@@ -1696,8 +1718,7 @@ class SessionManager:
             "attempt_id": getattr(self, "attempt_id", f"att-{self.run_id}-{attempt_number}"),
             "iteration": attempt_number,
         }
-        if "node_start_time" in locals() and node_start_time is not None:
-            node_event_payload["duration_ms"] = int((time.time() - node_start_time) * 1000)
+        node_event_payload["duration_ms"] = int((time.time() - node_start_time) * 1000)
         if node_final_status == "failed":
             node_event_payload["failure_class"] = str(
                 task_results.get("triage_tag") or "node_execution_failed"
@@ -1773,6 +1794,119 @@ class SessionManager:
         return await self.state_parity_verifier.verify_state_parity(
             node, sandbox, history, state_before=state_before
         )
+
+    def _ingest_external_tool_receipts(
+        self,
+        agent_response: dict[str, Any],
+        turn: int,
+        node: dict[str, Any],
+        protocol: str,
+        endpoint: str | None,
+    ) -> list[dict[str, Any]]:
+        """
+        Ingest self-reported tool trajectories from external agent telemetry (P0-03).
+        Emits typed EXTERNAL_TOOL_CALL and EXTERNAL_TOOL_RESULT events with explicit
+        provenance ('external_agent_telemetry' / 'reported') and binds receipt hashes.
+        Never relabels external receipts as AgentV-sandbox-authoritative.
+        """
+        if not isinstance(agent_response, dict):
+            return []
+
+        tool_calls = agent_response.get("tool_calls")
+        if not tool_calls and isinstance(agent_response.get("metadata"), dict):
+            raw = agent_response["metadata"].get("raw_response", {})
+            if isinstance(raw, dict):
+                tool_calls = (
+                    raw.get("tool_calls") or raw.get("steps") or raw.get("intermediate_steps")
+                )
+
+        if not isinstance(tool_calls, list) or not tool_calls:
+            return []
+
+        import hashlib
+
+        from agentv_runtime.canonical import canonical_json_encode
+
+        node_id = str(node.get("id", "unknown"))
+        receipts = []
+
+        for idx, call in enumerate(tool_calls):
+            if not isinstance(call, dict):
+                continue
+
+            tool_name = (
+                call.get("tool")
+                or call.get("name")
+                or (
+                    call.get("function", {}).get("name")
+                    if isinstance(call.get("function"), dict)
+                    else None
+                )
+                or "unknown_tool"
+            )
+            arguments = (
+                call.get("arguments")
+                or call.get("args")
+                or call.get("parameters")
+                or call.get("tool_params")
+                or {}
+            )
+            result = call.get("result") or call.get("output")
+
+            receipt_data = {
+                "order": idx,
+                "tool": tool_name,
+                "arguments": arguments,
+                "result": result,
+                "endpoint": endpoint or "external",
+                "protocol": protocol,
+            }
+            try:
+                c_bytes = canonical_json_encode(receipt_data)
+            except Exception:
+                c_bytes = json.dumps(receipt_data, sort_keys=True, default=str).encode("utf-8")
+
+            receipt_hash = f"sha3_256:{hashlib.sha3_256(c_bytes).hexdigest()}"
+
+            call_payload = {
+                "run_id": self.run_id,
+                "node_id": node_id,
+                "task_id": node_id,
+                "turn": turn,
+                "order": idx,
+                "tool": tool_name,
+                "arguments": arguments,
+                "source": "external_agent_telemetry",
+                "provenance": "reported",
+                "protocol": protocol,
+                "endpoint": endpoint or "external",
+                "receipt_hash": receipt_hash,
+            }
+            self.event_bus.emit(CoreEvents.EXTERNAL_TOOL_CALL, call_payload)
+
+            if result is not None:
+                result_payload = {
+                    "run_id": self.run_id,
+                    "node_id": node_id,
+                    "task_id": node_id,
+                    "turn": turn,
+                    "order": idx,
+                    "tool": tool_name,
+                    "result": result,
+                    "source": "external_agent_telemetry",
+                    "provenance": "reported",
+                    "protocol": protocol,
+                    "endpoint": endpoint or "external",
+                    "receipt_hash": receipt_hash,
+                }
+                self.event_bus.emit(CoreEvents.EXTERNAL_TOOL_RESULT, result_payload)
+
+            receipts.append(call_payload)
+
+        if hasattr(self, "forensics") and hasattr(self.forensics, "record_external_receipts"):
+            self.forensics.record_external_receipts(receipts, turn=turn, node_id=node_id)
+
+        return receipts
 
     async def _handle_tool_call(self, turn, agent_response, sandbox, history, actions, turn_ctx):
         tool_name = agent_response["tool_name"]
@@ -2033,8 +2167,50 @@ class SessionManager:
 
         # Non-interactive mode (no TTY): suspend into registry for GUI/API resolution
         if not sys.stdin.isatty() and (
-            "pytest" not in sys.modules or os.environ.get("FORCE_HITL_SUSPEND")
+            "pytest" not in sys.modules
+            or os.environ.get("FORCE_HITL_SUSPEND")
+            or os.environ.get("AGENTV_CLI_HITL_SUSPEND")
         ):
+            # Compute outbound hash
+            outbound_hash = ""
+            if agent_response:
+                import hashlib
+
+                payload_str = str(sorted(agent_response.items()))
+                outbound_hash = hashlib.sha3_256(payload_str.encode("utf-8")).hexdigest()
+
+            # Create durable approval request in ApprovalStore
+            durable_req = self.approval_manager.create_durable_request(
+                turn_index=turn,
+                outbound_payload_hash=outbound_hash,
+                required_role=agent_response.get("required_role"),
+                action_payload=agent_response,
+                prompt=prompt,
+                metadata={"task_id": task_id},
+            )
+
+            # If CLI suspension is requested, exit cleanly without blocking in memory
+            if os.environ.get("AGENTV_CLI_HITL_SUSPEND") == "1":
+                self.event_bus.emit(
+                    CoreEvents.HITL_PAUSE,
+                    {
+                        "task_id": task_id,
+                        "prompt": prompt,
+                        "approval_token": durable_req.approval_token,
+                        "status": "PAUSED_FOR_APPROVAL",
+                    },
+                )
+                print(f"\n⏸️  Run '{self.run_id}' PAUSED_FOR_APPROVAL at turn {turn}.")
+                print(f"    Approval Token: {durable_req.approval_token}")
+                print("    To resume execution, run:")
+                print(
+                    f"    agentv hitl-resume --run-id {self.run_id} "
+                    f"--approval-token {durable_req.approval_token} --decision APPROVED\n"
+                )
+                raise InterruptedError(
+                    f"Run '{self.run_id}' paused for approval. Token: {durable_req.approval_token}"
+                )
+
             # 1. Snapshot checkpoint before entering approval wait loop
             hist = (
                 self.turn_state_manager.history
@@ -2046,25 +2222,42 @@ class SessionManager:
                 "task_id": task_id,
                 "prompt": prompt,
                 "history": hist,
+                "scenario_data": self.scenario,
+                "status": "PAUSED_FOR_APPROVAL",
+                "approval_token": durable_req.approval_token,
                 "sandbox_state": getattr(getattr(self, "sandbox", None), "state", {}),
             }
 
             chk_id = self.checkpoint_manager.create_checkpoint(
                 state=chk_state,
-                metadata={"task_id": task_id, "status": "HITL_PENDING"},
+                metadata={
+                    "task_id": task_id,
+                    "status": "PAUSED_FOR_APPROVAL",
+                    "approval_token": durable_req.approval_token,
+                },
             )
 
             # 2. Use self.approval_manager to coordinate approval gate
             approval = self.approval_manager.request_approval(
                 task_id=task_id,
                 tool_name="human_intervention",
-                params={"prompt": prompt, "checkpoint_id": chk_id},
+                params={
+                    "prompt": prompt,
+                    "checkpoint_id": chk_id,
+                    "approval_token": durable_req.approval_token,
+                },
             )
 
             # Await the approvals queue wait loop (which runs in an executor thread)
             await approval.wait()
 
             if approval.action == "reject":
+                self.approval_manager.resolve_durable_request(
+                    approval_token=durable_req.approval_token,
+                    decision="REJECTED",
+                    decided_by="human_reviewer",
+                    decision_reason=approval.response,
+                )
                 self.event_bus.emit(
                     CoreEvents.HITL_RESUME, {"task_id": task_id, "response": "[REJECTED]"}
                 )
@@ -2072,6 +2265,12 @@ class SessionManager:
                     f"Human reviewer rejected task '{task_id}': {approval.response}"
                 )
 
+            self.approval_manager.resolve_durable_request(
+                approval_token=durable_req.approval_token,
+                decision="APPROVED",
+                decided_by="human_reviewer",
+                decision_reason=approval.response,
+            )
             self.event_bus.emit(
                 CoreEvents.HITL_RESUME, {"task_id": task_id, "response": approval.response}
             )

@@ -646,3 +646,102 @@ async def handle_certify(args):
     except Exception as e:
         print(f"❌ Error during certification: {e}")
         return 1
+
+
+async def handle_hitl_resume(args):
+    """
+    Resumes an evaluation run paused for Human-In-The-Loop approval.
+    Resolves the durable ApprovalRequest in the ApprovalStore, and if approved,
+    restores session execution from the durable checkpoint.
+    """
+    run_id = getattr(args, "run_id", None)
+    approval_token = getattr(args, "approval_token", None)
+    decision = getattr(args, "decision", "APPROVED") or "APPROVED"
+    reviewer = getattr(args, "reviewer", "cli_reviewer") or "cli_reviewer"
+    reason = getattr(args, "reason", None)
+    store_override = getattr(args, "store", None)
+
+    if not run_id:
+        print("❌ Error: Run ID is mandatory for hitl-resume.")
+        return 1
+    if not approval_token:
+        print("❌ Error: Approval token is mandatory for hitl-resume.")
+        return 1
+
+    normalized_decision = decision.upper().strip()
+    if normalized_decision not in ("APPROVED", "REJECTED"):
+        print(f"❌ Error: Invalid decision '{decision}'. Must be 'APPROVED' or 'REJECTED'.")
+        return 1
+
+    try:
+        from ..reference.approval_store import (
+            FileApprovalStore,
+            SQLiteApprovalStore,
+            get_default_approval_store,
+        )
+
+        if store_override == "sqlite":
+            store = SQLiteApprovalStore()
+        elif store_override == "file":
+            store = FileApprovalStore()
+        else:
+            store = get_default_approval_store()
+
+        request = store.get_request(approval_token)
+        if not request:
+            print(f"❌ Error: Approval request with token '{approval_token}' not found.")
+            return 1
+
+        if request.run_id != run_id:
+            print(
+                f"❌ Error: Approval token '{approval_token}' belongs to run '{request.run_id}', "
+                f"not '{run_id}'."
+            )
+            return 1
+
+        if request.status in ("APPROVED", "REJECTED"):
+            print(
+                f"⚠️  Notice: Approval request '{approval_token}' "
+                f"was already resolved as '{request.status}' "
+                f"by '{request.decided_by}'."
+            )
+            if request.status == "REJECTED":
+                return 0
+
+        # Resolve the request in durable store
+        store.resolve_request(
+            approval_token=approval_token,
+            decision=normalized_decision,
+            decided_by=reviewer,
+            decision_reason=reason,
+        )
+
+        if normalized_decision == "REJECTED":
+            print(f"🛑 Approval REJECTED for run '{run_id}'.")
+            print(f"    - Approval Token: {approval_token}")
+            print(f"    - Reviewer: {reviewer}")
+            if reason:
+                print(f"    - Reason: {reason}")
+            print("   Execution terminated cleanly.")
+            return 0
+
+        print(f"✅ Approval APPROVED for run '{run_id}'.")
+        print(f"    - Approval Token: {approval_token}")
+        print(f"    - Reviewer: {reviewer}")
+        print(f"   Resuming evaluation execution for run '{run_id}'...")
+
+        # Resume execution via InProcessExecutionBackend
+        from ..reference.inprocess_backend import get_execution_backend
+
+        backend = get_execution_backend()
+        backend.resume(
+            run_id=run_id,
+            resumption_token=approval_token,
+            background=False,
+        )
+        print(f"\n   [CLI] Resumed evaluation completed for run '{run_id}'.")
+        return 0
+
+    except Exception as e:
+        print(f"❌ Error during hitl-resume: {e}")
+        return 1

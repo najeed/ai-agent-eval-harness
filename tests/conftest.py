@@ -17,6 +17,9 @@ from typing import Any
 import pytest
 import pytest_asyncio
 
+# Enforce repository isolation in test execution (never load external unisolated entry-points)
+os.environ.setdefault("AGENTV_DISABLE_EXTERNAL_PLUGINS", "1")
+
 _MEMORY_FORENSICS_ENV = "AGENTV_TEST_MEMORY_FORENSICS"
 _MEMORY_FORENSICS_DIR_ENV = "AGENTV_TEST_MEMORY_FORENSICS_DIR"
 _MEMORY_FORENSICS_THRESHOLD_ENV = "AGENTV_TEST_MEMORY_THRESHOLD_MB"

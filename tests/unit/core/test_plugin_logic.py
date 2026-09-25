@@ -288,6 +288,7 @@ def test_load_plugins_entry_point_failure(monkeypatch, capsys, tmp_path):
     """Entry-point that fails to load is printed and skipped."""
     from eval_runner import plugins as plugins_mod
 
+    monkeypatch.delenv("AGENTV_DISABLE_EXTERNAL_PLUGINS", raising=False)
     reg_file = tmp_path / ".isolated_plugins.json"
     reg_file.write_text(json.dumps({"plugins": []}))
     monkeypatch.setattr(plugins_mod, "PERSISTENT_PLUGINS_PATH", reg_file)

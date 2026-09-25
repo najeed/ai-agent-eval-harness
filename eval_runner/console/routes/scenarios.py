@@ -514,6 +514,7 @@ def check_execution_readiness():
     _http_probed_protocols = {
         "http",
         "http_rest",
+        "openapi",
         "custom",
         "openai_assistants",
         "crewai",
@@ -593,13 +594,19 @@ def check_execution_readiness():
         probe_tier = "CONFIGURED"
         probe_msg = ""
         try:
-            endpoint_scheme = urllib.parse.urlparse(str(endpoint)).scheme.lower()
+            parsed_ep = urllib.parse.urlparse(str(endpoint))
+            endpoint_scheme = parsed_ep.scheme.lower()
             if endpoint_scheme not in ("http", "https"):
                 raise urllib.error.URLError(
                     f"Refused non-HTTP scheme '{endpoint_scheme or '(none)'}' "
                     "for connectivity probe"
                 )
-            health_url = endpoint.rstrip("/") + "/health"
+            # Resolve health probe URL: explicit configuration takes precedence over origin /health
+            declared_health = agent_config.get("health_url")
+            if not declared_health and agent_config.get("health_endpoint"):
+                declared_health = urllib.parse.urljoin(endpoint, agent_config["health_endpoint"])
+
+            health_url = declared_health or f"{parsed_ep.scheme}://{parsed_ep.netloc}/health"
             req = urllib.request.Request(health_url, method="HEAD")
             req.add_header("User-Agent", "AgentV-Preflight/2.0")
             with urllib.request.urlopen(req, timeout=3) as resp:  # nosec B310
@@ -621,13 +628,55 @@ def check_execution_readiness():
                 probe_tier = "REACHABLE"
                 probe_msg = f"HTTP {he.code} (Authentication Required)"
             elif he.code in (404, 405):
-                probe_status = "PASSED"
-                probe_tier = "REACHABLE"
-                probe_msg = f"HTTP {he.code} (Endpoint Reachable, No Health Handler)"
+                # Origin /health does not exist; probe the declared endpoint directly if distinct
+                if not declared_health and health_url != endpoint:
+                    try:
+                        ep_req = urllib.request.Request(endpoint, method="HEAD")
+                        ep_req.add_header("User-Agent", "AgentV-Preflight/2.0")
+                        with urllib.request.urlopen(ep_req, timeout=3) as ep_resp:  # nosec B310
+                            if 200 <= ep_resp.status < 400:
+                                probe_status = "PASSED"
+                                probe_tier = "REACHABLE"
+                                probe_msg = (
+                                    f"HTTP {ep_resp.status} (Endpoint Reachable, No Health Handler)"
+                                )
+                            else:
+                                probe_status = "FAILED"
+                                probe_tier = "CONFIGURED"
+                                probe_msg = f"HTTP {ep_resp.status} (Unhealthy Response)"
+                    except urllib.error.HTTPError as ep_he:
+                        if ep_he.code in (401, 403):
+                            probe_status = "FAILED"
+                            probe_tier = "REACHABLE"
+                            probe_msg = f"HTTP {ep_he.code} (Authentication Required)"
+                        elif ep_he.code == 405:
+                            # 405 Method Not Allowed on HEAD confirms endpoint is
+                            # reachable and responsive (POST only)
+                            probe_status = "PASSED"
+                            probe_tier = "REACHABLE"
+                            probe_msg = f"HTTP {ep_he.code} "
+                            "(Endpoint Reachable, Method Not Allowed for HEAD)"
+                        else:
+                            probe_status = "FAILED"
+                            probe_tier = "CONFIGURED"
+                            probe_msg = f"HTTP {ep_he.code} (Endpoint Error)"
+                    except (urllib.error.URLError, OSError, TimeoutError) as ep_ue:
+                        probe_status = "FAILED"
+                        probe_tier = "CONFIGURED"
+                        probe_msg = f"Unreachable: {ep_ue}"
+                else:
+                    probe_status = "FAILED"
+                    probe_tier = "CONFIGURED"
+                    probe_msg = (
+                        f"HTTP {he.code} (Endpoint Reachable, No Health Handler)"
+                        if declared_health
+                        else f"HTTP {he.code} (Not Found)"
+                    )
             else:
-                probe_status = "WARNING"
+                # Negative endpoint health fails closed!
+                probe_status = "FAILED"
                 probe_tier = "CONFIGURED"
-                probe_msg = f"HTTP {he.code} (Server Error / Missing Handler)"
+                probe_msg = f"HTTP {he.code} (Server Error / Unhealthy)"
         except (urllib.error.URLError, OSError, TimeoutError) as ue:
             probe_status = "FAILED"
             probe_tier = "CONFIGURED"

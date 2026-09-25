@@ -2080,6 +2080,63 @@ class DualNormalizationHub:
 
         return "error"
 
+    @classmethod
+    def normalize_response(
+        cls,
+        response: dict[str, Any],
+        *,
+        status_code: int = 200,
+        overrides: Mapping[str, str] | None = None,
+        schema: Mapping[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """
+        Normalize an external agent JSON response dict into the AgentV session contract.
+        If action is absent or non-standard, derives action from status/output fields.
+        Preserves raw external response telemetry under metadata.raw_response.
+        """
+        if not isinstance(response, dict):
+            return {"status": "error", "action": "error", "content": str(response)}
+
+        # If already an authoritative AgentV action or tool-call action, keep it
+        existing_action = response.get("action")
+        valid_action = cls.validate_action(existing_action)
+        if existing_action in ("call_tool", "call_multiple_tools"):
+            valid_action = existing_action
+
+        if valid_action is None:
+            derived_action = cls.normalize(
+                response,
+                status_code=status_code,
+                overrides=overrides,
+                schema=schema,
+            )
+            response["action"] = derived_action
+        else:
+            response["action"] = valid_action
+
+        # Ensure content is set
+        if not response.get("content"):
+            for k in ("output", "message", "result", "answer", "decision_reason", "text", "detail"):
+                if k in response and response[k] is not None:
+                    val = response[k]
+                    response["content"] = val if isinstance(val, str) else json.dumps(val)
+                    break
+
+        # Preserve raw external response under metadata.raw_response
+        meta = response.get("metadata")
+        if not isinstance(meta, dict):
+            meta = {}
+            response["metadata"] = meta
+        if "raw_response" not in meta:
+            meta["raw_response"] = {k: v for k, v in response.items() if k != "metadata"}
+
+        if response.get("action") == "error":
+            response["status"] = "error"
+        elif "status" not in response:
+            response["status"] = "success"
+
+        return response
+
 
 __all__ = [
     "AdapterExecutionContext",

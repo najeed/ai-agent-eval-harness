@@ -20,6 +20,8 @@ from datetime import datetime
 from typing import Any
 
 from eval_runner.events import CoreEvents
+from eval_runner.reference.field_policy import BasicFieldPolicyEvaluator
+from eval_runner.state_authority import bound_state_snapshot, state_authority_registry
 from eval_runner.utils.path_resolver import PathResolver
 
 logger = logging.getLogger(__name__)
@@ -89,9 +91,100 @@ class SessionStateParityVerifier:
         sandbox: Any,
         history: list[dict[str, Any]],
         shim_snapshots: dict[str, Any],
+        node: dict[str, Any] | None = None,
     ) -> tuple[Any, str | None]:
         target = assertion.get("target", "message")
         property_path = assertion.get("property")
+
+        # P0-05: External State Authorities (HTTP / REST / MCP observation)
+        if (
+            str(target).startswith("authority:")
+            or str(target).startswith("external:")
+            or target in ("external_state", "state_authority")
+        ):
+            scenario = getattr(self.session_manager, "scenario", {}) or {}
+            scenario_authorities = scenario.get("state_authorities") or scenario.get(
+                "state_authority"
+            )
+            if isinstance(scenario_authorities, dict) and "url" in scenario_authorities:
+                scenario_authorities = {"default": scenario_authorities}
+
+            target_str = str(target)
+            if target_str.startswith("authority:"):
+                raw_auth = target_str.split(":", 1)[1]
+            elif target_str.startswith("external:"):
+                raw_auth = target_str.split(":", 1)[1]
+            else:
+                raw_auth = "default"
+
+            # Check if property path was appended to target name (e.g. authority:auth_name.prop)
+            if (
+                "." in raw_auth
+                and not raw_auth.startswith("http://")
+                and not raw_auth.startswith("https://")
+            ):
+                auth_name, subpath = raw_auth.split(".", 1)
+                property_path = f"{subpath}.{property_path}" if property_path else subpath
+            else:
+                auth_name = raw_auth
+
+            try:
+                connector = state_authority_registry.get_connector(
+                    auth_name, scenario_authorities=scenario_authorities
+                )
+                raw_state = await connector.fetch_state()
+            except Exception as auth_err:
+                logger.warning(
+                    f"[StateParity] External state authority '{auth_name}' observation failed: "
+                    f"{auth_err}"
+                )
+                return None, "__unobserved_source__"
+
+            # P0-06: Apply Bounded State Capture & Projection
+            proj = assertion.get("projection") or (node.get("state_projection") if node else None)
+            bounded_state, _ = bound_state_snapshot(raw_state, projection=proj)
+            return bounded_state, property_path
+
+        # P0-07: Regulatory Policy machine-executable assertions (WA ESSB 5395 & IA HF 2635)
+        reg_targets = (
+            "regulatory_policy",
+            "policy:clinical_context",
+            "policy:mandatory_human_review",
+        )
+        if (
+            str(target).startswith("policy:regulatory")
+            or str(target).startswith("policy:ia_hf")
+            or str(target).startswith("policy:wa_essb")
+            or target in reg_targets
+        ):
+            evaluator = BasicFieldPolicyEvaluator()
+            policy_spec = dict(assertion.get("policy_spec") or {})
+            if "standard" not in policy_spec:
+                tgt = str(target)
+                if "5395" in tgt or "wa_essb" in tgt or "clinical_context" in tgt:
+                    policy_spec["standard"] = "WA_ESSB_5395"
+                elif "2635" in tgt or "ia_hf" in tgt or "mandatory_human_review" in tgt:
+                    policy_spec["standard"] = "IA_HF_2635"
+                else:
+                    policy_spec["standard"] = assertion.get("standard", "REGULATORY")
+
+            # Extract latest agent response payload for regulatory adjudication
+            agent_payload: dict[str, Any] = {}
+            for item in reversed(history or []):
+                if isinstance(item, dict) and item.get("role") in ("agent", "assistant"):
+                    c = item.get("content")
+                    if isinstance(c, dict):
+                        agent_payload = c
+                    elif isinstance(c, str):
+                        agent_payload = {"message": c, "action": c}
+                    break
+
+            eval_res = evaluator.evaluate_policy(policy_spec, agent_payload)
+            if property_path == "violations":
+                return eval_res.violations, None
+            if property_path == "reason":
+                return eval_res.reason, None
+            return eval_res.allowed, property_path
 
         if target.startswith("shim:"):
             raw_target = target.split(":", 1)[1]
@@ -131,12 +224,15 @@ class SessionStateParityVerifier:
                     logger.debug("Failed to extract agent summary: %s", exc)
             return actual_val, property_path
         if target == "state":
-            actual_val = (
+            raw_val = (
                 await sandbox.get_full_state()
                 if hasattr(sandbox, "get_full_state")
                 else getattr(sandbox, "state", {})
             )
-            return actual_val, property_path
+            # P0-06: Apply Bounded State Capture & Projection
+            proj = assertion.get("projection") or (node.get("state_projection") if node else None)
+            bounded_val, _ = bound_state_snapshot(raw_val, projection=proj)
+            return bounded_val, property_path
         return None, "__unsupported__"
 
     @staticmethod
@@ -217,7 +313,7 @@ class SessionStateParityVerifier:
                 tolerance = self._tolerance_for(node, assertion)
 
                 after_val, property_path = await self._resolve_target(
-                    assertion, sandbox, history, shim_snapshots
+                    assertion, sandbox, history, shim_snapshots, node=node
                 )
                 if property_path == "__unsupported__":
                     all_passed = False
@@ -359,7 +455,11 @@ class SessionStateParityVerifier:
         if state_before is None:
             return None
         target = assertion.get("target", "message")
-        if target != "state":
+        if (
+            target not in ("state", "external_state", "state_authority")
+            and not str(target).startswith("authority:")
+            and not str(target).startswith("external:")
+        ):
             return None
         if not property_path:
             return state_before

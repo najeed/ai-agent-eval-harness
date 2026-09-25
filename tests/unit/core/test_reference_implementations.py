@@ -27,7 +27,10 @@ from cryptography.hazmat.primitives.asymmetric import ed25519, rsa
 from eval_runner import config
 from eval_runner.identity import IdentityService
 from eval_runner.reference.auth import SimpleAPIKeyAuthBackend
-from eval_runner.reference.field_policy import BasicFieldPolicyEvaluator
+from eval_runner.reference.field_policy import (
+    BasicFieldPolicyEvaluator,
+    RegulatoryPolicyEvaluator,
+)
 from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
 from eval_runner.reference.local_artifact import LocalFileArtifactStore
 from eval_runner.reference.local_catalog import LocalFileCatalogStore
@@ -279,6 +282,403 @@ class TestPolicyEvaluatorReferenceImplementation:
         assert evaluator.validate_policy("not_a_dict") is False
         assert evaluator.validate_policy({"max_limit": "not_a_number"}) is False
         assert evaluator.validate_policy({"required_fields": "not_a_list"}) is False
+
+
+class TestRegulatoryPolicyReferenceImplementation:
+    """Tests for RegulatoryPolicyEvaluator & WA ESSB 5395 / IA HF 2635 mandates (P0-07)."""
+
+    def test_wa_essb_5395_clinical_context_and_rationale_mandate(self):
+        evaluator = RegulatoryPolicyEvaluator()
+        spec = {"standard": "WA_ESSB_5395"}
+
+        # 1. Adverse decision without clinical context & without rationale
+        res1 = evaluator.evaluate_policy(spec, {"decision": "DENIED"})
+        assert res1.allowed is False
+        codes = [v["code"] for v in res1.violations]
+        assert "WA_ESSB_5395_MISSING_CLINICAL_EVALUATION" in codes
+        assert "WA_ESSB_5395_MISSING_CLINICAL_RATIONALE" in codes
+
+        # 2. Adverse decision with clinical context but missing clinical rationale
+        res2 = evaluator.evaluate_policy(
+            spec,
+            {"decision": "DENIED", "clinical_context": {"chart_notes": "Patient history..."}},
+        )
+        assert res2.allowed is False
+        codes2 = [v["code"] for v in res2.violations]
+        assert "WA_ESSB_5395_MISSING_CLINICAL_EVALUATION" not in codes2
+        assert "WA_ESSB_5395_MISSING_CLINICAL_RATIONALE" in codes2
+
+        # 3. Adverse decision with clinical context AND clinical rationale -> ALLOWED
+        res3 = evaluator.evaluate_policy(
+            spec,
+            {
+                "decision": "DENIED",
+                "clinical_records": ["Record #1"],
+                "clinical_rationale": (
+                    "Medical guidelines require step therapy trial prior to biologics."
+                ),
+            },
+        )
+        assert res3.allowed is True
+        assert len(res3.violations) == 0
+
+        # 4. Favorable decision without clinical context -> ALLOWED under this policy
+        res4 = evaluator.evaluate_policy(spec, {"decision": "APPROVED"})
+        assert res4.allowed is True
+
+    def test_ia_hf_2635_mandatory_licensed_physician_review(self):
+        evaluator = RegulatoryPolicyEvaluator()
+        spec = {"standard": "IA_HF_2635"}
+
+        # 1. Adverse decision without human review -> VIOLATION
+        res1 = evaluator.evaluate_policy(spec, {"decision": "DENIED"})
+        assert res1.allowed is False
+        assert any(v["code"] == "IA_HF_2635_UNLICENSED_ADVERSE_DECISION" for v in res1.violations)
+
+        # 2. Adverse downgrade with licensed physician review -> ALLOWED
+        res2 = evaluator.evaluate_policy(
+            spec,
+            {"status": "DOWNGRADED", "licensed_physician_review": "Dr. Sarah Smith, MD #12345"},
+        )
+        assert res2.allowed is True
+
+        # 3. Adverse delay with human review artifact -> ALLOWED
+        res3 = evaluator.evaluate_policy(
+            spec,
+            {"action": "DELAY", "human_review_artifact": {"reviewer": "MD-442", "sig": "valid"}},
+        )
+        assert res3.allowed is True
+
+        # 4. Adverse decision with review_status COMPLETED -> ALLOWED
+        res4 = evaluator.evaluate_policy(
+            spec,
+            {"decision": "MODIFIED", "review_status": "COMPLETED"},
+        )
+        assert res4.allowed is True
+
+        # 5. Adverse decision with human_in_the_loop True -> ALLOWED
+        res5 = evaluator.evaluate_policy(
+            spec,
+            {"decision": "REJECTED", "human_in_the_loop": True},
+        )
+        assert res5.allowed is True
+
+        # 6. Favorable decision (APPROVED) -> ALLOWED without licensed review
+        res6 = evaluator.evaluate_policy(spec, {"decision": "APPROVED"})
+        assert res6.allowed is True
+
+    def test_regulatory_policy_validation(self):
+        evaluator = RegulatoryPolicyEvaluator()
+        assert evaluator.validate_policy({"standard": "WA_ESSB_5395"}) is True
+        assert evaluator.validate_policy({"regulatory_standard": "IA_HF_2635"}) is True
+        assert evaluator.validate_policy({"id": "custom_wa_essb_5395_policy"}) is True
+        assert evaluator.validate_policy({"rules": [{"rule_id": "test_r"}]}) is True
+        assert evaluator.validate_policy("not_a_dict") is False
+        assert evaluator.validate_policy({"max_limit": "not_a_number"}) is False
+        assert evaluator.validate_policy({"required_fields": "not_a_list"}) is False
+
+    def test_declarative_custom_rules_fuel_from_control_plane(self):
+        """Validates declarative AST rules passed as 'fuel' from Control Plane."""
+        evaluator = BasicFieldPolicyEvaluator()
+        spec = {
+            "id": "cp_fuel_finra_rule_2111",
+            "rules": [
+                {
+                    "rule_id": "suitability_customer_profile_gate",
+                    "when": {
+                        "field": "action",
+                        "operator": "in",
+                        "values": ["RECOMMEND_EQUITY", "RECOMMEND_OPTION"],
+                    },
+                    "require_any": ["customer_risk_profile", "investor_suitability_score"],
+                    "require_all": ["risk_disclosure_acknowledged"],
+                    "forbidden": ["guaranteed_return_statement"],
+                    "statutory_code": "FINRA_RULE_2111_SUITABILITY_VIOLATION",
+                    "citation": "FINRA Rule 2111",
+                    "message": (
+                        "Recommendation issued without complete customer "
+                        "suitability profile or disclosures."
+                    ),
+                }
+            ],
+        }
+
+        # 1. Missing both customer_risk_profile and disclosure -> FAILS with multi-reason
+        res1 = evaluator.evaluate_policy(
+            spec,
+            {"action": "RECOMMEND_EQUITY", "ticker": "AAPL"},
+        )
+        assert res1.allowed is False
+        assert len(res1.violations) == 1
+        v1 = res1.violations[0]
+        assert v1["code"] == "FINRA_RULE_2111_SUITABILITY_VIOLATION"
+        assert v1["citation"] == "FINRA Rule 2111"
+        assert len(v1["reasons"]) == 2
+        assert any("Missing required parameter (expected one of" in r for r in v1["reasons"])
+        assert any(
+            "Missing mandatory parameter: 'risk_disclosure_acknowledged'" in r
+            for r in v1["reasons"]
+        )
+        assert "2 constraint failures" in v1["message"]
+
+        # 2. Contains forbidden parameter -> FAILS
+        res2 = evaluator.evaluate_policy(
+            spec,
+            {
+                "action": "RECOMMEND_EQUITY",
+                "customer_risk_profile": "MODERATE",
+                "risk_disclosure_acknowledged": True,
+                "guaranteed_return_statement": "Guaranteed 20% annual return",
+            },
+        )
+        assert res2.allowed is False
+        assert any(
+            "Forbidden parameter 'guaranteed_return_statement'" in r
+            for r in res2.violations[0]["reasons"]
+        )
+
+        # 3. All constraints met -> ALLOWED
+        res3 = evaluator.evaluate_policy(
+            spec,
+            {
+                "action": "RECOMMEND_EQUITY",
+                "customer_risk_profile": "MODERATE",
+                "risk_disclosure_acknowledged": True,
+            },
+        )
+        assert res3.allowed is True
+        assert len(res3.violations) == 0
+
+        # 4. Trigger condition not met (different action) -> ALLOWED (rule skipped)
+        res4 = evaluator.evaluate_policy(
+            spec,
+            {"action": "GET_ACCOUNT_BALANCE"},
+        )
+        assert res4.allowed is True
+
+    def test_declarative_compound_multi_reason_failure_reporting(self):
+        """Verifies exact statutory pinpointing and multi-reason message synthesis."""
+        evaluator = BasicFieldPolicyEvaluator()
+        spec = {
+            "rules": [
+                {
+                    "rule_id": "mortgage_underwriting_safety",
+                    "when": {"field": "disposition", "operator": "eq", "value": "APPROVED"},
+                    "require_all": ["applicant_credit_score", "debt_to_income_ratio"],
+                    "min_length": {"underwriter_notes": 25},
+                    "bounds": {"loan_to_value": {"max": 0.80, "min": 0.10}},
+                    "statutory_code": "CFPB_ATR_QM_RULE_VIOLATION",
+                    "citation": "12 CFR § 1026.43(c)",
+                    "message": "Qualified mortgage ability-to-repay rules violated.",
+                }
+            ]
+        }
+
+        # Violates require_all, min_length, and bounds simultaneously
+        payload = {
+            "disposition": "APPROVED",
+            "applicant_credit_score": 750,
+            # missing debt_to_income_ratio
+            "underwriter_notes": "Looks ok",  # length 8 < 25
+            "loan_to_value": 0.95,  # > 0.80
+        }
+        res = evaluator.evaluate_policy(spec, payload)
+        assert res.allowed is False
+        v = res.violations[0]
+        assert v["code"] == "CFPB_ATR_QM_RULE_VIOLATION"
+        assert v["citation"] == "12 CFR § 1026.43(c)"
+        assert len(v["reasons"]) == 3
+        assert len(v["sub_violations"]) == 3
+        assert "3 constraint failures" in v["message"]
+        assert (
+            "- [CFPB_ATR_QM_RULE_VIOLATION] Missing mandatory parameter: 'debt_to_income_ratio'"
+            in v["message"]
+        )
+        assert "below required minimum of 25" in v["message"]
+        assert "exceeds maximum bound of 0.8" in v["message"]
+
+        # Multi-reason failure fallback when rule has no base_message
+        spec_no_msg = {"rules": [{"rule_id": "r_unnamed_multi", "require_all": ["f1", "f2"]}]}
+        res_no_msg = evaluator.evaluate_policy(spec_no_msg, {})
+        assert res_no_msg.allowed is False
+        assert (
+            "Rule 'r_unnamed_multi' failed (2 constraint failures)"
+            in res_no_msg.violations[0]["message"]
+        )
+
+    def test_declarative_operators_and_condition_matching(self):
+        """Tests operators: in, eq, ne, contains, gte, lte, gt, lt, exists, not_exists."""
+        evaluator = BasicFieldPolicyEvaluator()
+        spec = {
+            "rules": [
+                {
+                    "rule_id": "r_gte",
+                    "when": {"field": "amount", "operator": "gte", "value": 10000},
+                    "require_all": ["fincen_ctr_report"],
+                    "code": "FINCEN_CTR_MANDATE",
+                },
+                {
+                    "rule_id": "r_contains",
+                    "when": {
+                        "field": "user_prompt",
+                        "operator": "contains",
+                        "value": "CONFIDENTIAL",
+                    },
+                    "forbidden": ["raw_unmasked_data"],
+                    "code": "CONFIDENTIAL_DATA_LEAK",
+                },
+                {
+                    "rule_id": "r_exists",
+                    "when": {"field": "override_code", "operator": "exists"},
+                    "require_all": ["supervisor_approval"],
+                    "code": "UNAUTHORIZED_OVERRIDE",
+                },
+                {
+                    "rule_id": "r_not_exists",
+                    "when": {"field": "mfa_token", "operator": "not_exists"},
+                    "forbidden": ["privileged_session"],
+                    "code": "PRIVILEGED_ACCESS_WITHOUT_MFA",
+                },
+                {
+                    "rule_id": "r_ne",
+                    "when": {"field": "tenant_tier", "operator": "ne", "value": "ENTERPRISE"},
+                    "bounds": {"concurrency": {"max": 5}},
+                    "code": "TIER_CONCURRENCY_LIMIT",
+                },
+            ]
+        }
+
+        # 1. amount = 15000 -> requires fincen_ctr_report
+        r1 = evaluator.evaluate_policy(spec, {"amount": 15000})
+        assert any(v["code"] == "FINCEN_CTR_MANDATE" for v in r1.violations)
+
+        # 2. user_prompt contains CONFIDENTIAL -> forbidden raw_unmasked_data
+        r2 = evaluator.evaluate_policy(
+            spec,
+            {"user_prompt": "Process this CONFIDENTIAL document", "raw_unmasked_data": "secret"},
+        )
+        assert any(v["code"] == "CONFIDENTIAL_DATA_LEAK" for v in r2.violations)
+
+        # 3. override_code exists -> requires supervisor_approval
+        r3 = evaluator.evaluate_policy(spec, {"override_code": "BYPASS_101"})
+        assert any(v["code"] == "UNAUTHORIZED_OVERRIDE" for v in r3.violations)
+
+        # 4. mfa_token not_exists + privileged_session -> VIOLATION
+        r4 = evaluator.evaluate_policy(spec, {"privileged_session": True})
+        assert any(v["code"] == "PRIVILEGED_ACCESS_WITHOUT_MFA" for v in r4.violations)
+
+        # 5. tenant_tier != ENTERPRISE + concurrency 10 -> bounds violation
+        r5 = evaluator.evaluate_policy(spec, {"tenant_tier": "STANDARD", "concurrency": 10})
+        assert any(v["code"] == "TIER_CONCURRENCY_LIMIT" for v in r5.violations)
+
+        # 6. Additional operators & boundary conditions: lte, gt, lt, in-scalar, min bounds
+        from eval_runner.reference.field_policy import match_condition
+
+        assert match_condition(None, {"a": 1}) is True
+        assert match_condition({}, {"a": 1}) is True
+        assert match_condition({"operator": "exists"}, {"a": 1}) is True
+        assert (
+            match_condition(
+                {"field": "status", "operator": "in", "value": "sub"}, {"status": "SUBMITTED"}
+            )
+            is True
+        )
+        assert (
+            match_condition({"field": "score", "operator": "lte", "value": 50}, {"score": 40})
+            is True
+        )
+        assert (
+            match_condition({"field": "score", "operator": "gt", "value": 50}, {"score": 60})
+            is True
+        )
+        assert (
+            match_condition({"field": "score", "operator": "lt", "value": 50}, {"score": 30})
+            is True
+        )
+        assert (
+            match_condition(
+                {"field": "score", "operator": "gt", "value": 50}, {"score": "not_numeric"}
+            )
+            is False
+        )
+        assert (
+            match_condition(
+                {"field": "status", "operator": "unrecognized_custom"}, {"status": "ACTIVE"}
+            )
+            is True
+        )
+
+        # 7. Bounds min violation
+        spec_min = {
+            "rules": [
+                {
+                    "rule_id": "r_min",
+                    "bounds": {"deposit": {"min": 100}},
+                    "code": "MIN_DEPOSIT_VIOLATION",
+                }
+            ]
+        }
+        r_min = evaluator.evaluate_policy(spec_min, {"deposit": 50})
+        assert r_min.allowed is False
+        assert any("falls below minimum bound of 100" in r for r in r_min.violations[0]["reasons"])
+
+    def test_declarative_hybrid_mode_and_semantic_judge(self):
+        """Verifies short-circuiting on deterministic failure and semantic rubric invocation."""
+        evaluator = BasicFieldPolicyEvaluator()
+        rule_hybrid = {
+            "rule_id": "adverse_clinical_hybrid",
+            "mode": "hybrid",
+            "require_any": ["clinical_rationale"],
+            "min_length": {"clinical_rationale": 20},
+            "semantic": {
+                "rubric": "clinical_necessity_soundness",
+                "min_score": 0.85,
+            },
+            "statutory_code": "WA_ESSB_5395_SUBSTANTIVE_CLINICAL_FAILURE",
+        }
+        spec = {"rules": [rule_hybrid]}
+
+        # 1. Deterministic failure (missing clinical_rationale) -> Short-circuits immediately!
+        # Even if llm_judge is provided, it should NEVER be called.
+        judge_called = False
+
+        def mock_judge(rubric, input_data):
+            nonlocal judge_called
+            judge_called = True
+            return 0.95, "Approved"
+
+        res1 = evaluator.evaluate_policy(
+            spec, {"decision": "DENY"}, context={"llm_judge": mock_judge}
+        )
+        assert res1.allowed is False
+        assert judge_called is False  # Deterministic failure short-circuited!
+
+        # 2. Deterministic pass, but Semantic Judge fails rubric -> Semantic violation emitted
+        def failing_judge(rubric, input_data):
+            return 0.60, "Rationale lacks medical necessity justification"
+
+        sample_rationale = "Patient does not meet clinical guidelines for biologic continuation."
+        res2 = evaluator.evaluate_policy(
+            spec,
+            {"clinical_rationale": sample_rationale},
+            context={"llm_judge": failing_judge},
+        )
+        assert res2.allowed is False
+        assert any(
+            "Semantic judge rubric 'clinical_necessity_soundness' failed" in v["message"]
+            for v in res2.violations
+        )
+
+        # 3. Deterministic pass AND Semantic Judge passes -> ALLOWED
+        def passing_judge(rubric, input_data):
+            return 0.92, "Well supported clinical rationale"
+
+        res3 = evaluator.evaluate_policy(
+            spec,
+            {"clinical_rationale": sample_rationale},
+            context={"llm_judge": passing_judge},
+        )
+        assert res3.allowed is True
 
 
 # ==============================================================================

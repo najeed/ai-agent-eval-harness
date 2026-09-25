@@ -323,6 +323,7 @@ class InProcessExecutionBackend(ExecutionBackend):
                     "WAITING_FOR_APPROVAL",
                     "AWAITING_APPROVAL",
                     "PAUSED",
+                    "PAUSED_FOR_APPROVAL",
                     "UNKNOWN",
                 ):
                     raise RuntimeError(

@@ -25,8 +25,8 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **idna** | 3.20 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **jsonschema** | 4.26.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **numpy** | 2.5.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **opentelemetry-api** | 1.44.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **opentelemetry-sdk** | 1.44.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **opentelemetry-api** | 1.45.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **opentelemetry-sdk** | 1.45.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **Pillow** | 12.3.0 | HPND | [HPND.txt](LICENSES/HPND.txt) |
 | **psutil** | 7.2.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **pydantic** | 2.13.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
@@ -34,7 +34,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **python-dotenv** | 1.2.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **PyYAML** | 6.0.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **requests** | 2.34.2 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **sqlalchemy** | 2.1.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **sqlalchemy** | 2.1.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **urllib3** | 2.8.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **Werkzeug** | 3.1.8 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 
@@ -79,7 +79,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 ### 2.6 Optional Ecosystem & Framework Integrations (`pyproject.toml [project.optional-dependencies]`)
 | Package | Version | License | License File |
 | :--- | :--- | :--- | :--- |
-| **ag2** | 1.0.6 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **ag2** | 1.1.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **cyclecore-pq** | 0.3.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **datasets** | 5.0.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **GitPython** | 3.1.62 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
@@ -92,7 +92,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **langchain-openai** | 1.6.6 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langgraph** | 1.2.12 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langserve** | 0.3.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langsmith** | 0.14.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langsmith** | 0.14.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **lxml** | 6.1.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **pypdf** | 6.19.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **python-docx** | 1.2.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
@@ -176,10 +176,10 @@ In response to emerging quantum threats, AgentV v1.6.2+ introduces a **Hybrid Po
 
 ### Cryptographic Foundation
 - **Classical Layer**: Ed25519 (SHA-512 + Curve25519).
-- **Post-Quantum Layer**: ML-DSA-65 (Module-Lattice-based Digital Signature Algorithm).
+- **Optional Post-Quantum Layer**: ML-DSA-65 (Module-Lattice-based Digital Signature Algorithm).
 - **Hybrid Binding**: Signatures are chained within the `provenance_chain` of the VC v3.0.0 manifest.
 
-### Zero-Exposure Signing (ZES)
+### Zero-Exposure Signing (ZES) For PQC
 To maintain the privacy of industrial evaluation data, AgentV implements **Zero-Exposure Signing (ZES)**:
 1.  The evaluation trace and manifest are hashed locally using **SHAKE-256**.
 2.  Only the resulting cryptographic digest is transmitted to the PQC signing provider (CycleCore).

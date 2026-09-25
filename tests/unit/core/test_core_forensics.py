@@ -514,3 +514,14 @@ def test_forensics_extended_coverage_matrix(tmp_path):
     test_log = tmp_path / "file.log"
     test_log.write_text("sample log content")
     assert engine.is_relevant(test_log, run_id="r1", is_dedicated_dir=True) is True
+
+    # 19. ForensicCollector.record_external_receipts (P0-03)
+    receipts = [{"tool": "external_search", "result": {"items": [1, 2]}, "digest": "sha3_256:abc"}]
+    collector.record_external_receipts(receipts, turn=1, node_id="node_search")
+    assert hasattr(collector, "_external_receipts")
+    assert len(collector._external_receipts) == 1
+    receipt_file = tmp_path / "forensics" / "external_receipts_turn_001_node_search.json"
+    assert receipt_file.exists()
+
+    # Empty receipts test (early return)
+    collector.record_external_receipts([], turn=2, node_id="node_empty")

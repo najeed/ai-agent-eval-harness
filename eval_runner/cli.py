@@ -149,6 +149,7 @@ DISCOVERY_COMMANDS = {
     "init",
     "console",
     "doctor",
+    "hitl-resume",
 }
 
 
@@ -364,6 +365,43 @@ Usage: agentv <command> [options]
     replay_parser = subparsers.add_parser("replay", help="Replay a trace")
     replay_parser.set_defaults(func=_dispatch_evaluation)
     replay_parser.add_argument("--run-id", required=True, help="[SSOT] Mandatory identifier")
+
+    hitl_resume_parser = subparsers.add_parser(
+        "hitl-resume",
+        help="Resume a paused evaluation run following human-in-the-loop approval or rejection",
+    )
+    hitl_resume_parser.set_defaults(func=_dispatch_evaluation)
+    hitl_resume_parser.add_argument(
+        "--run-id", required=True, help="[SSOT] Mandatory Run ID of the paused evaluation"
+    )
+    hitl_resume_parser.add_argument(
+        "--approval-token",
+        required=True,
+        help="Cryptographic approval token issued during state suspension",
+    )
+    hitl_resume_parser.add_argument(
+        "--decision",
+        default="APPROVED",
+        choices=["APPROVED", "REJECTED"],
+        help="Human review decision: APPROVED to resume execution, "
+        "or REJECTED to cleanly terminate",
+    )
+    hitl_resume_parser.add_argument(
+        "--reviewer",
+        default="cli_reviewer",
+        help="Identifier or role of the human reviewer making the decision",
+    )
+    hitl_resume_parser.add_argument(
+        "--reason",
+        default=None,
+        help="Optional justification or reason for the review decision",
+    )
+    hitl_resume_parser.add_argument(
+        "--store",
+        choices=["file", "sqlite"],
+        default=None,
+        help="Optional approval store backend override (defaults to configured store)",
+    )
 
     explain_parser = subparsers.add_parser("explain", help="Diagnose root causes")
     explain_parser.set_defaults(func=_dispatch_analysis)

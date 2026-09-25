@@ -1028,7 +1028,7 @@ async def test_session_oracle_evaluation_matrix_outcomes(tmp_path):
             {},
             execution_context={"evaluation_plan": plan_na_allowed},
         )
-        assert res_plan_all_na.get("node_verdict", {}).get("verification") == "pass"
+        assert res_plan_all_na.get("node_verdict", {}).get("verification") == "not_applicable"
 
     # Branch: Fallback branch with non-REQUIRED oracle fail -> verification = fail
     with (

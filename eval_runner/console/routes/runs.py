@@ -576,10 +576,35 @@ def cancel_run(run_id):
 @require_permission(Permission.RUNS_WRITE)
 def resume_run(run_id):
     """Resumes a paused or checkpointed evaluation run via ExecutionBackend."""
+    from eval_runner.reference.approval_store import get_default_approval_store
     from eval_runner.reference.inprocess_backend import get_execution_backend
 
     data = request.json or {}
-    resumption_token = data.get("resumption_token")
+    resumption_token = data.get("resumption_token") or data.get("approval_token")
+    decision = (data.get("decision") or "APPROVED").upper()
+    reviewer = data.get("reviewer") or "console_user"
+    reason = data.get("reason")
+
+    if resumption_token:
+        store = get_default_approval_store()
+        req = store.get_request(resumption_token)
+        if req:
+            store.resolve_request(
+                resumption_token,
+                decision=decision,
+                decided_by=reviewer,
+                decision_reason=reason,
+            )
+            if decision == "REJECTED":
+                return jsonify(
+                    {
+                        "status": "REJECTED",
+                        "run_id": run_id,
+                        "approval_token": resumption_token,
+                        "reason": reason or "Rejected via review gate",
+                    }
+                )
+
     backend = get_execution_backend()
     resumed = backend.resume(run_id, resumption_token=resumption_token, background=True)
     if resumed is None:

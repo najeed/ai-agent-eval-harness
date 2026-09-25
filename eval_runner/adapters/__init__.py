@@ -39,6 +39,7 @@ from .. import config
 from .common import (
     AdapterSessionPool,
     BaseAdapter,
+    DualNormalizationHub,
     SessionManager,
     build_request_headers,
     iter_sse_events,
@@ -207,7 +208,7 @@ async def _request_json_once(
     timeout: float,
     headers: Mapping[str, str],
     protocol: str,
-) -> dict[str, Any]:
+) -> tuple[dict[str, Any], int]:
     """Execute one bounded JSON POST without transport retries."""
     _ensure_request_size(payload)
 
@@ -219,8 +220,9 @@ async def _request_json_once(
     ) as response:
         await _raise_for_http_failure(response, protocol=protocol)
         body = await response.read()
+        status_code = response.status
 
-    return _decode_json_object(body, protocol=protocol)
+    return _decode_json_object(body, protocol=protocol), status_code
 
 
 async def _execute_with_retry(
@@ -290,13 +292,19 @@ async def http_adapter(
             await pool.get_session() if pool is not None else await SessionManager.get_session()
         )
 
-        return await _request_json_once(
+        decoded, status_code = await _request_json_once(
             session,
             payload=payload,
             endpoint=resolved_endpoint,
             timeout=timeout,
             headers=headers,
             protocol="HTTP",
+        )
+        return DualNormalizationHub.normalize_response(
+            decoded,
+            status_code=status_code,
+            overrides=kwargs.get("overrides"),
+            schema=kwargs.get("schema"),
         )
 
     return await _execute_with_retry(
