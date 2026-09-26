@@ -1151,6 +1151,32 @@ class MutationService(MutationEngine):
 
         mutated = make_next(0, 0)(safe_scenario, mut_type)
 
+        # Guarantee ID differentiation so mutated child scenarios never overwrite base scenario
+        suffix = f"_mutated_{mut_type}"
+        if isinstance(mutated, dict):
+            mut_id = mutated.get("id")
+            orig_id = safe_scenario.get("id") if isinstance(safe_scenario, dict) else None
+            meta = mutated.setdefault("metadata", {})
+            orig_meta = safe_scenario.get("metadata", {}) if isinstance(safe_scenario, dict) else {}
+            orig_meta_id = orig_meta.get("id") if isinstance(orig_meta, dict) else None
+
+            # If provider didn't differentiate id from original, add suffix
+            if isinstance(mut_id, str):
+                if mut_id == orig_id and not mut_id.endswith(suffix):
+                    mutated["id"] = f"{mut_id}{suffix}"
+            elif isinstance(orig_id, str):
+                mutated["id"] = f"{orig_id}{suffix}"
+
+            if isinstance(meta, dict):
+                curr_meta_id = meta.get("id")
+                if isinstance(curr_meta_id, str):
+                    if curr_meta_id == orig_meta_id and not curr_meta_id.endswith(suffix):
+                        meta["id"] = f"{curr_meta_id}{suffix}"
+                elif isinstance(orig_meta_id, str):
+                    meta["id"] = f"{orig_meta_id}{suffix}"
+                elif isinstance(mutated.get("id"), str):
+                    meta["id"] = mutated["id"]
+
         # Inject seed lineage if provided
         if seed is not None:
             mutated.setdefault("metadata", {})["mutation_seed"] = seed

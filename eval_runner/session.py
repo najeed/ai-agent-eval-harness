@@ -1466,6 +1466,8 @@ class SessionManager:
                 else {}
             )
             oid = derive_oracle_id("sc", node_id, crit if crit else row, idx)
+            if oid in node_oracle_results:
+                oid = f"{oid}:{idx}"
             row["oracle_id"] = oid
             req = bool(crit.get("required", row.get("required", True)))
             req_level = str(
@@ -1493,6 +1495,8 @@ class SessionManager:
                 else {}
             )
             oid = derive_oracle_id("hygiene", node_id, rule if rule else row, idx)
+            if oid in node_oracle_results:
+                oid = f"{oid}:{idx}"
             row["oracle_id"] = oid
             req = bool(rule.get("required", row.get("required", True)))
             req_level = str(
@@ -1525,6 +1529,8 @@ class SessionManager:
                 entry_for_id.get("target") == "__state_parity__" or not declared_outcomes
             )
             oid = derive_oracle_id("parity", node_id, entry_for_id, idx)
+            if oid in node_oracle_results:
+                oid = f"{oid}:{idx}"
             row["oracle_id"] = oid
 
             if is_synthetic_na:

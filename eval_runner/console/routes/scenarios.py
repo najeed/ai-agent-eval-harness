@@ -58,6 +58,7 @@ def list_scenarios():
     query = request.args.get("q")
     industry = request.args.get("industry")
     difficulty = request.args.get("difficulty")
+    sort_by = request.args.get("sort", "mtime")
     limit = int(request.args.get("limit", 10000))
     page = int(request.args.get("page", 1))
     offset = (page - 1) * limit
@@ -66,9 +67,23 @@ def list_scenarios():
     if not catalog.scenarios:
         catalog.load_index()
 
-    results = catalog.search(
-        query=query, industry=industry, difficulty=difficulty, limit=limit, offset=offset
-    )
+    try:
+        results = catalog.search(
+            query=query,
+            industry=industry,
+            difficulty=difficulty,
+            sort_by=sort_by,
+            limit=limit,
+            offset=offset,
+        )
+    except TypeError:
+        results = catalog.search(
+            query=query,
+            industry=industry,
+            difficulty=difficulty,
+            limit=limit,
+            offset=offset,
+        )
     return jsonify(
         {
             "scenarios": results,
@@ -1006,7 +1021,19 @@ def save_scenario():
         return jsonify({"error": "Invalid payload: expected scenario JSON object"}), 400
 
     meta = data.setdefault("metadata", {})
+    # Hoist and remove root-level name and title to conform to AES 1.4 root schema
+    if "name" in data:
+        root_name = data.pop("name")
+        if root_name and not meta.get("name"):
+            meta["name"] = str(root_name)
+    if "title" in data:
+        root_title = data.pop("title")
+        if root_title and not meta.get("name"):
+            meta["name"] = str(root_title)
+
     scen_id = meta.get("id") or data.get("id")
+    if scen_id and "id" in data:
+        data["id"] = scen_id
     industry = data.get("industry") or meta.get("industry") or "generic"
 
     if not scen_id or not re.match(r"^[a-zA-Z0-9_\-]+$", scen_id):

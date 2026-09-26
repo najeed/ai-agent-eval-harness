@@ -326,7 +326,12 @@ class ScenarioCatalog:
             self._log("index_synchronized")
 
     def search(
-        self, query: str = None, limit: int = 50, offset: int = 0, **filters
+        self,
+        query: str = None,
+        limit: int = 50,
+        offset: int = 0,
+        sort_by: str = None,
+        **filters,
     ) -> list[dict[str, Any]]:
         """Searches the index. Auto-hydrates if empty."""
         with self._lock:
@@ -379,6 +384,9 @@ class ScenarioCatalog:
                     results = [s for s in results if s.get("industry", "").lower() == val_str]
                 else:
                     results = [s for s in results if str(s.get(key)).lower() == val_str]
+
+        if sort_by == "mtime":
+            results = sorted(results, key=lambda s: s.get("mtime", 0), reverse=True)
 
         return results[offset : offset + limit]
 

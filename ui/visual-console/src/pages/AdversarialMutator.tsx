@@ -47,7 +47,7 @@ export const AdversarialMutator: React.FC = () => {
   const fetchScenarios = async () => {
     setLoadingScenarios(true);
     try {
-      const res = await fetch('/api/scenarios');
+      const res = await fetch('/api/scenarios?limit=10000');
       const data = await res.json();
       if (res.ok && data.scenarios) {
         setScenarios(data.scenarios);
@@ -129,14 +129,27 @@ export const AdversarialMutator: React.FC = () => {
     setSaveMsg('');
     setError('');
 
-    // Ensure parent reference is linked to prevent orphaned mutants
+    // Ensure derived scenario ID reflects mutation and parent
+    const expectedSuffix = `_mutated_${mutationType}`;
+    let targetId = mutatedJson.metadata?.id || mutatedJson.id || selectedId;
+    if (!targetId.endsWith(expectedSuffix)) {
+      targetId = `${targetId}${expectedSuffix}`;
+    }
+
+    // Ensure parent reference and derived ID are linked to prevent orphaned mutants or overwriting base
+    const derivedName = mutatedJson.metadata?.name || mutatedJson.name || `${selectedId} (Mutated: ${mutationType})`;
     const mutantCopy = {
       ...mutatedJson,
       metadata: {
         ...(mutatedJson.metadata || {}),
-        parent_scenario_id: selectedId
+        id: targetId,
+        parent_scenario_id: selectedId,
+        name: derivedName
       }
     };
+    delete (mutantCopy as any).name;
+    delete (mutantCopy as any).id;
+    delete (mutantCopy as any).title;
 
     try {
       const res = await fetch('/api/scenarios', {
@@ -145,13 +158,15 @@ export const AdversarialMutator: React.FC = () => {
         body: JSON.stringify(mutantCopy)
       });
       if (res.ok) {
-        setSaveMsg(`Mutated scenario saved to library: ${mutantCopy.id}`);
+        const data = await res.json().catch(() => ({}));
+        const savedId = data.id || data.scenario_id || targetId;
+        setSaveMsg(`Mutated scenario saved to library: ${savedId}`);
         window.dispatchEvent(new CustomEvent('agentv-toast', {
-          detail: { message: 'Mutated scenario successfully saved!', type: 'success' }
+          detail: { message: `Mutated scenario successfully saved: ${savedId}`, type: 'success' }
         }));
-        setTimeout(() => navigate('/scenarios'), 1500);
+        setTimeout(() => navigate(`/scenarios?q=${encodeURIComponent(savedId)}`), 1500);
       } else {
-        const errData = await res.json();
+        const errData = await res.json().catch(() => ({}));
         setError(errData.error || 'Failed to save mutated scenario.');
       }
     } catch (err: any) {

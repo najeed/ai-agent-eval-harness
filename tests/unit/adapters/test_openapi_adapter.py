@@ -16,6 +16,19 @@ def test_normalization_hub_keywords():
     # Final Answer (Default & Keywords)
     assert DualNormalizationHub.normalize({"status": "approved"}, 200) == "final_answer"
     assert DualNormalizationHub.normalize({"data": "some value"}, 200) == "final_answer"
+    assert (
+        DualNormalizationHub.normalize(
+            {
+                "state": {
+                    "authorizations": [],
+                    "human_reviews": [{"review": "HUMAN_REVIEWED"}],
+                },
+                "state_hash": "sha256:123",
+            },
+            200,
+        )
+        == "final_answer"
+    )
 
 
 def test_normalization_hub_status_codes():

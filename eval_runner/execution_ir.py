@@ -539,12 +539,20 @@ def compile_evaluation_plan(
                         f"Malformed success_criteria on node '{node_id}': "
                         f"expected dict, got {type(c).__name__}"
                     )
+                has_explicit_id = bool(c.get("id") or c.get("oracle_id"))
                 oid = derive_oracle_id("sc", node_id, c, idx)
                 if oid in eval_plan.oracles:
-                    raise PlanValidationError(
-                        f"Duplicate oracle_id '{oid}' declared in evaluation plan. "
-                        "Oracle identifiers must be unique across all assertions."
-                    )
+                    if has_explicit_id:
+                        raise PlanValidationError(
+                            f"Duplicate oracle_id '{oid}' declared in evaluation plan. "
+                            "Oracle identifiers must be unique across all assertions."
+                        )
+                    oid = f"{oid}:{idx}"
+                    if oid in eval_plan.oracles:
+                        raise PlanValidationError(
+                            f"Duplicate oracle_id '{oid}' declared in evaluation plan. "
+                            "Oracle identifiers must be unique across all assertions."
+                        )
                 target = str(
                     c.get("target")
                     or c.get("property")
@@ -579,12 +587,20 @@ def compile_evaluation_plan(
                             f"Malformed state_hygiene rule on node '{node_id}': "
                             f"expected dict, got {type(r).__name__}"
                         )
+                    has_explicit_id = bool(r.get("id") or r.get("oracle_id"))
                     oid = derive_oracle_id("hygiene", node_id, r, idx)
                     if oid in eval_plan.oracles:
-                        raise PlanValidationError(
-                            f"Duplicate oracle_id '{oid}' declared in evaluation plan. "
-                            "Oracle identifiers must be unique across all assertions."
-                        )
+                        if has_explicit_id:
+                            raise PlanValidationError(
+                                f"Duplicate oracle_id '{oid}' declared in evaluation plan. "
+                                "Oracle identifiers must be unique across all assertions."
+                            )
+                        oid = f"{oid}:{idx}"
+                        if oid in eval_plan.oracles:
+                            raise PlanValidationError(
+                                f"Duplicate oracle_id '{oid}' declared in evaluation plan. "
+                                "Oracle identifiers must be unique across all assertions."
+                            )
                     path = str(r.get("path") or r.get("target") or "state")
                     req, req_level = _validate_oracle_requiredness(
                         r, f"Node '{node_id}' state_hygiene rule[{idx}]"
@@ -611,12 +627,20 @@ def compile_evaluation_plan(
                         f"Malformed expected_outcome on node '{node_id}': "
                         f"expected dict, got {type(o).__name__}"
                     )
+                has_explicit_id = bool(o.get("id") or o.get("oracle_id"))
                 oid = derive_oracle_id("parity", node_id, o, idx)
                 if oid in eval_plan.oracles:
-                    raise PlanValidationError(
-                        f"Duplicate oracle_id '{oid}' declared in evaluation plan. "
-                        "Oracle identifiers must be unique across all assertions."
-                    )
+                    if has_explicit_id:
+                        raise PlanValidationError(
+                            f"Duplicate oracle_id '{oid}' declared in evaluation plan. "
+                            "Oracle identifiers must be unique across all assertions."
+                        )
+                    oid = f"{oid}:{idx}"
+                    if oid in eval_plan.oracles:
+                        raise PlanValidationError(
+                            f"Duplicate oracle_id '{oid}' declared in evaluation plan. "
+                            "Oracle identifiers must be unique across all assertions."
+                        )
 
                 target = str(o.get("target") or o.get("property") or "state")
                 req, req_level = _validate_oracle_requiredness(

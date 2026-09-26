@@ -1925,7 +1925,7 @@ class DualNormalizationHub:
 
             value = response.get(key)
 
-            if value is not None:
+            if value is not None and not isinstance(value, (dict, list, set, tuple)):
                 return (
                     key,
                     str(value),
@@ -1942,7 +1942,7 @@ class DualNormalizationHub:
                     "result",
                 )
             ):
-                if value is not None:
+                if value is not None and not isinstance(value, (dict, list, set, tuple)):
                     return (
                         str(key),
                         str(value),

@@ -4110,7 +4110,11 @@ class OpenAPIAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         ):
             value = response.get(key)
 
-            if value is not None and str(value).strip().lower() in _PROCESSING_VALUES:
+            if (
+                value is not None
+                and not isinstance(value, (dict, list, set, tuple))
+                and str(value).strip().lower() in _PROCESSING_VALUES
+            ):
                 return "processing"
 
         return DualNormalizationHub.normalize(

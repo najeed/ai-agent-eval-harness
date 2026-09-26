@@ -231,7 +231,7 @@ def test_derive_oracle_id_and_evaluation_plan_compilation():
     )
     assert single_node_plan.entry_node_ids == ["solo"]
 
-    # Duplicate expected_outcome oracle_id
+    # Duplicate expected_outcome oracle_id when explicit ID is identical
     dup_eo = {
         "workflow": {
             "nodes": [
@@ -247,6 +247,25 @@ def test_derive_oracle_id_and_evaluation_plan_compilation():
     }
     with pytest.raises(PlanValidationError, match="Duplicate oracle_id"):
         compile_evaluation_plan(dup_eo)
+
+    # Multi-assertion on identical target without explicit IDs compiles successfully
+    # with indexed oracle IDs
+    multi_target_eo = {
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "eval_node",
+                    "expected_outcome": [
+                        {"target": "message", "expected": "denied", "mode": "regex"},
+                        {"target": "message", "expected": "notified", "mode": "regex"},
+                    ],
+                }
+            ]
+        }
+    }
+    plan_multi = compile_evaluation_plan(multi_target_eo)
+    assert "eval_node:parity:message" in plan_multi.oracles
+    assert "eval_node:parity:message:1" in plan_multi.oracles
 
 
 def test_predicate_normalization_and_evaluation_matrix():

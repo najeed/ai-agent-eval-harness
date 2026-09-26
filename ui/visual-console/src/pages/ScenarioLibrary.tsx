@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   Search, Grid, List, 
   Sparkles, CheckCircle, ArrowRight, Play, RefreshCw, Filter
@@ -21,13 +21,14 @@ interface ScenarioItem {
 
 export const ScenarioLibrary: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [scenarios, setScenarios] = useState<ScenarioItem[]>([]);
   const [allIndustries, setAllIndustries] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   
   // Search & Filter state
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(() => searchParams.get('q') || '');
   const [selectedIndustry, setSelectedIndustry] = useState<string>('All');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('All');
   
@@ -43,7 +44,7 @@ export const ScenarioLibrary: React.FC = () => {
       if (search.trim()) params.set('q', search.trim());
       if (selectedIndustry !== 'All') params.set('industry', selectedIndustry);
       if (selectedDifficulty !== 'All') params.set('difficulty', selectedDifficulty);
-      params.set('limit', '500');
+      params.set('limit', '10000');
 
       const res = await fetch(`/api/scenarios?${params.toString()}`);
       const data = await res.json();
@@ -81,6 +82,13 @@ export const ScenarioLibrary: React.FC = () => {
       setRefreshing(false);
     }
   };
+
+  useEffect(() => {
+    const q = searchParams.get('q');
+    if (q !== null && q !== search) {
+      setSearch(q);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     fetchScenarios();

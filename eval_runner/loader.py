@@ -283,6 +283,22 @@ def load_scenario(
             "This harness requires AES v1.4+ for Forensic Integrity compliance."
         )
 
+    # AES 1.4 Root Schema Sanitization: hoist legacy/mutator root name/title/id into metadata
+    if isinstance(scenario_data, dict) and isinstance(scenario_data.get("metadata"), dict):
+        meta = scenario_data["metadata"]
+        if "name" in scenario_data:
+            val = scenario_data.pop("name")
+            if val and not meta.get("name"):
+                meta["name"] = str(val)
+        if "title" in scenario_data:
+            val = scenario_data.pop("title")
+            if val and not meta.get("name"):
+                meta["name"] = str(val)
+        if "id" in scenario_data:
+            val = scenario_data.pop("id")
+            if val and not meta.get("id"):
+                meta["id"] = str(val)
+
     # Handle validation with the Universal Immutable Registry (No-Debt Standard)
     try:
         from jsonschema import ValidationError
