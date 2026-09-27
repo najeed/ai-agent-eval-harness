@@ -36,7 +36,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **requests** | 2.34.2 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **sqlalchemy** | 2.1.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **urllib3** | 2.8.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **Werkzeug** | 3.1.8 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **Werkzeug** | 3.1.9 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 
 ### 2.2 Visual Console Frontend UI Dependencies (`ui/visual-console/package.json`)
 | Package | Version | License | License File |
