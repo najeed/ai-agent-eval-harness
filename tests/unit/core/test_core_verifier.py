@@ -2165,7 +2165,8 @@ def test_get_certificate_success_returns_manifest(tmp_path):
         assert result == expected_manifest
 
 
-def test_verify_trace_discovers_staged_artifact(tmp_path):
+def test_verify_trace_discovers_staged_artifact(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
     priv = ed25519.Ed25519PrivateKey.generate()
     pub = priv.public_key()
     run_dir = tmp_path / "run_staging"
@@ -2204,7 +2205,8 @@ def test_verify_trace_discovers_staged_artifact(tmp_path):
         assert ok is True
 
 
-def test_verify_trace_skips_terminal_finalization_carrier(tmp_path):
+def test_verify_trace_skips_terminal_finalization_carrier(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
     priv = ed25519.Ed25519PrivateKey.generate()
     pub = priv.public_key()
     run_dir = tmp_path / "run_term"
@@ -2258,6 +2260,7 @@ def test_verify_trace_skips_terminal_finalization_carrier(tmp_path):
 
 
 def test_verify_trace_sealed_run_matching_run_log_dir(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
     priv = ed25519.Ed25519PrivateKey.generate()
     pub = priv.public_key()
     run_dir = tmp_path / "runs"
@@ -2291,7 +2294,8 @@ def test_verify_trace_sealed_run_matching_run_log_dir(tmp_path, monkeypatch):
         assert ok is True
 
 
-def test_verify_trace_trust_root_object_resolution(tmp_path):
+def test_verify_trace_trust_root_object_resolution(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
     priv = ed25519.Ed25519PrivateKey.generate()
     pub = priv.public_key()
     run_dir = tmp_path / "run_trust_obj"
@@ -2366,7 +2370,8 @@ def test_verify_trace_rejects_unsigned_verification_package(tmp_path):
         assert ok is False
 
 
-def test_verify_trace_trust_root_directory_and_opaque_object_fallbacks(tmp_path):
+def test_verify_trace_trust_root_directory_and_opaque_object_fallbacks(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
     priv = ed25519.Ed25519PrivateKey.generate()
     pub = priv.public_key()
 

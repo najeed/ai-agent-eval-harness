@@ -211,7 +211,7 @@ class AG2AdapterPlugin(BaseEvalPlugin, BaseAdapter):
                 span_context=span_context,
             )
         except TimeoutError:
-            timeout = self._adapter_timeout()
+            timeout = self._adapter_timeout(payload)
             return self._error(
                 message=f"AG2 execution timed out after {timeout:.1f}s.",
                 agent_id=agent_id,
@@ -251,7 +251,7 @@ class AG2AdapterPlugin(BaseEvalPlugin, BaseAdapter):
 
         framework_version = str(getattr(ag2, "__version__", "unknown"))
         agent_name = str(getattr(agent, "name", agent_id))
-        timeout = self._adapter_timeout()
+        timeout = self._adapter_timeout(payload)
 
         emit(
             CoreEvents.CHAIN_START,
@@ -495,7 +495,7 @@ class AG2AdapterPlugin(BaseEvalPlugin, BaseAdapter):
                 span_context=span_context,
             )
         except TimeoutError:
-            timeout = self._adapter_timeout()
+            timeout = self._adapter_timeout(payload)
             return self._error(
                 message=(f"AG2 remote A2A execution timed out after {timeout:.1f}s."),
                 agent_id=agent_id,
@@ -538,7 +538,7 @@ class AG2AdapterPlugin(BaseEvalPlugin, BaseAdapter):
         framework_version: str,
     ) -> dict[str, Any]:
         remote_agent = state.agent
-        timeout = self._adapter_timeout()
+        timeout = self._adapter_timeout(payload)
 
         emit(
             CoreEvents.CHAIN_START,
@@ -1416,11 +1416,13 @@ class AG2AdapterPlugin(BaseEvalPlugin, BaseAdapter):
         return f"{mode}:{endpoint_fingerprint}:{base}"
 
     @staticmethod
-    def _adapter_timeout() -> float:
-        value = getattr(
-            config,
-            "DEFAULT_ADAPTER_TIMEOUT",
-            AG2AdapterPlugin._DEFAULT_TIMEOUT,
+    def _adapter_timeout(payload: Mapping[str, Any] | None = None) -> float:
+        """Resolve a bounded per-turn timeout without mutating global policy."""
+        payload = payload or {}
+        value = (
+            payload.get("_agentv_timeout")
+            or payload.get("timeout")
+            or getattr(config, "DEFAULT_ADAPTER_TIMEOUT", AG2AdapterPlugin._DEFAULT_TIMEOUT)
         )
 
         try:

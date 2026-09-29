@@ -305,13 +305,15 @@ def _private_key_pem_bytes(identity_id: str) -> bytes:
     from cryptography.hazmat.primitives import serialization
 
     # Defect T6: Disable automatic key provisioning for production signing
-    is_production = (
-        os.getenv("ENVIRONMENT", "").strip().lower() in ("prod", "production")
-        or os.getenv("ENV", "").strip().lower() in ("prod", "production")
-        or os.getenv("AGENTV_ENV", "").strip().lower() in ("prod", "production")
-    )
+    is_production = config.is_production()
     if is_production:
-        key = identity.IdentityService.get_private_key(identity_id, auto_provision=False)
+        try:
+            key = identity.IdentityService.get_private_key(identity_id, auto_provision=False)
+        except PermissionError as exc:
+            raise ValueError(
+                "Automatic key provisioning is disabled in production for signing "
+                f"identity '{identity_id}'"
+            ) from exc
         if key is None:
             raise ValueError(
                 "Automatic key provisioning is disabled in production for signing "

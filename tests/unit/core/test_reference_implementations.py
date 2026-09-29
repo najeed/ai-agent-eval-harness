@@ -27,10 +27,7 @@ from cryptography.hazmat.primitives.asymmetric import ed25519, rsa
 from eval_runner import config
 from eval_runner.identity import IdentityService
 from eval_runner.reference.auth import SimpleAPIKeyAuthBackend
-from eval_runner.reference.field_policy import (
-    BasicFieldPolicyEvaluator,
-    RegulatoryPolicyEvaluator,
-)
+from eval_runner.reference.field_policy import BasicFieldPolicyEvaluator
 from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
 from eval_runner.reference.local_artifact import LocalFileArtifactStore
 from eval_runner.reference.local_catalog import LocalFileCatalogStore
@@ -284,98 +281,41 @@ class TestPolicyEvaluatorReferenceImplementation:
         assert evaluator.validate_policy({"required_fields": "not_a_list"}) is False
 
 
-class TestRegulatoryPolicyReferenceImplementation:
-    """Tests for RegulatoryPolicyEvaluator & WA ESSB 5395 / IA HF 2635 mandates (P0-07)."""
+class TestDeclarativePolicyReferenceImplementation:
+    """Runtime evaluates only generic controls supplied by a policy pack."""
 
-    def test_wa_essb_5395_clinical_context_and_rationale_mandate(self):
-        evaluator = RegulatoryPolicyEvaluator()
-        spec = {"standard": "WA_ESSB_5395"}
+    def test_required_values_are_enforced_by_pack_supplied_rule(self):
+        evaluator = BasicFieldPolicyEvaluator()
+        spec = {
+            "id": "external_adverse_decision_control",
+            "rules": [
+                {
+                    "rule_id": "human_review_required",
+                    "when": {"field": "decision", "operator": "eq", "value": "DENY"},
+                    "require_all": ["human_review_id", "reviewer_artifact"],
+                    "required_values": {"decision_source": "HUMAN_REVIEWED"},
+                }
+            ],
+        }
 
-        # 1. Adverse decision without clinical context & without rationale
-        res1 = evaluator.evaluate_policy(spec, {"decision": "DENIED"})
-        assert res1.allowed is False
-        codes = [v["code"] for v in res1.violations]
-        assert "WA_ESSB_5395_MISSING_CLINICAL_EVALUATION" in codes
-        assert "WA_ESSB_5395_MISSING_CLINICAL_RATIONALE" in codes
+        denied = evaluator.evaluate_policy(spec, {"decision": "DENY"})
+        assert denied.allowed is False
+        assert denied.violations
 
-        # 2. Adverse decision with clinical context but missing clinical rationale
-        res2 = evaluator.evaluate_policy(
-            spec,
-            {"decision": "DENIED", "clinical_context": {"chart_notes": "Patient history..."}},
-        )
-        assert res2.allowed is False
-        codes2 = [v["code"] for v in res2.violations]
-        assert "WA_ESSB_5395_MISSING_CLINICAL_EVALUATION" not in codes2
-        assert "WA_ESSB_5395_MISSING_CLINICAL_RATIONALE" in codes2
-
-        # 3. Adverse decision with clinical context AND clinical rationale -> ALLOWED
-        res3 = evaluator.evaluate_policy(
+        allowed = evaluator.evaluate_policy(
             spec,
             {
-                "decision": "DENIED",
-                "clinical_records": ["Record #1"],
-                "clinical_rationale": (
-                    "Medical guidelines require step therapy trial prior to biologics."
-                ),
+                "decision": "DENY",
+                "human_review_id": "review-1",
+                "reviewer_artifact": "receipt-1",
+                "decision_source": "HUMAN_REVIEWED",
             },
         )
-        assert res3.allowed is True
-        assert len(res3.violations) == 0
+        assert allowed.allowed is True
 
-        # 4. Favorable decision without clinical context -> ALLOWED under this policy
-        res4 = evaluator.evaluate_policy(spec, {"decision": "APPROVED"})
-        assert res4.allowed is True
-
-    def test_ia_hf_2635_mandatory_licensed_physician_review(self):
-        evaluator = RegulatoryPolicyEvaluator()
-        spec = {"standard": "IA_HF_2635"}
-
-        # 1. Adverse decision without human review -> VIOLATION
-        res1 = evaluator.evaluate_policy(spec, {"decision": "DENIED"})
-        assert res1.allowed is False
-        assert any(v["code"] == "IA_HF_2635_UNLICENSED_ADVERSE_DECISION" for v in res1.violations)
-
-        # 2. Adverse downgrade with licensed physician review -> ALLOWED
-        res2 = evaluator.evaluate_policy(
-            spec,
-            {"status": "DOWNGRADED", "licensed_physician_review": "Dr. Sarah Smith, MD #12345"},
-        )
-        assert res2.allowed is True
-
-        # 3. Adverse delay with human review artifact -> ALLOWED
-        res3 = evaluator.evaluate_policy(
-            spec,
-            {"action": "DELAY", "human_review_artifact": {"reviewer": "MD-442", "sig": "valid"}},
-        )
-        assert res3.allowed is True
-
-        # 4. Adverse decision with review_status COMPLETED -> ALLOWED
-        res4 = evaluator.evaluate_policy(
-            spec,
-            {"decision": "MODIFIED", "review_status": "COMPLETED"},
-        )
-        assert res4.allowed is True
-
-        # 5. Adverse decision with human_in_the_loop True -> ALLOWED
-        res5 = evaluator.evaluate_policy(
-            spec,
-            {"decision": "REJECTED", "human_in_the_loop": True},
-        )
-        assert res5.allowed is True
-
-        # 6. Favorable decision (APPROVED) -> ALLOWED without licensed review
-        res6 = evaluator.evaluate_policy(spec, {"decision": "APPROVED"})
-        assert res6.allowed is True
-
-    def test_regulatory_policy_validation(self):
-        evaluator = RegulatoryPolicyEvaluator()
-        assert evaluator.validate_policy({"standard": "WA_ESSB_5395"}) is True
-        assert evaluator.validate_policy({"regulatory_standard": "IA_HF_2635"}) is True
-        assert evaluator.validate_policy({"id": "custom_wa_essb_5395_policy"}) is True
-        assert evaluator.validate_policy({"rules": [{"rule_id": "test_r"}]}) is True
-        assert evaluator.validate_policy("not_a_dict") is False
-        assert evaluator.validate_policy({"max_limit": "not_a_number"}) is False
-        assert evaluator.validate_policy({"required_fields": "not_a_list"}) is False
+    def test_standard_name_is_not_a_runtime_policy(self):
+        evaluator = BasicFieldPolicyEvaluator()
+        assert evaluator.validate_policy({"standard": "arbitrary_external_standard"}) is False
 
     def test_declarative_custom_rules_fuel_from_control_plane(self):
         """Validates declarative AST rules passed as 'fuel' from Control Plane."""

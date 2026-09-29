@@ -1,128 +1,13 @@
 """
 eval_runner.reference.field_policy
-OSS Reference Implementation: BasicFieldPolicyEvaluator & RegulatoryPolicyEvaluator (P0-07).
-Evaluates numeric bounds, required fields, and statutory regulatory mandates
-via a pure declarative AST condition-constraint engine.
+OSS Reference Implementation: BasicFieldPolicyEvaluator.
+Evaluates generic numeric bounds, required fields, and scenario-supplied
+declarative controls via a pure condition-constraint engine.
 """
 
 from typing import Any
 
 from eval_runner.interfaces.policy import PolicyEvaluationResult, PolicyEvaluator
-
-# Canonical Pre-Compiled Declarative Rules for Reference Standards
-STANDARD_DECLARATIVE_RULES: dict[str, list[dict[str, Any]]] = {
-    "WA_ESSB_5395": [
-        {
-            "rule_id": "wa_essb_5395_clinical_context",
-            "when": {
-                "field": ["decision", "status", "action", "outcome"],
-                "operator": "in",
-                "values": [
-                    "DENY",
-                    "DENIED",
-                    "DOWNGRADE",
-                    "DOWNGRADED",
-                    "DELAY",
-                    "DELAYED",
-                    "MODIFIED",
-                    "REJECT",
-                    "REJECTED",
-                    "PARTIAL_APPROVAL",
-                ],
-            },
-            "require_any": [
-                "clinical_context",
-                "clinical_records",
-                "patient_notes",
-                "chart_history",
-                "medical_records",
-                "clinical_documentation",
-                "evidence",
-            ],
-            "statutory_code": "WA_ESSB_5395_MISSING_CLINICAL_EVALUATION",
-            "citation": "WA ESSB 5395 § 2(1)",
-            "message": (
-                "Statutory violation under WA ESSB 5395: Adverse determination "
-                "issued without patient clinical documentation evaluation."
-            ),
-        },
-        {
-            "rule_id": "wa_essb_5395_clinical_rationale",
-            "when": {
-                "field": ["decision", "status", "action", "outcome"],
-                "operator": "in",
-                "values": [
-                    "DENY",
-                    "DENIED",
-                    "DOWNGRADE",
-                    "DOWNGRADED",
-                    "DELAY",
-                    "DELAYED",
-                    "MODIFIED",
-                    "REJECT",
-                    "REJECTED",
-                    "PARTIAL_APPROVAL",
-                ],
-            },
-            "require_any": [
-                "clinical_rationale",
-                "medical_necessity_rationale",
-                "clinical_citations",
-                "rationale",
-                "denial_reason_clinical",
-            ],
-            "statutory_code": "WA_ESSB_5395_MISSING_CLINICAL_RATIONALE",
-            "citation": "WA ESSB 5395 § 2(2)",
-            "message": (
-                "Statutory violation under WA ESSB 5395: Adverse determination "
-                "cannot rely solely on automated decision systems without clinical rationale."
-            ),
-        },
-    ],
-    "IA_HF_2635": [
-        {
-            "rule_id": "ia_hf_2635_licensed_physician_review",
-            "when": {
-                "field": ["decision", "status", "action", "outcome"],
-                "operator": "in",
-                "values": [
-                    "DENY",
-                    "DENIED",
-                    "DOWNGRADE",
-                    "DOWNGRADED",
-                    "DELAY",
-                    "DELAYED",
-                    "MODIFIED",
-                    "REJECT",
-                    "REJECTED",
-                    "PARTIAL_APPROVAL",
-                ],
-            },
-            "require_any": [
-                "licensed_physician_review",
-                "human_reviewer_id",
-                "physician_license",
-                "reviewer_credential",
-                "human_review_artifact",
-                "licensed_reviewer",
-            ],
-            "valid_status_field": "review_status",
-            "valid_statuses": [
-                "COMPLETED",
-                "APPROVED_BY_PHYSICIAN",
-                "REVIEWED",
-                "LICENSED_REVIEW_COMPLETE",
-            ],
-            "bypass_flag": "human_in_the_loop",
-            "statutory_code": "IA_HF_2635_UNLICENSED_ADVERSE_DECISION",
-            "citation": "IA HF 2635 § 1",
-            "message": (
-                "Statutory violation under IA HF 2635: Adverse utilization review "
-                "determination must be reviewed by a licensed physician or clinical professional."
-            ),
-        }
-    ],
-}
 
 
 def match_condition(condition: dict[str, Any] | None, input_data: dict[str, Any]) -> bool:
@@ -253,6 +138,23 @@ def evaluate_declarative_rule(
                     }
                 )
 
+    # 2b. Require exact values for externally observed control facts.  This
+    # is deliberately generic: scenario packs declare the fields and values.
+    required_values = rule.get("required_values")
+    if isinstance(required_values, dict):
+        for field, expected in required_values.items():
+            actual = input_data.get(field)
+            expected_values = expected if isinstance(expected, list) else [expected]
+            if actual not in expected_values:
+                sub_violations.append(
+                    {
+                        "field": field,
+                        "expected_one_of": expected_values,
+                        "actual": actual,
+                        "reason": f"Expected '{field}' to be one of {expected_values!r}",
+                    }
+                )
+
     # 3. forbidden constraint
     forbidden = rule.get("forbidden")
     if forbidden:
@@ -374,15 +276,16 @@ def evaluate_declarative_rule(
     return None
 
 
-def evaluate_regulatory_policy(
+def evaluate_declarative_policy(
     policy_spec: dict[str, Any],
     input_data: dict[str, Any],
     context: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     """
     Evaluates regulatory policies using the pure declarative engine.
-    Supports custom declarative rules supplied in policy_spec['rules'],
-    or canonical pre-compiled rules for WA ESSB 5395 and IA HF 2635.
+    Supports only declarative rules supplied in policy_spec['rules'].
+    Jurisdiction-specific policy content belongs to a scenario pack or
+    Control Plane and is never inferred by Runtime.
     """
     violations: list[dict[str, Any]] = []
 
@@ -396,32 +299,12 @@ def evaluate_regulatory_policy(
                     violations.append(v)
         return violations
 
-    # 2. Standard resolution (WA ESSB 5395, IA HF 2635)
-    standard = (
-        policy_spec.get("standard")
-        or policy_spec.get("regulatory_standard")
-        or policy_spec.get("id")
-        or ""
-    ).upper()
-
-    active_rules: list[dict[str, Any]] = []
-    if "WA_ESSB_5395" in standard or "5395" in standard or policy_spec.get("enforce_wa_essb_5395"):
-        active_rules.extend(STANDARD_DECLARATIVE_RULES["WA_ESSB_5395"])
-
-    if "IA_HF_2635" in standard or "2635" in standard or policy_spec.get("enforce_ia_hf_2635"):
-        active_rules.extend(STANDARD_DECLARATIVE_RULES["IA_HF_2635"])
-
-    for r in active_rules:
-        v = evaluate_declarative_rule(r, input_data, context=context)
-        if v:
-            violations.append(v)
-
     return violations
 
 
 class BasicFieldPolicyEvaluator(PolicyEvaluator):
     """
-    Field-level numeric, boundary, and regulatory policy evaluator.
+    Field-level numeric, boundary, and declarative policy evaluator.
     Evaluates numeric bounds, constrained parameters, required fields,
     forbidden value rules, and declarative regulatory policies.
     """
@@ -435,9 +318,8 @@ class BasicFieldPolicyEvaluator(PolicyEvaluator):
         policy_id = policy_spec.get("id", policy_spec.get("name", "basic_field_policy"))
         violations: list[dict[str, Any]] = []
 
-        # 0. Declarative Regulatory Policy checks (P0-07)
-        regulatory_violations = evaluate_regulatory_policy(policy_spec, input_data, context=context)
-        violations.extend(regulatory_violations)
+        # 0. Declarative policy checks supplied by the scenario/pack.
+        violations.extend(evaluate_declarative_policy(policy_spec, input_data, context=context))
 
         # 1. Numeric limit constraints (e.g. max_limit, max_value, limit)
         max_val = policy_spec.get("max_limit")
@@ -530,16 +412,6 @@ class BasicFieldPolicyEvaluator(PolicyEvaluator):
         if "rules" in policy_spec and isinstance(policy_spec["rules"], (list, tuple)):
             return True
 
-        # Standard resolution specs are valid
-        standard = str(
-            policy_spec.get("standard")
-            or policy_spec.get("regulatory_standard")
-            or policy_spec.get("id")
-            or ""
-        ).upper()
-        if any(reg in standard for reg in ["WA_ESSB_5395", "5395", "IA_HF_2635", "2635"]):
-            return True
-
         max_val = (
             policy_spec.get("max_limit") or policy_spec.get("limit") or policy_spec.get("max_value")
         )
@@ -556,7 +428,3 @@ class BasicFieldPolicyEvaluator(PolicyEvaluator):
             or "required_fields" in policy_spec
             or "constrained_params" in policy_spec
         )
-
-
-class RegulatoryPolicyEvaluator(BasicFieldPolicyEvaluator):
-    """Dedicated evaluator for statutory regulatory policies."""

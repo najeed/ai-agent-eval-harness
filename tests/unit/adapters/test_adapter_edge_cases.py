@@ -10,12 +10,22 @@ from eval_runner.adapters.grok import GrokAdapterPlugin
 @pytest.mark.asyncio
 async def test_ag2_adapter():
     adapter = AG2AdapterPlugin()
-    payload = {"task_description": "test", "url": "http://mock-ag2/execute"}
+    payload = {
+        "task_description": "test",
+        "url": "http://mock-ag2/execute",
+        "_agentv_timeout": 0.1,
+    }
 
-    result = await adapter.execute_ag2_query(payload)
+    with patch.object(adapter, "_execute_remote_a2a", new_callable=AsyncMock) as remote:
+        remote.return_value = {
+            "status": "error",
+            "metadata": {"mode": "remote"},
+        }
+        result = await adapter.execute_ag2_query(payload)
 
     assert result["status"] == "error"
     assert result["metadata"]["mode"] == "remote"
+    assert remote.await_args.kwargs["url"] == "http://mock-ag2/execute"
 
 
 @pytest.mark.asyncio

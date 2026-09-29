@@ -62,6 +62,7 @@ coverage.xml
 .mypy_cache/
 .ruff_cache/
 .pytest-work/
+.pytest-tmp/
 
 # Environments
 .env

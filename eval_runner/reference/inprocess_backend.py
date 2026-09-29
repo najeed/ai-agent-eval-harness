@@ -8,6 +8,8 @@ strict execution state machine enforcement, and full dependency graph injection.
 
 from __future__ import annotations
 
+import hashlib
+import hmac
 import logging
 import threading
 from collections.abc import Callable
@@ -290,9 +292,16 @@ class InProcessExecutionBackend(ExecutionBackend):
         Enforces strict execution state machine guards to prevent duplicate execution threads,
         validating durable checkpoint state across cold process restarts.
         """
+        # A resumption token is also used by ordinary crash recovery.  It is
+        # an approval credential only when the checkpoint is approval-gated;
+        # treating every recovery token as an approval record broke non-HITL
+        # lifecycle recovery and changed the state-machine error precedence.
         checkpoint = self.checkpoint_store.load(run_id)
         if not checkpoint and run_id in self._active_runs:
             checkpoint = self._active_runs[run_id].get("resumption_checkpoint")
+
+        checkpoint_state = (checkpoint or {}).get("session_state") or (checkpoint or {})
+        expected_token = checkpoint_state.get("approval_token")
 
         with self._lock:
             current_entry = self._active_runs.get(run_id)
@@ -303,6 +312,12 @@ class InProcessExecutionBackend(ExecutionBackend):
                 current_status = checkpoint.get("status") or (
                     checkpoint.get("session_state") or {}
                 ).get("status", "PAUSED")
+
+            approval_states = {"WAITING_FOR_APPROVAL", "AWAITING_APPROVAL", "PAUSED_FOR_APPROVAL"}
+            if current_status in approval_states and not resumption_token:
+                raise PermissionError(
+                    f"Cannot resume run '{run_id}': approval-gated checkpoint requires a token."
+                )
 
             # Execution State Machine Guard
             if not force_recovery:
@@ -319,17 +334,51 @@ class InProcessExecutionBackend(ExecutionBackend):
                     )
 
                 # 3. Reject invalid intermediate execution states
-                if current_status and current_status not in (
-                    "WAITING_FOR_APPROVAL",
-                    "AWAITING_APPROVAL",
-                    "PAUSED",
-                    "PAUSED_FOR_APPROVAL",
-                    "UNKNOWN",
-                ):
+                if current_status and current_status not in (*approval_states, "PAUSED", "UNKNOWN"):
                     raise RuntimeError(
                         f"Cannot resume run '{run_id}': invalid state '{current_status}'."
                     )
 
+        requires_approval = bool(expected_token) or current_status in approval_states
+        if requires_approval:
+            if not resumption_token:
+                raise PermissionError(
+                    f"Cannot resume run '{run_id}': approval-gated checkpoint requires a token."
+                )
+            from eval_runner.reference.approval_store import get_default_approval_store
+
+            approval = get_default_approval_store().get_request(resumption_token)
+            if not approval or approval.run_id != run_id or approval.status != "APPROVED":
+                raise PermissionError(
+                    f"Cannot resume run '{run_id}': approval has not been authoritatively approved."
+                )
+            if approval.checkpoint_id:
+                checkpoint_ref = str(approval.checkpoint_id)
+                checkpoint_id = checkpoint_ref.rsplit("/", 1)[-1]
+                checkpoint = self.checkpoint_store.load(run_id, checkpoint_id)
+                if not checkpoint:
+                    raise PermissionError(
+                        f"Cannot resume run '{run_id}': approval checkpoint is unavailable."
+                    )
+                checkpoint_state = checkpoint.get("session_state") or checkpoint
+                expected_token = checkpoint_state.get("approval_token")
+            if not expected_token or not hmac.compare_digest(
+                str(expected_token), str(resumption_token)
+            ):
+                raise PermissionError(
+                    f"Cannot resume run '{run_id}': approval token does not bind to checkpoint."
+                )
+            action_payload = checkpoint_state.get("action_payload")
+            if action_payload and approval.outbound_payload_hash:
+                payload_hash = hashlib.sha3_256(
+                    str(sorted(action_payload.items())).encode("utf-8")
+                ).hexdigest()
+                if not hmac.compare_digest(payload_hash, approval.outbound_payload_hash):
+                    raise PermissionError(
+                        f"Cannot resume run '{run_id}': approval payload binding is invalid."
+                    )
+
+        with self._lock:
             if run_id in self._active_runs:
                 self._active_runs[run_id]["status"] = "RUNNING"
                 self._active_runs[run_id]["resumption_token"] = resumption_token

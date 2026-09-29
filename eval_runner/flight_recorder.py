@@ -578,6 +578,10 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                         f"for run '{run_id}': {exc}"
                     ) from exc
 
+    def on_cleanup_runs(self) -> None:
+        """Release recorder handles before a console cleanup deletes vaults."""
+        self.close_execution_writes(None)
+
     def get_run_state(self, run_id: str) -> str:
         """Returns the current lifecycle state for run_id (RUNNING, FINALIZING, SEALED)."""
         with self._lock:

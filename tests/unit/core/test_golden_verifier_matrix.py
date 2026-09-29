@@ -1191,6 +1191,28 @@ def _append_authoritative_finalization(trace_file: Path, run_id: str, run_dir: P
                 events_with_lines.append((ev, trimmed))
             except Exception:
                 pass
+    if not any(
+        isinstance((event.get("data") or {}).get("oracle_results"), list) for event in parsed
+    ):
+        oracle_event = {
+            "event": "execution_graph_node",
+            "_seq": len(parsed) + 1,
+            "data": {
+                "oracle_results": [
+                    {
+                        "oracle_id": "fixture:direct_oracle",
+                        "outcome": "PASS",
+                        "requiredness": "REQUIRED",
+                        "resolver": "fixture",
+                    }
+                ]
+            },
+        }
+        oracle_line = json.dumps(oracle_event)
+        with open(trace_file, "a", encoding="utf-8") as f:
+            f.write(oracle_line + "\n")
+        parsed.append(oracle_event)
+        events_with_lines.append((oracle_event, oracle_line))
     ev_graph = build_evidence_graph_from_events(events_with_lines)
     ev_root = ev_graph.get(
         "evidence_root_hash", f"sha3_256:{hashlib.sha3_256(b'empty').hexdigest()}"
@@ -1216,7 +1238,7 @@ def _append_authoritative_finalization(trace_file: Path, run_id: str, run_dir: P
         scenario_hash=scen_h,
         evaluator_identity="authoritative_evaluator",
         evaluator_config_hash="sha3_256:abc",
-        required_oracle_ids=[],
+        required_oracle_ids=["fixture:direct_oracle"],
         evidence_root_hash=ev_root,
         outcome="pass",
         score=1.0,

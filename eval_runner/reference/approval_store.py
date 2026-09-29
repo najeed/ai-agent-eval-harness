@@ -122,10 +122,6 @@ class FileApprovalStore(ApprovalStore):
         decided_by: str | None = None,
         decision_reason: str | None = None,
     ) -> ApprovalRequest:
-        req = self.get_request(approval_token)
-        if not req:
-            raise KeyError(f"Approval request for token '{approval_token}' not found.")
-
         normalized_decision = decision.upper().strip()
         if normalized_decision not in ("APPROVED", "REJECTED"):
             raise ValueError(
@@ -133,6 +129,18 @@ class FileApprovalStore(ApprovalStore):
             )
 
         with self._lock:
+            token_file = self.base_dir / f"token_{approval_token}.json"
+            if not token_file.exists():
+                raise KeyError(f"Approval request for token '{approval_token}' not found.")
+            try:
+                with open(token_file, encoding="utf-8") as f:
+                    req = ApprovalRequest.from_dict(json.load(f))
+            except (json.JSONDecodeError, OSError) as exc:
+                raise KeyError(f"Approval request for token '{approval_token}' not found.") from exc
+            if req.status != "PENDING":
+                raise ValueError(
+                    f"Approval request for token '{approval_token}' is already resolved."
+                )
             req.status = normalized_decision
             req.decision = normalized_decision
             req.decision_reason = decision_reason or (
@@ -376,7 +384,7 @@ class SQLiteApprovalStore(ApprovalStore):
                     "UPDATE approval_requests SET "
                     "status = ?, decision = ?, decision_reason = ?, "
                     "decided_by = ?, decided_at = ? "
-                    "WHERE approval_token = ?",
+                    "WHERE approval_token = ? AND status = 'PENDING'",
                     (
                         normalized_decision,
                         normalized_decision,
@@ -387,7 +395,15 @@ class SQLiteApprovalStore(ApprovalStore):
                     ),
                 )
                 if cursor.rowcount == 0:
-                    raise KeyError(f"Approval request for token '{approval_token}' not found.")
+                    cursor.execute(
+                        "SELECT status FROM approval_requests WHERE approval_token = ?",
+                        (approval_token,),
+                    )
+                    if cursor.fetchone() is None:
+                        raise KeyError(f"Approval request for token '{approval_token}' not found.")
+                    raise ValueError(
+                        f"Approval request for token '{approval_token}' is already resolved."
+                    )
                 conn.commit()
 
         req = self.get_request(approval_token)

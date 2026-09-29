@@ -59,11 +59,9 @@ class LocalFileArtifactStore(ArtifactStore):
         Rollback helper: unseals a vault if rollback is required during transactional recovery.
         In production, permanently sealed runs cannot be unsealed.
         """
-        import os
-
         from eval_runner.run_lifecycle import RunLifecycleState, get_run_lifecycle_state
 
-        is_prod = os.getenv("AGENTV_ENV", "").strip().lower() in ("production", "prod")
+        is_prod = config.is_production()
         if is_prod and get_run_lifecycle_state(run_id) == RunLifecycleState.SEALED:
             raise PermissionError(
                 f"ProductionImmutabilityViolation: Cannot unseal permanently "

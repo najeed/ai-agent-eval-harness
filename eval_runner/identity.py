@@ -148,9 +148,7 @@ class IdentityService:
             "attestation_signer",
             "eval_runner.runner.EvaluationKernel",
         }
-        is_prod = os.getenv("AGENTV_ENV", "").lower() == "production" or getattr(
-            config, "IS_PRODUCTION", False
-        )
+        is_prod = config.is_production()
         if (
             (identity_id in certification_identities or identity_id.startswith("cert_")) or is_prod
         ) and not config.ALLOW_SYSTEM_IDENTITY_PROVISIONING:

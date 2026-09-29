@@ -510,7 +510,7 @@ export const TrustCenter: React.FC = () => {
                   </div>
 
                   <p className="text-[11px] text-rose-300/80 bg-rose-500/5 border border-rose-500/20 p-2.5 rounded-lg">
-                    This evaluation cannot be certified. Authoritative certification requires passed assertions, verified policy compliance, and live/hybrid execution mode.
+                    This evaluation cannot be certified. Authoritative certification requires passed assertions, verified policy compliance, and live execution mode.
                   </p>
                 </div>
               </div>

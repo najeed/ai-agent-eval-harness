@@ -537,31 +537,67 @@ class TestInProcessBackendResumptionGuard:
     def test_resume_accepts_paused_for_approval(self):
         backend = InProcessExecutionBackend()
         run_id = "run_paused_hitl_01"
+        approved = ApprovalRequest(
+            approval_token="tok_test_resume",
+            run_id=run_id,
+            turn_index=1,
+            outbound_payload_hash="",
+            status="APPROVED",
+        )
 
         # 1. Active run in PAUSED_FOR_APPROVAL transitions to RUNNING
         with backend._lock:
             backend._active_runs[run_id] = {
                 "status": "PAUSED_FOR_APPROVAL",
                 "scenario_data": {"id": "test_scenario", "metadata": {"name": "Test"}},
+                "resumption_checkpoint": {"session_state": {"approval_token": "tok_test_resume"}},
             }
 
-        res = backend.resume(run_id=run_id, resumption_token="tok_test_resume")
-        assert res["status"] == "RUNNING"
-        assert res["resumption_token"] == "tok_test_resume"
+        approval_store = MagicMock()
+        approval_store.get_request.side_effect = lambda token: (
+            approved
+            if token == "tok_test_resume"
+            else ApprovalRequest(
+                approval_token=token,
+                run_id="run_cold_restart",
+                turn_index=1,
+                outbound_payload_hash="",
+                status="APPROVED",
+            )
+        )
+        with (
+            patch(
+                "eval_runner.reference.approval_store.get_default_approval_store",
+                return_value=approval_store,
+            ),
+            patch.object(
+                backend, "submit", return_value={"status": "resumed_from_checkpoint"}
+            ) as submit,
+        ):
+            res = backend.resume(run_id=run_id, resumption_token="tok_test_resume")
+        assert res == {"status": "resumed_from_checkpoint"}
+        assert submit.call_args.kwargs["resumption_token"] == "tok_test_resume"
 
         # 2. Resuming with checkpoint invokes submit
         mock_checkpoint_store = MagicMock()
         mock_checkpoint_store.load.return_value = {
             "status": "PAUSED_FOR_APPROVAL",
             "scenario_data": {"id": "scen_chk", "metadata": {"name": "Test Checkpoint"}},
+            "session_state": {"approval_token": "tok_chk_123"},
         }
         backend_chk = InProcessExecutionBackend(checkpoint_store=mock_checkpoint_store)
-        with patch.object(backend_chk, "submit") as mock_submit:
-            mock_submit.return_value = {"status": "resumed_from_checkpoint"}
-            res_chk = backend_chk.resume(run_id="run_cold_restart", resumption_token="tok_chk_123")
-            assert res_chk == {"status": "resumed_from_checkpoint"}
-            mock_submit.assert_called_once()
-            assert mock_submit.call_args[1]["resumption_token"] == "tok_chk_123"
+        with patch(
+            "eval_runner.reference.approval_store.get_default_approval_store",
+            return_value=approval_store,
+        ):
+            with patch.object(backend_chk, "submit") as mock_submit:
+                mock_submit.return_value = {"status": "resumed_from_checkpoint"}
+                res_chk = backend_chk.resume(
+                    run_id="run_cold_restart", resumption_token="tok_chk_123"
+                )
+                assert res_chk == {"status": "resumed_from_checkpoint"}
+                mock_submit.assert_called_once()
+                assert mock_submit.call_args[1]["resumption_token"] == "tok_chk_123"
 
 
 @pytest.mark.asyncio

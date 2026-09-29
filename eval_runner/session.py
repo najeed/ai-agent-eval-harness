@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import copy
+import inspect
 import json
 import logging
 import os
@@ -1365,7 +1366,12 @@ class SessionManager:
                 )
                 task_results["status"] = "failure"
                 task_results["message"] = err_msg
-                return task_results
+                # A failed agent/tool invocation still has to pass through the
+                # authoritative oracle phase below.  Returning here used to
+                # omit required parity evidence, which made a correctly denied
+                # action uncertifiable for the wrong reason.
+                node_success = False
+                break
 
             self.event_bus.emit(CoreEvents.TURN_END, {"turn": turn, "task_id": node_id})
 
@@ -1390,11 +1396,14 @@ class SessionManager:
         if parity_evidence:
             state_after_for_hash = None
             try:
-                raw_state_after = (
-                    await sandbox.get_full_state()
-                    if hasattr(sandbox, "get_full_state")
-                    else copy.deepcopy(getattr(sandbox, "state", {}))
-                )
+                state_getter = getattr(sandbox, "get_full_state", None)
+                if callable(state_getter) and inspect.iscoroutinefunction(state_getter):
+                    raw_state_after = await state_getter()
+                else:
+                    declared_state = getattr(sandbox, "state", {})
+                    raw_state_after = (
+                        copy.deepcopy(declared_state) if isinstance(declared_state, dict) else {}
+                    )
                 proj = node.get("state_projection") if isinstance(node, dict) else None
                 state_after_for_hash, _ = bound_state_snapshot(raw_state_after, projection=proj)
             except Exception:  # noqa: BLE001
@@ -1637,9 +1646,35 @@ class SessionManager:
 
         task_results["oracle_results"] = [r.to_dict() for r in node_oracle_results.values()]
 
-        # First-class policy assertions: every sandbox policy decision
-        # taken during this node's execution attaches here; a denial gates.
-        new_policy_decisions = getattr(sandbox, "policy_decisions", [])[policy_cursor:]
+        # First-class policy assertions: sandbox decisions and independently
+        # observed scenario-policy controls attach here; either denial gates.
+        # The latter are not inferred from text: their policy IDs, required
+        # oracle IDs, and evidence targets are declared in the scenario pack.
+        observed_policy_checks: list[dict[str, Any]] = []
+        for idx, row in enumerate(parity_rows):
+            assertion = row.get("assertion") if isinstance(row.get("assertion"), dict) else {}
+            target = assertion.get("target")
+            if not isinstance(target, str) or not target.startswith("policy:"):
+                continue
+            policy_id = target.split(":", 1)[1]
+            oracle_id = derive_oracle_id("parity", node_id, assertion, idx)
+            observed_policy_checks.append(
+                {
+                    "id": policy_id,
+                    "oracle_id": oracle_id,
+                    "decision": "allowed" if row.get("outcome") == "PASS" else "denied",
+                    "reason": row.get("error")
+                    or (
+                        "policy evidence satisfied"
+                        if row.get("outcome") == "PASS"
+                        else "policy evidence failed"
+                    ),
+                    "evidence": copy.deepcopy(row),
+                    "evidence_source": "independent_observation",
+                }
+            )
+        sandbox_policy_decisions = getattr(sandbox, "policy_decisions", [])[policy_cursor:]
+        new_policy_decisions = [*sandbox_policy_decisions, *observed_policy_checks]
         denied_ids = [
             str(d.get("id")) for d in new_policy_decisions if d.get("decision") == "denied"
         ]

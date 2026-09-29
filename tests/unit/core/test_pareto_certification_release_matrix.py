@@ -756,11 +756,12 @@ def test_evidence_root_mismatch_fails_closed(matrix_env):
 
 
 # ==============================================================================
-# Required-oracle completeness must require explicit PASS result state
+# Required-oracle completeness accepts a typed FAIL for a certified negative
+# result, but a signed PASS decision must not contradict that required result.
 # ==============================================================================
 
 
-def test_required_oracle_failed_outcome_blocks_certification(matrix_env):
+def test_required_oracle_failed_outcome_blocks_positive_certification(matrix_env):
     run_id = "run-p0-3-oracle-failed"
     scen_data = {
         "id": "scen_p0_3",
@@ -823,7 +824,7 @@ def test_required_oracle_failed_outcome_blocks_certification(matrix_env):
         write_manifest=False,
     )
 
-    with pytest.raises(ValueError, match="MissingRequiredOracles"):
+    with pytest.raises(ValueError, match="RequiredOracleOutcomeMismatch"):
         execute_industrial_certification(run_id=run_id, scenario_data=scen_data)
 
 

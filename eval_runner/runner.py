@@ -64,6 +64,22 @@ def compile_required_oracle_ids(scenario: dict[str, Any], resolved_policy: Any =
             if s_item and s_item not in req_oracles:
                 req_oracles.append(s_item)
 
+    # 1b. Required policy controls are ordinary required oracles.  A policy
+    # declaration is certifiable only when it names the exact assertion that
+    # will produce its evidence; descriptive labels are not controls.
+    policies = (scenario.get("metadata") or {}).get("policies") or {}
+    if isinstance(policies, dict):
+        for policy_id, policy_spec in policies.items():
+            if not isinstance(policy_spec, dict) or policy_spec.get("required") is not True:
+                continue
+            oracle_id = policy_spec.get("oracle_id")
+            if not isinstance(oracle_id, str) or not oracle_id.strip():
+                raise ValueError(
+                    f"RequiredPolicyMissingOracleId: policy '{policy_id}' must declare oracle_id"
+                )
+            if oracle_id not in req_oracles:
+                req_oracles.append(oracle_id)
+
     # 2. Compile from Workflow nodes / CompiledEvaluationPlan
     try:
         from eval_runner.execution_ir import compile_evaluation_plan
@@ -434,7 +450,11 @@ class DefaultRunner(BaseRunner):
         cfg_obj = scenario.get("config") or scenario.get("agent_config") or {}
         config_rev = f"sha3_256:{hashlib.sha3_256(canonical_json_encode(cfg_obj)).hexdigest()}"
         policy_data = (
-            scenario.get("policy") or scenario.get("rules") or scenario.get("assertions") or []
+            (scenario.get("metadata") or {}).get("policies")
+            or scenario.get("policy")
+            or scenario.get("rules")
+            or scenario.get("assertions")
+            or []
         )
         policy_h = f"sha3_256:{hashlib.sha3_256(canonical_json_encode(policy_data)).hexdigest()}"
         oracle_h = f"sha3_256:{hashlib.sha3_256(canonical_json_encode(req_oracles)).hexdigest()}"

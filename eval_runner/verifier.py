@@ -984,8 +984,18 @@ class TraceVerifier:
                     else (compliance_score if compliance_score is not None else 1.0)
                 )
 
-        if effective_compliance_status == "pass":
-            if req_oracles and ev_graph and not ev_graph.get("has_all_required", True):
+        # An authoritative negative certificate proves that a fully evaluated
+        # run failed; it must never be used as a substitute for an incomplete
+        # evaluation.  Require substantive, complete evidence independently of
+        # the PASS/FAIL outcome.  Provisional diagnostic artifacts retain the
+        # explicitly non-authoritative legacy path.
+        if not provisional:
+            if not ev_graph or not ev_graph.get("has_substantive_evidence", False):
+                raise CertificationFailedError(
+                    "SubstantiveEvidenceRequired: authoritative certification requires "
+                    "at least one direct typed oracle result"
+                )
+            if req_oracles and not ev_graph.get("has_all_required", True):
                 logger.error(
                     "Evidence graph missing required oracles: %s",
                     ev_graph.get("missing_required_oracles"),

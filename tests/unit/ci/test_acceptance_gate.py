@@ -267,6 +267,7 @@ def test_main_relative_paths(tmp_path, monkeypatch):
 def test_main_dunder_entrypoint(tmp_path, monkeypatch):
     """Test __main__ invocation via runpy."""
     import runpy
+    import sys
 
     import pytest
 
@@ -282,6 +283,11 @@ def test_main_dunder_entrypoint(tmp_path, monkeypatch):
         "results": [{"case_id": "AT-01", "accepted": True}],
     }
     (rel_report_dir / "acceptance-summary.json").write_text(json.dumps(summary), encoding="utf-8")
+
+    # The module is imported above by this test module.  Remove that cached
+    # instance so runpy exercises a clean __main__ import without issuing its
+    # duplicate-module execution warning.
+    monkeypatch.delitem(sys.modules, "tools.ci.acceptance_gate", raising=False)
 
     with patch(
         "sys.argv",

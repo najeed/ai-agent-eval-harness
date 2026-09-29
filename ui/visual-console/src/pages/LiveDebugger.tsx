@@ -62,6 +62,25 @@ export const LiveDebugger: React.FC = () => {
   const runIdParam = searchParams.get('run_id');
 
   const [runId, setRunId] = useState(runIdParam || '');
+
+  useEffect(() => {
+    if (runIdParam && runIdParam !== runId) {
+      const ctl = streamCtlRef.current;
+      if (ctl.timer) clearTimeout(ctl.timer);
+      if (ctl.scenarioTimer) clearTimeout(ctl.scenarioTimer);
+      if (ctl.es) ctl.es.close();
+      streamCtlRef.current = { es: null, timer: null, scenarioTimer: null, run: null, attempt: 0 };
+      cursorRef.current = 0;
+      contiguousCursorRef.current = 0;
+      seenTransportCursorsRef.current.clear();
+      seenSeqsRef.current.clear();
+      forensicHighestRef.current = 0;
+      setRunId(runIdParam);
+      setEvents([]); setFilteredEvents([]); setSelectedEvent(null); setStreamGaps([]);
+      setActiveScenario(null); setNodes([]); setEdges([]); setReconnectCount(0);
+      setConnectionStatus('DISCONNECTED'); setStatus('IDLE'); setSourcedFromMaster(false);
+    }
+  }, [runIdParam, runId]);
   const [runsList, setRunsList] = useState<string[]>([]);
   const [status, setStatus] = useState<string>('IDLE');
   const [sourcedFromMaster, setSourcedFromMaster] = useState<boolean>(false);
@@ -1016,6 +1035,15 @@ export const LiveDebugger: React.FC = () => {
     }
   };
 
+  const handleNodeClick = (_: any, node: any) => {
+    const nodeId = String(node?.id || '');
+    if (!nodeId) return;
+    const authoritative = events
+      .filter(event => event.event === 'execution_graph_node' && String(event.scenario_node_id || '') === nodeId)
+      .at(-1);
+    if (authoritative) setSelectedEvent(authoritative);
+  };
+
   const RUN_TERMINAL_STATUSES = new Set(['COMPLETED', 'PASSED', 'FAILED', 'ABORTED', 'ERROR', 'SEALED', 'CERTIFIED']);
   const isTerminalRun = RUN_TERMINAL_STATUSES.has(status);
 
@@ -1528,6 +1556,7 @@ export const LiveDebugger: React.FC = () => {
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onNodeDragStop={handleNodeDragStop}
+            onNodeClick={handleNodeClick}
             onInit={setReactFlowInstance}
             fitView
             nodesConnectable={false}

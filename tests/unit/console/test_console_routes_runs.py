@@ -1137,11 +1137,23 @@ def test_runs_cancel_and_resume_endpoints(runs_client):
     # Resume failure (no checkpoint)
     with patch.object(backend, "resume", return_value=None):
         res = runs_client.post("/api/v1/runs/run-no-chk/resume", json={})
-        assert res.status_code == 404
-        assert "No checkpoint found" in res.get_json()["error"]
+        assert res.status_code == 400
+        assert "approval token is required" in res.get_json()["error"]
 
     # Resume success
     with patch.object(backend, "resume", return_value={"resumed": True}):
+        from agentv_runtime.interfaces import ApprovalRequest
+        from eval_runner.reference.approval_store import get_default_approval_store
+
+        store = get_default_approval_store()
+        store.create_request(
+            ApprovalRequest(
+                approval_token="tok1",
+                run_id="run-with-chk",
+                turn_index=1,
+                outbound_payload_hash="h1",
+            )
+        )
         res = runs_client.post(
             "/api/v1/runs/run-with-chk/resume", json={"resumption_token": "tok1"}
         )
@@ -1149,10 +1161,6 @@ def test_runs_cancel_and_resume_endpoints(runs_client):
         assert res.get_json()["status"] == "RUNNING"
 
     # Resume with approval_token and REJECTED decision
-    from agentv_runtime.interfaces import ApprovalRequest
-    from eval_runner.reference.approval_store import get_default_approval_store
-
-    store = get_default_approval_store()
     store.create_request(
         ApprovalRequest(
             approval_token="tok_console_rej",

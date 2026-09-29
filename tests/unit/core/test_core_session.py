@@ -289,7 +289,7 @@ async def test_verify_state_parity_success(base_scenario, tmp_path):
     mock_sandbox.get_active_simulators.return_value["db"].get_snapshot.return_value = {
         "val": "db_val"
     }
-    mock_sandbox.get_full_state.return_value = {"k1": 1}
+    mock_sandbox.get_bounded_state = AsyncMock(return_value={"k1": 1})
 
     history = [{"role": "agent", "content": "ok"}]
 
@@ -297,6 +297,27 @@ async def test_verify_state_parity_success(base_scenario, tmp_path):
     assert result is True
     assert len(evidence) == 3
     assert all(row["passed"] for row in evidence)
+
+
+@pytest.mark.asyncio
+async def test_verify_state_parity_rejects_full_state_only_sandbox(base_scenario, tmp_path):
+    """State parity must use bounded acquisition, never the forensic full-state API."""
+
+    class FullStateOnlySandbox:
+        get_active_simulators = staticmethod(lambda: {})
+        get_full_state = AsyncMock(return_value={"k1": 1})
+
+    session = SessionManager("test_run", base_scenario, log_root=tmp_path)
+    node = {
+        "expected_outcome": [{"target": "state", "property": "k1", "expected": 1, "mode": "exact"}],
+        "timeout": 0.1,
+    }
+
+    passed, evidence = await session._verify_state_parity(node, FullStateOnlySandbox(), [])
+
+    assert passed is False
+    assert evidence[0]["outcome"] == "INVALID"
+    FullStateOnlySandbox.get_full_state.assert_not_awaited()
 
 
 @pytest.mark.asyncio
@@ -338,8 +359,14 @@ async def test_execute_node_agent_error(base_scenario, tmp_path):
     ):
         with patch.object(session, "_calculate_metrics", new_callable=AsyncMock) as mock_calc:
             mock_calc.return_value = {}
+            mock_sandbox = AsyncMock()
+            # Declare the state-capture contract explicitly.  An unconstrained
+            # AsyncMock fabricates coroutine-valued attributes, which is not a
+            # valid sandbox state and masks contract violations in the test.
+            mock_sandbox.get_full_state.return_value = {}
+            mock_sandbox.get_active_simulators = MagicMock(return_value={})
             res = await session._execute_node(
-                base_scenario["workflow"]["nodes"][0], 1, 0, AsyncMock(), [], {}
+                base_scenario["workflow"]["nodes"][0], 1, 0, mock_sandbox, [], {}
             )
 
             assert res["status"] == "failure"
@@ -384,7 +411,7 @@ async def test_session_state_parity_regex_numerical(base_scenario, tmp_path):
     }
     mock_sandbox = AsyncMock()
     mock_sandbox.get_active_simulators = MagicMock(return_value={})
-    mock_sandbox.get_full_state.return_value = {"val": "123", "num": 1.0000000001}
+    mock_sandbox.get_bounded_state = AsyncMock(return_value={"val": "123", "num": 1.0000000001})
     history = [{"role": "agent", "content": "testing 123"}]
 
     result, _evidence = await session._verify_state_parity(node, mock_sandbox, history)
@@ -478,6 +505,9 @@ async def test_session_execute_node_hitl_and_processing(base_scenario, tmp_path)
 async def test_session_execute_node_error_action(base_scenario, tmp_path):
     session = SessionManager("test_run", base_scenario, log_root=tmp_path)
     node = {"id": "node_1"}
+    sandbox = AsyncMock()
+    sandbox.get_full_state = AsyncMock(return_value={})
+    sandbox.get_active_simulators = MagicMock(return_value={})
 
     with patch(
         "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
@@ -485,7 +515,7 @@ async def test_session_execute_node_error_action(base_scenario, tmp_path):
         mock_agent.return_value = {"action": "error"}
         with patch.object(session, "_calculate_metrics", new_callable=AsyncMock) as mock_metrics:
             mock_metrics.return_value = {"metrics": []}
-            res = await session._execute_node(node, 1, 0, AsyncMock(), [], {})
+            res = await session._execute_node(node, 1, 0, sandbox, [], {})
             assert res["status"] == "failure"
 
 
@@ -493,6 +523,9 @@ async def test_session_execute_node_error_action(base_scenario, tmp_path):
 async def test_session_execute_node_unknown_action(base_scenario, tmp_path):
     session = SessionManager("test_run", base_scenario, log_root=tmp_path)
     node = {"id": "node_1"}
+    sandbox = AsyncMock()
+    sandbox.get_full_state = AsyncMock(return_value={})
+    sandbox.get_active_simulators = MagicMock(return_value={})
 
     with patch(
         "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
@@ -500,7 +533,7 @@ async def test_session_execute_node_unknown_action(base_scenario, tmp_path):
         mock_agent.return_value = {"action": "weird"}
         with patch.object(session, "_calculate_metrics", new_callable=AsyncMock) as mock_metrics:
             mock_metrics.return_value = {"metrics": []}
-            res = await session._execute_node(node, 1, 0, AsyncMock(), [], {})
+            res = await session._execute_node(node, 1, 0, sandbox, [], {})
             assert res["status"] == "failure"
 
 
@@ -508,6 +541,9 @@ async def test_session_execute_node_unknown_action(base_scenario, tmp_path):
 async def test_session_execute_node_empty_response(base_scenario, tmp_path):
     session = SessionManager("test_run", base_scenario, log_root=tmp_path)
     node = {"id": "node_1"}
+    sandbox = AsyncMock()
+    sandbox.get_full_state = AsyncMock(return_value={})
+    sandbox.get_active_simulators = MagicMock(return_value={})
 
     with patch(
         "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
@@ -515,7 +551,7 @@ async def test_session_execute_node_empty_response(base_scenario, tmp_path):
         mock_agent.return_value = None
         with patch.object(session, "_calculate_metrics", new_callable=AsyncMock) as mock_metrics:
             mock_metrics.return_value = {"metrics": []}
-            res = await session._execute_node(node, 1, 0, AsyncMock(), [], {})
+            res = await session._execute_node(node, 1, 0, sandbox, [], {})
             assert res["status"] == "failure"
             assert "returned no payload" in res["message"]
 
@@ -731,6 +767,9 @@ def test_get_last_env_message(base_scenario, tmp_path):
 async def test_session_tool_redirection_and_completed(base_scenario, tmp_path):
     session = SessionManager("test_run", base_scenario, log_root=tmp_path)
     node = {"id": "node_1"}
+    sandbox = AsyncMock()
+    sandbox.get_full_state = AsyncMock(return_value={})
+    sandbox.get_active_simulators = MagicMock(return_value={})
 
     # Trigger redirection
     session.plugin_manager.trigger_interceptor = MagicMock(
@@ -828,6 +867,9 @@ async def test_session_execute_tasks_missing_node(base_scenario, tmp_path):
 async def test_session_execute_node_throttle(base_scenario, tmp_path):
     session = SessionManager("test_run", base_scenario, log_root=tmp_path)
     node = {"id": "node_1"}
+    sandbox = AsyncMock()
+    sandbox.get_full_state = AsyncMock(return_value={})
+    sandbox.get_active_simulators = MagicMock(return_value={})
     with patch("eval_runner.config.EVAL_TURN_THROTTLE", 0.01):
         with patch(
             "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
@@ -835,7 +877,7 @@ async def test_session_execute_node_throttle(base_scenario, tmp_path):
             mock_agent.return_value = {"action": "completed"}
             with patch.object(session, "_calculate_metrics", new_callable=AsyncMock) as mock_calc:
                 mock_calc.return_value = {"status": "success", "metrics": []}
-                await session._execute_node(node, 1, 0, AsyncMock(), [], {})
+                await session._execute_node(node, 1, 0, sandbox, [], {})
 
 
 @pytest.mark.asyncio
@@ -882,7 +924,9 @@ async def test_verify_state_parity_contains_and_tolerance(base_scenario, tmp_pat
     session = SessionManager("test_run", base_scenario, log_root=tmp_path)
     mock_sandbox = AsyncMock()
     mock_sandbox.get_active_simulators = MagicMock(return_value={})
-    mock_sandbox.get_full_state.return_value = {"val": "hello world", "num": "invalid"}
+    mock_sandbox.get_bounded_state = AsyncMock(
+        return_value={"val": "hello world", "num": "invalid"}
+    )
 
     # Contains list
     node = {
@@ -1465,7 +1509,9 @@ async def test_session_state_parity_regex_numerical_exhaustive(base_scenario, tm
     }
     mock_sandbox = MagicMock()
     mock_sandbox.get_active_simulators.return_value = {}
-    mock_sandbox.get_full_state = AsyncMock(return_value={"s": "hello world", "v": 1.000000000001})
+    mock_sandbox.get_bounded_state = AsyncMock(
+        return_value={"s": "hello world", "v": 1.000000000001}
+    )
 
     res, _ev = await session._verify_state_parity(node, mock_sandbox, [])
     assert res is True
@@ -2061,7 +2107,7 @@ async def test_session_oracle_evaluation_matrix_outcomes(tmp_path):
     )
 
     mock_sandbox = MagicMock()
-    mock_sandbox.get_full_state = AsyncMock(return_value={"k": "v"})
+    mock_sandbox.get_bounded_state = AsyncMock(return_value={"k": "v"})
     mock_sandbox.policy_decisions = [{"decision": "DENY", "id": "pol_deny_1"}]
 
     with patch(
@@ -2822,6 +2868,7 @@ async def test_session_turn_loop_cancellation_and_hitl_unresolved(tmp_path):
 async def test_session_node_verdict_and_reporting_branches(tmp_path):
     sess = SessionManager("run_nv", {"id": "s_nv"}, log_root=tmp_path)
     mock_sandbox = MagicMock()
+    mock_sandbox.get_bounded_state = AsyncMock(return_value={"k": "v"})
     mock_sandbox.get_full_state = AsyncMock(return_value={"k": "v"})
     mock_sandbox.policy_decisions = []
 

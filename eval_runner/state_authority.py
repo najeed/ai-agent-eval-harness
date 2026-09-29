@@ -8,10 +8,14 @@ from __future__ import annotations
 import copy
 import hashlib
 import inspect
+import ipaddress
 import json
 import logging
+import os
+import socket
 from abc import ABC, abstractmethod
 from typing import Any
+from urllib.parse import urljoin, urlparse
 
 import aiohttp
 
@@ -20,6 +24,73 @@ from agentv_runtime.contracts import EvidenceBoundednessLimits
 from eval_runner.utils.path_resolver import PathResolver
 
 logger = logging.getLogger(__name__)
+
+
+class StateAuthorityPolicyError(ValueError):
+    """Raised when an external-state request violates the egress contract."""
+
+
+def _configured_authority_origins() -> set[str]:
+    """Return the explicit egress allow-list for scenario-owned authorities.
+
+    An authority is evidence input, not an arbitrary HTTP client.  Keeping the
+    policy in one environment variable makes both CI fixtures and deployments
+    declare exactly which authority origins they trust.
+    """
+    entries = os.getenv("AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST", "").split(",")
+    origins: set[str] = set()
+    for entry in entries:
+        parsed = urlparse(entry.strip())
+        if parsed.scheme in {"http", "https"} and parsed.netloc:
+            origins.add(f"{parsed.scheme}://{parsed.netloc}".lower())
+    return origins
+
+
+def _validate_external_authority_url(url: str) -> str:
+    """Validate a connector URL before opening a network connection.
+
+    The URL must target an explicitly configured origin.  Private, loopback,
+    link-local, metadata, and otherwise non-global addresses are prohibited
+    unless that exact origin is explicitly allow-listed (the latter supports a
+    deliberately declared local CI oracle without making localhost generally
+    reachable from scenario input).
+    """
+    parsed = urlparse(url)
+    if parsed.scheme not in {"http", "https"} or not parsed.hostname:
+        raise StateAuthorityPolicyError("External state authority requires an absolute HTTP(S) URL")
+    if parsed.username or parsed.password:
+        raise StateAuthorityPolicyError("External state authority URL must not contain credentials")
+
+    origin = f"{parsed.scheme}://{parsed.netloc}".lower()
+    allowed_origins = _configured_authority_origins()
+    if origin not in allowed_origins:
+        raise StateAuthorityPolicyError(
+            f"External state authority origin is not allow-listed: {origin}"
+        )
+
+    try:
+        addresses = {
+            record[4][0]
+            for record in socket.getaddrinfo(
+                parsed.hostname, parsed.port or 443, type=socket.SOCK_STREAM
+            )
+        }
+    except OSError as exc:
+        raise StateAuthorityPolicyError(
+            f"External state authority host could not be resolved: {parsed.hostname}"
+        ) from exc
+
+    if not addresses:
+        raise StateAuthorityPolicyError("External state authority host resolved to no addresses")
+    for address in addresses:
+        ip = ipaddress.ip_address(address)
+        if not ip.is_global and origin not in allowed_origins:
+            # Kept as a defense-in-depth guard if the allow-list implementation
+            # is changed: private destinations must *never* be implicit.
+            raise StateAuthorityPolicyError(
+                f"External state authority resolves to a non-global address: {address}"
+            )
+    return url
 
 
 def _safe_default(obj: Any) -> str:
@@ -142,7 +213,7 @@ class HttpStateAuthorityConnector(StateAuthorityConnector):
     """
 
     def __init__(self, base_url: str, default_headers: dict[str, str] | None = None):
-        self.base_url = base_url.rstrip("/")
+        self.base_url = _validate_external_authority_url(base_url.rstrip("/"))
         self.default_headers = default_headers or {}
 
     async def fetch_state(
@@ -153,18 +224,21 @@ class HttpStateAuthorityConnector(StateAuthorityConnector):
     ) -> dict[str, Any]:
         url = self.base_url
         if endpoint_or_query:
-            if endpoint_or_query.startswith("http://") or endpoint_or_query.startswith("https://"):
-                url = endpoint_or_query
-            else:
-                endpoint_clean = endpoint_or_query.lstrip("/")
-                url = f"{self.base_url}/{endpoint_clean}"
+            endpoint = urlparse(endpoint_or_query)
+            if endpoint.scheme or endpoint.netloc:
+                raise StateAuthorityPolicyError(
+                    "State authority endpoint must be relative to its declared origin"
+                )
+            url = urljoin(f"{self.base_url}/", endpoint_or_query.lstrip("/"))
+
+        _validate_external_authority_url(url)
 
         req_headers = {**self.default_headers, **(headers or {})}
         client_timeout = aiohttp.ClientTimeout(total=timeout)
 
         async with aiohttp.ClientSession(timeout=client_timeout) as session:
             try:
-                async with session.get(url, headers=req_headers) as resp:
+                async with session.get(url, headers=req_headers, allow_redirects=False) as resp:
                     status_code = resp.status
                     if status_code >= 400:
                         err_text = await resp.text()
@@ -177,7 +251,21 @@ class HttpStateAuthorityConnector(StateAuthorityConnector):
                             f"returned HTTP {status_code}: {err_text[:200]}"
                         )
 
-                    payload = await resp.json()
+                    content_length = resp.content_length
+                    max_response_bytes = EvidenceBoundednessLimits.MAX_SNAPSHOT_BYTES
+                    if content_length is not None and content_length > max_response_bytes:
+                        raise StateLimitExceededError(
+                            "External state response exceeds bounded snapshot limit"
+                        )
+                    raw_payload = await resp.content.read(max_response_bytes + 1)
+                    if len(raw_payload) > max_response_bytes:
+                        raise StateLimitExceededError(
+                            "External state response exceeds bounded snapshot limit"
+                        )
+                    try:
+                        payload = json.loads(raw_payload)
+                    except (TypeError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+                        raise ValueError("External state authority returned invalid JSON") from exc
                     if not isinstance(payload, dict):
                         payload = {"data": payload}
 

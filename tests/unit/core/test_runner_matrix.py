@@ -409,6 +409,23 @@ async def test_runner_compile_required_oracle_ids_matrix():
     assert compile_required_oracle_ids({"metadata": {"required_oracle_ids": ["o4"]}}) == ["o4"]
     assert compile_required_oracle_ids({"required_oracles": ["dup", "dup", "  "]}) == ["dup"]
 
+    # 1b. Required declarative controls contribute their explicit evidence
+    # oracle; descriptive policy labels are not certifiable controls.
+    assert compile_required_oracle_ids(
+        {
+            "metadata": {
+                "policies": {
+                    "external_control": {
+                        "required": True,
+                        "oracle_id": "policy:external_control",
+                    }
+                }
+            }
+        }
+    ) == ["policy:external_control"]
+    with pytest.raises(ValueError, match="RequiredPolicyMissingOracleId"):
+        compile_required_oracle_ids({"metadata": {"policies": {"bad": {"required": True}}}})
+
     # 2. Plan compilation exception
     with patch(
         "eval_runner.execution_ir.compile_evaluation_plan", side_effect=ValueError("Plan parse err")

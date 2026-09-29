@@ -14,6 +14,7 @@ not merely a final boolean.
 from __future__ import annotations
 
 import asyncio
+import inspect
 import logging
 import re
 from datetime import datetime
@@ -37,11 +38,19 @@ class SessionStateParityVerifier:
 
     async def get_shim_snapshots(self, sandbox: Any, shim_ids: list[str]) -> dict[str, Any]:
         """Queries active simulators for point-in-time state snapshots."""
-        simulators = (
-            sandbox.get_active_simulators() if hasattr(sandbox, "get_active_simulators") else {}
-        )
         shim_snapshots: dict[str, Any] = {}
         if not shim_ids:
+            return shim_snapshots
+
+        simulator_getter = getattr(sandbox, "get_active_simulators", None)
+        if not callable(simulator_getter):
+            logger.warning("[StateParity] Sandbox does not declare get_active_simulators")
+            return shim_snapshots
+        simulators = simulator_getter()
+        if inspect.isawaitable(simulators):
+            simulators = await simulators
+        if not isinstance(simulators, dict):
+            logger.warning("[StateParity] Sandbox returned an invalid simulator registry")
             return shim_snapshots
 
         tasks = []
@@ -145,41 +154,55 @@ class SessionStateParityVerifier:
             bounded_state, _ = bound_state_snapshot(raw_state, projection=proj)
             return bounded_state, property_path
 
-        # P0-07: Regulatory Policy machine-executable assertions (WA ESSB 5395 & IA HF 2635)
-        reg_targets = (
-            "regulatory_policy",
-            "policy:clinical_context",
-            "policy:mandatory_human_review",
-        )
-        if (
-            str(target).startswith("policy:regulatory")
-            or str(target).startswith("policy:ia_hf")
-            or str(target).startswith("policy:wa_essb")
-            or target in reg_targets
-        ):
+        # A policy assertion is evaluated against an explicitly declared,
+        # independently observable evidence source.  Runtime never infers a
+        # policy standard from a target name: control content belongs to a
+        # scenario pack / Control Plane, not the execution engine.
+        if isinstance(target, str) and target.startswith("policy:"):
+            policy_id = target.split(":", 1)[1].strip()
+            scenario = getattr(self.session_manager, "scenario", {}) or {}
+            policies = (scenario.get("metadata") or {}).get("policies") or {}
+            policy_spec = policies.get(policy_id) if isinstance(policies, dict) else None
+            if not isinstance(policy_spec, dict):
+                logger.warning("[StateParity] Unknown or non-executable policy '%s'", policy_id)
+                return None, "__unobserved_source__"
+            assertion_oracle_id = assertion.get("id") or assertion.get("oracle_id")
+            if (
+                policy_spec.get("required") is True
+                and policy_spec.get("oracle_id") != assertion_oracle_id
+            ):
+                logger.warning(
+                    "[StateParity] Required policy '%s' has a mismatched oracle ID", policy_id
+                )
+                return None, "__unobserved_source__"
+
+            evidence_target = policy_spec.get("evidence_target")
+            if not isinstance(evidence_target, str) or not evidence_target:
+                logger.warning(
+                    "[StateParity] Policy '%s' has no explicit observable evidence_target",
+                    policy_id,
+                )
+                return None, "__unobserved_source__"
+
+            evidence_assertion = {
+                "target": evidence_target,
+                "projection": policy_spec.get("projection"),
+            }
+            observed, observation_path = await self._resolve_target(
+                evidence_assertion, sandbox, history, shim_snapshots, node=node
+            )
+            if observation_path in ("__unobserved_source__", "__unsupported__") or not isinstance(
+                observed, dict
+            ):
+                logger.warning(
+                    "[StateParity] Policy '%s' evidence source '%s' was not observable",
+                    policy_id,
+                    evidence_target,
+                )
+                return None, "__unobserved_source__"
+
             evaluator = BasicFieldPolicyEvaluator()
-            policy_spec = dict(assertion.get("policy_spec") or {})
-            if "standard" not in policy_spec:
-                tgt = str(target)
-                if "5395" in tgt or "wa_essb" in tgt or "clinical_context" in tgt:
-                    policy_spec["standard"] = "WA_ESSB_5395"
-                elif "2635" in tgt or "ia_hf" in tgt or "mandatory_human_review" in tgt:
-                    policy_spec["standard"] = "IA_HF_2635"
-                else:
-                    policy_spec["standard"] = assertion.get("standard", "REGULATORY")
-
-            # Extract latest agent response payload for regulatory adjudication
-            agent_payload: dict[str, Any] = {}
-            for item in reversed(history or []):
-                if isinstance(item, dict) and item.get("role") in ("agent", "assistant"):
-                    c = item.get("content")
-                    if isinstance(c, dict):
-                        agent_payload = c
-                    elif isinstance(c, str):
-                        agent_payload = {"message": c, "action": c}
-                    break
-
-            eval_res = evaluator.evaluate_policy(policy_spec, agent_payload)
+            eval_res = evaluator.evaluate_policy(policy_spec, observed)
             if property_path == "violations":
                 return eval_res.violations, None
             if property_path == "reason":
@@ -224,13 +247,29 @@ class SessionStateParityVerifier:
                     logger.debug("Failed to extract agent summary: %s", exc)
             return actual_val, property_path
         if target == "state":
-            raw_val = (
-                await sandbox.get_full_state()
-                if hasattr(sandbox, "get_full_state")
-                else getattr(sandbox, "state", {})
-            )
-            # P0-06: Apply Bounded State Capture & Projection
             proj = assertion.get("projection") or (node.get("state_projection") if node else None)
+            if not proj and property_path:
+                proj = [property_path]
+            bounded_getter = getattr(sandbox, "get_bounded_state", None)
+            if callable(bounded_getter) and inspect.iscoroutinefunction(bounded_getter):
+                if not proj:
+                    logger.warning("[StateParity] Unprojected state assertion rejected")
+                    return None, "__unobserved_source__"
+                raw_val = await bounded_getter(proj)
+                if not isinstance(raw_val, dict):
+                    # Older third-party sandboxes and loose test doubles can
+                    # expose an unimplemented dynamic attribute. They do not
+                    # satisfy the bounded-acquisition contract.
+                    raw_val = None
+            else:
+                raw_val = None
+
+            if raw_val is None:
+                logger.warning(
+                    "[StateParity] State assertion rejected: sandbox does not provide "
+                    "a valid bounded-acquisition result"
+                )
+                return None, "__unobserved_source__"
             bounded_val, _ = bound_state_snapshot(raw_val, projection=proj)
             return bounded_val, property_path
         return None, "__unsupported__"

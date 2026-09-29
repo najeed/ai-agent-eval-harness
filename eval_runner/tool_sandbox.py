@@ -19,6 +19,7 @@ from typing import Any
 
 from eval_runner.interfaces.policy import PolicyEvaluator
 from eval_runner.reference.field_policy import BasicFieldPolicyEvaluator
+from eval_runner.utils.path_resolver import PathResolver
 
 from . import config
 
@@ -598,6 +599,38 @@ class ToolSandbox(AbstractSandbox):
                 {"state": safe_state, "shared_state": self.shared_state.registry},
             )
         return output
+
+    async def get_bounded_state(self, projection: list[str]) -> dict[str, Any]:
+        """Acquire only explicitly selected local state for parity evidence.
+
+        This is intentionally separate from ``get_full_state``.  A state
+        assertion must name the evidence it needs; it must not first
+        materialize all world/shared/shim data and then truncate it.
+        """
+        if not projection:
+            raise ValueError("State parity requires a non-empty bounded projection")
+
+        source = {
+            **self.state,
+            "world": self.state,
+            "shared": self.shared_state.registry,
+        }
+        bounded: dict[str, Any] = {}
+        for path in projection:
+            value = PathResolver.resolve(source, path)
+            if value is None:
+                continue
+            cursor = bounded
+            parts = PathResolver._tokenize(path)
+            for part in parts[:-1]:
+                child = cursor.get(part)
+                if not isinstance(child, dict):
+                    child = {}
+                    cursor[part] = child
+                cursor = child
+            if parts:
+                cursor[parts[-1]] = copy.deepcopy(value)
+        return bounded
 
     async def get_full_state(self) -> dict[str, Any]:
         """

@@ -160,11 +160,10 @@ class TestExecutionLifecycleContract:
             with pytest.raises(RuntimeError, match="terminal state"):
                 backend.resume(run_id, resumption_token="tok_term")
 
-    def test_resume_allows_waiting_for_approval_state(self):
+    def test_resume_rejects_waiting_for_approval_without_durable_approval(self):
         """
-        Contract: resume() is permitted when run is in WAITING_FOR_APPROVAL state.
-        It must not raise a RuntimeError (unlike RUNNING or terminal states) and
-        must update in-memory status to RUNNING with the provided resumption token.
+        Contract: an in-memory WAITING_FOR_APPROVAL marker alone is insufficient.
+        Resume requires a durable approved ApprovalRequest bound to the checkpoint.
         """
         backend = InProcessExecutionBackend()
         run_id = "waiting_approval_resume_001"
@@ -177,13 +176,8 @@ class TestExecutionLifecycleContract:
             "scenario_data": _STUB_SCENARIO,
         }
 
-        # resume() must accept WAITING_FOR_APPROVAL without raising
-        resumed = backend.resume(run_id, resumption_token="tok_approval")
-        assert resumed is not None
-
-        status = backend.status(run_id)
-        assert status["resumption_token"] == "tok_approval"
-        assert status["status"] in ("COMPLETED", "RUNNING")
+        with pytest.raises(PermissionError, match="authoritatively approved"):
+            backend.resume(run_id, resumption_token="tok_approval")
 
     def test_background_submit_failure_records_failed_status_without_unhandled_exception(
         self,

@@ -89,21 +89,26 @@ def test_get_verification_package_success_with_cert_and_provenance(crypto_client
 
     now = datetime.now(UTC)
 
-    # Write trace events with empty/corrupt line handling and dynamic timestamps
+    # Write a sequence-addressable trace.  Every evidence-bearing event must
+    # retain its own exact raw-line provenance; terminal carriers may not act
+    # as a substitute for that evidence.
     trace_file = run_vault / "run.jsonl"
     events = [
         {
             "event": "run_start",
+            "_seq": 1,
             "timestamp": now.isoformat(),
             "data": {"scenario": "sec_eval"},
         },
         {
             "event": "assertion_evaluated",
+            "_seq": 2,
             "timestamp": (now + timedelta(seconds=5)).isoformat(),
             "data": {"name": "check1", "passed": True},
         },
         {
             "event": "run_end",
+            "_seq": 3,
             "timestamp": (now + timedelta(seconds=10)).isoformat(),
             "data": {"status": "EXECUTION_COMPLETED", "passed": True, "score": 1.0},
         },

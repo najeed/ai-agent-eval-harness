@@ -14,6 +14,7 @@ from eval_runner.session_components.state_parity import SessionStateParityVerifi
 from eval_runner.state_authority import (
     ExternalStateAuthorityRegistry,
     HttpStateAuthorityConnector,
+    StateAuthorityPolicyError,
     _safe_default,
     bound_state_snapshot,
     state_authority_registry,
@@ -118,7 +119,7 @@ class TestHttpStateAuthorityConnector:
     """Tests for HttpStateAuthorityConnector (P0-05)."""
 
     @pytest.mark.asyncio
-    async def test_http_connector_fetch_state_success(self, aiohttp_client):
+    async def test_http_connector_fetch_state_success(self, aiohttp_client, monkeypatch):
         async def handler(request):
             return web.json_response({"status": "READY", "count": 10})
 
@@ -126,12 +127,14 @@ class TestHttpStateAuthorityConnector:
         app.router.add_get("/api/state", handler)
         client = await aiohttp_client(app)
 
-        connector = HttpStateAuthorityConnector(base_url=str(client.make_url("")))
+        base_url = str(client.make_url(""))
+        monkeypatch.setenv("AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST", base_url)
+        connector = HttpStateAuthorityConnector(base_url=base_url)
         state = await connector.fetch_state("/api/state")
         assert state == {"status": "READY", "count": 10}
 
     @pytest.mark.asyncio
-    async def test_http_connector_fetch_state_absolute_url(self, aiohttp_client):
+    async def test_http_connector_rejects_absolute_endpoint(self, aiohttp_client, monkeypatch):
         async def handler(request):
             return web.json_response({"active": True})
 
@@ -139,12 +142,14 @@ class TestHttpStateAuthorityConnector:
         app.router.add_get("/state", handler)
         client = await aiohttp_client(app)
 
-        connector = HttpStateAuthorityConnector(base_url="http://other:9999")
-        state = await connector.fetch_state(str(client.make_url("/state")))
-        assert state == {"active": True}
+        base_url = str(client.make_url(""))
+        monkeypatch.setenv("AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST", base_url)
+        connector = HttpStateAuthorityConnector(base_url=base_url)
+        with pytest.raises(StateAuthorityPolicyError, match="relative"):
+            await connector.fetch_state(str(client.make_url("/state")))
 
     @pytest.mark.asyncio
-    async def test_http_connector_fetch_state_non_dict_payload(self, aiohttp_client):
+    async def test_http_connector_fetch_state_non_dict_payload(self, aiohttp_client, monkeypatch):
         async def handler(request):
             return web.json_response([1, 2, 3])
 
@@ -152,12 +157,14 @@ class TestHttpStateAuthorityConnector:
         app.router.add_get("/list", handler)
         client = await aiohttp_client(app)
 
-        connector = HttpStateAuthorityConnector(base_url=str(client.make_url("")))
+        base_url = str(client.make_url(""))
+        monkeypatch.setenv("AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST", base_url)
+        connector = HttpStateAuthorityConnector(base_url=base_url)
         state = await connector.fetch_state("/list")
         assert state == {"data": [1, 2, 3]}
 
     @pytest.mark.asyncio
-    async def test_http_connector_error_response(self, aiohttp_client):
+    async def test_http_connector_error_response(self, aiohttp_client, monkeypatch):
         async def handler(request):
             return web.json_response({"error": "unauthorized"}, status=403)
 
@@ -165,15 +172,23 @@ class TestHttpStateAuthorityConnector:
         app.router.add_get("/forbidden", handler)
         client = await aiohttp_client(app)
 
-        connector = HttpStateAuthorityConnector(base_url=str(client.make_url("")))
+        base_url = str(client.make_url(""))
+        monkeypatch.setenv("AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST", base_url)
+        connector = HttpStateAuthorityConnector(base_url=base_url)
         with pytest.raises(ValueError, match="HTTP 403"):
             await connector.fetch_state("/forbidden")
 
     @pytest.mark.asyncio
-    async def test_http_connector_network_error(self):
+    async def test_http_connector_network_error(self, monkeypatch):
+        monkeypatch.setenv("AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST", "http://127.0.0.1:59999")
         connector = HttpStateAuthorityConnector(base_url="http://127.0.0.1:59999")
         with pytest.raises(ConnectionError):
             await connector.fetch_state("/fail", timeout=0.5)
+
+    def test_http_connector_requires_explicit_origin_allowlist(self, monkeypatch):
+        monkeypatch.delenv("AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST", raising=False)
+        with pytest.raises(StateAuthorityPolicyError, match="not allow-listed"):
+            HttpStateAuthorityConnector(base_url="https://example.com/state")
 
 
 class TestExternalStateAuthorityRegistry:
@@ -185,7 +200,7 @@ class TestExternalStateAuthorityRegistry:
         reg.register_authority("authorizations_db", mock_conn)
         assert reg.get_connector("authorizations_db") is mock_conn
 
-    def test_registry_get_from_scenario_authorities(self):
+    def test_registry_get_from_scenario_authorities(self, monkeypatch):
         reg = ExternalStateAuthorityRegistry()
         scenario_authorities = {
             "tester_mcp": {
@@ -193,19 +208,22 @@ class TestExternalStateAuthorityRegistry:
                 "headers": {"X-Custom": "test"},
             }
         }
+        monkeypatch.setenv("AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST", "http://127.0.0.1:8080")
         conn = reg.get_connector("tester_mcp", scenario_authorities=scenario_authorities)
         assert isinstance(conn, HttpStateAuthorityConnector)
         assert conn.base_url == "http://127.0.0.1:8080/mcp/state"
         assert conn.default_headers == {"X-Custom": "test"}
 
-    def test_registry_get_dynamic_url(self):
+    def test_registry_get_dynamic_url(self, monkeypatch):
         reg = ExternalStateAuthorityRegistry()
+        monkeypatch.setenv("AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST", "http://127.0.0.1:9090")
         conn = reg.get_connector("http://127.0.0.1:9090/state")
         assert isinstance(conn, HttpStateAuthorityConnector)
         assert conn.base_url == "http://127.0.0.1:9090/state"
 
-    def test_registry_get_dynamic_url_path_preservation(self):
+    def test_registry_get_dynamic_url_path_preservation(self, monkeypatch):
         reg = ExternalStateAuthorityRegistry()
+        monkeypatch.setenv("AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST", "http://127.0.0.1:8080")
         conn = reg.get_connector("http://127.0.0.1:8080/healthcare/state")
         assert isinstance(conn, HttpStateAuthorityConnector)
         assert conn.base_url == "http://127.0.0.1:8080/healthcare/state"
@@ -269,67 +287,46 @@ class TestSessionStateParityWithExternalAuthority:
         assert prop == "__unobserved_source__"
 
     @pytest.mark.asyncio
-    async def test_parity_verifier_regulatory_policy_wa_essb_5395(self):
+    async def test_parity_verifier_policy_uses_declared_external_evidence(self):
         session_mock = MagicMock()
-        verifier = SessionStateParityVerifier(session_manager=session_mock)
-
-        # History with adverse decision but no clinical context
-        history = [{"role": "agent", "content": {"decision": "DENIED"}}]
-        assertion = {
-            "target": "policy:wa_essb_5395",
-            "expected": True,
-        }
-        allowed, _ = await verifier._resolve_target(
-            assertion, sandbox=None, history=history, shim_snapshots={}
-        )
-        assert allowed is False
-
-        # History with clinical context AND rationale
-        history_valid = [
-            {
-                "role": "agent",
-                "content": {
-                    "decision": "DENIED",
-                    "clinical_context": {"chart": "data"},
-                    "clinical_rationale": "Prior conservative treatment not exhausted.",
-                },
+        session_mock.scenario = {
+            "metadata": {
+                "policies": {
+                    "adverse_requires_human_review": {
+                        "required": True,
+                        "oracle_id": "policy:adverse_requires_human_review",
+                        "evidence_target": "authority:healthcare",
+                        "rules": [
+                            {
+                                "when": {"field": "decision", "operator": "eq", "value": "DENY"},
+                                "require_all": ["human_review_id"],
+                                "required_values": {"decision_source": "HUMAN_REVIEWED"},
+                            }
+                        ],
+                    }
+                }
             }
-        ]
-        allowed_valid, _ = await verifier._resolve_target(
-            assertion, sandbox=None, history=history_valid, shim_snapshots={}
-        )
-        assert allowed_valid is True
-
-    @pytest.mark.asyncio
-    async def test_parity_verifier_regulatory_policy_ia_hf_2635(self):
-        session_mock = MagicMock()
-        verifier = SessionStateParityVerifier(session_manager=session_mock)
-
-        # History with adverse decision without licensed review
-        history = [{"role": "agent", "content": {"status": "DENIED"}}]
-        assertion = {
-            "target": "policy:ia_hf_2635",
-            "expected": True,
         }
-        allowed, _ = await verifier._resolve_target(
-            assertion, sandbox=None, history=history, shim_snapshots={}
-        )
-        assert allowed is False
+        verifier = SessionStateParityVerifier(session_manager=session_mock)
+        connector = AsyncMock()
+        connector.fetch_state.return_value = {
+            "decision": "DENY",
+            "human_review_id": "review-1",
+            "decision_source": "HUMAN_REVIEWED",
+        }
+        state_authority_registry.register_authority("healthcare", connector)
 
-        # History with licensed review
-        history_reviewed = [
+        allowed, prop = await verifier._resolve_target(
             {
-                "role": "agent",
-                "content": {
-                    "status": "DENIED",
-                    "licensed_physician_review": "Dr. John, MD",
-                },
-            }
-        ]
-        allowed_reviewed, _ = await verifier._resolve_target(
-            assertion, sandbox=None, history=history_reviewed, shim_snapshots={}
+                "id": "policy:adverse_requires_human_review",
+                "target": "policy:adverse_requires_human_review",
+            },
+            sandbox=None,
+            history=[],
+            shim_snapshots={},
         )
-        assert allowed_reviewed is True
+        assert allowed is True
+        assert prop is None
 
     @pytest.mark.asyncio
     async def test_parity_verifier_external_authority_subpath_and_fetch_failure(self):
@@ -365,45 +362,18 @@ class TestSessionStateParityWithExternalAuthority:
         assert prop_err == "__unobserved_source__"
 
     @pytest.mark.asyncio
-    async def test_parity_verifier_regulatory_policy_string_content_and_properties(self):
+    async def test_parity_verifier_rejects_policy_without_declared_external_evidence(self):
         session_mock = MagicMock()
+        session_mock.scenario = {"metadata": {"policies": {}}}
         verifier = SessionStateParityVerifier(session_manager=session_mock)
-
-        # String agent content in history
-        history_str = [{"role": "agent", "content": "DENIED"}]
-
-        # 1. property == "violations"
-        assertion_viols = {
-            "target": "policy:wa_essb_5395",
-            "property": "violations",
-        }
-        viols, prop_v = await verifier._resolve_target(
-            assertion_viols, sandbox=None, history=history_str, shim_snapshots={}
+        observed, marker = await verifier._resolve_target(
+            {"target": "policy:unbound_control"},
+            sandbox=None,
+            history=[],
+            shim_snapshots={},
         )
-        assert isinstance(viols, list)
-        assert len(viols) > 0
-        assert prop_v is None
-
-        # 2. property == "reason"
-        assertion_reason = {
-            "target": "policy:wa_essb_5395",
-            "property": "reason",
-        }
-        reason, prop_r = await verifier._resolve_target(
-            assertion_reason, sandbox=None, history=history_str, shim_snapshots={}
-        )
-        assert "Policy violated" in reason
-        assert prop_r is None
-
-        # 3. Fallback standard when none is specified
-        assertion_generic = {
-            "target": "policy:regulatory",
-            "standard": "CUSTOM_COMPLIANCE",
-        }
-        allowed_gen, _ = await verifier._resolve_target(
-            assertion_generic, sandbox=None, history=history_str, shim_snapshots={}
-        )
-        assert isinstance(allowed_gen, bool)
+        assert observed is None
+        assert marker == "__unobserved_source__"
 
     @pytest.mark.asyncio
     async def test_parity_verifier_target_external_state_and_dict_authorities(self):

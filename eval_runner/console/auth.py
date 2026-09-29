@@ -41,8 +41,7 @@ def get_jwt_secret() -> str:
     # A per-process ephemeral secret silently breaks JWT validation and
     # Flask sessions across worker processes/replicas. Fail loud in production;
     # warn clearly everywhere else.
-    env = os.environ.get("AGENTV_ENV", "").strip().lower()
-    if env in ("production", "prod"):
+    if config.is_production():
         raise RuntimeError(
             "AGENTV_ENV=production requires a stable signing secret: set "
             "JWT_SECRET or DASHBOARD_API_KEY. A per-process ephemeral secret "
@@ -108,7 +107,7 @@ def handoff_required(
     def decorator(func: Any) -> Any:
         @functools.wraps(func)
         def decorated(*args: Any, **kwargs: Any) -> Any:
-            is_prod = os.getenv("AGENTV_ENV", "").strip().lower() in ("production", "prod")
+            is_prod = config.is_production()
 
             token = request.headers.get("X-Handoff-Token")
             if not token:
@@ -197,7 +196,7 @@ def get_handoff_token():
     Requires authenticated operator with EXTENSIONS_RUN permission.
     Issues short-lived audience-bound token with explicit plugin identity.
     """
-    is_prod = os.getenv("AGENTV_ENV", "").strip().lower() in ("production", "prod")
+    is_prod = config.is_production()
     if is_prod and request.method != "POST":
         return (
             jsonify(

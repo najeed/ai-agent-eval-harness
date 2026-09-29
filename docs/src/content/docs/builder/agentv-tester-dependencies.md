@@ -29,12 +29,18 @@ The `acceptance-release` job in `.github/workflows/acceptance.yml` requires:
 | `vars.AGENTV_TESTER_SHA` | Immutable commit SHA | Release acceptance fails closed if absent or unresolvable. |
 | `secrets.AGENTV_TESTER_READ_TOKEN` | Read token for the tester repository | Release acceptance fails closed if absent. |
 | `AGENTV_ACCEPTANCE_ORACLE_URL` | Local oracle URL passed to acceptance tests | Set by CI to `http://127.0.0.1:8099/acceptance-oracle`. |
+| `AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST` | Exact allowed origin for state observation | Set by CI to `http://127.0.0.1:8099`; required before the runtime opens an oracle connection. |
 
 CI checks out the tester repository at the requested SHA into
 `.ci/agentv-tester`; it never uses a floating branch/tag. It launches the
 minimal oracle entrypoint and health-checks it before release acceptance runs.
 Checkout, startup, health-check, or receipt failures are release failures—no
 trace-derived fallback is permitted.
+
+The authority allowlist is an **origin**, not a path prefix. The runtime
+validates every observation URL, rejects redirects and absolute endpoint
+overrides, and bounds response bytes before JSON decoding. Localhost is
+permitted only because this exact CI origin is explicitly declared.
 
 ## Required tester services
 

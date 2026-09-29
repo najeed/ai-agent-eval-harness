@@ -11,7 +11,7 @@ from .approval_store import (
     reset_default_approval_store,
 )
 from .auth import SimpleAPIKeyAuthBackend
-from .field_policy import BasicFieldPolicyEvaluator, RegulatoryPolicyEvaluator
+from .field_policy import BasicFieldPolicyEvaluator
 from .inprocess_backend import InProcessExecutionBackend
 from .local_artifact import LocalFileArtifactStore
 from .local_catalog import LocalFileCatalogStore
@@ -34,7 +34,6 @@ __all__ = [
     "SQLiteCheckpointStore",
     "LocalFileArtifactStore",
     "BasicFieldPolicyEvaluator",
-    "RegulatoryPolicyEvaluator",
     "LocalEd25519SigningBackend",
     "NullSigningBackend",
     "PQCSigningBackend",

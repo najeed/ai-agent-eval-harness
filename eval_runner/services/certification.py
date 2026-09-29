@@ -769,18 +769,35 @@ class CertificationService:
                 # Only evaluate evidence completeness after the independently
                 # resolved scenario, physical manifest, and signed finalization
                 # agree on the full mandatory inventory.
+                if not ev_graph.get("has_substantive_evidence", False):
+                    raise ValueError(
+                        f"Run {run_id} has zero assertion or evidence nodes "
+                        "(decision-only trace); cannot issue authoritative certification."
+                    )
+                if not ev_graph.get("has_all_required", True):
+                    missing_oracles = ev_graph.get("missing_required_oracles", [])
+                    raise ValueError(
+                        f"MissingRequiredOracles: trace missing required oracles: {missing_oracles}"
+                    )
+                # A negative result is complete when its required oracles have
+                # typed direct outcomes, including FAIL.  A positive evaluator
+                # finalization, however, must agree with every required oracle:
+                # it cannot certify PASS over a required FAIL/SKIPPED result.
                 if effective_status == "pass":
-                    if not ev_graph.get("has_substantive_evidence", False):
+                    required_ids = {str(oracle_id) for oracle_id in fin_record.required_oracle_ids}
+                    non_passing_required = sorted(
+                        {
+                            str(node.get("oracle_id"))
+                            for node in ev_graph.get("nodes", [])
+                            if str(node.get("oracle_id")) in required_ids
+                            and node.get("outcome") != "PASS"
+                        }
+                    )
+                    if non_passing_required:
                         raise ValueError(
-                            f"Run {run_id} has zero assertion or evidence nodes "
-                            "(decision-only trace); "
-                            "cannot issue authoritative certification."
-                        )
-                    if not ev_graph.get("has_all_required", True):
-                        missing_oracles = ev_graph.get("missing_required_oracles", [])
-                        raise ValueError(
-                            "MissingRequiredOracles: trace missing required oracles: "
-                            f"{missing_oracles}"
+                            "RequiredOracleOutcomeMismatch: evaluator finalization claims PASS "
+                            "but required oracle outcomes are non-passing: "
+                            f"{non_passing_required}"
                         )
             except ValueError:
                 raise

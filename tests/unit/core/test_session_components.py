@@ -208,7 +208,7 @@ async def test_session_state_parity_verifier_comprehensive():
         "s4": mock_sim4,
         "s5": mock_sim5,
     }
-    mock_sandbox.get_full_state = AsyncMock(return_value={"version": "1.0"})
+    mock_sandbox.get_bounded_state = AsyncMock(return_value={"version": "1.0"})
 
     snaps = await verifier.get_shim_snapshots(
         mock_sandbox, ["s1", "s2", "s3", "s4", "s5", "missing_shim"]
@@ -294,11 +294,16 @@ async def test_session_state_parity_verifier_comprehensive():
 
     # 8. State before value resolution
     mock_state_box = MagicMock()
-    mock_state_box.get_full_state = AsyncMock(return_value={"user": {"name": "Alice"}})
+    mock_state_box.get_bounded_state = AsyncMock(return_value={"user": {"name": "Alice"}})
     node_state_before = {
         "expected_outcome": [
             {"target": "state", "property": "user.name", "expected": "Alice", "mode": "exact"},
-            {"target": "state", "expected": {"user": {"name": "Alice"}}, "mode": "exact"},
+            {
+                "target": "state",
+                "projection": ["user"],
+                "expected": {"user": {"name": "Alice"}},
+                "mode": "exact",
+            },
         ]
     }
     passed_before, ev_before = await verifier.verify_state_parity(

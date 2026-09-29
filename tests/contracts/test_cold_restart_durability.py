@@ -19,7 +19,9 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
+from agentv_runtime.interfaces import ApprovalRequest
 from agentv_runtime.results import EvaluationResult
+from eval_runner.reference.approval_store import FileApprovalStore
 from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
 from eval_runner.reference.sqlite_checkpoint import SQLiteCheckpointStore
 
@@ -71,9 +73,20 @@ class TestColdRestartDurabilityContract:
                     "session_state": {
                         "status": "WAITING_FOR_APPROVAL",
                         "turn_number": 1,
+                        "approval_token": resumption_token,
                     },
                 }
                 chk_store_1.save(run_id, "checkpoint_turn_1", checkpoint_data)
+                approval_store = FileApprovalStore(base_dir=Path(tmp_dir) / "approvals")
+                approval_store.create_request(
+                    ApprovalRequest(
+                        approval_token=resumption_token,
+                        run_id=run_id,
+                        turn_index=1,
+                        outbound_payload_hash="",
+                        status="APPROVED",
+                    )
+                )
 
                 # 2. Simulate complete process termination & restart:
                 # - Destroy backend_1 and chk_store_1
@@ -100,9 +113,15 @@ class TestColdRestartDurabilityContract:
                         "content": "Transfer completed successfully",
                     }
 
-                with patch(
-                    "eval_runner.session.AgentAdapterRegistry.call_agent",
-                    AsyncMock(side_effect=_agent_side_effect),
+                with (
+                    patch(
+                        "eval_runner.session.AgentAdapterRegistry.call_agent",
+                        AsyncMock(side_effect=_agent_side_effect),
+                    ),
+                    patch(
+                        "eval_runner.reference.approval_store.get_default_approval_store",
+                        return_value=approval_store,
+                    ),
                 ):
                     resumed_result = backend_2.resume(
                         run_id=run_id,

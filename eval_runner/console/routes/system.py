@@ -338,18 +338,8 @@ def cleanup_runs():
     """Industrial-grade log cleanup (v1.2.3)"""
     try:
         count = 0
-        if config.RUN_LOG_DIR.exists():
-            for item in config.RUN_LOG_DIR.iterdir():
-                if item.is_dir():
-                    import shutil
-
-                    shutil.rmtree(item)
-                    count += 1
-                elif item.is_file() and item.suffix in (".jsonl", ".json"):
-                    item.unlink()
-                    count += 1
-
-        # Trigger plugin hooks for cleanup
+        # Windows cannot unlink an actively-open recorder stream. Give plugins
+        # first chance to flush and release their handles.
         from eval_runner.plugins import manager
 
         for plugin in manager.plugins:
@@ -357,8 +347,41 @@ def cleanup_runs():
             if method and callable(method):
                 try:
                     method()
-                except Exception as pe:
-                    logger.warning(f"Plugin cleanup failed for {plugin.__class__.__name__}: {pe}")
+                except Exception as exc:  # noqa: BLE001
+                    # One optional plugin must not prevent the recorder hook
+                    # and the explicitly authorized cleanup from completing.
+                    logger.warning("Run cleanup hook failed for %s: %s", plugin, exc)
+
+        def _remove_readonly(func, path, exc_info):
+            """Retry a known cleanup target after clearing a Windows readonly bit."""
+            import stat
+
+            try:
+                os.chmod(path, stat.S_IWRITE)
+                func(path)
+            except OSError:
+                error = exc_info[1]
+                if error is not None:
+                    raise error from None
+                raise
+
+        if config.RUN_LOG_DIR.exists():
+            for item in config.RUN_LOG_DIR.iterdir():
+                if item.is_dir():
+                    import shutil
+
+                    shutil.rmtree(item, onerror=_remove_readonly)
+                    count += 1
+                elif item.is_file() and item.suffix in (".jsonl", ".json"):
+                    try:
+                        item.unlink()
+                    except PermissionError:
+                        # A third-party process can still hold a file after
+                        # recorder hooks run. Truncate only the explicitly
+                        # enumerated cleanup file; never broaden the target.
+                        with open(item, "w", encoding="utf-8") as stream:
+                            stream.truncate(0)
+                    count += 1
 
         return jsonify(
             {"status": "success", "message": f"Pruned {count} historical traces.", "count": count}
@@ -421,9 +444,7 @@ def _runtime_health() -> dict[str, Any]:
     # GUI console build artifact check (Defect 7)
     gui_dist = Path(config.PROJECT_ROOT) / "ui" / "visual-console" / "dist"
     gui_ok = gui_dist.is_dir() and (gui_dist / "index.html").exists()
-    is_prod = os.getenv("AGENTV_ENV", "").lower() == "production" or getattr(
-        config, "IS_PRODUCTION", False
-    )
+    is_prod = config.is_production()
     if gui_ok:
         dependencies["gui_console"] = "HEALTHY"
     elif is_prod:

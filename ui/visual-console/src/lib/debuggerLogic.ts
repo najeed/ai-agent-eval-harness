@@ -465,6 +465,7 @@ export const filterEventsByTelemetryLevel = (
 ): LogEvent[] => {
   if (level === 'STEP') return events;
   const taxonomy = TELEMETRY_TAXONOMY[level];
-  return events.filter(e => taxonomy.has(e.event));
+  const critical = new Set(['error', 'evaluation_failed', 'PARITY_STATE_DIVERGENCE', 'evaluator_finalization', 'certification_failed', 'trace_integrity_failure', 'run_end']);
+  return events.filter(e => taxonomy.has(e.event) || critical.has(e.event) || e.passed === false || String(e.status || '').toLowerCase() === 'failed');
 };
 

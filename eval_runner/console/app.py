@@ -1,4 +1,5 @@
 import os
+from urllib.parse import urlparse
 
 import flask
 from dotenv import load_dotenv
@@ -37,6 +38,23 @@ print(
 UI_BUILD_DIR = None
 
 
+def _configured_extension_origins() -> list[str]:
+    """Return CSP-safe origins for signed remote extension bundles.
+
+    Remote extensions remain disabled unless their origin is explicitly
+    declared by the server operator.  The browser CSP must agree with the
+    extension contract; SRI alone cannot bypass a restrictive connect-src.
+    """
+    origins: list[str] = []
+    for value in os.getenv("AGENTV_EXTENSION_ORIGINS", "").split(","):
+        parsed = urlparse(value.strip())
+        if parsed.scheme == "https" and parsed.netloc:
+            origins.append(f"https://{parsed.netloc}")
+        elif parsed.scheme == "http" and parsed.hostname in {"localhost", "127.0.0.1"}:
+            origins.append(f"http://{parsed.netloc}")
+    return sorted(set(origins))
+
+
 def create_app():
     # Eager Hydration: Ensure scenarios are loaded before the first request
     from eval_runner.catalog import ScenarioCatalog
@@ -56,9 +74,7 @@ def create_app():
         or (config.PROJECT_ROOT / "ui" / "visual-console" / "dist")
     )
     v2_ui_dist = os.path.abspath(ui_target)
-    is_prod = os.getenv("AGENTV_ENV", "").lower() == "production" or getattr(
-        config, "IS_PRODUCTION", False
-    )
+    is_prod = config.is_production()
     ui_exists = os.path.isdir(v2_ui_dist) and os.path.exists(os.path.join(v2_ui_dist, "index.html"))
     if not ui_exists:
         if is_prod:
@@ -87,7 +103,7 @@ def create_app():
         or os.getenv("DASHBOARD_API_KEY")
     )
     if not has_api_key:
-        if os.getenv("AGENTV_ENV", "").lower() == "production":
+        if config.is_production():
             raise RuntimeError(
                 "[Console][CRITICAL] AGENTV_ENV=production requires "
                 "DASHBOARD_API_KEY or SERVICE_API_KEY."
@@ -161,7 +177,7 @@ def create_app():
     # Explicit Session Cookie Hardening (T2 DevSecOps)
     app.config["SESSION_COOKIE_HTTPONLY"] = True
     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-    is_prod = os.getenv("AGENTV_ENV", "").lower() == "production"
+    is_prod = config.is_production()
     app.config["SESSION_COOKIE_SECURE"] = (
         is_prod or os.getenv("AGENTV_SECURE_COOKIES", "false").lower() == "true"
     )
@@ -237,12 +253,15 @@ def create_app():
     #     documented seam (SRI proves bytes, signed manifests prove trust).
     # Everything else is locked to self. This does NOT authorize arbitrary
     # third-party script origins.
+    extension_origins = _configured_extension_origins()
+    extension_connect_sources = " ".join(extension_origins)
     CONSOLE_CSP = "; ".join(
         [
             "default-src 'self'",
             "script-src 'self' https://cdn.jsdelivr.net blob:",
             "worker-src 'self' blob:",
-            "connect-src 'self' https://cdn.jsdelivr.net",
+            "connect-src 'self' https://cdn.jsdelivr.net"
+            + (f" {extension_connect_sources}" if extension_connect_sources else ""),
             "style-src 'self' 'unsafe-inline'",
             "img-src 'self' data: blob:",
             "font-src 'self' data:",
@@ -259,6 +278,10 @@ def create_app():
         if content_type.startswith("text/html"):
             response.headers.setdefault("Content-Security-Policy", CONSOLE_CSP)
             response.headers.setdefault("X-Frame-Options", "DENY")
+            if extension_origins:
+                response.headers.setdefault(
+                    "X-AgentV-Extension-Origins", ",".join(extension_origins)
+                )
         response.headers.setdefault("X-Content-Type-Options", "nosniff")
         response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
         return response

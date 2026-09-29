@@ -276,21 +276,23 @@ def build_evidence_graph(
         else True
     )
 
-    valid_direct_oracle_ids = {
+    # Completeness means each required oracle produced a direct, typed result.
+    # A required oracle can legitimately FAIL in a certificate that attests a
+    # blocked/failed evaluation; requiring PASS here made such evidence appear
+    # absent and prevented issuance of authoritative negative certificates.
+    completed_direct_oracle_ids = {
         str(n.get("oracle_id") or n.get("label") or "")
         for n in nodes
         if n.get("resolved")
         and (n.get("is_direct_provenance") or n.get("source_type") == "artifact")
         and not n.get("invalid")
         and n.get("has_result")
-        and n.get("passed") is True
-        and n.get("outcome") == "PASS"
     }
 
     missing_required_oracles: list[str] = []
     if required_oracle_ids:
         for req in required_oracle_ids:
-            if str(req) not in valid_direct_oracle_ids:
+            if str(req) not in completed_direct_oracle_ids:
                 missing_required_oracles.append(str(req))
         has_all_required = len(missing_required_oracles) == 0
     else:

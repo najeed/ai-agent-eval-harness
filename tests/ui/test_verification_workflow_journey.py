@@ -441,6 +441,32 @@ def test_verification_workflow_journey_playwright(journey_console_server):
             page.get_by_test_id("rf__node-decision").get_by_text(
                 "STATE_DIVERGENCE", exact=True
             ).wait_for(state="visible", timeout=10000)
+            # Graph selection must select the authoritative execution-node
+            # evidence, rather than a heuristic telemetry row.
+            page.get_by_test_id("rf__node-decision").click()
+            page.get_by_text("Event Type", exact=True).wait_for(state="visible", timeout=10000)
+            page.get_by_text("execution_graph_node", exact=True).wait_for(
+                state="visible", timeout=10000
+            )
+
+            # URL identity is evidence identity. Switch routes without
+            # remounting the page and prove the previous run cannot remain
+            # rendered, then recover the original run through the same path.
+            page.evaluate(
+                """
+                window.history.pushState({}, '', '/debugger?run_id=run-journey-switch-missing');
+                window.dispatchEvent(new PopStateEvent('popstate'));
+                """
+            )
+            page.wait_for_timeout(250)
+            assert not page.get_by_test_id("rf__node-decision").is_visible()
+            page.evaluate(
+                """
+                window.history.pushState({}, '', '/debugger?run_id=run-journey-rca-001');
+                window.dispatchEvent(new PopStateEvent('popstate'));
+                """
+            )
+            page.get_by_test_id("rf__node-decision").wait_for(state="visible", timeout=10000)
 
             # Divergence layer must expose the terminal planned-but-unexecuted node.
             page.get_by_role("button", name="divergence", exact=True).click()

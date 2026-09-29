@@ -17,7 +17,7 @@ from agentv_runtime.manifest import (
     compute_preflight_fingerprint,
     compute_scenario_hash,
 )
-from eval_runner import engine, loader, mutator, spec_parser, taxonomy  # noqa: F401
+from eval_runner import config, engine, loader, mutator, spec_parser, taxonomy  # noqa: F401
 from eval_runner.catalog import ScenarioCatalog
 
 from ..auth_manager import Permission, require_permission
@@ -1282,8 +1282,6 @@ def evaluate_scenario():
     if abs_path and abs_path.exists():
         path = str(abs_path)
     else:
-        from eval_runner import config
-
         target = Path(path)
         if not target.is_absolute():
             target = config.PROJECT_ROOT / path
@@ -1319,7 +1317,7 @@ def evaluate_scenario():
         or meta.get("fingerprint")
     )
 
-    is_prod = os.getenv("AGENTV_ENV", "").strip().lower() in ("production", "prod")
+    is_prod = config.is_production()
     require_preflight = is_prod or os.getenv("EVAL_REQUIRE_PREFLIGHT", "false").lower() == "true"
 
     if force_launch and is_prod:

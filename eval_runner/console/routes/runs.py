@@ -583,27 +583,48 @@ def resume_run(run_id):
     resumption_token = data.get("resumption_token") or data.get("approval_token")
     decision = (data.get("decision") or "APPROVED").upper()
     reviewer = data.get("reviewer") or "console_user"
+    reviewer_role = data.get("reviewer_role")
+    reviewer_credentials = data.get("reviewer_credentials") or {}
     reason = data.get("reason")
 
-    if resumption_token:
-        store = get_default_approval_store()
-        req = store.get_request(resumption_token)
-        if req:
-            store.resolve_request(
-                resumption_token,
-                decision=decision,
-                decided_by=reviewer,
-                decision_reason=reason,
-            )
-            if decision == "REJECTED":
-                return jsonify(
-                    {
-                        "status": "REJECTED",
-                        "run_id": run_id,
-                        "approval_token": resumption_token,
-                        "reason": reason or "Rejected via review gate",
-                    }
-                )
+    if decision not in {"APPROVED", "REJECTED"}:
+        return jsonify({"error": "decision must be APPROVED or REJECTED"}), 400
+    if not resumption_token:
+        return jsonify({"error": "A durable approval token is required to resume a run"}), 400
+
+    store = get_default_approval_store()
+    req = store.get_request(resumption_token)
+    if not req:
+        return jsonify({"error": "Approval token was not found"}), 404
+    if req.run_id != run_id:
+        return jsonify({"error": "Approval token is not bound to this run"}), 409
+    if req.status != "PENDING":
+        return jsonify({"error": "Approval token has already been resolved"}), 409
+    if req.required_role and reviewer_role != req.required_role:
+        return jsonify({"error": "Reviewer role does not satisfy the approval requirement"}), 403
+    if req.reviewer_credentials and reviewer_credentials != req.reviewer_credentials:
+        return jsonify(
+            {"error": "Reviewer credentials do not satisfy the approval requirement"}
+        ), 403
+
+    try:
+        store.resolve_request(
+            resumption_token,
+            decision=decision,
+            decided_by=reviewer,
+            decision_reason=reason,
+        )
+    except (KeyError, ValueError) as exc:
+        return jsonify({"error": str(exc)}), 409
+    if decision == "REJECTED":
+        return jsonify(
+            {
+                "status": "REJECTED",
+                "run_id": run_id,
+                "approval_token": resumption_token,
+                "reason": reason or "Rejected via review gate",
+            }
+        )
 
     backend = get_execution_backend()
     resumed = backend.resume(run_id, resumption_token=resumption_token, background=True)

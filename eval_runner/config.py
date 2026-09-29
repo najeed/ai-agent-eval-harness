@@ -12,6 +12,16 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
+
+def is_production() -> bool:
+    """Single authority for production-only security and readiness policy."""
+    environment_markers = ("AGENTV_ENV", "ENVIRONMENT", "ENV")
+    return any(
+        os.getenv(marker, "").strip().lower() in {"production", "prod"}
+        for marker in environment_markers
+    ) or bool(globals().get("IS_PRODUCTION", False))
+
+
 # Absolute Authoritative Project Root
 # Industrial Hardening: Use abspath to bypass Windows Roaming redirection
 _lib_dir = os.path.dirname(os.path.abspath(__file__))

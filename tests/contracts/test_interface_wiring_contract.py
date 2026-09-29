@@ -513,8 +513,10 @@ def test_inprocess_execution_backend_lifecycle_and_singleton():
     st = backend1.status(run_id)
     assert st["status"] in ("RUNNING", "COMPLETED", "FAILED")
 
-    # 3. State-aware resume (transitions when in WAITING_FOR_APPROVAL or with force_recovery)
-    backend1._active_runs[run_id]["status"] = "WAITING_FOR_APPROVAL"
+    # 3. Generic recovery token is valid for a non-HITL paused run. Approval
+    # states require a durable approved ApprovalRequest and are covered by the
+    # HITL contract tests.
+    backend1._active_runs[run_id]["status"] = "PAUSED"
     backend1._active_runs[run_id]["resumption_checkpoint"] = {"scenario_data": scenario}
     resumed = backend1.resume(run_id, resumption_token="res_tok_12345", background=True)
     assert resumed is not None
