@@ -117,12 +117,21 @@ and logically sealed; it is not the external state authority or WORM storage.</p
 
 
 
-<table><thead><tr><th>Configuration</th><th>Meaning</th><th>Failure behavior</th></tr></thead><tbody><tr><td><code dir="auto">vars.AGENTV_TESTER_REPOSITORY</code></td><td>Repository to check out</td><td>Release acceptance fails closed if absent.</td></tr><tr><td><code dir="auto">vars.AGENTV_TESTER_SHA</code></td><td>Immutable commit SHA</td><td>Release acceptance fails closed if absent or unresolvable.</td></tr><tr><td><code dir="auto">secrets.AGENTV_TESTER_READ_TOKEN</code></td><td>Read token for the tester repository</td><td>Release acceptance fails closed if absent.</td></tr><tr><td><code dir="auto">AGENTV_ACCEPTANCE_ORACLE_URL</code></td><td>Local oracle URL passed to acceptance tests</td><td>Set by CI to <code dir="auto">http://127.0.0.1:8099/acceptance-oracle</code>.</td></tr></tbody></table>
+
+
+
+
+
+<table><thead><tr><th>Configuration</th><th>Meaning</th><th>Failure behavior</th></tr></thead><tbody><tr><td><code dir="auto">vars.AGENTV_TESTER_REPOSITORY</code></td><td>Repository to check out</td><td>Release acceptance fails closed if absent.</td></tr><tr><td><code dir="auto">vars.AGENTV_TESTER_SHA</code></td><td>Immutable commit SHA</td><td>Release acceptance fails closed if absent or unresolvable.</td></tr><tr><td><code dir="auto">secrets.AGENTV_TESTER_READ_TOKEN</code></td><td>Read token for the tester repository</td><td>Release acceptance fails closed if absent.</td></tr><tr><td><code dir="auto">AGENTV_ACCEPTANCE_ORACLE_URL</code></td><td>Local oracle URL passed to acceptance tests</td><td>Set by CI to <code dir="auto">http://127.0.0.1:8099/acceptance-oracle</code>.</td></tr><tr><td><code dir="auto">AGENTV_EXTERNAL_STATE_AUTHORITY_ALLOWLIST</code></td><td>Exact allowed origin for state observation</td><td>Set by CI to <code dir="auto">http://127.0.0.1:8099</code>; required before the runtime opens an oracle connection.</td></tr></tbody></table>
 <p>CI checks out the tester repository at the requested SHA into
 <code dir="auto">.ci/agentv-tester</code>; it never uses a floating branch/tag. It launches the
 minimal oracle entrypoint and health-checks it before release acceptance runs.
 Checkout, startup, health-check, or receipt failures are release failures—no
 trace-derived fallback is permitted.</p>
+<p>The authority allowlist is an <strong>origin</strong>, not a path prefix. The runtime
+validates every observation URL, rejects redirects and absolute endpoint
+overrides, and bounds response bytes before JSON decoding. Localhost is
+permitted only because this exact CI origin is explicitly declared.</p>
 <div class="sl-heading-wrapper level-h2"><h2 id="required-tester-services">Required tester services</h2><a class="sl-anchor-link" href="#required-tester-services"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “Required tester services”</span></a></div>
 <div class="sl-heading-wrapper level-h3"><h3 id="state-oracle">State oracle</h3><a class="sl-anchor-link" href="#state-oracle"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 1 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 0 0-1.42-1.42m8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 1 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l3.88-3.89a4.49 4.49 0 0 0 0-6.33M8.83 15.17a1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.92-4.92a1 1 0 1 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “State oracle”</span></a></div>
 <p><code dir="auto">server/run_acceptance_oracle.py</code> starts the minimal independent state
