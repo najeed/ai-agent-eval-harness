@@ -27,7 +27,6 @@ from agentv_runtime.contracts import (
 from agentv_runtime.evidence_graph import index_events_by_seq
 from agentv_runtime.manifest import ManifestBuilder
 from agentv_runtime.package import VerificationPackage
-from eval_runner.console.routes.compliance_packs import compliance_packs_bp
 from eval_runner.console.routes.scenarios import scenario_bp
 from eval_runner.events import Event
 from eval_runner.flight_recorder import FlightRecorderPlugin
@@ -260,71 +259,6 @@ def test_server_side_preflight_fingerprint_enforcement(tmp_path, monkeypatch):
         )
         assert res_valid.status_code == 200
         assert res_valid.get_json()["status"] == "started"
-
-
-def test_compliance_pack_fail_closed_on_missing_consensus(tmp_path, monkeypatch):
-    """Compliance pack checks do not fall back to author compliance_score."""
-    monkeypatch.setenv("AGENTV_TEST_AUTH_BYPASS", "1")
-    root = tmp_path / "root"
-    root.mkdir()
-    runs = root / "runs"
-    runs.mkdir()
-    reports = root / "reports"
-    reports.mkdir()
-    certs_dir = reports / "certificates"
-    certs_dir.mkdir(parents=True)
-    packs_dir = root / "results" / "compliance_packs"
-    packs_dir.mkdir(parents=True)
-
-    from eval_runner import config
-
-    monkeypatch.setattr(config, "PROJECT_ROOT", root)
-    monkeypatch.setattr(config, "RUN_LOG_DIR", runs)
-    monkeypatch.setattr(config, "REPORTS_DIR", reports)
-    monkeypatch.setattr("eval_runner.console.routes.compliance_packs.PACKS_DIR", packs_dir)
-
-    app = Flask(__name__)
-    app.secret_key = "test"
-    app.register_blueprint(compliance_packs_bp, url_prefix="/api")
-
-    run_id = "test_run_fail_closed"
-    run_dir = runs / run_id
-    run_dir.mkdir()
-    trace = run_dir / "run.jsonl"
-    trace.write_text(json.dumps({"run_id": run_id, "status": "COMPLETED"}) + "\n", encoding="utf-8")
-
-    # Author supplied a compliance_score float, but NO independent consensus evaluation
-    vc_file = certs_dir / f"{run_id}_vc.json"
-    vc_file.write_text(
-        json.dumps({"compliance_score": 1.0}),  # Self-attested score only
-        encoding="utf-8",
-    )
-
-    pack = {
-        "id": "FAIL-CLOSED-PACK",
-        "name": "Fail Closed Pack",
-        "checks": [
-            {"type": "rubric_required", "params": {"rubric": "safety_rubric", "min_score": 0.8}},
-            {"type": "ija_threshold", "params": {"min_value": 0.75}},
-        ],
-        "version": 1,
-    }
-    (packs_dir / "FAIL-CLOSED-PACK.json").write_text(json.dumps(pack), encoding="utf-8")
-
-    with patch(
-        "eval_runner.console.routes.compliance_packs.resolve_trace_path", return_value=trace
-    ):
-        client = app.test_client()
-        res = client.post(f"/api/v1/compliance-packs/FAIL-CLOSED-PACK/test?run_id={run_id}")
-        data = res.get_json()
-
-        assert res.status_code == 200
-        assert data["overall_pass"] is False
-        # Both checks must FAIL because independent judge consensus is absent
-        assert data["checks"][0]["status"] == "FAIL"
-        assert "not evaluated" in data["checks"][0]["details"]
-        assert data["checks"][1]["status"] == "FAIL"
-        assert "missing" in data["checks"][1]["details"].lower()
 
 
 def test_verification_package_canonical_hash():

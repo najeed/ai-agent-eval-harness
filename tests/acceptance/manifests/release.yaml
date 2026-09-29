@@ -1,6 +1,7 @@
 manifest_version: "1.0"
 name: agentv-release-acceptance
 description: Strict release acceptance certification suite for AgentV.
+require_external_oracle: true
 thresholds:
   allow_false_negatives: 0
   allow_false_positives: 0

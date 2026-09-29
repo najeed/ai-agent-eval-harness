@@ -659,7 +659,6 @@ def test_check_execution_readiness_branches(client, console_jail, monkeypatch):
 
 def test_check_execution_readiness_openapi_success(client, console_jail, monkeypatch):
     """Verify openapi protocol probes origin /health and passes readiness."""
-    import urllib.request
 
     from eval_runner import config
 
@@ -690,7 +689,8 @@ def test_check_execution_readiness_openapi_success(client, console_jail, monkeyp
         probed_urls.append(url)
         return MockResp(200)
 
-    monkeypatch.setattr(urllib.request, "urlopen", mock_urlopen)
+    monkeypatch.setenv("AGENTV_AGENT_PROBE_ALLOWED_HOSTS", "tester")
+    monkeypatch.setattr("eval_runner.console.routes.scenarios._open_readiness_probe", mock_urlopen)
 
     res = client.post(
         "/api/scenarios/readiness",
@@ -732,7 +732,10 @@ def test_check_execution_readiness_openapi_negative_health_fails_closed(
             fp=None,
         )
 
-    monkeypatch.setattr(urllib.request, "urlopen", mock_urlopen_fail)
+    monkeypatch.setenv("AGENTV_AGENT_PROBE_ALLOWED_HOSTS", "tester")
+    monkeypatch.setattr(
+        "eval_runner.console.routes.scenarios._open_readiness_probe", mock_urlopen_fail
+    )
 
     res = client.post(
         "/api/scenarios/readiness",
@@ -758,7 +761,6 @@ def test_check_execution_readiness_declared_health_endpoint(client, console_jail
     Verify explicit health_endpoint configuration takes precedence
     over default origin /health.
     """
-    import urllib.request
 
     scen_data = {
         "metadata": {"id": "scen_declared_health", "status": "Ready"},
@@ -782,7 +784,8 @@ def test_check_execution_readiness_declared_health_endpoint(client, console_jail
         probed_urls.append(url)
         return MockResp(200)
 
-    monkeypatch.setattr(urllib.request, "urlopen", mock_urlopen)
+    monkeypatch.setenv("AGENTV_AGENT_PROBE_ALLOWED_HOSTS", "tester")
+    monkeypatch.setattr("eval_runner.console.routes.scenarios._open_readiness_probe", mock_urlopen)
 
     res = client.post(
         "/api/scenarios/readiness",
@@ -822,7 +825,10 @@ def test_check_execution_readiness_fallback_to_endpoint_head_405(client, console
             raise urllib.error.HTTPError(url=url, code=404, msg="Not Found", hdrs={}, fp=None)
         raise urllib.error.HTTPError(url=url, code=405, msg="Method Not Allowed", hdrs={}, fp=None)
 
-    monkeypatch.setattr(urllib.request, "urlopen", mock_urlopen_fallback)
+    monkeypatch.setenv("AGENTV_AGENT_PROBE_ALLOWED_HOSTS", "tester")
+    monkeypatch.setattr(
+        "eval_runner.console.routes.scenarios._open_readiness_probe", mock_urlopen_fallback
+    )
 
     res = client.post(
         "/api/scenarios/readiness",

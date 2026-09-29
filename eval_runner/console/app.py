@@ -201,16 +201,6 @@ def create_app():
     app.register_blueprint(evidence_bp, url_prefix="/api")
     app.register_blueprint(agent_targets_bp)
 
-    # Control plane management endpoints are omitted from default OSS runtime registration
-    # but can be enabled via configuration or extension plugins (P1.8)
-    if getattr(config, "ENABLE_CONTROL_PLANE", False) or os.getenv(
-        "AGENTV_ENABLE_CONTROL_PLANE", ""
-    ).lower() in ("1", "true"):
-        from .routes import compliance_packs_bp, publish_bp
-
-        app.register_blueprint(publish_bp, url_prefix="/api")
-        app.register_blueprint(compliance_packs_bp, url_prefix="/api")
-
     app.register_blueprint(trust_bp)
 
     # Demo blueprint is physically absent in production mode (ENABLE_DEMO=false).

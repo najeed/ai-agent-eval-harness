@@ -105,8 +105,11 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
         try {
           const ev = JSON.parse(e.data);
           accumulatedEvents.push(ev);
+          // Evidence panels are live views.  Do not defer their hydration
+          // until a terminal carrier, which can hide valid tool evidence
+          // emitted before an eventual seal/end record.
+          setStreamEvents([...accumulatedEvents]);
           if (ev.event === 'run_end' || ev.event === 'trace_sealed' || ev.event === 'verification_certificate_issued') {
-            setStreamEvents([...accumulatedEvents]);
             setStreamLoading(false);
           }
         } catch {}
@@ -169,21 +172,40 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
       parameters: Record<string, any>;
       result: any;
       duration_ms?: number;
+      source?: string;
+      provenance?: string;
+      receipt_hash?: string;
     }> = [];
+    const externalByReceipt = new Map<string, (typeof tools)[number]>();
     streamEvents.forEach((ev, idx) => {
       const evType = ev.event || ev.type;
-      if (evType === 'tool_call' || evType === 'agent_tool_call') {
+      if (evType === 'tool_call' || evType === 'agent_tool_call' || evType === 'external_tool_call') {
         const d = ev.data || ev;
-        tools.push({
+        const toolCall = {
           turn: d.turn || d.step || idx + 1,
           tool: d.tool || d.name || d.tool_name || 'unknown_tool',
           parameters: d.parameters || d.params || d.arguments || d.input || {},
           result: d.result || d.output || {},
           duration_ms: d.duration_ms || d.latency_ms,
-        });
+          source: d.source,
+          provenance: d.provenance,
+          receipt_hash: d.receipt_hash,
+        };
+        tools.push(toolCall);
+        if (evType === 'external_tool_call' && typeof d.receipt_hash === 'string') {
+          externalByReceipt.set(d.receipt_hash, toolCall);
+        }
+      } else if (evType === 'external_tool_result') {
+        const d = ev.data || ev;
+        const pairedCall = typeof d.receipt_hash === 'string'
+          ? externalByReceipt.get(d.receipt_hash)
+          : undefined;
+        if (pairedCall) {
+          pairedCall.result = d.result ?? d.output ?? d.result_summary ?? {};
+        }
       }
     });
-    return tools.length > 0 ? tools : (run.tool_calls || []);
+    return tools.length > 0 ? tools : (run.tool_calls || []) as typeof tools;
   }, [streamEvents, run.tool_calls]);
 
   // Hydrated State Diff
@@ -574,6 +596,12 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
                       <span className="text-indigo-400 font-bold">Turn {t.turn}: {t.tool}()</span>
                       <span className="text-[10px] text-slate-500">{t.duration_ms != null ? `${t.duration_ms}ms` : ''}</span>
                     </div>
+                    {t.provenance === 'reported' && (
+                      <div className="text-[10px] text-amber-300">
+                        Source: External agent telemetry · Authority: Reported, not AgentV sandbox execution
+                        {t.receipt_hash ? ` · Receipt: ${t.receipt_hash}` : ''}
+                      </div>
+                    )}
                     <div className="grid grid-cols-2 gap-3 text-[11px]">
                       <div className="bg-slate-950 p-2.5 rounded border border-slate-800">
                         <span className="text-slate-500 block mb-1">Parameters:</span>

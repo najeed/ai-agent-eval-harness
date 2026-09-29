@@ -9,13 +9,68 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
+  buildTraceGraph,
   buildWaterfall,
   computeTelemetryDiagnostics,
   computeTraceIntegrity,
   mergeSeqGap,
+  projectTraceGraphTopology,
   subtractSeqFromGaps,
   type LogEvent,
 } from '../../src/lib/debuggerLogic.js';
+
+test('buildTraceGraph projects retries, divergence, edges, positions, and late hydration', () => {
+  const events: LogEvent[] = [
+    { _seq: 1, event: 'execution_graph_node', scenario_node_id: 'intake', status: 'failed', attempt: 1 },
+    { _seq: 2, event: 'execution_graph_node', scenario_node_id: 'intake', status: 'completed', attempt: 2, duration_ms: 25 },
+    { _seq: 3, event: 'execution_graph_node', scenario_node_id: 'runtime_review', status: 'completed' },
+    { _seq: 4, event: 'execution_graph_edge', from_scenario_node_id: 'intake', to_scenario_node_id: 'review' },
+    { _seq: 5, event: 'execution_graph_edge', from_scenario_node_id: 'intake', to_scenario_node_id: 'review', edge_type: 'retry' },
+    { _seq: 6, event: 'execution_graph_edge', from_scenario_node_id: 'missing', to_scenario_node_id: 'review' },
+  ];
+  const scenario = {
+    workflow: {
+      nodes: [{ id: 'intake' }, { id: 'review' }, { id: 'notify' }],
+      edges: [{ from: 'intake', to: 'review' }],
+    },
+  };
+  const positions = new Map([['intake', { x: 7, y: 9 }]]);
+  const key = (id: string) => id;
+
+  assert.equal(buildTraceGraph(events, null, null, 'executed', false, new Map(), key).provenance, 'TOPOLOGY_UNAVAILABLE');
+  const graph = buildTraceGraph(events, scenario, null, 'divergence', true, positions, key);
+  assert.equal(graph.provenance, 'CANONICAL');
+  assert.deepEqual(graph.flowNodes.map(node => node.id), ['intake', 'review', 'notify', 'runtime_review']);
+  const intake = graph.flowNodes.find(node => node.id === 'intake')!;
+  assert.equal(intake.data.maxAttempt, 2);
+  assert.equal(intake.data.passCount, 1);
+  assert.equal(intake.data.failCount, 1);
+  assert.deepEqual(intake.position, { x: 7, y: 9 });
+  assert.equal(graph.flowNodes.find(node => node.id === 'notify')!.data.isSkipped, true);
+  assert.equal(graph.flowNodes.find(node => node.id === 'runtime_review')!.data.isUnplanned, true);
+  assert.equal(graph.droppedEdgeCount, 1);
+  assert.equal(graph.flowEdges.length, 3);
+  assert.deepEqual(graph.flowEdges.map(edge => edge.data.pathOffset).filter(Boolean), [20, 36, 52]);
+});
+
+test('graph topology keeps planned, executed, and divergence nodes distinct', () => {
+  const scenario = {
+    workflow: {
+      nodes: [{ id: 'intake' }, { id: 'eligibility' }, { id: 'notify' }],
+    },
+  };
+  const events: LogEvent[] = [
+    { _seq: 3, event: 'execution_graph_node', scenario_node_id: 'eligibility' },
+    { _seq: 1, event: 'execution_graph_node', scenario_node_id: 'intake' },
+    { _seq: 4, event: 'execution_graph_node', scenario_node_id: 'unplanned_review' },
+  ];
+  const ids = (mode: 'planned' | 'executed' | 'divergence') =>
+    projectTraceGraphTopology(events, scenario, mode).visibleNodes.map(node => node.id);
+
+  assert.deepEqual(ids('planned'), ['intake', 'eligibility', 'notify']);
+  assert.deepEqual(ids('executed'), ['intake', 'eligibility', 'unplanned_review']);
+  assert.deepEqual(ids('divergence'), ['intake', 'eligibility', 'notify', 'unplanned_review']);
+});
 
 
 test('buildWaterfall correlates markers by execution_instance_id', () => {

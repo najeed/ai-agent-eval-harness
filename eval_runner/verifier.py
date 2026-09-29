@@ -719,19 +719,15 @@ class TraceVerifier:
                                     f"Malformed trace record at line {line_idx}: {ev_parse_err}"
                                 ) from ev_parse_err
                 if events_list:
-                    req_oracles = (
-                        (metadata.get("required_oracle_ids") if metadata else None)
-                        or (
-                            scenario_data.get("required_oracles")
-                            if isinstance(scenario_data, dict)
-                            else None
-                        )
-                        or (
-                            scenario_data.get("metadata", {}).get("required_oracles")
-                            if isinstance(scenario_data, dict)
-                            else None
-                        )
-                    )
+                    # The scenario contract is the only authority for the
+                    # required-evidence inventory.  Caller metadata is an
+                    # annotation and must never weaken completeness checks.
+                    if isinstance(scenario_data, dict):
+                        from eval_runner.runner import compile_required_oracle_ids
+
+                        req_oracles = compile_required_oracle_ids(scenario_data)
+                    else:
+                        req_oracles = list((metadata or {}).get("required_oracle_ids") or [])
                     ev_graph = build_evidence_graph_from_events(
                         events_list_with_lines, required_oracle_ids=req_oracles
                     )
@@ -833,6 +829,15 @@ class TraceVerifier:
                         "ManifestHashMismatch: EvaluatorFinalizationRecord execution_manifest_hash "
                         f"'{fin_record.execution_manifest_hash}' != "
                         f"'{metadata['execution_manifest_hash']}'"
+                    )
+            if isinstance(scenario_data, dict):
+                expected_oracles = sorted(set(req_oracles or []))
+                finalization_oracles = sorted(set(fin_record.required_oracle_ids))
+                if finalization_oracles != expected_oracles:
+                    raise CertificationFailedError(
+                        "RequiredOracleInventoryMismatch: scenario-required oracle inventory "
+                        "does not exactly match EvaluatorFinalizationRecord "
+                        f"(scenario={expected_oracles}, finalization={finalization_oracles})"
                     )
         elif not provisional:
             raise CertificationFailedError(
@@ -1187,15 +1192,7 @@ class TraceVerifier:
                             )
                 manifest["execution_manifest_hash"] = m_h_val
                 ev_root_val = manifest_evidence_root or ""
-                pkg_req_oracles = list(
-                    (metadata.get("required_oracle_ids") if metadata else None)
-                    or (
-                        scenario_data.get("required_oracles")
-                        if isinstance(scenario_data, dict)
-                        else None
-                    )
-                    or []
-                )
+                pkg_req_oracles = list(req_oracles or [])
                 seen_oracle_ids = set()
                 executed_oracles = []
                 for n in reversed(ev_graph.get("nodes", []) if ev_graph else []):

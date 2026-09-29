@@ -313,6 +313,38 @@ class TestDeclarativePolicyReferenceImplementation:
         )
         assert allowed.allowed is True
 
+    def test_declarative_policy_resolves_nested_external_authority_fields(self):
+        evaluator = BasicFieldPolicyEvaluator()
+        spec = {
+            "id": "nested_authority_control",
+            "rules": [
+                {
+                    "when": {
+                        "field": "state.authorizations[1].decision",
+                        "operator": "eq",
+                        "value": "DENY",
+                    },
+                    "required_values": {
+                        "state.authorizations[1].decision_source": "HUMAN_REVIEWED",
+                        "state.authorizations[1].human_review_required": True,
+                    },
+                }
+            ],
+        }
+        observed = {
+            "state": {
+                "authorizations": [
+                    {"decision": "APPROVE"},
+                    {
+                        "decision": "DENY",
+                        "decision_source": "HUMAN_REVIEWED",
+                        "human_review_required": True,
+                    },
+                ]
+            }
+        }
+        assert evaluator.evaluate_policy(spec, observed).allowed is True
+
     def test_standard_name_is_not_a_runtime_policy(self):
         evaluator = BasicFieldPolicyEvaluator()
         assert evaluator.validate_policy({"standard": "arbitrary_external_standard"}) is False

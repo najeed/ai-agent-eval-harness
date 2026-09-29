@@ -57,7 +57,7 @@ framework-langgraph = [
     "langgraph==1.2.12",
 ]
 framework-ag2 = [
-    "ag2==1.1.0",
+    "ag2==1.1.1",
 ]
 framework-crewai = [
 #    "crewai==1.15.22; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
@@ -105,7 +105,7 @@ frameworks = [
     "langchain-core>=1.6.6",
     "langserve>=0.3.3",
     "langgraph==1.2.12",
-    "ag2==1.1.0",
+    "ag2==1.1.1",
 #    "crewai==1.15.22; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
 ]
 langchain-all = [
@@ -126,7 +126,7 @@ all = [
     "langchain-core>=1.6.6",
     "langserve>=0.3.3",
     "langgraph==1.2.12",
-    "ag2==1.1.0",
+    "ag2==1.1.1",
 #    "crewai==1.15.22; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
     "langchain-openai==1.6.6",
     "langchain-anthropic>=1.7.5",

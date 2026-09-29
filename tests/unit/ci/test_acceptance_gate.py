@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 from unittest.mock import patch
 
+from tests.acceptance.support.artifact_reader import bind_external_oracle_observation
 from tools.ci.acceptance_gate import GateDecision, evaluate_summary, main
 
 
@@ -337,19 +338,74 @@ def test_evaluate_summary_mandatory_oracle_branches(monkeypatch):
     }
     decision = evaluate_summary(summary_no_receipt, suite)
     assert decision.passed is False
-    assert any("Mandatory external acceptance oracle was required" in r for r in decision.reasons)
+    assert any("lacks a bound external oracle observation" in r for r in decision.reasons)
 
-    # 2. Present receipt hash when oracle required -> passes
+    # 2. A receipt must bind the exact case, run, authority, and observed state.
+    observation = {
+        "state": {"balances": {"operating": 800, "recipient": 200}},
+        "receipt_hash": "sha3_256:" + "a" * 64,
+    }
+    binding = bind_external_oracle_observation(
+        case_id="AT-01",
+        run_id="run-01",
+        authority_url="http://127.0.0.1:8099",
+        observation=observation,
+    )
     summary_with_receipt = {
         "total_cases": 1,
         "results": [
             {
                 "case_id": "AT-01",
+                "run_id": "run-01",
                 "accepted": True,
                 "expected": {"state": {"oracle_url": "http://127.0.0.1:8099"}},
-                "actual": {"state": {"oracle_receipt_hash": "sha256:abc1234"}},
+                "actual": {
+                    "state": {
+                        "final_state": observation["state"],
+                        "oracle_receipt_hash": observation["receipt_hash"],
+                        "oracle_observation": binding,
+                    }
+                },
             }
         ],
     }
     decision_ok = evaluate_summary(summary_with_receipt, suite)
     assert decision_ok.passed is True
+
+
+def test_evaluate_summary_rejects_reused_external_oracle_receipt():
+    """Each independently observed release case needs a fresh authority receipt."""
+    suite = {
+        "require_external_oracle": True,
+        "thresholds": {},
+        "cases": [
+            "tests/acceptance/corpus/AT-01.yaml",
+            "tests/acceptance/corpus/AT-02.yaml",
+        ],
+    }
+    observation = {"state": {"balance": 100}, "receipt_hash": "sha3_256:" + "b" * 64}
+    results = []
+    for case_id, run_id in (("AT-01", "run-01"), ("AT-02", "run-02")):
+        results.append(
+            {
+                "case_id": case_id,
+                "run_id": run_id,
+                "accepted": True,
+                "expected": {"state": {"oracle_url": "https://oracle.example.test"}},
+                "actual": {
+                    "state": {
+                        "final_state": observation["state"],
+                        "oracle_receipt_hash": observation["receipt_hash"],
+                        "oracle_observation": bind_external_oracle_observation(
+                            case_id=case_id,
+                            run_id=run_id,
+                            authority_url="https://oracle.example.test",
+                            observation=observation,
+                        ),
+                    }
+                },
+            }
+        )
+    decision = evaluate_summary({"total_cases": 2, "results": results}, suite)
+    assert decision.passed is False
+    assert any("receipt was reused" in reason for reason in decision.reasons)

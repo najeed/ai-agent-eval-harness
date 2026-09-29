@@ -431,7 +431,7 @@ class _MockSandbox:
     def __init__(self):
         self.state = {"db": {"active": True}}
 
-    async def get_full_state(self):
+    async def get_bounded_state(self, _projection):
         return self.state
 
 

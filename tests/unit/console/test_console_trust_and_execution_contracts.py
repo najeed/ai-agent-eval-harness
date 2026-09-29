@@ -19,12 +19,6 @@ from eval_runner.console.auth import (
     get_jwt_secret,
     handoff_required,
 )
-from eval_runner.console.routes.publish import (
-    JOBS,
-    DurableJobStore,
-    _get_job,
-    _update_job,
-)
 
 
 @pytest.fixture
@@ -74,7 +68,6 @@ def ent_client(tmp_path):
     with (
         patch.object(config, "PROJECT_ROOT", tmp_path),
         patch.object(config, "RUN_LOG_DIR", runs_dir),
-        patch.object(config, "ENABLE_CONTROL_PLANE", True, create=True),
     ):
         app = create_app()
         app.secret_key = "test_enterprise_secret_key"
@@ -275,7 +268,7 @@ def test_validate_scenario_schema(ent_client):
     assert res_empty.status_code == 400
 
 
-def test_check_execution_readiness(ent_client):
+def test_check_execution_readiness(ent_client, monkeypatch):
     client, tmp_path = ent_client
 
     # 1. Successful readiness check (with live agent endpoint response)
@@ -298,7 +291,11 @@ def test_check_execution_readiness(ent_client):
         def __exit__(self, *args):
             pass
 
-    with patch("urllib.request.urlopen", return_value=MockResponse()):
+    monkeypatch.setenv("AGENTV_AGENT_PROBE_ALLOWED_HOSTS", "localhost")
+    with patch(
+        "eval_runner.console.routes.scenarios._open_readiness_probe",
+        return_value=MockResponse(),
+    ):
         res = client.post("/api/scenarios/readiness", json=payload)
         assert res.status_code == 200
         data = res.get_json()
@@ -336,89 +333,6 @@ def test_save_scenario_with_hash_and_status(ent_client):
     assert data["scenario_hash"].startswith("sha3_256:")
     assert data["status"] == "success"
     assert data["lifecycle_status"] == "Draft"
-
-
-# ===========================================================================
-# 3. PUBLISH API & DURABLE JOB STORE TESTS
-# ===========================================================================
-
-
-def test_durable_job_store(tmp_path):
-    with patch.object(config, "PROJECT_ROOT", tmp_path):
-        # Save and Load
-        job_data = {"job_id": "job_dur_1", "status": "running", "progress": "50%"}
-        DurableJobStore.save("job_dur_1", job_data)
-
-        loaded = DurableJobStore.load("job_dur_1")
-        assert loaded == job_data
-        assert DurableJobStore.load("missing_job") is None
-
-        # List active
-        active = DurableJobStore.list_active()
-        assert "job_dur_1" in active
-
-        # Helper functions
-        _update_job("job_dur_1", {"progress": "75%"})
-        assert _get_job("job_dur_1")["progress"] == "75%"
-
-
-def test_publish_bundle_download(ent_client):
-    client, tmp_path = ent_client
-
-    batch_dir = tmp_path / "results" / "batch_bundle_test"
-    batch_dir.mkdir(parents=True, exist_ok=True)
-    zip_path = batch_dir / "publication_artifact_bundle.zip"
-    zip_path.write_bytes(b"PK\x05\x06" + b"\x00" * 18)  # Minimal valid zip structure
-
-    JOBS["job_bundle_ok"] = {
-        "job_id": "job_bundle_ok",
-        "status": "completed",
-        "results": {
-            "batch_id": "batch_bundle_test",
-            "zip_file": str(zip_path.relative_to(tmp_path)).replace("\\", "/"),
-        },
-    }
-
-    # Successful download
-    res = client.get("/api/publish/job_bundle_ok/bundle")
-    assert res.status_code == 200
-
-    # Job not found
-    assert client.get("/api/publish/nonexistent/bundle").status_code == 404
-
-    # Job incomplete
-    JOBS["job_inc"] = {"job_id": "job_inc", "status": "running", "results": None}
-    assert client.get("/api/publish/job_inc/bundle").status_code == 400
-
-
-def test_publish_stop_job(ent_client):
-    client, tmp_path = ent_client
-
-    # 1. Non-existent job
-    assert client.post("/api/publish/non_existent_job/stop").status_code == 404
-
-    # 2. Already finished job
-    JOBS["job_finished"] = {"job_id": "job_finished", "status": "completed"}
-    res_fin = client.post("/api/publish/job_finished/stop")
-    assert res_fin.status_code == 200
-    assert "already finished" in res_fin.get_json()["message"]
-
-    # 3. Running job with mock process
-    mock_p = MagicMock()
-    mock_p.pid = 99999
-    JOBS["job_to_kill"] = {
-        "job_id": "job_to_kill",
-        "status": "running",
-        "_proc": mock_p,
-    }
-    with patch("psutil.Process") as mock_proc_cls:
-        mock_proc_instance = MagicMock()
-        mock_proc_instance.children.return_value = []
-        mock_proc_cls.return_value = mock_proc_instance
-        res_kill = client.post("/api/publish/job_to_kill/stop")
-        assert res_kill.status_code == 200
-        assert res_kill.get_json()["status"] == "stopped"
-        assert JOBS["job_to_kill"]["status"] == "failed"
 
 
 def test_conductor_explicit_batch_and_output_dir(tmp_path):

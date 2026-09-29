@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "test:docmodel": "tsc -p tsconfig.test.json && node --test \"test-dist/tests/**/*.test.js\""
+    "test:docmodel": "tsc -p tsconfig.test.json && node --test \"test-dist/tests/**/*.test.js\"",
+    "test:browser": "playwright test"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
@@ -33,7 +34,8 @@
     "@vitejs/plugin-react": "^6.1.0",
     "oxlint": "^1.80.0",
     "typescript": "~7.0.2",
-    "vite": "^8.2.2"
+    "vite": "^8.2.2",
+    "@playwright/test": "^1.63.0"
   },
   "overrides": {
     "dompurify": "^3.4.14"

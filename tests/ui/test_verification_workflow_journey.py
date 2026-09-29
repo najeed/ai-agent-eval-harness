@@ -55,6 +55,15 @@ class ServerThread(threading.Thread):
 
 TEST_API_KEY = "test-journey-auth-key-007"
 RUN_ID = "run-journey-rca-001"
+EXTERNAL_TOOL_NAMES = (
+    "get_patient_diagnosis_codes",
+    "get_payer_policy",
+    "check_criteria_met",
+    "request_human_review",
+    "record_human_review",
+    "submit_authorization_decision",
+    "send_provider_notification",
+)
 
 
 @pytest.fixture(scope="module")
@@ -164,6 +173,41 @@ def journey_console_server(tmp_path_factory):
             "timestamp": "2026-09-19T10:00:02.000Z",
         },
     ]
+    terminal_event = events.pop()
+    for order, tool_name in enumerate(EXTERNAL_TOOL_NAMES, start=1):
+        receipt_hash = f"sha3_256:{order:064x}"
+        events.extend(
+            [
+                {
+                    "event": "external_tool_call",
+                    "run_id": RUN_ID,
+                    "node_id": "decision",
+                    "turn": 1,
+                    "order": order,
+                    "tool": tool_name,
+                    "arguments": {"order": order},
+                    "source": "external_agent_telemetry",
+                    "provenance": "reported",
+                    "receipt_hash": receipt_hash,
+                    "_seq": 8 + (order * 2) - 1,
+                },
+                {
+                    "event": "external_tool_result",
+                    "run_id": RUN_ID,
+                    "node_id": "decision",
+                    "turn": 1,
+                    "order": order,
+                    "tool": tool_name,
+                    "result": {"reported": tool_name},
+                    "source": "external_agent_telemetry",
+                    "provenance": "reported",
+                    "receipt_hash": receipt_hash,
+                    "_seq": 8 + (order * 2),
+                },
+            ]
+        )
+    terminal_event["_seq"] = 8 + (len(EXTERNAL_TOOL_NAMES) * 2) + 1
+    events.append(terminal_event)
     with open(trace_path, "w", encoding="utf-8") as f:
         for ev in events:
             f.write(json.dumps(ev) + "\n")
@@ -309,6 +353,10 @@ def journey_console_server(tmp_path_factory):
             {
                 "SERVICE_API_KEY": TEST_API_KEY,
                 "RUN_LOG_DIR": str(runs_dir),
+                # This fixture intentionally runs the sample agent on loopback.
+                # Production readiness probes remain private-network denied
+                # unless the deployer explicitly approves the destination.
+                "AGENTV_AGENT_PROBE_ALLOWED_HOSTS": "127.0.0.1",
                 "FLIGHT_RECORDER_KEY_PATH": str(
                     root_dir / ".aes" / "keys" / "system_id" / "private_key.pem"
                 ),
@@ -497,6 +545,15 @@ def test_verification_workflow_journey_playwright(journey_console_server):
             assert "checkout_node" in text or "db_state_invariance" in text
             # Verify expected vs actual is rendered
             assert "100" in text and "80" in text
+
+            page.get_by_role("button", name="State & Tool Evidence").click()
+            for tool_name in EXTERNAL_TOOL_NAMES:
+                page.get_by_text(f"{tool_name}()", exact=False).wait_for(
+                    state="visible", timeout=10000
+                )
+            page.get_by_text("Source: External agent telemetry", exact=False).first.wait_for(
+                state="visible", timeout=10000
+            )
 
             # Check Policy Tab: Click Policy & Guardrails
             policy_tab_btn = page.locator("button:has-text('Policy & Guardrails')")

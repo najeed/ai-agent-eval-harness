@@ -1,8 +1,10 @@
 import asyncio
+import ipaddress
 import json
 import logging
 import os
 import re
+import socket
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -23,6 +25,68 @@ from eval_runner.catalog import ScenarioCatalog
 from ..auth_manager import Permission, require_permission
 
 logger = logging.getLogger(__name__)
+
+
+_PRIVATE_NETWORKS = (
+    ipaddress.ip_network("0.0.0.0/8"),
+    ipaddress.ip_network("10.0.0.0/8"),
+    ipaddress.ip_network("127.0.0.0/8"),
+    ipaddress.ip_network("169.254.0.0/16"),
+    ipaddress.ip_network("172.16.0.0/12"),
+    ipaddress.ip_network("192.168.0.0/16"),
+    ipaddress.ip_network("::1/128"),
+    ipaddress.ip_network("fc00::/7"),
+    ipaddress.ip_network("fe80::/10"),
+)
+
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    """Treat redirects as failed readiness probes rather than following them."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):  # noqa: N802
+        return None
+
+
+def _assert_safe_probe_destination(url: str) -> None:
+    """Block SSRF probe targets unless the host is explicitly allowlisted."""
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme.lower() not in {"http", "https"} or not parsed.hostname:
+        raise ValueError("readiness probe requires an absolute HTTP(S) URL with a hostname")
+    if parsed.username or parsed.password:
+        raise ValueError("readiness probe URLs must not include credentials")
+    host = parsed.hostname.lower()
+    allowed_hosts = {
+        candidate.strip().lower()
+        for candidate in os.getenv("AGENTV_AGENT_PROBE_ALLOWED_HOSTS", "").split(",")
+        if candidate.strip()
+    }
+    if host in allowed_hosts:
+        return
+    try:
+        addresses = socket.getaddrinfo(
+            host,
+            parsed.port or (443 if parsed.scheme.lower() == "https" else 80),
+            type=socket.SOCK_STREAM,
+        )
+    except OSError as exc:
+        raise ValueError(f"readiness probe DNS resolution failed for '{host}': {exc}") from exc
+    for address in {result[4][0] for result in addresses}:
+        ip = ipaddress.ip_address(address)
+        if (
+            ip.is_unspecified
+            or ip.is_multicast
+            or any(ip in network for network in _PRIVATE_NETWORKS)
+        ):
+            raise ValueError(
+                f"readiness probe target '{host}' resolves to blocked address '{address}'; "
+                "set AGENTV_AGENT_PROBE_ALLOWED_HOSTS for an approved private target"
+            )
+
+
+def _open_readiness_probe(request_obj: urllib.request.Request, timeout: float):
+    """Open a validated probe without allowing cross-destination redirects."""
+    return urllib.request.build_opener(_NoRedirect).open(request_obj, timeout=timeout)
+
 
 # Server-authoritative lifecycle state machine adjacency matrix.
 # Keys are current states; values are the set of legally reachable next states.
@@ -600,8 +664,11 @@ def check_execution_readiness():
             agent_check.update(
                 {
                     "status": "PASSED",
-                    "tier": "AUTHENTICATED",
-                    "message": f"Agent provider '{proto}' configured with valid credentials.",
+                    "tier": "CONFIGURED",
+                    "message": (
+                        f"Agent provider '{proto}' credentials are configured; "
+                        "authentication has not been verified by a provider probe."
+                    ),
                 }
             )
         else:
@@ -635,9 +702,11 @@ def check_execution_readiness():
                 declared_health = urllib.parse.urljoin(endpoint, agent_config["health_endpoint"])
 
             health_url = declared_health or f"{parsed_ep.scheme}://{parsed_ep.netloc}/health"
+            _assert_safe_probe_destination(str(endpoint))
+            _assert_safe_probe_destination(str(health_url))
             req = urllib.request.Request(health_url, method="HEAD")
             req.add_header("User-Agent", "AgentV-Preflight/2.0")
-            with urllib.request.urlopen(req, timeout=3) as resp:  # nosec B310
+            with _open_readiness_probe(req, timeout=3) as resp:
                 if 200 <= resp.status < 300:
                     probe_status = "PASSED"
                     probe_tier = "HEALTHY"
@@ -661,7 +730,7 @@ def check_execution_readiness():
                     try:
                         ep_req = urllib.request.Request(endpoint, method="HEAD")
                         ep_req.add_header("User-Agent", "AgentV-Preflight/2.0")
-                        with urllib.request.urlopen(ep_req, timeout=3) as ep_resp:  # nosec B310
+                        with _open_readiness_probe(ep_req, timeout=3) as ep_resp:
                             if 200 <= ep_resp.status < 400:
                                 probe_status = "PASSED"
                                 probe_tier = "REACHABLE"
@@ -705,7 +774,7 @@ def check_execution_readiness():
                 probe_status = "FAILED"
                 probe_tier = "CONFIGURED"
                 probe_msg = f"HTTP {he.code} (Server Error / Unhealthy)"
-        except (urllib.error.URLError, OSError, TimeoutError) as ue:
+        except (urllib.error.URLError, OSError, TimeoutError, ValueError) as ue:
             probe_status = "FAILED"
             probe_tier = "CONFIGURED"
             probe_msg = f"Unreachable: {ue}"
@@ -851,7 +920,7 @@ def check_execution_readiness():
         )
 
     # Overall tier rollup
-    tier_order = ["CONFIGURED", "REACHABLE", "AUTHENTICATED", "HEALTHY", "EXECUTABLE", "VERIFIABLE"]
+    tier_order = ["CONFIGURED", "REACHABLE", "HEALTHY", "EXECUTABLE", "VERIFIABLE"]
     overall_tier = "VERIFIABLE"
     for c in checks:
         t = c.get("tier", "CONFIGURED")
@@ -880,11 +949,14 @@ def check_execution_readiness():
 
     can_execute = scenario_ok and agent_ok and sim_ok and not has_failed
     has_trusted_signer = signing_state.is_verifiable
-    post_run_evidence_complete = bool(
-        data.get("post_run_evidence")
-        or data.get("evidence_complete")
-        or (data.get("run_id") and data.get("trace_sealed"))
-    )
+    post_run_evidence_complete = False
+    run_id = data.get("run_id")
+    if isinstance(run_id, str) and run_id:
+        from eval_runner.services.run_summary import RunSummaryService
+
+        post_run_evidence_complete = (
+            RunSummaryService.get_authoritative_verdict(run_id) == "VERIFIED"
+        )
 
     if not can_execute:
         readiness_state = ReadinessState.BLOCKED

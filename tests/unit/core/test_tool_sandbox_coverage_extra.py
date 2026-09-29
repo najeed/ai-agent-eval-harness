@@ -49,22 +49,20 @@ async def test_sandbox_shared_state_failures(tmp_path):
 
 # --- AbstractSandbox Error Handling ---
 @pytest.mark.asyncio
-async def test_sandbox_setup_forensic_exception(tmp_path):
+async def test_sandbox_setup_skips_undeclared_forensic_state(tmp_path):
     scenario = {"id": "test", "run_id": "test_run"}
     forensics = MagicMock()
-    forensics.snapshot_state.side_effect = Exception("Forensic snapshot failed")
 
     sandbox = ToolSandbox(scenario, forensics=forensics)
     sandbox.workspace_dir = tmp_path / "workspace"
     sandbox.terminal_jail = tmp_path / "jail"
 
-    # Should catch exception and print to stderr, not crash
     await sandbox.setup()
-    assert forensics.snapshot_state.called
+    forensics.snapshot_state.assert_not_called()
 
 
 @pytest.mark.asyncio
-async def test_sandbox_get_full_state_exception():
+async def test_sandbox_has_no_full_state_acquisition_api():
     from eval_runner.tool_sandbox import AbstractSandbox
 
     class DummySandbox(AbstractSandbox):
@@ -77,13 +75,7 @@ async def test_sandbox_get_full_state_exception():
     scenario = {"id": "test"}
     sandbox = DummySandbox(scenario)
 
-    mock_sim = AsyncMock()
-    mock_sim.get_snapshot.side_effect = Exception("Simulator snapshot failed")
-
-    sandbox._simulator_cache = {"broken_sim": mock_sim}
-
-    state = await sandbox.get_full_state()
-    assert state["broken_sim"] == {"error": "Simulator snapshot failed"}
+    assert not hasattr(sandbox, "get_full_state")
 
 
 @pytest.mark.asyncio

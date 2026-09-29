@@ -127,7 +127,7 @@ async def test_sandbox_setup_teardown(base_scenario, tmp_path):
     await sandbox.setup()
     assert sandbox.workspace_dir.exists()
     assert sandbox.terminal_jail.exists()
-    sandbox.forensics.snapshot_state.assert_called()
+    sandbox.forensics.snapshot_state.assert_not_called()
 
     sandbox.scenario["metadata"] = {"cleanup_workspace": True, "cleanup_terminal_jail": True}
 
@@ -264,10 +264,7 @@ async def test_get_active_simulators_and_full_state(base_scenario, tmp_path, mon
             assert "test_shim" in active
             assert active["test_shim"].terminal_jail == sandbox.terminal_jail
 
-            full = await sandbox.get_full_state()
-            assert full["shims"]["test_shim"]["shim_state"] == "ok"
-            assert "world" in full
-            assert "shared" in full
+            assert not hasattr(sandbox, "get_full_state")
 
 
 @pytest.mark.asyncio
@@ -275,14 +272,7 @@ async def test_get_active_simulators_error_handling(base_scenario, tmp_path, cap
     sandbox = ToolSandbox(base_scenario, workspace_root=tmp_path)
     sandbox._simulator_cache = {}
 
-    mock_sim = AsyncMock()
-    mock_sim.get_snapshot.side_effect = Exception("Shim crashed")
-    sandbox._simulator_cache["broken_shim"] = mock_sim
-
-    await sandbox.get_full_state()
-
-    captured = capsys.readouterr()
-    assert "Failed to snapshot shim" in captured.err
+    assert not hasattr(sandbox, "get_full_state")
 
 
 def test_get_scenario_relevant_shims(base_scenario, tmp_path, monkeypatch):
@@ -316,32 +306,19 @@ class ConcreteSandbox(AbstractSandbox):
 
 
 @pytest.mark.asyncio
-async def test_abstract_sandbox_get_full_state(base_scenario, tmp_path, capsys):
+async def test_abstract_sandbox_has_no_full_state_acquisition_api(base_scenario, tmp_path, capsys):
     sandbox = ConcreteSandbox(base_scenario, workspace_root=tmp_path)
 
-    class OkShim:
-        async def get_snapshot(self):
-            return {"ok": 1}
-
-    class BadShim:
-        async def get_snapshot(self):
-            raise Exception("disk")
-
-    sandbox.get_active_simulators = MagicMock(
-        return_value={"ok_shim": OkShim(), "bad_shim": BadShim()}
-    )
-    state = await sandbox.get_full_state()
-    assert state["ok_shim"]["ok"] == 1
-    assert "error" in state["bad_shim"]
-    assert "Failed to snapshot shim" in capsys.readouterr().err
+    assert not hasattr(sandbox, "get_full_state")
 
 
 @pytest.mark.asyncio
-async def test_sandbox_setup_forensics_error(base_scenario, tmp_path, capsys):
+async def test_sandbox_setup_does_not_capture_undeclared_full_state(
+    base_scenario, tmp_path, capsys
+):
     sandbox = ToolSandbox(base_scenario, workspace_root=tmp_path, forensics=MagicMock())
-    sandbox.get_full_state = AsyncMock(side_effect=Exception("state error"))
     await sandbox.setup()
-    assert "Failed to capture initial forensic baseline" in capsys.readouterr().err
+    sandbox.forensics.snapshot_state.assert_not_called()
 
 
 @pytest.mark.asyncio

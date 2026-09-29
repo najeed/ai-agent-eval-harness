@@ -36,6 +36,57 @@ class SessionStateParityVerifier:
     def __init__(self, session_manager: Any):
         self.session_manager = session_manager
 
+    def _external_evidence_target(self, assertion: dict[str, Any]) -> str | None:
+        """Return the declared authority target that must be observed for this assertion."""
+        target = assertion.get("target")
+        if isinstance(target, str) and (
+            target.startswith("authority:")
+            or target.startswith("external:")
+            or target in ("external_state", "state_authority")
+        ):
+            return target
+        if not isinstance(target, str) or not target.startswith("policy:"):
+            return None
+        policy_id = target.split(":", 1)[1].strip()
+        scenario = getattr(self.session_manager, "scenario", {}) or {}
+        policies = (scenario.get("metadata") or {}).get("policies") or {}
+        policy = policies.get(policy_id) if isinstance(policies, dict) else None
+        evidence_target = policy.get("evidence_target") if isinstance(policy, dict) else None
+        return evidence_target if isinstance(evidence_target, str) and evidence_target else None
+
+    async def capture_external_prestate(
+        self, node: dict[str, Any], sandbox: Any, history: list[dict[str, Any]]
+    ) -> dict[str, dict[str, Any]]:
+        """Capture required authority state before execution; never substitute sandbox state."""
+        observations: dict[str, dict[str, Any]] = {}
+        for assertion in node.get("expected_outcome", []) or []:
+            if not isinstance(assertion, dict):
+                continue
+            source = self._external_evidence_target(assertion)
+            if not source or source in observations:
+                continue
+            observed, property_path = await self._resolve_target(
+                {
+                    "target": source,
+                    "property": assertion.get("property"),
+                    "projection": assertion.get("projection"),
+                },
+                sandbox,
+                history,
+                {},
+                node=node,
+            )
+            if property_path in ("__unobserved_source__", "__unsupported__"):
+                observations[source] = {"invalid": True}
+                continue
+            _, snapshot_hash = bound_state_snapshot(observed)
+            observations[source] = {
+                "state": observed,
+                "property_path": property_path,
+                "snapshot_hash": snapshot_hash,
+            }
+        return observations
+
     async def get_shim_snapshots(self, sandbox: Any, shim_ids: list[str]) -> dict[str, Any]:
         """Queries active simulators for point-in-time state snapshots."""
         shim_snapshots: dict[str, Any] = {}
@@ -298,6 +349,7 @@ class SessionStateParityVerifier:
         sandbox: Any,
         history: list[dict[str, Any]],
         state_before: dict[str, Any] | None = None,
+        external_state_before: dict[str, dict[str, Any]] | None = None,
     ) -> tuple[bool, list[dict[str, Any]]]:
         """
         Transition-based verification.
@@ -351,6 +403,29 @@ class SessionStateParityVerifier:
                 mode = assertion.get("mode", "exact")
                 tolerance = self._tolerance_for(node, assertion)
 
+                authority_source = self._external_evidence_target(assertion)
+                pre_observation = (external_state_before or {}).get(authority_source or "")
+                if authority_source and (not pre_observation or pre_observation.get("invalid")):
+                    all_passed = False
+                    failed_reason = (
+                        f"Unobservable pre-execution authority target '{authority_source}'"
+                    )
+                    evidence_rows.append(
+                        {
+                            "assertion": assertion,
+                            "mode": mode,
+                            "expected": expected,
+                            "actual_before": None,
+                            "actual_after": None,
+                            "passed": False,
+                            "invalid": True,
+                            "outcome": "INVALID",
+                            "error": failed_reason,
+                            "source": authority_source,
+                        }
+                    )
+                    break
+
                 after_val, property_path = await self._resolve_target(
                     assertion, sandbox, history, shim_snapshots, node=node
                 )
@@ -397,7 +472,13 @@ class SessionStateParityVerifier:
                     )
                     break
 
-                before_val = self._before_value(state_before, assertion, property_path)
+                before_val = (
+                    PathResolver.resolve(pre_observation["state"], property_path)
+                    if authority_source and pre_observation and property_path
+                    else (pre_observation or {}).get("state")
+                    if authority_source and pre_observation
+                    else self._before_value(state_before, assertion, property_path)
+                )
                 resolved_after = (
                     PathResolver.resolve(after_val, property_path)
                     if property_path and not str(property_path).startswith("__")
@@ -405,18 +486,26 @@ class SessionStateParityVerifier:
                 )
                 match = self._match(resolved_after, expected, mode, tolerance)
 
-                evidence_rows.append(
-                    {
-                        "assertion": assertion,
-                        "mode": mode,
-                        "expected": expected,
-                        "actual_before": before_val,
-                        "actual_after": resolved_after,
-                        "tolerance": tolerance if mode == "numerical_tolerance" else None,
-                        "passed": match,
-                        "outcome": "PASS" if match else "FAIL",
-                    }
-                )
+                evidence_row = {
+                    "assertion": assertion,
+                    "mode": mode,
+                    "expected": expected,
+                    "actual_before": before_val,
+                    "actual_after": resolved_after,
+                    "tolerance": tolerance if mode == "numerical_tolerance" else None,
+                    "passed": match,
+                    "outcome": "PASS" if match else "FAIL",
+                }
+                if authority_source and pre_observation:
+                    _, post_snapshot_hash = bound_state_snapshot(after_val)
+                    evidence_row.update(
+                        {
+                            "source": authority_source,
+                            "pre_snapshot_hash": pre_observation["snapshot_hash"],
+                            "post_snapshot_hash": post_snapshot_hash,
+                        }
+                    )
+                evidence_rows.append(evidence_row)
 
                 if not match:
                     all_passed = False

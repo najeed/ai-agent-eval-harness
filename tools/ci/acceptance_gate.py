@@ -15,6 +15,7 @@ Enforces zero-tolerance release rules against observable acceptance facts:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import sys
@@ -24,7 +25,81 @@ from typing import Any
 
 import yaml
 
+from agentv_runtime.canonical import canonical_json_encode
+
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+
+
+def _resolve_expected_oracle_url(value: Any) -> str:
+    """Resolve an acceptance manifest environment reference without guessing."""
+    if not isinstance(value, str) or not value:
+        return ""
+    if value.startswith("${") and value.endswith("}"):
+        return os.environ.get(value[2:-1], "").rstrip("/")
+    return value.rstrip("/")
+
+
+def _validate_external_oracle_observations(results: list[dict[str, Any]]) -> list[str]:
+    """Require one fresh, case/run-bound receipt for every oracle-backed case."""
+    reasons: list[str] = []
+    seen_receipts: set[str] = set()
+    for result in results:
+        expected_state = result.get("expected", {}).get("state", {})
+        authority_url = _resolve_expected_oracle_url(expected_state.get("oracle_url"))
+        if not authority_url:
+            continue
+        state = result.get("actual", {}).get("state", {})
+        binding = state.get("oracle_observation") if isinstance(state, dict) else None
+        case_id = str(result.get("case_id") or "")
+        run_id = str(result.get("run_id") or "")
+        if not isinstance(binding, dict):
+            reasons.append(f"CRITICAL: Case {case_id} lacks a bound external oracle observation.")
+            continue
+        receipt_hash = binding.get("receipt_hash")
+        if (
+            not isinstance(receipt_hash, str)
+            or not receipt_hash
+            or receipt_hash != state.get("oracle_receipt_hash")
+        ):
+            reasons.append(f"CRITICAL: Case {case_id} has an invalid external oracle receipt.")
+            continue
+        if receipt_hash in seen_receipts:
+            reasons.append(f"CRITICAL: External oracle receipt was reused by case {case_id}.")
+        seen_receipts.add(receipt_hash)
+        if (
+            binding.get("case_id") != case_id
+            or binding.get("run_id") != run_id
+            or binding.get("authority_url") != authority_url
+        ):
+            reasons.append(
+                f"CRITICAL: Case {case_id} external oracle binding does not match "
+                "its case/run/authority."
+            )
+            continue
+        final_state = state.get("final_state")
+        if not isinstance(final_state, dict):
+            reasons.append(
+                f"CRITICAL: Case {case_id} external oracle binding lacks observed state."
+            )
+            continue
+        observed_state_hash = (
+            "sha3_256:" + hashlib.sha3_256(canonical_json_encode(final_state)).hexdigest()
+        )
+        if binding.get("observed_state_hash") != observed_state_hash:
+            reasons.append(
+                f"CRITICAL: Case {case_id} external oracle observed-state hash mismatch."
+            )
+            continue
+        unsigned_binding = {
+            key: binding[key]
+            for key in ("authority_url", "case_id", "observed_state_hash", "receipt_hash", "run_id")
+        }
+        binding_hash = (
+            "sha3_256:" + hashlib.sha3_256(canonical_json_encode(unsigned_binding)).hexdigest()
+        )
+        if binding.get("binding_hash") != binding_hash:
+            reasons.append(f"CRITICAL: Case {case_id} external oracle binding hash mismatch.")
+    return reasons
 
 
 @dataclass(frozen=True)
@@ -122,16 +197,7 @@ def evaluate_summary(summary: dict[str, Any], suite: dict[str, Any] | None = Non
         "AGENTV_REQUIRE_EXTERNAL_ORACLE"
     ) == "1"
     if require_oracle:
-        oracle_seen = any(
-            bool(r.get("actual", {}).get("state", {}).get("oracle_receipt_hash"))
-            for r in raw_results
-            if r.get("expected", {}).get("state", {}).get("oracle_url")
-        )
-        if not oracle_seen:
-            reasons.append(
-                "CRITICAL: Mandatory external acceptance oracle was required, "
-                "but no valid oracle observations/receipts were recorded."
-            )
+        reasons.extend(_validate_external_oracle_observations(raw_results))
 
     gate_passed = len(reasons) == 0
     return GateDecision(

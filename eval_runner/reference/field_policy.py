@@ -8,6 +8,15 @@ declarative controls via a pure condition-constraint engine.
 from typing import Any
 
 from eval_runner.interfaces.policy import PolicyEvaluationResult, PolicyEvaluator
+from eval_runner.utils.path_resolver import PathResolver
+
+
+def _resolve_field(input_data: dict[str, Any], field: str) -> tuple[bool, Any]:
+    """Resolve a declared field without requiring external authorities to flatten state."""
+    if field in input_data:
+        return True, input_data[field]
+    value = PathResolver.resolve(input_data, field)
+    return value is not None, value
 
 
 def match_condition(condition: dict[str, Any] | None, input_data: dict[str, Any]) -> bool:
@@ -27,8 +36,9 @@ def match_condition(condition: dict[str, Any] | None, input_data: dict[str, Any]
     val = None
     field_found = False
     for f in field_candidates:
-        if f in input_data:
-            val = input_data[f]
+        found, candidate = _resolve_field(input_data, str(f))
+        if found:
+            val = candidate
             field_found = True
             break
 
@@ -98,14 +108,14 @@ def evaluate_declarative_rule(
 
     # Check rule bypass flags (e.g. human_in_the_loop == True)
     bypass_flag = rule.get("bypass_flag")
-    if bypass_flag and input_data.get(bypass_flag) is True:
+    if bypass_flag and _resolve_field(input_data, str(bypass_flag))[1] is True:
         return None
 
     # Check valid status bypass (e.g. review_status == "COMPLETED")
     status_field = rule.get("valid_status_field")
     valid_statuses = rule.get("valid_statuses", [])
     if status_field and valid_statuses:
-        current_status = str(input_data.get(status_field, "")).upper().strip()
+        current_status = str(_resolve_field(input_data, str(status_field))[1] or "").upper().strip()
         if current_status in {str(s).upper().strip() for s in valid_statuses}:
             return None
 
@@ -115,7 +125,10 @@ def evaluate_declarative_rule(
     require_any = rule.get("require_any")
     if require_any:
         keys = [require_any] if isinstance(require_any, str) else require_any
-        has_any = any(k in input_data and bool(input_data[k]) for k in keys)
+        has_any = any(
+            found and bool(value)
+            for found, value in (_resolve_field(input_data, str(k)) for k in keys)
+        )
         if not has_any:
             sub_violations.append(
                 {
@@ -130,7 +143,8 @@ def evaluate_declarative_rule(
     if require_all:
         keys = [require_all] if isinstance(require_all, str) else require_all
         for k in keys:
-            if k not in input_data or not bool(input_data[k]):
+            found, value = _resolve_field(input_data, str(k))
+            if not found or not bool(value):
                 sub_violations.append(
                     {
                         "field": k,
@@ -143,7 +157,7 @@ def evaluate_declarative_rule(
     required_values = rule.get("required_values")
     if isinstance(required_values, dict):
         for field, expected in required_values.items():
-            actual = input_data.get(field)
+            _, actual = _resolve_field(input_data, str(field))
             expected_values = expected if isinstance(expected, list) else [expected]
             if actual not in expected_values:
                 sub_violations.append(
@@ -160,7 +174,8 @@ def evaluate_declarative_rule(
     if forbidden:
         keys = [forbidden] if isinstance(forbidden, str) else forbidden
         for k in keys:
-            if k in input_data and bool(input_data[k]):
+            found, value = _resolve_field(input_data, str(k))
+            if found and bool(value):
                 sub_violations.append(
                     {
                         "field": k,
@@ -172,7 +187,7 @@ def evaluate_declarative_rule(
     min_length_spec = rule.get("min_length")
     if isinstance(min_length_spec, dict):
         for f, m_len in min_length_spec.items():
-            val = input_data.get(f)
+            _, val = _resolve_field(input_data, str(f))
             if val is not None and len(str(val)) < m_len:
                 sub_violations.append(
                     {
@@ -188,7 +203,7 @@ def evaluate_declarative_rule(
     bounds_spec = rule.get("bounds")
     if isinstance(bounds_spec, dict):
         for f, b_info in bounds_spec.items():
-            val = input_data.get(f)
+            _, val = _resolve_field(input_data, str(f))
             if isinstance(val, (int, float)) and isinstance(b_info, dict):
                 max_b = b_info.get("max")
                 min_b = b_info.get("min")

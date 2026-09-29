@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+﻿import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   ReactFlow, Controls, Background, useNodesState, useEdgesState
@@ -8,17 +8,16 @@ import {
   Sparkles, AlertTriangle, CheckCircle2, Layers, Crosshair, Maximize2
 } from 'lucide-react';
 import ReactDiffViewer from 'react-diff-viewer-continued';
-import dagre from 'dagre';
 import { computeScenarioHash } from '../lib/aesDocument';
 
 import {
   buildWaterfall,
+  buildTraceGraph,
   mergeSeqGap,
   subtractSeqFromGaps,
   computeTraceIntegrity,
   filterEventsByTelemetryLevel,
   computeTelemetryDiagnostics,
-  normalizeEventSequence,
 } from '../lib/debuggerLogic';
 import type {
   LogEvent,
@@ -26,6 +25,8 @@ import type {
   SeqGap,
   TraceIntegrityFlags,
   NodeDiagnostic,
+  GraphLayerMode,
+  FlowNodeData,
 } from '../lib/debuggerLogic';
 
 
@@ -104,7 +105,6 @@ export const LiveDebugger: React.FC = () => {
   // executed graph (execution_graph_edge evidence) and the divergence overlay
   // (skipped planned nodes / unplanned executions) are DISTINCT views; the
   // runtime never blends them into one implied truth.
-  type GraphLayerMode = 'planned' | 'executed' | 'divergence';
   const [layerMode, setLayerMode] = useState<GraphLayerMode>('executed');
 
   // [B3] Non-authoritative heuristic findings; rendered ONLY in the
@@ -612,422 +612,55 @@ export const LiveDebugger: React.FC = () => {
     return () => teardownStream();
   }, [runId]);
 
-  // Canonical Graph Builder; provenance-gated (Runtime-Authoritative
-  // Truth Model).
-  //
-  // Node topology is constructed ONLY from canonical sources:
-  //   1. The scenario workflow definition (design-time DAG), and/or
-  //   2. Authoritative `execution_graph_node` runtime events.
-  // Generic telemetry (tool_call, node_start/end, maneuvers, free-text errors)
-  // can NEVER fabricate topology, and node status derives SOLELY from
-  // execution_graph_node events. Heuristic inference lives exclusively in the
-  // non-authoritative Telemetry Diagnostics panel.
-  const buildTraceGraph = (
-    allEvents: LogEvent[],
-    scen: any,
-    selection: LogEvent | null,
-    mode: GraphLayerMode,
-    isTerminalRun: boolean
-  ): {
-    flowNodes: any[];
-    flowEdges: any[];
-    provenance: 'CANONICAL' | 'TOPOLOGY_UNAVAILABLE';
-    scenarioNodeCount: number;
-    runtimeNodeCount: number;
-    droppedEdgeCount: number;
-  } => {
-    const positions = nodePositionsRef.current;
-
-    // 0. Canonical event normalization: uses the single shared normalization
-    // function to guarantee consistent event ordering across waterfall, graph,
-    // diagnostics, selection, and integrity checks.
-    const normalizedEvents = normalizeEventSequence(allEvents);
-
-    // 1. Canonical sources only.
-    const scenarioNodesRaw = scen?.workflow?.nodes || scen?.workflow?.tasks || [];
-    const workflowEdges = scen?.workflow?.edges || [];
-
-    const graphNodeEventsAll = normalizedEvents.filter(e => e.event === 'execution_graph_node');
-    // Nodes with authoritative executed coverage; drives the
-    // divergence overlay (planned-but-never-executed detection).
-    const executedNodeIds = new Set<string>(
-      graphNodeEventsAll.map(e => e.scenario_node_id).filter((id): id is string => !!id)
-    );
-    const seenRuntimeIds = new Set<string>();
-    const runtimeDiscoveredNodes: any[] = [];
-    for (const ev of graphNodeEventsAll) {
-      const id = ev.scenario_node_id;
-      if (!id || seenRuntimeIds.has(id)) continue;
-      seenRuntimeIds.add(id);
-      const inScenario = scenarioNodesRaw.some(
-        (n: any) => String(n.id || n.scenario_node_id || n.task_id) === id
-      );
-      if (!inScenario) {
-        runtimeDiscoveredNodes.push({ id, task_description: id, __runtime_discovered: true });
-      }
-    }
-
-    // Executed is a forensic projection, never a dimmed plan.  Only
-    // execution_graph_node evidence may place a node in this layer.
-    const plannedNodes = [...scenarioNodesRaw];
-    const allKnownNodes = [...scenarioNodesRaw, ...runtimeDiscoveredNodes];
-    const workflowNodes = mode === 'executed'
-      ? allKnownNodes.filter((node: any) => {
-          const id = String(node.id || node.scenario_node_id || node.task_id);
-          return executedNodeIds.has(id) || !!node.__runtime_discovered;
-        })
-      : mode === 'divergence' ? allKnownNodes : plannedNodes;
-
-    if (workflowNodes.length === 0) {
-      return {
-        flowNodes: [],
-        flowEdges: [],
-        provenance: 'TOPOLOGY_UNAVAILABLE',
-        scenarioNodeCount: 0,
-        runtimeNodeCount: 0,
-        droppedEdgeCount: 0
-      };
-    }
-
-    // 2. Map authoritative state per canonical node using O(1) index; status comes SOLELY from
-    // execution_graph_node events. No string heuristics.
-    const eventsByNodeId = new Map<string, any[]>();
-    for (const ev of graphNodeEventsAll) {
-      if (ev.scenario_node_id) {
-        const nid = String(ev.scenario_node_id);
-        const list = eventsByNodeId.get(nid);
-        if (list) list.push(ev);
-        else eventsByNodeId.set(nid, [ev]);
-      }
-    }
-
-    const flowNodes = workflowNodes.map((n: any) => {
-      const id = String(n.id || n.scenario_node_id || n.task_id);
-      const label = n.task_description || n.description || n.label || id;
-
-      const graphNodeEvents = eventsByNodeId.get(id) || [];
-
-      let status = 'pending';
-      let hasCanonicalEvent = false;
-      let failureClass: string | undefined;
-      let failureReason: string | undefined;
-      let durationMs: number | undefined;
-      let maxAttempt = 1;
-      let passCount = 0;
-      let failCount = 0;
-
-      if (graphNodeEvents.length > 0) {
-        for (const ev of graphNodeEvents) {
-          const st = ev.status ? ev.status.toLowerCase() : '';
-          if (st === 'completed') passCount++;
-          else if (st === 'failed' || st === 'error' || st === 'aborted') failCount++;
-        }
-        const latestEv = graphNodeEvents[graphNodeEvents.length - 1];
-        if (latestEv.status) {
-          status = latestEv.status.toLowerCase();
-        }
-        failureClass = latestEv.failure_class;
-        failureReason = latestEv.failure_reason;
-        durationMs = latestEv.duration_ms;
-        const attempts = graphNodeEvents.map((e: any) => e.attempt || 1);
-        maxAttempt = attempts.length > 0 ? Math.max(...attempts) : 1;
-        hasCanonicalEvent = true;
-      }
-
-      // Selection matching: join on scenario_node_id
-      const selectedId = selection?.scenario_node_id || selection?.node_id || selection?.task_id;
-      const isHighlighted = !!selectedId && selectedId === id;
-
-      let border = isHighlighted ? '2px solid #818cf8' : '1px solid #334155';
-      let background = '#0f172a';
-      let statusLabel = 'Pending';
-
-      if (status === 'failed' || status === 'error' || status === 'aborted') {
-        border = isHighlighted ? '2px solid #f87171' : '1px solid #ef4444';
-        background = 'rgba(127,29,29,0.4)';
-        statusLabel = failureClass || failureReason || (failCount > 1 ? `Failed (${failCount} attempts)` : 'Failed');
-      } else if (status === 'completed') {
-        border = isHighlighted ? '2px solid #34d399' : '1px solid #10b981';
-        background = 'rgba(6,78,59,0.4)';
-        statusLabel = failCount > 0 ? `Completed (${passCount}/${passCount + failCount} with retries)` : 'Completed';
-      } else if (status === 'running') {
-        border = isHighlighted ? '2px solid #fbbf24' : '1px solid #f59e0b';
-        background = 'rgba(120,53,15,0.4)';
-        statusLabel = maxAttempt > 1 ? `Running (att #${maxAttempt})` : 'Running';
-      }
-
-      // Divergence overlay: only in divergence layer, only from
-      // canonical evidence. Pending ≠ skipped while the run is live; a
-      // planned node is SKIPPED only once the run reached a terminal state.
-      const isUnplanned = !!(n as any).__runtime_discovered;
-      const isSkipped =
-        mode === 'divergence' && !isUnplanned && isTerminalRun && !executedNodeIds.has(id);
-      if (isSkipped) {
-        border = `${isHighlighted ? '2px' : '1px'} dashed #ef4444`;
-      }
-      if (isUnplanned && mode === 'divergence') {
-        border = `${isHighlighted ? '2px' : '1px'} dashed #f59e0b`;
-      }
-
-      return {
-        id,
-        type: 'default',
-        position: { x: 0, y: 0 },
-        data: {
-          label: (
-            <div className="space-y-1">
-              <div className="flex items-center justify-between gap-1">
-                <span className="font-mono font-bold text-[10px] text-slate-200">{id}</span>
-                {maxAttempt > 1 && (
-                  <span className="px-1 py-0.2 bg-amber-500/20 text-amber-300 text-[8px] rounded font-mono">
-                    att#{maxAttempt}
-                  </span>
-                )}
-              </div>
-              <div className="text-[9px] text-slate-400 truncate max-w-[130px]" title={label}>
-                {statusLabel}
-              </div>
-              {!hasCanonicalEvent && (
-                <div
-                  title="No execution_graph_node event recorded for this node yet; status is PENDING by definition, not inferred."
-                  className="px-1 py-0.2 bg-slate-800/60 text-slate-500 text-[8px] rounded tracking-wider uppercase"
-                >
-                  NO GRAPH EVENT
-                </div>
-              )}
-              {isSkipped && (
-                <div
-                  title="Planned in the scenario DAG but never executed when the run terminated (execution_graph_node evidence)."
-                  className="px-1 py-0.2 bg-red-500/20 text-red-300 text-[8px] rounded font-bold tracking-wider uppercase"
-                >
-                  SKIPPED
-                </div>
-              )}
-              {isUnplanned && mode === 'divergence' && (
-                <div
-                  title="Executed at runtime but absent from the planned scenario DAG."
-                  className="px-1 py-0.2 bg-amber-500/20 text-amber-300 text-[8px] rounded font-bold tracking-wider uppercase"
-                >
-                  UNPLANNED
-                </div>
-              )}
-              {durationMs && (
-                <div className="text-[8px] text-slate-500 font-mono">
-                  {(durationMs / 1000).toFixed(2)}s
-                </div>
-              )}
-            </div>
-          )
-        },
-        style: {
-          background,
-          color: '#fff',
-          border,
-          borderRadius: '8px',
-          padding: '8px',
-          width: 170,
-          boxShadow: isHighlighted
-            ? '0 0 15px rgba(99, 102, 241, 0.7), inset 0 0 0 1px rgba(129, 140, 248, 0.5)'
-            : 'none',
-          transition: 'box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease'
-        }
-      };
-    });
-
-    // 3. Edges: Combine Scenario Workflow Edges + Runtime Execution Graph Edge Telemetry
-    const nodeIdSet = new Set(flowNodes.map((n: any) => n.id));
-    const flowEdgesMap = new Map<string, any>();
-
-    // Initial edges from workflow definition: include stable edge ID or condition/ordinal to preserve parallel edges
-    workflowEdges.forEach((e: any, idx: number) => {
-      const source = e.from || e.source;
-      const target = e.to || e.target;
-      if (nodeIdSet.has(source) && nodeIdSet.has(target)) {
-        const edgeId = e.id || `scen-edge-${source}-${target}-${e.condition || e.type || idx}`;
-        flowEdgesMap.set(edgeId, {
-          id: edgeId,
-          source,
-          target,
-          label: e.condition || e.label || undefined,
-          provenance: 'planned',
-          animated: true,
-          style: { stroke: '#6366f1', strokeWidth: 2 }
-        });
-      }
-    });
-
-    // Decorate with runtime execution_graph_edge events
-    const graphEdgeEvents = normalizedEvents.filter(e => e.event === 'execution_graph_edge');
-    const instanceOwner = new Map<string, string>();
-    for (const ev of graphNodeEventsAll) {
-      if (ev.execution_instance_id && ev.scenario_node_id) {
-        instanceOwner.set(String(ev.execution_instance_id), String(ev.scenario_node_id));
-      }
-    }
-    let droppedEdgeEvents = 0;
-    graphEdgeEvents.forEach((e: any, idx: number) => {
-      const rawSource = e.from_scenario_node_id || e.source_execution_id || e.source;
-      const rawTarget = e.to_scenario_node_id || e.target_execution_id || e.target;
-      const source = nodeIdSet.has(rawSource)
-        ? rawSource
-        : instanceOwner.get(String(rawSource));
-      const target = nodeIdSet.has(rawTarget)
-        ? rawTarget
-        : instanceOwner.get(String(rawTarget));
-      if (source && target && nodeIdSet.has(source) && nodeIdSet.has(target)) {
-        const edgeId = `exec-edge-${source}-${target}-${e._seq ?? e.execution_edge_id ?? idx}`;
-        const label =
-          e.edge_type === 'retry'
-            ? `retry${e.iteration ? ` #${e.iteration}` : ''}`
-            : e.edge_type === 'conditional'
-              ? 'if'
-              : e.iteration
-                ? `#${e.iteration}`
-                : undefined;
-        flowEdgesMap.set(edgeId, {
-          id: edgeId,
-          source,
-          target,
-          label,
-          provenance: 'executed',
-          animated: true,
-          style: {
-            stroke: e.edge_type === 'retry' ? '#f59e0b' : '#6366f1',
-            strokeWidth: 2,
-            strokeDasharray: e.edge_type === 'retry' ? '5,5' : undefined
-          }
-        });
-      } else if (rawSource != null && rawTarget != null) {
-        droppedEdgeEvents++;
-      }
-    });
-
-    const allEdges = Array.from(flowEdgesMap.values());
-
-    // Parallel edge offset decoration
-    const edgePairCounts = new Map<string, number>();
-    const edgePairCurrent = new Map<string, number>();
-    for (const e of allEdges) {
-      const pair = `${e.source}->${e.target}`;
-      edgePairCounts.set(pair, (edgePairCounts.get(pair) || 0) + 1);
-    }
-
-    const flowEdges = allEdges
-      .filter(e => {
-        const plannedEdge = e.provenance === 'planned';
-        if (mode === 'planned') return plannedEdge;
-        if (mode === 'executed') return !plannedEdge;
-        return true;
-      })
-      .map(e => {
-        const plannedEdge = e.provenance === 'planned';
-        const pair = `${e.source}->${e.target}`;
-        const total = edgePairCounts.get(pair) || 1;
-        const cur = edgePairCurrent.get(pair) || 0;
-        edgePairCurrent.set(pair, cur + 1);
-
-        // Deterministic offset geometry for parallel / retry edges
-        const pathOffset = total > 1 ? Math.round(20 + cur * 16) : undefined;
-        const pathOptions = total > 1 ? { offset: pathOffset, borderRadius: 8 } : undefined;
-
-        if (!plannedEdge) {
-          const isDivergence = mode === 'divergence';
-          return {
-            ...e,
-            type: total > 1 ? 'smoothstep' : undefined,
-            pathOptions,
-            animated: mode !== 'planned',
-            data: {
-              ...e.data,
-              parallelIndex: cur,
-              parallelTotal: total,
-              pathOffset,
-            },
-            style: {
-              stroke: isDivergence ? '#f59e0b' : '#10b981',
-              strokeWidth: isDivergence ? 2.5 : 2,
-            },
-          };
-        }
-        if (mode === 'planned') {
-          return {
-            ...e,
-            type: total > 1 ? 'smoothstep' : undefined,
-            pathOptions,
-            animated: true,
-            data: {
-              ...e.data,
-              parallelIndex: cur,
-              parallelTotal: total,
-              pathOffset,
-            },
-            style: { stroke: '#6366f1', strokeWidth: 2 },
-          };
-        }
-        // In executed and divergence modes, visually subordinate planned baseline edges
-        return {
-          ...e,
-          type: total > 1 ? 'smoothstep' : undefined,
-          pathOptions,
-          animated: false,
-          data: {
-            ...e.data,
-            parallelIndex: cur,
-            parallelTotal: total,
-            pathOffset,
-          },
-          style: {
-            stroke: '#334155',
-            strokeWidth: 1,
-            strokeDasharray: '4,4',
-            opacity: 0.35,
-          },
-        };
-      });
-
-    // 4. Graph Layout Engine (Dagre Integration)
-    const dagreGraph = new dagre.graphlib.Graph();
-    dagreGraph.setDefaultEdgeLabel(() => ({}));
-    dagreGraph.setGraph({ rankdir: 'LR', nodesep: 50, ranksep: 80 });
-
-    const nodeWidth = 180;
-    const nodeHeight = 70;
-
-    flowNodes.forEach((node: any) => {
-      dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
-    });
-
-    flowEdges.forEach((edge: any) => {
-      dagreGraph.setEdge(edge.source, edge.target);
-    });
-
-    dagre.layout(dagreGraph);
-
-    const layoutedNodes = flowNodes.map((node: any, index: number) => {
-      // Composite cache key: run_id :: scenario_hash :: node_id.
-      const savedPos = positions.get(posKey(node.id));
-      if (savedPos) {
-        return { ...node, position: savedPos };
-      }
-      const nodeWithPosition = dagreGraph.node(node.id);
-      const x = nodeWithPosition ? nodeWithPosition.x - nodeWidth / 2 + 80 : 80 + index * 220;
-      const y = nodeWithPosition ? nodeWithPosition.y - nodeHeight / 2 + 50 : 50;
-      const pos = { x, y };
-      positions.set(posKey(node.id), pos);
-      return { ...node, position: pos };
-    });
-
-    return {
-      flowNodes: layoutedNodes,
-      flowEdges,
-      provenance: 'CANONICAL',
-      scenarioNodeCount: scenarioNodesRaw.length,
-      runtimeNodeCount: runtimeDiscoveredNodes.length,
-      droppedEdgeCount: droppedEdgeEvents
-    };
-
-  };
-
+  // ---------------------------------------------------------------------------
+  // JSX label adapter — the ONLY React/JSX concern for graph nodes.
+  // buildTraceGraph (pure, in debuggerLogic.ts) returns typed FlowNodeData
+  // scalars. This function maps those scalars to the ReactFlow label element.
+  // ---------------------------------------------------------------------------
+  const toReactFlowLabel = (d: FlowNodeData) => (
+    <div className="space-y-1">
+      <div className="flex items-center justify-between gap-1">
+        <span className="font-mono font-bold text-[10px] text-slate-200">{d.id}</span>
+        {d.maxAttempt > 1 && (
+          <span className="px-1 py-0.2 bg-amber-500/20 text-amber-300 text-[8px] rounded font-mono">
+            att#{d.maxAttempt}
+          </span>
+        )}
+      </div>
+      <div className="text-[9px] text-slate-400 truncate max-w-[130px]" title={d.label}>
+        {d.statusLabel}
+      </div>
+      {!d.hasCanonicalEvent && (
+        <div
+          title="No execution_graph_node event recorded for this node yet; status is PENDING by definition, not inferred."
+          className="px-1 py-0.2 bg-slate-800/60 text-slate-500 text-[8px] rounded tracking-wider uppercase"
+        >
+          NO GRAPH EVENT
+        </div>
+      )}
+      {d.isSkipped && (
+        <div
+          title="Planned in the scenario DAG but never executed when the run terminated (execution_graph_node evidence)."
+          className="px-1 py-0.2 bg-red-500/20 text-red-300 text-[8px] rounded font-bold tracking-wider uppercase"
+        >
+          SKIPPED
+        </div>
+      )}
+      {d.isUnplanned && d.mode === 'divergence' && (
+        <div
+          title="Executed at runtime but absent from the planned scenario DAG."
+          className="px-1 py-0.2 bg-amber-500/20 text-amber-300 text-[8px] rounded font-bold tracking-wider uppercase"
+        >
+          UNPLANNED
+        </div>
+      )}
+      {d.durationMs != null && (
+        <div className="text-[8px] text-slate-500 font-mono">
+          {(d.durationMs / 1000).toFixed(2)}s
+        </div>
+      )}
+    </div>
+  );
   // Node Drag Position Saver to ensure layout state persistence
   const handleNodeDragStop = (_: any, node: any) => {
     if (node && node.id && node.position) {
@@ -1049,8 +682,16 @@ export const LiveDebugger: React.FC = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      const result = buildTraceGraph(events, activeScenario, selectedEvent, layerMode, isTerminalRun);
-      setNodes(result.flowNodes);
+      const result = buildTraceGraph(
+        events, activeScenario, selectedEvent, layerMode, isTerminalRun,
+        nodePositionsRef.current, posKey,
+      );
+      // Map pure FlowNodeData scalars to ReactFlow JSX labels
+      const reactFlowNodes = result.flowNodes.map((n) => ({
+        ...n,
+        data: { ...n.data, label: toReactFlowLabel(n.data) },
+      }));
+      setNodes(reactFlowNodes);
       setEdges(result.flowEdges);
       setTopologyProvenance({
         source: result.provenance,

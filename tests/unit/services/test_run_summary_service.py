@@ -149,27 +149,27 @@ def test_compute_summary_trace_states(tmp_path, monkeypatch):
 
         (run_dir / ".sealed").unlink()
 
-        # 2. Cached result_status PASS
+        # Cached indexes are not authoritative execution truth.
         summary_pass = RunSummaryService.compute_summary(
             "run_states", cached_entry={"result_status": "PASS"}
         )
-        assert summary_pass["status"] == "PASSED"
-        assert summary_pass["lifecycle"] == "COMPLETED"
+        assert summary_pass["status"] == "RUNNING"
+        assert summary_pass["lifecycle"] == "RUNNING"
 
-        # 3. Cached result_status FAIL
+        # Nor may cached FAIL override the parsed trace.
         summary_fail = RunSummaryService.compute_summary(
             "run_states", cached_entry={"result_status": "FAIL"}
         )
-        assert summary_fail["status"] == "FAILED"
-        assert summary_fail["lifecycle"] == "FAILED"
+        assert summary_fail["status"] == "RUNNING"
+        assert summary_fail["lifecycle"] == "RUNNING"
 
-        # 4. Trace tail with error event
+        # A non-terminal error is not a final verdict.
         trace_path.write_text('{"event": "error", "message": "boom"}\n', encoding="utf-8")
         summary_err = RunSummaryService.compute_summary("run_states")
-        assert summary_err["status"] == "FAILED"
+        assert summary_err["status"] == "RUNNING"
 
-        # 5. Trace tail with run_end (clean)
-        trace_path.write_text('{"event": "run_end", "data": {}}\n', encoding="utf-8")
+        # Terminal outcome is typed and parsed, not inferred from a marker.
+        trace_path.write_text('{"event": "run_end", "data": {"passed": true}}\n', encoding="utf-8")
         summary_end = RunSummaryService.compute_summary("run_states")
         assert summary_end["status"] == "PASSED"
 
@@ -179,10 +179,16 @@ def test_compute_summary_trace_states(tmp_path, monkeypatch):
 
         with patch("builtins.open", failing_open):
             summary_io = RunSummaryService.compute_summary("run_states")
-            assert summary_io["status"] == "RUNNING"
+            assert summary_io["status"] == "INVALID"
+            assert summary_io["trace_integrity"] == "INVALID"
 
-        # 7. Trace file > 32KB
-        large_bytes = b" " * (33 * 1024) + b'{"event": "run_end"}\n'
+        # 7. Large traces are parsed in full; a prior failed retry does not
+        # override the terminal PASS.
+        large_bytes = (
+            b'{"event":"assertion_evaluated","data":{"passed":false}}\n'
+            + b" " * (33 * 1024)
+            + b'{"event":"run_end","data":{"passed":true}}\n'
+        )
         trace_path.write_bytes(large_bytes)
         summary_large = RunSummaryService.compute_summary("run_states")
         assert summary_large["status"] == "PASSED"
@@ -202,9 +208,11 @@ def test_compute_summary_trace_states(tmp_path, monkeypatch):
             summary_stalled = RunSummaryService.compute_summary("run_states")
             assert summary_stalled["status"] == "STALLED"
 
-        # 10. Trace with both run_end and error event
+        # 10. A failed terminal outcome remains failed.
         trace_path.write_text(
-            '{"event": "error", "message": "fail"}\n{"event": "run_end"}\n', encoding="utf-8"
+            '{"event": "error", "message": "fail"}\n'
+            '{"event": "run_end", "data": {"passed": false}}\n',
+            encoding="utf-8",
         )
         summary_end_err = RunSummaryService.compute_summary("run_states")
         assert summary_end_err["status"] == "FAILED"

@@ -5,10 +5,13 @@ Authoritative reader and outcome normalizer for AgentV evidence artifacts and va
 
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
 from urllib.request import Request, urlopen
+
+from agentv_runtime.canonical import canonical_json_encode
 
 from .trace_reader import TraceReader
 
@@ -171,6 +174,40 @@ def read_external_state_oracle(oracle_url: str) -> dict[str, Any]:
     return observation
 
 
+def bind_external_oracle_observation(
+    *,
+    case_id: str,
+    run_id: str,
+    authority_url: str,
+    observation: dict[str, Any],
+) -> dict[str, str]:
+    """Bind an independent observation to one acceptance case and run.
+
+    The receipt is produced by the external authority; this binding prevents a
+    release summary from reusing that receipt for another case or run.
+    """
+    receipt_hash = observation.get("receipt_hash")
+    if not isinstance(receipt_hash, str) or not receipt_hash:
+        raise ValueError("External state oracle observation is missing receipt_hash")
+    if not isinstance(observation.get("state"), dict):
+        raise ValueError("External state oracle observation is missing object state")
+    normalized_authority = authority_url.rstrip("/")
+    observed_state_hash = (
+        "sha3_256:" + hashlib.sha3_256(canonical_json_encode(observation["state"])).hexdigest()
+    )
+    binding = {
+        "authority_url": normalized_authority,
+        "case_id": case_id,
+        "observed_state_hash": observed_state_hash,
+        "receipt_hash": receipt_hash,
+        "run_id": run_id,
+    }
+    return {
+        **binding,
+        "binding_hash": "sha3_256:" + hashlib.sha3_256(canonical_json_encode(binding)).hexdigest(),
+    }
+
+
 def reset_external_state_oracle(oracle_url: str, balances: dict[str, int]) -> None:
     request = Request(
         oracle_url.rstrip("/") + "/reset",
@@ -183,4 +220,9 @@ def reset_external_state_oracle(oracle_url: str, balances: dict[str, int]) -> No
             raise RuntimeError("independent state oracle reset failed")
 
 
-__all__ = ["RunArtifacts", "load_run_artifacts", "normalize_actual_result"]
+__all__ = [
+    "RunArtifacts",
+    "bind_external_oracle_observation",
+    "load_run_artifacts",
+    "normalize_actual_result",
+]

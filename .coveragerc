@@ -24,7 +24,7 @@ omit =
 [report]
 show_missing = True
 precision = 2
-fail_under = 90
+fail_under = 95
 omit =
     eval_runner/adapters/ag2.py
     eval_runner/adapters/crewai.py

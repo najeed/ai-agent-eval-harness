@@ -269,6 +269,40 @@ class TestSessionStateParityWithExternalAuthority:
         assert val["authorizations"][0]["status"] == "APPROVED"
 
     @pytest.mark.asyncio
+    async def test_authority_transition_evidence_uses_independent_pre_and_post_snapshots(self):
+        session_mock = MagicMock()
+        session_mock.scenario = {}
+        verifier = SessionStateParityVerifier(session_manager=session_mock)
+        connector = AsyncMock()
+        connector.fetch_state.side_effect = [
+            {"state": {"authorizations": []}},
+            {"state": {"authorizations": [{"decision": "APPROVE"}]}},
+        ]
+        state_authority_registry.register_authority("healthcare_transition", connector)
+        node = {
+            "expected_outcome": [
+                {
+                    "target": "authority:healthcare_transition",
+                    "property": "state.authorizations[0].decision",
+                    "expected": "APPROVE",
+                }
+            ],
+            "timeout": 0.05,
+        }
+
+        pre_state = await verifier.capture_external_prestate(node, sandbox=None, history=[])
+        passed, evidence = await verifier.verify_state_parity(
+            node, sandbox=None, history=[], external_state_before=pre_state
+        )
+
+        assert passed is True
+        assert evidence[0]["actual_before"] is None
+        assert evidence[0]["actual_after"] == "APPROVE"
+        assert evidence[0]["source"] == "authority:healthcare_transition"
+        assert evidence[0]["pre_snapshot_hash"].startswith("sha3_256:")
+        assert evidence[0]["post_snapshot_hash"].startswith("sha3_256:")
+
+    @pytest.mark.asyncio
     async def test_parity_verifier_unobserved_external_authority_fails_closed(self):
         session_mock = MagicMock()
         session_mock.scenario = {}

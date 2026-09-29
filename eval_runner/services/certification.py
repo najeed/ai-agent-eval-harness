@@ -63,7 +63,10 @@ class CertificationService:
                     raise ValueError(f"MalformedTraceRecord:{line_number}") from exc
                 if not isinstance(event, dict):
                     raise ValueError(f"InvalidTraceRecord:{line_number}: expected object")
-                event_run_id = event.get("run_id") or (event.get("data") or {}).get("run_id")
+                data = event.get("data")
+                event_run_id = event.get("run_id") or (
+                    data.get("run_id") if isinstance(data, dict) else None
+                )
                 if run_id and event_run_id and str(event_run_id) != run_id:
                     raise ValueError(f"ForeignTraceRecord:{line_number}: run_id mismatch")
                 events.append(event)

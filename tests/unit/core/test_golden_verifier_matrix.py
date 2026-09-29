@@ -1238,7 +1238,7 @@ def _append_authoritative_finalization(trace_file: Path, run_id: str, run_dir: P
         scenario_hash=scen_h,
         evaluator_identity="authoritative_evaluator",
         evaluator_config_hash="sha3_256:abc",
-        required_oracle_ids=["fixture:direct_oracle"],
+        required_oracle_ids=[],
         evidence_root_hash=ev_root,
         outcome="pass",
         score=1.0,

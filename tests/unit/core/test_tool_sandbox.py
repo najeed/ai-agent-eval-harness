@@ -1156,7 +1156,6 @@ def test_resource_registry_cleanup_error(tmp_path):
 @pytest.mark.asyncio
 async def test_tool_sandbox_setup_and_teardown_exceptions(tmp_path):
     forensics = MagicMock()
-    forensics.snapshot_state.side_effect = RuntimeError("Forensic snapshot error")
 
     sb = ToolSandbox(
         {"id": "setup_test"},
@@ -1165,7 +1164,7 @@ async def test_tool_sandbox_setup_and_teardown_exceptions(tmp_path):
         forensics=forensics,
     )
     await sb.setup()
-    assert forensics.snapshot_state.called
+    forensics.snapshot_state.assert_not_called()
 
     # Teardown with failing simulator cleanup
     mock_sim = AsyncMock()
@@ -1175,7 +1174,7 @@ async def test_tool_sandbox_setup_and_teardown_exceptions(tmp_path):
 
 
 @pytest.mark.asyncio
-async def test_abstract_sandbox_get_full_state_branches():
+async def test_abstract_sandbox_has_no_full_state_acquisition_api():
     from eval_runner.tool_sandbox import AbstractSandbox
 
     class CustomSandbox(AbstractSandbox):
@@ -1186,193 +1185,14 @@ async def test_abstract_sandbox_get_full_state_branches():
             return self._simulators
 
     sb = CustomSandbox({"id": "test_env_state"})
-
-    # 1. External simulator with get_bounded_reference (sync with to_dict)
-    ext_sim_ref = MagicMock()
-    ext_sim_ref.is_external = True
-    mock_ref = MagicMock()
-    mock_ref.to_dict.return_value = {"bounded": True}
-    ext_sim_ref.get_bounded_reference.return_value = mock_ref
-
-    # 2. External simulator with async get_bounded_reference (without to_dict)
-    ext_sim_ref_async = MagicMock()
-    ext_sim_ref_async.is_external = True
-
-    async def _async_ref():
-        return "raw_ref"
-
-    ext_sim_ref_async.get_bounded_reference = _async_ref
-
-    # 3. External simulator with get_snapshot (async, with large tables and normal keys)
-    ext_sim_snap = MagicMock()
-    ext_sim_snap.is_external = True
-    delattr(ext_sim_snap, "get_bounded_reference")
-
-    async def _async_snap_tables():
-        return {
-            "normal_key": 1,
-            "tables": "x" * 20000,
-        }
-
-    ext_sim_snap.get_snapshot = _async_snap_tables
-
-    # 4. External simulator with get_snapshot (sync, without tables)
-    ext_sim_snap_notables = MagicMock()
-    ext_sim_snap_notables.is_external = True
-    delattr(ext_sim_snap_notables, "get_bounded_reference")
-    ext_sim_snap_notables.get_snapshot.return_value = {"meta_only": 123}
-
-    # 5. External simulator without ref or snapshot
-    ext_sim_bare = MagicMock()
-    ext_sim_bare.is_external = True
-    delattr(ext_sim_bare, "get_bounded_reference")
-    delattr(ext_sim_bare, "get_snapshot")
-
-    # 6. Local simulator with async get_snapshot
-    local_sim_snap_async = MagicMock()
-    local_sim_snap_async.is_external = False
-
-    async def _async_snap():
-        return {"snap": "ok"}
-
-    local_sim_snap_async.get_snapshot = _async_snap
-
-    # 7. Local simulator with sync get_snapshot
-    local_sim_snap_sync = MagicMock()
-    local_sim_snap_sync.is_external = False
-    local_sim_snap_sync.get_snapshot.return_value = {"sync_snap": "ok"}
-
-    # 8. Local simulator with state attribute
-    local_sim_state = MagicMock()
-    local_sim_state.is_external = False
-    delattr(local_sim_state, "get_snapshot")
-    local_sim_state.state = {"local_key": "val"}
-
-    # 9. Local simulator with neither snapshot nor state
-    local_sim_bare = MagicMock()
-    local_sim_bare.is_external = False
-    delattr(local_sim_bare, "get_snapshot")
-    delattr(local_sim_bare, "state")
-
-    # 10. Simulator raising exception
-    failing_sim = MagicMock()
-    failing_sim.is_external = True
-    failing_sim.get_bounded_reference.side_effect = RuntimeError("Snap fail")
-
-    sb._simulators = {
-        "ext_ref": ext_sim_ref,
-        "ext_ref_async": ext_sim_ref_async,
-        "ext_snap": ext_sim_snap,
-        "ext_snap_notables": ext_sim_snap_notables,
-        "ext_bare": ext_sim_bare,
-        "local_snap_async": local_sim_snap_async,
-        "local_snap_sync": local_sim_snap_sync,
-        "local_state": local_sim_state,
-        "local_bare": local_sim_bare,
-        "failing": failing_sim,
-    }
-
-    env_state = await sb.get_full_state()
-    assert env_state["ext_ref"] == {"bounded": True}
-    assert env_state["ext_ref_async"] == "raw_ref"
-    assert "tables" not in env_state["ext_snap"]
-    assert env_state["ext_snap_notables"] == {"meta_only": 123}
-    assert env_state["ext_bare"]["status"] == "EXTERNAL_BOUNDED"
-    assert env_state["local_snap_async"] == {"snap": "ok"}
-    assert env_state["local_snap_sync"] == {"sync_snap": "ok"}
-    assert env_state["local_state"] == {"local_key": "val"}
-    assert "local_bare" not in env_state
-    assert "error" in env_state["failing"]
+    assert not hasattr(sb, "get_full_state")
 
 
 @pytest.mark.asyncio
-async def test_tool_sandbox_get_full_state_all_branches(tmp_path):
+async def test_tool_sandbox_has_no_full_state_acquisition_api(tmp_path):
     scenario = {"id": "full_state_test"}
     sb = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
-
-    ext_ref = MagicMock()
-    ext_ref.is_external = True
-    mock_ref = MagicMock()
-    mock_ref.to_dict.return_value = {"ref": 1}
-    ext_ref.get_bounded_reference.return_value = mock_ref
-
-    ext_ref_async = MagicMock()
-    ext_ref_async.is_external = True
-
-    async def _async_ref():
-        return "async_ref"
-
-    ext_ref_async.get_bounded_reference = _async_ref
-
-    ext_snap = MagicMock()
-    ext_snap.is_external = True
-    delattr(ext_snap, "get_bounded_reference")
-
-    async def _async_ext_snap():
-        return {"tables": "z" * 20000, "meta": "keep"}
-
-    ext_snap.get_snapshot = _async_ext_snap
-
-    ext_snap_notables = MagicMock()
-    ext_snap_notables.is_external = True
-    delattr(ext_snap_notables, "get_bounded_reference")
-    ext_snap_notables.get_snapshot.return_value = {"simple": "data"}
-
-    ext_bare = MagicMock()
-    ext_bare.is_external = True
-    delattr(ext_bare, "get_bounded_reference")
-    delattr(ext_bare, "get_snapshot")
-
-    loc_snap_async = MagicMock()
-    loc_snap_async.is_external = False
-
-    async def _loc_async_snap():
-        return {"loc": "snap"}
-
-    loc_snap_async.get_snapshot = _loc_async_snap
-
-    loc_snap_sync = MagicMock()
-    loc_snap_sync.is_external = False
-    loc_snap_sync.get_snapshot.return_value = {"loc_sync": "snap"}
-
-    loc_state = MagicMock()
-    loc_state.is_external = False
-    delattr(loc_state, "get_snapshot")
-    loc_state.state = {"loc": "state"}
-
-    loc_bare = MagicMock()
-    loc_bare.is_external = False
-    delattr(loc_bare, "get_snapshot")
-    delattr(loc_bare, "state")
-
-    fail_sim = MagicMock()
-    fail_sim.is_external = False
-    fail_sim.get_snapshot.side_effect = RuntimeError("Snapshot exception")
-
-    sb._simulator_cache = {
-        "ext_ref": ext_ref,
-        "ext_ref_async": ext_ref_async,
-        "ext_snap": ext_snap,
-        "ext_snap_notables": ext_snap_notables,
-        "ext_bare": ext_bare,
-        "loc_snap_async": loc_snap_async,
-        "loc_snap_sync": loc_snap_sync,
-        "loc_state": loc_state,
-        "loc_bare": loc_bare,
-        "fail_sim": fail_sim,
-    }
-
-    full_state = await sb.get_full_state()
-    assert full_state["shims"]["ext_ref"] == {"ref": 1}
-    assert full_state["shims"]["ext_ref_async"] == "async_ref"
-    assert "tables" not in full_state["shims"]["ext_snap"]
-    assert full_state["shims"]["ext_snap_notables"] == {"simple": "data"}
-    assert full_state["shims"]["ext_bare"]["status"] == "EXTERNAL_BOUNDED"
-    assert full_state["shims"]["loc_snap_async"] == {"loc": "snap"}
-    assert full_state["shims"]["loc_snap_sync"] == {"loc_sync": "snap"}
-    assert full_state["shims"]["loc_state"] == {"loc": "state"}
-    assert "loc_bare" not in full_state["shims"]
-    assert "error" in full_state["shims"]["fail_sim"]
+    assert not hasattr(sb, "get_full_state")
 
 
 @pytest.mark.asyncio

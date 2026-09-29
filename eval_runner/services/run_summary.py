@@ -66,6 +66,85 @@ class RunSummaryService:
             logger.debug(f"Authoritative verdict check failed for {run_id}: {err}")
             return "ERROR"
 
+    @staticmethod
+    def _parsed_terminal_state(trace_path: Any, run_id: str) -> tuple[str, str, str]:
+        """Derive execution state from parsed terminal evidence, never text search.
+
+        Returns ``(status, lifecycle, trace_integrity)``.  A malformed record
+        invalidates the whole stream; an earlier error does not override a
+        later authoritative terminal PASS (for example after a retry or
+        compensation).
+        """
+        from eval_runner.services.certification import CertificationService
+
+        try:
+            events = CertificationService.parse_trace_strict(trace_path, run_id)
+        except (OSError, ValueError, json.JSONDecodeError) as exc:
+            # Status rendering supports legacy framed logs whose non-event
+            # prefix is not JSONL.  Certification still uses the strict parser
+            # and will reject such a trace; this fallback never claims COMPLETE
+            # integrity without a parsed terminal carrier.
+            events = []
+            try:
+                with open(trace_path, encoding="utf-8") as trace_file:
+                    for line in trace_file:
+                        candidate = line[line.find("{") :] if "{" in line else ""
+                        if not candidate:
+                            continue
+                        parsed = json.loads(candidate)
+                        if isinstance(parsed, dict):
+                            events.append(parsed)
+            except (OSError, ValueError, json.JSONDecodeError):
+                logger.warning("Trace %s is structurally invalid: %s", run_id, exc)
+                return "INVALID", "INVALID", "INVALID"
+
+        terminal: dict[str, Any] | None = None
+        for event in events:
+            if event.get("event") in {
+                "run_end",
+                "end",
+                "session_decision",
+                "evaluation_result",
+                "evaluation_verdict",
+                "workflow_verdict",
+                "certification_failed",
+            }:
+                terminal = event
+
+        if terminal is None:
+            return "RUNNING", "RUNNING", "PARTIAL"
+        if terminal.get("event") == "certification_failed":
+            return "FAILED", "FAILED", "COMPLETE"
+
+        data = terminal.get("data") if isinstance(terminal.get("data"), dict) else terminal
+        raw_outcome = (
+            str(
+                data.get("outcome")
+                or data.get("status")
+                or data.get("decision")
+                or data.get("verdict")
+                or ""
+            )
+            .strip()
+            .upper()
+        )
+        if data.get("passed") is True or raw_outcome in {"PASS", "PASSED", "SUCCESS", "COMPLETED"}:
+            return "PASSED", "COMPLETED", "COMPLETE"
+        if data.get("passed") is False or raw_outcome in {
+            "FAIL",
+            "FAILED",
+            "ERROR",
+            "EVALUATION_INVALID",
+            "INVALID",
+            "CERTIFICATION_FAILED",
+        }:
+            return "FAILED", "FAILED", "COMPLETE"
+        # Legacy run_end records carried no typed outcome; their presence is a
+        # completed successful run for display compatibility only.
+        if terminal.get("event") in {"run_end", "end"}:
+            return "PASSED", "COMPLETED", "PARTIAL"
+        return "INVALID", "INVALID", "INVALID"
+
     @classmethod
     def compute_summary(
         cls,
@@ -106,11 +185,7 @@ class RunSummaryService:
         if not tp:
             tp = resolve_trace_path(run_id, allow_master_recovery=True)
 
-        trace_integrity = "PARTIAL"
-        if cached_result_status:
-            trace_integrity = "COMPLETE"
-        elif cached.get("_fragment_path"):
-            trace_integrity = "RECOVERED"
+        trace_integrity = "RECOVERED" if cached.get("_fragment_path") else "PARTIAL"
 
         status = "RUNNING"
         lifecycle = "RUNNING"
@@ -153,68 +228,11 @@ class RunSummaryService:
                 status = "SEALED"
                 lifecycle = "SEALED"
                 trace_integrity = "COMPLETE"
-            elif cached_result_status == "PASS":
-                status = "PASSED"
-                lifecycle = "COMPLETED"
-                trace_integrity = "COMPLETE"
-            elif cached_result_status == "FAIL":
-                status = "FAILED"
-                lifecycle = "FAILED"
-                trace_integrity = "COMPLETE"
             else:
-                # Inspect trace tail
-                try:
-                    size = os.path.getsize(tp)
-                    mtime = os.path.getmtime(tp)
-                    if size > 0:
-                        with open(tp, "rb") as f:
-                            if size > 32 * 1024:
-                                f.seek(size - 32 * 1024)
-                            content = f.read()
-
-                        has_error = (
-                            b'"event": "error"' in content
-                            or b'"level": "error"' in content
-                            or b'"status": "error"' in content
-                            or b'"status": "certification_failed"' in content
-                            or b'"event": "certification_failed"' in content
-                            or b'"outcome": "EVALUATION_INVALID"' in content
-                            or b'"status": "failure"' in content
-                            or b'"status": "failed"' in content
-                            or b'"status": "fail"' in content
-                            or b'"passed": false' in content
-                            or b'"passed":false' in content
-                        )
-                        has_end = (
-                            b'"event": "run_end"' in content
-                            or b'"event": "verification_certificate_issued"' in content
-                        )
-
-                        if has_end:
-                            trace_integrity = "COMPLETE"
-                            if has_error:
-                                status = "FAILED"
-                                lifecycle = "FAILED"
-                            else:
-                                status = "PASSED"
-                                lifecycle = "COMPLETED"
-                        elif has_error:
-                            status = "FAILED"
-                            lifecycle = "FAILED"
-                        else:
-                            if mtime > 0 and (time.time() - mtime > 300):
-                                status = "STALLED"
-                                lifecycle = "STALLED"
-                            else:
-                                status = "RUNNING"
-                                lifecycle = "RUNNING"
-                    else:
-                        status = "RUNNING"
-                        lifecycle = "RUNNING"
-                except Exception as e:
-                    logger.debug(f"Error inspecting trace for run {run_id}: {e}")
-                    status = "RUNNING"
-                    lifecycle = "RUNNING"
+                status, lifecycle, trace_integrity = cls._parsed_terminal_state(tp, run_id)
+                if status == "RUNNING" and time.time() - os.path.getmtime(tp) > 300:
+                    status = "STALLED"
+                    lifecycle = "STALLED"
 
         summary = {
             "run_id": run_id,

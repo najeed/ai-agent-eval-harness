@@ -433,6 +433,7 @@ async def test_session_reconciliation_live_and_hybrid(tmp_path):
                 {
                     "id": "node_1",
                     "prompt": "Hello",
+                    "state_projection": ["counter"],
                     "expected_outcome": [{"target": "state", "property": "counter", "expected": 1}],
                     "success_criteria": [{"metric": "exact_match", "expected": "completed"}],
                 }
@@ -454,7 +455,7 @@ async def test_session_reconciliation_live_and_hybrid(tmp_path):
             return_value={"action": "completed"},
         ),
         patch(
-            "eval_runner.tool_sandbox.ToolSandbox.get_full_state",
+            "eval_runner.tool_sandbox.ToolSandbox.get_bounded_state",
             new_callable=AsyncMock,
             return_value={"counter": 1},
         ),
@@ -520,6 +521,7 @@ async def test_session_state_capture_exceptions(tmp_path):
                 {
                     "id": "node_1",
                     "prompt": "Hello",
+                    "state_projection": ["counter"],
                     "expected_outcome": {"target": "state", "property": "counter", "expected": 1},
                     "success_criteria": [{"metric": "exact_match", "expected": "completed"}],
                 }
@@ -534,10 +536,10 @@ async def test_session_state_capture_exceptions(tmp_path):
     )
     session.execution_mode = ExecutionMode.LIVE
 
-    # Raising inside get_full_state on the sandbox
+    # A bounded acquisition failure is contained by the evidence path.
     with (
         patch(
-            "eval_runner.tool_sandbox.ToolSandbox.get_full_state",
+            "eval_runner.tool_sandbox.ToolSandbox.get_bounded_state",
             side_effect=RuntimeError("State capture error"),
         ),
         patch(

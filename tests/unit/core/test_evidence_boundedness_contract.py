@@ -28,7 +28,7 @@ from agentv_runtime.contracts import (
 from agentv_runtime.evidence_graph import link_assertion
 from agentv_runtime.interfaces import BoundedStateProvider
 from eval_runner.forensics import ForensicCollector, list_diff
-from eval_runner.simulators import BaseSimulator, DatabaseSimulator
+from eval_runner.simulators import DatabaseSimulator
 from eval_runner.tool_sandbox import ToolSandbox
 
 
@@ -274,8 +274,8 @@ def test_evidence_graph_link_assertion_with_evidence_reference():
 
 
 @pytest.mark.asyncio
-async def test_tool_sandbox_get_full_state_with_external_simulator(tmp_path):
-    """Verify ToolSandbox respects external state boundedness during get_full_state()."""
+async def test_tool_sandbox_acquires_only_declared_bounded_state(tmp_path):
+    """Forensic state acquisition requires an explicit bounded projection."""
     scenario = {
         "id": "bounded_scenario",
         "run_id": "test_sandbox_bound_run",
@@ -283,21 +283,6 @@ async def test_tool_sandbox_get_full_state_with_external_simulator(tmp_path):
     }
     sandbox = ToolSandbox(scenario=scenario, jail_root=tmp_path)
 
-    # Attach both an internal shim and an external enterprise provider shim
-    internal_shim = BaseSimulator(initial_state={"step": 1})
-    external_shim = MockExternalEnterpriseProvider(name="salesforce_crm")
-
-    sandbox._simulator_cache = {
-        "internal_worker": internal_shim,
-        "external_crm": external_shim,
-    }
-
-    full_state = await sandbox.get_full_state()
-    assert "world" in full_state
-    assert full_state["world"]["agent_mode"] == "test"
-    assert "internal_worker" in full_state["shims"]
-    assert full_state["shims"]["internal_worker"] == {"step": 1}
-
-    # External CRM should be bounded
-    assert "external_crm" in full_state["shims"]
-    assert full_state["shims"]["external_crm"].get("status") == "EXTERNAL_BOUNDED"
+    bounded_state = await sandbox.get_bounded_state(["world.agent_mode"])
+    assert bounded_state == {"world": {"agent_mode": "test"}}
+    assert not hasattr(sandbox, "get_full_state")

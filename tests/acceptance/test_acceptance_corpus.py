@@ -13,6 +13,7 @@ import pytest
 
 from tests.acceptance.result import AcceptanceResult
 from tests.acceptance.support.artifact_reader import (
+    bind_external_oracle_observation,
     load_run_artifacts,
     normalize_actual_result,
     read_external_state_oracle,
@@ -162,6 +163,12 @@ def test_agentv_acceptance_case(case, isolated_acceptance_env, acceptance_aggreg
         external_observation = read_external_state_oracle(oracle_url)
         actual["state"]["final_state"] = external_observation["state"]
         actual["state"]["oracle_receipt_hash"] = external_observation["receipt_hash"]
+        actual["state"]["oracle_observation"] = bind_external_oracle_observation(
+            case_id=case["id"],
+            run_id=run_id,
+            authority_url=oracle_url,
+            observation=external_observation,
+        )
 
     # 7. Independent Oracle Evaluation
     oracle_failures = compare_expectations(expected=expect_cfg, actual=actual)

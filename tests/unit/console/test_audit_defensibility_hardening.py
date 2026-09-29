@@ -140,9 +140,8 @@ def test_preflight_truthful_probe_failing_closed_on_http_error(auth_client, monk
     as WARNING / CONFIGURED, not HEALTHY/PASSED.
     """
     import urllib.error
-    import urllib.request
 
-    def mock_urlopen(req, timeout=3):
+    def mock_probe(req, timeout=3):
         raise urllib.error.HTTPError(
             url=req.full_url,
             code=500,
@@ -151,7 +150,8 @@ def test_preflight_truthful_probe_failing_closed_on_http_error(auth_client, monk
             fp=None,
         )
 
-    monkeypatch.setattr(urllib.request, "urlopen", mock_urlopen)
+    monkeypatch.setenv("AGENTV_AGENT_PROBE_ALLOWED_HOSTS", "127.0.0.1")
+    monkeypatch.setattr("eval_runner.console.routes.scenarios._open_readiness_probe", mock_probe)
 
     payload = {
         "scenario_id": "test_preflight",

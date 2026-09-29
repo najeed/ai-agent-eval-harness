@@ -413,6 +413,7 @@ def append_authoritative_finalization(
     )
     from agentv_runtime.finalization import EvaluatorFinalizationRecord
     from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
+    from eval_runner.runner import compile_required_oracle_ids
 
     target_dir = run_dir or trace_file.parent
     content = trace_file.read_text(encoding="utf-8") if trace_file.exists() else ""
@@ -465,7 +466,11 @@ def append_authoritative_finalization(
         scen_data = json.loads(scen_file.read_text(encoding="utf-8"))
         scen_res_file.write_text(json.dumps(scen_data), encoding="utf-8")
     else:
-        scen_data = {"id": f"scen_{run_id}", "version": "1.0.0"}
+        scen_data = {
+            "id": f"scen_{run_id}",
+            "version": "1.0.0",
+            "required_oracle_ids": ["fixture:direct_oracle"],
+        }
         scen_file.write_text(json.dumps(scen_data), encoding="utf-8")
         scen_res_file.write_text(json.dumps(scen_data), encoding="utf-8")
 
@@ -494,7 +499,7 @@ def append_authoritative_finalization(
         scenario_hash=scen_h,
         evaluator_identity=evaluator_identity,
         evaluator_config_hash="sha3_256:abc",
-        required_oracle_ids=["fixture:direct_oracle"],
+        required_oracle_ids=compile_required_oracle_ids(scen_data),
         evidence_root_hash=ev_root,
         outcome=outcome,
         score=score,

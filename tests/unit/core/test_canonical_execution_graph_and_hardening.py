@@ -274,13 +274,14 @@ def test_scenario_validation_and_concurrency(tmp_path, monkeypatch):
         sess["user"] = {"id": "tester", "roles": ["admin"]}
     with (
         patch("eval_runner.console.auth_manager.get_auth_provider") as get_provider,
-        patch("urllib.request.urlopen") as mock_urlopen,
+        patch("eval_runner.console.routes.scenarios._open_readiness_probe") as mock_probe,
     ):
         provider = MagicMock()
         provider.has_permission.return_value = True
         get_provider.return_value = provider
-        mock_response = MagicMock(status=200)
-        mock_urlopen.return_value.__enter__.return_value = mock_response
+        mock_response = MagicMock()
+        mock_response.status = 200
+        mock_probe.return_value.__enter__.return_value = mock_response
         res_readiness = client.post(
             "/api/scenarios/readiness",
             json={

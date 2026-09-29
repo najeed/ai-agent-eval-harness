@@ -17,6 +17,7 @@ from flask import Flask
 
 from eval_runner import config
 from eval_runner.console.routes.scenarios import (
+    _assert_safe_probe_destination,
     scenario_bp,
     validate_scenario_structure,
 )
@@ -96,6 +97,15 @@ def test_validate_scenario_structure_matrix():
     valid, errs = validate_scenario_structure(cycle_scenario)
     assert not valid
     assert any("contains a cycle" in e for e in errs)
+
+
+def test_readiness_probe_rejects_private_destinations_unless_explicitly_allowed(monkeypatch):
+    """Operator-supplied readiness URLs must not become an internal SSRF primitive."""
+    with pytest.raises(ValueError, match="blocked address"):
+        _assert_safe_probe_destination("http://127.0.0.1:8080/health")
+
+    monkeypatch.setenv("AGENTV_AGENT_PROBE_ALLOWED_HOSTS", "127.0.0.1")
+    _assert_safe_probe_destination("http://127.0.0.1:8080/health")
 
 
 def test_scenario_validation_endpoints(client, tmp_path):
@@ -179,7 +189,10 @@ def test_execution_readiness_comprehensive(client, tmp_path):
     assert res_provider.status_code == 200
 
     # 4. HTTP protocol probe reachability
-    with patch("urllib.request.urlopen") as mock_open:
+    with (
+        patch("eval_runner.console.routes.scenarios._assert_safe_probe_destination"),
+        patch("eval_runner.console.routes.scenarios._open_readiness_probe") as mock_open,
+    ):
         mock_resp = MagicMock()
         mock_resp.status = 200
         mock_open.return_value.__enter__.return_value = mock_resp

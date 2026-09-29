@@ -52,7 +52,6 @@ from .session_components import (  # noqa: E402
     ToolExecutionCoordinator,
     TurnStateManager,
 )
-from .state_authority import bound_state_snapshot  # noqa: E402
 from .tool_sandbox import ToolSandbox  # noqa: E402
 from .utils import crypto  # noqa: E402
 from .workflow_interpreter import WorkflowInterpreter  # noqa: E402
@@ -548,11 +547,7 @@ class SessionManager:
             state_before_map: dict[str, dict[str, Any]] = {}
 
             async def _context_provider() -> dict[str, Any]:
-                state = (
-                    await sandbox.get_full_state()
-                    if hasattr(sandbox, "get_full_state")
-                    else getattr(sandbox, "state", {})
-                )
+                state = await self._acquire_bounded_state(sandbox, [])
                 return {"state": state}
 
             async def _executor(node_ir, exec_id: str, parent_exec_id: str | None):
@@ -582,13 +577,8 @@ class SessionManager:
                 branch_actions: dict[str, Any] = {"used_tools": []}
 
                 try:
-                    raw_state_before = (
-                        await branch_sandbox.get_full_state()
-                        if hasattr(branch_sandbox, "get_full_state")
-                        else copy.deepcopy(getattr(branch_sandbox, "state", {}))
-                    )
                     proj = node_def.get("state_projection") if isinstance(node_def, dict) else None
-                    state_before, _ = bound_state_snapshot(raw_state_before, projection=proj)
+                    state_before = await self._acquire_bounded_state(branch_sandbox, proj or [])
                 except Exception:  # noqa: BLE001 - evidence capture must not break execution
                     state_before = None
                 if state_before is not None:
@@ -651,10 +641,8 @@ class SessionManager:
                     from .reconciliation import build_reconciliation_record
 
                     try:
-                        state_after = (
-                            await sandbox.get_full_state()
-                            if hasattr(sandbox, "get_full_state")
-                            else copy.deepcopy(getattr(sandbox, "state", {}))
+                        state_after = await self._acquire_bounded_state(
+                            sandbox, node_def.get("state_projection") or []
                         )
                     except Exception:  # noqa: BLE001 - evidence capture must not break execution
                         state_after = None
@@ -1178,6 +1166,13 @@ class SessionManager:
         execution_context = execution_context or {}
         policy_cursor = len(getattr(sandbox, "policy_decisions", []))
 
+        # External authorities are independently observed before the agent can
+        # mutate them.  This is distinct from the branch sandbox snapshot and
+        # supplies the authoritative pre-state for authority assertions.
+        external_state_before = await self.state_parity_verifier.capture_external_prestate(
+            node, sandbox, conversation_history
+        )
+
         # 1. Forensic Maneuver Start
         print(f"      [Node Execution] ID: {node_id} | Task: {task_description[:50]}...")
         node_start_time = time.time()
@@ -1271,9 +1266,8 @@ class SessionManager:
                 )
 
                 # [Forensic Persistence] Snapshoting state after turn completion (P0-06 Bounded)
-                raw_full_state = await sandbox.get_full_state()
                 proj = node.get("state_projection") if isinstance(node, dict) else None
-                full_state, _ = bound_state_snapshot(raw_full_state, projection=proj)
+                full_state = await self._acquire_bounded_state(sandbox, proj or [])
                 self.forensics.snapshot_state(full_state, turn)
                 self._capture_telemetry()
 
@@ -1377,7 +1371,11 @@ class SessionManager:
 
         # 3. Implicit Verification Phase (Transition-Based State Parity, AgentV v2.0.0)
         parity_success, parity_evidence = await self._verify_state_parity(
-            node, sandbox, conversation_history, state_before=state_before
+            node,
+            sandbox,
+            conversation_history,
+            state_before=state_before,
+            external_state_before=external_state_before,
         )
 
         # Consensus judges need the scenario's declared expected messages;
@@ -1396,16 +1394,8 @@ class SessionManager:
         if parity_evidence:
             state_after_for_hash = None
             try:
-                state_getter = getattr(sandbox, "get_full_state", None)
-                if callable(state_getter) and inspect.iscoroutinefunction(state_getter):
-                    raw_state_after = await state_getter()
-                else:
-                    declared_state = getattr(sandbox, "state", {})
-                    raw_state_after = (
-                        copy.deepcopy(declared_state) if isinstance(declared_state, dict) else {}
-                    )
                 proj = node.get("state_projection") if isinstance(node, dict) else None
-                state_after_for_hash, _ = bound_state_snapshot(raw_state_after, projection=proj)
+                state_after_for_hash = await self._acquire_bounded_state(sandbox, proj or [])
             except Exception:  # noqa: BLE001
                 state_after_for_hash = None
 
@@ -1423,6 +1413,16 @@ class SessionManager:
                 row["execution_instance_id"] = exec_id
                 row["state_before_hash"] = _hash_state(state_before)
                 row["state_after_hash"] = _hash_state(state_after_for_hash)
+                if row.get("source"):
+                    row["authority_observation_binding_hash"] = _hash_state(
+                        {
+                            "attempt_id": attempt_id,
+                            "execution_instance_id": exec_id,
+                            "authority": row["source"],
+                            "pre_snapshot_hash": row.get("pre_snapshot_hash"),
+                            "post_snapshot_hash": row.get("post_snapshot_hash"),
+                        }
+                    )
 
         # 4. Calculation and Reporting
         task_results = await self._calculate_metrics(
@@ -1826,6 +1826,7 @@ class SessionManager:
         sandbox: Any,
         history: list,
         state_before: dict[str, Any] | None = None,
+        external_state_before: dict[str, dict[str, Any]] | None = None,
     ) -> tuple[bool, list[dict[str, Any]]]:
         """
         Authoritative Transition-Based State Parity Verification.
@@ -1833,7 +1834,11 @@ class SessionManager:
         Returns (passed, transition_evidence).
         """
         return await self.state_parity_verifier.verify_state_parity(
-            node, sandbox, history, state_before=state_before
+            node,
+            sandbox,
+            history,
+            state_before=state_before,
+            external_state_before=external_state_before,
         )
 
     def _ingest_external_tool_receipts(
@@ -2028,8 +2033,8 @@ class SessionManager:
         state_after = sandbox.state.copy()
 
         # O(N) Forensics: Offload state to disk snapshots
-        state_after_full = await sandbox.get_full_state()
-        self.forensics.snapshot_state(state_after_full, turn + 1000)
+        state_after_bounded = await self._acquire_bounded_state(sandbox, [])
+        self.forensics.snapshot_state(state_after_bounded, turn + 1000)
 
         # [Forensic Hardening] capture state fingerprint for stall detection
         self.state_snapshots.append(crypto.checksum(str(sorted(state_after.items()))))
@@ -2159,9 +2164,9 @@ class SessionManager:
         state_after = sandbox.state.copy()
 
         # O(N) Forensics: Offload state to disk snapshots
-        state_after_full = await sandbox.get_full_state()
+        state_after_bounded = await self._acquire_bounded_state(sandbox, [])
         self.forensics.snapshot_state(
-            state_after_full, turn + 1000
+            state_after_bounded, turn + 1000
         )  # Offset for after-state transparency
 
         # [Forensic Hardening] capture state fingerprint for stall detection
@@ -2449,6 +2454,27 @@ class SessionManager:
 
             registry[name] = {"parameters": params}
         return registry
+
+    @staticmethod
+    async def _acquire_bounded_state(sandbox: ToolSandbox, projection: list[str]) -> dict[str, Any]:
+        """Acquire forensic state at source through the bounded-state contract.
+
+        Runtime evidence must never materialize an unbounded sandbox snapshot
+        and trim it afterwards. Sandboxes that cannot honor this contract are
+        invalid evidence sources and therefore fail execution/certification.
+        """
+        if not projection:
+            # No declared projection means no state may be acquired.  Returning
+            # an empty evidence projection is intentional; it is not a full
+            # state fallback.
+            return {}
+        getter = getattr(sandbox, "get_bounded_state", None)
+        if not callable(getter) or not inspect.iscoroutinefunction(getter):
+            raise RuntimeError("BoundedStateAcquisitionUnavailable")
+        state = await getter(projection)
+        if not isinstance(state, dict):
+            raise RuntimeError("BoundedStateAcquisitionInvalid")
+        return state
 
     def _capture_telemetry(self):
         """Captures hardware resource metrics for forensic gradient analysis."""
