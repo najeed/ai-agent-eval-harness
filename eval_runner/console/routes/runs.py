@@ -1,11 +1,13 @@
 import json
 import logging
 import os
+import tempfile
 import threading
 import time
+from io import BytesIO
 from pathlib import Path
 
-from flask import Blueprint, Response, jsonify, request
+from flask import Blueprint, Response, jsonify, request, send_file
 
 from eval_runner import config
 from eval_runner.explainer import explain_trace
@@ -376,6 +378,48 @@ def stream_runs_list():
             time.sleep(1.0)
 
     return Response(generate(), mimetype="text/event-stream")
+
+
+@run_bp.route("/v1/runs/<path:run_id>/report.pdf", methods=["GET"])
+@require_permission(Permission.RUNS_READ)
+def download_run_report_pdf(run_id: str):
+    """Generate a human-readable PDF report without mutating the sealed run vault."""
+    trace_path = resolve_trace_path(run_id)
+    if trace_path is None or not trace_path.exists():
+        return jsonify({"error": "Run not found"}), 404
+
+    from eval_runner.console.pdf_service import generate_run_pdf
+
+    summary = RunSummaryService.compute_summary(run_id)
+    report_data = {
+        **summary,
+        "run_id": run_id,
+        "passed": summary["status"] in {"CERTIFIED", "SEALED", "PASSED"},
+        "has_certificate": summary["has_certificate"],
+        "is_certified": summary["status"] == "CERTIFIED",
+        "verification_status": summary["verification_status"],
+    }
+
+    # The report is a derived presentation artifact.  It must never be written
+    # into an evidence vault, particularly after the certification seal.
+    with tempfile.TemporaryDirectory(prefix="agentv-run-report-") as temp_dir:
+        report_path = Path(temp_dir) / "report.pdf"
+        if not generate_run_pdf(report_data, report_path) or not report_path.exists():
+            logger.error("Could not generate PDF report for run %s", run_id)
+            return jsonify({"error": "PDF report generation failed"}), 503
+
+        report_bytes = report_path.read_bytes()
+
+    if not report_bytes.startswith(b"%PDF-"):
+        logger.error("PDF generator produced a non-PDF artifact for run %s", run_id)
+        return jsonify({"error": "No PDF rendering engine is available"}), 503
+
+    return send_file(
+        BytesIO(report_bytes),
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name=f"{run_id}-compliance-report.pdf",
+    )
 
 
 @run_bp.route("/v1/runs/<path:run_id>", methods=["GET"])

@@ -5,6 +5,7 @@ Unit tests for RunSummaryService in eval_runner.services.run_summary.
 
 from __future__ import annotations
 
+import json
 import time
 from datetime import datetime
 from unittest.mock import patch
@@ -98,7 +99,10 @@ def test_compute_summary_artifact_present_and_missing_trace(tmp_path, monkeypatc
 
     cert_dir = reports_dir / "certificates"
     cert_dir.mkdir(parents=True, exist_ok=True)
-    (cert_dir / "run_art_vc.json").write_text("{}", encoding="utf-8")
+    (cert_dir / "run_art_vc.json").write_text(
+        json.dumps({"vc_version": "3.0.0", "trace_hash": "sha3_256:test"}),
+        encoding="utf-8",
+    )
 
     # 1. Certificate exists on disk, but verdict is UNKNOWN -> ARTIFACT_PRESENT
     with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="UNKNOWN"):

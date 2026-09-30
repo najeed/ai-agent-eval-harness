@@ -392,6 +392,35 @@ def test_get_run_status_vault_completed(runs_jail, runs_client):
     assert res.get_json()["status"] == "COMPLETED"
 
 
+def test_download_run_report_pdf(runs_jail, runs_client):
+    """The OSS console exposes a derived PDF without writing to the vault."""
+    rid = "status-vault-pdf"
+    run_dir = runs_jail["runs"] / rid
+    run_dir.mkdir(exist_ok=True)
+    (run_dir / "run.jsonl").write_bytes(
+        b'{"event": "run_start", "run_id": "status-vault-pdf"}\n'
+        b'{"event": "run_end", "status": "PASS"}\n'
+    )
+
+    def write_pdf(_run_data, output_path):
+        output_path.write_bytes(b"%PDF-1.4\\nagentv test report")
+        return True
+
+    with patch("eval_runner.console.pdf_service.generate_run_pdf", side_effect=write_pdf):
+        response = runs_client.get(f"/api/v1/runs/{rid}/report.pdf")
+
+    assert response.status_code == 200
+    assert response.mimetype == "application/pdf"
+    assert response.data.startswith(b"%PDF-")
+    assert "compliance-report.pdf" in response.headers["Content-Disposition"]
+    assert list(run_dir.glob("*.pdf")) == []
+
+
+def test_download_run_report_pdf_missing_run_returns_404(runs_client):
+    response = runs_client.get("/api/v1/runs/no-such-run/report.pdf")
+    assert response.status_code == 404
+
+
 def test_get_run_status_vault_large_file(runs_jail, runs_client):
     """get_run_status: file > 128KB triggers seek path."""
     rid = "status-vault-large"
@@ -441,7 +470,10 @@ def test_get_run_status_vault_has_certificate(runs_jail, runs_client):
     d = runs_jail["runs"] / rid
     d.mkdir(exist_ok=True)
     (d / "run.jsonl").write_bytes(b'{"event": "run_start"}\n')
-    (d / "run_manifest.json").write_text("{}", encoding="utf-8")
+    (d / "run_manifest.json").write_text(
+        json.dumps({"run_id": rid, "vc_version": "3.0", "trace_hash": "sha3_256:test"}),
+        encoding="utf-8",
+    )
 
     res = runs_client.get(f"/api/v1/runs/{rid}")
     assert res.status_code == 200
@@ -551,7 +583,10 @@ def test_get_cert_cert_path_success(runs_jail, runs_client):
     """get_verification_certificate: cert_path exists and valid JSON."""
     rid = "cert-ok"
     cert = runs_jail["reports"] / "certificates" / f"{rid}_vc.json"
-    cert.write_text(json.dumps({"run_id": rid}), encoding="utf-8")
+    cert.write_text(
+        json.dumps({"run_id": rid, "vc_version": "3.0", "trace_hash": "sha3_256:test"}),
+        encoding="utf-8",
+    )
 
     res = runs_client.get(f"/api/v1/certificates/{rid}")
     assert res.status_code == 200
@@ -578,7 +613,10 @@ def test_get_cert_vault_manifest_success(runs_jail, runs_client):
     d = runs_jail["runs"] / rid
     d.mkdir(exist_ok=True)
     manifest = d / "run_manifest.json"
-    manifest.write_text(json.dumps({"run_id": rid}), encoding="utf-8")
+    manifest.write_text(
+        json.dumps({"run_id": rid, "vc_version": "3.0", "trace_hash": "sha3_256:test"}),
+        encoding="utf-8",
+    )
 
     res = runs_client.get(f"/api/v1/certificates/{rid}")
     assert res.status_code == 200

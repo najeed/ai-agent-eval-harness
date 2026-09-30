@@ -162,9 +162,12 @@ class RunSummaryService:
         cached_result_status = cached.get("result_status")
         cached_exec_mode = cached.get("execution_mode")
 
-        cert_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
-        vault_manifest = config.RUN_LOG_DIR / run_id / "run_manifest.json"
-        has_certificate = cert_path.exists() or vault_manifest.exists()
+        # ``run_manifest.json`` may be the execution manifest.  Certificate
+        # presence is meaningful only when a VC artifact binds ``trace_hash``.
+        from eval_runner.verifier import locate_certificate_file
+
+        certificate_path = locate_certificate_file(run_id)
+        has_certificate = certificate_path is not None
 
         auth_verdict = cls.get_authoritative_verdict(run_id)
 

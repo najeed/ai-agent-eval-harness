@@ -130,35 +130,43 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
 
   // Hydrated Assertions: from evidencePackage (verdict/graph) or trace events
   const assertions = React.useMemo(() => {
+    const normalizeAssertions = (rawAssertions: any[]) => rawAssertions.map((a: any) => ({
+      name: a.metric || a.assertion || a.name || a.oracle_id || 'assertion',
+      passed: a.passed === true || a.outcome === 'PASS',
+      expected: a.expected != null ? String(a.expected) : undefined,
+      actual: a.actual != null ? String(a.actual) : a.observed != null ? String(a.observed) : undefined,
+      description: a.description,
+      node: a.node || a.node_id || a.scenario_node_id,
+      metric: a.metric || a.assertion,
+    }));
+
     if (evidencePackage?.verdict?.assertions && Array.isArray(evidencePackage.verdict.assertions) && evidencePackage.verdict.assertions.length > 0) {
-      return evidencePackage.verdict.assertions;
+      return normalizeAssertions(evidencePackage.verdict.assertions);
     }
     if (evidencePackage?.assertions && Array.isArray(evidencePackage.assertions) && evidencePackage.assertions.length > 0) {
-      return evidencePackage.assertions;
+      return normalizeAssertions(evidencePackage.assertions);
     }
     if (evidencePackage?.evidence_graph?.nodes && Array.isArray(evidencePackage.evidence_graph.nodes) && evidencePackage.evidence_graph.nodes.length > 0) {
       return evidencePackage.evidence_graph.nodes.map((n: any) => ({
         name: n.label || n.oracle_id || n.metric || n.node || 'assertion',
-        passed: n.passed === true,
+        passed: n.passed === true || n.outcome === 'PASS',
         expected: n.expected != null ? String(n.expected) : undefined,
-        actual: n.actual != null ? String(n.actual) : undefined,
+        actual: n.actual != null ? String(n.actual) : n.observed != null ? String(n.observed) : undefined,
         description: n.description || `Node: ${n.node || n.node_id || 'unknown'} (${n.kind || 'metric'})`,
         node: n.node || n.node_id,
         metric: n.label || n.oracle_id,
       }));
     }
     for (let i = streamEvents.length - 1; i >= 0; i--) {
-      const evData = streamEvents[i]?.data;
-      if (evData && Array.isArray(evData.assertions) && evData.assertions.length > 0) {
-        return evData.assertions.map((a: any) => ({
-          name: a.metric || a.assertion || a.name || a.oracle_id || 'assertion',
-          passed: a.passed === true,
-          expected: a.expected != null ? String(a.expected) : undefined,
-          actual: a.actual != null ? String(a.actual) : undefined,
-          description: a.description,
-          node: a.node || a.node_id,
-          metric: a.metric || a.assertion,
-        }));
+      const event = streamEvents[i];
+      const evData = event?.data || event;
+      const eventAssertions = Array.isArray(evData?.assertions)
+        ? evData.assertions
+        : Array.isArray(evData?.oracle_results)
+          ? evData.oracle_results
+          : null;
+      if (eventAssertions && eventAssertions.length > 0) {
+        return normalizeAssertions(eventAssertions);
       }
     }
     return run.assertions || [];
@@ -168,9 +176,11 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
   const toolCalls = React.useMemo(() => {
     const tools: Array<{
       turn: number;
+      order: number;
       tool: string;
       parameters: Record<string, any>;
       result: any;
+      node_id?: string;
       duration_ms?: number;
       source?: string;
       provenance?: string;
@@ -182,10 +192,12 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
       if (evType === 'tool_call' || evType === 'agent_tool_call' || evType === 'external_tool_call') {
         const d = ev.data || ev;
         const toolCall = {
-          turn: d.turn || d.step || idx + 1,
+          turn: d.turn ?? d.step ?? 1,
+          order: d.order ?? idx + 1,
           tool: d.tool || d.name || d.tool_name || 'unknown_tool',
           parameters: d.parameters || d.params || d.arguments || d.input || {},
           result: d.result || d.output || {},
+          node_id: d.node_id || d.task_id,
           duration_ms: d.duration_ms || d.latency_ms,
           source: d.source,
           provenance: d.provenance,
@@ -593,7 +605,9 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
                 {toolCalls.map((t, idx) => (
                   <div key={idx} className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-2 font-mono">
                     <div className="flex items-center justify-between text-slate-400">
-                      <span className="text-indigo-400 font-bold">Turn {t.turn}: {t.tool}()</span>
+                      <span className="text-indigo-400 font-bold">
+                        {t.node_id ? `Node ${t.node_id} · ` : ''}Turn {t.turn} · Call {t.order}: {t.tool}()
+                      </span>
                       <span className="text-[10px] text-slate-500">{t.duration_ms != null ? `${t.duration_ms}ms` : ''}</span>
                     </div>
                     {t.provenance === 'reported' && (
@@ -737,7 +751,6 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
                 </div>
                 <Download className="w-4 h-4 text-slate-400 group-hover:text-white transition" />
               </a>
-
               <a
                 href={`/api/v1/runs/${run.run_id}/report.pdf`}
                 target="_blank"
@@ -746,9 +759,11 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
               >
                 <div className="space-y-1">
                   <div className="font-bold text-white flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-emerald-400" /> Executive PDF Compliance Report
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" /> Basic Compliance Report (PDF)
                   </div>
-                  <div className="text-slate-400 text-[11px]">Executive summary for compliance & regulatory reviews.</div>
+                  <div className="text-slate-400 text-[11px]">
+                    Human-readable summary derived from this run's evidence.
+                  </div>
                 </div>
                 <Download className="w-4 h-4 text-slate-400 group-hover:text-white transition" />
               </a>

@@ -40,6 +40,7 @@ export const TrustCenter: React.FC = () => {
   
   // Key State
   const [resolvedKey, setResolvedKey] = useState('');
+  const certificationPending = Boolean(runDetails && !runDetails.has_certificate);
 
   const inspectTargetRun = async (rid: string) => {
     if (!rid.trim()) {
@@ -299,12 +300,18 @@ export const TrustCenter: React.FC = () => {
                 </div>
               )}
 
-              <div className="pt-4 border-t border-slate-800/80">
+              <div className="pt-4 border-t border-slate-800/80 space-y-2">
                 <a
                   href={`/api/v1/runs/${verifyResult.run_id}/report.pdf`}
                   className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white rounded text-xs font-bold uppercase tracking-wider transition-all"
                 >
-                  Download PDF Compliance Report
+                  Download Basic Compliance Report (PDF)
+                </a>
+                <a
+                  href={`/api/v1/evidence/packages/${verifyResult.run_id}?download=true`}
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2 border border-slate-700 hover:border-slate-500 text-slate-200 rounded text-xs font-bold uppercase tracking-wider transition-all"
+                >
+                  Download Verification Package
                 </a>
               </div>
             </div>
@@ -374,13 +381,15 @@ export const TrustCenter: React.FC = () => {
                   <div className="space-y-2 text-xs">
                     <div className="grid grid-cols-2 gap-3">
                       <div className="bg-slate-900/60 p-2.5 rounded border border-slate-800">
-                        <span className="text-[10px] text-slate-500 uppercase block font-semibold">Authoritative Verdict</span>
+                        <span className="text-[10px] text-slate-500 uppercase block font-semibold">Certification State</span>
                         <span className={`font-bold font-mono ${
-                          runDetails.verification_status === 'VERIFIED' || runDetails.verdict === 'VERIFIED'
+                          certificationPending || runDetails.verification_status === 'VERIFIED' || runDetails.verdict === 'VERIFIED'
                             ? 'text-emerald-400'
                             : 'text-amber-400'
                         }`}>
-                          {runDetails.verification_status || runDetails.verdict || runDetails.status || 'UNKNOWN'}
+                          {certificationPending
+                            ? 'CERTIFICATION_NOT_ISSUED'
+                            : runDetails.verification_status || runDetails.verdict || runDetails.status || 'UNKNOWN'}
                         </span>
                       </div>
                       <div className="bg-slate-900/60 p-2.5 rounded border border-slate-800">

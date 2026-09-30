@@ -2953,3 +2953,88 @@ def test_verify_certification_artifact_successful_authoritative_certification():
     )
     assert res_obj["verified"] is True
     assert res_obj["status"] == "CERTIFIED"
+
+
+def test_is_plain_execution_manifest_and_uncertified_run_handling(tmp_path, monkeypatch):
+    """Execution manifests must be rejected as certificates and report UNVERIFIED."""
+    from eval_runner.verifier import _is_plain_execution_manifest
+
+    # 1. Non-existent file
+    assert _is_plain_execution_manifest(tmp_path / "missing.json") is False
+
+    # 2. Non-dict JSON
+    list_file = tmp_path / "list.json"
+    list_file.write_text("[1, 2, 3]", encoding="utf-8")
+    assert _is_plain_execution_manifest(list_file) is False
+
+    # 3. Corrupt JSON
+    corrupt_file = tmp_path / "corrupt.json"
+    corrupt_file.write_text("{broken", encoding="utf-8")
+    assert _is_plain_execution_manifest(corrupt_file) is False
+
+    # 4. Certificate manifest (contains trace_hash)
+    cert_file = tmp_path / "cert.json"
+    cert_file.write_text(
+        json.dumps({"manifest_id": "man_1", "trace_hash": "th_1"}), encoding="utf-8"
+    )
+    assert _is_plain_execution_manifest(cert_file) is False
+
+    # 5. Plain execution manifest (man_ prefix)
+    exec_file_1 = tmp_path / "exec1.json"
+    exec_file_1.write_text(
+        json.dumps({"manifest_id": "man_test_run", "scenario_id": "s1"}), encoding="utf-8"
+    )
+    assert _is_plain_execution_manifest(exec_file_1) is True
+
+    # 6. Plain execution manifest (agent_config)
+    exec_file_2 = tmp_path / "exec2.json"
+    exec_file_2.write_text(json.dumps({"agent_config": {"model": "test"}}), encoding="utf-8")
+    assert _is_plain_execution_manifest(exec_file_2) is True
+
+    # 7. Plain execution manifest (pass_at_k)
+    exec_file_3 = tmp_path / "exec3.json"
+    exec_file_3.write_text(json.dumps({"pass_at_k": 1.0, "results": []}), encoding="utf-8")
+    assert _is_plain_execution_manifest(exec_file_3) is True
+
+    # 8. locate_certificate_file rejects plain run_manifest.json
+    runs_dir = tmp_path / "runs"
+    reports_dir = tmp_path / "reports"
+    runs_dir.mkdir(parents=True, exist_ok=True)
+    reports_dir.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr(config, "RUN_LOG_DIR", runs_dir)
+    monkeypatch.setattr(config, "REPORTS_DIR", reports_dir)
+
+    run_id = "uncertified_run_manifest_test"
+    run_vault = runs_dir / run_id
+    run_vault.mkdir(parents=True, exist_ok=True)
+    plain_manifest = run_vault / "run_manifest.json"
+    plain_manifest.write_text(
+        json.dumps(
+            {
+                "manifest_id": f"man_{run_id}",
+                "scenario_id": "demo_scenario",
+                "scenario_hash": "sha3_256:abc",
+                "agent_config": {"name": "agent"},
+            }
+        ),
+        encoding="utf-8",
+    )
+    (run_vault / "run.jsonl").write_text(
+        '{"event": "run_start"}\n{"event": "run_end"}\n', encoding="utf-8"
+    )
+
+    # Plain execution manifest is not discovered as a certificate
+    assert locate_certificate_file(run_id) is None
+
+    # verify_run_directory reports UNVERIFIED and Certification not issued
+    res = TraceVerifier.verify_run_directory(run_vault)
+    assert res["verification_status"] == "UNVERIFIED"
+    assert res["is_valid"] is False
+    assert res["has_certificate"] is False
+    assert res["has_signature"] is False
+    assert res["failure_reason"] == "Certification not issued"
+
+    # When fallback legacy certificate is present, locate_certificate_file discovers it
+    legacy_cert = run_vault / f"{run_id}_certificate.json"
+    legacy_cert.write_text(json.dumps({"vc_version": "3.0.0"}), encoding="utf-8")
+    assert locate_certificate_file(run_id) == legacy_cert.resolve()

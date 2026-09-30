@@ -378,6 +378,16 @@ class DefaultRunner(BaseRunner):
         )
 
         scen_hash = compute_scenario_hash(scenario)
+        # Freeze the exact document whose identity is bound into the execution
+        # manifest *before* emitting RUN_START.  Event subscribers/plugins may
+        # enrich mutable scenario objects; persisting afterwards from that
+        # object would split the vault snapshot from the signed run identity.
+        scenario_snapshot = json.loads(json.dumps(scenario))
+        if compute_scenario_hash(scenario_snapshot) != scen_hash:
+            raise RuntimeError(
+                "ScenarioSnapshotHashMismatch: unable to freeze the exact scenario "
+                "document bound to this execution."
+            )
         scen_ver = str(
             scenario.get("version") or (scenario.get("metadata") or {}).get("version") or "1.0.0"
         )
@@ -692,6 +702,7 @@ class DefaultRunner(BaseRunner):
                 f"RunIdCollision: evidence vault already exists for run '{effective_run_id}'"
             )
         manifest_file = run_vault_dir / "execution_manifest.json"
+        scenario_snapshot_file = run_vault_dir / "scenario_resolved.json"
 
         try:
             events.emit(
@@ -716,11 +727,14 @@ class DefaultRunner(BaseRunner):
                 span_context=ctx.span_context,
             )
 
-            # The recorder owns creation of a new vault at RUN_START.  The
-            # execution manifest is persisted only after that trace exists.
+            # The recorder owns creation of a new vault at RUN_START.  Persist
+            # both execution bindings immediately afterwards: certification
+            # must never fall back to the mutable scenario catalog.
             run_vault_dir.mkdir(parents=True, exist_ok=True)
             with open(manifest_file, "w", encoding="utf-8") as mf:
                 json.dump(exec_manifest.to_dict(), mf, indent=2)
+            with open(scenario_snapshot_file, "w", encoding="utf-8") as sf:
+                json.dump(scenario_snapshot, sf, indent=2)
 
             plugins.manager.trigger("before_evaluation", ctx)
 

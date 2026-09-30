@@ -604,11 +604,10 @@ class CertificationService:
                         f"finalization record scenario_id '{target_scen_id}'"
                     )
 
-            if effective_scenario_data is None and embedded_scenario_data is not None:
-                effective_scenario_data = embedded_scenario_data
-
             if effective_scenario_data is None:
-                # Prefer per-run immutable snapshot first (P1-1)
+                # The per-run snapshot is the authoritative document bound at
+                # launch.  Trace-embedded scenario data is telemetry and may
+                # have been enriched/mutated by plugins after RUN_START.
                 resolved_snapshot = vault_dir / "scenario_resolved.json"
                 if resolved_snapshot.exists():
                     try:
@@ -618,6 +617,9 @@ class CertificationService:
                                 effective_scenario_data = loaded_snap
                     except Exception as snap_err:
                         logger.debug("Could not read scenario_resolved.json: %s", snap_err)
+
+            if effective_scenario_data is None and embedded_scenario_data is not None:
+                effective_scenario_data = embedded_scenario_data
 
             if effective_scenario_data is None:
                 try:

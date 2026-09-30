@@ -371,6 +371,57 @@ class VerificationService:
 verification_service = VerificationService()
 
 
+def _is_plain_execution_manifest(path: Path) -> bool:
+    """
+    Check if a candidate file is a plain pre-certification execution manifest
+    rather than a verification certificate.
+
+    Returns True ONLY if the file is valid JSON, represents an execution manifest
+    (e.g., manifest_id starting with 'man_', 'agent_config' present, or scenario_id+scenario_hash),
+    and lacks all certificate indicators (trace_hash, vc_version, signature, etc.).
+
+    If the file cannot be read, is not valid JSON, or contains certificate markers,
+    it returns False (so it is not rejected as an execution manifest).
+    """
+    try:
+        if not path.is_file():
+            return False
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+        if not isinstance(data, dict):
+            return False
+
+        cert_markers = (
+            "trace_hash",
+            "verification_package",
+            "provenance_chain",
+            "signature",
+            "signatures",
+            "vc_version",
+            "compliance",
+            "compliance_status",
+            "certificate_hash",
+        )
+        if any(k in data for k in cert_markers):
+            return False
+
+        exec_markers = (
+            "agent_config",
+            "runtime_config",
+            "producer_identity",
+            "attempt_statistics",
+            "pass_at_k",
+        )
+        manifest_id = str(data.get("manifest_id", ""))
+        has_exec_id = manifest_id.startswith("man_")
+        has_exec_pair = bool(data.get("scenario_id") and data.get("scenario_hash"))
+        has_exec_marker = any(k in data for k in exec_markers)
+
+        return bool(has_exec_id or has_exec_pair or has_exec_marker)
+    except Exception:
+        return False
+
+
 class TraceVerifier:
     """
     Electronic Verification and Certification Engine for evaluation traces.
@@ -2000,6 +2051,12 @@ class TraceVerifier:
         cp = p / "certificate.json"
         if not cp.exists():
             cp = config.REPORTS_DIR / "certificates" / f"{p.name}_vc.json"
+        if not cp.exists():
+            cp = p / f"{p.name}_vc.json"
+        if not cp.exists():
+            cp = p / f"{p.name}_certificate.json"
+        if not cp.exists():
+            cp = config.REPORTS_DIR / "certificates" / f"{p.name}_certificate.json"
 
         if not p.exists():
             return {
@@ -2011,7 +2068,11 @@ class TraceVerifier:
                 "failure_reason": "Run directory does not exist",
             }
 
-        target_manifest = mp if mp.exists() else cp if cp.exists() else None
+        candidate_mp = None
+        if mp.exists() and not _is_plain_execution_manifest(mp):
+            candidate_mp = mp
+
+        target_manifest = candidate_mp if candidate_mp else cp if cp.exists() else None
         if not target_manifest or not target_manifest.exists():
             return {
                 "run_id": p.name,
@@ -2019,9 +2080,7 @@ class TraceVerifier:
                 "is_valid": False,
                 "has_certificate": False,
                 "has_signature": False,
-                "failure_reason": (
-                    "No persistent cryptographic manifest or certificate found for this run."
-                ),
+                "failure_reason": "Certification not issued",
             }
 
         if not tp.exists():
@@ -3780,7 +3839,8 @@ def locate_certificate_file(run_id: str) -> Path | None:
     Authoritative canonical certificate locator across the AgentV ecosystem.
     Searches:
       1. Published reports vault: reports/certificates/<run_id>_vc.json
-      2. Per-run storage vault: runs/<run_id>/run_manifest.json
+      2. Per-run storage vault: runs/<run_id>/run_manifest.json, but only
+         when it is a VC certificate rather than an execution manifest.
       3. Legacy vault certificates: runs/<run_id>/<run_id>_certificate.json
          or runs/<run_id>/<run_id>_vc.json
     Returns the resolved Path if it exists, or None.
@@ -3800,5 +3860,7 @@ def locate_certificate_file(run_id: str) -> Path | None:
     ]
     for c in candidates:
         if c.is_file():
+            if c.name == "run_manifest.json" and _is_plain_execution_manifest(c):
+                continue
             return c.resolve()
     return None

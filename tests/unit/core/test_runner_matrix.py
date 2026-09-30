@@ -845,6 +845,9 @@ async def test_default_runner_run_scenario_rich_provenance(tmp_path, monkeypatch
     import json
 
     data = json.loads(manifest_p.read_text(encoding="utf-8"))
+    snapshot_p = tmp_path / "runs" / res.run_id / "scenario_resolved.json"
+    assert snapshot_p.exists()
+    assert json.loads(snapshot_p.read_text(encoding="utf-8")) == scenario
 
     agent_cfg = data["agent_config"]
     assert agent_cfg["source_commit"] == "commit_123"

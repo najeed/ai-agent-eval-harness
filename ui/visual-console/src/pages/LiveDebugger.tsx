@@ -1046,44 +1046,31 @@ export const LiveDebugger: React.FC = () => {
                 SSE GAP ({streamGaps.length})
               </div>
             )}
-            {/* [GUI-P0-8] Explicit graph layer selector */}
-            <div
-              title={
-                layerMode === 'planned'
-                  ? 'Planned layer: the scenario DAG as defined; the design-time control-flow contract.'
-                  : layerMode === 'executed'
-                    ? 'Executed layer: only authoritative execution_graph_node and execution_graph_edge evidence.'
-                    : 'Divergence overlay: planned-vs-executed differences (SKIPPED planned nodes, UNPLANNED executions).'
-              }
-              className="flex bg-slate-950 border border-slate-800 rounded-lg p-0.5 font-mono text-[9px] font-bold uppercase tracking-wider cursor-help"
-            >
-              <Layers className="w-3.5 h-3.5 text-slate-500 self-center ml-1.5 mr-1" />
-              {(['planned', 'executed', 'divergence'] as const).map(l => (
-                <button
-                  key={l}
-                  onClick={() => setLayerMode(l)}
-                  className={`px-2 py-1 rounded-md transition-colors ${layerMode === l ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                >
-                  {l}
-                </button>
-              ))}
-            </div>
-
-            {/* Visual Edge Hierarchy Legend */}
-            <div className="hidden xl:flex items-center gap-2.5 px-2 py-0.5 bg-slate-900/80 border border-slate-800 rounded text-[9px] font-mono text-slate-400">
-              <span className="flex items-center gap-1">
-                <span className="w-2.5 h-0.5 border-t border-dashed border-slate-500 inline-block" />
-                <span className="text-slate-400">Planned</span>
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-2.5 h-0.5 bg-emerald-500 inline-block" />
-                <span className="text-emerald-400">Executed</span>
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-2.5 h-0.5 bg-amber-500 inline-block" />
-                <span className="text-amber-400">Divergence</span>
-              </span>
+            {/* Layer selector and its legend form one vertical control, avoiding
+                competition with the runner and stream status controls. */}
+            <div className="flex flex-col items-start gap-1">
+              <div
+                title={
+                  layerMode === 'planned'
+                    ? 'Planned layer: the scenario DAG as defined; the design-time control-flow contract.'
+                    : layerMode === 'executed'
+                      ? 'Executed layer: only authoritative execution_graph_node and execution_graph_edge evidence.'
+                      : 'Divergence overlay: planned-vs-executed differences (SKIPPED planned nodes, UNPLANNED executions).'
+                }
+                className="flex bg-slate-950 border border-slate-800 rounded-lg p-0.5 font-mono text-[9px] font-bold uppercase tracking-wider cursor-help"
+              >
+                <Layers className="w-3.5 h-3.5 text-slate-500 self-center ml-1.5 mr-1" />
+                {(['planned', 'executed', 'divergence'] as const).map(l => (
+                  <button key={l} onClick={() => setLayerMode(l)} className={`px-2 py-1 rounded-md transition-colors ${layerMode === l ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>
+                    {l}
+                  </button>
+                ))}
+              </div>
+              <div className="hidden xl:flex items-center gap-2.5 px-2 py-0.5 bg-slate-900/80 border border-slate-800 rounded text-[9px] font-mono text-slate-400">
+                <span className="flex items-center gap-1"><span className="w-2.5 h-0.5 border-t border-dashed border-slate-500 inline-block" /><span className="text-slate-400">Planned</span></span>
+                <span className="flex items-center gap-1"><span className="w-2.5 h-0.5 bg-emerald-500 inline-block" /><span className="text-emerald-400">Executed</span></span>
+                <span className="flex items-center gap-1"><span className="w-2.5 h-0.5 bg-amber-500 inline-block" /><span className="text-amber-400">Divergence</span></span>
+              </div>
             </div>
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Runner Status:</span>
             <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider">

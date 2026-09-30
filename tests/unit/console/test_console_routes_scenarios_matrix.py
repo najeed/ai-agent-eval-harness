@@ -101,6 +101,7 @@ def test_validate_scenario_structure_matrix():
 
 def test_readiness_probe_rejects_private_destinations_unless_explicitly_allowed(monkeypatch):
     """Operator-supplied readiness URLs must not become an internal SSRF primitive."""
+    monkeypatch.delenv("AGENTV_AGENT_PROBE_ALLOWED_HOSTS", raising=False)
     with pytest.raises(ValueError, match="blocked address"):
         _assert_safe_probe_destination("http://127.0.0.1:8080/health")
 
