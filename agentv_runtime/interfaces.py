@@ -11,7 +11,10 @@ from __future__ import annotations
 import time
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from agentv_runtime.contracts import MutationDescriptor
 
 # ==============================================================================
 # 1. ExecutionBackend Contract
@@ -408,6 +411,11 @@ class MutationEngine(ABC):
     @abstractmethod
     def list_supported_mutators(self) -> list[dict[str, Any]]:
         """Returns catalog of registered mutators, coordinates, and supported tiers."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_mutation_catalog(self, org_id: str | None = None) -> list[MutationDescriptor]:
+        """Returns catalog of typed MutationDescriptors filtered by tenant org_id."""
         raise NotImplementedError
 
 

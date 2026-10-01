@@ -764,3 +764,286 @@ def test_mutator_edge_cases_and_branch_completions(tmp_path):
     non_standard_spec_scen = {"workflow": {"nodes": [{"id": "n1", "task_description": "base"}]}}
     res_non_std = clean_service.mutate_scenario(non_standard_spec_scen, mutation_spec=12345)
     assert res_non_std is not None
+
+
+def test_mutation_descriptor_contract_and_catalog():
+    """Verify MutationDescriptor contract fields, serialization, and master catalog coverage."""
+    from agentv_runtime.contracts import (
+        MutationDescriptor,
+        MutationOperation,
+        MutationTier,
+        MutationVector,
+    )
+    from eval_runner.mutator import MUTATION_CATALOG
+
+    desc = MutationDescriptor(
+        id="test.custom",
+        label="Custom Test Mutator",
+        vector=MutationVector.INPUT,
+        operation=MutationOperation.CORRUPT,
+        tier=MutationTier.T0_LINGUISTIC,
+        source="core",
+        description="A test mutator descriptor",
+        target_field="task_description",
+        regulatory_frameworks=["EU_AI_ACT"],
+        org_id=None,
+        deterministic=True,
+        parameters_schema={"type": "object"},
+    )
+    d_dict = desc.to_dict()
+    assert d_dict["id"] == "test.custom"
+    assert d_dict["deterministic"] is True
+    assert d_dict["regulatory_frameworks"] == ["EU_AI_ACT"]
+    assert d_dict["parameters_schema"] == {"type": "object"}
+
+    # Master catalog validation
+    assert len(MUTATION_CATALOG) >= 30
+    vectors_in_cat = {m.vector for m in MUTATION_CATALOG}
+    assert MutationVector.INPUT in vectors_in_cat
+    assert MutationVector.CONTEXT in vectors_in_cat
+    assert MutationVector.MEMORY in vectors_in_cat
+    assert MutationVector.RETRIEVAL in vectors_in_cat
+    assert MutationVector.TOOL in vectors_in_cat
+    assert MutationVector.STATE in vectors_in_cat
+    assert MutationVector.AUTHORIZATION in vectors_in_cat
+    assert MutationVector.TIME in vectors_in_cat
+    assert MutationVector.OBJECTIVE in vectors_in_cat
+
+    for m in MUTATION_CATALOG:
+        assert m.id and m.label and m.description and m.target_field
+        assert m.deterministic is True
+
+
+def test_mutation_service_list_mutation_catalog_and_tenant_scoping():
+    """Verify MutationService.list_mutation_catalog filters by tenant org_id and wraps providers."""
+    from agentv_runtime.contracts import (
+        MutationCoordinate,
+        MutationDescriptor,
+        MutationOperation,
+        MutationTier,
+        MutationVector,
+    )
+    from eval_runner.mutator import MutationService, ScenarioMutator
+
+    svc = MutationService()
+
+    # 1. Global catalog without org_id
+    cat_all = svc.list_mutation_catalog()
+    assert len(cat_all) >= 30
+
+    # 2. Provider with direct descriptor attribute
+    class DescriptorProvider(ScenarioMutator):
+        name = "desc_provider"
+        descriptor = MutationDescriptor(
+            id="tenant.custom_a",
+            label="Tenant A Mutator",
+            vector=MutationVector.TOOL,
+            operation=MutationOperation.CORRUPT,
+            tier=MutationTier.T5_ENTERPRISE,
+            source="enterprise",
+            description="Tenant A custom tool fault",
+            target_field="parameters",
+            org_id="org_alpha",
+        )
+
+    # 3. Provider with list_descriptors method
+    class MultiDescriptorProvider(ScenarioMutator):
+        name = "multi_desc_provider"
+
+        def list_descriptors(self):
+            return [
+                MutationDescriptor(
+                    id="tenant.custom_b",
+                    label="Tenant B Mutator",
+                    vector=MutationVector.STATE,
+                    operation=MutationOperation.CONFLICT,
+                    tier=MutationTier.T5_ENTERPRISE,
+                    source="enterprise",
+                    description="Tenant B custom state fault",
+                    target_field="failure_policy",
+                    org_id="org_beta",
+                ),
+                "not_a_descriptor_object",  # branch: ignored
+            ]
+
+    # 4. Provider raising exception in list_descriptors
+    class FailingDescriptorProvider(ScenarioMutator):
+        name = "failing_desc"
+
+        def list_descriptors(self):
+            raise RuntimeError("Corrupt descriptor provider")
+
+    # 5. Fallback provider wrapped into MutationDescriptor automatically
+    class BareProvider(ScenarioMutator):
+        name = "bare_mutator"
+        is_enterprise = True
+        coordinate = MutationCoordinate(
+            MutationVector.AUTHORIZATION, MutationOperation.DELETE, MutationTier.T4_SECURITY
+        )
+
+    svc.register_provider(DescriptorProvider())
+    svc.register_provider(MultiDescriptorProvider())
+    svc.register_provider(FailingDescriptorProvider())
+    svc.register_provider(BareProvider())
+
+    # Filter for org_alpha: should include global (org_id=None) and org_alpha, but NOT org_beta
+    alpha_cat = svc.list_mutation_catalog(org_id="org_alpha")
+    ids_alpha = {m.id for m in alpha_cat}
+    assert "tenant.custom_a" in ids_alpha
+    assert "tenant.custom_b" not in ids_alpha
+
+    # Filter for org_beta: should include global and org_beta, but NOT org_alpha
+    beta_cat = svc.list_mutation_catalog(org_id="org_beta")
+    ids_beta = {m.id for m in beta_cat}
+    assert "tenant.custom_b" in ids_beta
+    assert "tenant.custom_a" not in ids_beta
+
+    # Filter for nonexistent tenant: only global core mutators returned
+    gamma_cat = svc.list_mutation_catalog(org_id="org_gamma")
+    ids_gamma = {m.id for m in gamma_cat}
+    assert "tenant.custom_a" not in ids_gamma
+    assert "tenant.custom_b" not in ids_gamma
+    assert "typo" in ids_gamma
+
+    svc.reset()
+
+
+def test_mutation_service_plugin_discovery_and_reset(monkeypatch):
+    """Verify dynamic in-process plugin discovery via entry_points and reset."""
+    from unittest.mock import MagicMock
+
+    from eval_runner.mutator import MutationService, ScenarioMutator
+
+    svc = MutationService()
+
+    # 1. When AGENTV_DISABLE_EXTERNAL_PLUGINS is 1, discovery is bypassed
+    monkeypatch.setenv("AGENTV_DISABLE_EXTERNAL_PLUGINS", "1")
+    svc._discovered_plugins = False
+    svc.discover_installed_mutator_plugins()
+    assert svc._discovered_plugins is False
+
+    # 2. When enabled, discovery loads entry points
+    monkeypatch.delenv("AGENTV_DISABLE_EXTERNAL_PLUGINS", raising=False)
+
+    class DiscoveredMutator(ScenarioMutator):
+        name = "discovered_entrypoint"
+
+    mock_ep = MagicMock()
+    mock_ep.load.return_value = DiscoveredMutator
+
+    def mock_entry_points(group=None):
+        if group == "agentv.mutators":
+            return [mock_ep]
+        return []
+
+    monkeypatch.setattr("importlib.metadata.entry_points", mock_entry_points)
+    svc.discover_installed_mutator_plugins()
+    assert svc._discovered_plugins is True
+    assert any(getattr(p, "name", "") == "discovered_entrypoint" for p in svc._providers)
+
+    # Calling again does not re-discover if already discovered
+    svc.discover_installed_mutator_plugins()
+
+    # Reset clears discovered status
+    svc.reset()
+    assert svc._discovered_plugins is False
+
+    # Exception during discovery logs warning and does not crash
+    def mock_broken_entry_points(group=None):
+        raise RuntimeError("Disk I/O error on entrypoint search")
+
+    monkeypatch.setattr("importlib.metadata.entry_points", mock_broken_entry_points)
+    svc.discover_installed_mutator_plugins()
+    svc.reset()
+
+
+def test_mutation_service_id_differentiation_and_seed_branches():
+    """Verify edge case branches in ID differentiation and seed injection."""
+    from eval_runner.mutator import MutationService, ScenarioMutator
+
+    class CustomMutatorIdSame(ScenarioMutator):
+        name = "same_id_mutator"
+
+        def can_mutate(self, mutation_type: str) -> bool:
+            return mutation_type == "same_id"
+
+        def mutate(self, scenario: dict, mutation_type: str, next_mutator) -> dict:
+            return scenario
+
+    svc = MutationService()
+    svc.register_provider(CustomMutatorIdSame())
+
+    # Branch 1: mut_id == orig_id and does not end with suffix (line 1316)
+    # AND curr_meta_id == orig_meta_id and does not end with suffix (line 1324)
+    scen1 = {
+        "id": "base_scenario_1",
+        "metadata": {"id": "base_scenario_1"},
+        "workflow": {"nodes": []},
+    }
+    mut1 = svc.mutate_scenario(scen1, "same_id", seed=100)
+    assert mut1["id"] == "base_scenario_1_mutated_same_id"
+    assert mut1["metadata"]["id"] == "base_scenario_1_mutated_same_id"
+    assert mut1["metadata"]["mutation_seed"] == 100
+
+    # Branch 2: mut_id is not string/missing, but orig_id is string (line 1318)
+    # AND curr_meta_id is not string/missing, but orig_meta_id is string (line 1326)
+    class CustomMutatorStrippedId(ScenarioMutator):
+        name = "strip_id"
+
+        def can_mutate(self, mutation_type: str) -> bool:
+            return mutation_type == "strip"
+
+        def mutate(self, scenario: dict, mutation_type: str, next_mutator) -> dict:
+            sc = dict(scenario)
+            sc.pop("id", None)
+            sc["metadata"] = {}
+            return sc
+
+    svc.register_provider(CustomMutatorStrippedId())
+    scen2 = {
+        "id": "base_scenario_2",
+        "metadata": {"id": "base_scenario_2_meta"},
+        "workflow": {"nodes": []},
+    }
+    mut2 = svc.mutate_scenario(scen2, "strip")
+    assert mut2["id"] == "base_scenario_2_mutated_strip"
+    assert mut2["metadata"]["id"] == "base_scenario_2_meta_mutated_strip"
+
+    svc.reset()
+
+
+def test_mutation_service_non_dict_mutated_and_meta_branches():
+    """Verify branches where mutated scenario or its metadata is not a dict."""
+    from eval_runner.mutator import MutationService, ScenarioMutator
+
+    class NonDictMutator(ScenarioMutator):
+        name = "non_dict"
+
+        def can_mutate(self, mutation_type: str) -> bool:
+            return mutation_type == "non_dict"
+
+        def mutate(self, scenario: dict, mutation_type: str, next_mutator):
+            return "string_not_dict"
+
+    class NonDictMetaMutator(ScenarioMutator):
+        name = "non_dict_meta"
+
+        def can_mutate(self, mutation_type: str) -> bool:
+            return mutation_type == "non_dict_meta"
+
+        def mutate(self, scenario: dict, mutation_type: str, next_mutator) -> dict:
+            return {"id": "scen_meta_str", "metadata": "string_not_dict"}
+
+    svc = MutationService()
+    svc.register_provider(NonDictMutator())
+    svc.register_provider(NonDictMetaMutator())
+
+    # 1. Non-dict mutated return (line 1803 False branch)
+    res_str = svc.mutate_scenario({"id": "base"}, "non_dict")
+    assert res_str == "string_not_dict"
+
+    # 2. Non-dict metadata (line 1817 False branch)
+    res_meta = svc.mutate_scenario({"id": "base"}, "non_dict_meta")
+    assert res_meta["metadata"] == "string_not_dict"
+
+    svc.reset()

@@ -492,6 +492,83 @@ def test_scenarios_mutate_by_id_not_found(client):
     assert "not found" in res.get_json()["error"]
 
 
+def test_scenarios_list_available_mutations_route(client):
+    """Verify GET /api/v1/mutations returns dynamic master catalog with metadata."""
+    res = client.get("/api/v1/mutations")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["status"] == "success"
+    assert data["total"] >= 30
+    assert len(data["mutations"]) >= 30
+
+    item = data["mutations"][0]
+    assert "id" in item
+    assert "label" in item
+    assert "vector" in item
+    assert "operation" in item
+    assert "tier" in item
+    assert "source" in item
+    assert "description" in item
+    assert "target_field" in item
+    assert "regulatory_frameworks" in item
+    assert item["deterministic"] is True
+
+    # Test with org_id query parameter
+    res_tenant = client.get("/api/v1/mutations?org_id=tenant_test_xyz")
+    assert res_tenant.status_code == 200
+    data_tenant = res_tenant.get_json()
+    assert data_tenant["status"] == "success"
+    assert len(data_tenant["mutations"]) >= 30
+
+    # Test with g.current_org_id injected in request
+    from flask import g
+
+    with client.application.test_request_context("/api/v1/mutations"):
+        g.current_org_id = "tenant_g_org"
+        from eval_runner.console.routes.scenarios import list_available_mutations
+
+        res_g = list_available_mutations()
+        assert res_g.json["status"] == "success"
+        assert len(res_g.json["mutations"]) >= 30
+
+
+def test_scenarios_mutate_seed_and_invalid_type_handling(client, console_jail):
+    """Verify /api/v1/mutate handles deterministic seed propagation and graceful fallback."""
+    from eval_runner.catalog import ScenarioCatalog
+
+    cat = ScenarioCatalog.get_instance()
+    scen_dir = console_jail["root"] / "scenarios"
+    scen_dir.mkdir(parents=True, exist_ok=True)
+    scen_file = scen_dir / "scen_seed_test.json"
+    scen_file.write_text(
+        '{"id": "scen_seed_test", "title": "Seed Test", "workflow": {"nodes": []}}',
+        encoding="utf-8",
+    )
+
+    prev_scenarios = cat.scenarios
+    cat.scenarios = [{"id": "scen_seed_test", "path": "scenarios/scen_seed_test.json"}]
+    try:
+        # Valid integer seed
+        res = client.post(
+            "/api/v1/mutate",
+            json={"scenario_id": "scen_seed_test", "type": "typo", "seed": 999},
+        )
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["status"] == "success"
+        assert data["mutated"]["metadata"]["mutation_seed"] == 999
+
+        # Non-integer seed falls back gracefully to None without crash
+        res_non_int = client.post(
+            "/api/v1/mutate",
+            json={"scenario_id": "scen_seed_test", "type": "typo", "seed": "not_an_int"},
+        )
+        assert res_non_int.status_code == 200
+        assert res_non_int.get_json()["status"] == "success"
+    finally:
+        cat.scenarios = prev_scenarios
+
+
 # ---------------------------------------------------------------------------
 # 5. Deep AES Schema & Semantic Invariant Validation Tests
 # ---------------------------------------------------------------------------

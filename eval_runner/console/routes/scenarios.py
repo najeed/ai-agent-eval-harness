@@ -12,7 +12,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from flask import Blueprint, jsonify, request, session
+from flask import Blueprint, g, jsonify, request, session
 
 import eval_runner
 from agentv_runtime.manifest import (
@@ -1521,6 +1521,21 @@ def get_taxonomy():
     return jsonify({"categories": eval_runner.taxonomy.CATEGORIES})
 
 
+@scenario_bp.route("/v1/mutations", methods=["GET"])
+@require_permission(Permission.SCENARIOS_READ)
+def list_available_mutations():
+    """Returns the unified mutation catalog (Core + Enterprise + Tenant), tenant-filtered."""
+    org_id = getattr(g, "current_org_id", None) or request.args.get("org_id")
+    catalog = eval_runner.mutator.mutation_service.list_mutation_catalog(org_id=org_id)
+    return jsonify(
+        {
+            "status": "success",
+            "mutations": [m.to_dict() for m in catalog],
+            "total": len(catalog),
+        }
+    )
+
+
 @scenario_bp.route("/v1/mutate", methods=["POST"])
 @require_permission(Permission.SCENARIOS_WRITE)
 def mutate_scenario():
@@ -1529,6 +1544,12 @@ def mutate_scenario():
 
     data = request.json or {}
     mutation_type = data.get("type", "typo")
+    seed = data.get("seed")
+    if seed is not None:
+        try:
+            seed = int(seed)
+        except (ValueError, TypeError):
+            seed = None
 
     # Support raw content, scenario ID, or input path
     raw_content = data.get("raw_json")
@@ -1558,7 +1579,7 @@ def mutate_scenario():
             scenario = json.load(f)
 
     try:
-        mutated = eval_runner.mutator.mutate_scenario(scenario, mutation_type)
+        mutated = eval_runner.mutator.mutate_scenario(scenario, mutation_type, seed=seed)
 
         # Optionally save to output path
         output_path = data.get("output_path")

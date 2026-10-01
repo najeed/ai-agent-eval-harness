@@ -501,6 +501,27 @@ class MutationTier:
 
 
 @dataclass(frozen=True)
+class MutationDescriptor:
+    """Authoritative descriptor exposed to Visual Console and Control Plane catalog."""
+
+    id: str
+    label: str
+    vector: str
+    operation: str
+    tier: str
+    source: str
+    description: str
+    target_field: str
+    regulatory_frameworks: list[str] = field(default_factory=list)
+    org_id: str | None = None
+    deterministic: bool = True
+    parameters_schema: dict[str, Any] | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
 class MutationCoordinate:
     """Uniquely indexes any mutation in the 3D mutation algebra (vector x operation x tier)."""
 
@@ -609,6 +630,7 @@ __all__ = [
     "MutationCampaignSpec",
     "MutationContext",
     "MutationCoordinate",
+    "MutationDescriptor",
     "MutationHandle",
     "MutationOperation",
     "MutationRecord",
