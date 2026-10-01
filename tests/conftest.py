@@ -16,6 +16,8 @@ from typing import Any
 
 import pytest
 import pytest_asyncio
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import ed25519
 
 # Enforce repository isolation in test execution (never load external unisolated entry-points)
 os.environ.setdefault("AGENTV_DISABLE_EXTERNAL_PLUGINS", "1")
@@ -329,12 +331,50 @@ def isolate_plugin_registry(tmp_path, monkeypatch):
     return registry_file
 
 
+def _generate_test_identity_bytes():
+    priv = ed25519.Ed25519PrivateKey.generate()
+    priv_pem = priv.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption(),
+    )
+    pub_pem = priv.public_key().public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )
+    return priv_pem, pub_pem
+
+
+_BASELINE_TEST_IDENTITIES = [
+    "system_id",
+    "eval_kernel",
+    "authoritative_evaluator",
+    "test_signer",
+    "eval_runner.runner.EvaluationKernel",
+    "dev_publisher",
+    "contract_test_signer",
+    "fp_contract_signer",
+    "schema_contract_signer",
+    "test_evaluator",
+    "test-identity",
+    "chaos_verifier",
+    "strict_mode_test_id",
+    "pqc_test_signing_id",
+    "pqc_disabled_fallback_id",
+]
+
+_CACHED_TEST_KEYS: dict[str, tuple[bytes, bytes]] = {
+    ident: _generate_test_identity_bytes() for ident in _BASELINE_TEST_IDENTITIES
+}
+
+
 @pytest.fixture(autouse=True)
 def isolate_trust_root(tmp_path, monkeypatch):
     """
     Global Safety Net: Automatically isolates TRUST_ROOT for all tests.
     Copies existing workspace keys to a temporary directory and redirects config.TRUST_ROOT,
     preventing any test from ever clobbering or overwriting workspace keys.
+    Seeds baseline test identities in CI or fresh environments where .aes/keys does not exist.
     """
     import shutil
 
@@ -344,6 +384,22 @@ def isolate_trust_root(tmp_path, monkeypatch):
     isolated_keys_dir.mkdir(parents=True, exist_ok=True)
     if config.TRUST_ROOT.exists():
         shutil.copytree(config.TRUST_ROOT, isolated_keys_dir, dirs_exist_ok=True)
+
+    # Seed baseline test identities if not already present
+    for ident, (priv_bytes, pub_bytes) in _CACHED_TEST_KEYS.items():
+        ident_dir = isolated_keys_dir / ident
+        priv_file = ident_dir / "private_key.pem"
+        pub_file = ident_dir / "public_key.pem"
+        if not priv_file.exists():
+            ident_dir.mkdir(parents=True, exist_ok=True)
+            priv_file.write_bytes(priv_bytes)
+        if not pub_file.exists():
+            pub_file.write_bytes(pub_bytes)
+
+    # Also write system_id.pem fallback if absent
+    system_id_pem = isolated_keys_dir / "system_id.pem"
+    if not system_id_pem.exists():
+        system_id_pem.write_bytes(_CACHED_TEST_KEYS["system_id"][0])
 
     monkeypatch.setattr(config, "TRUST_ROOT", isolated_keys_dir)
     monkeypatch.setenv("TRUST_ROOT", str(isolated_keys_dir))
