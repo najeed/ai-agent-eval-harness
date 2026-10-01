@@ -47,6 +47,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **cmdk** | ^1.1.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **dagre** | ^0.8.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **lucide-react** | ^1.34.0 | ISC | [ISC.txt](LICENSES/ISC.txt) |
+| **monaco-editor** | ^0.57.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **react** | ^19.2.8 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **react-diff-viewer-continued** | ^4.4.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **react-dom** | ^19.2.8 | MIT | [MIT.txt](LICENSES/MIT.txt) |
@@ -83,7 +84,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **cyclecore-pq** | 0.3.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **datasets** | 5.0.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **GitPython** | 3.2.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **google-genai** | 2.25.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **google-genai** | 2.26.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **langchain** | 1.4.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-anthropic** | 1.7.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-core** | 1.6.6 | MIT | [MIT.txt](LICENSES/MIT.txt) |
