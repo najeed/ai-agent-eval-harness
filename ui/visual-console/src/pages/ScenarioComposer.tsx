@@ -75,6 +75,7 @@ export const ScenarioComposer: React.FC = () => {
   // JSON/YAML Toggle
   const [viewMode, setViewMode] = useState<'canvas' | 'json'>('canvas');
   const prevViewModeRef = React.useRef<'canvas' | 'json'>('canvas');
+  const editorRef = React.useRef<any>(null);
   const [rawJson, setRawJson] = useState('');
   // P0-1: synchronous JSON syntax error state. When set, Save/Run are blocked.
   const [jsonParseError, setJsonParseError] = useState<string | null>(null);
@@ -214,6 +215,9 @@ export const ScenarioComposer: React.FC = () => {
     if (viewMode === 'json' && prevViewModeRef.current !== 'json') {
       setRawJson(JSON.stringify(getAESJson(), null, 2));
       setJsonParseError(null);
+      setTimeout(() => {
+        editorRef.current?.layout();
+      }, 60);
     }
     prevViewModeRef.current = viewMode;
   }, [viewMode]);
@@ -969,7 +973,7 @@ export const ScenarioComposer: React.FC = () => {
       )}
 
       {/* Main Workspace Body */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden min-h-0">
         {viewMode === 'canvas' ? (
           <>
             {/* Canvas Pane */}
@@ -1198,16 +1202,24 @@ export const ScenarioComposer: React.FC = () => {
           </>
         ) : (
           /* Monaco Editor split pane */
-          <div className="flex-1 h-full bg-[#1e1e1e]">
+          <div className="flex-1 h-full min-h-0 min-w-0 relative overflow-hidden bg-[#1e1e1e]">
             <Editor
               height="100%"
               defaultLanguage="json"
               theme="vs-dark"
               value={rawJson}
-              onMount={(_editor, monaco) => {
+              onMount={(editor, monaco) => {
+                editorRef.current = editor;
+                monaco.editor.remeasureFonts();
+                editor.layout();
+                setTimeout(() => {
+                  monaco.editor.remeasureFonts();
+                  editor.layout();
+                }, 80);
                 if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) {
                   document.fonts.ready.then(() => {
                     monaco.editor.remeasureFonts();
+                    editor.layout();
                   });
                 }
               }}
@@ -1227,7 +1239,6 @@ export const ScenarioComposer: React.FC = () => {
                 minimap: { enabled: false },
                 fontSize: 13,
                 lineHeight: 20,
-                letterSpacing: 0,
                 fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, Menlo, Monaco, 'Courier New', monospace",
                 fontLigatures: false,
                 automaticLayout: true,
@@ -1243,7 +1254,7 @@ export const ScenarioComposer: React.FC = () => {
                 scrollbar: {
                   verticalScrollbarSize: 10,
                   horizontalScrollbarSize: 10,
-                  alwaysConsumeMouseWheel: false,
+                  alwaysConsumeMouseWheel: true,
                 },
               }}
             />

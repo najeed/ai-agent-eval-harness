@@ -982,8 +982,8 @@ export const LiveDebugger: React.FC = () => {
       {/* Center - Visual Canvas */}
       <div className="flex-1 flex flex-col bg-navy-base relative min-w-0">
         {/* Header toolbar */}
-        <div className="h-14 border-b border-slate-900 bg-slate-950/20 px-6 flex items-center justify-between shrink-0 text-xs">
-          <div className="flex items-center gap-3">
+        <div className="min-h-[52px] border-b border-slate-900 bg-slate-950/40 px-5 py-2 flex items-center justify-between gap-4 shrink-0 text-xs">
+          <div className="flex items-center gap-3 min-w-0 flex-1 overflow-x-auto no-scrollbar py-0.5">
             {/* [B1] Topology provenance authority chip */}
             <div
               title={
@@ -991,7 +991,7 @@ export const LiveDebugger: React.FC = () => {
                   ? `Topology reconstructed from canonical sources only: ${topologyProvenance.scenarioNodeCount} scenario node(s), ${topologyProvenance.runtimeNodeCount} runtime-discovered node(s) (execution_graph_node events).`
                   : 'No canonical workflow definition and no execution_graph_node events were found for this trace. Generic telemetry cannot fabricate topology.'
               }
-              className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border font-mono text-[10px] font-bold uppercase tracking-wider cursor-help ${topologyProvenance.source === 'CANONICAL'
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border font-mono text-[10px] font-bold uppercase tracking-wider cursor-help shrink-0 whitespace-nowrap ${topologyProvenance.source === 'CANONICAL'
                 ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
                 : 'border-amber-500/40 bg-amber-500/10 text-amber-300 animate-pulse'
                 }`}
@@ -1006,7 +1006,7 @@ export const LiveDebugger: React.FC = () => {
             {/* [P0-9][B2] Prominent compositional trace-integrity state */}
             <div
               title={traceIntegrity.issues.join('\n') || 'Trace integrity verified.'}
-              className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border font-mono text-[10px] font-bold uppercase tracking-wider cursor-help ${integrityTone === 'clean'
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border font-mono text-[10px] font-bold uppercase tracking-wider cursor-help shrink-0 whitespace-nowrap ${integrityTone === 'clean'
                 ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
                 : integrityTone === 'recovered'
                   ? 'border-violet-500/30 bg-violet-500/10 text-violet-300'
@@ -1027,7 +1027,7 @@ export const LiveDebugger: React.FC = () => {
             {topologyProvenance.droppedEdgeCount > 0 && (
               <div
                 title={`${topologyProvenance.droppedEdgeCount} executed transition event(s) reference endpoints that could not be resolved to scenario nodes. The rendered graph is INCOMPLETE: absence of an edge here is NOT evidence it did not fire.`}
-                className="flex items-center gap-1.5 px-2 py-1 rounded-lg border border-amber-500/40 bg-amber-500/10 text-amber-300 font-mono text-[10px] font-bold uppercase tracking-wider cursor-help animate-pulse"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-amber-500/40 bg-amber-500/10 text-amber-300 font-mono text-[10px] font-bold uppercase tracking-wider cursor-help animate-pulse shrink-0 whitespace-nowrap"
               >
                 <AlertTriangle className="w-3.5 h-3.5" />
                 DROPPED EDGES ({topologyProvenance.droppedEdgeCount})
@@ -1040,51 +1040,65 @@ export const LiveDebugger: React.FC = () => {
                 title={`Server stream gaps detected before dedupe/reorder: ${streamGaps
                   .map(g => `${g.from}–${g.to}`)
                   .join(', ')}. The trace-integrity panel reflects the authoritative post-replay state.`}
-                className="flex items-center gap-1.5 px-2 py-1 rounded-lg border border-rose-500/40 bg-rose-500/10 text-rose-300 font-mono text-[10px] font-bold uppercase tracking-wider cursor-help animate-pulse"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-rose-500/40 bg-rose-500/10 text-rose-300 font-mono text-[10px] font-bold uppercase tracking-wider cursor-help animate-pulse shrink-0 whitespace-nowrap"
               >
                 <AlertTriangle className="w-3.5 h-3.5" />
                 SSE GAP ({streamGaps.length})
               </div>
             )}
-            {/* Layer selector and its legend form one vertical control, avoiding
-                competition with the runner and stream status controls. */}
-            <div className="flex flex-col items-start gap-1">
-              <div
-                title={
-                  layerMode === 'planned'
-                    ? 'Planned layer: the scenario DAG as defined; the design-time control-flow contract.'
-                    : layerMode === 'executed'
-                      ? 'Executed layer: only authoritative execution_graph_node and execution_graph_edge evidence.'
-                      : 'Divergence overlay: planned-vs-executed differences (SKIPPED planned nodes, UNPLANNED executions).'
-                }
-                className="flex bg-slate-950 border border-slate-800 rounded-lg p-0.5 font-mono text-[9px] font-bold uppercase tracking-wider cursor-help"
-              >
-                <Layers className="w-3.5 h-3.5 text-slate-500 self-center ml-1.5 mr-1" />
-                {(['planned', 'executed', 'divergence'] as const).map(l => (
-                  <button key={l} onClick={() => setLayerMode(l)} className={`px-2 py-1 rounded-md transition-colors ${layerMode === l ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>
-                    {l}
-                  </button>
-                ))}
-              </div>
-              <div className="hidden xl:flex items-center gap-2.5 px-2 py-0.5 bg-slate-900/80 border border-slate-800 rounded text-[9px] font-mono text-slate-400">
-                <span className="flex items-center gap-1"><span className="w-2.5 h-0.5 border-t border-dashed border-slate-500 inline-block" /><span className="text-slate-400">Planned</span></span>
-                <span className="flex items-center gap-1"><span className="w-2.5 h-0.5 bg-emerald-500 inline-block" /><span className="text-emerald-400">Executed</span></span>
-                <span className="flex items-center gap-1"><span className="w-2.5 h-0.5 bg-amber-500 inline-block" /><span className="text-amber-400">Divergence</span></span>
-              </div>
+
+            <div className="h-4 w-px bg-slate-800 shrink-0" />
+
+            {/* Layer selector with embedded color indicators */}
+            <div
+              title={
+                layerMode === 'planned'
+                  ? 'Planned layer: the scenario DAG as defined; the design-time control-flow contract.'
+                  : layerMode === 'executed'
+                    ? 'Executed layer: only authoritative execution_graph_node and execution_graph_edge evidence.'
+                    : 'Divergence overlay: planned-vs-executed differences (SKIPPED planned nodes, UNPLANNED executions).'
+              }
+              className="flex items-center bg-slate-950 border border-slate-800 rounded-lg p-0.5 font-mono text-[9px] font-bold uppercase tracking-wider cursor-help shrink-0"
+            >
+              <Layers className="w-3.5 h-3.5 text-slate-500 ml-1.5 mr-1" />
+              {(['planned', 'executed', 'divergence'] as const).map(l => (
+                <button
+                  key={l}
+                  onClick={() => setLayerMode(l)}
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-colors whitespace-nowrap cursor-pointer ${
+                    layerMode === l ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  {l === 'planned' && (
+                    <span className="w-2.5 h-0.5 border-t border-dashed border-current inline-block opacity-75" />
+                  )}
+                  {l === 'executed' && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+                  )}
+                  {l === 'divergence' && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block" />
+                  )}
+                  {l}
+                </button>
+              ))}
             </div>
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Runner Status:</span>
-            <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider">
-              <span className={`w-2.5 h-2.5 rounded-full ${status === 'RUNNING' ? 'bg-amber-500 animate-pulse' :
-                status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-red-500'
+
+            <div className="h-4 w-px bg-slate-800 shrink-0" />
+
+            {/* Runner & Stream status pills */}
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900/90 border border-slate-800 text-[10px] font-mono shrink-0 whitespace-nowrap">
+              <span className="text-slate-500 font-bold uppercase tracking-wider text-[9px]">Runner:</span>
+              <span className={`w-2 h-2 rounded-full ${status === 'RUNNING' ? 'bg-amber-400 animate-pulse' :
+                status === 'COMPLETED' ? 'bg-emerald-400' : 'bg-red-400'
                 }`} />
-              <span className={status === 'RUNNING' ? 'text-amber-400' : status === 'COMPLETED' ? 'text-emerald-400' : 'text-red-400'}>
+              <span className={`font-bold uppercase tracking-wider ${status === 'RUNNING' ? 'text-amber-400' : status === 'COMPLETED' ? 'text-emerald-400' : 'text-red-400'}`}>
                 {status}
               </span>
             </div>
 
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider ml-4">Stream:</span>
-            <div className="flex items-center gap-1.5">
-              <span className={`px-2 py-0.5 rounded text-[9px] font-bold border ${connectionStatus === 'CONNECTED' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900/90 border border-slate-800 text-[10px] font-mono shrink-0 whitespace-nowrap">
+              <span className="text-slate-500 font-bold uppercase tracking-wider text-[9px]">Stream:</span>
+              <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold border ${connectionStatus === 'CONNECTED' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
                 connectionStatus === 'REPLAYING' ? 'bg-violet-500/10 text-violet-300 border-violet-500/20 animate-pulse' :
                   connectionStatus === 'CONNECTING' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20 animate-pulse' :
                     connectionStatus === 'RECONNECTING' ? 'bg-red-500/10 text-red-400 border-red-500/20 animate-pulse' :
@@ -1101,31 +1115,32 @@ export const LiveDebugger: React.FC = () => {
                   Reconnect
                 </button>
               )}
-              {/* [Sprint-3] Explicit fit; auto-fit only ever happens on
-                  initial load of a run+scenario. */}
-              <button
-                title="Fit graph to viewport (explicit)"
-                onClick={() => reactFlowInstance?.fitView?.({ padding: 0.2, duration: 300 })}
-                className="px-2 py-0.5 bg-slate-800/60 hover:bg-slate-800 border border-slate-700 rounded text-[9px] font-mono text-slate-300 font-bold uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1"
-              >
-                <Maximize2 className="w-3 h-3" /> Fit
-              </button>
             </div>
+
+            <button
+              title="Fit graph to viewport (explicit)"
+              onClick={() => reactFlowInstance?.fitView?.({ padding: 0.2, duration: 300 })}
+              className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 rounded-lg text-[10px] font-mono text-slate-300 font-bold uppercase tracking-wider transition-colors cursor-pointer shrink-0 whitespace-nowrap"
+            >
+              <Maximize2 className="w-3 h-3 text-slate-400" />
+              <span>Fit</span>
+            </button>
           </div>
 
-          <div className="flex items-center gap-2">
+          {/* Action buttons (Right-aligned, never squeezed) */}
+          <div className="flex items-center gap-2 shrink-0 pl-3 border-l border-slate-900">
             {hasError && (
               <button
                 onClick={handleIsolateRootCause}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-950/40 border border-rose-900 hover:border-rose-700 rounded text-rose-350 hover:text-rose-200 transition-colors font-bold uppercase tracking-wider cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-950/50 hover:bg-rose-900/60 border border-rose-800 hover:border-rose-600 rounded-lg text-rose-300 hover:text-rose-100 transition-colors font-bold uppercase tracking-wider text-[11px] whitespace-nowrap shrink-0 shadow-sm cursor-pointer"
               >
-                <AlertTriangle className="w-3.5 h-3.5 text-rose-500 animate-pulse" />
+                <AlertTriangle className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
                 <span>Isolate Root Cause</span>
               </button>
             )}
             <button
               onClick={handleExplain}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-950 border border-slate-900 rounded text-slate-400 hover:text-slate-200 transition-colors font-bold uppercase tracking-wider"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-lg text-slate-300 hover:text-white transition-colors font-bold uppercase tracking-wider text-[11px] whitespace-nowrap shrink-0 shadow-sm cursor-pointer"
             >
               <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
               <span>Root Cause Analysis</span>

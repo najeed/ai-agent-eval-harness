@@ -28,6 +28,16 @@
   }
 }
 
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
 /* ReactFlow Canvas Controls Dark Theme */
 .react-flow__controls {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6) !important;
@@ -60,83 +70,23 @@
 }
 
 /* Monaco Editor Container & Typography Stabilization */
-.monaco-editor,
+.monaco-editor .view-lines,
+.monaco-editor .view-line,
+.monaco-editor .margin,
 .monaco-editor .inputarea.ime-input {
-  font-family: 'JetBrains Mono', 'Fira Code', Menlo, Monaco, Consolas, 'Courier New', monospace !important;
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, Menlo, Monaco, 'Courier New', monospace !important;
   letter-spacing: 0px !important;
+  box-sizing: content-box !important;
 }
 
+/* Guarantee Monaco Codicon icons are NEVER overridden by general font rules */
+.monaco-editor .codicon,
+.codicon,
+[class*='codicon-'] {
+  font-family: codicon !important;
+}
+
+/* Ensure view-lines line height & alignment match line height calculations */
 .monaco-editor .view-line {
-  letter-spacing: 0px !important;
+  line-height: inherit !important;
 }
-
-/* Monaco Context Menu, Suggest Widget & Floating Views */
-.context-view.monaco-menu-container,
-.monaco-menu-container {
-  background-color: #0f172a !important;
-  border: 1px solid #334155 !important;
-  border-radius: 8px !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7), 0 8px 10px -6px rgba(0, 0, 0, 0.7) !important;
-  padding: 6px !important;
-  z-index: 99999 !important;
-}
-
-.monaco-menu {
-  background-color: #0f172a !important;
-  color: #f1f5f9 !important;
-}
-
-.monaco-menu .monaco-action-bar.vertical {
-  background-color: transparent !important;
-}
-
-.monaco-menu .action-item {
-  border-radius: 6px !important;
-  transition: background-color 0.1s ease !important;
-}
-
-.monaco-menu .action-menu-item {
-  color: #e2e8f0 !important;
-  padding: 6px 10px !important;
-  font-size: 12px !important;
-  font-family: 'Inter', system-ui, sans-serif !important;
-}
-
-.monaco-menu .action-item.focused,
-.monaco-menu .action-item:hover,
-.monaco-menu .action-menu-item:hover {
-  background-color: #4f46e5 !important;
-  color: #ffffff !important;
-}
-
-.monaco-menu .action-item.focused .action-label,
-.monaco-menu .action-item:hover .action-label {
-  color: #ffffff !important;
-}
-
-.monaco-menu .keybinding {
-  color: #94a3b8 !important;
-  font-size: 11px !important;
-}
-
-.monaco-menu .action-item.focused .keybinding,
-.monaco-menu .action-item:hover .keybinding {
-  color: #e0e7ff !important;
-}
-
-.monaco-menu .action-item.separator {
-  border-bottom: 1px solid #1e293b !important;
-  margin: 4px 0 !important;
-}
-
-/* Suggest and Hover Widgets */
-.monaco-editor .suggest-widget,
-.monaco-editor .hover-widget,
-.monaco-editor .find-widget {
-  background-color: #0f172a !important;
-  border: 1px solid #334155 !important;
-  border-radius: 8px !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7) !important;
-  z-index: 99999 !important;
-}
-
