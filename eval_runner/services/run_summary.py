@@ -237,15 +237,120 @@ class RunSummaryService:
                     status = "STALLED"
                     lifecycle = "STALLED"
 
+        # Hydrate start timestamp and temporal identifier from physical trace if absent
+        if (not timestamp or not identifier) and tp and tp.exists():
+            try:
+                with open(tp, encoding="utf-8") as f_first:
+                    first_line = f_first.readline().strip()
+                    if first_line and "{" in first_line:
+                        f_ev = json.loads(first_line[first_line.find("{") :])
+                        if not timestamp:
+                            timestamp = (
+                                f_ev.get("timestamp")
+                                or f_ev.get("_ts_iso")
+                                or f_ev.get("time")
+                                or (f_ev.get("data") or {}).get("timestamp")
+                                or ""
+                            )
+                        if not identifier:
+                            identifier = (
+                                f_ev.get("identifier")
+                                or (f_ev.get("metadata") or {}).get("identifier")
+                                or ""
+                            )
+            except Exception as e:
+                logger.debug("Failed extracting start timestamp/identifier from trace: %s", e)
+
+        score = cached.get("score")
+        if score is None and has_certificate and certificate_path:
+            try:
+                with open(certificate_path, encoding="utf-8") as f_cert:
+                    cert_data = json.load(f_cert)
+                    if cert_data.get("score") is not None:
+                        score = float(cert_data["score"])
+                    elif isinstance(cert_data.get("decision"), dict):
+                        d_score = cert_data["decision"].get("score")
+                        if d_score is not None:
+                            score = float(d_score)
+            except Exception as e:
+                logger.debug(f"Error reading score from certificate: {e}")
+
+        # If score is still None, attempt extraction from package manifest or trace
+        if score is None and tp and tp.exists():
+            try:
+                pkg_path = tp.parent / "verification_package.json"
+                if not pkg_path.exists():
+                    pkg_path = tp.parent / "run_manifest.json"
+                if pkg_path.exists():
+                    with open(pkg_path, encoding="utf-8") as f_pkg:
+                        p_data = json.load(f_pkg)
+                        if p_data.get("score") is not None:
+                            score = float(p_data["score"])
+                        elif isinstance(p_data.get("decision"), dict):
+                            d_score = p_data["decision"].get("score")
+                            if d_score is not None:
+                                score = float(d_score)
+            except Exception as e:
+                logger.debug("Failed reading score from package manifest: %s", e)
+
+        # If score is still None, derive from terminal status
+        if score is None:
+            if status in ("CERTIFIED", "PASSED", "SEALED") or cached_result_status == "PASS":
+                score = 1.0
+            elif status == "FAILED" or cached_result_status == "FAIL":
+                score = 0.0
+
+        # If duration_seconds is still None and trace exists, derive from timestamps
+        if duration_seconds is None and tp and tp.exists():
+            try:
+                with open(tp, encoding="utf-8") as f_t:
+                    t_first = None
+                    t_last = None
+                    for line in f_t:
+                        line_str = line.strip()
+                        if not line_str:
+                            continue
+                        if "{" in line_str:
+                            ev = json.loads(line_str[line_str.find("{") :])
+                            ts = (
+                                ev.get("timestamp")
+                                or ev.get("_ts_iso")
+                                or ev.get("time")
+                                or (ev.get("data") or {}).get("timestamp")
+                            )
+                            if ts:
+                                if not t_first:
+                                    t_first = ts
+                                t_last = ts
+                            if (
+                                ev.get("event") == "run_end"
+                                and (ev.get("data") or {}).get("duration") is not None
+                            ):
+                                duration_seconds = float(ev["data"]["duration"])
+                                break
+                    if duration_seconds is None and t_first and t_last:
+                        dt0 = datetime.fromisoformat(
+                            t_first.replace("Z", "+00:00").split("+00:00")[0]
+                        ).timestamp()
+                        dt1 = datetime.fromisoformat(
+                            t_last.replace("Z", "+00:00").split("+00:00")[0]
+                        ).timestamp()
+                        if dt1 >= dt0:
+                            duration_seconds = round(dt1 - dt0, 1)
+            except Exception as e:
+                logger.debug("Failed deriving duration from trace timestamps: %s", e)
+
         summary = {
             "run_id": run_id,
             "scenario": scenario,
             "timestamp": timestamp,
-            "identifier": identifier,
+            "start_time": timestamp,
+            "identifier": identifier or timestamp,
             "lifecycle": lifecycle,
             "status": status,
             "result_status": cached_result_status,
             "duration_seconds": duration_seconds,
+            "score": score,
             "execution_mode": exec_mode,
             "provisional": provisional,
             "trace_integrity": trace_integrity,

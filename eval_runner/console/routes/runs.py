@@ -235,6 +235,9 @@ class RunsCache:
                     event = json.loads(first_line)
                     rid = event.get("run_id") or p.parent.name or ""
                     scenario = event.get("scenario")
+                    timestamp = (
+                        event.get("timestamp") or event.get("_ts_iso") or event.get("time") or ""
+                    )
 
                     # [G5] Primary identifiers: agent identity + terminal
                     # result/duration from the authoritative run_end event.
@@ -248,8 +251,10 @@ class RunsCache:
                         or (event.get("data") or {}).get("execution_mode")
                         or (event.get("metadata") or {}).get("execution_mode")
                     )
-                    if p.stat().st_size < 512 * 1024:
+                    score_cached = None
+                    if p.stat().st_size < 1024 * 1024:
                         lines = f.readlines()
+                        last_ts = None
                         for ln in reversed(lines):
                             ln = ln.strip()
                             if not ln:
@@ -258,11 +263,82 @@ class RunsCache:
                                 last_ev = json.loads(ln)
                             except Exception:
                                 continue
-                            if last_ev.get("event") == "run_end":
-                                data_block = last_ev.get("data", {})
-                                duration_seconds = data_block.get("duration")
-                                result_status = "PASS" if data_block.get("passed") else "FAIL"
-                            break
+                            if not last_ts:
+                                last_ts = (
+                                    last_ev.get("timestamp")
+                                    or last_ev.get("_ts_iso")
+                                    or last_ev.get("time")
+                                )
+                            ev_name = last_ev.get("event")
+                            if ev_name in (
+                                "run_end",
+                                "end",
+                                "session_decision",
+                                "evaluation_result",
+                                "workflow_verdict",
+                            ):
+                                data_block = (
+                                    last_ev.get("data")
+                                    if isinstance(last_ev.get("data"), dict)
+                                    else last_ev
+                                )
+                                if (
+                                    duration_seconds is None
+                                    and data_block.get("duration") is not None
+                                ):
+                                    try:
+                                        duration_seconds = float(data_block["duration"])
+                                    except (ValueError, TypeError):
+                                        pass
+                                if result_status is None:
+                                    raw_st = (
+                                        str(
+                                            data_block.get("outcome")
+                                            or data_block.get("status")
+                                            or ""
+                                        )
+                                        .strip()
+                                        .upper()
+                                    )
+                                    if data_block.get("passed") is True or raw_st in (
+                                        "PASS",
+                                        "PASSED",
+                                        "SUCCESS",
+                                    ):
+                                        result_status = "PASS"
+                                    elif data_block.get("passed") is False or raw_st in (
+                                        "FAIL",
+                                        "FAILED",
+                                        "ERROR",
+                                    ):
+                                        result_status = "FAIL"
+                                if score_cached is None and data_block.get("score") is not None:
+                                    try:
+                                        score_cached = float(data_block["score"])
+                                    except (ValueError, TypeError):
+                                        pass
+                                if (
+                                    duration_seconds is not None
+                                    and result_status is not None
+                                    and score_cached is not None
+                                ):
+                                    break
+                        if duration_seconds is None and timestamp and last_ts:
+                            try:
+                                from datetime import datetime
+
+                                t0 = datetime.fromisoformat(
+                                    timestamp.replace("Z", "+00:00").split("+00:00")[0]
+                                ).timestamp()
+                                t1 = datetime.fromisoformat(
+                                    last_ts.replace("Z", "+00:00").split("+00:00")[0]
+                                ).timestamp()
+                                if t1 >= t0:
+                                    duration_seconds = round(t1 - t0, 1)
+                            except Exception as e:
+                                logger.debug(
+                                    "Failed computing fallback duration from timestamps: %s", e
+                                )
 
                     if not scenario and rid.startswith("run-"):
                         parts = rid.split("-")
@@ -284,6 +360,7 @@ class RunsCache:
                         "duration_seconds": duration_seconds,
                         "result_status": result_status,
                         "execution_mode": execution_mode_cached,
+                        "score": score_cached,
                     }
             except Exception as e:
                 logger.debug(f"Parsing vault run warning: {e}")
@@ -366,12 +443,18 @@ def stream_runs_list():
                         "run_id": run_id,
                         "scenario": summary.get("scenario", run.get("scenario")),
                         "timestamp": summary.get("timestamp", run.get("timestamp")),
+                        "start_time": summary.get("timestamp", run.get("timestamp")),
+                        "identifier": summary.get("identifier")
+                        or run.get("identifier")
+                        or summary.get("timestamp"),
                         "status": summary["status"],
                         "lifecycle": summary["lifecycle"],
                         "verification_status": summary["verification_status"],
                         "trace_integrity": summary["trace_integrity"],
                         "execution_mode": summary["execution_mode"],
                         "provisional": summary["provisional"],
+                        "duration_seconds": summary.get("duration_seconds"),
+                        "score": summary.get("score"),
                     }
                 )
             yield f"data: {json.dumps(resolved_chunk)}\n\n"
@@ -495,6 +578,11 @@ def get_run_status(run_id):
                 "execution_mode": summary["execution_mode"],
                 "provisional": summary["provisional"],
                 "verification_status": summary["verification_status"],
+                "duration_seconds": summary.get("duration_seconds"),
+                "score": summary.get("score"),
+                "timestamp": summary.get("timestamp"),
+                "start_time": summary.get("timestamp"),
+                "identifier": summary.get("identifier") or summary.get("timestamp"),
             }
         )
 

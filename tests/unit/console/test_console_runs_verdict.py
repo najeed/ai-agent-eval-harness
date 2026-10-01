@@ -29,20 +29,26 @@ def verdict_jail(request):
     root = tmp_root / "root"
     runs = root / "runs"
     reports = root / "reports"
+    keys = root / "keys"
 
     if tmp_root.exists():
         rmtree_resilient(tmp_root)
 
     (reports / "certificates").mkdir(parents=True)
     runs.mkdir(parents=True)
+    keys.mkdir(parents=True)
     from eval_runner.identity import IdentityService
 
-    IdentityService._provision_local_identity("system_id")
-    IdentityService._provision_local_identity("test_signer")
-    yield {"root": root, "runs": runs, "reports": reports}
-
-    if tmp_root.exists():
-        rmtree_resilient(tmp_root)
+    old_trust_root = config.TRUST_ROOT
+    config.TRUST_ROOT = keys
+    try:
+        IdentityService._provision_local_identity("system_id")
+        IdentityService._provision_local_identity("test_signer")
+        yield {"root": root, "runs": runs, "reports": reports, "keys": keys}
+    finally:
+        config.TRUST_ROOT = old_trust_root
+        if tmp_root.exists():
+            rmtree_resilient(tmp_root)
 
 
 @pytest.fixture
@@ -53,6 +59,7 @@ def client(verdict_jail, monkeypatch):
     monkeypatch.setattr(config, "PROJECT_ROOT", verdict_jail["root"])
     monkeypatch.setattr(config, "RUN_LOG_DIR", verdict_jail["runs"])
     monkeypatch.setattr(config, "REPORTS_DIR", verdict_jail["reports"])
+    monkeypatch.setattr(config, "TRUST_ROOT", verdict_jail["keys"])
 
     with patch("eval_runner.console.auth_manager.require_permission", lambda _: lambda f: f):
         yield app.test_client()

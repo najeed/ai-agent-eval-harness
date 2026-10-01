@@ -14,6 +14,7 @@ import {
   Layers,
   HelpCircle,
   Loader2,
+  Clock,
 } from 'lucide-react';
 import { ProvisionalBadge } from './ProvisionalBadge';
 
@@ -26,7 +27,11 @@ export interface RunDetailData {
   execution_mode?: string | null;
   score?: number;
   duration?: number;
+  resultStatus?: 'PASS' | 'FAIL';
   timestamp?: string;
+  start_time?: string;
+  identifier?: string;
+  agent?: string;
   model?: string;
   target?: string;
   content_hash?: string;
@@ -328,6 +333,84 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
     assertions
   ).filter((a: any) => a && a.passed === false);
 
+  // Hydrated Duration (fallback to streamEvents timestamps if run.duration is not recorded)
+  const derivedDuration = React.useMemo(() => {
+    if (run.duration != null && typeof run.duration === 'number') return run.duration;
+    if (streamEvents && streamEvents.length >= 2) {
+      const getTs = (ev: any) => {
+        const raw = ev.timestamp || ev._ts_iso || ev.time || ev.data?.timestamp;
+        if (!raw) return NaN;
+        return new Date(raw).getTime();
+      };
+      const firstTs = getTs(streamEvents[0]);
+      const lastTs = getTs(streamEvents[streamEvents.length - 1]);
+      if (!isNaN(firstTs) && !isNaN(lastTs) && lastTs >= firstTs) {
+        const elapsed = (lastTs - firstTs) / 1000;
+        return elapsed > 0 ? elapsed : 0.1;
+      }
+    }
+    return null;
+  }, [run.duration, streamEvents]);
+
+  // Hydrated Assurance Score (fallback to evidence package, assertions ratio, or terminal status)
+  const derivedScore = React.useMemo(() => {
+    if (run.score != null && typeof run.score === 'number') return run.score;
+    const pkgScore = evidencePackage?.score ?? evidencePackage?.decision?.score;
+    if (pkgScore != null && typeof pkgScore === 'number') return pkgScore;
+    if (assertions && assertions.length > 0) {
+      const passedCount = assertions.filter(
+        (a: any) => a.passed === true || a.status === 'PASS' || a.outcome === 'PASS'
+      ).length;
+      return passedCount / assertions.length;
+    }
+    if (run.status === 'CERTIFIED' || run.status === 'PASSED' || run.resultStatus === 'PASS') {
+      return 1.0;
+    }
+    if (run.status === 'FAILED' || run.resultStatus === 'FAIL') {
+      return 0.0;
+    }
+    return null;
+  }, [run.score, run.status, run.resultStatus, evidencePackage, assertions]);
+
+  // Hydrated Start Time / Temporal Identifier
+  const derivedStartTime = React.useMemo(() => {
+    if (run.start_time && run.start_time !== 'N/A' && run.start_time !== '—') return run.start_time;
+    if (run.timestamp && run.timestamp !== 'N/A' && run.timestamp !== '—') return run.timestamp;
+    if (run.identifier && run.identifier.includes('T') && !isNaN(new Date(run.identifier).getTime())) return run.identifier;
+    if (streamEvents && streamEvents.length > 0) {
+      const getTs = (ev: any) => ev.timestamp || ev._ts_iso || ev.time || ev.data?.timestamp;
+      const firstTs = getTs(streamEvents[0]);
+      if (firstTs) return firstTs;
+    }
+    if (evidencePackage?.timestamp) return evidencePackage.timestamp;
+    if (auditResult?.timestamp) return auditResult.timestamp;
+    const match = run.run_id?.match(/(\d{10,13})/);
+    if (match) {
+      const val = parseInt(match[1], 10);
+      const ms = match[1].length === 10 ? val * 1000 : val;
+      const d = new Date(ms);
+      if (!isNaN(d.getTime()) && d.getFullYear() >= 2020 && d.getFullYear() <= 2035) {
+        return d.toISOString();
+      }
+    }
+    return null;
+  }, [run.start_time, run.timestamp, run.identifier, run.run_id, streamEvents, evidencePackage, auditResult]);
+
+  const formattedStartTime = React.useMemo(() => {
+    if (!derivedStartTime) return 'NOT_RECORDED';
+    const parsed = new Date(derivedStartTime);
+    if (isNaN(parsed.getTime())) return derivedStartTime;
+    return parsed.toLocaleString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    });
+  }, [derivedStartTime]);
+
   const whyLine: string = isVerified
     ? `PASS; ${crypto?.verified ? 'signature verified and evidence chain intact' : 'runtime verification decision: PASS'}.`
     : isBreach
@@ -362,12 +445,22 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
       <div className="p-6 border-b border-slate-800 bg-slate-950/60">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500">
                 Immutable Run ID:
               </span>
               <span className="text-xs font-mono font-bold text-slate-300 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
                 {run.run_id}
+              </span>
+              <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500 ml-1">
+                Started:
+              </span>
+              <span
+                className="text-xs font-mono font-bold text-indigo-300 bg-indigo-950/40 border border-indigo-500/30 px-2 py-0.5 rounded flex items-center gap-1.5"
+                title={`Temporal Identifier: ${derivedStartTime || 'Not Recorded'}`}
+              >
+                <Clock className="w-3.5 h-3.5 text-indigo-400" />
+                {formattedStartTime}
               </span>
               <ProvisionalBadge
                 provisional={isProvisional}
@@ -515,21 +608,32 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
             </div>
 
             {/* Quick Metrics Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 font-mono">
               <div className="p-4 rounded-xl bg-slate-950/40 border border-slate-800">
                 <span className="text-slate-500 text-[10px] block uppercase">Execution Status</span>
                 <span className="text-sm font-bold text-white">{run.status || 'UNKNOWN'}</span>
               </div>
               <div className="p-4 rounded-xl bg-slate-950/40 border border-slate-800">
+                <span className="text-slate-500 text-[10px] block uppercase">Start Time (Identifier)</span>
+                <span className="text-sm font-bold text-indigo-300 block truncate" title={derivedStartTime || ''}>
+                  {formattedStartTime}
+                </span>
+                {derivedStartTime && (
+                  <span className="text-[10px] text-slate-500 block truncate font-mono mt-0.5" title={derivedStartTime}>
+                    {derivedStartTime}
+                  </span>
+                )}
+              </div>
+              <div className="p-4 rounded-xl bg-slate-950/40 border border-slate-800">
                 <span className="text-slate-500 text-[10px] block uppercase">Duration</span>
                 <span className="text-sm font-bold text-slate-200">
-                  {run.duration != null ? `${run.duration.toFixed(1)}s` : 'NOT_RECORDED'}
+                  {derivedDuration != null ? `${derivedDuration.toFixed(1)}s` : 'NOT_RECORDED'}
                 </span>
               </div>
               <div className="p-4 rounded-xl bg-slate-950/40 border border-slate-800">
                 <span className="text-slate-500 text-[10px] block uppercase">Assurance Score</span>
                 <span className="text-sm font-bold text-emerald-400">
-                  {run.score != null ? `${(run.score * 100).toFixed(1)}%` : 'NOT_SCORED'}
+                  {derivedScore != null ? `${(derivedScore * 100).toFixed(1)}%` : 'NOT_SCORED'}
                 </span>
               </div>
               <div className="p-4 rounded-xl bg-slate-950/40 border border-slate-800">

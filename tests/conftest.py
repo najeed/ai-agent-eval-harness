@@ -329,6 +329,27 @@ def isolate_plugin_registry(tmp_path, monkeypatch):
     return registry_file
 
 
+@pytest.fixture(autouse=True)
+def isolate_trust_root(tmp_path, monkeypatch):
+    """
+    Global Safety Net: Automatically isolates TRUST_ROOT for all tests.
+    Copies existing workspace keys to a temporary directory and redirects config.TRUST_ROOT,
+    preventing any test from ever clobbering or overwriting workspace keys.
+    """
+    import shutil
+
+    from eval_runner import config
+
+    isolated_keys_dir = tmp_path / ".isolated_keys"
+    isolated_keys_dir.mkdir(parents=True, exist_ok=True)
+    if config.TRUST_ROOT.exists():
+        shutil.copytree(config.TRUST_ROOT, isolated_keys_dir, dirs_exist_ok=True)
+
+    monkeypatch.setattr(config, "TRUST_ROOT", isolated_keys_dir)
+    monkeypatch.setenv("TRUST_ROOT", str(isolated_keys_dir))
+    return isolated_keys_dir
+
+
 @pytest.fixture
 def pqc_client():
     """
