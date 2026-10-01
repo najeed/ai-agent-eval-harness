@@ -31,7 +31,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **psutil** | 7.2.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **pydantic** | 2.13.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **PyJWT** | 2.15.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **python-dotenv** | 1.2.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **python-dotenv** | 1.2.4 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **PyYAML** | 6.0.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **requests** | 2.34.2 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **sqlalchemy** | 2.1.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
