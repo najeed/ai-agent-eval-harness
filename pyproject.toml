@@ -164,7 +164,7 @@ coverage = "eval_runner.coverage_plugin:CoveragePlugin"
 testpaths = ["tests", "dataproc_engine/tests"]
 # xdist workers race when sharing a pytest cache on Windows/OneDrive.  The
 # cache is only an optimization, so disable it for deterministic parallel CI.
-addopts = "-ra --dist loadfile -p no:cacheprovider"
+addopts = "--tb=short --showlocals -ra --dist loadfile -p no:cacheprovider"
 python_files = ["test_*.py"]
 pythonpath = ["."]
 asyncio_mode = "auto"

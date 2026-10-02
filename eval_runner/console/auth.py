@@ -69,6 +69,7 @@ def generate_handoff_token(
     plugin_id: str = "control-plane",
     audience: str = "agentv-plugin",
     expires_in_seconds: int = 900,
+    **extra_claims: Any,
 ) -> str:
     """
     Generates a cryptographically signed, short-lived, audience-bound JWT
@@ -84,6 +85,7 @@ def generate_handoff_token(
         "scope": "console-handoff",
         "jti": secrets.token_hex(16),
     }
+    payload.update(extra_claims)
     return jwt.encode(payload, get_jwt_secret(), algorithm="HS256")
 
 
@@ -295,6 +297,7 @@ def get_current_user():
             "permissions": Permission.ADMIN(),
             "type": "local-dev",
             "workspace_id": "ws-default",
+            "tenant_id": getattr(config, "TENANT_ID", None) or "tenant-default",
         }
 
     if not user:
@@ -328,6 +331,9 @@ def get_current_user():
                 "role": role,
                 "permissions": perms,
                 "type": user.get("type", "session"),
+                "tenant_id": user.get("tenant_id")
+                or getattr(config, "TENANT_ID", None)
+                or "tenant-default",
                 "workspace_id": user.get("workspace_id", "ws-default"),
                 "is_dev_mode": is_dev_mode,
             },
