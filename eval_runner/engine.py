@@ -217,11 +217,15 @@ class AgentAdapterRegistry:
         cls._adapters[protocol] = adapter_func
 
     @classmethod
-    def get_available_protocols(cls) -> list[str]:
+    def get_available_protocols(cls, eager: bool = True) -> list[str]:
         """Returns sorted list of all active registered protocol adapters."""
-        if not cls._discovered:
-            cls._discover()
-        return sorted(list(cls._adapters.keys()))
+        if eager:
+            if not cls._discovered:
+                cls._discover()
+            return sorted(list(cls._adapters.keys()))
+        cls._ensure_baseline()
+        known = set(cls._adapters.keys()) | set(cls.ADAPTER_TAXONOMY.keys()) | cls.CORE_PROTOCOLS
+        return sorted(list(known))
 
     @classmethod
     def reset(cls):
@@ -229,6 +233,58 @@ class AgentAdapterRegistry:
         cls._discovered = False
         cls._adapters = {}
         cls._active_whitelists = {"protocols": None, "providers": None, "frameworks": None}
+
+    @classmethod
+    def _ensure_baseline(cls):
+        """Registers authoritative baseline protocols with zero discovery overhead."""
+        if "http" in cls._adapters:
+            return
+        from eval_runner import adapters
+
+        cls.register("http", adapters.http_adapter)
+        cls.register("sse", adapters.sse_http_adapter)
+        cls.register("local", adapters.local_subprocess_adapter)
+        cls.register("socket", adapters.socket_adapter)
+
+    @classmethod
+    def _resolve_adapter(cls, protocol: str) -> Callable | None:
+        """Just-in-time adapter resolution for a specific protocol."""
+        normalized = protocol.lower().strip() if protocol else ""
+        if not normalized:
+            return None
+        cls._ensure_baseline()
+        if normalized in cls._adapters:
+            return cls._adapters[normalized]
+
+        base_proto = normalized.split(":")[0]
+        # Attempt targeted lazy import of the specific adapter module
+        if base_proto in cls.ADAPTER_TAXONOMY or base_proto in cls.CORE_PROTOCOLS:
+            try:
+                import importlib
+
+                mod_name = f"eval_runner.adapters.{base_proto}"
+                mod = importlib.import_module(mod_name)
+                if hasattr(mod, "adapter") and callable(mod.adapter):
+                    cls.register(base_proto, mod.adapter)
+                for attr_name in dir(mod):
+                    if attr_name.endswith("Plugin"):
+                        attr = getattr(mod, attr_name)
+                        if isinstance(attr, type) and hasattr(attr, "on_discover_adapters"):
+                            try:
+                                inst = attr()
+                                inst.on_discover_adapters(cls)
+                            except Exception as e:
+                                logger.debug("Adapter plugin registration skipped: %s", e)
+                if normalized in cls._adapters:
+                    return cls._adapters[normalized]
+            except Exception as e:
+                logger.debug("Targeted adapter import failed for '%s': %s", base_proto, e)
+
+        # If not resolved via targeted loader, fall back to discovery
+        if not cls._discovered:
+            cls._discover()
+
+        return cls._adapters.get(normalized)
 
     @classmethod
     def _discover(cls):
@@ -292,12 +348,9 @@ class AgentAdapterRegistry:
         Industrial Multi-Agent Dispatcher (v1.6.0).
         Routes the task to the appropriate adapter based on protocol.
         """
-        if not cls._discovered:
-            cls._discover()
-
-        # 1. Resolve Adapter
+        # 1. Resolve Adapter via Just-in-Time Resolution
         normalized_proto = protocol.lower().strip() if protocol else ""
-        adapter_func = cls._adapters.get(normalized_proto)
+        adapter_func = cls._resolve_adapter(normalized_proto)
         if not adapter_func:
             available = list(cls._adapters.keys())
             raise ValueError(f"Unsupported protocol '{protocol}'. Available: {available}")

@@ -244,7 +244,7 @@ class PluginManager:
                 "trusted": True,
             }
 
-    def load_plugins(self, force: bool = False):
+    def load_plugins(self, force: bool = False, load_external: bool = True):
         """Discovers and loads plugins with an industrial 60s TTL debounce."""
         import time  # noqa: F811
 
@@ -258,7 +258,7 @@ class PluginManager:
         self._last_load_time = now
 
         # 1. Discover external plugins via entry points (standard install)
-        if not os.getenv("AGENTV_DISABLE_EXTERNAL_PLUGINS"):
+        if load_external and not os.getenv("AGENTV_DISABLE_EXTERNAL_PLUGINS"):
             for entry_point in importlib.metadata.entry_points(group="eval_runner.plugins"):
                 try:
                     plugin_cls = entry_point.load()
@@ -439,7 +439,8 @@ class PluginManager:
 
     def trigger(self, hook_name: str, *args, **kwargs):
         """Triggers a plugin hook across all loaded plugins with timeout."""
-        self.load_plugins()
+        load_external = hook_name != "on_discover_adapters"
+        self.load_plugins(load_external=load_external)
         for plugin in self.plugins:
             if hasattr(plugin, hook_name):
                 try:

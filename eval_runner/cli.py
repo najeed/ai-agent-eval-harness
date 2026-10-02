@@ -168,13 +168,12 @@ def get_parser(is_help: bool = False):
 
     if needs_discovery:
         try:
-            # Lazy Import: Defer 'engine' to avoid initializing plugins, background hooks,
-            # and simulators during lightweight command executions or CLI help rendering.
+            # Lazy Import: Defer heavy dynamic discovery to execution dispatch.
+            # get_available_protocols(eager=False) provides instant zero-cost resolution.
             from . import engine
 
-            engine.AgentAdapterRegistry._discover()
-            available_protocols = list(engine.AgentAdapterRegistry._adapters.keys())
-        except ImportError:
+            available_protocols = engine.AgentAdapterRegistry.get_available_protocols(eager=False)
+        except (ImportError, TypeError, Exception):
             available_protocols = STATIC_PROTOCOLS
     else:
         available_protocols = STATIC_PROTOCOLS

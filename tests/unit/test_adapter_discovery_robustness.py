@@ -95,3 +95,43 @@ async def test_zero_trust_baseline_enforcement(clean_registry, monkeypatch):
     # Baseline expected: All frameworks/providers blocked
     assert "openai" not in registered
     assert "ag2" not in registered
+
+
+@pytest.mark.asyncio
+async def test_ensure_baseline_and_jit_resolution(clean_registry):
+    """Verifies zero-cost baseline registration and JIT adapter resolution."""
+    assert not AgentAdapterRegistry._discovered
+    assert "http" not in AgentAdapterRegistry._adapters
+
+    # 1. Non-eager protocol listing does not trigger heavy discovery
+    protocols = AgentAdapterRegistry.get_available_protocols(eager=False)
+    assert "http" in protocols
+    assert "openai" in protocols
+    assert not AgentAdapterRegistry._discovered
+
+    # 2. _ensure_baseline registers baseline protocols
+    AgentAdapterRegistry._ensure_baseline()
+    assert "http" in AgentAdapterRegistry._adapters
+    assert "sse" in AgentAdapterRegistry._adapters
+    assert "local" in AgentAdapterRegistry._adapters
+    assert "socket" in AgentAdapterRegistry._adapters
+
+    # Idempotent re-entry
+    AgentAdapterRegistry._ensure_baseline()
+    assert "http" in AgentAdapterRegistry._adapters
+
+    # 3. Empty protocol returns None
+    assert AgentAdapterRegistry._resolve_adapter("") is None
+    assert AgentAdapterRegistry._resolve_adapter(None) is None
+
+    # 4. Resolve baseline protocol
+    adapter = AgentAdapterRegistry._resolve_adapter("http")
+    assert adapter is not None
+
+    # 5. Targeted JIT resolution for known provider
+    openai_adapter = AgentAdapterRegistry._resolve_adapter("openai")
+    assert openai_adapter is not None or "openai" in AgentAdapterRegistry._adapters
+
+    # 6. Fallback for completely unknown protocol
+    unknown = AgentAdapterRegistry._resolve_adapter("nonexistent-custom-protocol-xyz")
+    assert unknown is None
