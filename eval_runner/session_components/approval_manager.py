@@ -21,6 +21,7 @@ class SessionApprovalManager:
         state_provider: Any | None = None,
         plugin_manager: Any | None = None,
         approval_store: ApprovalStore | None = None,
+        event_bus: Any | None = None,
     ):
         self.run_id = run_id
         self.registry = registry or hitl_pending.global_registry
@@ -28,6 +29,7 @@ class SessionApprovalManager:
         self.state_provider = state_provider
         self.plugin_manager = plugin_manager
         self._approval_store = approval_store
+        self.event_bus = event_bus
 
     @property
     def approval_store(self) -> ApprovalStore:
@@ -171,7 +173,31 @@ class SessionApprovalManager:
             prompt=prompt or f"Approval required for run '{self.run_id}' turn {turn_index}",
             metadata=metadata or {},
         )
-        return self.approval_store.create_request(req)
+        persisted = self.approval_store.create_request(req)
+
+        # Trigger on_approval_created hook (best-effort, fail-safe)
+        if self.plugin_manager:
+            try:
+                self.plugin_manager.trigger("on_approval_created", self, persisted)
+            except Exception as exc:
+                logger.warning(
+                    "[SessionApprovalManager] Plugin hook on_approval_created failed: %s",
+                    exc,
+                )
+
+        # Emit CoreEvents.APPROVAL_CREATED event (best-effort, fail-safe)
+        try:
+            from eval_runner.events import CoreEvents, EventEmitter
+
+            bus = self.event_bus or EventEmitter.get_global()
+            bus.emit(CoreEvents.APPROVAL_CREATED, persisted.to_dict())
+        except Exception as exc:
+            logger.warning(
+                "[SessionApprovalManager] Failed to emit APPROVAL_CREATED event: %s",
+                exc,
+            )
+
+        return persisted
 
     def resolve_durable_request(
         self,
@@ -181,12 +207,36 @@ class SessionApprovalManager:
         decision_reason: str | None = None,
     ) -> ApprovalRequest:
         """Resolves a durable approval request in the persistent store."""
-        return self.approval_store.resolve_request(
+        resolved = self.approval_store.resolve_request(
             approval_token=approval_token,
             decision=decision,
             decided_by=decided_by,
             decision_reason=decision_reason,
         )
+
+        # Trigger on_approval_resolved hook (best-effort, fail-safe)
+        if self.plugin_manager:
+            try:
+                self.plugin_manager.trigger("on_approval_resolved", self, resolved)
+            except Exception as exc:
+                logger.warning(
+                    "[SessionApprovalManager] Plugin hook on_approval_resolved failed: %s",
+                    exc,
+                )
+
+        # Emit CoreEvents.APPROVAL_RESOLVED event (best-effort, fail-safe)
+        try:
+            from eval_runner.events import CoreEvents, EventEmitter
+
+            bus = self.event_bus or EventEmitter.get_global()
+            bus.emit(CoreEvents.APPROVAL_RESOLVED, resolved.to_dict())
+        except Exception as exc:
+            logger.warning(
+                "[SessionApprovalManager] Failed to emit APPROVAL_RESOLVED event: %s",
+                exc,
+            )
+
+        return resolved
 
     def get_durable_request(self, approval_token: str) -> ApprovalRequest | None:
         """Retrieves a durable approval request by token."""

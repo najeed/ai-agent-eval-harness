@@ -740,12 +740,21 @@ def resume_run(run_id):
         ), 403
 
     try:
-        store.resolve_request(
+        resolved_req = store.resolve_request(
             resumption_token,
             decision=decision,
             decided_by=reviewer,
             decision_reason=reason,
         )
+        try:
+            from eval_runner import events, plugins
+
+            plugins.manager.trigger("on_approval_resolved", None, resolved_req)
+            events.emit(events.CoreEvents.APPROVAL_RESOLVED, resolved_req.to_dict())
+        except Exception as _hook_err:
+            logger.warning(
+                "[Console] Failed to dispatch on_approval_resolved hook/event: %s", _hook_err
+            )
     except (KeyError, ValueError) as exc:
         return jsonify({"error": str(exc)}), 409
     if decision == "REJECTED":

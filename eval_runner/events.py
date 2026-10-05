@@ -325,6 +325,8 @@ class CoreEvents:
     EVALUATION = "evaluation"
     HITL_PAUSE = "hitl_pause"
     HITL_RESUME = "hitl_resume"
+    APPROVAL_CREATED = "approval_created"
+    APPROVAL_RESOLVED = "approval_resolved"
     ERROR = "error"
     RUN_ERROR = "error"
 

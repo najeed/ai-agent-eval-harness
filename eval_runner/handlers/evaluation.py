@@ -5,11 +5,14 @@ Core execution logic for evaluation commands.
 """
 
 import json
+import logging
 import os
 import traceback
 from pathlib import Path
 
 from .. import config, utils
+
+logger = logging.getLogger(__name__)
 
 
 def __getattr__(name: str):
@@ -709,12 +712,24 @@ async def handle_hitl_resume(args):
                 return 0
 
         # Resolve the request in durable store
-        store.resolve_request(
+        resolved_req = store.resolve_request(
             approval_token=approval_token,
             decision=normalized_decision,
             decided_by=reviewer,
             decision_reason=reason,
         )
+
+        # Trigger on_approval_resolved hook and emit CoreEvents.APPROVAL_RESOLVED (best-effort)
+        try:
+            from .. import events, plugins
+
+            plugins.manager.trigger("on_approval_resolved", None, resolved_req)
+            events.emit(events.CoreEvents.APPROVAL_RESOLVED, resolved_req.to_dict())
+        except Exception as _hook_err:
+            logger.warning(
+                "[CLI] Failed to dispatch on_approval_resolved hook/event: %s",
+                _hook_err,
+            )
 
         if normalized_decision == "REJECTED":
             print(f"🛑 Approval REJECTED for run '{run_id}'.")

@@ -235,6 +235,7 @@ class SessionManager:
                 else None,
             },
             plugin_manager=self.plugin_manager,
+            event_bus=self.event_bus,
         )
         self.tool_execution_coordinator = ToolExecutionCoordinator()
         self.metrics_calculator = SessionMetricsCalculator(session_manager=self)
@@ -2247,13 +2248,31 @@ class SessionManager:
                 outbound_hash = hashlib.sha3_256(payload_str.encode("utf-8")).hexdigest()
 
             # Create durable approval request in ApprovalStore
+            req_metadata: dict[str, Any] = {"task_id": task_id}
+            scenario_meta = self.scenario.get("metadata")
+            if not isinstance(scenario_meta, dict):
+                scenario_meta = {}
+
+            org_id = (
+                self.metadata.get("org_id")
+                or scenario_meta.get("org_id")
+                or self.scenario.get("org_id")
+            )
+            if org_id:
+                req_metadata["org_id"] = str(org_id)
+
+            for k in ("tenant_id", "correlation_id", "project_id", "environment"):
+                val = self.metadata.get(k) or scenario_meta.get(k)
+                if val:
+                    req_metadata[k] = val
+
             durable_req = self.approval_manager.create_durable_request(
                 turn_index=turn,
                 outbound_payload_hash=outbound_hash,
                 required_role=agent_response.get("required_role"),
                 action_payload=agent_response,
                 prompt=prompt,
-                metadata={"task_id": task_id},
+                metadata=req_metadata,
             )
 
             # If CLI suspension is requested, exit cleanly without blocking in memory

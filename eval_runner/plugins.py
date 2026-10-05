@@ -123,6 +123,18 @@ class BaseEvalPlugin(ABC):  # noqa: B024
         """Hook called before evaluating a human-in-the-loop approval."""
         return True
 
+    def on_approval_created(  # noqa: B027
+        self, context: Any, request: Any
+    ) -> None:
+        """Hook called when a durable approval request is created and pending approval."""
+        pass
+
+    def on_approval_resolved(  # noqa: B027
+        self, context: Any, request: Any
+    ) -> None:
+        """Hook called when a durable approval request is resolved (APPROVED/REJECTED)."""
+        pass
+
 
 class PluginManager:
     """
@@ -470,6 +482,9 @@ class PluginManager:
                     print(
                         f"   [PluginManager] Error in {hook_name} for {plugin.__class__.__name__}: {e}"  # noqa: E501
                     )
+
+    # Alias to support both trigger() and trigger_hook()
+    trigger_hook = trigger
 
     def finalize(self):
         """
