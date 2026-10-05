@@ -2207,16 +2207,18 @@ class SessionManager:
         task_id = turn_ctx.task_id if turn_ctx else "unknown"
         self.event_bus.emit(CoreEvents.HITL_PAUSE, {"task_id": task_id, "prompt": prompt})
 
-        if os.getenv("CI", "").lower() == "true":
-            # A human-gated scenario can never pass without a human decision;
-            # automation produces an explicit HITL_UNRESOLVED failure.
-            self._hitl_unresolved = True
-            response = f"[HITL_UNRESOLVED] No human decision available for: {prompt}"
-            print(
-                f"      [HITL] CI Mode: approval UNRESOLVED for task {task_id} "
-                "(auto-approval is forbidden)"
-            )
-            return response
+        # Check for explicit durable suspension requests first, even in CI
+        if not (os.environ.get("AGENTV_CLI_HITL_SUSPEND") or os.environ.get("FORCE_HITL_SUSPEND")):
+            if os.getenv("CI", "").lower() == "true":
+                # A human-gated scenario can never pass without a human decision;
+                # automation produces an explicit HITL_UNRESOLVED failure.
+                self._hitl_unresolved = True
+                response = f"[HITL_UNRESOLVED] No human decision available for: {prompt}"
+                print(
+                    f"      [HITL] CI Mode: approval UNRESOLVED for task {task_id} "
+                    "(auto-approval is forbidden)"
+                )
+                return response
 
         import sys
 

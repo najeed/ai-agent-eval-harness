@@ -1,8 +1,7 @@
-"""Focused contract coverage for Gemini request and response helpers."""
-
+import asyncio
 import sys
 from types import ModuleType, SimpleNamespace
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -893,3 +892,657 @@ def test_gemini_generate_content_extraction_helper_edge_contracts() -> None:
     assert (
         adapter._extract_message_text([{"text": "one"}, {"parts": [{"text": "two"}]}]) == "one\ntwo"
     )
+
+
+def test_gemini_adapter_extended_edge_cases() -> None:
+    adapter = GeminiAdapterPlugin()
+
+    # Discover adapters hook
+    registry = MagicMock()
+    adapter.on_discover_adapters(registry)
+    registry.register.assert_called_once_with("gemini", adapter.execute_gemini_query)
+
+    # Build interaction input when task is None
+    assert adapter._build_interaction_input({}) is None
+
+    # Latest user input with non-mapping and non-user messages
+    assert adapter._latest_user_input([123, {"role": "model", "content": "hi"}]) == "hi"
+
+    # Latest user input with parts
+    assert adapter._latest_user_input([{"role": "user", "parts": [{"text": "p"}]}]) == [
+        {"text": "p"}
+    ]
+
+    # Latest user input fallback to last message
+    assert adapter._latest_user_input([{"role": "assistant", "content": "a"}]) == "a"
+    assert adapter._latest_user_input(["str_msg"]) == "str_msg"
+
+    # Messages to interaction input with strings and typed dicts
+    res_str = adapter._messages_to_interaction_input(["just string"])
+    assert res_str[0]["text"] == "just string"
+    res_typed = adapter._messages_to_interaction_input([{"type": "text", "text": "direct"}])
+    assert res_typed[0]["text"] == "direct"
+
+    # Normalize interaction content with Mapping and non-collection scalars
+    assert adapter._content_to_text_parts({"text": "hello"}) == [{"type": "text", "text": "hello"}]
+    assert adapter._content_to_text_parts({}) == []
+    assert adapter._content_to_text_parts(123) == [{"type": "text", "text": "123"}]
+
+    # Normalize interaction part with explicit type and media
+    assert adapter._normalize_interaction_part({"type": "custom", "val": 1}) == {
+        "type": "custom",
+        "val": 1,
+    }
+    part_file = adapter._normalize_interaction_part(
+        {"file_data": {"uri": "gs://b/f", "mime_type": "audio/mp3"}}
+    )
+    assert part_file is not None and part_file["mime_type"] == "audio/mp3"
+
+    part_url = adapter._normalize_interaction_part(
+        {"url": "https://img", "mime_type": "image/jpeg"}
+    )
+    assert (
+        part_url is not None
+        and part_url["type"] == "image"
+        and part_url["mime_type"] == "image/jpeg"
+    )
+
+    # Coerce interaction input with type mapping and scalar
+    assert adapter._coerce_interaction_input({"type": "raw"}) == {"type": "raw"}
+    assert adapter._coerce_interaction_input(999) == "999"
+
+    # Build generate content contents edge cases
+    with pytest.raises(TypeError, match="must be a list"):
+        adapter._build_generate_content_contents({"messages": "not_a_list"})
+
+    with pytest.raises(TypeError, match="must be a string or object"):
+        adapter._build_generate_content_contents({"messages": [123]})
+
+    contents_str, _ = adapter._build_generate_content_contents({"messages": ["hello string"]})
+    assert contents_str[0]["parts"][0]["text"] == "hello string"
+
+    contents_empty, _ = adapter._build_generate_content_contents({})
+    assert contents_empty == []
+
+    contents_list, _ = adapter._build_generate_content_contents(
+        {"task": [{"role": "user", "parts": []}]}
+    )
+    assert contents_list == [{"role": "user", "parts": []}]
+
+    # Normalize generate content parts when content is None with message fallback
+    assert (
+        adapter._normalize_generate_content_parts(
+            None,
+            message={"tool_response": {"type": "tool_response", "name": "t", "response": {}}},
+        )[0]["function_response"]["name"]
+        == "t"
+    )
+    assert adapter._normalize_generate_content_parts(None, message={}) == []
+    assert adapter._normalize_generate_content_parts({"text": "m"}, message={}) == [{"text": "m"}]
+    assert adapter._normalize_generate_content_parts(["str"], message={}) == [{"text": "str"}]
+    assert adapter._normalize_generate_content_parts([123], message={}) == [{"text": "123"}]
+    assert adapter._normalize_generate_content_parts(456, message={}) == [{"text": "456"}]
+
+    # Normalize generate content part edge cases
+    assert adapter._normalize_generate_content_part({}) == []
+    assert adapter._normalize_generate_content_part({"code_execution_result": {}}) == [
+        {"code_execution_result": {}}
+    ]
+    assert adapter._normalize_generate_content_part({"type": "text"}) == [{"text": ""}]
+    assert adapter._normalize_generate_content_part({"type": "text", "text": "t"}) == [
+        {"type": "text", "text": "t"}
+    ]
+    assert adapter._normalize_generate_content_part({"type": "image", "image": "gs://img"}) == [
+        {"file_data": {"file_uri": "gs://img"}}
+    ]
+    assert (
+        adapter._normalize_generate_content_part(
+            {"type": "image", "image": {"url": "gs://img", "mime_type": "image/png"}}
+        )[0]["file_data"]["mime_type"]
+        == "image/png"
+    )
+    assert (
+        adapter._normalize_generate_content_part({"url": "gs://img", "mime_type": "image/png"})[0][
+            "file_data"
+        ]["mime_type"]
+        == "image/png"
+    )
+    assert adapter._normalize_generate_content_part({"unknown_key": "val"}) == [
+        {"unknown_key": "val"}
+    ]
+
+    # Normalize interaction empty and stream single tool
+    assert (
+        adapter._normalize_interaction(
+            response=SimpleNamespace(),
+            model="m",
+            agent=None,
+            vertexai=False,
+            project=None,
+            location=None,
+        )["status"]
+        == "error"
+    )
+    norm_stream = adapter._normalize_streamed_interaction(
+        response={"function_calls": [{"name": "tool", "arguments": {}}]},
+        model="m",
+        agent=None,
+        vertexai=False,
+        project=None,
+        location=None,
+    )
+    assert norm_stream["action"] == "call_tool"
+
+    # Stream generate content chunks usage and tool calls
+    chunk_usage = SimpleNamespace(
+        usage_metadata={"total_token_count": 10}, text=None, candidates=[]
+    )
+    norm_chunks_usage = adapter._normalize_generate_content_chunks(
+        response=[chunk_usage],
+        model="m",
+        vertexai=False,
+        project=None,
+        location=None,
+    )
+    assert norm_chunks_usage["metadata"]["usage"]["total_token_count"] == 10
+
+    chunk_call = SimpleNamespace(
+        text=None,
+        candidates=[
+            SimpleNamespace(
+                content=SimpleNamespace(
+                    parts=[SimpleNamespace(function_call=SimpleNamespace(name="t", args={}))]
+                )
+            )
+        ],
+        usage_metadata=None,
+    )
+    norm_chunks_tool = adapter._normalize_generate_content_chunks(
+        response=[chunk_call],
+        model="m",
+        vertexai=False,
+        project=None,
+        location=None,
+    )
+    assert norm_chunks_tool["action"] == "call_tool"
+
+    # Build generate content config with explicit generation_config
+    cfg = adapter._build_generate_content_config(
+        payload={"generation_config": {"temperature": 0.5}},
+        types=_Types,
+        system_instruction=None,
+    )
+    assert cfg.kwargs["temperature"] == 0.5
+
+    # Resolution helpers
+    assert adapter._resolve_vertex_mode({"metadata": {"vertex_ai": True}}, None) is True
+    assert (
+        adapter._resolve_max_attempts({"max_retries": "not_an_int"})
+        == adapter.DEFAULT_MAX_RETRIES + 1
+    )
+    assert adapter._resolve_max_attempts({}) == adapter.DEFAULT_MAX_RETRIES + 1
+    assert adapter._resolve_backoff_base({}) == adapter.DEFAULT_BACKOFF_BASE
+    assert adapter._resolve_backoff_max({}) == adapter.DEFAULT_BACKOFF_MAX
+
+    # Extraction helpers
+    assert adapter._extract_function_calls_from_interaction({"outputs": [{"type": "not_fn"}]}) == []
+    assert adapter._extract_step_text("direct_str") == ["direct_str"]
+    assert adapter._extract_step_text({"other_key": 1}) == []
+    assert adapter._extract_step_text(SimpleNamespace(text=123)) == []
+    assert adapter._extract_generate_content_text({"candidates": [{"content": {}}]}) == ""
+    assert adapter._extract_generate_content_function_calls({"candidates": [{"content": {}}]}) == []
+    assert adapter._extract_message_text(None) is None
+    assert adapter._extract_message_text({"other": 1}) is None
+    assert adapter._extract_message_text(123) == "123"
+
+    # Edge case extraction and resolution helpers
+    assert adapter._latest_user_input([123]) == "123"
+    assert adapter._latest_user_input([]) is None
+    assert adapter._normalize_interaction_part({"unknown": "val"}) == {
+        "type": "text",
+        "text": "{'unknown': 'val'}",
+    }
+    assert (
+        adapter._extract_generate_content_text(
+            {"candidates": [SimpleNamespace(content=SimpleNamespace(parts=[]))]}
+        )
+        == ""
+    )
+    assert (
+        adapter._extract_generate_content_function_calls(
+            {"candidates": [SimpleNamespace(content=SimpleNamespace(parts=[]))]}
+        )
+        == []
+    )
+    assert adapter._resolve_max_attempts({"max_retries": "bad"}) == adapter.DEFAULT_MAX_RETRIES + 1
+    assert adapter._resolve_max_attempts({"max_attempts": "bad"}) == adapter.DEFAULT_MAX_RETRIES + 1
+    assert adapter._resolve_backoff_base({"retry_delay": "bad"}) == adapter.DEFAULT_BACKOFF_BASE
+    assert adapter._resolve_backoff_max({"max_retry_delay": "bad"}) == adapter.DEFAULT_BACKOFF_MAX
+    with patch("eval_runner.config.ADAPTER_MAX_RETRIES", 5, create=True):
+        assert adapter._resolve_max_attempts({}) == 6
+    with patch("eval_runner.config.ADAPTER_RETRY_DELAY", 2.0, create=True):
+        assert adapter._resolve_backoff_base({}) == 2.0
+    with patch("eval_runner.config.ADAPTER_MAX_RETRY_DELAY", 45.0, create=True):
+        assert adapter._resolve_backoff_max({}) == 45.0
+
+    # Serialization exception fallback
+    class _Unserializable:
+        __slots__ = ()
+
+        def __str__(self) -> str:
+            return "unserializable"
+
+    assert adapter._serialize(_Unserializable()) == "unserializable"
+
+    # Emit usage with non-mapping
+    adapter._emit_usage({"usage": "not_a_mapping"})
+
+    # Extract retry after with invalid float
+    exc_bad_retry = Exception()
+    exc_bad_retry.raw_response = SimpleNamespace(headers={"Retry-After": "invalid"})
+    assert adapter._extract_retry_after(exc_bad_retry) is None
+
+
+@pytest.mark.asyncio
+async def test_gemini_adapter_async_extended_edge_cases() -> None:
+    adapter = GeminiAdapterPlugin()
+
+    # Missing google-genai import error
+    import builtins
+
+    orig_import = builtins.__import__
+
+    def mock_genai_import(name, *args, **kwargs):
+        if "google.genai" in name or name == "google.genai":
+            raise ImportError("simulated missing google-genai")
+        return orig_import(name, *args, **kwargs)
+
+    with patch("builtins.__import__", side_effect=mock_genai_import):
+        res_no_pkg = await adapter.execute_gemini_query({"model": "m", "task": "t"})
+        assert res_no_pkg["status"] == "error"
+        assert "requires the 'google-genai' package" in res_no_pkg["message"]
+
+    # Missing model or agent error
+    with patch.object(adapter, "_resolve_model", return_value=None):
+        with patch.object(adapter, "_resolve_agent", return_value=None):
+            res_no_model = await adapter.execute_gemini_query({})
+            assert res_no_model["status"] == "error"
+            assert "requires either 'model' or 'agent'" in res_no_model["message"]
+
+    # CancelledError in execute_gemini_query
+    def _create_mock_client(**kwargs: object) -> MagicMock:
+        c = MagicMock()
+        c.aio.aclose = AsyncMock()
+        return c
+
+    with patch.dict(
+        sys.modules,
+        {
+            "google": MagicMock(),
+            "google.genai": MagicMock(Client=_create_mock_client),
+            "google.genai.errors": MagicMock(),
+            "google.genai.types": _Types,
+        },
+    ):
+        with patch.object(adapter, "_execute_interaction", side_effect=asyncio.CancelledError()):
+            with pytest.raises(asyncio.CancelledError):
+                await adapter.execute_gemini_query({"api_key": "k", "model": "m", "task": "t"})
+
+        # Status code in exception
+        exc_status = Exception("not found")
+        exc_status.status_code = 404
+        with patch.object(adapter, "_execute_interaction", side_effect=exc_status):
+            res_exc = await adapter.execute_gemini_query(
+                {"api_key": "k", "model": "m", "task": "t"}
+            )
+            assert res_exc["status"] == "error"
+            assert res_exc["metadata"]["status_code"] == 404
+
+        # Client cleanup failure warning in finally
+        client_cleanup_fail = MagicMock()
+        client_cleanup_fail.aio.aclose = AsyncMock(side_effect=RuntimeError("close failed"))
+        with patch.dict(
+            sys.modules,
+            {"google.genai": MagicMock(Client=lambda **kwargs: client_cleanup_fail)},
+        ):
+            with patch.object(
+                adapter,
+                "_execute_interaction",
+                return_value={"status": "success", "metadata": {}},
+            ):
+                res_cleanup = await adapter.execute_gemini_query(
+                    {"api_key": "k", "model": "m", "task": "t"}
+                )
+                assert res_cleanup["status"] == "success"
+
+    # _call_interaction_with_retry with timeout_seconds == 0
+    client_invoke = MagicMock()
+    client_invoke.aio.interactions.create = AsyncMock(return_value="interaction_res")
+    assert (
+        await adapter._call_interaction_with_retry(
+            client=client_invoke,
+            genai_errors=MagicMock(),
+            request={},
+            timeout_seconds=0,
+            payload={},
+        )
+        == "interaction_res"
+    )
+
+    # CancelledError in _call_interaction_with_retry
+    client_invoke.aio.interactions.create = AsyncMock(side_effect=asyncio.CancelledError())
+    with pytest.raises(asyncio.CancelledError):
+        await adapter._call_interaction_with_retry(
+            client=client_invoke,
+            genai_errors=MagicMock(),
+            request={},
+            timeout_seconds=1,
+            payload={},
+        )
+
+    # TimeoutError retry loop in _call_interaction_with_retry
+    timeout_calls = []
+
+    async def mock_timeout_create(**kwargs: object) -> str:
+        timeout_calls.append(1)
+        if len(timeout_calls) < 2:
+            raise TimeoutError()
+        return "success"
+
+    client_invoke.aio.interactions.create = mock_timeout_create
+    with patch.object(adapter, "_retry_sleep", new_callable=AsyncMock):
+        res_timeout = await adapter._call_interaction_with_retry(
+            client=client_invoke,
+            genai_errors=MagicMock(),
+            request={},
+            timeout_seconds=1,
+            payload={"idempotency_key": "k"},
+        )
+        assert res_timeout == "success"
+
+    # APIError not retryable in _call_interaction_with_retry
+    err_cls = type("APIError", (Exception,), {})
+    genai_errs = SimpleNamespace(APIError=err_cls)
+    err_inst = err_cls("bad request")
+    err_inst.code = 400
+    client_invoke.aio.interactions.create = AsyncMock(side_effect=err_inst)
+    with pytest.raises(err_cls):
+        await adapter._call_interaction_with_retry(
+            client=client_invoke,
+            genai_errors=genai_errs,
+            request={},
+            timeout_seconds=1,
+            payload={"max_attempts": 1},
+        )
+
+    # _call_interaction_stream_with_retry CancelledError
+    with patch.object(adapter, "_consume_interaction_stream", side_effect=asyncio.CancelledError()):
+        with pytest.raises(asyncio.CancelledError):
+            await adapter._call_interaction_stream_with_retry(
+                client=MagicMock(),
+                genai_errors=MagicMock(),
+                request={},
+                timeout_seconds=1,
+                payload={},
+            )
+
+    # _call_interaction_stream_with_retry TimeoutError retry
+    stream_timeout_calls = []
+
+    async def mock_stream_timeout(**kwargs: object) -> dict[str, str]:
+        stream_timeout_calls.append(1)
+        if len(stream_timeout_calls) < 2:
+            raise TimeoutError()
+        return {"text": "streamed"}
+
+    with patch.object(adapter, "provider_retry_attempts", return_value=2):
+        with patch.object(adapter, "_consume_interaction_stream", side_effect=mock_stream_timeout):
+            with patch.object(adapter, "_retry_sleep", new_callable=AsyncMock):
+                res_stream_timeout = await adapter._call_interaction_stream_with_retry(
+                    client=MagicMock(),
+                    genai_errors=MagicMock(),
+                    request={},
+                    timeout_seconds=1,
+                    payload={"idempotency_key": "k"},
+                )
+                assert res_stream_timeout == {"text": "streamed"}
+
+    # _call_interaction_stream_with_retry APIError with retry_after
+    err_retry = err_cls("rate limited")
+    err_retry.code = 429
+    err_retry.headers = {"Retry-After": "5"}
+    stream_api_calls = []
+
+    async def mock_stream_api(**kwargs: object) -> dict[str, str]:
+        stream_api_calls.append(1)
+        if len(stream_api_calls) < 2:
+            raise err_retry
+        return {"text": "recovered"}
+
+    with patch.object(adapter, "provider_retry_attempts", return_value=2):
+        with patch.object(adapter, "_consume_interaction_stream", side_effect=mock_stream_api):
+            with patch.object(adapter, "_retry_sleep", new_callable=AsyncMock) as mock_sleep:
+                res_stream_api = await adapter._call_interaction_stream_with_retry(
+                    client=MagicMock(),
+                    genai_errors=genai_errs,
+                    request={},
+                    timeout_seconds=1,
+                    payload={"idempotency_key": "k"},
+                )
+                assert res_stream_api == {"text": "recovered"}
+                assert mock_sleep.call_args[1].get("retry_after") == 5.0
+
+    # _consume_interaction_stream with timeout_seconds == 0
+    client_stream_zero = MagicMock()
+    client_stream_zero.aio.interactions.create = AsyncMock(return_value=_AsyncEvents([]))
+    res_zero = await adapter._consume_interaction_stream(
+        client=client_stream_zero, request={}, timeout_seconds=0
+    )
+    assert res_zero["text"] == ""
+
+    # _build_interaction_request with no input error and response format
+    with pytest.raises(ValueError, match="contains no input"):
+        adapter._build_interaction_request(payload={}, model="m", agent=None)
+
+    req_fmt = adapter._build_interaction_request(
+        payload={"task": "t", "response_json_schema": {"type": "object"}},
+        model="m",
+        agent=None,
+    )
+    assert "response_format" in req_fmt
+
+    # _call_interaction_with_retry TimeoutError exhaustion
+    client_timeout_fail = MagicMock()
+    client_timeout_fail.aio.interactions.create = AsyncMock(side_effect=TimeoutError())
+    with pytest.raises(TimeoutError):
+        await adapter._call_interaction_with_retry(
+            client=client_timeout_fail,
+            genai_errors=MagicMock(),
+            request={},
+            timeout_seconds=1,
+            payload={"max_attempts": 1},
+        )
+
+    # _call_interaction_stream_with_retry TimeoutError exhaustion
+    with patch.object(adapter, "_consume_interaction_stream", side_effect=TimeoutError()):
+        with pytest.raises(TimeoutError):
+            await adapter._call_interaction_stream_with_retry(
+                client=MagicMock(),
+                genai_errors=MagicMock(),
+                request={},
+                timeout_seconds=1,
+                payload={"max_attempts": 1},
+            )
+
+    # _execute_generate_content missing model error
+    res_gc_no_model = await adapter._execute_generate_content(
+        payload={},
+        model=None,
+        client=MagicMock(),
+        genai_errors=MagicMock(),
+        types=_Types,
+        vertexai=False,
+        project=None,
+        location=None,
+        timeout_seconds=10,
+    )
+    assert res_gc_no_model["status"] == "error"
+
+    # _execute_generate_content with explicit generation_config
+    mock_gc_gen = MagicMock()
+    mock_gc_gen.aio.models.generate_content = AsyncMock(
+        return_value=SimpleNamespace(text="ok", candidates=[])
+    )
+    res_gc_cfg = await adapter._execute_generate_content(
+        payload={"generation_config": {"temperature": 0.5}},
+        model="m",
+        client=mock_gc_gen,
+        genai_errors=MagicMock(),
+        types=_Types,
+        vertexai=False,
+        project=None,
+        location=None,
+        timeout_seconds=10,
+    )
+    assert res_gc_cfg["status"] == "success"
+
+    # _call_generate_content_with_retry timeout == 0, CancelledError, TimeoutError, APIError
+    client_gc = MagicMock()
+    client_gc.aio.models.generate_content = AsyncMock(return_value="gc_res")
+    assert (
+        await adapter._call_generate_content_with_retry(
+            client=client_gc,
+            genai_errors=MagicMock(),
+            request={},
+            timeout_seconds=0,
+            payload={},
+        )
+        == "gc_res"
+    )
+
+    client_gc.aio.models.generate_content = AsyncMock(side_effect=asyncio.CancelledError())
+    with pytest.raises(asyncio.CancelledError):
+        await adapter._call_generate_content_with_retry(
+            client=client_gc,
+            genai_errors=MagicMock(),
+            request={},
+            timeout_seconds=1,
+            payload={},
+        )
+
+    gc_timeout_calls = []
+
+    async def mock_gc_timeout(**kwargs: object) -> str:
+        gc_timeout_calls.append(1)
+        if len(gc_timeout_calls) < 2:
+            raise TimeoutError()
+        return "gc_recovered"
+
+    client_gc.aio.models.generate_content = mock_gc_timeout
+    with patch.object(adapter, "_retry_sleep", new_callable=AsyncMock):
+        assert (
+            await adapter._call_generate_content_with_retry(
+                client=client_gc,
+                genai_errors=MagicMock(),
+                request={},
+                timeout_seconds=1,
+                payload={"idempotency_key": "k"},
+            )
+            == "gc_recovered"
+        )
+
+    client_gc.aio.models.generate_content = AsyncMock(side_effect=err_inst)
+    with pytest.raises(err_cls):
+        await adapter._call_generate_content_with_retry(
+            client=client_gc,
+            genai_errors=genai_errs,
+            request={},
+            timeout_seconds=1,
+            payload={"max_attempts": 1},
+        )
+
+    # _call_generate_content_stream_with_retry timeout == 0, CancelledError, TimeoutError, APIError
+    client_gc_stream = MagicMock()
+    chunk_item = SimpleNamespace(text="streamed_chunk")
+    client_gc_stream.aio.models.generate_content_stream = AsyncMock(
+        return_value=_AsyncEvents([chunk_item])
+    )
+    chunks_res = await adapter._call_generate_content_stream_with_retry(
+        client=client_gc_stream,
+        genai_errors=MagicMock(),
+        request={},
+        timeout_seconds=0,
+        payload={},
+    )
+    assert len(chunks_res) == 1
+
+    client_gc_stream.aio.models.generate_content_stream = AsyncMock(
+        side_effect=asyncio.CancelledError()
+    )
+    with pytest.raises(asyncio.CancelledError):
+        await adapter._call_generate_content_stream_with_retry(
+            client=client_gc_stream,
+            genai_errors=MagicMock(),
+            request={},
+            timeout_seconds=1,
+            payload={},
+        )
+
+    gc_stream_timeout_calls = []
+
+    async def mock_gc_stream_timeout(**kwargs: object) -> _AsyncEvents:
+        gc_stream_timeout_calls.append(1)
+        if len(gc_stream_timeout_calls) < 2:
+            raise TimeoutError()
+        return _AsyncEvents([chunk_item])
+
+    client_gc_stream.aio.models.generate_content_stream = mock_gc_stream_timeout
+    with patch.object(adapter, "_retry_sleep", new_callable=AsyncMock):
+        assert (
+            len(
+                await adapter._call_generate_content_stream_with_retry(
+                    client=client_gc_stream,
+                    genai_errors=MagicMock(),
+                    request={},
+                    timeout_seconds=1,
+                    payload={"idempotency_key": "k"},
+                )
+            )
+            == 1
+        )
+
+    client_gc_stream.aio.models.generate_content_stream = AsyncMock(side_effect=err_inst)
+    with pytest.raises(err_cls):
+        await adapter._call_generate_content_stream_with_retry(
+            client=client_gc_stream,
+            genai_errors=genai_errs,
+            request={},
+            timeout_seconds=1,
+            payload={"max_attempts": 1},
+        )
+
+    # _call_generate_content_with_retry TimeoutError exhaustion
+    client_gc_timeout = MagicMock()
+    client_gc_timeout.aio.models.generate_content = AsyncMock(side_effect=TimeoutError())
+    with pytest.raises(TimeoutError):
+        await adapter._call_generate_content_with_retry(
+            client=client_gc_timeout,
+            genai_errors=MagicMock(),
+            request={},
+            timeout_seconds=1,
+            payload={"max_attempts": 1},
+        )
+
+    # _call_generate_content_stream_with_retry TimeoutError exhaustion
+    client_gc_stream_timeout = MagicMock()
+    client_gc_stream_timeout.aio.models.generate_content_stream = AsyncMock(
+        side_effect=TimeoutError()
+    )
+    with pytest.raises(TimeoutError):
+        await adapter._call_generate_content_stream_with_retry(
+            client=client_gc_stream_timeout,
+            genai_errors=MagicMock(),
+            request={},
+            timeout_seconds=1,
+            payload={"max_attempts": 1},
+        )

@@ -116,8 +116,18 @@ async def test_traceparent_injection_in_http_adapter():
     mock_post_context.__aexit__ = mock.AsyncMock(return_value=False)
     mock_session.post.return_value = mock_post_context
 
-    patch_path = "eval_runner.adapters.common.SessionManager.get_session"
-    with mock.patch(patch_path, return_value=mock_session):
+    with (
+        mock.patch(
+            "eval_runner.adapters.SessionManager.get_session",
+            new_callable=mock.AsyncMock,
+            return_value=mock_session,
+        ),
+        mock.patch(
+            "eval_runner.adapters.common.SessionManager.get_session",
+            new_callable=mock.AsyncMock,
+            return_value=mock_session,
+        ),
+    ):
         res = await http_adapter(payload, "http://localhost:5001/execute")
         assert res["status"] == "ok"
         assert res["action"] == "final_answer"
@@ -149,8 +159,18 @@ async def test_traceparent_injection_in_sse_adapter():
     mock_post_context.__aexit__ = mock.AsyncMock(return_value=False)
     mock_session.post.return_value = mock_post_context
 
-    patch_path = "eval_runner.adapters.common.SessionManager.get_session"
-    with mock.patch(patch_path, return_value=mock_session):
+    with (
+        mock.patch(
+            "eval_runner.adapters.SessionManager.get_session",
+            new_callable=mock.AsyncMock,
+            return_value=mock_session,
+        ),
+        mock.patch(
+            "eval_runner.adapters.common.SessionManager.get_session",
+            new_callable=mock.AsyncMock,
+            return_value=mock_session,
+        ),
+    ):
         res = await sse_http_adapter(payload, "http://localhost:5001/execute")
         assert res["content"] == "hello"
         assert res["status"] == "completed"

@@ -636,3 +636,78 @@ async def test_claude_post_decodes_success_and_surfaces_provider_error() -> None
             stream=False,
             timeout_seconds=1,
         )
+
+
+@pytest.mark.asyncio
+async def test_claude_adapter_extended_edge_cases() -> None:
+    adapter = ClaudeAdapterPlugin()
+
+    # URL resolution with explicit trailing slash
+    assert (
+        adapter._resolve_url({}, "https://example.test/v1/") == "https://example.test/v1/messages"
+    )
+
+    # Content block stop with non-int index
+    with pytest.raises(ClaudeAdapterError, match="invalid index"):
+        adapter._aggregate_sse_events(
+            [
+                ("message_start", {"message": {"id": "m0"}}),
+                (
+                    "content_block_start",
+                    {"index": 0, "content_block": {"type": "tool_use", "id": "t1", "name": "foo"}},
+                ),
+                ("content_block_stop", {"index": "not_an_int"}),
+            ]
+        )
+
+    # Content block stop with whitespace partial json
+    events_empty_json = [
+        ("message_start", {"message": {"id": "m1"}}),
+        (
+            "content_block_start",
+            {"index": 0, "content_block": {"type": "tool_use", "id": "t1", "name": "foo"}},
+        ),
+        (
+            "content_block_delta",
+            {"index": 0, "delta": {"type": "input_json_delta", "partial_json": "   "}},
+        ),
+        ("content_block_stop", {"index": 0}),
+        ("message_stop", {}),
+    ]
+    res_empty_json, _ = adapter._aggregate_sse_events(events_empty_json)
+    assert res_empty_json["content"][0]["input"] == {}
+
+    # Content block stop with tool input decoding to non-dict
+    events_scalar_json = [
+        ("message_start", {"message": {"id": "m2"}}),
+        (
+            "content_block_start",
+            {"index": 0, "content_block": {"type": "tool_use", "id": "t1", "name": "foo"}},
+        ),
+        (
+            "content_block_delta",
+            {"index": 0, "delta": {"type": "input_json_delta", "partial_json": '"scalar_string"'}},
+        ),
+        ("content_block_stop", {"index": 0}),
+        ("message_stop", {}),
+    ]
+    with pytest.raises(ClaudeAdapterError, match="must decode to an object"):
+        adapter._aggregate_sse_events(events_scalar_json)
+
+    # Trailing SSE event where JSON decodes to non-object
+    lines = _AsyncLines(
+        [
+            b"event: message_start\n",
+            b"data: 12345",
+        ]
+    )
+    response_mock = SimpleNamespace(
+        content=lines,
+        headers={"request-id": "req-1"},
+    )
+    with pytest.raises(ClaudeAdapterError, match="trailing SSE event must decode to an object"):
+        await adapter._read_stream(response_mock)
+
+    # Error message extraction with direct top-level message
+    err_msg = adapter._extract_error_message(500, "", {"message": "Direct error message"})
+    assert err_msg == "Direct error message"

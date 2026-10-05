@@ -288,7 +288,7 @@ class ClaudeAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             or "https://api.anthropic.com/v1/messages"
         )
 
-        endpoint = str(endpoint).strip().rstrip("/")
+        endpoint = str(endpoint).strip()
 
         if not endpoint:
             raise ClaudeAdapterError("Anthropic endpoint is empty.")
@@ -302,7 +302,7 @@ class ClaudeAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         if endpoint.endswith("/v1/"):
             return f"{endpoint}messages"
 
-        return f"{endpoint}/v1/messages"
+        return f"{endpoint.rstrip('/')}/v1/messages"
 
     @staticmethod
     def _resolve_headers(

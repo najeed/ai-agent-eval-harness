@@ -1,5 +1,6 @@
 import asyncio
 import json
+from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import aiohttp
@@ -748,3 +749,121 @@ async def test_openai_adapter_error_handling():
         assert result["status"] == "error"
         assert "401" in result["message"]
         assert post_json.await_count == 1
+
+
+@pytest.mark.asyncio
+async def test_openai_adapter_extended_edge_cases():
+    adapter = OpenAIAdapterPlugin()
+
+    # Circular dict serialization error
+    circular: dict[str, object] = {}
+    circular["self"] = circular
+    with pytest.raises(OpenAIAdapterError, match="Unable to serialize"):
+        OpenAIAdapterPlugin._serialize_input(circular)
+
+    # Tool call with non-dict function in message conversion
+    converted = OpenAIAdapterPlugin._messages_for_responses_api(
+        [
+            {
+                "role": "assistant",
+                "tool_calls": [{"type": "function", "function": "invalid_not_dict"}],
+            }
+        ]
+    )
+    assert converted == []
+
+    # Non-2xx HTTP status in _post_json
+    resp_err = MagicMock()
+    resp_err.status = 400
+    resp_err.headers = {}
+    resp_err.json = AsyncMock(return_value={"error": {"message": "Bad request"}})
+    resp_err.request_info = MagicMock()
+    resp_err.history = ()
+    session_mock = MagicMock()
+    session_mock.post.return_value = _ResponseContext(resp_err)
+    with patch.object(adapter, "get_session", new_callable=AsyncMock, return_value=session_mock):
+        with pytest.raises(OpenAIAdapterError, match="OpenAI API request failed"):
+            await adapter._post_json("https://example.test", {}, {})
+
+    # Stream request in responses mode
+    resp_stream = MagicMock()
+    resp_stream.status = 200
+    resp_stream.headers = {}
+    session_stream = MagicMock()
+    session_stream.post.return_value = _ResponseContext(resp_stream)
+    with patch.object(adapter, "get_session", new_callable=AsyncMock, return_value=session_stream):
+        with patch.object(
+            adapter,
+            "_consume_responses_stream",
+            new_callable=AsyncMock,
+            return_value=({"output": []}, {}),
+        ):
+            res_stream, _ = await adapter._stream_request(
+                "https://example.test", {}, {}, api_mode="responses"
+            )
+            assert res_stream == {"output": []}
+
+    # Exception during response.text() in _read_json_or_error
+    resp_text_exc = MagicMock()
+    resp_text_exc.json = AsyncMock(side_effect=aiohttp.ContentTypeError(MagicMock(), ()))
+    resp_text_exc.text = AsyncMock(side_effect=RuntimeError("cannot read text"))
+    err_dict = await OpenAIAdapterPlugin._read_json_or_error(resp_text_exc)
+    assert err_dict == {"error": {"message": ""}}
+
+    # Trailing SSE sentinel and invalid json without newline
+    sentinel_lines = _AsyncLines([b"data: [DONE]"])
+    res_sentinel = [
+        e async for e in adapter._iter_sse_events(SimpleNamespace(content=sentinel_lines))
+    ]
+    assert res_sentinel == []
+
+    invalid_json_lines = _AsyncLines([b"data: invalid_json{"])
+    res_invalid = [
+        e async for e in adapter._iter_sse_events(SimpleNamespace(content=invalid_json_lines))
+    ]
+    assert res_invalid == []
+
+    # _consume_chat_stream with non-dict delta_tool_call
+    chat_lines = _AsyncLines(
+        [
+            b'data: {"choices": [{"delta": {"tool_calls": ["not_a_dict"]}}]}\n',
+            b"\n",
+            b"data: [DONE]\n",
+            b"\n",
+        ]
+    )
+    chat_resp = SimpleNamespace(content=chat_lines)
+    assembled, _ = await adapter._consume_chat_stream(chat_resp, {})
+    assert assembled["choices"][0]["message"]["content"] == ""
+
+    # _normalize_chat_completion with empty content and stop finish reason
+    with pytest.raises(OpenAIAdapterError, match="returned no text content and no tool calls"):
+        adapter._normalize_chat_completion(
+            {"choices": [{"message": {"content": ""}, "finish_reason": "stop"}]}
+        )
+
+    # _normalize_responses with non-dict content block
+    data_non_dict_block = {
+        "output": [
+            {
+                "type": "message",
+                "content": ["not_a_dict", {"type": "text", "text": "hello"}],
+            }
+        ]
+    }
+    norm_res = adapter._normalize_responses(data_non_dict_block)
+    assert norm_res["output"] == "hello"
+
+    # _normalize_responses with multiple function calls
+    data_multi_tool = {
+        "output": [
+            {"type": "function_call", "name": "f1", "arguments": "{}"},
+            {"type": "function_call", "name": "f2", "arguments": "{}"},
+        ]
+    }
+    norm_multi = adapter._normalize_responses(data_multi_tool)
+    assert norm_multi["action"] == "call_multiple_tools"
+
+    # _normalize_usage with non-integer total_tokens
+    usage = adapter._normalize_usage({"total_tokens": "invalid"})
+    assert "total_tokens" not in usage

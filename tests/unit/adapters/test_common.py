@@ -15,6 +15,8 @@ Covers:
     (all primary keys, secondary substring scan, no match, emit on non-final)
 """
 
+import asyncio
+from datetime import datetime
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -919,3 +921,151 @@ def test_provider_retry_attempts_require_explicit_replay_safety(payload, stream,
     adapter.max_retries = 3
 
     assert adapter.provider_retry_attempts(payload, stream=stream) == expected_attempts
+
+
+def test_common_adapter_extended_edge_cases():
+    import builtins
+    import importlib
+
+    import eval_runner.adapters.common as common_mod
+    from eval_runner.adapters.common import (
+        retry_after_seconds,
+        traceparent_from_payload,
+    )
+
+    # Missing framework fallback import simulation
+    orig_import = builtins.__import__
+
+    def mock_import(name, *args, **kwargs):
+        if "langchain_core" in name:
+            raise ImportError("simulated missing langchain_core")
+        return orig_import(name, *args, **kwargs)
+
+    orig_session_mgr = common_mod.SessionManager
+    with patch("builtins.__import__", side_effect=mock_import):
+        importlib.reload(common_mod)
+        assert hasattr(common_mod, "BaseCallbackHandler")
+    common_mod.SessionManager = orig_session_mgr
+    import eval_runner.adapters
+
+    eval_runner.adapters.SessionManager = orig_session_mgr
+
+    # Traceparent flags length mismatch
+    invalid_tp = traceparent_from_payload(
+        {
+            "span_context": {
+                "traceparent": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-001"
+            }
+        }
+    )
+    assert invalid_tp is None
+
+    # Naive datetime string in retry_after_seconds
+    resp_with_header = SimpleNamespace(headers={"Retry-After": "Wed, 21 Oct 2026 07:28:00"})
+    with patch(
+        "eval_runner.adapters.common.parsedate_to_datetime",
+        return_value=datetime(2030, 1, 1),
+    ):
+        naive_retry = retry_after_seconds(resp_with_header)
+        assert naive_retry is not None and naive_retry > 0.0
+
+    # Request headers resolution fallback to metadata
+    ctx = AdapterExecutionContext(
+        pool=MagicMock(),
+        payload={},
+        metadata={"headers": {"X-From-Metadata": "true"}},
+    )
+    assert ctx.request_headers.get("X-From-Metadata") == "true"
+
+    # Current loop resolution when no event loop is running
+    assert AdapterSessionPool._current_loop() is None
+
+    # Session usability when loops are None
+    pool = AdapterSessionPool()
+    sess = MagicMock(closed=False)
+    sess._loop = None
+    assert pool._is_usable(sess, None) is True
+
+    # Usage extraction from usage_metadata attribute
+    resp = SimpleNamespace(usage_metadata={"input_tokens": 12, "output_tokens": 34})
+    usage = AESCallbackHandler._extract_usage(resp)
+    assert usage["prompt_tokens"] == 12
+    assert usage["completion_tokens"] == 34
+
+    # Text normalization on whitespace
+    assert DualNormalizationHub.normalize_text("   ", empty_action="custom_empty") == "custom_empty"
+
+    # Status code normalization with invalid integer representation
+    assert DualNormalizationHub.normalize({}, status_code="not_an_int") == "error"
+
+    # Response normalization branches
+    assert DualNormalizationHub.normalize_response("invalid_non_dict")["status"] == "error"
+    resp_tool = {"action": "call_tool", "output": "calling tool"}
+    assert DualNormalizationHub.normalize_response(resp_tool)["action"] == "call_tool"
+    resp_err = {"action": "error", "message": "fail"}
+    assert DualNormalizationHub.normalize_response(resp_err)["status"] == "error"
+    resp_derive = {"status": "success", "result": {"key": "val"}}
+    norm_derive = DualNormalizationHub.normalize_response(resp_derive)
+    assert norm_derive["status"] == "success"
+    assert norm_derive["action"] == "final_answer"
+    assert '"key": "val"' in norm_derive["content"]
+
+
+@pytest.mark.asyncio
+async def test_common_adapter_async_extended_edge_cases():
+    from eval_runner.adapters.common import _AdapterRequestContext
+
+    # Session pool close session on None and closed
+    pool = AdapterSessionPool()
+    await pool._close_session(None)
+    sess_closed = MagicMock(closed=True)
+    await pool._close_session(sess_closed)
+
+    # Session pool double-check lock return
+    calls = []
+
+    def mock_is_usable(sess, loop):
+        calls.append(True)
+        return len(calls) > 1
+
+    mock_sess = MagicMock(closed=False)
+    pool._session = mock_sess
+    with patch.object(pool, "_is_usable", side_effect=mock_is_usable):
+        session = await pool.get_session()
+        assert session is mock_sess
+
+    # Pool request context __aexit__ when context is None
+    ctx = _AdapterRequestContext(
+        pool=MagicMock(),
+        method="GET",
+        url="https://example.test",
+        kwargs={},
+    )
+    assert await ctx.__aexit__(None, None, None) is False
+
+    # Execute with retry remaining timeout ceiling
+    adapter = BaseAdapter("test-timeout")
+    attempts = []
+
+    async def flaky():
+        attempts.append(1)
+        if len(attempts) < 2:
+            raise aiohttp.ClientResponseError(request_info=MagicMock(), history=(), status=503)
+        return "ok"
+
+    with patch("asyncio.sleep", new_callable=AsyncMock) as mock_sleep:
+        res = await adapter.call_with_retry(
+            flaky,
+            max_attempts=2,
+            base_delay=10.0,
+            deadline=1.0,
+        )
+        assert res == "ok"
+        assert mock_sleep.call_count == 1
+        assert mock_sleep.call_args[0][0] <= 1.0
+
+    async def cancel_op():
+        raise asyncio.CancelledError()
+
+    with pytest.raises(asyncio.CancelledError):
+        await adapter.call_with_retry(cancel_op, max_attempts=2)
