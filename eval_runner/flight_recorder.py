@@ -160,18 +160,56 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                     run_vault_dir = self.log_dir / run_id
                     trace_path = run_vault_dir / "run.jsonl"
                     lifecycle_state = get_run_lifecycle_state(run_id, log_dir=self.log_dir)
-                    if (
-                        run_vault_dir.exists()
-                        or trace_path.exists()
-                        or lifecycle_state != RunLifecycleState.OPEN
-                    ):
-                        raise RuntimeError(
-                            f"RunIdCollision: run '{run_id}' already has persistent "
-                            "trace or lifecycle state; refusing to overwrite evidence."
-                        )
-                    self._run_states[run_id] = "RUNNING"
-                    self._failed_runs.discard(run_id)
-                    self._sequence_numbers[run_id] = 0
+                    is_resume = bool(data.get("is_resume"))
+                    if not is_resume:
+                        if (
+                            run_vault_dir.exists()
+                            or trace_path.exists()
+                            or lifecycle_state != RunLifecycleState.OPEN
+                        ):
+                            raise RuntimeError(
+                                f"RunIdCollision: run '{run_id}' already has persistent "
+                                "trace or lifecycle state; refusing to overwrite evidence."
+                            )
+                        self._run_states[run_id] = "RUNNING"
+                        self._failed_runs.discard(run_id)
+                        self._sequence_numbers[run_id] = 0
+                    else:
+                        if lifecycle_state in (
+                            RunLifecycleState.FINALIZING,
+                            RunLifecycleState.SEALED,
+                            RunLifecycleState.INVALID,
+                        ):
+                            raise RuntimeError(
+                                f"ResumptionError: run '{run_id}' is in state "
+                                f"'{lifecycle_state.value}'; "
+                                "refusing to append to finalized or invalid trace."
+                            )
+                        self._run_states[run_id] = "RUNNING"
+                        self._failed_runs.discard(run_id)
+                        # Monotonic sequencing: initialize sequence number from existing trace
+                        initial_seq = 0
+                        if trace_path.exists():
+                            try:
+                                with open(trace_path, encoding="utf-8") as tf:
+                                    for line in tf:
+                                        s = line.strip()
+                                        if s:
+                                            try:
+                                                entry = json.loads(s)
+                                                s_num = entry.get("_seq")
+                                                if isinstance(s_num, int) and s_num > initial_seq:
+                                                    initial_seq = s_num
+                                            except Exception as json_err:
+                                                logger.debug(
+                                                    "Trace scan parse error: %s",
+                                                    json_err,
+                                                )
+                            except Exception as te:
+                                logger.debug(
+                                    "Error reading trace for sequence initialization: %s", te
+                                )
+                        self._sequence_numbers[run_id] = initial_seq
 
             if self.log_rotate_count > 0:
                 self.rotate_logs(is_new_run=True)

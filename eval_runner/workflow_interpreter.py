@@ -43,6 +43,7 @@ from .execution_ir import (
     WorkflowStatus,
     evaluate_predicate,
 )
+from .run_lifecycle import RunSuspendedForApproval
 
 NodeExecutor = Callable[[Any, str, str | None], Awaitable[dict[str, Any]]]
 ContextProvider = Callable[[], Awaitable[dict[str, Any]]]
@@ -587,6 +588,8 @@ class WorkflowInterpreter:
                 "conversation_history": [],
                 "timed_out": True,
             }
+        except RunSuspendedForApproval:
+            raise
         except Exception as exc:  # noqa: BLE001 - engine boundary
             result = {
                 "task_id": item.node_id,

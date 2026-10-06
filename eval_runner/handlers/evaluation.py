@@ -11,6 +11,7 @@ import traceback
 from pathlib import Path
 
 from .. import config, utils
+from ..run_lifecycle import RunSuspendedForApproval
 
 logger = logging.getLogger(__name__)
 
@@ -278,6 +279,15 @@ async def handle_run(args):
 
         return 0
 
+    except RunSuspendedForApproval as susp:
+        print(f"\n[HITL PAUSE] Run '{susp.run_id}' PAUSED_FOR_APPROVAL.")
+        print(f"    Approval Token: {susp.approval_token}")
+        print("    To resume execution, run:")
+        print(
+            f"    agentv hitl-resume --run-id {susp.run_id} "
+            f"--approval-token {susp.approval_token} --decision APPROVED\n"
+        )
+        return 0
     except Exception:
         print("❌ Error during evaluation:")
         traceback.print_exc()

@@ -1,0 +1,336 @@
+{
+  "sso": {
+    "provider": "okta",
+    "enabled": true,
+    "enforce_org_wide": true,
+    "grace_period_days": 14,
+    "idp_metadata_url": "https://identity.enterprise.internal/app/agentv/sso/saml/metadata",
+    "sp_entity_id": "urn:agentv:enterprise:sp",
+    "sp_acs_url": "https://console.agentv.internal/v2/api/v1/sso/callback",
+    "claims_mapping": {
+      "email": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
+      "name": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name",
+      "roles": "http://schemas.enterprise.internal/claims/agentv_roles",
+      "department": "department"
+    },
+    "last_tested": null,
+    "test_status": "NOT_TESTED"
+  },
+  "session_policy": {
+    "idle_timeout_minutes": 30,
+    "mfa_required": true,
+    "max_concurrent_sessions": 3,
+    "ip_allowlist": [
+      "10.0.0.0/8",
+      "192.168.1.0/24",
+      "172.16.0.0/12"
+    ]
+  },
+  "roles": [
+    {
+      "id": "role_sysadmin",
+      "name": "System Admin",
+      "description": "Full platform administration, security policies, and credential governance",
+      "is_built_in": true,
+      "permissions": [
+        "system.manage",
+        "security.policy.edit",
+        "vault.certify",
+        "vault.export",
+        "admin.sso.configure",
+        "admin.secrets.manage",
+        "admin.retention.edit",
+        "shims.manage",
+        "scenarios.edit",
+        "eval.run",
+        "hitl.resolve",
+        "drift.view"
+      ],
+      "assigned_users_count": 3,
+      "updated_at": "2026-08-10T12:00:00Z"
+    },
+    {
+      "id": "role_compliance_auditor",
+      "name": "Compliance Auditor",
+      "description": "Read-only audit evidence inspector and GRC pack certifier",
+      "is_built_in": true,
+      "permissions": [
+        "compliance.view",
+        "compliance.export",
+        "vault.certify",
+        "vault.view",
+        "hitl.resolve",
+        "reports.view",
+        "meta_audit.view"
+      ],
+      "assigned_users_count": 5,
+      "updated_at": "2026-08-10T12:00:00Z"
+    },
+    {
+      "id": "role_scenario_designer",
+      "name": "Scenario Designer",
+      "description": "Authoring evaluation scenarios, mutation suites, and synthetic testing",
+      "is_built_in": true,
+      "permissions": [
+        "scenarios.edit",
+        "synthetic.generate",
+        "eval.run",
+        "reports.view",
+        "calibration.view"
+      ],
+      "assigned_users_count": 12,
+      "updated_at": "2026-08-10T12:00:00Z"
+    },
+    {
+      "id": "role_ops_eng",
+      "name": "MultiAgentOps Eng.",
+      "description": "Fleet deployment, shim instrumentation, and observability monitoring",
+      "is_built_in": true,
+      "permissions": [
+        "agents.deploy",
+        "shims.manage",
+        "observability.view",
+        "sniffer.manage",
+        "cluster.manage",
+        "drift.view",
+        "eval.run"
+      ],
+      "assigned_users_count": 8,
+      "updated_at": "2026-08-10T12:00:00Z"
+    },
+    {
+      "id": "role_eu_compliance_lead",
+      "name": "Regional Compliance Lead \u2014 EU",
+      "description": "EU AI Act high-risk certification and regional residency oversight",
+      "is_built_in": false,
+      "permissions": [
+        "compliance.view",
+        "compliance.export",
+        "vault.certify",
+        "admin.retention.view",
+        "meta_audit.view",
+        "hitl.resolve"
+      ],
+      "assigned_users_count": 2,
+      "updated_at": "2026-08-12T14:30:00Z"
+    }
+  ],
+  "users": [],
+  "environments": [
+    {
+      "id": "env_dev",
+      "name": "Development",
+      "type": "dev",
+      "endpoint": "http://dev-console.agentv.internal:5000",
+      "status": "unknown",
+      "active_agents": 0,
+      "last_ping": null,
+      "is_production": false
+    },
+    {
+      "id": "env_staging",
+      "name": "Staging",
+      "type": "staging",
+      "endpoint": "http://staging-console.agentv.internal:5000",
+      "status": "unknown",
+      "active_agents": 0,
+      "last_ping": null,
+      "is_production": false
+    },
+    {
+      "id": "env_prod",
+      "name": "Production (EU-Central)",
+      "type": "prod",
+      "endpoint": "https://prod-console.agentv.internal",
+      "status": "unknown",
+      "active_agents": 0,
+      "last_ping": null,
+      "is_production": true
+    }
+  ],
+  "promotion_gates": [
+    {
+      "id": "gate_staging_to_prod",
+      "name": "Staging \u2192 Production Promotion Gate",
+      "from_env": "env_staging",
+      "to_env": "env_prod",
+      "enabled": true,
+      "conditions": {
+        "required_compliance_packs": [
+          "SOC 2 CC6.1",
+          "EU AI Act Art. 14"
+        ],
+        "min_compliance_score": 95,
+        "required_approvals_count": 2,
+        "approver_roles": [
+          "System Admin",
+          "Compliance Auditor"
+        ],
+        "require_unrevoked_trust_cert": true,
+        "block_on_critical_security_findings": true,
+        "max_regression_drift_percent": 2.0
+      },
+      "version": "v2.1",
+      "updated_by": "sarah.chen@enterprise.corp",
+      "updated_at": "2026-08-12T10:00:00Z"
+    }
+  ],
+  "secrets": [],
+  "secret_access_logs": [],
+  "notification_channels": [
+    {
+      "id": "chan_slack_sec",
+      "name": "Slack #security-alerts",
+      "type": "slack",
+      "target": "#security-alerts",
+      "webhook_url": null,
+      "status": "unverified",
+      "events_dispatched": 0,
+      "last_event": null
+    },
+    {
+      "id": "chan_pagerduty",
+      "name": "PagerDuty MultiAgent-Ops Escalation",
+      "type": "pagerduty",
+      "target": "Service: AgentV-Core-Escalation",
+      "webhook_url": null,
+      "status": "unverified",
+      "events_dispatched": 0,
+      "last_event": null
+    },
+    {
+      "id": "chan_email_compliance",
+      "name": "Email: compliance-leads@enterprise.corp",
+      "type": "email",
+      "target": "compliance-leads@enterprise.corp",
+      "webhook_url": null,
+      "status": "unverified",
+      "events_dispatched": 0,
+      "last_event": null
+    },
+    {
+      "id": "chan_webhook_siem",
+      "name": "Enterprise SIEM Ingest Webhook",
+      "type": "webhook",
+      "target": "https://siem-collector.enterprise.internal/v1/agentv",
+      "webhook_url": null,
+      "status": "unverified",
+      "events_dispatched": 0,
+      "last_event": null
+    }
+  ],
+  "notification_rules": [
+    {
+      "id": "rule_01",
+      "name": "Critical Security Violations",
+      "event_type": "security.policy_violation",
+      "severity": "CRITICAL",
+      "channels": [
+        "chan_pagerduty",
+        "chan_slack_sec",
+        "chan_webhook_siem"
+      ],
+      "enabled": true,
+      "escalation_minutes": 15
+    },
+    {
+      "id": "rule_02",
+      "name": "Compliance Framework Score Drop (<90%)",
+      "event_type": "compliance.framework_score_drop",
+      "severity": "HIGH",
+      "channels": [
+        "chan_slack_sec",
+        "chan_email_compliance"
+      ],
+      "enabled": true,
+      "escalation_minutes": 60
+    },
+    {
+      "id": "rule_03",
+      "name": "HITL Triage Pending SLA Breach (>30m)",
+      "event_type": "hitl.pending_sla_breach",
+      "severity": "HIGH",
+      "channels": [
+        "chan_slack_sec",
+        "chan_pagerduty"
+      ],
+      "enabled": true,
+      "escalation_minutes": 30
+    },
+    {
+      "id": "rule_04",
+      "name": "Fleet Statistical Drift Regression",
+      "event_type": "drift.regression_detected",
+      "severity": "MEDIUM",
+      "channels": [
+        "chan_slack_sec"
+      ],
+      "enabled": true,
+      "escalation_minutes": 120
+    },
+    {
+      "id": "rule_05",
+      "name": "Credential Rotation Reminder (Overdue)",
+      "event_type": "admin.secret_rotation_due",
+      "severity": "MEDIUM",
+      "channels": [
+        "chan_email_compliance"
+      ],
+      "enabled": true,
+      "escalation_minutes": 240
+    }
+  ],
+  "retention": {
+    "raw_traces_days": 365,
+    "certificates_days": 2555,
+    "sniffer_vfs_logs_days": 90,
+    "hitl_resolution_records_days": 1825,
+    "legal_holds_count": 0,
+    "storage_residency_region": "eu-central-1 (Frankfurt)",
+    "pqc_cold_archive_enabled": true
+  },
+  "legal_holds": [],
+  "feature_flags": {
+    "env_dev": {
+      "synthetic_factory": true,
+      "forensic_sniffer": true,
+      "security_shield": true,
+      "hitl_triage": true,
+      "tri_dna": true,
+      "drift_detection": true,
+      "compliance_center": true,
+      "audit_vault": true,
+      "shim_manager": true,
+      "observability": true,
+      "agent_registry": true
+    },
+    "env_staging": {
+      "synthetic_factory": true,
+      "forensic_sniffer": true,
+      "security_shield": true,
+      "hitl_triage": true,
+      "tri_dna": true,
+      "drift_detection": true,
+      "compliance_center": true,
+      "audit_vault": true,
+      "shim_manager": true,
+      "observability": true,
+      "agent_registry": true
+    },
+    "env_prod": {
+      "synthetic_factory": false,
+      "forensic_sniffer": true,
+      "security_shield": true,
+      "hitl_triage": true,
+      "tri_dna": true,
+      "drift_detection": true,
+      "compliance_center": true,
+      "audit_vault": true,
+      "shim_manager": false,
+      "observability": true,
+      "agent_registry": true
+    }
+  },
+  "meta_audit_log": [],
+  "events_feed": []
+}

@@ -17,6 +17,7 @@ from typing import Any
 
 from eval_runner.interfaces.backend import ExecutionBackend
 from eval_runner.reference.sqlite_checkpoint import SQLiteCheckpointStore
+from eval_runner.run_lifecycle import RunSuspendedForApproval
 
 logger = logging.getLogger(__name__)
 
@@ -237,6 +238,20 @@ class InProcessExecutionBackend(ExecutionBackend):
                             self._active_runs[run_id]["status"] = "COMPLETED"
                         self._active_runs[run_id]["results"] = results
                 return results
+            except RunSuspendedForApproval as susp:
+                logger.info("Run %s entered durable suspension: %s", run_id, susp)
+                with self._lock:
+                    if run_id in self._active_runs:
+                        self._active_runs[run_id]["status"] = "PAUSED_FOR_APPROVAL"
+                        self._active_runs[run_id]["approval_token"] = susp.approval_token
+                        self._active_runs[run_id]["checkpoint_id"] = susp.checkpoint_id
+                        self._active_runs[run_id]["resumption_checkpoint"] = susp.checkpoint
+                return {
+                    "status": "PAUSED_FOR_APPROVAL",
+                    "run_id": run_id,
+                    "approval_token": susp.approval_token,
+                    "checkpoint_id": susp.checkpoint_id,
+                }
             except Exception as e:
                 logger.error("Execution failed for run %s: %s", run_id, e, exc_info=True)
                 with self._lock:

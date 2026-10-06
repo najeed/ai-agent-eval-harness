@@ -89,10 +89,15 @@ class SQLiteCheckpointStore(CheckpointStore):
         self._ensure_initialized()
         with closing(self._get_connection()) as conn:
             if checkpoint_id:
+                cid = checkpoint_id
+                if not isinstance(cid, str):
+                    cid = str(cid)
+                if "#" in cid and "/" in cid.split("#")[-1]:
+                    cid = cid.split("#")[-1].split("/")[-1]
                 row = conn.execute(
                     "SELECT state_json FROM session_checkpoints "
                     "WHERE run_id = ? AND checkpoint_id = ?",
-                    (run_id, checkpoint_id),
+                    (run_id, cid),
                 ).fetchone()
             else:
                 row = conn.execute(

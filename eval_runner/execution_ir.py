@@ -265,6 +265,22 @@ class NodeIR:
         except (TypeError, ValueError):
             return None
 
+    @property
+    def has_hitl_gate(self) -> bool:
+        """Indicates if scenario declared a first-class HITL governance gate."""
+        mode = str(self.definition.get("interaction_mode") or "").strip().lower()
+        if mode in ("manual_approval", "hitl", "approval"):
+            return True
+        return bool(self.definition.get("hitl_gate"))
+
+    @property
+    def hitl_gate_timing(self) -> str:
+        """Timing of the HITL gate: 'before' (default) or 'after'."""
+        gate_cfg = self.definition.get("hitl_gate")
+        if isinstance(gate_cfg, dict):
+            return str(gate_cfg.get("timing", "before")).strip().lower()
+        return "before"
+
     def join_spec(self, incoming_edge_ids: set[str]) -> tuple[str, int]:
         """
         [P0-5] Explicit join semantics: mode ∈ {all, any, n_of_m}.

@@ -1,0 +1,20 @@
+{
+  "id": "scen_gate_test",
+  "metadata": {
+    "org_id": "org_regulatory"
+  },
+  "workflow": [
+    {
+      "id": "wire_transfer",
+      "name": "Execute High Value Wire",
+      "interaction_mode": "Manual_Approval",
+      "tool": "wire",
+      "success_criteria": [
+        {
+          "type": "string_match",
+          "value": "Done"
+        }
+      ]
+    }
+  ]
+}

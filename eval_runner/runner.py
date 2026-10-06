@@ -26,6 +26,7 @@ from .reproducibility import (  # noqa: E402
     fingerprint,
     metric_registry_fingerprint,
 )
+from .run_lifecycle import RunSuspendedForApproval  # noqa: E402
 from .statistics import compute_attempt_statistics  # noqa: E402
 
 logger = logging.getLogger(__name__)
@@ -288,6 +289,7 @@ class DefaultRunner(BaseRunner):
         max_turns: int | None = None,
         cancellation_event: Any | None = None,
         resumption_checkpoint: dict | None = None,
+        resumption_token: str | None = None,
     ) -> EvaluationResult:
         import copy
 
@@ -697,12 +699,28 @@ class DefaultRunner(BaseRunner):
         exec_manifest_hash = exec_manifest.compute_manifest_hash()
 
         run_vault_dir = config.RUN_LOG_DIR / effective_run_id
-        if run_vault_dir.exists():
-            raise RuntimeError(
-                f"RunIdCollision: evidence vault already exists for run '{effective_run_id}'"
-            )
+        is_resume = (resumption_checkpoint is not None) or bool(resumption_token)
         manifest_file = run_vault_dir / "execution_manifest.json"
         scenario_snapshot_file = run_vault_dir / "scenario_resolved.json"
+
+        if run_vault_dir.exists():
+            if not is_resume:
+                raise RuntimeError(
+                    f"RunIdCollision: evidence vault already exists for run '{effective_run_id}'"
+                )
+            from eval_runner.run_lifecycle import (
+                RunLifecycleState,
+                get_run_lifecycle_state,
+                transition_run_lifecycle,
+            )
+
+            lf_state = get_run_lifecycle_state(effective_run_id)
+            if lf_state in (RunLifecycleState.FINALIZING, RunLifecycleState.SEALED):
+                raise RuntimeError(
+                    f"ResumptionError: cannot resume run '{effective_run_id}' in terminal "
+                    f"lifecycle state '{lf_state.value}'"
+                )
+            transition_run_lifecycle(effective_run_id, RunLifecycleState.OPEN)
 
         try:
             events.emit(
@@ -723,18 +741,19 @@ class DefaultRunner(BaseRunner):
                         or scenario.get("metadata", {}).get("execution_mode")
                     ),
                     "reproducibility_fingerprint": fingerprint(repro_contract),
+                    "is_resume": is_resume,
+                    "resumption_token": resumption_token,
                 },
                 span_context=ctx.span_context,
             )
 
-            # The recorder owns creation of a new vault at RUN_START.  Persist
-            # both execution bindings immediately afterwards: certification
-            # must never fall back to the mutable scenario catalog.
-            run_vault_dir.mkdir(parents=True, exist_ok=True)
-            with open(manifest_file, "w", encoding="utf-8") as mf:
-                json.dump(exec_manifest.to_dict(), mf, indent=2)
-            with open(scenario_snapshot_file, "w", encoding="utf-8") as sf:
-                json.dump(scenario_snapshot, sf, indent=2)
+            # Only write manifests if they do not already exist (preserves on resume)
+            if not manifest_file.exists():
+                run_vault_dir.mkdir(parents=True, exist_ok=True)
+                with open(manifest_file, "w", encoding="utf-8") as mf:
+                    json.dump(exec_manifest.to_dict(), mf, indent=2)
+                with open(scenario_snapshot_file, "w", encoding="utf-8") as sf:
+                    json.dump(scenario_snapshot, sf, indent=2)
 
             plugins.manager.trigger("before_evaluation", ctx)
 
@@ -781,13 +800,30 @@ class DefaultRunner(BaseRunner):
                     seed=current_seed,
                     cancellation_event=cancellation_event,
                     resumption_checkpoint=resumption_checkpoint,
+                    resumption_token=resumption_token,
                     resolved_config=self.resolved_config,
                     artifact_store=self.artifact_store,
                     checkpoint_store=self.checkpoint_store,
                     policy_evaluator=self.policy_evaluator,
                     signing_backend=self.signing_backend,
                 )
-                attempt_results = await session.execute_tasks(k)
+                try:
+                    attempt_results = await session.execute_tasks(k)
+                except RunSuspendedForApproval as susp:
+                    from eval_runner.run_lifecycle import (
+                        RunLifecycleState,
+                        transition_run_lifecycle,
+                    )
+
+                    logger.info(
+                        "Evaluation run %s suspended for approval (token: %s)",
+                        effective_run_id,
+                        susp.approval_token,
+                    )
+                    transition_run_lifecycle(
+                        effective_run_id, RunLifecycleState.PAUSED_FOR_APPROVAL
+                    )
+                    raise
 
                 # [Forensic Sync] propagate resolved routing (e.g. Port 8000)
                 from .context import _freeze_dict
@@ -1310,6 +1346,7 @@ def run_scenario(
     max_turns: int | None = None,
     cancellation_event: Any | None = None,
     resumption_checkpoint: dict | None = None,
+    resumption_token: str | None = None,
     runner: BaseRunner | None = None,
     run_store: Any | None = None,
     config_resolver: Any | None = None,
@@ -1364,6 +1401,7 @@ def run_scenario(
                     max_turns=max_turns,
                     cancellation_event=cancellation_event,
                     resumption_checkpoint=resumption_checkpoint,
+                    resumption_token=resumption_token,
                 ),
             ).result()
     else:
@@ -1377,5 +1415,6 @@ def run_scenario(
                 max_turns=max_turns,
                 cancellation_event=cancellation_event,
                 resumption_checkpoint=resumption_checkpoint,
+                resumption_token=resumption_token,
             )
         )

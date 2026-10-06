@@ -130,9 +130,12 @@ class SessionApprovalManager:
         """
         token = secrets.token_urlsafe(24)
         checkpoint_id = None
+        task_id = (metadata or {}).get("task_id", "unknown") if metadata else "unknown"
         if self.checkpoint_manager:
             checkpoint_state = {
                 "turn": turn_index,
+                "task_id": task_id,
+                "prompt": prompt,
                 "status": "PAUSED_FOR_APPROVAL",
                 "approval_token": token,
                 "action_payload": action_payload or {},
@@ -148,6 +151,7 @@ class SessionApprovalManager:
                 checkpoint_state,
                 metadata={
                     "hitl_gate": True,
+                    "task_id": task_id,
                     "status": "PAUSED_FOR_APPROVAL",
                     "approval_token": token,
                     "turn": turn_index,

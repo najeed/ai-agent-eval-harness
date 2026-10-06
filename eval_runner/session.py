@@ -44,6 +44,11 @@ from .execution_ir import (  # noqa: E402
     derive_oracle_id,
 )
 from .forensics import ForensicCollector  # noqa: E402
+from .run_lifecycle import (  # noqa: E402
+    RunLifecycleState,
+    RunSuspendedForApproval,
+    transition_run_lifecycle,
+)
 from .session_components import (  # noqa: E402
     SessionApprovalManager,
     SessionCheckpointManager,
@@ -101,6 +106,7 @@ class SessionManager:
         log_root: Path | None = None,
         cancellation_event: Any | None = None,
         resumption_checkpoint: dict | None = None,
+        resumption_token: str | None = None,
         resolved_config: Any | None = None,
         artifact_store: Any | None = None,
         checkpoint_store: Any | None = None,
@@ -118,6 +124,9 @@ class SessionManager:
         self.policy_evaluator = policy_evaluator
         self.signing_backend = signing_backend
         self.resumption_checkpoint = resumption_checkpoint
+        self.resumption_token = resumption_token
+        self._completed_node_results: dict[str, Any] = {}
+        self._approved_gates: set[str] = set()
         # Preserve the immutable evaluation contract separately from the working
         # scenario.  The runner hashes this supplied contract into the
         # EvaluatorFinalizationRecord.  Runtime routing below intentionally adds
@@ -229,6 +238,7 @@ class SessionManager:
                 "scenario_data": self.scenario,
                 "turn_state": self.turn_state_manager.snapshot(),
                 "tool_state": self.tool_execution_coordinator.snapshot(),
+                "completed_node_results": dict(getattr(self, "_completed_node_results", {})),
                 "metadata": dict(self.metadata),
                 "config_hash": getattr(self.resolved_config, "config_hash", None)
                 if self.resolved_config
@@ -242,7 +252,7 @@ class SessionManager:
         self.state_parity_verifier = SessionStateParityVerifier(session_manager=self)
 
         if resumption_checkpoint:
-            self.restore_from_checkpoint(resumption_checkpoint)
+            self.restore_from_checkpoint(resumption_checkpoint, resumption_token=resumption_token)
 
         # Initialize plugins for this session
         self.plugin_manager.load_plugins()
@@ -324,6 +334,9 @@ class SessionManager:
 
         # Auto-subscribe plugins to the session bus (Bridge to legacy Hooks)
         def _bridge_event_internal(event: Event):
+            # Approval hooks are triggered directly by SessionApprovalManager with typed contract
+            if event.name in (CoreEvents.APPROVAL_CREATED, CoreEvents.APPROVAL_RESOLVED):
+                return
             # Map events to legacy hook names
             hook_name = f"on_{event.name.lower()}"
             # Standard Unpacking: Pass event data and turns_taken as context proxy
@@ -488,6 +501,12 @@ class SessionManager:
             self.session_metadata.update(data["metadata"])
         if "session_metadata" in data and isinstance(data["session_metadata"], dict):
             self.session_metadata.update(data["session_metadata"])
+        if "completed_node_results" in data and isinstance(data["completed_node_results"], dict):
+            self._completed_node_results = dict(data["completed_node_results"])
+        if resumption_token:
+            self.resumption_token = resumption_token
+        elif "approval_token" in data:
+            self.resumption_token = str(data["approval_token"])
         return True
 
     async def execute_tasks(self, attempt_number: int) -> list[dict[str, Any]]:
@@ -554,6 +573,9 @@ class SessionManager:
             async def _executor(node_ir, exec_id: str, parent_exec_id: str | None):
                 node_def = node_ir.definition
                 node_id_local = node_ir.node_id
+                if node_id_local in getattr(self, "_completed_node_results", {}):
+                    return self._completed_node_results[node_id_local]
+
                 if (
                     self.cancellation_event
                     and getattr(self.cancellation_event, "is_set", lambda: False)()
@@ -634,6 +656,9 @@ class SessionManager:
 
                 if result.get("status") == "success":
                     ctx.turns_taken += 1
+                    if not hasattr(self, "_completed_node_results"):
+                        self._completed_node_results = {}
+                    self._completed_node_results[node_id_local] = result
 
                 # [E4] LIVE/HYBRID reconciliation: independently capture the
                 # post-node world state and reconcile it against the node's
@@ -811,6 +836,8 @@ class SessionManager:
             verdict_target["verification_decision"] = decision
             all_task_results.append(verdict_target)
 
+        except RunSuspendedForApproval:
+            raise
         except Exception as e:
             err_msg = f"Forensic Exception during node execution: {str(e)}"
             import traceback
@@ -1218,6 +1245,46 @@ class SessionManager:
         # AES v1.6.0 typically maintains session-scoped history.
         conversation_history.append({"role": "user", "content": current_message})
 
+        # Check scenario-declared governance HITL gate (P0-5)
+        if self._should_enforce_hitl_gate(node, timing="before"):
+            gate_prompt = (
+                node.get("hitl_prompt")
+                or f"Manual approval required for task '{node_id}': {task_description}"
+            )
+            agent_resp = {
+                "action": "hitl_pause",
+                "prompt": gate_prompt,
+                "task_id": node_id,
+                "required_role": node.get("required_role"),
+                "gate_type": "scenario_declared",
+            }
+            gate_turn_ctx = TurnContext(
+                task_id=node_id,
+                turn_number=0,
+                current_message=current_message,
+                history=list(conversation_history),
+                input_payload=node.get("input_payload", {}),
+                span_context=self.session_metadata.get("span_context"),
+                sandbox=sandbox,
+                metadata={
+                    **self.session_metadata,
+                    "agent_name": self.metadata.get("agent_name"),
+                    "agent": self.metadata.get("agent"),
+                    "protocol": self.metadata.get("protocol"),
+                },
+            )
+            gate_response = await self._handle_hitl(
+                0, agent_resp, conversation_history, agent_actions, gate_turn_ctx
+            )
+            self._mark_gate_approved(node_id)
+            if getattr(self, "_hitl_unresolved", False):
+                self._hitl_unresolved = False
+                node_success = False
+                hitl_unresolved = True
+            else:
+                conversation_history.append({"role": "human", "content": gate_response})
+                current_message = gate_response
+
         node_success = False
         hitl_unresolved = False
         turn = 0
@@ -1343,6 +1410,8 @@ class SessionManager:
                     node_success = False
                     break
 
+            except RunSuspendedForApproval:
+                raise
             except Exception as e:
                 err_msg = f"Agent Node Error: {str(e)}"
                 self.event_bus.emit(
@@ -2207,6 +2276,28 @@ class SessionManager:
         task_id = turn_ctx.task_id if turn_ctx else "unknown"
         self.event_bus.emit(CoreEvents.HITL_PAUSE, {"task_id": task_id, "prompt": prompt})
 
+        # Check if already authoritatively approved via resumption token
+        if getattr(self, "resumption_token", None):
+            try:
+                from eval_runner.reference.approval_store import get_default_approval_store
+
+                res_req = get_default_approval_store().get_request(self.resumption_token)
+                if res_req and res_req.status == "APPROVED":
+                    req_task = res_req.metadata.get("task_id") if res_req.metadata else None
+                    if req_task == task_id or not req_task:
+                        resolved_msg = res_req.decision_reason or res_req.decision or "APPROVED"
+                        self.event_bus.emit(
+                            CoreEvents.HITL_RESUME,
+                            {
+                                "task_id": task_id,
+                                "response": resolved_msg,
+                                "approval_token": self.resumption_token,
+                            },
+                        )
+                        return resolved_msg
+            except Exception as _chk_err:
+                logger.debug("Resumption approval store check failed: %s", _chk_err)
+
         # Check for explicit durable suspension requests first, even in CI
         if not (os.environ.get("AGENTV_CLI_HITL_SUSPEND") or os.environ.get("FORCE_HITL_SUSPEND")):
             if os.getenv("CI", "").lower() == "true":
@@ -2277,26 +2368,41 @@ class SessionManager:
                 metadata=req_metadata,
             )
 
-            # If CLI suspension is requested, exit cleanly without blocking in memory
-            if os.environ.get("AGENTV_CLI_HITL_SUSPEND") == "1":
+            # If CLI/durable suspension is requested, exit cleanly without blocking in memory
+            is_durable_suspend = os.environ.get("AGENTV_CLI_HITL_SUSPEND") == "1"
+            if is_durable_suspend:
                 self.event_bus.emit(
                     CoreEvents.HITL_PAUSE,
                     {
                         "task_id": task_id,
                         "prompt": prompt,
                         "approval_token": durable_req.approval_token,
+                        "checkpoint_id": durable_req.checkpoint_id,
                         "status": "PAUSED_FOR_APPROVAL",
                     },
                 )
-                print(f"\n⏸️  Run '{self.run_id}' PAUSED_FOR_APPROVAL at turn {turn}.")
+                transition_run_lifecycle(self.run_id, RunLifecycleState.PAUSED_FOR_APPROVAL)
+                print(f"\n[HITL PAUSE] Run '{self.run_id}' PAUSED_FOR_APPROVAL at turn {turn}.")
                 print(f"    Approval Token: {durable_req.approval_token}")
                 print("    To resume execution, run:")
                 print(
                     f"    agentv hitl-resume --run-id {self.run_id} "
                     f"--approval-token {durable_req.approval_token} --decision APPROVED\n"
                 )
-                raise InterruptedError(
-                    f"Run '{self.run_id}' paused for approval. Token: {durable_req.approval_token}"
+                chk_data = (
+                    self.checkpoint_manager.load_checkpoint(durable_req.checkpoint_id)
+                    if durable_req.checkpoint_id and isinstance(durable_req.checkpoint_id, str)
+                    else None
+                )
+                raise RunSuspendedForApproval(
+                    run_id=self.run_id,
+                    task_id=task_id,
+                    approval_token=durable_req.approval_token,
+                    turn_index=turn,
+                    checkpoint_id=durable_req.checkpoint_id,
+                    prompt=prompt,
+                    checkpoint=chk_data,
+                    action_payload=agent_response,
                 )
 
             # 1. Snapshot checkpoint before entering approval wait loop
@@ -2368,6 +2474,46 @@ class SessionManager:
         response = f"Skipped (non-interactive, no TTY): {prompt}"
         self.event_bus.emit(CoreEvents.HITL_RESUME, {"task_id": task_id, "response": response})
         return response
+
+    def _should_enforce_hitl_gate(self, node: dict[str, Any], timing: str = "before") -> bool:
+        """Determines if a scenario-declared HITL governance gate should trigger (P0-5)."""
+        node_id = str(node.get("id", "unknown"))
+        if getattr(self, "_approved_gates", None) and node_id in self._approved_gates:
+            return False
+
+        # If resumed with an approved request matching this node, gate is pre-approved
+        if getattr(self, "resumption_token", None):
+            try:
+                from eval_runner.reference.approval_store import get_default_approval_store
+
+                req = get_default_approval_store().get_request(self.resumption_token)
+                if req and req.status == "APPROVED":
+                    req_node = req.metadata.get("task_id") if req.metadata else None
+                    if req_node == node_id or not req_node:
+                        self._mark_gate_approved(node_id)
+                        return False
+            except Exception as _chk_err:
+                logger.debug(
+                    "Failed checking resumption token approval in gate check: %s",
+                    _chk_err,
+                )
+
+        mode = str(node.get("interaction_mode") or "").strip().lower()
+        has_gate = mode in ("manual_approval", "hitl", "approval") or bool(node.get("hitl_gate"))
+        if not has_gate:
+            return False
+
+        node_timing = "before"
+        gate_cfg = node.get("hitl_gate")
+        if isinstance(gate_cfg, dict):
+            node_timing = str(gate_cfg.get("timing", "before")).strip().lower()
+        return node_timing == timing
+
+    def _mark_gate_approved(self, node_id: str) -> None:
+        """Records that a governance gate has been approved for the node."""
+        if not hasattr(self, "_approved_gates"):
+            self._approved_gates = set()
+        self._approved_gates.add(node_id)
 
     def _record_tool_result(self, turn, tool_name, tool_params, result, history, actions, turn_ctx):
         """Unified helper to record tool results across single and short-circuited paths."""

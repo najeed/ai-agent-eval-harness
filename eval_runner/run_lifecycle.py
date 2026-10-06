@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 class RunLifecycleState(StrEnum):
     OPEN = "OPEN"
+    PAUSED_FOR_APPROVAL = "PAUSED_FOR_APPROVAL"
     FINALIZING = "FINALIZING"
     SEALED = "SEALED"
     UNKNOWN = "UNKNOWN"
@@ -35,10 +36,48 @@ class TraceClosedError(RuntimeError):
     """Raised when a trace write is attempted on a run in FINALIZING, SEALED, or INVALID state."""
 
 
+class RunSuspendedForApproval(InterruptedError):
+    """
+    Authoritative suspension signal raised when a run enters durable HITL approval gate.
+    Bypasses standard node-level failure handling to preserve PAUSED_FOR_APPROVAL state.
+    Inherits from InterruptedError for backward compatibility with direct callers.
+    """
+
+    def __init__(
+        self,
+        run_id: str,
+        task_id: str,
+        approval_token: str,
+        turn_index: int = 0,
+        checkpoint_id: str | None = None,
+        prompt: str = "",
+        checkpoint: dict[str, Any] | None = None,
+        action_payload: dict[str, Any] | None = None,
+    ):
+        super().__init__(
+            f"Run '{run_id}' paused for approval on task '{task_id}'. Token: {approval_token}"
+        )
+        self.run_id = run_id
+        self.task_id = task_id
+        self.approval_token = approval_token
+        self.turn_index = turn_index
+        self.checkpoint_id = checkpoint_id
+        self.prompt = prompt
+        self.checkpoint = checkpoint or {}
+        self.action_payload = action_payload or {}
+
+
 _VALID_TRANSITIONS: dict[RunLifecycleState, set[RunLifecycleState]] = {
     RunLifecycleState.OPEN: {
         RunLifecycleState.OPEN,
+        RunLifecycleState.PAUSED_FOR_APPROVAL,
         RunLifecycleState.FINALIZING,
+    },
+    RunLifecycleState.PAUSED_FOR_APPROVAL: {
+        RunLifecycleState.PAUSED_FOR_APPROVAL,
+        RunLifecycleState.OPEN,
+        RunLifecycleState.FINALIZING,
+        RunLifecycleState.SEALED,
     },
     RunLifecycleState.FINALIZING: {RunLifecycleState.FINALIZING, RunLifecycleState.SEALED},
     RunLifecycleState.SEALED: {RunLifecycleState.SEALED},
@@ -169,6 +208,14 @@ def can_write_trace(run_id: str, log_dir: Path | None = None) -> tuple[bool, str
         return True, ""
 
     state = get_run_lifecycle_state(run_id, log_dir)
+    if state == RunLifecycleState.PAUSED_FOR_APPROVAL:
+        return (
+            False,
+            (
+                f"Run '{run_id}' is in PAUSED_FOR_APPROVAL state; "
+                "trace writes prohibited until resumed."
+            ),
+        )
     if state == RunLifecycleState.FINALIZING:
         return False, f"Run '{run_id}' is in FINALIZING state; trace writes prohibited."
     if state == RunLifecycleState.SEALED:
@@ -219,6 +266,7 @@ def rollback_run_lifecycle_to_open(run_id: str, log_dir: Path | None = None) -> 
 
 __all__ = [
     "RunLifecycleState",
+    "RunSuspendedForApproval",
     "TraceClosedError",
     "assert_can_write_trace",
     "can_write_trace",

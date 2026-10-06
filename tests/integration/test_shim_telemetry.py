@@ -25,7 +25,7 @@ async def test_tool_sandbox_metadata_captures_snapshot():
     assert "provisioning_hash" in sandbox.scenario["metadata"]
 
     # Verify values match registry
-    registry = config.RegistryManager.get_resolved_registry()
+    registry = config.RegistryManager.get_sanitized_registry()
     # Use deep comparison or just verify it's a dict with expected keys
     assert isinstance(sandbox.scenario["environmental_snapshot"], dict)
     assert sandbox.scenario["environmental_snapshot"] == registry
