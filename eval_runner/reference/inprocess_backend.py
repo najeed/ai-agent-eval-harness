@@ -10,11 +10,14 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import json
 import logging
 import threading
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
+from eval_runner import config
 from eval_runner.interfaces.backend import ExecutionBackend
 from eval_runner.reference.sqlite_checkpoint import SQLiteCheckpointStore
 from eval_runner.run_lifecycle import RunSuspendedForApproval
@@ -403,16 +406,56 @@ class InProcessExecutionBackend(ExecutionBackend):
                 if not checkpoint and not kwargs.get("force_submit", False):
                     return self._active_runs[run_id]
 
-        scenario_data = (checkpoint.get("scenario_data") if checkpoint else None) or (
-            self._active_runs.get(run_id, {}).get("scenario_data")
-            if run_id in self._active_runs
-            else None
-        )
+        vault_dir = Path(config.RUN_LOG_DIR) / run_id
+        resolved_file = vault_dir / "scenario_resolved.json"
+        scenario_data = None
+        if resolved_file.exists():
+            try:
+                scenario_data = json.loads(resolved_file.read_text(encoding="utf-8"))
+            except Exception as sf_err:
+                logger.debug("Failed reading scenario_resolved.json on resume: %s", sf_err)
+
+        if not scenario_data:
+            scenario_data = (checkpoint.get("scenario_data") if checkpoint else None) or (
+                self._active_runs.get(run_id, {}).get("scenario_data")
+                if run_id in self._active_runs
+                else None
+            )
         if not scenario_data:
             raise RuntimeError(
                 f"Cannot resume run '{run_id}': checkpoint does not contain required "
                 "scenario state (fail-closed)."
             )
+
+        # Preserve authoritative execution_mode across resumption
+        resumed_metadata = dict(kwargs.get("metadata") or {})
+        orig_mode = kwargs.pop("execution_mode", None)
+        if not orig_mode:
+            if checkpoint:
+                chk_meta = (
+                    checkpoint.get("metadata")
+                    or (checkpoint.get("session_state") or {}).get("metadata")
+                    or {}
+                )
+                orig_mode = chk_meta.get("execution_mode")
+            if not orig_mode and run_id in self._active_runs:
+                orig_mode = self._active_runs[run_id].get("kwargs", {}).get("execution_mode")
+                if not orig_mode:
+                    orig_meta = self._active_runs[run_id].get("kwargs", {}).get("metadata") or {}
+                    orig_mode = orig_meta.get("execution_mode")
+            if not orig_mode and (vault_dir / "execution_manifest.json").exists():
+                try:
+                    with open(vault_dir / "execution_manifest.json", encoding="utf-8") as mf:
+                        em_json = json.load(mf)
+                    orig_mode = em_json.get("runtime_config", {}).get("execution_mode")
+                except Exception as em_err:
+                    logger.debug("Failed reading execution manifest on resume: %s", em_err)
+        if orig_mode:
+            resumed_metadata["execution_mode"] = orig_mode
+            resumed_metadata["execution_mode_declared"] = True
+            if isinstance(scenario_data, dict):
+                scenario_data["execution_mode"] = orig_mode
+        kwargs["metadata"] = resumed_metadata
 
         background = kwargs.pop("background", False)
         return self.submit(

@@ -60,7 +60,7 @@ framework-ag2 = [
     "ag2==1.1.2",
 ]
 framework-crewai = [
-#    "crewai==1.15.22; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
+#    "crewai==1.15.24; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
 ]
 
 # 3. Framework-to-Provider Integrations (LangChain Wrappers)
@@ -106,7 +106,7 @@ frameworks = [
     "langserve>=0.3.3",
     "langgraph==1.2.14",
     "ag2==1.1.2",
-#    "crewai==1.15.22; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
+#    "crewai==1.15.24; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
 ]
 langchain-all = [
     "langchain==1.4.3",
@@ -127,7 +127,7 @@ all = [
     "langserve>=0.3.3",
     "langgraph==1.2.14",
     "ag2==1.1.2",
-#    "crewai==1.15.22; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
+#    "crewai==1.15.24; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
     "langchain-openai==1.6.7",
     "langchain-anthropic>=1.7.5",
     "langchain-google-genai>=4.4.0",

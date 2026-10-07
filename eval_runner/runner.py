@@ -722,6 +722,34 @@ class DefaultRunner(BaseRunner):
                 )
             transition_run_lifecycle(effective_run_id, RunLifecycleState.OPEN)
 
+        # On resumption, authoritative ExecutionManifest and scenario snapshot are locked
+        # from the initial run launch to preserve cryptographic binding.
+        if is_resume and manifest_file.exists():
+            try:
+                with open(manifest_file, encoding="utf-8") as mf:
+                    loaded_m_data = json.load(mf)
+                exec_manifest = ExecutionManifest.from_dict(loaded_m_data)
+                exec_manifest_hash = exec_manifest.compute_manifest_hash()
+                scen_hash = exec_manifest.scenario_hash
+                manifest_mode = exec_manifest.runtime_config.get(
+                    "execution_mode"
+                ) or exec_manifest.metadata.get("execution_mode")
+                if manifest_mode:
+                    execution_mode = manifest_mode
+                    execution_mode_declared = True
+                    if isinstance(ctx.metadata, dict):
+                        ctx.metadata["execution_mode"] = execution_mode
+                        ctx.metadata["execution_mode_declared"] = True
+            except Exception as em_err:
+                logger.warning("Failed reloading authoritative manifest on resume: %s", em_err)
+
+        if is_resume and scenario_snapshot_file.exists():
+            try:
+                with open(scenario_snapshot_file, encoding="utf-8") as sf:
+                    scenario_snapshot = json.load(sf)
+            except Exception as sf_err:
+                logger.warning("Failed reloading scenario snapshot on resume: %s", sf_err)
+
         try:
             events.emit(
                 events.CoreEvents.RUN_START,
@@ -736,7 +764,8 @@ class DefaultRunner(BaseRunner):
                     # Whether the operator explicitly declared the mode;
                     # absent declaration → provisional certificates.
                     "execution_mode_declared": bool(
-                        scenario.get("execution_mode")
+                        execution_mode_declared
+                        or scenario.get("execution_mode")
                         or (metadata or {}).get("execution_mode")
                         or scenario.get("metadata", {}).get("execution_mode")
                     ),

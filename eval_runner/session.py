@@ -435,8 +435,12 @@ class SessionManager:
         # Persist the immutable scenario contract that was hashed at evaluation
         # start, not the mutable execution copy.  Routing and run affinity are
         # recorded separately in the execution manifest and trace.
-        with open(self.run_vault / "scenario_resolved.json", "w", encoding="utf-8") as f:
-            json.dump(self._scenario_contract, f, indent=2)
+        if not (
+            (self.resumption_checkpoint or self.resumption_token)
+            and (self.run_vault / "scenario_resolved.json").exists()
+        ):
+            with open(self.run_vault / "scenario_resolved.json", "w", encoding="utf-8") as f:
+                json.dump(self._scenario_contract, f, indent=2)
 
         # 🚀 [Forensic Hardening] Protocol Trace capture
         self.protocol_sequence: list[str] = []
