@@ -18,6 +18,8 @@ from werkzeug.serving import make_server
 from eval_runner import config
 from eval_runner.console.app import create_app
 
+TEST_API_KEY = "test-visual-console-key"
+
 
 def get_free_port() -> int:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -62,6 +64,8 @@ def console_server(tmp_path_factory):
     with (
         patch.object(config, "PROJECT_ROOT", config.PROJECT_ROOT),
         patch.object(config, "RUN_LOG_DIR", runs_dir),
+        patch.object(config, "DASHBOARD_API_KEY", TEST_API_KEY),
+        patch.object(config, "SERVICE_API_KEY", TEST_API_KEY),
     ):
         app = create_app()
         app.secret_key = "test-ui-secret"
@@ -152,6 +156,8 @@ def test_playwright_e2e_navigation(console_server):
             # 1. Load Canonical Root
             page.goto(base_url, wait_until="domcontentloaded", timeout=20000)
             assert page.locator("#root").count() == 1
+            login = page.request.post(f"{base_url}/api/auth/login", data={"apiKey": TEST_API_KEY})
+            assert login.status == 200
 
             # 2. Navigate to /scenarios
             page.goto(f"{base_url}/scenarios", wait_until="domcontentloaded", timeout=20000)

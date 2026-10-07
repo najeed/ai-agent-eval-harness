@@ -1439,6 +1439,11 @@ class SessionManager:
 
             self.event_bus.emit(CoreEvents.TURN_END, {"turn": turn, "task_id": node_id})
 
+        # A durable approval is an execution boundary, not a state-parity
+        # observation.  Never spend the node verification window polling for
+        # a human decision that has not yet been applied.
+        self._raise_if_pending_durable_approval()
+
         # 3. Implicit Verification Phase (Transition-Based State Parity, AgentV v2.0.0)
         parity_success, parity_evidence = await self._verify_state_parity(
             node,
@@ -2257,6 +2262,52 @@ class SessionManager:
         # Record unified environment response for multi-tool execution
         history.append({"role": "environment", "content": all_tool_results})
 
+    def _raise_if_pending_durable_approval(self) -> None:
+        """Suspend execution before verification while human approval is pending."""
+        pending = self.approval_manager.list_durable_pending()
+        if not pending:
+            return
+        if len(pending) != 1:
+            raise RuntimeError(
+                f"Run '{self.run_id}' has {len(pending)} pending durable approvals; "
+                "cannot select a resumption checkpoint safely."
+            )
+
+        request = pending[0]
+        metadata = request.metadata if isinstance(request.metadata, dict) else {}
+        task_id = str(metadata.get("task_id") or "unknown")
+        checkpoint_id = request.checkpoint_id
+        checkpoint = (
+            self.checkpoint_manager.load_checkpoint(checkpoint_id)
+            if isinstance(checkpoint_id, str) and checkpoint_id
+            else None
+        )
+        self.event_bus.emit(
+            CoreEvents.HITL_PAUSE,
+            {
+                "task_id": task_id,
+                "prompt": request.prompt,
+                "approval_token": request.approval_token,
+                "checkpoint_id": checkpoint_id,
+                "status": "PAUSED_FOR_APPROVAL",
+            },
+        )
+        transition_run_lifecycle(
+            self.run_id,
+            RunLifecycleState.PAUSED_FOR_APPROVAL,
+            log_dir=self.log_root,
+        )
+        raise RunSuspendedForApproval(
+            run_id=self.run_id,
+            task_id=task_id,
+            approval_token=request.approval_token,
+            turn_index=request.turn_index,
+            checkpoint_id=checkpoint_id,
+            prompt=request.prompt,
+            checkpoint=checkpoint,
+            action_payload=request.action_payload,
+        )
+
     async def _handle_hitl(
         self,
         turn: int,
@@ -2271,6 +2322,12 @@ class SessionManager:
         prompt = agent_response.get("prompt", "Human intervention required.")
         """Handles Human-In-The-Loop interaction."""
         import os
+
+        # Scenario-declared governance gates are control-plane boundaries.  A
+        # console server may inherit a TTY and development dependencies (such
+        # as pytest), neither of which may turn a durable approval into a
+        # local input prompt or an automatic "Skipped" resume.
+        is_scenario_gate = agent_response.get("gate_type") == "scenario_declared"
 
         # Record the pause event for audit/forensics regardless of CI mode
         raw_task_id = getattr(turn_ctx, "task_id", None) if turn_ctx else None
@@ -2300,7 +2357,9 @@ class SessionManager:
                 logger.debug("Resumption approval store check failed: %s", _chk_err)
 
         # Check for explicit durable suspension requests first, even in CI
-        if not (os.environ.get("AGENTV_CLI_HITL_SUSPEND") or os.environ.get("FORCE_HITL_SUSPEND")):
+        if not is_scenario_gate and not (
+            os.environ.get("AGENTV_CLI_HITL_SUSPEND") or os.environ.get("FORCE_HITL_SUSPEND")
+        ):
             if os.getenv("CI", "").lower() == "true":
                 # A human-gated scenario can never pass without a human decision;
                 # automation produces an explicit HITL_UNRESOLVED failure.
@@ -2314,8 +2373,12 @@ class SessionManager:
 
         import sys
 
-        if sys.stdin.isatty() and not (
-            os.environ.get("AGENTV_CLI_HITL_SUSPEND") or os.environ.get("FORCE_HITL_SUSPEND")
+        if (
+            sys.stdin.isatty()
+            and not is_scenario_gate
+            and not (
+                os.environ.get("AGENTV_CLI_HITL_SUSPEND") or os.environ.get("FORCE_HITL_SUSPEND")
+            )
         ):
             # Interactive terminal: read from stdin directly
             print(f"\n      [HITL] Human intervention required for task '{task_id}'")
@@ -2330,11 +2393,7 @@ class SessionManager:
             return human_input
 
         # Non-interactive mode (no TTY): suspend into registry for GUI/API resolution
-        if not sys.stdin.isatty() and (
-            "pytest" not in sys.modules
-            or os.environ.get("FORCE_HITL_SUSPEND")
-            or os.environ.get("AGENTV_CLI_HITL_SUSPEND")
-        ):
+        if is_scenario_gate or not sys.stdin.isatty():
             # Compute outbound hash
             outbound_hash = ""
             if agent_response:
@@ -2371,8 +2430,13 @@ class SessionManager:
                 metadata=req_metadata,
             )
 
-            # If CLI/durable suspension is requested, exit cleanly without blocking in memory
-            is_durable_suspend = os.environ.get("AGENTV_CLI_HITL_SUSPEND") == "1"
+            # A non-interactive runtime cannot hold a process-local approval
+            # wait safely.  Persist and suspend so resolution resumes from the
+            # durable checkpoint.  Pytest remains opt-in to preserve its
+            # explicit in-process approval test doubles.
+            is_durable_suspend = (
+                is_scenario_gate or os.environ.get("AGENTV_TEST_NON_DURABLE_HITL") != "1"
+            )
             if is_durable_suspend:
                 self.event_bus.emit(
                     CoreEvents.HITL_PAUSE,

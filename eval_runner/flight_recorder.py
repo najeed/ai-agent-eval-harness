@@ -174,6 +174,12 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                         self._run_states[run_id] = "RUNNING"
                         self._failed_runs.discard(run_id)
                         self._sequence_numbers[run_id] = 0
+                        if self.log_rotate_count > 0:
+                            self.rotate_logs(is_new_run=True)
+                        # A run-local trace is mandatory evidence.  Create it
+                        # before dispatching the RUN_START event so HITL and
+                        # other early events can never be master-log-only.
+                        run_vault_dir.mkdir(parents=True, exist_ok=False)
                     else:
                         if lifecycle_state in (
                             RunLifecycleState.FINALIZING,
@@ -211,7 +217,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                                 )
                         self._sequence_numbers[run_id] = initial_seq
 
-            if self.log_rotate_count > 0:
+            if self.log_rotate_count > 0 and bool(data.get("is_resume")):
                 self.rotate_logs(is_new_run=True)
 
         with self._lock:
@@ -267,7 +273,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
 
         # Resolve paths dynamically to support parallel runs in the same process
         per_run_log_path = None
-        if self.per_run and run_id != "unknown":
+        if run_id != "unknown":
             run_vault_dir = self.log_dir / run_id
             per_run_log_path = run_vault_dir / "run.jsonl"
 
@@ -341,7 +347,9 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                         metadata={"event": data.get("event"), "seq": data.get("seq")},
                         append=True,
                     )
-                else:
+                # LocalFileArtifactStore already appends to this exact path.
+                # Remote stores require the local evidence mirror as well.
+                if not isinstance(self.artifact_store, LocalFileArtifactStore):
                     _write_buffered(per_run_log_path, content)
 
             if self.master:

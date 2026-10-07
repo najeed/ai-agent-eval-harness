@@ -821,7 +821,9 @@ class DefaultRunner(BaseRunner):
                         susp.approval_token,
                     )
                     transition_run_lifecycle(
-                        effective_run_id, RunLifecycleState.PAUSED_FOR_APPROVAL
+                        effective_run_id,
+                        RunLifecycleState.PAUSED_FOR_APPROVAL,
+                        log_dir=session.log_root,
                     )
                     raise
 

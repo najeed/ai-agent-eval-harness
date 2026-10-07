@@ -130,9 +130,17 @@ def isolate_run_log_dir(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     original_run_log_dir = config.RUN_LOG_DIR
     if Path(config.RUN_LOG_DIR) == default_run_log_dir:
         config.RUN_LOG_DIR = isolated_run_log_dir
+    monkeypatch.setenv("AGENTV_APPROVALS_DIR", str(tmp_path / ".agentv_approvals"))
+    from eval_runner.reference.approval_store import reset_default_approval_store
+
+    reset_default_approval_store()
     monkeypatch.delenv("AGENTV_CLI_HITL_SUSPEND", raising=False)
     monkeypatch.delenv("FORCE_HITL_SUSPEND", raising=False)
+    # Unit tests that exercise the in-memory approval double opt in explicitly;
+    # production behavior must never depend on pytest being importable.
+    monkeypatch.setenv("AGENTV_TEST_NON_DURABLE_HITL", "1")
     yield
+    reset_default_approval_store()
     if config.RUN_LOG_DIR == isolated_run_log_dir:
         config.RUN_LOG_DIR = original_run_log_dir
 

@@ -179,6 +179,26 @@ async def test_p0_1_session_durable_suspension_emits_and_preserves_state(
     )
 
 
+def test_pending_durable_approval_suspends_before_state_parity(tmp_path: Path):
+    run_id = "run-pending-before-parity"
+    runs_dir = tmp_path / "runs"
+    session = SessionManager(run_id=run_id, scenario={"id": "pending_gate"}, log_root=runs_dir)
+    request = session.approval_manager.create_durable_request(
+        turn_index=1,
+        action_payload={"action": "hitl_pause"},
+        prompt="Human review is required",
+        metadata={"task_id": "review_node"},
+    )
+
+    with pytest.raises(RunSuspendedForApproval) as exc_info:
+        session._raise_if_pending_durable_approval()
+
+    assert exc_info.value.approval_token == request.approval_token
+    assert (
+        get_run_lifecycle_state(run_id, log_dir=runs_dir) == RunLifecycleState.PAUSED_FOR_APPROVAL
+    )
+
+
 # ---------------------------------------------------------------------------
 # P0-2: Same-Run Resume Evidence Vault & Canonical Trace Appending
 # ---------------------------------------------------------------------------
@@ -195,11 +215,12 @@ async def test_p0_2_flight_recorder_monotonic_resumption_sequence(tmp_path: Path
 
     # Initial session writes RUN_START and 2 steps
     recorder.handle_event(Event(CoreEvents.RUN_START, {"run_id": run_id, "scenario": "scen_1"}))
+    trace_file = log_dir / "run.jsonl"
+    assert trace_file.exists()
+    assert len([line for line in trace_file.read_text().splitlines() if line]) == 1
     recorder.handle_event(Event(CoreEvents.STEP_START, {"run_id": run_id, "step": 1}))
     recorder.handle_event(Event(CoreEvents.STEP_END, {"run_id": run_id, "step": 1}))
 
-    trace_file = log_dir / "run.jsonl"
-    assert trace_file.exists()
     lines_pre_pause = [json.loads(line) for line in trace_file.read_text().splitlines() if line]
     assert len(lines_pre_pause) == 3
     pre_seqs = [item["_seq"] for item in lines_pre_pause]
@@ -471,7 +492,9 @@ def test_p0_5_node_ir_compilation_detects_manual_approval():
 async def test_p0_5_session_enforces_scenario_declared_manual_approval_gate(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ):
-    monkeypatch.setenv("AGENTV_CLI_HITL_SUSPEND", "1")
+    # A scenario-declared gate is durable without a CLI-only override, even
+    # under pytest where the in-memory approval test double is enabled.
+    monkeypatch.delenv("AGENTV_CLI_HITL_SUSPEND", raising=False)
     run_id = "run-p0-5-gate"
     runs_dir = tmp_path / "runs"
     vault_dir = runs_dir / run_id
