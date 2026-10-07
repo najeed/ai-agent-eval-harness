@@ -176,42 +176,108 @@ export const buildWaterfall = (
     }
   }
 
-  // Index HITL pauses and resumes for split timing computation
+  // Index HITL pauses, resumes, and approvals for split timing and status resolution
   const hitlPauses = new Map<string, { pauseTs: number; prePauseDurationMs?: number }>();
   const hitlResumes = new Map<string, { resumeTs: number; waitDurationMs?: number; prePauseDurationMs?: number; pauseStartTs?: number }>();
+  const tokenToTaskId = new Map<string, string>();
+  const approvalByTaskId = new Map<string, {
+    status: string;
+    decision?: string;
+    reason?: string;
+    token?: string;
+    resolvedTs?: number;
+  }>();
+
   for (const e of orderedEvents) {
     const rawTaskId = e.task_id || e.scenario_node_id || e.node_id;
     const tId = rawTaskId ? String(rawTaskId) : undefined;
-    if (!tId) continue;
+    const tok = e.approval_token ? String(e.approval_token) : (e.token ? String(e.token) : undefined);
+    if (tId && tok) {
+      tokenToTaskId.set(tok, tId);
+    }
     const ts = parseEventTimestamp(e);
 
     if (e.event === 'hitl_pause' || e.event === 'HITL_PAUSE') {
-      const existing = hitlPauses.get(tId);
-      const preDur = typeof e.pre_pause_duration_ms === 'number' ? e.pre_pause_duration_ms : undefined;
-      const validTs = Number.isFinite(ts) ? ts : Date.now();
-      if (!existing) {
-        hitlPauses.set(tId, { pauseTs: validTs, prePauseDurationMs: preDur });
-      } else {
-        if (Number.isFinite(ts) && ts < existing.pauseTs) {
-          existing.pauseTs = ts;
-        }
-        if (preDur != null && existing.prePauseDurationMs == null) {
-          existing.prePauseDurationMs = preDur;
+      if (tId) {
+        const existing = hitlPauses.get(tId);
+        const preDur = typeof e.pre_pause_duration_ms === 'number' ? e.pre_pause_duration_ms : undefined;
+        const validTs = Number.isFinite(ts) ? ts : Date.now();
+        if (!existing) {
+          hitlPauses.set(tId, { pauseTs: validTs, prePauseDurationMs: preDur });
+        } else {
+          if (Number.isFinite(ts) && ts < existing.pauseTs) {
+            existing.pauseTs = ts;
+          }
+          if (preDur != null && existing.prePauseDurationMs == null) {
+            existing.prePauseDurationMs = preDur;
+          }
         }
       }
     } else if (e.event === 'hitl_resume' || e.event === 'HITL_RESUME') {
-      const explicitResume = typeof e.resume_ts === 'number' ? e.resume_ts * 1000 : undefined;
-      const parsedTs = parseEventTimestamp(e);
-      const rTs = explicitResume ?? (Number.isFinite(parsedTs) ? parsedTs : Date.now());
-      const waitDur = typeof e.wait_duration_ms === 'number' ? e.wait_duration_ms : undefined;
-      const preDur = typeof e.pre_pause_duration_ms === 'number' ? e.pre_pause_duration_ms : undefined;
-      const pauseStartTs = typeof e.pause_start_ts === 'number' ? e.pause_start_ts * 1000 : undefined;
-      hitlResumes.set(tId, {
-        resumeTs: rTs,
-        waitDurationMs: waitDur,
-        prePauseDurationMs: preDur,
-        pauseStartTs,
-      });
+      if (tId) {
+        const explicitResume = typeof e.resume_ts === 'number' ? e.resume_ts * 1000 : undefined;
+        const parsedTs = parseEventTimestamp(e);
+        const rTs = explicitResume ?? (Number.isFinite(parsedTs) ? parsedTs : Date.now());
+        const waitDur = typeof e.wait_duration_ms === 'number' ? e.wait_duration_ms : undefined;
+        const preDur = typeof e.pre_pause_duration_ms === 'number' ? e.pre_pause_duration_ms : undefined;
+        const pauseStartTs = typeof e.pause_start_ts === 'number' ? e.pause_start_ts * 1000 : undefined;
+        hitlResumes.set(tId, {
+          resumeTs: rTs,
+          waitDurationMs: waitDur,
+          prePauseDurationMs: preDur,
+          pauseStartTs,
+        });
+      }
+    } else if (e.event === 'approval_created' || e.event === 'APPROVAL_CREATED') {
+      if (tId) {
+        approvalByTaskId.set(tId, {
+          status: String(e.status || 'PENDING').toUpperCase(),
+          decision: e.decision ? String(e.decision).toUpperCase() : undefined,
+          token: tok,
+        });
+      }
+    } else if (
+      e.event === 'approval_resolved' ||
+      e.event === 'APPROVAL_RESOLVED' ||
+      e.event === 'approval_rejected' ||
+      e.event === 'APPROVAL_REJECTED'
+    ) {
+      let resolvedTaskId = e.metadata?.task_id || e.task_id || e.scenario_node_id || e.node_id;
+      if (!resolvedTaskId && tok && tokenToTaskId.has(tok)) {
+        resolvedTaskId = tokenToTaskId.get(tok);
+      }
+      if (!resolvedTaskId && hitlPauses.size === 1) {
+        resolvedTaskId = hitlPauses.keys().next().value;
+      }
+      const rawDecision = String(
+        e.decision ||
+        e.status ||
+        (e.event.toLowerCase().includes('reject') ? 'REJECTED' : '')
+      ).toUpperCase();
+      const reason = e.decision_reason || e.reason || e.message;
+      const targetId = resolvedTaskId ? String(resolvedTaskId) : undefined;
+      if (targetId) {
+        approvalByTaskId.set(targetId, {
+          status: rawDecision,
+          decision: rawDecision,
+          reason,
+          token: tok,
+          resolvedTs: Number.isFinite(ts) ? ts : undefined,
+        });
+
+        if (rawDecision === 'APPROVED' && !hitlResumes.has(targetId)) {
+          const pauseEntry = hitlPauses.get(targetId);
+          const resolvedTs = Number.isFinite(ts) ? ts : Date.now();
+          const pauseStartTs = pauseEntry?.pauseTs;
+          const waitDurationMs = pauseStartTs && resolvedTs > pauseStartTs ? resolvedTs - pauseStartTs : undefined;
+          hitlResumes.set(targetId, {
+            resumeTs: resolvedTs,
+            waitDurationMs,
+            prePauseDurationMs: pauseEntry?.prePauseDurationMs,
+            pauseStartTs,
+          });
+        }
+      }
     }
   }
 
@@ -260,10 +326,24 @@ export const buildWaterfall = (
     }
   }
 
-  // Compute split timing metrics for nodes that paused for human review
+  // Compute split timing metrics and resolve final status for nodes that paused for human review
   for (const r of byExec.values()) {
     const pauseInfo = hitlPauses.get(r.nodeId);
     const resumeInfo = hitlResumes.get(r.nodeId) ?? (hitlResumes.size === 1 ? hitlResumes.values().next().value : undefined);
+    const approvalInfo = approvalByTaskId.get(r.nodeId) ?? (approvalByTaskId.size === 1 && pauseInfo ? approvalByTaskId.values().next().value : undefined);
+    const isApprovalRejected =
+      approvalInfo?.decision === 'REJECTED' ||
+      approvalInfo?.status === 'REJECTED';
+    const isApprovalApproved =
+      approvalInfo?.decision === 'APPROVED' ||
+      approvalInfo?.status === 'APPROVED';
+
+    if (isApprovalRejected) {
+      r.status = 'rejected';
+    } else if (pauseInfo && !resumeInfo && !isApprovalApproved && r.status === 'running') {
+      r.status = 'paused';
+    }
+
     if (pauseInfo) {
       let preMs = pauseInfo.prePauseDurationMs ?? resumeInfo?.prePauseDurationMs ?? 0;
       if (preMs === 0) {
@@ -279,13 +359,17 @@ export const buildWaterfall = (
         waitMs = resumeInfo.waitDurationMs;
       } else if (resumeInfo && resumeInfo.resumeTs > pauseStart) {
         waitMs = Math.max(0, resumeInfo.resumeTs - pauseStart);
+      } else if (isApprovalRejected && approvalInfo?.resolvedTs && approvalInfo.resolvedTs > pauseStart) {
+        waitMs = Math.max(0, approvalInfo.resolvedTs - pauseStart);
+      } else if (approvalInfo?.resolvedTs && approvalInfo.resolvedTs > pauseStart) {
+        waitMs = Math.max(0, approvalInfo.resolvedTs - pauseStart);
       } else if (r.endTs != null && r.endTs > pauseStart) {
         // Robust fallback: if wait duration wasn't stamped, calculate from elapsed span between pause and completion minus post-pause compute
         const postEstimate = r.durationMs ?? 0;
         waitMs = Math.max(0, (r.endTs - pauseStart) - postEstimate);
       }
 
-      const postMs = r.durationMs ?? 0;
+      const postMs = isApprovalRejected ? 0 : (r.durationMs ?? 0);
       r.splitDuration = {
         preMs: Math.round(preMs * 100) / 100,
         waitMs: Math.round(waitMs * 100) / 100,
@@ -731,6 +815,12 @@ export interface FlowNodeData {
     postMs: number;
     totalComputeMs: number;
   };
+  /** True if this node was rejected during HITL approval */
+  isHitlRejected?: boolean;
+  /** True if this node is currently paused waiting for HITL approval */
+  isHitlPaused?: boolean;
+  /** Reason for HITL approval rejection */
+  approvalDecisionReason?: string;
 }
 
 /** A single ReactFlow node with typed data (label is a scalar string). */
@@ -874,42 +964,108 @@ export const buildTraceGraph = (
     }
   }
 
-  // Index HITL pauses and resumes for split timing computation across graph nodes
+  // Index HITL pauses, resumes, and approvals for split timing and status resolution across graph nodes
   const hitlPauseMap = new Map<string, { pauseTs: number; prePauseDurationMs?: number }>();
   const hitlResumeMap = new Map<string, { resumeTs: number; waitDurationMs?: number; prePauseDurationMs?: number; pauseStartTs?: number }>();
+  const tokenToTaskId = new Map<string, string>();
+  const approvalByTaskId = new Map<string, {
+    status: string;
+    decision?: string;
+    reason?: string;
+    token?: string;
+    resolvedTs?: number;
+  }>();
+
   for (const ev of normalizedEvents) {
     const rawTaskId = ev.task_id || ev.scenario_node_id || ev.node_id;
     const tId = rawTaskId ? String(rawTaskId) : undefined;
-    if (!tId) continue;
+    const tok = ev.approval_token ? String(ev.approval_token) : (ev.token ? String(ev.token) : undefined);
+    if (tId && tok) {
+      tokenToTaskId.set(tok, tId);
+    }
     const ts = parseEventTimestamp(ev);
 
     if (ev.event === 'hitl_pause' || ev.event === 'HITL_PAUSE') {
-      const existing = hitlPauseMap.get(tId);
-      const preDur = typeof ev.pre_pause_duration_ms === 'number' ? ev.pre_pause_duration_ms : undefined;
-      const validTs = Number.isFinite(ts) ? ts : Date.now();
-      if (!existing) {
-        hitlPauseMap.set(tId, { pauseTs: validTs, prePauseDurationMs: preDur });
-      } else {
-        if (Number.isFinite(ts) && ts < existing.pauseTs) {
-          existing.pauseTs = ts;
-        }
-        if (preDur != null && existing.prePauseDurationMs == null) {
-          existing.prePauseDurationMs = preDur;
+      if (tId) {
+        const existing = hitlPauseMap.get(tId);
+        const preDur = typeof ev.pre_pause_duration_ms === 'number' ? ev.pre_pause_duration_ms : undefined;
+        const validTs = Number.isFinite(ts) ? ts : Date.now();
+        if (!existing) {
+          hitlPauseMap.set(tId, { pauseTs: validTs, prePauseDurationMs: preDur });
+        } else {
+          if (Number.isFinite(ts) && ts < existing.pauseTs) {
+            existing.pauseTs = ts;
+          }
+          if (preDur != null && existing.prePauseDurationMs == null) {
+            existing.prePauseDurationMs = preDur;
+          }
         }
       }
     } else if (ev.event === 'hitl_resume' || ev.event === 'HITL_RESUME') {
-      const explicitResume = typeof ev.resume_ts === 'number' ? ev.resume_ts * 1000 : undefined;
-      const parsedTs = parseEventTimestamp(ev);
-      const rTs = explicitResume ?? (Number.isFinite(parsedTs) ? parsedTs : Date.now());
-      const waitDur = typeof ev.wait_duration_ms === 'number' ? ev.wait_duration_ms : undefined;
-      const preDur = typeof ev.pre_pause_duration_ms === 'number' ? ev.pre_pause_duration_ms : undefined;
-      const pauseStartTs = typeof ev.pause_start_ts === 'number' ? ev.pause_start_ts * 1000 : undefined;
-      hitlResumeMap.set(tId, {
-        resumeTs: rTs,
-        waitDurationMs: waitDur,
-        prePauseDurationMs: preDur,
-        pauseStartTs,
-      });
+      if (tId) {
+        const explicitResume = typeof ev.resume_ts === 'number' ? ev.resume_ts * 1000 : undefined;
+        const parsedTs = parseEventTimestamp(ev);
+        const rTs = explicitResume ?? (Number.isFinite(parsedTs) ? parsedTs : Date.now());
+        const waitDur = typeof ev.wait_duration_ms === 'number' ? ev.wait_duration_ms : undefined;
+        const preDur = typeof ev.pre_pause_duration_ms === 'number' ? ev.pre_pause_duration_ms : undefined;
+        const pauseStartTs = typeof ev.pause_start_ts === 'number' ? ev.pause_start_ts * 1000 : undefined;
+        hitlResumeMap.set(tId, {
+          resumeTs: rTs,
+          waitDurationMs: waitDur,
+          prePauseDurationMs: preDur,
+          pauseStartTs,
+        });
+      }
+    } else if (ev.event === 'approval_created' || ev.event === 'APPROVAL_CREATED') {
+      if (tId) {
+        approvalByTaskId.set(tId, {
+          status: String(ev.status || 'PENDING').toUpperCase(),
+          decision: ev.decision ? String(ev.decision).toUpperCase() : undefined,
+          token: tok,
+        });
+      }
+    } else if (
+      ev.event === 'approval_resolved' ||
+      ev.event === 'APPROVAL_RESOLVED' ||
+      ev.event === 'approval_rejected' ||
+      ev.event === 'APPROVAL_REJECTED'
+    ) {
+      let resolvedTaskId = ev.metadata?.task_id || ev.task_id || ev.scenario_node_id || ev.node_id;
+      if (!resolvedTaskId && tok && tokenToTaskId.has(tok)) {
+        resolvedTaskId = tokenToTaskId.get(tok);
+      }
+      if (!resolvedTaskId && hitlPauseMap.size === 1) {
+        resolvedTaskId = hitlPauseMap.keys().next().value;
+      }
+      const rawDecision = String(
+        ev.decision ||
+        ev.status ||
+        (ev.event.toLowerCase().includes('reject') ? 'REJECTED' : '')
+      ).toUpperCase();
+      const reason = ev.decision_reason || ev.reason || ev.message;
+      const targetId = resolvedTaskId ? String(resolvedTaskId) : undefined;
+      if (targetId) {
+        approvalByTaskId.set(targetId, {
+          status: rawDecision,
+          decision: rawDecision,
+          reason,
+          token: tok,
+          resolvedTs: Number.isFinite(ts) ? ts : undefined,
+        });
+
+        if (rawDecision === 'APPROVED' && !hitlResumeMap.has(targetId)) {
+          const pauseEntry = hitlPauseMap.get(targetId);
+          const resolvedTs = Number.isFinite(ts) ? ts : Date.now();
+          const pauseStartTs = pauseEntry?.pauseTs;
+          const waitDurationMs = pauseStartTs && resolvedTs > pauseStartTs ? resolvedTs - pauseStartTs : undefined;
+          hitlResumeMap.set(targetId, {
+            resumeTs: resolvedTs,
+            waitDurationMs,
+            prePauseDurationMs: pauseEntry?.prePauseDurationMs,
+            pauseStartTs,
+          });
+        }
+      }
     }
   }
 
@@ -934,6 +1090,9 @@ export const buildTraceGraph = (
     let originalDurationMs: number | undefined;
     let replayedDurationMs: number | undefined;
     let splitDuration: FlowNodeData['splitDuration'] | undefined;
+    let isHitlRejected = false;
+    let isHitlPaused = false;
+    let approvalDecisionReason: string | undefined;
 
     if (graphNodeEvents.length > 0) {
       for (const ev of graphNodeEvents) {
@@ -966,9 +1125,39 @@ export const buildTraceGraph = (
         replayedDurationMs = latestEv.duration_ms;
       }
 
-      // Detect split execution for nodes paused by human review
+      // Detect split execution and resolve status for nodes paused by human review
       const pauseInfo = hitlPauseMap.get(id);
       const resumeInfo = hitlResumeMap.get(id) ?? (hitlResumeMap.size === 1 ? hitlResumeMap.values().next().value : undefined);
+      const approvalInfo = approvalByTaskId.get(id) ?? (approvalByTaskId.size === 1 && pauseInfo ? approvalByTaskId.values().next().value : undefined);
+      const isApprovalRejected =
+        approvalInfo?.decision === 'REJECTED' ||
+        approvalInfo?.status === 'REJECTED';
+      const isApprovalApproved =
+        approvalInfo?.decision === 'APPROVED' ||
+        approvalInfo?.status === 'APPROVED';
+
+      const isCompleted = status === 'completed';
+      const isResumed = !!resumeInfo || isApprovalApproved || (isCompleted && !!pauseInfo);
+      const isPausedWithoutResume = !!pauseInfo && !isResumed && !isCompleted && status !== 'failed';
+
+      if (isApprovalRejected) {
+        isHitlRejected = true;
+        status = 'rejected';
+        failCount = Math.max(failCount, 1);
+        failureClass = failureClass || 'HITL_REJECTED';
+        failureReason = approvalInfo?.reason || failureReason || 'Approval was rejected during human review';
+        approvalDecisionReason = failureReason;
+      } else if (isPausedWithoutResume && !isCompleted) {
+        if (isTerminalRun) {
+          status = 'stalled';
+          failureClass = failureClass || 'HITL_SUSPENDED_UNRESUMED';
+          failureReason = failureReason || 'Execution halted or stalled while awaiting human approval';
+        } else {
+          isHitlPaused = true;
+          status = 'paused';
+        }
+      }
+
       if (pauseInfo) {
         let preMs = pauseInfo.prePauseDurationMs ?? resumeInfo?.prePauseDurationMs ?? 0;
         if (preMs === 0) {
@@ -984,6 +1173,10 @@ export const buildTraceGraph = (
           waitMs = resumeInfo.waitDurationMs;
         } else if (resumeInfo && resumeInfo.resumeTs > pauseStart) {
           waitMs = Math.max(0, resumeInfo.resumeTs - pauseStart);
+        } else if (isApprovalRejected && approvalInfo?.resolvedTs && approvalInfo.resolvedTs > pauseStart) {
+          waitMs = Math.max(0, approvalInfo.resolvedTs - pauseStart);
+        } else if (approvalInfo?.resolvedTs && approvalInfo.resolvedTs > pauseStart) {
+          waitMs = Math.max(0, approvalInfo.resolvedTs - pauseStart);
         } else {
           // Robust fallback: if wait duration wasn't stamped, calculate from elapsed span between pause and completion minus post-pause compute
           const compTs = parseEventTimestamp(latestEv);
@@ -993,7 +1186,7 @@ export const buildTraceGraph = (
           }
         }
 
-        const postMs = typeof latestEv.duration_ms === 'number' ? latestEv.duration_ms : 0;
+        const postMs = isApprovalRejected ? 0 : (typeof latestEv.duration_ms === 'number' ? latestEv.duration_ms : 0);
         splitDuration = {
           preMs: Math.round(preMs * 100) / 100,
           waitMs: Math.round(waitMs * 100) / 100,
@@ -1016,7 +1209,13 @@ export const buildTraceGraph = (
 
     // Status label — descriptive text scalars only, no JSX
     let statusLabel = 'Pending';
-    if (status === 'failed' || status === 'error' || status === 'aborted') {
+    if (status === 'rejected') {
+      statusLabel = failureReason ? `Rejected: ${failureReason}` : 'Rejected (HITL)';
+    } else if (status === 'stalled') {
+      statusLabel = failureReason ? `Stalled: ${failureReason}` : 'Stalled (Unresumed)';
+    } else if (status === 'paused') {
+      statusLabel = 'Paused for Approval';
+    } else if (status === 'failed' || status === 'error' || status === 'aborted') {
       statusLabel =
         failureClass ||
         failureReason ||
@@ -1038,7 +1237,16 @@ export const buildTraceGraph = (
     let border = isHighlighted ? '2px solid #818cf8' : '1px solid #334155';
     let background = '#0f172a';
 
-    if (status === 'failed' || status === 'error' || status === 'aborted') {
+    if (status === 'rejected') {
+      border = isHighlighted ? '2px solid #f43f5e' : '1px solid #e11d48';
+      background = 'rgba(159,18,57,0.45)';
+    } else if (status === 'paused') {
+      border = isHighlighted ? '2px solid #f59e0b' : '1px dashed #d97706';
+      background = 'rgba(120,53,15,0.35)';
+    } else if (status === 'stalled') {
+      border = isHighlighted ? '2px solid #f87171' : '1px dashed #ef4444';
+      background = 'rgba(127,29,29,0.35)';
+    } else if (status === 'failed' || status === 'error' || status === 'aborted') {
       border = isHighlighted ? '2px solid #f87171' : '1px solid #ef4444';
       background = 'rgba(127,29,29,0.4)';
     } else if (isReplayed && status === 'completed') {
@@ -1083,6 +1291,9 @@ export const buildTraceGraph = (
         originalDurationMs,
         replayedDurationMs,
         splitDuration,
+        isHitlRejected,
+        isHitlPaused,
+        approvalDecisionReason,
       },
       style: {
         background,

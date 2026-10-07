@@ -547,3 +547,218 @@ test('buildTraceGraph computes waitMs when wait_duration_ms is omitted on hitl_r
   assert.equal(node.data.splitDuration!.postMs, 2400, 'postMs is 2400ms');
 });
 
+test('buildTraceGraph and buildWaterfall transition HITL paused node to rejected when approval is rejected', () => {
+  const scenario = {
+    workflow: {
+      nodes: [
+        { id: 'adverse_review_intake', task_description: 'Adverse Review Intake' },
+        { id: 'physician_review', task_description: 'Physician Human Review' },
+        { id: 'dispatch_determination', task_description: 'Dispatch Determination' },
+      ],
+    },
+  };
+
+  const events: LogEvent[] = [
+    {
+      _seq: 1,
+      event: 'execution_graph_node',
+      scenario_node_id: 'adverse_review_intake',
+      status: 'completed',
+      duration_ms: 120,
+    },
+    {
+      _seq: 2,
+      event: 'execution_graph_node',
+      scenario_node_id: 'physician_review',
+      status: 'running',
+      timestamp: '2026-10-07T10:00:00.000Z',
+    },
+    {
+      _seq: 3,
+      event: 'hitl_pause',
+      task_id: 'physician_review',
+      approval_token: 'appr_token_999',
+      status: 'PAUSED_FOR_APPROVAL',
+      timestamp: '2026-10-07T10:00:00.120Z',
+      pre_pause_duration_ms: 120,
+      pause_start_ts: 1791367200.120,
+    },
+    {
+      _seq: 4,
+      event: 'approval_resolved',
+      approval_token: 'appr_token_999',
+      decision: 'REJECTED',
+      status: 'REJECTED',
+      decision_reason: 'Physician rejected: clinical documentation insufficient',
+      decided_by: 'dr_reviewer_1',
+      timestamp: '2026-10-07T10:00:30.120Z', // 30 seconds wait
+    },
+  ];
+
+  // 1. Verify buildTraceGraph reflects rejected status, failure reason, styling, and split duration
+  const graph = buildTraceGraph(events, scenario, null, 'executed', true, new Map(), (id) => id);
+  const node = graph.flowNodes.find((n) => n.id === 'physician_review')!;
+  assert.ok(node, 'physician_review node exists');
+  assert.equal(node.data.status, 'rejected', 'Node status is rejected');
+  assert.equal(node.data.isHitlRejected, true, 'isHitlRejected is true');
+  assert.equal(node.data.failCount, 1, 'failCount is 1');
+  assert.equal(node.data.failureClass, 'HITL_REJECTED');
+  assert.equal(node.data.failureReason, 'Physician rejected: clinical documentation insufficient');
+  assert.match(node.data.statusLabel, /Rejected/);
+  assert.equal(node.style.background, 'rgba(159,18,57,0.45)');
+  assert.ok(node.data.splitDuration, 'splitDuration is computed');
+  assert.equal(node.data.splitDuration!.preMs, 120);
+  assert.equal(node.data.splitDuration!.waitMs, 30000);
+  assert.equal(node.data.splitDuration!.postMs, 0, 'postMs is 0 on rejected HITL');
+
+  // 2. Verify buildWaterfall also marks the row as rejected with zero postMs compute
+  const waterfall = buildWaterfall(events);
+  const wfRow = waterfall.rows.find((r) => r.nodeId === 'physician_review')!;
+  assert.ok(wfRow, 'waterfall row exists');
+  assert.equal(wfRow.status, 'rejected', 'Waterfall row status is rejected');
+  assert.ok(wfRow.splitDuration, 'Waterfall splitDuration computed');
+  assert.equal(wfRow.splitDuration!.postMs, 0);
+  assert.equal(wfRow.splitDuration!.waitMs, 30000);
+});
+
+test('buildTraceGraph marks unresumed node as paused when run is live, or stalled when terminal', () => {
+  const scenario = {
+    workflow: {
+      nodes: [{ id: 'physician_review', task_description: 'Physician Review' }],
+    },
+  };
+
+  const events: LogEvent[] = [
+    {
+      _seq: 1,
+      event: 'execution_graph_node',
+      scenario_node_id: 'physician_review',
+      status: 'running',
+    },
+    {
+      _seq: 2,
+      event: 'hitl_pause',
+      task_id: 'physician_review',
+      approval_token: 'appr_active_1',
+      status: 'PAUSED_FOR_APPROVAL',
+      pre_pause_duration_ms: 100,
+    },
+  ];
+
+  // Active / Live run: node is paused waiting for approval
+  const liveGraph = buildTraceGraph(events, scenario, null, 'executed', false, new Map(), (id) => id);
+  const liveNode = liveGraph.flowNodes.find((n) => n.id === 'physician_review')!;
+  assert.equal(liveNode.data.status, 'paused', 'Active paused node is paused, not running');
+  assert.equal(liveNode.data.isHitlPaused, true);
+  assert.equal(liveNode.data.statusLabel, 'Paused for Approval');
+
+  // Terminal / Stalled run without resume: node is stalled
+  const stalledGraph = buildTraceGraph(events, scenario, null, 'executed', true, new Map(), (id) => id);
+  const stalledNode = stalledGraph.flowNodes.find((n) => n.id === 'physician_review')!;
+  assert.equal(stalledNode.data.status, 'stalled', 'Unresumed node in terminal run is stalled');
+  assert.match(stalledNode.data.statusLabel, /Stalled/);
+});
+
+test('buildTraceGraph retains completed status for HITL node after resumption and approval without false stalled state', () => {
+  const scenario = {
+    workflow: {
+      nodes: [
+        { id: 'initiate_adverse_review', task_description: 'Initiate Adverse Review' },
+        { id: 'verify_physician_review', task_description: 'Verify Physician Review' },
+        { id: 'verify_provider_notification', task_description: 'Verify Provider Notification' },
+      ],
+      edges: [
+        { from: 'initiate_adverse_review', to: 'verify_physician_review' },
+        { from: 'verify_physician_review', to: 'verify_provider_notification' },
+      ],
+    },
+  };
+
+  const events: LogEvent[] = [
+    {
+      _seq: 1,
+      event: 'execution_graph_node',
+      scenario_node_id: 'initiate_adverse_review',
+      status: 'completed',
+      duration_ms: 14140,
+      is_replayed: true,
+    },
+    {
+      _seq: 2,
+      event: 'execution_graph_node',
+      scenario_node_id: 'verify_physician_review',
+      status: 'running',
+      timestamp: '2026-10-08T00:00:00.000Z',
+    },
+    {
+      _seq: 3,
+      event: 'hitl_pause',
+      task_id: 'verify_physician_review',
+      approval_token: 'appr_tok_456',
+      status: 'PAUSED_FOR_APPROVAL',
+      pre_pause_duration_ms: 40,
+      timestamp: '2026-10-08T00:00:00.040Z',
+    },
+    {
+      _seq: 4,
+      event: 'approval_created',
+      task_id: 'verify_physician_review',
+      approval_token: 'appr_tok_456',
+      status: 'PENDING',
+      timestamp: '2026-10-08T00:00:00.050Z',
+    },
+    {
+      _seq: 5,
+      event: 'approval_resolved',
+      task_id: 'verify_physician_review',
+      approval_token: 'appr_tok_456',
+      decision: 'APPROVED',
+      status: 'APPROVED',
+      timestamp: '2026-10-08T00:01:33.040Z', // 93,000ms wait
+    },
+    {
+      _seq: 6,
+      event: 'execution_graph_node',
+      scenario_node_id: 'verify_physician_review',
+      status: 'completed',
+      duration_ms: 560,
+      timestamp: '2026-10-08T00:01:33.600Z',
+    },
+    {
+      _seq: 7,
+      event: 'execution_graph_node',
+      scenario_node_id: 'verify_provider_notification',
+      status: 'completed',
+      duration_ms: 500,
+      timestamp: '2026-10-08T00:01:34.100Z',
+    },
+  ];
+
+  // Run is terminal (completed)
+  const graph = buildTraceGraph(events, scenario, null, 'executed', true, new Map(), (id) => id);
+  const node = graph.flowNodes.find((n) => n.id === 'verify_physician_review')!;
+
+  assert.ok(node, 'verify_physician_review node exists');
+  assert.equal(node.data.status, 'completed', 'Node status remains completed after resumption and completion');
+  assert.notEqual(node.data.status, 'stalled', 'Node must NOT be stalled');
+  assert.equal(node.data.isHitlPaused, false, 'isHitlPaused is false once completed');
+  assert.equal(node.data.isHitlRejected, false, 'isHitlRejected is false');
+  assert.ok(node.data.splitDuration, 'splitDuration is computed');
+  assert.equal(node.data.splitDuration!.preMs, 40);
+  assert.equal(node.data.splitDuration!.waitMs, 93000);
+  assert.equal(node.data.splitDuration!.postMs, 560);
+  assert.equal(node.data.splitDuration!.totalComputeMs, 600);
+
+  // Also verify buildWaterfall
+  const waterfall = buildWaterfall(events);
+  const wfRow = waterfall.rows.find((r) => r.nodeId === 'verify_physician_review')!;
+  assert.ok(wfRow, 'waterfall row exists');
+  assert.equal(wfRow.status, 'completed', 'Waterfall row remains completed');
+  assert.ok(wfRow.splitDuration, 'Waterfall splitDuration computed');
+  assert.equal(wfRow.splitDuration!.preMs, 40);
+  assert.equal(wfRow.splitDuration!.waitMs, 93000);
+  assert.equal(wfRow.splitDuration!.postMs, 560);
+});
+
+
+

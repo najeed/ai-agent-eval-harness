@@ -651,6 +651,22 @@ export const LiveDebugger: React.FC = () => {
             REPLAYED
           </span>
         )}
+        {d.isHitlRejected && (
+          <span
+            title="Rejected during Human-in-the-Loop review"
+            className="px-1 py-0.2 bg-rose-500/25 text-rose-300 border border-rose-500/30 text-[8px] rounded font-mono font-bold tracking-wider"
+          >
+            REJECTED
+          </span>
+        )}
+        {d.isHitlPaused && (
+          <span
+            title="Currently paused waiting for Human-in-the-Loop approval"
+            className="px-1 py-0.2 bg-amber-500/25 text-amber-300 border border-amber-500/30 text-[8px] rounded font-mono font-bold tracking-wider animate-pulse"
+          >
+            HITL PAUSED
+          </span>
+        )}
       </div>
       <div className="text-[9px] text-slate-400 truncate max-w-[130px]" title={d.label}>
         {d.statusLabel}
@@ -716,7 +732,7 @@ export const LiveDebugger: React.FC = () => {
     if (authoritative) setSelectedEvent(authoritative);
   };
 
-  const RUN_TERMINAL_STATUSES = new Set(['COMPLETED', 'PASSED', 'FAILED', 'ABORTED', 'ERROR', 'SEALED', 'CERTIFIED']);
+  const RUN_TERMINAL_STATUSES = new Set(['COMPLETED', 'PASSED', 'FAILED', 'ABORTED', 'ERROR', 'SEALED', 'CERTIFIED', 'STALLED']);
   const isTerminalRun = RUN_TERMINAL_STATUSES.has(status);
 
   useEffect(() => {
@@ -1277,7 +1293,7 @@ export const LiveDebugger: React.FC = () => {
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_6px_rgba(239,68,68,0.6)]" />
-                <span>Failed / Aborted</span>
+                <span>Failed / Rejected</span>
               </div>
               <div className="flex items-center gap-1.5 col-span-2">
                 <span className="w-2 h-2 rounded-full border border-dashed border-slate-400 bg-slate-800" />
@@ -1289,9 +1305,9 @@ export const LiveDebugger: React.FC = () => {
       </div>
 
       {/* Right Side - Diagnostics + State Parity Inspector */}
-      <div className="w-96 border-l border-slate-900 bg-slate-950/30 overflow-y-auto p-5 space-y-4 shrink-0 text-xs flex flex-col justify-between h-full">
-        <div className="space-y-4 overflow-y-auto">
-          <h3 className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">State Parity Inspector</h3>
+      <div className="w-96 border-l border-slate-900 bg-slate-950/30 p-5 shrink-0 text-xs flex flex-col h-full min-h-0 overflow-y-auto">
+        <div className="flex-1 flex flex-col min-h-0 space-y-4">
+          <h3 className="font-bold text-slate-400 uppercase tracking-wider text-[10px] shrink-0">State Parity Inspector</h3>
 
           {/* [B3] Non-authoritative telemetry diagnostics; heuristic findings
               are quarantined here and never drive the execution graph. */}
@@ -1340,8 +1356,8 @@ export const LiveDebugger: React.FC = () => {
           )}
 
           {selectedEvent ? (
-            <div className="space-y-3">
-              <div className="p-3 bg-slate-950/60 border border-slate-850 rounded-lg space-y-1">
+            <div className="flex-1 flex flex-col min-h-0 space-y-3">
+              <div className="p-3 bg-slate-950/60 border border-slate-850 rounded-lg space-y-1 shrink-0">
                 <span className="text-[10px] text-slate-500 font-bold uppercase font-mono">Event Type</span>
                 <p className="text-white font-mono font-bold text-xs uppercase">{selectedEvent.event}</p>
               </div>
@@ -1484,7 +1500,7 @@ export const LiveDebugger: React.FC = () => {
                       )}
                     </div>
                     <details className="mt-2 pt-2 border-t border-slate-800 text-slate-400 cursor-pointer">
-                      <summary className="hover:text-slate-200 select-none">Collapsed Replayed Telemetry Set</summary>
+                      <summary className="hover:text-slate-200 select-none">Replayed Telemetry Set</summary>
                       <pre className="mt-1.5 p-2 bg-slate-950 rounded border border-slate-900 font-mono text-[9px] text-slate-400 overflow-x-auto">
                         {JSON.stringify(
                           {
@@ -1503,9 +1519,34 @@ export const LiveDebugger: React.FC = () => {
                 );
               })()}
 
-              <div className="space-y-2">
-                <span className="text-slate-400 font-semibold">Event Parameters JSON:</span>
-                <pre className="bg-slate-950 p-4 rounded-lg border border-slate-850 text-[10px] text-slate-300 font-mono leading-relaxed overflow-x-auto select-all max-h-[220px]">
+              {(() => {
+                const selectedNodeData = selectedEvent
+                  ? (nodes.find((n) => n.id === (selectedEvent.scenario_node_id || selectedEvent.node_id || selectedEvent.task_id))?.data as FlowNodeData | undefined)
+                  : undefined;
+                const isRejected = selectedNodeData?.isHitlRejected || String(selectedEvent.decision || selectedEvent.status || '').toUpperCase() === 'REJECTED';
+                if (!isRejected) return null;
+
+                return (
+                  <div className="space-y-1.5 p-3 bg-rose-950/20 border border-rose-500/30 rounded-lg text-[10px] shrink-0">
+                    <div className="flex items-center justify-between font-bold text-rose-300 uppercase tracking-wider">
+                      <span className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-rose-400" />
+                        HITL Approval Rejected
+                      </span>
+                      <span className="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono text-[9px]">
+                        REVIEW GATE
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-rose-200/90 leading-relaxed font-mono">
+                      {selectedNodeData?.approvalDecisionReason || selectedEvent.decision_reason || selectedEvent.reason || selectedEvent.message || 'Action proposal was rejected during human review.'}
+                    </p>
+                  </div>
+                );
+              })()}
+
+              <div className="flex-1 flex flex-col min-h-0 space-y-2 pt-1">
+                <span className="text-slate-400 font-semibold shrink-0">Event Parameters JSON:</span>
+                <pre className="bg-slate-950 p-4 rounded-lg border border-slate-850 text-[10px] text-slate-300 font-mono leading-relaxed overflow-auto select-all flex-1 min-h-[280px]">
                   {JSON.stringify(selectedEvent, null, 2)}
                 </pre>
               </div>
