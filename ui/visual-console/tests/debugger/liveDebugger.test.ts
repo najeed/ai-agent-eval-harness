@@ -426,3 +426,124 @@ test('buildWaterfall preserves original duration and split metrics without stret
   assert.ok(pausedRow.splitDuration, 'Split duration attached to waterfall row');
   assert.equal(pausedRow.durationMs, 1100, 'Total compute is preMs (500) + postMs (600)');
 });
+
+test('buildTraceGraph infers preMs and preserves real waitMs when pause is re-emitted on resume', () => {
+  const scenario = {
+    workflow: {
+      nodes: [{ id: 'physician_review' }],
+      edges: [],
+    },
+  };
+  const events: LogEvent[] = [
+    // Node maneuver starts at 10:00:00.000
+    { _seq: 1, event: 'maneuver_start', node_id: 'physician_review', timestamp: '2026-10-07T10:00:00.000Z' },
+    // Pauses at 10:00:00.120 without explicit pre_pause_duration_ms
+    { _seq: 2, event: 'hitl_pause', task_id: 'physician_review', timestamp: '2026-10-07T10:00:00.120Z' },
+    // Resumed after 3 minutes (10:03:00.000); second pause was emitted at resume time
+    { _seq: 3, event: 'hitl_pause', task_id: 'physician_review', timestamp: '2026-10-07T10:03:00.000Z' },
+    { _seq: 4, event: 'hitl_resume', task_id: 'physician_review', timestamp: '2026-10-07T10:03:00.050Z', wait_duration_ms: 180000 },
+    // Final node completion with 600ms post-resume duration
+    { _seq: 5, event: 'execution_graph_node', scenario_node_id: 'physician_review', status: 'completed', duration_ms: 600, timestamp: '2026-10-07T10:03:00.650Z' },
+  ];
+
+  const graph = buildTraceGraph(events, scenario, null, 'executed', true, new Map(), (id) => id);
+  const node = graph.flowNodes.find((n) => n.id === 'physician_review')!;
+  assert.ok(node.data.splitDuration, 'Split duration present');
+  // preMs must be inferred from maneuver_start to hitl_pause (120ms)
+  assert.equal(node.data.splitDuration!.preMs, 120);
+  // waitMs must be preserved from wait_duration_ms or original pause to resume (180,000ms = 3m)
+  assert.equal(node.data.splitDuration!.waitMs, 180000);
+  // postMs is 600ms
+  assert.equal(node.data.splitDuration!.postMs, 600);
+  assert.equal(node.data.splitDuration!.totalComputeMs, 720);
+});
+
+test('buildWaterfall sets status completed and authoritative original duration for replayed rows', () => {
+  const events: LogEvent[] = [
+    // Node initially started
+    {
+      _seq: 1,
+      event: 'execution_graph_node',
+      scenario_node_id: 'reset_authority',
+      execution_instance_id: 'reset_authority#1',
+      status: 'running',
+      duration_ms: 1150,
+      timestamp: '2026-10-07T10:00:00.000Z',
+    },
+    // Pause happened
+    {
+      _seq: 2,
+      event: 'hitl_pause',
+      task_id: 'verify_physician_review_and_business_state',
+      timestamp: '2026-10-07T10:00:01.000Z',
+    },
+    // Replay fast-forwarded reset_authority upon resume
+    {
+      _seq: 3,
+      event: 'execution_graph_node',
+      scenario_node_id: 'reset_authority',
+      execution_instance_id: 'reset_authority#1',
+      is_replayed: true,
+      duration_ms: 0.05,
+      original_duration_ms: 880,
+      timestamp: '2026-10-07T10:03:00.000Z',
+    },
+  ];
+
+  const waterfall = buildWaterfall(events);
+  const row = waterfall.rows.find((r) => r.nodeId === 'reset_authority')!;
+  assert.ok(row, 'reset_authority row found in waterfall');
+  assert.equal(row.isReplayed, true, 'isReplayed flag is true');
+  assert.equal(row.status, 'completed', 'status is completed (not running/amber)');
+  assert.equal(row.originalDurationMs, 880, 'original duration is 880ms (0.88s)');
+  assert.equal(row.durationMs, 880, 'durationMs is updated to original duration 880ms');
+});
+
+test('buildTraceGraph computes waitMs when wait_duration_ms is omitted on hitl_resume', () => {
+  const scenario = {
+    workflow: {
+      nodes: [{ id: 'verify_physician_review_and_business_state' }],
+      edges: [],
+    },
+  };
+  const events: LogEvent[] = [
+    {
+      _seq: 1,
+      event: 'maneuver_start',
+      node_id: 'verify_physician_review_and_business_state',
+      timestamp: '2026-10-07T10:00:00.000Z',
+    },
+    {
+      _seq: 2,
+      event: 'hitl_pause',
+      task_id: 'verify_physician_review_and_business_state',
+      timestamp: '2026-10-07T10:00:00.150Z',
+      pre_pause_duration_ms: 150,
+      pause_start_ts: 1791367200.150,
+    },
+    // hitl_resume emitted without wait_duration_ms (e.g. from historical trace or fallback emission)
+    {
+      _seq: 3,
+      event: 'hitl_resume',
+      task_id: 'verify_physician_review_and_business_state',
+      timestamp: '2026-10-07T10:01:50.150Z', // 110 seconds later
+    },
+    // Node completes with 2400ms post-resume duration
+    {
+      _seq: 4,
+      event: 'execution_graph_node',
+      scenario_node_id: 'verify_physician_review_and_business_state',
+      status: 'completed',
+      duration_ms: 2400,
+      timestamp: '2026-10-07T10:01:52.550Z',
+    },
+  ];
+
+  const graph = buildTraceGraph(events, scenario, null, 'executed', true, new Map(), (id) => id);
+  const node = graph.flowNodes.find((n) => n.id === 'verify_physician_review_and_business_state')!;
+  assert.ok(node.data.splitDuration, 'Split duration computed');
+  assert.equal(node.data.splitDuration!.preMs, 150, 'preMs is 150ms');
+  assert.equal(node.data.splitDuration!.waitMs, 110000, 'waitMs is 110,000ms (110s)');
+  assert.equal(node.data.splitDuration!.postMs, 2400, 'postMs is 2400ms');
+});
+

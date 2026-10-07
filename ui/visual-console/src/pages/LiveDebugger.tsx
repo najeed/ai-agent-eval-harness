@@ -613,6 +613,28 @@ export const LiveDebugger: React.FC = () => {
   }, [runId]);
 
   // ---------------------------------------------------------------------------
+  // Duration formatting helpers: avoid truncating fast sub-second intervals
+  // to misleading '0.0s'.
+  // ---------------------------------------------------------------------------
+  const formatDurationCompact = (ms: number): string => {
+    if (ms <= 0) return '0s';
+    if (ms < 1000) return `${(ms / 1000).toFixed(2)}s`;
+    if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
+    const m = Math.floor(ms / 60000);
+    const s = Math.round((ms % 60000) / 1000);
+    return `${m}m ${s}s`;
+  };
+
+  const formatDurationDetailed = (ms: number): string => {
+    if (ms <= 0) return '0.00s';
+    if (ms < 1000) return `${(ms / 1000).toFixed(2)}s (${Math.round(ms)}ms)`;
+    if (ms < 60000) return `${(ms / 1000).toFixed(2)}s`;
+    const m = Math.floor(ms / 60000);
+    const s = ((ms % 60000) / 1000).toFixed(1);
+    return `${m}m ${s}s (${(ms / 1000).toFixed(1)}s)`;
+  };
+
+  // ---------------------------------------------------------------------------
   // JSX label adapter — the ONLY React/JSX concern for graph nodes.
   // buildTraceGraph (pure, in debuggerLogic.ts) returns typed FlowNodeData
   // scalars. This function maps those scalars to the ReactFlow label element.
@@ -621,21 +643,14 @@ export const LiveDebugger: React.FC = () => {
     <div className="space-y-1">
       <div className="flex items-center justify-between gap-1">
         <span className="font-mono font-bold text-[10px] text-slate-200">{d.id}</span>
-        <div className="flex items-center gap-1">
-          {d.isReplayed && (
-            <span
-              title="Fast-forwarded from checkpoint on resume"
-              className="px-1 py-0.2 bg-blue-500/20 text-blue-300 text-[8px] rounded font-mono font-bold tracking-wider"
-            >
-              REPLAYED
-            </span>
-          )}
-          {d.maxAttempt > 1 && (
-            <span className="px-1 py-0.2 bg-amber-500/20 text-amber-300 text-[8px] rounded font-mono">
-              att#{d.maxAttempt}
-            </span>
-          )}
-        </div>
+        {d.isReplayed && (
+          <span
+            title="Fast-forwarded from checkpoint on resume"
+            className="px-1 py-0.2 bg-blue-500/20 text-blue-300 text-[8px] rounded font-mono font-bold tracking-wider"
+          >
+            REPLAYED
+          </span>
+        )}
       </div>
       <div className="text-[9px] text-slate-400 truncate max-w-[130px]" title={d.label}>
         {d.statusLabel}
@@ -666,10 +681,10 @@ export const LiveDebugger: React.FC = () => {
       )}
       {d.splitDuration ? (
         <div
-          title={`Pre: ${(d.splitDuration.preMs / 1000).toFixed(2)}s | Wait: ${(d.splitDuration.waitMs / 1000).toFixed(1)}s | Post: ${(d.splitDuration.postMs / 1000).toFixed(2)}s`}
+          title={`Pre: ${formatDurationDetailed(d.splitDuration.preMs)} | Wait: ${formatDurationDetailed(d.splitDuration.waitMs)} | Post: ${formatDurationDetailed(d.splitDuration.postMs)} (Total compute: ${formatDurationDetailed(d.splitDuration.totalComputeMs)})`}
           className="text-[8px] text-emerald-400 font-mono tracking-tight"
         >
-          Pre: {(d.splitDuration.preMs / 1000).toFixed(1)}s | Wait: {(d.splitDuration.waitMs / 1000).toFixed(1)}s | Post: {(d.splitDuration.postMs / 1000).toFixed(1)}s
+          Pre: {formatDurationCompact(d.splitDuration.preMs)} | Wait: {formatDurationCompact(d.splitDuration.waitMs)} | Post: {formatDurationCompact(d.splitDuration.postMs)}
         </div>
       ) : d.isReplayed ? (
         <div
@@ -925,25 +940,33 @@ export const LiveDebugger: React.FC = () => {
                       const left = rawSpan === 0 ? 0 : Math.min(((start - waterfall.tMin!) / span) * 100, 97);
                       const width = rawSpan === 0 ? 100 : Math.max(((end - start) / span) * 100, 1);
                       const barCls =
-                        row.status === 'completed'
-                          ? 'bg-emerald-500/70'
-                          : row.status === 'failed'
-                            ? 'bg-red-500/80'
-                            : row.status === 'running'
-                              ? 'bg-amber-500/80 animate-pulse'
-                              : 'bg-slate-600';
+                        row.isReplayed
+                          ? 'bg-blue-500/70 border border-blue-400/40'
+                          : row.status === 'completed'
+                            ? 'bg-emerald-500/70'
+                            : row.status === 'failed'
+                              ? 'bg-red-500/80'
+                              : row.status === 'running'
+                                ? 'bg-amber-500/80 animate-pulse'
+                                : 'bg-slate-600';
+                      const effDuration = row.isReplayed && row.originalDurationMs != null ? row.originalDurationMs : row.durationMs;
                       return (
                         <button
                           key={row.execId}
                           onClick={() => focusWaterfallRow(row)}
-                          title={`${row.nodeId} · ${row.status}${row.durationMs ? ` · ${row.durationMs}ms` : ''}`}
+                          title={`${row.nodeId} · ${row.isReplayed ? 'replayed' : row.status}${effDuration ? ` · ${effDuration}ms` : ''}`}
                           className="w-full flex items-center gap-2 group"
                         >
                           <span
-                            className="font-mono text-[8px] text-slate-500 truncate w-24 text-left"
+                            className="font-mono text-[8px] text-slate-500 truncate w-24 text-left flex items-center gap-1"
                             style={{ paddingLeft: `${Math.min(row.depth * 8, 32)}px` }}
                           >
-                            {row.depth > 0 ? '↳ ' : ''}{row.nodeId}
+                            <span className="truncate">{row.depth > 0 ? '↳ ' : ''}{row.nodeId}</span>
+                            {row.isReplayed && (
+                              <span className="px-1 py-0.2 bg-blue-500/20 text-blue-300 text-[6.5px] rounded font-mono font-bold leading-tight flex-shrink-0">
+                                REPLAYED
+                              </span>
+                            )}
                             {row.iteration > 1 || (row.execId.match(/#(\d+)$/)?.[1] ?? '1') !== '1' ? ` ·it${row.iteration}` : ''}
                           </span>
                           <span className="relative flex-1 h-3 bg-slate-900/80 rounded overflow-hidden">
@@ -980,7 +1003,7 @@ export const LiveDebugger: React.FC = () => {
                             )}
                           </span>
                           <span className="font-mono text-[8px] text-slate-500 w-10 text-right">
-                            {row.durationMs != null ? `${(row.durationMs / 1000).toFixed(2)}s` : '—'}
+                            {effDuration != null ? `${(effDuration / 1000).toFixed(2)}s` : '—'}
                           </span>
                         </button>
                       );
@@ -993,7 +1016,7 @@ export const LiveDebugger: React.FC = () => {
                       onClick={() => focusWaterfallRow(row)}
                       className="w-full text-left font-mono text-[8px] text-slate-500 hover:text-slate-300 truncate"
                     >
-                      {row.depth > 0 ? '↳ ' : ''}{row.nodeId} · {row.status} · no timestamps in trace
+                      {row.depth > 0 ? '↳ ' : ''}{row.nodeId} · {row.isReplayed ? 'replayed' : row.status} · no timestamps in trace
                     </button>
                   ))
                 )}
@@ -1443,15 +1466,19 @@ export const LiveDebugger: React.FC = () => {
                           <div className="text-slate-400 font-bold">HITL Split Breakdown:</div>
                           <div className="flex justify-between text-slate-400">
                             <span>Pre-Pause:</span>
-                            <span>{(selectedNodeData.splitDuration.preMs / 1000).toFixed(2)}s</span>
+                            <span>{formatDurationDetailed(selectedNodeData.splitDuration.preMs)}</span>
                           </div>
                           <div className="flex justify-between text-slate-400">
                             <span>Review Wait:</span>
-                            <span>{(selectedNodeData.splitDuration.waitMs / 1000).toFixed(2)}s</span>
+                            <span>{formatDurationDetailed(selectedNodeData.splitDuration.waitMs)}</span>
                           </div>
                           <div className="flex justify-between text-slate-400">
                             <span>Post-Resume:</span>
-                            <span>{(selectedNodeData.splitDuration.postMs / 1000).toFixed(2)}s</span>
+                            <span>{formatDurationDetailed(selectedNodeData.splitDuration.postMs)}</span>
+                          </div>
+                          <div className="flex justify-between text-slate-300 font-semibold pt-1 border-t border-slate-800/60">
+                            <span>Total Compute:</span>
+                            <span>{formatDurationDetailed(selectedNodeData.splitDuration.totalComputeMs)}</span>
                           </div>
                         </div>
                       )}

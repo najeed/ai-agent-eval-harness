@@ -124,6 +124,16 @@ class SessionManager:
         self.policy_evaluator = policy_evaluator
         self.signing_backend = signing_backend
         self.resumption_checkpoint = resumption_checkpoint
+        if (
+            not resumption_token
+            and resumption_checkpoint
+            and isinstance(resumption_checkpoint, dict)
+        ):
+            chk_state = resumption_checkpoint.get("session_state")
+            chk_meta = resumption_checkpoint.get("metadata")
+            state_tok = chk_state.get("approval_token") if isinstance(chk_state, dict) else None
+            meta_tok = chk_meta.get("approval_token") if isinstance(chk_meta, dict) else None
+            resumption_token = resumption_checkpoint.get("approval_token") or state_tok or meta_tok
         self.resumption_token = resumption_token
         self._completed_node_results: dict[str, Any] = {}
         self._approved_gates: set[str] = set()
@@ -1215,6 +1225,7 @@ class SessionManager:
         # 1. Forensic Maneuver Start
         print(f"      [Node Execution] ID: {node_id} | Task: {task_description[:50]}...")
         node_start_time = time.time()
+        self._current_node_start_time = node_start_time
         exec_inst_id = (
             execution_context.get("execution_instance_id")
             if execution_context
@@ -2341,21 +2352,8 @@ class SessionManager:
         # local input prompt or an automatic "Skipped" resume.
         is_scenario_gate = agent_response.get("gate_type") == "scenario_declared"
 
-        # Record the pause event for audit/forensics regardless of CI mode
         raw_task_id = getattr(turn_ctx, "task_id", None) if turn_ctx else None
         task_id = str(raw_task_id) if raw_task_id is not None else "unknown"
-        pre_pause_duration_ms = None
-        if turn_ctx and hasattr(turn_ctx, "start_time"):
-            pre_pause_duration_ms = round((time.time() - turn_ctx.start_time) * 1000, 2)
-        self.event_bus.emit(
-            CoreEvents.HITL_PAUSE,
-            {
-                "task_id": task_id,
-                "prompt": prompt,
-                "pre_pause_duration_ms": pre_pause_duration_ms,
-                "pause_start_ts": time.time(),
-            },
-        )
 
         # Check if already authoritatively approved via resumption token
         if getattr(self, "resumption_token", None):
@@ -2367,18 +2365,56 @@ class SessionManager:
                     req_task = res_req.metadata.get("task_id") if res_req.metadata else None
                     if req_task == task_id or not req_task:
                         resolved_msg = res_req.decision_reason or res_req.decision or "APPROVED"
+                        wait_duration_ms = None
+                        if (
+                            res_req.created_at
+                            and res_req.decided_at
+                            and res_req.decided_at >= res_req.created_at
+                        ):
+                            wait_duration_ms = round(
+                                (res_req.decided_at - res_req.created_at) * 1000, 2
+                            )
+                        elif res_req.created_at:
+                            wait_duration_ms = round((time.time() - res_req.created_at) * 1000, 2)
+                        stored_pre_dur = (
+                            res_req.metadata.get("pre_pause_duration_ms")
+                            if isinstance(res_req.metadata, dict)
+                            else None
+                        )
                         self.event_bus.emit(
                             CoreEvents.HITL_RESUME,
                             {
                                 "task_id": task_id,
                                 "response": resolved_msg,
                                 "approval_token": self.resumption_token,
-                                "resume_ts": time.time(),
+                                "resume_ts": res_req.decided_at or time.time(),
+                                "pause_start_ts": res_req.created_at,
+                                "wait_duration_ms": wait_duration_ms,
+                                "pre_pause_duration_ms": stored_pre_dur,
                             },
                         )
                         return resolved_msg
             except Exception as _chk_err:
                 logger.debug("Resumption approval store check failed: %s", _chk_err)
+
+        # Record the pause event for audit/forensics regardless of CI mode
+        node_start_ts = getattr(self, "_current_node_start_time", None)
+        pre_pause_duration_ms = None
+        if node_start_ts is not None:
+            pre_pause_duration_ms = round((time.time() - node_start_ts) * 1000, 2)
+        elif turn_ctx and hasattr(turn_ctx, "start_time"):
+            pre_pause_duration_ms = round((time.time() - turn_ctx.start_time) * 1000, 2)
+
+        pause_start_ts = time.time()
+        self.event_bus.emit(
+            CoreEvents.HITL_PAUSE,
+            {
+                "task_id": task_id,
+                "prompt": prompt,
+                "pre_pause_duration_ms": pre_pause_duration_ms,
+                "pause_start_ts": pause_start_ts,
+            },
+        )
 
         # Check for explicit durable suspension requests first, even in CI
         if not is_scenario_gate and not (
@@ -2411,8 +2447,17 @@ class SessionManager:
             human_input = input()
             if human_input.lower() == "exit":
                 raise InterruptedError(f"Human operator aborted task '{task_id}'")
+            now_ts = time.time()
             self.event_bus.emit(
-                CoreEvents.HITL_RESUME, {"task_id": task_id, "response": human_input}
+                CoreEvents.HITL_RESUME,
+                {
+                    "task_id": task_id,
+                    "response": human_input,
+                    "resume_ts": now_ts,
+                    "pause_start_ts": pause_start_ts,
+                    "wait_duration_ms": round((now_ts - pause_start_ts) * 1000, 2),
+                    "pre_pause_duration_ms": pre_pause_duration_ms,
+                },
             )
             return human_input
 
@@ -2432,7 +2477,10 @@ class SessionManager:
                 outbound_hash = hashlib.sha3_256(payload_str.encode("utf-8")).hexdigest()
 
             # Create durable approval request in ApprovalStore
-            req_metadata: dict[str, Any] = {"task_id": task_id}
+            req_metadata: dict[str, Any] = {
+                "task_id": task_id,
+                "pre_pause_duration_ms": pre_pause_duration_ms,
+            }
             scenario_meta = self.scenario.get("metadata")
             if not isinstance(scenario_meta, dict):
                 scenario_meta = {}
@@ -2477,6 +2525,8 @@ class SessionManager:
                         "approval_token": durable_req.approval_token,
                         "checkpoint_id": durable_req.checkpoint_id,
                         "status": "PAUSED_FOR_APPROVAL",
+                        "pre_pause_duration_ms": pre_pause_duration_ms,
+                        "pause_start_ts": time.time(),
                     },
                 )
                 transition_run_lifecycle(
@@ -2554,8 +2604,20 @@ class SessionManager:
                     decided_by="human_reviewer",
                     decision_reason=approval.response,
                 )
+                now_ts = time.time()
+                p_start = durable_req.created_at or pause_start_ts
+                wait_dur = round((now_ts - p_start) * 1000, 2) if p_start else None
                 self.event_bus.emit(
-                    CoreEvents.HITL_RESUME, {"task_id": task_id, "response": "[REJECTED]"}
+                    CoreEvents.HITL_RESUME,
+                    {
+                        "task_id": task_id,
+                        "response": "[REJECTED]",
+                        "approval_token": durable_req.approval_token,
+                        "resume_ts": now_ts,
+                        "pause_start_ts": p_start,
+                        "wait_duration_ms": wait_dur,
+                        "pre_pause_duration_ms": pre_pause_duration_ms,
+                    },
                 )
                 raise InterruptedError(
                     f"Human reviewer rejected task '{task_id}': {approval.response}"
@@ -2567,14 +2629,38 @@ class SessionManager:
                 decided_by="human_reviewer",
                 decision_reason=approval.response,
             )
+            now_ts = time.time()
+            p_start = durable_req.created_at or pause_start_ts
+            wait_dur = round((now_ts - p_start) * 1000, 2) if p_start else None
             self.event_bus.emit(
-                CoreEvents.HITL_RESUME, {"task_id": task_id, "response": approval.response}
+                CoreEvents.HITL_RESUME,
+                {
+                    "task_id": task_id,
+                    "response": approval.response,
+                    "approval_token": durable_req.approval_token,
+                    "resume_ts": now_ts,
+                    "pause_start_ts": p_start,
+                    "wait_duration_ms": wait_dur,
+                    "pre_pause_duration_ms": pre_pause_duration_ms,
+                },
             )
             return approval.response
 
         # Non-interactive without GUI (e.g. piped stdin in test): return informative message
         response = f"Skipped (non-interactive, no TTY): {prompt}"
-        self.event_bus.emit(CoreEvents.HITL_RESUME, {"task_id": task_id, "response": response})
+        now_ts = time.time()
+        wait_dur = round((now_ts - pause_start_ts) * 1000, 2) if pause_start_ts else None
+        self.event_bus.emit(
+            CoreEvents.HITL_RESUME,
+            {
+                "task_id": task_id,
+                "response": response,
+                "resume_ts": now_ts,
+                "pause_start_ts": pause_start_ts,
+                "wait_duration_ms": wait_dur,
+                "pre_pause_duration_ms": pre_pause_duration_ms,
+            },
+        )
         return response
 
     def _should_enforce_hitl_gate(self, node: dict[str, Any], timing: str = "before") -> bool:

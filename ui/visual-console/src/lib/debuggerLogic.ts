@@ -133,28 +133,84 @@ export const projectTraceGraphTopology = (
   return { scenarioNodes, runtimeNodes, visibleNodes, executedNodeIds, graphNodeEvents };
 };
 
+export const parseEventTimestamp = (ev: LogEvent | Record<string, any>): number => {
+  if (typeof (ev as any).timestamp_ms === 'number') return (ev as any).timestamp_ms;
+  const raw = ev.timestamp || (ev as any)._ts_iso;
+  if (typeof raw === 'string') {
+    const parsed = Date.parse(raw);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  const isResume = ev.event === 'hitl_resume' || ev.event === 'HITL_RESUME';
+  if (isResume && typeof ev.resume_ts === 'number') return ev.resume_ts * 1000;
+  if (!isResume && typeof ev.pause_start_ts === 'number') return ev.pause_start_ts * 1000;
+  if (typeof ev.resume_ts === 'number') return ev.resume_ts * 1000;
+  if (typeof ev.pause_start_ts === 'number') return ev.pause_start_ts * 1000;
+  return NaN;
+};
+
 export const buildWaterfall = (
   allEvents: LogEvent[]
 ): { rows: WaterfallRow[]; tMin: number | null; tMax: number | null } => {
   const orderedEvents = getSequenceOrderedEvents(allEvents);
   const byExec = new Map<string, WaterfallRow>();
 
+  // Index earliest node start events to infer pre-pause compute if not explicitly stamped
+  const nodeStartMap = new Map<string, number>();
+  for (const ev of orderedEvents) {
+    const rawId = ev.scenario_node_id || ev.node_id || ev.task_id;
+    if (!rawId) continue;
+    const nid = String(rawId);
+    const ts = parseEventTimestamp(ev);
+    if (Number.isFinite(ts)) {
+      if (
+        ev.event === 'maneuver_start' ||
+        ev.event === 'subtask_start' ||
+        ev.event === 'turn_start' ||
+        (ev.event === 'execution_graph_node' && (ev.status === 'running' || !ev.status))
+      ) {
+        const existing = nodeStartMap.get(nid);
+        if (existing == null || ts < existing) {
+          nodeStartMap.set(nid, ts);
+        }
+      }
+    }
+  }
+
   // Index HITL pauses and resumes for split timing computation
   const hitlPauses = new Map<string, { pauseTs: number; prePauseDurationMs?: number }>();
-  const hitlResumes = new Map<string, { resumeTs: number }>();
+  const hitlResumes = new Map<string, { resumeTs: number; waitDurationMs?: number; prePauseDurationMs?: number; pauseStartTs?: number }>();
   for (const e of orderedEvents) {
     const rawTaskId = e.task_id || e.scenario_node_id || e.node_id;
     const tId = rawTaskId ? String(rawTaskId) : undefined;
-    const ts = e.timestamp ? Date.parse(e.timestamp) : (e.pause_start_ts ? e.pause_start_ts * 1000 : NaN);
-    if ((e.event === 'hitl_pause' || e.event === 'HITL_PAUSE') && tId) {
-      hitlPauses.set(tId, {
-        pauseTs: Number.isFinite(ts) ? ts : Date.now(),
-        prePauseDurationMs: typeof e.pre_pause_duration_ms === 'number' ? e.pre_pause_duration_ms : undefined,
-      });
-    } else if ((e.event === 'hitl_resume' || e.event === 'HITL_RESUME') && tId) {
-      const rTs = e.timestamp ? Date.parse(e.timestamp) : (e.resume_ts ? e.resume_ts * 1000 : NaN);
+    if (!tId) continue;
+    const ts = parseEventTimestamp(e);
+
+    if (e.event === 'hitl_pause' || e.event === 'HITL_PAUSE') {
+      const existing = hitlPauses.get(tId);
+      const preDur = typeof e.pre_pause_duration_ms === 'number' ? e.pre_pause_duration_ms : undefined;
+      const validTs = Number.isFinite(ts) ? ts : Date.now();
+      if (!existing) {
+        hitlPauses.set(tId, { pauseTs: validTs, prePauseDurationMs: preDur });
+      } else {
+        if (Number.isFinite(ts) && ts < existing.pauseTs) {
+          existing.pauseTs = ts;
+        }
+        if (preDur != null && existing.prePauseDurationMs == null) {
+          existing.prePauseDurationMs = preDur;
+        }
+      }
+    } else if (e.event === 'hitl_resume' || e.event === 'HITL_RESUME') {
+      const explicitResume = typeof e.resume_ts === 'number' ? e.resume_ts * 1000 : undefined;
+      const parsedTs = parseEventTimestamp(e);
+      const rTs = explicitResume ?? (Number.isFinite(parsedTs) ? parsedTs : Date.now());
+      const waitDur = typeof e.wait_duration_ms === 'number' ? e.wait_duration_ms : undefined;
+      const preDur = typeof e.pre_pause_duration_ms === 'number' ? e.pre_pause_duration_ms : undefined;
+      const pauseStartTs = typeof e.pause_start_ts === 'number' ? e.pause_start_ts * 1000 : undefined;
       hitlResumes.set(tId, {
-        resumeTs: Number.isFinite(rTs) ? rTs : Date.now(),
+        resumeTs: rTs,
+        waitDurationMs: waitDur,
+        prePauseDurationMs: preDur,
+        pauseStartTs,
       });
     }
   }
@@ -183,16 +239,19 @@ export const buildWaterfall = (
     const isReplayedEvent = e.is_replayed === true;
     if (isReplayedEvent) {
       row.isReplayed = true;
-      if (typeof e.original_duration_ms === 'number') {
+      row.status = 'completed'; // Replayed executions are completed
+      if (typeof e.original_duration_ms === 'number' && e.original_duration_ms > 0) {
         row.originalDurationMs = e.original_duration_ms;
-        if (row.durationMs === null || row.durationMs === 0) {
-          row.durationMs = e.original_duration_ms;
-        }
+        row.durationMs = e.original_duration_ms; // Authoritatively bind to original duration
+      }
+      const ts = parseEventTimestamp(e);
+      if (!Number.isNaN(ts)) {
+        if (row.startTs === null) row.startTs = ts;
       }
     } else {
       if (e.status) row.status = e.status;
       if (typeof e.duration_ms === 'number' && e.duration_ms > 0) row.durationMs = e.duration_ms;
-      const ts = Date.parse(e.timestamp || '');
+      const ts = parseEventTimestamp(e);
       if (!Number.isNaN(ts)) {
         if (e.status === 'running' && row.startTs === null) row.startTs = ts;
         row.endTs = row.endTs === null ? ts : Math.max(row.endTs, ts);
@@ -204,20 +263,52 @@ export const buildWaterfall = (
   // Compute split timing metrics for nodes that paused for human review
   for (const r of byExec.values()) {
     const pauseInfo = hitlPauses.get(r.nodeId);
-    const resumeInfo = hitlResumes.get(r.nodeId);
+    const resumeInfo = hitlResumes.get(r.nodeId) ?? (hitlResumes.size === 1 ? hitlResumes.values().next().value : undefined);
     if (pauseInfo) {
-      const waitMs = resumeInfo && resumeInfo.resumeTs > pauseInfo.pauseTs
-        ? resumeInfo.resumeTs - pauseInfo.pauseTs
-        : 0;
-      const preMs = pauseInfo.prePauseDurationMs ?? 0;
+      let preMs = pauseInfo.prePauseDurationMs ?? resumeInfo?.prePauseDurationMs ?? 0;
+      if (preMs === 0) {
+        const startTs = nodeStartMap.get(r.nodeId);
+        if (startTs != null && pauseInfo.pauseTs >= startTs) {
+          preMs = Math.max(0, pauseInfo.pauseTs - startTs);
+        }
+      }
+
+      const pauseStart = resumeInfo?.pauseStartTs ?? pauseInfo.pauseTs;
+      let waitMs = 0;
+      if (resumeInfo?.waitDurationMs != null && resumeInfo.waitDurationMs >= 0) {
+        waitMs = resumeInfo.waitDurationMs;
+      } else if (resumeInfo && resumeInfo.resumeTs > pauseStart) {
+        waitMs = Math.max(0, resumeInfo.resumeTs - pauseStart);
+      } else if (r.endTs != null && r.endTs > pauseStart) {
+        // Robust fallback: if wait duration wasn't stamped, calculate from elapsed span between pause and completion minus post-pause compute
+        const postEstimate = r.durationMs ?? 0;
+        waitMs = Math.max(0, (r.endTs - pauseStart) - postEstimate);
+      }
+
       const postMs = r.durationMs ?? 0;
       r.splitDuration = {
-        preMs,
-        waitMs,
-        postMs,
-        totalComputeMs: preMs + postMs,
+        preMs: Math.round(preMs * 100) / 100,
+        waitMs: Math.round(waitMs * 100) / 100,
+        postMs: Math.round(postMs * 100) / 100,
+        totalComputeMs: Math.round((preMs + postMs) * 100) / 100,
       };
       r.durationMs = r.splitDuration.totalComputeMs;
+    }
+  }
+
+  // Ensure replayed rows are marked completed and endTs strictly bounds original duration without stretching past pause
+  for (const r of byExec.values()) {
+    if (r.isReplayed) {
+      r.status = 'completed';
+      if (r.originalDurationMs != null && r.originalDurationMs > 0) {
+        r.durationMs = r.originalDurationMs;
+      }
+      const pauseInfo = hitlPauses.get(r.nodeId);
+      const resumeInfo = hitlResumes.get(r.nodeId);
+      const pauseStart = resumeInfo?.pauseStartTs ?? pauseInfo?.pauseTs;
+      if (pauseStart != null && r.endTs != null && r.endTs >= pauseStart) {
+        r.endTs = r.startTs != null && r.durationMs != null ? r.startTs + r.durationMs : pauseStart;
+      }
     }
   }
 
@@ -761,22 +852,63 @@ export const buildTraceGraph = (
     }
   }
 
+  // Index earliest node start events to infer pre-pause compute if not explicitly stamped
+  const nodeStartMap = new Map<string, number>();
+  for (const ev of normalizedEvents) {
+    const rawId = ev.scenario_node_id || ev.node_id || ev.task_id;
+    if (!rawId) continue;
+    const nid = String(rawId);
+    const ts = parseEventTimestamp(ev);
+    if (Number.isFinite(ts)) {
+      if (
+        ev.event === 'maneuver_start' ||
+        ev.event === 'subtask_start' ||
+        ev.event === 'turn_start' ||
+        (ev.event === 'execution_graph_node' && (ev.status === 'running' || !ev.status))
+      ) {
+        const existing = nodeStartMap.get(nid);
+        if (existing == null || ts < existing) {
+          nodeStartMap.set(nid, ts);
+        }
+      }
+    }
+  }
+
   // Index HITL pauses and resumes for split timing computation across graph nodes
   const hitlPauseMap = new Map<string, { pauseTs: number; prePauseDurationMs?: number }>();
-  const hitlResumeMap = new Map<string, { resumeTs: number }>();
+  const hitlResumeMap = new Map<string, { resumeTs: number; waitDurationMs?: number; prePauseDurationMs?: number; pauseStartTs?: number }>();
   for (const ev of normalizedEvents) {
     const rawTaskId = ev.task_id || ev.scenario_node_id || ev.node_id;
     const tId = rawTaskId ? String(rawTaskId) : undefined;
-    const ts = ev.timestamp ? Date.parse(ev.timestamp) : (ev.pause_start_ts ? ev.pause_start_ts * 1000 : NaN);
-    if ((ev.event === 'hitl_pause' || ev.event === 'HITL_PAUSE') && tId) {
-      hitlPauseMap.set(tId, {
-        pauseTs: Number.isFinite(ts) ? ts : Date.now(),
-        prePauseDurationMs: typeof ev.pre_pause_duration_ms === 'number' ? ev.pre_pause_duration_ms : undefined,
-      });
-    } else if ((ev.event === 'hitl_resume' || ev.event === 'HITL_RESUME') && tId) {
-      const rTs = ev.timestamp ? Date.parse(ev.timestamp) : (ev.resume_ts ? ev.resume_ts * 1000 : NaN);
+    if (!tId) continue;
+    const ts = parseEventTimestamp(ev);
+
+    if (ev.event === 'hitl_pause' || ev.event === 'HITL_PAUSE') {
+      const existing = hitlPauseMap.get(tId);
+      const preDur = typeof ev.pre_pause_duration_ms === 'number' ? ev.pre_pause_duration_ms : undefined;
+      const validTs = Number.isFinite(ts) ? ts : Date.now();
+      if (!existing) {
+        hitlPauseMap.set(tId, { pauseTs: validTs, prePauseDurationMs: preDur });
+      } else {
+        if (Number.isFinite(ts) && ts < existing.pauseTs) {
+          existing.pauseTs = ts;
+        }
+        if (preDur != null && existing.prePauseDurationMs == null) {
+          existing.prePauseDurationMs = preDur;
+        }
+      }
+    } else if (ev.event === 'hitl_resume' || ev.event === 'HITL_RESUME') {
+      const explicitResume = typeof ev.resume_ts === 'number' ? ev.resume_ts * 1000 : undefined;
+      const parsedTs = parseEventTimestamp(ev);
+      const rTs = explicitResume ?? (Number.isFinite(parsedTs) ? parsedTs : Date.now());
+      const waitDur = typeof ev.wait_duration_ms === 'number' ? ev.wait_duration_ms : undefined;
+      const preDur = typeof ev.pre_pause_duration_ms === 'number' ? ev.pre_pause_duration_ms : undefined;
+      const pauseStartTs = typeof ev.pause_start_ts === 'number' ? ev.pause_start_ts * 1000 : undefined;
       hitlResumeMap.set(tId, {
-        resumeTs: Number.isFinite(rTs) ? rTs : Date.now(),
+        resumeTs: rTs,
+        waitDurationMs: waitDur,
+        prePauseDurationMs: preDur,
+        pauseStartTs,
       });
     }
   }
@@ -836,18 +968,37 @@ export const buildTraceGraph = (
 
       // Detect split execution for nodes paused by human review
       const pauseInfo = hitlPauseMap.get(id);
-      const resumeInfo = hitlResumeMap.get(id);
+      const resumeInfo = hitlResumeMap.get(id) ?? (hitlResumeMap.size === 1 ? hitlResumeMap.values().next().value : undefined);
       if (pauseInfo) {
-        const waitMs = resumeInfo && resumeInfo.resumeTs > pauseInfo.pauseTs
-          ? resumeInfo.resumeTs - pauseInfo.pauseTs
-          : 0;
+        let preMs = pauseInfo.prePauseDurationMs ?? resumeInfo?.prePauseDurationMs ?? 0;
+        if (preMs === 0) {
+          const startTs = nodeStartMap.get(id);
+          if (startTs != null && pauseInfo.pauseTs >= startTs) {
+            preMs = Math.max(0, pauseInfo.pauseTs - startTs);
+          }
+        }
+
+        const pauseStart = resumeInfo?.pauseStartTs ?? pauseInfo.pauseTs;
+        let waitMs = 0;
+        if (resumeInfo?.waitDurationMs != null && resumeInfo.waitDurationMs >= 0) {
+          waitMs = resumeInfo.waitDurationMs;
+        } else if (resumeInfo && resumeInfo.resumeTs > pauseStart) {
+          waitMs = Math.max(0, resumeInfo.resumeTs - pauseStart);
+        } else {
+          // Robust fallback: if wait duration wasn't stamped, calculate from elapsed span between pause and completion minus post-pause compute
+          const compTs = parseEventTimestamp(latestEv);
+          const postEstimate = typeof latestEv.duration_ms === 'number' ? latestEv.duration_ms : 0;
+          if (Number.isFinite(compTs) && compTs > pauseStart) {
+            waitMs = Math.max(0, (compTs - pauseStart) - postEstimate);
+          }
+        }
+
         const postMs = typeof latestEv.duration_ms === 'number' ? latestEv.duration_ms : 0;
-        const preMs = pauseInfo.prePauseDurationMs ?? 0;
         splitDuration = {
-          preMs,
-          waitMs,
-          postMs,
-          totalComputeMs: preMs + postMs,
+          preMs: Math.round(preMs * 100) / 100,
+          waitMs: Math.round(waitMs * 100) / 100,
+          postMs: Math.round(postMs * 100) / 100,
+          totalComputeMs: Math.round((preMs + postMs) * 100) / 100,
         };
         durationMs = splitDuration.totalComputeMs;
       } else {

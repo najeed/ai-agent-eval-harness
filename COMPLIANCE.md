@@ -34,7 +34,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **python-dotenv** | 1.2.4 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **PyYAML** | 6.0.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **requests** | 2.34.2 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **sqlalchemy** | 2.1.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **sqlalchemy** | 2.1.4 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **urllib3** | 2.8.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **Werkzeug** | 3.1.9 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 
