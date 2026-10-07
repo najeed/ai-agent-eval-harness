@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Pure telemetry, waterfall, and diagnostic logic for the LiveDebugger.
  * Fully decoupled from React DOM / CSS dependencies for pure unit testability.
  */
@@ -41,6 +41,14 @@ export interface WaterfallRow {
   endTs: number | null;
   depth: number;
   markers: WaterfallMarker[];
+  isReplayed?: boolean;
+  originalDurationMs?: number | null;
+  splitDuration?: {
+    preMs: number;
+    waitMs: number;
+    postMs: number;
+    totalComputeMs: number;
+  };
 }
 
 export const normalizeEventSequence = (events: LogEvent[]): LogEvent[] => {
@@ -130,6 +138,27 @@ export const buildWaterfall = (
 ): { rows: WaterfallRow[]; tMin: number | null; tMax: number | null } => {
   const orderedEvents = getSequenceOrderedEvents(allEvents);
   const byExec = new Map<string, WaterfallRow>();
+
+  // Index HITL pauses and resumes for split timing computation
+  const hitlPauses = new Map<string, { pauseTs: number; prePauseDurationMs?: number }>();
+  const hitlResumes = new Map<string, { resumeTs: number }>();
+  for (const e of orderedEvents) {
+    const rawTaskId = e.task_id || e.scenario_node_id || e.node_id;
+    const tId = rawTaskId ? String(rawTaskId) : undefined;
+    const ts = e.timestamp ? Date.parse(e.timestamp) : (e.pause_start_ts ? e.pause_start_ts * 1000 : NaN);
+    if ((e.event === 'hitl_pause' || e.event === 'HITL_PAUSE') && tId) {
+      hitlPauses.set(tId, {
+        pauseTs: Number.isFinite(ts) ? ts : Date.now(),
+        prePauseDurationMs: typeof e.pre_pause_duration_ms === 'number' ? e.pre_pause_duration_ms : undefined,
+      });
+    } else if ((e.event === 'hitl_resume' || e.event === 'HITL_RESUME') && tId) {
+      const rTs = e.timestamp ? Date.parse(e.timestamp) : (e.resume_ts ? e.resume_ts * 1000 : NaN);
+      hitlResumes.set(tId, {
+        resumeTs: Number.isFinite(rTs) ? rTs : Date.now(),
+      });
+    }
+  }
+
   for (const e of orderedEvents) {
     if (e.event !== 'execution_graph_node') continue;
     const nodeId = e.scenario_node_id || e.node_id || '?';
@@ -150,13 +179,45 @@ export const buildWaterfall = (
       };
       byExec.set(execId, row);
     }
-    if (e.status) row.status = e.status;
-    if (typeof e.duration_ms === 'number' && e.duration_ms > 0) row.durationMs = e.duration_ms;
-    const ts = Date.parse(e.timestamp || '');
-    if (!Number.isNaN(ts)) {
-      if (e.status === 'running' && row.startTs === null) row.startTs = ts;
-      row.endTs = row.endTs === null ? ts : Math.max(row.endTs, ts);
-      if (row.startTs === null) row.startTs = ts;
+
+    const isReplayedEvent = e.is_replayed === true;
+    if (isReplayedEvent) {
+      row.isReplayed = true;
+      if (typeof e.original_duration_ms === 'number') {
+        row.originalDurationMs = e.original_duration_ms;
+        if (row.durationMs === null || row.durationMs === 0) {
+          row.durationMs = e.original_duration_ms;
+        }
+      }
+    } else {
+      if (e.status) row.status = e.status;
+      if (typeof e.duration_ms === 'number' && e.duration_ms > 0) row.durationMs = e.duration_ms;
+      const ts = Date.parse(e.timestamp || '');
+      if (!Number.isNaN(ts)) {
+        if (e.status === 'running' && row.startTs === null) row.startTs = ts;
+        row.endTs = row.endTs === null ? ts : Math.max(row.endTs, ts);
+        if (row.startTs === null) row.startTs = ts;
+      }
+    }
+  }
+
+  // Compute split timing metrics for nodes that paused for human review
+  for (const r of byExec.values()) {
+    const pauseInfo = hitlPauses.get(r.nodeId);
+    const resumeInfo = hitlResumes.get(r.nodeId);
+    if (pauseInfo) {
+      const waitMs = resumeInfo && resumeInfo.resumeTs > pauseInfo.pauseTs
+        ? resumeInfo.resumeTs - pauseInfo.pauseTs
+        : 0;
+      const preMs = pauseInfo.prePauseDurationMs ?? 0;
+      const postMs = r.durationMs ?? 0;
+      r.splitDuration = {
+        preMs,
+        waitMs,
+        postMs,
+        totalComputeMs: preMs + postMs,
+      };
+      r.durationMs = r.splitDuration.totalComputeMs;
     }
   }
 
@@ -566,6 +627,19 @@ export interface FlowNodeData {
   failureReason: string | undefined;
   /** Whether the node is currently highlighted (matches the selected event) */
   isHighlighted: boolean;
+  /** True if this node was fast-forwarded / replayed from a resume checkpoint */
+  isReplayed?: boolean;
+  /** Original duration in ms before pause/resume */
+  originalDurationMs?: number;
+  /** Replayed fast-forward duration in ms (typically ~0.00ms) */
+  replayedDurationMs?: number;
+  /** Split execution metrics for nodes paused by HITL */
+  splitDuration?: {
+    preMs: number;
+    waitMs: number;
+    postMs: number;
+    totalComputeMs: number;
+  };
 }
 
 /** A single ReactFlow node with typed data (label is a scalar string). */
@@ -687,6 +761,26 @@ export const buildTraceGraph = (
     }
   }
 
+  // Index HITL pauses and resumes for split timing computation across graph nodes
+  const hitlPauseMap = new Map<string, { pauseTs: number; prePauseDurationMs?: number }>();
+  const hitlResumeMap = new Map<string, { resumeTs: number }>();
+  for (const ev of normalizedEvents) {
+    const rawTaskId = ev.task_id || ev.scenario_node_id || ev.node_id;
+    const tId = rawTaskId ? String(rawTaskId) : undefined;
+    const ts = ev.timestamp ? Date.parse(ev.timestamp) : (ev.pause_start_ts ? ev.pause_start_ts * 1000 : NaN);
+    if ((ev.event === 'hitl_pause' || ev.event === 'HITL_PAUSE') && tId) {
+      hitlPauseMap.set(tId, {
+        pauseTs: Number.isFinite(ts) ? ts : Date.now(),
+        prePauseDurationMs: typeof ev.pre_pause_duration_ms === 'number' ? ev.pre_pause_duration_ms : undefined,
+      });
+    } else if ((ev.event === 'hitl_resume' || ev.event === 'HITL_RESUME') && tId) {
+      const rTs = ev.timestamp ? Date.parse(ev.timestamp) : (ev.resume_ts ? ev.resume_ts * 1000 : NaN);
+      hitlResumeMap.set(tId, {
+        resumeTs: Number.isFinite(rTs) ? rTs : Date.now(),
+      });
+    }
+  }
+
   const selectedId =
     selection?.scenario_node_id || selection?.node_id || selection?.task_id;
 
@@ -704,21 +798,61 @@ export const buildTraceGraph = (
     let maxAttempt = 1;
     let passCount = 0;
     let failCount = 0;
+    let isReplayed = false;
+    let originalDurationMs: number | undefined;
+    let replayedDurationMs: number | undefined;
+    let splitDuration: FlowNodeData['splitDuration'] | undefined;
 
     if (graphNodeEvents.length > 0) {
       for (const ev of graphNodeEvents) {
         const st = ev.status ? ev.status.toLowerCase() : '';
         if (st === 'completed') passCount++;
         else if (st === 'failed' || st === 'error' || st === 'aborted') failCount++;
+        if (ev.is_replayed === true) isReplayed = true;
       }
       const latestEv = graphNodeEvents[graphNodeEvents.length - 1];
       if (latestEv.status) status = latestEv.status.toLowerCase();
       failureClass = latestEv.failure_class;
       failureReason = latestEv.failure_reason;
-      durationMs = latestEv.duration_ms;
       const attempts = graphNodeEvents.map((e) => e.attempt || 1);
       maxAttempt = attempts.length > 0 ? Math.max(...attempts) : 1;
       hasCanonicalEvent = true;
+
+      // Detect replayed executions (both explicit flag and multiple completed events from resume)
+      const completedEvents = graphNodeEvents.filter((e) => String(e.status || '').toLowerCase() === 'completed');
+      if (completedEvents.length > 1) {
+        const firstComp = completedEvents[0];
+        const lastComp = completedEvents[completedEvents.length - 1];
+        if (lastComp.is_replayed || (typeof firstComp.duration_ms === 'number' && firstComp.duration_ms > 0 && typeof lastComp.duration_ms === 'number' && lastComp.duration_ms < 50)) {
+          isReplayed = true;
+          originalDurationMs = firstComp.original_duration_ms ?? firstComp.duration_ms;
+          replayedDurationMs = lastComp.duration_ms;
+        }
+      } else if (latestEv.is_replayed) {
+        isReplayed = true;
+        originalDurationMs = latestEv.original_duration_ms;
+        replayedDurationMs = latestEv.duration_ms;
+      }
+
+      // Detect split execution for nodes paused by human review
+      const pauseInfo = hitlPauseMap.get(id);
+      const resumeInfo = hitlResumeMap.get(id);
+      if (pauseInfo) {
+        const waitMs = resumeInfo && resumeInfo.resumeTs > pauseInfo.pauseTs
+          ? resumeInfo.resumeTs - pauseInfo.pauseTs
+          : 0;
+        const postMs = typeof latestEv.duration_ms === 'number' ? latestEv.duration_ms : 0;
+        const preMs = pauseInfo.prePauseDurationMs ?? 0;
+        splitDuration = {
+          preMs,
+          waitMs,
+          postMs,
+          totalComputeMs: preMs + postMs,
+        };
+        durationMs = splitDuration.totalComputeMs;
+      } else {
+        durationMs = isReplayed && originalDurationMs != null ? originalDurationMs : latestEv.duration_ms;
+      }
     }
 
     const isHighlighted = !!selectedId && selectedId === id;
@@ -736,6 +870,10 @@ export const buildTraceGraph = (
         failureClass ||
         failureReason ||
         (failCount > 1 ? `Failed (${failCount} attempts)` : 'Failed');
+    } else if (isReplayed && status === 'completed') {
+      statusLabel = originalDurationMs != null
+        ? `Replayed (${(originalDurationMs / 1000).toFixed(2)}s)`
+        : 'Replayed';
     } else if (status === 'completed') {
       statusLabel =
         failCount > 0
@@ -752,6 +890,10 @@ export const buildTraceGraph = (
     if (status === 'failed' || status === 'error' || status === 'aborted') {
       border = isHighlighted ? '2px solid #f87171' : '1px solid #ef4444';
       background = 'rgba(127,29,29,0.4)';
+    } else if (isReplayed && status === 'completed') {
+      // Replayed nodes styled in neutral blue theme
+      border = isHighlighted ? '2px solid #60a5fa' : '1px solid #3b82f6';
+      background = 'rgba(30,58,138,0.4)';
     } else if (status === 'completed') {
       border = isHighlighted ? '2px solid #34d399' : '1px solid #10b981';
       background = 'rgba(6,78,59,0.4)';
@@ -786,6 +928,10 @@ export const buildTraceGraph = (
         failureClass,
         failureReason,
         isHighlighted,
+        isReplayed,
+        originalDurationMs,
+        replayedDurationMs,
+        splitDuration,
       },
       style: {
         background,
@@ -847,6 +993,8 @@ export const buildTraceGraph = (
     }
   }
   let droppedEdgeEvents = 0;
+  const seenReplayTransitions = new Set<string>();
+
   graphEdgeEvents.forEach((e, idx) => {
     const rawSource = e.from_scenario_node_id || e.source_execution_id || e.source;
     const rawTarget = e.to_scenario_node_id || e.target_execution_id || e.target;
@@ -857,6 +1005,17 @@ export const buildTraceGraph = (
       ? rawTarget
       : instanceOwner.get(String(rawTarget));
     if (source && target && nodeIdSet.has(source) && nodeIdSet.has(target)) {
+      const isRetry = e.edge_type === 'retry';
+      const transitionKey = `${source}->${target}:${e.edge_type ?? 'sequential'}:${e.iteration ?? 1}:${e.selected_edge_id ?? ''}`;
+
+      // Deduplicate ONLY replayed transitions.
+      // Conditional loops with distinct iterations, retries, and non-replayed transitions are strictly preserved!
+      const isReplayed = e.is_replayed === true || (seenReplayTransitions.has(transitionKey) && !isRetry);
+      if (isReplayed && seenReplayTransitions.has(transitionKey)) {
+        return; // Deduplicate this replayed transition
+      }
+      seenReplayTransitions.add(transitionKey);
+
       const edgeId = `exec-edge-${source}-${target}-${e._seq ?? e.execution_edge_id ?? idx}`;
       const label =
         e.edge_type === 'retry'
@@ -922,7 +1081,8 @@ export const buildTraceGraph = (
           animated: mode !== 'planned',
           data: edgeData,
           style: {
-            stroke: isDivergence ? '#f59e0b' : '#10b981',
+            ...e.style,
+            stroke: e.style?.stroke ?? (isDivergence ? '#f59e0b' : '#10b981'),
             strokeWidth: isDivergence ? 2.5 : 2,
           },
         };

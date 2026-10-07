@@ -527,9 +527,12 @@ export const AdversarialMutator: React.FC = () => {
   const [catalog, setCatalog] = useState<MutationDescriptor[]>(FALLBACK_MUTATION_CATALOG);
   const [selectedVector, setSelectedVector] = useState<string>('All');
   const [diffMode, setDiffMode] = useState<'prompt' | 'json'>('json');
+  const [splitView, setSplitView] = useState(true);
+  const [wrapLines, setWrapLines] = useState(false);
 
   const [mutating, setMutating] = useState(false);
   const [mutatedJson, setMutatedJson] = useState<any>(null);
+  const [canonicalBaseScenario, setCanonicalBaseScenario] = useState<any>(null);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
@@ -538,6 +541,28 @@ export const AdversarialMutator: React.FC = () => {
   // Search & Filter state
   const [industryFilter, setIndustryFilter] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Fetch full canonical scenario specification when selectedId changes
+  useEffect(() => {
+    if (!selectedId) {
+      setCanonicalBaseScenario(null);
+      return;
+    }
+    let isCurrent = true;
+    fetch(`/api/scenarios/${encodeURIComponent(selectedId)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (isCurrent && data.scenario) {
+          setCanonicalBaseScenario(data.scenario);
+        }
+      })
+      .catch((err) => {
+        console.warn('Failed to load canonical scenario specification for diff:', err);
+      });
+    return () => {
+      isCurrent = false;
+    };
+  }, [selectedId]);
 
   // 1. Fetch live mutation catalog from backend
   const fetchCatalog = async () => {
@@ -786,7 +811,7 @@ export const AdversarialMutator: React.FC = () => {
   };
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
+    <div className="p-6 space-y-6 max-w-[1700px] w-full mx-auto min-h-screen flex flex-col">
       {/* Page Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-900 pb-5">
         <div>
@@ -806,7 +831,7 @@ export const AdversarialMutator: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
         {/* Left column: Controls */}
         <div className="space-y-6 lg:col-span-1">
           <div className="bg-slate-950/40 border border-slate-900 rounded-xl p-5 space-y-4">
@@ -992,8 +1017,8 @@ export const AdversarialMutator: React.FC = () => {
         </div>
 
         {/* Right column: Comparative Diff & Save action */}
-        <div className="lg:col-span-2 bg-slate-950/40 border border-slate-900 rounded-xl p-5 space-y-4 flex flex-col justify-between">
-          <div className="space-y-4 flex-1">
+        <div className="lg:col-span-2 bg-slate-950/40 border border-slate-900 rounded-xl p-5 space-y-4 flex flex-col justify-between min-h-[700px] flex-1">
+          <div className="space-y-4 flex-1 flex flex-col">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-900/60 pb-3">
               <div>
                 <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
@@ -1007,35 +1032,91 @@ export const AdversarialMutator: React.FC = () => {
                 </h3>
               </div>
 
-              {/* Dual Diff View Selector */}
+              {/* Dual Diff View Selector & Layout Mode */}
               <div className="flex items-center gap-2">
                 {mutatedJson && (
-                  <div className="flex items-center bg-slate-900 p-0.5 rounded-lg border border-slate-800">
-                    <button
-                      type="button"
-                      onClick={() => setDiffMode('prompt')}
-                      className={`px-2 py-1 rounded text-[10px] font-mono flex items-center gap-1 transition-colors ${
-                        diffMode === 'prompt'
-                          ? 'bg-indigo-600 text-white font-bold'
-                          : 'text-slate-400 hover:text-white'
-                      }`}
-                    >
-                      <FileText className="w-3 h-3" />
-                      <span>Prompts {isLinguistic && '★'}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setDiffMode('json')}
-                      className={`px-2 py-1 rounded text-[10px] font-mono flex items-center gap-1 transition-colors ${
-                        diffMode === 'json'
-                          ? 'bg-indigo-600 text-white font-bold'
-                          : 'text-slate-400 hover:text-white'
-                      }`}
-                    >
-                      <Code2 className="w-3 h-3" />
-                      <span>Full Spec JSON {!isLinguistic && '★'}</span>
-                    </button>
-                  </div>
+                  <>
+                    <div className="flex items-center bg-slate-900 p-0.5 rounded-lg border border-slate-800">
+                      <button
+                        type="button"
+                        onClick={() => setDiffMode('prompt')}
+                        className={`px-2 py-1 rounded text-[10px] font-mono flex items-center gap-1 transition-colors ${
+                          diffMode === 'prompt'
+                            ? 'bg-indigo-600 text-white font-bold'
+                            : 'text-slate-400 hover:text-white'
+                        }`}
+                      >
+                        <FileText className="w-3 h-3" />
+                        <span>Prompts {isLinguistic && '★'}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDiffMode('json')}
+                        className={`px-2 py-1 rounded text-[10px] font-mono flex items-center gap-1 transition-colors ${
+                          diffMode === 'json'
+                            ? 'bg-indigo-600 text-white font-bold'
+                            : 'text-slate-400 hover:text-white'
+                        }`}
+                      >
+                        <Code2 className="w-3 h-3" />
+                        <span>Full Spec JSON {!isLinguistic && '★'}</span>
+                      </button>
+                    </div>
+
+                    <div className="flex items-center bg-slate-900 p-0.5 rounded-lg border border-slate-800">
+                      <button
+                        type="button"
+                        onClick={() => setSplitView(true)}
+                        className={`px-2 py-1 rounded text-[10px] font-mono transition-colors ${
+                          splitView
+                            ? 'bg-indigo-600 text-white font-bold'
+                            : 'text-slate-400 hover:text-white'
+                        }`}
+                        title="Side-by-side 50/50 split diff view"
+                      >
+                        <span>Split</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSplitView(false)}
+                        className={`px-2 py-1 rounded text-[10px] font-mono transition-colors ${
+                          !splitView
+                            ? 'bg-indigo-600 text-white font-bold'
+                            : 'text-slate-400 hover:text-white'
+                        }`}
+                        title="Single unified inline diff view"
+                      >
+                        <span>Unified</span>
+                      </button>
+                    </div>
+
+                    <div className="flex items-center bg-slate-900 p-0.5 rounded-lg border border-slate-800">
+                      <button
+                        type="button"
+                        onClick={() => setWrapLines(false)}
+                        className={`px-2 py-1 rounded text-[10px] font-mono transition-colors ${
+                          !wrapLines
+                            ? 'bg-indigo-600 text-white font-bold'
+                            : 'text-slate-400 hover:text-white'
+                        }`}
+                        title="Horizontal scroll view (no line wrap)"
+                      >
+                        <span>Scroll</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setWrapLines(true)}
+                        className={`px-2 py-1 rounded text-[10px] font-mono transition-colors ${
+                          wrapLines
+                            ? 'bg-indigo-600 text-white font-bold'
+                            : 'text-slate-400 hover:text-white'
+                        }`}
+                        title="Wrap text lines within column"
+                      >
+                        <span>Wrap</span>
+                      </button>
+                    </div>
+                  </>
                 )}
 
                 {mutatedJson && (
@@ -1063,38 +1144,46 @@ export const AdversarialMutator: React.FC = () => {
             )}
 
             {mutating ? (
-              <div className="h-[380px] flex flex-col justify-center items-center gap-3">
+              <div className="min-h-[500px] flex flex-col justify-center items-center gap-3">
                 <div className="w-6 h-6 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
                 <span className="text-xs text-slate-500">
                   Synthesizing adversarial perturbations across {selectedDescriptor?.vector || 'target'} vector...
                 </span>
               </div>
             ) : !mutatedJson ? (
-              <div className="h-[380px] border border-dashed border-slate-900 rounded-xl flex flex-col items-center justify-center p-6 text-center text-xs text-slate-600">
+              <div className="min-h-[500px] border border-dashed border-slate-900 rounded-xl flex flex-col items-center justify-center p-6 text-center text-xs text-slate-600">
                 <Layers className="w-8 h-8 text-slate-800 mb-2" />
                 <p>Select target scenario and perturbation strategy, then execute the mutation engine.</p>
                 <p className="text-[10px] text-slate-700 mt-1">
-                  Dual Diff View displays both linguistic workflow prompts and full scenario JSON (tools, state, auth,
-                  temporal) changes.
+                  Attribution Diff compares the canonical baseline scenario specification against the mutated output.
                 </p>
               </div>
             ) : (
-              <div className="border border-slate-900 rounded-xl overflow-hidden bg-slate-950 text-xs leading-relaxed max-h-[420px] overflow-y-auto">
+              <div className="border border-slate-900 rounded-xl bg-slate-950 text-xs leading-relaxed min-h-[600px] h-[calc(100vh-270px)] overflow-x-auto overflow-y-auto flex-1">
                 <ReactDiffViewer
                   oldValue={
                     diffMode === 'prompt'
-                      ? getScenarioText(chosenScenario)
-                      : JSON.stringify(chosenScenario, null, 2)
+                      ? getScenarioText(canonicalBaseScenario || chosenScenario)
+                      : JSON.stringify(canonicalBaseScenario || chosenScenario, null, 2)
                   }
                   newValue={
                     diffMode === 'prompt'
                       ? getScenarioText(mutatedJson)
                       : JSON.stringify(mutatedJson, null, 2)
                   }
-                  splitView={true}
-                  leftTitle="Base Scenario"
-                  rightTitle={`Mutated Scenario (${selectedDescriptor?.label || mutationType})`}
+                  splitView={splitView}
+                  leftTitle="Baseline Scenario (Original Specification)"
+                  rightTitle={`Mutated Scenario (+ Perturbations: ${selectedDescriptor?.label || mutationType})`}
                   useDarkTheme={true}
+                  summary={
+                    <span
+                      title="Expand/Fold unchanged blocks. The number indicates total changed lines; colored blocks show additions (green) vs deletions (red) ratio."
+                      className="text-[10px] text-slate-400 font-sans cursor-help flex items-center gap-1.5 ml-2"
+                    >
+                      <span className="text-slate-600 font-mono">|</span>
+                      <span>Fold/Expand toggle &amp; line diff metrics (green=added, red=deleted)</span>
+                    </span>
+                  }
                   styles={{
                     variables: {
                       dark: {
@@ -1106,12 +1195,43 @@ export const AdversarialMutator: React.FC = () => {
                         removedColor: '#f87171',
                         wordAddedBackground: '#047857',
                         wordRemovedBackground: '#991b1b',
+                        diffViewerTitleBackground: '#0b1329',
+                        diffViewerTitleColor: '#cbd5e1',
+                        diffViewerTitleBorderColor: '#1e293b',
                       },
+                    },
+                    diffContainer: {
+                      tableLayout: 'fixed',
+                      width: '100%',
+                      minWidth: wrapLines ? '100%' : (splitView ? '1200px' : '800px'),
+                      overflowX: 'auto',
+                    },
+                    splitView: {
+                      width: '100%',
+                    },
+                    content: {
+                      width: splitView ? '50%' : '100%',
+                      overflowX: 'visible',
+                    },
+                    titleBlock: {
+                      width: splitView ? '50%' : '100%',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      padding: '6px 12px',
+                      fontSize: '11px',
+                      fontWeight: 600,
                     },
                     line: {
                       fontSize: '11px',
                       fontFamily: 'monospace',
                       lineHeight: '1.4',
+                      whiteSpace: wrapLines ? 'pre-wrap' : 'pre',
+                      wordBreak: wrapLines ? 'break-all' : 'normal',
+                    },
+                    contentText: {
+                      whiteSpace: wrapLines ? 'pre-wrap' : 'pre',
+                      wordBreak: wrapLines ? 'break-all' : 'normal',
                     },
                   }}
                 />

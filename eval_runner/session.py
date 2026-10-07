@@ -574,7 +574,13 @@ class SessionManager:
                 node_def = node_ir.definition
                 node_id_local = node_ir.node_id
                 if node_id_local in getattr(self, "_completed_node_results", {}):
-                    return self._completed_node_results[node_id_local]
+                    cached_res = copy.deepcopy(self._completed_node_results[node_id_local])
+                    cached_res["is_replayed"] = True
+                    if "original_duration_ms" not in cached_res:
+                        cached_res["original_duration_ms"] = cached_res.get(
+                            "execution_duration_ms"
+                        ) or cached_res.get("duration_ms")
+                    return cached_res
 
                 if (
                     self.cancellation_event
@@ -627,6 +633,7 @@ class SessionManager:
                     else None
                 )
 
+                node_start_time = time.time()
                 result = await self._execute_node(
                     node_def,
                     attempt_number,
@@ -644,7 +651,11 @@ class SessionManager:
                         "evaluation_plan": plan.evaluation_plan,
                     },
                 )
+                node_duration_ms = round((time.time() - node_start_time) * 1000, 2)
                 # [AgentV v2.0.0] Immutable join model on every task result
+                result["duration_ms"] = node_duration_ms
+                result["original_duration_ms"] = node_duration_ms
+                result["execution_duration_ms"] = node_duration_ms
                 result["execution_instance_id"] = exec_id
                 result["parent_execution_id"] = parent_exec_id
                 result["scenario_node_id"] = node_id_local
@@ -2290,6 +2301,7 @@ class SessionManager:
                 "approval_token": request.approval_token,
                 "checkpoint_id": checkpoint_id,
                 "status": "PAUSED_FOR_APPROVAL",
+                "pause_start_ts": time.time(),
             },
         )
         transition_run_lifecycle(
@@ -2332,7 +2344,18 @@ class SessionManager:
         # Record the pause event for audit/forensics regardless of CI mode
         raw_task_id = getattr(turn_ctx, "task_id", None) if turn_ctx else None
         task_id = str(raw_task_id) if raw_task_id is not None else "unknown"
-        self.event_bus.emit(CoreEvents.HITL_PAUSE, {"task_id": task_id, "prompt": prompt})
+        pre_pause_duration_ms = None
+        if turn_ctx and hasattr(turn_ctx, "start_time"):
+            pre_pause_duration_ms = round((time.time() - turn_ctx.start_time) * 1000, 2)
+        self.event_bus.emit(
+            CoreEvents.HITL_PAUSE,
+            {
+                "task_id": task_id,
+                "prompt": prompt,
+                "pre_pause_duration_ms": pre_pause_duration_ms,
+                "pause_start_ts": time.time(),
+            },
+        )
 
         # Check if already authoritatively approved via resumption token
         if getattr(self, "resumption_token", None):
@@ -2350,6 +2373,7 @@ class SessionManager:
                                 "task_id": task_id,
                                 "response": resolved_msg,
                                 "approval_token": self.resumption_token,
+                                "resume_ts": time.time(),
                             },
                         )
                         return resolved_msg

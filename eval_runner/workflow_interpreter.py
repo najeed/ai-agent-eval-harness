@@ -100,6 +100,7 @@ class ReadyItem:
     generation: str
     parent_exec_id: str | None
     epoch: str = ""
+    is_replayed: bool = False
 
 
 @dataclass
@@ -116,6 +117,7 @@ class TransitionRecord:
     source_execution_id: str | None = None
     target_execution_id: str | None = None
     branch_generation: str | None = None
+    is_replayed: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -129,6 +131,7 @@ class TransitionRecord:
             "source_execution_id": self.source_execution_id,
             "target_execution_id": self.target_execution_id,
             "branch_generation": self.branch_generation,
+            "is_replayed": self.is_replayed,
         }
 
 
@@ -145,9 +148,11 @@ class NodeExecutionRecord:
     compensating: bool = False
     branch_generation: str | None = None
     timed_out: bool = False
+    is_replayed: bool = False
+    original_duration_ms: float | None = None
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        d = {
             "scenario_node_id": self.scenario_node_id,
             "execution_instance_id": self.execution_instance_id,
             "parent_execution_id": self.parent_execution_id,
@@ -159,7 +164,11 @@ class NodeExecutionRecord:
             "compensating": self.compensating,
             "branch_generation": self.branch_generation,
             "timed_out": self.timed_out,
+            "is_replayed": self.is_replayed,
         }
+        if self.original_duration_ms is not None:
+            d["original_duration_ms"] = self.original_duration_ms
+        return d
 
 
 @dataclass
@@ -601,6 +610,10 @@ class WorkflowInterpreter:
             }
         duration_ms = round((time.time() - start) * 1000, 2)
         record.duration_ms = duration_ms
+        if isinstance(result, dict) and result.get("is_replayed"):
+            record.is_replayed = True
+            record.original_duration_ms = result.get("original_duration_ms")
+            item.is_replayed = True
         return record, result, duration_ms
 
     # ------------------------------------------------------------------
@@ -757,6 +770,7 @@ class WorkflowInterpreter:
                 iteration=item.iteration,
                 generation=lineage,
                 compensating=compensating or item.compensating,
+                is_replayed=getattr(item, "is_replayed", False),
             )
             token = ExecutionToken(
                 edge_id=edge.edge_id,
@@ -903,6 +917,7 @@ class WorkflowInterpreter:
         iteration: int = 1,
         generation: str | None = None,
         compensating: bool = False,
+        is_replayed: bool = False,
     ) -> TransitionRecord:
         rec = TransitionRecord(
             from_node=edge.from_node,
@@ -914,26 +929,30 @@ class WorkflowInterpreter:
             observed_value=observed,
             source_execution_id=producer_exec_id,
             branch_generation=generation,
+            is_replayed=is_replayed,
         )
         self.transitions.append(rec)
         if self.event_bus:
+            payload = {
+                "run_id": self.identity.evaluation_run_id,
+                "from_scenario_node_id": edge.from_node,
+                "to_scenario_node_id": edge.to_node,
+                "edge_type": edge.type.value,
+                "selected_edge_id": edge.edge_id,
+                "transition_reason": reason,
+                "evaluated_predicate": rec.evaluated_predicate,
+                "attempt_number": self.identity.attempt_number,
+                "attempt_id": self.identity.attempt_id,
+                "execution_mode": self.identity.execution_mode.value,
+                "source_execution_id": producer_exec_id,
+                "branch_generation": generation,
+                "compensating": compensating,
+            }
+            if is_replayed:
+                payload["is_replayed"] = True
             self.event_bus.emit(
                 "execution_graph_edge",
-                {
-                    "run_id": self.identity.evaluation_run_id,
-                    "from_scenario_node_id": edge.from_node,
-                    "to_scenario_node_id": edge.to_node,
-                    "edge_type": edge.type.value,
-                    "selected_edge_id": edge.edge_id,
-                    "transition_reason": reason,
-                    "evaluated_predicate": rec.evaluated_predicate,
-                    "attempt_number": self.identity.attempt_number,
-                    "attempt_id": self.identity.attempt_id,
-                    "execution_mode": self.identity.execution_mode.value,
-                    "source_execution_id": producer_exec_id,
-                    "branch_generation": generation,
-                    "compensating": compensating,
-                },
+                payload,
             )
         return rec
 
@@ -1002,6 +1021,10 @@ class WorkflowInterpreter:
         if record:
             if record.duration_ms:
                 payload["duration_ms"] = record.duration_ms
+            if record.is_replayed:
+                payload["is_replayed"] = True
+                payload["original_duration_ms"] = record.original_duration_ms
+                payload["replayed_duration_ms"] = record.duration_ms
             if record.failure_class:
                 payload["failure_class"] = record.failure_class
             if record.failure_reason:

@@ -270,3 +270,159 @@ test('computeTraceIntegrity marks contiguous valid sequences as clean and valid'
   assert.equal(res.missingEnd, false);
   assert.equal(res.issues.length, 0);
 });
+
+test('buildTraceGraph detects replayed nodes, applies blue theme, and preserves original durations', () => {
+  const scenario = {
+    workflow: {
+      nodes: [{ id: 'intake' }, { id: 'adjudicate' }],
+      edges: [{ from: 'intake', to: 'adjudicate' }],
+    },
+  };
+  const events: LogEvent[] = [
+    // Pre-pause execution
+    { _seq: 1, event: 'execution_graph_node', scenario_node_id: 'intake', status: 'completed', duration_ms: 1250 },
+    // Resumed fast-forward replayed execution
+    { _seq: 10, event: 'execution_graph_node', scenario_node_id: 'intake', status: 'completed', duration_ms: 0.05, is_replayed: true, original_duration_ms: 1250 },
+    { _seq: 11, event: 'execution_graph_node', scenario_node_id: 'adjudicate', status: 'completed', duration_ms: 850 },
+    // Pre-pause and replayed edge
+    { _seq: 2, event: 'execution_graph_edge', from_scenario_node_id: 'intake', to_scenario_node_id: 'adjudicate', edge_type: 'sequential', iteration: 1 },
+    { _seq: 12, event: 'execution_graph_edge', from_scenario_node_id: 'intake', to_scenario_node_id: 'adjudicate', edge_type: 'sequential', iteration: 1, is_replayed: true },
+  ];
+
+  const graph = buildTraceGraph(events, scenario, null, 'executed', true, new Map(), (id) => id);
+  const intake = graph.flowNodes.find((n) => n.id === 'intake')!;
+  assert.equal(intake.data.isReplayed, true);
+  assert.equal(intake.data.originalDurationMs, 1250);
+  assert.equal(intake.data.replayedDurationMs, 0.05);
+  assert.equal(intake.data.durationMs, 1250); // Preserves original compute time, not 0.00s!
+  assert.ok(String(intake.style.border).includes('#3b82f6'), 'Replayed node styled with blue border');
+  assert.ok(String(intake.style.background).replace(/\s+/g, '').includes('rgba(30,58,138,0.4)'), 'Replayed node styled with blue bg');
+  assert.ok(intake.data.statusLabel.includes('Replayed (1.25s)'));
+
+  // Edge deduplication: only the single transition between intake and adjudicate should exist
+  assert.equal(graph.flowEdges.length, 1, 'Replayed transition was deduplicated; no double line');
+});
+
+test('buildTraceGraph computes split timing for HITL paused nodes', () => {
+  const scenario = {
+    workflow: {
+      nodes: [{ id: 'review_gate' }],
+      edges: [],
+    },
+  };
+  const events: LogEvent[] = [
+    { _seq: 1, event: 'execution_graph_node', scenario_node_id: 'review_gate', status: 'running' },
+    {
+      _seq: 2,
+      event: 'hitl_pause',
+      task_id: 'review_gate',
+      timestamp: '2026-08-27T08:00:01.000Z',
+      pre_pause_duration_ms: 450,
+    },
+    {
+      _seq: 3,
+      event: 'hitl_resume',
+      task_id: 'review_gate',
+      timestamp: '2026-08-27T08:05:01.000Z', // 5-minute pause wait
+    },
+    {
+      _seq: 4,
+      event: 'execution_graph_node',
+      scenario_node_id: 'review_gate',
+      status: 'completed',
+      duration_ms: 350, // Post-resume duration
+    },
+  ];
+
+  const graph = buildTraceGraph(events, scenario, null, 'executed', true, new Map(), (id) => id);
+  const reviewNode = graph.flowNodes.find((n) => n.id === 'review_gate')!;
+  assert.ok(reviewNode.data.splitDuration, 'Split duration computed');
+  assert.equal(reviewNode.data.splitDuration!.preMs, 450);
+  assert.equal(reviewNode.data.splitDuration!.waitMs, 300000);
+  assert.equal(reviewNode.data.splitDuration!.postMs, 350);
+  assert.equal(reviewNode.data.splitDuration!.totalComputeMs, 800);
+  assert.equal(reviewNode.data.durationMs, 800, 'Total compute is pre + post, not truncated post');
+});
+
+test('buildTraceGraph preserves distinct conditional loop and retry edge transitions', () => {
+  const scenario = {
+    workflow: {
+      nodes: [{ id: 'step_a' }, { id: 'step_b' }],
+      edges: [],
+    },
+  };
+  const events: LogEvent[] = [
+    { _seq: 1, event: 'execution_graph_node', scenario_node_id: 'step_a', status: 'completed' },
+    { _seq: 2, event: 'execution_graph_edge', from_scenario_node_id: 'step_a', to_scenario_node_id: 'step_b', edge_type: 'sequential', iteration: 1 },
+    { _seq: 3, event: 'execution_graph_node', scenario_node_id: 'step_b', status: 'completed' },
+    // Conditional loop back from step_b to step_a on iteration 2
+    { _seq: 4, event: 'execution_graph_edge', from_scenario_node_id: 'step_b', to_scenario_node_id: 'step_a', edge_type: 'conditional', iteration: 2 },
+    // Retry edge from step_a to step_b
+    { _seq: 5, event: 'execution_graph_edge', from_scenario_node_id: 'step_a', to_scenario_node_id: 'step_b', edge_type: 'retry', iteration: 2 },
+  ];
+
+  const graph = buildTraceGraph(events, scenario, null, 'executed', true, new Map(), (id) => id);
+  // All three non-replayed transitions must be preserved!
+  assert.equal(graph.flowEdges.length, 3);
+  const retryEdge = graph.flowEdges.find((e) => e.style.strokeDasharray === '5,5');
+  assert.ok(retryEdge, 'Retry edge preserved with dasharray');
+});
+
+test('buildWaterfall preserves original duration and split metrics without stretching across pause', () => {
+  const events: LogEvent[] = [
+    {
+      _seq: 1,
+      event: 'execution_graph_node',
+      scenario_node_id: 'fast_node',
+      execution_instance_id: 'fast_node#1',
+      status: 'completed',
+      duration_ms: 1200,
+      timestamp: '2026-08-27T08:00:00.000Z',
+    },
+    {
+      _seq: 2,
+      event: 'hitl_pause',
+      task_id: 'paused_node',
+      timestamp: '2026-08-27T08:00:01.000Z',
+      pre_pause_duration_ms: 500,
+    },
+    {
+      _seq: 3,
+      event: 'hitl_resume',
+      task_id: 'paused_node',
+      timestamp: '2026-08-27T08:10:01.000Z',
+    },
+    // Fast-forward replayed event for fast_node on resume
+    {
+      _seq: 4,
+      event: 'execution_graph_node',
+      scenario_node_id: 'fast_node',
+      execution_instance_id: 'fast_node#1',
+      status: 'completed',
+      duration_ms: 0.05,
+      is_replayed: true,
+      original_duration_ms: 1200,
+      timestamp: '2026-08-27T08:10:01.050Z',
+    },
+    {
+      _seq: 5,
+      event: 'execution_graph_node',
+      scenario_node_id: 'paused_node',
+      execution_instance_id: 'paused_node#1',
+      status: 'completed',
+      duration_ms: 600,
+      timestamp: '2026-08-27T08:10:01.650Z',
+    },
+  ];
+
+  const waterfall = buildWaterfall(events);
+  assert.equal(waterfall.rows.length, 2);
+  const fastRow = waterfall.rows.find((r) => r.nodeId === 'fast_node')!;
+  assert.equal(fastRow.isReplayed, true);
+  assert.equal(fastRow.durationMs, 1200, 'Original compute duration preserved in waterfall');
+  assert.equal(fastRow.endTs, Date.parse('2026-08-27T08:00:00.000Z'), 'endTs not stretched across 10-minute pause');
+
+  const pausedRow = waterfall.rows.find((r) => r.nodeId === 'paused_node')!;
+  assert.ok(pausedRow.splitDuration, 'Split duration attached to waterfall row');
+  assert.equal(pausedRow.durationMs, 1100, 'Total compute is preMs (500) + postMs (600)');
+});

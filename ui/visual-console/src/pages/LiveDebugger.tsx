@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   ReactFlow, Controls, Background, useNodesState, useEdgesState
@@ -621,11 +621,21 @@ export const LiveDebugger: React.FC = () => {
     <div className="space-y-1">
       <div className="flex items-center justify-between gap-1">
         <span className="font-mono font-bold text-[10px] text-slate-200">{d.id}</span>
-        {d.maxAttempt > 1 && (
-          <span className="px-1 py-0.2 bg-amber-500/20 text-amber-300 text-[8px] rounded font-mono">
-            att#{d.maxAttempt}
-          </span>
-        )}
+        <div className="flex items-center gap-1">
+          {d.isReplayed && (
+            <span
+              title="Fast-forwarded from checkpoint on resume"
+              className="px-1 py-0.2 bg-blue-500/20 text-blue-300 text-[8px] rounded font-mono font-bold tracking-wider"
+            >
+              REPLAYED
+            </span>
+          )}
+          {d.maxAttempt > 1 && (
+            <span className="px-1 py-0.2 bg-amber-500/20 text-amber-300 text-[8px] rounded font-mono">
+              att#{d.maxAttempt}
+            </span>
+          )}
+        </div>
       </div>
       <div className="text-[9px] text-slate-400 truncate max-w-[130px]" title={d.label}>
         {d.statusLabel}
@@ -654,11 +664,25 @@ export const LiveDebugger: React.FC = () => {
           UNPLANNED
         </div>
       )}
-      {d.durationMs != null && (
+      {d.splitDuration ? (
+        <div
+          title={`Pre: ${(d.splitDuration.preMs / 1000).toFixed(2)}s | Wait: ${(d.splitDuration.waitMs / 1000).toFixed(1)}s | Post: ${(d.splitDuration.postMs / 1000).toFixed(2)}s`}
+          className="text-[8px] text-emerald-400 font-mono tracking-tight"
+        >
+          Pre: {(d.splitDuration.preMs / 1000).toFixed(1)}s | Wait: {(d.splitDuration.waitMs / 1000).toFixed(1)}s | Post: {(d.splitDuration.postMs / 1000).toFixed(1)}s
+        </div>
+      ) : d.isReplayed ? (
+        <div
+          title={`Original compute: ${((d.originalDurationMs ?? d.durationMs ?? 0) / 1000).toFixed(2)}s | Replayed duration: ${((d.replayedDurationMs ?? 0) / 1000).toFixed(2)}s`}
+          className="text-[8px] text-blue-300 font-mono tracking-tight"
+        >
+          Orig: {((d.originalDurationMs ?? d.durationMs ?? 0) / 1000).toFixed(2)}s | Replay: {((d.replayedDurationMs ?? 0) / 1000).toFixed(2)}s
+        </div>
+      ) : d.durationMs != null ? (
         <div className="text-[8px] text-slate-500 font-mono">
           {(d.durationMs / 1000).toFixed(2)}s
         </div>
-      )}
+      ) : null}
     </div>
   );
   // Node Drag Position Saver to ensure layout state persistence
@@ -1065,9 +1089,8 @@ export const LiveDebugger: React.FC = () => {
                 <button
                   key={l}
                   onClick={() => setLayerMode(l)}
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-colors whitespace-nowrap cursor-pointer ${
-                    layerMode === l ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
-                  }`}
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-colors whitespace-nowrap cursor-pointer ${layerMode === l ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
+                    }`}
                 >
                   {l === 'planned' && (
                     <span className="w-2.5 h-0.5 border-t border-dashed border-current inline-block opacity-75" />
@@ -1210,6 +1233,35 @@ export const LiveDebugger: React.FC = () => {
             <Background color="#334155" gap={16} />
             <Controls />
           </ReactFlow>
+
+          {/* Floating Graph Color Legend */}
+          <div className="absolute bottom-4 right-4 z-10 bg-slate-950/85 backdrop-blur-md border border-slate-800/80 rounded-lg p-2.5 shadow-xl text-[10px] text-slate-300 font-mono space-y-1.5 pointer-events-auto">
+            <div className="text-[9px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between gap-3 border-b border-slate-800/60 pb-1">
+              <span>Color Legend</span>
+            </div>
+            <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[9px]">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)]" />
+                <span>Completed</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.6)]" />
+                <span>Replayed</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_6px_rgba(245,158,11,0.6)]" />
+                <span>Running / Retrying</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_6px_rgba(239,68,68,0.6)]" />
+                <span>Failed / Aborted</span>
+              </div>
+              <div className="flex items-center gap-1.5 col-span-2">
+                <span className="w-2 h-2 rounded-full border border-dashed border-slate-400 bg-slate-800" />
+                <span>Planned Baseline</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1347,6 +1399,79 @@ export const LiveDebugger: React.FC = () => {
                         inferred from message text. Raw event shown below.
                       </div>
                     )}
+                  </div>
+                );
+              })()}
+
+              {/* Replay and Split execution inspection */}
+              {(() => {
+                const selectedNodeData = selectedEvent
+                  ? (nodes.find((n) => n.id === (selectedEvent.scenario_node_id || selectedEvent.node_id || selectedEvent.task_id))?.data as FlowNodeData | undefined)
+                  : undefined;
+                const isReplayed = selectedEvent.is_replayed || selectedNodeData?.isReplayed;
+                const hasSplit = !!selectedNodeData?.splitDuration;
+                if (!isReplayed && !hasSplit) return null;
+
+                return (
+                  <div className="space-y-2 p-3 bg-blue-950/20 border border-blue-500/30 rounded-lg text-[10px]">
+                    <div className="flex items-center justify-between font-bold text-blue-300 uppercase tracking-wider">
+                      <span className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-blue-400" />
+                        {isReplayed ? 'Replayed Execution' : 'Split Execution'}
+                      </span>
+                      <span className="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono text-[9px]">
+                        {isReplayed ? 'CHECKPOINT RESUME' : 'HITL PAUSE'}
+                      </span>
+                    </div>
+                    <div className="space-y-1 font-mono text-slate-300">
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">Original Compute:</span>
+                        <span className="text-emerald-400 font-bold">
+                          {((selectedEvent.original_duration_ms ?? selectedNodeData?.originalDurationMs ?? selectedEvent.duration_ms ?? 0) / 1000).toFixed(2)}s
+                        </span>
+                      </div>
+                      {isReplayed && (
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Replayed Pass:</span>
+                          <span className="text-blue-300">
+                            {((selectedEvent.replayed_duration_ms ?? selectedNodeData?.replayedDurationMs ?? selectedEvent.duration_ms ?? 0) / 1000).toFixed(2)}s
+                          </span>
+                        </div>
+                      )}
+                      {selectedNodeData?.splitDuration && (
+                        <div className="pt-1.5 border-t border-slate-800 text-[9px] space-y-0.5">
+                          <div className="text-slate-400 font-bold">HITL Split Breakdown:</div>
+                          <div className="flex justify-between text-slate-400">
+                            <span>Pre-Pause:</span>
+                            <span>{(selectedNodeData.splitDuration.preMs / 1000).toFixed(2)}s</span>
+                          </div>
+                          <div className="flex justify-between text-slate-400">
+                            <span>Review Wait:</span>
+                            <span>{(selectedNodeData.splitDuration.waitMs / 1000).toFixed(2)}s</span>
+                          </div>
+                          <div className="flex justify-between text-slate-400">
+                            <span>Post-Resume:</span>
+                            <span>{(selectedNodeData.splitDuration.postMs / 1000).toFixed(2)}s</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <details className="mt-2 pt-2 border-t border-slate-800 text-slate-400 cursor-pointer">
+                      <summary className="hover:text-slate-200 select-none">Collapsed Replayed Telemetry Set</summary>
+                      <pre className="mt-1.5 p-2 bg-slate-950 rounded border border-slate-900 font-mono text-[9px] text-slate-400 overflow-x-auto">
+                        {JSON.stringify(
+                          {
+                            execution_instance_id: selectedEvent.execution_instance_id,
+                            is_replayed: true,
+                            original_duration_ms: selectedEvent.original_duration_ms ?? selectedNodeData?.originalDurationMs,
+                            replayed_duration_ms: selectedEvent.replayed_duration_ms ?? selectedNodeData?.replayedDurationMs,
+                            split_duration: selectedNodeData?.splitDuration,
+                          },
+                          null,
+                          2
+                        )}
+                      </pre>
+                    </details>
                   </div>
                 );
               })()}
