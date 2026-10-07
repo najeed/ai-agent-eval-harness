@@ -2393,7 +2393,12 @@ class SessionManager:
             return human_input
 
         # Non-interactive mode (no TTY): suspend into registry for GUI/API resolution
-        if is_scenario_gate or not sys.stdin.isatty():
+        if (
+            is_scenario_gate
+            or os.environ.get("AGENTV_CLI_HITL_SUSPEND") == "1"
+            or os.environ.get("FORCE_HITL_SUSPEND") == "1"
+            or (not sys.stdin.isatty() and os.environ.get("AGENTV_TEST_NON_DURABLE_HITL") != "1")
+        ):
             # Compute outbound hash
             outbound_hash = ""
             if agent_response:
@@ -2435,7 +2440,9 @@ class SessionManager:
             # durable checkpoint.  Pytest remains opt-in to preserve its
             # explicit in-process approval test doubles.
             is_durable_suspend = (
-                is_scenario_gate or os.environ.get("AGENTV_TEST_NON_DURABLE_HITL") != "1"
+                is_scenario_gate
+                or os.environ.get("AGENTV_CLI_HITL_SUSPEND") == "1"
+                or os.environ.get("AGENTV_TEST_NON_DURABLE_HITL") != "1"
             )
             if is_durable_suspend:
                 self.event_bus.emit(
