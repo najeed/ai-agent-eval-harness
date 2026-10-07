@@ -121,6 +121,23 @@ except ImportError:
 
 
 @pytest.fixture(autouse=True)
+def isolate_run_log_dir(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    """Keep test-created run artifacts out of the repository workspace."""
+    from eval_runner import config
+
+    default_run_log_dir = Path(__file__).resolve().parent.parent / "runs"
+    isolated_run_log_dir = tmp_path / ".agentv_test_runs"
+    original_run_log_dir = config.RUN_LOG_DIR
+    if Path(config.RUN_LOG_DIR) == default_run_log_dir:
+        config.RUN_LOG_DIR = isolated_run_log_dir
+    monkeypatch.delenv("AGENTV_CLI_HITL_SUSPEND", raising=False)
+    monkeypatch.delenv("FORCE_HITL_SUSPEND", raising=False)
+    yield
+    if config.RUN_LOG_DIR == isolated_run_log_dir:
+        config.RUN_LOG_DIR = original_run_log_dir
+
+
+@pytest.fixture(autouse=True)
 def shutdown_tracer():
     """Explicitly shuts down the OpenTelemetry tracer provider at the end of each test."""
     yield

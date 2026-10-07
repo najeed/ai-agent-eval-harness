@@ -163,8 +163,12 @@ class SessionStateParityVerifier:
             or target in ("external_state", "state_authority")
         ):
             scenario = getattr(self.session_manager, "scenario", {}) or {}
-            scenario_authorities = scenario.get("state_authorities") or scenario.get(
-                "state_authority"
+            scenario_meta = scenario.get("metadata") or {}
+            scenario_authorities = (
+                scenario.get("state_authorities")
+                or scenario.get("state_authority")
+                or scenario_meta.get("state_authorities")
+                or scenario_meta.get("state_authority")
             )
             if isinstance(scenario_authorities, dict) and "url" in scenario_authorities:
                 scenario_authorities = {"default": scenario_authorities}

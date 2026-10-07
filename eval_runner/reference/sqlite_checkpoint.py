@@ -69,8 +69,8 @@ class SQLiteCheckpointStore(CheckpointStore):
     ) -> str:
         self._ensure_initialized()
         turn_number = int(state.get("turn", state.get("turn_number", 0)))
-        state_json = json.dumps(state)
-        metadata_json = json.dumps(metadata or {})
+        state_json = json.dumps(state, default=str)
+        metadata_json = json.dumps(metadata or {}, default=str)
         now_iso = datetime.now().astimezone().isoformat()
 
         with closing(self._get_connection()) as conn:

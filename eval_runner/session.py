@@ -2273,7 +2273,8 @@ class SessionManager:
         import os
 
         # Record the pause event for audit/forensics regardless of CI mode
-        task_id = turn_ctx.task_id if turn_ctx else "unknown"
+        raw_task_id = getattr(turn_ctx, "task_id", None) if turn_ctx else None
+        task_id = str(raw_task_id) if raw_task_id is not None else "unknown"
         self.event_bus.emit(CoreEvents.HITL_PAUSE, {"task_id": task_id, "prompt": prompt})
 
         # Check if already authoritatively approved via resumption token
@@ -2313,7 +2314,9 @@ class SessionManager:
 
         import sys
 
-        if sys.stdin.isatty():
+        if sys.stdin.isatty() and not (
+            os.environ.get("AGENTV_CLI_HITL_SUSPEND") or os.environ.get("FORCE_HITL_SUSPEND")
+        ):
             # Interactive terminal: read from stdin directly
             print(f"\n      [HITL] Human intervention required for task '{task_id}'")
             print(f"      Prompt: {prompt}")
@@ -2381,7 +2384,11 @@ class SessionManager:
                         "status": "PAUSED_FOR_APPROVAL",
                     },
                 )
-                transition_run_lifecycle(self.run_id, RunLifecycleState.PAUSED_FOR_APPROVAL)
+                transition_run_lifecycle(
+                    self.run_id,
+                    RunLifecycleState.PAUSED_FOR_APPROVAL,
+                    log_dir=self.log_root,
+                )
                 print(f"\n[HITL PAUSE] Run '{self.run_id}' PAUSED_FOR_APPROVAL at turn {turn}.")
                 print(f"    Approval Token: {durable_req.approval_token}")
                 print("    To resume execution, run:")

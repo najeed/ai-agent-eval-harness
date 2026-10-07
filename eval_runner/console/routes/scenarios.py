@@ -212,11 +212,14 @@ def get_canonical_scenario(scenario_id: str):
         return jsonify({"error": f"Failed to read canonical scenario: {e}"}), 500
 
 
-def validate_scenario_structure(raw_data: dict[str, Any]) -> tuple[bool, list[str]]:
+def validate_scenario_structure(
+    raw_data: dict[str, Any], enforce_schema: bool = False
+) -> tuple[bool, list[str]]:
     """
     Comprehensive AES 1.4 schema and semantic invariant validator.
     Validates metadata, workflow node uniqueness, DAG acyclicity,
-    tool constraints, assertion definitions, and state invariants.
+    tool constraints, assertion definitions, state invariants,
+    and authoritative JSON Schema Draft-07 compliance.
     """
     errors: list[str] = []
     if not isinstance(raw_data, dict):
@@ -344,6 +347,13 @@ def validate_scenario_structure(raw_data: dict[str, Any]) -> tuple[bool, list[st
         if not isinstance(assertions, list):
             errors.append("'evaluation.assertions' must be a list if defined")
 
+    # 5. Authoritative AES Draft-07 JSON Schema Validation
+    if enforce_schema or "aes_version" in raw_data or "$schema" in raw_data:
+        from eval_runner.loader import validate_scenario_schema as validate_aes_schema
+
+        schema_errors = validate_aes_schema(raw_data)
+        errors.extend(schema_errors)
+
     return len(errors) == 0, errors
 
 
@@ -355,13 +365,15 @@ def validate_scenario_body():
     Accepts any scenario JSON payload (no path param required) and returns
     structured errors and warnings suitable for inline composer display.
     """
-    raw_data = (request.json or {}).get("scenario") or request.json
+    body = request.json or {}
+    raw_data = body.get("scenario") or body
     if not raw_data or not isinstance(raw_data, dict):
         return jsonify(
             {"valid": False, "errors": ["Request body must be a JSON scenario object"]}
         ), 400
 
-    valid, errors = validate_scenario_structure(raw_data)
+    enforce_schema = bool(body.get("enforce_schema", False))
+    valid, errors = validate_scenario_structure(raw_data, enforce_schema=enforce_schema)
 
     # Produce per-node error map for inline canvas annotation
     node_errors: dict[str, list[str]] = {}
@@ -415,7 +427,8 @@ def validate_scenario_schema(scenario_id):
     if not raw_data:
         return jsonify({"valid": False, "errors": ["Scenario document missing or empty"]}), 400
 
-    valid, errors = validate_scenario_structure(raw_data)
+    enforce_schema = bool(request.json.get("enforce_schema", False)) if request.json else False
+    valid, errors = validate_scenario_structure(raw_data, enforce_schema=enforce_schema)
     warnings: list[str] = []
 
     return jsonify(
@@ -1246,7 +1259,8 @@ def transition_scenario_lifecycle(scenario_id):
         return jsonify({"error": f"Failed to load scenario: {e}"}), 500
 
     meta = scen_data.setdefault("metadata", {})
-    valid, issues = validate_scenario_structure(scen_data)
+    should_enforce_schema = target_status in ("Validated", "Ready") and "aes_version" in scen_data
+    valid, issues = validate_scenario_structure(scen_data, enforce_schema=should_enforce_schema)
 
     if target_status in ("Validated", "Ready") and not valid:
         return jsonify(

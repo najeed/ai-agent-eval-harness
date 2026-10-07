@@ -8,6 +8,7 @@ eval launch, mutation, spec-to-eval, and auto-translate.
 
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -455,3 +456,222 @@ def test_taxonomy_mutate_and_spec_endpoints(client, tmp_path):
         res_ref = client.post("/scenarios/refresh")
         assert res_ref.status_code == 200
         assert mock_b.called
+
+
+def test_scenario_json_schema_draft07_lifecycle_validation_and_rejection(client, tmp_path):
+    """
+    Forensic verification that Draft-07 JSON Schema validation is authoritative
+    during lifecycle transitions and lint endpoints, rejecting illegal root properties
+    such as 'state_authorities'.
+    """
+    from eval_runner.loader import (
+        get_scenario_validator,
+        reset_universal_registry,
+        validate_scenario_schema,
+    )
+    from eval_runner.session_components.state_parity import SessionStateParityVerifier
+    from eval_runner.state_authority import state_authority_registry
+
+    # 1. Direct validate_scenario_schema tests
+    # Non-dict rejection
+    assert validate_scenario_schema(["not", "a", "dict"]) == ["Scenario root must be a JSON object"]
+
+    # Clean valid AES 1.4 scenario
+    valid_aes_scenario = {
+        "aes_version": 1.4,
+        "metadata": {
+            "id": "scen_aes_clean",
+            "name": "Clean AES Scenario",
+            "version": "1.0.0",
+            "compliance_level": "Standard",
+        },
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "node_start",
+                    "task_description": "Initial task",
+                    "required_tools": [],
+                    "expected_outcome": [],
+                }
+            ],
+            "edges": [],
+        },
+        "evaluation": {
+            "consensus": {
+                "strategy": "Majority_Vote",
+                "min_judges": 1,
+            }
+        },
+        "industry": "healthcare",
+        "use_case": "prior_authorization",
+    }
+    assert validate_scenario_schema(valid_aes_scenario) == []
+
+    # Valid scenario with legacy root fields (name, title, id) hoisted into metadata
+    legacy_hoisted_scenario = dict(valid_aes_scenario)
+    legacy_hoisted_scenario["title"] = "Hoisted Title"
+    legacy_hoisted_scenario["path"] = "/ephemeral/path.json"
+    assert validate_scenario_schema(legacy_hoisted_scenario) == []
+
+    # Scenario with illegal root property 'state_authorities'
+    invalid_root_scenario = dict(valid_aes_scenario)
+    invalid_root_scenario["state_authorities"] = {
+        "um_auth": {"url": "http://127.0.0.1:8080/healthcare/state"}
+    }
+    root_errors = validate_scenario_schema(invalid_root_scenario)
+    assert any("state_authorities" in err for err in root_errors)
+
+    # Validator caching and reset verification
+    v1 = get_scenario_validator()
+    v2 = get_scenario_validator()
+    assert v1 is v2
+    reset_universal_registry()
+    v3 = get_scenario_validator()
+    assert v3 is not None
+
+    # Test get_scenario_validator branch when $id is already present in cached schema
+    import eval_runner.loader as loader_mod
+
+    loader_mod._SCENARIO_VALIDATOR = None
+    v4 = get_scenario_validator()
+    assert v4 is not None
+
+    # Branch coverage: non-dict metadata
+    errs_bad_meta = validate_scenario_schema({"aes_version": 1.4, "metadata": "not_a_dict"})
+    assert any("not of type 'object'" in err for err in errs_bad_meta)
+
+    # Branch coverage: metadata already has field, root has field (line 180 False branch)
+    conflict_scen = dict(valid_aes_scenario)
+    conflict_scen["name"] = "Root Name Conflict"
+    conflict_scen["id"] = "Root ID Conflict"
+    assert validate_scenario_schema(conflict_scen) == []
+
+    # 2. validate_scenario_structure integration
+    # Schema check triggered via aes_version
+    valid_struct, struct_errors = validate_scenario_structure(invalid_root_scenario)
+    assert not valid_struct
+    assert any("state_authorities" in err for err in struct_errors)
+
+    # Schema check triggered via $schema
+    schema_uri_scenario = {
+        "$schema": "https://agentvos.ai/spec/aes/aes.schema.json",
+        "metadata": {"id": "sc_schema_uri"},
+        "workflow": {"nodes": []},
+    }
+    v_uri, errs_uri = validate_scenario_structure(schema_uri_scenario)
+    assert not v_uri
+
+    # Schema check triggered via enforce_schema flag
+    no_ver_scenario = {
+        "metadata": {"id": "sc_no_ver", "name": "No Ver", "compliance_level": "Standard"},
+        "workflow": {"nodes": [{"id": "n1", "task_description": "Task"}]},
+    }
+    v_enforced, errs_enforced = validate_scenario_structure(no_ver_scenario, enforce_schema=True)
+    assert not v_enforced
+    assert any("aes_version" in err for err in errs_enforced)
+
+    # 3. HTTP Endpoint POST /scenarios/validate body validation
+    res_val_bad = client.post(
+        "/scenarios/validate",
+        json={"scenario": invalid_root_scenario},
+    )
+    assert res_val_bad.status_code == 200
+    val_data = res_val_bad.get_json()
+    assert val_data["valid"] is False
+    assert any("state_authorities" in e for e in val_data["errors"])
+
+    res_val_good = client.post(
+        "/scenarios/validate",
+        json={"scenario": valid_aes_scenario, "enforce_schema": True},
+    )
+    assert res_val_good.status_code == 200
+    assert res_val_good.get_json()["valid"] is True
+
+    # 4. HTTP Endpoint POST /scenarios/<id>/transition lifecycle enforcement
+    # Save a scenario with illegal root property in Draft
+    bad_sc_file = tmp_path / "industries" / "healthcare" / "scenarios" / "sc_bad_root.json"
+    bad_sc_file.parent.mkdir(parents=True, exist_ok=True)
+    bad_sc_payload = dict(invalid_root_scenario)
+    bad_sc_payload["metadata"] = dict(invalid_root_scenario["metadata"])
+    bad_sc_payload["metadata"]["id"] = "sc_bad_root"
+    bad_sc_payload["metadata"]["status"] = "Draft"
+    bad_sc_file.write_text(json.dumps(bad_sc_payload), encoding="utf-8")
+
+    # Attempt transition Draft -> Validated: MUST FAIL with 400 and reject state_authorities
+    res_trans_fail = client.post(
+        "/scenarios/sc_bad_root/transition",
+        json={
+            "target_status": "Validated",
+            "reason": "Attempting validation with illegal property",
+        },
+    )
+    assert res_trans_fail.status_code == 400
+    fail_json = res_trans_fail.get_json()
+    assert "Cannot transition to Validated: Scenario validation failed" in fail_json["error"]
+    assert any("state_authorities" in issue for issue in fail_json["issues"])
+
+    # Save a clean scenario in Draft and transition Draft -> Validated: MUST SUCCEED
+    clean_sc_file = tmp_path / "industries" / "healthcare" / "scenarios" / "sc_clean_root.json"
+    clean_sc_payload = dict(valid_aes_scenario)
+    clean_sc_payload["metadata"] = dict(valid_aes_scenario["metadata"])
+    clean_sc_payload["metadata"]["id"] = "sc_clean_root"
+    clean_sc_payload["metadata"]["status"] = "Draft"
+    clean_sc_file.write_text(json.dumps(clean_sc_payload), encoding="utf-8")
+
+    res_trans_pass = client.post(
+        "/scenarios/sc_clean_root/transition",
+        json={"target_status": "Validated", "reason": "Passed Draft-07 schema and DAG checks"},
+    )
+    assert res_trans_pass.status_code == 200
+    assert res_trans_pass.get_json()["lifecycle_status"] == "Validated"
+
+    # Validate by scenario_id endpoint with enforce_schema
+    res_val_id = client.post(
+        "/scenarios/sc_clean_root/validate",
+        json={"enforce_schema": True},
+    )
+    assert res_val_id.status_code == 200
+    assert res_val_id.get_json()["valid"] is True
+
+    # 5. StateParityVerifier fallback for metadata.state_authorities and metadata.state_authority
+    session_mock = MagicMock()
+    session_mock.scenario = {
+        "metadata": {
+            "state_authorities": {"um_meta": {"url": "http://127.0.0.1:8080/healthcare/state"}}
+        }
+    }
+    verifier = SessionStateParityVerifier(session_manager=session_mock)
+    mock_connector = AsyncMock()
+    mock_connector.fetch_state.return_value = {"record_id": "REC-99"}
+    state_authority_registry.register_authority("um_meta", mock_connector)
+
+    assertion = {
+        "target": "authority:um_meta",
+        "property": "record_id",
+        "expected": "REC-99",
+    }
+    val, prop = asyncio.run(
+        verifier._resolve_target(assertion, sandbox=None, history=[], shim_snapshots={})
+    )
+    assert val == {"record_id": "REC-99"}
+    assert prop == "record_id"
+
+    # Also test metadata.state_authority singular dictionary fallback
+    session_mock_single = MagicMock()
+    session_mock_single.scenario = {
+        "metadata": {"state_authority": {"url": "http://127.0.0.1:8080/single/state"}}
+    }
+    verifier_single = SessionStateParityVerifier(session_manager=session_mock_single)
+    state_authority_registry.register_authority("default", mock_connector)
+    assertion_single = {
+        "target": "state_authority",
+        "property": "record_id",
+        "expected": "REC-99",
+    }
+    val_s, prop_s = asyncio.run(
+        verifier_single._resolve_target(
+            assertion_single, sandbox=None, history=[], shim_snapshots={}
+        )
+    )
+    assert val_s == {"record_id": "REC-99"}
+    assert prop_s == "record_id"

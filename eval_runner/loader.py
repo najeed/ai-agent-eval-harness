@@ -23,6 +23,7 @@ from .utils import normalize_uri
 _REGISTRY_CACHE = None
 _SCENARIO_SCHEMA = None
 _LAST_PROJECT_ROOT = None
+_SCENARIO_VALIDATOR = None
 
 
 def get_internal_spec_root() -> Path:
@@ -37,10 +38,11 @@ def get_spec_root() -> Path:
 
 def reset_universal_registry():
     """Industrial helper for test environments to clear cached registry state."""
-    global _REGISTRY_CACHE, _SCENARIO_SCHEMA, _LAST_PROJECT_ROOT
+    global _REGISTRY_CACHE, _SCENARIO_SCHEMA, _LAST_PROJECT_ROOT, _SCENARIO_VALIDATOR
     _REGISTRY_CACHE = None
     _SCENARIO_SCHEMA = None
     _LAST_PROJECT_ROOT = None
+    _SCENARIO_VALIDATOR = None
 
 
 def get_universal_registry():
@@ -133,6 +135,53 @@ def _get_schema() -> dict:
         with open(schema_path, encoding="utf-8") as f:
             _SCENARIO_SCHEMA = json.load(f)
     return _SCENARIO_SCHEMA
+
+
+def get_scenario_validator():
+    """Returns the cached authoritative Draft-07 validator for AES scenario specs."""
+    global _SCENARIO_VALIDATOR
+    if _SCENARIO_VALIDATOR is None:
+        from jsonschema.validators import validator_for
+
+        registry = get_universal_registry()
+        schema = _get_schema()
+        if "$id" not in schema:
+            schema["$id"] = "https://agentvos.ai/spec/aes/aes.schema.json"
+
+        resolver = registry.resolver(base_uri="https://agentvos.ai/spec/aes/aes.schema.json")
+        _SCENARIO_VALIDATOR = validator_for(schema)(schema, _resolver=resolver)
+    return _SCENARIO_VALIDATOR
+
+
+def validate_scenario_schema(scenario_data: dict[str, Any]) -> list[str]:
+    """
+    Validates scenario_data against the authoritative AES Draft-07 schema
+    (spec/aes/aes.schema.json). Returns a list of validation error message
+    strings (empty list if valid). Complies with AES Forensic Integrity standards.
+    """
+    if not isinstance(scenario_data, dict):
+        return ["Scenario root must be a JSON object"]
+
+    # Create a shallow copy for validation so internal sanitization/popping
+    # (e.g. hoisting legacy root name/title/id or ignoring ephemeral path)
+    # does not mutate caller's dictionary.
+    data_to_validate = dict(scenario_data)
+
+    # Ephemeral runtime fields injected post-load are ignored during schema checking
+    data_to_validate.pop("path", None)
+
+    # AES 1.4 Root Schema Sanitization: hoist legacy root name/title/id into metadata
+    if isinstance(data_to_validate.get("metadata"), dict):
+        meta = dict(data_to_validate["metadata"])
+        data_to_validate["metadata"] = meta
+        for key in ("name", "title", "id"):
+            if key in data_to_validate:
+                val = data_to_validate.pop(key)
+                if val and not meta.get(key):
+                    meta[key] = str(val)
+
+    validator = get_scenario_validator()
+    return [err.message for err in validator.iter_errors(data_to_validate)]
 
 
 class LoaderRegistry:
@@ -302,18 +351,8 @@ def load_scenario(
     # Handle validation with the Universal Immutable Registry (No-Debt Standard)
     try:
         from jsonschema import ValidationError
-        from jsonschema.validators import validator_for
 
-        registry = get_universal_registry()
-        schema = _get_schema()
-
-        # Anchor Logic: Ensure the schema dict is associated with its canonical identity
-        # The Registry provides all external $ref resolution without I/O side effects
-        if "$id" not in schema:
-            schema["$id"] = "https://agentvos.ai/spec/aes/aes.schema.json"
-
-        validator_cls = validator_for(schema)
-        validator = validator_cls(schema, registry=registry)
+        validator = get_scenario_validator()
         validator.validate(instance=scenario_data)
 
     except ValidationError as e:
