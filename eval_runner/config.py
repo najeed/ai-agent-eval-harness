@@ -519,7 +519,37 @@ REPORTS_DIR = (PROJECT_ROOT / os.getenv("REPORTS_DIR", "reports")).absolute()
 TRAJECTORIES_DIR = REPORTS_DIR / "trajectories"
 HTML_REPORTS_DIR = REPORTS_DIR / "html"
 
-MERMAID_CDN = os.getenv("MERMAID_CDN", "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js")
+
+def is_airgapped() -> bool:
+    """Returns True if the runtime is configured in strict air-gapped / offline mode."""
+    return (
+        os.getenv("AIRGAPPED_MODE", "false").lower() in ("true", "1", "yes")
+        or os.getenv("AIRGAP_MODE", "false").lower() in ("true", "1", "yes")
+        or os.getenv("AGENTV_AIRGAPPED", "false").lower() in ("true", "1", "yes")
+    )
+
+
+AIRGAPPED_MODE = is_airgapped()
+AIRGAPPED_ALLOWED_HOSTS = [
+    h.strip().lower() for h in os.getenv("AIRGAPPED_ALLOWED_HOSTS", "").split(",") if h.strip()
+]
+
+# --- Console CSP Overrides (SOC 2 DF-05) ---
+CONSOLE_CSP_SCRIPT_SRC = os.getenv("CONSOLE_CSP_SCRIPT_SRC", "")
+CONSOLE_CSP_CONNECT_SRC = os.getenv("CONSOLE_CSP_CONNECT_SRC", "")
+
+
+def get_mermaid_asset_url() -> str:
+    """Resolves the Mermaid JS URL, respecting air-gapped offline local assets."""
+    custom_cdn = os.getenv("MERMAID_CDN")
+    if custom_cdn:
+        return custom_cdn
+    if is_airgapped():
+        return "/static/vendor/mermaid.min.js"
+    return "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"
+
+
+MERMAID_CDN = get_mermaid_asset_url()
 MERMAID_THEME = os.getenv("MERMAID_THEME", "dark")
 
 # HTML Report Styling
@@ -589,3 +619,8 @@ def get_routing_strategy() -> str:
 # Throttle between agent turns (seconds) to prevent resource exhaustion
 # and satisfy rate-limiting requirements in sensitive industrial sectors.
 EVAL_TURN_THROTTLE = float(os.getenv("EVAL_TURN_THROTTLE", "0.0"))
+
+# --- WORM & Retention Configuration (SOC 2 DF-03 / CC6.8) ---
+WORM_RETENTION_DAYS = int(os.getenv("WORM_RETENTION_DAYS", "0"))
+WORM_LEGAL_HOLD = os.getenv("WORM_LEGAL_HOLD", "false").lower() in ("true", "1", "yes")
+WORM_COMPLIANCE_MODE = os.getenv("WORM_COMPLIANCE_MODE", "COMPLIANCE")

@@ -31,6 +31,9 @@ class OllamaProvider(LLMProvider):
     def __init__(self, host: str | None = None, model: str | None = None):
         self.host = host or config.OLLAMA_HOST
         self.model = model or config.OLLAMA_MODEL
+        from eval_runner.adapters.common import assert_airgap_safe_endpoint
+
+        assert_airgap_safe_endpoint(self.host)
 
     async def generate(self, prompt: str, **kwargs) -> str:
         async def _call():
@@ -87,6 +90,9 @@ class OpenAIProvider(LLMProvider):
         self.api_key = api_key or config.OPENAI_API_KEY
         self.base_url = base_url or config.OPENAI_BASE_URL
         self.model = model or config.OPENAI_MODEL
+        from eval_runner.adapters.common import assert_airgap_safe_endpoint
+
+        assert_airgap_safe_endpoint(self.base_url)
 
     async def generate(self, prompt: str, **kwargs) -> str:
         if not self.api_key:
@@ -160,6 +166,9 @@ class AnthropicProvider(LLMProvider):
         self.api_key = api_key or config.ANTHROPIC_API_KEY
         self.base_url = base_url or config.ANTHROPIC_BASE_URL
         self.model = model or config.ANTHROPIC_MODEL
+        from eval_runner.adapters.common import assert_airgap_safe_endpoint
+
+        assert_airgap_safe_endpoint(self.base_url)
 
     async def generate(self, prompt: str, **kwargs) -> str:
         if not self.api_key:
@@ -227,6 +236,14 @@ class GeminiProvider(LLMProvider):
         self.model = model or config.GEMINI_MODEL
         # The SDK handles the base URL automatically, but we can override if needed
         self.vertex_ai = "vertexai" in (base_url or "").lower()
+        if config.is_airgapped():
+            from eval_runner.exceptions import AirgappedConfigurationError
+
+            raise AirgappedConfigurationError(
+                "Fail-closed airgap violation: GeminiProvider relies on public "
+                "Google GenAI cloud API which is prohibited under AIRGAPPED_MODE=true. "
+                "Use local Ollama or an authorized internal proxy."
+            )
 
     async def _get_client(self):
         """Lazy initialization of the GenAI client."""
@@ -295,6 +312,9 @@ class GrokProvider(LLMProvider):
     def __init__(self, api_key: str | None = None, model: str | None = None):
         self.api_key = api_key or config.XAI_API_KEY
         self.model = model or config.XAI_MODEL
+        from eval_runner.adapters.common import assert_airgap_safe_endpoint
+
+        assert_airgap_safe_endpoint(config.XAI_BASE_URL)
 
     async def generate(self, prompt: str, **kwargs) -> str:
         # Grok uses OpenAI-compatible API

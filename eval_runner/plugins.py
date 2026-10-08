@@ -135,6 +135,16 @@ class BaseEvalPlugin(ABC):  # noqa: B024
         """Hook called when a durable approval request is resolved (APPROVED/REJECTED)."""
         pass
 
+    def on_artifact_created(  # noqa: B027
+        self,
+        run_id: str,
+        artifact_name: str,
+        artifact_path: str,
+        metadata: dict[str, Any] | None = None,
+    ) -> None:
+        """Hook called when an artifact is committed to the ArtifactStore (SOC 2 CC6.8)."""
+        pass
+
 
 class PluginManager:
     """

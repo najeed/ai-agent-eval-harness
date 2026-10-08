@@ -245,28 +245,58 @@ def create_app():
     # third-party script origins.
     extension_origins = _configured_extension_origins()
     extension_connect_sources = " ".join(extension_origins)
-    CONSOLE_CSP = "; ".join(
-        [
-            "default-src 'self'",
-            "script-src 'self' https://cdn.jsdelivr.net blob:",
-            "worker-src 'self' blob:",
-            "connect-src 'self' https://cdn.jsdelivr.net"
-            + (f" {extension_connect_sources}" if extension_connect_sources else ""),
-            "style-src 'self' 'unsafe-inline'",
-            "img-src 'self' data: blob:",
-            "font-src 'self' data:",
-            "frame-ancestors 'none'",
-            "base-uri 'self'",
-            "form-action 'self'",
-            "object-src 'none'",
-        ]
-    )
+
+    def _build_console_csp() -> str:
+        # Air-gapped isolation & operator CSP configuration (SOC 2 DF-05)
+        script_sources = ["'self'", "blob:"]
+        connect_sources = ["'self'"]
+
+        if not config.is_airgapped():
+            script_sources.insert(1, "https://cdn.jsdelivr.net")
+            connect_sources.append("https://cdn.jsdelivr.net")
+
+        custom_script_src = getattr(config, "CONSOLE_CSP_SCRIPT_SRC", "") or os.getenv(
+            "CONSOLE_CSP_SCRIPT_SRC", ""
+        )
+        if custom_script_src:
+            for src in custom_script_src.split():
+                if src and src not in script_sources:
+                    script_sources.append(src)
+
+        custom_connect_src = getattr(config, "CONSOLE_CSP_CONNECT_SRC", "") or os.getenv(
+            "CONSOLE_CSP_CONNECT_SRC", ""
+        )
+        if custom_connect_src:
+            for src in custom_connect_src.split():
+                if src and src not in connect_sources:
+                    connect_sources.append(src)
+
+        if extension_connect_sources:
+            connect_sources.append(extension_connect_sources)
+
+        return "; ".join(
+            [
+                "default-src 'self'",
+                f"script-src {' '.join(script_sources)}",
+                "worker-src 'self' blob:",
+                f"connect-src {' '.join(connect_sources)}",
+                "style-src 'self' 'unsafe-inline'",
+                "img-src 'self' data: blob:",
+                "font-src 'self' data:",
+                "frame-ancestors 'none'",
+                "base-uri 'self'",
+                "form-action 'self'",
+                "object-src 'none'",
+            ]
+        )
+
+    _build_console_csp()
 
     @app.after_request
     def security_headers(response):
         content_type = response.headers.get("Content-Type", "")
         if content_type.startswith("text/html"):
-            response.headers.setdefault("Content-Security-Policy", CONSOLE_CSP)
+            response.headers.setdefault("Content-Security-Policy", _build_console_csp())
             response.headers.setdefault("X-Frame-Options", "DENY")
             if extension_origins:
                 response.headers.setdefault(

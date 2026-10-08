@@ -6,6 +6,7 @@ OSS Reference Implementation: LocalFileArtifactStore
 import hashlib
 import json
 import logging
+from datetime import UTC
 from pathlib import Path
 from typing import Any
 
@@ -51,6 +52,26 @@ class LocalFileArtifactStore(ArtifactStore):
         seal_data = dict(metadata or {})
         seal_data.setdefault("sealed", True)
         seal_data.setdefault("run_id", run_id)
+
+        # WORM retention and legal hold (SOC 2 CC6.8 / DF-03)
+        retention_days = seal_data.get("retention_days") or getattr(
+            config, "WORM_RETENTION_DAYS", 0
+        )
+        legal_hold = (
+            seal_data.get("legal_hold")
+            if "legal_hold" in seal_data
+            else getattr(config, "WORM_LEGAL_HOLD", False)
+        )
+        if retention_days:
+            seal_data["retention_days"] = retention_days
+            if "retention_until" not in seal_data:
+                from datetime import datetime, timedelta
+
+                retain_until = datetime.now(UTC) + timedelta(days=retention_days)
+                seal_data["retention_until"] = retain_until.isoformat()
+        if legal_hold:
+            seal_data["legal_hold"] = True
+
         with open(seal_marker, "w", encoding="utf-8") as f:
             json.dump(seal_data, f, indent=2)
 
@@ -58,6 +79,7 @@ class LocalFileArtifactStore(ArtifactStore):
         """
         Rollback helper: unseals a vault if rollback is required during transactional recovery.
         In production, permanently sealed runs cannot be unsealed.
+        Under active legal hold or unexpired WORM retention, unsealing is strictly prohibited.
         """
         from eval_runner.run_lifecycle import RunLifecycleState, get_run_lifecycle_state
 
@@ -73,7 +95,32 @@ class LocalFileArtifactStore(ArtifactStore):
             if run_dir.exists():
                 seal_marker = run_dir / ".sealed"
                 if seal_marker.exists():
+                    try:
+                        with open(seal_marker, encoding="utf-8") as sf:
+                            seal_data = json.load(sf)
+                    except Exception:
+                        seal_data = {}
+                    if seal_data.get("legal_hold"):
+                        raise PermissionError(
+                            f"WORMImmutabilityViolation: Cannot unseal run "
+                            f"'{run_id}' under active legal hold."
+                        )
+                    retention_until_str = seal_data.get("retention_until")
+                    if retention_until_str:
+                        from datetime import datetime
+
+                        try:
+                            retention_until = datetime.fromisoformat(retention_until_str)
+                            if datetime.now(UTC) < retention_until:
+                                raise PermissionError(
+                                    f"WORMImmutabilityViolation: Cannot unseal run "
+                                    f"'{run_id}' prior to retention expiry ({retention_until_str})."
+                                )
+                        except (ValueError, TypeError):
+                            pass
                     seal_marker.unlink(missing_ok=True)
+        except PermissionError:
+            raise
         except OSError as unlink_err:
             logger.debug("Failed to unseal run directory for %s: %s", run_id, unlink_err)
 
@@ -126,9 +173,58 @@ class LocalFileArtifactStore(ArtifactStore):
         meta_dict.setdefault("content_type", content_type or "application/octet-stream")
         meta_dict.setdefault("size_bytes", len(raw_bytes))
 
+        # WORM retention metadata (SOC 2 CC6.8 / DF-03)
+        retention_days = (
+            kwargs.get("retention_days")
+            or meta_dict.get("retention_days")
+            or getattr(config, "WORM_RETENTION_DAYS", 0)
+        )
+        legal_hold = (
+            kwargs.get("legal_hold")
+            if "legal_hold" in kwargs
+            else (
+                meta_dict.get("legal_hold")
+                if "legal_hold" in meta_dict
+                else getattr(config, "WORM_LEGAL_HOLD", False)
+            )
+        )
+        compliance_mode = (
+            kwargs.get("compliance_mode")
+            or meta_dict.get("compliance_mode")
+            or getattr(config, "WORM_COMPLIANCE_MODE", "COMPLIANCE")
+        )
+
+        if retention_days:
+            meta_dict["retention_days"] = retention_days
+            if "retention_until" not in meta_dict and "retention_until" not in kwargs:
+                from datetime import datetime, timedelta
+
+                retain_until = datetime.now(UTC) + timedelta(days=retention_days)
+                meta_dict["retention_until"] = retain_until.isoformat()
+            elif "retention_until" in kwargs:
+                meta_dict["retention_until"] = kwargs["retention_until"]
+        if legal_hold:
+            meta_dict["legal_hold"] = True
+        if compliance_mode:
+            meta_dict["compliance_mode"] = compliance_mode
+
         meta_path = run_dir / f"{target_path.name}.meta.json"
         with open(meta_path, "w", encoding="utf-8") as f:
             json.dump(meta_dict, f, indent=2)
+
+        # Zero-Touch extension hook: notify plugins of artifact creation
+        try:
+            from eval_runner.plugins import manager
+
+            manager.trigger(
+                "on_artifact_created",
+                run_id=run_id,
+                artifact_name=artifact_name,
+                artifact_path=str(target_path),
+                metadata=meta_dict,
+            )
+        except Exception as p_err:
+            logger.debug("on_artifact_created plugin dispatch notice: %s", p_err)
 
         return str(target_path)
 

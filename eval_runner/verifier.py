@@ -1437,6 +1437,10 @@ class TraceVerifier:
                 json.dump(manifest_to_write, f, indent=4)
 
             # Store artifact in configured ArtifactStore
+            retention_days = getattr(config, "WORM_RETENTION_DAYS", 0) or None
+            legal_hold = getattr(config, "WORM_LEGAL_HOLD", False)
+            compliance_mode = getattr(config, "WORM_COMPLIANCE_MODE", "COMPLIANCE")
+
             store.store_artifact(
                 run_id=run_id,
                 artifact_name="run_manifest.json",
@@ -1445,7 +1449,13 @@ class TraceVerifier:
                 metadata={
                     "status": effective_compliance_status,
                     "vc_version": manifest["vc_version"],
+                    "retention_days": retention_days,
+                    "legal_hold": legal_hold,
+                    "compliance_mode": compliance_mode,
                 },
+                retention_days=retention_days,
+                legal_hold=legal_hold,
+                compliance_mode=compliance_mode,
             )
             store.store_artifact(
                 run_id=run_id,
@@ -1455,7 +1465,13 @@ class TraceVerifier:
                 metadata={
                     "status": effective_compliance_status,
                     "vc_version": manifest["vc_version"],
+                    "retention_days": retention_days,
+                    "legal_hold": legal_hold,
+                    "compliance_mode": compliance_mode,
                 },
+                retention_days=retention_days,
+                legal_hold=legal_hold,
+                compliance_mode=compliance_mode,
             )
 
         def _verify() -> None:
@@ -1572,6 +1588,8 @@ class TraceVerifier:
                             "vc_version": manifest.get("vc_version", VC_V3_SCHEMA_VERSION),
                             "timestamp": timestamp,
                             "compliance_status": compliance_status,
+                            "retention_days": getattr(config, "WORM_RETENTION_DAYS", 0) or None,
+                            "legal_hold": getattr(config, "WORM_LEGAL_HOLD", False),
                         },
                     )
                 transition_run_lifecycle(run_id, RunLifecycleState.SEALED)

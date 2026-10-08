@@ -24,6 +24,7 @@ from eval_runner.reference.signing import (
     PQCSigningBackend,
 )
 
+from . import config
 from .events import CoreEvents, Event
 from .plugins import BaseEvalPlugin
 from .utils import rmtree_resilient
@@ -529,6 +530,8 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                     content=json.dumps(seal_envelope, indent=2),
                     content_type="application/json",
                     overwrite=True,
+                    retention_days=getattr(config, "WORM_RETENTION_DAYS", 0) or None,
+                    legal_hold=getattr(config, "WORM_LEGAL_HOLD", False),
                 )
             except Exception as e:
                 logger.debug(f"Artifact store finalize seal error: {e}")

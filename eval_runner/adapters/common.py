@@ -29,6 +29,7 @@ Design principles:
 from __future__ import annotations
 
 import asyncio
+import ipaddress
 import json
 import logging
 import os
@@ -234,13 +235,100 @@ def _safe_header_value(value: Any) -> str | None:
     return result
 
 
+def is_airgap_safe_host(hostname: str | None, allowed_hosts: list[str] | None = None) -> bool:
+    """
+    Determines whether a target hostname/IP is safe for air-gapped execution (SOC 2 CC6.6).
+    Permits localhost, loopback, link-local, RFC 1918 private IPv4/IPv6,
+    recognized local TLDs (.local, .internal, .lan, .corp, .test),
+    and any explicitly configured hostnames or CIDRs in allowed_hosts.
+    """
+    if not hostname or not isinstance(hostname, str):
+        return False
+
+    raw = hostname.strip().lower()
+    if raw.startswith("["):
+        if "]" in raw:
+            host = raw[1 : raw.index("]")]
+        else:
+            host = raw.strip("[]")
+    elif raw.count(":") == 1:
+        host = raw.split(":")[0]
+    else:
+        host = raw
+
+    if host in {"localhost", "127.0.0.1", "::1", "0.0.0.0"}:  # nosec B104
+        return True
+
+    allowed = (
+        allowed_hosts
+        if allowed_hosts is not None
+        else getattr(config, "AIRGAPPED_ALLOWED_HOSTS", [])
+    )
+    for allowed_entry in allowed:
+        entry = allowed_entry.strip().lower()
+        if not entry:
+            continue
+        if host == entry or host.endswith(f".{entry}"):
+            return True
+        if "/" in entry:
+            try:
+                net = ipaddress.ip_network(entry, strict=False)
+                if ipaddress.ip_address(host) in net:
+                    return True
+            except ValueError:
+                pass
+
+    try:
+        ip = ipaddress.ip_address(host)
+        return ip.is_private or ip.is_loopback or ip.is_link_local
+    except ValueError:
+        pass
+
+    if host.endswith((".local", ".internal", ".lan", ".corp", ".test", ".home.arpa")):
+        return True
+
+    return False
+
+
+def assert_airgap_safe_endpoint(endpoint: Any) -> None:
+    """
+    Strict fail-closed assertion for air-gapped network boundaries (SOC 2 CC6.6).
+    If AIRGAPPED_MODE is active, non-local/non-private endpoints raise AirgappedConfigurationError.
+    """
+    from eval_runner.exceptions import AirgappedConfigurationError
+
+    if not config.is_airgapped():
+        return
+
+    if not isinstance(endpoint, str) or not endpoint.strip():
+        raise AirgappedConfigurationError(
+            "Airgap boundary violation: endpoint must be a non-empty string."
+        )
+
+    cleaned = endpoint.strip()
+    try:
+        parsed = urlparse(cleaned)
+    except Exception as exc:
+        raise AirgappedConfigurationError(
+            f"Airgap boundary violation: invalid endpoint URL '{endpoint}': {exc}"
+        ) from exc
+
+    hostname = parsed.hostname or parsed.netloc
+    if not is_airgap_safe_host(hostname, getattr(config, "AIRGAPPED_ALLOWED_HOSTS", [])):
+        raise AirgappedConfigurationError(
+            f"Fail-closed airgap violation: Endpoint '{cleaned}' (host: '{hostname}') "
+            "targets a public WAN or non-private destination under AIRGAPPED_MODE=true. "
+            "External network egress is strictly prohibited."
+        )
+
+
 def validate_http_endpoint(endpoint: Any) -> str:
     """
     Validate an HTTP(S) URL before transport.
 
-    The adapter layer does not perform SSRF policy decisions itself, because
-    enterprise deployments may require different allow/deny policies. URL
-    syntactic validation is nevertheless mandatory here.
+    The adapter layer does not perform arbitrary SSRF policy decisions itself,
+    but under AIRGAPPED_MODE=true strict fail-closed boundary isolation is mandatory.
+    URL syntactic validation is nevertheless mandatory here.
     """
     if not isinstance(endpoint, str) or not endpoint.strip():
         raise ValueError("Adapter endpoint must be a non-empty URL string")
@@ -257,6 +345,8 @@ def validate_http_endpoint(endpoint: Any) -> str:
 
     if not parsed.netloc:
         raise ValueError("Adapter endpoint must contain a host")
+
+    assert_airgap_safe_endpoint(endpoint)
 
     return endpoint
 
@@ -2166,5 +2256,7 @@ __all__ = [
     "retry_after_seconds",
     "serialize_json_bytes",
     "traceparent_from_payload",
+    "assert_airgap_safe_endpoint",
+    "is_airgap_safe_host",
     "validate_http_endpoint",
 ]

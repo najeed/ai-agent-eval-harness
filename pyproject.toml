@@ -48,7 +48,7 @@ provider-gemini = [
 # 2. Framework Environments (Evaluated and verified agent architectures)
 framework-langchain = [
     "langchain==1.4.3",
-    "langchain-core>=1.6.8",
+    "langchain-core>=1.6.9",
 ]
 framework-langserve = [
     "langserve>=0.3.3",
@@ -102,7 +102,7 @@ vcs = [
 # 5. Composed Ecosystem Extras
 frameworks = [
     "langchain==1.4.3",
-    "langchain-core>=1.6.8",
+    "langchain-core>=1.6.9",
     "langserve>=0.3.3",
     "langgraph==1.2.14",
     "ag2==1.1.2",
@@ -110,7 +110,7 @@ frameworks = [
 ]
 langchain-all = [
     "langchain==1.4.3",
-    "langchain-core>=1.6.8",
+    "langchain-core>=1.6.9",
     "langchain-openai==1.7.0",
     "langchain-anthropic>=1.7.5",
     "langchain-google-genai>=4.4.0",
@@ -123,7 +123,7 @@ all = [
     "datasets==5.1.0",
     "google-genai==2.29.0",
     "langchain==1.4.3",
-    "langchain-core>=1.6.8",
+    "langchain-core>=1.6.9",
     "langserve>=0.3.3",
     "langgraph==1.2.14",
     "ag2==1.1.2",

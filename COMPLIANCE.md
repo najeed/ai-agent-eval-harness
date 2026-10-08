@@ -87,7 +87,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **google-genai** | 2.29.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **langchain** | 1.4.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-anthropic** | 1.7.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langchain-core** | 1.6.8 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-core** | 1.6.9 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-google-genai** | 4.4.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **langchain-ollama** | 1.1.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-openai** | 1.7.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
