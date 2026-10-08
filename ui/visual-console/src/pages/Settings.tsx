@@ -80,7 +80,7 @@ export const Settings: React.FC = () => {
         <ShieldAlert className="w-12 h-12 text-red-500 mx-auto" />
         <h2 className="text-lg font-bold text-white uppercase tracking-wider">Access Denied</h2>
         <p className="text-slate-400 text-xs leading-relaxed">
-          Your current active role (<span className="text-indigo-400 font-bold">{role}</span>) does not have privileges to view or modify System Settings. 
+          Your current active role (<span className="text-indigo-400 font-bold">{role}</span>) does not have privileges to view or modify System Settings.
           Please contact your administrator or switch to <span className="text-slate-350 font-bold">System Admin</span> or <span className="text-slate-350 font-bold">MultiAgentOps Eng.</span> in the header layout toolbar.
         </p>
       </div>
@@ -118,7 +118,7 @@ export const Settings: React.FC = () => {
           <h1 className="text-2xl font-bold text-white tracking-tight">System Settings & Health</h1>
           <p className="text-slate-400 text-sm">Monitor harness engine state and clean up debug assets.</p>
         </div>
-        <button 
+        <button
           onClick={fetchDoctor}
           className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 transition-colors text-xs font-semibold"
         >
@@ -141,9 +141,9 @@ export const Settings: React.FC = () => {
             <div className="space-y-3">
               <div className="flex items-center justify-between p-3 rounded-lg bg-slate-950/40 border border-slate-800/60">
                 <span className="text-xs text-slate-400">System Status</span>
-                <span className={`text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
-                  audit.status === 'healthy' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'
-                }`}>
+                <span className={`text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-wider 
+                    ${audit.status?.toLowerCase() === 'healthy' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                  }`}>
                   {audit.status}
                 </span>
               </div>
@@ -191,7 +191,7 @@ export const Settings: React.FC = () => {
           <div className="space-y-3 pt-2">
             <div className="flex items-center gap-3">
               <label className="text-xs text-slate-400 shrink-0">Retention Age (Days):</label>
-              <input 
+              <input
                 type="number"
                 min="0"
                 value={retentionDays}
@@ -201,7 +201,7 @@ export const Settings: React.FC = () => {
               <span className="text-[10px] text-slate-500 font-semibold italic">(0 = Delete everything)</span>
             </div>
 
-            <button 
+            <button
               onClick={() => setShowConfirm(true)}
               disabled={cleaning}
               className="flex items-center justify-center gap-2 w-full py-2 bg-red-950/20 hover:bg-red-950/40 border border-red-900/30 hover:border-red-900/60 text-red-400 rounded-lg transition-all text-xs font-semibold"
@@ -285,22 +285,22 @@ export const Settings: React.FC = () => {
               </div>
               <h3 className="text-lg font-bold text-white">Verify Trace Cleanup</h3>
             </div>
-            
+
             <p className="text-slate-300 text-xs leading-relaxed">
-              Are you absolutely sure you want to delete trace history? 
+              Are you absolutely sure you want to delete trace history?
               This will remove all run logs and evaluation reports older than <strong className="text-amber-400">{retentionDays} days</strong>.
-              <br/><br/>
+              <br /><br />
               This operation is **irreversible** and violates WORM log storage policies in production audit modes.
             </p>
 
             <div className="flex justify-end gap-3 pt-2 text-xs">
-              <button 
+              <button
                 onClick={() => setShowConfirm(false)}
                 className="px-4 py-2 bg-slate-800 rounded-lg hover:bg-slate-700 text-slate-300 transition-colors"
               >
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={handleCleanup}
                 className="px-4 py-2 bg-red-600 rounded-lg hover:bg-red-500 text-white font-semibold transition-colors"
               >
