@@ -20,6 +20,69 @@ interface ScenarioItem {
   };
 }
 
+interface VariantInfo {
+  type: 'mutant' | 'synthetic';
+  label: string;
+}
+
+const getVariantBadge = (sc: ScenarioItem): VariantInfo | null => {
+  const title = sc.title || sc.metadata?.name || '';
+  const id = sc.id || '';
+
+  const titleMutMatch = title.match(/\(Mutated:\s*([^)]+)\)/i);
+  if (titleMutMatch) {
+    return {
+      type: 'mutant',
+      label: titleMutMatch[1].trim(),
+    };
+  }
+
+  const idMutMatch = id.match(/_mutated_([a-zA-Z0-9_-]+)/i);
+  if (idMutMatch) {
+    return {
+      type: 'mutant',
+      label: idMutMatch[1].replace(/_/g, ' ').trim(),
+    };
+  }
+
+  if (title.includes('[GENERATED]')) {
+    return {
+      type: 'synthetic',
+      label: 'Generated',
+    };
+  }
+
+  if (id.startsWith('auto_') || title.toLowerCase().startsWith('auto-generated')) {
+    return {
+      type: 'synthetic',
+      label: 'Auto-Gen',
+    };
+  }
+
+  if (id.startsWith('gen-') || id.startsWith('gen_')) {
+    return {
+      type: 'synthetic',
+      label: 'Synthetic',
+    };
+  }
+
+  return null;
+};
+
+const formatScenarioTitle = (title: string) => {
+  if (!title) return null;
+  const match = title.match(/^(.*?)\s*(\(Mutated:\s*[^)]+\))$/i);
+  if (match) {
+    return (
+      <>
+        <span>{match[1]}</span>{' '}
+        <span className="text-purple-300 font-semibold inline-block">{match[2]}</span>
+      </>
+    );
+  }
+  return title;
+};
+
 export const ScenarioLibrary: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -382,6 +445,7 @@ export const ScenarioLibrary: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredScenarios.map(sc => {
                 const isSelected = selectedIds.includes(sc.id);
+                const variant = getVariantBadge(sc);
                 return (
                   <div 
                     key={sc.id} 
@@ -396,6 +460,17 @@ export const ScenarioLibrary: React.FC = () => {
                         <span className="text-[9px] bg-slate-900 border border-slate-800 text-slate-400 font-bold uppercase tracking-wider px-2 py-0.5 rounded">
                           {sc.industry}
                         </span>
+                        {variant && variant.type === 'mutant' && (
+                          <span className="text-[9px] bg-purple-500/15 border border-purple-500/30 text-purple-300 font-bold uppercase tracking-wider px-1.5 py-0.5 rounded flex items-center gap-1">
+                            <Sparkles className="w-2.5 h-2.5" />
+                            {variant.label}
+                          </span>
+                        )}
+                        {variant && variant.type === 'synthetic' && !sc.is_fixture && (
+                          <span className="text-[9px] bg-sky-500/15 border border-sky-500/30 text-sky-300 font-bold uppercase tracking-wider px-1.5 py-0.5 rounded">
+                            {variant.label}
+                          </span>
+                        )}
                         {sc.is_fixture && (
                           <span className="text-[9px] bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold uppercase tracking-wider px-1.5 py-0.5 rounded">
                             Synthetic Fixture
@@ -408,11 +483,18 @@ export const ScenarioLibrary: React.FC = () => {
                     </div>
 
                     {/* Content */}
-                    <div className="space-y-2">
-                      <h3 className="font-bold text-white tracking-tight group-hover:text-indigo-400 transition-colors text-sm font-mono truncate">
-                        {sc.title}
+                    <div className="space-y-1.5">
+                      <h3 
+                        className="font-bold text-white tracking-tight group-hover:text-indigo-400 transition-colors text-sm leading-snug break-words line-clamp-3 min-h-[2.5rem]"
+                        title={sc.title}
+                      >
+                        {formatScenarioTitle(sc.title)}
                       </h3>
-                      <p className="text-slate-400 text-xs line-clamp-3 leading-relaxed">
+                      <div className="flex items-center gap-1.5 font-mono text-[11px] text-slate-500 break-all select-all pb-1" title={sc.id}>
+                        <span className="text-slate-600 font-sans text-[10px] uppercase font-bold tracking-wider shrink-0">ID:</span>
+                        <span className="text-slate-400 hover:text-slate-300 transition-colors truncate">{sc.id}</span>
+                      </div>
+                      <p className="text-slate-400 text-xs line-clamp-2 leading-relaxed">
                         {sc.metadata?.description || 'No description provided.'}
                       </p>
                     </div>
@@ -457,6 +539,7 @@ export const ScenarioLibrary: React.FC = () => {
                 <tbody className="divide-y divide-slate-900/60">
                   {filteredScenarios.map(sc => {
                     const isSelected = selectedIds.includes(sc.id);
+                    const variant = getVariantBadge(sc);
                     return (
                       <tr key={sc.id} className="hover:bg-slate-950/60 transition-colors">
                         <td className="px-4 py-3 text-center">
@@ -467,14 +550,36 @@ export const ScenarioLibrary: React.FC = () => {
                             className="rounded border-slate-800 bg-slate-950 text-indigo-600 focus:ring-0"
                           />
                         </td>
-                        <td className="px-4 py-3 font-mono font-bold text-slate-350">
-                          <div className="flex items-center gap-2">
-                            <span>{sc.id}</span>
-                            {sc.is_fixture && (
-                              <span className="text-[9px] bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold uppercase tracking-wider px-1.5 py-0.2 rounded">
-                                Fixture
+                        <td className="px-4 py-3">
+                          <div className="flex flex-col gap-1 max-w-md">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span 
+                                className="font-bold text-slate-200 text-xs leading-snug hover:text-indigo-400 transition-colors cursor-pointer"
+                                onClick={() => navigate(`/editor?scenario_id=${sc.id}`)}
+                                title={sc.title}
+                              >
+                                {formatScenarioTitle(sc.title || sc.id)}
                               </span>
-                            )}
+                              {variant && variant.type === 'mutant' && (
+                                <span className="text-[9px] bg-purple-500/15 border border-purple-500/30 text-purple-300 font-bold uppercase tracking-wider px-1.5 py-0.5 rounded shrink-0 flex items-center gap-1">
+                                  <Sparkles className="w-2.5 h-2.5" />
+                                  {variant.label}
+                                </span>
+                              )}
+                              {variant && variant.type === 'synthetic' && !sc.is_fixture && (
+                                <span className="text-[9px] bg-sky-500/15 border border-sky-500/30 text-sky-300 font-bold uppercase tracking-wider px-1.5 py-0.5 rounded shrink-0">
+                                  {variant.label}
+                                </span>
+                              )}
+                              {sc.is_fixture && (
+                                <span className="text-[9px] bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold uppercase tracking-wider px-1.5 py-0.5 rounded shrink-0">
+                                  Fixture
+                                </span>
+                              )}
+                            </div>
+                            <span className="font-mono text-[10px] text-slate-500 select-all truncate" title={sc.id}>
+                              {sc.id}
+                            </span>
                           </div>
                         </td>
                         <td className="px-4 py-3 capitalize text-slate-400">
@@ -483,7 +588,10 @@ export const ScenarioLibrary: React.FC = () => {
                         <td className="px-4 py-3 text-slate-400">
                           {sc.metadata?.compliance_level || 'Standard'}
                         </td>
-                        <td className="px-4 py-3 text-slate-500 font-mono text-[10px] truncate max-w-[200px]">
+                        <td 
+                          className="px-4 py-3 text-slate-500 font-mono text-[10px] truncate max-w-[200px]"
+                          title={sc.metadata?.capabilities?.join(', ') || 'Default'}
+                        >
                           {sc.metadata?.capabilities?.join(', ') || 'Default'}
                         </td>
                         <td className="px-4 py-3 text-right">

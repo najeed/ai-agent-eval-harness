@@ -1276,7 +1276,7 @@ export const LiveDebugger: React.FC = () => {
           {/* Floating Graph Color Legend */}
           <div className="absolute bottom-4 right-4 z-10 bg-slate-950/85 backdrop-blur-md border border-slate-800/80 rounded-lg p-2.5 shadow-xl text-[10px] text-slate-300 font-mono space-y-1.5 pointer-events-auto">
             <div className="text-[9px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between gap-3 border-b border-slate-800/60 pb-1">
-              <span>Color Legend</span>
+              <span>Legend</span>
             </div>
             <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[9px]">
               <div className="flex items-center gap-1.5">

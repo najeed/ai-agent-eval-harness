@@ -29,7 +29,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **opentelemetry-sdk** | 1.45.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **Pillow** | 12.3.0 | HPND | [HPND.txt](LICENSES/HPND.txt) |
 | **psutil** | 7.2.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **pydantic** | 2.13.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **pydantic** | 2.14.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **PyJWT** | 2.15.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **python-dotenv** | 1.2.4 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **PyYAML** | 6.0.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
@@ -87,10 +87,10 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **google-genai** | 2.29.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **langchain** | 1.4.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-anthropic** | 1.7.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langchain-core** | 1.6.7 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-core** | 1.6.8 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-google-genai** | 4.4.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **langchain-ollama** | 1.1.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langchain-openai** | 1.6.7 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-openai** | 1.7.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langgraph** | 1.2.14 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langserve** | 0.3.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langsmith** | 0.14.4 | MIT | [MIT.txt](LICENSES/MIT.txt) |
