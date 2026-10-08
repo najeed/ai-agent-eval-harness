@@ -42,7 +42,7 @@ dependencies = [
 # 1. Direct Native Provider SDKs
 # (OpenAI, Anthropic, Grok, Ollama connect directly via aiohttp; no external Python SDKs required)
 provider-gemini = [
-    "google-genai==2.28.0",
+    "google-genai==2.29.0",
 ]
 
 # 2. Framework Environments (Evaluated and verified agent architectures)
@@ -121,7 +121,7 @@ langchain-all = [
 all = [
     "sentence-transformers==6.1.0",
     "datasets==5.1.0",
-    "google-genai==2.28.0",
+    "google-genai==2.29.0",
     "langchain==1.4.3",
     "langchain-core>=1.6.7",
     "langserve>=0.3.3",

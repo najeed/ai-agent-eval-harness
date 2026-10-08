@@ -11,6 +11,7 @@ interface ScenarioItem {
   industry: string;
   aes_version: number;
   compliance_level?: string;
+  is_fixture?: boolean;
   metadata?: {
     name: string;
     description?: string;
@@ -31,6 +32,7 @@ export const ScenarioLibrary: React.FC = () => {
   const [search, setSearch] = useState(() => searchParams.get('q') || '');
   const [selectedIndustry, setSelectedIndustry] = useState<string>('All');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('All');
+  const [benchmarkTab, setBenchmarkTab] = useState<'canonical' | 'fixtures' | 'all'>('canonical');
   
   // Bulk Actions
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -152,7 +154,14 @@ export const ScenarioLibrary: React.FC = () => {
                       (selectedDifficulty === 'Standard' && (compLevel === 'standard' || s.aes_version === 1)) ||
                       (selectedDifficulty === 'High' && compLevel !== 'standard');
                       
-    return titleMatch && indMatch && diffMatch;
+    const fixtureMatch =
+      benchmarkTab === 'all'
+        ? true
+        : benchmarkTab === 'fixtures'
+          ? Boolean(s.is_fixture)
+          : !s.is_fixture;
+
+    return titleMatch && indMatch && diffMatch && fixtureMatch;
   });
 
   const industries = [
@@ -175,6 +184,31 @@ export const ScenarioLibrary: React.FC = () => {
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-5 text-xs">
+          {/* Benchmark Scope Facet */}
+          <div className="space-y-2">
+            <span className="font-bold text-slate-500 uppercase tracking-wider text-[10px]">Benchmark Scope</span>
+            <div className="space-y-1">
+              {[
+                { id: 'canonical', label: 'Canonical Benchmarks', count: scenarios.filter(s => !s.is_fixture).length },
+                { id: 'fixtures', label: 'Test & Synthetic', count: scenarios.filter(s => s.is_fixture).length },
+                { id: 'all', label: 'All Scenarios', count: scenarios.length },
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setBenchmarkTab(tab.id as 'canonical' | 'fixtures' | 'all')}
+                  className={`flex items-center justify-between w-full text-left px-2 py-1.5 rounded transition-colors ${
+                    benchmarkTab === tab.id
+                      ? 'bg-indigo-500/10 text-indigo-400 font-semibold'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/40'
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                  <span className="text-[10px] text-slate-600 font-bold">{tab.count}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Industry Facet */}
           <div className="space-y-2">
             <span className="font-bold text-slate-500 uppercase tracking-wider text-[10px]">Industry sector</span>
@@ -225,15 +259,57 @@ export const ScenarioLibrary: React.FC = () => {
       <div className="flex-1 flex flex-col min-w-0 bg-navy-base overflow-hidden">
         {/* Search and Action Header */}
         <div className="p-4 border-b border-slate-900 bg-slate-950/10 flex flex-col md:flex-row gap-4 justify-between items-center shrink-0">
-          <div className="relative w-full md:max-w-sm">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
-            <input 
-              type="text"
-              placeholder="Search scenario catalog..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-900 rounded-lg pl-9 pr-4 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
-            />
+          <div className="flex items-center gap-3 w-full md:max-w-2xl">
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+              <input 
+                type="text"
+                placeholder="Search scenario catalog..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full bg-slate-950 border border-slate-900 rounded-lg pl-9 pr-4 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+
+            {/* Scope Segment Control */}
+            <div className="flex items-center bg-slate-950 border border-slate-900 rounded-lg p-0.5 text-xs shrink-0">
+              <button
+                onClick={() => setBenchmarkTab('canonical')}
+                className={`px-3 py-1.5 rounded transition-colors font-semibold flex items-center gap-1.5 ${
+                  benchmarkTab === 'canonical'
+                    ? 'bg-indigo-600 text-white shadow'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <span>Canonical</span>
+                <span className="text-[10px] px-1 py-0.2 rounded bg-slate-900/60 font-mono">
+                  {scenarios.filter(s => !s.is_fixture).length}
+                </span>
+              </button>
+              <button
+                onClick={() => setBenchmarkTab('fixtures')}
+                className={`px-3 py-1.5 rounded transition-colors font-semibold flex items-center gap-1.5 ${
+                  benchmarkTab === 'fixtures'
+                    ? 'bg-indigo-600 text-white shadow'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <span>Test & Synthetic</span>
+                <span className="text-[10px] px-1 py-0.2 rounded bg-slate-900/60 font-mono">
+                  {scenarios.filter(s => s.is_fixture).length}
+                </span>
+              </button>
+              <button
+                onClick={() => setBenchmarkTab('all')}
+                className={`px-2.5 py-1.5 rounded transition-colors font-semibold ${
+                  benchmarkTab === 'all'
+                    ? 'bg-indigo-600 text-white shadow'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <span>All</span>
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center gap-3 shrink-0 text-xs">
@@ -315,11 +391,18 @@ export const ScenarioLibrary: React.FC = () => {
                     }`}
                   >
                     {/* Badge header */}
-                    <div className="flex justify-between items-start">
-                      <span className="text-[9px] bg-slate-900 border border-slate-800 text-slate-400 font-bold uppercase tracking-wider px-2 py-0.5 rounded">
-                        {sc.industry}
-                      </span>
-                      <span className="text-[9px] text-emerald-400 font-bold border border-emerald-500/20 bg-emerald-500/5 px-2 py-0.5 rounded flex items-center gap-0.5">
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-[9px] bg-slate-900 border border-slate-800 text-slate-400 font-bold uppercase tracking-wider px-2 py-0.5 rounded">
+                          {sc.industry}
+                        </span>
+                        {sc.is_fixture && (
+                          <span className="text-[9px] bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold uppercase tracking-wider px-1.5 py-0.5 rounded">
+                            Synthetic Fixture
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[9px] text-emerald-400 font-bold border border-emerald-500/20 bg-emerald-500/5 px-2 py-0.5 rounded flex items-center gap-0.5 shrink-0">
                         <CheckCircle className="w-3 h-3" /> Lint Passed
                       </span>
                     </div>
@@ -385,7 +468,14 @@ export const ScenarioLibrary: React.FC = () => {
                           />
                         </td>
                         <td className="px-4 py-3 font-mono font-bold text-slate-350">
-                          {sc.id}
+                          <div className="flex items-center gap-2">
+                            <span>{sc.id}</span>
+                            {sc.is_fixture && (
+                              <span className="text-[9px] bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold uppercase tracking-wider px-1.5 py-0.2 rounded">
+                                Fixture
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-4 py-3 capitalize text-slate-400">
                           {sc.industry.replace(/_/g, ' ')}

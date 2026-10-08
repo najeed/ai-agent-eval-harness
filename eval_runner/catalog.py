@@ -44,6 +44,12 @@ class ScenarioCatalog:
     def clear_instance(cls):
         """reset of singleton state for test isolation."""
         with cls._lock:
+            if cls._instance is not None:
+                try:
+                    cls._instance._attrs_initialized = False
+                    cls._instance._last_sync_check = 0
+                except (AttributeError, TypeError):
+                    pass
             cls._instance = None
             cls._initialized = False
 
@@ -113,6 +119,15 @@ class ScenarioCatalog:
                 # Use glob for discovery but skip deep lints for 10x speedup
                 for p in root_path.glob("**/*.json"):
                     try:
+                        # 1. Eliminate the index Phantom Scenario and temporary files
+                        try:
+                            is_index_self = p.resolve() == self.index_path.resolve()
+                        except (OSError, RuntimeError):
+                            is_index_self = False
+
+                        if p.name == "index.json" or p.name.endswith(".tmp") or is_index_self:
+                            continue
+
                         # Optimization: Use string-based prefix check for speed
                         # glob results are already absolute or anchored.
                         # We only resolve if we detect potential traversal/symlinks.
@@ -122,12 +137,32 @@ class ScenarioCatalog:
                             if not is_path_safe(p, jail_base):
                                 continue
 
+                        # 2. Segregate / Filter Synthetic & Test Scenarios
+                        p_name = p.name.lower()
+                        is_fixture = (
+                            p_name.startswith("test_")
+                            or p_name.startswith("gen_")
+                            or "/auto/" in p_str
+                        )
+
+                        if not kwargs.get("include_fixtures", True) and is_fixture:
+                            continue
+
                         path_str = get_canonical_path(os.path.relpath(p, root_canonical_path))
                         mtime = p.stat().st_mtime
 
                         # Optimized Cache Check
-                        if path_str in cache and cache[path_str].get("mtime") == mtime:
-                            new_scenarios.append(cache[path_str])
+                        if (
+                            path_str in cache
+                            and cache[path_str].get("mtime") == mtime
+                            and "is_fixture" in cache[path_str]
+                        ):
+                            cached_entry = cache[path_str]
+                            if not kwargs.get("include_fixtures", True) and cached_entry.get(
+                                "is_fixture", False
+                            ):
+                                continue
+                            new_scenarios.append(cached_entry)
                             continue
 
                         with open(p, encoding="utf-8") as f:
@@ -177,6 +212,7 @@ class ScenarioCatalog:
                                 ),
                                 "lint_score": cached_lint.get("lint_score", 100),
                                 "status": cached_lint.get("status", "pass"),
+                                "is_fixture": is_fixture,
                             }
                         )
                     except Exception as e:
@@ -331,6 +367,7 @@ class ScenarioCatalog:
         limit: int = 50,
         offset: int = 0,
         sort_by: str = None,
+        include_fixtures: bool | None = None,
         **filters,
     ) -> list[dict[str, Any]]:
         """Searches the index. Auto-hydrates if empty."""
@@ -340,6 +377,16 @@ class ScenarioCatalog:
                 self.load_index()
 
             results = self.scenarios
+
+        if "is_fixture" in filters:
+            raw_fixture = filters.pop("is_fixture")
+            if isinstance(raw_fixture, str):
+                target_fixture = raw_fixture.lower() in ("true", "1", "yes")
+            else:
+                target_fixture = bool(raw_fixture)
+            results = [s for s in results if bool(s.get("is_fixture", False)) == target_fixture]
+        elif include_fixtures is False:
+            results = [s for s in results if not s.get("is_fixture", False)]
 
         if query:
             query = query.lower()

@@ -127,27 +127,46 @@ def list_scenarios():
     page = int(request.args.get("page", 1))
     offset = (page - 1) * limit
 
+    # Fixture filtering heuristics
+    raw_include_fixtures = request.args.get("include_fixtures")
+    raw_is_fixture = request.args.get("is_fixture")
+    tab = request.args.get("tab")
+
+    is_fixture = None
+    if raw_is_fixture is not None:
+        is_fixture = raw_is_fixture.lower() in ("true", "1", "yes")
+    elif tab in ("fixtures", "synthetic", "test"):
+        is_fixture = True
+    elif tab in ("canonical", "production", "benchmarks"):
+        is_fixture = False
+    elif raw_include_fixtures is not None and raw_include_fixtures.lower() in ("false", "0", "no"):
+        is_fixture = False
+
     catalog = get_catalog()
     if not catalog.scenarios:
         catalog.load_index()
 
+    search_kwargs = {
+        "query": query,
+        "industry": industry,
+        "difficulty": difficulty,
+        "sort_by": sort_by,
+        "limit": limit,
+        "offset": offset,
+    }
+    if is_fixture is not None:
+        search_kwargs["is_fixture"] = is_fixture
+
     try:
-        results = catalog.search(
-            query=query,
-            industry=industry,
-            difficulty=difficulty,
-            sort_by=sort_by,
-            limit=limit,
-            offset=offset,
-        )
+        results = catalog.search(**search_kwargs)
     except TypeError:
-        results = catalog.search(
-            query=query,
-            industry=industry,
-            difficulty=difficulty,
-            limit=limit,
-            offset=offset,
-        )
+        search_kwargs.pop("sort_by", None)
+        try:
+            results = catalog.search(**search_kwargs)
+        except TypeError:
+            search_kwargs.pop("is_fixture", None)
+            results = catalog.search(**search_kwargs)
+
     return jsonify(
         {
             "scenarios": results,

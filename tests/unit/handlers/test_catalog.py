@@ -874,3 +874,107 @@ class TestPackParsingAndInstallationCoverage:
         p_dir.mkdir()
         (p_dir / "pack.yaml").write_text("- item1\n- item2\n", encoding="utf-8")
         assert _load_pack_manifest(p_dir) == {}
+
+
+def test_catalog_ignores_index_and_tmp_files(tmp_path):
+    """
+    Verify index.json, *.tmp files, and self index path
+    are never indexed as phantom scenarios.
+    """
+    scenarios_dir = tmp_path / "scenarios"
+    scenarios_dir.mkdir(parents=True)
+
+    # 1. Real scenario
+    real_scen = {
+        "id": "bench_01",
+        "title": "Real Benchmark",
+        "metadata": {"industry": "healthcare"},
+    }
+    (scenarios_dir / "bench_01.json").write_text(json.dumps(real_scen), encoding="utf-8")
+
+    # 2. Existing index.json inside scenarios
+    index_file = scenarios_dir / "index.json"
+    index_content = {"metadata": {"id": "index"}, "scenarios": []}
+    index_file.write_text(json.dumps(index_content), encoding="utf-8")
+
+    # 3. Temp files
+    (scenarios_dir / "index.12345.tmp").write_text(json.dumps({"id": "tmp_scen"}), encoding="utf-8")
+    (scenarios_dir / "test.tmp").write_text("{}", encoding="utf-8")
+
+    cat = ScenarioCatalog(index_path=str(index_file))
+    cat.build_index(root_dir=str(tmp_path))
+
+    indexed_ids = [s["id"] for s in cat.scenarios]
+    assert "bench_01" in indexed_ids
+    assert "index" not in indexed_ids
+    assert "tmp_scen" not in indexed_ids
+    assert not any(s["path"].endswith("index.json") for s in cat.scenarios)
+    assert not any(s["path"].endswith(".tmp") for s in cat.scenarios)
+
+
+def test_catalog_segregates_fixture_and_synthetic_scenarios(tmp_path):
+    """Verify test_*.json, gen_*.json, and /auto/ scenarios receive is_fixture: True."""
+    scenarios_dir = tmp_path / "scenarios"
+    scenarios_dir.mkdir(parents=True)
+    auto_dir = scenarios_dir / "auto"
+    auto_dir.mkdir(parents=True)
+
+    (scenarios_dir / "canonical_bench.json").write_text(
+        json.dumps({"id": "canonical_bench", "title": "Prod Bench"}), encoding="utf-8"
+    )
+    (scenarios_dir / "test_login_flow.json").write_text(
+        json.dumps({"id": "test_login_flow", "title": "Test Flow"}), encoding="utf-8"
+    )
+    (scenarios_dir / "gen_mutant_1.json").write_text(
+        json.dumps({"id": "gen_mutant_1", "title": "Generated Mutant"}), encoding="utf-8"
+    )
+    (auto_dir / "auto_tool_0.json").write_text(
+        json.dumps({"id": "auto_tool_0", "title": "Auto Generated"}), encoding="utf-8"
+    )
+
+    index_file = tmp_path / "index.json"
+    cat = ScenarioCatalog(index_path=str(index_file))
+    cat.build_index(root_dir=str(tmp_path))
+
+    scen_map = {s["id"]: s for s in cat.scenarios}
+    assert scen_map["canonical_bench"]["is_fixture"] is False
+    assert scen_map["test_login_flow"]["is_fixture"] is True
+    assert scen_map["gen_mutant_1"]["is_fixture"] is True
+    assert scen_map["auto_tool_0"]["is_fixture"] is True
+
+    # Search filter tests
+    # 1. Default search includes all
+    all_res = cat.search()
+    assert len(all_res) == 4
+
+    # 2. Exclude fixtures
+    canonical_res = cat.search(include_fixtures=False)
+    assert [s["id"] for s in canonical_res] == ["canonical_bench"]
+
+    # 3. Explicit is_fixture=True
+    fixture_res = cat.search(is_fixture=True)
+    assert set(s["id"] for s in fixture_res) == {"test_login_flow", "gen_mutant_1", "auto_tool_0"}
+
+    # 4. Explicit is_fixture=False
+    prod_res = cat.search(is_fixture=False)
+    assert [s["id"] for s in prod_res] == ["canonical_bench"]
+
+
+def test_catalog_build_index_exclude_fixtures_kwarg(tmp_path):
+    """Verify build_index(include_fixtures=False) excludes fixtures at scan time."""
+    scenarios_dir = tmp_path / "scenarios"
+    scenarios_dir.mkdir(parents=True)
+
+    (scenarios_dir / "canonical_bench.json").write_text(
+        json.dumps({"id": "canonical_bench", "title": "Prod Bench"}), encoding="utf-8"
+    )
+    (scenarios_dir / "test_fixture.json").write_text(
+        json.dumps({"id": "test_fixture", "title": "Test Fixture"}), encoding="utf-8"
+    )
+
+    index_file = tmp_path / "index.json"
+    cat = ScenarioCatalog(index_path=str(index_file))
+    cat.build_index(root_dir=str(tmp_path), include_fixtures=False)
+
+    indexed_ids = [s["id"] for s in cat.scenarios]
+    assert indexed_ids == ["canonical_bench"]
