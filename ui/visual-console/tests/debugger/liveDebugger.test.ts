@@ -10,6 +10,7 @@ import assert from 'node:assert/strict';
 
 import {
   buildTraceGraph,
+  getGraphNodeDimensions,
   buildWaterfall,
   computeTelemetryDiagnostics,
   computeTraceIntegrity,
@@ -51,6 +52,29 @@ test('buildTraceGraph projects retries, divergence, edges, positions, and late h
   assert.equal(graph.droppedEdgeCount, 1);
   assert.equal(graph.flowEdges.length, 3);
   assert.deepEqual(graph.flowEdges.map(edge => edge.data.pathOffset).filter(Boolean), [20, 36, 52]);
+});
+
+test('graph node dimensions expand to a maximum width and then wrap long content', () => {
+  const shortNode = getGraphNodeDimensions({
+    id: 'review',
+    label: 'Review',
+    statusLabel: 'Completed',
+  });
+  const longNode = getGraphNodeDimensions({
+    id: 'verify_physician_review_and_business_state',
+    label: 'A deliberately long node description that must remain readable in the graph.',
+    statusLabel: 'Waiting for an external physician decision before verification can continue.',
+    isHitlPaused: true,
+  });
+  const unboundedNode = getGraphNodeDimensions({
+    id: 'x'.repeat(500),
+    label: 'y'.repeat(500),
+    statusLabel: 'z'.repeat(500),
+  });
+
+  assert.ok(longNode.width > shortNode.width);
+  assert.equal(unboundedNode.width, 360);
+  assert.ok(unboundedNode.height > shortNode.height);
 });
 
 test('graph topology keeps planned, executed, and divergence nodes distinct', () => {
@@ -759,6 +783,3 @@ test('buildTraceGraph retains completed status for HITL node after resumption an
   assert.equal(wfRow.splitDuration!.waitMs, 93000);
   assert.equal(wfRow.splitDuration!.postMs, 560);
 });
-
-
-

@@ -874,8 +874,61 @@ export interface TraceGraphResult {
   droppedEdgeCount: number;
 }
 
-const _GRAPH_NODE_WIDTH = 180;
-const _GRAPH_NODE_HEIGHT = 70;
+const _GRAPH_NODE_MIN_WIDTH = 180;
+const _GRAPH_NODE_MAX_WIDTH = 360;
+const _GRAPH_NODE_MIN_HEIGHT = 70;
+const _GRAPH_NODE_HORIZONTAL_PADDING = 32;
+const _GRAPH_NODE_CHARACTER_WIDTH = 6.2;
+const _GRAPH_NODE_LINE_HEIGHT = 15;
+
+export interface GraphNodeDimensions {
+  width: number;
+  height: number;
+}
+
+/**
+ * Estimate a readable, bounded node footprint before React Flow mounts it.
+ * The estimate deliberately uses the same text fields shown in the node,
+ * expands the width for ordinary labels, and wraps only after the maximum
+ * readable width is reached.  Dagre therefore receives dimensions close to
+ * the rendered box instead of the former fixed 180x70 placeholder.
+ */
+export const getGraphNodeDimensions = (
+  data: Pick<FlowNodeData, 'id' | 'label' | 'statusLabel'> &
+    Partial<
+      Pick<
+        FlowNodeData,
+        'isReplayed' | 'isHitlRejected' | 'isHitlPaused' | 'splitDuration' | 'durationMs'
+      >
+    >,
+): GraphNodeDimensions => {
+  const contentLines = [data.id, data.label, data.statusLabel];
+  if (data.isReplayed) contentLines.push('REPLAYED');
+  if (data.isHitlRejected) contentLines.push('REJECTED');
+  if (data.isHitlPaused) contentLines.push('HITL PAUSED');
+  if (data.splitDuration) contentLines.push('Pre: 0.00s | Wait: 0.00s | Post: 0.00s');
+  else if (data.durationMs != null) contentLines.push('0.00s');
+
+  const longestLine = Math.max(0, ...contentLines.map((line) => line.length));
+  const width = Math.round(
+    Math.min(
+      _GRAPH_NODE_MAX_WIDTH,
+      Math.max(_GRAPH_NODE_MIN_WIDTH, longestLine * _GRAPH_NODE_CHARACTER_WIDTH + _GRAPH_NODE_HORIZONTAL_PADDING),
+    ),
+  );
+  const charactersPerLine = Math.max(
+    1,
+    Math.floor((width - _GRAPH_NODE_HORIZONTAL_PADDING) / _GRAPH_NODE_CHARACTER_WIDTH),
+  );
+  const visualLineCount = contentLines.reduce(
+    (count, line) => count + Math.max(1, Math.ceil(line.length / charactersPerLine)),
+    0,
+  );
+  const height = Math.round(
+    Math.max(_GRAPH_NODE_MIN_HEIGHT, 20 + visualLineCount * _GRAPH_NODE_LINE_HEIGHT),
+  );
+  return { width, height };
+};
 
 /**
  * Build the complete ReactFlow node+edge arrays from raw trace events.
@@ -1285,6 +1338,17 @@ export const buildTraceGraph = (
       border = `${isHighlighted ? '2px' : '1px'} dashed #f59e0b`;
     }
 
+    const dimensions = getGraphNodeDimensions({
+      id,
+      label,
+      statusLabel,
+      isReplayed,
+      isHitlRejected,
+      isHitlPaused,
+      splitDuration,
+      durationMs,
+    });
+
     return {
       id,
       type: 'default',
@@ -1319,7 +1383,10 @@ export const buildTraceGraph = (
         border,
         borderRadius: '8px',
         padding: '8px',
-        width: _GRAPH_NODE_WIDTH - 10,
+        width: dimensions.width,
+        minHeight: dimensions.height,
+        whiteSpace: 'normal',
+        overflowWrap: 'anywhere',
         boxShadow: isHighlighted
           ? '0 0 15px rgba(99, 102, 241, 0.7), inset 0 0 0 1px rgba(129, 140, 248, 0.5)'
           : 'none',
@@ -1513,9 +1580,10 @@ export const buildTraceGraph = (
   dagreGraph.setGraph({ rankdir: 'LR', nodesep: 50, ranksep: 80 });
 
   flowNodes.forEach((node) => {
+    const dimensions = getGraphNodeDimensions(node.data);
     dagreGraph.setNode(node.id, {
-      width: _GRAPH_NODE_WIDTH,
-      height: _GRAPH_NODE_HEIGHT,
+      width: dimensions.width,
+      height: dimensions.height,
     });
   });
   flowEdges.forEach((edge) => {
@@ -1529,11 +1597,12 @@ export const buildTraceGraph = (
       return { ...node, position: savedPos };
     }
     const nodeWithPosition = dagreGraph.node(node.id);
+    const dimensions = getGraphNodeDimensions(node.data);
     const x = nodeWithPosition
-      ? nodeWithPosition.x - _GRAPH_NODE_WIDTH / 2 + 80
+      ? nodeWithPosition.x - dimensions.width / 2 + 80
       : 80 + index * 220;
     const y = nodeWithPosition
-      ? nodeWithPosition.y - _GRAPH_NODE_HEIGHT / 2 + 50
+      ? nodeWithPosition.y - dimensions.height / 2 + 50
       : 50;
     const pos = { x, y };
     positions.set(posKeyFn(node.id), pos);

@@ -691,9 +691,9 @@ export const LiveDebugger: React.FC = () => {
   // scalars. This function maps those scalars to the ReactFlow label element.
   // ---------------------------------------------------------------------------
   const toReactFlowLabel = (d: FlowNodeData) => (
-    <div className="space-y-1">
-      <div className="flex items-center justify-between gap-1">
-        <span className="font-mono font-bold text-[10px] text-slate-200">{d.id}</span>
+    <div className="space-y-1 min-w-0">
+      <div className="flex items-start justify-between gap-1 min-w-0">
+        <span className="flex-1 min-w-0 font-mono font-bold text-[10px] text-slate-200 break-words">{d.id}</span>
         {d.isReplayed && (
           <span
             title="Fast-forwarded from checkpoint on resume"
@@ -719,7 +719,12 @@ export const LiveDebugger: React.FC = () => {
           </span>
         )}
       </div>
-      <div className="text-[9px] text-slate-400 truncate max-w-[130px]" title={d.label}>
+      {d.label !== d.id && (
+        <div className="text-[9px] text-slate-300 break-words" title={d.label}>
+          {d.label}
+        </div>
+      )}
+      <div className="text-[9px] text-slate-400 break-words" title={d.statusLabel}>
         {d.statusLabel}
       </div>
       {!d.hasCanonicalEvent && (
@@ -1700,7 +1705,6 @@ export const LiveDebugger: React.FC = () => {
     </div>
   );
 };
-
 
 
 
