@@ -1,7 +1,7 @@
 import json
 import os
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -90,6 +90,25 @@ def test_generate_report_console_output(capsys, mock_results):
     assert "EVALUATION REPORT" in captured.out
     assert "Console Test" in captured.out
     assert "Overall Success Rate: 100.00%" in captured.out
+
+
+def test_generate_report_records_summary_with_run_id(mock_results):
+    """Leaderboard storage receives the run ID required by the OSS store."""
+    store = MagicMock()
+
+    reporter.generate_report(
+        {"id": "c1", "title": "Console Test"},
+        mock_results,
+        metadata={"run_id": "run-report-1"},
+        leaderboard_store=store,
+        export_trajectory=False,
+        export_html=False,
+    )
+
+    store.record_run_summary.assert_called_once()
+    run_id, summary = store.record_run_summary.call_args.args
+    assert run_id == "run-report-1"
+    assert summary["run_id"] == run_id
 
 
 def test_generate_mermaid_complex():

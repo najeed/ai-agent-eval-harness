@@ -27,7 +27,7 @@
         "expected_outcome": [
           {
             "target": "message",
-            "expected": "Agent confirms the customer is on a '100 Mbps' plan.",
+            "expected": "Jane Doe.*100 Mbps",
             "mode": "regex"
           }
         ],
@@ -43,7 +43,7 @@
         "expected_outcome": [
           {
             "target": "message",
-            "expected": "Agent's remote test shows the modem is receiving the full 100 Mbps speed.",
+            "expected": "full 100 Mbps speed",
             "mode": "regex"
           }
         ],
@@ -59,7 +59,7 @@
         "expected_outcome": [
           {
             "target": "message",
-            "expected": "Agent provides clear instructions for the customer to perform a local speed test.",
+            "expected": "local speed test via Ethernet",
             "mode": "regex"
           }
         ],
@@ -75,7 +75,7 @@
         "expected_outcome": [
           {
             "target": "message",
-            "expected": "Agent correctly identifies the problem as local Wi-Fi and provides relevant troubleshooting advice.",
+            "expected": "local Wi-Fi.*optimization guide",
             "mode": "regex"
           }
         ],
@@ -101,6 +101,20 @@
         "to": "task-4"
       }
     ]
+  },
+  "tools": {
+    "get_customer_details": {
+      "output": {
+        "status": "success",
+        "message": "Customer Jane Doe is on the 100 Mbps Fiber plan."
+      }
+    },
+    "run_remote_speed_test": {
+      "output": {
+        "status": "success",
+        "message": "Remote diagnostics confirm the modem is receiving the full 100 Mbps speed."
+      }
+    }
   },
   "evaluation": {
     "metrics": [

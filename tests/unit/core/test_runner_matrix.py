@@ -314,6 +314,30 @@ def test_run_scenario_sync_orchestrator():
     t.join()
 
 
+def test_run_scenario_closes_adapter_sessions_on_success_and_failure():
+    scenario = {"id": "adapter-session-cleanup", "workflow": {"nodes": []}}
+
+    successful_runner = MagicMock(spec=[])
+    successful_runner.run = AsyncMock(return_value=MagicMock(pass_at_k=1.0))
+    with patch(
+        "eval_runner.adapters.close_adapter_sessions", new_callable=AsyncMock
+    ) as close_sessions:
+        result = run_scenario(scenario, runner=successful_runner)
+
+    assert result.pass_at_k == 1.0
+    close_sessions.assert_awaited_once()
+
+    failing_runner = MagicMock(spec=[])
+    failing_runner.run = AsyncMock(side_effect=RuntimeError("evaluation failed"))
+    with patch(
+        "eval_runner.adapters.close_adapter_sessions", new_callable=AsyncMock
+    ) as close_sessions:
+        with pytest.raises(RuntimeError, match="evaluation failed"):
+            run_scenario(scenario, runner=failing_runner)
+
+    close_sessions.assert_awaited_once()
+
+
 @pytest.mark.asyncio
 async def test_run_scenario_from_async_context():
     scenario = {

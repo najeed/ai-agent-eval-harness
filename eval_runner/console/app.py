@@ -330,8 +330,13 @@ def create_app():
     # Hardened Route Precedence (AgentV v1.6.0 Sync)
     # Industrial Standard: Use blueprint-first registration only.
 
-    # Load external hooks for zero-touch discovery
-    manager.load_plugins()
+    # External plugin entry points may import distributed runtimes.  Console startup
+    # stays on the core/local path unless an operator explicitly enables external
+    # console extensions for this server process.
+    enable_external_console_plugins = os.getenv(
+        "AGENTV_ENABLE_EXTERNAL_CONSOLE_PLUGINS", ""
+    ).lower() in {"1", "true", "yes"}
+    manager.load_plugins(load_external=enable_external_console_plugins)
 
     # Core navigation registry
     nav_registry = []

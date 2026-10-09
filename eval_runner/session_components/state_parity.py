@@ -145,6 +145,18 @@ class SessionStateParityVerifier:
         except (TypeError, ValueError):
             return DEFAULT_NUMERICAL_TOLERANCE
 
+    @staticmethod
+    def _can_settle_asynchronously(assertion: dict[str, Any]) -> bool:
+        """Return whether a failed assertion can change without another agent turn."""
+        target = str(assertion.get("target", ""))
+        return (
+            target.startswith("shim:")
+            or target.startswith("authority:")
+            or target.startswith("external:")
+            or target.startswith("policy:")
+            or target in {"external_state", "state_authority"}
+        )
+
     async def _resolve_target(
         self,
         assertion: dict[str, Any],
@@ -399,6 +411,7 @@ class SessionStateParityVerifier:
         while True:
             shim_snapshots = await self.get_shim_snapshots(sandbox, shim_ids)
             all_passed = True
+            has_terminal_failure = False
             failed_reason = None
             evidence_rows: list[dict[str, Any]] = []
 
@@ -435,6 +448,7 @@ class SessionStateParityVerifier:
                 )
                 if property_path == "__unsupported__":
                     all_passed = False
+                    has_terminal_failure = True
                     failed_reason = f"Unsupported target: {assertion.get('target')}"
                     evidence_rows.append(
                         {
@@ -513,6 +527,9 @@ class SessionStateParityVerifier:
 
                 if not match:
                     all_passed = False
+                    has_terminal_failure = (
+                        has_terminal_failure or not self._can_settle_asynchronously(assertion)
+                    )
                     failed_reason = (
                         f"{assertion.get('target', 'message')}.{property_path or ''} | "
                         f"Expected: {expected} | Actual: {resolved_after} "
@@ -523,7 +540,7 @@ class SessionStateParityVerifier:
                 logger.info(f"      [Session] [Parity] All {len(assertions)} assertions PASSED.")
                 return True, evidence_rows
 
-            if asyncio.get_event_loop().time() - start_time > timeout:
+            if has_terminal_failure or asyncio.get_event_loop().time() - start_time >= timeout:
                 logger.info(
                     f"      [Session] [Parity-Audit] TIMEOUT reached. Last failure: {failed_reason}"
                 )

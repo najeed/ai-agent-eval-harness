@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from eval_runner.plugins import PluginManager
+from eval_runner.plugins import PluginManager, disable_external_plugin_discovery
 
 
 @pytest.fixture
@@ -98,5 +98,20 @@ def test_plugin_manager_external_plugins_env_switch(monkeypatch):
         # When enabled (env var removed)
         mock_ep.return_value = []
         monkeypatch.delenv("AGENTV_DISABLE_EXTERNAL_PLUGINS", raising=False)
+        pm.load_plugins(force=True)
+        mock_ep.assert_called_once_with(group="eval_runner.plugins")
+
+
+def test_external_plugin_discovery_can_be_suppressed_per_execution_flow(monkeypatch):
+    """A self-contained run must not import external entry-point code."""
+    from unittest.mock import patch
+
+    pm = PluginManager()
+    monkeypatch.delenv("AGENTV_DISABLE_EXTERNAL_PLUGINS", raising=False)
+    with patch("importlib.metadata.entry_points", return_value=[]) as mock_ep:
+        with disable_external_plugin_discovery():
+            pm.load_plugins(force=True)
+        mock_ep.assert_not_called()
+
         pm.load_plugins(force=True)
         mock_ep.assert_called_once_with(group="eval_runner.plugins")

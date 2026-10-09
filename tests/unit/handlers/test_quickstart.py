@@ -87,6 +87,7 @@ async def test_run_quickstart_flow(tmp_path, monkeypatch, capsys):
     from unittest.mock import AsyncMock
 
     mock_run = AsyncMock(return_value=mock_results)
+    close_adapter_sessions = AsyncMock()
 
     with monkeypatch.context() as m:
         m.setattr("eval_runner.quickstart.engine.run_evaluation", mock_run)
@@ -97,7 +98,9 @@ async def test_run_quickstart_flow(tmp_path, monkeypatch, capsys):
             lambda *args, **kwargs: "report.html",
         )
 
+        m.setattr("eval_runner.adapters.close_adapter_sessions", close_adapter_sessions)
         await run_quickstart()
 
+    close_adapter_sessions.assert_awaited_once()
     captured = capsys.readouterr().out
     assert "Instant Gratification Achieved! \U0001f3c6" in captured

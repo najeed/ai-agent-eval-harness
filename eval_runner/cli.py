@@ -145,12 +145,65 @@ DISCOVERY_COMMANDS = {
     "run",
     "playground",
     "record",
-    "quickstart",
     "init",
     "console",
     "doctor",
     "hitl-resume",
 }
+
+BUILTIN_COMMANDS = {
+    "aes",
+    "analyze",
+    "auto-translate",
+    "calibrate",
+    "catalog-refresh",
+    "catalog-search",
+    "certify",
+    "ci",
+    "cleanup-runs",
+    "console",
+    "contribute",
+    "doctor",
+    "evaluate",
+    "explain",
+    "export",
+    "failures",
+    "gate",
+    "hitl-resume",
+    "import-drift",
+    "init",
+    "inspect",
+    "install",
+    "leaderboard",
+    "lint",
+    "list",
+    "list-metrics",
+    "list-plugins",
+    "mutate",
+    "playground",
+    "plugin",
+    "quickstart",
+    "record",
+    "registry",
+    "replay",
+    "report",
+    "run",
+    "scenario",
+    "spec-to-eval",
+    "taxonomy",
+    "trend",
+    "verify",
+    "verify-package",
+}
+
+
+def _should_load_cli_extensions() -> bool:
+    """Load external command code only for an explicit extension command."""
+    if len(sys.argv) < 2:
+        return False
+
+    command = sys.argv[1]
+    return not command.startswith("-") and command not in BUILTIN_COMMANDS
 
 
 def get_parser(is_help: bool = False):
@@ -245,20 +298,23 @@ Usage: agentv <command> [options]
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
-    # Industrial Discovery: Load external command extensions via Entry Points
-    import importlib.metadata
+    # Loading an entry point executes third-party import code.  Keep built-in commands
+    # and top-level help/version on the cold path; only an explicit unknown command can
+    # be an extension and therefore warrants resolving external command registrations.
+    if _should_load_cli_extensions():
+        import importlib.metadata
 
-    try:
-        eps = importlib.metadata.entry_points(group="agentv.extensions")
-    except TypeError:
-        eps = importlib.metadata.entry_points().get("agentv.extensions", [])
-
-    for ep in eps:
         try:
-            register_func = ep.load()
-            register_func(subparsers)
-        except Exception as e:
-            sys.stderr.write(f"   [CLI] Warning: Failed to load extension {ep.name}: {e}\n")
+            eps = importlib.metadata.entry_points(group="agentv.extensions")
+        except TypeError:
+            eps = importlib.metadata.entry_points().get("agentv.extensions", [])
+
+        for ep in eps:
+            try:
+                register_func = ep.load()
+                register_func(subparsers)
+            except Exception as e:
+                sys.stderr.write(f"   [CLI] Warning: Failed to load extension {ep.name}: {e}\n")
 
     # --- CORE COMMANDS ---
 
@@ -698,9 +754,9 @@ def main():
         traceback.print_exc()
         sys.exit(1)
     finally:
-        from . import plugins
-
-        plugins.manager.finalize()
+        plugins_module = sys.modules.get("eval_runner.plugins")
+        if plugins_module is not None:
+            plugins_module.manager.finalize()
 
 
 if __name__ == "__main__":

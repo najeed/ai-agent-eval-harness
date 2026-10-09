@@ -336,6 +336,24 @@ async def test_verify_state_parity_timeout(base_scenario, tmp_path):
 
 
 @pytest.mark.asyncio
+async def test_verify_state_parity_message_mismatch_does_not_poll(base_scenario, tmp_path):
+    """A completed agent message cannot change during a parity settlement window."""
+    session = SessionManager("test_run", base_scenario, log_root=tmp_path)
+    node = {"expected_outcome": [{"target": "message", "expected": "ok"}], "timeout": 30}
+    mock_sandbox = AsyncMock()
+    mock_sandbox.get_active_simulators = MagicMock(return_value={})
+
+    with patch("asyncio.sleep", new_callable=AsyncMock) as sleep:
+        result, evidence = await session._verify_state_parity(
+            node, mock_sandbox, [{"role": "agent", "content": "wrong"}]
+        )
+
+    assert result is False
+    assert evidence[0]["outcome"] == "FAIL"
+    sleep.assert_not_awaited()
+
+
+@pytest.mark.asyncio
 async def test_verify_state_parity_unsupported_target(base_scenario, tmp_path):
     session = SessionManager("test_run", base_scenario, log_root=tmp_path)
     node = {"expected_outcome": [{"target": "weird", "expected": "ok"}], "timeout": 0.1}

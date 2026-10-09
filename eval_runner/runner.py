@@ -1424,6 +1424,25 @@ def run_scenario(
             signing_backend=signing_backend,
         )
 
+    async def _run_with_adapter_cleanup() -> EvaluationResult:
+        """Run one evaluation and release this process's shared HTTP sessions."""
+        try:
+            return await runner.run(
+                scenario=scenario,
+                attempts=attempts,
+                run_id=run_id,
+                seed=seed,
+                metadata=metadata,
+                max_turns=max_turns,
+                cancellation_event=cancellation_event,
+                resumption_checkpoint=resumption_checkpoint,
+                resumption_token=resumption_token,
+            )
+        finally:
+            from .adapters import close_adapter_sessions
+
+            await close_adapter_sessions()
+
     try:
         loop = asyncio.get_event_loop()
     except RuntimeError:
@@ -1436,29 +1455,7 @@ def run_scenario(
         with concurrent.futures.ThreadPoolExecutor() as pool:
             return pool.submit(
                 asyncio.run,
-                runner.run(
-                    scenario=scenario,
-                    attempts=attempts,
-                    run_id=run_id,
-                    seed=seed,
-                    metadata=metadata,
-                    max_turns=max_turns,
-                    cancellation_event=cancellation_event,
-                    resumption_checkpoint=resumption_checkpoint,
-                    resumption_token=resumption_token,
-                ),
+                _run_with_adapter_cleanup(),
             ).result()
     else:
-        return loop.run_until_complete(
-            runner.run(
-                scenario=scenario,
-                attempts=attempts,
-                run_id=run_id,
-                seed=seed,
-                metadata=metadata,
-                max_turns=max_turns,
-                cancellation_event=cancellation_event,
-                resumption_checkpoint=resumption_checkpoint,
-                resumption_token=resumption_token,
-            )
-        )
+        return loop.run_until_complete(_run_with_adapter_cleanup())

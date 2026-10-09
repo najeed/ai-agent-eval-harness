@@ -45,27 +45,52 @@ async def run_quickstart():
             return
 
         from . import loader
+        from .runner import new_run_id
 
         print(f"📊 Running demo scenario: {scenario_path.name}")
 
         scenario = loader.load_scenario(scenario_path)
+        scenario_id = str(
+            scenario.get("id") or scenario.get("metadata", {}).get("id") or "quickstart"
+        )
+        run_id = new_run_id(scenario_id)
 
-        results = await engine.run_evaluation(scenario)
+        # The bundled demo is self-contained.  Do not import optional external
+        # entry-point plugins (which can start distributed runtimes) while it runs.
+        from .plugins import disable_external_plugin_discovery
+
+        with disable_external_plugin_discovery():
+            results = await engine.run_evaluation(scenario, run_id=run_id)
 
         print("\n✅ Quickstart evaluation complete!")
-        reporter.generate_report(scenario, results, export_trajectory=True)
+        report_metadata = {
+            "run_id": run_id,
+            "protocol": "http",
+            "agent": scenario.get("metadata", {}).get("agent", {}).get("endpoint"),
+        }
+        reporter.generate_report(
+            scenario, results, metadata=report_metadata, export_trajectory=True
+        )
 
         # Also try to generate an HTML report if implemented
         if hasattr(reporter, "generate_html_report"):
-            html_path = reporter.generate_html_report(scenario, results)
+            html_path = reporter.generate_html_report(scenario, results, metadata=report_metadata)
             print(f"🎨 Visual Report: {html_path}")
 
     finally:
-        print("\n🛑 Shutting down sample agent...")
-        if agent_process:
-            agent_process.terminate()
-            agent_process.wait()
-            print("✔ Agent server stopped.")
+        try:
+            # HTTP adapters use the backwards-compatible shared pool when a
+            # run has not injected a pool of its own. Quickstart owns this
+            # short-lived evaluation lifecycle, so it must release that pool.
+            from .adapters import close_adapter_sessions
+
+            await close_adapter_sessions()
+        finally:
+            print("\n🛑 Shutting down sample agent...")
+            if agent_process:
+                agent_process.terminate()
+                agent_process.wait()
+                print("✔ Agent server stopped.")
 
     print("\n" + "=" * 50)
     print("Instant Gratification Achieved! 🏆")

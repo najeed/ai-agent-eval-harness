@@ -9,6 +9,8 @@ Updated to respect Zero-Touch architecture and immutable core.
 from abc import ABC  # noqa: I001
 import atexit
 import concurrent.futures
+from contextlib import contextmanager
+from contextvars import ContextVar
 import importlib.metadata
 import importlib.util
 import inspect
@@ -27,6 +29,19 @@ PLUGIN_TIMEOUT = config.PLUGIN_TIMEOUT
 
 PERSISTENT_PLUGINS_PATH = config.PLUGINS_CONFIG_PATH
 STRICT_PLUGINS = os.getenv("STRICT_PLUGINS", "false").lower() == "true"
+_external_plugin_discovery_enabled: ContextVar[bool] = ContextVar(
+    "external_plugin_discovery_enabled", default=True
+)
+
+
+@contextmanager
+def disable_external_plugin_discovery():
+    """Suppress external entry-point imports for the current async execution flow."""
+    token = _external_plugin_discovery_enabled.set(False)
+    try:
+        yield
+    finally:
+        _external_plugin_discovery_enabled.reset(token)
 
 
 def _invoke_with_timeout(func, *args, **kwargs):
@@ -280,7 +295,11 @@ class PluginManager:
         self._last_load_time = now
 
         # 1. Discover external plugins via entry points (standard install)
-        if load_external and not os.getenv("AGENTV_DISABLE_EXTERNAL_PLUGINS"):
+        if (
+            load_external
+            and _external_plugin_discovery_enabled.get()
+            and not os.getenv("AGENTV_DISABLE_EXTERNAL_PLUGINS")
+        ):
             for entry_point in importlib.metadata.entry_points(group="eval_runner.plugins"):
                 try:
                     plugin_cls = entry_point.load()

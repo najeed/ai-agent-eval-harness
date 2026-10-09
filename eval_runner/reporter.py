@@ -584,7 +584,19 @@ def generate_report(
             "pass_rate": attempt_success_rate,
             "task_success_rate": task_success_rate,
         }
-        lb_store.record_run_summary(summary_record)
+        run_id = (metadata or {}).get("run_id")
+        if not isinstance(run_id, str) or not run_id:
+            for attempt in attempts_list:
+                for task_result in attempt:
+                    candidate = task_result.get("run_id")
+                    if isinstance(candidate, str) and candidate:
+                        run_id = candidate
+                        break
+                if run_id:
+                    break
+        if isinstance(run_id, str) and run_id:
+            summary_record["run_id"] = run_id
+            lb_store.record_run_summary(run_id, summary_record)
     except Exception as e:
         import sys
 

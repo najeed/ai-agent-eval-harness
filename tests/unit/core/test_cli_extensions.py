@@ -35,8 +35,8 @@ class TestCLIExtensions(unittest.TestCase):
         mock_entry_points.return_value = [mock_ep]
 
         # 2. Get the parser
-        with patch.object(sys, "argv", ["agentv", "--help"]):
-            parser = cli.get_parser(is_help=True)
+        with patch.object(sys, "argv", ["agentv", "ext-cmd"]):
+            parser = cli.get_parser()
 
         # 3. Verify the command exists in subparsers
         # subparsers are stored in parser._subparsers._group_actions[0].choices
@@ -77,16 +77,24 @@ class TestCLIExtensions(unittest.TestCase):
 
         mock_entry_points.return_value = [mock_ep]
 
-        # We need to capture stderr to verify the warning
+        # Unknown commands are the only path that loads extension entry points.
         with patch("sys.stderr.write") as mock_stderr:
-            with patch.object(sys, "argv", ["agentv", "--help"]):
-                cli.get_parser(is_help=True)
+            with patch.object(sys, "argv", ["agentv", "broken-extension"]):
+                cli.get_parser()
 
             # Check for the warning message
             warning_called = any("broken_ext" in call[0][0] for call in mock_stderr.call_args_list)
             self.assertTrue(
                 warning_called, "Warning message should be printed for failed extension load"
             )
+
+    @patch("importlib.metadata.entry_points")
+    def test_top_level_help_does_not_load_extension_code(self, mock_entry_points):
+        """Keep CLI help on the no-plugin cold path."""
+        with patch.object(sys, "argv", ["agentv", "--help"]):
+            cli.get_parser(is_help=True)
+
+        mock_entry_points.assert_not_called()
 
 
 if __name__ == "__main__":

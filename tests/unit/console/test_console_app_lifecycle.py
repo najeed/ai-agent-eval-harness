@@ -121,6 +121,32 @@ def test_create_app_demo_enabled():
                 mock_instance.load_index.assert_not_called()
 
 
+def test_create_app_skips_external_plugins_by_default(monkeypatch):
+    """Console startup must not import optional distributed plugin runtimes."""
+    monkeypatch.delenv("AGENTV_ENABLE_EXTERNAL_CONSOLE_PLUGINS", raising=False)
+
+    with (
+        patch("eval_runner.plugins.manager.load_plugins") as load_plugins,
+        patch("eval_runner.catalog.ScenarioCatalog.get_instance"),
+    ):
+        create_app()
+
+    load_plugins.assert_called_once_with(load_external=False)
+
+
+def test_create_app_can_opt_in_external_console_plugins(monkeypatch):
+    """External console extensions remain an explicit operator opt-in."""
+    monkeypatch.setenv("AGENTV_ENABLE_EXTERNAL_CONSOLE_PLUGINS", "true")
+
+    with (
+        patch("eval_runner.plugins.manager.load_plugins") as load_plugins,
+        patch("eval_runner.catalog.ScenarioCatalog.get_instance"),
+    ):
+        create_app()
+
+    load_plugins.assert_called_once_with(load_external=True)
+
+
 def test_create_app_plugin_route_failure_graceful(capsys):
     """If a plugin's on_register_console_routes raises, it is caught, recorded, and surfaced."""
     from eval_runner import config

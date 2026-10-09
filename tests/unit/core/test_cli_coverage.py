@@ -103,13 +103,13 @@ def test_entry_points_type_error_fallback():
     def _old_style_eps(**kwargs):
         raise TypeError("unexpected keyword argument")
 
-    with patch.object(sys, "argv", ["agentv", "--help"]):
+    with patch.object(sys, "argv", ["agentv", "extension-command"]):
         with patch("importlib.metadata.entry_points", side_effect=_old_style_eps):
             with patch(
                 "importlib.metadata.entry_points",
                 side_effect=[TypeError("unexpected"), {"agentv.extensions": []}],
             ):
-                parser = cli.get_parser(is_help=True)
+                parser = cli.get_parser()
                 assert parser is not None
     _reset_cache()
 

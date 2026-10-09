@@ -62,8 +62,11 @@ def test_cli_extension_registration():
 
     mock_ep.load.return_value = mock_reg
 
-    with patch("importlib.metadata.entry_points", return_value=[mock_ep]):
-        parser = cli.get_parser(is_help=True)
+    with (
+        patch.object(cli.sys, "argv", ["agentv", "test_ext"]),
+        patch("importlib.metadata.entry_points", return_value=[mock_ep]),
+    ):
+        parser = cli.get_parser()
         subparsers = [a for a in parser._actions if isinstance(a, cli.argparse._SubParsersAction)][
             0
         ]
