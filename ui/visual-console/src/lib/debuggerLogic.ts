@@ -4,6 +4,18 @@
  */
 
 import dagre from 'dagre';
+
+export const CANONICAL_TERMINAL_STATUSES = new Set([
+  'COMPLETED',
+  'PASSED',
+  'FAILED',
+  'ABORTED',
+  'ERROR',
+  'SEALED',
+  'CERTIFIED',
+  'STALLED',
+]);
+
 export interface LogEvent {
   _seq?: number;
   timestamp?: string;
@@ -125,9 +137,11 @@ export const projectTraceGraphTopology = (
     mode === 'planned'
       ? scenarioNodes
       : mode === 'executed'
-        ? [...scenarioNodes, ...runtimeNodes].filter(node =>
-            executedNodeIds.has(String(node.id || node.scenario_node_id || node.task_id)),
-          )
+        ? executedNodeIds.size === 0
+          ? scenarioNodes
+          : [...scenarioNodes, ...runtimeNodes].filter(node =>
+              executedNodeIds.has(String(node.id || node.scenario_node_id || node.task_id)),
+            )
         : [...scenarioNodes, ...runtimeNodes];
 
   return { scenarioNodes, runtimeNodes, visibleNodes, executedNodeIds, graphNodeEvents };
@@ -1237,7 +1251,11 @@ export const buildTraceGraph = (
     let border = isHighlighted ? '2px solid #818cf8' : '1px solid #334155';
     let background = '#0f172a';
 
-    if (status === 'rejected') {
+    if (mode === 'executed' && !hasCanonicalEvent) {
+      statusLabel = 'Planned (Pending Execution)';
+      border = isHighlighted ? '2px dashed #818cf8' : '1px dashed #475569';
+      background = 'rgba(30, 41, 59, 0.35)';
+    } else if (status === 'rejected') {
       border = isHighlighted ? '2px solid #f43f5e' : '1px solid #e11d48';
       background = 'rgba(159,18,57,0.45)';
     } else if (status === 'paused') {
@@ -1419,7 +1437,10 @@ export const buildTraceGraph = (
     .filter((e) => {
       const isPlanned = e.provenance === 'planned';
       if (mode === 'planned') return isPlanned;
-      if (mode === 'executed') return !isPlanned;
+      if (mode === 'executed') {
+        if (executedNodeIds.size === 0) return isPlanned;
+        return !isPlanned;
+      }
       return true; // divergence: show all
     })
     .map((e): FlowEdge => {
@@ -1447,6 +1468,16 @@ export const buildTraceGraph = (
             stroke: e.style?.stroke ?? (isDivergence ? '#f59e0b' : '#10b981'),
             strokeWidth: isDivergence ? 2.5 : 2,
           },
+        };
+      }
+      if (mode === 'executed' && executedNodeIds.size === 0) {
+        return {
+          ...e,
+          type: total > 1 ? 'smoothstep' : undefined,
+          pathOptions,
+          animated: false,
+          data: edgeData,
+          style: { stroke: '#475569', strokeWidth: 1.5, strokeDasharray: '4,4' },
         };
       }
       if (mode === 'planned') {

@@ -230,3 +230,62 @@ class TestFlightRecorderWORMPropagation:
                     retention_days=180,
                     legal_hold=True,
                 )
+
+
+class TestImmutableWORMEnforcement:
+    """
+    Verifies that claimed or required physical WORM rejects logical-only stores
+    before certification.
+    """
+
+    def test_local_artifact_store_classification_is_logical_seal(self) -> None:
+        store = LocalFileArtifactStore()
+        assert store.immutability_guarantee == "TAMPER_EVIDENT_LOGICAL_SEAL"
+
+    def test_certification_rejects_logical_store_when_immutable_worm_required(
+        self, tmp_path: Path, monkeypatch
+    ) -> None:
+        from eval_runner.identity import IdentityService
+        from eval_runner.verifier import CertificationFailedError, TraceVerifier
+
+        project_root = tmp_path / "project"
+        run_log_dir = project_root / "runs"
+        reports_dir = project_root / "reports"
+        trust_root = project_root / ".aes" / "keys"
+
+        run_id = "run-test-worm"
+        run_dir = run_log_dir / run_id
+        run_dir.mkdir(parents=True, exist_ok=True)
+        reports_dir.mkdir(parents=True, exist_ok=True)
+        trust_root.mkdir(parents=True, exist_ok=True)
+
+        trace_file = run_dir / "run.jsonl"
+        trace_file.write_text(
+            json.dumps({"event": "run_start", "run_id": run_id})
+            + "\n"
+            + json.dumps({"event": "oracle_result", "oracle_id": "o1", "outcome": "PASS"})
+            + "\n"
+            + json.dumps(
+                {"event": "run_end", "run_id": run_id, "data": {"status": "pass", "score": 1.0}}
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+        monkeypatch.setattr(config, "PROJECT_ROOT", project_root)
+        monkeypatch.setattr(config, "RUN_LOG_DIR", run_log_dir)
+        monkeypatch.setattr(config, "REPORTS_DIR", reports_dir)
+        monkeypatch.setattr(config, "TRUST_ROOT", trust_root)
+
+        IdentityService._provision_local_identity("system_id")
+        store = LocalFileArtifactStore(base_dir=run_log_dir)
+
+        with patch.object(config, "REQUIRE_IMMUTABLE_WORM", True):
+            with pytest.raises(CertificationFailedError) as exc_info:
+                TraceVerifier.sign_trace(
+                    trace_path=str(trace_file),
+                    run_id=run_id,
+                    artifact_store=store,
+                )
+            assert "ImmutableRetentionRequired" in str(exc_info.value)
+            assert "TAMPER_EVIDENT_LOGICAL_SEAL" in str(exc_info.value)

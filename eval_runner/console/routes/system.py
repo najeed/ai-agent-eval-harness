@@ -454,6 +454,25 @@ def _runtime_health() -> dict[str, Any]:
             "ui/visual-console/dist."
         )
 
+    # Plugin registration status
+    from flask import current_app
+
+    plugin_errors: list[dict[str, str]] = []
+    try:
+        plugin_errors = current_app.config.get("PLUGIN_REGISTRATION_ERRORS", [])
+    except RuntimeError:
+        pass
+
+    if plugin_errors:
+        dependencies["plugins"] = "FAILED"
+        for p_err in plugin_errors:
+            details.append(
+                f"Plugin registration failed for {p_err.get('plugin', 'unknown')}: "
+                f"{p_err.get('error', '')}"
+            )
+    else:
+        dependencies["plugins"] = "HEALTHY"
+
     failed = [k for k, v in dependencies.items() if v == "FAILED"]
     degraded = [k for k, v in dependencies.items() if v == "DEGRADED"]
     if failed:

@@ -18,6 +18,7 @@ import {
   computeTraceIntegrity,
   filterEventsByTelemetryLevel,
   computeTelemetryDiagnostics,
+  CANONICAL_TERMINAL_STATUSES,
 } from '../lib/debuggerLogic';
 import type {
   LogEvent,
@@ -154,8 +155,9 @@ export const LiveDebugger: React.FC = () => {
       .then(data => {
         const list = (data.runs || []).map((r: any) => r.run_id);
         setRunsList(list);
-        if (!runId && list.length > 0) {
-          setRunId(list[0]);
+        const currentParam = new URLSearchParams(window.location.search).get('run_id');
+        if (!currentParam && list.length > 0) {
+          setRunId(prev => (prev ? prev : list[0]));
         }
       });
   }, []);
@@ -195,8 +197,6 @@ export const LiveDebugger: React.FC = () => {
     }
   };
 
-  const TERMINAL_RUN_STATUSES = new Set(['COMPLETED', 'FAILED', 'ABORTED', 'ERROR', 'SEALED', 'CERTIFIED']);
-
   // Lifecycle-bound scenario topology fetcher with exponential backoff retry.
   // Coupled to run lifecycle: continues retrying while run is nonterminal,
   // then performs one mandatory terminal refresh to ensure late-resolved scenarios hydrate.
@@ -211,7 +211,7 @@ export const LiveDebugger: React.FC = () => {
           return;
         }
         const runStatus = String(data.status || '').toUpperCase();
-        if (TERMINAL_RUN_STATUSES.has(runStatus) && !isTerminalRefresh) {
+        if (CANONICAL_TERMINAL_STATUSES.has(runStatus) && !isTerminalRefresh) {
           // Perform one mandatory terminal refresh
           setTimeout(() => {
             if (!staleAfterFetch()) fetchScenarioWithRetry(rid, attempt + 1, true);
@@ -502,13 +502,66 @@ export const LiveDebugger: React.FC = () => {
         console.error('Failed to parse SSE event data:', e);
         return;
       }
+      // 1. Explicit typed stream-control events (transport & lifecycle commands)
+      // These do not require an opaque transport cursor and must NEVER be dropped,
+      // but are NOT treated as certifying evidentiary trace records.
       if (data.event === 'timeout') {
         setStatus('STALLED');
+        setConnectionStatus('FINISHED');
+        if (streamCtlRef.current.es === source) {
+          source.close();
+          streamCtlRef.current.es = null;
+        }
         return;
       }
       if (data.event === 'not_found') {
         console.info('[LiveDebugger] Trace not ready yet:', data.message);
         setConnectionStatus('CONNECTING');
+        return;
+      }
+      if (data.event === 'error' || data.event === 'stream_error') {
+        const errMsg = data.message || data.error || 'Stream error occurred';
+        console.warn('[LiveDebugger] Stream control error received:', errMsg);
+        setStatus(prev => (prev === 'IDLE' ? 'ERROR' : prev));
+        setConnectionStatus('DISCONNECTED');
+        if (streamCtlRef.current.es === source) {
+          source.close();
+          streamCtlRef.current.es = null;
+        }
+        fetch(`/api/v1/runs/${rid}`)
+          .then(res => res.json())
+          .then(runData => {
+            if (streamCtlRef.current.run !== rid) return;
+            if (runData.status) setStatus(runData.status);
+            if (CANONICAL_TERMINAL_STATUSES.has(String(runData.status || '').toUpperCase())) {
+              setConnectionStatus('FINISHED');
+            }
+          })
+          .catch(() => {});
+        return;
+      }
+      if (data.event === 'stream_end' || data.event === 'end') {
+        setConnectionStatus('FINISHED');
+        if (streamCtlRef.current.es === source) {
+          source.close();
+          streamCtlRef.current.es = null;
+        }
+        fetchScenarioWithRetry(rid, 0, true);
+        return;
+      }
+      if (
+        (data.event === 'run_end' || (data as any).name === 'run_end') &&
+        (!Number.isSafeInteger(Number((data as any)._transport_cursor)) ||
+          Number((data as any)._transport_cursor) <= 0)
+      ) {
+        // Synthetic terminal notification (e.g. process thread terminated abruptly / aborted)
+        setStatus(data.status ? String(data.status).toUpperCase() : 'ABORTED');
+        setConnectionStatus('FINISHED');
+        if (streamCtlRef.current.es === source) {
+          source.close();
+          streamCtlRef.current.es = null;
+        }
+        fetchScenarioWithRetry(rid, 0, true);
         return;
       }
 
@@ -578,8 +631,6 @@ export const LiveDebugger: React.FC = () => {
       source.close();
       streamCtlRef.current.es = null;
 
-      const TERMINAL_STATUSES = new Set(['COMPLETED', 'FAILED', 'ABORTED', 'ERROR', 'SEALED', 'CERTIFIED']);
-
       fetch(`/api/v1/runs/${rid}`)
         .then(res => {
           if (!res.ok) throw new Error(`Status check returned ${res.status}`);
@@ -591,7 +642,7 @@ export const LiveDebugger: React.FC = () => {
           setStatus(runStatus);
           setSourcedFromMaster(!!data.sourced_from_master);
 
-          if (TERMINAL_STATUSES.has(runStatus)) {
+          if (CANONICAL_TERMINAL_STATUSES.has(runStatus)) {
             // Explicit terminal state: the run is over; no retries are scheduled.
             setConnectionStatus('FINISHED');
             fetchScenarioWithRetry(rid, 0, true);
@@ -673,10 +724,14 @@ export const LiveDebugger: React.FC = () => {
       </div>
       {!d.hasCanonicalEvent && (
         <div
-          title="No execution_graph_node event recorded for this node yet; status is PENDING by definition, not inferred."
-          className="px-1 py-0.2 bg-slate-800/60 text-slate-500 text-[8px] rounded tracking-wider uppercase"
+          title={
+            d.mode === 'executed'
+              ? 'Planned scenario spine shown awaiting execution telemetry.'
+              : 'No execution_graph_node event recorded for this node yet; status is PENDING by definition, not inferred.'
+          }
+          className="px-1 py-0.2 bg-slate-800/60 text-slate-400 text-[8px] rounded tracking-wider uppercase font-mono"
         >
-          NO GRAPH EVENT
+          {d.mode === 'executed' ? 'PLANNED (PENDING)' : 'NO GRAPH EVENT'}
         </div>
       )}
       {d.isSkipped && (
@@ -732,8 +787,7 @@ export const LiveDebugger: React.FC = () => {
     if (authoritative) setSelectedEvent(authoritative);
   };
 
-  const RUN_TERMINAL_STATUSES = new Set(['COMPLETED', 'PASSED', 'FAILED', 'ABORTED', 'ERROR', 'SEALED', 'CERTIFIED', 'STALLED']);
-  const isTerminalRun = RUN_TERMINAL_STATUSES.has(status);
+  const isTerminalRun = CANONICAL_TERMINAL_STATUSES.has(status);
 
   useEffect(() => {
     const timer = setTimeout(() => {

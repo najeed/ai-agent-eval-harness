@@ -183,26 +183,28 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
     elif computed_status in ("pass", "fail"):
         is_eval_pass = computed_status == "pass"
     else:
-        is_eval_pass = bool(data_block.get("passed", False)) or bool(
-            data_block.get("verified", False)
-        )
+        is_eval_pass = None
 
-    # Priority: evidence_invalid > policy_violation > crypto-verified > unverified > not-verified
+    # Priority: evidence_invalid > policy_violation > crypto-verified >
+    # unverified > not-verified / inconclusive
     if corrupt_line_offsets:
         verified_outcome = "EVIDENCE_INVALID"
     elif any(e.get("event") == "policy_violation" for e in events):
         verified_outcome = "POLICY_BREACH"
     elif (
-        is_eval_pass
+        is_eval_pass is True
         and crypto_verification.get("verified") is True
         and crypto_verification.get("manifest_hash_match") is True
     ):
         verified_outcome = "VERIFIED"
-    elif is_eval_pass or (data_block.get("passed", False) or data_block.get("verified", False)):
+    elif is_eval_pass is True:
         # Execution passed but signature did not verify — report truthfully
         verified_outcome = "UNVERIFIED"
-    else:
+    elif is_eval_pass is False:
         verified_outcome = "NOT_VERIFIED"
+    else:
+        # Authoritative finalization/computed outcomes unavailable
+        verified_outcome = "INCONCLUSIVE"
 
     evidence_chain_valid: bool = verified_outcome == "VERIFIED" and not corrupt_line_offsets
 

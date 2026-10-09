@@ -10,6 +10,7 @@ import pytest
 
 from eval_runner import config
 from eval_runner.adapters.common import (
+    AdapterSessionPool,
     assert_airgap_safe_endpoint,
     is_airgap_safe_host,
     validate_http_endpoint,
@@ -184,3 +185,86 @@ class TestLLMProvidersAirgapGuard:
         with patch.object(config, "is_airgapped", return_value=True):
             with pytest.raises(AirgappedConfigurationError):
                 GrokProvider(api_key="test-key")
+
+
+class TestDnsRebindingAndRedirectGuards:
+    """Verifies DNS rebinding and redirect revalidation defense-in-depth."""
+
+    def test_internal_suffix_resolving_to_public_ip_rejected(self) -> None:
+        # Mock DNS resolution where a .internal domain resolves to a public WAN IP
+        fake_addrinfo = [
+            (2, 1, 6, "", ("93.184.216.34", 80)),
+        ]
+        with patch("socket.getaddrinfo", return_value=fake_addrinfo):
+            assert is_airgap_safe_host("malicious-rebinding.internal", resolve_dns=True) is False
+
+    def test_rebinding_dual_homed_host_with_mixed_ips_rejected(self) -> None:
+        # Host resolves to both 127.0.0.1 and a public IP (split-horizon / rebinding attack)
+        fake_addrinfo = [
+            (2, 1, 6, "", ("127.0.0.1", 80)),
+            (2, 1, 6, "", ("8.8.8.8", 80)),
+        ]
+        with patch("socket.getaddrinfo", return_value=fake_addrinfo):
+            assert is_airgap_safe_host("dual-homed.local", resolve_dns=True) is False
+
+    def test_assert_airgap_safe_endpoint_rejects_rebinding_domain(self) -> None:
+        fake_addrinfo = [
+            (2, 1, 6, "", ("142.250.190.46", 443)),
+        ]
+        with patch.object(config, "is_airgapped", return_value=True):
+            with patch("socket.getaddrinfo", return_value=fake_addrinfo):
+                with pytest.raises(AirgappedConfigurationError) as exc_info:
+                    assert_airgap_safe_endpoint("https://spoofed.internal/v1")
+                assert "targets a public WAN or non-private destination" in str(exc_info.value)
+
+    @pytest.mark.asyncio
+    async def test_session_pool_redirect_trace_config_rejects_public_redirect(self) -> None:
+        with patch.object(config, "is_airgapped", return_value=True):
+            pool = AdapterSessionPool()
+            session = pool._build_session()
+            try:
+                assert len(session.trace_configs) == 1
+                trace_cfg = session.trace_configs[0]
+                assert len(trace_cfg.on_request_redirect) == 1
+
+                class DummyParams:
+                    url = "https://public-wan-site.com/steal"
+
+                with pytest.raises(AirgappedConfigurationError):
+                    await trace_cfg.on_request_redirect[0](session, None, DummyParams())
+            finally:
+                await session.close()
+
+    @pytest.mark.asyncio
+    async def test_adapter_request_context_revalidates_response_history(self) -> None:
+        from unittest.mock import AsyncMock, MagicMock
+
+        from eval_runner.adapters.common import _AdapterRequestContext
+
+        pool = MagicMock()
+        mock_session = AsyncMock()
+        pool.get_session = AsyncMock(return_value=mock_session)
+
+        mock_context = AsyncMock()
+        mock_session.request = MagicMock(return_value=mock_context)
+
+        # Create mock response with a public redirect history
+        mock_response = MagicMock()
+        mock_response.url = "http://127.0.0.1:8000/done"
+
+        redirect_record = MagicMock()
+        redirect_record.url = "https://external-leak.com/intermediate"
+        mock_response.history = [redirect_record]
+
+        mock_context.__aenter__.return_value = mock_response
+
+        with patch.object(config, "is_airgapped", return_value=True):
+            ctx = _AdapterRequestContext(
+                pool=pool,
+                method="GET",
+                url="http://127.0.0.1:8000/start",
+                kwargs={},
+            )
+            with pytest.raises(AirgappedConfigurationError) as exc_info:
+                await ctx.__aenter__()
+            assert "external-leak.com" in str(exc_info.value)

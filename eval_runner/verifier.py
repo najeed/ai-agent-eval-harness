@@ -1563,6 +1563,28 @@ class TraceVerifier:
             from eval_runner.run_lifecycle import RunLifecycleState, transition_run_lifecycle
 
             try:
+                # Check immutable retention guarantees if required
+                require_immutable = bool(
+                    getattr(config, "REQUIRE_IMMUTABLE_WORM", False)
+                    or (
+                        scenario_data
+                        and scenario_data.get("metadata", {}).get("require_immutable_worm", False)
+                    )
+                )
+                if require_immutable:
+                    guarantee = getattr(store, "immutability_guarantee", None)
+                    if (
+                        guarantee == "TAMPER_EVIDENT_LOGICAL_SEAL"
+                        or not guarantee
+                        or guarantee != "HARDWARE_OR_CLOUD_ENFORCED_WORM"
+                    ):
+                        raise CertificationFailedError(
+                            f"ImmutableRetentionRequired: Active artifact store "
+                            f"'{store.__class__.__name__}' offers '{guarantee or 'UNSPECIFIED'}', "
+                            "but deployment/scenario requires an externally enforced "
+                            "immutable ArtifactStore (e.g., S3 Object Lock)."
+                        )
+
                 # Local lifecycle owns .sealed.  Calling LocalFileArtifactStore.seal
                 # first created a second irreversible write, so a subsequent
                 # lifecycle persistence failure could leave a sealed-but-unpublished

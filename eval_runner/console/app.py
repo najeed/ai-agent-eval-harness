@@ -344,16 +344,26 @@ def create_app():
     subscribe_debugger()
 
     # Trigger plugin hook to register additional routes and nav items
+    plugin_errors: list[dict[str, str]] = []
     for plugin in manager.plugins:
         method = getattr(plugin, "on_register_console_routes", None)
         if method and callable(method):
             try:
                 method(app, nav_registry)
             except Exception as e:
+                err_msg = str(e)
                 print(
                     f"   [Console] Warning: Route registration failed for "
-                    f"{plugin.__class__.__name__}: {e}"
+                    f"{plugin.__class__.__name__}: {err_msg}"
                 )
+                plugin_errors.append(
+                    {
+                        "plugin": plugin.__class__.__name__,
+                        "error": err_msg,
+                    }
+                )
+
+    app.config["PLUGIN_REGISTRATION_ERRORS"] = plugin_errors
 
     # Re-assert core paths and industrial components to prevent plugin overrides
     core_overrides = {

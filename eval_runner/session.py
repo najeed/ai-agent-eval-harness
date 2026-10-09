@@ -2131,6 +2131,24 @@ class SessionManager:
         )
 
         result = await sandbox.execute(tool_name, tool_params)
+        result_intercept = self.plugin_manager.trigger_interceptor(
+            "on_tool_result", turn_ctx, tool_name, result
+        )
+        if result_intercept is False:
+            raise RuntimeError(f"Tool result for '{tool_name}' rejected by required interceptor")
+        if isinstance(result_intercept, dict):
+            result = result_intercept.get("result", result)
+            receipt = result_intercept.get("mutation_receipt")
+            if isinstance(receipt, dict):
+                self.event_bus.emit(
+                    CoreEvents.ADAPTER_DEBUG,
+                    {
+                        "category": "MUTATION_DELIVERY",
+                        "tool": tool_name,
+                        "mutation_receipt": receipt,
+                    },
+                    span_context=turn_ctx.span_context,
+                )
         state_after = sandbox.state.copy()
 
         # O(N) Forensics: Offload state to disk snapshots
@@ -2220,6 +2238,26 @@ class SessionManager:
                 {"step": turn, "tool": active_tn, "arguments": active_params},
             )
             res = await sandbox.execute(active_tn, active_params)
+            result_intercept = self.plugin_manager.trigger_interceptor(
+                "on_tool_result", turn_ctx, active_tn, res
+            )
+            if result_intercept is False:
+                raise RuntimeError(
+                    f"Tool result for '{active_tn}' rejected by required interceptor"
+                )
+            if isinstance(result_intercept, dict):
+                res = result_intercept.get("result", res)
+                receipt = result_intercept.get("mutation_receipt")
+                if isinstance(receipt, dict):
+                    self.event_bus.emit(
+                        CoreEvents.ADAPTER_DEBUG,
+                        {
+                            "category": "MUTATION_DELIVERY",
+                            "tool": active_tn,
+                            "mutation_receipt": receipt,
+                        },
+                        span_context=turn_ctx.span_context,
+                    )
             all_tool_results[idx] = res
             self.event_bus.emit(
                 CoreEvents.TOOL_RESULT,

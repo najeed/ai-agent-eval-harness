@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 
 import pytest
 
@@ -477,3 +478,31 @@ def test_verify_verification_package_route(client):
         json={"package": pkg_payload, "raw_trace_bytes": "invalid base64!"},
     )
     assert res_bad_b64.status_code == 400
+
+
+def test_evidence_package_unfinalized_run_reports_inconclusive(client, tmp_path: Path) -> None:
+    """
+    Verifies that an unfinalized run without finalization
+    or computed outcome reports INCONCLUSIVE.
+    """
+    runs_dir = tmp_path / "runs"
+    run_id = f"run-inconclusive-{int(datetime.now(UTC).timestamp())}"
+    run_vault = runs_dir / run_id
+    run_vault.mkdir(parents=True, exist_ok=True)
+
+    now = datetime.now(UTC)
+    # Trace contains only non-terminal intermediate events;
+    # no finalization record, no computed outcome
+    (run_vault / "run.jsonl").write_text(
+        json.dumps(
+            {"event": "node_execution", "timestamp": now.isoformat(), "data": {"passed": True}}
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    res = client.get(f"/api/v1/evidence/packages/{run_id}")
+    assert res.status_code == 200
+    pkg = res.get_json()
+    assert pkg["verdict"]["verified_outcome"] == "INCONCLUSIVE"
+    assert pkg["evidence_chain_valid"] is False

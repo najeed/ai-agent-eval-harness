@@ -3324,3 +3324,701 @@ async def test_session_consensus_pass_and_model_only(tmp_path):
             [],
         )
         assert res_ms["evaluated"] is True
+
+
+@pytest.mark.asyncio
+async def test_session_restore_checkpoint_completed_nodes_and_tokens(tmp_path):
+    """Verify restore_checkpoint restores completed_node_results and resumption tokens."""
+    sess = SessionManager("run_restore", {"id": "scen_res"}, log_root=tmp_path)
+
+    # 1. Restore completed_node_results and resumption_token argument
+    data1 = {"turn": 3, "completed_node_results": {"n1": {"status": "success"}}}
+    sess.restore_from_checkpoint(data1, resumption_token="res_tok_1")
+    assert sess.turn_number == 3
+    assert sess._completed_node_results == {"n1": {"status": "success"}}
+    assert sess.resumption_token == "res_tok_1"
+
+    # 2. Restore approval_token from checkpoint data without resumption_token arg
+    data2 = {"turn": 1, "approval_token": "app_tok_2"}
+    sess2 = SessionManager("run_restore2", {"id": "scen_res2"}, log_root=tmp_path)
+    sess2.restore_from_checkpoint(data2)
+    assert sess2.resumption_token == "app_tok_2"
+
+
+@pytest.mark.asyncio
+async def test_session_execute_tasks_replays_cached_nodes(tmp_path):
+    """Verify execute_tasks returns cached node results when present in _completed_node_results."""
+    scen = {
+        "id": "scen_cached",
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "n_cached",
+                    "task_description": "Cached node",
+                    "success_criteria": [{"metric": "exact_match", "expected": "ok"}],
+                },
+            ]
+        },
+    }
+    sess = SessionManager("run_cached", scen, log_root=tmp_path)
+    sess._completed_node_results = {
+        "n_cached": {
+            "task_id": "n_cached",
+            "status": "success",
+            "duration_ms": 150,
+        }
+    }
+
+    results = await sess.execute_tasks(1)
+    replayed = next(r for r in results if r.get("task_id") == "n_cached")
+    assert replayed.get("is_replayed") is True
+    assert replayed.get("original_duration_ms") == 150
+
+
+@pytest.mark.asyncio
+async def test_session_run_suspended_for_approval_propagation(tmp_path):
+    """Verify RunSuspendedForApproval propagates through execute_tasks without suppression."""
+    from eval_runner.run_lifecycle import RunSuspendedForApproval
+
+    scen = {
+        "id": "scen_susp",
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "n_susp",
+                    "task_description": "Susp node",
+                    "success_criteria": [{"metric": "exact_match", "expected": "ok"}],
+                }
+            ]
+        },
+    }
+    sess = SessionManager("run_susp", scen, log_root=tmp_path)
+
+    with patch.object(
+        sess,
+        "_execute_node",
+        side_effect=RunSuspendedForApproval("run_susp", "n_susp", "token_susp"),
+    ):
+        with pytest.raises(RunSuspendedForApproval) as exc_info:
+            await sess.execute_tasks(1)
+        assert exc_info.value.approval_token == "token_susp"
+
+
+@pytest.mark.asyncio
+async def test_session_hitl_gate_before_approval_and_unresolved(tmp_path):
+    """Verify scenario-declared HITL gate enforcement, resolution, and unresolved states."""
+    scen = {
+        "id": "scen_gate",
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "n_gate",
+                    "interaction_mode": "manual_approval",
+                    "hitl_prompt": "Approve this critical node",
+                    "success_criteria": [{"metric": "exact_match", "expected": "ok"}],
+                }
+            ]
+        },
+    }
+    sess = SessionManager("run_gate", scen, log_root=tmp_path)
+
+    # 1. Successful gate approval via _handle_hitl
+    with (
+        patch.object(sess, "_handle_hitl", new_callable=AsyncMock, return_value="Approved input"),
+        patch(
+            "eval_runner.session.AgentAdapterRegistry.call_agent",
+            new_callable=AsyncMock,
+            return_value={"action": "done"},
+        ),
+    ):
+        res1 = await sess.execute_tasks(1)
+        assert len(res1) > 0
+        assert "n_gate" in getattr(sess, "_approved_gates", set())
+
+    # 2. Gate unresolved in CI mode
+    sess2 = SessionManager("run_gate_unres", scen, log_root=tmp_path)
+
+    async def mock_unres(*args, **kwargs):
+        sess2._hitl_unresolved = True
+        return "[HITL_UNRESOLVED]"
+
+    with (
+        patch.object(sess2, "_handle_hitl", mock_unres),
+        patch(
+            "eval_runner.session.AgentAdapterRegistry.call_agent",
+            new_callable=AsyncMock,
+            return_value={"action": "done"},
+        ),
+    ):
+        res2 = await sess2.execute_tasks(1)
+        assert len(res2) > 0
+
+
+@pytest.mark.asyncio
+async def test_session_oracle_deduplication_and_parity_binding_hash(tmp_path):
+    """Verify oracle ID deduplication and authority observation binding hash generation."""
+    scen = {"id": "scen_dedup", "workflow": {"nodes": [{"id": "n1"}]}}
+    sess = SessionManager("run_dedup", scen, log_root=tmp_path)
+
+    node_def = {
+        "id": "n1",
+        "task_description": "Dedup node",
+        "success_criteria": [
+            {"metric": "exact_match", "threshold": 1.0},
+            {"metric": "exact_match", "threshold": 1.0},
+        ],
+        "state_hygiene": {
+            "rules": [
+                {"rule": "no_leaks"},
+                {"rule": "no_leaks"},
+            ]
+        },
+        "expected_outcome": [
+            {"target": "db", "property": "balance", "expected": 100},
+            {"target": "db", "property": "balance", "expected": 100},
+            {"target": "policy:strict_auth", "expected": "PASS"},
+        ],
+    }
+
+    mock_metrics = {
+        "metrics": [
+            {"metric": "exact_match", "score": 1.0, "passed": True},
+            {"metric": "exact_match", "score": 1.0, "passed": True},
+        ],
+        "state_hygiene": [
+            {"rule": "no_leaks", "passed": True, "actual": "clean"},
+            {"rule": "no_leaks", "passed": True, "actual": "clean"},
+        ],
+        "evaluation_valid": True,
+    }
+
+    mock_parity = (
+        True,
+        [
+            {
+                "target": "db",
+                "assertion": {"target": "db", "property": "balance"},
+                "outcome": "PASS",
+                "source": "postgres_authority",
+            },
+            {
+                "target": "db",
+                "assertion": {"target": "db", "property": "balance"},
+                "outcome": "PASS",
+            },
+            {
+                "target": "policy:strict_auth",
+                "assertion": {"target": "policy:strict_auth"},
+                "outcome": "PASS",
+            },
+        ],
+    )
+
+    with (
+        patch.object(sess, "_calculate_metrics", new_callable=AsyncMock, return_value=mock_metrics),
+        patch.object(
+            sess, "_verify_state_parity", new_callable=AsyncMock, return_value=mock_parity
+        ),
+        patch(
+            "eval_runner.session.AgentAdapterRegistry.call_agent",
+            new_callable=AsyncMock,
+            return_value={"action": "final_answer", "output": "done"},
+        ),
+    ):
+        res = await sess._execute_node(node_def, 1, 0, MagicMock(), [], {"used_tools": []})
+
+    assert len(res["oracle_results"]) > 0
+    assert "policy_checks" in res
+    assert any(c["id"] == "strict_auth" for c in res["policy_checks"])
+
+
+@pytest.mark.asyncio
+async def test_session_pending_durable_approval_and_lifecycle(tmp_path):
+    """Verify _raise_if_pending_durable_approval handles single and multiple pending approvals."""
+    from eval_runner.run_lifecycle import RunSuspendedForApproval
+
+    sess = SessionManager("run_pend", {"id": "scen_pend"}, log_root=tmp_path)
+
+    # 1. Multiple pending requests raises RuntimeError
+    req1 = MagicMock(
+        approval_token="tok1",
+        prompt="Prompt 1",
+        checkpoint_id="ck1",
+        turn_index=1,
+        action_payload={},
+        metadata={"task_id": "t1"},
+    )
+    req2 = MagicMock(
+        approval_token="tok2",
+        prompt="Prompt 2",
+        checkpoint_id="ck2",
+        turn_index=2,
+        action_payload={},
+        metadata={"task_id": "t2"},
+    )
+    with patch.object(sess.approval_manager, "list_durable_pending", return_value=[req1, req2]):
+        with pytest.raises(RuntimeError, match="has 2 pending durable approvals"):
+            sess._raise_if_pending_durable_approval()
+
+    # 2. Exactly one pending request emits pause and raises RunSuspendedForApproval
+    with (
+        patch.object(sess.approval_manager, "list_durable_pending", return_value=[req1]),
+        patch.object(sess.checkpoint_manager, "load_checkpoint", return_value={"state": 1}),
+    ):
+        with pytest.raises(RunSuspendedForApproval) as exc_info:
+            sess._raise_if_pending_durable_approval()
+        assert exc_info.value.approval_token == "tok1"
+
+
+@pytest.mark.asyncio
+async def test_session_handle_hitl_resumption_token_and_durations(tmp_path):
+    """Verify _handle_hitl handles resumed approval tokens, wait durations, and exceptions."""
+    sess = SessionManager("run_hitl_res", {"id": "scen_hitl_res"}, log_root=tmp_path)
+    sess.resumption_token = "valid_approved_token"
+
+    # 1. Resumption request approved with decided_at >= created_at
+    mock_req = MagicMock(
+        status="APPROVED",
+        decision_reason="Approved by Lead",
+        decision="APPROVED",
+        created_at=1000.0,
+        decided_at=1005.0,
+        metadata={"task_id": "task_hitl", "pre_pause_duration_ms": 120.0},
+    )
+    turn_ctx = MagicMock(task_id="task_hitl", start_time=999.0)
+
+    with patch(
+        "eval_runner.reference.approval_store.get_default_approval_store"
+    ) as mock_store_getter:
+        mock_store = MagicMock()
+        mock_store.get_request.return_value = mock_req
+        mock_store_getter.return_value = mock_store
+
+        resp = await sess._handle_hitl(1, {"prompt": "Approval required"}, [], {}, turn_ctx)
+        assert resp == "Approved by Lead"
+
+    # 2. Resumption store raises exception gracefully and falls through
+    from eval_runner.run_lifecycle import RunSuspendedForApproval
+
+    sess._current_node_start_time = 1000.0
+    with (
+        patch(
+            "eval_runner.reference.approval_store.get_default_approval_store",
+            side_effect=RuntimeError("Store error"),
+        ),
+        patch.object(
+            sess.approval_manager,
+            "create_durable_request",
+            return_value=MagicMock(approval_token="app_d", checkpoint_id="ck_d"),
+        ),
+        patch.object(sess.checkpoint_manager, "load_checkpoint", return_value={"st": 1}),
+    ):
+        with pytest.raises(RunSuspendedForApproval):
+            await sess._handle_hitl(
+                1,
+                {"prompt": "Approval required", "gate_type": "scenario_declared"},
+                [],
+                {},
+                turn_ctx,
+            )
+
+
+@pytest.mark.asyncio
+async def test_session_should_enforce_hitl_gate_branches(tmp_path):
+    """Verify _should_enforce_hitl_gate checks pre-approved gates and timing configurations."""
+    sess = SessionManager("run_gate_branches", {"id": "scen_gb"}, log_root=tmp_path)
+
+    # 1. Gate already in _approved_gates
+    sess._approved_gates = {"node_approved"}
+    assert sess._should_enforce_hitl_gate({"id": "node_approved"}) is False
+
+    # 2. Resumption token pre-approved for this node
+    sess.resumption_token = "tok_pre"
+    mock_req = MagicMock(status="APPROVED", metadata={"task_id": "node_pre"})
+    with patch(
+        "eval_runner.reference.approval_store.get_default_approval_store"
+    ) as mock_store_getter:
+        mock_store = MagicMock()
+        mock_store.get_request.return_value = mock_req
+        mock_store_getter.return_value = mock_store
+
+        assert sess._should_enforce_hitl_gate({"id": "node_pre"}) is False
+        assert "node_pre" in sess._approved_gates
+
+        # Exception querying store logs debug and continues
+        mock_store.get_request.side_effect = RuntimeError("Store error")
+        node_timing = {"id": "node_time", "hitl_gate": {"timing": "after"}}
+        assert sess._should_enforce_hitl_gate(node_timing, timing="before") is False
+        assert sess._should_enforce_hitl_gate(node_timing, timing="after") is True
+
+
+@pytest.mark.asyncio
+async def test_session_acquire_bounded_state_validation(tmp_path):
+    """
+    Verify _acquire_bounded_state raises appropriate errors for invalid or non-dict state getters.
+    """
+    sess = SessionManager("run_bound", {"id": "scen_bound"}, log_root=tmp_path)
+
+    # 1. Missing or non-coroutine get_bounded_state raises BoundedStateAcquisitionUnavailable
+    bad_sandbox1 = MagicMock()
+    bad_sandbox1.get_bounded_state = "not_callable"
+    with pytest.raises(RuntimeError, match="BoundedStateAcquisitionUnavailable"):
+        await sess._acquire_bounded_state(bad_sandbox1, ["prop"])
+
+    # 2. get_bounded_state returns non-dict raises BoundedStateAcquisitionInvalid
+    bad_sandbox2 = MagicMock()
+
+    async def mock_bad_getter(projection):
+        return "not_a_dict"
+
+    bad_sandbox2.get_bounded_state = mock_bad_getter
+
+    with pytest.raises(RuntimeError, match="BoundedStateAcquisitionInvalid"):
+        await sess._acquire_bounded_state(bad_sandbox2, ["prop"])
+
+
+@pytest.mark.asyncio
+async def test_session_cached_result_with_original_duration_branch(tmp_path):
+    """
+    Verify execute_tasks returns cached node results
+    when original_duration_ms is already present.
+    """
+    scen = {
+        "id": "scen_cached_orig",
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "n_cached_orig",
+                    "task_description": "Cached node with orig duration",
+                    "success_criteria": [{"metric": "exact_match", "expected": "ok"}],
+                },
+            ]
+        },
+    }
+    sess = SessionManager("run_cached_orig", scen, log_root=tmp_path)
+    sess._completed_node_results = {
+        "n_cached_orig": {
+            "task_id": "n_cached_orig",
+            "status": "success",
+            "original_duration_ms": 250,
+        }
+    }
+    results = await sess.execute_tasks(1)
+    replayed = next(r for r in results if r.get("task_id") == "n_cached_orig")
+    assert replayed.get("original_duration_ms") == 250
+
+
+@pytest.mark.asyncio
+async def test_session_completed_node_results_lazy_init_on_success(tmp_path):
+    """
+    Verify _completed_node_results is lazily initialized
+    when a node succeeds in execute_tasks.
+    """
+    scen = {
+        "id": "scen_lazy_init",
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "n_lazy",
+                    "task_description": "Lazy node",
+                    "success_criteria": [{"metric": "exact_match", "expected": "ok"}],
+                },
+            ]
+        },
+    }
+    sess = SessionManager("run_lazy_init", scen, log_root=tmp_path)
+    if hasattr(sess, "_completed_node_results"):
+        delattr(sess, "_completed_node_results")
+
+    with (
+        patch.object(
+            sess,
+            "_execute_node",
+            new_callable=AsyncMock,
+            return_value={"status": "success", "task_id": "n_lazy"},
+        ),
+    ):
+        results = await sess.execute_tasks(1)
+        assert len(results) >= 1
+        assert hasattr(sess, "_completed_node_results")
+        assert "n_lazy" in sess._completed_node_results
+
+
+@pytest.mark.asyncio
+async def test_session_execute_node_re_raises_run_suspended_for_approval(tmp_path):
+    """Verify _execute_node re-raises RunSuspendedForApproval when raised during turn execution."""
+    from eval_runner.run_lifecycle import RunSuspendedForApproval
+
+    sess = SessionManager("run_turn_susp", {"id": "scen_turn_susp"}, log_root=tmp_path)
+    node_def = {
+        "id": "n_susp_turn",
+        "task_description": "Susp turn node",
+        "success_criteria": [{"metric": "exact_match", "expected": "ok"}],
+    }
+    with patch(
+        "eval_runner.session.AgentAdapterRegistry.call_agent",
+        new_callable=AsyncMock,
+        side_effect=RunSuspendedForApproval("run_turn_susp", "n_susp_turn", "tok_turn"),
+    ):
+        with pytest.raises(RunSuspendedForApproval) as exc_info:
+            await sess._execute_node(node_def, 1, 0, MagicMock(), [], {"used_tools": []})
+        assert exc_info.value.approval_token == "tok_turn"
+
+
+@pytest.mark.asyncio
+async def test_session_oracle_deduplication_hygiene_same_path(tmp_path):
+    """Verify oracle ID deduplication when multiple state hygiene rules share the same path."""
+    scen = {"id": "scen_sh_dup", "workflow": {"nodes": [{"id": "n_sh"}]}}
+    sess = SessionManager("run_sh_dup", scen, log_root=tmp_path)
+    node_def = {
+        "id": "n_sh",
+        "task_description": "SH dup node",
+        "success_criteria": [{"metric": "exact_match", "threshold": 1.0}],
+        "state_hygiene": {
+            "rules": [
+                {"path": "/common/path", "expected": 1},
+                {"path": "/common/path", "expected": 2},
+            ]
+        },
+    }
+    mock_metrics = {
+        "metrics": [{"metric": "exact_match", "score": 1.0, "passed": True}],
+        "state_hygiene": [
+            {"path": "/common/path", "passed": True, "actual": 1},
+            {"path": "/common/path", "passed": True, "actual": 2},
+        ],
+        "evaluation_valid": True,
+    }
+    with (
+        patch.object(sess, "_calculate_metrics", new_callable=AsyncMock, return_value=mock_metrics),
+        patch.object(sess, "_verify_state_parity", new_callable=AsyncMock, return_value=(True, [])),
+        patch(
+            "eval_runner.session.AgentAdapterRegistry.call_agent",
+            new_callable=AsyncMock,
+            return_value={"action": "final_answer", "output": "ok"},
+        ),
+    ):
+        res = await sess._execute_node(node_def, 1, 0, MagicMock(), [], {"used_tools": []})
+    oracle_ids = [o["oracle_id"] for o in res["oracle_results"]]
+    assert any(":1" in oid for oid in oracle_ids)
+
+
+@pytest.mark.asyncio
+async def test_session_tool_intercept_rejection_and_mutation_receipt(tmp_path):
+    """
+    Verify tool interceptor rejection and mutation receipt
+    debug events across single and multi tools.
+    """
+    from eval_runner.context import TurnContext
+
+    sess = SessionManager("run_tool_int", {"id": "scen_tool_int"}, log_root=tmp_path)
+    sandbox = MagicMock()
+    sandbox.execute = AsyncMock(return_value="executed_ok")
+    turn_ctx = TurnContext(task_id="t1", turn_number=1, current_message="msg", history=[])
+
+    # 1. Single tool call rejected by on_tool_result interceptor
+    with patch.object(
+        sess.plugin_manager,
+        "trigger_interceptor",
+        side_effect=lambda hook, *args: False if hook == "on_tool_result" else None,
+    ):
+        with pytest.raises(RuntimeError, match="rejected by required interceptor"):
+            await sess._handle_tool_call(
+                1, {"tool_name": "t_single"}, sandbox, [], {"used_tools": []}, turn_ctx
+            )
+
+    # 2. Single tool call with mutation receipt in intercept_result
+    with patch.object(
+        sess.plugin_manager,
+        "trigger_interceptor",
+        side_effect=lambda hook, *args: (
+            {"result": "mut_res", "mutation_receipt": {"status": "ok"}}
+            if hook == "on_tool_result"
+            else None
+        ),
+    ):
+        await sess._handle_tool_call(
+            1, {"tool_name": "t_mut"}, sandbox, [], {"used_tools": []}, turn_ctx
+        )
+
+    # 3. Multi tool call rejected by on_tool_result interceptor
+    with patch.object(
+        sess.plugin_manager,
+        "trigger_interceptor",
+        side_effect=lambda hook, *args: False if hook == "on_tool_result" else None,
+    ):
+        with pytest.raises(RuntimeError, match="rejected by required interceptor"):
+            await sess._handle_multiple_tools(
+                1, {"tool_calls": [{"tool": "t_multi"}]}, sandbox, [], {"used_tools": []}, turn_ctx
+            )
+
+    # 4. Multi tool call with mutation receipt in intercept_result
+    with patch.object(
+        sess.plugin_manager,
+        "trigger_interceptor",
+        side_effect=lambda hook, *args: (
+            {"result": "mut_res_m", "mutation_receipt": {"status": "ok"}}
+            if hook == "on_tool_result"
+            else None
+        ),
+    ):
+        await sess._handle_multiple_tools(
+            1, {"tool_calls": [{"tool": "t_multi_mut"}]}, sandbox, [], {"used_tools": []}, turn_ctx
+        )
+
+
+@pytest.mark.asyncio
+async def test_session_hitl_resumption_token_mismatched_task_and_duration_fallbacks(tmp_path):
+    """
+    Verify resumption token non-approval, mismatched task IDs,
+    created_at duration fallback, and null context.
+    """
+    sess = SessionManager("run_hitl_misc", {"id": "scen_hm"}, log_root=tmp_path)
+    sess.resumption_token = "tok_misc"
+
+    # 1. res_req is not approved (PENDING)
+    mock_req_pending = MagicMock(status="PENDING", metadata={"task_id": "task_1"})
+    with (
+        patch(
+            "eval_runner.reference.approval_store.get_default_approval_store"
+        ) as mock_store_getter,
+        patch.object(sess, "_current_node_start_time", None, create=True),
+    ):
+        mock_store = MagicMock()
+        mock_store.get_request.return_value = mock_req_pending
+        mock_store_getter.return_value = mock_store
+
+        # With turn_ctx without start_time
+        ctx_no_start = MagicMock(spec=[])
+        resp = await sess._handle_hitl(1, {"prompt": "Prompt 1"}, [], {}, ctx_no_start)
+        assert "[HITL_UNRESOLVED]" in resp or "Skipped" in resp
+
+    # 2. res_req approved but task_id doesn't match
+    mock_req_mismatch = MagicMock(status="APPROVED", metadata={"task_id": "other_task"})
+    with patch(
+        "eval_runner.reference.approval_store.get_default_approval_store"
+    ) as mock_store_getter:
+        mock_store = MagicMock()
+        mock_store.get_request.return_value = mock_req_mismatch
+        mock_store_getter.return_value = mock_store
+
+        resp = await sess._handle_hitl(
+            1, {"prompt": "Prompt 2"}, [], {}, MagicMock(task_id="this_task")
+        )
+        assert "[HITL_UNRESOLVED]" in resp or "Skipped" in resp
+
+    # 3. res_req approved, task_id matches, but decided_at is None (created_at fallback)
+    mock_req_created_only = MagicMock(
+        status="APPROVED",
+        metadata={"task_id": "task_match"},
+        decision="APPROVED",
+        decision_reason="Approved reason",
+        created_at=100.0,
+        decided_at=None,
+    )
+    with patch(
+        "eval_runner.reference.approval_store.get_default_approval_store"
+    ) as mock_store_getter:
+        mock_store = MagicMock()
+        mock_store.get_request.return_value = mock_req_created_only
+        mock_store_getter.return_value = mock_store
+
+        resp = await sess._handle_hitl(
+            1, {"prompt": "Prompt 3"}, [], {}, MagicMock(task_id="task_match")
+        )
+        assert resp == "Approved reason"
+
+    # 4. res_req approved, task_id matches, but created_at and decided_at are both None
+    mock_req_no_timestamps = MagicMock(
+        status="APPROVED",
+        metadata={"task_id": "task_match"},
+        decision="APPROVED",
+        decision_reason="Approved no timestamps",
+        created_at=None,
+        decided_at=None,
+    )
+    with patch(
+        "eval_runner.reference.approval_store.get_default_approval_store"
+    ) as mock_store_getter:
+        mock_store = MagicMock()
+        mock_store.get_request.return_value = mock_req_no_timestamps
+        mock_store_getter.return_value = mock_store
+
+        resp = await sess._handle_hitl(
+            1, {"prompt": "Prompt 4"}, [], {}, MagicMock(task_id="task_match")
+        )
+        assert resp == "Approved no timestamps"
+
+
+@pytest.mark.asyncio
+async def test_session_hitl_durable_request_org_id_and_tenancy_metadata(tmp_path, monkeypatch):
+    """Verify org_id and tenancy metadata propagation when creating durable approval requests."""
+    monkeypatch.setenv("AGENTV_CLI_HITL_SUSPEND", "1")
+    sess = SessionManager("run_tenancy", {"id": "scen_tenancy"}, log_root=tmp_path)
+    sess.metadata["org_id"] = "org_enterprise"
+    sess.metadata["tenant_id"] = "tenant_xyz"
+    sess.metadata["correlation_id"] = "corr_abc"
+
+    captured_metadata = {}
+
+    def mock_create_durable(**kwargs):
+        captured_metadata.update(kwargs.get("metadata", {}))
+        return MagicMock(approval_token="app_ten", checkpoint_id="ck_ten")
+
+    with (
+        patch.object(
+            sess.approval_manager, "create_durable_request", side_effect=mock_create_durable
+        ),
+        patch.object(sess.checkpoint_manager, "load_checkpoint", return_value={"st": 1}),
+    ):
+        from eval_runner.run_lifecycle import RunSuspendedForApproval
+
+        with pytest.raises(RunSuspendedForApproval):
+            await sess._handle_hitl(
+                1, {"prompt": "Suspend prompt"}, [], {}, MagicMock(task_id="t_ten")
+            )
+
+    assert captured_metadata.get("org_id") == "org_enterprise"
+    assert captured_metadata.get("tenant_id") == "tenant_xyz"
+    assert captured_metadata.get("correlation_id") == "corr_abc"
+
+
+@pytest.mark.asyncio
+async def test_session_gate_check_resumption_token_branches_and_lazy_approved_gates(tmp_path):
+    """
+    Verify _should_enforce_hitl_gate token non-approval, node mismatch,
+    and lazy _approved_gates creation.
+    """
+    sess = SessionManager("run_gate_extra", {"id": "scen_ge"}, log_root=tmp_path)
+    sess.resumption_token = "tok_gate_check"
+
+    # 1. Resumption request status is PENDING
+    mock_req_pending = MagicMock(status="PENDING", metadata={"task_id": "gate_node"})
+    with patch(
+        "eval_runner.reference.approval_store.get_default_approval_store"
+    ) as mock_store_getter:
+        mock_store = MagicMock()
+        mock_store.get_request.return_value = mock_req_pending
+        mock_store_getter.return_value = mock_store
+
+        node_cfg = {"id": "gate_node", "interaction_mode": "manual_approval"}
+        assert sess._should_enforce_hitl_gate(node_cfg) is True
+
+    # 2. Resumption request status is APPROVED but task_id is mismatched
+    mock_req_mismatch = MagicMock(status="APPROVED", metadata={"task_id": "other_gate"})
+    with patch(
+        "eval_runner.reference.approval_store.get_default_approval_store"
+    ) as mock_store_getter:
+        mock_store = MagicMock()
+        mock_store.get_request.return_value = mock_req_mismatch
+        mock_store_getter.return_value = mock_store
+
+        node_cfg2 = {"id": "gate_node", "interaction_mode": "manual_approval"}
+        assert sess._should_enforce_hitl_gate(node_cfg2) is True
+
+    # 3. Fresh session lazy _approved_gates initialization
+    sess_fresh = SessionManager("run_fresh_gate", {"id": "scen_fg"}, log_root=tmp_path)
+    if hasattr(sess_fresh, "_approved_gates"):
+        delattr(sess_fresh, "_approved_gates")
+    sess_fresh._mark_gate_approved("fresh_gate_node")
+    assert "fresh_gate_node" in sess_fresh._approved_gates

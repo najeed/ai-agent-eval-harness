@@ -122,7 +122,7 @@ def test_create_app_demo_enabled():
 
 
 def test_create_app_plugin_route_failure_graceful(capsys):
-    """If a plugin's on_register_console_routes raises, it is caught and logged."""
+    """If a plugin's on_register_console_routes raises, it is caught, recorded, and surfaced."""
     from eval_runner import config
 
     bad_plugin = MagicMock()
@@ -137,6 +137,17 @@ def test_create_app_plugin_route_failure_graceful(capsys):
     ):
         app = create_app()
         assert app is not None
+        assert app.config["PLUGIN_REGISTRATION_ERRORS"] == [
+            {"plugin": "BadPlugin", "error": "Route crash"}
+        ]
+
+        with app.test_client() as c:
+            resp = c.get("/api/status")
+            assert resp.status_code == 200
+            data = resp.get_json()
+            assert data["dependencies"]["plugins"] == "FAILED"
+            assert data["status"] == "UNREACHABLE"
+            assert any("BadPlugin" in detail for detail in data["details"])
 
 
 def test_create_app_nav_registry_overrides():

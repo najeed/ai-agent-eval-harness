@@ -426,11 +426,12 @@ async def test_runner_compile_required_oracle_ids_matrix():
     with pytest.raises(ValueError, match="RequiredPolicyMissingOracleId"):
         compile_required_oracle_ids({"metadata": {"policies": {"bad": {"required": True}}}})
 
-    # 2. Plan compilation exception
+    # 2. Plan compilation exception fails closed
     with patch(
         "eval_runner.execution_ir.compile_evaluation_plan", side_effect=ValueError("Plan parse err")
     ):
-        assert compile_required_oracle_ids({"id": "err_scen"}) == []
+        with pytest.raises(ValueError, match="Plan parse err"):
+            compile_required_oracle_ids({"id": "err_scen"})
 
     # 3. Plan compilation with required and non-required oracles and duplicates
     mock_plan = MagicMock()
@@ -1134,3 +1135,440 @@ async def test_certification_fails_closed_on_missing_hashes_or_tools(tmp_path, m
     monkeypatch.setattr(runner.resolved_config, "config_hash", "none")
     res = await runner.run(scenario, metadata=meta)
     assert res.metadata.get("uncertifiable") is True
+
+
+def test_runner_compile_required_oracle_ids_extended_branches():
+    """Verify compile_required_oracle_ids handles non-dict policies and deduplication."""
+    from eval_runner.runner import compile_required_oracle_ids
+
+    # Policies declared as non-dict
+    res_non_dict = compile_required_oracle_ids({"metadata": {"policies": ["not_a_dict"]}})
+    assert isinstance(res_non_dict, list)
+
+    # Policy specs that are not dicts or not marked required
+    scenario_mixed = {
+        "metadata": {
+            "policies": {
+                "p_str": "not_a_dict_spec",
+                "p_unreq": {"required": False, "oracle_id": "ignored_id"},
+                "p_req": {"required": True, "oracle_id": "active_id"},
+            }
+        }
+    }
+    res_mixed = compile_required_oracle_ids(scenario_mixed)
+    assert "active_id" in res_mixed
+    assert "ignored_id" not in res_mixed
+
+    # Duplicate oracle IDs across policies
+    scenario_dup = {
+        "metadata": {
+            "policies": {
+                "p1": {"required": True, "oracle_id": "shared_oracle"},
+                "p2": {"required": True, "oracle_id": "shared_oracle"},
+            }
+        }
+    }
+    res_dup = compile_required_oracle_ids(scenario_dup)
+    assert res_dup.count("shared_oracle") == 1
+
+
+def test_runner_resolve_tool_versions_attribution_extended_branches():
+    """Verify tool version attribution when tools are malformed or non-standard types."""
+    # Tools declared as non-list
+    vers1, prov1 = DefaultRunner._resolve_tool_versions_attribution(
+        {"tools": "invalid_tools_string"}, {}
+    )
+    assert vers1 == {}
+    assert prov1 == {}
+
+    # Tools list with non-dict and non-str elements
+    vers2, prov2 = DefaultRunner._resolve_tool_versions_attribution(
+        {"tools": [12345, None, 3.14]}, {}
+    )
+    assert vers2 == {}
+    assert prov2 == {}
+
+
+@pytest.mark.asyncio
+async def test_runner_scenario_snapshot_hash_mismatch_fails_closed():
+    """Verify RuntimeError is raised when scenario document cannot be frozen consistently."""
+    runner = DefaultRunner()
+    scenario = {"id": "scen_freeze_test", "workflow": {"nodes": [{"id": "n1"}]}}
+
+    with patch(
+        "agentv_runtime.manifest.compute_scenario_hash",
+        side_effect=["initial_hash", "mutated_hash"],
+    ):
+        with pytest.raises(
+            RuntimeError,
+            match="ScenarioSnapshotHashMismatch: unable to freeze the exact scenario document",
+        ):
+            await runner.run(scenario)
+
+
+@pytest.mark.asyncio
+async def test_runner_certification_unknown_hashes_and_no_adapter(monkeypatch):
+    """Verify certification mode flags unknown hashes and handles scenario without adapter."""
+    runner = DefaultRunner()
+    scenario = {
+        "id": "cert_no_adapter_scen",
+        "version": "1.0.0",
+        "execution_mode": "live",
+        "policy_hash": "unknown",
+        "workflow": {"nodes": [{"id": "n1"}]},
+    }
+    monkeypatch.setattr("agentv_runtime.manifest.compute_scenario_hash", lambda _: "unknown")
+
+    emitted = []
+    monkeypatch.setattr(
+        "eval_runner.events.emit",
+        lambda ev, payload, *a, **k: emitted.append((ev, payload)),
+    )
+
+    res = await runner.run(scenario)
+    assert res.metadata.get("uncertifiable") is True
+    fail_evs = [p for e, p in emitted if e == CoreEvents.CERTIFICATION_FAILED]
+    assert len(fail_evs) > 0
+    error_msg = fail_evs[0].get("error", "")
+    assert "scenario_hash" in error_msg
+    assert "policy_hash" in error_msg
+
+
+@pytest.mark.asyncio
+async def test_runner_callable_metadata_and_non_dict_metadata(tmp_path, monkeypatch):
+    """Verify callable entries in manifest metadata are pruned and non-dict metadata is handled."""
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
+    runner = DefaultRunner()
+    scenario = {
+        "id": "callable_meta_scen",
+        "workflow": {"nodes": [{"id": "n1"}]},
+    }
+    meta_with_callable = {
+        "normal_field": "valid",
+        "ignored_callable": lambda: "strip_me",
+        "nested_dict": {
+            "inner_valid": 42,
+            "inner_callable": lambda: "strip_too",
+        },
+    }
+
+    with patch(
+        "eval_runner.session.SessionManager.execute_tasks",
+        new_callable=AsyncMock,
+        return_value=[{"workflow_verdict": {"status": "COMPLETED"}}],
+    ):
+        res = await runner.run(scenario, metadata=meta_with_callable)
+        assert res is not None
+
+        res2 = await runner.run(scenario, metadata=None)
+        assert res2 is not None
+
+
+@pytest.mark.asyncio
+async def test_runner_vault_collision_and_resumption_lifecycle(tmp_path, monkeypatch):
+    """Verify vault directory collision and resumption lifecycle transitions."""
+    import json
+
+    from eval_runner.run_lifecycle import RunLifecycleState, transition_run_lifecycle
+
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
+    runner = DefaultRunner()
+    scenario = {"id": "vault_scen", "workflow": {"nodes": [{"id": "n1"}]}}
+
+    # 1. Existing vault without resumption raises RunIdCollision
+    existing_vault = tmp_path / "runs" / "collision_test_run"
+    existing_vault.mkdir(parents=True, exist_ok=True)
+    with pytest.raises(RuntimeError, match="RunIdCollision"):
+        await runner.run(scenario, run_id="collision_test_run")
+
+    # 2. Existing vault in terminal sealed state raises ResumptionError
+    sealed_vault = tmp_path / "runs" / "sealed_test_run"
+    sealed_vault.mkdir(parents=True, exist_ok=True)
+    transition_run_lifecycle("sealed_test_run", RunLifecycleState.FINALIZING)
+    transition_run_lifecycle("sealed_test_run", RunLifecycleState.SEALED)
+    with pytest.raises(RuntimeError, match="ResumptionError"):
+        await runner.run(
+            scenario,
+            run_id="sealed_test_run",
+            resumption_token="test_resume_token",
+        )
+
+    # 3. Successful resumption reloads manifest and scenario snapshot
+    resume_vault = tmp_path / "runs" / "active_resume_run"
+    resume_vault.mkdir(parents=True, exist_ok=True)
+    transition_run_lifecycle("active_resume_run", RunLifecycleState.PAUSED_FOR_APPROVAL)
+
+    manifest_file = resume_vault / "execution_manifest.json"
+    manifest_file.write_text(
+        json.dumps(
+            {
+                "manifest_id": "man_active_resume_run",
+                "scenario_id": "vault_scen",
+                "scenario_version": "1.0.0",
+                "scenario_hash": "mock_scen_hash",
+                "agent_config": {},
+                "runtime_config": {"execution_mode": "hybrid"},
+                "environment": {},
+                "metadata": {"execution_mode": "hybrid"},
+            }
+        ),
+        encoding="utf-8",
+    )
+    snapshot_file = resume_vault / "scenario_resolved.json"
+    snapshot_file.write_text(json.dumps(scenario), encoding="utf-8")
+
+    with patch(
+        "eval_runner.session.SessionManager.execute_tasks",
+        new_callable=AsyncMock,
+        return_value=[{"workflow_verdict": {"status": "COMPLETED"}}],
+    ):
+        res_resume = await runner.run(
+            scenario,
+            run_id="active_resume_run",
+            resumption_token="test_resume_token",
+        )
+        assert res_resume is not None
+        assert res_resume.metadata.get("execution_mode") == "hybrid"
+
+
+@pytest.mark.asyncio
+async def test_runner_resumption_corrupt_manifest_and_snapshot_handling(tmp_path, monkeypatch):
+    """Verify resumption handles corrupted manifest and snapshot files gracefully."""
+    from eval_runner.run_lifecycle import RunLifecycleState, transition_run_lifecycle
+
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
+    runner = DefaultRunner()
+    scenario = {"id": "corrupt_resume_scen", "workflow": {"nodes": [{"id": "n1"}]}}
+
+    corrupt_vault = tmp_path / "runs" / "corrupt_resume_run"
+    corrupt_vault.mkdir(parents=True, exist_ok=True)
+    transition_run_lifecycle("corrupt_resume_run", RunLifecycleState.OPEN)
+
+    manifest_file = corrupt_vault / "execution_manifest.json"
+    manifest_file.write_text("{ corrupt json ", encoding="utf-8")
+    snapshot_file = corrupt_vault / "scenario_resolved.json"
+    snapshot_file.write_text("{ corrupt json ", encoding="utf-8")
+
+    with patch(
+        "eval_runner.session.SessionManager.execute_tasks",
+        new_callable=AsyncMock,
+        return_value=[{"workflow_verdict": {"status": "COMPLETED"}}],
+    ):
+        res = await runner.run(
+            scenario,
+            run_id="corrupt_resume_run",
+            resumption_token="corrupt_tok",
+        )
+        assert res is not None
+
+
+@pytest.mark.asyncio
+async def test_runner_run_suspended_for_approval_transition(tmp_path, monkeypatch):
+    """Verify RunSuspendedForApproval transitions lifecycle to PAUSED_FOR_APPROVAL and re-raises."""
+    from eval_runner.run_lifecycle import RunSuspendedForApproval
+
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
+    runner = DefaultRunner()
+    scenario = {"id": "hitl_scen", "workflow": {"nodes": [{"id": "n1"}]}}
+
+    with patch(
+        "eval_runner.session.SessionManager.execute_tasks",
+        new_callable=AsyncMock,
+        side_effect=RunSuspendedForApproval("hitl_test_run", "node_1", "approval_token_999"),
+    ):
+        with pytest.raises(RunSuspendedForApproval) as exc_info:
+            await runner.run(scenario, run_id="hitl_test_run")
+        assert exc_info.value.approval_token == "approval_token_999"
+
+
+@pytest.mark.asyncio
+async def test_runner_physical_trace_reading_empty_lines(tmp_path, monkeypatch):
+    """Verify trace parser handles empty and whitespace lines in run.jsonl without errors."""
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
+    runner = DefaultRunner()
+    scenario = {"id": "trace_space_scen", "workflow": {"nodes": [{"id": "n1"}]}}
+
+    async def mock_exec(*args, **kwargs):
+        run_file = tmp_path / "runs" / "space_trace_run" / "run.jsonl"
+        run_file.parent.mkdir(parents=True, exist_ok=True)
+        run_file.write_text(
+            '{"event": "run_start", "run_id": "space_trace_run"}\n\n   '
+            '\n{"event": "run_end", "run_id": "space_trace_run"}\n\n',
+            encoding="utf-8",
+        )
+        return [{"workflow_verdict": {"status": "COMPLETED"}}]
+
+    monkeypatch.setattr("eval_runner.session.SessionManager.execute_tasks", mock_exec)
+    res = await runner.run(scenario, run_id="space_trace_run")
+    assert res is not None
+
+
+@pytest.mark.asyncio
+async def test_runner_certification_evaluation_kernel_fallback_and_signing_error(
+    tmp_path, monkeypatch
+):
+    """
+    Verify fallback to EvaluationKernel identity and error handling
+    on finalization signing exception.
+    """
+    from eval_runner.identity import IdentityService
+
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
+    runner = DefaultRunner()
+    scenario = {
+        "id": "cert_kernel_fallback_scen",
+        "version": "1.0.0",
+        "execution_mode": "live",
+        "adapter": {"endpoint": "http://localhost:8000", "protocol": "http_rest"},
+        "tools": [{"name": "tool1", "version": "1.0.0"}],
+        "workflow": {"nodes": [{"id": "n1"}]},
+    }
+    meta = {
+        "model": "gpt-4o",
+        "provider": "openai",
+        "adapter_version": "1.0.0",
+        "source_commit": "abc1234",
+    }
+    emitted = []
+    monkeypatch.setattr(
+        "eval_runner.events.emit",
+        lambda ev, payload, *a, **k: emitted.append((ev, payload)),
+    )
+
+    async def mock_exec(*args, **kwargs):
+        for v in (tmp_path / "runs").iterdir():
+            if v.is_dir():
+                run_file = v / "run.jsonl"
+                if not run_file.exists():
+                    run_file.write_text('{"event": "run_start"}\n', encoding="utf-8")
+        return [{"workflow_verdict": {"status": "COMPLETED"}}]
+
+    monkeypatch.setattr("eval_runner.session.SessionManager.execute_tasks", mock_exec)
+
+    orig_get_key = IdentityService.get_private_key
+
+    def mock_get_key(id_id, auto_provision=True):
+        if id_id == "eval_runner.runner.EvaluationKernel":
+            return orig_get_key(id_id, auto_provision=True)
+        return None
+
+    monkeypatch.setattr(IdentityService, "get_private_key", mock_get_key)
+
+    # 1. Successful fallback to EvaluationKernel
+    res = await runner.run(scenario, run_id="cert_fallback_run", metadata=meta)
+    assert res is not None
+
+    # 2. Signing failure on finalization record
+    with patch(
+        "agentv_runtime.finalization.EvaluatorFinalizationRecord.sign",
+        side_effect=ValueError("Corrupt signature hardware"),
+    ):
+        res2 = await runner.run(scenario, run_id="cert_sign_fail_run", metadata=meta)
+        assert res2.metadata.get("uncertifiable") is True
+
+
+@pytest.mark.asyncio
+async def test_runner_save_manifest_run_store_exception_logged(tmp_path, monkeypatch):
+    """Verify failure to save run manifest to RunStore logs warning and does not crash run."""
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
+    runner = DefaultRunner()
+    scenario = {"id": "run_store_fail_scen", "workflow": {"nodes": [{"id": "n1"}]}}
+
+    mock_run_store = MagicMock()
+    mock_run_store.save_run_manifest.side_effect = OSError("Simulated disk write failure")
+    runner.run_store = mock_run_store
+
+    with patch(
+        "eval_runner.session.SessionManager.execute_tasks",
+        new_callable=AsyncMock,
+        return_value=[{"workflow_verdict": {"status": "COMPLETED"}}],
+    ):
+        res = await runner.run(scenario, run_id="store_fail_run")
+        assert res is not None
+        assert mock_run_store.save_run_manifest.called
+
+
+@pytest.mark.asyncio
+async def test_runner_metadata_non_mapping_and_manifest_mode_branches(tmp_path, monkeypatch):
+    """
+    Verify branches where context metadata is not Mapping or resumed manifest has no execution mode.
+    """
+    import json
+
+    from eval_runner.context import EvaluationContext
+    from eval_runner.run_lifecycle import RunLifecycleState, transition_run_lifecycle
+
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
+    runner = DefaultRunner()
+    scenario = {"id": "non_map_scen", "workflow": {"nodes": [{"id": "n1"}]}}
+
+    # 1. Branch 350->358: ctx.metadata is None (not a Mapping)
+    orig_init = EvaluationContext.__init__
+
+    def mock_ctx_init(self, *a, **kw):
+        orig_init(self, *a, **kw)
+        object.__setattr__(self, "metadata", None)
+
+    with patch("eval_runner.runner.EvaluationContext.__init__", mock_ctx_init):
+        with patch(
+            "eval_runner.session.SessionManager.execute_tasks",
+            new_callable=AsyncMock,
+            return_value=[{"workflow_verdict": {"status": "COMPLETED"}}],
+        ):
+            res1 = await runner.run(scenario, run_id="non_map_meta_run")
+            assert res1 is not None
+
+    # 2. Resumption where manifest has no execution_mode (branch 743->756)
+    vault = tmp_path / "runs" / "no_mode_resume_run"
+    vault.mkdir(parents=True, exist_ok=True)
+    transition_run_lifecycle("no_mode_resume_run", RunLifecycleState.OPEN)
+
+    mf = vault / "execution_manifest.json"
+    mf.write_text(
+        json.dumps(
+            {
+                "manifest_id": "man_no_mode_resume_run",
+                "scenario_id": "non_map_scen",
+                "scenario_version": "1.0.0",
+                "scenario_hash": "h123",
+                "runtime_config": {},
+                "metadata": {},
+            }
+        ),
+        encoding="utf-8",
+    )
+    with patch(
+        "eval_runner.session.SessionManager.execute_tasks",
+        new_callable=AsyncMock,
+        return_value=[{"workflow_verdict": {"status": "COMPLETED"}}],
+    ):
+        res2 = await runner.run(scenario, run_id="no_mode_resume_run", resumption_token="tok")
+        assert res2 is not None
+
+    # 3. Resumption where manifest mode is set but ctx.metadata is not Mapping (branch 746->756)
+    vault3 = tmp_path / "runs" / "no_meta_resume_run"
+    vault3.mkdir(parents=True, exist_ok=True)
+    transition_run_lifecycle("no_meta_resume_run", RunLifecycleState.OPEN)
+
+    mf3 = vault3 / "execution_manifest.json"
+    mf3.write_text(
+        json.dumps(
+            {
+                "manifest_id": "man_no_meta_resume_run",
+                "scenario_id": "non_map_scen",
+                "scenario_version": "1.0.0",
+                "scenario_hash": "h123",
+                "runtime_config": {"execution_mode": "hybrid"},
+                "metadata": {},
+            }
+        ),
+        encoding="utf-8",
+    )
+    with patch("eval_runner.runner.EvaluationContext.__init__", mock_ctx_init):
+        with patch(
+            "eval_runner.session.SessionManager.execute_tasks",
+            new_callable=AsyncMock,
+            return_value=[{"workflow_verdict": {"status": "COMPLETED"}}],
+        ):
+            res3 = await runner.run(scenario, run_id="no_meta_resume_run", resumption_token="tok")
+            assert res3 is not None

@@ -24,9 +24,12 @@ class ScenarioLinter:
             return "BRONZE"
         return "UNRANKED"
 
-    def lint(self, file_path: str) -> dict[str, Any]:
-        """Runs a suite of checks on a scenario file."""
-        p = Path(file_path)
+    def lint(self, target: str | Path | dict[str, Any]) -> dict[str, Any]:
+        """Runs a suite of checks on a scenario file or in-memory dictionary."""
+        if isinstance(target, dict):
+            return self.lint_dict(target, name="scenario.json")
+
+        p = Path(target)
         results = {
             "file": p.name,
             "status": "pass",
@@ -56,9 +59,22 @@ class ScenarioLinter:
             results["tier"] = "UNRANKED"
             return results
 
+        return self.lint_dict(data, name=p.name)
+
+    def lint_dict(self, data: Any, name: str = "scenario.json") -> dict[str, Any]:
+        """Runs a suite of checks on a scenario data structure."""
+        results = {
+            "file": name,
+            "status": "pass",
+            "warnings": [],
+            "errors": [],
+            "score": 100,
+            "tier": "GOLD",
+        }
+
         # 1. Registry/List Check
         if isinstance(data, list):
-            if p.name == "index.json":
+            if name == "index.json":
                 results["status"] = "pass"
                 results["tier"] = "REGISTRY"
                 results["score"] = 100
@@ -88,13 +104,23 @@ class ScenarioLinter:
             results["status"] = "fail"
             results["score"] -= 50
 
-        # Mandatory Top-Level Fields (v1.3)
-        mandatory_fields = ["aes_version", "metadata", "workflow", "industry"]
+        # Mandatory Top-Level Fields (AES v1.4)
+        mandatory_fields = ["aes_version", "metadata", "workflow"]
         for field in mandatory_fields:
             if field not in data or not data[field]:
                 results["errors"].append(f"Missing mandatory field: '{field}'")
                 results["status"] = "fail"
                 results["score"] -= 20
+
+        # Industry can be specified at root or inside metadata
+        has_industry = bool(
+            data.get("industry")
+            or (isinstance(data.get("metadata"), dict) and data["metadata"].get("industry"))
+        )
+        if not has_industry:
+            results["errors"].append("Missing mandatory field: 'industry'")
+            results["status"] = "fail"
+            results["score"] -= 20
 
         # Metadata Compliance (v1.3 requirement)
         metadata = data.get("metadata", {})

@@ -721,25 +721,21 @@ async def handle_hitl_resume(args):
             if request.status == "REJECTED":
                 return 0
 
-        # Resolve the request in durable store
-        resolved_req = store.resolve_request(
+        # Use the shared runtime approval boundary so CLI resolution receives
+        # the same pre-resolution interceptor checks as in-session approval.
+        from .. import plugins
+        from ..session_components.approval_manager import SessionApprovalManager
+
+        SessionApprovalManager(
+            run_id=run_id,
+            approval_store=store,
+            plugin_manager=plugins.manager,
+        ).resolve_durable_request(
             approval_token=approval_token,
             decision=normalized_decision,
             decided_by=reviewer,
             decision_reason=reason,
         )
-
-        # Trigger on_approval_resolved hook and emit CoreEvents.APPROVAL_RESOLVED (best-effort)
-        try:
-            from .. import events, plugins
-
-            plugins.manager.trigger("on_approval_resolved", None, resolved_req)
-            events.emit(events.CoreEvents.APPROVAL_RESOLVED, resolved_req.to_dict())
-        except Exception as _hook_err:
-            logger.warning(
-                "[CLI] Failed to dispatch on_approval_resolved hook/event: %s",
-                _hook_err,
-            )
 
         if normalized_decision == "REJECTED":
             print(f"🛑 Approval REJECTED for run '{run_id}'.")

@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
+from eval_runner.mutator_plugin import RuntimeMutationPlugin
 from eval_runner.plugins import BaseEvalPlugin, PluginManager
 from eval_runner.session import SessionManager
 
@@ -24,6 +25,20 @@ class ShortCircuitPlugin(BaseEvalPlugin):
         if tool_name == "identity_check":
             return {"short_circuit_result": {"status": "success", "identity": "verified_by_plugin"}}
         return True
+
+
+def test_required_interceptor_failure_is_not_silently_bypassed():
+    class RequiredFailingPlugin(BaseEvalPlugin):
+        is_mandatory = True
+
+        def on_tool_request(self, context, tool_name, arguments):
+            raise RuntimeError("injection boundary unavailable")
+
+    manager = PluginManager()
+    manager.plugins = [RequiredFailingPlugin()]
+
+    with pytest.raises(RuntimeError, match="Required interceptor on_tool_request failed"):
+        manager.trigger_interceptor("on_tool_request", MagicMock(), "tool", {})
 
 
 @pytest.mark.asyncio
@@ -81,3 +96,30 @@ async def test_tool_short_circuit():
     sandbox.execute.assert_not_called()
     # 2. History should contain the short-circuited result
     assert history[-1]["content"]["identity"] == "verified_by_plugin"
+
+
+@pytest.mark.asyncio
+async def test_runtime_response_mutation_records_delivery_evidence():
+    plugin = RuntimeMutationPlugin()
+    plugin.on_step_start(None, "node_1", {"tool_response_corrupted": True})
+    manager = PluginManager()
+    manager.plugins = [plugin]
+    sandbox = AsyncMock()
+    sandbox.state = {}
+    sandbox.execute = AsyncMock(return_value={"status": "success", "amount": 500})
+    session = SessionManager(run_id="run_response_fault", scenario={"id": "test"})
+    session.plugin_manager = manager
+    events = []
+    session.event_bus.subscribe(lambda event: events.append(event.to_dict()))
+
+    await session._handle_tool_call(
+        1,
+        {"action": "call_tool", "tool_name": "execute_wire", "tool_params": {}},
+        sandbox,
+        [],
+        {"used_tools": []},
+        MagicMock(),
+    )
+
+    delivery = [event for event in events if event.get("category") == "MUTATION_DELIVERY"]
+    assert delivery and delivery[0]["mutation_receipt"]["delivery"] == "DELIVERED"

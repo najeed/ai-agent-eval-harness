@@ -36,6 +36,10 @@ from agentv_runtime.contracts import (
 from agentv_runtime.interfaces import MutationEngine
 
 
+class UnsupportedMutationError(ValueError):
+    """Raised when a requested mutation has no executable runtime provider."""
+
+
 def mutate_text_with_typos(text: str, probability: float = 0.1) -> str:
     """Randomly swaps or repeats characters to simulate typos."""
     if not text:
@@ -423,6 +427,20 @@ class InputMutators(ScenarioMutator):
             for node in nodes:
                 node["task_description"] += injection
 
+        # Update scenario name conforming to AES 1.4 schema
+        label = {
+            "typos": "(Typo)",
+            "typo": "(Typo)",
+            "ambiguity": "(Ambiguity)",
+            "injection": "(Injection)",
+        }.get(mutation_type)
+        if label:
+            if "metadata" in scenario and isinstance(scenario["metadata"], dict):
+                cur_name = scenario["metadata"].get("name", "Scenario")
+                scenario["metadata"]["name"] = f"{cur_name} {label}"
+            if "name" in scenario:
+                scenario["name"] = f"{scenario.get('name', 'Scenario')} {label}"
+
 
 class ContextMutators(ScenarioMutator):
     """Contextual and goal decay perturbations targeting CONTEXT vector."""
@@ -679,6 +697,10 @@ class ToolMutators(ScenarioMutator):
         elif mutation_type in ["malformed_payload", "malformed payload", "malformed"]:
             for node in nodes:
                 node["raw_payload_corrupted"] = '{"unclosed_json: true'
+                # RuntimeMutationPlugin applies this at the post-execution
+                # response boundary as well, rather than only decorating the
+                # scenario definition.
+                node["tool_response_corrupted"] = True
         elif mutation_type in ["tool_contract", "contract violation", "contract_violation"]:
             for node in nodes:
                 params = node.setdefault("parameters", {})
@@ -776,11 +798,6 @@ class StateMutators(ScenarioMutator):
                 node["partial_commit_simulated"] = True
                 node["failure_mode"] = "fail_after_step_1"
         elif mutation_type in ["rollback_failure", "rollback failure", "rollback"]:
-            fp = scenario.get("failure_policy")
-            if isinstance(fp, dict):
-                fp["rollback_handler_corrupted"] = True
-            elif fp is None:
-                scenario["failure_policy"] = {"rollback_handler_corrupted": True}
             scenario.setdefault("metadata", {})["rollback_handler_corrupted"] = True
             for node in nodes:
                 node["rollback_handler_corrupted"] = True
@@ -789,11 +806,6 @@ class StateMutators(ScenarioMutator):
             for node in nodes:
                 node["concurrent_writers"] = 2
         elif mutation_type in ["duplicate_commit", "duplicate commit"]:
-            fp = scenario.get("failure_policy")
-            if isinstance(fp, dict):
-                fp["duplicate_commit"] = True
-            elif fp is None:
-                scenario["failure_policy"] = {"duplicate_commit": True}
             scenario.setdefault("metadata", {})["duplicate_commit"] = True
             for node in nodes:
                 node["duplicate_commit"] = True
@@ -804,11 +816,6 @@ class StateMutators(ScenarioMutator):
             "after_cancel_commit",
             "after-cancel",
         ]:
-            fp = scenario.get("failure_policy")
-            if isinstance(fp, dict):
-                fp["commit_after_cancel"] = True
-            elif fp is None:
-                scenario["failure_policy"] = {"commit_after_cancel": True}
             scenario.setdefault("metadata", {})["commit_after_cancel"] = True
             for node in nodes:
                 node["commit_after_cancel"] = True
@@ -1735,6 +1742,13 @@ class MutationService(MutationEngine):
         """Executes mutation through the chain with deep-copy and cycle safeguards."""
         return self.mutate_scenario(scenario_data=scenario, mutation_spec=mutation_type)
 
+    def supports_mutation(self, mutation_type: str) -> bool:
+        """Whether a named mutation has an executable provider in this runtime."""
+        self.discover_installed_mutator_plugins()
+        return self._core_mutator.can_mutate(mutation_type) or any(
+            provider.can_mutate(mutation_type) for provider in self._providers
+        )
+
     # --------------------------------------------------------------------------
     # MutationEngine Interface Methods
     # --------------------------------------------------------------------------
@@ -1757,6 +1771,11 @@ class MutationService(MutationEngine):
             mut_type = str(mutation_spec.get("type", "typo"))
         elif isinstance(mutation_spec, ScenarioMutator):
             mut_type = getattr(mutation_spec, "name", "custom")
+
+        if not isinstance(mutation_spec, ScenarioMutator) and not self.supports_mutation(mut_type):
+            raise UnsupportedMutationError(
+                f"Mutation '{mut_type}' is not available from an executable runtime provider."
+            )
 
         # Deterministic seeding if requested
         if seed is not None:
@@ -1831,8 +1850,13 @@ class MutationService(MutationEngine):
                         meta["id"] = f"{curr_meta_id}{suffix}"
                 elif isinstance(orig_meta_id, str):
                     meta["id"] = f"{orig_meta_id}{suffix}"
-                elif isinstance(mutated.get("id"), str):
-                    meta["id"] = mutated["id"]
+            # Strict AES 1.4 additionalProperties schema guard:
+            # Do not retain root 'id' or 'name' if not present in the original scenario
+            if isinstance(safe_scenario, dict):
+                if "id" in mutated and "id" not in safe_scenario:
+                    del mutated["id"]
+                if "name" in mutated and "name" not in safe_scenario:
+                    del mutated["name"]
 
         # Inject seed lineage if provided
         if seed is not None:

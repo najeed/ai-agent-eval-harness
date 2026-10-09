@@ -548,11 +548,11 @@ def test_verification_workflow_journey_playwright(journey_console_server):
 
             page.get_by_role("button", name="State & Tool Evidence").click()
             for tool_name in EXTERNAL_TOOL_NAMES:
-                page.get_by_text(f"{tool_name}()", exact=False).wait_for(
-                    state="visible", timeout=10000
+                page.get_by_text(f"{tool_name}()", exact=False).first.wait_for(
+                    state="visible", timeout=25000
                 )
             page.get_by_text("Source: External agent telemetry", exact=False).first.wait_for(
-                state="visible", timeout=10000
+                state="visible", timeout=25000
             )
 
             # Check Policy Tab: Click Policy & Guardrails

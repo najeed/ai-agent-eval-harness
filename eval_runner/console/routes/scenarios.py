@@ -1614,6 +1614,14 @@ def mutate_scenario():
     try:
         mutated = eval_runner.mutator.mutate_scenario(scenario, mutation_type, seed=seed)
 
+        # Automated Scenario Linting on Mutant
+        from eval_runner.linter import ScenarioLinter
+
+        linter = ScenarioLinter()
+        lint_report = linter.lint_dict(
+            mutated, name=f"{scenario_id or 'scenario'}_mutated_{mutation_type}.json"
+        )
+
         # Optionally save to output path
         output_path = data.get("output_path")
         if output_path:
@@ -1622,7 +1630,20 @@ def mutate_scenario():
                 return jsonify({"error": "Access denied: output_path outside project root"}), 403
             eval_runner.mutator.save_mutated_scenario(mutated, Path(output_path))
 
-        return jsonify({"status": "success", "mutated": mutated})
+        # This endpoint generates a mutated scenario definition; it does not
+        # execute or verify fault delivery.  Keep the legacy success status for
+        # existing clients while making that boundary explicit to the console.
+        return jsonify(
+            {
+                "status": "success",
+                "operation": "scenario_generation",
+                "delivery_status": "NOT_EXECUTED",
+                "mutated": mutated,
+                "lint_report": lint_report,
+            }
+        )
+    except eval_runner.mutator.UnsupportedMutationError as e:
+        return jsonify({"status": "error", "error": "unsupported_mutation", "message": str(e)}), 400
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 

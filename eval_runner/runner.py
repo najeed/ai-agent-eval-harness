@@ -13,6 +13,7 @@ import logging  # noqa: E402
 import os  # noqa: E402
 import uuid  # noqa: E402
 from abc import ABC, abstractmethod  # noqa: E402
+from collections.abc import Mapping  # noqa: E402
 from pathlib import Path  # noqa: E402
 from typing import Any  # noqa: E402
 
@@ -81,18 +82,15 @@ def compile_required_oracle_ids(scenario: dict[str, Any], resolved_policy: Any =
             if oracle_id not in req_oracles:
                 req_oracles.append(oracle_id)
 
-    # 2. Compile from Workflow nodes / CompiledEvaluationPlan
-    try:
-        from eval_runner.execution_ir import compile_evaluation_plan
+    # 2. Compile from Workflow nodes / CompiledEvaluationPlan (fail closed on invalid plan)
+    from eval_runner.execution_ir import compile_evaluation_plan
 
-        plan = compile_evaluation_plan(scenario)
-        for oid, compiled in plan.oracles.items():
-            if getattr(compiled, "required", True):
-                s_oid = str(oid).strip()
-                if s_oid and s_oid not in req_oracles:
-                    req_oracles.append(s_oid)
-    except Exception as e:
-        logger.debug("Plan compilation in required oracle discovery skipped: %s", e)
+    plan = compile_evaluation_plan(scenario)
+    for oid, compiled in plan.oracles.items():
+        if getattr(compiled, "required", True):
+            s_oid = str(oid).strip()
+            if s_oid and s_oid not in req_oracles:
+                req_oracles.append(s_oid)
 
     # 3. Top-level scenario success_criteria or expected_outcome
     for key in ("success_criteria", "expected_outcome", "oracles"):
@@ -349,9 +347,13 @@ class DefaultRunner(BaseRunner):
         )
         execution_mode = str(declared_mode) if declared_mode else "simulated"
         execution_mode_declared = bool(declared_mode)
-        if isinstance(ctx.metadata, dict):
-            ctx.metadata["execution_mode"] = execution_mode
-            ctx.metadata["execution_mode_declared"] = execution_mode_declared
+        if isinstance(ctx.metadata, Mapping):
+            from .context import _freeze_dict
+
+            new_meta = dict(ctx.metadata)
+            new_meta["execution_mode"] = execution_mode
+            new_meta["execution_mode_declared"] = execution_mode_declared
+            object.__setattr__(ctx, "metadata", _freeze_dict(new_meta))
 
         repro_contract = build_reproducibility_contract(
             scenario,
@@ -359,7 +361,7 @@ class DefaultRunner(BaseRunner):
             seed=seed,
             attempts=attempts,
             execution_mode=str(execution_mode),
-            adapter_metadata=dict(ctx.metadata),
+            adapter_metadata=dict(ctx.metadata) if isinstance(ctx.metadata, Mapping) else {},
             evaluator_fingerprint=metric_registry_fingerprint(),
             plugin_provenance=dict(getattr(plugins.manager, "provenance_map", {}) or {}),
         )
@@ -393,7 +395,7 @@ class DefaultRunner(BaseRunner):
         scen_ver = str(
             scenario.get("version") or (scenario.get("metadata") or {}).get("version") or "1.0.0"
         )
-        adapter_meta = dict(ctx.metadata)
+        adapter_meta = dict(ctx.metadata) if isinstance(ctx.metadata, Mapping) else {}
         scenario_meta = scenario.get("metadata", {}) if isinstance(scenario, dict) else {}
         endpoint = (
             adapter_meta.get("agent")
@@ -468,7 +470,11 @@ class DefaultRunner(BaseRunner):
             or scenario.get("assertions")
             or []
         )
-        policy_h = f"sha3_256:{hashlib.sha3_256(canonical_json_encode(policy_data)).hexdigest()}"
+        policy_h = (
+            str(scenario.get("policy_hash"))
+            if scenario.get("policy_hash") is not None
+            else f"sha3_256:{hashlib.sha3_256(canonical_json_encode(policy_data)).hexdigest()}"
+        )
         oracle_h = f"sha3_256:{hashlib.sha3_256(canonical_json_encode(req_oracles)).hexdigest()}"
         env_raw = (
             f"{sys.platform}:{platform.python_version()}:{platform.node()}:{runtime_pkg_version}"
@@ -666,7 +672,7 @@ class DefaultRunner(BaseRunner):
         }
 
         manifest_metadata = {
-            **dict(ctx.metadata),
+            **(dict(ctx.metadata) if isinstance(ctx.metadata, Mapping) else {}),
             "preflight_fingerprint": canonical_preflight_fp,
             "plugin_provenance": dict(getattr(plugins.manager, "provenance_map", {}) or {}),
             "evaluator_fingerprint": metric_registry_fingerprint(),
@@ -737,9 +743,13 @@ class DefaultRunner(BaseRunner):
                 if manifest_mode:
                     execution_mode = manifest_mode
                     execution_mode_declared = True
-                    if isinstance(ctx.metadata, dict):
-                        ctx.metadata["execution_mode"] = execution_mode
-                        ctx.metadata["execution_mode_declared"] = True
+                    if isinstance(ctx.metadata, Mapping):
+                        from .context import _freeze_dict
+
+                        new_meta = dict(ctx.metadata)
+                        new_meta["execution_mode"] = execution_mode
+                        new_meta["execution_mode_declared"] = True
+                        object.__setattr__(ctx, "metadata", _freeze_dict(new_meta))
             except Exception as em_err:
                 logger.warning("Failed reloading authoritative manifest on resume: %s", em_err)
 
@@ -859,7 +869,7 @@ class DefaultRunner(BaseRunner):
                 # [Forensic Sync] propagate resolved routing (e.g. Port 8000)
                 from .context import _freeze_dict
 
-                new_meta = dict(ctx.metadata)
+                new_meta = dict(ctx.metadata) if isinstance(ctx.metadata, Mapping) else {}
                 new_meta.update(session.metadata)
                 object.__setattr__(ctx, "metadata", _freeze_dict(new_meta))
 
@@ -931,7 +941,7 @@ class DefaultRunner(BaseRunner):
                         "error": post_process_error,
                         "finalization": None,
                         "metadata": {
-                            **dict(ctx.metadata),
+                            **(dict(ctx.metadata) if isinstance(ctx.metadata, Mapping) else {}),
                             "evaluation_valid": False,
                             "outcome": "EVALUATION_INVALID",
                             "uncertifiable": True,
@@ -1057,7 +1067,10 @@ class DefaultRunner(BaseRunner):
                         "pass_at_k": 0.0,
                         "error": fail_msg,
                         "finalization": None,
-                        "metadata": {**dict(ctx.metadata), "uncertifiable": True},
+                        "metadata": {
+                            **(dict(ctx.metadata) if isinstance(ctx.metadata, Mapping) else {}),
+                            "uncertifiable": True,
+                        },
                     },
                     span_context=ctx.span_context,
                 )
@@ -1078,7 +1091,7 @@ class DefaultRunner(BaseRunner):
                 # DEBUG / TEST: synthetic reconstruction permitted, certificate prohibited
                 from .context import _freeze_dict
 
-                meta_dict = dict(ctx.metadata)
+                meta_dict = dict(ctx.metadata) if isinstance(ctx.metadata, Mapping) else {}
                 meta_dict["uncertifiable"] = True
                 meta_dict["provisional"] = True
                 object.__setattr__(ctx, "metadata", _freeze_dict(meta_dict))
@@ -1234,7 +1247,7 @@ class DefaultRunner(BaseRunner):
                 except Exception as e:
                     logger.debug(f"Failed to save manifest to RunStore: {e}")
 
-            result_metadata = dict(ctx.metadata)
+            result_metadata = dict(ctx.metadata) if isinstance(ctx.metadata, Mapping) else {}
             result_metadata["execution_mode"] = str(execution_mode)
             result_metadata["reproducibility"] = repro_contract
             result_metadata["reproducibility_fingerprint"] = fingerprint(repro_contract)

@@ -554,6 +554,10 @@ class PluginManager:
                         current_diff = mutations.get("state_diff", args[1] if len(args) > 1 else {})
                         if len(call_args) > 1:
                             call_args[1] = current_diff
+                    elif hook_name == "on_tool_result":
+                        current_result = mutations.get("result", args[2] if len(args) > 2 else None)
+                        if len(call_args) > 2:
+                            call_args[2] = current_result
 
                     result = hook(*call_args, **kwargs)
 
@@ -569,6 +573,12 @@ class PluginManager:
                             return False
 
                 except Exception as e:
+                    required_hooks = set(getattr(plugin, "required_interceptor_hooks", ()))
+                    if getattr(plugin, "is_mandatory", False) or hook_name in required_hooks:
+                        raise RuntimeError(
+                            f"Required interceptor {hook_name} failed for "
+                            f"{plugin.__class__.__name__}: {e}"
+                        ) from e
                     print(
                         f"   [PluginManager] Error in interceptor {hook_name} "
                         f"for {plugin.__class__.__name__}: {e}"

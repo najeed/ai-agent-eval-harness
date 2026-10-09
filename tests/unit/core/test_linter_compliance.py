@@ -64,6 +64,20 @@ def test_linter_basic_success(linter, tmp_path):
     assert res["tier"] == "GOLD"
 
 
+def test_linter_dict_input(linter):
+    data = {
+        "aes_version": 1.4,
+        "industry": "finance",
+        "metadata": {"id": "scen-dict", "attribution": "test", "version": "1.0"},
+        "workflow": {"nodes": [{"id": "n1", "task_description": "do thing"}], "edges": []},
+        "complexity_level": "low",
+    }
+    res = linter.lint(data)
+    assert res["status"] == "pass"
+    assert res["score"] == 100
+    assert res["tier"] == "GOLD"
+
+
 def test_linter_weak_score(linter, tmp_path):
     p = tmp_path / "weak.json"
     data = {

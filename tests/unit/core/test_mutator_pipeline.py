@@ -11,6 +11,7 @@ import pytest
 
 from eval_runner.mutator import (
     ScenarioMutator,
+    UnsupportedMutationError,
     mutate_scenario,
     mutation_service,
 )
@@ -95,10 +96,9 @@ def test_pipeline_preemption():
         "workflow": {"nodes": [{"id": "n1", "task_description": "Initial text"}]},
     }
 
-    # Core doesn't handle "stressor" - should fallback to core mutator (which just adds suffix)
-    mutated_fallback = mutate_scenario(scenario, "stressor")
-    assert mutated_fallback["id"] == "base_mutated_stressor"
-    assert "stressed" not in mutated_fallback
+    # Unregistered mutator should raise UnsupportedMutationError
+    with pytest.raises(UnsupportedMutationError):
+        mutate_scenario(scenario, "stressor")
 
     # Register the preempting mutator
     mutation_service.register_provider(EnterpriseStressorMutator())

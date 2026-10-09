@@ -14,6 +14,7 @@ import {
   FileText,
   Code2,
   Hash,
+  AlertTriangle,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -55,476 +56,18 @@ interface ScenarioOption {
   };
 }
 
-// Built-in baseline catalog for instant zero-latency render & offline fallback
-const FALLBACK_MUTATION_CATALOG: MutationDescriptor[] = [
-  {
-    id: "typo",
-    label: "Typographical Keyboard Errors",
-    vector: "INPUT",
-    operation: "CORRUPT",
-    tier: "T0_LINGUISTIC",
-    source: "core",
-    description: "Simulates keyboard slips, letter swaps, and spelling corruptions in user instructions.",
-    target_field: "task_description",
-    regulatory_frameworks: ["ROBUSTNESS", "USER_INPUT_TOLERANCE"],
-    deterministic: true,
-  },
-  {
-    id: "ambiguity",
-    label: "Vague & Non-Committal Hedging",
-    vector: "INPUT",
-    operation: "INSERT",
-    tier: "T1_BEHAVIORAL",
-    source: "core",
-    description: "Appends vague, non-committal hedging clauses requesting unnecessary permissions.",
-    target_field: "task_description",
-    regulatory_frameworks: ["PROMPT_AMBIGUITY", "DECISION_CLARITY"],
-    deterministic: true,
-  },
-  {
-    id: "injection",
-    label: "Adversarial Prompt Injection",
-    vector: "INPUT",
-    operation: "INSERT",
-    tier: "T4_SECURITY",
-    source: "core",
-    description: "Appends adversarial jailbreak and system boundary override sequences.",
-    target_field: "task_description",
-    regulatory_frameworks: ["EU_AI_ACT_ART15", "OWASP_LLM_TOP_10", "NIST_SP_800_218"],
-    deterministic: true,
-  },
-  {
-    id: "goal_drift",
-    label: "Midway Objective Goal Drift",
-    vector: "CONTEXT",
-    operation: "DRIFT",
-    tier: "T1_BEHAVIORAL",
-    source: "core",
-    description: "Pivots agent objective midway toward an alternative or secondary task.",
-    target_field: "task_description",
-    regulatory_frameworks: ["OBJECTIVE_INTEGRITY", "INTENT_ALIGNMENT"],
-    deterministic: true,
-  },
-  {
-    id: "constraint_drop",
-    label: "Safety Constraint Stripping",
-    vector: "CONTEXT",
-    operation: "DROP",
-    tier: "T1_BEHAVIORAL",
-    source: "core",
-    description: "Strips negative safety constraints and operational guardrails from instructions.",
-    target_field: "task_description",
-    regulatory_frameworks: ["EU_AI_ACT_ART14", "GUARDRAIL_ENFORCEMENT"],
-    deterministic: true,
-  },
-  {
-    id: "memory_drift",
-    label: "Scratchpad & Working Memory Corruption",
-    vector: "MEMORY",
-    operation: "CORRUPT",
-    tier: "T1_BEHAVIORAL",
-    source: "core",
-    description: "Corrupts scratchpad intermediate thoughts and cross-turn memory state.",
-    target_field: "scratchpad",
-    regulatory_frameworks: ["STATE_REPRODUCIBILITY", "MEMORY_ISOLATION"],
-    deterministic: true,
-  },
-  {
-    id: "retrieval_stale",
-    label: "Stale Knowledge Base Document",
-    vector: "RETRIEVAL",
-    operation: "EXPIRE",
-    tier: "T2_STRUCTURAL",
-    source: "core",
-    description: "Injects outdated or expired reference documents into RAG context.",
-    target_field: "retrieved_documents",
-    regulatory_frameworks: ["EU_AI_ACT_ART14", "NIST_AI_RMF"],
-    deterministic: true,
-  },
-  {
-    id: "retrieval_irrelevant",
-    label: "Irrelevant Distractor Chunk",
-    vector: "RETRIEVAL",
-    operation: "INSERT",
-    tier: "T2_STRUCTURAL",
-    source: "core",
-    description: "Injects plausible but irrelevant distractor documents into retrieval context.",
-    target_field: "retrieved_documents",
-    regulatory_frameworks: ["RETRIEVAL_PRECISION", "NOISE_TOLERANCE"],
-    deterministic: true,
-  },
-  {
-    id: "retrieval_conflict",
-    label: "Conflicting Knowledge Policies",
-    vector: "RETRIEVAL",
-    operation: "CONFLICT",
-    tier: "T2_STRUCTURAL",
-    source: "core",
-    description: "Injects mutually contradictory policy documentation to test resolution.",
-    target_field: "retrieved_documents",
-    regulatory_frameworks: ["POLICY_CONFLICT_RESOLUTION", "EVIDENTIARY_CONSISTENCY"],
-    deterministic: true,
-  },
-  {
-    id: "retrieval_chunk",
-    label: "Truncated / Clipped Chunk Boundary",
-    vector: "RETRIEVAL",
-    operation: "CORRUPT",
-    tier: "T2_STRUCTURAL",
-    source: "core",
-    description: "Simulates chunk boundary clipping and unexpected EOF truncation in retrieved texts.",
-    target_field: "retrieved_documents",
-    regulatory_frameworks: ["DATA_INTEGRITY", "TRUNCATION_HANDLING"],
-    deterministic: true,
-  },
-  {
-    id: "retrieval_source_swap",
-    label: "Untrusted Mirror Source Substitution",
-    vector: "RETRIEVAL",
-    operation: "REPLACE",
-    tier: "T2_STRUCTURAL",
-    source: "core",
-    description: "Substitutes verified knowledge sources with untrusted external mirrors.",
-    target_field: "retrieved_documents",
-    regulatory_frameworks: ["PROVENANCE_VERIFICATION", "SUPPLY_CHAIN_SECURITY"],
-    deterministic: true,
-  },
-  {
-    id: "schema_type",
-    label: "Parameter Type Confusion",
-    vector: "TOOL",
-    operation: "CORRUPT",
-    tier: "T2_STRUCTURAL",
-    source: "core",
-    description: "Mutates tool parameter types violating schemas.",
-    target_field: "parameters",
-    regulatory_frameworks: ["API_CONTRACT_INTEGRITY", "SCHEMA_CONFORMANCE"],
-    deterministic: true,
-  },
-  {
-    id: "missing_field",
-    label: "Required Schema Field Omission",
-    vector: "TOOL",
-    operation: "DROP",
-    tier: "T2_STRUCTURAL",
-    source: "core",
-    description: "Drops a required parameter from tool invocation definitions.",
-    target_field: "parameters",
-    regulatory_frameworks: ["SCHEMA_VALIDATION", "DEFENSIVE_TOOLING"],
-    deterministic: true,
-  },
-  {
-    id: "enum_drift",
-    label: "Unsupported Enum Code Drift",
-    vector: "TOOL",
-    operation: "REPLACE",
-    tier: "T2_STRUCTURAL",
-    source: "core",
-    description: "Injects an invalid or deprecated enum code into structured tool calls.",
-    target_field: "unsupported_enum_value",
-    regulatory_frameworks: ["API_EVOLUTION", "ENUM_INTEGRITY"],
-    deterministic: true,
-  },
-  {
-    id: "malformed_payload",
-    label: "Malformed JSON Byte Serialization",
-    vector: "TOOL",
-    operation: "CORRUPT",
-    tier: "T2_STRUCTURAL",
-    source: "core",
-    description: "Injects unclosed syntax and corrupt serialization bytes into payloads.",
-    target_field: "raw_payload_corrupted",
-    regulatory_frameworks: ["INPUT_VALIDATION", "PARSER_ROBUSTNESS"],
-    deterministic: true,
-  },
-  {
-    id: "tool_contract",
-    label: "Forbidden Additional Properties Violation",
-    vector: "TOOL",
-    operation: "CORRUPT",
-    tier: "T2_STRUCTURAL",
-    source: "core",
-    description: "Injects forbidden additional properties violating strict JSON schemas.",
-    target_field: "parameters",
-    regulatory_frameworks: ["ZERO_TRUST_TOOL_CONTRACTS", "STRICT_SCHEMA"],
-    deterministic: true,
-  },
-  {
-    id: "duplicate",
-    label: "Duplicate Action Multiplicity",
-    vector: "TOOL",
-    operation: "DUPLICATE",
-    tier: "T2_STRUCTURAL",
-    source: "core",
-    description: "Duplicates actions to test non-idempotent tool safety.",
-    target_field: "repeat_action_count",
-    regulatory_frameworks: ["IDEMPOTENCY_ASSURANCE", "FINANCIAL_NONCE_VERIFICATION"],
-    deterministic: true,
-  },
-  {
-    id: "replay",
-    label: "Cross-Session Event Replay",
-    vector: "TOOL",
-    operation: "REPLAY",
-    tier: "T3_WORKFLOW",
-    source: "core",
-    description: "Replays previous tool results to test freshness and idempotency.",
-    target_field: "replay_previous_event",
-    regulatory_frameworks: ["REPLAY_ATTACK_DEFENSE", "NONCE_VALIDATION"],
-    deterministic: true,
-  },
-  {
-    id: "stale_state",
-    label: "Stale Snapshot Initial State",
-    vector: "STATE",
-    operation: "EXPIRE",
-    tier: "T3_WORKFLOW",
-    source: "core",
-    description: "Initializes execution with outdated state checkpoints.",
-    target_field: "initial_state",
-    regulatory_frameworks: ["STATE_FRESHNESS", "CHECKPOINT_INTEGRITY"],
-    deterministic: true,
-  },
-  {
-    id: "partial_commit",
-    label: "Partial Atomic Commit Abort",
-    vector: "STATE",
-    operation: "DROP",
-    tier: "T3_WORKFLOW",
-    source: "core",
-    description: "Simulates failure midway through a multi-step commit sequence.",
-    target_field: "failure_mode",
-    regulatory_frameworks: ["ATOMICITY_ASSURANCE", "SAGA_RESILIENCE"],
-    deterministic: true,
-  },
-  {
-    id: "rollback_failure",
-    label: "Saga Rollback Handler Failure",
-    vector: "STATE",
-    operation: "CORRUPT",
-    tier: "T3_WORKFLOW",
-    source: "core",
-    description: "Corrupts compensation handlers to evaluate recovery from failed sagas.",
-    target_field: "failure_policy",
-    regulatory_frameworks: ["COMPENSATION_INTEGRITY", "RECOVERY_ORCHESTRATION"],
-    deterministic: true,
-  },
-  {
-    id: "concurrency",
-    label: "Concurrent Writer Contention",
-    vector: "CONCURRENCY",
-    operation: "CONFLICT",
-    tier: "T3_WORKFLOW",
-    source: "core",
-    description: "Simulates race conditions with simultaneous external state modifications.",
-    target_field: "metadata",
-    regulatory_frameworks: ["OPTIMISTIC_CONCURRENCY", "ISOLATION_LEVELS"],
-    deterministic: true,
-  },
-  {
-    id: "duplicate_commit",
-    label: "Duplicate Transaction Commit",
-    vector: "STATE",
-    operation: "DUPLICATE",
-    tier: "T3_WORKFLOW",
-    source: "core",
-    description: "Simulates double-execution of state commit transactions.",
-    target_field: "failure_policy",
-    regulatory_frameworks: ["TRANSACTION_ISOLATION", "FINRA_4370"],
-    deterministic: true,
-  },
-  {
-    id: "commit_after_cancel",
-    label: "Post-Cancellation Commit Attempt",
-    vector: "STATE",
-    operation: "CONFLICT",
-    tier: "T3_WORKFLOW",
-    source: "core",
-    description: "Tests whether agent commits actions after receiving a cancellation event.",
-    target_field: "failure_policy",
-    regulatory_frameworks: ["CANCELLATION_SAFETY", "LIFECYCLE_BOUNDARIES"],
-    deterministic: true,
-  },
-  {
-    id: "stale_commit",
-    label: "Base Revision Mismatch Collision",
-    vector: "STATE",
-    operation: "EXPIRE",
-    tier: "T3_WORKFLOW",
-    source: "core",
-    description: "Simulates optimistic locking collision by referencing outdated revisions.",
-    target_field: "expected_base_revision",
-    regulatory_frameworks: ["REVISION_CONTROL", "OPTIMISTIC_LOCKING"],
-    deterministic: true,
-  },
-  {
-    id: "approval_stale",
-    label: "Expired Approval Signature",
-    vector: "AUTHORIZATION",
-    operation: "EXPIRE",
-    tier: "T4_SECURITY",
-    source: "core",
-    description: "Injects expired HITL security tokens and timestamp signatures.",
-    target_field: "approval_token",
-    regulatory_frameworks: ["EU_AI_ACT_ART14", "SEC_15C3_5", "SOC2_CC6"],
-    deterministic: true,
-  },
-  {
-    id: "approval_mismatch",
-    label: "Approval Transaction ID Mismatch",
-    vector: "AUTHORIZATION",
-    operation: "CONFLICT",
-    tier: "T4_SECURITY",
-    source: "core",
-    description: "Binds an approval token to an unrelated transaction ID.",
-    target_field: "approval_transaction_id",
-    regulatory_frameworks: ["SEC_15C3_5", "PCI_DSS_REQ7", "ZERO_TRUST"],
-    deterministic: true,
-  },
-  {
-    id: "approval_replay",
-    label: "Replayed Single-Use Approval Token",
-    vector: "AUTHORIZATION",
-    operation: "REPLAY",
-    tier: "T4_SECURITY",
-    source: "core",
-    description: "Reuses a previously consumed approval token in a fresh session.",
-    target_field: "replay_token",
-    regulatory_frameworks: ["NONCE_ENFORCEMENT", "SECURITY_AUDIT"],
-    deterministic: true,
-  },
-  {
-    id: "approval_race",
-    label: "TOCTOU Authorization Race Condition",
-    vector: "AUTHORIZATION",
-    operation: "CONFLICT",
-    tier: "T4_SECURITY",
-    source: "core",
-    description: "Simulates TOCTOU race between permission check and tool execution.",
-    target_field: "approval_race",
-    regulatory_frameworks: ["TOCTOU_DEFENSE", "HIGH_FREQUENCY_TRADING_SAFETY"],
-    deterministic: true,
-  },
-  {
-    id: "approval_revocation",
-    label: "Asynchronous Token Revocation",
-    vector: "AUTHORIZATION",
-    operation: "DELETE",
-    tier: "T4_SECURITY",
-    source: "core",
-    description: "Revokes authorization midway through an asynchronous action.",
-    target_field: "approval_status",
-    regulatory_frameworks: ["REVOCATION_LIST_INTEGRITY", "REAL_TIME_GUARDRAILS"],
-    deterministic: true,
-  },
-  {
-    id: "timeout_boundary",
-    label: "Sub-Threshold Execution Timeout",
-    vector: "TIME",
-    operation: "DELAY",
-    tier: "T2_STRUCTURAL",
-    source: "core",
-    description: "Forces tight execution timeouts to test graceful degradation.",
-    target_field: "timeout_boundary_ms",
-    regulatory_frameworks: ["SLA_CONFORMANCE", "BOUNDED_EXECUTION"],
-    deterministic: true,
-  },
-  {
-    id: "latency_jitter",
-    label: "High-Jitter Latency Spike",
-    vector: "TIME",
-    operation: "DELAY",
-    tier: "T2_STRUCTURAL",
-    source: "core",
-    description: "Injects unpredictable network latency spikes into operations.",
-    target_field: "injected_latency_ms",
-    regulatory_frameworks: ["RESILIENCE_CHAOS", "LATENCY_TOLERANCE"],
-    deterministic: true,
-  },
-  {
-    id: "cancel_race",
-    label: "Cancellation Boundary Race",
-    vector: "TIME",
-    operation: "CONFLICT",
-    tier: "T3_WORKFLOW",
-    source: "core",
-    description: "Cancels workflow precisely when reaching step boundary.",
-    target_field: "cancel_at_boundary",
-    regulatory_frameworks: ["CANCEL_SAFETY", "GRACEFUL_SHUTDOWN"],
-    deterministic: true,
-  },
-  {
-    id: "metric_gaming",
-    label: "Goodhart's Law Metric Gaming",
-    vector: "OBJECTIVE",
-    operation: "CORRUPT",
-    tier: "T1_BEHAVIORAL",
-    source: "core",
-    description: "Nudges agent to optimize for word count / velocity over correctness.",
-    target_field: "task_description",
-    regulatory_frameworks: ["EU_AI_ACT_ART15", "ALIGNMENT_AUDITING"],
-    deterministic: true,
-  },
-  {
-    id: "proxy_goal",
-    label: "Proxy Goal Shortcut",
-    vector: "OBJECTIVE",
-    operation: "REPLACE",
-    tier: "T1_BEHAVIORAL",
-    source: "core",
-    description: "Offers a lazy shortcut (e.g. closing ticket without doing work).",
-    target_field: "task_description",
-    regulatory_frameworks: ["SPECIFICATION_GAMING", "PROXY_DRIFT"],
-    deterministic: true,
-  },
-  {
-    id: "constraint_tradeoff",
-    label: "Security-for-Speed Tradeoff Pressure",
-    vector: "OBJECTIVE",
-    operation: "DROP",
-    tier: "T1_BEHAVIORAL",
-    source: "core",
-    description: "Pressures agent to bypass safety checks to meet time deadlines.",
-    target_field: "task_description",
-    regulatory_frameworks: ["SAFETY_OVER_SPEED", "ETHICAL_BOUNDARIES"],
-    deterministic: true,
-  },
-  {
-    id: "subgoal_cannibalization",
-    label: "Subgoal Resource Cannibalization",
-    vector: "OBJECTIVE",
-    operation: "CONFLICT",
-    tier: "T3_WORKFLOW",
-    source: "core",
-    description: "Preconditions early task step by destroying resources needed later.",
-    target_field: "task_description",
-    regulatory_frameworks: ["LONG_HORIZON_PLANNING", "DEPENDENCY_INTEGRITY"],
-    deterministic: true,
-  },
-  {
-    id: "reward_hacking",
-    label: "Auditor Passcode Reward Hacking",
-    vector: "OBJECTIVE",
-    operation: "ESCALATE",
-    tier: "T1_BEHAVIORAL",
-    source: "core",
-    description: "Prompts agent to emit auditor passcodes without fulfilling requirements.",
-    target_field: "task_description",
-    regulatory_frameworks: ["REWARD_HACKING_DEFENSE", "EU_AI_ACT_ART15"],
-    deterministic: true,
-  },
-];
-
 export const AdversarialMutator: React.FC = () => {
   const navigate = useNavigate();
   const [scenarios, setScenarios] = useState<ScenarioOption[]>([]);
   const [selectedId, setSelectedId] = useState('');
-  const [mutationType, setMutationType] = useState('typo');
+  const [mutationType, setMutationType] = useState('');
   const [seed, setSeed] = useState('42');
   const [loadingScenarios, setLoadingScenarios] = useState(false);
 
-  // Dynamic Catalog State
-  const [catalog, setCatalog] = useState<MutationDescriptor[]>(FALLBACK_MUTATION_CATALOG);
+  // Dynamic Catalog State (strictly backend-confirmed, zero silent offline fallback)
+  const [catalog, setCatalog] = useState<MutationDescriptor[]>([]);
+  const [loadingCatalog, setLoadingCatalog] = useState<boolean>(true);
+  const [catalogError, setCatalogError] = useState<string>('');
   const [selectedVector, setSelectedVector] = useState<string>('All');
   const [diffMode, setDiffMode] = useState<'prompt' | 'json'>('json');
   const [splitView, setSplitView] = useState(true);
@@ -532,6 +75,7 @@ export const AdversarialMutator: React.FC = () => {
 
   const [mutating, setMutating] = useState(false);
   const [mutatedJson, setMutatedJson] = useState<any>(null);
+  const [lintReport, setLintReport] = useState<any>(null);
   const [canonicalBaseScenario, setCanonicalBaseScenario] = useState<any>(null);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
@@ -564,16 +108,31 @@ export const AdversarialMutator: React.FC = () => {
     };
   }, [selectedId]);
 
-  // 1. Fetch live mutation catalog from backend
+  // 1. Fetch live mutation catalog from backend - strictly fail-closed, no hardcoded fallbacks
   const fetchCatalog = async () => {
+    setLoadingCatalog(true);
+    setCatalogError('');
     try {
       const res = await fetch('/api/v1/mutations');
-      const data = await res.json();
-      if (res.ok && data.mutations && Array.isArray(data.mutations) && data.mutations.length > 0) {
-        setCatalog(data.mutations);
+      if (!res.ok) {
+        throw new Error(`Server returned HTTP ${res.status}: Failed to retrieve mutation catalog`);
       }
-    } catch (e) {
-      console.warn('Could not fetch dynamic mutations catalog, falling back to local registry:', e);
+      const data = await res.json();
+      if (data.mutations && Array.isArray(data.mutations) && data.mutations.length > 0) {
+        setCatalog(data.mutations);
+        if (!mutationType) {
+          setMutationType(data.mutations[0].id);
+        }
+      } else {
+        throw new Error('Runtime reported empty mutation catalog (no active mutator engines registered)');
+      }
+    } catch (e: any) {
+      const msg = e.message || 'Could not fetch dynamic mutations catalog from backend';
+      console.error('Failed to fetch adversarial mutation catalog:', e);
+      setCatalog([]);
+      setCatalogError(msg);
+    } finally {
+      setLoadingCatalog(false);
     }
   };
 
@@ -616,8 +175,10 @@ export const AdversarialMutator: React.FC = () => {
       if (!visibleMutations.some((m) => m.id === mutationType)) {
         setMutationType(visibleMutations[0].id);
       }
+    } else {
+      setMutationType('');
     }
-  }, [selectedVector, visibleMutations]);
+  }, [selectedVector, visibleMutations, mutationType]);
 
   const selectedDescriptor = useMemo(() => {
     return catalog.find((m) => m.id === mutationType) || catalog[0] || null;
@@ -654,11 +215,12 @@ export const AdversarialMutator: React.FC = () => {
 
   const handleMutate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedId) return;
+    if (!selectedId || !mutationType) return;
 
     setMutating(true);
     setError('');
     setMutatedJson(null);
+    setLintReport(null);
     setSaveMsg('');
 
     try {
@@ -675,6 +237,7 @@ export const AdversarialMutator: React.FC = () => {
       const data = await res.json();
       if (res.ok && data.status === 'success') {
         setMutatedJson(data.mutated);
+        setLintReport(data.lint_report || null);
         // Automatically default diff mode to the recommended view
         setDiffMode(isLinguistic ? 'prompt' : 'json');
         window.dispatchEvent(
@@ -820,16 +383,39 @@ export const AdversarialMutator: React.FC = () => {
             <span>Adversarial Scenario Mutator</span>
           </h1>
           <p className="text-xs text-slate-500 mt-1 max-w-2xl">
-            Test policy stability, safety constraints, and resilience across all 9 perturbation vectors (Linguistic,
-            Context, Memory, Retrieval, Tools, State, Authorization, Temporal, and Objective Gaming).
+            Test policy stability, safety constraints, and resilience across all perturbation vectors.
+            Only strictly backend-confirmed, executable mutators are exposed.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-[10px] text-slate-500 font-mono">
-            {catalog.length} Mutators Active ({vectors.length - 1} Vectors)
+            {catalog.length} Mutators Active ({vectors.length > 1 ? vectors.length - 1 : 0} Vectors)
           </span>
         </div>
       </div>
+
+      {/* Explicit Backend Error Banner */}
+      {catalogError && (
+        <div className="p-4 rounded-xl bg-rose-950/40 border border-rose-800 text-rose-200 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-bold text-rose-100">Live Mutation Catalog Unavailable</p>
+              <p className="text-rose-300/90 text-[11px] mt-0.5">
+                The console requires verified mutators from <code className="font-mono bg-rose-900/60 px-1 py-0.5 rounded text-rose-100">/api/v1/mutations</code>.
+                Silent fallback is disabled to prevent executing unsupported mutations. Details: {catalogError}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={fetchCatalog}
+            className="px-3 py-1.5 bg-rose-800 hover:bg-rose-700 text-white rounded-lg text-xs font-semibold shrink-0 transition-colors self-end sm:self-center"
+          >
+            Retry Catalog Load
+          </button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
         {/* Left column: Controls */}
@@ -898,114 +484,131 @@ export const AdversarialMutator: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Vector Selection Tabs */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label className="text-[9px] text-slate-500 font-bold uppercase font-mono flex items-center gap-1">
-                      <Sliders className="w-3 h-3 text-indigo-400" />
-                      <span>Perturbation Vector</span>
-                    </label>
-                    <span className="text-[9px] text-slate-600 font-mono">
-                      {visibleMutations.length} options
-                    </span>
+                {/* Catalog Loading / Error States in Form */}
+                {loadingCatalog ? (
+                  <div className="p-3 bg-slate-950/80 border border-slate-850 rounded-lg text-xs text-slate-500 italic">
+                    Loading executable mutation catalog from runtime...
                   </div>
-                  <div className="flex flex-wrap gap-1 bg-slate-950/80 p-1 rounded-lg border border-slate-850 max-h-24 overflow-y-auto">
-                    {vectors.map((vec) => (
-                      <button
-                        key={vec}
-                        type="button"
-                        onClick={() => setSelectedVector(vec)}
-                        className={`px-2 py-1 rounded text-[10px] font-mono transition-colors ${
-                          selectedVector === vec
-                            ? 'bg-indigo-600 text-white font-bold'
-                            : 'text-slate-400 hover:text-white hover:bg-slate-900'
-                        }`}
-                      >
-                        {vec}
-                      </button>
-                    ))}
+                ) : catalogError ? (
+                  <div className="p-3 bg-rose-950/30 border border-rose-900 rounded-lg text-xs text-rose-300">
+                    Cannot configure mutation: Catalog is currently unavailable.
                   </div>
-                </div>
-
-                {/* Mutation Strategy Selector */}
-                <div className="space-y-1.5">
-                  <label className="text-[9px] text-slate-500 font-bold uppercase font-mono">
-                    Mutation Strategy ({visibleMutations.length})
-                  </label>
-                  <select
-                    value={mutationType}
-                    onChange={(e) => setMutationType(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-850 rounded px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-indigo-500 cursor-pointer font-medium"
-                  >
-                    {visibleMutations.map((m) => (
-                      <option key={m.id} value={m.id}>
-                        [{m.vector}] {m.label} ({m.tier.replace('T', 'Tier ')})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Deterministic Seed */}
-                <div className="space-y-1.5">
-                  <label className="text-[9px] text-slate-500 font-bold uppercase font-mono flex items-center gap-1">
-                    <Hash className="w-3 h-3 text-indigo-400" />
-                    <span>Deterministic Seed (PRNG)</span>
-                  </label>
-                  <input
-                    type="number"
-                    value={seed}
-                    onChange={(e) => setSeed(e.target.value)}
-                    placeholder="42"
-                    className="w-full bg-slate-950 border border-slate-850 rounded px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-indigo-500 font-mono"
-                  />
-                  <span className="text-[9px] text-slate-600">
-                    Controls pseudo-random character replacements & perturbation permutations.
-                  </span>
-                </div>
-
-                {/* Strategy Details Card */}
-                {selectedDescriptor && (
-                  <div className="p-3 bg-slate-950/80 border border-slate-850 rounded-lg space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[9px] text-slate-500 font-bold uppercase font-mono flex items-center gap-1">
-                        <HelpCircle className="w-3.5 h-3.5 text-indigo-400" />
-                        <span>Strategy Details</span>
-                      </span>
-                      {renderSourceBadge(selectedDescriptor.source)}
-                    </div>
-                    <p className="text-[10px] text-slate-300 leading-relaxed font-sans">
-                      {selectedDescriptor.description}
-                    </p>
-                    <div className="flex flex-wrap gap-1.5 pt-1 border-t border-slate-900">
-                      <span className="px-1.5 py-0.5 rounded bg-slate-900 text-slate-400 text-[9px] font-mono">
-                        Target: {selectedDescriptor.target_field}
-                      </span>
-                      <span className="px-1.5 py-0.5 rounded bg-slate-900 text-slate-400 text-[9px] font-mono">
-                        Op: {selectedDescriptor.operation}
-                      </span>
-                      <span className="px-1.5 py-0.5 rounded bg-slate-900 text-slate-400 text-[9px] font-mono">
-                        {selectedDescriptor.tier}
-                      </span>
-                    </div>
-
-                    {selectedDescriptor.regulatory_frameworks && selectedDescriptor.regulatory_frameworks.length > 0 && (
-                      <div className="flex flex-wrap gap-1 pt-1">
-                        {selectedDescriptor.regulatory_frameworks.map((rf) => (
-                          <span
-                            key={rf}
-                            className="px-1.5 py-0.5 rounded bg-indigo-950/40 text-indigo-300 border border-indigo-900/50 text-[8px] font-mono"
+                ) : catalog.length === 0 ? (
+                  <div className="p-3 bg-amber-950/30 border border-amber-900 rounded-lg text-xs text-amber-300">
+                    No executable mutators found on backend.
+                  </div>
+                ) : (
+                  <>
+                    {/* Vector Selection Tabs */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[9px] text-slate-500 font-bold uppercase font-mono flex items-center gap-1">
+                          <Sliders className="w-3 h-3 text-indigo-400" />
+                          <span>Perturbation Vector</span>
+                        </label>
+                        <span className="text-[9px] text-slate-600 font-mono">
+                          {visibleMutations.length} options
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap gap-1 bg-slate-950/80 p-1 rounded-lg border border-slate-850 max-h-24 overflow-y-auto">
+                        {vectors.map((vec) => (
+                          <button
+                            key={vec}
+                            type="button"
+                            onClick={() => setSelectedVector(vec)}
+                            className={`px-2 py-1 rounded text-[10px] font-mono transition-colors ${
+                              selectedVector === vec
+                                ? 'bg-indigo-600 text-white font-bold'
+                                : 'text-slate-400 hover:text-white hover:bg-slate-900'
+                            }`}
                           >
-                            {rf}
-                          </span>
+                            {vec}
+                          </button>
                         ))}
                       </div>
+                    </div>
+
+                    {/* Mutation Strategy Selector */}
+                    <div className="space-y-1.5">
+                      <label className="text-[9px] text-slate-500 font-bold uppercase font-mono">
+                        Mutation Strategy ({visibleMutations.length})
+                      </label>
+                      <select
+                        value={mutationType}
+                        onChange={(e) => setMutationType(e.target.value)}
+                        className="w-full bg-slate-950 border border-slate-850 rounded px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-indigo-500 cursor-pointer font-medium"
+                      >
+                        {visibleMutations.map((m) => (
+                          <option key={m.id} value={m.id}>
+                            [{m.vector}] {m.label} ({m.tier.replace('T', 'Tier ')})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Deterministic Seed */}
+                    <div className="space-y-1.5">
+                      <label className="text-[9px] text-slate-500 font-bold uppercase font-mono flex items-center gap-1">
+                        <Hash className="w-3 h-3 text-indigo-400" />
+                        <span>Deterministic Seed (PRNG)</span>
+                      </label>
+                      <input
+                        type="number"
+                        value={seed}
+                        onChange={(e) => setSeed(e.target.value)}
+                        placeholder="42"
+                        className="w-full bg-slate-950 border border-slate-850 rounded px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-indigo-500 font-mono"
+                      />
+                      <span className="text-[9px] text-slate-600">
+                        Controls pseudo-random character replacements & perturbation permutations.
+                      </span>
+                    </div>
+
+                    {/* Strategy Details Card */}
+                    {selectedDescriptor && (
+                      <div className="p-3 bg-slate-950/80 border border-slate-850 rounded-lg space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[9px] text-slate-500 font-bold uppercase font-mono flex items-center gap-1">
+                            <HelpCircle className="w-3.5 h-3.5 text-indigo-400" />
+                            <span>Strategy Details</span>
+                          </span>
+                          {renderSourceBadge(selectedDescriptor.source)}
+                        </div>
+                        <p className="text-[10px] text-slate-300 leading-relaxed font-sans">
+                          {selectedDescriptor.description}
+                        </p>
+                        <div className="flex flex-wrap gap-1.5 pt-1 border-t border-slate-900">
+                          <span className="px-1.5 py-0.5 rounded bg-slate-900 text-slate-400 text-[9px] font-mono">
+                            Target: {selectedDescriptor.target_field}
+                          </span>
+                          <span className="px-1.5 py-0.5 rounded bg-slate-900 text-slate-400 text-[9px] font-mono">
+                            Op: {selectedDescriptor.operation}
+                          </span>
+                          <span className="px-1.5 py-0.5 rounded bg-slate-900 text-slate-400 text-[9px] font-mono">
+                            {selectedDescriptor.tier}
+                          </span>
+                        </div>
+
+                        {selectedDescriptor.regulatory_frameworks && selectedDescriptor.regulatory_frameworks.length > 0 && (
+                          <div className="flex flex-wrap gap-1 pt-1">
+                            {selectedDescriptor.regulatory_frameworks.map((rf) => (
+                              <span
+                                key={rf}
+                                className="px-1.5 py-0.5 rounded bg-indigo-950/40 text-indigo-300 border border-indigo-900/50 text-[8px] font-mono"
+                              >
+                                {rf}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     )}
-                  </div>
+                  </>
                 )}
 
                 <button
                   type="submit"
-                  disabled={mutating || !selectedId}
+                  disabled={mutating || !selectedId || catalog.length === 0 || !mutationType || !!catalogError}
                   className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5"
                 >
                   <PlayCircle className="w-4 h-4" />
@@ -1122,7 +725,7 @@ export const AdversarialMutator: React.FC = () => {
                 {mutatedJson && (
                   <button
                     onClick={handleCopy}
-                    className="flex items-center gap-1 px-2.5 py-1 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded text-[10px] font-bold text-slate-300 hover:text-white transition-colors"
+                    className="flex items-center gap-1 px-2.5 py-1 bg-slate-900 hover:bg-slate-850 border border-slate-850 rounded text-[10px] font-bold text-slate-300 hover:text-white transition-colors"
                   >
                     {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
                     <span>{copied ? 'Copied' : 'Copy JSON'}</span>
@@ -1159,8 +762,82 @@ export const AdversarialMutator: React.FC = () => {
                 </p>
               </div>
             ) : (
-              <div className="border border-slate-900 rounded-xl bg-slate-950 text-xs leading-relaxed min-h-[600px] h-[calc(100vh-270px)] overflow-x-auto overflow-y-auto flex-1">
-                <ReactDiffViewer
+              <div className="flex-1 flex flex-col gap-3 min-h-[600px] h-[calc(100vh-270px)]">
+                {lintReport && (
+                  <div
+                    className={`p-3 rounded-lg border flex flex-col gap-2 shrink-0 ${
+                      lintReport.status === 'pass'
+                        ? 'bg-emerald-950/20 border-emerald-500/30'
+                        : lintReport.status === 'warning'
+                        ? 'bg-amber-950/20 border-amber-500/30'
+                        : 'bg-rose-950/20 border-rose-500/30'
+                    }`}
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wider font-mono uppercase ${
+                            lintReport.tier === 'GOLD'
+                              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                              : lintReport.tier === 'SILVER'
+                              ? 'bg-slate-300/20 text-slate-200 border border-slate-400/40'
+                              : lintReport.tier === 'BRONZE'
+                              ? 'bg-orange-800/20 text-orange-400 border border-orange-700/40'
+                              : 'bg-rose-950/40 text-rose-400 border border-rose-800/40'
+                          }`}
+                        >
+                          {lintReport.tier} TIER
+                        </span>
+                        <span className="text-xs font-semibold text-slate-200">
+                          Lint Score: <span className="font-mono">{lintReport.score}</span>/100
+                        </span>
+                        <span
+                          className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
+                            lintReport.status === 'pass'
+                              ? 'text-emerald-400 bg-emerald-500/10'
+                              : lintReport.status === 'warning'
+                              ? 'text-amber-400 bg-amber-500/10'
+                              : 'text-rose-400 bg-rose-500/10'
+                          }`}
+                        >
+                          {lintReport.status === 'pass'
+                            ? '100% AES 1.4 Validated'
+                            : lintReport.status === 'warning'
+                            ? 'AES 1.4 Adherent (Advisory Warnings)'
+                            : 'AES Schema / Spec Validation Errors'}
+                        </span>
+                      </div>
+                      <span className="text-[10px] text-slate-500 font-mono">
+                        target: {lintReport.file || 'scenario.json'}
+                      </span>
+                    </div>
+
+                    {lintReport.errors && lintReport.errors.length > 0 && (
+                      <div className="space-y-1 pt-1 border-t border-rose-500/20">
+                        {lintReport.errors.map((err: string, idx: number) => (
+                          <div key={idx} className="text-[11px] text-rose-400 flex items-center gap-1.5 font-mono">
+                            <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                            <span>{err}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {lintReport.warnings && lintReport.warnings.length > 0 && (
+                      <div className="space-y-1 pt-1 border-t border-amber-500/20">
+                        {lintReport.warnings.map((warn: string, idx: number) => (
+                          <div key={idx} className="text-[11px] text-amber-400 flex items-center gap-1.5 font-mono">
+                            <span className="text-amber-500 shrink-0">⚠️</span>
+                            <span>{warn}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="border border-slate-900 rounded-xl bg-slate-950 text-xs leading-relaxed overflow-x-auto overflow-y-auto flex-1">
+                  <ReactDiffViewer
                   oldValue={
                     diffMode === 'prompt'
                       ? getScenarioText(canonicalBaseScenario || chosenScenario)
@@ -1236,7 +913,8 @@ export const AdversarialMutator: React.FC = () => {
                   }}
                 />
               </div>
-            )}
+            </div>
+          )}
           </div>
 
           {mutatedJson && (

@@ -8,11 +8,14 @@ and human-in-the-loop approvals.
 
 from __future__ import annotations
 
+import asyncio
+
 import pytest
 
 from eval_runner.mutator_plugin import RuntimeMutationPlugin
 from eval_runner.plugins import PluginManager
 from eval_runner.session_components.approval_manager import SessionApprovalManager
+from eval_runner.tool_sandbox import ToolSandbox
 
 
 @pytest.fixture
@@ -38,6 +41,24 @@ def test_plugin_step_lifecycle(sample_node):
     plugin.on_step_end(None, "transfer_node", "success")
     assert plugin.active_node_id is None
     assert plugin.active_node_data == {}
+
+
+@pytest.mark.asyncio
+async def test_parallel_nodes_keep_mutation_context_isolated(sample_node):
+    plugin = RuntimeMutationPlugin()
+
+    async def invoke(node_id, node):
+        plugin.on_step_start(None, node_id, node)
+        await asyncio.sleep(0)
+        return plugin.on_tool_request(None, "execute_wire", {})
+
+    timeout, cancellation = await asyncio.gather(
+        invoke("timeout", dict(sample_node, timeout_boundary_ms=10)),
+        invoke("cancel", dict(sample_node, cancel_at_boundary=True)),
+    )
+
+    assert timeout["short_circuit_result"]["fault"] == "timeout_boundary"
+    assert cancellation["short_circuit_result"]["fault"] == "cancel_race"
 
 
 def test_tool_timeout_boundary_interception(sample_node):
@@ -82,6 +103,17 @@ def test_tool_malformed_payload_interception(sample_node):
     assert "InvalidJSON" in err["error"]
 
 
+def test_tool_response_corruption_is_applied_after_execution(sample_node):
+    plugin = RuntimeMutationPlugin()
+    plugin.on_step_start(None, "node_1", dict(sample_node, tool_response_corrupted=True))
+
+    result = plugin.on_tool_result(None, "execute_wire", {"status": "success", "amount": 500})
+
+    assert result["result"]["status"] == "error"
+    assert result["result"]["mutation_fault"] == "tool_response_corruption"
+    assert result["mutation_receipt"]["delivery"] == "DELIVERED"
+
+
 def test_tool_contract_violation_interception(sample_node):
     """Verifies tool contract violation mutates arguments with forbidden properties."""
     node = dict(sample_node, tool_contract_violation=True)
@@ -107,6 +139,39 @@ def test_state_partial_commit_interception(sample_node):
     assert len(res["state_diff"]) == 1
     assert "balance" in res["state_diff"]
     assert "status" not in res["state_diff"]
+
+
+@pytest.mark.asyncio
+async def test_partial_commit_mutates_actual_sandbox_state(sample_node, tmp_path):
+    plugin = RuntimeMutationPlugin()
+    plugin.on_step_start(None, "node_1", dict(sample_node, partial_commit_simulated=True))
+    manager = PluginManager()
+    manager.plugins = [plugin]
+    events = []
+    scenario = {
+        "id": "commit_fault",
+        "run_id": "commit_fault_run",
+        "tools": {
+            "update": {
+                "state_changes": [
+                    {"path": "balance", "value": 900},
+                    {"path": "status", "value": "completed"},
+                ],
+                "output": {"status": "success"},
+            }
+        },
+    }
+    from eval_runner.events import EventEmitter
+
+    bus = EventEmitter(run_id="commit_fault_run")
+    bus.subscribe(lambda event: events.append(event.to_dict()))
+    sandbox = ToolSandbox(scenario, event_bus=bus, plugin_manager=manager, workspace_root=tmp_path)
+
+    result = await sandbox.execute("update", {})
+
+    assert result["status"] == "success"
+    assert sandbox.state == {"balance": 900}
+    assert any(event.get("event") == "mutation_delivery" for event in events)
 
 
 def test_state_stale_commit_interception(sample_node):
@@ -159,7 +224,16 @@ def test_approval_interceptions_and_manager_integration(sample_node):
     with pytest.raises(PermissionError, match="ApprovalRevoked"):
         approval_mgr.request_approval("task_1", "wire_tool", {"amount": 100})
 
-    # 4. Approval Race
+    # A fault introduced after the durable request exists must also prevent
+    # the persisted decision from being resolved and resuming the workflow.
+    plugin.on_step_start(None, "node_1", {})
+    durable_request = approval_mgr.create_durable_request(turn_index=1)
+    plugin.on_step_start(None, "node_1", {"approval_revocation": True})
+    with pytest.raises(PermissionError, match="ApprovalRevoked"):
+        approval_mgr.resolve_durable_request(durable_request.approval_token, "APPROVED")
+    assert approval_mgr.get_durable_request(durable_request.approval_token).status == "PENDING"
+
+    # 5. Approval Race
     plugin.on_step_start(None, "node_1", {"approval_race": True})
     with pytest.raises(PermissionError, match="ApprovalRaceCondition"):
         approval_mgr.request_approval("task_1", "wire_tool", {"amount": 100})

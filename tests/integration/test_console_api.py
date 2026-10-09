@@ -68,10 +68,24 @@ def test_mutate_api_raw(client):
     assert response.status_code == 200
     data = response.get_json()
     assert data["status"] == "success"
+    assert data["operation"] == "scenario_generation"
+    assert data["delivery_status"] == "NOT_EXECUTED"
     assert "mutated" in data
     assert "Raw Test" in data["mutated"]["title"]
     # Mutation must have occurred or at least the object is valid
     assert "description" in data["mutated"]
+
+
+def test_mutate_api_rejects_unknown_operator(client):
+    headers = {"X-Api-Key": "test_key"}
+    response = client.post(
+        "/api/v1/mutate",
+        json={"type": "not_a_runtime_mutation", "raw_json": {"id": "scenario"}},
+        headers=headers,
+    )
+    assert response.status_code == 400
+    data = response.get_json()
+    assert data["error"] == "unsupported_mutation"
 
 
 def test_doctor_api(client):

@@ -238,6 +238,24 @@ async def handle_mutate(args):
         with open(args.input, encoding="utf-8") as f:
             scenario = json.load(f)
         mutated = mutator.mutate_scenario(scenario, args.type)
+
+        # Automated Scenario Linting on Mutant
+        from .. import linter
+
+        scenario_linter = linter.ScenarioLinter()
+        lint_res = scenario_linter.lint_dict(mutated, name=Path(args.input).name)
+        if lint_res["status"] == "pass":
+            status_icon = "✅"
+        elif lint_res["status"] == "warning":
+            status_icon = "⚠️"
+        else:
+            status_icon = "❌"
+        print(f"[{lint_res['tier']}] Lint Score: {lint_res['score']}/100 {status_icon}")
+        for err in lint_res.get("errors", []):
+            print(f"  ❌ Error: {err}")
+        for warn in lint_res.get("warnings", []):
+            print(f"  ⚠️ Warning: {warn}")
+
         output_path = Path(args.output or "mutated.json")
         mutator.save_mutated_scenario(mutated, output_path)
         print(f"✅ Mutation complete! Variant saved to: {output_path}")

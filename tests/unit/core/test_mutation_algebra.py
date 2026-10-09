@@ -500,7 +500,8 @@ def test_core_mutator_remaining_branches(sample_scenario):
     """Verifies rollback_failure, retrieval_irrelevant, and schema_type digit parsing."""
     # rollback_failure
     mut_roll = mutate_scenario(sample_scenario, "rollback_failure")
-    assert mut_roll["failure_policy"]["rollback_handler_corrupted"] is True
+    assert mut_roll["metadata"]["rollback_handler_corrupted"] is True
+    assert mut_roll["workflow"]["nodes"][0]["rollback_handler_corrupted"] is True
 
     # retrieval_irrelevant
     mut_irrel = mutate_scenario(sample_scenario, "retrieval_irrelevant")
@@ -645,12 +646,14 @@ def test_new_tier_a_mutators(sample_scenario):
 
     # 4. duplicate_commit
     m_dup = mutate_scenario(sample_scenario, "duplicate_commit")
-    assert m_dup["failure_policy"]["duplicate_commit"] is True
+    assert m_dup["metadata"]["duplicate_commit"] is True
+    assert m_dup["workflow"]["nodes"][0]["duplicate_commit"] is True
     assert m_dup["workflow"]["nodes"][0]["commit_multiplicity"] == 2
 
     # 5. commit_after_cancel
     m_cancel = mutate_scenario(sample_scenario, "commit_after_cancel")
-    assert m_cancel["failure_policy"]["commit_after_cancel"] is True
+    assert m_cancel["metadata"]["commit_after_cancel"] is True
+    assert m_cancel["workflow"]["nodes"][0]["commit_after_cancel"] is True
     assert m_cancel["workflow"]["nodes"][0]["allow_post_cancellation_write"] is True
 
     # 6. stale_commit

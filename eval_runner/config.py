@@ -624,3 +624,8 @@ EVAL_TURN_THROTTLE = float(os.getenv("EVAL_TURN_THROTTLE", "0.0"))
 WORM_RETENTION_DAYS = int(os.getenv("WORM_RETENTION_DAYS", "0"))
 WORM_LEGAL_HOLD = os.getenv("WORM_LEGAL_HOLD", "false").lower() in ("true", "1", "yes")
 WORM_COMPLIANCE_MODE = os.getenv("WORM_COMPLIANCE_MODE", "COMPLIANCE")
+REQUIRE_IMMUTABLE_WORM = os.getenv("REQUIRE_IMMUTABLE_WORM", "false").lower() in (
+    "true",
+    "1",
+    "yes",
+)

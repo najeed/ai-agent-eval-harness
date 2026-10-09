@@ -532,6 +532,53 @@ class TestSessionApprovalManagerLegacyAndGates:
                 params={"path": "/"},
             )
 
+    def test_durable_approval_uses_interceptor_before_persistence(self):
+        plugin_manager = MagicMock()
+        plugin_manager.trigger_interceptor.return_value = {
+            "allowed": False,
+            "error": "Approval token revoked",
+        }
+        manager = SessionApprovalManager(
+            run_id="run_durable_intercept",
+            plugin_manager=plugin_manager,
+            approval_store=MagicMock(),
+        )
+
+        with pytest.raises(PermissionError, match="Approval token revoked"):
+            manager.create_durable_request(
+                turn_index=1,
+                metadata={"task_id": "approval_gate"},
+            )
+
+        plugin_manager.trigger_interceptor.assert_called_once()
+        assert plugin_manager.trigger_interceptor.call_args.args[0] == "on_approval_request"
+        manager.approval_store.create_request.assert_not_called()
+
+    def test_durable_approval_resolution_uses_interceptor_before_persistence(self):
+        store = MagicMock()
+        store.get_request.return_value = MagicMock(
+            metadata={"task_id": "approval_gate"},
+            required_role="reviewer",
+            action_payload={"action": "release"},
+        )
+        plugin_manager = MagicMock()
+        plugin_manager.trigger_interceptor.return_value = {
+            "allowed": False,
+            "error": "Approval token revoked",
+        }
+        manager = SessionApprovalManager(
+            run_id="run_durable_resolution_intercept",
+            plugin_manager=plugin_manager,
+            approval_store=store,
+        )
+
+        with pytest.raises(PermissionError, match="Approval token revoked"):
+            manager.resolve_durable_request("approval-token", "APPROVED")
+
+        assert plugin_manager.trigger_interceptor.call_args.args[0] == "on_approval_resolution"
+        assert plugin_manager.trigger_interceptor.call_args.args[2]["phase"] == "resolution"
+        store.resolve_request.assert_not_called()
+
 
 class TestInProcessBackendResumptionGuard:
     def test_resume_accepts_paused_for_approval(self):

@@ -58,8 +58,9 @@ class SessionApprovalManager:
             if intercept is False or (
                 isinstance(intercept, dict) and intercept.get("allowed") is False
             ):
+                plugin_reason = getattr(self.plugin_manager, "last_rejection_reason", None)
                 err_msg = (
-                    getattr(self.plugin_manager, "last_rejection_reason", None)
+                    (plugin_reason if isinstance(plugin_reason, str) and plugin_reason else None)
                     or (intercept.get("error") if isinstance(intercept, dict) else None)
                     or "Approval rejected by security policy"
                 )
@@ -128,9 +129,36 @@ class SessionApprovalManager:
         Creates a durable ApprovalRequest, snapshots state into a checkpoint with
         PAUSED_FOR_APPROVAL status, and persists the record to the ApprovalStore.
         """
+        task_id = (metadata or {}).get("task_id", "unknown") if metadata else "unknown"
+        # Durable approvals are the authoritative HITL boundary.  They must
+        # pass through the same interceptor as transient approval requests so
+        # stale/revoked/mismatched approval fault tests exercise the real
+        # lifecycle before a checkpoint or token is created.
+        if self.plugin_manager:
+            approval_data = {
+                "task_id": task_id,
+                "turn_index": turn_index,
+                "required_role": required_role,
+                "action_payload": action_payload or {},
+                "metadata": metadata or {},
+                "durable": True,
+            }
+            intercept = self.plugin_manager.trigger_interceptor(
+                "on_approval_request", self, approval_data
+            )
+            if intercept is False or (
+                isinstance(intercept, dict) and intercept.get("allowed") is False
+            ):
+                plugin_reason = getattr(self.plugin_manager, "last_rejection_reason", None)
+                err_msg = (
+                    (plugin_reason if isinstance(plugin_reason, str) and plugin_reason else None)
+                    or (intercept.get("error") if isinstance(intercept, dict) else None)
+                    or "Durable approval rejected by security policy"
+                )
+                raise PermissionError(err_msg)
+
         token = secrets.token_urlsafe(24)
         checkpoint_id = None
-        task_id = (metadata or {}).get("task_id", "unknown") if metadata else "unknown"
         if self.checkpoint_manager:
             checkpoint_state = {
                 "turn": turn_index,
@@ -211,6 +239,43 @@ class SessionApprovalManager:
         decision_reason: str | None = None,
     ) -> ApprovalRequest:
         """Resolves a durable approval request in the persistent store."""
+        # Resolution is also an executable HITL boundary.  Run interceptors
+        # before changing the durable record so a revoked/stale/mismatched
+        # approval cannot be turned into a resume decision merely because the
+        # request was created successfully earlier in the workflow.
+        if self.plugin_manager:
+            pending = self.approval_store.get_request(approval_token)
+            approval_data = {
+                "approval_token": approval_token,
+                "decision": decision,
+                "decided_by": decided_by,
+                "decision_reason": decision_reason,
+                "durable": True,
+                "phase": "resolution",
+            }
+            if pending is not None:
+                approval_data.update(
+                    {
+                        "task_id": pending.metadata.get("task_id", "unknown"),
+                        "required_role": pending.required_role,
+                        "action_payload": pending.action_payload,
+                        "metadata": pending.metadata,
+                    }
+                )
+            intercept = self.plugin_manager.trigger_interceptor(
+                "on_approval_resolution", self, approval_data
+            )
+            if intercept is False or (
+                isinstance(intercept, dict) and intercept.get("allowed") is False
+            ):
+                plugin_reason = getattr(self.plugin_manager, "last_rejection_reason", None)
+                err_msg = (
+                    (plugin_reason if isinstance(plugin_reason, str) and plugin_reason else None)
+                    or (intercept.get("error") if isinstance(intercept, dict) else None)
+                    or "Durable approval resolution rejected by security policy"
+                )
+                raise PermissionError(err_msg)
+
         resolved = self.approval_store.resolve_request(
             approval_token=approval_token,
             decision=decision,

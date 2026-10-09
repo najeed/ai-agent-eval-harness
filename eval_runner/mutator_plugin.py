@@ -9,6 +9,7 @@ Bridges declarative AES scenario mutations to live session and tool execution.
 from __future__ import annotations
 
 import logging
+from contextvars import ContextVar
 from typing import Any
 
 from .plugins import BaseEvalPlugin
@@ -25,10 +26,22 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
 
     def __init__(self, scenario: dict[str, Any] | None = None):
         self.scenario: dict[str, Any] = scenario or {}
-        self.active_node_id: str | None = None
-        self.active_node_data: dict[str, Any] = {}
-        self.step_index: int = 0
+        self._node_context: ContextVar[tuple[str | None, dict[str, Any], int]] = ContextVar(
+            f"runtime_mutation_node_context_{id(self)}", default=(None, {}, 0)
+        )
         self.applied_mutations: list[dict[str, Any]] = []
+
+    @property
+    def active_node_id(self) -> str | None:
+        return self._node_context.get()[0]
+
+    @property
+    def active_node_data(self) -> dict[str, Any]:
+        return self._node_context.get()[1]
+
+    @property
+    def step_index(self) -> int:
+        return self._node_context.get()[2]
 
     def before_evaluation(self, context: Any, span_context: dict[str, Any] | None = None):
         """Captures scenario data from evaluation context if not provided at init."""
@@ -46,10 +59,9 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
     ):
         """Binds active step and node definition for node-scoped mutations."""
         if node_id is not None:
-            self.active_node_id = node_id
-            self.active_node_data = node_data or {}
-            self.step_index += 1
-            logger.debug(f"[RuntimeMutationPlugin] Step {self.step_index} start: node={node_id}")
+            next_step = self.step_index + 1
+            self._node_context.set((node_id, dict(node_data or {}), next_step))
+            logger.debug(f"[RuntimeMutationPlugin] Step {next_step} start: node={node_id}")
 
     def on_step_end(
         self,
@@ -60,8 +72,7 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
     ):
         """Cleans up active step-scoped state."""
         if node_id is not None:
-            self.active_node_id = None
-            self.active_node_data = {}
+            self._node_context.set((None, {}, self.step_index))
 
     def on_tool_request(
         self, context: Any, tool_name: str, arguments: dict[str, Any] | None = None
@@ -155,6 +166,7 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
                 "state_diff": partial_diff,
                 "partial_commit_applied": True,
                 "simulated_error": "TransactionAbortedMidway: remaining keys dropped after step 1",
+                "mutation_receipt": {**record, "delivery": "DELIVERED"},
             }
 
         # 2. Stale Commit (Optimistic Lock Violation)
@@ -166,6 +178,7 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
             return {
                 "allowed": False,
                 "error": f"OptimisticLockError: base revision mismatch (expected {expected})",
+                "mutation_receipt": {**record, "delivery": "BLOCKED"},
             }
 
         # 3. Commit After Cancel Fault
@@ -176,6 +189,33 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
             return {"commit_after_cancel_tracked": True}
 
         return True
+
+    def on_tool_result(self, context: Any, tool_name: str, result: Any) -> dict[str, Any] | bool:
+        """Corrupt an actual post-execution tool response at the delivery boundary."""
+        node = self.active_node_data
+        if not node.get("tool_response_corrupted"):
+            return True
+
+        record = {
+            "fault": "tool_response_corruption",
+            "tool": tool_name,
+            "step": self.step_index,
+            "delivery": "DELIVERED",
+        }
+        self.applied_mutations.append(record)
+        if isinstance(result, dict):
+            corrupted = dict(result)
+            corrupted["status"] = "error"
+            corrupted["error"] = "InjectedToolResponseCorruption"
+            corrupted["mutation_fault"] = "tool_response_corruption"
+        else:
+            corrupted = {
+                "status": "error",
+                "error": "InjectedToolResponseCorruption",
+                "original_type": type(result).__name__,
+                "mutation_fault": "tool_response_corruption",
+            }
+        return {"result": corrupted, "mutation_receipt": record}
 
     def on_rollback(self, context: Any, compensation_action: dict[str, Any] | None = None) -> bool:
         """
@@ -259,3 +299,9 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
             }
 
         return True
+
+    def on_approval_resolution(
+        self, context: Any, approval_data: dict[str, Any] | None = None
+    ) -> dict[str, Any] | bool:
+        """Apply approval faults to the real decision boundary before resume."""
+        return self.on_approval_request(context, approval_data)

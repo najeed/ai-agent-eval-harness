@@ -1,9 +1,12 @@
 {
     "$schema": "../../spec/aes/aes.schema.json",
     "aes_version": 1.4,
+    "industry": "generic",
     "metadata": {
         "id": "agentv-runtime-golden-1-4",
         "name": "AgentV Runtime Golden Regression Scenario 1.4",
+        "attribution": "AgentV Core Runtime Team",
+        "version": "1.4.0",
         "compliance_level": "Regulatory_Audit",
         "standards_registry": [
             "NIST_AI_RMF",
@@ -90,7 +93,6 @@
         }
     },
     "initial_state": {
-
         "system": {
             "status": "ready",
             "schema_version": "1.4",

@@ -723,6 +723,406 @@ class TestInProcessExecutionBackend:
         assert st["status"] == "FAILED"
         assert "Injected runner execution crash" in st["error"]
 
+    def test_inprocess_backend_init_dependency_injection(self):
+        mock_runner = MagicMock()
+        mock_ckpt = MagicMock()
+        mock_art = MagicMock()
+        mock_pol = MagicMock()
+        mock_sign = MagicMock()
+        mock_cfg = MagicMock()
+        mock_run_store = MagicMock()
+
+        backend = InProcessExecutionBackend(
+            runner_callable=mock_runner,
+            checkpoint_store=mock_ckpt,
+            artifact_store=mock_art,
+            policy_evaluator=mock_pol,
+            signing_backend=mock_sign,
+            config_resolver=mock_cfg,
+            run_store=mock_run_store,
+        )
+        assert backend._runner_callable == mock_runner
+        assert backend._checkpoint_store == mock_ckpt
+        assert backend._artifact_store == mock_art
+        assert backend._policy_evaluator == mock_pol
+        assert backend._signing_backend == mock_sign
+        assert backend._config_resolver == mock_cfg
+        assert backend._run_store == mock_run_store
+
+    def test_inprocess_backend_execution_when_run_id_deleted_during_completion(self, monkeypatch):
+        import eval_runner.runner as runner
+
+        backend = InProcessExecutionBackend()
+        run_id_success = "run-del-succ-001"
+
+        def mock_runner_pop_run(*args, **kwargs):
+            backend._active_runs.pop(run_id_success, None)
+            return {"status": "ok"}
+
+        monkeypatch.setattr(runner, "run_scenario", mock_runner_pop_run)
+        res = backend.submit(run_id=run_id_success, scenario_data={"id": "s1"}, background=False)
+        assert res == {"status": "ok"}
+
+        run_id_fail = "run-del-fail-001"
+
+        def mock_runner_pop_and_fail(*args, **kwargs):
+            backend._active_runs.pop(run_id_fail, None)
+            raise ValueError("Failure after delete")
+
+        monkeypatch.setattr(runner, "run_scenario", mock_runner_pop_and_fail)
+        with pytest.raises(ValueError, match="Failure after delete"):
+            backend.submit(run_id=run_id_fail, scenario_data={"id": "s2"}, background=False)
+
+    def test_inprocess_backend_execution_suspension_handling(self, monkeypatch):
+        import eval_runner.runner as runner
+        from eval_runner.exceptions import RunSuspendedForApproval
+
+        backend = InProcessExecutionBackend()
+        run_id = "run-susp-001"
+
+        def mock_suspending_runner(*args, **kwargs):
+            raise RunSuspendedForApproval(
+                run_id=run_id,
+                task_id="task_001",
+                approval_token="tok_susp_123",
+                checkpoint_id="chk_456",
+                checkpoint={"session_state": {"status": "PAUSED_FOR_APPROVAL"}},
+            )
+
+        monkeypatch.setattr(runner, "run_scenario", mock_suspending_runner)
+        res = backend.submit(run_id=run_id, scenario_data={"id": "s_susp"}, background=False)
+        assert res["status"] == "PAUSED_FOR_APPROVAL"
+        assert res["approval_token"] == "tok_susp_123"
+        assert res["checkpoint_id"] == "chk_456"
+
+        st = backend.status(run_id)
+        assert st["status"] == "PAUSED_FOR_APPROVAL"
+        assert st["approval_token"] == "tok_susp_123"
+
+        # Pop active_run during suspension
+        run_id_pop = "run-susp-pop-001"
+
+        def mock_suspending_pop(*args, **kwargs):
+            backend._active_runs.pop(run_id_pop, None)
+            raise RunSuspendedForApproval(
+                run_id=run_id_pop,
+                task_id="task_001",
+                approval_token="tok_pop",
+                checkpoint_id="chk_pop",
+            )
+
+        monkeypatch.setattr(runner, "run_scenario", mock_suspending_pop)
+        res_pop = backend.submit(run_id=run_id_pop, scenario_data={"id": "s_pop"}, background=False)
+        assert res_pop["status"] == "PAUSED_FOR_APPROVAL"
+
+        # Background failure without re-raise
+        run_id_bg_fail = "run-bg-fail-001"
+
+        def mock_bg_failing(*args, **kwargs):
+            raise RuntimeError("Async crash in thread")
+
+        monkeypatch.setattr(runner, "run_scenario", mock_bg_failing)
+        backend.submit(run_id=run_id_bg_fail, scenario_data={"id": "s_bg_fail"}, background=True)
+        backend._threads[run_id_bg_fail].join(timeout=2.0)
+        assert backend.status(run_id_bg_fail)["status"] == "FAILED"
+
+    def test_inprocess_backend_resume_approval_gated_validation_errors(self, monkeypatch, tmp_path):
+        import hashlib
+        from unittest.mock import MagicMock
+
+        import eval_runner.runner as runner
+        from eval_runner.interfaces.approval import ApprovalRequest
+        from eval_runner.reference.approval_store import get_default_approval_store
+
+        monkeypatch.setattr(runner, "run_scenario", lambda *a, **kw: {"status": "resumed_ok"})
+
+        backend = InProcessExecutionBackend()
+        run_id = "run-resume-val-001"
+
+        # 1. Approval-gated status without resumption_token raises PermissionError
+        backend._active_runs[run_id] = {
+            "run_id": run_id,
+            "status": "PAUSED_FOR_APPROVAL",
+            "scenario_data": {"id": "s1"},
+        }
+        with pytest.raises(PermissionError, match="approval-gated checkpoint requires a token"):
+            backend.resume(run_id, resumption_token=None)
+
+        # 2. Invalid state without force_recovery raises RuntimeError
+        backend._active_runs[run_id]["status"] = "CORRUPT_STATE"
+        with pytest.raises(RuntimeError, match="invalid state 'CORRUPT_STATE'"):
+            backend.resume(run_id, resumption_token="tok1")
+
+        # 3. Requires approval: token not authoritatively approved raises PermissionError
+        backend._active_runs[run_id]["status"] = "PAUSED_FOR_APPROVAL"
+        with pytest.raises(PermissionError, match="approval has not been authoritatively approved"):
+            backend.resume(run_id, resumption_token="tok_unapproved")
+
+        # Setup mock approved request
+        mock_req = ApprovalRequest(
+            approval_token="tok_appr",
+            run_id=run_id,
+            turn_index=1,
+            outbound_payload_hash="wrong_hash",
+            status="APPROVED",
+            checkpoint_id="chk_ref_999",
+        )
+        store = get_default_approval_store()
+        store.create_request(mock_req)
+
+        # 4. Checkpoint is unavailable
+        mock_chk_store = MagicMock()
+        mock_chk_store.load.return_value = None
+        backend._checkpoint_store = mock_chk_store
+
+        with pytest.raises(PermissionError, match="approval checkpoint is unavailable"):
+            backend.resume(run_id, resumption_token="tok_appr")
+
+        # 5. Token does not bind to checkpoint
+        mock_chk_store.load.return_value = {
+            "session_state": {
+                "approval_token": "different_tok",
+                "action_payload": {"amount": 100},
+            }
+        }
+        with pytest.raises(PermissionError, match="approval token does not bind to checkpoint"):
+            backend.resume(run_id, resumption_token="tok_appr")
+
+        # 6. Payload binding mismatch
+        mock_chk_store.load.return_value = {
+            "session_state": {
+                "approval_token": "tok_appr",
+                "action_payload": {"amount": 100},
+            }
+        }
+        with pytest.raises(PermissionError, match="approval payload binding is invalid"):
+            backend.resume(run_id, resumption_token="tok_appr")
+
+        # 7. Checkpoint has expected_token but resumption_token is None while status is PAUSED
+        mock_chk_store.load.return_value = {
+            "session_state": {
+                "approval_token": "tok_needed",
+            },
+            "status": "PAUSED",
+        }
+        backend._active_runs[run_id]["status"] = "PAUSED"
+        with pytest.raises(PermissionError, match="approval-gated checkpoint requires a token"):
+            backend.resume(run_id, resumption_token=None, force_recovery=True)
+
+        # 8. Successful approval resumption with matching payload hash
+        valid_hash = hashlib.sha3_256(
+            str(sorted({"amount": 100}.items())).encode("utf-8")
+        ).hexdigest()
+        valid_req = ApprovalRequest(
+            approval_token="tok_valid",
+            run_id=run_id,
+            turn_index=1,
+            outbound_payload_hash=valid_hash,
+            status="APPROVED",
+            checkpoint_id="chk_ref_valid",
+        )
+        store.create_request(valid_req)
+        mock_chk_store.load.return_value = {
+            "session_state": {
+                "approval_token": "tok_valid",
+                "action_payload": {"amount": 100},
+            },
+            "scenario_data": {"id": "s_valid"},
+        }
+        res_approved = backend.resume(run_id, resumption_token="tok_valid", force_recovery=True)
+        assert res_approved == {"status": "resumed_ok"}
+
+        # 9. Approval without checkpoint_id and without payload
+        run_id_no_chk = "run-resume-no-chk-001"
+        valid_no_chk = ApprovalRequest(
+            approval_token="tok_no_chk",
+            run_id=run_id_no_chk,
+            turn_index=1,
+            outbound_payload_hash="",
+            status="APPROVED",
+            checkpoint_id=None,
+        )
+        store.create_request(valid_no_chk)
+        mock_chk_store.load.return_value = {
+            "session_state": {"approval_token": "tok_no_chk", "action_payload": {}},
+            "scenario_data": {"id": "s_no_chk"},
+        }
+        backend._active_runs[run_id_no_chk] = {
+            "run_id": run_id_no_chk,
+            "status": "PAUSED",
+            "scenario_data": {"id": "s_no_chk"},
+        }
+        res_no_chk = backend.resume(
+            run_id_no_chk, resumption_token="tok_no_chk", force_recovery=True
+        )
+        assert res_no_chk == {"status": "resumed_ok"}
+
+    def test_inprocess_backend_resume_manifest_and_metadata_recovery(self, tmp_path, monkeypatch):
+        import eval_runner.runner as runner
+
+        monkeypatch.setattr(runner, "run_scenario", lambda *a, **kw: {"status": "ok"})
+
+        vault_dir = tmp_path / "runs" / "run-recovery-001"
+        vault_dir.mkdir(parents=True, exist_ok=True)
+        monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "runs")
+
+        backend = InProcessExecutionBackend()
+        run_id = "run-recovery-001"
+
+        # Corrupt scenario_resolved.json
+        (vault_dir / "scenario_resolved.json").write_text("invalid json {", encoding="utf-8")
+
+        # Corrupt execution_manifest.json (triggers exception log lines 451-452 when no orig_mode)
+        (vault_dir / "execution_manifest.json").write_text("invalid json {", encoding="utf-8")
+
+        # Resume falls back cleanly when chk metadata has no execution_mode
+        chk = {
+            "scenario_data": {"id": "recovered_scen"},
+            "metadata": {},
+            "status": "PAUSED",
+        }
+        backend._active_runs[run_id] = {
+            "run_id": run_id,
+            "status": "PAUSED",
+            "resumption_checkpoint": chk,
+        }
+        res = backend.resume(
+            run_id,
+            force_recovery=True,
+            background=False,
+        )
+        assert res is not None
+
+        # Pass orig_mode directly in kwargs
+        res_direct = backend.resume(
+            run_id,
+            execution_mode="live",
+            force_recovery=True,
+            background=False,
+        )
+        assert res_direct is not None
+
+        # Mode from active run kwargs (covers branch 443->446)
+        backend._checkpoint_store = MagicMock()
+        backend._checkpoint_store.load.return_value = None
+        backend._active_runs[run_id]["resumption_checkpoint"] = None
+        backend._active_runs[run_id]["scenario_data"] = {"id": "scen_active_no_chk"}
+        backend._active_runs[run_id]["kwargs"] = {"execution_mode": "hybrid"}
+        res_kw = backend.resume(run_id, force_recovery=True, background=False)
+        assert res_kw is not None
+
+        # Mode from active run metadata
+        backend._active_runs[run_id]["kwargs"] = {"metadata": {"execution_mode": "record_replay"}}
+        res_meta = backend.resume(run_id, force_recovery=True, background=False)
+        assert res_meta is not None
+
+        # Mode from valid execution_manifest.json
+        backend._active_runs[run_id]["kwargs"] = {}
+        chk["metadata"] = {}
+        (vault_dir / "execution_manifest.json").write_text(
+            json.dumps({"runtime_config": {"execution_mode": "live"}}),
+            encoding="utf-8",
+        )
+        res_manifest = backend.resume(run_id, force_recovery=True, background=False)
+        assert res_manifest is not None
+
+        # Valid scenario_resolved.json covers branch 418->424
+        (vault_dir / "scenario_resolved.json").write_text(
+            json.dumps({"id": "resolved_from_disk"}),
+            encoding="utf-8",
+        )
+        res_resolved_disk = backend.resume(
+            run_id, force_submit=True, force_recovery=True, background=False
+        )
+        assert res_resolved_disk is not None
+
+        # Missing checkpoint with active_runs kwargs execution_mode
+        (vault_dir / "scenario_resolved.json").unlink(missing_ok=True)
+        (vault_dir / "execution_manifest.json").unlink(missing_ok=True)
+        backend._checkpoint_store.load.return_value = None
+        backend._active_runs[run_id]["resumption_checkpoint"] = None
+        backend._active_runs[run_id]["scenario_data"] = {"id": "scen_active"}
+        backend._active_runs[run_id]["kwargs"] = {"execution_mode": "hybrid"}
+        res_active_mode = backend.resume(
+            run_id, force_submit=True, force_recovery=True, background=False
+        )
+        assert res_active_mode is not None
+
+        # Non-dict scenario_data with orig_mode covers branch 456->458
+        class CustomNonDictScenario:
+            def get(self, key, default=None):
+                return default
+
+        backend._active_runs[run_id]["scenario_data"] = CustomNonDictScenario()
+        backend._active_runs[run_id]["kwargs"] = {}
+        res_non_dict = backend.resume(
+            run_id, execution_mode="live", force_submit=True, force_recovery=True, background=False
+        )
+        assert res_non_dict is not None
+
+    def test_inprocess_backend_singleton_lifecycle_and_dependencies(self, monkeypatch):
+        from eval_runner.reference.inprocess_backend import get_execution_backend
+
+        InProcessExecutionBackend.clear_instance()
+        b1 = get_execution_backend()
+        assert b1 is not None
+
+        # get_instance with dependency update
+        mock_runner = MagicMock()
+        mock_callable = MagicMock(return_value={"status": "callable_ok"})
+        mock_ckpt = MagicMock()
+        mock_art = MagicMock()
+        mock_pol = MagicMock()
+        mock_sign = MagicMock()
+        mock_cfg = MagicMock()
+        mock_run_store = MagicMock()
+
+        b2 = InProcessExecutionBackend.get_instance(
+            runner=mock_runner,
+            checkpoint_store=mock_ckpt,
+            artifact_store=mock_art,
+            policy_evaluator=mock_pol,
+            signing_backend=mock_sign,
+            config_resolver=mock_cfg,
+            run_store=mock_run_store,
+        )
+        assert b2 is b1
+        assert b1._runner == mock_runner
+
+        # Update dependency graph
+        b1.set_dependency_graph(runner_callable=mock_callable)
+        assert b1._runner_callable == mock_callable
+
+        # Runner callable invocation in submit
+        res_callable = b1.submit("run-call-001", {"id": "s_call"}, background=False)
+        assert res_callable == {"status": "callable_ok"}
+
+        # Background submission
+        res_bg = b1.submit("run-bg-001", {"id": "s_bg"}, background=True)
+        assert res_bg["status"] == "started"
+        assert "run-bg-001" in b1._threads
+        b1._threads["run-bg-001"].join(timeout=2.0)
+
+        # Status from cold checkpoint store
+        mock_cold_ckpt = MagicMock()
+        mock_cold_ckpt.load.return_value = {"status": "PAUSED", "data": 123}
+        backend_cold = InProcessExecutionBackend(checkpoint_store=mock_cold_ckpt)
+        st_cold = backend_cold.status("run-cold-001")
+        assert st_cold["status"] == "PAUSED"
+        assert st_cold["run_id"] == "run-cold-001"
+
+        # Resume state machine guards
+        backend_guard = InProcessExecutionBackend()
+        backend_guard._active_runs["run-guard-running"] = {"status": "RUNNING"}
+        with pytest.raises(RuntimeError, match="currently in RUNNING state"):
+            backend_guard.resume("run-guard-running")
+
+        backend_guard._active_runs["run-guard-completed"] = {"status": "COMPLETED"}
+        with pytest.raises(RuntimeError, match="reached terminal state"):
+            backend_guard.resume("run-guard-completed")
+
+        InProcessExecutionBackend.clear_instance()
+
 
 # ==============================================================================
 # 5. CatalogStore Reference Implementation

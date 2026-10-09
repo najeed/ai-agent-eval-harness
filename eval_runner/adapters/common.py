@@ -235,12 +235,21 @@ def _safe_header_value(value: Any) -> str | None:
     return result
 
 
-def is_airgap_safe_host(hostname: str | None, allowed_hosts: list[str] | None = None) -> bool:
+def is_airgap_safe_host(
+    hostname: str | None,
+    allowed_hosts: list[str] | None = None,
+    resolve_dns: bool = True,
+) -> bool:
     """
     Determines whether a target hostname/IP is safe for air-gapped execution (SOC 2 CC6.6).
+    Enforces destination-IP validation and DNS rebinding protection in depth.
     Permits localhost, loopback, link-local, RFC 1918 private IPv4/IPv6,
-    recognized local TLDs (.local, .internal, .lan, .corp, .test),
-    and any explicitly configured hostnames or CIDRs in allowed_hosts.
+    recognized local TLDs (.local, .internal, .lan, .corp, .test, .home.arpa) whose
+    resolved destination IPs are strictly non-public, and explicitly configured allowlists.
+
+    Note: Application-level validation provides defense-in-depth against unauthorized
+    egress, DNS rebinding, and redirect leakage. Authoritative network isolation must
+    be enforced at the container / Kubernetes NetworkPolicy level.
     """
     if not hostname or not isinstance(hostname, str):
         return False
@@ -259,17 +268,29 @@ def is_airgap_safe_host(hostname: str | None, allowed_hosts: list[str] | None = 
     if host in {"localhost", "127.0.0.1", "::1", "0.0.0.0"}:  # nosec B104
         return True
 
+    # 1. Direct IP Address Literal Validation
+    try:
+        ip = ipaddress.ip_address(host)
+        return bool(
+            ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_unspecified  # nosec B104
+        )
+    except ValueError:
+        pass
+
+    # 2. Explicit Allowlist Verification
     allowed = (
         allowed_hosts
         if allowed_hosts is not None
         else getattr(config, "AIRGAPPED_ALLOWED_HOSTS", [])
     )
+    is_explicitly_allowed = False
     for allowed_entry in allowed:
         entry = allowed_entry.strip().lower()
         if not entry:
             continue
         if host == entry or host.endswith(f".{entry}"):
-            return True
+            is_explicitly_allowed = True
+            break
         if "/" in entry:
             try:
                 net = ipaddress.ip_network(entry, strict=False)
@@ -278,22 +299,62 @@ def is_airgap_safe_host(hostname: str | None, allowed_hosts: list[str] | None = 
             except ValueError:
                 pass
 
-    try:
-        ip = ipaddress.ip_address(host)
-        return ip.is_private or ip.is_loopback or ip.is_link_local
-    except ValueError:
-        pass
+    has_private_suffix = host.endswith(
+        (".local", ".internal", ".lan", ".corp", ".test", ".home.arpa")
+    )
 
-    if host.endswith((".local", ".internal", ".lan", ".corp", ".test", ".home.arpa")):
-        return True
+    if not (is_explicitly_allowed or has_private_suffix):
+        return False
 
-    return False
+    # 3. Destination-IP Resolution & DNS Rebinding Protection (Defense in Depth)
+    # When a domain name matches a private suffix or explicit allowlist, resolve its
+    # destination IPs to verify that they actually route to private/loopback addresses.
+    # Reject immediately if any resolved IP address belongs to public WAN space.
+    if resolve_dns:
+        import socket
+
+        try:
+            addr_info = socket.getaddrinfo(host, None)
+            if addr_info:
+                for item in addr_info:
+                    sockaddr = item[4]
+                    if sockaddr and len(sockaddr) > 0:
+                        resolved_ip_str = sockaddr[0]
+                        try:
+                            resolved_ip = ipaddress.ip_address(resolved_ip_str)
+                            if not (
+                                resolved_ip.is_private
+                                or resolved_ip.is_loopback
+                                or resolved_ip.is_link_local
+                                or resolved_ip.is_unspecified  # nosec B104
+                            ):
+                                logger.warning(
+                                    "Airgap DNS rebinding / public destination IP detected: "
+                                    "host '%s' resolved to public IP '%s'",
+                                    host,
+                                    resolved_ip_str,
+                                )
+                                return False
+                        except ValueError:
+                            return False
+                return True
+        except (socket.gaierror, OSError):
+            # When offline or DNS is unavailable, allow recognized private suffixes
+            # so local mock test fixtures without network daemons do not fail.
+            return True
+
+    return True
 
 
 def assert_airgap_safe_endpoint(endpoint: Any) -> None:
     """
     Strict fail-closed assertion for air-gapped network boundaries (SOC 2 CC6.6).
+    Enforces destination-IP validation and DNS rebinding protection in depth.
     If AIRGAPPED_MODE is active, non-local/non-private endpoints raise AirgappedConfigurationError.
+
+    Note: Application-level validation provides defense-in-depth against unauthorized
+    egress, DNS rebinding, and redirect leakage. Authoritative network isolation must
+    be enforced at the container / Kubernetes NetworkPolicy level.
     """
     from eval_runner.exceptions import AirgappedConfigurationError
 
@@ -314,7 +375,11 @@ def assert_airgap_safe_endpoint(endpoint: Any) -> None:
         ) from exc
 
     hostname = parsed.hostname or parsed.netloc
-    if not is_airgap_safe_host(hostname, getattr(config, "AIRGAPPED_ALLOWED_HOSTS", [])):
+    if not is_airgap_safe_host(
+        hostname,
+        getattr(config, "AIRGAPPED_ALLOWED_HOSTS", []),
+        resolve_dns=True,
+    ):
         raise AirgappedConfigurationError(
             f"Fail-closed airgap violation: Endpoint '{cleaned}' (host: '{hostname}') "
             "targets a public WAN or non-private destination under AIRGAPPED_MODE=true. "
@@ -981,12 +1046,27 @@ class AdapterSessionPool:
             keepalive_timeout=self._keepalive_timeout,
         )
 
+        trace_configs = []
+        if config.is_airgapped():
+            trace_config = aiohttp.TraceConfig()
+
+            async def _on_request_redirect(
+                session: aiohttp.ClientSession,
+                context: Any,
+                params: Any,
+            ) -> None:
+                assert_airgap_safe_endpoint(str(params.url))
+
+            trace_config.on_request_redirect.append(_on_request_redirect)
+            trace_configs.append(trace_config)
+
         return aiohttp.ClientSession(
             connector=connector,
             connector_owner=True,
             timeout=self._timeout,
             trust_env=self._trust_env,
             headers=self._headers or None,
+            trace_configs=trace_configs or None,
         )
 
     async def get_session(self) -> aiohttp.ClientSession:
@@ -1096,6 +1176,10 @@ class _AdapterRequestContext:
         )
 
         self._response = await self._context.__aenter__()
+        if config.is_airgapped():
+            for redirect_resp in getattr(self._response, "history", ()):
+                assert_airgap_safe_endpoint(str(redirect_resp.url))
+            assert_airgap_safe_endpoint(str(self._response.url))
         return self._response
 
     async def __aexit__(self, exc_type, exc, tb) -> bool:

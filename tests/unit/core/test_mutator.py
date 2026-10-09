@@ -6,7 +6,14 @@ Unit tests for the adversarial mutation engine.
 
 import json
 
+import pytest
+
 from eval_runner import mutator
+
+
+def test_mutator_rejects_unknown_operator():
+    with pytest.raises(mutator.UnsupportedMutationError, match="not available"):
+        mutator.mutate_scenario({"id": "unknown_mutation"}, "not_a_runtime_mutation")
 
 
 def test_mutator_typo():
@@ -526,7 +533,10 @@ def test_all_vector_sub_engines():
     sm.apply_mutation(scen_sm_no_fp, "rollback_failure")
     sm.apply_mutation(scen_sm_no_fp, "duplicate_commit")
     sm.apply_mutation(scen_sm_no_fp, "commit_after_cancel")
-    assert "failure_policy" in scen_sm_no_fp
+    assert scen_sm_no_fp.get("failure_policy") is None
+    assert scen_sm_no_fp["metadata"]["rollback_handler_corrupted"] is True
+    assert scen_sm_no_fp["metadata"]["duplicate_commit"] is True
+    assert scen_sm_no_fp["metadata"]["commit_after_cancel"] is True
 
     am = AuthorizationMutators()
     for t in am.SUPPORTED_TYPES:
@@ -745,11 +755,13 @@ def test_mutator_edge_cases_and_branch_completions(tmp_path):
 
     scen_none_fp_1 = {"failure_policy": None, "workflow": {"nodes": [{}]}}
     StateMutators().apply_mutation(scen_none_fp_1, "duplicate_commit")
-    assert scen_none_fp_1["failure_policy"]["duplicate_commit"] is True
+    assert scen_none_fp_1["failure_policy"] is None
+    assert scen_none_fp_1["metadata"]["duplicate_commit"] is True
 
     scen_none_fp_2 = {"failure_policy": None, "workflow": {"nodes": [{}]}}
     StateMutators().apply_mutation(scen_none_fp_2, "commit_after_cancel")
-    assert scen_none_fp_2["failure_policy"]["commit_after_cancel"] is True
+    assert scen_none_fp_2["failure_policy"] is None
+    assert scen_none_fp_2["metadata"]["commit_after_cancel"] is True
 
     fresh_service = MutationService()
     fresh_service.reset()
@@ -1038,12 +1050,111 @@ def test_mutation_service_non_dict_mutated_and_meta_branches():
     svc.register_provider(NonDictMutator())
     svc.register_provider(NonDictMetaMutator())
 
-    # 1. Non-dict mutated return (line 1803 False branch)
+    # Non-dict mutated return
     res_str = svc.mutate_scenario({"id": "base"}, "non_dict")
     assert res_str == "string_not_dict"
 
-    # 2. Non-dict metadata (line 1817 False branch)
+    # Non-dict metadata
     res_meta = svc.mutate_scenario({"id": "base"}, "non_dict_meta")
     assert res_meta["metadata"] == "string_not_dict"
 
     svc.reset()
+
+
+def test_mutator_aes_root_schema_conformance_and_zero_deviations():
+    """Verifies all state and semantic mutators produce 100% AES 1.4 compliant scenarios."""
+    from eval_runner.loader import validate_scenario_schema
+    from eval_runner.mutator import ScenarioMutator, mutate_scenario, mutation_service
+
+    base_scenario = {
+        "aes_version": 1.4,
+        "industry": "golden",
+        "metadata": {
+            "id": "scenario_conformance_test",
+            "name": "Scenario Conformance Test",
+            "compliance_level": "Standard",
+        },
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "node_1",
+                    "task_description": "Execute compliant operation",
+                    "expected_outcome": [{"target": "message", "expected": "success"}],
+                }
+            ],
+            "edges": [],
+        },
+        "evaluation": {
+            "consensus": {
+                "strategy": "Majority_Vote",
+                "min_judges": 1,
+                "judge_panel": ["Luna-1"],
+            }
+        },
+    }
+
+    # Verify base passes schema validation
+    base_errs = validate_scenario_schema(base_scenario)
+    assert base_errs == [], f"Base scenario schema errors: {base_errs}"
+
+    # Verify state mutators and semantic mutators against Draft-07 AES schema
+    test_types = [
+        "duplicate_commit",
+        "rollback_failure",
+        "commit_after_cancel",
+        "concurrency",
+        "stale_state",
+        "partial_commit",
+        "typo",
+        "ambiguity",
+        "injection",
+    ]
+
+    for mtype in test_types:
+        mutant = mutate_scenario(base_scenario, mtype, seed=42)
+
+        # 1. Root name and root id must not be injected
+        assert "name" not in mutant, f"Root 'name' injected by mutator {mtype}"
+        assert "id" not in mutant, f"Root 'id' injected by mutator {mtype}"
+
+        # 2. metadata.name should be updated for semantic mutators
+        if mtype in ["typo", "ambiguity", "injection"]:
+            assert mutant["metadata"]["name"] != base_scenario["metadata"]["name"]
+
+        # 3. failure_policy must remain absent or a valid enum string
+        if "failure_policy" in mutant:
+            assert isinstance(mutant["failure_policy"], str), (
+                f"failure_policy must be a string, got {type(mutant['failure_policy'])} for {mtype}"
+            )
+
+        # 4. Mutant must have zero Draft-07 schema validation errors
+        errs = validate_scenario_schema(mutant)
+        assert errs == [], f"Schema validation failed for mutator {mtype}: {errs}"
+
+    # Legacy root name preservation and root id/name injection guard
+    legacy_scen = {
+        "name": "Legacy Scenario Name",
+        "workflow": {"nodes": [{"id": "n1", "task_description": "legacy task"}]},
+    }
+    mut_legacy = mutate_scenario(legacy_scen, "typo")
+    assert "Legacy Scenario Name (Typo)" == mut_legacy["name"]
+
+    # Provider attempting to inject root id and name when absent from source scenario
+    class RogueMutator(ScenarioMutator):
+        name = "rogue_injector"
+
+        def can_mutate(self, mutation_type: str) -> bool:
+            return mutation_type == "rogue_injector"
+
+        def mutate(self, scenario: dict, mutation_type: str, next_mutator) -> dict:
+            scen = dict(scenario)
+            scen["id"] = "illegal_root_id"
+            scen["name"] = "illegal_root_name"
+            return scen
+
+    mutation_service.register_provider(RogueMutator())
+    clean_scen = {"metadata": {"id": "clean_scenario"}}
+    mut_rogue = mutation_service.mutate_scenario(clean_scen, "rogue_injector")
+    assert "id" not in mut_rogue
+    assert "name" not in mut_rogue
+    mutation_service.reset()

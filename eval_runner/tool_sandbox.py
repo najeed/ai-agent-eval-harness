@@ -348,13 +348,11 @@ class ToolSandbox(AbstractSandbox):
     Uses a static mapping of tool behaviors defined in the scenario.
     """
 
-    def _set_state_path(self, path: str, value: Any) -> None:
-        """
-        Applies a dotted path mutation to the hierarchical sandbox state.
-        Navigates and initializes intermediate dictionaries as needed.
-        """
+    @staticmethod
+    def _set_state_path_on(state: dict[str, Any], path: str, value: Any) -> None:
+        """Apply a dotted mutation to an explicit state mapping."""
         parts = path.split(".")
-        cursor = self.state
+        cursor = state
         for part in parts[:-1]:
             existing = cursor.get(part)
             if not isinstance(existing, dict):
@@ -362,6 +360,13 @@ class ToolSandbox(AbstractSandbox):
                 cursor[part] = existing
             cursor = existing
         cursor[parts[-1]] = value
+
+    def _set_state_path(self, path: str, value: Any) -> None:
+        """
+        Applies a dotted path mutation to the hierarchical sandbox state.
+        Navigates and initializes intermediate dictionaries as needed.
+        """
+        self._set_state_path_on(self.state, path, value)
 
     async def execute(self, tool_name: str, params: dict, agent_name: str | None = None) -> dict:
         """Executes a tool and returns the result, routing through the
@@ -489,11 +494,48 @@ class ToolSandbox(AbstractSandbox):
                     "details": eval_result.to_dict(),
                 }
         state_changes = tool_def.get("state_changes", [])
+        proposed_diff: dict[str, Any] = {}
         for change in state_changes:
             path = change.get("path")
             value = change.get("value")
             if path:
-                self._set_state_path(path, value)
+                proposed_diff[str(path)] = value
+
+        # State changes are proposed first, then passed through the actual
+        # commit interceptor before they reach the sandbox state.  This is the
+        # only local state-write boundary, so partial/stale commit mutations
+        # now affect a real state transition rather than a metadata flag.
+        if proposed_diff and self.plugin_manager:
+            intercept = self.plugin_manager.trigger_interceptor(
+                "on_before_commit", self, dict(proposed_diff)
+            )
+            if intercept is False or (
+                isinstance(intercept, dict) and intercept.get("allowed") is False
+            ):
+                message = (
+                    getattr(self.plugin_manager, "last_rejection_reason", None)
+                    or (intercept.get("error") if isinstance(intercept, dict) else None)
+                    or "State commit rejected by interceptor"
+                )
+                return {
+                    "status": "error",
+                    "error_code": "STATE_COMMIT_REJECTED",
+                    "message": message,
+                }
+            if isinstance(intercept, dict):
+                candidate = intercept.get("state_diff", proposed_diff)
+                if not isinstance(candidate, dict):
+                    raise TypeError("on_before_commit state_diff must be a mapping")
+                proposed_diff = candidate
+                receipt = intercept.get("mutation_receipt")
+                if isinstance(receipt, dict) and self.event_bus:
+                    self.event_bus.emit(
+                        "mutation_delivery",
+                        {"category": "MUTATION_DELIVERY", "mutation_receipt": receipt},
+                    )
+
+        for path, value in proposed_diff.items():
+            self._set_state_path(str(path), value)
         if "shared_write" in params:
             write_path = params["shared_write"].get("path")
             write_val = params["shared_write"].get("value")

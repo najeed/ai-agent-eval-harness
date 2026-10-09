@@ -710,6 +710,7 @@ def resume_run(run_id):
     """Resumes a paused or checkpointed evaluation run via ExecutionBackend."""
     from eval_runner.reference.approval_store import get_default_approval_store
     from eval_runner.reference.inprocess_backend import get_execution_backend
+    from eval_runner.session_components.approval_manager import SessionApprovalManager
 
     data = request.json or {}
     resumption_token = data.get("resumption_token") or data.get("approval_token")
@@ -740,21 +741,23 @@ def resume_run(run_id):
         ), 403
 
     try:
-        resolved_req = store.resolve_request(
-            resumption_token,
+        # Keep all durable approval resolutions on the runtime's generic
+        # approval boundary.  This ensures the same interceptor checks apply
+        # to Console, CLI, and in-session resumption paths.
+        from eval_runner import plugins
+
+        SessionApprovalManager(
+            run_id=run_id,
+            approval_store=store,
+            plugin_manager=plugins.manager,
+        ).resolve_durable_request(
+            approval_token=resumption_token,
             decision=decision,
             decided_by=reviewer,
             decision_reason=reason,
         )
-        try:
-            from eval_runner import events, plugins
-
-            plugins.manager.trigger("on_approval_resolved", None, resolved_req)
-            events.emit(events.CoreEvents.APPROVAL_RESOLVED, resolved_req.to_dict())
-        except Exception as _hook_err:
-            logger.warning(
-                "[Console] Failed to dispatch on_approval_resolved hook/event: %s", _hook_err
-            )
+    except PermissionError as exc:
+        return jsonify({"error": str(exc)}), 403
     except (KeyError, ValueError) as exc:
         return jsonify({"error": str(exc)}), 409
     if decision == "REJECTED":
