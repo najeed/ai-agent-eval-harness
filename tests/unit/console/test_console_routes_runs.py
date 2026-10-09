@@ -9,7 +9,6 @@ Covers: resolve_trace_path, list_metrics, explain_run, list_runs,
 
 import json
 import os
-import tempfile
 import threading
 import time
 from datetime import UTC, datetime
@@ -1114,18 +1113,12 @@ def test_stream_and_cleanup_finally_unlink_error(tmp_path):
     assert any("run_end" in e for e in events)
 
 
-def test_get_run_status_master_log_fp_then_false_run_id(runs_jail, runs_client):
+def test_get_run_status_master_log_fp_then_false_run_id(runs_jail):
     """Cover 243->239: line passes fast filter but JSON run_id doesn't match (false positive)."""
     rid = "status-false-pos"
     # Use a run_id that is a prefix of another — ensures '"status-false-pos"' substring match
     other_rid = f"{rid}-extension"
-    # Write to a unique directory to avoid master log conflicts
-    tmp_root = Path(tempfile.mkdtemp())
-    tmp_runs = tmp_root / "runs"
-    tmp_runs.mkdir()
-    tmp_reports = tmp_root / "reports" / "certificates"
-    tmp_reports.mkdir(parents=True)
-    master = tmp_runs / "run.jsonl"
+    master = runs_jail["runs"] / "run.jsonl"
     master.write_text(
         json.dumps({"run_id": other_rid, "event": "run_start"}) + "\n", encoding="utf-8"
     )
@@ -1140,8 +1133,8 @@ def test_get_run_status_master_log_fp_then_false_run_id(runs_jail, runs_client):
     app.register_blueprint(run_bp, url_prefix="/api")
 
     with patch("eval_runner.console.auth_manager.require_permission", lambda _: lambda f: f):
-        with patch.object(config, "RUN_LOG_DIR", tmp_runs):
-            with patch.object(config, "REPORTS_DIR", tmp_root / "reports"):
+        with patch.object(config, "RUN_LOG_DIR", runs_jail["runs"]):
+            with patch.object(config, "REPORTS_DIR", runs_jail["reports"]):
                 with patch("eval_runner.console.routes.runs.resolve_trace_path", return_value=None):
                     res = app.test_client().get(f"/api/v1/runs/{rid}")
 
