@@ -24,7 +24,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **httpx** | 0.28.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **idna** | 3.20 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **jsonschema** | 4.26.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **numpy** | 2.5.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **numpy** | 2.5.4 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **opentelemetry-api** | 1.45.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **opentelemetry-sdk** | 1.45.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **Pillow** | 12.3.0 | HPND | [HPND.txt](LICENSES/HPND.txt) |
@@ -88,7 +88,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **langchain** | 1.4.4 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-anthropic** | 1.7.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-core** | 1.6.9 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langchain-google-genai** | 4.4.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **langchain-google-genai** | 4.4.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **langchain-ollama** | 1.1.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-openai** | 1.7.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langgraph** | 1.2.14 | MIT | [MIT.txt](LICENSES/MIT.txt) |

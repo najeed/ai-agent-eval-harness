@@ -24,7 +24,7 @@ pyasn1>=0.6.4
 
 # --- Code Quality & Security ---
 ruff==0.17.0
-black>=26.10.0
+black>=26.10.1
 flake8>=7.4.1
 isort>=9.0.2
 pip-audit>=2.10.1
