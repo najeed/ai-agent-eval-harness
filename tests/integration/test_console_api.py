@@ -88,6 +88,37 @@ def test_mutate_api_rejects_unknown_operator(client):
     assert data["error"] == "unsupported_mutation"
 
 
+def test_mutate_api_compiles_scoped_prompt_injection_profile(client):
+    headers = {"X-Api-Key": "test_key"}
+    response = client.post(
+        "/api/v1/mutate",
+        json={
+            "type": "injection",
+            "profile": "authority_impersonation",
+            "placement": "prefix",
+            "target_node_ids": ["review"],
+            "raw_json": {
+                "id": "injection_api_test",
+                "workflow": {
+                    "nodes": [
+                        {"id": "safe", "task_description": "Do normal work."},
+                        {"id": "review", "task_description": "Review the request."},
+                    ],
+                    "edges": [],
+                },
+            },
+        },
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    mutated = response.get_json()["mutated"]
+    details = mutated["metadata"]["applied_mutations"][-1]["details"]
+    assert mutated["workflow"]["nodes"][0]["task_description"] == "Do normal work."
+    assert details["profile"] == "authority_impersonation"
+    assert details["target_node_ids"] == ["review"]
+
+
 def test_doctor_api(client):
     """Verify Roadmap: /api/v1/doctor audit."""
     headers = {"X-Api-Key": "test_key"}

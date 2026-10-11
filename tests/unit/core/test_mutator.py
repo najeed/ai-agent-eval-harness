@@ -68,6 +68,67 @@ def test_mutator_injection():
     mutated = mutator.mutate_scenario(scenario, "injection")
     desc = mutated["workflow"]["nodes"][0]["task_description"]
     assert "Ignore all previous instructions" in desc
+    assert "[AGENTV_PI_PROFILE:direct_override]" in desc
+    record = mutated["metadata"]["applied_mutations"][-1]
+    assert record["details"] == {
+        "delivery_class": "direct_task_instruction",
+        "profile": "direct_override",
+        "profile_version": "1",
+        "family": "instruction_override",
+        "placement": "suffix",
+        "target_node_ids": ["n1"],
+        "canary": record["details"]["canary"],
+        "payload_commitment": record["details"]["payload_commitment"],
+    }
+    assert record["details"]["canary"] in desc
+    assert record["details"]["payload_commitment"].startswith("sha3_256:")
+
+
+def test_mutator_injection_is_scoped_and_deterministically_committed():
+    scenario = {
+        "id": "injection_scope_test",
+        "metadata": {"name": "injection_scope_test"},
+        "workflow": {
+            "nodes": [
+                {"id": "safe", "task_description": "Perform the safe task."},
+                {"id": "target", "task_description": "Review the supplied document."},
+            ],
+            "edges": [],
+        },
+    }
+    spec = {
+        "type": "injection",
+        "profile": "delimiter_hijack",
+        "placement": "prefix",
+        "target_node_ids": ["target"],
+    }
+
+    first = mutator.mutate_scenario(scenario, spec, seed=91)
+    second = mutator.mutate_scenario(scenario, spec, seed=91)
+    first_details = first["metadata"]["applied_mutations"][-1]["details"]
+    second_details = second["metadata"]["applied_mutations"][-1]["details"]
+
+    assert first["workflow"]["nodes"][0]["task_description"] == "Perform the safe task."
+    assert first["workflow"]["nodes"][1]["task_description"].startswith(
+        "\n\n[UNTRUSTED SECURITY TEST CONTENT]"
+    )
+    target_description = first["workflow"]["nodes"][1]["task_description"]
+    assert "[AGENTV_PI_PROFILE:delimiter_hijack]" in target_description
+    assert first_details == second_details
+    assert first_details["profile"] == "delimiter_hijack"
+    assert first_details["target_node_ids"] == ["target"]
+
+
+def test_mutator_injection_rejects_ambiguous_or_unknown_scope():
+    scenario = {
+        "id": "injection_validation_test",
+        "workflow": {"nodes": [{"id": "n1", "task_description": "Review."}], "edges": []},
+    }
+
+    with pytest.raises(mutator.InvalidPromptInjectionSpecError, match="Unsupported"):
+        mutator.mutate_scenario(scenario, {"type": "injection", "unknown": True})
+    with pytest.raises(mutator.InvalidPromptInjectionSpecError, match="do not exist"):
+        mutator.mutate_scenario(scenario, {"type": "injection", "target_node_ids": ["missing"]})
 
 
 def test_save_mutated_scenario(tmp_path):

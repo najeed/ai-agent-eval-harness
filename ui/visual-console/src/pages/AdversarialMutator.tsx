@@ -33,6 +33,13 @@ export interface MutationDescriptor {
   parameters_schema?: any;
 }
 
+const PROMPT_INJECTION_PROFILE_LABELS: Record<string, string> = {
+  direct_override: 'Direct instruction override',
+  authority_impersonation: 'Authority impersonation',
+  delimiter_hijack: 'Delimiter hijack',
+  data_exfiltration: 'Sensitive-data exfiltration probe',
+};
+
 interface ScenarioOption {
   id: string;
   title?: string;
@@ -62,6 +69,10 @@ export const AdversarialMutator: React.FC = () => {
   const [selectedId, setSelectedId] = useState('');
   const [mutationType, setMutationType] = useState('');
   const [seed, setSeed] = useState('42');
+  const [injectionProfile, setInjectionProfile] = useState('direct_override');
+  const [injectionPlacement, setInjectionPlacement] = useState<'prefix' | 'suffix'>('suffix');
+  const [injectionTargetNodeIds, setInjectionTargetNodeIds] = useState<string[]>([]);
+  const [injectionTargetsAll, setInjectionTargetsAll] = useState(true);
   const [loadingScenarios, setLoadingScenarios] = useState(false);
 
   // Dynamic Catalog State (strictly backend-confirmed, zero silent offline fallback)
@@ -184,6 +195,27 @@ export const AdversarialMutator: React.FC = () => {
     return catalog.find((m) => m.id === mutationType) || catalog[0] || null;
   }, [catalog, mutationType]);
 
+  const isPromptInjection = mutationType === 'injection';
+  const injectionNodes = useMemo(() => {
+    const nodes = canonicalBaseScenario?.workflow?.nodes;
+    return Array.isArray(nodes) ? nodes.filter((node: any) => typeof node?.id === 'string') : [];
+  }, [canonicalBaseScenario]);
+  const injectionProfiles = useMemo(() => {
+    const values = selectedDescriptor?.parameters_schema?.properties?.profile?.enum;
+    return Array.isArray(values) ? values.filter((value: unknown): value is string => typeof value === 'string') : [];
+  }, [selectedDescriptor]);
+
+  useEffect(() => {
+    if (isPromptInjection && injectionProfiles.length > 0 && !injectionProfiles.includes(injectionProfile)) {
+      setInjectionProfile(injectionProfiles[0]);
+    }
+  }, [injectionProfile, injectionProfiles, isPromptInjection]);
+
+  useEffect(() => {
+    setInjectionTargetNodeIds([]);
+    setInjectionTargetsAll(true);
+  }, [selectedId]);
+
   // Recommend diff mode based on vector type
   const isLinguistic = selectedDescriptor?.vector === 'INPUT' || selectedDescriptor?.vector === 'CONTEXT';
 
@@ -225,6 +257,13 @@ export const AdversarialMutator: React.FC = () => {
 
     try {
       const parsedSeed = seed ? parseInt(seed, 10) : undefined;
+      const injectionOptions = isPromptInjection
+        ? {
+            profile: injectionProfile,
+            placement: injectionPlacement,
+            ...(!injectionTargetsAll ? { target_node_ids: injectionTargetNodeIds } : {}),
+          }
+        : {};
       const res = await fetch('/api/v1/mutate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -232,6 +271,7 @@ export const AdversarialMutator: React.FC = () => {
           scenario_id: selectedId,
           type: mutationType,
           seed: Number.isInteger(parsedSeed) ? parsedSeed : 42,
+          ...injectionOptions,
         }),
       });
       const data = await res.json();
@@ -343,6 +383,20 @@ export const AdversarialMutator: React.FC = () => {
         }
         text += '\n';
       });
+    }
+    const appliedMutations = sc.metadata?.applied_mutations;
+    if (Array.isArray(appliedMutations)) {
+      const promptInjection = appliedMutations.find((mutation: any) => mutation?.type === 'injection');
+      if (promptInjection?.details) {
+        const details = promptInjection.details;
+        text += '[Prompt Injection Probe]\n';
+        text += `Profile: ${details.profile || 'unknown'}\n`;
+        text += `Family: ${details.family || 'unknown'}\n`;
+        text += `Placement: ${details.placement || 'unknown'}\n`;
+        text += `Targets: ${(details.target_node_ids || []).join(', ')}\n`;
+        text += `Canary: ${details.canary || 'unknown'}\n`;
+        text += `Payload Commitment: ${details.payload_commitment || 'unknown'}\n`;
+      }
     }
     return text;
   };
@@ -546,6 +600,78 @@ export const AdversarialMutator: React.FC = () => {
                       </select>
                     </div>
 
+                    {isPromptInjection && (
+                      <div className="space-y-3 rounded-lg border border-amber-900/70 bg-amber-950/20 p-3">
+                        <div className="flex items-center gap-1.5 text-[9px] font-bold uppercase text-amber-300">
+                          <Shield className="h-3.5 w-3.5" />
+                          <span>Prompt injection probe</span>
+                        </div>
+                        <p className="text-[10px] leading-relaxed text-amber-100/75">
+                          Generates a direct task-instruction probe. It does not claim to emulate an
+                          indirect retrieval or document injection.
+                        </p>
+                        <div className="space-y-1.5">
+                          <label className="text-[9px] font-bold uppercase text-slate-500">Profile</label>
+                          <select
+                            aria-label="Prompt injection profile"
+                            value={injectionProfile}
+                            onChange={(event) => setInjectionProfile(event.target.value)}
+                            className="w-full cursor-pointer rounded border border-slate-850 bg-slate-950 px-2.5 py-1.5 text-xs text-slate-300 focus:border-amber-500 focus:outline-none"
+                          >
+                            {(injectionProfiles.length > 0 ? injectionProfiles : Object.keys(PROMPT_INJECTION_PROFILE_LABELS)).map((profile) => (
+                              <option key={profile} value={profile}>
+                                {PROMPT_INJECTION_PROFILE_LABELS[profile] || profile}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-[9px] font-bold uppercase text-slate-500">Placement</label>
+                          <select
+                            aria-label="Prompt injection placement"
+                            value={injectionPlacement}
+                            onChange={(event) => setInjectionPlacement(event.target.value as 'prefix' | 'suffix')}
+                            className="w-full cursor-pointer rounded border border-slate-850 bg-slate-950 px-2.5 py-1.5 text-xs text-slate-300 focus:border-amber-500 focus:outline-none"
+                          >
+                            <option value="suffix">Append after the task</option>
+                            <option value="prefix">Place before the task</option>
+                          </select>
+                        </div>
+                        <fieldset className="space-y-1.5">
+                          <legend className="text-[9px] font-bold uppercase text-slate-500">Target nodes</legend>
+                          <label className="flex cursor-pointer items-center gap-2 text-[10px] text-slate-300">
+                            <input
+                              type="checkbox"
+                              checked={injectionTargetsAll}
+                              onChange={(event) => {
+                                setInjectionTargetsAll(event.target.checked);
+                                if (event.target.checked) setInjectionTargetNodeIds([]);
+                              }}
+                              className="accent-amber-500"
+                            />
+                            All task nodes
+                          </label>
+                          {injectionNodes.map((node: any) => {
+                            const selected = injectionTargetNodeIds.includes(node.id);
+                            return (
+                              <label key={node.id} className="flex cursor-pointer items-center gap-2 text-[10px] text-slate-400">
+                                <input
+                                  type="checkbox"
+                                  checked={selected}
+                                  disabled={injectionTargetsAll}
+                                  onChange={() => setInjectionTargetNodeIds((current) => {
+                                    return selected ? current.filter((id) => id !== node.id) : [...current, node.id];
+                                  })}
+                                  className="accent-amber-500 disabled:cursor-not-allowed disabled:opacity-50"
+                                />
+                                <span className="font-mono">{node.id}</span>
+                              </label>
+                            );
+                          })}
+                        </fieldset>
+                      </div>
+                    )}
+
                     {/* Deterministic Seed */}
                     <div className="space-y-1.5">
                       <label className="text-[9px] text-slate-500 font-bold uppercase font-mono flex items-center gap-1">
@@ -608,7 +734,14 @@ export const AdversarialMutator: React.FC = () => {
 
                 <button
                   type="submit"
-                  disabled={mutating || !selectedId || catalog.length === 0 || !mutationType || !!catalogError}
+                  disabled={
+                    mutating
+                    || !selectedId
+                    || catalog.length === 0
+                    || !mutationType
+                    || !!catalogError
+                    || (isPromptInjection && !injectionTargetsAll && injectionTargetNodeIds.length === 0)
+                  }
                   className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5"
                 >
                   <PlayCircle className="w-4 h-4" />

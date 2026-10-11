@@ -1577,6 +1577,12 @@ def mutate_scenario():
 
     data = request.json or {}
     mutation_type = data.get("type", "typo")
+    mutation_spec: str | dict[str, Any] = mutation_type
+    if mutation_type == "injection":
+        mutation_spec = {"type": mutation_type}
+        for option in ("profile", "target_node_ids", "placement"):
+            if option in data:
+                mutation_spec[option] = data[option]
     seed = data.get("seed")
     if seed is not None:
         try:
@@ -1612,7 +1618,7 @@ def mutate_scenario():
             scenario = json.load(f)
 
     try:
-        mutated = eval_runner.mutator.mutate_scenario(scenario, mutation_type, seed=seed)
+        mutated = eval_runner.mutator.mutate_scenario(scenario, mutation_spec, seed=seed)
 
         # Automated Scenario Linting on Mutant
         from eval_runner.linter import ScenarioLinter
@@ -1642,7 +1648,10 @@ def mutate_scenario():
                 "lint_report": lint_report,
             }
         )
-    except eval_runner.mutator.UnsupportedMutationError as e:
+    except (
+        eval_runner.mutator.UnsupportedMutationError,
+        eval_runner.mutator.InvalidPromptInjectionSpecError,
+    ) as e:
         return jsonify({"status": "error", "error": "unsupported_mutation", "message": str(e)}), 400
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
