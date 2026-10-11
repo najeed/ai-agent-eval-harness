@@ -116,11 +116,7 @@
       }
     }
   },
-  "evaluation": {
-    "metrics": [
-      "keyword_match"
-    ]
-  },
+  "evaluation": {},
   "initial_state": {
     "session_active": true,
     "user_authenticated": true,

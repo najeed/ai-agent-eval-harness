@@ -57,9 +57,15 @@ async def run_quickstart():
 
         # The bundled demo is self-contained.  Do not import optional external
         # entry-point plugins (which can start distributed runtimes) while it runs.
-        from .plugins import disable_external_plugin_discovery
+        from .plugins import (
+            disable_external_plugin_discovery,
+            disable_persistent_plugin_registry,
+        )
 
-        with disable_external_plugin_discovery():
+        # Quickstart is a self-contained demo.  Local persistent plugins can
+        # import application services during RUN_START, so isolate this flow
+        # from both entry-point discovery and the user's plugin registry.
+        with disable_external_plugin_discovery(), disable_persistent_plugin_registry():
             results = await engine.run_evaluation(scenario, run_id=run_id)
 
         print("\n✅ Quickstart evaluation complete!")

@@ -71,6 +71,15 @@ def history_text(data: dict[str, Any]) -> str:
 
 
 def quickstart(task: str, history: str, customer_id: str) -> dict[str, Any] | None:
+    # The HTTP adapter intentionally forwards only the current wire message to
+    # an external agent. After a tool call, that message is the tool result,
+    # rather than the original task plus an internal runtime history.
+    if "customer jane doe is on the 100 mbps fiber plan" in task:
+        return final("I have identified the customer as Jane Doe on a 100 Mbps Fiber plan.")
+
+    if "remote diagnostics confirm the modem is receiving the full 100 mbps speed" in task:
+        return final("Remote diagnostics confirm the modem is receiving the full 100 Mbps speed.")
+
     if "identify the customer" in task and "speed tier" in task:
         if "get_customer_details" in history:
             return final("I have identified the customer as Jane Doe on a 100 Mbps Fiber plan.")

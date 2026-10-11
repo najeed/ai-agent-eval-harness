@@ -133,6 +133,19 @@ def _is_task_row(tr: dict) -> bool:
     return "workflow_verdict" not in tr and not tr.get("synthetic")
 
 
+def _task_succeeded(task_result: dict) -> bool:
+    """Resolve a task's result without discarding metric-free oracle verdicts."""
+    if task_result.get("status", "success") != "success":
+        return False
+
+    node_verdict = task_result.get("node_verdict")
+    if isinstance(node_verdict, dict) and "overall" in node_verdict:
+        return node_verdict["overall"] == "success"
+
+    metrics = task_result.get("metrics", [])
+    return bool(metrics) and all(metric.get("success", False) for metric in metrics)
+
+
 def generate_html_report(
     scenario: dict, results: list, metadata: dict | None = None, standalone: bool = False
 ) -> Path:
@@ -208,13 +221,7 @@ def generate_html_report(
                 break
 
     total_tasks = len(all_tasks)
-    successful_tasks = sum(
-        1
-        for tr in all_tasks
-        if tr.get("status", "success") == "success"
-        and len(tr.get("metrics", [])) > 0
-        and all(m["success"] for m in tr.get("metrics", []))
-    )
+    successful_tasks = sum(1 for tr in all_tasks if _task_succeeded(tr))
     success_rate = (successful_tasks / total_tasks * 100) if total_tasks > 0 else 0
 
     tasks_html = ""
@@ -236,11 +243,7 @@ def generate_html_report(
                 continue
             task_id = tr.get("task_id", "unknown")
             metrics = tr.get("metrics", [])
-            is_success = (
-                tr.get("status", "success") == "success"
-                and len(metrics) > 0
-                and all(m["success"] for m in metrics)
-            )
+            is_success = _task_succeeded(tr)
             status_class = "success" if is_success else "failure"
             status_text = "PASSED" if is_success else f"FAILED [{tr.get('triage_tag', 'UNKNOWN')}]"
 
@@ -507,11 +510,7 @@ def generate_report(
             total_tasks_run += 1
             task_id = task_result["task_id"]
             metrics_list = task_result.get("metrics", [])
-            task_is_overall_success = (
-                task_result.get("status", "success") == "success"
-                and len(metrics_list) > 0
-                and all(m["success"] for m in metrics_list)
-            )
+            task_is_overall_success = _task_succeeded(task_result)
 
             if task_is_overall_success:
                 status = "SUCCESS"

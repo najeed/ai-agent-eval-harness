@@ -92,6 +92,26 @@ def test_generate_report_console_output(capsys, mock_results):
     assert "Overall Success Rate: 100.00%" in captured.out
 
 
+def test_reporter_accepts_metric_free_authoritative_node_verdict(capsys):
+    """State-parity assertions are valid evidence even without a metric row."""
+    reporter.generate_report(
+        {"id": "node-verdict", "title": "Node Verdict"},
+        [
+            {
+                "task_id": "t1",
+                "status": "success",
+                "metrics": [],
+                "node_verdict": {"overall": "success"},
+                "conversation_history": [],
+            }
+        ],
+        export_trajectory=False,
+        export_html=False,
+    )
+
+    assert "Task: t1 [SUCCESS]" in capsys.readouterr().out
+
+
 def test_generate_report_records_summary_with_run_id(mock_results):
     """Leaderboard storage receives the run ID required by the OSS store."""
     store = MagicMock()

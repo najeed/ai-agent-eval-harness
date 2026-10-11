@@ -86,11 +86,16 @@ async def test_run_quickstart_flow(tmp_path, monkeypatch, capsys):
 
     from unittest.mock import AsyncMock
 
-    mock_run = AsyncMock(return_value=mock_results)
     close_adapter_sessions = AsyncMock()
 
+    async def run_while_registry_is_suppressed(*args, **kwargs):
+        from eval_runner.plugins import _persistent_plugin_registry_enabled
+
+        assert not _persistent_plugin_registry_enabled.get()
+        return mock_results
+
     with monkeypatch.context() as m:
-        m.setattr("eval_runner.quickstart.engine.run_evaluation", mock_run)
+        m.setattr("eval_runner.quickstart.engine.run_evaluation", run_while_registry_is_suppressed)
         # Suppress reporting side-effects but verify they are called
         m.setattr("eval_runner.quickstart.reporter.generate_report", lambda *args, **kwargs: None)
         m.setattr(

@@ -2,7 +2,11 @@ import json
 
 import pytest
 
-from eval_runner.plugins import PluginManager, disable_external_plugin_discovery
+from eval_runner.plugins import (
+    PluginManager,
+    disable_external_plugin_discovery,
+    disable_persistent_plugin_registry,
+)
 
 
 @pytest.fixture
@@ -115,3 +119,32 @@ def test_external_plugin_discovery_can_be_suppressed_per_execution_flow(monkeypa
 
         pm.load_plugins(force=True)
         mock_ep.assert_called_once_with(group="eval_runner.plugins")
+
+
+def test_persistent_plugin_registry_can_be_suppressed_per_execution_flow(
+    isolated_registry,
+):
+    """A self-contained run must not import enabled local registry plugins."""
+    isolated_registry.write_text(
+        json.dumps(
+            {
+                "plugins": [
+                    {
+                        "id": "must_not_import",
+                        "name": "must_not_import",
+                        "module": "must_not_import",
+                        "class": "MustNotImport",
+                        "enabled": True,
+                        "config": {},
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    manager = PluginManager()
+
+    with disable_persistent_plugin_registry():
+        manager.load_plugins(force=True, load_external=False)
+
+    assert not any(plugin.__class__.__name__ == "MustNotImport" for plugin in manager.plugins)

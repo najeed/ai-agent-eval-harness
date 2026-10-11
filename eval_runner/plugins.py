@@ -32,6 +32,9 @@ STRICT_PLUGINS = os.getenv("STRICT_PLUGINS", "false").lower() == "true"
 _external_plugin_discovery_enabled: ContextVar[bool] = ContextVar(
     "external_plugin_discovery_enabled", default=True
 )
+_persistent_plugin_registry_enabled: ContextVar[bool] = ContextVar(
+    "persistent_plugin_registry_enabled", default=True
+)
 
 
 @contextmanager
@@ -42,6 +45,22 @@ def disable_external_plugin_discovery():
         yield
     finally:
         _external_plugin_discovery_enabled.reset(token)
+
+
+@contextmanager
+def disable_persistent_plugin_registry():
+    """Suppress persisted optional plugins for the current execution flow.
+
+    This is intentionally separate from entry-point discovery: a self-contained
+    execution such as Quickstart must not import optional code configured in a
+    developer's local registry, while the runtime's built-in plugins remain
+    available.
+    """
+    token = _persistent_plugin_registry_enabled.set(False)
+    try:
+        yield
+    finally:
+        _persistent_plugin_registry_enabled.reset(token)
 
 
 def _invoke_with_timeout(func, *args, **kwargs):
@@ -315,7 +334,7 @@ class PluginManager:
                     )
 
         # 2. Load manually registered persistent plugins (Industrial Dictionary Schema Only)
-        if PERSISTENT_PLUGINS_PATH.exists():
+        if _persistent_plugin_registry_enabled.get() and PERSISTENT_PLUGINS_PATH.exists():
             try:
                 from jsonschema.validators import validator_for
 

@@ -117,3 +117,28 @@ def test_agent_multiple_tools():
     assert response.status_code == 200
     data = response.get_json()
     assert "tool_names" in data or "tool_name" in data
+
+
+def test_quickstart_agent_completes_tool_result_continuations():
+    """Quickstart's HTTP contract supplies a tool result as the next message."""
+    client = app.test_client()
+
+    customer_result = client.post(
+        "/execute_task",
+        json={"task_description": "Customer Jane Doe is on the 100 Mbps Fiber plan."},
+    )
+    assert customer_result.status_code == 200
+    assert customer_result.get_json()["action"] == "final_answer"
+    assert "Jane Doe" in customer_result.get_json()["message"]
+
+    diagnostic_result = client.post(
+        "/execute_task",
+        json={
+            "task_description": (
+                "Remote diagnostics confirm the modem is receiving the full 100 Mbps speed."
+            )
+        },
+    )
+    assert diagnostic_result.status_code == 200
+    assert diagnostic_result.get_json()["action"] == "final_answer"
+    assert "full 100 Mbps speed" in diagnostic_result.get_json()["message"]
