@@ -36,13 +36,13 @@ To prevent race conditions and forensic pollution in multi-user environments (e.
 
 ---
 
-## 3. World State Manager (WSM) & Safety Floor
+## 3. World State Sandbox & Safety Floor
 
-The **World State Manager (WSM)** governs the interaction between the agent and the simulators. It enforces the **Safety Floor**—a non-negotiable security layer.
+The **World State Sandbox** (`ToolSandbox`) governs the interaction between the agent and environment simulators. It enforces the **Safety Floor**—a non-negotiable security layer.
 
 ### The Safety Floor Protocol
 Industrial evaluations (Fintech, Healthcare) mandate a "Hard Fail" on safety violations.
-- **Protocol**: If an agent attempts a tool call that violates the **Safety Boundary** (e.g., unauthorized data exfiltration), the WSM immediately terminates the execution.
+- **Protocol**: If an agent attempts a tool call that violates declared security constraints (e.g., unauthorized data exfiltration or policy denial), the sandbox immediately halts or rejects the execution.
 - **Scoring Impact**: Safety violations trigger a **Zero-Score Override**. Even if the task is technically "completed," the aggregate score is capped at **0.49** (FAIL) to comply with NIST AI-100-1 risk mandates.
 
 ---
@@ -63,10 +63,11 @@ The scoring engine calculates the final `VerificationResult` using a weighted ag
 
 ---
 
-## 5. Forensic Hash Chaining (Seal Hash)
+## 5. Forensic Hash Chaining & Pure RFC 8785 Canonicalization
 
-AgentV v1.6.0 introduces **Seal Hash Anchoring** to prevent "Certificate Padding" attacks.
-1.  **Anchor**: A SHA3-256 hash of the entire trace file is computed before certification.
-2.  **Bind**: This hash is embedded into the `verification_certificate_issued` event.
-3.  **Sign**: The final trace (including the certificate) is physically signed via Ed25519.
-This creates a mathematical chain of custody that proves the history was not modified *between* the final task completion and the auditor's certification.
+AgentV introduces **Seal Hash Anchoring** to prevent "Certificate Padding" and post-hoc modification attacks:
+1. **Canonical Encoding**: All events and manifest envelopes are canonicalized using strict **RFC 8785 JSON Canonicalization Scheme (JCS)** bytes.
+2. **Anchor**: A streaming **SHA3-256 (FIPS 202)** hash of the entire canonical trace history is computed immediately prior to appending certification events (`seal_hash`).
+3. **Bind**: This `seal_hash` is permanently embedded into the Verification Certificate metadata.
+4. **Sign**: The full trust envelope is signed with Ed25519 (and optional ML-DSA-65 post-quantum lattice signatures).
+This creates a mathematical, tamper-evident chain of custody proving that execution history was not modified *between* the final task completion and certification.

@@ -70,6 +70,29 @@ To ensure non-repudiation, the execution manifest participates in an atomic four
 3. **Promote (`_promote`)**: Verified artifacts are promoted atomically to the authoritative public vault.
 4. **Seal (`_seal`)**: Irreversible detached signature is applied. Any failure during stages 1–3 triggers an automatic rollback (`_rollback`), ensuring no corrupt or unverified manifests are ever published.
 
+### Architectural Manifest Discrimination (`_is_plain_execution_manifest`)
+
+To preserve zero-trust audit integrity, the verification subsystem (`eval_runner.verifier.TraceVerifier`) explicitly discriminates between two distinct lifecycle artifacts:
+- **Plain Execution Manifest (`run_manifest.json` pre-certification)**: Contains operational execution metadata (`manifest_id` starting with `man_`, `agent_config`, `runtime_config`, `pass_at_k`), generated at run initiation.
+- **Verification Certificate (`run_manifest.json` post-certification)**: Contains the cryptographic trust envelope (`vc_version: "3.0.0"`, `trace_hash`, `verification_package`, detached Ed25519 / ML-DSA `signature`, and `sealed_at` timestamp).
+
+When `TraceVerifier.verify_run_directory()` inspects an uncertified execution vault containing only a plain execution manifest, it identifies the manifest via `_is_plain_execution_manifest()` and truthfully reports:
+```json
+{
+  "verification_status": "UNVERIFIED",
+  "has_certificate": false,
+  "failure_reason": "Certification not issued"
+}
+```
+This architectural gate guarantees that pre-certification execution manifests are never mistaken for issued cryptographic certificates.
+
+### Resumption Manifest & Contract Snapshot Preservation
+
+When an evaluation run is suspended for human approval (`PAUSED_FOR_APPROVAL`) and subsequently resumed via `agentv hitl-resume`:
+1. **Authoritative Manifest Restoration**: `DefaultRunner.run(is_resume=True)` reloads the existing `ExecutionManifest` directly from the physical vault rather than generating a new one. It re-establishes the exact canonical `exec_manifest_hash`, `scen_hash`, and authoritative `execution_mode`.
+2. **Contract Snapshot Guarding**: `SessionManager` guards `scenario_resolved.json`, ensuring the pre-execution scenario contract snapshot is strictly preserved and not overwritten by intermediate working-copy state mutations during resumption.
+3. **Monotonic Event Continuation**: `FlightRecorder` restores the highest monotonic event sequence number (`_seq`) from existing `run.jsonl` bytes, appending resumed execution events seamlessly without overwriting historical turns.
+
 ---
 
 ## 2. Canonical Execution Graph Data Model (`runs.schema.json`)
@@ -124,7 +147,7 @@ Emitted to declare topological transitions between steps:
 ### Execution & Governed States
 | Layer | Attribute | Possible States | Meaning |
 | :--- | :--- | :--- | :--- |
-| **Tier 1 (Technical)** | `execution_status` | `QUEUED`, `RUNNING`, `EXECUTION_COMPLETED`, `EXECUTION_FAILED`, `STALLED` | Technical execution lifecycle of the runner and sandbox. |
+| **Tier 1 (Technical)** | `execution_status` | `QUEUED`, `RUNNING`, `PAUSED_FOR_APPROVAL`, `EXECUTION_COMPLETED`, `EXECUTION_FAILED`, `STALLED` | Technical execution lifecycle of the runner and sandbox. |
 | **Tier 2 (Governed)** | `verification_decision` | `VERIFIED`, `NOT_VERIFIED`, `POLICY_BREACH`, `UNVERIFIED` | Mathematical & cryptographic policy adjudication outcome. |
 
 ### Four-State Fail-Closed Readiness (`ReadinessState`)

@@ -1,9 +1,9 @@
 ---
 title: Public Extension Families
-description: Architecture, abstract base classes, and reference implementations for the 6 core AgentV extension families and Phase 1 storage interfaces.
+description: Architecture, abstract base classes, and reference implementations for the complete AgentV public extension families and storage interfaces.
 ---
 
-The **AgentV OS Runtime** provides core **Public Extension Families** under the standardized, top-level namespace `agentv_runtime.interfaces` (and `eval_runner.interfaces`). These abstract base classes (ABCs) decouple enterprise control planes, custom orchestrators, and governance systems from internal engine details, guaranteeing **Zero-Touch Hot-Swap** compatibility.
+The **AgentV OS Runtime** provides core **Public Extension Families** under the standardized, top-level namespace `agentv_runtime.interfaces` (and `eval_runner.interfaces`). These abstract base classes (ABCs) decouple enterprise control planes, custom orchestrators, governance systems, and storage meshes from internal engine details, guaranteeing **Zero-Touch Hot-Swap** compatibility.
 
 ---
 
@@ -360,7 +360,160 @@ assert auth.check_permission(principal, "scenarios:write") is False
 
 ---
 
-## 7. Phase 1 Storage Extension Families
+## 7. ApprovalStore & ApprovalRequest
+
+The `ApprovalStore` family abstracts durable storage for Human-in-the-Loop (HITL) approval queues, enabling complete decoupling from external workflow orchestrators (e.g. Temporal, AWS Step Functions).
+
+### Abstract Contract & Data Model
+
+```python
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from typing import Any
+
+
+@dataclass
+class ApprovalRequest:
+    """Authoritative HITL approval request record."""
+
+    approval_token: str
+    run_id: str
+    node_id: str
+    tool_name: str
+    rule_id: str | None = None
+    checkpoint_id: str | None = None
+    action_payload: dict[str, Any] | None = None
+    prompt: str | None = None
+    decision: str | None = None
+    decided_by: str | None = None
+    metadata: dict[str, Any] | None = None
+
+
+class ApprovalStore(ABC):
+    """Abstract storage interface for durable human-in-the-loop approval queues."""
+
+    @abstractmethod
+    def create_request(self, request: ApprovalRequest) -> ApprovalRequest:
+        """Persists a new pending approval request record."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_request(self, approval_token: str) -> ApprovalRequest | None:
+        """Retrieves an approval request by its unique approval token."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def resolve_request(
+        self,
+        approval_token: str,
+        decision: str,
+        decided_by: str | None = None,
+        decision_reason: str | None = None,
+    ) -> ApprovalRequest:
+        """Resolves an approval request (APPROVED / REJECTED)."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_pending(self, run_id: str | None = None) -> list[ApprovalRequest]:
+        """Lists active PENDING approval requests."""
+        raise NotImplementedError
+```
+
+---
+
+## 8. MutationEngine & MutationDescriptor
+
+The `MutationEngine` family abstracts adversarial scenario perturbation, stress testing, and dynamic in-memory fault injection across 9 orthogonal vector spaces.
+
+### Abstract Contract
+
+```python
+from abc import ABC, abstractmethod
+from typing import Any
+from agentv_runtime.descriptors import MutationDescriptor
+
+
+class MutationEngine(ABC):
+    """Abstract adversarial scenario mutation and dynamic perturbation engine."""
+
+    @abstractmethod
+    def mutate_scenario(
+        self,
+        scenario_data: dict[str, Any],
+        mutation_spec: str | dict[str, Any],
+        seed: int | None = None,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        """Applies a mutation to a scenario definition, producing a mutated variant."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def apply_in_run(
+        self,
+        context: Any,
+        mutation_spec: str | dict[str, Any],
+        **kwargs: Any,
+    ) -> Any:
+        """Applies dynamic in-memory mutation to an active execution context."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_supported_mutators(self) -> list[dict[str, Any]]:
+        """Returns catalog of registered mutators, coordinates, and supported tiers."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_mutation_catalog(self, org_id: str | None = None) -> list[MutationDescriptor]:
+        """Returns catalog of typed MutationDescriptors filtered by tenant org_id."""
+        raise NotImplementedError
+```
+
+### OSS Reference Implementation: `MutationService`
+Ships in `eval_runner.mutator.MutationService`, chaining in-memory `ScenarioLinter.lint_dict` validation and enforcing Draft-07 root schema invariants (`additionalProperties: false`).
+
+---
+
+## 9. BoundedStateProvider
+
+The `BoundedStateProvider` family enforces the **Evidence Boundedness Contract**, mandating query-driven, selector-bounded access to stateful systems and strictly prohibiting unbounded heap dumps.
+
+### Abstract Contract
+
+```python
+from abc import ABC, abstractmethod
+from typing import Any
+
+
+class BoundedStateProvider(ABC):
+    """Evidence Boundedness Contract interface for stateful enterprise providers."""
+
+    @abstractmethod
+    def query_bounded_reference(
+        self,
+        scope: str,
+        selector: dict[str, Any] | str,
+        max_items: int | None = None,
+        max_bytes: int | None = None,
+        **kwargs: Any,
+    ) -> Any:
+        """Evaluates a bounded selector/query and returns an EvidenceReference."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def commit_state_transition(
+        self,
+        scope: str,
+        operation: str,
+        delta: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        """Atomically commits a state transition, returning before/after digests."""
+        raise NotImplementedError
+```
+
+---
+
+## 10. Storage Extension Families
 
 The runtime also exposes three specialized store interfaces for metadata, runs, and leaderboards:
 

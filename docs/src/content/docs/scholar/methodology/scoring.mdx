@@ -50,13 +50,32 @@ Researchers can leverage built-in metrics for large-scale campaigns.
 
 <Tabs>
   <TabItem label="Pass@k">
-    The expected success rate of the agent given $k$ attempts. Highly relevant for research into agent planning robustness where multiple trajectories are sampled for the same problem.
+    The unbiased estimator for the probability that at least one of k samples passes:
+
+    ```txt
+    pass@k = 1 - prod_{i=0..k-1} (n - c - i) / (n - i)
+    ```
+
+    Where:
+    - `n` is total samples actually executed (`n >= 1`).
+    - `c` is successful samples (`0 <= c <= n`).
+    - `k` is the requested evaluation subset size (`k_eff = min(k, n)`).
+
+    Computed strictly over actually executed attempts to prevent bias from interrupted or cancelled runs.
   </TabItem>
-  <TabItem label="95% CI">
-    The confidence interval (95%) for pass rates, calculated using the standard error across batch runs. Critical for ensuring that reported agent improvements are statistically significant.
+  <TabItem label="95% CI (Wilson Interval)">
+    The Wilson score interval for a binomial proportion provides asymmetric coverage robust even with small sample sizes or extreme proportions (p ~ 0 or p ~ 1):
+
+    ```txt
+    center = (p + z^2 / (2n)) / (1 + z^2 / n)
+    spread = (z / (1 + z^2 / n)) * sqrt(p * (1 - p) / n + z^2 / (4 * n^2))
+    interval = [center - spread, center + spread]
+    ```
+
+    Where `p = c / n`, and `z = 1.95996` (for 95% confidence).
   </TabItem>
   <TabItem label="WSM Variance">
-    A metric capturing how much the scoring varies between different LLM judges evaluating the same trace.
+    A metric capturing how much the scoring varies between different LLM judges evaluating the same trace across repeated evaluations.
   </TabItem>
 </Tabs>
 

@@ -40,12 +40,12 @@ In an **AES v1.4** scenario, the `core_function` tag is an **optional metadata f
 
 ```json
 {
+  "aes_version": 1.4,
   "metadata": {
     "id": "fraud-detection-t1",
     "industry": "Finance",
     "use_case": "Retail Banking",
-    "core_function": "Fraud & Security",
-    "aes_version": "1.4"
+    "core_function": "Fraud & Security"
   },
   "workflow": {
     "nodes": [

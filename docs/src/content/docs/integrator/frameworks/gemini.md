@@ -44,7 +44,7 @@ Evaluate Gemini frontier models directly against AgentV benchmarks using the bui
 
 ```bash
 # Evaluate Gemini 3.7 Flash on financial scenarios
-agentv evaluate \
+agentv run \
   --path industries/finance/scenarios/ \
   --protocol gemini \
   --agent "gemini://gemini-3.7-flash" \

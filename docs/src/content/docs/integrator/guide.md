@@ -53,8 +53,8 @@ AgentV supports a wide range of communication patterns. Use the `--protocol` and
 | Protocol | Description | CLI Example |
 | :--- | :--- | :--- |
 | **HTTP** | Standard web API interaction. | `--protocol http --agent http://localhost:5001/execute` |
-| **Local** | Spawns a local process (stdin/stdout). | `--protocol local --agent-cmd "python my_agent.py"` |
-| **Socket** | TCP or Unix socket communication. | `--protocol socket --agent-socket tcp:127.0.0.1:9000` |
+| **Local** | Spawns a local process (stdin/stdout). | `--protocol local --agent "python my_agent.py"` |
+| **Socket** | TCP or Unix socket communication. | `--protocol socket --agent "tcp:127.0.0.1:9000"` |
 | **OpenAI** | Official OpenAI API / Assistants. | `--protocol openai --agent openai://gpt-5.6` |
 | **Claude** | Anthropic Claude API. | `--protocol claude --agent claude://claude-opus-5` |
 | **Gemini** | Google Gemini API (includes Vertex AI). | `--protocol gemini --agent gemini://gemini-3.7-flash` |

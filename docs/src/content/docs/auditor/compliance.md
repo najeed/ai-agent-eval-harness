@@ -37,7 +37,7 @@ graph TD
    - Before signing, the trace digest is wrapped in a complete trust envelope containing `signer_identity`, `key_id`, `algorithm`, `trace_digest`, `event_count`, `sealed_at`, and `metadata`.
    - The detached cryptographic signature is computed over the canonical RFC 8785 bytes of the full envelope, preventing envelope substitution attacks.
 4. **External Trust Root Mandate**:
-   - Verification strictly requires validation against an external trust root or trusted key registry (`--root-cert`). Self-attestation via embedded untrusted keys is rejected as `UNVERIFIED`.
+   - Verification strictly requires validation against an authoritative external trust root or trusted key registry (`--public-key`). Self-attestation via embedded untrusted keys is rejected as `UNVERIFIED`.
 5. **Atomic Two-Phase Transaction Lifecycle**:
    - Manifest creation follows a strict prepare-verify-promote-seal commit protocol (`_persist` $\rightarrow$ `_verify` $\rightarrow$ `_promote` $\rightarrow$ `_seal`).
    - The trace seal is applied as the final irreversible step only after in-memory verification passes; errors trigger an immediate atomic rollback (`_rollback`).
@@ -82,7 +82,7 @@ For enterprise compliance archives, AgentV bundles complete audit evidence into 
   - `verify_package_artifacts(package_data, external_trust_roots)`: Deep cryptographic audit re-hashing all internal payload byte streams and asserting exact equality with recorded digests.
 - **Offline Independent Verification**:
   ```bash
-  agentv verify-package ./run_compliance.agentv-package.json --root-cert /etc/pki/agentv-root.pem
+  agentv verify-package ./run_compliance.agentv-package.json --public-key /etc/pki/agentv-root.pem
   ```
 - **In-Archive ZIP Verification**:
   When handling `.zip` archive bundles, AgentV verifies file byte streams directly in memory without disk extraction, enforcing strict path traversal guards (`..`, absolute paths, drive prefixes) to neutralize Zip Slip attacks.
@@ -94,7 +94,7 @@ For enterprise compliance archives, AgentV bundles complete audit evidence into 
 Enforce compliance in deployment pipelines by failing builds that do not meet verification thresholds:
 
 ```bash
-agentv gate --run-id run_fintech_2026_01 --verify-ledger --pqc --root-cert /etc/pki/agentv-root.pem
+agentv gate --run-id run_fintech_2026_01 --verify-ledger --pqc
 ```
 
 Exits with non-zero code if:

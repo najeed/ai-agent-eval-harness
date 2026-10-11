@@ -46,7 +46,7 @@ We strictly adhere to a **Zero-Touch Core** architectural mandate. Pull Requests
 
 ### 3. Extending via Plugins
 The Zero-Touch Core is designed to be extended without core PRs.
-- **Lifecycle Hooks**: Subscribe to `before_evaluation`, `on_agent_turn_start`, `on_turn_end`, `on_metrics_calculated`, and `after_evaluation`.
+- **Lifecycle Hooks**: Subscribe to `before_evaluation`, `after_evaluation`, `on_step_start`, `on_step_end`, `on_tool_request`, `on_before_commit`, `on_approval_created`, or dynamic event bus hooks (`on_turn_start`, `on_turn_end`).
 - **Interception**: Use `on_tool_request` to enforce safety or HITL proxies. Return `False` to block a tool call.
 - **CLI Commands**: Use `on_register_commands` to register namespaced CLI subcommands (under `agentv plugin <name>`).
 - **Event Bus**: Use `EventEmitter.subscribe(callback)` for passive monitoring.

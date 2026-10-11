@@ -97,19 +97,33 @@ The harness no longer supports the combined `"module": "path.Class"` string form
 
 ---
 
-## 🏗️ Lifecycle Hooks
+## 🏗️ Lifecycle & Interceptor Hooks
 
-The plugin system provides hooks at every stage of the evaluation loop.
+`BaseEvalPlugin` provides both typed abstract interface hooks and automatic dynamic event bus bridging.
 
+### Native Interface Hooks
 | Hook | Arguments | Description |
 | :--- | :--- | :--- |
-| **`before_evaluation`** | `context: EvaluationContext` | Setup task-level state or mocks. |
-| **`on_agent_turn_start`** | `context: TurnContext` | Intercept the conversation flow. |
-| **`on_turn_end`** | `context: TurnContext` | Observe results after an agent turn. |
-| **`on_tool_request`** | `context`, `tool`, `args` | **Interception Point**. Return `False` to block. |
-| **`on_tool_result`** | `context`, `tool`, `result` | Observe tool outputs for drift detection. |
-| **`on_diagnose_failure`**| `taxonomy` | **v1.6.0**. Register custom forensic analyzers. |
-| **`on_error`** | `context`, `exception` | Handle unhandled core exceptions. |
+| **`before_evaluation`** | `context, span_context=None` | Pre-scenario setup, connection initialization, and span tagging. |
+| **`after_evaluation`** | `context, results, span_context=None` | Post-run teardown, artifact publishing, and metric export. |
+| **`on_step_start`** | `context=None, node_id=None, node_data=None` | Workflow DAG node activation hook. |
+| **`on_step_end`** | `context=None, node_id=None, verdict=None` | Workflow DAG node completion and verdict hook. |
+| **`on_tool_request`** | `context, tool_name, arguments=None` | **Interception Point**. Return `True` to allow, `False` to reject, or a dict to mutate. |
+| **`on_before_commit`** | `context, state_diff=None` | State transition gate. Return `True` to commit, `False` to abort. |
+| **`on_rollback`** | `context, compensation_action=None` | Compensating rollback execution hook. |
+| **`on_approval_request`** | `context, approval_data=None` | Human-in-the-loop permission evaluation. Return `True`/`False`. |
+| **`on_approval_created`** | `context, request` | Durable approval request notification dispatch. |
+| **`on_approval_resolved`** | `context, request` | Approval decision resolution audit hook. |
+| **`on_artifact_created`** | `run_id, artifact_name, artifact_path, metadata=None` | Evidence artifact commit listener (SOC 2 CC6.8). |
+| **`on_register_commands`** | `registry` | Register custom CLI commands under `agentv`. |
+| **`on_discover_adapters`** | `registry` | Register custom agent communication adapters. |
+| **`on_register_simulators`**| `registry` | Register custom World Shims. |
+| **`on_discover_metrics`** | `registry` | Register custom evaluation metrics. |
+| **`on_diagnose_failure`**| `taxonomy` | Register custom forensic failure analyzers. |
+| **`on_register_console_routes`** | `app, nav_registry` | Register custom Flask API routes and React sidebar tabs. |
+
+### Dynamic Event Bus Bridge
+Additionally, any event emitted over the session `EventEmitter` automatically dispatches to an `on_<event_name.lower()>(self, context, **event_data)` hook on loaded plugins (e.g., `on_turn_start`, `on_turn_end`, `on_tool_call`, `on_tool_result`, `on_external_tool_call`, `on_external_tool_result`, `on_hitl_pause`, `on_hitl_resume`).
 
 ---
 

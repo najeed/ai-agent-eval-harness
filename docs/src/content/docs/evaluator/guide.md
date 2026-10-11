@@ -33,15 +33,19 @@ graph LR
 Scenarios are authored in the **Agent Evaluation Specification (AES)** format (JSON or YAML), defining a Directed Acyclic Graph (DAG) of tasks:
 
 ```yaml
-id: loan_approval_risk_check
-name: Commercial Loan Underwriting & Risk Assessment
+aes_version: 1.4
 industry: finance
-version: "1.4"
-difficulty: L3_Intermediate
-target_capabilities:
-  - tool_use
-  - multi_turn_reasoning
-  - compliance_enforcement
+metadata:
+  id: loan_approval_risk_check
+  name: Commercial Loan Underwriting & Risk Assessment
+  compliance_level: Standard
+  attribution: AgentV Scenario Suite
+  version: "1.0.0"
+  complexity: medium
+  capabilities:
+    - tool_use
+    - multi_turn_reasoning
+    - compliance_enforcement
 
 workflow:
   nodes:
@@ -50,27 +54,33 @@ workflow:
       required_tools:
         - credit_bureau_api
       success_criteria:
-        - type: tool_call_correctness
-          expected_tools:
-            - credit_bureau_api
-        - type: state_verification
-          path: "environment.credit_pull_completed"
-          expected_value: true
+        - metric: tool_call_correctness
+          threshold: 1.0
+      expected_outcome:
+        - target: environment.credit_pull_completed
+          expected: true
 
     - id: step_2_risk_decision
       task_description: "Calculate overall risk rating and approve or decline loan per policy FIN-POL-402."
       required_tools:
         - loan_decision_service
       success_criteria:
-        - type: regex
-          pattern: "STATUS:\\s*(APPROVED|DECLINED)"
-        - type: policy_compliance
-          policy_id: "FIN-POL-402"
+        - metric: policy_compliance
+          threshold: 1.0
+      expected_outcome:
+        - target: message
+          expected: "STATUS: APPROVED"
+          mode: regex
 
   edges:
     - from: step_1_credit_pull
       to: step_2_risk_decision
       condition: "step_1_credit_pull.status == 'success'"
+
+evaluation:
+  consensus:
+    strategy: Majority_Vote
+    min_judges: 1
 ```
 
 ---

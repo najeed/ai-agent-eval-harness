@@ -50,40 +50,63 @@ These events track the lifecycle of the evaluation run.
 - **Trigger**: Called for every interaction turn between the agent and environment.
 - **Payload**: `turn`, `task_id`.
 
+### `ROUTING_RESOLVED`
+- **Trigger**: Emitted by `eval_runner/session.py` when capability-based routing discovers and binds protocol adapters and endpoints.
+- **Payload**: `capabilities`, `resolved_protocol`, `resolved_endpoint`, `source`.
+
 ---
 
 ## 🛠️ Tool & Environment Events
 
-### `TOOL_CALL`
-- **Trigger**: Emitted when an agent requests a tool execution.
-- **Payload**: `tool_name`, `arguments`.
+### `TOOL_CALL` / `TOOL_RESULT`
+- **Trigger**: Emitted when an agent executes a local/containerized tool inside the AgentV sandbox environment.
+- **`TOOL_CALL` Payload**: `tool`, `arguments`, `call_id`.
+- **`TOOL_RESULT` Payload**: `tool`, `result`, `call_id`, `error`.
 
-### `TOOL_RESULT`
-- **Trigger**: Emitted after a tool has executed.
-- **Payload**: `tool_name`, `result`, `status` (success/error/policy_violation).
+### `EXTERNAL_TOOL_CALL` / `EXTERNAL_TOOL_RESULT`
+- **Trigger**: Emitted when ingesting self-reported external agent execution trajectories from autonomous remote agent services.
+- **Provenance Attributes**:
+  - `source`: `"external_agent_telemetry"`
+  - `provenance`: `"reported"`
+  - `receipt_hash`: `"sha3_256:<hex>"` (deterministic digest computed over canonical RFC 8785 JSON representation of the call/result record).
+- **Integrity Rule**: External telemetry receipts are strictly tracked and counted in `CertificationService` under `external_tool_calls_observed`, and are **never** relabeled as AgentV-sandbox-authoritative.
 
 ### `STATE_VERIFICATION`
 - **Trigger**: Emitted when a state-parity check is performed.
 - **Payload**: `metric`, `success`, `diff` (structural state difference).
 
-### `STATE_READ`
-- **Trigger**: Emitted when an agent reads a value from the `SharedStateRegistry`.
+### `STATE_READ` / `STATE_WRITE`
+- **Trigger**: Emitted when an agent reads from or writes to the `SharedStateRegistry` (critical for taint tracking and data flow auditing).
 - **Payload**: `agent`, `path`, `value`.
-
-### `STATE_WRITE`
-- **Trigger**: Emitted when an agent successfully writes a value to the `SharedStateRegistry`.
-- **Payload**: `agent`, `path`, `value` (Crucial for Taint Tracking).
 
 ---
 
-## 🔬 Forensic Events
+## 🔬 Forensic, Approval & Certification Events
 
-### `HITL_PAUSE`
-- **Trigger**: Emitted when human intervention is requested.
-- **Payload**: `agent_request`, `human_message`.
+### `HITL_PAUSE` / `HITL_RESUME`
+- **Trigger**: `HITL_PAUSE` suspends execution when policy gates mandate manual human approval. `HITL_RESUME` resumes execution upon operator response.
+- **`HITL_PAUSE` Payload**: `task_id`, `prompt`, `approval_id`.
+- **`HITL_RESUME` Payload**: `task_id`, `response`, `approved`.
+
+### `APPROVAL_CREATED` / `APPROVAL_RESOLVED`
+- **Trigger**: Emitted by `SessionApprovalManager` as durable approval requests are generated, persisted to the `ApprovalStore`, and resolved by human reviewers.
+- **`APPROVAL_CREATED` Payload**: `approval_id`, `run_id`, `node_id`, `task_id`, `tool_name`, `arguments`, `status="pending"`, `created_at`.
+- **`APPROVAL_RESOLVED` Payload**: `approval_id`, `run_id`, `decision` (`approved`|`denied`), `resolved_by`, `resolved_at`, `reason`.
+
+### `TRACE_SEALED`
+- **Trigger**: Emitted by `VerificationService` / `agentv certify` upon computing the authoritative SHA3-256 digest over raw `run.jsonl`, generating Ed25519 / ML-DSA-65 signatures, and writing the `.sealed` sentinel marker.
+- **Payload**: `run_id`, `trace_hash`, `signer_id`, `timestamp`.
+
+### `CERTIFICATION_FAILED`
+- **Trigger**: Emitted when post-run trace verification fails invariant checks (e.g. terminal boundary violation, state corruption, signature mismatch).
+- **Payload**: `run_id`, `reason`, `code`.
+
+### `PARITY_STATE_DIVERGENCE`
+- **Trigger**: Emitted when transition-based world state differs from expected post-action assertions.
+- **Payload**: `node_id`, `state_before_hash`, `state_after_hash`, `expected_diff`.
 
 ### `SANDBOX_EVENT`
-- **Trigger**: Emitted during sandbox lifecycle transitions.
+- **Trigger**: Emitted during containerized sandbox lifecycle transitions.
 - **Payload**: `action` (create/teardown/limit), `resource_id`.
 
 ---

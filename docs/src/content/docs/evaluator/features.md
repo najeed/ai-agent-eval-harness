@@ -8,7 +8,8 @@ This inventory provides a comprehensive overview of the capabilities, tools, and
 ## 1. Zero-Touch Core (Evaluation Engine)
 
 The foundation of the harness, designed for framework-agnostic execution and high-fidelity measurement.
-- **Modular Plugin Bus**: Lifecycle hooks (`before_evaluation`, `on_turn_start`, `after_evaluation`) that allow extending the harness without modifying the core.
+- **Two-Tier Plugin Architecture**: 17 native abstract `BaseEvalPlugin` hooks (`before_evaluation`, `after_evaluation`, `on_step_start`, `on_step_end`, `on_tool_request`, `on_before_commit`, `on_rollback`, `on_approval_request`, `on_approval_created`, `on_approval_resolved`, etc.) paired with automated dynamic event bus bridging (`on_<event_name.lower>()`).
+- **Durable Approval Store & HITL Suspension**: Abstract `ApprovalStore` interface (`FileApprovalStore`, `SQLiteApprovalStore`) enabling runtime state suspension (`PAUSED_FOR_APPROVAL`), checkpoint preservation, and CLI/REST resumption (`hitl-resume`) with monotonic sequence continuation.
 - **Dynamic Adapter Discovery**: Automatically recognizes and registers agent protocols (`http`, `sse`, `local`, `openai`, `gemini`, `claude`, `grok`, `ollama`) via the `AgentAdapterRegistry` with lazy dynamic imports.
 - **Modern Streaming Support (SSE)**: Built-in support for `text/event-stream` agents, with automated chunk accumulation and JSON normalization.
 - **Flight Recorder (`run.jsonl`)**: Captures every state transition, tool call, and agent response in a deterministic, append-only log with intrinsically fail-closed persistence in certification mode.
@@ -34,7 +35,7 @@ Enterprise-grade protection and regulatory audit tools.
 Closing the loop between production behavior and evaluation rigor.
 - **Import Drift**: CLI utility to convert production JSONL traces into actionable evaluation scenarios.
 - **AES (Agent Eval Specification)**: A portable, YAML/JSON-based benchmark format for sharing and versioning complex agentic tasks.
-- **3D Runtime Mutation Engine**: Generates deterministic adversarial variants across a 3D coordinate space ($V \times O \times T$) of 13 vectors (Syntactic, Behavioral, Adversarial, Context Bleed, Protocol, Timing, Chaos, State, Retrieval, Authorization, Schema Drift, Replay, Latency), 13 operations, and 6 risk tiers.
+- **9-Vector Adversarial Mutation Engine**: Generates deterministic adversarial variants across 9 operational vectors (Input, Context, Memory, Retrieval, Tool, State, Authorization, Temporal, Objective) with 35+ registered catalog mutators, strict Draft-07 schema compliance (preserving `failure_policy` string enum and safe `metadata.name` updates), and automated in-memory `ScenarioLinter` quality gating.
 - **Algebraic Mutation Combinators**: Compose complex mutation pipelines using functional primitives (`sequence`, `repeat`, `probability`, `after_event`, `before_commit`, `between_steps`, `concurrent`) with deterministic seed chaining.
 
 ## 4. Ecosystem & Framework Adapters
@@ -68,7 +69,7 @@ Professional-grade dashboards and debugging tools.
 ## 7. Developer Experience (`agentv`)
 
 Diagnostics and maintenance utilities for the engineer.
-- **Quickstart Demo**: 60-second "Instant Gratification" flow including agent spawn and premium report generation.
+- **Quickstart Workflow**: 60-second end-to-end evaluation flow including agent execution and authoritative verification report generation.
 - **Interactive Contributor Wizard**: CLI (`contribute`) for building and submitting scenarios.
 - **Harness Doctor**: Self-diagnostic tool to verify environment health and dependency status.
 - **Scenario Scaffold**: Markdown-to-AES conversion (`spec-to-eval`) using local LLMs.

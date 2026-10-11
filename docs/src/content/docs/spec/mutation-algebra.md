@@ -245,7 +245,7 @@ To guarantee reproducible forensic audits:
 
 ---
 
-## 6. 🏗️ Modular Vector Sub-Engines
+## 6. 🏗️ Modular Vector Sub-Engines & The 9-Vector Catalog
 
 The mutation engine is organized into 9 domain-focused vector sub-engines inherited by `CoreMutator`:
 
@@ -260,6 +260,32 @@ The mutation engine is organized into 9 domain-focused vector sub-engines inheri
 9. **`ObjectiveMutators`**: Metric gaming (exploiting proxy metrics), proxy goal substitution, constraint trade-offs, subgoal cannibalization, and reward hacking.
 
 All sub-engines export their primitives directly, while `CoreMutator` provides backwards-compatible unified dispatch across all mutation coordinates.
+
+### 6.1 Authoritative `MutationDescriptor` Contract
+
+Every mutator in the catalog is formally declared using the authoritative `MutationDescriptor` contract (`agentv_runtime.contracts.MutationDescriptor`):
+
+```python
+@dataclass(frozen=True)
+class MutationDescriptor:
+    id: str  # Unique slug (e.g., "prompt_injection", "partial_commit")
+    name: str  # Human-readable title
+    vector: str  # Target vector (e.g., "input", "state", "tool")
+    operation: str  # Operation type (e.g., "insert", "delete", "corrupt")
+    tier: str  # Severity tier (T0_linguistic through T5_enterprise)
+    description: str  # Detailed operational impact synopsis
+    provenance: str = "CORE RUNTIME"  # CORE RUNTIME, ENTERPRISE T5, or CUSTOM PLUGIN
+    regulatory_frameworks: list[str] = field(default_factory=list)  # EU_AI_ACT, NIST_SP_800_218, etc.
+    parameters: dict[str, Any] = field(default_factory=dict)  # Tunable parameter schema
+    category: str = "linguistic"  # "linguistic" or "structural" (guides Dual Diff View)
+```
+
+### 6.2 Master Catalog & Tenant Scoping
+
+AgentV ships with a master `MUTATION_CATALOG` containing 35+ verified mutators across all 9 vectors:
+- **Tenant Scoping**: `MutationService.list_mutation_catalog(org_id)` filters and scopes available mutators by organizational boundary, allowing enterprise tenants to declare proprietary mutator packs.
+- **Dynamic Plugin Discovery**: `discover_installed_mutator_plugins()` discovers mutators registered via Python entry points (`agentv.mutators`), rejecting insecure remote webhooks.
+- **Dual Diff Visualization**: The Visual Console consumes `category` ("linguistic" vs "structural") to automatically recommend the optimal Diff View (Prompts Diff for linguistic injections vs Full Scenario Spec JSON Diff for state and workflow perturbations).
 
 ---
 
@@ -291,7 +317,7 @@ The evaluation harness strictly enforces an **architectural separation of concer
 └────────────────────────────────────────────────────────┘
 ```
 
-1. **Portability & Deterministic Hashing (RFC 8785)**: Scenarios must serialize canonically to enable cryptographic signing, SHA-256 certificate generation, and cross-language benchmarking. Embedding executable Python objects breaks serialization and prevents verification.
+1. **Portability & Deterministic Hashing (RFC 8785)**: Scenarios must serialize canonically to enable cryptographic signing, SHA3-256 certificate generation, and cross-language benchmarking. Embedding executable Python objects breaks serialization and prevents verification.
 2. **Security & Untrusted Scenarios**: Scenarios frequently originate from external benchmark datasets, third-party audits, or untrusted repositories. Permitting executable plugins directly within scenario step schemas creates an arbitrary Remote Code Execution (RCE) vulnerability.
 3. **Southbound Interception vs. Northbound Specification**:
    - The **Scenario (Northbound)** declares *what* perturbations should occur:
@@ -325,6 +351,18 @@ The engine supports two operational paths depending on whether evaluation is run
 | **In-Run Evaluation** (`agentv eval`) | ❌ None | ✅ Active | Executed 100% in RAM via `copy.deepcopy()` and passed directly to `SessionOrchestrator`. No temporary scenario files are created. |
 | **CLI Scenario Mutation** (`agentv mutate`) | ❌ No source edits | ✅ Active | Writes the mutated scenario variant to a new file specified by `--output <path>`. |
 | **Synthetic Scenario Generation** (`SyntheticService.generate_variants`) | ❌ No source edits | ✅ Active | Materializes $N$ distinct mutated scenario JSON files to `scenarios/synthetic/{parent_id}_{strategy}_{idx}.json`. |
+
+### 3. Draft-07 AES Schema Preservation & Mutation-Linting Pipeline
+
+Mutations must perturb agent task parameters and world state without corrupting the underlying AES v1.4 contract:
+1. **Schema Guarding (`additionalProperties: false`)**:
+   - The root schema forbids undeclared top-level attributes. Mutators modifying scenario titles or identifiers strictly update `metadata.name` and `metadata.id` rather than injecting invalid root-level `name` or `id` attributes.
+   - When a base scenario omits top-level `id` or `name`, the mutation engine respects this contract and avoids synthesizing root-level keys.
+2. **String Enum Preservation (`failure_policy`)**:
+   - Execution failure policies (`fail_fast`, `continue_independent`, `compensate_then_fail`, `best_effort`) are validated as string enums. Mutators such as `rollback_failure` or `duplicate_commit` configure step-level fault attributes and metadata flags without corrupting `failure_policy` into a dictionary.
+3. **Automated Mutation-Linting Pipeline (`ScenarioLinter`)**:
+   - Prior to saving variants or rendering visual diffs, both the CLI (`agentv mutate`) and Visual Console (`POST /v1/mutate`) chain in-memory schema validation via `ScenarioLinter.lint_dict()`.
+   - Mutants are audited for Draft-07 conformance, industry taxonomy placement, and structural health, assigning a certification badge and tier assessment (Gold 100, Silver 80–99, Bronze, Fail) directly alongside the diff preview.
 
 ---
 

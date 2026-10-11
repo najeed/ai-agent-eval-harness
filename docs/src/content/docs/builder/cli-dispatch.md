@@ -9,45 +9,59 @@ AgentV uses a **Unified Functional Dispatcher** to manage its expansive CLI inte
 
 ## The Functional Dispatcher Pattern
 
-The `eval_runner.cli` module serves as the central entry point. Instead of a monolithic `if/elif` block, the harness uses `argparse` subparsers combined with the `set_defaults(func=...)` pattern to map commands to their implementation functions.
-
-### Registration Pattern
-
-Commands are registered during the `eval_runner.cli.main` initialization:
+The `eval_runner.cli` module serves as the central entry point. Instead of a monolithic `if/elif` block, the harness uses `argparse` subparsers combined with the `set_defaults(func=...)` pattern to map commands to modular handler namespaces:
 
 ```python
 # Core command registration (eval_runner/cli.py)
-evaluate_parser = subparsers.add_parser("evaluate", help="Batch process scenarios")
-evaluate_parser.set_defaults(func=_dispatch_evaluation)
+run_parser = subparsers.add_parser("run", help="Execute single scenario evaluation")
+run_parser.set_defaults(func=_dispatch_evaluation)
 
 console_parser = subparsers.add_parser("console", help="Launch the Visual Debugger")
 console_parser.set_defaults(func=_dispatch_console)
 ```
 
-### Dynamic Dispatch
+### Handler Dispatch Namespaces
+Commands route through categorized dispatcher functions:
+- `_dispatch_evaluation`: Routes `run`, `replay`, `record`, `playground`, `quickstart`, `hitl-resume`, `gate`, `verify`, `certify`.
+- `_dispatch_scenarios`: Routes `list`, `inspect`, `mutate`, `catalog-search`, `catalog-refresh`, `spec-to-eval`, `aes`, `lint`.
+- `_dispatch_analysis`: Routes `report`, `leaderboard`, `calibrate`, `trend`, `list-metrics`, `taxonomy`.
+- `_dispatch_environment`: Routes `ci`, `registry`, `export`, `plugin`, `list-plugins`, `analyze`, `auto-translate`.
 
-When you run `agentv <command>`, the harness:
-1.  **Parses** global arguments (e.g., `--debug`).
-2.  **Identifies** the target sub-parser and its associated `func` default.
-3.  **Dispatches** the execution by calling `args.func(args)`, passing the parsed arguments directly to the handler.
+---
+
+## ⚡ High-Performance Zero-Touch Architecture
+
+To maintain sub-10ms CLI startup times across enterprise environments:
+
+### 1. Static vs. Dynamic Protocol Resolution
+- **`STATIC_PROTOCOLS`**: Default protocol choices (`http`, `local`, `socket`, `stdio`) are resolved statically without initiating network calls or scanning packages.
+- **`DISCOVERY_COMMANDS`**: Dynamic adapter discovery is deferred until a command explicitly requires adapter inspection, calling `AgentAdapterRegistry.get_available_protocols(eager=False)`.
+
+### 2. Extension Isolation Gating (`_should_load_cli_extensions`)
+- External Python entry point extensions (`agentv.extensions`) are loaded **only** if the invoked command is not in `BUILTIN_COMMANDS`.
+- Built-in commands run with zero external import overhead, protecting core CLI execution from slow or faulty third-party packages.
+
+### 3. Singleton Parser Caching
+- `get_parser()` hashes `sys.argv` and caches the configured parser in `_parser_cache`.
+- Cache invalidation is available via `_invalidate_parser_cache()` for unit test isolation and dynamic plugin reconfiguration.
 
 ---
 
 ## 🔒 Exhaustive CLI Testing
 
 To ensure industrial-grade reliability, AgentV enforces an **Exhaustive Testing Standard** for the CLI layer. Every registered command must have a corresponding unit test that verifies:
-1.  **Successful Dispatch**: The command reaches the handler with the correct parameters.
-2.  **Error Handling**: Invalid arguments or environment failures are caught and reported with meaningful exit codes.
-3.  **Namespace Integrity**: Plugin commands (registered via `on_register_commands`) do not collide with core engine commands.
+1. **Successful Dispatch**: The command reaches the handler with the correct parameters.
+2. **Error Handling**: Invalid arguments or environment failures are caught and reported with meaningful exit codes.
+3. **Namespace Integrity**: Plugin commands (registered via `on_register_commands`) do not collide with core engine commands.
 
 ### Example: Testing a Dispatcher
-We use `unittest.mock` to verify that the CLI correctly routes to the `eval_runner` engine handlers.
+We use `unittest.mock` to verify that the CLI correctly routes to the `eval_runner` engine handlers:
 
 ```python
-def test_cli_routing_evaluate(self):
+def test_cli_routing_run(self):
     with patch("eval_runner.cli._dispatch_evaluation") as mock_handler:
-        # Simulate 'agentv evaluate --path my_path'
-        main(["evaluate", "--path", "my_path"])
+        # Simulate 'agentv run --path my_path'
+        main(["run", "--path", "my_path"])
         mock_handler.assert_called_once()
 ```
 
@@ -55,11 +69,11 @@ def test_cli_routing_evaluate(self):
 
 ## 🔌 Plugin Commandments
 
-Plugins can inject their own commands into the `agentv` namespace while maintaining security.
+Plugins can inject their own commands into the `agentv` namespace while maintaining security:
 
 1. **Scoping**: Plugin commands are automatically namespaced to prevent hijacking core functions.
 2. **Lifecycle**: Documentation for plugin commands is dynamically generated by the sub-parser registry, ensuring that `agentv --help` is always accurate, regardless of which plugins are active.
 
 :::tip
-**Note**: This functional dispatch model is what allows AgentV to scale to hundreds of sub-commands across 30+ industrial sectors without becoming a "spaghetti" maintenance nightmare. It leverages Python's native `argparse` capabilities to provide a robust, typesafe, and testable interface.
+**Architectural Invariant**: This functional dispatch model is what allows AgentV to scale to hundreds of sub-commands without becoming a maintenance nightmare. It leverages Python's native `argparse` capabilities to provide a robust, typesafe, and testable interface.
 :::

@@ -78,6 +78,17 @@ graph LR
    - Executed edges are accentuated as solid paths dynamically color-coded by the downstream node's execution outcome (`#10b981` success, `#f43f5e` failure/deviation).
    - An interactive **Edge Hierarchy Legend** in the debugger toolbar provides immediate visual clarity across planned, executed, and divergent pathways.
 
+7. **Canonical Terminal Status Sets (`CANONICAL_TERMINAL_STATUSES`)**:
+   - Unifies terminal state resolution across the debugger. Explicitly treats `STALLED` as a distinct non-success terminal condition alongside `COMPLETED`, `FAILED`, `CANCELLED`, and `TIMEOUT`.
+   - Prevents looping, infinite replanning, or hanging runs from remaining indefinitely in indeterminate "running" animations.
+
+8. **Planned Scenario Spine Projection**:
+   - When operating in `executed` layer mode before execution events arrive, the canvas renders the planned scenario DAG spine with dashed borders and `Planned (Pending Execution)` status labels, preventing confusing blank canvas states.
+
+9. **URL Parameter Authority & Stream Control Resilience**:
+   - The URL-selected `run_id` acts as the authoritative truth, preventing asynchronous `/api/runs` polling races from hijacking active debugging sessions.
+   - Handles typed stream control signals (`timeout`, `error`, `end`, `stream_end`) without dropping frames even when transport cursor IDs are omitted.
+
 ---
 
 ## 2. 🎨 Visual Composer & Monaco Source of Truth
@@ -105,6 +116,22 @@ The **Scenario Composer** (`/scenarios/compose` or `/editor`) offers dual-mode s
   - Scenario saves enforce document revision hashing (`expected_revision_hash`), preventing accidental overwrites in multi-user environments.
 - **Dark Mode Canvas & Node Dragging**:
   - Smooth pan/zoom canvas, customized node connectors, and validation error markers.
+
+---
+
+### 🌪️ Adversarial Mutator & Linter Assessment (`/scenarios/mutator`)
+
+The **Adversarial Mutator** provides an interactive visual studio for generating and inspecting adversarial stress-tests across the complete 9-Vector Ecosystem:
+
+- **Dynamic 9-Vector Catalog Discovery**:
+  - Queries the backend at `GET /api/v1/mutations` to populate executable mutator descriptors dynamically across all 9 vectors (Input, Context, Memory, Retrieval, Tool, State, Authorization, Temporal, Objective).
+  - If the endpoint is unreachable, displays an explicit fail-closed error banner rather than a silent hardcoded fallback.
+- **In-Memory Scenario Linter Integration**:
+  - Chains `ScenarioLinter.lint_dict` and renders a real-time **Lint Tier & Health Assessment** banner above the Monaco Diff Viewer.
+  - Displays the scenario tier (`GOLD`, `SILVER`, `BRONZE`, `REJECTED`), numerical compliance score (0–100), and specific schema errors or warnings.
+- **Deterministic Mutant Lineage**:
+  - Computes canonical derived IDs (`${base_id}_mutated_${mutation_type}`) bound into `metadata.name` and parent scenario references.
+  - Automatically navigates to `/scenarios?q=${targetId}` upon saving to verify catalog placement.
 
 ---
 
@@ -148,9 +175,12 @@ The **Scenario Library** (`/scenarios`) enables exploration across thousands of 
 
 ## 5. 📑 Runs, Truthful PDF Reports & Metrics Leaderboard
 
-### Runs & Reports (`/reports`):
-- Filter by status (`passed`, `failed`, `running`, `unverified`, `error`).
-- Detailed execution drawers displaying duration, token consumption, and assertion breakdowns.
+### Runs, Run Detail & Evidence Inspector (`/reports`, `/runs/<run_id>`):
+- **Filtering & Navigation**: Filter by status (`passed`, `failed`, `running`, `unverified`, `error`).
+- **Temporal Start Time Identifier**: Prominently displays the ISO timestamp and local formatted time as a distinct temporal run identifier in the header banner with a `Clock` icon and quick metrics card.
+- **Derived Execution Duration & Score**: Computes duration from explicit run timestamps or streaming event boundaries, and derives assurance score from the certificate manifest, evidence package, or passed/total ratio of evaluated assertions.
+- **Authoritative Assertions Hydration**: Aggregates canonical `execution_graph_node.oracle_results` across all trace events, mapping observed values to actual outputs with zero synthetic stubs.
+- **Truthful Uncertified Run Resolution**: When viewing uncertified runs, the UI truthfully reports `UNVERIFIED` status and `Certification not issued`, preventing misleading assertions of compliance.
 - **Truthful Enterprise PDF Generation**:
   - The PDF generation engine (`eval_runner/console/pdf_service.py` via ReportLab) extracts all execution metrics, timestamps, and pass/fail states directly from authentic `summary.json` and `run_manifest.json` artifacts.
   - Zero manufactured or hardcoded placeholder strings; unverified runs explicitly reflect `UNVERIFIED` badges.

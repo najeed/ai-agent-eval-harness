@@ -17,17 +17,24 @@ AgentV uses a deterministic seeding strategy that applies to Python's `random`, 
 
 When you start an evaluation campaign with a base seed (e.g., `--seed 12345`), the harness initializes the global state. This base seed is the root of the "Randomness Tree" for that entire batch.
 
-### Run Index Offsets
+### Run Index Offsets & Deterministic Seed Derivation
 
-In multi-run batches (e.g., running a scenario 100 times to calculate Pass@k), using the same seed for every run would result in identical agent paths (if the agent is also seeded). Instead, AgentV applies a predictable offset:
+In multi-run batches (e.g., executing a scenario K times to calculate Pass@K), using the identical seed for every attempt would eliminate statistical variance. Instead, AgentV applies a mathematically predictable, reproducible seed derivation formula:
 
-**`Final Seed = Base Seed + Run Index`**
+```txt
+S_k = S_base + (k - 1)
+```
 
-- **Run 0**: Seed 12345
-- **Run 1**: Seed 12346
-- **Run 2**: Seed 12347
+Where:
+- `S_base` is the configured base seed (`--seed <int>`).
+- `k` in `[1, K]` is the 1-indexed attempt number.
 
-This ensures that while each run is unique, the *entire batch* is perfectly reproducible if started with the same base seed.
+For 0-indexed run offsets ($i = k - 1$):
+- **Attempt 1 ($i=0$)**: Seed `S_base` (e.g. `12345`)
+- **Attempt 2 ($i=1$)**: Seed `S_base + 1` (e.g. `12346`)
+- **Attempt 3 ($i=2$)**: Seed `S_base + 2` (e.g. `12347`)
+
+This guarantees that while each attempt explores a distinct stochastic trajectory, the *entire batch* is 100% reproducible when initialized with the same base seed.
 
 ---
 
@@ -49,7 +56,7 @@ A critical requirement for research-grade evaluation is the ability to revisit a
 
 2.  **Re-run with Exact Seed**: Use the specific seed from the manifest to replicate the exact failure.
     ```bash
-    agentv evaluate --path industries/finance --agent http://localhost:5001/execute_task --seed 12387
+    agentv run --path industries/finance --agent http://localhost:5001/execute_task --seed 12387
     ```
 
 3.  **Analyze Trajectory**: The agent will follow the same reasoning path, allowing you to observe the state drift or planning error in real-time.

@@ -18,11 +18,17 @@ The adapter implements two primary industrial communication patterns:
 
 ## Normalization Hub
 
-heterogeneous agents use different names for their status fields (e.g., `status`, `state`, `result`). The **Dual Normalization Hub** uses lexical heuristics to map these to deterministic Harness actions:
+Heterogeneous REST agents use varied names and schemas for their status fields (e.g., `status`, `state`, `phase`, `outcome`, `decision`, `result`). The **Dual Normalization Hub** (`eval_runner.adapters.common.DualNormalizationHub`) deterministically maps incoming payloads to canonical AgentV actions using strict precedence:
 
-- **`hitl_pause`**: Triggered by keywords like `pending`, `review`, or `waiting`.
-- **`final_answer`**: Triggered by keywords like `completed`, `success`, or `approved`.
-- **`error`**: Triggered by HTTP 4xx/5xx or keywords like `failure` or `crash`.
+1. **Transport Failure**: Any HTTP status code $\ge 400$ normalizes to `"error"`.
+2. **Explicit Overrides**: Custom overrides defined in the scenario or routing configuration take absolute precedence.
+3. **Declared Schema Mapping**: Maps custom fields using declared `status_field` and mapping dictionaries.
+4. **Keyword Heuristics**: Analyzes recognized status fields against keyword groups:
+   - **`hitl_pause`**: Triggered by keywords like `pending`, `review`, `waiting`, `approval`.
+   - **`processing`**: Triggered by keywords like `running`, `in_progress`, `queued` (initiating async polling).
+   - **`final_answer`**: Triggered by keywords like `completed`, `success`, `approved`, `done`.
+   - **`error`**: Triggered by keywords like `failure`, `crash`, `rejected`.
+5. **Content Fallback**: Analyzes payload text content with `normalize_text()`, defaulting to `"final_answer"`.
 
 ### Break-Glass Overrides
 
@@ -36,6 +42,21 @@ For agents with unconventional schemas, you can define custom status mappings di
   }
 }
 ```
+
+---
+
+## Preflight Probing & External Telemetry Receipts
+
+### 1. Preflight Health Probing
+Before launching multi-turn task evaluations, the OpenAPI adapter verifies endpoint availability and schema contracts:
+- Automatically issues a health check probe to `urljoin(endpoint, "/health")` or checks `openapi.json`.
+- Fails fast with clear diagnostic logging if the target agent service is unreachable or unauthenticated.
+
+### 2. External Tool Receipts Ingestion
+When an OpenAPI service reports internal tool executions via `execution_receipt` or `tool_calls`:
+- The adapter forwards the steps directly to the session manager.
+- Emits `EXTERNAL_TOOL_CALL` and `EXTERNAL_TOOL_RESULT` events with `source="external_agent_telemetry"` and `provenance="reported"`.
+- Binds canonical RFC 8785 SHA3-256 receipt digests (`receipt_hash`) without modifying sandbox-executed tool state.
 
 ---
 

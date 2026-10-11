@@ -34,9 +34,8 @@ agentv evaluate \
 
 # SSE Streaming Agent
 agentv evaluate \
-  --path scenarios/loan_scenario.json \
-  --agent sse://localhost:5005/stream \
-  --industry finance
+  --path industries/finance/scenarios/loan_scenario.json \
+  --agent sse://localhost:5005/stream
 ```
 
 ### 🧩 `run` — Single Scenario
@@ -45,11 +44,17 @@ Use this for rapid iteration during prompt engineering or scenario design.
 agentv run --scenario industries/finance/scenarios/loan_v1.json -v
 ```
 
+### ⏸️ `hitl-resume` — Human-in-the-Loop Resumption
+When an evaluation scenario encounters a required human authorization step (e.g., fund transfers or clinical medication orders), runtime state suspends into `PAUSED_FOR_APPROVAL` with an issued `approval_token`. Resume execution after external review:
+```bash
+agentv hitl-resume --run-id <run_id> --approval-token <token> --decision APPROVED
+```
+
 ### ⚡ CLI Command Quick Reference
 | Category | Command | Purpose |
 | :--- | :--- | :--- |
 | **Execution** | `evaluate`, `run`, `quickstart` | Running deterministic and batch evaluation suites. |
-| **Interactive**| `playground`, `record`, `replay` | Prototyping, manual sessions, and step-by-step playback. |
+| **Interactive**| `playground`, `record`, `replay`, `hitl-resume` | Prototyping, manual sessions, playback, and HITL resumption. |
 | **Analysis** | `report`, `explain`, `leaderboard`, `trend` | Generating HTML reports, root cause triage, and regression tracking. |
 | **Authoring** | `init`, `analyze`, `spec-to-eval`, `auto-translate`, `mutate`, `install` | Scaffolding workspaces, AST repo analysis, PRD parsing, and mutation. |
 | **Trust & Audit** | `certify`, `verify`, `verify-package`, `gate` | Cryptographic certification, offline package verification, and CI/CD gating. |

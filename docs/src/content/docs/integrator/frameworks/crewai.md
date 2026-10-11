@@ -91,15 +91,24 @@ Launch the CrewAI service:
 uvicorn crew_agent:app --host 127.0.0.1 --port 8000
 ```
 
-Execute the evaluation run:
+Execute the evaluation run against the HTTP service:
 ```bash
-agentv evaluate \
+agentv run \
   --path industries/finance/scenarios/loan_approval_risk_check.json \
-  --protocol crewai \
+  --protocol http \
   --agent http://127.0.0.1:8000/execute_task \
   --agent-name "CrewAI-Underwriting-Team" \
   --attempts 1
 ```
+
+:::tip
+**Native In-Process Binding**: Alternatively, to run without an HTTP server, declare `metadata.crew_path: "my_module.underwriting:crew"` in your scenario JSON and invoke with the native in-process protocol:
+```bash
+agentv run \
+  --path scenarios/loan_approval_risk_check.json \
+  --protocol crewai
+```
+:::
 
 ---
 

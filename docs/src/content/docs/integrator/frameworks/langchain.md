@@ -10,32 +10,49 @@ AgentV provides native support for LangChain, allowing you to evaluate chains, a
 Expose your LangChain agent via a standard HTTP endpoint or using **LangServe**.
 
 ```python
-from langchain.chat_models import ChatOpenAI
-from langchain.schema import HumanMessage
 from fastapi import FastAPI
+from langchain_core.messages import HumanMessage
+from langchain_openai import ChatOpenAI
 
-chat = ChatOpenAI()
+chat = ChatOpenAI(model="gpt-5.6")
 app = FastAPI()
 
 
 @app.post("/execute_task")
 async def execute(request: dict):
-    # Process turn
-    result = chat([HumanMessage(content=request["task_description"])])
-    return {"action": "final_answer", "summary": result.content}
+  # Process turn
+  task_desc = request.get("task_description", "")
+  result = chat.invoke([HumanMessage(content=task_desc)])
+  return {"action": "final_answer", "summary": result.content}
 ```
 
 ## 2. Run Evaluation
 
-Use the `langchain` protocol to connect the harness to your agent service.
+Execute the evaluation against your FastAPI service using `--protocol http`:
 
 ```bash
 agentv run \
   --path scenarios/loan_scenario.json \
-  --protocol langchain \
-  --agent langchain://localhost:8000/execute_task \
+  --protocol http \
+  --agent http://localhost:8000/execute_task \
   --agent-name "LangChain-Retail-Bot"
 ```
+
+:::tip
+**Native LangServe / In-Process Protocol**: If your chain is hosted with **LangServe** or executed in-process, use `--protocol langchain`:
+```bash
+# LangServe remote deployment:
+agentv run \
+  --path scenarios/loan_scenario.json \
+  --protocol langchain \
+  --agent http://localhost:8000/my_chain
+
+# Or in-process Runnable binding (specifying metadata.chain_path in scenario):
+agentv run \
+  --path scenarios/loan_scenario.json \
+  --protocol langchain
+```
+:::
 
 ## 3. Verify Grounding
 

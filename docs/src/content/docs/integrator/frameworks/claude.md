@@ -23,7 +23,7 @@ Evaluate Claude frontier models directly against AgentV benchmarks using the bui
 
 ```bash
 # Evaluate Claude Opus 5 on financial scenarios
-agentv evaluate \
+agentv run \
   --path industries/finance/scenarios/ \
   --protocol claude \
   --agent "claude://claude-opus-5" \

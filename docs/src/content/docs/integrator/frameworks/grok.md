@@ -15,10 +15,12 @@ agentv run --path scenarios/loan_scenario.json --protocol grok --agent grok://gr
 ```
 
 ### Configuration
-Ensure your `XAI_API_KEY` is set in your `.env` file.
+Ensure your API key is set in your `.env` file (`XAI_API_KEY` or `GROK_API_KEY`):
 
 ```ini
 XAI_API_KEY=xai-xxx
+# Or:
+GROK_API_KEY=grok-xxx
 ```
 
 ## 🛠 Model Support

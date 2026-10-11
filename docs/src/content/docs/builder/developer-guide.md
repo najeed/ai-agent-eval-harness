@@ -54,16 +54,25 @@ The engine is built on a decoupled, event-driven architecture to support enterpr
 
 Plugins are the primary extension point for the harness.
 
-### Lifecycle Hooks
+### Lifecycle & Interceptor Hooks
 | Hook | Purpose |
 | :--- | :--- |
-| `before_evaluation` | Global setup and configuration validation. |
-| `on_agent_turn_start`| Intercept and inspect context before the agent speaks. |
-| `on_tool_request` | **Interception**: Return `False` to block a suspicious tool call. |
-| `on_metrics_calculated`| Post-process scores or inject custom logic. |
-| `on_register_commands`| Register custom namespaced CLI commands under `agentv plugin <name>`. |
+| `before_evaluation` | Global setup, span tagging, and configuration validation. |
+| `after_evaluation` | Post-run teardown, artifact export, and metric publishing. |
+| `on_step_start` / `on_step_end` | Workflow DAG node activation and verdict capture. |
+| `on_tool_request` | **Interception**: Return `True` to allow, `False` to block, or a dict to mutate tool parameters. |
+| `on_before_commit` / `on_rollback`| State transition validation gate and compensating rollback execution. |
+| `on_approval_request` | Pre-evaluation filter for human review requests (return `True` to allow or modified dict). |
+| `on_approval_created` / `on_approval_resolved`| Durable Human-in-the-Loop approval lifecycle events. |
+| `on_artifact_created`| Forensic evidence artifact commit listener (SOC 2 CC6.8). |
+| `on_register_commands`| Register custom namespaced CLI commands under `agentv`. |
+| `on_discover_adapters`| Register custom agent communication adapters with the registry. |
 | `on_register_simulators`| Inject custom environment World Shims into the simulator cache. |
-| `on_register_console_routes`| Inject custom REST routes and navigation into the [Visual Console](/evaluator/user-manual/). |
+| `on_discover_metrics`| Dynamically register custom metric functions. |
+| `on_diagnose_failure`| Register custom failure analyzers with the forensic taxonomy engine. |
+| `on_register_console_routes`| Inject custom REST routes and navigation tabs into the [Visual Console](/evaluator/user-manual/). |
+
+*(Note: Additionally, all `CoreEvents` emitted over the session event bus automatically bridge to `on_<event_name.lower()>(self, context, **event_data)` hooks on loaded plugins).*
 
 ---
 

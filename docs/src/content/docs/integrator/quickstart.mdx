@@ -34,7 +34,7 @@ Welcome to AgentV. This guide gets you from a fresh installation to your first *
 3.  **Execute a Deterministic Run**  
     Run a pre-configured scenario using the **Zero-Temperature Mock Adapter**. This verifies your local routing and event bus without incurring LLM costs.
     ```bash
-    agentv evaluate --path industries/finance/scenarios/loan_approval.json
+    agentv run --path industries/finance/scenarios/loan_approval.json
     ```
 
 4.  **Visual Triage**  
@@ -50,7 +50,7 @@ Welcome to AgentV. This guide gets you from a fresh installation to your first *
 
 ## 🔍 What Just Happened?
 
-When you ran `evaluate`, the AgentV engine executed several industrial-grade protocols:
+When you ran `run`, the AgentV engine executed several industrial-grade protocols:
 
 - **Isolated Routing**: The engine consulted `.aes/config/routing/manifest.json` to map the scenario's requirements to a local simulator.
 - **Event-Driven Observation**: Every tool call and reasoning step was emitted to the [Global Event Bus](/builder/architecture/), allowing the dashboard to mirror the execution in real-time.

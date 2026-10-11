@@ -29,7 +29,7 @@ v MAJOR . MINOR . PATCH
 The following subsystems form the **Sealed Public Contract Surface** of AgentV. Any backward-incompatible change to these surfaces requires a **MAJOR** version bump.
 
 ### 2.1. Extension Families (`agentv_runtime.interfaces`)
-The Abstract Base Classes (ABCs) that define external integration boundaries:
+The Abstract Base Classes (ABCs) that define external integration boundaries across all 10 core extension families:
 - `ExecutionBackend`: `submit()`, `status()`, `cancel()`, `resume()`
 - `CheckpointStore`: `save()`, `load()`, `delete()`, `list_checkpoints()`
 - `SigningBackend`: `sign_payload()`, `verify_signature()`
@@ -39,6 +39,9 @@ The Abstract Base Classes (ABCs) that define external integration boundaries:
 - `CatalogStore`: `list_scenarios()`, `get_scenario()`, `save_scenario()`, `delete_scenario()`
 - `RunStore`: `get_run()`, `list_runs()`, `save_run_manifest()`, `delete_run()`
 - `LeaderboardStore`: `get_leaderboard()`, `record_run_summary()`
+- `ApprovalStore`: `request_approval()`, `get_approval()`, `resolve_approval()`, `list_pending()`
+- `MutationEngine`: `mutate()`, `describe()`
+- `BoundedStateProvider`: `get_state()`, `snapshot_state()`
 
 ### 2.2. Subsystem Contract Version Dunders
 Published in `agentv_runtime` and `eval_runner`:
@@ -57,9 +60,12 @@ Published in `agentv_runtime` and `eval_runner`:
 - Mandatory top-level structure: `aes_version`, `metadata`, `workflow`, `evaluation`.
 - Universal immutable schema registry validation for all `.json` and `.yaml` scenario manifests.
 
-### 2.5. Plugin Discovery & Lifecycle Hook Architecture
-- `PluginManager` dynamic and persistent registration mechanisms.
-- `BaseEvalPlugin` standard lifecycle hooks: `before_evaluation`, `after_evaluation`, `on_register_commands`, `on_discover_adapters`, `on_register_simulators`, `on_discover_metrics`, `on_diagnose_failure`.
+### 2.5. Plugin Discovery & Two-Tier Hook Architecture
+- `PluginManager` dynamic and persistent registration mechanisms via Python entry points (`agentv.plugins`).
+- `BaseEvalPlugin` 17 native abstract lifecycle & interceptor hooks:
+  - Lifecycle: `before_evaluation`, `after_evaluation`, `on_step_start`, `on_step_end`, `on_tool_request`, `on_before_commit`, `on_rollback`, `on_approval_request`, `on_approval_created`, `on_approval_resolved`, `on_artifact_created`.
+  - Discovery & Registration: `on_register_commands`, `on_discover_adapters`, `on_register_simulators`, `on_discover_metrics`, `on_diagnose_failure`.
+- Dynamic Event Bus Bridging: Automatic dispatch of all session `EventEmitter` events to `on_<event_name.lower()>(self, context, **data)` plugin methods.
 
 ### 2.6. Verification Certificate Protocol (`VC v3.0.0`)
 - NIST AI-100-1 7-Dimension **Weighted Severity Model (WSM)** scoring vector (`safety`, `security`, `reliability`, `fairness`, `explainability`, `privacy`, `resilience`).
@@ -92,7 +98,7 @@ The contract boundary is protected by an automated, zero-regression test suite l
 - `test_aes_schema_contract.py`: Enforces AES v1.4 scenario structure and version requirements.
 - `test_config_hash_contract.py`: Enforces deterministic SHA3-256 config hash stability.
 - `test_execution_lifecycle_contract.py`: Enforces 4-method execution backend lifecycle invariants.
-- `test_interface_wiring_contract.py`: Enforces active runtime calls across all 6 interface families and fail-closed crypto.
+- `test_interface_wiring_contract.py`: Enforces active runtime calls across all core interface families and fail-closed crypto.
 - `test_plugin_discovery_contract.py`: Enforces plugin hooks and `agentv_runtime` namespace integrity.
 - `test_verification_contract.py`: Enforces VC v3.0.0 schemas, NIST 7-dimension weights, and safety floors.
 

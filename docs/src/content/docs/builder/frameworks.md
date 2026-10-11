@@ -30,7 +30,7 @@ pip install -e ".[frameworks]"
 
 **Usage:**
 ```bash
-agentv evaluate --agent langgraph://my_retail_node
+agentv run --scenario scenarios/retail.json --agent langgraph://my_retail_node
 ```
 
 ### ⚙️ Behavioral Configuration Mesh
@@ -62,47 +62,84 @@ If a native adapter is not available, you can wrap your agent in a simple REST A
 
 ### 🟢 LangGraph Example
 ```python
-from langgraph.graph import StateGraph
 from fastapi import FastAPI
+from langgraph.graph import MessagesState, StateGraph
 
 app = FastAPI()
+
+builder = StateGraph(MessagesState)
+
+
+def agent_node(state: MessagesState) -> dict:
+  return {
+      "messages": [
+          {"role": "assistant", "content": "Analysis complete: Approved"}
+      ]
+  }
+
+
+builder.add_node("agent", agent_node)
+builder.set_entry_point("agent")
+graph = builder.compile()
 
 
 @app.post("/execute_task")
 async def execute(request: dict):
-    state = {"input": request["input"]}
-    result = graph.invoke(state)
-    return {"content": result["output"]}
+  input_text = request.get("input", "")
+  result = graph.invoke(
+      {"messages": [{"role": "user", "content": input_text}]}
+  )
+  messages = result.get("messages", [])
+  last_msg = messages[-1].content if messages else ""
+  return {"content": last_msg}
 ```
 
-### 🟠 AG2 Example
+### 🟠 AG2 (AutoGen) Example
 ```python
-import ag2
+from autogen import AssistantAgent, UserProxyAgent
 from fastapi import FastAPI
 
 app = FastAPI()
 
+assistant = AssistantAgent("assistant", llm_config={"model": "gpt-5.6"})
+user_proxy = UserProxyAgent("user_proxy", code_execution_config=False)
+
 
 @app.post("/execute_task")
 async def execute(request: dict):
-    # Map input to AG2 initiate_chat
-    user_proxy.initiate_chat(assistant, message=request["input"])
-    return {"content": user_proxy.last_message()["content"]}
+  input_text = request.get("input", "")
+  user_proxy.initiate_chat(assistant, message=input_text, max_turns=1)
+  last_msg = user_proxy.last_message()
+  return {"content": last_msg.get("content", "") if last_msg else ""}
 ```
 
 ### 🔵 CrewAI Example
 ```python
-from crewai import Crew
+from crewai import Agent, Crew, Process, Task
 from fastapi import FastAPI
 
 app = FastAPI()
 
+analyst = Agent(
+    role="Financial Analyst",
+    goal="Evaluate loan risks against regulatory bounds",
+    backstory="Industrial financial risk evaluator",
+)
+
 
 @app.post("/execute_task")
 async def execute(request: dict):
-    crew = Crew(agents=[...], tasks=[...])
-    result = crew.kickoff()
-    return {"content": result}
+  input_text = request.get("input", "")
+  task = Task(
+      description=input_text,
+      agent=analyst,
+      expected_output="Risk assessment recommendation",
+  )
+  crew = Crew(
+      agents=[analyst], tasks=[task], process=Process.sequential, verbose=False
+  )
+  result = crew.kickoff()
+  return {"content": str(result)}
 ```
 
 ---
@@ -113,6 +150,7 @@ Once your agent is running (manually or via a native scheme), register it with t
 
 ```bash
 agentv evaluate \
+  --path scenarios/retail/ \
   --run-id <id> \
   --agent http://localhost:8000/execute_task \
   --agent-name "Retail-Orchestrator-V1"

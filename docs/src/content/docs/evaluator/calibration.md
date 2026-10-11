@@ -35,7 +35,7 @@ Ensure your scenarios include a `human_score` field in the criteria metadata. Th
 Run your evaluation as normal. The harness will record the judge's score alongside the human score in the flight recorder (`run.jsonl`).
 
 ```bash
-agentv evaluate --run-id <id>
+agentv evaluate --path scenarios/clinical_safety.json --run-id <id>
 ```
 
 ---
@@ -44,7 +44,11 @@ agentv evaluate --run-id <id>
 Use the `calibrate` command to generate an alignment report.
 
 ```bash
+# Calibrate directly against recorded run traces
 agentv calibrate --run-id <id>
+
+# Or calibrate against an external golden dataset with agreement plots
+agentv calibrate --run-id <id> --golden data/golden_labels.json --plot
 ```
 
 ## Interpreting Alignment Metrics

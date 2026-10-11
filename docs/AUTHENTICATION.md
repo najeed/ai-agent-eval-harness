@@ -32,6 +32,7 @@ AgentV enforces authentication and authorization across three distinct layers de
 - On successful authentication, a cryptographically signed cookie session (`session["user"]`) is established.
 
 ### Session Security & Hardening
+- **Session Secret Key Derivation**: The console derives its session signing key via pure SHA3-256 (`app.secret_key = crypto.checksum(api_key or secret_key_env)`), producing a 64-character cryptographic hex digest binding cookie signatures to the active master secret.
 - **HTTP-Only Enforcement**: `SESSION_COOKIE_HTTPONLY = True` prevents client-side JavaScript access, neutralizing session hijacking via XSS.
 - **CSRF Mitigation**: `SESSION_COOKIE_SAMESITE = "Lax"` isolates cookies from cross-site request contexts.
 - **Transport Security**: `SESSION_COOKIE_SECURE = True` is enforced automatically in production (`AGENTV_ENV=production`), requiring TLS/HTTPS.

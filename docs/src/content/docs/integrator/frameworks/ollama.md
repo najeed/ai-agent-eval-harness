@@ -29,11 +29,18 @@ AgentV is optimized for the 2026 local model landscape:
 - `phi-5`
 
 ## 🧪 Benchmarking Local vs. Cloud
-A common research use case is comparing a local model against a cloud baseline (e.g., Llama 4 vs. GPT-5.4). 
+A common research use case is comparing a local model against a cloud baseline (e.g., Llama 4 vs. GPT-5.6). 
 
-Use the **Model Wars** protocol:
+Run the evaluations with distinct run IDs and generate a comparative leaderboard:
 ```bash
-agentv run --path scenarios/loan_scenario.json --compare agents_inventory.yaml
+# 1. Run local model
+agentv run --scenario scenarios/loan_scenario.json --protocol ollama --agent ollama://llama4 --run-id run_llama4
+
+# 2. Run cloud baseline
+agentv run --scenario scenarios/loan_scenario.json --protocol openai --agent openai://gpt-5.6 --run-id run_gpt56
+
+# 3. Generate comparative ranking
+agentv leaderboard --dir runs/ --output LEADERBOARD.md
 ```
 
 ## ⚠️ Performance Note

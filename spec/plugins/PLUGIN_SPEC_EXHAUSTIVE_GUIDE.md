@@ -104,7 +104,7 @@ The "whitelist" is not a static list but a **policy layer** resolved through the
 
 ## Reference Implementation: PII Masking Plugin
 
-This plugin demonstrates the **Interceptor** pattern by redacting sensitive data from tool results before they are written to the trace.
+This plugin illustrates the **Interceptor** pattern by redacting sensitive data from tool results before they are written to the trace.
 
 ```python
 from eval_runner.plugins import BaseEvalPlugin

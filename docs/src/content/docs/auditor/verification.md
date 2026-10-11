@@ -28,7 +28,7 @@ graph TD
     V5 --> PASS["Verification Status: VERIFIED"]
 ```
 
-### Response Schema:
+### Response Schema (Certified Run):
 ```json
 {
   "run_id": "run_fintech_2026_01",
@@ -44,7 +44,21 @@ graph TD
 }
 ```
 
----
+### Architectural Manifest Discrimination (`_is_plain_execution_manifest`)
+To prevent pre-certification execution manifests from masquerading as authoritative Verification Certificates:
+- The verification subsystem discriminates between plain execution manifests (prefixed with `man_`, capturing runtime metadata such as `agent_config`, `pass_at_k`) and post-certification **Verification Certificates** (`vc_version: "3.0.0"`, `trace_hash`, `provenance_chain`).
+- When a run directory contains only a plain execution manifest (i.e. certification was not performed or failed), `TraceVerifier` explicitly returns:
+```json
+{
+  "run_id": "run_uncertified_02",
+  "verification_status": "UNVERIFIED",
+  "is_valid": false,
+  "has_certificate": false,
+  "failure_reason": "Certification not issued"
+}
+```
+- Auditors are guaranteed that uncertified execution artifacts are never reported as verified.
+
 
 ---
 
@@ -150,8 +164,8 @@ agentv run --path scenarios/loan_risk.json --protocol langgraph --agent http://l
 agentv run --path scenarios/loan_risk.json --protocol crewai --agent http://localhost:8000/execute_task
 
 # Frontier Model Direct Adapters
-agentv run --protocol gemini --agent "gemini://gemini-3.7-flash"
-agentv run --protocol claude --agent "claude://claude-opus-5"
-agentv run --protocol openai --agent "openai://gpt-5.6"
-agentv run --protocol ollama --agent "ollama://deepseek-r1:70b"
+agentv run --scenario scenarios/loan_risk.json --protocol gemini --agent "gemini://gemini-3.7-flash"
+agentv run --scenario scenarios/loan_risk.json --protocol claude --agent "claude://claude-opus-5"
+agentv run --scenario scenarios/loan_risk.json --protocol openai --agent "openai://gpt-5.6"
+agentv run --scenario scenarios/loan_risk.json --protocol ollama --agent "ollama://deepseek-r1:70b"
 ```

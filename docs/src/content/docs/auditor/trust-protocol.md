@@ -194,7 +194,30 @@ agentv gate --run-id <id> --verify-ledger
 
 ---
 
-## 7. Security Guardrails
+## 7. Storage Tier Classification & WORM Enforcement Gate
+
+To satisfy regulatory retention mandates (e.g., FINRA Rule 4511, SEC Rule 17a-4, EU AI Act Art. 12), AgentV formally distinguishes between logical tamper evidence and hardware physical immutability:
+
+| Storage Tier | Implementation | Security Boundary | Regulatory Compliance |
+| :--- | :--- | :--- | :--- |
+| **`TAMPER_EVIDENT_LOGICAL_SEAL`** | `LocalFileArtifactStore` | Filesystem permissions + detached SHA3-256 seal. Detects post-run tampering upon verification. | Internal CI/CD regression, pre-deployment staging. |
+| **`PHYSICAL_IMMUTABLE_WORM`** | Enterprise WORM Stores (S3 Object Lock, Glacier Vault Lock, Azure Immutable Blob) | Non-bypassable compliance mode retention policies with legal holds. | Production deployment gates, compliance defense. |
+
+### The `REQUIRE_IMMUTABLE_WORM` Certification Gate
+When operating in regulated audit mode:
+```ini
+REQUIRE_IMMUTABLE_WORM=true
+```
+Under this setting:
+1. `CertificationService` queries the configured `ArtifactStore` for its physical immutability tier.
+2. If `LocalFileArtifactStore` or any logical-only store is configured, the certification pipeline **fails closed**:
+   - Certificate issuance is immediately aborted.
+   - Run is marked as `CERTIFICATION_FAILED`.
+   - Manifest emission is blocked with `"ImmutableWORMRequiredError: Cannot issue Verification Certificate on logical storage tier"`.
+
+---
+
+## 8. Security Guardrails
 
 :::note[Important]
 **Path Traversal Protection**: All file operations in the `verifier.py` engine are jail-checked. The protocol will refuse to sign or verify files outside of authorized evaluation directories.

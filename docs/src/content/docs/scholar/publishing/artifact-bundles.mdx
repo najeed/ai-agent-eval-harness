@@ -30,11 +30,18 @@ curl -H "X-Api-Key: $SERVICE_API_KEY" http://localhost:5000/api/v1/evidence/pack
 Independent auditors can verify a package without access to the original runtime environment or databases:
 
 ```bash
-# Standard Ed25519 verification against an authoritative trust root
-agentv verify-package ./run_evidence.agentv-package.json --root-cert /etc/pki/agentv-root.pem
+# Standard Ed25519 verification against a public key or external trust root
+agentv verify-package ./run_evidence.agentv-package.json \
+  --public-key .aes/keys/trust_root_pub.pem \
+  --require-signature
 
-# Hybrid Post-Quantum Cryptography (ML-DSA) verification
-agentv verify-package ./run_evidence.agentv-package.json --root-cert /etc/pki/agentv-root.pem --pqc
+# Deep artifact and scenario binding verification with raw trace parity check
+agentv verify-package ./run_evidence.agentv-package.json \
+  --public-key .aes/keys/trust_root_pub.pem \
+  --require-signature \
+  --scenario scenarios/baseline.json \
+  --require-scenario \
+  --trace runs/run_01/run.jsonl
 ```
 
 ### Verification Layers
@@ -62,8 +69,8 @@ agentv bundle --run-id <run_id>
 
 ### Verifying Shared Archives
 ```bash
-# Verify a shared zip bundle
-agentv verify --path ./study_results_v1.zip --root-cert /etc/pki/agentv-root.pem
+# Verify an evaluation run directory
+agentv verify --run-id <run_id> --pqc
 ```
 
 ### In-Archive Security & Integrity Checks:

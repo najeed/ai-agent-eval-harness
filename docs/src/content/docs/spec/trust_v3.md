@@ -45,6 +45,19 @@ To ensure audit-grade forensic stability, the protocol enforces strict identity 
 - **Precedence Hierarchy**: Any terminal failure status (`failed`, `timeout`, `policy_breach`, `error`) takes absolute precedence over optimistic heuristic counters (`passed=True`, `success_rate`).
 - **Intrinsically Fail-Closed Persistence**: In certification or attestation mode, any event write failure (disk full, I/O disruption) immediately aborts the run into `CERTIFICATION_FAILED`, tracks the failed run, and strictly refuses seal, certificate, or package generation.
 
+## 5.1 Storage Classification & Immutable WORM Mandate (`REQUIRE_IMMUTABLE_WORM`)
+To eliminate ambiguous compliance claims, AgentV establishes a strict classification boundary between logical tamper-evidence and physical immutable storage:
+
+- **`TAMPER_EVIDENT_LOGICAL_SEAL`**:
+  The default Open Core storage backend (`eval_runner.reference.LocalFileArtifactStore`) provides high-integrity logical seals. It captures retention metadata (`retention_days`, `retention_until`, `legal_hold`), writes `.sealed` sentinels, and rejects programmatic mutation. However, because host operating system filesystems can be altered by privileged local administrators, it is classified strictly as a logical seal, not hardware WORM.
+- **`PHYSICAL_IMMUTABLE_WORM`**:
+  Enterprise storage backends (e.g. AWS S3 Object Lock in COMPLIANCE mode, Azure Immutable Blob Storage) that enforce hardware-level write-once immutability.
+- **Fail-Closed Certification Gate**:
+  When immutable retention is claimed or required by configuration (`REQUIRE_IMMUTABLE_WORM=true`), `CertificationService` and `TraceVerifier` inspect the active `ArtifactStore`. If the active store is classified as `TAMPER_EVIDENT_LOGICAL_SEAL`, certification is unconditionally blocked and fails closed with:
+  ```text
+  CertificationVerificationError: Storage tier provides TAMPER_EVIDENT_LOGICAL_SEAL, but immutable physical WORM is required by policy.
+  ```
+
 # 6. Use Cases
-- **Regulatory Audits**: Providing high-fidelity proof for healthcare or finance agents under NIST AI 100-1 and EU AI Act.
+- **Regulatory Audits**: Providing high-fidelity proof for healthcare or finance agents under NIST AI 100-1, SOC 2 Type II, and EU AI Act.
 - **Zero-Trust CI/CD**: Using the `gate` command to verify integrity and evidence graph completion before deployment.

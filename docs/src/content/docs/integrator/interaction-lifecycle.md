@@ -105,28 +105,47 @@ When an agent requests environment modification or data retrieval:
      "result": { "status": "success", "tx_id": "tx-9821" },
      "call_id": "call_12345"
    }
-   ```
+    ```
+
+### External Tool Telemetry Receipts
+When evaluating autonomous agents that invoke tools internally outside the harness (e.g. LangGraph, CrewAI):
+- The agent embeds an `execution_receipt` with executed steps in its response envelope.
+- AgentV ingests each step, emitting `external_tool_call` and `external_tool_result` events with `source="external_agent_telemetry"` and `provenance="reported"`.
+- Each receipt is bound by a canonical RFC 8785 SHA3-256 hash (`receipt_hash`), ensuring complete evidentiary separation from sandbox-executed tools.
 
 ---
 
-## 4. Human-in-the-Loop (HITL) Interventions
+## 4. Human-in-the-Loop (HITL) Interventions & Resumption
 
-For critical actions requiring explicit human approval:
+For critical actions requiring explicit operator oversight:
 
 1. **Agent Pause**: The agent responds with `action: "hitl_pause"`:
    ```json
    {
      "action": "hitl_pause",
-     "prompt": "Authorization required: Transfer 5000 USD to external account."
+     "prompt": "Authorization required: Transfer 5000 USD to external account.",
+     "approval_token": "req_hitl_882910"
    }
    ```
-2. **Engine Suspension (`hitl_pause`)**:
-   AgentV halts execution and emits `hitl_pause`. The pending approval enters the HITL queue (`/api/v1/hitl/queue`).
-3. **Operator Resolution (`hitl_resume`)**:
-   When the operator approves or rejects via the dashboard:
-   - `hitl_resume` is emitted with the operator response.
-   - If approved, the agent resumes execution.
-   - If rejected, execution aborts and the node fails closed with `POLICY_DENIED`.
+2. **Engine Suspension (`approval_created` / `hitl_pause`)**:
+   - AgentV halts turn execution and records the approval request in the configured `ApprovalStore`.
+   - Emits `approval_created` and `hitl_pause` events.
+   - Flushes the execution manifest to disk with `execution_status: "PAUSED_FOR_APPROVAL"` and snapshots `scenario_resolved.json`.
+3. **Operator Resolution (`agentv hitl-resume` / Console)**:
+   The operator reviews the paused run and submits a decision (`APPROVED` or `REJECTED`):
+   ```bash
+   agentv hitl-resume \
+     --run-id run_fintech_2026_01 \
+     --approval-token req_hitl_882910 \
+     --decision APPROVED \
+     --reviewer "compliance_officer_42" \
+     --reason "Valid underwriting exemption granted"
+   ```
+4. **Monotonic Event Sequence Continuation (`is_resume=True`)**:
+   - The engine re-opens the existing run vault without overwriting `run.jsonl`.
+   - Scans the stream to compute `start_seq = max(_seq) + 1`, guaranteeing strictly monotonic sequence ordering.
+   - Emits `approval_resolved` and `hitl_resume` with reviewer identity, decision, and rationale.
+   - If approved, the agent turn loop resumes with operator feedback injected into context; if rejected, the turn loop aborts fail-closed with `POLICY_DENIED`.
 
 ---
 

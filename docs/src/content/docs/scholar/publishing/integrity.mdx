@@ -43,10 +43,14 @@ Peer reviewers can verify your results using the `agentv verify` or `agentv veri
 
 ```bash
 # Verify run directory within local vault
-agentv verify --run-id <run_id> --root-cert /etc/pki/agentv-root.pem
+agentv verify --run-id <run_id> --pqc
 
-# Verify standalone single-file research package
-agentv verify-package ./run_evidence.agentv-package.json --root-cert /etc/pki/agentv-root.pem
+# Verify standalone single-file research package with public key and scenario binding
+agentv verify-package ./run_evidence.agentv-package.json \
+  --public-key .aes/keys/trust_root_pub.pem \
+  --require-signature \
+  --scenario scenarios/baseline.json \
+  --require-scenario
 ```
 
 The engine will return **`SIGNATURE_MATCH`** only if:

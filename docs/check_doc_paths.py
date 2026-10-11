@@ -18,6 +18,8 @@ DOC_FILES = [
     PROJECT_ROOT / "README.md",
     PROJECT_ROOT / "COMPLIANCE.md",
     PROJECT_ROOT / "docs" / "AUTHENTICATION.md",
+    PROJECT_ROOT / "docs" / "README.md",
+    PROJECT_ROOT / "docs" / "RESOURCES_MAP.md",
     *list((PROJECT_ROOT / "docs" / "src" / "content" / "docs").rglob("*.md")),
     *list((PROJECT_ROOT / "docs" / "src" / "content" / "docs").rglob("*.mdx")),
     *list((PROJECT_ROOT / "docs-v1-deprecated-reference").rglob("*.md")),

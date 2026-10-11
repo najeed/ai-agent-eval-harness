@@ -126,15 +126,32 @@ Start your LangGraph service:
 uvicorn agent_service:app --host 127.0.0.1 --port 8000
 ```
 
-Execute evaluation via the `agentv` CLI:
+Execute evaluation via the `agentv` CLI against the FastAPI service:
 ```bash
-agentv evaluate \
+agentv run \
   --path industries/finance/scenarios/loan_approval_risk_check.json \
-  --protocol langgraph \
+  --protocol http \
   --agent http://127.0.0.1:8000/execute_task \
   --agent-name "LangGraph-Fintech-Agent" \
   --attempts 3
 ```
+
+:::tip
+**Native LangGraph Protocol**: To evaluate a compiled in-process graph or a LangGraph Cloud / Studio deployment, use the native `langgraph` protocol:
+```bash
+# In-process graph module binding:
+agentv run \
+  --path scenarios/loan_risk.json \
+  --protocol langgraph \
+  --agent "my_module.graph:app"
+
+# Or remote LangGraph Server deployment:
+agentv run \
+  --path scenarios/loan_risk.json \
+  --protocol langgraph \
+  --agent "http://127.0.0.1:8123"
+```
+:::
 
 ---
 

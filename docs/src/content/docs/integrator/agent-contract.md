@@ -178,13 +178,48 @@ When the agent requests tool execution, the **AgentV harness executes the sandbo
 }
 ```
 
-:::note[Important: Authoritative Execution]
-The agent **must never fabricate tool outputs** or claim to execute tools locally. The harness is the sole authoritative gateway to simulated environments and world shims.
+:::note[Authoritative Execution & Sandbox Isolation]
+For tools declared in the scenario, the agent **must never fabricate tool outputs** or claim to execute tools locally. The harness is the sole authoritative gateway to simulated environments and world shims.
 :::
 
 ---
 
-## 🧬 4. OpenTelemetry Context & Behavioral DNA
+## 📦 4. External Tool Telemetry Receipts (Hybrid & Autonomous Agents)
+
+For autonomous agent architectures (e.g., LangGraph, CrewAI, AutoGen/AG2) that execute internal or self-hosted tools outside the AgentV sandbox, the harness provides native ingestion of **External Tool Telemetry Receipts** via the response envelope:
+
+### Envelope Specification with `execution_receipt`:
+```json
+{
+  "action": "final_answer",
+  "summary": "Completed financial risk calculation using external credit scoring tool.",
+  "execution_receipt": {
+    "steps": [
+      {
+        "tool": "calculate_risk_index",
+        "arguments": { "applicant_id": "APP-98214", "model_version": "v2.1" },
+        "result": { "risk_index": 0.14, "risk_tier": "LOW" },
+        "result_summary": "Calculated low risk tier index 0.14"
+      }
+    ]
+  },
+  "metadata": {
+    "decision": "APPROVED"
+  }
+}
+```
+
+### Ingestion & Provenance Classification:
+1. **Typed Event Emission**: Ingested steps emit `EXTERNAL_TOOL_CALL` and `EXTERNAL_TOOL_RESULT` events over the session event bus.
+2. **Cryptographic Receipt Digest**: A deterministic SHA3-256 hash is computed over RFC 8785 canonical JSON bytes of the receipt data (`receipt_hash: "sha3_256:..."`).
+3. **Explicit Provenance Attributes**:
+   - `source`: `"external_agent_telemetry"`
+   - `provenance`: `"reported"`
+4. **Forensic Integrity Guard**: External receipts are recorded in the trace and tracked in `CertificationService` under `external_tool_calls_observed`. They are **strictly never relabeled** as AgentV sandbox-authoritative, maintaining absolute evidentiary distinction between sandbox-verified state mutations and remote agent self-reported operations.
+
+---
+
+## 🧬 5. OpenTelemetry Context & Behavioral DNA
 
 The harness automatically injects W3C Distributed Tracing headers (`traceparent`, `tracestate`) and span metadata into every turn invocation.
 
@@ -217,7 +252,7 @@ Agents can include structured operational telemetry in `metadata.telemetry`:
 
 ---
 
-## 🔌 5. Non-HTTP Protocol Alternatives
+## 🔌 6. Non-HTTP Protocol Alternatives
 
 ### Local Subprocess (`local://`)
 The harness executes the agent command as a local child process communicating over standard input/output streams:
@@ -233,5 +268,5 @@ agentv run --scenario scenarios/loan.json --protocol local --agent "python -m my
 The harness connects via persistent TCP socket, transmitting newline-delimited JSON packets. This mode eliminates HTTP connection setup latency for high-throughput batch benchmarks.
 
 ```bash
-agentv evaluate --path scenarios/ --protocol socket --agent "socket://127.0.0.1:9099"
+agentv run --path scenarios/ --protocol socket --agent "socket://127.0.0.1:9099"
 ```

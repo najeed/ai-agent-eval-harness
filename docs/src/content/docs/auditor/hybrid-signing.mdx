@@ -26,8 +26,9 @@ The hybrid protocol combines classical elliptic curve cryptography with modern l
 
 AgentV enforces strict cryptographic safety gates during evaluation:
 
-> [!IMPORTANT]
-> **Mandatory Signing Rules**: When `EVAL_REQUIRE_SIGNING=true` or `AUDIT_LEVEL >= 2` and no valid signing key or `SigningBackend` is provided, the runtime immediately raises a `RuntimeError` (`"CryptographicSigningError: Signing is mandatory..."`). Silent unauthenticated evaluations are strictly rejected.
+<Aside type="caution" title="Mandatory Signing Rules">
+When `EVAL_REQUIRE_SIGNING=true` or `AUDIT_LEVEL >= 2` and no valid signing key or `SigningBackend` is provided, the runtime immediately raises a `RuntimeError` (`"CryptographicSigningError: Signing is mandatory..."`). Silent unauthenticated evaluations are strictly rejected.
+</Aside>
 
 ---
 

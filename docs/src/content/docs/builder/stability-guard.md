@@ -22,7 +22,7 @@ AgentV uses a multi-layered guard system powered by `psutil` to ensure that only
 
 ### 1. The PID Lockfile
 Upon startup, the engine attempts to create a lockfile at:
-`.aes/lock/server.pid`
+`.aes/server.pid`
 
 If the file exists, the harness doesn't just error; it enters the **Remediation Phase**.
 

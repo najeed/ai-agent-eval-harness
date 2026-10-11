@@ -52,7 +52,7 @@ Analyzers are executed in the order they are registered. Core analyzers run firs
 
 ## 3. Advanced Examples (Enterprise Patterns)
 
-The follow examples demonstrate how heavy or domain-specific logic (e.g., NLP clustering or telemetry trending) can be integrated as custom analyzers. 
+The following examples illustrate how heavy or domain-specific logic (e.g., NLP clustering or telemetry trending) can be integrated as custom analyzers.
 
 ### Example A: Building a State-Action Validator
 This example detects if an agent claims to have "deleted" a file, but the state snapshots show the file system remains unchanged.

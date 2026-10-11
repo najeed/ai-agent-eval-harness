@@ -51,10 +51,17 @@ For in-depth security implementation details, review the [Authentication Archite
 
 ### 1. Network & SSRF Protection
 The harness implements IP-level validation to prevent **Server-Side Request Forgery (SSRF)**.
-- **Forbidden Endpoints**: Loopback (`127.0.0.1`), link-local (`169.254.x.x`), and private subnets are blocked.
-- **Cloud Metadata Security**: Access to provider metadata (e.g., AWS IMDSv2) is strictly neutralized.
+- **Forbidden Endpoints**: Loopback (`127.0.0.1`), link-local (`169.254.x.x`), and private subnets are blocked unless explicitly permit-listed.
+- **Cloud Metadata Security**: Access to provider metadata (e.g., AWS IMDSv2 `169.254.169.254`) is strictly neutralized.
+- **Anti-DNS Rebinding**: Target hostnames are pre-resolved to IP addresses and pinned for the lifetime of the request. All HTTP redirects re-validate the target destination IP against the private subnet boundary before following.
 
-### 2. File Jail Control (`AEH_STRICT_JAIL`)
+### 2. Airgapped Execution Hardening (`AIRGAPPED_MODE=true`)
+For high-security sovereign environments, airgapped mode enforces zero external egress:
+- **Zero-Egress Gating**: When `AIRGAPPED_MODE=true`, any unrouted outbound HTTP/HTTPS connection immediately fails closed with an `AirgapViolationError`.
+- **Dynamic CDN Stripping**: Visual Console responses automatically strip external CDN references (e.g. `https://cdn.jsdelivr.net`), serving all assets from verified local bundles.
+- **Operator CSP Control**: Content Security Policy headers enforce strict `default-src 'self'` directives with configurable allowlists.
+
+### 3. File Jail Control (`AEH_STRICT_JAIL`)
 - **Default (Standard)**: Allows file access within `PROJECT_ROOT` and system temporary directories for CI/CD flexibility.
 - **Strict (Hardened)**: Set `AEH_STRICT_JAIL=1` to enforce an absolute, project-only jail, blocking access to all external directories.
 

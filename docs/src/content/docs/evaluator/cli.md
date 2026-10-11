@@ -73,9 +73,10 @@ agentv run \
 #### Options:
 - `--path`, `--scenario` *(required)*: Path to scenario file or Benchmark URI (e.g., `gaia://2023_all`).
 - `--agent`: Target agent endpoint.
-- `--protocol`: Protocol adapter (`http`, `local`, `socket`, etc.).
+- `--protocol`: Protocol adapter (`http`, `local`, `socket`, `langgraph`, `crewai`, `ag2`, etc.).
 - `--attempts`: Number of evaluation trials.
 - `--seed`: Deterministic random seed.
+- `--execution-mode`: Authoritative execution mode recorded in the immutable run trace: `live` (real APIs), `hybrid` (live model + sandboxed local tools), or `simulated` (mocked environment).
 - `--output`: Custom result summary destination.
 - `--run-log-dir`: Custom run log directory.
 - `--plugin`: Load external runtime plugins.
@@ -84,7 +85,7 @@ agentv run \
 ---
 
 ### `agentv quickstart`
-Run a self-contained 60-second engine demonstration executing a real telecom support benchmark scenario (`13814_home_internet_slow_speed.json`) against the local sample agent service.
+Run a self-contained 60-second baseline execution of a real telecom support benchmark scenario (`13814_home_internet_slow_speed.json`) against the local sample agent service.
 
 ```bash
 agentv quickstart
@@ -155,7 +156,9 @@ agentv auto-translate --input docs/api_guide.md --industry telecom --model llama
 ---
 
 ### `agentv mutate`
-Generate adversarial, edge-case, or perturbed scenario variants from existing baselines.
+Generate adversarial, edge-case, or perturbed scenario variants from existing baselines across the 9-Vector Ecosystem.
+
+The mutation command automatically chains the in-memory **Scenario Linter** (`ScenarioLinter.lint_dict`), outputting the resulting Lint Tier (`GOLD`, `SILVER`, `BRONZE`, `REJECTED`), compliance health score, error counts, and warnings before writing the mutated scenario variant to disk.
 
 ```bash
 agentv mutate --input scenarios/baseline.json --type injection --output scenarios/adversarial.json
@@ -163,8 +166,8 @@ agentv mutate --input scenarios/baseline.json --type injection --output scenario
 
 #### Options:
 - `--input`, `--path` *(required)*: Path to baseline scenario JSON.
-- `--type` *(required)*: Mutation strategy: `typo`, `injection` (prompt injection), `ambiguity` (underspecified constraints).
-- `--output`: Destination path for the mutated scenario.
+- `--type` *(required)*: Mutation strategy from the catalog (e.g. `injection`, `typo`, `ambiguity`).
+- `--output`: Destination path for the mutated scenario (defaults to auto-derived `[baseline]_mutated_[type].json`).
 - `-f`, `--force`: Overwrite existing output file.
 
 ---
@@ -268,6 +271,31 @@ Deterministically replay a previously recorded evaluation trace step-by-step.
 ```bash
 agentv replay --run-id run_fintech_2026_01
 ```
+
+---
+
+### `agentv hitl-resume`
+Resume a paused evaluation run following human-in-the-loop (HITL) approval or rejection.
+
+When a scenario requires manual governance or human authorization (such as financial disbursements or clinical order commitments), execution suspends with status `PAUSED_FOR_APPROVAL` and registers an `ApprovalRequest` in the configured `ApprovalStore`. Use `hitl-resume` to authoritatively submit the review decision and resume runtime execution from the checkpoint with monotonic sequence continuation (`_seq`).
+
+```bash
+agentv hitl-resume \
+  --run-id run_fintech_2026_01 \
+  --approval-token apprv_7f8a9b0c \
+  --decision APPROVED \
+  --reviewer security_lead \
+  --reason "Payload audited for PII compliance" \
+  --store file
+```
+
+#### Options:
+- `--run-id` *(required)*: Unique identifier of the paused evaluation run.
+- `--approval-token` *(required)*: Cryptographic approval token issued during state suspension.
+- `--decision`: Human review decision: `APPROVED` to resume execution, or `REJECTED` to cleanly terminate with policy rejection (default: `APPROVED`).
+- `--reviewer`: Identifier or role of the human reviewer making the decision (default: `cli_reviewer`).
+- `--reason`: Optional justification or audit reason for the review decision.
+- `--store`: Approval store backend: `file` (default, persisted in `.agentv/approvals/`) or `sqlite`.
 
 ---
 
@@ -431,17 +459,17 @@ agentv certify \
 ---
 
 ### `agentv gate`
-CI/CD Hard Gatekeeper. Validates trace hashes, sidecar evidence ledgers, and cryptographic certificates, exiting with code `1` upon any tamper or failure.
+CI/CD Hard Gatekeeper. Validates trace hashes, sidecar evidence ledgers, and cryptographic certificates, exiting with code `1` upon any tamper, schema divergence, or policy failure.
 
 ```bash
 agentv gate --run-id run_fintech_2026_01 --verify-ledger --pqc
 ```
 
 #### Options:
-- `--run-id`, `--path` *(required)*: Run identifier.
+- `--run-id`, `--path` *(required)*: Run identifier or path to run directory.
 - `--hash`: Expected SHA3-256 trace hash for tamper detection.
-- `--verify-ledger`: Verify every artifact referenced in `evidence_ledger`.
-- `--pqc`: Enforce PQC signature verification.
+- `--verify-ledger`: Full forensic ledger verification validating all artifacts referenced in `evidence_ledger` (default: `True`; pass `--no-verify-ledger` to bypass).
+- `--pqc`: Enforce Post-Quantum Cryptographic (ML-DSA Dilithium + Ed25519) signature verification.
 
 ---
 

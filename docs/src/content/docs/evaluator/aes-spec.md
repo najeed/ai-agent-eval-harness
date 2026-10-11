@@ -76,9 +76,7 @@ To convert a PRD and backfill schema defaults:
 ```bash
 agentv spec-to-eval \
   --input docs/specs/fraud_prd.md \
-  --output scenarios/fraud.json \
-  --fill-defaults \
-  --force
+  --output scenarios/fraud.json
 ```
 
 :::note[Important]

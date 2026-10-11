@@ -15,17 +15,86 @@ X-Api-Key: {SERVICE_API_KEY}
 
 ---
 
-## 🚀 Priority Roadmap Endpoints (/api/v1)
+## 🚀 Priority Operational Endpoints (/api/v1)
+
+### `GET /api/v1/mutations`
+**Priority: P0**
+Returns the unified 9-Vector Mutation Catalog (35+ registered mutators across `input`, `context`, `memory`, `retrieval`, `tool`, `state`, `authorization`, `temporal`, `objective`). Supports tenant filtering via `?org_id=`.
+
+- **Response**:
+  ```json
+  {
+    "status": "success",
+    "mutations": [
+      {
+        "id": "typo",
+        "vector": "input",
+        "name": "Typographical Noise",
+        "description": "Injects character slips and keyboard distance typos into task input.",
+        "parameters": { "severity": { "type": "number", "default": 0.1 } }
+      }
+    ],
+    "total": 35
+  }
+  ```
 
 ### `POST /api/v1/mutate`
 **Priority: P0**
-Programmatic scenario mutation for variance and robustness testing.
+Programmatic scenario mutation with chained in-memory static linting (`ScenarioLinter.lint_dict`).
 
 - **Body**:
-  - `type` (string): Mutation type (e.g., `typo`, `jumble`, `synonym`).
-  - `path` (string): Path to a scenario JSON file.
-  - `raw_json` (object, optional): Raw scenario JSON to mutate directly.
-- **Support**: Accepts **Raw Content** for cloud-native integration.
+  - `type` (string, required): Mutation type from the 9-vector catalog (e.g., `typo`, `injection`, `temporal_skew`).
+  - `seed` (integer, optional): Deterministic integer seed for reproducible perturbation.
+  - `scenario_id` (string, optional): ID of scenario in catalog.
+  - `input_path` (string, optional): Safe workspace path to scenario JSON.
+  - `raw_json` (object, optional): In-memory scenario JSON dictionary.
+  - Vector-specific options (e.g. `profile`, `target_node_ids`, `placement` for `injection`).
+- **Response**:
+  ```json
+  {
+    "status": "success",
+    "operation": "scenario_generation",
+    "delivery_status": "NOT_EXECUTED",
+    "mutated": { "aes_version": "1.4", "id": "loan_approval_mutated_typo", ... },
+    "lint_report": {
+      "valid": true,
+      "score": 96.5,
+      "tier": "GOLD",
+      "errors": [],
+      "warnings": []
+    }
+  }
+  ```
+
+### `GET /api/v1/evidence/packages/<run_id>`
+**Priority: P0**
+Serves or exports an immutable, single-file `.agentv-package.json` verification package conforming to NIST AI 100-1 auditability standards.
+- **Query Params**:
+  - `download=true`: Returns attachment response with `Content-Disposition: attachment; filename={run_id}.agentv-package.json`.
+- **Response**: Bundles resolved scenario, execution manifest, run events, assertion results, evidence ledger, and detached cryptographic signatures.
+
+### `POST /api/v1/evidence/verify`
+**Priority: P0**
+Independently verifies an offline `.agentv-package.json` verification package against external trust roots without requiring disk access to the original evaluation runner.
+- **Body**:
+  - `package` (object): Verification package JSON object.
+  - `raw_trace_bytes` (string, optional base64): Raw trace bytes for byte-level verification.
+  - `public_key_pem` (string, optional): Authoritative public key PEM for trust root anchoring.
+  - `require_signature` (boolean, default: `true`).
+  - `require_scenario` (boolean, default: `true`).
+- **Response**:
+  ```json
+  {
+    "verified": true,
+    "status": "CERTIFIED",
+    "checks": {
+      "trace_hash_valid": true,
+      "signature_valid": true,
+      "manifest_binding_valid": true,
+      "scenario_hash_valid": true
+    }
+  }
+  ```
 
 ### `GET /api/v1/metrics`
 **Priority: P0**
