@@ -412,7 +412,13 @@ async def _run_local_process(
 
     try:
         process.stdin.write(request_body)
-        await process.stdin.drain()
+        try:
+            await process.stdin.drain()
+        except (BrokenPipeError, ConnectionResetError) as exc:
+            # A local agent may deliberately close stdin after it has enough
+            # input (or, as with a zero-input command, exit before reading).
+            # Its exit status and stdout remain authoritative below.
+            logger.debug("Local subprocess closed stdin before request drain: %s", exc)
         process.stdin.close()
 
         await asyncio.wait_for(

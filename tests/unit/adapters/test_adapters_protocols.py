@@ -57,6 +57,18 @@ async def test_local_subprocess_adapter():
     assert res == {"test": "pass"}
 
 
+@pytest.mark.asyncio
+async def test_local_subprocess_adapter_accepts_agent_that_closes_stdin():
+    """A completed agent's stdout remains valid when it never reads the request."""
+    script = 'import os, sys; os.close(0); sys.stdout.write(\'{"test": "pass"}\')'
+    res = await _run_local_process(
+        command=[sys.executable, "-c", script],
+        payload={"request": "ignored"},
+        timeout=5,
+    )
+    assert res == {"test": "pass"}
+
+
 def test_local_command_removes_windows_argument_quotes():
     with patch("eval_runner.adapters.os.name", "nt"):
         command = _resolve_local_command('"C:\\Program Files\\Agent\\agent.exe" --mode test')
