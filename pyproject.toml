@@ -23,7 +23,7 @@ dependencies = [
     "Werkzeug==3.1.9",
     "jsonschema==4.26.0",
     "PyYAML==6.0.3",
-    "pydantic==2.14.0",
+    "pydantic==2.14.1",
     "numpy==2.5.4",
     "PyJWT==2.15.1",
     "cryptography==50.0.2",
