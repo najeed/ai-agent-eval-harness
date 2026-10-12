@@ -564,6 +564,60 @@ def test_p0_session_checkpoint_manager_loading_and_listing(tmp_path: Path):
     assert default_mgr.store is not None
 
 
+def test_sqlite_checkpoint_store_preserves_opaque_state_and_metadata(tmp_path: Path):
+    """Durable checkpoint JSON must retain the `default=str` serialization boundary."""
+    store = SQLiteCheckpointStore(db_path=str(tmp_path / "opaque-checkpoints.db"))
+    opaque_state = object()
+    opaque_metadata = object()
+
+    store.save(
+        "run-opaque-checkpoint",
+        "chk-opaque",
+        {"opaque": opaque_state},
+        metadata={"opaque": opaque_metadata},
+    )
+
+    loaded = store.load("run-opaque-checkpoint", "chk-opaque")
+    listed = store.list_checkpoints("run-opaque-checkpoint")
+
+    assert loaded == {"opaque": str(opaque_state)}
+    assert listed[0]["metadata"] == {"opaque": str(opaque_metadata)}
+
+
+def test_sqlite_checkpoint_store_serializes_non_json_runtime_state(tmp_path: Path):
+    """Checkpoint persistence must retain durable state when a value needs string fallback."""
+    store = SQLiteCheckpointStore(db_path=str(tmp_path / "checkpoint-serialization.db"))
+    marker = object()
+
+    store.save(
+        "run-serialization",
+        "checkpoint-1",
+        {"runtime_marker": marker},
+        metadata={"metadata_marker": marker},
+    )
+
+    restored = store.load("run-serialization", "checkpoint-1")
+    assert restored == {"runtime_marker": str(marker)}
+    assert store.list_checkpoints("run-serialization")[0]["metadata"] == {
+        "metadata_marker": str(marker)
+    }
+
+
+def test_sqlite_checkpoint_store_load_normalizes_durable_uri(tmp_path: Path):
+    store = SQLiteCheckpointStore(db_path=str(tmp_path / "checkpoint-uri.db"))
+    uri = store.save("run-uri", "checkpoint-1", {"turn": 1})
+
+    assert store.load("run-uri", uri) == {"turn": 1}
+    assert store.load("run-uri", "prefix#checkpoint-1") is None
+
+
+def test_sqlite_checkpoint_store_load_normalizes_numeric_checkpoint_identifier(tmp_path: Path):
+    store = SQLiteCheckpointStore(db_path=str(tmp_path / "checkpoint-numeric.db"))
+    store.save("run-numeric", "42", {"turn": 42})
+
+    assert store.load("run-numeric", 42) == {"turn": 42}
+
+
 def test_p0_run_lifecycle_edge_branches(tmp_path: Path):
     runs_dir = tmp_path / "runs"
     runs_dir.mkdir(parents=True, exist_ok=True)

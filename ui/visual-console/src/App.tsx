@@ -687,7 +687,7 @@ const ConsoleLayout: React.FC = () => {
     logout,
     canAccessSettings,
     canEditScenario,
-    canSignCert,
+    canVerifyCert,
   } = useRBAC();
   const [isCmdOpen, setIsCmdOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -861,7 +861,7 @@ const ConsoleLayout: React.FC = () => {
     }
     if (item.path === '/settings' && !canAccessSettings) return true;
     if (item.path === '/editor' && !canEditScenario) return true;
-    if (item.path === '/trust' && !canSignCert) return true;
+    if (item.path === '/trust' && !canVerifyCert) return true;
     if (item.path === '/mutator' && !canEditScenario) return true;
     return false;
   };

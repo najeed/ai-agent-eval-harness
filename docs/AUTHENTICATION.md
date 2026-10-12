@@ -12,7 +12,7 @@ AgentV enforces authentication and authorization across three distinct layers de
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                        AgentV Ingress Boundaries                        │
 ├────────────────────────────┬────────────────────────────┬───────────────┤
-│ 1. Web UI / Visual Console │ 2. CI/CD & API Integrations │ 3. Extensions │
+│ 1. Web UI / Visual Console │ 2. CI/CD & API Integrations │ 3. Extensions│
 │    (Session PBAC)          │    (Bearer / API Key)      │    (JWT)      │
 ├────────────────────────────┼────────────────────────────┼───────────────┤
 │ Flask Session Cookie       │ Authorization: Bearer <key>│ X-Handoff-    │

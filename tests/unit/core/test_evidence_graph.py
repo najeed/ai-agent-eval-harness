@@ -3,11 +3,26 @@ E1/E2: Evidence Graph v1 — provenance-linked assertions and root commitments.
 """
 
 from agentv_runtime.evidence_graph import (
+    _strict_result_value,
     build_evidence_graph,
     compute_evidence_graph_root,
     hash_source_line,
     index_events_by_seq,
+    link_assertion,
 )
+
+
+def test_strict_result_value_rejects_invalid_types():
+    import pytest
+
+    assert _strict_result_value({"passed": True}) is True
+    assert _strict_result_value({"outcome": "FAIL"}) is False
+    assert _strict_result_value({}) is False
+    assert _strict_result_value({"outcome": None}) is False
+    with pytest.raises(ValueError, match="passed/success must be a boolean"):
+        _strict_result_value({"passed": "true"})
+    with pytest.raises(ValueError, match="outcome must be one of"):
+        _strict_result_value({"outcome": "uncertain"})
 
 
 def _events_with_lines():
@@ -56,6 +71,106 @@ def test_unresolved_assertions_never_invent_provenance():
     assert node["source_ref"] is None
     assert node["content_hash"] is None
     assert graph["unresolved_count"] == 1
+
+
+def test_incomplete_evidence_references_and_artifacts_remain_unresolved():
+    incomplete_reference = link_assertion(
+        {"reference": {"source_id": "source-only"}},
+        {},
+    )
+    missing_artifact = link_assertion(
+        {"artifact": "missing.pdf", "passed": True},
+        {},
+        artifact_hashes={"other.pdf": "sha3_256:other"},
+    )
+
+    assert incomplete_reference["resolved"] is False
+    assert incomplete_reference["source_type"] == "unresolved"
+    assert incomplete_reference["is_direct_provenance"] is False
+    assert missing_artifact["resolved"] is False
+    assert missing_artifact["source_type"] == "unresolved"
+    assert missing_artifact["is_direct_provenance"] is False
+
+
+def test_link_assertion_preserves_direct_and_fallback_provenance_semantics():
+    seq_index = {2: "sha3_256:two"}
+    direct_reference = link_assertion(
+        {"reference": {"source_id": "source", "result_hash": "sha3_256:ref"}},
+        seq_index,
+    )
+    artifact = link_assertion(
+        {"artifact": "report.pdf"},
+        seq_index,
+        artifact_hashes={"report.pdf": "sha3_256:artifact"},
+    )
+    malformed_explicit = link_assertion({"event_seq": 1}, seq_index)
+    malformed_fallback = link_assertion({}, seq_index, fallback_seq=1)
+    fallback = link_assertion({}, seq_index, fallback_seq=2)
+
+    assert direct_reference["resolved"] is True
+    assert direct_reference["is_direct_provenance"] is True
+    assert artifact["resolved"] is True
+    assert artifact["is_direct_provenance"] is False
+    assert malformed_explicit["resolved"] is False
+    assert malformed_fallback["resolved"] is False
+    assert fallback["resolved"] is True
+    assert fallback["is_direct_provenance"] is False
+    assert fallback["has_result"] is False
+    assert fallback["outcome"] == "FAIL"
+
+
+def test_evidence_completeness_ignores_informational_and_rejects_invalid_results():
+    informational_only = build_evidence_graph(
+        [],
+        [{"oracle_id": "notice", "passed": False, "severity": "informational"}],
+    )
+    invalid_required = build_evidence_graph(
+        [({"_seq": 1}, '{"_seq": 1}')],
+        [
+            {
+                "oracle_id": "required",
+                "passed": False,
+                "invalid": True,
+                "event_seq": 1,
+            }
+        ],
+        required_oracle_ids=["required"],
+    )
+
+    assert informational_only["is_complete_provenance"] is True
+    assert invalid_required["has_all_required"] is False
+    assert invalid_required["missing_required_oracles"] == ["required"]
+
+
+def test_empty_evidence_graph_has_complete_vacuous_provenance():
+    graph = build_evidence_graph([], [])
+
+    assert graph["is_complete_provenance"] is True
+    assert graph["has_all_required"] is True
+
+
+def test_required_direct_trace_result_is_complete():
+    graph = build_evidence_graph(
+        [({"_seq": 1}, '{"_seq": 1}')],
+        [{"oracle_id": "required", "passed": True, "event_seq": 1}],
+        required_oracle_ids=["required"],
+    )
+
+    assert graph["has_all_required"] is True
+    assert graph["missing_required_oracles"] == []
+
+
+def test_artifact_evidence_counts_as_complete_provenance():
+    graph = build_evidence_graph(
+        [],
+        [{"oracle_id": "artifact", "artifact": "report.pdf", "passed": True}],
+        artifact_hashes={"report.pdf": "sha3_256:artifact"},
+        required_oracle_ids=["artifact"],
+    )
+
+    assert graph["is_complete_provenance"] is True
+    assert graph["has_all_required"] is True
+    assert graph["missing_required_oracles"] == []
 
 
 def test_root_hash_is_sensitive_to_any_change():
@@ -157,6 +272,12 @@ def test_link_assertion_all_outcome_states():
     r_bool_f = link_assertion({"oracle_id": "o8", "passed": False, "event_seq": 1}, seq_idx)
     assert r_bool_f["outcome"] == "FAIL"
 
+    r_success = link_assertion(
+        {"oracle_id": "o9", "passed": False, "success": True, "event_seq": 1},
+        seq_idx,
+    )
+    assert r_success["outcome"] == "PASS"
+
 
 def test_build_evidence_graph_from_events_with_tuples_and_carrier_upgrade():
     from agentv_runtime.evidence_graph import build_evidence_graph_from_events
@@ -194,6 +315,30 @@ def test_build_evidence_graph_from_events_with_tuples_and_carrier_upgrade():
     assert node["source_ref"] == "run.jsonl#seq=3"
     assert node["is_direct_provenance"] is True
     assert graph["is_complete_provenance"] is True
+
+
+def test_build_evidence_graph_ignores_unknown_events_and_keeps_first_unsequenced_assertion():
+    from agentv_runtime.evidence_graph import build_evidence_graph_from_events
+
+    graph = build_evidence_graph_from_events(
+        [
+            {"event": "unknown", "_seq": 1, "passed": True},
+            {
+                "event": "run_end",
+                "_seq": 2,
+                "data": {
+                    "assertions": [
+                        {"oracle_id": "duplicate", "node": "n", "passed": True},
+                        {"oracle_id": "duplicate", "node": "n", "passed": False},
+                    ]
+                },
+            },
+        ]
+    )
+
+    assert graph["evidence_count"] == 1
+    assert graph["nodes"][0]["oracle_id"] == "duplicate"
+    assert graph["nodes"][0]["passed"] is True
 
 
 def test_build_evidence_graph_sequential_executions_and_missing_required():
@@ -236,6 +381,8 @@ def test_build_evidence_graph_sequential_executions_and_missing_required():
     assert graph["evidence_count"] == 3
     assert graph["has_all_required"] is False
     assert "check_nonexistent" in graph["missing_required_oracles"]
+    output_node = next(node for node in graph["nodes"] if node["oracle_id"] == "check_output")
+    assert output_node["invalid"] is False
 
 
 def test_build_evidence_graph_from_events_dict_stream_and_execution_graph_node_metrics():
@@ -261,6 +408,7 @@ def test_build_evidence_graph_from_events_dict_stream_and_execution_graph_node_m
     assert graph["evidence_count"] == 2
     assert graph["has_all_required"] is True
     assert graph["missing_required_oracles"] == []
+    assert graph["nodes"][0]["invalid"] is False
 
 
 def test_compute_evidence_graph_root_mapping_and_dicts():

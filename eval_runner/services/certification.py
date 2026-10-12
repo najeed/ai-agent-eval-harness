@@ -76,7 +76,7 @@ class CertificationService:
     def read_run_truth_level(cls, run_id: str) -> tuple[str | None, bool]:
         """
         Inspect the run's raw trace file to extract the authoritative execution mode.
-        (Defect T1): Explicit, recognized execution_mode is a hard prerequisite.
+        Explicit, recognized execution_mode is a hard prerequisite.
         None, unknown, simulated, or provisional mode marks provisional=True.
         Returns (execution_mode, is_provisional).
         """
@@ -195,8 +195,8 @@ class CertificationService:
         Extracts the authoritative computed outcome directly from the immutable trace.
         Never reads previous run_manifest.json to avoid circular trust.
         Consumes one authoritative final WorkflowOutcome or EvaluatorFinalizationRecord,
-        rejects multiple conflicting or duplicate terminal decisions (Defect T4),
-        and rejects any outcome event appended after finalization (Defect T4).
+        rejects multiple conflicting or duplicate terminal decisions,
+        and rejects any outcome event appended after finalization.
         Returns (status, score). If unparseable or inconclusive, returns ("inconclusive", 0.0).
         """
         try:
@@ -229,7 +229,7 @@ class CertificationService:
                             fin_payload = ev["finalization"]
 
                     if finalization_seen:
-                        # Defect T4: Reject any event appended after finalization marker
+                        # Reject any event appended after finalization marker
                         if fin_payload or event_name == "evaluator_finalization":
                             logger.error("Multiple evaluator finalization records in trace")
                         else:
@@ -371,7 +371,7 @@ class CertificationService:
             if not extracted_decisions:
                 return "inconclusive", 0.0
 
-            # Defect T4: Reject multiple authoritative terminal decisions
+            # Reject multiple authoritative terminal decisions
             if len(extracted_decisions) > 1:
                 logger.error(
                     "Multiple authoritative terminal decisions detected without finalization "
@@ -463,7 +463,7 @@ class CertificationService:
             # malformed or cross-run record.
             cls.parse_trace_strict(target_trace, run_id)
 
-            # 1. Execution Truth Level Verification (Defect T1: 'live' execution only)
+            # 1. Execution Truth Level Verification ('live' execution only)
             execution_mode, provisional = cls.read_run_truth_level(run_id)
             clean_mode = str(execution_mode).strip().lower() if execution_mode else ""
             if provisional or not clean_mode or clean_mode != "live":
@@ -593,7 +593,7 @@ class CertificationService:
                     "carrier fallback provenance."
                 )
 
-            # Mandatory Scenario identity & authoritative scenario_hash verification (Defect T3)
+            # Mandatory Scenario identity & authoritative scenario_hash verification
             effective_scenario_data = scenario_data
             target_scen_id = fin_record.scenario_id
             if scenario_data and isinstance(scenario_data, dict):
@@ -640,7 +640,7 @@ class CertificationService:
             if effective_scenario_data is None:
                 raise ValueError(
                     f"Run {run_id} cannot resolve authoritative scenario definition for "
-                    f"'{target_scen_id}'; certification blocked (Defect T3)."
+                    f"'{target_scen_id}'; certification blocked."
                 )
 
             from agentv_runtime.manifest import compute_scenario_hash
@@ -837,7 +837,7 @@ class CertificationService:
                     json.dump(manifest, f, indent=2)
 
             is_pass = effective_status == "pass"
-            # Defect T1 Invariant: never certified=True when provisional=True;
+            # Invariant: never certified=True when provisional=True;
             # live execution strictly required
             is_certified = bool(is_pass and not provisional and clean_mode == "live")
             return {

@@ -7,6 +7,7 @@ file handles, cryptographic signing, vault rotation, and trace seals.
 
 from __future__ import annotations
 
+import json
 import os
 from unittest.mock import MagicMock, patch
 
@@ -131,6 +132,30 @@ def test_flight_recorder_finalize_run_variations(tmp_path):
     mock_art_store.store_artifact.side_effect = None
     with patch("eval_runner.identity.get_default_signer", return_value=None, create=True):
         fr_disk.finalize_run("run-disk-fallback")
+
+
+def test_flight_recorder_finalize_omits_non_string_signer_key_id(tmp_path):
+    class NonStringKeySigner:
+        identity = "non-string-key-signer"
+        key_id = 7
+
+        def get_key_id(self):
+            raise AssertionError("get_key_id must not run when key_id is declared")
+
+        def sign(self, payload: bytes) -> bytes:
+            return b"non-string-key-signature"
+
+    recorder = FlightRecorderPlugin(log_dir=tmp_path / "logs")
+    run_id = "non-string-key-run"
+    recorder.handle_event(Event("step", {"run_id": run_id}))
+    recorder.signing_backend = NonStringKeySigner()
+
+    recorder.finalize_run(run_id)
+
+    assert recorder.get_run_state(run_id) == "SEALED"
+    sealed = recorder.artifact_store.get_artifact(run_id, "trace_seal.json")
+    payload = json.loads(sealed.decode("utf-8") if isinstance(sealed, bytes) else sealed)
+    assert "key_id" not in payload
 
 
 def test_flight_recorder_after_evaluation_and_rotation(tmp_path):

@@ -304,7 +304,7 @@ DEFAULT_DEV_PUBLISHER_IDENTITY = "dev_publisher"
 def _private_key_pem_bytes(identity_id: str) -> bytes:
     from cryptography.hazmat.primitives import serialization
 
-    # Defect T6: Disable automatic key provisioning for production signing
+    # Disable automatic key provisioning for production signing
     is_production = config.is_production()
     if is_production:
         try:
@@ -468,7 +468,7 @@ def verify_extension_publisher():
             }
         )
 
-    # Defect T6: Verification key MUST resolve exclusively from the verified publisher identity.
+    # Verification key MUST resolve exclusively from the verified publisher identity.
     # Never accept an independent signer identity.
     caller_identity = data.get("identity_id")
     if caller_identity and caller_identity != publisher:

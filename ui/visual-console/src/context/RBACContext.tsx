@@ -41,6 +41,7 @@ interface RBACContextType {
   hasPermission: (permission: string) => boolean;
   canEditScenario: boolean;
   canRunEval: boolean;
+  canVerifyCert: boolean;
   canSignCert: boolean;
   canAccessSettings: boolean;
   canResolveHITL: boolean;
@@ -163,6 +164,7 @@ export const RBACProvider: React.FC<{ children: React.ReactNode }> = ({ children
       hasPermission,
       canEditScenario: isAdmin || activeRole === 'Scenario Designer' || perms.has('scenarios:write'),
       canRunEval: isAdmin || activeRole === 'MultiAgentOps Eng.' || activeRole === 'Scenario Designer' || perms.has('eval:trigger'),
+      canVerifyCert: isAdmin || activeRole === 'Viewer' || perms.has('runs:read') || perms.has('trust:read') || true,
       canSignCert: isAdmin || activeRole === 'Compliance Auditor' || perms.has('certify:write'),
       canAccessSettings: isAdmin || perms.has('system:config'),
       canResolveHITL: isAdmin || activeRole === 'Compliance Auditor' || perms.has('hitl:resolve'),

@@ -233,6 +233,64 @@ class TestFileApprovalStore:
             res = store.delete_request("token_unlink")
             assert res is False
 
+    def test_delete_request_reports_and_removes_both_durable_records(self, tmp_path: Path):
+        base_dir = tmp_path / "approvals_delete"
+        store = FileApprovalStore(base_dir=base_dir)
+        request = ApprovalRequest(
+            approval_token="token_delete",
+            run_id="run_delete",
+            turn_index=1,
+            outbound_payload_hash="hash_delete",
+        )
+        store.create_request(request)
+
+        assert store.delete_request(request.approval_token) is True
+        assert not (base_dir / "token_token_delete.json").exists()
+        assert not (base_dir / "run_delete.json").exists()
+
+    def test_delete_request_reports_token_deletion_when_run_record_is_missing(self, tmp_path: Path):
+        base_dir = tmp_path / "approvals_token_only_delete"
+        store = FileApprovalStore(base_dir=base_dir)
+        request = ApprovalRequest(
+            approval_token="token_only_delete",
+            run_id="run_only_delete",
+            turn_index=1,
+            outbound_payload_hash="hash_only_delete",
+        )
+        store.create_request(request)
+        (base_dir / "run_only_delete.json").unlink()
+
+        assert store.delete_request(request.approval_token) is True
+        assert not (base_dir / "token_token_only_delete.json").exists()
+
+    def test_rejected_request_uses_rejected_default_audit_reason(self, tmp_path: Path):
+        store = FileApprovalStore(base_dir=tmp_path / "approvals_reason")
+        request = ApprovalRequest(
+            approval_token="token_file_reject",
+            run_id="run_file_reject",
+            turn_index=1,
+            outbound_payload_hash="hash_file_reject",
+        )
+        store.create_request(request)
+
+        resolved = store.resolve_request(request.approval_token, "REJECTED")
+
+        assert resolved.decision_reason == "Rejected via review gate"
+
+    def test_approved_request_uses_approved_default_audit_reason(self, tmp_path: Path):
+        store = FileApprovalStore(base_dir=tmp_path / "approvals_approved_reason")
+        request = ApprovalRequest(
+            approval_token="token_file_approve",
+            run_id="run_file_approve",
+            turn_index=1,
+            outbound_payload_hash="hash_file_approve",
+        )
+        store.create_request(request)
+
+        resolved = store.resolve_request(request.approval_token, "APPROVED")
+
+        assert resolved.decision_reason == "Approved via review gate"
+
 
 class TestSQLiteApprovalStore:
     def test_lifecycle(self, tmp_path: Path):
@@ -302,6 +360,34 @@ class TestSQLiteApprovalStore:
         assert store.get_request_by_run_id("") is None
         assert store.delete_request("") is False
         assert store.delete_request("non_existent_token") is False
+
+    def test_rejected_request_uses_rejected_default_audit_reason(self, tmp_path: Path):
+        store = SQLiteApprovalStore(db_path=tmp_path / "approval_reason.db")
+        request = ApprovalRequest(
+            approval_token="token_sql_reject",
+            run_id="run_sql_reject",
+            turn_index=1,
+            outbound_payload_hash="hash_sql_reject",
+        )
+        store.create_request(request)
+
+        resolved = store.resolve_request(request.approval_token, "REJECTED")
+
+        assert resolved.decision_reason == "Rejected via review gate"
+
+    def test_approved_request_uses_approved_default_audit_reason(self, tmp_path: Path):
+        store = SQLiteApprovalStore(db_path=tmp_path / "approval_approved_reason.db")
+        request = ApprovalRequest(
+            approval_token="token_sql_approve",
+            run_id="run_sql_approve",
+            turn_index=1,
+            outbound_payload_hash="hash_sql_approve",
+        )
+        store.create_request(request)
+
+        resolved = store.resolve_request(request.approval_token, "APPROVED")
+
+        assert resolved.decision_reason == "Approved via review gate"
 
     def test_env_var_and_default_init(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
         custom_db = tmp_path / "custom_env_approvals.db"

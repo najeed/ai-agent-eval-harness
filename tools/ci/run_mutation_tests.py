@@ -1,9 +1,8 @@
 """
 Industrial Mutation Testing Sentinel & Scorecard Generator.
-Executes real AST-based code mutations against critical verification modules:
-  - eval_runner/verifier.py
-  - eval_runner/tool_sandbox.py
-  - eval_runner/utils/base.py
+Executes real AST-based code mutations against explicit critical Runtime
+surfaces: verification, execution isolation, lifecycle, HITL durability,
+trace persistence, outbound payloads, checkpoints, and canonical evidence.
 
 Mutation strategy: SURGICAL LINE SUBSTITUTION.
 Rather than using ast.unparse() (which rewrites the entire file, losing comments,
@@ -13,36 +12,45 @@ This preserves all non-mutated lines byte-for-byte, preventing spurious test
 failures from file-hash mismatches in TraceVerifier-based tests.
 
 Calculates exact mutation score:
-  Mutation Score = (Killed + Timeout) / (Killed + Timeout + Survived)
+Mutation Score = Killed / (Killed + Survived)
 
 Incompetent mutants (annotation-only BitOr with no runtime effect under
 `from __future__ import annotations`) are excluded from the denominator.
 
 Outputs complete metrics:
-  - Killed / Survived / Timeout / Skipped / Incompetent
+  - Killed / Survived / Timeout / Indeterminate / Skipped / Incompetent
   - Mutation Score (%)
   - Baseline vs Delta
 
-Generates diligence artifact 'reports/mutation_scorecard.md' and fails CI if score < 100.0%.
+Generates diligence artifact 'reports/mutation_scorecard.md' and fails CI unless every
+competent mutant is deterministically killed.
 """
 
 from __future__ import annotations
 
 import ast
+import base64
+import bisect
 import concurrent.futures
+import hashlib
+import json
 import os
 import random
 import re
 import subprocess
 import sys
-import tempfile
 import threading
+import time
+from collections.abc import Mapping
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 BASE_DIR = Path(__file__).parent.parent.parent
 REPORT_DIR = BASE_DIR / "reports"
 REPORT_PATH = REPORT_DIR / "mutation_scorecard.md"
+BASELINE_CACHE_PATH = REPORT_DIR / "mutation_baseline_cache.json"
+BASELINE_CACHE_VERSION = 1
 
 # Strips heavy, slow third-party plugins that add 3-5s of startup latency per mutant
 FAST_PYTEST_FLAGS = [
@@ -68,12 +76,6 @@ FAST_PYTEST_FLAGS = [
     "addopts=",
 ]
 
-TARGET_MODULES = [
-    BASE_DIR / "eval_runner" / "verifier.py",
-    BASE_DIR / "eval_runner" / "tool_sandbox.py",
-    BASE_DIR / "eval_runner" / "utils" / "base.py",
-    BASE_DIR / "agentv_runtime" / "package.py",
-]
 
 # Per-module test corpora.
 #
@@ -84,20 +86,312 @@ TARGET_MODULES = [
 #   verifier.py corpus  (test_golden_verifier_matrix) : 7.67s
 #   tool_sandbox corpus (test_tool_sandbox)            : 8.84s
 #   base.py corpus      (test_core_utilities)          : 9.46s
-MODULE_TEST_MAP: dict[str, list[str]] = {
-    "verifier.py": [
-        "tests/unit/core/test_golden_verifier_matrix.py",
-        "tests/unit/core/test_hardened_audit_verification.py",
-    ],
-    "tool_sandbox.py": [
-        "tests/unit/core/test_tool_sandbox.py",
-    ],
-    "base.py": [
-        "tests/unit/core/test_core_utilities.py",
-    ],
-    "package.py": [
-        "tests/unit/core/test_verification_envelope.py",
-    ],
+@dataclass(frozen=True)
+class CriticalMutationTarget:
+    """An explicit Runtime trust boundary and its authoritative fast corpus."""
+
+    path: Path
+    tests: tuple[str, ...]
+    scopes: frozenset[str]
+    required_operator_families: frozenset[str] = frozenset()
+    eligible_operator_families: frozenset[str] = frozenset()
+    excluded_mutations: frozenset[tuple[str, int, str, str]] = frozenset()
+    scope_test_names: Mapping[str, tuple[str, ...]] | None = None
+
+
+@dataclass
+class ModuleTiming:
+    """Measured per-module cost and acceleration evidence for one sentinel run."""
+
+    baseline_seconds: float
+    mutant_seconds: float = 0.0
+    full_corpus_fallbacks: int = 0
+    cache_hits: int = 0
+    timeout_retries: int = 0
+    _lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
+
+    def record_cache_hit(self) -> None:
+        with self._lock:
+            self.cache_hits += 1
+
+    def record_full_corpus_fallback(self) -> None:
+        with self._lock:
+            self.full_corpus_fallbacks += 1
+
+    def record_timeout_retry(self) -> None:
+        with self._lock:
+            self.timeout_retries += 1
+
+
+# Mutation testing is deliberately risk-driven. This is not a general code
+# coverage list: each entry is an execution, evidence, or lifecycle boundary.
+CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
+    CriticalMutationTarget(
+        BASE_DIR / "eval_runner" / "verifier.py",
+        (
+            "tests/unit/core/test_golden_verifier_matrix.py",
+            "tests/unit/core/test_hardened_audit_verification.py",
+        ),
+        frozenset(
+            {
+                "sign_trace",
+                "verify_trace",
+                "verify_trace_async",
+                "verify_run_directory",
+                "verify_trace_certificate",
+                "verify_package",
+                "verify_package_artifacts",
+                "verify_package_signature_only",
+            }
+        ),
+    ),
+    CriticalMutationTarget(
+        BASE_DIR / "eval_runner" / "tool_sandbox.py",
+        ("tests/unit/core/test_tool_sandbox.py",),
+        frozenset({"execute", "_execute_core", "get_bounded_state", "_sanitize_path", "fork"}),
+    ),
+    CriticalMutationTarget(
+        BASE_DIR / "eval_runner" / "flight_recorder.py",
+        ("tests/unit/core/test_flight_recorder_matrix.py",),
+        frozenset(
+            {
+                "_enforce_safety_floor",
+                "handle_event",
+                "finalize_run",
+                "freeze_run",
+                "close_execution_writes",
+            }
+        ),
+        scope_test_names={
+            "finalize_run": ("test_flight_recorder_finalize_omits_non_string_signer_key_id",),
+        },
+    ),
+    CriticalMutationTarget(
+        BASE_DIR / "eval_runner" / "run_lifecycle.py",
+        ("tests/unit/core/test_hitl_durable_suspension_and_resume.py",),
+        frozenset(
+            {
+                "get_run_lifecycle_state",
+                "transition_run_lifecycle",
+                "can_write_trace",
+                "assert_can_write_trace",
+                "rollback_run_lifecycle_to_open",
+            }
+        ),
+    ),
+    CriticalMutationTarget(
+        BASE_DIR / "eval_runner" / "session.py",
+        (
+            "tests/unit/core/test_hitl_durable_suspension_and_resume.py",
+            "tests/unit/core/test_core_session.py",
+        ),
+        frozenset(
+            {
+                "save_checkpoint",
+                "restore_from_checkpoint",
+                "_verify_state_parity",
+                "_raise_if_pending_durable_approval",
+                "_handle_hitl",
+            }
+        ),
+    ),
+    CriticalMutationTarget(
+        BASE_DIR / "eval_runner" / "engine.py",
+        ("tests/unit/core/test_core_engine.py",),
+        frozenset({"render_outbound_payload", "call_agent"}),
+    ),
+    CriticalMutationTarget(
+        BASE_DIR / "eval_runner" / "reference" / "sqlite_checkpoint.py",
+        ("tests/unit/core/test_hitl_durable_suspension_and_resume.py",),
+        frozenset({"save", "load"}),
+        frozenset({"serialization"}),
+        frozenset({"serialization", "guard", "comparison", "boolean"}),
+        scope_test_names={
+            "save": (
+                "test_sqlite_checkpoint_store_preserves_opaque_state_and_metadata",
+                "test_sqlite_checkpoint_store_serializes_non_json_runtime_state",
+            ),
+            "load": (
+                "test_sqlite_checkpoint_store_load_normalizes_durable_uri",
+                "test_sqlite_checkpoint_store_load_normalizes_numeric_checkpoint_identifier",
+            ),
+        },
+    ),
+    CriticalMutationTarget(
+        BASE_DIR / "agentv_runtime" / "package.py",
+        ("tests/unit/core/test_verification_envelope.py",),
+        frozenset(
+            {
+                "compute_content_hash",
+                "canonical_payload_dict",
+                "compute_package_hash",
+                "sign",
+                "verify_signature",
+            }
+        ),
+    ),
+    CriticalMutationTarget(
+        BASE_DIR / "agentv_runtime" / "canonical.py",
+        ("tests/unit/core/test_rfc8785_canonicalization.py",),
+        frozenset(
+            {
+                "_serialize_number",
+                "canonical_json_dumps",
+                "canonical_json_encode",
+                "compute_reference_hash",
+            }
+        ),
+    ),
+    CriticalMutationTarget(
+        BASE_DIR / "agentv_runtime" / "manifest.py",
+        (
+            "tests/unit/test_execution_manifest.py",
+            "tests/unit/core/test_resumption_manifest_integrity.py",
+        ),
+        frozenset(
+            {
+                "_to_json_compatible",
+                "_canonical_json_bytes",
+                "compute_scenario_hash",
+                "compute_preflight_fingerprint",
+                "compute_content_hash",
+                "compute_manifest_hash",
+                "from_dict",
+                "build",
+            }
+        ),
+        frozenset({"commitment"}),
+    ),
+    CriticalMutationTarget(
+        BASE_DIR / "agentv_runtime" / "evidence_graph.py",
+        ("tests/unit/core/test_evidence_graph.py",),
+        frozenset(
+            {
+                "_strict_result_value",
+                "index_events_by_seq",
+                "link_assertion",
+                "build_evidence_graph",
+                "build_evidence_graph_from_events",
+                "compute_evidence_graph_root",
+            }
+        ),
+        frozenset({"commitment"}),
+        frozenset({"commitment", "guard", "comparison", "boolean"}),
+        # These candidates are proven non-observable in the public graph API:
+        # every node is created by link_assertion with an explicit directness
+        # flag, and the standalone passed/success expression is discarded.
+        frozenset(
+            {
+                ("build_evidence_graph", 271, "False", "True"),
+                ("build_evidence_graph_from_events", 379, "is not", "is"),
+                ("build_evidence_graph_from_events", 382, "is not", "is"),
+                ("build_evidence_graph_from_events", 383, "False", "True"),
+            }
+        ),
+        scope_test_names={
+            "_strict_result_value": ("test_strict_result_value_rejects_invalid_types",),
+            "index_events_by_seq": ("test_index_events_by_seq_duplicate_raises",),
+            "link_assertion": (
+                "test_graph_links_assertion_via_carrier_seq",
+                "test_unresolved_assertions_never_invent_provenance",
+                "test_incomplete_evidence_references_and_artifacts_remain_unresolved",
+                "test_link_assertion_preserves_direct_and_fallback_provenance_semantics",
+                "test_artifact_reference_wins_when_declared",
+                "test_link_assertion_all_outcome_states",
+            ),
+            "build_evidence_graph": (
+                "test_build_evidence_graph_sequential_executions_and_missing_required",
+                "test_evidence_completeness_ignores_informational_and_rejects_invalid_results",
+                "test_empty_evidence_graph_has_complete_vacuous_provenance",
+                "test_required_direct_trace_result_is_complete",
+                "test_artifact_evidence_counts_as_complete_provenance",
+            ),
+            "build_evidence_graph_from_events": (
+                "test_build_evidence_graph_from_events_with_tuples_and_carrier_upgrade",
+                "test_build_evidence_graph_from_events_dict_stream_and_execution_graph_node_metrics",
+                "test_build_evidence_graph_ignores_unknown_events_and_keeps_first_unsequenced_assertion",
+            ),
+            "compute_evidence_graph_root": (
+                "test_evidence_root_commitment_semantics",
+                "test_compute_evidence_graph_root_mapping_and_dicts",
+            ),
+        },
+    ),
+    CriticalMutationTarget(
+        BASE_DIR / "agentv_runtime" / "finalization.py",
+        ("tests/unit/core/test_finalization_record.py",),
+        frozenset(
+            {
+                "parse_untrusted",
+                "verify_authoritative",
+                "from_dict",
+                "canonical_payload_bytes",
+                "compute_finalization_hash",
+                "sign",
+                "verify_signature",
+            }
+        ),
+        frozenset({"commitment"}),
+    ),
+    CriticalMutationTarget(
+        BASE_DIR / "eval_runner" / "reference" / "approval_store.py",
+        ("tests/unit/core/test_approval_store.py",),
+        frozenset(
+            {
+                "create_request",
+                "get_request",
+                "get_request_by_run_id",
+                "resolve_request",
+                "list_pending",
+                "delete_request",
+            }
+        ),
+        frozenset({"approval_gate"}),
+        frozenset({"approval_gate", "boolean", "comparison", "guard"}),
+        # The primary token-file lookup has already failed before this fallback
+        # scan. Re-including that exact token index cannot change its result.
+        frozenset({("get_request", 90, "or", "and")}),
+        scope_test_names={
+            "create_request": ("test_lifecycle",),
+            "get_request": (
+                "test_lifecycle",
+                "test_fallback_scan_when_token_file_missing_and_corruptions",
+            ),
+            "get_request_by_run_id": ("test_lifecycle",),
+            "resolve_request": (
+                "test_resolve_errors",
+                "test_rejected_request_uses_rejected_default_audit_reason",
+                "test_approved_request_uses_approved_default_audit_reason",
+                "test_hitl_resume_already_resolved",
+            ),
+            "list_pending": ("test_lifecycle",),
+            "delete_request": (
+                "test_delete_request_reports_and_removes_both_durable_records",
+                "test_delete_request_reports_token_deletion_when_run_record_is_missing",
+                "test_delete_request_unlink_exceptions",
+            ),
+        },
+    ),
+)
+
+TARGET_MODULES = [target.path for target in CRITICAL_MUTATION_TARGETS]
+MODULE_TEST_MAP: dict[Path, tuple[str, ...]] = {
+    target.path: target.tests for target in CRITICAL_MUTATION_TARGETS
+}
+MODULE_SCOPE_MAP: dict[Path, frozenset[str]] = {
+    target.path: target.scopes for target in CRITICAL_MUTATION_TARGETS
+}
+MODULE_REQUIRED_OPERATOR_FAMILIES: dict[Path, frozenset[str]] = {
+    target.path: target.required_operator_families for target in CRITICAL_MUTATION_TARGETS
+}
+MODULE_ELIGIBLE_OPERATOR_FAMILIES: dict[Path, frozenset[str]] = {
+    target.path: target.eligible_operator_families for target in CRITICAL_MUTATION_TARGETS
+}
+MODULE_EXCLUDED_MUTATIONS: dict[Path, frozenset[tuple[str, int, str, str]]] = {
+    target.path: target.excluded_mutations for target in CRITICAL_MUTATION_TARGETS
+}
+MODULE_SCOPE_TEST_MAP: dict[Path, Mapping[str, tuple[str, ...]]] = {
+    target.path: target.scope_test_names or {} for target in CRITICAL_MUTATION_TARGETS
 }
 
 # Fallback corpus used for baseline verification and any module not in the map
@@ -116,6 +410,7 @@ BASELINE_TESTS = [
 # Timeout = max(wall-clock) * 2.0 = 15.0 * 2.0 = 30.0s (provides 2x headroom).
 # Any value below ~10s fires before tests execute → meaningless 100% from timeouts.
 MUTANT_TIMEOUT_SECONDS = 30.0
+PYTEST_NO_TESTS_COLLECTED = 5
 
 
 # ---------------------------------------------------------------------------
@@ -131,7 +426,52 @@ _COMPARE_MUTATIONS: dict[type, tuple[str, str]] = {
     ast.GtE: (">=", "<"),
     ast.Is: ("is", "is not"),
     ast.IsNot: ("is not", "is"),
+    ast.In: ("in", "not in"),
+    ast.NotIn: ("not in", "in"),
 }
+
+# Guard mutations exercise fail-open mistakes that simple equality mutations
+# miss: bypassing a negated precondition, weakening conjunctions, and changing
+# universal evidence requirements into existential ones.
+_BOOLOP_MUTATIONS: dict[type, tuple[str, str]] = {
+    ast.And: ("and", "or"),
+    ast.Or: ("or", "and"),
+}
+
+_QUANTIFIER_MUTATIONS = {"all": "any", "any": "all"}
+
+# Lifecycle values are Runtime authorization boundaries.  Replacing either
+# side models the class of defect that permits trace writes while approval is
+# pending, or falsely suspends an active run.
+_LIFECYCLE_STATE_MUTATIONS = {
+    "PAUSED_FOR_APPROVAL": "RUNNING",
+    "RUNNING": "PAUSED_FOR_APPROVAL",
+}
+
+_APPROVAL_STATE_MUTATIONS = {
+    "PENDING": "APPROVED",
+    "APPROVED": "PENDING",
+    "REJECTED": "APPROVED",
+}
+
+# Replacing a commitment key simulates omitting the binding from emitted
+# evidence without generating syntactically invalid dictionary literals.
+_COMMITMENT_FIELD_MUTATIONS = {
+    "signature",
+    "trace_digest",
+    "manifest_hash",
+    "scenario_digest",
+    "scenario_hash",
+    "execution_manifest_hash",
+    "evidence_root_hash",
+    "finalization_hash",
+    "evaluator_signature",
+}
+_MUTATED_COMMITMENT_FIELD = "__mutation_missing_commitment__"
+
+HIGH_IMPACT_OPERATOR_FAMILIES = frozenset(
+    {"approval_gate", "commitment", "guard", "lifecycle", "quantifier", "serialization"}
+)
 
 # BinOp operator text replacements
 _BINOP_MUTATIONS: dict[type, tuple[str, str]] = {
@@ -232,13 +572,79 @@ class MutationPoint:
         self.scope = scope
 
 
+class _MutationProgress:
+    """Compact, xdist-style progress output owned by the coordinating thread."""
+
+    _TOKENS = {
+        "killed": (".", "\033[32m"),
+        "survived": ("F", "\033[31m"),
+        "timeout": ("T", "\033[33m"),
+        "indeterminate": ("?", "\033[35m"),
+        "incompetent": ("i", "\033[36m"),
+    }
+    _RESET = "\033[0m"
+
+    def __init__(self, total: int, workers: int, stream: Any | None = None):
+        self.total = total
+        self.workers = workers
+        self.completed = 0
+        self.stream = stream if stream is not None else sys.stdout
+        self.color = bool(getattr(self.stream, "isatty", lambda: False)()) and not os.getenv(
+            "NO_COLOR"
+        )
+
+    def start(self) -> None:
+        print(
+            f"      Progress: 0/{self.total} queued (workers={self.workers}) ",
+            end="",
+            file=self.stream,
+            flush=True,
+        )
+
+    def report(self, status: str) -> None:
+        token, color = self._TOKENS.get(status, ("!", "\033[31m"))
+        self.completed += 1
+        rendered = f"{color}{token}{self._RESET}" if self.color else token
+        print(rendered, end="", file=self.stream, flush=True)
+        if self.completed % 40 == 0 and self.completed < self.total:
+            print(
+                f" {self.completed}/{self.total}\n      Progress: ",
+                end="",
+                file=self.stream,
+                flush=True,
+            )
+
+    def close(self) -> None:
+        print(f" {self.completed}/{self.total}", file=self.stream, flush=True)
+
+    def heartbeat(self, active_workers: int) -> None:
+        """Make long-running mutant subprocesses visibly alive between completions."""
+        print(
+            f" {self.completed}/{self.total}\n"
+            f"      [RUNNING] {self.completed}/{self.total} complete; "
+            f"{active_workers} mutant worker(s) active\n"
+            "      Progress: ",
+            end="",
+            file=self.stream,
+            flush=True,
+        )
+
+
 class _MutationVisitor(ast.NodeVisitor):
     """AST visitor that discovers mutation points and tracks enclosing method/class scope."""
 
-    def __init__(self, annotation_lines: set[int]):
+    def __init__(self, annotation_lines: set[int], source: str):
         self.annotation_lines = annotation_lines
+        self.source = source
+        self.source_lines = source.splitlines(keepends=True)
+        self.line_offsets: list[int] = []
+        offset = 0
+        for line in self.source_lines:
+            self.line_offsets.append(offset)
+            offset += len(line)
         self.points: list[MutationPoint] = []
         self.scope_stack: list[str] = []
+        self.guard_depth = 0
         self.idx = 0
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
@@ -259,45 +665,258 @@ class _MutationVisitor(ast.NodeVisitor):
     def _current_scope(self) -> str:
         return self.scope_stack[-1] if self.scope_stack else "module"
 
+    def _absolute_position(self, lineno: int, col_offset: int) -> int:
+        # CPython AST columns are UTF-8 byte offsets, while string slices use
+        # Unicode code points. Convert before using the source-text index.
+        line = self.source_lines[lineno - 1]
+        char_offset = len(line.encode("utf-8")[:col_offset].decode("utf-8"))
+        return self.line_offsets[lineno - 1] + char_offset
+
+    def _line_col(self, offset: int) -> tuple[int, int]:
+        line_index = bisect.bisect_right(self.line_offsets, offset) - 1
+        return line_index + 1, offset - self.line_offsets[line_index]
+
+    def _between(self, left: ast.AST, right: ast.AST, token: str) -> tuple[int, int] | None:
+        """Locate an operator only in the AST gap between its two operands."""
+        if not all(
+            hasattr(node, "end_lineno") and hasattr(node, "lineno") for node in (left, right)
+        ):
+            return None
+        start = self._absolute_position(left.end_lineno, left.end_col_offset)
+        end = self._absolute_position(right.lineno, right.col_offset)
+        gap = self.source[start:end]
+        if token.isalnum() or " " in token:
+            match = re.search(r"\b" + re.escape(token) + r"\b", gap)
+            position = match.start() if match else -1
+        else:
+            position = gap.find(token)
+        return self._line_col(start + position) if position >= 0 else None
+
+    def _before(self, node: ast.AST, following: ast.AST, token: str) -> tuple[int, int] | None:
+        """Locate a prefix operator between an AST node start and its operand."""
+        start = self._absolute_position(node.lineno, node.col_offset)
+        end = self._absolute_position(following.lineno, following.col_offset)
+        position = self.source[start:end].find(token)
+        return self._line_col(start + position) if position >= 0 else None
+
+    def _visit_guard(self, node: ast.AST) -> None:
+        """Visit an authorization/control-flow predicate as a guard context."""
+        self.guard_depth += 1
+        self.visit(node)
+        self.guard_depth -= 1
+
+    def visit_If(self, node: ast.If) -> None:
+        self._visit_guard(node.test)
+        for statement in node.body:
+            self.visit(statement)
+        for statement in node.orelse:
+            self.visit(statement)
+
+    def visit_While(self, node: ast.While) -> None:
+        self._visit_guard(node.test)
+        for statement in node.body:
+            self.visit(statement)
+        for statement in node.orelse:
+            self.visit(statement)
+
+    def visit_Assert(self, node: ast.Assert) -> None:
+        self._visit_guard(node.test)
+        if node.msg:
+            self.visit(node.msg)
+
+    def visit_IfExp(self, node: ast.IfExp) -> None:
+        self._visit_guard(node.test)
+        self.visit(node.body)
+        self.visit(node.orelse)
+
+    def visit_comprehension(self, node: ast.comprehension) -> None:
+        self.visit(node.target)
+        self.visit(node.iter)
+        for condition in node.ifs:
+            self._visit_guard(condition)
+
     def visit_Compare(self, node: ast.Compare) -> None:
         lineno = getattr(node, "lineno", None)
-        col = getattr(node, "col_offset", 0)
         in_annotation = lineno is not None and lineno in self.annotation_lines
         scope = self._current_scope()
 
-        for op in node.ops:
+        for op_index, op in enumerate(node.ops):
             op_type = type(op)
+            if op_type in {ast.In, ast.NotIn} and not self.guard_depth:
+                continue
             if op_type in _COMPARE_MUTATIONS:
                 orig, mut = _COMPARE_MUTATIONS[op_type]
-                # For multi-operator comparisons the AST doesn't give per-op col_offset.
-                # Use the node's start col as a best-effort anchor; the surgical
-                # replacer will find the first occurrence of orig on that line.
+                left = node.left if op_index == 0 else node.comparators[op_index - 1]
+                location = self._between(left, node.comparators[op_index], orig)
+                if location is None:
+                    continue
+                op_lineno, op_col = location
                 desc = f"{op_type.__name__} ({orig}) -> ({mut})"
                 self.points.append(
-                    MutationPoint(self.idx, lineno, col, orig, mut, desc, in_annotation, scope)
+                    MutationPoint(
+                        self.idx, op_lineno, op_col, orig, mut, desc, in_annotation, scope
+                    )
                 )
                 self.idx += 1
         self.generic_visit(node)
 
     def visit_BinOp(self, node: ast.BinOp) -> None:
         lineno = getattr(node, "lineno", None)
-        col = getattr(node, "col_offset", 0)
         in_annotation = lineno is not None and lineno in self.annotation_lines
         scope = self._current_scope()
 
         op_type = type(node.op)
         if op_type in _BINOP_MUTATIONS:
             orig, mut = _BINOP_MUTATIONS[op_type]
+            location = self._between(node.left, node.right, orig)
+            if location is None:
+                self.generic_visit(node)
+                return
+            op_lineno, op_col = location
             desc = f"{orig} -> {mut}"
             self.points.append(
-                MutationPoint(self.idx, lineno, col, orig, mut, desc, in_annotation, scope)
+                MutationPoint(self.idx, op_lineno, op_col, orig, mut, desc, in_annotation, scope)
+            )
+            self.idx += 1
+        self.generic_visit(node)
+
+    def visit_BoolOp(self, node: ast.BoolOp) -> None:
+        if not self.guard_depth:
+            self.generic_visit(node)
+            return
+
+        lineno = getattr(node, "lineno", None)
+        in_annotation = lineno is not None and lineno in self.annotation_lines
+        scope = self._current_scope()
+        op_type = type(node.op)
+
+        if op_type in _BOOLOP_MUTATIONS:
+            orig, mut = _BOOLOP_MUTATIONS[op_type]
+            for value_index in range(len(node.values) - 1):
+                location = self._between(
+                    node.values[value_index], node.values[value_index + 1], orig
+                )
+                if location is None:
+                    continue
+                op_lineno, op_col = location
+                self.points.append(
+                    MutationPoint(
+                        self.idx,
+                        op_lineno,
+                        op_col,
+                        orig,
+                        mut,
+                        f"guard {orig} -> {mut}",
+                        in_annotation,
+                        scope,
+                    )
+                )
+                self.idx += 1
+        self.generic_visit(node)
+
+    def visit_UnaryOp(self, node: ast.UnaryOp) -> None:
+        if not self.guard_depth or not isinstance(node.op, ast.Not):
+            self.generic_visit(node)
+            return
+
+        lineno = getattr(node, "lineno", None)
+        in_annotation = lineno is not None and lineno in self.annotation_lines
+        location = self._before(node, node.operand, "not")
+        if location is None:
+            self.generic_visit(node)
+            return
+        op_lineno, op_col = location
+        self.points.append(
+            MutationPoint(
+                self.idx,
+                op_lineno,
+                op_col,
+                "not",
+                "",
+                "guard not -> removed",
+                in_annotation,
+                self._current_scope(),
+            )
+        )
+        self.idx += 1
+        self.generic_visit(node)
+
+    def visit_Call(self, node: ast.Call) -> None:
+        if (
+            self.guard_depth
+            and isinstance(node.func, ast.Name)
+            and node.func.id in _QUANTIFIER_MUTATIONS
+        ):
+            lineno, col = self._line_col(
+                self._absolute_position(node.func.lineno, node.func.col_offset)
+            )
+            in_annotation = lineno is not None and lineno in self.annotation_lines
+            original = node.func.id
+            self.points.append(
+                MutationPoint(
+                    self.idx,
+                    lineno,
+                    col,
+                    original,
+                    _QUANTIFIER_MUTATIONS[original],
+                    f"quantifier {original} -> {_QUANTIFIER_MUTATIONS[original]}",
+                    in_annotation,
+                    self._current_scope(),
+                )
+            )
+            self.idx += 1
+        if (
+            isinstance(node.func, ast.Attribute)
+            and isinstance(node.func.value, ast.Name)
+            and node.func.value.id == "json"
+            and node.func.attr == "dumps"
+        ):
+            for keyword in node.keywords:
+                if (
+                    keyword.arg == "default"
+                    and isinstance(keyword.value, ast.Name)
+                    and keyword.value.id == "str"
+                ):
+                    lineno, col = self._line_col(
+                        self._absolute_position(keyword.value.lineno, keyword.value.col_offset)
+                    )
+                    self.points.append(
+                        MutationPoint(
+                            self.idx,
+                            lineno,
+                            col,
+                            "str",
+                            "None",
+                            "serialization default str -> None",
+                            lineno in self.annotation_lines,
+                            self._current_scope(),
+                        )
+                    )
+                    self.idx += 1
+        self.generic_visit(node)
+
+    def visit_Attribute(self, node: ast.Attribute) -> None:
+        if node.attr in _LIFECYCLE_STATE_MUTATIONS:
+            attr_end = self._absolute_position(node.end_lineno, node.end_col_offset)
+            lineno, col = self._line_col(attr_end - len(node.attr))
+            in_annotation = lineno is not None and lineno in self.annotation_lines
+            self.points.append(
+                MutationPoint(
+                    self.idx,
+                    lineno,
+                    col,
+                    node.attr,
+                    _LIFECYCLE_STATE_MUTATIONS[node.attr],
+                    f"lifecycle {node.attr} -> {_LIFECYCLE_STATE_MUTATIONS[node.attr]}",
+                    in_annotation,
+                    self._current_scope(),
+                )
             )
             self.idx += 1
         self.generic_visit(node)
 
     def visit_Constant(self, node: ast.Constant) -> None:
-        lineno = getattr(node, "lineno", None)
-        col = getattr(node, "col_offset", 0)
+        lineno, col = self._line_col(self._absolute_position(node.lineno, node.col_offset))
         in_annotation = lineno is not None and lineno in self.annotation_lines
         scope = self._current_scope()
 
@@ -307,6 +926,34 @@ class _MutationVisitor(ast.NodeVisitor):
             desc = f"{orig} -> {mut}"
             self.points.append(
                 MutationPoint(self.idx, lineno, col, orig, mut, desc, in_annotation, scope)
+            )
+            self.idx += 1
+        elif isinstance(node.value, str) and node.value in _APPROVAL_STATE_MUTATIONS:
+            self.points.append(
+                MutationPoint(
+                    self.idx,
+                    lineno,
+                    col,
+                    node.value,
+                    _APPROVAL_STATE_MUTATIONS[node.value],
+                    f"approval state {node.value} -> {_APPROVAL_STATE_MUTATIONS[node.value]}",
+                    in_annotation,
+                    scope,
+                )
+            )
+            self.idx += 1
+        elif isinstance(node.value, str) and node.value in _COMMITMENT_FIELD_MUTATIONS:
+            self.points.append(
+                MutationPoint(
+                    self.idx,
+                    lineno,
+                    col,
+                    node.value,
+                    _MUTATED_COMMITMENT_FIELD,
+                    f"commitment field {node.value} -> omitted",
+                    in_annotation,
+                    scope,
+                )
             )
             self.idx += 1
         self.generic_visit(node)
@@ -319,9 +966,39 @@ def discover_mutation_points(source: str, annotation_lines: set[int]) -> list[Mu
     Captures enclosing function/class scope for targeted test dispatch.
     """
     tree = ast.parse(source)
-    visitor = _MutationVisitor(annotation_lines)
+    visitor = _MutationVisitor(annotation_lines, source)
     visitor.visit(tree)
     return visitor.points
+
+
+def mutation_operator_family(point: MutationPoint) -> str:
+    """Classify a mutant for manifest-level assurance requirements."""
+    if point.original in _LIFECYCLE_STATE_MUTATIONS:
+        return "lifecycle"
+    if point.original in _APPROVAL_STATE_MUTATIONS:
+        return "approval_gate"
+    if point.original in _COMMITMENT_FIELD_MUTATIONS:
+        return "commitment"
+    if point.description.endswith("serialization default str -> None"):
+        return "serialization"
+    if point.original in {"not", "and", "or", "in", "not in"}:
+        return "guard"
+    if point.original in _QUANTIFIER_MUTATIONS:
+        return "quantifier"
+    if point.original in {"True", "False"}:
+        return "boolean"
+    if point.original in {"+", "-", "&", "|"}:
+        return "arithmetic"
+    return "comparison"
+
+
+def discover_defined_scopes(tree: ast.AST) -> set[str]:
+    """Return declared function scopes, including scopes with no mutable operator."""
+    return {
+        node.name
+        for node in ast.walk(tree)
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef)
+    }
 
 
 def _apply_surgical_mutation(source_lines: list[str], mp: MutationPoint) -> str | None:
@@ -347,16 +1024,9 @@ def _apply_surgical_mutation(source_lines: list[str], mp: MutationPoint) -> str 
 
         pattern = re.compile(r"\b" + re.escape(mp.original) + r"\b")
         match = pattern.search(line, search_start)
-        if match:
-            pos = match.start()
-        else:
-            match = pattern.search(line)
-            pos = match.start() if match else -1
+        pos = match.start() if match else -1
     else:
         pos = line.find(mp.original, search_start)
-        if pos == -1:
-            # Fallback: search from beginning of line (handles multi-op comparisons)
-            pos = line.find(mp.original)
 
     if pos == -1:
         return None  # Token not found on expected line → incompetent
@@ -371,12 +1041,171 @@ def count_mutation_points(source: str, annotation_lines: set[int]) -> int:
     return len(discover_mutation_points(source, annotation_lines))
 
 
-def _tests_for_module(module_name: str) -> list[str]:
+def _tests_for_module(target: Path) -> list[str]:
     """Return the relevant test paths for a given target module filename."""
-    return MODULE_TEST_MAP.get(module_name, BASELINE_TESTS)
+    return list(MODULE_TEST_MAP.get(target, tuple(BASELINE_TESTS)))
 
 
-def _make_loader_code(mutant_file: str, orig_file: Path, module_name: str, args_str: str) -> str:
+def _mutation_cache_key(
+    module_name: str, tests: list[str], scope: str
+) -> tuple[str, tuple[str, ...], str]:
+    """Return a cache key that cannot leak killers between target corpora."""
+    return module_name, tuple(tests), scope
+
+
+def _collected_no_tests(returncode: int) -> bool:
+    """Identify pytest's explicit no-tests-collected outcome."""
+    return returncode == PYTEST_NO_TESTS_COLLECTED
+
+
+def _declared_test_names(tests: list[str]) -> set[str]:
+    """Return test function names without starting pytest just to probe ``-k``.
+
+    A source scope such as ``resolve_request`` is usually not part of a test
+    name.  Starting a Python process merely to discover that fact is expensive
+    and guarantees an unnecessary full-corpus fallback for every mutant.
+    """
+    names: set[str] = set()
+    for test_path in tests:
+        try:
+            tree = ast.parse((BASE_DIR / test_path).read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, UnicodeDecodeError) as err:
+            raise RuntimeError(
+                f"Cannot inspect configured mutation test {test_path}: {err}"
+            ) from err
+        names.update(
+            node.name
+            for node in ast.walk(tree)
+            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef)
+            and node.name.startswith("test_")
+        )
+    return names
+
+
+def _scope_selector_available(scope: str, declared_test_names: set[str]) -> bool:
+    """Whether a conventional ``-k <source scope>`` selector can collect a test."""
+    normalized_scope = scope.casefold()
+    return any(normalized_scope in test_name.casefold() for test_name in declared_test_names)
+
+
+def _scope_test_selector(target: Path, scope: str, declared_test_names: set[str]) -> str | None:
+    """Return a vetted explicit selector, or a viable conventional scope selector."""
+    explicit_names = MODULE_SCOPE_TEST_MAP.get(target, {}).get(scope, ())
+    if explicit_names:
+        missing_names = set(explicit_names) - declared_test_names
+        if missing_names:
+            raise RuntimeError(
+                f"Configured mutation selector for {target.name}:{scope} references missing tests: "
+                f"{sorted(missing_names)}"
+            )
+        return " or ".join(explicit_names)
+    if _scope_selector_available(scope, declared_test_names):
+        return scope
+    return None
+
+
+def _partition_scope_primers(
+    points: list[MutationPoint],
+) -> tuple[list[MutationPoint], list[MutationPoint]]:
+    """Reserve the first deterministic mutant from each source scope as a cache primer."""
+    primers: list[MutationPoint] = []
+    remainder: list[MutationPoint] = []
+    primed_scopes: set[str] = set()
+    for point in points:
+        if point.scope not in primed_scopes:
+            primers.append(point)
+            primed_scopes.add(point.scope)
+        else:
+            remainder.append(point)
+    return primers, remainder
+
+
+def _sha3_file(path: Path) -> str:
+    """Return the SHA3-256 content digest used to invalidate baseline cache entries."""
+    return hashlib.sha3_256(path.read_bytes()).hexdigest()
+
+
+def _baseline_cache_key(tests: tuple[str, ...], targets: tuple[Path, ...]) -> str:
+    """Bind a reusable baseline to its exact executable test context."""
+    import pytest
+
+    context_files = (
+        BASE_DIR / "pyproject.toml",
+        BASE_DIR / "tests" / "conftest.py",
+        Path(__file__).resolve(),
+    )
+    environment = {
+        name: value
+        for name, value in os.environ.items()
+        if name == "CI" or name.startswith(("AGENTV_", "PYTEST_", "COVERAGE_"))
+    }
+    payload = {
+        "cache_version": BASELINE_CACHE_VERSION,
+        "python_version": sys.version,
+        "pytest_version": pytest.__version__,
+        "pytest_flags": FAST_PYTEST_FLAGS,
+        "tests": [(path, _sha3_file(BASE_DIR / path)) for path in tests],
+        "targets": [
+            (path.relative_to(BASE_DIR).as_posix(), _sha3_file(path))
+            for path in sorted(targets, key=lambda item: item.as_posix())
+        ],
+        "context_files": [
+            (path.relative_to(BASE_DIR).as_posix(), _sha3_file(path))
+            for path in context_files
+            if path.exists()
+        ],
+        "environment": environment,
+    }
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha3_256(encoded).hexdigest()
+
+
+def _load_baseline_cache() -> dict[str, dict[str, Any]]:
+    """Load only well-formed cache entries; malformed cache data is never trusted."""
+    if not BASELINE_CACHE_PATH.exists():
+        return {}
+    try:
+        payload = json.loads(BASELINE_CACHE_PATH.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as err:
+        sys.stderr.write(f"  [Warn] Ignoring unreadable baseline cache: {err}\n")
+        return {}
+    if not isinstance(payload, dict) or payload.get("version") != BASELINE_CACHE_VERSION:
+        return {}
+    entries = payload.get("entries")
+    if not isinstance(entries, dict):
+        return {}
+    return {
+        key: entry
+        for key, entry in entries.items()
+        if isinstance(key, str)
+        and isinstance(entry, dict)
+        and isinstance(entry.get("duration_seconds"), (int, float))
+        and entry["duration_seconds"] > 0
+    }
+
+
+def _write_baseline_cache(entries: Mapping[str, Mapping[str, Any]]) -> None:
+    """Persist successful baseline timings as an ignored reports artifact."""
+    REPORT_DIR.mkdir(parents=True, exist_ok=True)
+    payload = {"version": BASELINE_CACHE_VERSION, "entries": entries}
+    try:
+        BASELINE_CACHE_PATH.write_text(
+            json.dumps(payload, sort_keys=True, indent=2), encoding="utf-8"
+        )
+    except OSError as err:
+        sys.stderr.write(f"  [Warn] Could not write baseline cache: {err}\n")
+
+
+def format_sentinel_duration(duration_seconds: float) -> str:
+    """Render precise elapsed seconds alongside a pytest-style wall-clock duration."""
+    whole_seconds = max(0, int(duration_seconds))
+    hours, remainder = divmod(whole_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return f"{duration_seconds:.2f}s ({hours}:{minutes:02d}:{seconds:02d})"
+
+
+def _make_loader_code(mutant_source: str, orig_file: Path, module_name: str, args_str: str) -> str:
+    """Build a subprocess loader that receives the mutant only through stdin."""
     parts = module_name.rsplit(".", 1)
     if len(parts) > 1:
         pkg_name = parts[0]
@@ -384,12 +1213,13 @@ def _make_loader_code(mutant_file: str, orig_file: Path, module_name: str, args_
     else:
         pkg_name = ""
         sub_name = module_name
+    encoded_source = base64.b64encode(mutant_source.encode("utf-8")).decode("ascii")
 
     return f"""
-import sys, importlib.util
-from pathlib import Path
+import base64, sys, importlib.util
 sys.path.insert(0, r"{BASE_DIR}")
-code = compile(Path(r"{mutant_file}").read_text(encoding="utf-8"), r"{orig_file}", "exec")
+source = base64.b64decode({encoded_source!r}).decode("utf-8")
+code = compile(source, r"{orig_file}", "exec")
 pkg_name = "{pkg_name}"
 sub_name = "{sub_name}"
 spec = importlib.util.spec_from_file_location("{module_name}", r"{orig_file}")
@@ -418,16 +1248,19 @@ def evaluate_mutant(
     timeout_seconds: float = 30.0,
     original_bytes: bytes | None = None,
     scope: str = "",
-    killer_cache: dict[str, str] | None = None,
+    scope_test_selector: str | None = None,
+    killer_cache: dict[tuple[str, tuple[str, ...], str], str] | None = None,
     cache_lock: threading.Lock | None = None,
+    module_timing: ModuleTiming | None = None,
 ) -> str:
     """
     Evaluates mutant using dynamic in-memory injection without mutating target_file on disk.
     Applies 3-phase cascading acceleration:
       1. Cached killer-test execution (stops in ~1 test if cached)
-      2. Targeted scope test execution (-k <scope> -x)
+      2. Targeted source-scope test execution (-k selector -x), when viable
       3. Fallback full module corpus execution (-x)
-    Returns status: 'killed', 'survived', 'timeout', or 'incompetent'.
+    Returns status: 'killed', 'survived', 'timeout', 'indeterminate', or
+    'incompetent'. A timeout is retried serially by the module coordinator.
     """
     # 1. In-process AST syntax pre-check before touching disk or spawning subprocess
     try:
@@ -440,14 +1273,11 @@ def evaluate_mutant(
     module_name = ".".join(rel_path.with_suffix("").parts)
     target_resolved = target_file.resolve()
 
-    # Isolated temporary mutant file (never modifies original source file on disk!)
-    with tempfile.NamedTemporaryFile("w", suffix=".py", delete=False, encoding="utf-8") as tf:
-        tf.write(mutant_source)
-        tf_path = tf.name
-
     env = os.environ.copy()
     env["PYTHONDONTWRITEBYTECODE"] = "1"
     env["PYTHONPATH"] = f"{BASE_DIR}{os.pathsep}{env.get('PYTHONPATH', '')}"
+
+    cache_key = _mutation_cache_key(module_name, tests, scope)
 
     def _extract_and_cache_killer(output: str) -> None:
         if killer_cache is not None and scope and scope != "module":
@@ -456,9 +1286,9 @@ def evaluate_mutant(
                 test_name = m.group(1)
                 if cache_lock:
                     with cache_lock:
-                        killer_cache[scope] = test_name
+                        killer_cache[cache_key] = test_name
                 else:
-                    killer_cache[scope] = test_name
+                    killer_cache[cache_key] = test_name
 
     try:
         # Phase 1: Try cached killer test first (fast-fail on 1 test)
@@ -466,54 +1296,75 @@ def evaluate_mutant(
         if killer_cache and scope:
             if cache_lock:
                 with cache_lock:
-                    cached_killer = killer_cache.get(scope)
+                    cached_killer = killer_cache.get(cache_key)
             else:
-                cached_killer = killer_cache.get(scope)
+                cached_killer = killer_cache.get(cache_key)
 
         if cached_killer:
+            if module_timing is not None:
+                module_timing.record_cache_hit()
             fast_flags = FAST_PYTEST_FLAGS + ["-k", cached_killer, "-x"]
             args_str = repr(tests + fast_flags)
-            loader_code = _make_loader_code(tf_path, target_resolved, module_name, args_str)
+            loader_code = _make_loader_code(mutant_source, target_resolved, module_name, args_str)
             res = subprocess.run(
-                [sys.executable, "-B", "-c", loader_code],
+                [sys.executable, "-B", "-"],
                 cwd=BASE_DIR,
                 capture_output=True,
+                input=loader_code,
                 text=True,
                 timeout=min(timeout_seconds, 15.0),
                 env=env,
             )
-            if res.returncode != 0:
+            if _collected_no_tests(res.returncode):
+                # Cached selectors can become stale as tests are renamed or
+                # moved. They are an optimization, never kill evidence.
+                if cache_lock:
+                    with cache_lock:
+                        killer_cache.pop(cache_key, None)
+                else:
+                    killer_cache.pop(cache_key, None)
+            elif res.returncode != 0:
                 return "killed"
 
-        # Phase 2: Scoped test filter
-        if scope and scope != "module":
-            scoped_flags = FAST_PYTEST_FLAGS + ["-k", scope, "-x"]
+        # Phase 2: Scoped test filter.  The selector is vetted from the test
+        # AST once per scope; never spawn an empty ``-k resolve_request`` probe.
+        if scope_test_selector:
+            scoped_flags = FAST_PYTEST_FLAGS + ["-k", scope_test_selector, "-x"]
             args_str = repr(tests + scoped_flags)
-            loader_code = _make_loader_code(tf_path, target_resolved, module_name, args_str)
+            loader_code = _make_loader_code(mutant_source, target_resolved, module_name, args_str)
             res = subprocess.run(
-                [sys.executable, "-B", "-c", loader_code],
+                [sys.executable, "-B", "-"],
                 cwd=BASE_DIR,
                 capture_output=True,
+                input=loader_code,
                 text=True,
                 timeout=timeout_seconds,
                 env=env,
             )
-            if res.returncode != 0:
+            if res.returncode != 0 and not _collected_no_tests(res.returncode):
                 _extract_and_cache_killer(res.stdout)
                 return "killed"
 
         # Phase 3: Fallback full module corpus
+        if module_timing is not None:
+            module_timing.record_full_corpus_fallback()
         full_flags = FAST_PYTEST_FLAGS + ["-x"]
         args_str = repr(tests + full_flags)
-        loader_code = _make_loader_code(tf_path, target_resolved, module_name, args_str)
+        loader_code = _make_loader_code(mutant_source, target_resolved, module_name, args_str)
         res = subprocess.run(
-            [sys.executable, "-B", "-c", loader_code],
+            [sys.executable, "-B", "-"],
             cwd=BASE_DIR,
             capture_output=True,
+            input=loader_code,
             text=True,
             timeout=timeout_seconds,
             env=env,
         )
+        if _collected_no_tests(res.returncode):
+            sys.stderr.write(
+                "      [Mutant] Full corpus collected no tests; mutation result is indeterminate.\n"
+            )
+            return "indeterminate"
         if res.returncode != 0:
             _extract_and_cache_killer(res.stdout)
             return "killed"
@@ -523,11 +1374,9 @@ def evaluate_mutant(
     except (SyntaxError, UnicodeDecodeError, OSError, ValueError) as err:
         sys.stderr.write(f"      [Mutant] Incompetent AST substitution: {err}\n")
         return "incompetent"
-    finally:
-        Path(tf_path).unlink(missing_ok=True)
 
 
-def verify_sentinel_preconditions() -> dict[str, float]:
+def verify_sentinel_preconditions() -> tuple[dict[str, float], dict[Path, float]]:
     """
     Self-validating precondition checks executed before any mutation testing begins.
 
@@ -547,6 +1396,34 @@ def verify_sentinel_preconditions() -> dict[str, float]:
             rel = target.relative_to(BASE_DIR)
             print(f"  [FAIL] Target module missing: {rel}")
             sys.exit(1)
+        try:
+            tree = ast.parse(target.read_text(encoding="utf-8"))
+            available_scopes = discover_defined_scopes(tree)
+        except (OSError, SyntaxError, UnicodeDecodeError) as exc:
+            print(f"  [FAIL] Cannot inspect critical mutation target {target}: {exc}")
+            sys.exit(1)
+        missing_scopes = MODULE_SCOPE_MAP[target] - available_scopes
+        if missing_scopes:
+            print(
+                f"  [FAIL] Critical mutation scopes missing from {target.name}: "
+                f"{sorted(missing_scopes)}"
+            )
+            sys.exit(1)
+        selected_points = [
+            point
+            for point in discover_mutation_points(
+                target.read_text(encoding="utf-8"), _annotation_line_numbers(tree)
+            )
+            if point.scope in MODULE_SCOPE_MAP[target]
+        ]
+        present_families = {mutation_operator_family(point) for point in selected_points}
+        missing_families = MODULE_REQUIRED_OPERATOR_FAMILIES[target] - present_families
+        if missing_families:
+            print(
+                f"  [FAIL] Critical mutation families missing from {target.name}: "
+                f"{sorted(missing_families)}"
+            )
+            sys.exit(1)
 
     # Check test file existence
     all_test_paths = set(BASELINE_TESTS)
@@ -559,55 +1436,100 @@ def verify_sentinel_preconditions() -> dict[str, float]:
             print(f"  [FAIL] Configured test file missing: {test_path}")
             sys.exit(1)
 
-    # Verify per-module baseline runtimes and calculate dynamic timeouts
+    # Explicit source-scope mappings are executable configuration, not best
+    # effort hints.  Fail before mutation fan-out if a renamed test would turn
+    # a critical boundary back into an expensive and less precise fallback.
+    for target, scope_map in MODULE_SCOPE_TEST_MAP.items():
+        declared_names = _declared_test_names(_tests_for_module(target))
+        for scope, test_names in scope_map.items():
+            unknown_names = set(test_names) - declared_names
+            if unknown_names:
+                print(
+                    f"  [FAIL] Critical selector mapping for {target.name}:{scope} "
+                    f"references missing tests: {sorted(unknown_names)}"
+                )
+                sys.exit(1)
+
+    # Verify each distinct baseline corpus once. A corpus proves the same
+    # un-mutated suite regardless of how many runtime targets reuse it.
+    # Deliberately serial: concurrent Python/pytest startup is slower and less
+    # stable on Windows under import and disk contention.
     env = os.environ.copy()
     env["PYTHONDONTWRITEBYTECODE"] = "1"
     env["PYTHONPATH"] = f"{BASE_DIR}{os.pathsep}{env.get('PYTHONPATH', '')}"
     module_timeouts: dict[str, float] = {}
+    baseline_durations: dict[Path, float] = {}
+    baseline_cache = _load_baseline_cache()
+    corpus_groups: dict[tuple[str, ...], list[Path]] = {}
     for target in TARGET_MODULES:
-        module_name = target.name
-        tests = _tests_for_module(module_name)
-        args_str = repr(tests + FAST_PYTEST_FLAGS)
-        py_code = (
-            f"import sys; sys.path.insert(0, r'{BASE_DIR}'); "
-            f"import pytest; sys.exit(pytest.main({args_str}))"
-        )
-        cmd = [sys.executable, "-B", "-c", py_code]
-        t0 = time.monotonic()
-        res = subprocess.run(cmd, cwd=BASE_DIR, capture_output=True, text=True, env=env)
-        elapsed = time.monotonic() - t0
+        corpus_groups.setdefault(tuple(_tests_for_module(target)), []).append(target)
 
-        if res.returncode != 0:
-            print(f"  [FAIL] Baseline test suite for '{module_name}' failed or collected no tests!")
-            print(f"         Command output:\n{res.stdout}\n{res.stderr}")
-            sys.exit(1)
+    for tests, targets in corpus_groups.items():
+        cache_key = _baseline_cache_key(tests, tuple(targets))
+        cached_entry = baseline_cache.get(cache_key)
+        if cached_entry is not None:
+            elapsed = float(cached_entry["duration_seconds"])
+            status = "cache hit"
+        else:
+            args_str = repr(list(tests) + FAST_PYTEST_FLAGS)
+            py_code = (
+                f"import sys; sys.path.insert(0, r'{BASE_DIR}'); "
+                f"import pytest; sys.exit(pytest.main({args_str}))"
+            )
+            cmd = [sys.executable, "-B", "-c", py_code]
+            t0 = time.monotonic()
+            res = subprocess.run(cmd, cwd=BASE_DIR, capture_output=True, text=True, env=env)
+            elapsed = time.monotonic() - t0
 
-        dynamic_timeout = max(MUTANT_TIMEOUT_SECONDS, elapsed * 2.5)
-        module_timeouts[module_name] = dynamic_timeout
-        headroom = dynamic_timeout / elapsed if elapsed > 0 else 999.0
+            if res.returncode != 0:
+                names = ", ".join(target.name for target in targets)
+                print(f"  [FAIL] Baseline test suite for '{names}' failed or collected no tests!")
+                print(f"         Command output:\n{res.stdout}\n{res.stderr}")
+                sys.exit(1)
+
+            baseline_cache[cache_key] = {
+                "duration_seconds": elapsed,
+                "tests": list(tests),
+                "targets": [target.relative_to(BASE_DIR).as_posix() for target in targets],
+            }
+            status = "verified"
+
         print(
-            f"   • Module '{module_name}' baseline: {elapsed:.2f}s "
-            f"(Timeout: {dynamic_timeout:.1f}s, Headroom: {headroom:.2f}x)"
+            f"   [Baseline {status}] corpus={', '.join(tests)} "
+            f"targets={', '.join(target.name for target in targets)}"
         )
+        for target in targets:
+            module_name = target.name
+            dynamic_timeout = max(MUTANT_TIMEOUT_SECONDS, elapsed * 2.5)
+            module_timeouts[module_name] = dynamic_timeout
+            baseline_durations[target] = elapsed
+            headroom = dynamic_timeout / elapsed if elapsed > 0 else 999.0
+            print(
+                f"   • Module '{module_name}' baseline: {elapsed:.2f}s "
+                f"(Timeout: {dynamic_timeout:.1f}s, Headroom: {headroom:.2f}x)"
+            )
 
+    _write_baseline_cache(baseline_cache)
     print("  [OK] Precondition checks PASSED cleanly.\n")
-    return module_timeouts
+    return module_timeouts, baseline_durations
 
 
 def _evaluate_target_module(
     target: Path,
     args: Any,
     module_timeouts: dict[str, float],
-    shared_killer_cache: dict[str, str] | None = None,
+    baseline_seconds: float,
+    shared_killer_cache: dict[tuple[str, tuple[str, ...], str], str] | None = None,
     cache_lock: threading.Lock | None = None,
-) -> tuple[int, int, int, int, list[dict]]:
+) -> tuple[int, int, int, int, int, list[dict], ModuleTiming]:
     """
     Evaluates mutants for a single target module using mutant-level concurrency.
-    Returns: (killed, survived, timeout, incompetent, mutant_records)
+    Returns: (killed, survived, timeout, indeterminate, incompetent, mutant_records, timing)
     """
     rel_path = target.relative_to(BASE_DIR)
     module_name = target.name
-    tests = _tests_for_module(module_name)
+    tests = _tests_for_module(target)
+    declared_test_names = _declared_test_names(tests)
     timeout_sec = module_timeouts.get(module_name, MUTANT_TIMEOUT_SECONDS)
 
     original_bytes = target.read_bytes()
@@ -622,13 +1544,31 @@ def _evaluate_target_module(
 
     annotation_lines = _annotation_line_numbers(tree)
     all_points = discover_mutation_points(original_source, annotation_lines)
-    num_points = len(all_points)
-    competent_points = [p for p in all_points if not p.is_incompetent]
+    selected_scopes = MODULE_SCOPE_MAP.get(target, frozenset())
+    required_families = MODULE_REQUIRED_OPERATOR_FAMILIES.get(target, frozenset())
+    eligible_families = (
+        MODULE_ELIGIBLE_OPERATOR_FAMILIES[target]
+        or required_families
+        or HIGH_IMPACT_OPERATOR_FAMILIES
+    )
+    scoped_points = [
+        point
+        for point in all_points
+        if point.scope in selected_scopes
+        and mutation_operator_family(point) in eligible_families
+        and (point.scope, point.lineno, point.original, point.mutated)
+        not in MODULE_EXCLUDED_MUTATIONS[target]
+    ]
+    num_points = len(scoped_points)
+    competent_points = [p for p in scoped_points if not p.is_incompetent]
     num_competent = len(competent_points)
 
     if args.full:
-        sampled = all_points
-        print(f"   • Module: {rel_path} ({num_points} mutation points, evaluating ALL 100%)")
+        sampled = scoped_points
+        print(
+            f"   • Module: {rel_path} ({num_points} critical-surface mutation points, "
+            "evaluating ALL 100%)"
+        )
     else:
         max_mutants = min(num_competent, 15)
         rng = random.Random(args.seed) if args.seed is not None else random.Random()
@@ -647,10 +1587,14 @@ def _evaluate_target_module(
     killed = 0
     survived = 0
     timeout = 0
+    indeterminate = 0
     incompetent = 0
     records: list[dict] = []
+    timing = ModuleTiming(baseline_seconds=baseline_seconds)
+    mutation_started_at = time.monotonic()
 
     num_workers = max(1, getattr(args, "workers", 1))
+    progress = _MutationProgress(len(sampled), num_workers)
 
     def _eval_one(mp: MutationPoint) -> tuple[str, str, MutationPoint]:
         if mp.is_incompetent:
@@ -671,58 +1615,80 @@ def _evaluate_target_module(
             timeout_seconds=timeout_sec,
             original_bytes=original_bytes,
             scope=mp.scope,
+            scope_test_selector=_scope_test_selector(target, mp.scope, declared_test_names),
             killer_cache=shared_killer_cache,
             cache_lock=cache_lock,
+            module_timing=timing,
         )
         return status, mp.description, mp
 
-    if num_workers > 1:
-        with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as pool:
-            futures = {pool.submit(_eval_one, mp): mp for mp in sampled}
-            for fut in concurrent.futures.as_completed(futures):
-                status, desc, mp = fut.result()
-                if status == "killed":
-                    killed += 1
-                    icon = "[KILLED]"
-                elif status == "timeout":
-                    timeout += 1
-                    icon = "[TIMEOUT]"
-                elif status == "survived":
-                    survived += 1
-                    icon = "[SURVIVED]"
-                else:
-                    incompetent += 1
-                    icon = "[INCOMPETENT]"
+    evaluations: list[tuple[str, str, MutationPoint]] = []
+    progress.start()
+    # Prime exactly one mutant per source scope before concurrent fan-out.
+    # Once a primer identifies its killer, sibling mutants start with that one
+    # test rather than racing to repeat an expensive full-corpus fallback.
+    primers, remainder = _partition_scope_primers(sampled)
+    for primer in primers:
+        result = _eval_one(primer)
+        evaluations.append(result)
+        progress.report(result[0])
 
-                records.append(
-                    {"module": str(rel_path), "mutation": mp.description, "status": status}
-                )
-                print(f"      {icon:15s} [{rel_path.as_posix()}] {desc}", flush=True)
-    else:
-        for mp in sampled:
-            status, desc, _ = _eval_one(mp)
-            if status == "killed":
-                killed += 1
-                icon = "[KILLED]"
-            elif status == "timeout":
-                timeout += 1
-                icon = "[TIMEOUT]"
-            elif status == "survived":
-                survived += 1
-                icon = "[SURVIVED]"
-            else:
-                incompetent += 1
-                icon = "[INCOMPETENT]"
+    with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as pool:
+        pending = {pool.submit(_eval_one, mp) for mp in remainder}
+        while pending:
+            completed, pending = concurrent.futures.wait(
+                pending,
+                timeout=10.0,
+                return_when=concurrent.futures.FIRST_COMPLETED,
+            )
+            if not completed:
+                progress.heartbeat(min(num_workers, len(pending)))
+                continue
+            for future in completed:
+                result = future.result()
+                evaluations.append(result)
+                progress.report(result[0])
+    progress.close()
 
-            records.append({"module": str(rel_path), "mutation": mp.description, "status": status})
-            print(f"      {icon:15s} [{rel_path.as_posix()}] {desc}", flush=True)
+    # Timeout retries run only after every parallel worker has completed so
+    # the retry is serial and free of mutant-level resource contention.
+    final_evaluations: list[tuple[str, str, MutationPoint]] = []
+    for status, desc, mp in evaluations:
+        if status == "timeout":
+            print(f"      [RETRY SERIAL]   [{rel_path.as_posix()}] {desc}", flush=True)
+            timing.record_timeout_retry()
+            status, desc, mp = _eval_one(mp)
+        final_evaluations.append((status, desc, mp))
 
-    return killed, survived, timeout, incompetent, records
+    for status, desc, mp in final_evaluations:
+        if status == "killed":
+            killed += 1
+            icon = "[KILLED]"
+        elif status == "timeout":
+            timeout += 1
+            icon = "[TIMEOUT]"
+        elif status == "survived":
+            survived += 1
+            icon = "[SURVIVED]"
+        elif status == "indeterminate":
+            indeterminate += 1
+            icon = "[INDETERMINATE]"
+        else:
+            incompetent += 1
+            icon = "[INCOMPETENT]"
+
+        records.append({"module": str(rel_path), "mutation": mp.description, "status": status})
+        print(f"      {icon:15s} [{rel_path.as_posix()}] {desc}", flush=True)
+
+    timing.mutant_seconds = time.monotonic() - mutation_started_at
+    return killed, survived, timeout, indeterminate, incompetent, records, timing
 
 
 def run_mutation_sentinel() -> None:
     """Executes full or sampled mutation scoring lifecycle across critical verification modules."""
     import argparse
+
+    started_at = time.monotonic()
 
     parser = argparse.ArgumentParser(description="Industrial Mutation Testing Sentinel")
     parser.add_argument(
@@ -837,61 +1803,83 @@ def run_mutation_sentinel() -> None:
     emergency_restore()
 
     # 1. Self-Validating Precondition Verification
-    module_timeouts = verify_sentinel_preconditions()
+    module_timeouts, baseline_durations = verify_sentinel_preconditions()
 
     # 2. Mutation Discovery & Testing
     total_killed = 0
     total_survived = 0
     total_timeout = 0
+    total_indeterminate = 0
     total_skipped = 0
     total_incompetent = 0
     mutant_records: list[dict] = []
+    module_timings: list[tuple[Path, ModuleTiming]] = []
 
-    shared_killer_cache: dict[str, str] = {}
+    shared_killer_cache: dict[tuple[str, tuple[str, ...], str], str] = {}
     cache_lock = threading.Lock()
     try:
         print(f"2. Mutating Verification Modules & Scoring Test Suite ({mode_label})...")
         for target in TARGET_MODULES:
-            k, s, t, inc, recs = _evaluate_target_module(
-                target, args, module_timeouts, shared_killer_cache, cache_lock
+            k, s, t, ind, inc, recs, timing = _evaluate_target_module(
+                target,
+                args,
+                module_timeouts,
+                baseline_durations[target],
+                shared_killer_cache,
+                cache_lock,
             )
             total_killed += k
             total_survived += s
             total_timeout += t
+            total_indeterminate += ind
             total_incompetent += inc
             mutant_records.extend(recs)
+            module_timings.append((target, timing))
     finally:
         emergency_restore()
 
     # 3. Calculate Refined Mutation Metrics
     # Denominator excludes incompetent mutants (annotation-only, no runtime effect).
-    total_valid_mutants = total_killed + total_survived + total_timeout + total_incompetent
-    denom = total_killed + total_survived + total_timeout
-    effective_killed = total_killed + total_timeout
+    total_valid_mutants = total_killed + total_survived + total_timeout + total_indeterminate
+    definitive_denom = total_killed + total_survived
 
-    kill_rate_pct = (total_killed / denom * 100.0) if denom > 0 else 100.0
-    timeout_rate_pct = (total_timeout / denom * 100.0) if denom > 0 else 0.0
-    effective_detection_pct = (effective_killed / denom * 100.0) if denom > 0 else 100.0
+    kill_rate_pct = (total_killed / definitive_denom * 100.0) if definitive_denom > 0 else 0.0
+    timeout_rate_pct = (total_timeout / total_valid_mutants * 100.0) if total_valid_mutants else 0.0
+    duration_seconds = time.monotonic() - started_at
+    duration_display = format_sentinel_duration(duration_seconds)
 
     print("\n" + "=" * 80)
     print(f"=== MUTATION TESTING FINAL SCORECARD ({mode_label}) ===")
     print("=" * 80)
     print(f"  • Execution Mode:           {mode_label}")
+    print(f"  • Sentinel Duration:        {duration_display}")
     print(f"  • Total Mutants Evaluated:  {total_valid_mutants + total_skipped}")
     print(f"  • Killed:                   {total_killed}")
     print(f"  • Timeout:                  {total_timeout}")
+    print(f"  • Indeterminate:            {total_indeterminate}")
     print(f"  • Survived:                 {total_survived}")
     print(f"  • Incompetent (Annotation): {total_incompetent}")
     print(f"  • Mutation Kill Rate:       {kill_rate_pct:.2f}% (Killed / Evaluated)")
     print(f"  • Timeout Rate:             {timeout_rate_pct:.2f}% (Timeout / Evaluated)")
-    print(
-        f"  • Effective Detection Rate: {effective_detection_pct:.2f}% "
-        f"((Killed + Timeout) / Evaluated, Target: >=100.00%)"
-    )
+    print(f"  • Definitive Kill Rate:     {kill_rate_pct:.2f}% (Target: 100.00%)")
     print("=" * 80)
+
+    print("  Per-module timing:")
+    for target, timing in module_timings:
+        print(
+            f"    - {target.relative_to(BASE_DIR).as_posix()}: "
+            f"baseline={format_sentinel_duration(timing.baseline_seconds)}, "
+            f"mutants={format_sentinel_duration(timing.mutant_seconds)}, "
+            f"full-fallbacks={timing.full_corpus_fallbacks}, "
+            f"cache-hits={timing.cache_hits}, retries={timing.timeout_retries}"
+        )
 
     # 4. Generate Diligence Artifact
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
+    target_modules_report = "\n".join(
+        f"{idx}. `{target.relative_to(BASE_DIR).as_posix()}`"
+        for idx, target in enumerate(TARGET_MODULES, 1)
+    )
     report_md = f"""# Mutation Testing Diligence Scorecard
 
 Enterprise verification assurance scorecard generated by surgical AST mutation analysis.
@@ -901,13 +1889,14 @@ Enterprise verification assurance scorecard generated by surgical AST mutation a
 | Metric | Value |
 | :--- | :--- |
 | **Execution Mode** | **{mode_label}** |
-| **Effective Detection Rate** | **{effective_detection_pct:.2f}%** |
-| **Mutation Kill Rate** | **{kill_rate_pct:.2f}%** |
+| **Sentinel Duration** | **{duration_display}** |
+| **Definitive Kill Rate** | **{kill_rate_pct:.2f}%** |
 | **Timeout Rate** | **{timeout_rate_pct:.2f}%** |
 | **Minimum Required Target** | **100.00%** |
 | **Evaluation Baseline** | **PASSED (Green)** |
 | **Killed Mutants** | **{total_killed}** |
 | **Timeout Mutants** | **{total_timeout}** |
+| **Indeterminate Mutants** | **{total_indeterminate}** |
 | **Survived Mutants** | **{total_survived}** |
 | **Incompetent Mutants** | **{total_incompetent}** |
 | **Total Mutants Evaluated** | **{total_valid_mutants}** |
@@ -917,15 +1906,29 @@ Enterprise verification assurance scorecard generated by surgical AST mutation a
 - **Mutation Strategy**: Surgical line substitution — targeted token replacement at AST
   coordinates; non-mutated lines preserved 100% byte-for-byte.
 - **Metric Definitions**:
-  - `Mutation Kill Rate = Killed / (Killed + Timeout + Survived)`
-  - `Timeout Rate = Timeout / (Killed + Timeout + Survived)`
-  - `Effective Detection Rate = (Killed + Timeout) / (Killed + Timeout + Survived)`
+  - `Definitive Kill Rate = Killed / (Killed + Survived)`
+  - `Timeout Rate = Timeout / (Killed + Survived + Timeout + Indeterminate)`
+  - A timeout is retried serially and remains non-passing if unresolved.
+  - A no-tests-collected result is indeterminate; it is never kill evidence.
 
 ## Target Modules Evaluated
 
-1. `eval_runner/verifier.py`
-2. `eval_runner/tool_sandbox.py`
-3. `eval_runner/utils/base.py`
+{target_modules_report}
+
+## Per-Module Timing
+
+| Module | Baseline | Mutant Evaluation | Full Fallbacks | Cache Hits | Retries |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+"""
+    for target, timing in module_timings:
+        report_md += (
+            f"| `{target.relative_to(BASE_DIR).as_posix()}` | "
+            f"{format_sentinel_duration(timing.baseline_seconds)} | "
+            f"{format_sentinel_duration(timing.mutant_seconds)} | "
+            f"{timing.full_corpus_fallbacks} | {timing.cache_hits} | {timing.timeout_retries} |\n"
+        )
+
+    report_md += """
 
 ## Detailed Mutation Log
 
@@ -938,7 +1941,9 @@ Enterprise verification assurance scorecard generated by surgical AST mutation a
         elif rec["status"] == "killed":
             status_str = "PASSED (Killed)"
         elif rec["status"] == "timeout":
-            status_str = "PASSED (Timeout)"
+            status_str = "FAILED (Unresolved timeout)"
+        elif rec["status"] == "indeterminate":
+            status_str = "FAILED (Indeterminate)"
         else:
             status_str = "FAILED (Survived)"
         report_md += f"| `{rec['module']}` | `{rec['mutation']}` | {status_str} |\n"
@@ -947,18 +1952,17 @@ Enterprise verification assurance scorecard generated by surgical AST mutation a
     rel_report = REPORT_PATH.relative_to(BASE_DIR)
     print(f"\n[Diligence Artifact] Generated mutation scorecard report at: {rel_report}")
 
-    # 5. Enforce >= 90% Threshold Gate
-    if effective_detection_pct < 100.0:
+    # 5. Enforce a deterministic 100% mutation gate. A timeout or indeterminate
+    # result is not evidence that a test detected the mutant.
+    if total_survived or total_timeout or total_indeterminate or kill_rate_pct < 100.0:
         print(
-            f"\n[FAIL] Effective detection rate {effective_detection_pct:.2f}% "
-            f"is below required 100.00% threshold!"
+            f"\n[FAIL] Mutation gate failed: kill_rate={kill_rate_pct:.2f}%, "
+            f"survived={total_survived}, timeout={total_timeout}, "
+            f"indeterminate={total_indeterminate}."
         )
         sys.exit(1)
     else:
-        print(
-            f"\n[OK] Effective detection rate {effective_detection_pct:.2f}% "
-            f"meets enterprise gate (>=100.00%)."
-        )
+        print(f"\n[OK] Definitive kill rate {kill_rate_pct:.2f}% meets the 100.00% gate.")
 
 
 if __name__ == "__main__":

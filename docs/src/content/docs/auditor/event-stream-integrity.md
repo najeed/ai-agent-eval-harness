@@ -53,7 +53,7 @@ The execution engine streams events sequentially to `run.jsonl`:
 
 ## 2. Critical Security & Audit Invariants
 
-### Invariant 1: Monotonic Terminal Boundary (Defect T4 Guard)
+### Invariant 1: Monotonic Terminal Boundary
 - **The Rule**: `run_end` MUST be the final event written to `run.jsonl`.
 - **The Rationale**: Strategy conclusion (`strategy_end`) and all phase telemetry must complete *prior* to finalization. When `run_end` is emitted, it encapsulates the complete state of the run inside its `finalization` block.
 - **Enforcement**: If any event appears in the stream after `finalization` is parsed, the `CertificationService` flags a fatal `Monotonic terminal boundary violation`, rejects certification, and fails closed with:
@@ -70,7 +70,7 @@ The terminal `run_end` payload strictly requires a `finalization` block containi
 
 If the claimed `finalization_hash` does not match the recomputed digest, the trace is rejected as tampered.
 
-### Invariant 3: Execution Truth & Anti-Masquerade (Defect T1 Guard)
+### Invariant 3: Execution Truth & Anti-Masquerade
 - The harness requires an explicit `execution_mode` (`live`, `hybrid`, `record_replay`).
 - If an operator fails to declare `execution_mode`, the engine defaults to `simulated` and marks `provisional: true`.
 - **Audit Policy**: Provisional certificates can NEVER be cited for industrial safety compliance, financial audit defense, or security validation.

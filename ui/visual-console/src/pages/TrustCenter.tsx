@@ -21,13 +21,13 @@ interface VerifyResult {
 export const TrustCenter: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'verify' | 'certify'>('verify');
   const { canSignCert, role } = useRBAC();
-  
+
   // Verify State
   const [verifyRunId, setVerifyRunId] = useState('');
   const [verifyResult, setVerifyResult] = useState<VerifyResult | null>(null);
   const [verifying, setVerifying] = useState(false);
   const [verifyError, setVerifyError] = useState('');
-  
+
   // Certify State
   const [certifyRunId, setCertifyRunId] = useState('');
   const [policyRef, setPolicyRef] = useState('NIST-AI-100');
@@ -37,7 +37,7 @@ export const TrustCenter: React.FC = () => {
   const [certifyResult, setCertifyResult] = useState<any>(null);
   const [certifying, setCertifying] = useState(false);
   const [certifyError, setCertifyError] = useState('');
-  
+
   // Key State
   const [resolvedKey, setResolvedKey] = useState('');
   const certificationPending = Boolean(runDetails && !runDetails.has_certificate);
@@ -78,16 +78,16 @@ export const TrustCenter: React.FC = () => {
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!verifyRunId.trim()) return;
-    
+
     setVerifying(true);
     setVerifyError('');
     setVerifyResult(null);
     setResolvedKey('');
-    
+
     try {
       const res = await fetch(`/api/v1/verify/${verifyRunId.trim()}`);
       const data = await res.json();
-      
+
       if (res.ok) {
         setVerifyResult(data);
         // Automatically resolve public key from provenance chain
@@ -137,7 +137,7 @@ export const TrustCenter: React.FC = () => {
         })
       });
       const data = await res.json();
-      
+
       if (res.ok) {
         setCertifyResult(data);
       } else {
@@ -161,21 +161,19 @@ export const TrustCenter: React.FC = () => {
       <div className="flex border-b border-slate-800">
         <button
           onClick={() => setActiveTab('verify')}
-          className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${
-            activeTab === 'verify' 
-              ? 'border-indigo-500 text-indigo-400' 
+          className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'verify'
+              ? 'border-indigo-500 text-indigo-400'
               : 'border-transparent text-slate-500 hover:text-slate-350'
-          }`}
+            }`}
         >
           Verify Running Audit Logs
         </button>
         <button
           onClick={() => setActiveTab('certify')}
-          className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${
-            activeTab === 'certify' 
-              ? 'border-indigo-500 text-indigo-400' 
+          className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'certify'
+              ? 'border-indigo-500 text-indigo-400'
               : 'border-transparent text-slate-500 hover:text-slate-350'
-          }`}
+            }`}
         >
           Issue Cryptographic Certificate
         </button>
@@ -223,7 +221,7 @@ export const TrustCenter: React.FC = () => {
           {verifyResult && (
             <div className="border border-slate-800 bg-slate-900/50 rounded-xl p-6 space-y-4 shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-indigo-500/10 to-transparent pointer-events-none rounded-bl-full" />
-              
+
               <div className="flex items-start justify-between">
                 <div className="space-y-1">
                   <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Verification Ledger Entry</span>
@@ -242,7 +240,7 @@ export const TrustCenter: React.FC = () => {
                 </div>
               </div>
 
-              {/* Tri-State Audit Verification Cards (Defect T8) */}
+              {/* Tri-State Audit Verification Cards */}
               <div className="grid grid-cols-3 gap-2 pt-1 text-[11px]">
                 <div className="bg-slate-950/60 p-2 rounded border border-slate-800 space-y-0.5">
                   <span className="text-[9px] text-slate-500 uppercase font-bold block">1. Cryptographic</span>
@@ -252,21 +250,19 @@ export const TrustCenter: React.FC = () => {
                 </div>
                 <div className="bg-slate-950/60 p-2 rounded border border-slate-800 space-y-0.5">
                   <span className="text-[9px] text-slate-500 uppercase font-bold block">2. Evaluation</span>
-                  <span className={`font-mono font-bold ${
-                    verifyResult.evaluation_passed
+                  <span className={`font-mono font-bold ${verifyResult.evaluation_passed
                       ? 'text-emerald-400'
                       : verifyResult.evaluation_verdict?.toLowerCase() === 'fail'
                         ? 'text-red-400'
                         : 'text-amber-400'
-                  }`}>
+                    }`}>
                     {verifyResult.evaluation_verdict?.toUpperCase() || (verifyResult.evaluation_passed ? 'PASSED' : 'FAILED')}
                   </span>
                 </div>
                 <div className="bg-slate-950/60 p-2 rounded border border-slate-800 space-y-0.5">
                   <span className="text-[9px] text-slate-500 uppercase font-bold block">3. Authority</span>
-                  <span className={`font-mono font-bold ${
-                    verifyResult.certificate_authoritative ? 'text-indigo-400' : 'text-amber-400'
-                  }`}>
+                  <span className={`font-mono font-bold ${verifyResult.certificate_authoritative ? 'text-indigo-400' : 'text-amber-400'
+                    }`}>
                     {verifyResult.certificate_authoritative ? (verifyResult.manifest?.execution_mode?.toUpperCase() || 'AUTHORITATIVE') : 'PROVISIONAL'}
                   </span>
                 </div>
@@ -322,7 +318,7 @@ export const TrustCenter: React.FC = () => {
           <ShieldAlert className="w-12 h-12 text-amber-500 mx-auto" />
           <h2 className="text-sm font-bold text-white uppercase tracking-wider">Auditor Privileges Required</h2>
           <p className="text-slate-400 text-xs leading-relaxed">
-            Your current active role (<span className="text-indigo-400 font-bold">{role}</span>) does not have cryptographic signing privileges. 
+            Your current active role (<span className="text-indigo-400 font-bold">{role}</span>) does not have cryptographic signing privileges.
             Verification Certificate (VC) issuance requires <span className="text-slate-350 font-bold">Compliance Auditor</span> or <span className="text-slate-350 font-bold">System Admin</span> authorization keys.
           </p>
         </div>
@@ -382,11 +378,10 @@ export const TrustCenter: React.FC = () => {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="bg-slate-900/60 p-2.5 rounded border border-slate-800">
                         <span className="text-[10px] text-slate-500 uppercase block font-semibold">Certification State</span>
-                        <span className={`font-bold font-mono ${
-                          certificationPending || runDetails.verification_status === 'VERIFIED' || runDetails.verdict === 'VERIFIED'
+                        <span className={`font-bold font-mono ${certificationPending || runDetails.verification_status === 'VERIFIED' || runDetails.verdict === 'VERIFIED'
                             ? 'text-emerald-400'
                             : 'text-amber-400'
-                        }`}>
+                          }`}>
                           {certificationPending
                             ? 'CERTIFICATION_NOT_ISSUED'
                             : runDetails.verification_status || runDetails.verdict || runDetails.status || 'UNKNOWN'}
@@ -421,6 +416,7 @@ export const TrustCenter: React.FC = () => {
               <button
                 type="submit"
                 disabled={
+                  !canSignCert ||
                   certifying ||
                   !certifyRunId.trim() ||
                   !runDetails ||
@@ -434,6 +430,11 @@ export const TrustCenter: React.FC = () => {
                 <Award className="w-4 h-4" />
                 <span>{certifying ? 'Signing Manifest...' : 'Issue Cryptographic Certificate'}</span>
               </button>
+              {!canSignCert && (
+                <p className="text-[11px] text-amber-400/90 text-center font-medium">
+                  Signing authority required: Only Compliance Auditors and System Admins can issue cryptographic certificates.
+                </p>
+              )}
             </form>
 
             {certifyError && (
@@ -455,7 +456,7 @@ export const TrustCenter: React.FC = () => {
 
                 <div className="p-6 bg-slate-950/60 border border-slate-850 rounded-lg space-y-4 text-xs font-mono relative overflow-hidden">
                   <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-500/5 via-transparent to-transparent pointer-events-none" />
-                  
+
                   <div className="flex justify-between items-center border-b border-slate-800/50 pb-3">
                     <div className="flex items-center gap-2">
                       <Award className="w-5 h-5 text-indigo-400" />

@@ -1883,7 +1883,7 @@ class TraceVerifier:
                     logger.warning(f"Failed to verify evidence graph root: {ev_v_err}")
                     return False
 
-            # 2c. Authoritative Scenario Hash Check (Defect T3)
+            # 2c. Authoritative Scenario Hash Check
             expected_scenario_hash = manifest.get("scenario_hash") or (
                 manifest.get("metadata", {}).get("scenario_hash")
             )

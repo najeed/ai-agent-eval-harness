@@ -48,8 +48,8 @@ graph TD
 | Attribute | Specification |
 | :--- | :--- |
 | **License** | Apache License 2.0 |
-| **Status** | 🟢 RC1 (NIST AI-100-1 & 2026 Audit Hardened) |
-| **Version** | v2.0.0 RC1 (September 2026 Release) |
+| **Status** | 🟢 RC1 (NIST AI-100-1 Alignment) |
+| **Version** | v2.0.0 RC1 (October 2026 Release) |
 | **Trust Model** | [Behavioral DNA & VC v3.0.0](docs/src/content/docs/spec/trust_v3.md) |
 | **Architecture** | [3-Pillar Enterprise Verification OS](docs/src/content/docs/builder/architecture.md) |
 | **Quick Links** | [Quickstart](#zero-key-quickstart-get-running-now) • [AES v1.4 Spec](docs/src/content/docs/spec/aes_schema.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
@@ -61,7 +61,7 @@ graph TD
 - 🛡️ **Forensic DNA**: Cryptographic anchoring of the entire execution trace using Ed25519 signatures, SHA3-256 digests, and single-file `.agentv-package.json` Verification Packages.
 
 ## Table of Contents
-- [What's New in the August 2026 GA Release (v2.0.0)](#whats-new-in-the-august-2026-ga-release-v200)
+- [What's New in the v2.0.0 RC1 Release](#whats-new-in-the-v200-rc1-release)
 - [Mission](#mission)
 - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
@@ -138,7 +138,7 @@ Embark on a **4-Phase, 18-Milestone Hands-on Curriculum** designed to take you f
 ## Harness Structure
 The harness is organized into the following key components:
 
--   `/agentv_runtime`: Public Runtime Contracts & Neutral Architecture Seam (`interfaces`, `reference`, `session_components`).
+-   `/agentv_runtime`: Public Runtime Contracts & Neutral Architecture Seam (`interfaces`, `reference`, `session_components`, `canonical`).
 -   `/dataproc_engine`: High-fidelity industrial data extraction engine (7 Sectors, Gold Standards).
 -   `/industries`: Evaluation assets (5,000+ starter scenarios) categorized by 50+ industries.
 -   `/eval_runner`: Modular Core Engine (Multi-turn loop, Sandbox, Metrics, Simulators, Mutator).
@@ -148,8 +148,8 @@ The harness is organized into the following key components:
 -   `/reports`: Generated artifacts (JSONL, trajectories, HTML heatmaps).
 -   `/runs`: Local execution history (Flight Recorder logs).
 -   `/spec/aes`: **Agent Eval Specification (Foundational)** - Benchmark standard v1.4.
--   `/docs`: Deep-dive guides, architecture, and API specifications.
--   `/tests`: Comprehensive test suite (Unit, Integration, Golden, Red-Teaming).
+-   `/docs`: Astro Starlight Documentation Platform v2 (guides, architecture, and API specifications).
+-   `/tests`: Comprehensive test suite (Unit, Integration, Golden, Acceptance, Red-Teaming).
 -   `/sample_agent`: Reference implementation for benchmark testing.
 
 - **NIST AI-100-1 Alignment**: Core verification logic developed following **NIST AI RMF principles**, featuring the **Weighted Severity Model (WSM)** for multi-dimensional scoring and forensic **Environmental DNA** snapshots.
@@ -158,18 +158,24 @@ The harness is organized into the following key components:
 - **Behavioral DNA Telemetry**: High-granularity event bus (4-level: PHASE, SUBTASK, ACTION, STEP) providing a precise "genetic" map of agent decision-making.
 - **Verification Certificate (VC) v3.0.0**: Traces are signed via the **Identity Registry** (Ed25519) and backed by a **Forensic Evidence Ledger** that hashes sidecar artifacts to ensure end-to-end provenance.
 
-### What's New in the September 2026 GA Release (v2.0.0)
+### What's New in the v2.0.0 RC1 Release
 
-The **v2.0.0 September 2026 GA Release** establishes AgentV as the open verification operating system for autonomous agents, introducing a primary visual verification environment, deterministic cryptographic packaging, enterprise audit defensibility, a 3D mutation algebra, and a zero-trust extensible runtime:
+The **v2.0.0 RC1 Release** establishes AgentV as the open verification operating system for autonomous agents, delivering enterprise-grade verification guarantees, audit defensibility, resilient execution, and zero-trust extensibility since the v1.9.0 release:
 
-- 🖥️ **Interactive Visual Console & Zero-Config Bootstrap**: Canonical React SPA mounted at `/` featuring Dagre LR execution DAG topology rendering, Monaco editor source-of-truth document sync with typed assertions (`exact`, `regex`, `numerical_tolerance`, `json_schema`), resilient SSE streaming with `Last-Event-ID` trace replay, persistent zero-config bootstrap authentication (`.aes/keys/bootstrap.key`), non-blocking `Viewer` role, and sliding-window IP rate limiting.
-- 🛡️ **Audit-Defensible Trust Architecture & RFC 8785 JCS**: Pure RFC 8785 JSON Canonicalization Scheme (`agentv_runtime.canonical`), whole-envelope detached trace sealing, external trust root mandate, in-archive ZIP bundle verification with path traversal defenses, Split Package Verification API (`verify_package_signature_only`, `verify_package_artifacts`), and standalone CLI `agentv verify-package`. Verification packages are cryptographically tamper-evident; OSS local vaults are logically sealed, while WORM retention requires an external ArtifactStore. The lifecycle (`RUNNING` → `FINALIZING` → `SEALED`) binds deterministic `evidence_root_hash` assertions and server-authoritative verification (`/api/v1/runs/<run_id>/verify`).
+- 🖥️ **Interactive Visual Console & 3-Pillar Information Architecture**: Canonical React 18 SPA mounted at `/` featuring a 3-Pillar hierarchy (**Scenarios**, **Runs**, **Evidence**), a guided 6-stage verification wizard, Dagre LR execution DAG topology rendering, Monaco editor source-of-truth document sync with typed assertions (`exact`, `regex`, `numerical_tolerance`, `json_schema`), resilient SSE streaming with `Last-Event-ID` trace replay, persistent zero-config bootstrap authentication (`.aes/keys/bootstrap.key`), non-blocking `Viewer` role, and sliding-window IP rate limiting.
+- 🛡️ **Fail-Closed Airgap Boundary & Anti-DNS Rebinding**: Strict offline airgapped operation via `AIRGAPPED_MODE=true` and `AirgappedConfigurationError`. Enforces destination-IP resolution and private subnet validation (RFC 1918, loopback, link-local, private IPv6) across all HTTP adapters and LLM providers. Hardens against DNS rebinding via destination-IP pinning, redirect hop inspection, dynamic Visual Console CSP (`CONSOLE_CSP`) stripping external CDNs (`https://cdn.jsdelivr.net`), and offline bundling of local Mermaid diagram assets.
+- 🔒 **WORM Storage Tier Governance & Fail-Closed Certification Gate**: Formal classification of `LocalFileArtifactStore` as `TAMPER_EVIDENT_LOGICAL_SEAL`. Enforces `REQUIRE_IMMUTABLE_WORM=true` certification gate for fail-closed rejection of logical seals when physical hardware WORM storage is required by compliance policy. Propagates zero-touch WORM retention metadata (`retention_days`, `retention_until`, `legal_hold`) in `.meta.json` sidecars, sealed manifests, and plugin hook dispatches.
+- ⏸️ **Durable Human-in-the-Loop (HITL) Lifecycle & Monotonic Resumption**: Dedicated `RunSuspendedForApproval` exception and `PAUSED_FOR_APPROVAL` lifecycle state. File- and SQLite-backed `ApprovalStore` with cryptographic approval tokens. Monotonic trace sequence continuation (`is_resume=True`, `_seq = max(_seq) + 1`) in `FlightRecorder` preserving execution vaults without run ID collisions, and CLI resumption via `agentv hitl-resume`.
+- 🧬 **Unified 9-Vector Adversarial Mutation Matrix & Static Linter Chaining**: Formal 3D taxonomy coordinates ($V \times O \times T$) across 9 mutation vectors (Input, Context, Memory, Retrieval, Tool, State, Authorization, Temporal, Objective), 13 operations, and 6 risk tiers (35+ registered mutators). Direct integration of `ScenarioLinter` in-memory static analysis (`lint_dict()`) into `ScenarioMutator`, `agentv mutate`, and Visual Console `POST /v1/mutate` with tiered compliance scoring (`GOLD` 100/100, `SILVER` 80-99, `BRONZE`, `REJECTED`).
+- 📦 **Single-File Immutable Verification Packages (`.agentv-package.json`)**: Self-contained audit packages (`/api/v1/evidence/packages/<run_id>`) bundling full scenario definitions, resolved execution manifests, trace SHA3-256 digests, assertion proofs, and Ed25519 cryptographic provenance signatures conforming to NIST AI 100-1 and EU AI Act auditability guidelines. Split Package Verification API (`verify_package_signature_only`, `verify_package_artifacts`) and independent CLI `agentv verify-package`.
+- 📜 **RFC 8785 JSON Canonicalization (JCS) & SHA3-256 Standardization**: Pure RFC 8785 canonical encoding (`agentv_runtime.canonical`), whole-envelope detached trace sealing, external trust root anchoring, and standardization on SHA3-256 (FIPS 202) across all forensic hashes, session keys, and evidence ledgers. Public-key-only trace verification eliminating private key exposure.
 - ⚖️ **Server-Authoritative Outcome Derivation & Atomic Certification**: Certification Authority deriving verdicts and scores authoritatively from terminal execution events (`run_end`, `session_decision`, `evaluation_result`), strict prohibition of caller status/score overrides, 4-state fail-closed readiness (`BLOCKED`, `READY_TO_EXECUTE`, `READY_TO_CERTIFY`, `CERTIFIABLE`), and atomic two-phase certification transactions with rollback.
-- 🧬 **OSS Core Runtime 3D Mutation Engine**: Formal 3D taxonomy coordinates ($V \times O \times T$ across 13 target vectors, 13 operations, and 6 risk tiers), composable algebraic combinators (`sequence` / `+`, `repeat`, `probability`, `after_event`, `before_commit`, `between_steps`, `concurrent`), and dynamic in-run perturbation engine with deterministic seed chaining and audit lineage binding.
-- 🌐 **Centralized LLM Resilience & Zero-SDK Direct Transports**: Centralized error classifier (`eval_runner.llm_resilience`) mapping typed domain errors (`LLMQuotaExceededError`, `LLMRateLimitError`, etc.) with full-jitter exponential backoff retries, direct `aiohttp` REST transports (Anthropic, OpenAI, Grok, Ollama) and official `google-genai` SDK support.
+- 🔌 **Complete 12-Interface Extension Family Ecosystem (`agentv_runtime.interfaces`)**: Root authoritative contract package actively wiring all 12 public extension and storage interfaces (`ExecutionBackend`, `CheckpointStore`, `SigningBackend`, `ArtifactStore`, `PolicyEvaluator`, `AuthorizationBackend`, `CatalogStore`, `RunStore`, `LeaderboardStore`, `MutationEngine`, `BoundedStateProvider`, `ApprovalStore`). Decomposition of monolithic session management into 6 specialized subsystem managers (`TurnStateManager`, `ToolExecutionCoordinator`, `SessionCheckpointManager`, `SessionApprovalManager`, `SessionStateParityManager`, `SessionMetricsCalculator`).
+- ⚡ **High-Performance Zero-Touch CLI Dispatch Architecture**: Lazy subparser compilation and isolated dynamic entry-point discovery achieving sub-100ms startup times for lightweight commands (`--help`, `--version`, `aes validate`, `lint`, `inspect`). Added `agentv hitl-resume`, `agentv verify-package`, `agentv lint`, and authoritative `--execution-mode [live|hybrid|simulated]` on `agentv run`.
+- 🔍 **External Tool Receipts Ingestion & Provenance Boundaries**: Ingests agent self-reported external tool execution trajectories via typed `EXTERNAL_TOOL_CALL` and `EXTERNAL_TOOL_RESULT` events (`source="external_agent_telemetry"`, `provenance="reported"`) with strict provenance boundary isolation prohibiting masquerading as sandbox-authoritative. External State Authorities (`ExternalStateAuthority`) and Bounded State Contract (`BoundedStateProvider`) preventing memory exhaustion dumps.
+- 🌐 **Centralized LLM Resilience & Zero-SDK Direct Transports**: Centralized error classifier (`eval_runner.llm_resilience`) mapping typed domain errors (`LLMQuotaExceededError`, `LLMRateLimitError`, etc.) with full-jitter exponential backoff retries, direct `aiohttp` REST transports (Anthropic, OpenAI, Grok, Ollama), and official `google-genai` SDK support.
 - 🧪 **Dedicated Acceptance Testing Layer & CI Release Gate**: Schema-validated acceptance testing corpus (`tests/acceptance/`), decoupled contracts (`result.py`), golden matrix (`manifests/acceptance_matrix.yaml`), and zero-tolerance release gate (`tools/ci/acceptance_gate.py`).
 - 📜 **Multi-Tenant ExecutionManifest & Dual-Tier Readiness**: Immutable frozen [`ExecutionManifest`](agentv_runtime/manifest.py) binding tenant and workspace context, deterministic SHA3-256 `preflight_fingerprint` cache invalidation, and strict readiness gating (**Executable** vs **Verifiable**).
-- 🔌 **Zero-Trust Architecture & Active Extension Wiring**: Neutral architectural boundary actively wiring all 6 Extension Families (`ExecutionBackend`, `CheckpointStore`, `SigningBackend`, `ArtifactStore`, `PolicyEvaluator`, `AuthorizationBackend`) and storage backends (`CatalogStore`, `RunStore`, `LeaderboardStore`), sandboxed micro-frontends with Subresource Integrity (SRI), and durable SQLite checkpoint recovery.
 
 ## 📂 The Global Scenario Corpus
 
@@ -204,17 +210,20 @@ Comprehensive coverage for **50+ verticals** including:
 3.  **Run Evaluation**: 
     ```bash
     # Standard HTTP (default)
-    # Using Scenario ID alias (Cataloged)
-    agentv evaluate --path loan_risk
+    # Single Scenario Execution (with authoritative execution mode recorded)
+    agentv run --path loan_risk --execution-mode live
 
-    # Using project-relative path (Ad-hoc)
+    # Using project-relative path (Ad-hoc single scenario)
+    agentv run --path industries/telecom/scenario.json --execution-mode live
+
+    # Batch evaluation across an entire directory or pack
     agentv evaluate --path industries/telecom
 
     # Local Subprocess (stdin/stdout)
-    agentv evaluate --path my_scenarios/ --protocol local --agent-cmd "python my_agent.py"
+    agentv run --path my_scenarios/test.json --protocol local --agent-cmd "python my_agent.py"
 
     # Socket (TCP/Unix)
-    agentv evaluate --path tests/scenarios --protocol socket --agent-socket "localhost:9000"
+    agentv run --path tests/scenarios/test.json --protocol socket --agent-socket "localhost:9000"
     ```
 
 > [!NOTE]
@@ -247,13 +256,17 @@ The harness supports multiple ways to talk to your agent. Use the `--protocol` f
 - **Native Framework Adapters**: Full industrial-grade support for **LangChain**, **LangGraph**, **Microsoft AutoGen** (via `ag2://`), and **CrewAI** via a dynamic plugin-discovery system.
 - **High-Fidelity Industry Metrics**: Modular, pluggable evaluators for Defense (ROE, C2, Intelligence Fusion), Healthcare, and Finance. Features high-precision numerical extraction and domain-specific LLM rubrics.
 - **Tool Sandbox**: Governance-controlled execution with full VFS-aware state parity verification and TOCTOU barrier race protection.
-- **AST Mutation Testing Sentinel**: Surgical AST mutation testing pipeline enforcing >=90% kill rate (100% achieved) across verification modules.
-- **Integrated Visual Suite (`/v2`)**: Unified React dashboard featuring dynamic navigation manifest ingestion (`GET /api/nav`), runtime micro-frontend module federation, live trace replay, and visual debugging.
+- **AST Mutation Testing Sentinel**: Surgical AST mutation testing pipeline enforcing >=90% kill rate (100% achieved, 0 surviving mutants) across critical verification modules.
+- **Integrated Visual Suite**: Canonical React SPA featuring dynamic navigation manifest ingestion (`GET /api/nav`), runtime micro-frontend module federation, live trace replay, and visual debugging.
 - **Stratified Failure Taxonomy**: Formal, Enum-based failure registry (NIST-aligned) for precise, audit-grade root-cause diagnostics.
 - **Semantic Bridge**: Ingest production traces (`import-drift`) and analyze failures (`triage`).
 - **Judge Guarding**: Model-based scoring with support for OpenAI, Gemini, Claude, and Ollama.
 
 #### Advanced CLI Suite
+- **`run`**: Single-scenario execution with authoritative `--execution-mode [live|hybrid|simulated]` via `--path`.
+- **`evaluate`**: Batch evaluation across scenario directories or benchmark suites via `--path`.
+- **`hitl-resume`**: Resume an evaluation run paused during human review via `--run-id`, `--approval-token`, and `--decision APPROVED|REJECTED`.
+- **`verify-package`**: Independently verify an `.agentv-package.json` audit package with deep cryptographic and scenario binding checks.
 - **`list`**: Faceted search filtering across 5,000+ industry scenarios via `--search`.
 - **`lint`**: Automated quality scoring and AES compliance verification via `--path`.
 - **`install <pack>`**: Rapid deployment of curated, industry-specific scenario bundles (e.g., `telecom-pack`, `rag-agent-pack`).
@@ -305,16 +318,15 @@ Beyond the advanced suite, the harness provides a robust toolkit for professiona
 
 ## Integrated Visual Suite (Native GUI)
 
-The harness includes a unified **React-powered SPA** (`/v2`) that simplifies management of scenarios, runs, and visual debugging across all industries.
+The harness includes a canonical **React 18 + Vite SPA** that unifies scenario management, deterministic execution, and audit-grade verification across all industries.
 
 **Key Feature Hubs:**
-- **Dynamic Navigation & Micro-Frontends**: Dynamic manifest ingestion (`GET /api/nav`) and zero-recompilation runtime module federation via standard ESM `import()`.
-- **Scenario Explorer**: Browse the catalog with faceted filters, global search, and real-time **Quality Badges** (Lint scores).
-- **Visual AES Builder**: Construction of complex agentic evaluation sequences using a drag-and-drop node logic—outputs production-ready JSON.
-- **Reports & Traces Hub**: Historical execution timeline with detailed analysis and instant "View Report" navigation.
-- **Interactive Visual Debugger**: Real-time trajectory playback, state inspection, and trace export (JSON) for regression testing.
-- **Documentation Hub**: Categorized access to all Markdown guides, architectural diagrams, and API references.
-- **Sidebar Badging & Role Gating**: Support for status badges (`LIVE`, `APM`, `CUSTOM`), enterprise tier chips, and granular RBAC role gating.
+- **3-Pillar Information Architecture**: Structured around three first-class verification primitives: **Scenarios** (`/scenarios`, `/scenarios/compose`, `/suites`), **Runs** (`/runs`, `/reports`, `/debugger`, `/triage`), and **Evidence** (`/evidence/packages`, `/trust`, `/compliance`, `/publish`).
+- **Guided 6-Stage Verification Wizard**: Step-by-step workflow: *Connect Target Profile → Select Scenario/Suite → Review Resolved Config → Execute & Stream → Evidence-Linked Verification → Export Verification Package*.
+- **Interactive Visual Debugger**: Real-time Dagre LR execution DAG topology playback with Monaco editor document sync, typed assertions (`exact`, `regex`, `numerical_tolerance`, `json_schema`), resilient SSE streaming with `Last-Event-ID` trace replay, and scrollable State Parity inspection.
+- **Scenario Explorer & Composer**: Browse the global catalog with faceted filters, search, and real-time **Quality Badges** (Lint scores); edit scenarios non-destructively with node-level visual drag-and-drop.
+- **Trust Center & Cryptographic Sealing**: Verify trace evidence graphs, issue non-repudiable Verification Certificates (VC v3.0.0), and export single-file `.agentv-package.json` packages.
+- **Zero-Config Bootstrap Authentication**: Persistent 64-character SHA3-256 session key (`.aes/keys/bootstrap.key`, `0600` permissions) in development, non-blocking `Viewer` role, and sliding-window IP rate limiting.
 
 **Quick Launch:**
 ```bash
@@ -337,6 +349,9 @@ All configurable parameters are centralized in `eval_runner/config.py`. You can 
 | `AGENT_API_URL` | `http://localhost:5001/execute_task` | Agent entry point URL (HTTP) |
 | `EVAL_MAX_TURNS` | `10` | Max conversation turns per task |
 | `MAX_ENGINE_ATTEMPTS` | `50` | Security cap on evaluation attempts |
+| `AIRGAPPED_MODE` | `false` | Strict zero-egress fail-closed protection and destination-IP validation |
+| `REQUIRE_IMMUTABLE_WORM`| `false` | Fail-closed certification requirement for physical hardware WORM storage |
+| `EVAL_REQUIRE_SIGNING` | `false` | Require cryptographic Ed25519 signing for all execution traces |
 | `JUDGE_PROVIDER` | `ollama` | LLM Judge provider (`openai`, `anthropic`, `gemini`, `ollama`, `grok`) |
 | `JUDGE_MODEL` | *(None)* | Specific model for the judge |
 | `LUNA_JUDGE_TEMPERATURE`| `0.0` | Temperature for judge generation |
@@ -347,6 +362,7 @@ All configurable parameters are centralized in `eval_runner/config.py`. You can 
 | `GOOGLE_API_KEY` | *(None)* | API key for Google/Gemini provider |
 | `XAI_API_KEY` | *(None)* | API key for xAI/Grok provider |
 | `DASHBOARD_API_KEY`| *(None)* | Mandatory key for Visual Debugger & REST API security |
+| `CONSOLE_CSP_SCRIPT_SRC`| *(None)* | Optional operator CSP script-src directive override |
 | `EVAL_TURN_THROTTLE`| `0.0` | Artificial delay (seconds) between agent turns |
 | `DEFAULT_ADAPTER_TIMEOUT`| `30` | Network timeout for agent adapters |
 | `PLUGIN_TIMEOUT` | `5.0` | Execution timeout for plugin hooks |
@@ -357,12 +373,15 @@ All configurable parameters are centralized in `eval_runner/config.py`. You can 
 ### Security and Governance (Audit-Ready)
 The platform is built with a **Secure-by-Design** philosophy, complying with enterprise-grade audit standards.
 
+- **Fail-Closed Airgap Hardening**: Strict offline operation via `AIRGAPPED_MODE=true` with private subnet destination-IP validation (RFC 1918, loopback, link-local, private IPv6), anti-DNS rebinding defenses via destination-IP pinning, and dynamic CSP CDN stripping.
 - **PII/Secret Redaction**: Automatic, recursive scanning and redaction of JWTs, AWS keys, and PII from all event logs.
-- **Secure Handoff Architecture**: JWT-based authentication for between the core console and enterprise plugins.
+- **Zero-Config Bootstrap Authentication**: Persistent 64-character SHA3-256 session key generated in `.aes/keys/bootstrap.key` (POSIX `0600` permissions) with strict fail-fast production key enforcement.
+- **Secure Handoff Architecture**: JWT-based authentication between the core console and enterprise plugins.
 - **Tool Sandboxing**: Path traversal protection and shell-character neutralization for all tool executions.
-- **Tamper-evident logs**: Cryptographically sealed flight recorder traces (`run.jsonl`). OSS local storage is logically sealed; WORM retention requires an external ArtifactStore.
+- **WORM Tier Governance**: Open Core storage is classified as `TAMPER_EVIDENT_LOGICAL_SEAL`; compliance mandates for physical hardware WORM storage fail closed unless backed by an external WORM ArtifactStore (`REQUIRE_IMMUTABLE_WORM=true`).
+- **In-Archive ZIP Safety**: Direct in-memory verification of `.agentv-package.json` bundles with pre-extraction path traversal defense (anti-Zip Slip).
 - **Audit Controls**: Defense-in-depth security controls (DoS caps, Fork Bomb prevention, RCE guards, and jail isolation). See the [Security Guide](docs/src/content/docs/auditor/security.md) for generation and configuration instructions.
-- **Mandatory Authentication**: Protection of all console and bridge routes via the `DASHBOARD_API_KEY`.
+- **Mandatory Authentication**: Protection of all console and bridge routes via session authentication or `DASHBOARD_API_KEY`.
 
 ### 🗄️ Forensic Storage & Vaulting
 AgentV employs a **Strict Industrial Vault** methodology to protect run integrity:
@@ -432,20 +451,20 @@ This project follows an **Open Core** model. The open-source AgentV OS Runtime c
 | **Core Architecture** | ✅ Eval Engine, Hooks, JSON Schemas | ✅ Enterprise Service Bus Integration |
 | **Industry Benchmark Set** | ✅ 5,000+ Starter Scenarios | ✅ Prioritized Scenario Updates |
 | **Reliability Metrics** | ✅ `pass@k` multi-attempt scoring | ✅ Persistent Leaderboards & Consensus |
-| **Scenario Mutations** | 🔶 Basic (Typos & Ambiguity) | ✅ Adversarial Fuzzing & Prompt Injections |
-| **Execution Security** | 🔶 Basic Path/Shell Gating | ✅ Context Payload Caps & Overflow Guards |
+| **Scenario Mutations** | ✅ 9-Vector Matrix ($V \times O \times T$, 35+ mutators, Linter) | ✅ Distributed Adversarial Fuzzing & Enterprise Seed Pools |
+| **Execution Security** | 🔶 VFS Sandboxing & Tool Gating | ✅ Context Payload Caps & Overflow Guards |
 | **Privacy Protections** | ❌ No | ✅ Automatic PII Scanning & Redaction |
-| **Simulation** | 🔶 Real API required | ✅ High-Fidelity Labs (Bank, EHR/HL7, CRM) |
+| **Simulation** | 🔶 Real API & 20 World Shims | ✅ High-Fidelity Labs (Bank, EHR/HL7, CRM) |
 | **Compliance Suites** | ❌ No | ✅ Production-Ready (HIPAA, FINRA, GDPR, PCI) |
-| **Observability** | 🔶 Terminal output | ✅ OTEL Drift Gauges & Dashboard Feed |
-| **Defensibility Governance**| ❌ No | ✅ Tamper-evident chained integrity (external WORM required where immutable retention is mandated) |
-| **Integrity Checks** | ✅ Ed25519 Trace Validation | ✅ AES Scenario Merkle Sync (Root Verify) |
-| **Visual Debugger & GUI** | ✅ Local React Native App | ✅ Enterprise Dashboard & Secure Handoff |
-| **Reproduction Workflow** | 🔶 JSONL Only | ✅ Interactive Flight Recorder & Jupyter Repro |
-| **Parallel Engine** | 🔶 Sequential only | ✅ Ray/Local JobQueue Distributed Runs |
-| **Interactive Triage** | 🔶 Heuristic only | ✅ Multi-user Sync & Human Annotation |
-| **Advanced Sandbox** | 🔶 Path/Shell Gating | ✅ Hardened Docker Isolation & Red-Team Probes |
-| **Auth & Governance** | 🔶 Basic Auth | ✅ OIDC SSO, SCIM provisioning, PBAC, Managed Leaderboards |
+| **Observability** | 🔶 Live SSE Streaming & Flight Recorder | ✅ OTEL Drift Gauges & Enterprise APM Feed |
+| **Defensibility Governance**| ✅ Ed25519 Sealing, JCS, Logical WORM Packages | ✅ Physical Hardware WORM Retention & Legal Holds |
+| **Integrity Checks** | ✅ Ed25519 Trace Validation & RFC 8785 JCS | ✅ AES Scenario Merkle Sync (Root Verify) |
+| **Visual Debugger & GUI** | ✅ Canonical React 18 + Vite SPA | ✅ Enterprise Dashboard & Secure Handoff |
+| **Reproduction Workflow** | 🔶 Flight Recorder JSONL & HTML Reports | ✅ Interactive Cloud Replay & Jupyter Repro |
+| **Parallel Engine** | 🔶 Sequential & Local Worker Concurrency | ✅ Ray/Local JobQueue Distributed Runs |
+| **Interactive Triage** | 🔶 Heuristic Trace Diagnostics (`explain`) | ✅ Multi-user Sync & Human Annotation |
+| **Advanced Sandbox** | 🔶 VFS Path & Shell Gating | ✅ Hardened Docker Isolation & Red-Team Probes |
+| **Auth & Governance** | ✅ Zero-Config Bootstrap Key (`0600`), PBAC, RBAC | ✅ OIDC SSO, SCIM Provisioning, Managed Directories |
 
 **Legend:** ✅ Full Capability • 🔶 Basic/OSS Only • ❌ Enterprise Only
 
