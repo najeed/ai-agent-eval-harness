@@ -86,16 +86,16 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **GitPython** | 3.2.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **google-genai** | 2.29.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **langchain** | 1.4.4 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langchain-anthropic** | 1.7.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langchain-core** | 1.6.9 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-anthropic** | 1.7.6 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-core** | 1.6.10 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-google-genai** | 4.4.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **langchain-ollama** | 1.1.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langchain-openai** | 1.7.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-openai** | 1.7.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langgraph** | 1.2.14 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langserve** | 0.3.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langsmith** | 0.14.7 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **lxml** | 6.1.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **pypdf** | 6.20.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **pypdf** | 6.20.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **python-docx** | 1.2.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **reportlab** | 5.0.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **sentence-transformers** | 6.1.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
