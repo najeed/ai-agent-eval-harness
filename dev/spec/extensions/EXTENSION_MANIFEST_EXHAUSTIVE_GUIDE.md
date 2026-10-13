@@ -33,8 +33,8 @@ Fail-closed rules: unsigned remotes are unmountable; local-origin unsigned modul
 |---|---|
 | `publisher` | Signing identity in the trust root. REQUIRED when signed. |
 | `signature` | Hex Ed25519 over canonical bytes. REQUIRED when signed. Canonicalization: deterministic serialization with `signature` removed — never re-serialize by hand; use `RuntimeExtension.canonical_bytes()`. |
-| `sri_hash` | SHA3-256 hex of the ESM bundle. Required for any cross-origin entry. |
-| `remote_entry` | ESM URL for dynamic import after verification. |
+| `sri_hash` | `sha3-256-<base64>` SRI of the ESM entry bundle. Required for every signed entry. |
+| `remote_entry` | Runtime-published origin-relative ESM URL, imported by its real URL after verification. |
 
 ### Capabilities & permissions
 | Field | Notes |
@@ -68,12 +68,12 @@ The frontend consumes `data.tier` exclusively. A manifest field claiming `tier: 
 
 ## 4. Mount pipeline (host side)
 
-1. Fetch `remote_entry` → byte buffer.
-2. Verify SRI (`sri_hash`) → else `sri_failed`.
-3. Blob-URL + dynamic `import()` → module must export `manifest`.
-4. Structural validation → violations list ⇒ `contract_violation` screen.
-5. `POST verify-publisher` → resolveTier (authoritative) ⇒ failure ⇒ `publisher_failed`.
-6. Mount inside ExtensionHostProvider(tier) with capability-scoped APIs; unsigned-local renders the LOCAL warning strip.
+1. Fetch `remote_entry` and its signed `.manifest.json` sidecar without executing either module.
+2. Verify the entry's SHA3-256 SRI, then structurally validate the sidecar and bind its `remote_entry` and `sri_hash` to the requested descriptor.
+3. `POST verify-publisher` resolves the authoritative publisher tier; failure blocks mounting.
+4. Fetch and verify every declared safe-relative `verified_chunks` SHA3-256 digest.
+5. Dynamically import the verified `remote_entry` by its real origin-relative URL. Blob URLs are unsupported because they break normal ESM relative-chunk resolution.
+6. Revalidate the exported manifest and mount inside ExtensionHostProvider(tier) with capability-scoped APIs; unsigned-local renders the LOCAL warning strip.
 
 
 ---
@@ -95,8 +95,8 @@ The frontend consumes `data.tier` exclusively. A manifest field claiming `tier: 
     { "path": "/cp/fleet/packs", "label": "Managed Packs", "required_role": "System Admin" }
   ],
   "nav_group": "extensions",
-  "remote_entry": "https://cp.acme.example.com/remote/fleet.esm.js",
-  "sri_hash": "9f1c…e70a",
+  "remote_entry": "/extensions/fleet/1.2.3/entry.mjs",
+  "sri_hash": "sha3-256-…",
   "publisher": "acme-platform",
   "signature": "5b2d…88f1",
   "lifecycle": { "on_mount": "cpOnMount", "on_unmount": "cpOnUnmount", "on_error": "cpOnError" }
