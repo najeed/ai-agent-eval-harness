@@ -17,6 +17,8 @@ interface ExtensionNavItem {
   title?: string;
   path?: string;
   remoteEntry?: string;
+  componentName?: string;
+  type?: string;
   tier?: string;
   sriHash?: string;
 }
@@ -60,14 +62,15 @@ export const Settings: React.FC = () => {
   useEffect(() => {
     if (!canAccessSettings) return;
     fetchDoctor();
-    // [D2] Read-only Extension Host inventory: remote-capable nav entries.
-    // Trust tier + api version are advisory here; verify-publisher (server)
-    // remains the sole authority for mounting decisions.
+    // Read-only Extension Host inventory. Hosts may be signed remote
+    // bundles or trusted in-process Control Plane components.
     fetch('/api/nav')
       .then(res => res.json())
       .then(data => {
         const items = (Array.isArray(data?.nav) ? data.nav : []).filter(
-          (i: any) => i && typeof i === 'object' && !!i.remoteEntry
+          (i: any) => i && typeof i === 'object' && (
+            !!i.remoteEntry || (i.type === 'component' && typeof i.componentName === 'string')
+          )
         );
         setExtensions(items);
       })
@@ -230,15 +233,15 @@ export const Settings: React.FC = () => {
         </div>
 
         <p className="text-slate-400 text-xs leading-relaxed">
-          Remote-capable navigation entries contributed by runtime extensions. Trust tiers and
-          capability scopes are enforced server-side; this view is read-only inventory.
+          Registered extension hosts, including trusted in-process Control Plane components and
+          remote bundles. Trust tiers and capability scopes are enforced server-side; this view is read-only inventory.
         </p>
 
         {extensions === null ? (
           <p className="text-xs text-slate-500 italic">Loading extension registry...</p>
         ) : extensions.length === 0 ? (
           <p className="text-xs text-slate-500 italic">
-            No remote extensions registered. Core runtime routes only.
+            No extension hosts registered. Core runtime routes only.
           </p>
         ) : (
           <div className="space-y-2">
@@ -250,16 +253,22 @@ export const Settings: React.FC = () => {
                 <span className="text-xs font-bold text-slate-200">
                   {ext.name || ext.title || ext.id || 'Unnamed extension'}
                 </span>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border ${ext.remoteEntry
+                  ? 'bg-indigo-500/10 text-indigo-300 border-indigo-500/20'
+                  : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20'
+                  }`}>
+                  {ext.remoteEntry ? 'remote host' : 'in-process host'}
+                </span>
                 {ext.tier && (
                   <span className="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
                     {ext.tier}
                   </span>
                 )}
                 <span className="text-[10px] font-mono text-slate-500">api v{EXTENSION_CONTRACT_VERSION}</span>
-                <span className="text-[10px] font-mono text-slate-500 truncate ml-auto max-w-[40%]" title={ext.remoteEntry}>
-                  {ext.remoteEntry}
+                <span className="text-[10px] font-mono text-slate-500 truncate ml-auto max-w-[40%]" title={ext.remoteEntry || ext.componentName}>
+                  {ext.remoteEntry || ext.componentName}
                 </span>
-                {!ext.sriHash && (
+                {ext.remoteEntry && !ext.sriHash && (
                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 uppercase tracking-wider">
                     no SRI
                   </span>
@@ -270,8 +279,9 @@ export const Settings: React.FC = () => {
         )}
 
         <p className="text-[10px] text-slate-500 leading-snug">
-          Mount authorization is decided exclusively by the server-side verify-publisher trust root
-          (signature + publisher identity). Client badges are informational and never grant access.
+          Remote mount authorization is decided exclusively by the server-side verify-publisher trust root
+          (signature + publisher identity). In-process hosts are registered by the server plugin lifecycle.
+          Client badges are informational and never grant access.
         </p>
       </div>
 

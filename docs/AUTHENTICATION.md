@@ -93,14 +93,21 @@ In production environments (`AGENTV_ENV=production`):
 
 ### Mechanism
 - Used when bridging the Visual Console to sandboxed extension panels, remote components, or external verification micro-services.
-- An authenticated user requests a short-lived, audience-bound handoff token from `/api/auth/handoff?plugin_id=<ID>`.
+- An authenticated user requests a short-lived, audience-bound handoff token from `/api/auth/handoff` (POST with `plugin_id` in the body in production).
 - The token is a signed HS256 JWT containing:
   - `sub`: User ID / Principal
   - `aud`: `agentv-plugin`
   - `plugin_id`: Target extension / plugin identifier
   - `scope`: `console-handoff`
+  - normalized principal context when present: `sub`, `email`, `roles`, `permissions`, `org_id`, `tenant_id`, `workspace_id`, and `active_environment`
   - `exp`: 15 minutes (900 seconds)
   - `jti`: Unique token nonce
+
+The handoff token is a generic Console extension contract; Core does not import or expose Control Plane endpoints. Principal claims are copied only from the verified Console session, OIDC bearer token, or API-key principal. They are never taken from request headers, query parameters, or JSON (other than the target `plugin_id`). Extension services must validate signature, expiry, audience, plugin binding, and server-side PBAC and tenant ownership. Client-supplied context is presentation-only.
+
+### Authenticated SSE extension contract
+
+Production SSE routes accept same-origin browser `EventSource` connections through the HttpOnly Console session cookie. Do not put bearer tokens, API keys, or tenant/workspace/environment identifiers in a stream URL; Core rejects them. Header credentials remain available to non-browser clients. Reconnect replay uses the standard `Last-Event-ID` header; stream handlers must treat it only as an event cursor and re-run PBAC on every reconnect.
 
 ### Verification & Capability Boundary Status
 - **Server Enforcement**: Provided via `eval_runner.console.auth.handoff_required` — a published route decorator that extensions apply to their own routes. It validates `X-Handoff-Token` or `?token=` parameter for audience (`agentv-plugin`), signature, and expiration against `JWT_SECRET`. OSS-internal routes do not use this decorator because the OSS layer does not host extension-owned endpoints; the decorator is part of the **extension API contract** consumed by the enterprise control plane and other micro-frontends.

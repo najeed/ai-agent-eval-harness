@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import jwt
 import pytest
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 from eval_runner.console.auth import (
     auth_bp,
@@ -10,6 +10,7 @@ from eval_runner.console.auth import (
     get_jwt_secret,
     handoff_required,
 )
+from eval_runner.console.auth_manager import Permission, require_sse_permission
 
 
 @pytest.fixture
@@ -130,6 +131,64 @@ def test_handoff_endpoint_authenticated_success(client):
     assert resp.json["expires_in"] == 900
 
 
+def test_handoff_propagates_only_verified_principal_context(client):
+    """Request data cannot override the session's verified identity or tenant scope."""
+    with client.session_transaction() as sess:
+        sess["user"] = {
+            "id": "operator-1",
+            "email": "operator@example.com",
+            "roles": ["operator"],
+            "permissions": [Permission.EXTENSIONS_RUN],
+            "org_id": "org-verified",
+            "tenant_id": "tenant-verified",
+            "workspace_id": "workspace-verified",
+            "active_environment": "prod",
+        }
+
+    response = client.post(
+        "/api/auth/handoff",
+        json={
+            "plugin_id": "my-extension",
+            "roles": ["admin"],
+            "permissions": ["*"],
+            "tenant_id": "tenant-attacker",
+            "workspace_id": "workspace-attacker",
+        },
+        headers={"X-Tenant-Id": "tenant-header-attacker"},
+    )
+    assert response.status_code == 200
+    decoded = jwt.decode(
+        response.json["token"], get_jwt_secret(), algorithms=["HS256"], audience="agentv-plugin"
+    )
+    assert decoded["sub"] == "operator-1"
+    assert decoded["roles"] == ["operator"]
+    assert decoded["permissions"] == [Permission.EXTENSIONS_RUN]
+    assert decoded["org_id"] == "org-verified"
+    assert decoded["tenant_id"] == "tenant-verified"
+    assert decoded["workspace_id"] == "workspace-verified"
+    assert decoded["active_environment"] == "prod"
+
+
+def test_sse_contract_uses_session_and_rejects_url_credentials_and_tenant_context(app, monkeypatch):
+    """EventSource-style session auth retains replay headers but refuses URL secrets/context."""
+    monkeypatch.delenv("AGENTV_TEST_AUTH_BYPASS", raising=False)
+
+    @app.route("/events")
+    @require_sse_permission(Permission.RUNS_READ)
+    def events():
+        return jsonify({"last_event_id": request.headers.get("Last-Event-ID")})
+
+    client = app.test_client()
+    with client.session_transaction() as sess:
+        sess["user"] = {"id": "viewer", "permissions": [Permission.RUNS_READ]}
+
+    good = client.get("/events", headers={"Last-Event-ID": "42"})
+    assert good.status_code == 200
+    assert good.json["last_event_id"] == "42"
+    assert client.get("/events?token=secret").status_code == 400
+    assert client.get("/events?tenant_id=other-tenant").status_code == 400
+
+
 def test_handoff_endpoint_production_rejects_get(client, monkeypatch):
     """In production, GET /api/auth/handoff must be rejected with 405 (POST required)."""
     from eval_runner.console.auth_manager import Permission
@@ -216,6 +275,76 @@ def test_auth_me_endpoint(client):
         assert "user" in data
         assert "role" in data["user"]
         assert "permissions" in data["user"]
+
+
+def test_auth_me_returns_allowlisted_verified_context_without_secrets(client):
+    """The context read model is session-authoritative and credential-free."""
+    with client.session_transaction() as sess:
+        sess["user"] = {
+            "id": "operator-1",
+            "email": "operator@example.com",
+            "name": "Operator",
+            "roles": ["operator"],
+            "permissions": [Permission.RUNS_READ],
+            "org_id": "org-verified",
+            "tenant_id": "tenant-verified",
+            "workspace_id": "workspace-verified",
+            "active_environment": "production",
+            "access_token": "must-not-leak",
+            "api_key": "must-not-leak",
+        }
+
+    response = client.get(
+        "/api/auth/me?tenant_id=tenant-attacker",
+        headers={"X-Tenant-Id": "tenant-header-attacker"},
+    )
+    assert response.status_code == 200
+    body = response.json
+    assert body["authenticated"] is True
+    assert body["context_version"] == "1"
+    assert body["context"] == {
+        "org_id": "org-verified",
+        "tenant_id": "tenant-verified",
+        "workspace_id": "workspace-verified",
+        "active_environment": "production",
+    }
+    assert body["user"]["email"] == "operator@example.com"
+    assert body["user"]["roles"] == ["operator"]
+    assert body["user"]["tenant_id"] == "tenant-verified"
+    assert "access_token" not in body["user"]
+    assert "api_key" not in body["user"]
+
+
+def test_auth_me_unauthenticated_response_remains_compatible(client, monkeypatch):
+    monkeypatch.setattr("eval_runner.config.ENABLE_DEMO", False)
+    monkeypatch.setenv("DEV_PERSONA_SIMULATOR", "false")
+    response = client.get("/api/auth/me", environ_base={"REMOTE_ADDR": "192.0.2.1"})
+    assert response.status_code == 200
+    assert response.json == {"authenticated": False, "user": None, "is_dev_mode": False}
+
+
+@patch("eval_runner.console.auth_manager.get_auth_provider")
+def test_auth_me_bearer_principal_exposes_normalized_oidc_context(mock_get_provider, client):
+    provider = MagicMock()
+    provider.verify_token.return_value = {
+        "id": "oidc-operator",
+        "email": "oidc@example.com",
+        "roles": ["auditor"],
+        "permissions": [Permission.CERTIFY_WRITE],
+        "org_id": "org-oidc",
+        "tenant_id": "tenant-oidc",
+        "workspace_id": "workspace-oidc",
+        "active_environment": "staging",
+        "type": "oidc-sso",
+    }
+    mock_get_provider.return_value = provider
+
+    response = client.get("/api/auth/me", headers={"Authorization": "Bearer verified-oidc-token"})
+    assert response.status_code == 200
+    assert response.json["user"]["role"] == "Compliance Auditor"
+    assert response.json["user"]["roles"] == ["auditor"]
+    assert response.json["context"]["tenant_id"] == "tenant-oidc"
+    provider.verify_token.assert_called_once_with("verified-oidc-token")
 
 
 @patch("eval_runner.console.auth_manager.get_auth_provider")

@@ -15,7 +15,7 @@ from eval_runner.metrics import MetricRegistry
 from eval_runner.services.certification import CertificationService
 from eval_runner.services.run_summary import RunSummaryService
 
-from ..auth_manager import Permission, require_permission
+from ..auth_manager import Permission, require_permission, require_sse_permission
 
 logger = logging.getLogger(__name__)
 
@@ -425,7 +425,7 @@ def _authoritative_verdict(run_id: str) -> str:
 
 
 @run_bp.route("/v1/runs/stream-list", methods=["GET"])
-@require_permission(Permission.RUNS_READ)
+@require_sse_permission(Permission.RUNS_READ)
 def stream_runs_list():
     """Streams the run list incrementally in chunks every 1 second (SSE)."""
 
@@ -999,7 +999,7 @@ def tail_file_generator(
 
 
 @run_bp.route("/v1/runs/<path:run_id>/stream", methods=["GET"])
-@require_permission(Permission.RUNS_READ)
+@require_sse_permission(Permission.RUNS_READ)
 def stream_run_logs(run_id):
     """SSE streaming endpoint for live run traces with Last-Event-ID replay support."""
     last_id_str = (

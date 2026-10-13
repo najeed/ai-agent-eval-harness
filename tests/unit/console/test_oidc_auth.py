@@ -71,6 +71,11 @@ def test_oidc_jwt_verification_success():
             "email": "user@example.com",
             "name": "Jane Doe",
             "permissions": [Permission.SCENARIOS_READ, Permission.RUNS_READ],
+            "roles": ["auditor"],
+            "org_id": "org-123",
+            "tenant_id": "tenant-123",
+            "workspace_id": "workspace-123",
+            "environment": "production",
             "iss": "https://auth.example.com",
             "aud": "agentv-service",
         }
@@ -87,6 +92,11 @@ def test_oidc_jwt_verification_success():
             assert user["name"] == "Jane Doe"
             assert Permission.SCENARIOS_READ in user["permissions"]
             assert user["type"] == "oidc-sso"
+            assert user["roles"] == ["auditor"]
+            assert user["org_id"] == "org-123"
+            assert user["tenant_id"] == "tenant-123"
+            assert user["workspace_id"] == "workspace-123"
+            assert user["active_environment"] == "production"
 
             mock_decode.assert_called_once_with(
                 "valid-jwt-token-string",

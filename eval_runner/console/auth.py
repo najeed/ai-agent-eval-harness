@@ -18,6 +18,17 @@ logger = logging.getLogger(__name__)
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 
+HANDOFF_PRINCIPAL_CLAIMS = (
+    "email",
+    "roles",
+    "permissions",
+    "org_id",
+    "tenant_id",
+    "workspace_id",
+    "active_environment",
+)
+CONTEXT_CLAIMS = ("org_id", "tenant_id", "workspace_id", "active_environment")
+
 # Sliding-window rate limiting for /api/auth/login (S1 DevSecOps Hardening)
 _FAILED_LOGIN_ATTEMPTS: dict[str, list[float]] = {}
 _LOGIN_ATTEMPT_LOCK = threading.Lock()
@@ -69,7 +80,7 @@ def generate_handoff_token(
     plugin_id: str = "control-plane",
     audience: str = "agentv-plugin",
     expires_in_seconds: int = 900,
-    **extra_claims: Any,
+    **principal_claims: Any,
 ) -> str:
     """
     Generates a cryptographically signed, short-lived, audience-bound JWT
@@ -85,7 +96,12 @@ def generate_handoff_token(
         "scope": "console-handoff",
         "jti": secrets.token_hex(16),
     }
-    payload.update(extra_claims)
+    # Handoff tokens deliberately have a narrow, stable principal schema.
+    # Callers cannot smuggle unrelated request data into an extension token.
+    for claim in HANDOFF_PRINCIPAL_CLAIMS:
+        value = principal_claims.get(claim)
+        if value is not None:
+            payload[claim] = value
     return jwt.encode(payload, get_jwt_secret(), algorithm="HS256")
 
 
@@ -246,7 +262,10 @@ def get_handoff_token():
         ), 400
 
     sub = user.get("id") or "authenticated-user"
-    token = generate_handoff_token(sub=sub, plugin_id=plugin_id)
+    principal_claims = {
+        claim: user[claim] for claim in HANDOFF_PRINCIPAL_CLAIMS if user.get(claim) is not None
+    }
+    token = generate_handoff_token(sub=sub, plugin_id=plugin_id, **principal_claims)
     return jsonify(
         {
             "token": token,
@@ -310,6 +329,12 @@ def get_current_user():
         ), 200
 
     perms = user.get("permissions", [])
+    if isinstance(perms, str):
+        perms = perms.split()
+    roles = user.get("roles", [])
+    if isinstance(roles, str):
+        roles = [roles]
+    context = {claim: user.get(claim) for claim in CONTEXT_CLAIMS}
     # Infer standard role label from permissions if not explicitly stored
     role = user.get("role")
     if not role:
@@ -325,16 +350,17 @@ def get_current_user():
     return jsonify(
         {
             "authenticated": True,
+            "context_version": "1",
+            "context": context,
             "user": {
                 "id": user.get("id", "user"),
+                "email": user.get("email") or None,
                 "name": user.get("name", "Authenticated User"),
                 "role": role,
+                "roles": roles,
                 "permissions": perms,
                 "type": user.get("type", "session"),
-                "tenant_id": user.get("tenant_id")
-                or getattr(config, "TENANT_ID", None)
-                or "tenant-default",
-                "workspace_id": user.get("workspace_id", "ws-default"),
+                **context,
                 "is_dev_mode": is_dev_mode,
             },
         }
@@ -399,7 +425,9 @@ def login():
         else "MultiAgentOps Eng."
     )
     user["role"] = role
-    user["workspace_id"] = data.get("workspace_id", "ws-default")
+    # Workspace scope must originate with the authenticated provider.  A login
+    # request is not an authority to select or elevate tenant context.
+    user.setdefault("workspace_id", "ws-default")
 
     # Populate industrial-grade PBAC session
     session["user"] = user

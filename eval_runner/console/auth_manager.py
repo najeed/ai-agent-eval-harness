@@ -99,12 +99,25 @@ class StaticKeyProvider(AuthManager):
             ptype = principal.metadata.get(
                 "type", "static-root" if principal.principal_id == "root-admin" else "backend-auth"
             )
-            return {
+            user = {
                 "id": principal.principal_id,
                 "name": principal.metadata.get("name", principal.principal_id),
                 "permissions": perms,
                 "type": ptype,
             }
+            # Context is supplied by the authorization backend, never by a
+            # Console request.  Preserve it when a backend supports it.
+            for claim in (
+                "email",
+                "roles",
+                "org_id",
+                "tenant_id",
+                "workspace_id",
+                "active_environment",
+            ):
+                if claim in principal.metadata:
+                    user[claim] = principal.metadata[claim]
+            return user
 
         if not self.key or credentials != self.key:
             return None
@@ -151,8 +164,12 @@ class StaticKeyProvider(AuthManager):
                 payload = jwt.decode(token, signing_key.key, **kwargs)
 
                 permissions = payload.get("permissions", [])
+                if isinstance(permissions, str):
+                    permissions = permissions.split()
                 if not permissions:
                     roles = payload.get("roles", [])
+                    if isinstance(roles, str):
+                        roles = [roles]
                     if "admin" in roles or "system-admin" in roles:
                         permissions = Permission.ADMIN()
                     else:
@@ -160,13 +177,24 @@ class StaticKeyProvider(AuthManager):
                         if scope:
                             permissions = scope.split(" ")
 
-                return {
+                user = {
                     "id": payload.get("sub", "unknown-oidc-user"),
                     "email": payload.get("email", ""),
                     "name": payload.get("name", payload.get("preferred_username", "OIDC User")),
                     "permissions": permissions,
                     "type": "oidc-sso",
                 }
+                # These are normalized from the verified OIDC payload so
+                # downstream extension handoffs can retain tenant context.
+                if "roles" in payload:
+                    user["roles"] = roles if "roles" in locals() else payload["roles"]
+                for claim in ("org_id", "tenant_id", "workspace_id"):
+                    if claim in payload:
+                        user[claim] = payload[claim]
+                environment = payload.get("active_environment", payload.get("environment"))
+                if environment is not None:
+                    user["active_environment"] = environment
+                return user
             except Exception as e:
                 if os.getenv("DEBUG", "false").lower() == "true":
                     print(f"   [Auth] JWT Verification failed: {e}")
@@ -306,6 +334,47 @@ def require_permission(permission_node: str):
                 )
 
             return jsonify({"error": "Unauthorized: Invalid or missing API Key"}), 401
+
+        return decorated_function
+
+    return decorator
+
+
+def require_sse_permission(permission_node: str):
+    """Authorize an SSE route without accepting credentials or tenant scope in its URL.
+
+    Same-origin ``EventSource`` reconnects authenticate through the HttpOnly
+    Console session cookie.  Non-browser clients may use normal headers, but
+    URL credentials and presentation tenant context are categorically refused.
+    ``Last-Event-ID`` remains the replay authority.
+    """
+
+    from functools import wraps
+
+    from flask import jsonify, request
+
+    forbidden_query_keys = {
+        "token",
+        "access_token",
+        "authorization",
+        "apiKey",
+        "api_key",
+        "tenant_id",
+        "org_id",
+        "workspace_id",
+        "active_environment",
+        "environment",
+    }
+
+    def decorator(f):
+        @wraps(f)
+        @require_permission(permission_node)
+        def decorated_function(*args, **kwargs):
+            if forbidden_query_keys.intersection(request.args.keys()):
+                return jsonify(
+                    {"error": "SSE credentials and tenant context must not be sent in the URL"}
+                ), 400
+            return f(*args, **kwargs)
 
         return decorated_function
 

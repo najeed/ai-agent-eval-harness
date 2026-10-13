@@ -25,8 +25,17 @@ For CI/CD and programmatic orchestration, bypass session state by providing the 
 - **Header**: `X-Api-Key: {SERVICE_API_KEY}`
 - **Note**: The harness prioritizes `SERVICE_API_KEY` for programmatic headers, falling back to `DASHBOARD_API_KEY` if not configured.
 
-#### `GET /api/auth/handoff`
-Generates a short-lived (60s) JWT handoff token for secure frontend-to-plugin communication.
+#### `POST /api/auth/handoff`
+Generates a short-lived (900s), audience- and plugin-bound JWT for secure
+frontend-to-plugin communication. In development, `GET` remains available for
+compatibility. The token includes only normalized claims from the verified
+principal: `sub`, `email`, `roles`, `permissions`, `org_id`, `tenant_id`,
+`workspace_id`, and `active_environment` when present. Extensions must enforce
+PBAC and tenant ownership server-side; client context is presentation-only.
+
+For SSE, same-origin `EventSource` uses the HttpOnly Console session cookie.
+Do not encode credentials or tenant context in stream URLs; reconnect using
+`Last-Event-ID` replay instead.
 
 ---
 
