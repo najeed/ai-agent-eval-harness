@@ -19,6 +19,9 @@ logger = logging.getLogger(__name__)
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 
 HANDOFF_PRINCIPAL_CLAIMS = (
+    "context_version",
+    "context",
+    "authorized_contexts",
     "email",
     "roles",
     "permissions",
@@ -28,6 +31,7 @@ HANDOFF_PRINCIPAL_CLAIMS = (
     "active_environment",
 )
 CONTEXT_CLAIMS = ("org_id", "tenant_id", "workspace_id", "active_environment")
+_REVOKED_HANDOFF_JTIS: set[str] = set()
 
 # Sliding-window rate limiting for /api/auth/login (S1 DevSecOps Hardening)
 _FAILED_LOGIN_ATTEMPTS: dict[str, list[float]] = {}
@@ -164,6 +168,8 @@ def handoff_required(
                 return jsonify({"error": "Token expired"}), 401
             except jwt.InvalidTokenError as e:
                 return jsonify({"error": f"Invalid token: {e}"}), 401
+            if decoded.get("jti") in _REVOKED_HANDOFF_JTIS:
+                return jsonify({"error": "Token revoked"}), 401
 
             # Validate scope binding
             token_scope = decoded.get("scope")
@@ -227,7 +233,12 @@ def get_handoff_token():
             405,
         )
 
-    from .auth_manager import Permission, extract_credentials_from_context, get_auth_provider
+    from .auth_manager import (
+        Permission,
+        extract_credentials_from_context,
+        get_auth_provider,
+        normalize_entitlements,
+    )
 
     provider = get_auth_provider()
     user = session.get("user")
@@ -244,6 +255,10 @@ def get_handoff_token():
         return jsonify(
             {"error": "Unauthorized: authenticated operator session or API key required"}
         ), 401
+    try:
+        user = normalize_entitlements(user)
+    except ValueError:
+        return jsonify({"error": "Invalid configured principal entitlements"}), 403
 
     if not provider.has_permission(user, Permission.EXTENSIONS_RUN):
         return jsonify(
@@ -266,6 +281,8 @@ def get_handoff_token():
         claim: user[claim] for claim in HANDOFF_PRINCIPAL_CLAIMS if user.get(claim) is not None
     }
     token = generate_handoff_token(sub=sub, plugin_id=plugin_id, **principal_claims)
+    decoded = jwt.decode(token, get_jwt_secret(), algorithms=["HS256"], audience="agentv-plugin")
+    session.setdefault("handoff_jtis", []).append(decoded["jti"])
     return jsonify(
         {
             "token": token,
@@ -283,7 +300,7 @@ def get_current_user():
     Returns the server-authoritative authenticated identity, role,
     and granular permissions for the active session.
     """
-    from .auth_manager import Permission, get_auth_provider
+    from .auth_manager import Permission, get_auth_provider, normalize_entitlements
 
     provider = get_auth_provider()
     user = session.get("user")
@@ -315,8 +332,6 @@ def get_current_user():
             "role": "System Admin",
             "permissions": Permission.ADMIN(),
             "type": "local-dev",
-            "workspace_id": "ws-default",
-            "tenant_id": getattr(config, "TENANT_ID", None) or "tenant-default",
         }
 
     if not user:
@@ -327,6 +342,16 @@ def get_current_user():
                 "is_dev_mode": is_dev_mode,
             }
         ), 200
+    try:
+        user = normalize_entitlements(user)
+    except ValueError:
+        return jsonify(
+            {
+                "authenticated": False,
+                "user": None,
+                "error": "Invalid configured principal entitlements",
+            }
+        ), 403
 
     perms = user.get("permissions", [])
     if isinstance(perms, str):
@@ -350,8 +375,9 @@ def get_current_user():
     return jsonify(
         {
             "authenticated": True,
-            "context_version": "1",
+            "context_version": user.get("context_version", "2"),
             "context": context,
+            "authorized_contexts": user.get("authorized_contexts", []),
             "user": {
                 "id": user.get("id", "user"),
                 "email": user.get("email") or None,
@@ -367,6 +393,47 @@ def get_current_user():
     )
 
 
+@auth_bp.route("/context", methods=["POST"])
+def switch_context():
+    """Atomically select an already provider-authorized workspace/environment."""
+    from .auth_manager import normalize_entitlements
+
+    user = session.get("user")
+    if not user:
+        return jsonify({"error": "Unauthorized"}), 401
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict) or set(data) != {"workspace_id", "active_environment"}:
+        return jsonify({"error": "workspace_id and active_environment are required"}), 400
+    workspace_id, environment = data["workspace_id"], data["active_environment"]
+    if not isinstance(workspace_id, str) or not isinstance(environment, str):
+        return jsonify({"error": "Invalid requested context"}), 400
+    try:
+        normalized = normalize_entitlements(user)
+    except ValueError:
+        return jsonify({"error": "Invalid configured principal entitlements"}), 403
+    entry = next(
+        (
+            item
+            for item in normalized["authorized_contexts"]
+            if item["workspace_id"] == workspace_id and environment in item["environments"]
+        ),
+        None,
+    )
+    if entry is None:
+        return jsonify({"error": "Requested context is not authorized"}), 403
+    # No session mutation occurs until all validation succeeds.
+    context = {key: entry[key] for key in CONTEXT_CLAIMS[:-1]}
+    context["active_environment"] = environment
+    normalized.update(context)
+    normalized["context"] = context
+    for jti in session.get("handoff_jtis", []):
+        _REVOKED_HANDOFF_JTIS.add(jti)
+    normalized["handoff_jtis"] = []
+    session["user"] = normalized
+    session["handoff_jtis"] = []
+    return jsonify({"context_version": "2", "context": context})
+
+
 @auth_bp.route("/logout", methods=["POST"])
 def logout():
     """Terminates the active session and clears authentication cookies."""
@@ -377,7 +444,7 @@ def logout():
 @auth_bp.route("/login", methods=["POST"], strict_slashes=False)
 def login():
     """Standard PBAC Login Gate for the Visual Suite."""
-    from .auth_manager import Permission, get_auth_provider
+    from .auth_manager import Permission, get_auth_provider, normalize_entitlements
 
     ip = request.remote_addr or "127.0.0.1"
     now = time.time()
@@ -413,13 +480,20 @@ def login():
         with _LOGIN_ATTEMPT_LOCK:
             _FAILED_LOGIN_ATTEMPTS.setdefault(ip, []).append(now)
         return jsonify({"error": "Unauthorized: Invalid API Key"}), 401
+    try:
+        user = normalize_entitlements(user)
+    except ValueError:
+        return jsonify({"error": "Invalid configured principal entitlements"}), 403
 
     # Successful authentication resets failed attempts counter
     with _LOGIN_ATTEMPT_LOCK:
         _FAILED_LOGIN_ATTEMPTS.pop(ip, None)
 
     perms = user.get("permissions", [])
-    role = (
+    # A verified identity provider may supply one of the Console's explicit
+    # display roles (for example Clinical HITL Reviewer).  Preserve it; only
+    # infer a label when the provider did not provide one.
+    role = user.get("role") or (
         "System Admin"
         if ("*" in perms or set(Permission.ADMIN()).issubset(set(perms)))
         else "MultiAgentOps Eng."
@@ -427,8 +501,6 @@ def login():
     user["role"] = role
     # Workspace scope must originate with the authenticated provider.  A login
     # request is not an authority to select or elevate tenant context.
-    user.setdefault("workspace_id", "ws-default")
-
     # Populate industrial-grade PBAC session
     session["user"] = user
     session.permanent = True
@@ -442,7 +514,7 @@ def login():
                 "id": user["id"],
                 "role": role,
                 "permissions": user["permissions"],
-                "workspace_id": user["workspace_id"],
+                "workspace_id": user.get("workspace_id"),
             },
         }
     )

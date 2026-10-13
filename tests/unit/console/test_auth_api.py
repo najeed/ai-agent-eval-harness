@@ -11,6 +11,7 @@ from eval_runner.console.auth import (
     handoff_required,
 )
 from eval_runner.console.auth_manager import Permission, require_sse_permission
+from eval_runner.console.routes.runs import run_bp
 
 
 @pytest.fixture
@@ -301,7 +302,7 @@ def test_auth_me_returns_allowlisted_verified_context_without_secrets(client):
     assert response.status_code == 200
     body = response.json
     assert body["authenticated"] is True
-    assert body["context_version"] == "1"
+    assert body["context_version"] == "2"
     assert body["context"] == {
         "org_id": "org-verified",
         "tenant_id": "tenant-verified",
@@ -399,6 +400,134 @@ def test_auth_secret_and_token_branches():
 
     tok = generate_handoff_token("user-1", "admin", "custom-plugin")
     assert isinstance(tok, str)
+
+
+def test_context_switch_is_entitlement_authorized_and_revokes_stale_handoff(client):
+    @client.application.route("/stale-handoff")
+    @handoff_required
+    def stale_handoff():
+        return jsonify({"ok": True})
+
+    user = {
+        "id": "operator",
+        "permissions": [Permission.EXTENSIONS_RUN],
+        "roles": ["configured-role"],
+        "context_version": "2",
+        "context": {
+            "org_id": "org-a",
+            "tenant_id": "tenant-a",
+            "workspace_id": "ws-a",
+            "active_environment": "staging",
+        },
+        "authorized_contexts": [
+            {
+                "org_id": "org-a",
+                "tenant_id": "tenant-a",
+                "workspace_id": "ws-a",
+                "environments": ["staging", "sandbox"],
+            },
+            {
+                "org_id": "org-b",
+                "tenant_id": "tenant-b",
+                "workspace_id": "ws-b",
+                "environments": ["production"],
+            },
+        ],
+    }
+    with client.session_transaction() as sess:
+        sess["user"] = user
+    old = client.post("/api/auth/handoff", json={"plugin_id": "extension"}).json["token"]
+    assert (
+        client.post(
+            "/api/auth/context", json={"workspace_id": "ws-b", "active_environment": "staging"}
+        ).status_code
+        == 403
+    )
+    assert client.get("/api/auth/me").json["context"]["tenant_id"] == "tenant-a"
+    assert (
+        client.post(
+            "/api/auth/context",
+            json={
+                "workspace_id": "ws-b",
+                "active_environment": "production",
+                "tenant_id": "attacker",
+            },
+        ).status_code
+        == 400
+    )
+    changed = client.post(
+        "/api/auth/context", json={"workspace_id": "ws-b", "active_environment": "production"}
+    )
+    assert changed.status_code == 200
+    assert changed.json["context"]["tenant_id"] == "tenant-b"
+
+    assert client.get("/stale-handoff", headers={"X-Handoff-Token": old}).status_code == 401
+    new = client.post("/api/auth/handoff", json={"plugin_id": "extension"}).json["token"]
+    decoded = jwt.decode(new, get_jwt_secret(), algorithms=["HS256"], audience="agentv-plugin")
+    assert decoded["tenant_id"] == "tenant-b"
+    assert decoded["roles"] == ["configured-role"]
+
+
+def test_malformed_entitlements_fail_closed(client):
+    with client.session_transaction() as sess:
+        sess["user"] = {
+            "id": "bad",
+            "permissions": [],
+            "context_version": "2",
+            "context": {},
+            "authorized_contexts": [],
+        }
+    assert client.get("/api/auth/me").status_code == 403
+
+
+def test_duplicate_entitlement_tuple_fails_closed(client):
+    context = {"org_id": "o", "tenant_id": "t", "workspace_id": "w", "active_environment": "dev"}
+    entry = {"org_id": "o", "tenant_id": "t", "workspace_id": "w", "environments": ["dev"]}
+    with client.session_transaction() as sess:
+        sess["user"] = {
+            "id": "bad",
+            "permissions": [],
+            "context_version": "2",
+            "context": context,
+            "authorized_contexts": [entry, dict(entry)],
+        }
+    assert client.get("/api/auth/me").status_code == 403
+
+
+def test_cross_tenant_run_read_is_non_enumerating(client, app, tmp_path, monkeypatch):
+    """A verified tenant cannot learn whether another tenant's run exists."""
+    app.register_blueprint(run_bp)
+    run_dir = tmp_path / "cross-tenant-run"
+    run_dir.mkdir()
+    (run_dir / "run_manifest.json").write_text(
+        '{"metadata":{"runtime_context":{"org_id":"other-org","tenant_id":"other-tenant","workspace_id":"other-workspace","active_environment":"production"}}}',
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("eval_runner.console.routes.runs.config.RUN_LOG_DIR", tmp_path)
+    with client.session_transaction() as sess:
+        sess["user"] = {
+            "id": "operator",
+            "permissions": [Permission.RUNS_READ],
+            "context_version": "2",
+            "context": {
+                "org_id": "org",
+                "tenant_id": "tenant",
+                "workspace_id": "workspace",
+                "active_environment": "staging",
+            },
+            "authorized_contexts": [
+                {
+                    "org_id": "org",
+                    "tenant_id": "tenant",
+                    "workspace_id": "workspace",
+                    "environments": ["staging"],
+                }
+            ],
+        }
+    response = client.get(
+        "/v1/runs/cross-tenant-run?tenant_id=other-tenant", headers={"X-Tenant-Id": "other-tenant"}
+    )
+    assert response.status_code == 404
 
 
 @patch("eval_runner.console.auth_manager.get_auth_provider")

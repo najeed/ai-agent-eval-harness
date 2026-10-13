@@ -118,6 +118,13 @@ class SimpleAPIKeyAuthBackend(AuthorizationBackend):
                 roles=info.get("roles", []),
                 permissions=info.get("permissions", []),
                 metadata=info.get("metadata", {}),
+                context_version=info.get(
+                    "context_version", info.get("metadata", {}).get("context_version")
+                ),
+                context=info.get("context", info.get("metadata", {}).get("context")),
+                authorized_contexts=info.get(
+                    "authorized_contexts", info.get("metadata", {}).get("authorized_contexts")
+                ),
             )
 
         # Fallback to master key match

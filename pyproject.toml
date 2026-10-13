@@ -42,7 +42,7 @@ dependencies = [
 # 1. Direct Native Provider SDKs
 # (OpenAI, Anthropic, Grok, Ollama connect directly via aiohttp; no external Python SDKs required)
 provider-gemini = [
-    "google-genai==2.30.0",
+    "google-genai==2.30.1",
 ]
 
 # 2. Framework Environments (Evaluated and verified agent architectures)
@@ -71,7 +71,7 @@ langchain-anthropic = [
     "langchain-anthropic>=1.7.6",
 ]
 langchain-gemini = [
-    "langchain-google-genai>=4.4.1",
+    "langchain-google-genai>=4.4.2",
 ]
 langchain-ollama = [
     "langchain-ollama>=1.1.0",
@@ -113,7 +113,7 @@ langchain-all = [
     "langchain-core>=1.6.10",
     "langchain-openai==1.7.1",
     "langchain-anthropic>=1.7.6",
-    "langchain-google-genai>=4.4.1",
+    "langchain-google-genai>=4.4.2",
     "langchain-ollama>=1.1.0",
     "langsmith==0.14.8",
 ]
@@ -121,7 +121,7 @@ langchain-all = [
 all = [
     "sentence-transformers==6.1.0",
     "datasets==5.1.0",
-    "google-genai==2.30.0",
+    "google-genai==2.30.1",
     "langchain==1.4.5",
     "langchain-core>=1.6.10",
     "langserve>=0.3.3",
@@ -130,7 +130,7 @@ all = [
 #    "crewai==1.15.27; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
     "langchain-openai==1.7.1",
     "langchain-anthropic>=1.7.6",
-    "langchain-google-genai>=4.4.1",
+    "langchain-google-genai>=4.4.2",
     "langchain-ollama>=1.1.0",
     "langsmith==0.14.8",
     "pypdf==6.20.1",

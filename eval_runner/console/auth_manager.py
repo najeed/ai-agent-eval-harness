@@ -1,5 +1,7 @@
+import json
 import os
 from abc import ABC, abstractmethod
+from pathlib import Path
 
 from eval_runner.interfaces.auth import AuthorizationBackend, AuthPrincipal
 from eval_runner.reference.auth import SimpleAPIKeyAuthBackend
@@ -58,6 +60,98 @@ class Permission:
         ]
 
 
+CONTEXT_VERSION = "2"
+CONTEXT_FIELDS = ("org_id", "tenant_id", "workspace_id", "active_environment")
+
+
+def normalize_entitlements(user: dict) -> dict:
+    """Return a fail-closed, provider-owned normalized principal.
+
+    A principal without any context claims is a valid unscoped service
+    principal.  Once a provider supplies entitlement claims, however, the v2
+    claim is mandatory and every active scope must be an allowlisted tuple.
+    """
+    has_entitlements = any(k in user for k in ("context_version", "context", "authorized_contexts"))
+    has_legacy_context = any(k in user for k in CONTEXT_FIELDS)
+    if not has_entitlements and not has_legacy_context:
+        return dict(user)
+
+    version = user.get("context_version")
+    context = user.get("context")
+    entries = user.get("authorized_contexts")
+    # Flat provider fields are accepted only as a compatibility input and are
+    # normalized before storage; request values never enter this function.
+    if context is None and has_legacy_context:
+        context = {field: user.get(field) for field in CONTEXT_FIELDS}
+    if entries is None and has_legacy_context:
+        entries = [
+            {
+                "org_id": context.get("org_id"),
+                "tenant_id": context.get("tenant_id"),
+                "workspace_id": context.get("workspace_id"),
+                "environments": [context.get("active_environment")],
+            }
+        ]
+        version = version or CONTEXT_VERSION
+    if (
+        version != CONTEXT_VERSION
+        or not isinstance(context, dict)
+        or not isinstance(entries, list)
+        or not entries
+    ):
+        raise ValueError("invalid configured principal entitlements")
+    if set(context) != set(CONTEXT_FIELDS) or any(
+        not isinstance(context[k], str) or not context[k] for k in CONTEXT_FIELDS
+    ):
+        raise ValueError("invalid active entitlement context")
+    normalized_entries = []
+    seen = set()
+    for entry in entries:
+        if not isinstance(entry, dict) or set(entry) != {
+            "org_id",
+            "tenant_id",
+            "workspace_id",
+            "environments",
+        }:
+            raise ValueError("malformed authorized context")
+        key = tuple(entry.get(k) for k in CONTEXT_FIELDS[:-1])
+        environments = entry.get("environments")
+        if (
+            key in seen
+            or any(not isinstance(v, str) or not v for v in key)
+            or not isinstance(environments, list)
+            or not environments
+            or any(not isinstance(v, str) or not v for v in environments)
+            or len(set(environments)) != len(environments)
+        ):
+            raise ValueError("duplicate or malformed authorized context")
+        seen.add(key)
+        normalized_entries.append(
+            {**{k: entry[k] for k in CONTEXT_FIELDS[:-1]}, "environments": list(environments)}
+        )
+    active_key = tuple(context[k] for k in CONTEXT_FIELDS[:-1])
+    match = next(
+        (
+            entry
+            for entry in normalized_entries
+            if tuple(entry[k] for k in CONTEXT_FIELDS[:-1]) == active_key
+        ),
+        None,
+    )
+    if match is None or context["active_environment"] not in match["environments"]:
+        raise ValueError("active context is not authorized")
+    result = dict(user)
+    result.update(context)
+    result.update(
+        {
+            "context_version": CONTEXT_VERSION,
+            "context": dict(context),
+            "authorized_contexts": normalized_entries,
+        }
+    )
+    return result
+
+
 class AuthManager(ABC):
     """Base interface for authentication and PBAC integration."""
 
@@ -83,8 +177,66 @@ class StaticKeyProvider(AuthManager):
     def __init__(self, key: str, backend: AuthorizationBackend | None = None):
         self.key = key
         self.backend = backend or SimpleAPIKeyAuthBackend(master_key=key)
+        self._register_demo_principals()
         self._jwks_client = None
         self._jwks_url_cached = None
+
+    def _register_demo_principals(self) -> None:
+        """Load explicit local demo identities only when demo mode is enabled.
+
+        This deliberately is not a production identity source: each credential
+        is registered in the in-memory reference backend at startup and all
+        tenant/workspace/environment claims originate from that verified
+        principal, never a Console request.
+        """
+        from .. import config
+
+        fixture_path = os.getenv("AGENTV_DEMO_IDENTITIES_FILE", "").strip()
+        if not getattr(config, "ENABLE_DEMO", False) or not fixture_path:
+            return
+        if not isinstance(self.backend, SimpleAPIKeyAuthBackend):
+            return
+
+        try:
+            payload = json.loads(Path(fixture_path).read_text(encoding="utf-8"))
+            principals = payload.get("principals", [])
+            if not isinstance(principals, list):
+                raise ValueError("'principals' must be a list")
+            for item in principals:
+                if not isinstance(item, dict):
+                    raise ValueError("each principal must be an object")
+                api_key = str(item["api_key"])
+                principal_id = str(item["id"])
+                permissions = item.get("permissions", [])
+                roles = item.get("roles", [])
+                if not isinstance(permissions, list) or not isinstance(roles, list):
+                    raise ValueError("permissions and roles must be lists")
+                metadata = {
+                    claim: item[claim]
+                    for claim in (
+                        "name",
+                        "email",
+                        "role",
+                        "roles",
+                        "org_id",
+                        "tenant_id",
+                        "workspace_id",
+                        "active_environment",
+                        "context_version",
+                        "context",
+                        "authorized_contexts",
+                    )
+                    if item.get(claim) is not None
+                }
+                self.backend.register_key(
+                    api_key,
+                    principal_id=principal_id,
+                    roles=[str(role) for role in roles],
+                    permissions=[str(permission) for permission in permissions],
+                    metadata=metadata,
+                )
+        except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
+            raise RuntimeError(f"Invalid demo identity fixture: {fixture_path}") from exc
 
     def authenticate(self, credentials: str) -> dict | None:
         if not credentials:
@@ -109,14 +261,22 @@ class StaticKeyProvider(AuthManager):
             # Console request.  Preserve it when a backend supports it.
             for claim in (
                 "email",
+                "role",
                 "roles",
                 "org_id",
                 "tenant_id",
                 "workspace_id",
                 "active_environment",
+                "context_version",
+                "context",
+                "authorized_contexts",
             ):
                 if claim in principal.metadata:
                     user[claim] = principal.metadata[claim]
+            for claim in ("context_version", "context", "authorized_contexts"):
+                value = getattr(principal, claim, None)
+                if value is not None:
+                    user[claim] = value
             return user
 
         if not self.key or credentials != self.key:
@@ -194,6 +354,9 @@ class StaticKeyProvider(AuthManager):
                 environment = payload.get("active_environment", payload.get("environment"))
                 if environment is not None:
                     user["active_environment"] = environment
+                for claim in ("context_version", "context", "authorized_contexts"):
+                    if claim in payload:
+                        user[claim] = payload[claim]
                 return user
             except Exception as e:
                 if os.getenv("DEBUG", "false").lower() == "true":
@@ -277,6 +440,18 @@ def require_permission(permission_node: str):
             provider = get_auth_provider()
             user = session.get("user")
 
+            def bind_verified_scope(principal: dict) -> bool:
+                """Bind only provider/session context for downstream data routes."""
+                from flask import g
+
+                try:
+                    normalized = normalize_entitlements(principal)
+                except ValueError:
+                    return False
+                g.verified_principal = normalized
+                g.runtime_context = normalized.get("context")
+                return True
+
             # NOTE: No implicit localhost trust, even in demo mode.
             # All API access — including local developer setups — requires a valid
             # session or bearer token. Set DASHBOARD_API_KEY for local development.
@@ -284,6 +459,8 @@ def require_permission(permission_node: str):
 
             # 1. Check Session (Browser UI)
             if user:
+                if not bind_verified_scope(user):
+                    return jsonify({"error": "Invalid configured principal entitlements"}), 403
                 if provider.has_permission(user, permission_node):
                     return f(*args, **kwargs)
                 return jsonify(
@@ -298,6 +475,8 @@ def require_permission(permission_node: str):
             if bearer_token:
                 user = provider.verify_token(bearer_token)
                 if user:
+                    if not bind_verified_scope(user):
+                        return jsonify({"error": "Invalid configured principal entitlements"}), 403
                     if provider.has_permission(user, permission_node):
                         return f(*args, **kwargs)
                     return jsonify(
@@ -307,6 +486,8 @@ def require_permission(permission_node: str):
             elif api_key:
                 user = provider.authenticate(api_key)
                 if user:
+                    if not bind_verified_scope(user):
+                        return jsonify({"error": "Invalid configured principal entitlements"}), 403
                     if provider.has_permission(user, permission_node):
                         return f(*args, **kwargs)
                     return jsonify(
@@ -338,6 +519,30 @@ def require_permission(permission_node: str):
         return decorated_function
 
     return decorator
+
+
+def active_runtime_context() -> dict[str, str] | None:
+    """Return the request-bound verified context, never request presentation data."""
+    from flask import g
+
+    context = getattr(g, "runtime_context", None)
+    return dict(context) if isinstance(context, dict) else None
+
+
+def context_allows_record(record: dict, context: dict[str, str] | None) -> bool:
+    """Non-enumerating scope test for a stored Runtime object.
+
+    Records without scope are available only to unscoped legacy service
+    principals. A scoped principal never receives a record whose declared
+    tuple differs or is absent.
+    """
+    if context is None:
+        return True
+    source = record.get("context") if isinstance(record.get("context"), dict) else record
+    metadata = record.get("metadata")
+    if isinstance(metadata, dict) and isinstance(metadata.get("runtime_context"), dict):
+        source = metadata["runtime_context"]
+    return all(source.get(field) == context[field] for field in CONTEXT_FIELDS)
 
 
 def require_sse_permission(permission_node: str):

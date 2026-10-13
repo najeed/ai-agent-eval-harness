@@ -21,6 +21,7 @@ from eval_runner.leaderboard_generator import LeaderboardGenerator
 from eval_runner.trace_utils import load_events, reconstruct_results_from_events
 
 from ..auth_manager import Permission, require_permission
+from .runs import _run_is_in_active_context
 
 logger = logging.getLogger(__name__)
 
@@ -192,6 +193,8 @@ def run_triage(run_id: str):
     Returns a list of per-task triage reports with category, confidence,
     explanation, suggestion, and root-cause turn index.
     """
+    if not _run_is_in_active_context(run_id):
+        return jsonify({"error": "Run not found"}), 404
     trace_path = config.RUN_LOG_DIR / run_id / "run.jsonl"
     if not trace_path.exists():
         return jsonify({"error": f"Run '{run_id}' not found"}), 404
@@ -234,6 +237,8 @@ def run_triage(run_id: str):
 @require_permission(Permission.RUNS_READ)
 def get_compliance(run_id: str):
     """Returns PQC compliance status for a single run's manifest."""
+    if not _run_is_in_active_context(run_id):
+        return jsonify({"error": "Run not found"}), 404
     run_dir = config.RUN_LOG_DIR / run_id
     if not run_dir.exists():
         return jsonify({"error": f"Run '{run_id}' not found"}), 404
@@ -266,6 +271,8 @@ def get_compliance_summary():
 
     for manifest_path in runs_dir.glob("*/run_manifest.json"):
         run_id = manifest_path.parent.name
+        if not _run_is_in_active_context(run_id):
+            continue
         if date_range and not run_id.startswith(date_range):
             continue
 

@@ -22,9 +22,34 @@ from agentv_runtime.manifest import (
 from eval_runner import config, engine, loader, mutator, spec_parser, taxonomy  # noqa: F401
 from eval_runner.catalog import ScenarioCatalog
 
-from ..auth_manager import Permission, require_permission
+from ..auth_manager import Permission, active_runtime_context, require_permission
 
 logger = logging.getLogger(__name__)
+
+
+def _execution_scope_for_request(data: dict[str, Any]) -> dict[str, str] | None:
+    """Get verified scope; retain the explicit test-auth seam only for tests."""
+    context = active_runtime_context()
+    if context is not None:
+        return context
+    # Backward-compatible unscoped service principals are authenticated but
+    # cannot select a tenant from a request.  Persist empty provenance rather
+    # than inventing a Core-owned tenant/workspace name.
+    if getattr(g, "verified_principal", None) is not None:
+        return {
+            "org_id": "",
+            "tenant_id": "",
+            "workspace_id": "",
+            "active_environment": "",
+        }
+    if os.getenv("AGENTV_TEST_AUTH_BYPASS") == "1":
+        return {
+            "org_id": "test-org",
+            "tenant_id": str(data.get("tenant_id", "default")),
+            "workspace_id": str(data.get("workspace_id", "default")),
+            "active_environment": str(data.get("active_environment", "test")),
+        }
+    return None
 
 
 _PRIVATE_NETWORKS = (
@@ -554,6 +579,9 @@ def check_execution_readiness():
     from eval_runner.simulators import get_simulator_registry
 
     data = request.json or {}
+    scope = _execution_scope_for_request(data)
+    if scope is None:
+        return jsonify({"error": "Not found"}), 404
     scen_id = data.get("scenario_id") or data.get("path")
     logger.info("   [Preflight] Checking execution readiness for scenario='%s'", scen_id)
 
@@ -1043,8 +1071,8 @@ def check_execution_readiness():
         agent_config=agent_config,
         runtime_config=runtime_config,
         scenario_version=str(scen_meta.get("version", "1.0.0")),
-        tenant_id=str(data.get("tenant_id", "default")),
-        workspace_id=str(data.get("workspace_id", "default")),
+        tenant_id=scope["tenant_id"],
+        workspace_id=scope["workspace_id"],
         seed=data.get("seed") or scen_meta.get("seed"),
         execution_mode=exec_mode,
         evaluators=data.get("evaluators"),
@@ -1377,6 +1405,11 @@ def evaluate_scenario():
     from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
 
     data = request.json or {}
+    scope = _execution_scope_for_request(data)
+    if scope is None:
+        # Do not permit caller-selected manifest provenance for an unscoped
+        # principal, and do not reveal whether a requested scenario exists.
+        return jsonify({"error": "Not found"}), 404
     path = data.get("path")
     if not path:
         return jsonify({"error": "Missing scenario path"}), 400
@@ -1460,8 +1493,8 @@ def evaluate_scenario():
         agent_config=agent_config,
         runtime_config=runtime_config,
         scenario_version=str(scen_meta.get("version", "1.0.0")),
-        tenant_id=str(data.get("tenant_id", "default")),
-        workspace_id=str(data.get("workspace_id", "default")),
+        tenant_id=scope["tenant_id"],
+        workspace_id=scope["workspace_id"],
         seed=data.get("seed") or scen_meta.get("seed"),
         execution_mode=exec_mode,
         evaluators=data.get("evaluators"),
@@ -1504,10 +1537,13 @@ def evaluate_scenario():
         scenario_data=scen,
         agent_config=agent_config,
         runtime_config=runtime_config,
-        tenant_id=data.get("tenant_id", "default"),
-        workspace_id=data.get("workspace_id", "default"),
-        created_by=request.headers.get("X-User-Id", "system"),
-        metadata=data.get("metadata"),
+        tenant_id=scope["tenant_id"],
+        workspace_id=scope["workspace_id"],
+        created_by=str(getattr(g, "verified_principal", {}).get("id", "system")),
+        metadata={
+            **(data.get("metadata") if isinstance(data.get("metadata"), dict) else {}),
+            "runtime_context": dict(scope),
+        },
         execution_mode=exec_mode,
     )
 
@@ -1558,7 +1594,9 @@ def get_taxonomy():
 @require_permission(Permission.SCENARIOS_READ)
 def list_available_mutations():
     """Returns the unified mutation catalog (Core + Enterprise + Tenant), tenant-filtered."""
-    org_id = getattr(g, "current_org_id", None) or request.args.get("org_id")
+    context = active_runtime_context()
+    # Query parameters are presentation inputs, never mutation catalog scope.
+    org_id = context["org_id"] if context is not None else None
     catalog = eval_runner.mutator.mutation_service.list_mutation_catalog(org_id=org_id)
     return jsonify(
         {

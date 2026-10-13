@@ -15,7 +15,13 @@ from eval_runner.metrics import MetricRegistry
 from eval_runner.services.certification import CertificationService
 from eval_runner.services.run_summary import RunSummaryService
 
-from ..auth_manager import Permission, require_permission, require_sse_permission
+from ..auth_manager import (
+    Permission,
+    active_runtime_context,
+    context_allows_record,
+    require_permission,
+    require_sse_permission,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -35,10 +41,29 @@ def resolve_trace_path(run_id: str) -> Path | None:
     return _rtp(run_id, allow_master_recovery=False)
 
 
+def _run_is_in_active_context(run_id: str, context: dict[str, str] | None = None) -> bool:
+    """Hide a run when its persisted manifest is outside the verified scope."""
+    if context is None:
+        context = active_runtime_context()
+    if context is None:
+        return True
+    manifest_path = config.RUN_LOG_DIR / run_id / "run_manifest.json"
+    if not manifest_path.exists():
+        return False
+    try:
+        with manifest_path.open(encoding="utf-8") as manifest_file:
+            return context_allows_record(json.load(manifest_file), context)
+    except (OSError, ValueError, json.JSONDecodeError):
+        logger.warning("Unable to verify context for run %s", run_id, exc_info=True)
+        return False
+
+
 @run_bp.route("/v1/explain/<run_id>", methods=["GET"])
 @require_permission(Permission.RUNS_READ)
 def explain_run(run_id):
     """Roadmap: Forensic RCA as a service."""
+    if not _run_is_in_active_context(run_id):
+        return jsonify({"error": "Not found"}), 404
     trace_path = resolve_trace_path(run_id)
     temp_path = None
 
@@ -411,6 +436,8 @@ def list_runs():
     enriched = []
     for run in runs[:200]:
         rid = run.get("run_id") or ""
+        if not _run_is_in_active_context(rid):
+            continue
         summary = RunSummaryService.compute_summary(rid, cached_entry=run)
         enriched.append(summary)
     return jsonify({"runs": enriched})
@@ -428,6 +455,7 @@ def _authoritative_verdict(run_id: str) -> str:
 @require_sse_permission(Permission.RUNS_READ)
 def stream_runs_list():
     """Streams the run list incrementally in chunks every 1 second (SSE)."""
+    request_context = active_runtime_context()
 
     def generate():
         runs = runs_cache.get_runs()
@@ -437,6 +465,10 @@ def stream_runs_list():
             resolved_chunk = []
             for run in chunk:
                 run_id = run["run_id"]
+                if request_context is not None and not _run_is_in_active_context(
+                    run_id, request_context
+                ):
+                    continue
                 summary = RunSummaryService.compute_summary(run_id, cached_entry=run)
                 resolved_chunk.append(
                     {
@@ -466,6 +498,8 @@ def stream_runs_list():
 @run_bp.route("/v1/runs/<path:run_id>/report.pdf", methods=["GET"])
 @require_permission(Permission.RUNS_READ)
 def download_run_report_pdf(run_id: str):
+    if not _run_is_in_active_context(run_id):
+        return jsonify({"error": "Not found"}), 404
     """Generate a human-readable PDF report without mutating the sealed run vault."""
     trace_path = resolve_trace_path(run_id)
     if trace_path is None or not trace_path.exists():
@@ -509,6 +543,8 @@ def download_run_report_pdf(run_id: str):
 @require_permission(Permission.RUNS_READ)
 def get_run_status(run_id):
     """Industrial Polling Primitive."""
+    if not _run_is_in_active_context(run_id):
+        return jsonify({"error": "Not found"}), 404
     vault_trace = resolve_trace_path(run_id)
     scenario_data = None
 
@@ -684,6 +720,8 @@ def get_run_status(run_id):
 @run_bp.route("/v1/runs/<path:run_id>/cancel", methods=["POST"])
 @require_permission(Permission.RUNS_WRITE)
 def cancel_run(run_id):
+    if not _run_is_in_active_context(run_id):
+        return jsonify({"error": "Not found"}), 404
     """Cancels an active execution run via ExecutionBackend."""
     from eval_runner.reference.inprocess_backend import get_execution_backend
 
@@ -707,6 +745,8 @@ def cancel_run(run_id):
 @run_bp.route("/v1/runs/<path:run_id>/resume", methods=["POST"])
 @require_permission(Permission.RUNS_WRITE)
 def resume_run(run_id):
+    if not _run_is_in_active_context(run_id):
+        return jsonify({"error": "Not found"}), 404
     """Resumes a paused or checkpointed evaluation run via ExecutionBackend."""
     from eval_runner.reference.approval_store import get_default_approval_store
     from eval_runner.reference.inprocess_backend import get_execution_backend
@@ -787,6 +827,8 @@ def resume_run(run_id):
 
 @run_bp.route("/v1/certificates/<run_id>", methods=["GET"])
 def get_verification_certificate(run_id):
+    if not _run_is_in_active_context(run_id):
+        return jsonify({"error": "Not found"}), 404
     """Public Trust Protocol endpoint."""
     from eval_runner.verifier import locate_certificate_file
 
@@ -1002,6 +1044,8 @@ def tail_file_generator(
 @require_sse_permission(Permission.RUNS_READ)
 def stream_run_logs(run_id):
     """SSE streaming endpoint for live run traces with Last-Event-ID replay support."""
+    if not _run_is_in_active_context(run_id):
+        return jsonify({"error": "Not found"}), 404
     last_id_str = (
         request.headers.get("Last-Event-ID")
         or request.args.get("last_event_id")
@@ -1057,6 +1101,8 @@ def stream_run_logs(run_id):
 @require_permission(Permission.RUNS_READ)
 def verify_run(run_id):
     """Server-Authoritative Cryptographic Verification Endpoint."""
+    if not _run_is_in_active_context(run_id):
+        return jsonify({"error": "Not found"}), 404
     from eval_runner.verifier import TraceVerifier
 
     run_dir = config.RUN_LOG_DIR / run_id

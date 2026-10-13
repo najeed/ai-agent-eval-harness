@@ -251,11 +251,19 @@ class AuthPrincipal:
         roles: list[str] | None = None,
         permissions: list[str] | None = None,
         metadata: dict[str, Any] | None = None,
+        context_version: str | None = None,
+        context: dict[str, str] | None = None,
+        authorized_contexts: list[dict[str, Any]] | None = None,
     ):
         self.principal_id = principal_id
         self.roles = roles or []
         self.permissions = permissions or []
         self.metadata = metadata or {}
+        # Context is provider-owned entitlement data.  It is intentionally a
+        # contract field rather than a Console-specific role or tenant map.
+        self.context_version = context_version
+        self.context = context
+        self.authorized_contexts = authorized_contexts
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -263,6 +271,9 @@ class AuthPrincipal:
             "roles": self.roles,
             "permissions": self.permissions,
             "metadata": self.metadata,
+            "context_version": self.context_version,
+            "context": self.context,
+            "authorized_contexts": self.authorized_contexts,
         }
 
 

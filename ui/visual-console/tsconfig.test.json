@@ -15,6 +15,7 @@
   "include": [
     "src/lib/aesDocument.ts",
     "src/lib/debuggerLogic.ts",
+    "src/auth/runtimeAuthContext.ts",
     "src/types/extension-contract.ts",
     "src/components/ExtensionLoadError.tsx",
     "src/components/RemoteErrorBoundary.tsx",

@@ -120,6 +120,48 @@ Production SSE routes accept same-origin browser `EventSource` connections throu
 
 ## 5. Security & Trust Boundaries
 
+### Configured principal entitlements and context switching
+
+Providers (OIDC custom claims or an `AuthorizationBackend`) supply the versioned
+`context_version: "2"` claim: `context` has `org_id`, `tenant_id`,
+`workspace_id`, and `active_environment`; `authorized_contexts` allowlists
+organization/tenant/workspace tuples and their environments. Runtime rejects
+malformed or duplicate tuples and any active context outside that allowlist.
+Roles and permissions are provider-supplied.
+
+`POST /api/auth/context` accepts exactly `workspace_id` and
+`active_environment`. It resolves the organization and tenant from the matching
+entitlement, atomically updates the authenticated server session, and revokes
+previous context-bound handoff tokens. `/api/auth/me` and new handoff tokens
+are generated from that verified session state. Browser headers, query strings,
+local storage, labels, and request bodies are never authority sources for
+organization, tenant, workspace, or environment. Data routes must derive scope
+from the verified principal/session and return a non-enumerating `404` for
+out-of-scope objects by default (a policy may opt into generic `403` for
+auditable administration actions).
+
+### Console extension context API
+
+Core exposes `ui/visual-console/src/auth/runtimeAuthContext.ts` for Console
+extensions. Its `getRuntimeAuthContext()` and `switchRuntimeContext(workspaceId,
+activeEnvironment)` functions call only Runtime authentication endpoints. The
+returned `RuntimeAuthContext` contains the active tuple and the provider's
+allowlisted `authorized_contexts`; callers must render only that list. A switch
+never takes an organization or tenant identifier. `clearRuntimeAuthCaches()`
+clears the in-memory extension handoff credential after logout, authentication
+failure, or a successful context switch. Extensions may use the generic
+handoff helper, but Core does not import extension pages, routes, navigation,
+or extension-owned authentication clients.
+
+Signed Console extensions can declare the generic `header` capability and
+`slot: "header"` in their Runtime extension manifest. The host mounts the
+extension in the Console header and supplies only two props: `context`, a
+`RuntimeAuthContext` read model, and `switchContext(workspaceId,
+activeEnvironment)`. The latter can select only an already-authorized workspace
+and environment; no organization or tenant mutation capability exists. Core
+navigation and route presentation gates consume verified permission claims,
+never role strings. Roles remain display metadata.
+
 | Layer | Mechanism | Cryptographic Primitive | Verification Boundary |
 |---|---|---|---|
 | **PQC Verification** | ML-DSA-65 / Falcon-512 | NIST FIPS 204 Post-Quantum | `TraceVerifier` & Flight Recorder |

@@ -13,6 +13,7 @@ export const EXTENSION_CONTRACT_STATUS = 'stable';
 export const KNOWN_CAPABILITIES = [
   'routes',
   'navigation',
+  'header',
   'lifecycle',
   'runs:read',
   'scenarios:read',
@@ -84,7 +85,13 @@ export interface ExtensionRoute {
   path: string;
   label: string;
   icon?: string;
-  required_role?: string;
+  required_permissions?: string[];
+}
+
+/** The only authenticated context surface supplied to mounted extensions. */
+export interface ExtensionRuntimeContextApi {
+  context: import('../auth/runtimeAuthContext.js').RuntimeAuthContext;
+  switchContext(workspaceId: string, activeEnvironment: string): Promise<void>;
 }
 
 export interface ExtensionLifecycle {
@@ -111,6 +118,8 @@ export interface RuntimeExtensionManifest {
   signature: string;
   lifecycle: ExtensionLifecycle;
   host_apis: string[];
+  /** Optional generic visual contribution point. */
+  slot?: 'header';
   /** [D2] Declared trust tier (verified server-side; advisory client-side). */
   tier?: ExtensionTier;
 }

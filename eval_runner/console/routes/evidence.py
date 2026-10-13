@@ -19,7 +19,7 @@ from flask import Blueprint, Response, jsonify, request
 from agentv_runtime.versions import VERIFICATION_PACKAGE_VERSION
 from eval_runner import config
 from eval_runner.console.auth_manager import require_permission
-from eval_runner.console.routes.runs import resolve_trace_path
+from eval_runner.console.routes.runs import _run_is_in_active_context, resolve_trace_path
 from eval_runner.utils import is_path_safe
 from eval_runner.verifier import locate_certificate_file
 
@@ -336,6 +336,8 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
 @require_permission("runs:read")
 def get_verification_package(run_id: str):
     """Serve or export immutable .agentv-package.json Verification Package."""
+    if not _run_is_in_active_context(run_id):
+        return jsonify({"error": "Verification package not found for run", "run_id": run_id}), 404
     package = build_verification_package(run_id)
     if not package:
         return jsonify({"error": "Verification package not found for run", "run_id": run_id}), 404
@@ -364,6 +366,8 @@ def list_verification_packages():
     for path in runs_dir.iterdir():
         if path.is_dir() and path.name.startswith("run-"):
             rid = path.name
+            if not _run_is_in_active_context(rid):
+                continue
             cert_file = locate_certificate_file(rid)
             cert_exists = cert_file is not None and cert_file.exists()
             manifest_exists = (path / "run_manifest.json").exists() or cert_exists

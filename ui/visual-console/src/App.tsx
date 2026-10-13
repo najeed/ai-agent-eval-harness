@@ -39,6 +39,7 @@ import {
   READ_ONLY_HOST_APIS,
   type ExtensionTier,
   type RuntimeExtensionManifest,
+  type ExtensionRuntimeContextApi,
 } from './types/extension-contract';
 import { verifySubresourceIntegrity } from './utils/crypto';
 
@@ -63,10 +64,11 @@ export interface NavItem {
   group?: string;               // Target nav group (e.g., "Operations", "Audit & Compliance", "Build", "System")
   badge?: string;               // Optional badge chip (e.g., "LIVE", "HOT-RELOAD", "FLEET", "APM", "◆ ENT")
   tier?: 'core' | 'enterprise' | 'local'; // Visual delineation marker
-                                // [D2] 'local': unsigned plugin contribution — flagged in nav and limited to read-only host APIs.
+  // 'local': unsigned plugin contribution — flagged in nav and limited to read-only host APIs.
   remoteEntry?: string;         // ESM bundle URL for dynamic micro-frontend mounting
   sriHash?: string;             // Subresource integrity digest (FIPS 202 SHA3 / WebCrypto SHA-2)
-  required_role?: string[];     // Optional RBAC role gating
+  required_permissions?: string[];
+  slot?: 'header';
 }
 
 export interface NavGroup {
@@ -152,6 +154,7 @@ export function mergeNavManifest(
   for (const rawItem of remoteItems) {
     if (!rawItem || typeof rawItem !== 'object') continue;
     if (rawItem.type === 'heading') continue;
+    if (rawItem.slot === 'header') continue;
     if (!rawItem.path && !rawItem.remoteEntry) continue;
     const name = rawItem.name || rawItem.title || rawItem.id || 'Plugin Item';
     const path = rawItem.path || (rawItem.id ? `/${rawItem.id}` : '#');
@@ -169,8 +172,8 @@ export function mergeNavManifest(
       tier: rawItem.tier,
       remoteEntry: rawItem.remoteEntry,
       sriHash: rawItem.sriHash || rawItem.integrity || rawItem.sri,
-      required_role: Array.isArray(rawItem.required_role)
-        ? rawItem.required_role
+      required_permissions: Array.isArray(rawItem.required_permissions)
+        ? rawItem.required_permissions
         : undefined,
       // [D2] Unsigned plugin contributions are stamped LOCAL: they render a
       // visible flag in the nav. Signed contributions must carry their own SRI.
@@ -234,19 +237,19 @@ const ExtensionHostProvider: React.FC<{
   manifest,
   children,
 }) => {
-  const value = useMemo<ExtensionHostApiInfo>(() => {
-    const tierApis = hostApisForTier(tier);
-    const allowedApis = manifest?.host_apis
-      ? tierApis.filter(api => manifest.host_apis.includes(api))
-      : tierApis;
-    return {
-      tier,
-      allowedApis,
-      can: (call: string) => canCallHostApi(tier, call, manifest),
-    };
-  }, [tier, manifest]);
-  return <ExtensionHostContext.Provider value={value}>{children}</ExtensionHostContext.Provider>;
-};
+    const value = useMemo<ExtensionHostApiInfo>(() => {
+      const tierApis = hostApisForTier(tier);
+      const allowedApis = manifest?.host_apis
+        ? tierApis.filter(api => manifest.host_apis.includes(api))
+        : tierApis;
+      return {
+        tier,
+        allowedApis,
+        can: (call: string) => canCallHostApi(tier, call, manifest),
+      };
+    }, [tier, manifest]);
+    return <ExtensionHostContext.Provider value={value}>{children}</ExtensionHostContext.Provider>;
+  };
 
 
 /**
@@ -256,16 +259,27 @@ const ExtensionHostProvider: React.FC<{
  */
 
 export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: string }> = ({ entryUrl, sriHash }) => {
+  const { authorizedContexts, workspaceId, tenantId, user, switchContext } = useRBAC();
+  const extensionContext = useMemo<ExtensionRuntimeContextApi>(() => ({
+    context: {
+      context_version: '2',
+      context: user?.active_environment
+        ? { org_id: user.org_id || '', tenant_id: tenantId, workspace_id: workspaceId, active_environment: user.active_environment }
+        : null,
+      authorized_contexts: authorizedContexts,
+    },
+    switchContext,
+  }), [authorizedContexts, switchContext, tenantId, user?.active_environment, workspaceId]);
   const [loadingState, setLoadingState] = useState<{
     status:
-      | 'idle'
-      | 'verifying'
-      | 'ready'
-      | 'untrusted_origin'
-      | 'sri_failed'
-      | 'contract_violation'
-      | 'publisher_failed'
-      | 'load_error';
+    | 'idle'
+    | 'verifying'
+    | 'ready'
+    | 'untrusted_origin'
+    | 'sri_failed'
+    | 'contract_violation'
+    | 'publisher_failed'
+    | 'load_error';
     Component?: React.ComponentType<any>;
     errorMessage?: string;
     computedDigest?: string;
@@ -534,8 +548,8 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
 
           const violations = !manifestObj
             ? [
-                "Module exports no 'manifest' — every extension must declare its identity, capabilities and host-API usage (RuntimeExtension contract).",
-              ]
+              "Module exports no 'manifest' — every extension must declare its identity, capabilities and host-API usage (RuntimeExtension contract).",
+            ]
             : validateExtensionManifest(manifestObj, { requireSignature: false });
           if (violations.length > 0 && active) {
             setLoadingState({ status: 'contract_violation', violations });
@@ -653,7 +667,7 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
           </div>
         )}
         <RemoteErrorBoundary entryUrl={entryUrl}>
-          <Component />
+          <Component context={extensionContext.context} switchContext={extensionContext.switchContext} />
         </RemoteErrorBoundary>
       </ExtensionHostProvider>
     );
@@ -688,6 +702,7 @@ const ConsoleLayout: React.FC = () => {
     canAccessSettings,
     canEditScenario,
     canVerifyCert,
+    hasPermission,
   } = useRBAC();
   const [isCmdOpen, setIsCmdOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -853,11 +868,15 @@ const ConsoleLayout: React.FC = () => {
   const navGroups = useMemo(() => {
     return mergeNavManifest(baseNavGroups, remoteNav);
   }, [remoteNav]);
+  const headerExtensions = useMemo(
+    () => (Array.isArray(remoteNav) ? remoteNav.filter(item => item?.slot === 'header' && item?.remoteEntry) : []),
+    [remoteNav],
+  );
 
-  // Role-based nav access gating
+  // Verified-permission-only navigation gating.
   const isNavItemRestricted = (item: NavItem): boolean => {
-    if (item.required_role && item.required_role.length > 0) {
-      if (!item.required_role.includes(role)) return true;
+    if (item.required_permissions && item.required_permissions.length > 0) {
+      if (!item.required_permissions.every(permission => hasPermission(permission))) return true;
     }
     if (item.path === '/settings' && !canAccessSettings) return true;
     if (item.path === '/editor' && !canEditScenario) return true;
@@ -958,7 +977,7 @@ const ConsoleLayout: React.FC = () => {
                         return (
                           <div
                             key={item.id || item.name}
-                            title="Restricted: insufficient role permissions"
+                            title="Restricted: insufficient verified permissions"
                             className="flex items-center gap-3 px-3 py-2 rounded-lg text-xs border border-transparent text-slate-600 opacity-50 cursor-not-allowed select-none"
                           >
                             <div className="shrink-0">{item.icon}</div>
@@ -1081,6 +1100,14 @@ const ConsoleLayout: React.FC = () => {
               </button>
             )}
 
+            {headerExtensions.map(item => (
+              <RemoteComponentLoader
+                key={item.id || item.remoteEntry}
+                entryUrl={item.remoteEntry}
+                sriHash={item.sriHash || item.integrity || item.sri}
+              />
+            ))}
+
             {/* Authoritative Runtime Health (P0-1): server-derived only.
                 Never render READY without a successful health verification. */}
             {(() => {
@@ -1170,29 +1197,17 @@ const ConsoleLayout: React.FC = () => {
 };
 
 const RemoteRouteGuard: React.FC<{ item: any }> = ({ item }) => {
-  const { role, hasPermission } = useRBAC();
-  const rawRole = item.required_role || item.role;
-  const requiredRoles: string[] = Array.isArray(rawRole)
-    ? rawRole
-    : typeof rawRole === 'string'
-      ? [rawRole]
-      : [];
+  const { hasPermission } = useRBAC();
   const requiredPerm = item.required_permission || item.permission;
 
-  if (requiredRoles.length > 0 && role !== 'System Admin' && !requiredRoles.includes(role)) {
+  const requiredPermissions = Array.isArray(item.required_permissions)
+    ? item.required_permissions
+    : requiredPerm ? [requiredPerm] : [];
+  if (!requiredPermissions.every((permission: string) => hasPermission(permission))) {
     return (
       <div className="p-8 text-center text-slate-400">
         <h3 className="text-lg font-bold text-red-400 mb-2">Access Denied</h3>
-        <p className="text-sm">Role '{requiredRoles.join(' or ')}' is required to access this extension view.</p>
-      </div>
-    );
-  }
-
-  if (requiredPerm && !hasPermission(requiredPerm)) {
-    return (
-      <div className="p-8 text-center text-slate-400">
-        <h3 className="text-lg font-bold text-red-400 mb-2">Access Denied</h3>
-        <p className="text-sm">Permission '{requiredPerm}' is required to access this extension view.</p>
+        <p className="text-sm">Verified permission is required to access this extension view.</p>
       </div>
     );
   }

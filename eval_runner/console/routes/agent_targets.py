@@ -27,7 +27,12 @@ from flask import Blueprint, jsonify, request
 
 from eval_runner import config
 
-from ..auth_manager import Permission, require_permission
+from ..auth_manager import (
+    Permission,
+    active_runtime_context,
+    context_allows_record,
+    require_permission,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -317,8 +322,14 @@ _store = AgentTargetStore()
 @require_permission(Permission.SCENARIOS_READ)
 def list_agent_targets():
     """List all reusable agent targets."""
+    context = active_runtime_context()
     return jsonify(
-        {"schema_version": AGENT_TARGETS_SCHEMA_VERSION, "targets": _store.list_targets()}
+        {
+            "schema_version": AGENT_TARGETS_SCHEMA_VERSION,
+            "targets": [
+                target for target in _store.list_targets() if context_allows_record(target, context)
+            ],
+        }
     )
 
 
@@ -326,7 +337,7 @@ def list_agent_targets():
 @require_permission(Permission.SCENARIOS_READ)
 def get_agent_target(target_id: str):
     target = _store.get(target_id)
-    if not target:
+    if not target or not context_allows_record(target, active_runtime_context()):
         return jsonify({"error": f"Agent target '{target_id}' not found"}), 404
     return jsonify(target)
 
@@ -337,7 +348,13 @@ def save_agent_target():
     """Create or update a reusable agent target (connect-once wizard)."""
     data = request.json or {}
     try:
+        existing = _store.get(data.get("id")) if isinstance(data.get("id"), str) else None
+        if existing is not None and not context_allows_record(existing, active_runtime_context()):
+            return jsonify({"error": "Agent target not found"}), 404
         fields = _validate_target_payload(data)
+        context = active_runtime_context()
+        if context is not None:
+            fields["runtime_context"] = context
         target = _store.upsert(fields, target_id=data.get("id"))
     except AgentTargetValidationError as e:
         return jsonify({"error": str(e)}), 400
@@ -350,6 +367,9 @@ def save_agent_target():
 @agent_targets_bp.route("/v1/agent-targets/<target_id>", methods=["DELETE"])
 @require_permission(Permission.SCENARIOS_WRITE)
 def delete_agent_target(target_id: str):
+    target = _store.get(target_id)
+    if not target or not context_allows_record(target, active_runtime_context()):
+        return jsonify({"error": f"Agent target '{target_id}' not found"}), 404
     if not _store.delete(target_id):
         return jsonify({"error": f"Agent target '{target_id}' not found"}), 404
     return jsonify({"status": "deleted", "id": target_id})
@@ -373,7 +393,7 @@ def test_unsaved_agent_target():
 def test_agent_target(target_id: str):
     """Server-authoritative reachability test for a saved target."""
     target = _store.get(target_id)
-    if not target:
+    if not target or not context_allows_record(target, active_runtime_context()):
         return jsonify({"error": f"Agent target '{target_id}' not found"}), 404
     result = _probe_endpoint(target["protocol"], target["endpoint"])
     return jsonify({"id": target_id, **result})
