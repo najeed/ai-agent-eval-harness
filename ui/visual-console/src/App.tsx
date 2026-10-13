@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation, Outlet, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import { CommandPalette } from './components/CommandPalette';
@@ -42,6 +42,12 @@ import {
   type ExtensionRuntimeContextApi,
 } from './types/extension-contract';
 import { verifySubresourceIntegrity } from './utils/crypto';
+import { authorizedRuntimeFetch } from './auth/runtimeAuthContext';
+
+// Supported remote-extension ABI: a Vite extension externalizes React and
+// reads this singleton as its peer runtime.  It must never bundle React.
+(globalThis as typeof globalThis & { __AGENTV_EXTENSION_REACT__?: typeof React })
+  .__AGENTV_EXTENSION_REACT__ = React;
 
 
 
@@ -258,8 +264,9 @@ const ExtensionHostProvider: React.FC<{
  * Natively enforces FIPS 202 SHA3-256 / SHA3-384 / SHA3-512 with legacy WebCrypto SHA-2 fallback.
  */
 
-export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: string }> = ({ entryUrl, sriHash }) => {
+export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: string; route?: import('./types/extension-contract').ExtensionRoute }> = ({ entryUrl, sriHash, route }) => {
   const { authorizedContexts, workspaceId, tenantId, user, switchContext } = useRBAC();
+  const extensionIdRef = useRef('');
   const extensionContext = useMemo<ExtensionRuntimeContextApi>(() => ({
     context: {
       context_version: '2',
@@ -269,6 +276,7 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
       authorized_contexts: authorizedContexts,
     },
     switchContext,
+    authorizedFetch: (input, init) => authorizedRuntimeFetch(extensionIdRef.current, input, init),
   }), [authorizedContexts, switchContext, tenantId, user?.active_environment, workspaceId]);
   const [loadingState, setLoadingState] = useState<{
     status:
@@ -309,7 +317,6 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
 
   useEffect(() => {
     let active = true;
-    let blobUrlToRevoke: string | null = null;
 
     async function loadAndVerifyModule() {
       if (!isTrustedOrigin) {
@@ -430,6 +437,9 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
           }
 
           const preViolations = validateExtensionManifest(preManifest, { requireSignature: true });
+          if (import.meta.env.PROD && preManifest.react_peer !== true) {
+            preViolations.push('Production extensions must declare react_peer: true and use the host React singleton.');
+          }
           if (preViolations.length > 0) {
             if (active) setLoadingState({ status: 'contract_violation', violations: preViolations });
             return;
@@ -474,11 +484,24 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
           }
 
           const tier = await resolveTier(preManifest);
-
-          // Integrity and contract validated: instantiate via ephemeral Blob URL
-          const blob = new Blob([buffer], { type: 'text/javascript' });
-          blobUrlToRevoke = URL.createObjectURL(blob);
-          const mod = await import(/* @vite-ignore */ blobUrlToRevoke);
+          // Verify every declared relative chunk before importing the entry by
+          // its real URL. Blob imports break standard ESM relative resolution;
+          // real-URL imports preserve a Vite bundle's chunk graph.
+          const chunks = preManifest.verified_chunks || {};
+          for (const [chunkPath, chunkSri] of Object.entries(chunks)) {
+            // Extension entries may be configured as an origin-relative URL.
+            // Resolve the entry first so relative Vite chunks are verified at
+            // the same real URL the ESM loader will use.
+            const resolvedEntryUrl = new URL(entryUrl, window.location.origin).toString();
+            const chunkUrl = new URL(chunkPath, resolvedEntryUrl).toString();
+            const chunkResponse = await fetch(chunkUrl, { cache: 'no-store' });
+            if (!chunkResponse.ok) throw new Error(`HTTP ${chunkResponse.status}: Failed to fetch extension chunk.`);
+            const verification = await verifySubresourceIntegrity(await chunkResponse.arrayBuffer(), chunkSri as string);
+            if (!verification.valid) {
+              throw new Error(`Integrity check failed for extension chunk '${chunkPath}'.`);
+            }
+          }
+          const mod = await import(/* @vite-ignore */ entryUrl);
           const manifestObj = (mod as any)?.manifest || preManifest;
 
           // Mandatory manifest confirmation post-import
@@ -490,6 +513,7 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
           }
 
           const ResolvedComp = mod.default || mod[Object.keys(mod)[0]] || mod;
+          extensionIdRef.current = manifestObj.extension_id;
           if (active) setLoadingState({ status: 'ready', Component: ResolvedComp, tier, manifest: manifestObj });
         } else {
           if (import.meta.env.PROD) {
@@ -585,9 +609,6 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
 
     return () => {
       active = false;
-      if (blobUrlToRevoke) {
-        URL.revokeObjectURL(blobUrlToRevoke);
-      }
     };
   }, [entryUrl, sriHash, isTrustedOrigin]);
 
@@ -654,6 +675,9 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
   if (loadingState.status === 'ready' && loadingState.Component) {
     const Component = loadingState.Component;
     const tier: ExtensionTier = loadingState.tier ?? 'unsigned-local';
+    if (route && !((loadingState.manifest?.capabilities || []).some((cap: string) => cap === 'routes' || cap === 'navigation'))) {
+      return <ExtensionLoadError title="Extension Contract Violation" entryUrl={entryUrl} message="Extension manifest does not declare a route capability." />;
+    }
     return (
       <ExtensionHostProvider tier={tier} manifest={loadingState.manifest}>
 
@@ -667,7 +691,7 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
           </div>
         )}
         <RemoteErrorBoundary entryUrl={entryUrl}>
-          <Component context={extensionContext.context} switchContext={extensionContext.switchContext} />
+          <Component context={extensionContext.context} switchContext={extensionContext.switchContext} authorizedFetch={extensionContext.authorizedFetch} route={route} />
         </RemoteErrorBoundary>
       </ExtensionHostProvider>
     );
@@ -1216,6 +1240,7 @@ const RemoteRouteGuard: React.FC<{ item: any }> = ({ item }) => {
     <RemoteComponentLoader
       entryUrl={item.remoteEntry}
       sriHash={item.sriHash || item.integrity || item.sri}
+      route={{ path: item.path, label: item.name || item.path, required_permissions: requiredPermissions }}
     />
   );
 };

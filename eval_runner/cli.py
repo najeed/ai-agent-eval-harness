@@ -7,6 +7,7 @@ Refactored to use a Unified Functional Dispatcher and dynamic Extension Discover
 
 import argparse
 import inspect
+import json
 import os
 import sys
 from pathlib import Path
@@ -43,6 +44,51 @@ def _add_pqc_args(parser: argparse.ArgumentParser):
 
 
 def _dispatch_console(args):
+    if getattr(args, "console_command", None) == "extension":
+        from .console.extension_publisher import (
+            publish_extension,
+            repair_extension,
+            unpublish_extension,
+            verify_extension,
+        )
+        from .console.routes.trust import _private_key_pem_bytes, _public_key_pem_bytes
+
+        if args.extension_command == "unpublish":
+            descriptor = unpublish_extension(
+                extension_id=args.extension_id, version=args.extension_version
+            )
+        elif args.extension_command == "verify":
+            descriptor = verify_extension(
+                extension_id=args.extension_id,
+                version=args.extension_version,
+                public_key_pem=_public_key_pem_bytes,
+            )
+            if not descriptor["valid"]:
+                print(json.dumps(descriptor, sort_keys=True))
+                return 1
+        elif args.extension_command == "repair":
+            descriptor = repair_extension(
+                entry=Path(args.entry),
+                extension_id=args.extension_id,
+                publisher=args.publisher,
+                version=args.extension_version,
+                public_key_pem=_public_key_pem_bytes,
+            )
+        else:
+            descriptor = publish_extension(
+                entry=Path(args.entry),
+                extension_id=args.extension_id,
+                publisher=args.publisher,
+                version=args.extension_version,
+                private_key_pem=_private_key_pem_bytes,
+                manifest_declaration=(
+                    json.loads(Path(args.manifest).read_text(encoding="utf-8"))
+                    if args.manifest
+                    else None
+                ),
+            )
+        print(json.dumps(descriptor, sort_keys=True))
+        return 0
     from .console.app import run_server
 
     print(f"[CLI] Launching Visual Debugger on http://{args.host}:{args.port}")
@@ -264,6 +310,7 @@ Usage: agentv <command> [options]
   failures       Search the global Failure Corpus and patterns
   playground     Launch an interactive REPL for agent experimentation
   record         Record live agent interactions to a session trace
+  hitl-resume    Resume a paused human-in-the-loop evaluation
 
 5. Reporting & Benchmarking
   report         Generate stylized HTML reports from run traces
@@ -273,6 +320,7 @@ Usage: agentv <command> [options]
 
 6. Trust & Verification
   verify         Verify the cryptographic integrity of a run trace
+  verify-package Independently verify a sealed verification package
   certify        Generate a Verification Certificate (VC) for a trace
   gate           CI/CD "Hard Gate": Enforce verification/compliance
   aes            AES Specification utilities (Validate/Register)
@@ -286,6 +334,7 @@ Usage: agentv <command> [options]
 
 8. Maintenance & Control
   console        Launch the Visual Debugger (Web UI & REST API)
+                 Extension lifecycle: `console extension publish|inspect|unpublish`
   contribute     Start the interactive contribution wizard
   cleanup-runs   Prune old traces and rotate log artifacts
   doctor         Audit the environment and dependencies
@@ -324,6 +373,40 @@ Usage: agentv <command> [options]
     console_parser.add_argument("--port", type=int, default=5000)
     console_parser.add_argument("--debug", action="store_true")
     console_parser.set_defaults(func=_dispatch_console)
+    console_subparsers = console_parser.add_subparsers(dest="console_command")
+    extension_parser = console_subparsers.add_parser(
+        "extension", help="Manage signed console extensions"
+    )
+    extension_subparsers = extension_parser.add_subparsers(dest="extension_command", required=True)
+    publish_parser = extension_subparsers.add_parser(
+        "publish", help="Sign and atomically publish an ESM extension"
+    )
+    publish_parser.add_argument(
+        "--entry", required=True, help="Local ESM entry file under the configured source root"
+    )
+    publish_parser.add_argument("--extension-id", required=True)
+    publish_parser.add_argument("--publisher", required=True, help="Configured trust-root identity")
+    publish_parser.add_argument("--extension-version", required=True, dest="extension_version")
+    publish_parser.add_argument(
+        "--manifest", help="Validated generic extension manifest declaration JSON"
+    )
+    unpublish_parser = extension_subparsers.add_parser(
+        "unpublish", help="Atomically withdraw a published extension version"
+    )
+    unpublish_parser.add_argument("--extension-id", required=True)
+    unpublish_parser.add_argument("--extension-version", required=True, dest="extension_version")
+    verify_parser = extension_subparsers.add_parser(
+        "verify", help="Verify installed entry, chunks, manifest, and publisher"
+    )
+    verify_parser.add_argument("--extension-id", required=True)
+    verify_parser.add_argument("--extension-version", required=True, dest="extension_version")
+    repair_parser = extension_subparsers.add_parser(
+        "repair", help="Restore only bytes matching a retained signed release"
+    )
+    repair_parser.add_argument("--entry", required=True)
+    repair_parser.add_argument("--extension-id", required=True)
+    repair_parser.add_argument("--publisher", required=True)
+    repair_parser.add_argument("--extension-version", required=True, dest="extension_version")
 
     contribute_parser = subparsers.add_parser("contribute", help="Interactive wizard")
     contribute_parser.set_defaults(func=_dispatch_contribute)
@@ -707,7 +790,9 @@ Usage: agentv <command> [options]
 def main():
     """Main CLI entrance."""
     is_help = "-h" in sys.argv or "--help" in sys.argv
-    if "--version" in sys.argv:
+    # Global version applies only to the top-level invocation.  Nested
+    # subcommands own their flags and must reach argparse unchanged.
+    if sys.argv[1:] == ["--version"]:
         print(f"AgentV {__version__}")
         sys.exit(0)
 

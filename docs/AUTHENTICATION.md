@@ -111,7 +111,7 @@ Production SSE routes accept same-origin browser `EventSource` connections throu
 
 ### Verification & Capability Boundary Status
 - **Server Enforcement**: Provided via `eval_runner.console.auth.handoff_required` — a published route decorator that extensions apply to their own routes. It validates `X-Handoff-Token` or `?token=` parameter for audience (`agentv-plugin`), signature, and expiration against `JWT_SECRET`. OSS-internal routes do not use this decorator because the OSS layer does not host extension-owned endpoints; the decorator is part of the **extension API contract** consumed by the enterprise control plane and other micro-frontends.
-- **Client Manifest Capabilities**: Extension declared capabilities (e.g. `canCallHostApi`, `canReadRuns`) and Subresource Integrity (SHA-384 SRI) are currently validated client-side by the Extension Host module loader upon importing signed plugin manifests.
+- **Client Manifest Capabilities**: Extension declared capabilities (e.g. `canCallHostApi`, `canReadRuns`) and SHA3-256 SRI are checked by the Extension Host before mounting a signed Runtime-published module. The host imports the verified origin-relative module URL only after its signed sidecar and declared chunks validate.
 - **Open Architectural Decision (Iframe & Realm Isolation)**:
   - *Current OSS Boundary*: Remote components are dynamically loaded as ECMAScript modules (ESM) into the host realm, gated by cryptographic signature and SRI verification.
   - *Target Boundary (v2.1+)*: Transitioning to cross-origin sandboxed `<iframe>` or ShadowRealm execution with structured `postMessage` RPC to prevent untrusted plugins from accessing host DOM, window storage, or memory.
@@ -153,6 +153,37 @@ failure, or a successful context switch. Extensions may use the generic
 handoff helper, but Core does not import extension pages, routes, navigation,
 or extension-owned authentication clients.
 
+`authorizedRuntimeFetch(extensionId, input, init)` is the preferred generic
+handoff helper for a signed extension. It keeps a short-lived handoff token
+only in Core memory, keyed by the verified extension ID; it reuses that token
+until Runtime invalidates it, retries once after a rejected token, and clears
+all cached credentials after logout, authentication failure, or a successful
+context switch. Extensions must not call `/api/auth/handoff` directly or store
+handoff tokens in browser persistence.
+
+### Configuring a non-OIDC authorization backend
+
+A deployment may select a non-OIDC `AuthorizationBackend` without modifying
+Core by setting `AGENTV_AUTHORIZATION_BACKEND_FACTORY` at Console startup to a
+zero-argument factory in `package.module:factory` form. The factory must return
+an `AuthorizationBackend`; invalid imports, factories, or return values fail
+closed rather than falling back to an unscoped identity. For example:
+
+```text
+AGENTV_AUTHORIZATION_BACKEND_FACTORY=deployment.auth:create_authorization_backend
+```
+
+The factory returns principals whose verified metadata includes the v2
+`context_version`, `context`, and `authorized_contexts` claims. Runtime applies
+the same entitlement normalization and context-switch allowlist checks as for
+OIDC claims. A deployment embedding Console may instead call
+`register_authorization_backend(backend)` before constructing the application;
+that explicit bootstrap registration takes precedence over the environment
+factory. Neither mechanism reads identity or scope from browser headers, query
+parameters, local storage, or login request bodies. With neither OIDC nor a
+configured backend, the existing unscoped static service principal remains
+available for compatible service deployments.
+
 Signed Console extensions can declare the generic `header` capability and
 `slot: "header"` in their Runtime extension manifest. The host mounts the
 extension in the Console header and supplies only two props: `context`, a
@@ -162,10 +193,27 @@ and environment; no organization or tenant mutation capability exists. Core
 navigation and route presentation gates consume verified permission claims,
 never role strings. Roles remain display metadata.
 
+### Signed extension bundle ABI
+
+Signed production extensions are loaded by their verified `remote_entry` URL,
+not a Blob URL, so ordinary relative ESM chunk imports resolve correctly. The
+signed manifest must list every relative chunk in `verified_chunks` as
+`{ "relative-chunk.js": "sha3-256-…" }`; Runtime verifies those bytes before
+mounting the entry. A missing or tampered declared chunk prevents mounting.
+
+Extensions must build React as a peer, never bundle a second React runtime.
+Production manifests set `react_peer: true`; extension build configuration must
+externalize `react` and `react-dom` and bind React to
+`globalThis.__AGENTV_EXTENSION_REACT__` supplied by the host. For Vite this
+means an external/alias configuration targeting that global peer and classic
+JSX (or an equivalent JSX-runtime externalization). The remote default export
+receives `context` and `switchContext` props described above. This ABI is
+generic and does not expose tenant/org mutation APIs.
+
 | Layer | Mechanism | Cryptographic Primitive | Verification Boundary |
 |---|---|---|---|
 | **PQC Verification** | ML-DSA-65 / Falcon-512 | NIST FIPS 204 Post-Quantum | `TraceVerifier` & Flight Recorder |
-| **Integrity Checks** | SHA-384 SRI | Subresource Integrity Digest | ESM Module & Asset Fetch |
+| **Integrity Checks** | SHA3-256 SRI | Signed entry and declared chunk digests | Runtime extension artifact fetch |
 | **Extension Trust** | Signed Manifests | Ed25519 / RSA Keyroot | Extension Host & SRI Gating (Client Verified) |
 | **Runtime Sessions** | Flask Session Cookies | itsdangerous / HMAC-SHA256 | Console Web Gateway |
 | **Plugin Handoff** | Scoped JWTs | HMAC-SHA256 (Audience Bound) | `/api/auth/handoff` & `@handoff_required` |
@@ -183,3 +231,18 @@ never role strings. Roles remain display metadata.
 | `JWT_SECRET` | Secret key for signing console sessions and handoff JWTs | Falls back to `DASHBOARD_API_KEY` or fails in `production`. |
 | `FLIGHT_RECORDER_KEY_PATH` | Ed25519 private key path for Flight Recorder trace signing | Required when `EVAL_REQUIRE_SIGNING=true`. |
 | `DEV_PERSONA_SIMULATOR` | Enables local loopback persona switching for UI dev | Ignored in `production`. |
+# Signed extension publishing
+
+Runtime publishes signed extensions through its configured local artifact store; publishers never provide a Console hostname or calculate integrity values in a browser. Run this command on the Runtime host (where the configured trust-root signer is available):
+
+```text
+agentv console extension publish --entry ./dist/entry.mjs --extension-id example-header --publisher configured-publisher --extension-version 1.0.0
+```
+
+It discovers static relative ESM imports, computes SHA3-256 SRI for the entry and every chunk, signs the canonical `RuntimeExtension` sidecar with the configured publisher identity, and atomically publishes the version. The returned descriptor contains an origin-relative `remoteEntry` and `sriHash`; use it unchanged in the configured navigation descriptor. A failed publish leaves no partially visible version.
+
+Production extensions declare `react_peer: true`, externalize React/ReactDOM, and use the host singleton rather than bundling a second React runtime. Header extensions declare both `capabilities: ["header"]` and `slot: "header"`; `verified_chunks` is a signed map of safe relative paths to `sha3-256-...` SRI. Blob imports and SHA-2 SRI are not a supported production ABI.
+
+To withdraw a bad release without directly mutating the artifact store, use `agentv console extension unpublish --extension-id example-header --extension-version 1.0.0`. It atomically removes the served release before quarantining and deleting it; a repeated call reports `not_found` without error.
+
+`publish` is idempotent only for byte-identical entry/chunk graphs and the same signed manifest; a changed version is rejected. Use `agentv console extension verify --extension-id example-header --extension-version 1.0.0` for a read-only entry, chunk, manifest, and publisher-trust check. `repair` requires a retained signed release record and candidate source whose bytes exactly match it; it atomically restores that exact version and never rebinds a version to different code.

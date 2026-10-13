@@ -92,6 +92,11 @@ export interface ExtensionRoute {
 export interface ExtensionRuntimeContextApi {
   context: import('../auth/runtimeAuthContext.js').RuntimeAuthContext;
   switchContext(workspaceId: string, activeEnvironment: string): Promise<void>;
+  authorizedFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
+}
+
+export interface ExtensionPageHostApi extends ExtensionRuntimeContextApi {
+  route: ExtensionRoute;
 }
 
 export interface ExtensionLifecycle {
@@ -114,6 +119,10 @@ export interface RuntimeExtensionManifest {
   nav_group: string;
   remote_entry: string;
   sri_hash: string;
+  /** Signed integrity map for every relative ESM chunk imported by remote_entry. */
+  verified_chunks?: Record<string, string>;
+  /** ABI assertion: React is a host peer, never bundled into the extension. */
+  react_peer?: boolean;
   publisher: string;
   signature: string;
   lifecycle: ExtensionLifecycle;
@@ -121,7 +130,7 @@ export interface RuntimeExtensionManifest {
   /** Optional generic visual contribution point. */
   slot?: 'header';
   /** [D2] Declared trust tier (verified server-side; advisory client-side). */
-  tier?: ExtensionTier;
+  tier?: ExtensionTier | null;
 }
 
 export function parseSemver(version: string): [number, number, number] {
@@ -205,6 +214,16 @@ export function validateExtensionManifest(
       violations.push(`Undeclared host API referenced: ${api}`);
     }
   }
+  if (m.verified_chunks !== undefined) {
+    if (typeof m.verified_chunks !== 'object' || Array.isArray(m.verified_chunks)) {
+      violations.push('verified_chunks must be an object mapping chunk URL to SRI digest');
+    } else if (Object.entries(m.verified_chunks).some(([url, digest]) => !url || url.startsWith('/') || url.split('/').includes('..') || typeof digest !== 'string' || !digest.startsWith('sha3-256-'))) {
+      violations.push('verified_chunks entries require safe relative paths and sha3-256 SRI digests');
+    }
+  }
+  if (m.slot !== undefined && m.slot !== 'header') violations.push(`Unknown extension slot: ${String(m.slot)}`);
+  if (m.slot === 'header' && !caps.includes('header')) violations.push('Header slot requires the "header" capability');
+  if (m.react_peer !== undefined && typeof m.react_peer !== 'boolean') violations.push('react_peer must be a boolean');
 
   const routes = m.routes ?? [];
   if (routes.length > 0 && !caps.includes('routes') && !caps.includes('navigation')) {
@@ -224,6 +243,7 @@ export function validateExtensionManifest(
   const tier = (m as any).tier;
   if (
     tier !== undefined &&
+    tier !== null &&
     !['official', 'community', 'unsigned-local', 'invalid-signature'].includes(tier)
   ) {
     violations.push(`Unknown trust tier: ${String(tier)}`);

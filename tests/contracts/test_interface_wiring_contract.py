@@ -9,6 +9,7 @@ runtime execution paths, preventing "built but unwired" regressions.
 from __future__ import annotations
 
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 from unittest.mock import MagicMock
 from uuid import uuid4
@@ -17,7 +18,12 @@ import pytest
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
-from eval_runner.console.auth_manager import Permission, StaticKeyProvider
+from eval_runner.console.auth_manager import (
+    Permission,
+    StaticKeyProvider,
+    get_auth_provider,
+    register_authorization_backend,
+)
 from eval_runner.events import Event
 from eval_runner.flight_recorder import FlightRecorderPlugin
 from eval_runner.interfaces.policy import PolicyEvaluationResult, PolicyEvaluator
@@ -304,6 +310,65 @@ def test_auth_manager_delegates_to_authorization_backend():
 
     # 3. Invalid token returns None
     assert provider.authenticate("invalid-nonexistent-token") is None
+
+
+def test_registered_authorization_backend_is_used_by_console_factory():
+    backend = SimpleAPIKeyAuthBackend(master_key="backend-registration-key")
+    backend.register_key(
+        key="scoped-token",
+        principal_id="scoped-user",
+        roles=["metadata-only"],
+        permissions=["runs:read"],
+        metadata={
+            "context_version": "2",
+            "context": {
+                "org_id": "o",
+                "tenant_id": "t",
+                "workspace_id": "w",
+                "active_environment": "sandbox",
+            },
+            "authorized_contexts": [
+                {"org_id": "o", "tenant_id": "t", "workspace_id": "w", "environments": ["sandbox"]}
+            ],
+        },
+    )
+    register_authorization_backend(backend)
+    try:
+        principal = get_auth_provider().authenticate("scoped-token")
+        assert principal is not None
+        assert principal["context"]["workspace_id"] == "w"
+    finally:
+        register_authorization_backend(None)
+
+
+def test_declarative_authorization_backend_factory_is_used_by_console_factory(monkeypatch):
+    backend = SimpleAPIKeyAuthBackend(master_key="declarative-backend-key")
+    backend.register_key(
+        key="scoped-token",
+        principal_id="scoped-user",
+        permissions=["runs:read"],
+        metadata={
+            "context_version": "2",
+            "context": {
+                "org_id": "o",
+                "tenant_id": "t",
+                "workspace_id": "w",
+                "active_environment": "sandbox",
+            },
+            "authorized_contexts": [
+                {"org_id": "o", "tenant_id": "t", "workspace_id": "w", "environments": ["sandbox"]}
+            ],
+        },
+    )
+    monkeypatch.setenv("AGENTV_AUTHORIZATION_BACKEND_FACTORY", "deployment.auth:create_backend")
+    monkeypatch.setattr(
+        "eval_runner.console.auth_manager.importlib.import_module",
+        lambda module_name: SimpleNamespace(create_backend=lambda: backend),
+    )
+    register_authorization_backend(None)
+    principal = get_auth_provider().authenticate("scoped-token")
+    assert principal is not None
+    assert principal["context"]["workspace_id"] == "w"
 
 
 # ==============================================================================

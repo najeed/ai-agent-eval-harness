@@ -1,3 +1,4 @@
+import importlib
 import json
 import os
 from abc import ABC, abstractmethod
@@ -377,13 +378,57 @@ class StaticKeyProvider(AuthManager):
         return result
 
 
+_configured_authorization_backend: AuthorizationBackend | None = None
+_AUTHORIZATION_BACKEND_FACTORY_ENV = "AGENTV_AUTHORIZATION_BACKEND_FACTORY"
+
+
+def register_authorization_backend(backend: AuthorizationBackend | None) -> None:
+    """Explicit bootstrap seam for a configured non-OIDC authorization backend."""
+    global _configured_authorization_backend
+    _configured_authorization_backend = backend
+
+
+def _load_configured_authorization_backend(factory_spec: str) -> AuthorizationBackend:
+    """Load a deployment-configured backend factory without accepting request input."""
+    module_name, separator, factory_name = factory_spec.rpartition(":")
+    if not separator or not module_name or not factory_name:
+        raise RuntimeError(f"{_AUTHORIZATION_BACKEND_FACTORY_ENV} must be 'package.module:factory'")
+    try:
+        module = importlib.import_module(module_name)
+        factory = getattr(module, factory_name)
+    except (ImportError, AttributeError) as exc:
+        raise RuntimeError(
+            f"Unable to load {_AUTHORIZATION_BACKEND_FACTORY_ENV}={factory_spec!r}"
+        ) from exc
+    if not callable(factory):
+        raise RuntimeError(
+            f"{_AUTHORIZATION_BACKEND_FACTORY_ENV} factory {factory_spec!r} is not callable"
+        )
+    try:
+        backend = factory()
+    except TypeError as exc:
+        raise RuntimeError(
+            f"{_AUTHORIZATION_BACKEND_FACTORY_ENV} factory must be callable with no arguments"
+        ) from exc
+    if not isinstance(backend, AuthorizationBackend):
+        raise RuntimeError(
+            f"{_AUTHORIZATION_BACKEND_FACTORY_ENV} factory must return an AuthorizationBackend"
+        )
+    return backend
+
+
 def get_auth_provider() -> AuthManager:
     """Factory method to retrieve the active Auth Provider."""
     from .. import config
 
     # Ensure environment is loaded for the API key
     # Industrial Hardening: Prefer dedicated SERVICE_API_KEY for programmatic access
-    return StaticKeyProvider(config.SERVICE_API_KEY)
+    backend = _configured_authorization_backend
+    if backend is None:
+        factory_spec = os.getenv(_AUTHORIZATION_BACKEND_FACTORY_ENV, "").strip()
+        if factory_spec:
+            backend = _load_configured_authorization_backend(factory_spec)
+    return StaticKeyProvider(config.SERVICE_API_KEY, backend=backend)
 
 
 def extract_credentials_from_context(headers: dict, args: dict) -> tuple[str | None, str | None]:

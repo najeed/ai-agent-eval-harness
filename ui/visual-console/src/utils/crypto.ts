@@ -43,14 +43,16 @@ function keccakF1600(state: BigUint64Array): void {
     }
 
     // Rho and Pi steps
-    for (let i = 0; i < 25; i++) {
-      B[i] = rotl64(state[i], RHO[i]);
-    }
+    // State is A[x + 5*y].  FIPS 202 maps A[x,y] to
+    // B[y,(2*x + 3*y) mod 5]; keeping those axes explicit is essential.
     for (let y = 0; y < 5; y++) {
       for (let x = 0; x < 5; x++) {
-        state[y * 5 + x] = B[x * 5 + ((2 * x + 3 * y) % 5)];
+        B[y + 5 * ((2 * x + 3 * y) % 5)] = rotl64(
+          state[x + 5 * y], RHO[x + 5 * y],
+        );
       }
     }
+    state.set(B);
 
     // Chi step
     for (let y = 0; y < 5; y++) {

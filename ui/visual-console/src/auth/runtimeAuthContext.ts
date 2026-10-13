@@ -26,10 +26,12 @@ interface RuntimeAuthResponse extends RuntimeAuthContext {
   user?: Record<string, unknown> | null;
 }
 
-let handoffCredentials: string | null = null;
+// Tokens are audience-bound to a signed extension. Keep them only in memory
+// and never let one extension reuse another extension's credential.
+const handoffCredentials = new Map<string, string>();
 
 export function clearRuntimeAuthCaches(): void {
-  handoffCredentials = null;
+  handoffCredentials.clear();
 }
 
 async function readJson(response: Response): Promise<RuntimeAuthResponse> {
@@ -78,12 +80,30 @@ export async function logoutRuntimeAuth(): Promise<void> {
 
 /** Generic extension helper; no extension route or tenant data is involved. */
 export async function getRuntimeHandoff(pluginId: string): Promise<string> {
+  const cachedCredential = handoffCredentials.get(pluginId);
+  if (cachedCredential) return cachedCredential;
+
   const payload = await readJson(await fetch('/api/auth/handoff', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ plugin_id: pluginId }),
   })) as RuntimeAuthResponse & { token?: string };
   if (!payload.token) throw new Error('Runtime did not issue a handoff token');
-  handoffCredentials = payload.token;
-  return handoffCredentials;
+  handoffCredentials.set(pluginId, payload.token);
+  return payload.token;
+}
+
+/** Same-origin authenticated fetch for an extension; scope remains server-derived. */
+export async function authorizedRuntimeFetch(pluginId: string, input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
+  const request = (token: string) => {
+    const headers = new Headers(init.headers);
+    headers.set('X-Handoff-Token', token);
+    return fetch(input, { ...init, headers });
+  };
+  let response = await request(await getRuntimeHandoff(pluginId));
+  if (response.status !== 401 && response.status !== 403) return response;
+  clearRuntimeAuthCaches();
+  response = await request(await getRuntimeHandoff(pluginId));
+  if (response.status === 401 || response.status === 403) clearRuntimeAuthCaches();
+  return response;
 }

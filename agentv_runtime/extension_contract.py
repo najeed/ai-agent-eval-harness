@@ -75,6 +75,7 @@ KNOWN_CAPABILITIES = {
     "lifecycle",  # mount/unmount/error hooks
     "runs:read",  # scoped host API: read runs
     "scenarios:read",  # scoped host API: read scenarios
+    "header",  # contribute a presentation component to the generic header slot
 }
 
 KNOWN_HOST_APIS = {
@@ -104,6 +105,9 @@ class ExtensionRoute:
     path: str
     label: str
     icon: str | None = None
+    required_permissions: list[str] = field(default_factory=list)
+    # Legacy signed metadata retained for manifest compatibility; Runtime UI
+    # presentation gates use required_permissions only.
     required_role: str | None = None
 
 
@@ -141,6 +145,12 @@ class RuntimeExtension:
     signature: str = ""  # hex signature over canonical manifest bytes
     lifecycle: ExtensionLifecycle = field(default_factory=ExtensionLifecycle)
     host_apis: list[str] = field(default_factory=list)
+    # Signed extension-bundle ABI.  These values are intentionally modelled
+    # here rather than passed through as opaque JSON: they are security
+    # relevant and therefore must be covered by canonical signing.
+    slot: str | None = None
+    react_peer: bool = False
+    verified_chunks: dict[str, str] = field(default_factory=dict)
     # [D2] Declared trust tier; verified server-side against the trust root.
     tier: str | None = None
 
@@ -163,6 +173,14 @@ class RuntimeExtension:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> RuntimeExtension:
         try:
+            if not isinstance(data, dict):
+                raise ExtensionContractError("manifest must be an object")
+            allowed = {f.name for f in __import__("dataclasses").fields(cls)}
+            unknown = set(data) - allowed
+            if unknown:
+                raise ExtensionContractError(
+                    f"Unmodelled manifest fields are forbidden: {sorted(unknown)}"
+                )
             routes = [
                 r if isinstance(r, ExtensionRoute) else ExtensionRoute(**r)
                 for r in data.get("routes", [])
@@ -188,11 +206,18 @@ class RuntimeExtension:
                 signature=str(data.get("signature", "")),
                 lifecycle=lifecycle,
                 host_apis=list(data.get("host_apis", [])),
+                slot=(str(data["slot"]) if data.get("slot") is not None else None),
+                react_peer=data.get("react_peer", False),
+                verified_chunks=(
+                    dict(data.get("verified_chunks", {}))
+                    if isinstance(data.get("verified_chunks", {}), dict)
+                    else data.get("verified_chunks")
+                ),
                 tier=(str(data["tier"]) if data.get("tier") is not None else None),
             )
         except KeyError as err:
             raise ExtensionContractError(f"Missing required manifest field: {err}") from err
-        except TypeError as err:
+        except (TypeError, ValueError) as err:
             raise ExtensionContractError(f"Malformed manifest structure: {err}") from err
 
     # ------------------------------------------------------------------
@@ -243,6 +268,28 @@ class RuntimeExtension:
             violations.append(
                 'Manifest declares routes but does not declare "routes" or "navigation" capability'
             )
+
+        if self.slot is not None and self.slot != "header":
+            violations.append(f"Unknown extension slot: {self.slot!r}")
+        if self.slot == "header" and "header" not in self.capabilities:
+            violations.append('Header slot requires the "header" capability')
+        if not isinstance(self.react_peer, bool):
+            violations.append("react_peer must be a boolean")
+        if not isinstance(self.verified_chunks, dict):
+            violations.append("verified_chunks must be a map of relative path to SRI")
+        else:
+            for path, integrity in self.verified_chunks.items():
+                if (
+                    not isinstance(path, str)
+                    or not path
+                    or path.startswith("/")
+                    or ".." in path.split("/")
+                ):
+                    violations.append(
+                        f"verified_chunks path must be a safe relative path: {path!r}"
+                    )
+                if not isinstance(integrity, str) or not integrity.startswith("sha3-256-"):
+                    violations.append(f"verified_chunks integrity must be sha3-256 SRI: {path!r}")
 
         for route in self.routes:
             if not route.path or not route.path.startswith("/"):

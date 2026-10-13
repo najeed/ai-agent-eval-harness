@@ -170,6 +170,13 @@ def create_app():
             "In development, ensure zero-config bootstrap key is generated."
         )
 
+    # Resolve the configured backend while the Console is starting so an
+    # invalid declarative factory prevents serving requests without its
+    # intended authorization policy.
+    from .auth_manager import get_auth_provider
+
+    get_auth_provider()
+
     from ..utils import crypto
 
     app.secret_key = crypto.checksum(api_key or secret_key_env)
@@ -396,6 +403,14 @@ def create_app():
         if os.path.exists(assets_dir):
             return send_from_directory(assets_dir, path)
         return jsonify({"error": "Asset Not Found"}), 404
+
+    @app.route("/extensions/<path:path>")
+    def serve_signed_extension(path):
+        """Serve only Runtime-published extension artifacts at stable relative URLs."""
+        extension_dir = str(config.EXTENSION_ARTIFACT_DIR)
+        if os.path.exists(extension_dir):
+            return send_from_directory(extension_dir, path)
+        return jsonify({"error": "Extension Not Found"}), 404
 
     @app.route("/v2/assets/<path:path>")
     def serve_v2_assets(path):

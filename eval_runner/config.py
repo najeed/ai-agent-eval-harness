@@ -421,6 +421,11 @@ SYSTEM_JUNK_EXTENSIONS = [".tmp", ".bak", ".swp", ".old"]
 
 # --- Logging Configuration ---
 RUN_LOG_DIR = (PROJECT_ROOT / os.getenv("RUN_LOG_DIR", "runs")).absolute()
+# Runtime-owned extension artifact store.  The Console exposes this store at
+# the origin-relative /extensions/ URL; it is not a Vite development proxy.
+EXTENSION_ARTIFACT_DIR = Path(
+    os.getenv("AGENTV_EXTENSION_ARTIFACT_DIR", str(PROJECT_ROOT / ".agentv" / "extensions"))
+).absolute()
 RUN_LOG_PER_RUN = os.getenv("RUN_LOG_PER_RUN", "true").lower() == "true"
 RUN_LOG_MASTER = os.getenv("RUN_LOG_MASTER", "true").lower() == "true"
 RUN_LOG_ROTATE_COUNT = int(os.getenv("RUN_LOG_ROTATE_COUNT", "0"))

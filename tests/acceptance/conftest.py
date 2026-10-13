@@ -10,7 +10,6 @@ from pathlib import Path
 
 import pytest
 
-from eval_runner.identity import IdentityService
 from tests.acceptance.support.acceptance_runner import AgentVAcceptanceRunner
 from tests.acceptance.support.report import AcceptanceReportAggregator
 
@@ -24,8 +23,12 @@ def repo_root() -> Path:
 
 @pytest.fixture(scope="session")
 def signing_identity():
-    """Ensure standard system signing identity is provisioned for certification."""
-    IdentityService._provision_local_identity("system_id")
+    """Name used by each worker-isolated acceptance trust root.
+
+    The per-test fixture provisions the key under its own temporary trust
+    root.  Do not write a shared key below the repository: xdist workers can
+    race there and OneDrive can retain a transient file lock.
+    """
     return "system_id"
 
 

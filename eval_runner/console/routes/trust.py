@@ -414,6 +414,101 @@ def sign_extension_manifest():
     )
 
 
+@trust_bp.route("/v1/extensions/publish", methods=["POST"])
+@require_permission(Permission.CERTIFY_WRITE)
+def publish_extension_bundle():
+    """Publish a signed ESM extension from the Runtime's configured source/store."""
+    from eval_runner.console.extension_publisher import publish_extension
+
+    data = request.json or {}
+    entry_value = data.get("entry")
+    if not isinstance(entry_value, str):
+        return jsonify({"error": "entry must be a configured local ESM path"}), 400
+    source_root = Path(os.getenv("AGENTV_EXTENSION_SOURCE_ROOT", config.PROJECT_ROOT)).resolve()
+    entry = Path(entry_value).resolve()
+    if source_root not in entry.parents:
+        return jsonify({"error": "entry is outside the configured extension source root"}), 400
+    try:
+        descriptor = publish_extension(
+            entry=entry,
+            extension_id=str(data.get("extension_id") or ""),
+            publisher=str(data.get("publisher") or ""),
+            version=str(data.get("version") or ""),
+            private_key_pem=_private_key_pem_bytes,
+            manifest_declaration=data.get("manifest"),
+        )
+    except (OSError, ValueError) as exc:
+        logger.warning("[Extensions] publish rejected: %s", exc)
+        return jsonify({"error": str(exc)}), 400
+    return jsonify(descriptor), 201
+
+
+@trust_bp.route("/v1/extensions/unpublish", methods=["POST"])
+@require_permission(Permission.CERTIFY_WRITE)
+def unpublish_extension_bundle():
+    """Authenticated, idempotent withdrawal of a Runtime-owned release."""
+    from eval_runner.console.extension_publisher import unpublish_extension
+
+    data = request.json or {}
+    extension_id = data.get("extension_id")
+    version = data.get("extension_version")
+    if not isinstance(extension_id, str) or not isinstance(version, str):
+        return jsonify({"error": "extension_id and extension_version are required"}), 400
+    try:
+        return jsonify(unpublish_extension(extension_id=extension_id, version=version))
+    except (OSError, ValueError) as exc:
+        logger.warning("[Extensions] unpublish rejected: %s", exc)
+        return jsonify({"error": str(exc)}), 400
+
+
+@trust_bp.route("/v1/extensions/verify", methods=["POST"])
+@require_permission(Permission.CERTIFY_WRITE)
+def verify_extension_bundle():
+    from eval_runner.console.extension_publisher import verify_extension
+
+    data = request.json or {}
+    if not isinstance(data.get("extension_id"), str) or not isinstance(
+        data.get("extension_version"), str
+    ):
+        return jsonify({"error": "extension_id and extension_version are required"}), 400
+    result = verify_extension(
+        extension_id=data["extension_id"],
+        version=data["extension_version"],
+        public_key_pem=_public_key_pem_bytes,
+    )
+    return jsonify(result), (200 if result["valid"] else 409)
+
+
+@trust_bp.route("/v1/extensions/repair", methods=["POST"])
+@require_permission(Permission.CERTIFY_WRITE)
+def repair_extension_bundle():
+    from eval_runner.console.extension_publisher import repair_extension
+
+    data = request.json or {}
+    required = ("entry", "extension_id", "publisher", "extension_version")
+    if not all(isinstance(data.get(name), str) for name in required):
+        return jsonify(
+            {"error": "entry, extension_id, publisher, and extension_version are required"}
+        ), 400
+    source_root = Path(os.getenv("AGENTV_EXTENSION_SOURCE_ROOT", config.PROJECT_ROOT)).resolve()
+    entry = Path(data["entry"]).resolve()
+    if source_root not in entry.parents:
+        return jsonify({"error": "entry is outside the configured extension source root"}), 400
+    try:
+        return jsonify(
+            repair_extension(
+                entry=entry,
+                extension_id=data["extension_id"],
+                publisher=data["publisher"],
+                version=data["extension_version"],
+                public_key_pem=_public_key_pem_bytes,
+            )
+        )
+    except (OSError, ValueError) as exc:
+        logger.warning("[Extensions] repair rejected: %s", exc)
+        return jsonify({"error": str(exc)}), 400
+
+
 @trust_bp.route("/v1/extensions/verify-publisher", methods=["POST"])
 @require_permission(Permission.RUNS_READ)
 def verify_extension_publisher():
