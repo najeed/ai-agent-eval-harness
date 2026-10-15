@@ -14,6 +14,7 @@ export interface AuthenticatedUser {
   name: string;
   role: UserRole;
   permissions: string[];
+  roles?: string[];
   type?: string;
   tenant_id?: string;
   org_id?: string;
@@ -146,7 +147,10 @@ export const RBACProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const hasPermission = (permission: string): boolean => {
     if (isAdmin) return true;
-    return perms.has(permission);
+    if (perms.has(permission)) return true;
+    if (permission.includes(':') && perms.has(permission.replace(/:/g, '.'))) return true;
+    if (permission.includes('.') && perms.has(permission.replace(/\./g, ':'))) return true;
+    return false;
   };
 
   const switchContext = async (workspaceId: string, activeEnvironment: string) => {

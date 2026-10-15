@@ -113,7 +113,22 @@ export function mergeNavManifest(
     if (!rawItem.path && !rawItem.remoteEntry) continue;
     const name = rawItem.name || rawItem.title || rawItem.id || 'Plugin Item';
     const path = rawItem.path || (rawItem.id ? `/${rawItem.id}` : '#');
-    if (existingPaths.has(path)) continue;
+    const rawPerms = rawItem.required_permissions || rawItem.required_permission;
+    const required_permissions = Array.isArray(rawPerms)
+      ? rawPerms
+      : (typeof rawPerms === 'string' ? [rawPerms] : undefined);
+
+    if (existingPaths.has(path)) {
+      const existingItem = merged.flatMap(g => g.items).find(i => i.path === path);
+      if (existingItem) {
+        if (required_permissions) {
+          existingItem.required_permissions = Array.from(
+            new Set([...(existingItem.required_permissions || []), ...required_permissions])
+          );
+        }
+      }
+      continue;
+    }
 
     const targetGroupTitle =
       rawItem.group || (rawItem.tier === 'enterprise' ? 'Enterprise' : 'System');
@@ -128,9 +143,7 @@ export function mergeNavManifest(
       tier: rawItem.tier,
       remoteEntry: rawItem.remoteEntry,
       sriHash: rawItem.sriHash || rawItem.integrity || rawItem.sri,
-      required_permissions: Array.isArray(rawItem.required_permissions)
-        ? rawItem.required_permissions
-        : undefined,
+      required_permissions,
       // [D2] Unsigned plugin contributions are stamped LOCAL: they render a
       // visible flag in the nav. Signed contributions must carry their own SRI.
       ...(rawItem.tier
@@ -226,7 +239,7 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
       authorized_contexts: authorizedContexts,
     },
     switchContext,
-    authorizedFetch: (input, init) => authorizedRuntimeFetch(extensionIdRef.current, input, init),
+    authorizedFetch: (input, init) => authorizedRuntimeFetch(extensionIdRef.current || 'enterprise', input, init),
   }), [authorizedContexts, switchContext, tenantId, user?.active_environment, workspaceId]);
   const [loadingState, setLoadingState] = useState<{
     status:
@@ -463,7 +476,7 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
           }
 
           const ResolvedComp = mod.default || mod[Object.keys(mod)[0]] || mod;
-          extensionIdRef.current = manifestObj.extension_id;
+          extensionIdRef.current = manifestObj.extension_id || manifestObj.id || 'enterprise';
           if (active) setLoadingState({ status: 'ready', Component: ResolvedComp, tier, manifest: manifestObj });
         } else {
           if (import.meta.env.PROD) {
@@ -532,6 +545,7 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
 
           const tier = await resolveTier(manifestObj);
           const ResolvedComp = mod.default || mod[Object.keys(mod)[0]] || mod;
+          extensionIdRef.current = manifestObj?.extension_id || manifestObj?.id || 'enterprise';
           if (active) setLoadingState({ status: 'ready', Component: ResolvedComp, tier, manifest: manifestObj });
         }
       } catch (err: any) {
@@ -849,6 +863,9 @@ const ConsoleLayout: React.FC = () => {
 
   // Verified-permission-only navigation gating.
   const isNavItemRestricted = (item: NavItem): boolean => {
+    // Admin / wildcard bypass
+    if (user?.permissions?.includes('*') || role === 'System Admin') return false;
+
     if (item.required_permissions && item.required_permissions.length > 0) {
       if (!item.required_permissions.every(permission => hasPermission(permission))) return true;
     }

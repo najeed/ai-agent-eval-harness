@@ -7,6 +7,7 @@ import {
   RefreshCw,
   Download,
   Eye,
+  Inbox,
 } from 'lucide-react';
 import { RunDetailView } from '../components/RunDetailView';
 import { ProvisionalBadge } from '../components/ProvisionalBadge';
@@ -154,6 +155,16 @@ export const RunsReports: React.FC = () => {
                 <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-indigo-500/10 border border-indigo-500/30 text-indigo-300">
                   {activeView === 'packages' ? 'Audit & Artifacts' : 'Execution Logs'}
                 </span>
+                {!loading && runs.length === 0 && (
+                  <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-amber-500/10 border border-amber-500/30 text-amber-400">
+                    {activeView === 'packages' ? 'Empty Evidence Packages Catalog' : 'Empty Runs Catalog'}
+                  </span>
+                )}
+                {!loading && runs.length > 0 && (
+                  <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold tracking-wider bg-slate-800 text-slate-400 border border-slate-700">
+                    {filteredRuns.length === runs.length ? `${runs.length} ${runs.length === 1 ? 'item' : 'items'}` : `${filteredRuns.length} of ${runs.length} items`}
+                  </span>
+                )}
               </div>
               <p className="text-xs text-slate-400 mt-1">
                 {activeView === 'packages'
@@ -249,7 +260,78 @@ export const RunsReports: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60 font-mono">
-                  {filteredRuns.map((r) => {
+                  {loading ? (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-16 text-center">
+                        <div className="flex flex-col items-center justify-center gap-3 font-sans">
+                          <RefreshCw className="w-6 h-6 text-indigo-400 animate-spin" />
+                          <p className="text-sm font-medium text-slate-300">Loading Catalog...</p>
+                          <p className="text-xs text-slate-500">
+                            {activeView === 'packages'
+                              ? 'Retrieving cryptographic evidence packages and certificates...'
+                              : 'Retrieving evaluation runs and execution telemetry...'}
+                          </p>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : filteredRuns.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-16 text-center">
+                        <div className="flex flex-col items-center justify-center max-w-md mx-auto text-center space-y-3 font-sans">
+                          <div className="w-12 h-12 rounded-2xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-slate-400 shadow-inner">
+                            <Inbox className="w-6 h-6 text-slate-400" />
+                          </div>
+                          <div>
+                            <span className="inline-block px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-amber-500/10 border border-amber-500/30 text-amber-400 mb-2">
+                              {runs.length === 0
+                                ? (activeView === 'packages' ? 'Empty Evidence Packages Catalog' : 'Empty Runs Catalog')
+                                : 'No Matching Runs'}
+                            </span>
+                            <h3 className="text-base font-semibold text-white tracking-tight">
+                              {runs.length === 0
+                                ? (activeView === 'packages' ? 'Evidence Packages & Certs Catalog is Empty' : 'Runs & History Catalog is Empty')
+                                : 'No runs matched your filter'}
+                            </h3>
+                            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                              {runs.length === 0
+                                ? (activeView === 'packages'
+                                    ? 'No cryptographic evidence packages, sealed manifests, or verification certificates have been cataloged in this workspace.'
+                                    : 'No evaluation runs, verification verdicts, or execution logs were found in the database. Run an evaluation workflow to populate the catalog.')
+                                : `No catalog items matched search "${search}" with status filter "${statusFilter}". Try adjusting or resetting your filter.`}
+                            </p>
+                          </div>
+                          {runs.length > 0 ? (
+                            <button
+                              onClick={() => {
+                                setSearch('');
+                                setStatusFilter('All');
+                              }}
+                              className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition shadow-sm mt-2"
+                            >
+                              Reset Filters
+                            </button>
+                          ) : (
+                            <div className="flex items-center gap-2 pt-2">
+                              <button
+                                onClick={fetchRuns}
+                                className="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition"
+                              >
+                                <RefreshCw className="w-3.5 h-3.5 text-indigo-400" />
+                                Refresh Catalog
+                              </button>
+                              <a
+                                href="/runner"
+                                className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition"
+                              >
+                                Start New Run
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredRuns.map((r) => {
                     //Server-authoritative verdict only, no inference.
                     // Server-authoritative verdict only, no inference.
                     const isProv = r.provisional || r.verdict === 'VERIFIED_PROVISIONAL';
@@ -337,7 +419,8 @@ export const RunsReports: React.FC = () => {
                         </td>
                       </tr>
                     );
-                  })}
+                  })
+                )}
                 </tbody>
               </table>
             </div>

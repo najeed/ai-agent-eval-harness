@@ -513,6 +513,13 @@ export const Dashboard: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/50">
+              {runs.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="py-8 text-center text-slate-500 font-sans text-xs">
+                    <span className="font-semibold text-slate-400">Empty Runs Catalog</span>: No evaluation runs recorded yet.
+                  </td>
+                </tr>
+              )}
               {runs.map((r) => {
                 const isProv = r.provisional || r.verdict === 'VERIFIED_PROVISIONAL';
                 const isVer = r.verdict === 'VERIFIED';

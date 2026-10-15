@@ -891,9 +891,13 @@ export const LiveDebugger: React.FC = () => {
               onChange={(e) => setRunId(e.target.value)}
               className="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-mono"
             >
-              {runsList.map(rid => (
-                <option key={rid} value={rid}>{rid}</option>
-              ))}
+              {runsList.length === 0 ? (
+                <option value="">No evaluation runs available</option>
+              ) : (
+                runsList.map(rid => (
+                  <option key={rid} value={rid}>{rid}</option>
+                ))
+              )}
             </select>
           </div>
 

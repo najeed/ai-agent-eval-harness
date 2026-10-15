@@ -13,7 +13,9 @@
     "description": "Synthetic utilization-management demo: external physician review occurs in the target application; AgentV durably pauses before downstream verification and independently observes the resulting business state.",
     "complexity": "high",
     "org_id": "tenant-default",
+    "correlation_id": "corr-um-adverse-4402",
     "agent": {
+      "name": "prior_auth_agent",
       "protocol": "openapi",
       "endpoint": "http://127.0.0.1:8080/execute_task"
     },
