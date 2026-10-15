@@ -48,7 +48,7 @@ provider-gemini = [
 # 2. Framework Environments (Evaluated and verified agent architectures)
 framework-langchain = [
     "langchain==1.4.6",
-    "langchain-core>=1.6.10",
+    "langchain-core>=1.6.11",
 ]
 framework-langserve = [
     "langserve>=0.3.3",
@@ -77,7 +77,7 @@ langchain-ollama = [
     "langchain-ollama>=1.1.0",
 ]
 langsmith = [
-    "langsmith==0.14.8",
+    "langsmith==0.14.9",
 ]
 
 # 4. Domain & Task Extras
@@ -102,7 +102,7 @@ vcs = [
 # 5. Composed Ecosystem Extras
 frameworks = [
     "langchain==1.4.6",
-    "langchain-core>=1.6.10",
+    "langchain-core>=1.6.11",
     "langserve>=0.3.3",
     "langgraph==1.2.15",
     "ag2==1.1.2",
@@ -110,12 +110,12 @@ frameworks = [
 ]
 langchain-all = [
     "langchain==1.4.6",
-    "langchain-core>=1.6.10",
+    "langchain-core>=1.6.11",
     "langchain-openai==1.7.2",
     "langchain-anthropic>=1.7.6",
     "langchain-google-genai>=4.4.2",
     "langchain-ollama>=1.1.0",
-    "langsmith==0.14.8",
+    "langsmith==0.14.9",
 ]
 
 all = [
@@ -123,7 +123,7 @@ all = [
     "datasets==5.1.0",
     "google-genai==2.31.0",
     "langchain==1.4.6",
-    "langchain-core>=1.6.10",
+    "langchain-core>=1.6.11",
     "langserve>=0.3.3",
     "langgraph==1.2.15",
     "ag2==1.1.2",
@@ -132,7 +132,7 @@ all = [
     "langchain-anthropic>=1.7.6",
     "langchain-google-genai>=4.4.2",
     "langchain-ollama>=1.1.0",
-    "langsmith==0.14.8",
+    "langsmith==0.14.9",
     "pypdf==6.20.1",
     "python-docx==1.2.0",
     "lxml==6.1.3",
