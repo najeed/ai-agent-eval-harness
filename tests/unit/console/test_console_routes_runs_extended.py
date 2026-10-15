@@ -984,3 +984,926 @@ def test_runs_vault_scanner_corrupt_lines_and_run_end(client, console_jail):
     r_end = next((r for r in runs if r.get("run_id") == "r_vault_end"), None)
     if r_end:
         assert r_end.get("duration_seconds") == 12.5 or r_end.get("result_status") == "PASS"
+
+
+def test_run_is_in_active_context_matrix(console_jail, monkeypatch):
+    from eval_runner.console.routes.runs import _run_is_in_active_context
+
+    monkeypatch.setattr(config, "RUN_LOG_DIR", console_jail["runs"])
+    ctx = {
+        "org_id": "org-1",
+        "tenant_id": "tenant-alpha",
+        "workspace_id": "ws-1",
+        "active_environment": "dev",
+    }
+
+    # Case 1: No context configured anywhere -> returns True
+    monkeypatch.setattr("eval_runner.console.routes.runs.active_runtime_context", lambda: None)
+    assert _run_is_in_active_context("any_run", context=None) is True
+
+    # Case 2: Context present, run record is None and manifest does not exist -> returns False
+    monkeypatch.setattr("eval_runner.console.routes.runs.read_run_index", lambda r: None)
+    console_jail["runs"] / "ghost_run"
+    assert _run_is_in_active_context("ghost_run", context=ctx) is False
+
+    # Case 3: Context present, record is None but manifest exists
+    # and matches context -> returns True
+    m_dir = console_jail["runs"] / "manifest_ok_run"
+    m_dir.mkdir(parents=True, exist_ok=True)
+    (m_dir / "run_manifest.json").write_text(json.dumps(ctx), encoding="utf-8")
+    assert _run_is_in_active_context("manifest_ok_run", context=ctx) is True
+
+    # Case 4: Context present, record is None but manifest exists and conflicts -> returns False
+    m_bad_dir = console_jail["runs"] / "manifest_bad_run"
+    m_bad_dir.mkdir(parents=True, exist_ok=True)
+    bad_ctx = dict(ctx)
+    bad_ctx["tenant_id"] = "tenant-beta"
+    (m_bad_dir / "run_manifest.json").write_text(json.dumps(bad_ctx), encoding="utf-8")
+    assert _run_is_in_active_context("manifest_bad_run", context=ctx) is False
+
+    # Case 5: Manifest is corrupt JSON -> returns False
+    m_corrupt_dir = console_jail["runs"] / "manifest_corrupt_run"
+    m_corrupt_dir.mkdir(parents=True, exist_ok=True)
+    (m_corrupt_dir / "run_manifest.json").write_text("{corrupt", encoding="utf-8")
+    assert _run_is_in_active_context("manifest_corrupt_run", context=ctx) is False
+
+
+def test_runs_routes_blocked_by_active_context(client, monkeypatch):
+    monkeypatch.setattr(
+        "eval_runner.console.routes.runs._run_is_in_active_context", lambda *args, **kwargs: False
+    )
+
+    r_id = "blocked_run"
+    assert client.get(f"/api/v1/explain/{r_id}").status_code == 404
+    assert client.get(f"/api/v1/runs/{r_id}/report.pdf").status_code == 404
+    assert client.get(f"/api/v1/runs/{r_id}").status_code == 404
+    assert client.post(f"/api/v1/runs/{r_id}/cancel").status_code == 404
+    assert client.post(f"/api/v1/runs/{r_id}/resume").status_code == 404
+    assert client.get(f"/api/v1/certificates/{r_id}").status_code == 404
+    assert client.get(f"/api/v1/runs/{r_id}/stream").status_code == 404
+    assert client.get(f"/api/v1/runs/{r_id}/verify").status_code == 404
+
+
+def test_runs_cache_autostart_and_stop_lifecycle():
+    from eval_runner.console.routes.runs import RunsCache
+
+    cache = RunsCache(autostart=True)
+    assert cache._started is True
+    assert cache._thread is not None
+
+    # Stopping running cache
+    cache.stop()
+    assert cache._started is False
+    assert cache._thread is None
+
+    # Calling stop on already-stopped cache returns early
+    cache.stop()
+    assert cache._started is False
+
+
+def test_runs_cache_durable_index_and_corrupt_fragments(console_jail, monkeypatch):
+    from eval_runner.console.routes.runs import RunsCache
+
+    runs_dir = console_jail["runs"]
+    monkeypatch.setattr(config, "RUN_LOG_DIR", runs_dir)
+    cache = RunsCache()
+
+    # 1. Fragment stat error
+    broken_frag = runs_dir / "broken.jsonl"
+    broken_frag.write_text('{"event": "run_start"}\n', encoding="utf-8")
+    orig_stat = Path.stat
+
+    def mock_stat(self, *args, **kwargs):
+        if self.name == "broken.jsonl":
+            raise OSError("Simulated stat error")
+        return orig_stat(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "stat", mock_stat)
+    cache.update_cache()
+    monkeypatch.setattr(Path, "stat", orig_stat)
+
+    # 2. Durable run index processing
+    index_dir = runs_dir / ".index"
+    index_dir.mkdir(parents=True, exist_ok=True)
+
+    # Valid run index
+    idx_file = index_dir / "run_idx_valid.json"
+    idx_file.write_text(
+        json.dumps(
+            {
+                "run_id": "run_idx_valid",
+                "scenario_id": "scenario_idx",
+                "created_at": "2026-10-15T00:00:00Z",
+                "status": "PENDING",
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    # Non-dict JSON in index
+    (index_dir / "run_idx_list.json").write_text('["not_a_dict"]\n', encoding="utf-8")
+
+    # Non-string run_id
+    (index_dir / "run_idx_bad_id.json").write_text('{"run_id": 12345}\n', encoding="utf-8")
+
+    # Corrupt JSON in index
+    (index_dir / "run_idx_corrupt.json").write_text("{corrupt_json\n", encoding="utf-8")
+
+    cache.update_cache()
+    runs = cache.get_runs()
+    found = [r for r in runs if r.get("run_id") == "run_idx_valid"]
+    assert len(found) == 1
+    assert found[0]["pending_status"] == "PENDING"
+    assert found[0]["_run_index"] is True
+
+    # Re-running update_cache when mtime matches cached mtime (skips re-reading)
+    cache.update_cache()
+
+    # Prune test with _run_index where run_index_path does not exist
+    monkeypatch.setattr(
+        "eval_runner.console.routes.runs.run_index_path",
+        lambda rid: Path("/nonexistent/path/for/prune.json"),
+    )
+    cache.update_cache()
+    assert not any(r.get("run_id") == "run_idx_valid" for r in cache.get_runs())
+
+
+def test_runs_cache_vault_parsing_durations_and_scores(console_jail, monkeypatch):
+    from eval_runner.console.routes.runs import RunsCache
+
+    runs_dir = console_jail["runs"]
+    monkeypatch.setattr(config, "RUN_LOG_DIR", runs_dir)
+    cache = RunsCache()
+
+    # Vault 1: Invalid duration and score values to exercise exception handlers
+    v1_dir = runs_dir / "v_invalid_vals"
+    v1_dir.mkdir(parents=True, exist_ok=True)
+    v1_file = v1_dir / "run.jsonl"
+    v1_file.write_text(
+        '{"event": "run_start", "run_id": "v_invalid_vals", '
+        '"timestamp": "2026-10-15T00:00:00Z"}\n'
+        '{"event": "run_end", "data": {"duration": "not_a_float", '
+        '"score": "not_a_float", "passed": true}}\n',
+        encoding="utf-8",
+    )
+
+    # Vault 2: Valid score and duration from terminal event
+    v2_dir = runs_dir / "v_valid_vals"
+    v2_dir.mkdir(parents=True, exist_ok=True)
+    v2_file = v2_dir / "run.jsonl"
+    v2_file.write_text(
+        '{"event": "run_start", "run_id": "v_valid_vals", "timestamp": "2026-10-15T00:00:00Z"}\n'
+        '{"event": "run_end", "data": {"duration": 18.2, "score": 95.0, "status": "SUCCESS"}}\n',
+        encoding="utf-8",
+    )
+
+    # Vault 3: Fallback duration computed from timestamps (t1 >= t0)
+    v3_dir = runs_dir / "v_timestamp_diff"
+    v3_dir.mkdir(parents=True, exist_ok=True)
+    v3_file = v3_dir / "run.jsonl"
+    v3_file.write_text(
+        '{"event": "run_start", "run_id": "v_timestamp_diff", '
+        '"timestamp": "2026-10-15T10:00:00+00:00"}\n'
+        '{"event": "step", "timestamp": "2026-10-15T10:00:25+00:00"}\n',
+        encoding="utf-8",
+    )
+
+    # Vault 4: Fallback timestamp where t1 < t0
+    v4_dir = runs_dir / "v_timestamp_negative"
+    v4_dir.mkdir(parents=True, exist_ok=True)
+    v4_file = v4_dir / "run.jsonl"
+    v4_file.write_text(
+        '{"event": "run_start", "run_id": "v_timestamp_negative", '
+        '"timestamp": "2026-10-15T12:00:00+00:00"}\n'
+        '{"event": "step", "timestamp": "2026-10-15T11:00:00+00:00"}\n',
+        encoding="utf-8",
+    )
+
+    # Vault 5: Fallback timestamp with unparseable datetime
+    v5_dir = runs_dir / "v_timestamp_unparseable"
+    v5_dir.mkdir(parents=True, exist_ok=True)
+    v5_file = v5_dir / "run.jsonl"
+    v5_file.write_text(
+        '{"event": "run_start", "run_id": "v_timestamp_unparseable", '
+        '"timestamp": "invalid_date_start"}\n'
+        '{"event": "step", "timestamp": "invalid_date_end"}\n',
+        encoding="utf-8",
+    )
+
+    # Vault 6: Large file (st_size >= 1MB) to exercise size cap branch (309->397)
+    v6_dir = runs_dir / "v_large_vault"
+    v6_dir.mkdir(parents=True, exist_ok=True)
+    v6_file = v6_dir / "run.jsonl"
+    with open(v6_file, "wb") as f_large:
+        f_large.write(b'{"event": "run_start", "run_id": "v_large_vault"}\n')
+        f_large.seek(1024 * 1024 + 10)
+        f_large.write(b"\n")
+
+    # Vault 7: Multi-event reverse scan to exercise branches 320->326 and 347->369
+    v7_dir = runs_dir / "v_multi"
+    v7_dir.mkdir(parents=True, exist_ok=True)
+    v7_file = v7_dir / "run.jsonl"
+    v7_file.write_text(
+        '{"event": "run_start", "run_id": "v_multi", "timestamp": "2026-10-15T00:00:00Z"}\n'
+        '{"event": "evaluation_result", "data": {"score": 99.0}, '
+        '"timestamp": "2026-10-15T00:00:01Z"}\n'
+        '{"event": "step", "data": {"status": "PASS"}, "timestamp": "2026-10-15T00:00:02Z"}\n'
+        '{"event": "run_end", "data": {"status": "PASS", "duration": 4.5}, '
+        '"timestamp": "2026-10-15T00:00:03Z"}\n',
+        encoding="utf-8",
+    )
+
+    cache.update_cache()
+    runs = {r["run_id"]: r for r in cache.get_runs()}
+
+    assert runs["v_valid_vals"]["score"] == 95.0
+    assert runs["v_valid_vals"]["duration_seconds"] == 18.2
+    assert runs["v_valid_vals"]["result_status"] == "PASS"
+
+    assert runs["v_timestamp_diff"]["duration_seconds"] == 25.0
+    assert runs["v_timestamp_negative"]["duration_seconds"] is None
+    assert runs["v_timestamp_unparseable"]["duration_seconds"] is None
+    assert "v_large_vault" in runs
+    assert runs["v_multi"]["score"] == 99.0
+    assert runs["v_multi"]["duration_seconds"] == 4.5
+    assert runs["v_multi"]["result_status"] == "PASS"
+
+
+def test_list_runs_and_stream_with_provisional_run_index(client, console_jail):
+    runs_dir = console_jail["runs"]
+    index_dir = runs_dir / ".index"
+    index_dir.mkdir(parents=True, exist_ok=True)
+
+    idx_file = index_dir / "pending_prov_run.json"
+    idx_file.write_text(
+        json.dumps(
+            {
+                "run_id": "pending_prov_run",
+                "scenario_id": "scen_provisional",
+                "created_at": "2026-10-15T09:00:00Z",
+                "status": "PENDING",
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    from eval_runner.console.routes.runs import runs_cache
+
+    runs_cache.update_cache()
+
+    # 1. list_runs enrichment for provisional index
+    res = client.get("/api/runs")
+    assert res.status_code == 200
+    runs = res.get_json()["runs"]
+    prov_run = next((r for r in runs if r.get("run_id") == "pending_prov_run"), None)
+    assert prov_run is not None
+    assert prov_run["verification_status"] == "NOT_EXECUTED"
+    assert prov_run["provisional"] is True
+    assert prov_run["status"] == "PENDING"
+
+    # 2. stream_runs_list chunk for provisional index
+    stream_res = client.get("/api/v1/runs/stream-list")
+    assert stream_res.status_code == 200
+    stream_data = stream_res.get_data(as_text=True)
+    assert "pending_prov_run" in stream_data
+    assert "NOT_EXECUTED" in stream_data
+
+
+def test_download_run_report_pdf_error_branches(client, console_jail, monkeypatch):
+    run_id = "pdf_fail_run"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "run.jsonl").write_text(
+        '{"event": "run_start", "run_id": "pdf_fail_run"}\n'
+        '{"event": "run_end", "run_id": "pdf_fail_run"}\n',
+        encoding="utf-8",
+    )
+
+    # 1. generate_run_pdf returns False
+    monkeypatch.setattr(
+        "eval_runner.console.pdf_service.generate_run_pdf", lambda data, path: False
+    )
+    res1 = client.get(f"/api/v1/runs/{run_id}/report.pdf")
+    assert res1.status_code == 503
+    assert res1.get_json()["error"] == "PDF report generation failed"
+
+    # 2. generate_run_pdf produces non-PDF bytes
+    def mock_generate_non_pdf(data, path):
+        Path(path).write_bytes(b"NOT_A_VALID_PDF_HEADER")
+        return True
+
+    monkeypatch.setattr("eval_runner.console.pdf_service.generate_run_pdf", mock_generate_non_pdf)
+    res2 = client.get(f"/api/v1/runs/{run_id}/report.pdf")
+    assert res2.status_code == 503
+    assert res2.get_json()["error"] == "No PDF rendering engine is available"
+
+
+def test_get_run_status_vault_certificate_and_short_run_id(client, console_jail, monkeypatch):
+    runs_dir = console_jail["runs"]
+
+    # 1. Vault trace containing certificate and sealed events
+    run_id = "cert_vault_run"
+    run_dir = runs_dir / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "run.jsonl").write_text(
+        '{"event": "run_start"}\n\n'
+        '{"event": "trace_sealed"}\n'
+        '{"event": "verification_certificate_issued"}\n',
+        encoding="utf-8",
+    )
+    res1 = client.get(f"/api/v1/runs/{run_id}")
+    assert res1.status_code == 200
+
+    # 2. Master log with short run_id format (e.g. "run-short")
+    short_id = "run-short"
+    master_log = runs_dir / "run.jsonl"
+    master_log.write_text(
+        f'{{"event": "run_start", "run_id": "{short_id}"}}\n'
+        f'{{"event": "run_end", "run_id": "{short_id}"}}\n',
+        encoding="utf-8",
+    )
+
+    class MockCatalog:
+        @classmethod
+        def get_instance(cls):
+            return cls()
+
+        def get_scenario(self, scenario):
+            return {"id": "short"}
+
+        def get_absolute_path(self, sid):
+            p = runs_dir / "corrupt_scenario.json"
+            p.write_text("{corrupt_json\n", encoding="utf-8")
+            return p
+
+    monkeypatch.setattr("eval_runner.catalog.ScenarioCatalog", MockCatalog)
+    res2 = client.get(f"/api/v1/runs/{short_id}")
+    assert res2.status_code == 200
+    assert res2.get_json()["sourced_from_master"] is True
+
+    # 3. Master log with empty scenario string (hits branch 729->743)
+    empty_scen_id = "run-"
+    master_log.write_text(
+        f'{{"event": "run_start", "run_id": "{empty_scen_id}"}}\n',
+        encoding="utf-8",
+    )
+    res3 = client.get(f"/api/v1/runs/{empty_scen_id}")
+    assert res3.status_code == 200
+
+    # 4. Master log with scenario that has no path (hits branch 736->743)
+    class MockCatalogNoPath:
+        @classmethod
+        def get_instance(cls):
+            return cls()
+
+        def get_scenario(self, scenario):
+            return {"id": "no_path_scen"}
+
+        def get_absolute_path(self, sid):
+            return None
+
+    monkeypatch.setattr("eval_runner.catalog.ScenarioCatalog", MockCatalogNoPath)
+    master_log.write_text(
+        '{"event": "run_start", "run_id": "run-nopath"}\n',
+        encoding="utf-8",
+    )
+    res4 = client.get("/api/v1/runs/run-nopath")
+    assert res4.status_code == 200
+
+
+def test_resume_run_comprehensive_validation(client, monkeypatch):
+    from agentv_runtime.interfaces import ApprovalRequest
+
+    run_id = "resume_test_run"
+
+    # 1. Invalid decision
+    res1 = client.post(f"/api/v1/runs/{run_id}/resume", json={"decision": "MAYBE"})
+    assert res1.status_code == 400
+    assert "must be APPROVED or REJECTED" in res1.get_json()["error"]
+
+    # 2. Missing resumption token
+    res2 = client.post(f"/api/v1/runs/{run_id}/resume", json={"decision": "APPROVED"})
+    assert res2.status_code == 400
+    assert "approval token is required" in res2.get_json()["error"]
+
+    # 3. Token not found
+    class MockStoreEmpty:
+        def get_request(self, token):
+            return None
+
+    monkeypatch.setattr(
+        "eval_runner.reference.approval_store.get_default_approval_store",
+        lambda: MockStoreEmpty(),
+    )
+    res3 = client.post(
+        f"/api/v1/runs/{run_id}/resume",
+        json={"resumption_token": "missing_tok"},
+    )
+    assert res3.status_code == 404
+
+    # 4. Token bound to different run
+    mismatched_req = ApprovalRequest(
+        approval_token="tok_diff",
+        run_id="other_run_id",
+        turn_index=0,
+        outbound_payload_hash="dummy",
+        status="PENDING",
+    )
+
+    class MockStoreMismatch:
+        def get_request(self, token):
+            return mismatched_req
+
+    monkeypatch.setattr(
+        "eval_runner.reference.approval_store.get_default_approval_store",
+        lambda: MockStoreMismatch(),
+    )
+    res4 = client.post(
+        f"/api/v1/runs/{run_id}/resume",
+        json={"resumption_token": "tok_diff"},
+    )
+    assert res4.status_code == 409
+    assert "not bound to this run" in res4.get_json()["error"]
+
+    # 5. Token already resolved
+    resolved_req = ApprovalRequest(
+        approval_token="tok_resolved",
+        run_id=run_id,
+        turn_index=0,
+        outbound_payload_hash="dummy",
+        status="RESOLVED",
+    )
+
+    class MockStoreResolved:
+        def get_request(self, token):
+            return resolved_req
+
+    monkeypatch.setattr(
+        "eval_runner.reference.approval_store.get_default_approval_store",
+        lambda: MockStoreResolved(),
+    )
+    res5 = client.post(
+        f"/api/v1/runs/{run_id}/resume",
+        json={"resumption_token": "tok_resolved"},
+    )
+    assert res5.status_code == 409
+    assert "already been resolved" in res5.get_json()["error"]
+
+    # 6. Role mismatch
+    role_req = ApprovalRequest(
+        approval_token="tok_role",
+        run_id=run_id,
+        turn_index=0,
+        outbound_payload_hash="dummy",
+        status="PENDING",
+        required_role="security_officer",
+    )
+
+    class MockStoreRole:
+        def get_request(self, token):
+            return role_req
+
+    monkeypatch.setattr(
+        "eval_runner.reference.approval_store.get_default_approval_store",
+        lambda: MockStoreRole(),
+    )
+    res6 = client.post(
+        f"/api/v1/runs/{run_id}/resume",
+        json={"resumption_token": "tok_role", "reviewer_role": "auditor"},
+    )
+    assert res6.status_code == 403
+    assert "Reviewer role does not satisfy" in res6.get_json()["error"]
+
+    # 7. Credentials mismatch
+    cred_req = ApprovalRequest(
+        approval_token="tok_cred",
+        run_id=run_id,
+        turn_index=0,
+        outbound_payload_hash="dummy",
+        status="PENDING",
+        reviewer_credentials={"key_level": "top_secret"},
+    )
+
+    class MockStoreCred:
+        def get_request(self, token):
+            return cred_req
+
+    monkeypatch.setattr(
+        "eval_runner.reference.approval_store.get_default_approval_store",
+        lambda: MockStoreCred(),
+    )
+    res7 = client.post(
+        f"/api/v1/runs/{run_id}/resume",
+        json={
+            "resumption_token": "tok_cred",
+            "reviewer_credentials": {"key_level": "unclassified"},
+        },
+    )
+    assert res7.status_code == 403
+    assert "Reviewer credentials do not satisfy" in res7.get_json()["error"]
+
+    # 8. resolve_durable_request raising PermissionError, KeyError
+    valid_req = ApprovalRequest(
+        approval_token="tok_valid",
+        run_id=run_id,
+        turn_index=0,
+        outbound_payload_hash="dummy",
+        status="PENDING",
+    )
+
+    class MockStoreValid:
+        def get_request(self, token):
+            return valid_req
+
+    monkeypatch.setattr(
+        "eval_runner.reference.approval_store.get_default_approval_store",
+        lambda: MockStoreValid(),
+    )
+
+    class MockManagerPerm:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def resolve_durable_request(self, *args, **kwargs):
+            raise PermissionError("Denied by policy")
+
+    monkeypatch.setattr(
+        "eval_runner.session_components.approval_manager.SessionApprovalManager",
+        MockManagerPerm,
+    )
+    res8 = client.post(
+        f"/api/v1/runs/{run_id}/resume",
+        json={"resumption_token": "tok_valid", "decision": "APPROVED"},
+    )
+    assert res8.status_code == 403
+
+    class MockManagerKeyErr:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def resolve_durable_request(self, *args, **kwargs):
+            raise KeyError("Request not found in manager")
+
+    monkeypatch.setattr(
+        "eval_runner.session_components.approval_manager.SessionApprovalManager",
+        MockManagerKeyErr,
+    )
+    res9 = client.post(
+        f"/api/v1/runs/{run_id}/resume",
+        json={"resumption_token": "tok_valid", "decision": "APPROVED"},
+    )
+    assert res9.status_code == 409
+
+    # 9. REJECTED decision path
+    class MockManagerOk:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def resolve_durable_request(self, *args, **kwargs):
+            return None
+
+    monkeypatch.setattr(
+        "eval_runner.session_components.approval_manager.SessionApprovalManager",
+        MockManagerOk,
+    )
+    res10 = client.post(
+        f"/api/v1/runs/{run_id}/resume",
+        json={"resumption_token": "tok_valid", "decision": "REJECTED", "reason": "Not ready"},
+    )
+    assert res10.status_code == 200
+    assert res10.get_json()["status"] == "REJECTED"
+
+    # 10. APPROVED but backend.resume returns None
+    class MockBackendNone:
+        def resume(self, *args, **kwargs):
+            return None
+
+    monkeypatch.setattr(
+        "eval_runner.reference.inprocess_backend.get_execution_backend",
+        lambda: MockBackendNone(),
+    )
+    res11 = client.post(
+        f"/api/v1/runs/{run_id}/resume",
+        json={"resumption_token": "tok_valid", "decision": "APPROVED"},
+    )
+    assert res11.status_code == 404
+    assert "No checkpoint found" in res11.get_json()["error"]
+
+
+def test_extract_canonical_event_info_and_tail_edge_cases():
+    from eval_runner.console.routes.runs import _extract_canonical_event_info
+
+    # 1. Corrupt JSON containing terminal event string
+    seq, is_term = _extract_canonical_event_info('CORRUPT{"event": "run_end"}', 5)
+    assert seq == 5
+    assert is_term is True
+
+    # 2. Corrupt JSON not containing terminal event string
+    seq2, is_term2 = _extract_canonical_event_info('CORRUPT{"event": "step"}', 7)
+    assert seq2 == 7
+    assert is_term2 is False
+
+    # 3. Valid dict with seq_id
+    seq3, is_term3 = _extract_canonical_event_info('{"seq_id": 42, "event": "step"}', 1)
+    assert seq3 == 42
+    assert is_term3 is False
+
+    # 4. Valid dict with id
+    seq4, _ = _extract_canonical_event_info('{"id": 88}', 1)
+    assert seq4 == 88
+
+    # 5. Valid dict with invalid seq string
+    seq5, _ = _extract_canonical_event_info('{"_seq": "not_int"}', 10)
+    assert seq5 == 10
+
+    # 6. Valid dict without any seq fields
+    seq6, _ = _extract_canonical_event_info('{"other": "field"}', 15)
+    assert seq6 == 15
+
+
+def test_tail_file_generator_deep_coverage(tmp_path, monkeypatch):
+    from eval_runner.console.routes.runs import tail_file_generator
+
+    # 1. Partial trailing line in historical read (no newline, pos seek rewind)
+    log_file = tmp_path / "stream_deep.jsonl"
+    log_file.write_text('{"event": "step", "_seq": 1}\nunended_line', encoding="utf-8")
+
+    gen1 = tail_file_generator(log_file, run_id="r_deep", last_event_id=0)
+    item1 = next(gen1)
+    assert "id: 1" in item1
+    # Advance to line 2 (which has no newline): this exercises f.seek(pos) and break
+    # Next iteration in Step B tail loop will wait for data or check state.
+    # Close generator cleanly.
+    gen1.close()
+
+    # 2. Tell raising OSError in historical read
+    orig_open = open
+
+    class WrappedFile:
+        def __init__(self, f):
+            self._f = f
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return self._f.__exit__(*args)
+
+        def tell(self):
+            raise OSError("tell failed")
+
+        def readline(self):
+            return self._f.readline()
+
+        def seek(self, pos):
+            return self._f.seek(pos)
+
+    def mock_open_tell_fail(path, *args, **kwargs):
+        real_f = orig_open(path, *args, **kwargs)
+        if "tell_fail" in str(path):
+            return WrappedFile(real_f)
+        return real_f
+
+    log_tell_fail = tmp_path / "tell_fail.jsonl"
+    log_tell_fail.write_text('{"event": "run_end"}\n', encoding="utf-8")
+
+    monkeypatch.setattr("builtins.open", mock_open_tell_fail)
+    gen2 = tail_file_generator(log_tell_fail, run_id="r_tell", last_event_id=0)
+    res2 = list(gen2)
+    assert len(res2) == 1
+    assert "run_end" in res2[0]
+    monkeypatch.undo()
+
+    # 3. File deleted detected during tail loop
+    log_del = tmp_path / "to_delete.jsonl"
+    log_del.write_text('{"event": "step"}\n', encoding="utf-8")
+    gen3 = tail_file_generator(log_del, run_id="r_del", last_event_id=0)
+    next(gen3)  # Consume initial event
+
+    orig_path_exists = Path.exists
+
+    def mock_del_exists(self):
+        if self.name == "to_delete.jsonl":
+            return False
+        return orig_path_exists(self)
+
+    monkeypatch.setattr(Path, "exists", mock_del_exists)
+    del_event = next(gen3)
+    assert "Log file deleted" in del_event
+    monkeypatch.setattr(Path, "exists", orig_path_exists)
+
+    # 4. Target run_id filter and corrupt JSON in tail loop
+    log_filt = tmp_path / "filtered_tail.jsonl"
+    log_filt.write_text(
+        '{"event": "step", "run_id": "other_run"}\n'
+        '{"event": "step", "run_id": "target_run"}\n'
+        '{"event": "run_end", "run_id": "target_run"}\n',
+        encoding="utf-8",
+    )
+    gen4 = tail_file_generator(
+        log_filt, run_id="target_run", target_run_id="target_run", last_event_id=0
+    )
+    results = list(gen4)
+    assert len(results) == 2
+    assert "target_run" in results[0]
+    assert "run_end" in results[1]
+
+
+def test_runs_filtering_unverified_context_in_list_and_stream(client, console_jail, monkeypatch):
+    from eval_runner.console.routes.runs import runs_cache
+
+    runs_dir = console_jail["runs"]
+    monkeypatch.setattr(config, "RUN_LOG_DIR", runs_dir)
+
+    # Put a forbidden run into cache
+    runs_cache._runs = [
+        {"run_id": "forbidden_run_1", "scenario": "scen_f"},
+        {"run_id": "allowed_run_1", "scenario": "scen_a"},
+    ]
+
+    # Context allows allowed_run_1, forbids forbidden_run_1
+    def mock_context_check(run_id, ctx=None):
+        return run_id == "allowed_run_1"
+
+    monkeypatch.setattr(
+        "eval_runner.console.routes.runs._run_is_in_active_context", mock_context_check
+    )
+    monkeypatch.setattr(
+        "eval_runner.console.routes.runs.active_runtime_context", lambda: {"tenant_id": "t1"}
+    )
+
+    # 1. list_runs filters forbidden_run_1
+    res = client.get("/api/runs")
+    assert res.status_code == 200
+    runs = res.get_json()["runs"]
+    ids = [r["run_id"] for r in runs]
+    assert "forbidden_run_1" not in ids
+
+    # 2. stream_runs_list filters forbidden_run_1
+    stream_res = client.get("/api/v1/runs/stream-list")
+    assert stream_res.status_code == 200
+    stream_data = stream_res.get_data(as_text=True)
+    assert "forbidden_run_1" not in stream_data
+
+
+def test_tail_file_generator_tail_loop_branches(tmp_path, monkeypatch):
+    from eval_runner.console.routes.runs import tail_file_generator
+
+    log_hb = tmp_path / "heartbeat.jsonl"
+    log_hb.write_text('{"event": "step"}\n', encoding="utf-8")
+
+    # Fast forward sleep so idle_cycles >= 150 triggers immediately
+    monkeypatch.setattr("time.sleep", lambda _: None)
+    alive_states = [True, False]
+    monkeypatch.setattr(
+        "eval_runner.console.routes.runs.is_run_alive",
+        lambda _: alive_states.pop(0) if alive_states else False,
+    )
+
+    gen_hb = tail_file_generator(log_hb, run_id="r_hb", last_event_id=0)
+    first_item = next(gen_hb)
+    assert "step" in first_item
+
+    # Next iteration in tail loop enters idle_cycles >= 150 with is_run_alive = True
+    hb_item1 = next(gen_hb)
+    assert ": heartbeat\n\n" in hb_item1
+
+    # Next iteration in tail loop enters idle_cycles >= 150 with is_run_alive = False
+    hb_item2 = next(gen_hb)
+    assert ": heartbeat\n\n" in hb_item2
+    term_item = next(gen_hb)
+    assert "Process thread terminated abruptly" in term_item
+
+
+def test_tail_file_generator_step_b_tail_loop(tmp_path, monkeypatch):
+    from eval_runner.console.routes.runs import tail_file_generator
+
+    # Initial file has valid line 1 and partial line 2 without newline
+    log_file = tmp_path / "tail_b.jsonl"
+    log_file.write_text(
+        '{"event": "step", "run_id": "r_target", "_seq": 1}\npartial_step_a', encoding="utf-8"
+    )
+
+    monkeypatch.setattr("time.sleep", lambda _: None)
+
+    orig_open = open
+
+    class WrappedTailFile:
+        def __init__(self, f):
+            self._f = f
+            self._tell_calls = 0
+            self._readline_calls = 0
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return self._f.__exit__(*args)
+
+        def tell(self):
+            self._tell_calls += 1
+            if self._tell_calls == 4:
+                # Exercises OSError on tell in Step B
+                raise OSError("Simulated tell error in Step B")
+            return self._f.tell()
+
+        def readline(self):
+            line = self._f.readline()
+            self._readline_calls += 1
+            if self._readline_calls == 3:
+                # In Step B after reading partial_step_a,
+                # append newline (corrupt JSON),
+                # empty line,
+                # non-terminal event,
+                # other run event, and terminal event.
+                with orig_open(self._f.name, "a", encoding="utf-8") as appender:
+                    appender.write("\n")
+                    appender.write("\n")  # Empty line -> stripped is empty
+                    appender.write('{"event": "step", "run_id": "r_target"}\n')  # non-terminal
+                    appender.write('{"event": "step", "run_id": "other_run"}\n')
+                    appender.write('{"event": "run_end", "run_id": "r_target"}\n')
+            return line
+
+        def seek(self, pos):
+            return self._f.seek(pos)
+
+        def __getattr__(self, name):
+            return getattr(self._f, name)
+
+    def mock_open_tail(path, *args, **kwargs):
+        rf = orig_open(path, *args, **kwargs)
+        if "tail_b" in str(path):
+            return WrappedTailFile(rf)
+        return rf
+
+    monkeypatch.setattr("builtins.open", mock_open_tail)
+
+    gen = tail_file_generator(
+        log_file, run_id="r_target", target_run_id="r_target", last_event_id=2
+    )
+    # Step B processes non-terminal step event (seq_id 2 <= 2, skipped yield)
+    # then terminal run_end event (seq_id 3 > 2, yielded)
+    item_end = next(gen)
+    assert "run_end" in item_end
+    with pytest.raises(StopIteration):
+        next(gen)
+
+
+def test_tail_file_generator_branches_matrix(tmp_path, monkeypatch):
+    from eval_runner.console.routes.runs import tail_file_generator
+
+    # In Step A, pos is None and line does not end with newline
+    log_file1 = tmp_path / "step_a_no_pos.jsonl"
+    log_file1.write_text("partial_without_newline", encoding="utf-8")
+
+    orig_open = open
+
+    class WrappedFileNoPos:
+        def __init__(self, f):
+            self._f = f
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return self._f.__exit__(*args)
+
+        def tell(self):
+            raise OSError("tell pos failure")
+
+        def readline(self):
+            return self._f.readline()
+
+        def seek(self, pos):
+            return self._f.seek(pos)
+
+    def mock_open_no_pos(path, *args, **kwargs):
+        rf = orig_open(path, *args, **kwargs)
+        if "step_a_no_pos" in str(path):
+            return WrappedFileNoPos(rf)
+        return rf
+
+    monkeypatch.setattr("builtins.open", mock_open_no_pos)
+    monkeypatch.setattr("eval_runner.console.routes.runs.is_run_alive", lambda _: False)
+
+    gen1 = tail_file_generator(
+        log_file1, run_id="r_nopos", target_run_id="r_nopos", last_event_id=0
+    )
+    res1 = next(gen1)
+    assert "not_found" in res1
+    monkeypatch.undo()
+
+
+def test_tail_file_generator_target_run_not_found(tmp_path, monkeypatch):
+    from eval_runner.console.routes.runs import tail_file_generator
+
+    log_file = tmp_path / "not_found.jsonl"
+    log_file.write_text('{"event": "step", "run_id": "different_run"}\n', encoding="utf-8")
+
+    monkeypatch.setattr("eval_runner.console.routes.runs.is_run_alive", lambda _: False)
+
+    gen = tail_file_generator(
+        log_file, run_id="r_missing", target_run_id="r_missing", last_event_id=0
+    )
+    res = next(gen)
+    assert "Execution log file not found. Waiting for trace data." in res

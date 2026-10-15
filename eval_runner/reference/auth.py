@@ -157,3 +157,11 @@ class SimpleAPIKeyAuthBackend(AuthorizationBackend):
                 return True
 
         return False
+
+    def get_service_credential(self) -> str | None:
+        """Returns the master key or registered service credential."""
+        if self.master_key:
+            return self.master_key
+        if self._keys:
+            return next(iter(self._keys.keys()))
+        return None

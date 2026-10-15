@@ -144,3 +144,92 @@ def test_extension_manifest_rejects_unknown_capability():
     doc["capabilities"] = ["fleet:write"]
     with pytest.raises(jsonschema.ValidationError):
         jsonschema.validate(doc, schema)
+
+
+def test_canonical_execution_plan_from_scenario_no_eval_plan():
+    from agentv_runtime.scenario import CanonicalScenarioIR
+
+    scenario = {
+        "id": "scen_no_eval",
+        "version": "1.0.0",
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "step_1",
+                    "prompt": "hi",
+                    "success_criteria": [{"metric": "exact_match", "expected": "hi"}],
+                }
+            ],
+            "edges": [],
+        },
+    }
+    plan = CanonicalScenarioIR.from_scenario(scenario)
+    assert plan.scenario_id == "scen_no_eval"
+    assert "step_1" in plan.nodes
+
+
+def test_canonical_execution_plan_fallback_normalization_branches(monkeypatch):
+    import sys
+
+    from agentv_runtime.scenario import CanonicalScenarioIR
+
+    # Monkeypatch execution_ir import to trigger fallback path
+    monkeypatch.setitem(sys.modules, "eval_runner.execution_ir", None)
+
+    # 1. wf is dict with invalid nodes and edges
+    scen_dict_invalid = {
+        "id": "scen_fallback_dict",
+        "version": "1.0.0",
+        "workflow": {
+            "nodes": [{"id": "n1"}, "not_a_dict", {}],
+            "edges": [{"id": "e1", "from": "n1", "to": "n2"}, "invalid_edge"],
+        },
+    }
+    p1 = CanonicalScenarioIR.from_scenario(scen_dict_invalid)
+    assert "n1" in p1.nodes
+    assert len(p1.edges) == 1
+
+    # 2. wf is neither dict nor list
+    scen_other = {
+        "id": "scen_fallback_other",
+        "version": "1.0.0",
+        "workflow": "invalid_string_workflow",
+    }
+    p2 = CanonicalScenarioIR.from_scenario(scen_other)
+    assert p2.nodes == {}
+    assert p2.edges == []
+
+    # 3. wf is list with invalid elements
+    scen_list_invalid = {
+        "id": "scen_fallback_list",
+        "version": "1.0.0",
+        "workflow": [{"id": "n1"}, 42, {}, {"id": "n2"}],
+    }
+    p3 = CanonicalScenarioIR.from_scenario(scen_list_invalid)
+    assert "n1" in p3.nodes
+    assert "n2" in p3.nodes
+    assert len(p3.edges) == 1
+
+
+def test_canonical_scenario_ir_with_evaluation_plan():
+    """Verify CanonicalScenarioIR compiles evaluation plan when scenario declares oracles."""
+    from agentv_runtime.scenario import CanonicalScenarioIR
+
+    scenario = {
+        "id": "scen_with_eval_plan",
+        "version": "1.0.0",
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "node1",
+                    "success_criteria": [
+                        {"id": "sc1", "target": "accuracy", "required": True, "type": "metric"}
+                    ],
+                }
+            ],
+            "edges": [],
+        },
+    }
+    ir = CanonicalScenarioIR.from_scenario(scenario)
+    assert ir.evaluation_plan is not None
+    assert len(ir.evaluation_plan) > 0

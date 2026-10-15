@@ -560,7 +560,317 @@ def test_scenarios_mutate_by_id_success(client, console_jail):
 
 
 def test_scenarios_mutate_by_id_not_found(client):
-    """Cover mutate_scenario scenario_id 404 (line 185)."""
+    """Cover mutate_scenario scenario_id 404."""
     res = client.post("/api/v1/mutate", json={"scenario_id": "nonexistent_mutate_id"})
     assert res.status_code == 404
     assert "not found" in res.get_json()["error"]
+
+
+def test_debugger_state_store_run_end_variations():
+    from eval_runner.console.routes.system import DebuggerStateStore
+    from eval_runner.events import CoreEvents
+
+    DebuggerStateStore.reset()
+    # Loan demo run ID
+    DebuggerStateStore.handle_event(
+        {"event": CoreEvents.RUN_END, "data": {"status": "SUCCESS"}},
+        run_id="run-loan-narrative",
+    )
+    state = DebuggerStateStore.get_state("run-loan-narrative")
+    assert "Industrial Demo Narrative" in state["summary"]["message"]
+
+    # Normal run ID without loan prefix
+    DebuggerStateStore.handle_event(
+        {"event": CoreEvents.RUN_END, "data": {"status": "FAILED"}},
+        run_id="run-standard-exec",
+    )
+    norm_state = DebuggerStateStore.get_state("run-standard-exec")
+    assert "Industrial Demo Narrative" not in norm_state["summary"]["message"]
+
+    # Run without run_id in data or call
+    DebuggerStateStore.handle_event(
+        {"event": CoreEvents.RUN_END, "data": {"status": "SUCCESS"}},
+        run_id=None,
+    )
+
+
+def test_canonicalize_nav_registry_exhaustive_branches():
+    from eval_runner.console.routes.system import canonicalize_nav_registry
+
+    # Non-list input returns input directly
+    assert canonicalize_nav_registry(None) is None
+    assert canonicalize_nav_registry("invalid") == "invalid"
+
+    # Non-dict items in inventory view vs normal view
+    non_dict_items = ["string_nav_entry", 123]
+    assert canonicalize_nav_registry(non_dict_items, inventory_view=True) == []
+    assert canonicalize_nav_registry(non_dict_items, inventory_view=False) == non_dict_items
+
+    # Non-extension items in inventory view vs core view
+    core_items = [{"title": "Dashboard", "path": "/dashboard"}]
+    assert canonicalize_nav_registry(core_items, inventory_view=True) == []
+    res_core = canonicalize_nav_registry(core_items, inventory_view=False)
+    assert len(res_core) == 1
+    assert res_core[0]["title"] == "Dashboard"
+
+    # Multiple remote versions for capability
+    multi_version = [
+        {
+            "capabilityId": "cap-multi",
+            "extensionId": "ext-1",
+            "remoteEntry": "url-v1",
+            "version": "1.0.0",
+        },
+        {
+            "capabilityId": "cap-multi",
+            "extensionId": "ext-1",
+            "remoteEntry": "url-v2",
+            "version": "2.0.0",
+        },
+    ]
+    res_multi = canonicalize_nav_registry(multi_version, inventory_view=True)
+    assert len(res_multi) == 2
+
+    # Related registration IDs and de-duplication
+    related_ids_items = [
+        {
+            "capabilityId": "cap-rel",
+            "extensionId": "ext-rel",
+            "remoteEntry": "url-rel",
+            "id": "reg-1",
+            "relatedRegistrationIds": ["reg-2", "reg-3", "reg-1"],
+        }
+    ]
+    res_rel = canonicalize_nav_registry(related_ids_items, inventory_view=True)
+    assert "reg-1" in res_rel[0]["relatedRegistrationIds"]
+    assert "reg-2" in res_rel[0]["relatedRegistrationIds"]
+
+    # Items without IDs or relatedRegistrationIds
+    no_ids_items = [
+        {"capabilityId": "cap-no-id", "extensionId": "ext-no-id", "remoteEntry": "url-no-id"}
+    ]
+    res_no_id = canonicalize_nav_registry(no_ids_items, inventory_view=True)
+    assert "relatedRegistrationIds" not in res_no_id[0]
+
+    # Item with neither title nor name
+    no_title_name = [
+        {
+            "capabilityId": "cap-fallback",
+            "extensionId": "ext-fallback",
+            "remoteEntry": "url-fallback",
+        }
+    ]
+    res_fallback = canonicalize_nav_registry(no_title_name, inventory_view=True)
+    assert res_fallback[0]["title"] == "cap-fallback"
+
+    # Item with both title and name
+    both_title_name = [
+        {
+            "capabilityId": "cap-both",
+            "extensionId": "ext-both",
+            "remoteEntry": "url-both",
+            "title": "Existing Title",
+            "name": "Existing Name",
+        }
+    ]
+    res_both = canonicalize_nav_registry(both_title_name, inventory_view=True)
+    assert res_both[0]["title"] == "Existing Title"
+    assert res_both[0]["name"] == "Existing Name"
+
+
+def test_system_route_read_doc_direct_match(client, console_jail):
+    docs_dir = console_jail["docs"]
+    raw_doc = docs_dir / "RAW_FILE"
+    raw_doc.write_text("direct content", encoding="utf-8")
+    res = client.get("/api/docs/RAW_FILE")
+    assert res.status_code == 200
+    assert res.get_json()["content"] == "direct content"
+
+
+def test_system_cleanup_runs_error_handling(client, console_jail, monkeypatch):
+    import os
+    import shutil
+
+    # Readonly file in subdirectory triggering _remove_readonly
+    sub_dir = console_jail["runs"] / "sub_ro"
+    sub_dir.mkdir(parents=True, exist_ok=True)
+    ro_file = sub_dir / "readonly.txt"
+    ro_file.write_text("temp", encoding="utf-8")
+
+    real_rmtree = shutil.rmtree
+
+    def fake_rmtree(path, onerror=None):
+        if onerror:
+            try:
+                # Exercise normal retry where chmod clears readonly bit
+                onerror(os.unlink, str(ro_file), (OSError, OSError("readonly"), None))
+            except OSError:
+                pass
+            try:
+                # Exercise fallback raise when exc_info error is None
+                onerror(os.unlink, "nonexistent_target_to_raise", (None, None, None))
+            except OSError:
+                pass
+        real_rmtree(path)
+
+    monkeypatch.setattr(shutil, "rmtree", fake_rmtree)
+    res_ro = client.post("/api/cleanup-runs")
+    assert res_ro.status_code == 200
+
+    # PermissionError on top-level file unlink leading to file truncation
+    top_file = console_jail["runs"] / "locked_run.jsonl"
+    top_file.write_text("some historical content", encoding="utf-8")
+
+    orig_unlink = Path.unlink
+
+    def fake_unlink(self, *args, **kwargs):
+        if self.name == "locked_run.jsonl":
+            raise PermissionError("File locked by external process")
+        return orig_unlink(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "unlink", fake_unlink)
+    res_lock = client.post("/api/cleanup-runs")
+    assert res_lock.status_code == 200
+    assert top_file.read_text(encoding="utf-8") == ""
+
+
+def test_runtime_health_exhaustive_states(client):
+    from types import SimpleNamespace
+
+    from eval_runner.console.routes.system import _runtime_health
+
+    app = client.application
+
+    # Outside application context (handles RuntimeError at current_app)
+    outside_ctx_health = _runtime_health()
+    assert outside_ctx_health["status"] in ("HEALTHY", "DEGRADED", "UNREACHABLE")
+
+    with app.app_context():
+        # Signing state FAILED without error message
+        mock_failed_signing = SimpleNamespace(
+            is_verifiable=False,
+            signer_type="FAILED",
+            error_message=None,
+        )
+        with patch(
+            "eval_runner.signing_readiness.check_signing_readiness",
+            return_value=mock_failed_signing,
+        ):
+            health_failed = _runtime_health()
+            assert health_failed["status"] == "UNREACHABLE"
+            assert health_failed["dependencies"]["signing"] == "FAILED"
+
+        # Signing state DEGRADED with error message
+        mock_degraded_signing = SimpleNamespace(
+            is_verifiable=False,
+            signer_type="EPHEMERAL",
+            error_message="Ephemeral signing key active",
+        )
+        with patch(
+            "eval_runner.signing_readiness.check_signing_readiness",
+            return_value=mock_degraded_signing,
+        ):
+            health_degraded = _runtime_health()
+            assert health_degraded["status"] == "DEGRADED"
+            assert health_degraded["dependencies"]["signing"] == "DEGRADED"
+            assert any("Ephemeral signing key active" in d for d in health_degraded["details"])
+
+        # Signing state DEGRADED without error message
+        mock_deg_no_err = SimpleNamespace(
+            is_verifiable=False,
+            signer_type="EPHEMERAL",
+            error_message=None,
+        )
+        with patch(
+            "eval_runner.signing_readiness.check_signing_readiness", return_value=mock_deg_no_err
+        ):
+            health_deg_no_err = _runtime_health()
+            assert health_deg_no_err["status"] == "DEGRADED"
+            assert health_deg_no_err["dependencies"]["signing"] == "DEGRADED"
+
+        # Plugin registration errors present in app config
+        app.config["PLUGIN_REGISTRATION_ERRORS"] = [
+            {"plugin": "faulty_extension", "error": "Import crashed"}
+        ]
+        try:
+            health_plugins = _runtime_health()
+            assert health_plugins["dependencies"]["plugins"] == "FAILED"
+            assert any("faulty_extension" in d for d in health_plugins["details"])
+        finally:
+            app.config.pop("PLUGIN_REGISTRATION_ERRORS", None)
+
+
+def test_system_debugger_state_auth_headers_and_path_safety(client, console_jail, monkeypatch):
+    from unittest.mock import MagicMock
+
+    # Auth bypass disabled to exercise header checks
+    monkeypatch.setenv("AGENTV_TEST_AUTH_BYPASS", "0")
+
+    # Client without session user
+    with client.session_transaction() as sess:
+        sess.pop("user", None)
+
+    # Missing credentials returns 401
+    res_unauth = client.get("/api/debugger/state")
+    assert res_unauth.status_code == 401
+
+    # Bearer token auth in Authorization header
+    with patch("eval_runner.console.auth_manager.get_auth_provider") as mock_get_provider:
+        mock_provider = MagicMock()
+        mock_get_provider.return_value = mock_provider
+        mock_provider.verify_token.return_value = {"id": "token-user", "permissions": ["*"]}
+        mock_provider.has_permission.return_value = True
+
+        res_bearer = client.get(
+            "/api/debugger/state",
+            headers={"Authorization": "Bearer valid-auth-token"},
+        )
+        assert res_bearer.status_code == 200
+        mock_provider.verify_token.assert_called_with("valid-auth-token")
+
+        # API Key in X-AES-API-KEY header
+        mock_provider.authenticate.return_value = {"id": "key-user", "permissions": ["*"]}
+        res_key = client.get(
+            "/api/debugger/state",
+            headers={"X-AES-API-KEY": "valid-aes-key"},
+        )
+        assert res_key.status_code == 200
+        mock_provider.authenticate.assert_called_with("valid-aes-key")
+
+    # Path traversal detection in trace loading
+    with client.session_transaction() as sess:
+        sess["user"] = {"id": "test-admin", "name": "Admin", "permissions": ["*"]}
+
+    run_id = "traversal_run_test"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "run.jsonl").write_text("{}\n", encoding="utf-8")
+
+    with patch("eval_runner.utils.is_path_safe", return_value=False):
+        res_traversal = client.get(f"/api/debugger/state?run_id={run_id}")
+        assert res_traversal.status_code == 400
+        assert "Path traversal detected" in res_traversal.get_json()["error"]
+
+
+def test_system_ollama_status_error_and_status_branches(client):
+    from unittest.mock import MagicMock
+
+    # Ollama status non-200 response
+    mock_resp_500 = MagicMock()
+    mock_resp_500.status = 500
+    mock_resp_500.__enter__.return_value = mock_resp_500
+    with patch("urllib.request.urlopen", return_value=mock_resp_500):
+        res_500 = client.get("/api/system/ollama-status")
+        assert res_500.status_code == 200
+        assert res_500.get_json()["available"] is False
+
+    # Ollama status 200 with JSON decode exception
+    mock_resp_bad_json = MagicMock()
+    mock_resp_bad_json.status = 200
+    mock_resp_bad_json.read.return_value = b"invalid json content"
+    mock_resp_bad_json.__enter__.return_value = mock_resp_bad_json
+    with patch("urllib.request.urlopen", return_value=mock_resp_bad_json):
+        res_bad_json = client.get("/api/system/ollama-status")
+        assert res_bad_json.status_code == 200
+        assert res_bad_json.get_json()["available"] is True
+        assert res_bad_json.get_json()["models"] == []

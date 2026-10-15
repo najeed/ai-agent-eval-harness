@@ -11,22 +11,14 @@ interface DoctorAudit {
   error?: string;
 }
 
-interface ExtensionNavItem {
-  id?: string;
-  name?: string;
-  title?: string;
-  path?: string;
-  remoteEntry?: string;
-  componentName?: string;
-  type?: string;
-  tier?: string;
-  sriHash?: string;
-}
-
 import { useRBAC } from '../context/RBACContext';
 // Contract version is displayed until a manifest endpoint exists; the
 // authoritative trust decision always happens server-side.
-import { EXTENSION_CONTRACT_VERSION } from '../types/extension-contract';
+import {
+  EXTENSION_CONTRACT_VERSION,
+  buildExtensionInventory,
+  type ExtensionInventoryItem,
+} from '../types/extension-contract';
 
 export const Settings: React.FC = () => {
   const { canAccessSettings, role } = useRBAC();
@@ -36,7 +28,7 @@ export const Settings: React.FC = () => {
   const [retentionDays, setRetentionDays] = useState('0');
   const [showConfirm, setShowConfirm] = useState(false);
   const [message, setMessage] = useState('');
-  const [extensions, setExtensions] = useState<ExtensionNavItem[] | null>(null);
+  const [extensions, setExtensions] = useState<ExtensionInventoryItem[] | null>(null);
 
   const fetchDoctor = async () => {
     setLoading(true);
@@ -62,17 +54,14 @@ export const Settings: React.FC = () => {
   useEffect(() => {
     if (!canAccessSettings) return;
     fetchDoctor();
-    // Read-only Extension Host inventory. Hosts may be signed remote
-    // bundles or trusted in-process Control Plane components.
-    fetch('/api/nav')
+    // Read-only Extension Inventory. Registrations may be signed remote
+    // bundles or server-registered components.
+    fetch('/api/nav?view=inventory')
       .then(res => res.json())
       .then(data => {
-        const items = (Array.isArray(data?.nav) ? data.nav : []).filter(
-          (i: any) => i && typeof i === 'object' && (
-            !!i.remoteEntry || (i.type === 'component' && typeof i.componentName === 'string')
-          )
-        );
-        setExtensions(items);
+        const rawItems = Array.isArray(data?.nav) ? data.nav : [];
+        const normalized = buildExtensionInventory(rawItems);
+        setExtensions(normalized);
       })
       .catch(() => setExtensions([]));
   }, [canAccessSettings]);
@@ -222,53 +211,96 @@ export const Settings: React.FC = () => {
         </div>
       </div>
 
-      {/* [D2] Extension Host inventory (read-only) */}
+      {/* Extension Inventory (read-only) */}
       <div className="border border-slate-800 bg-slate-900/40 rounded-xl p-6 space-y-4">
         <div className="flex items-center gap-2">
           <Puzzle className="w-5 h-5 text-indigo-400" />
-          <h2 className="text-lg font-semibold text-white">Extension Host</h2>
+          <h2 className="text-lg font-semibold text-white">Extension Inventory</h2>
           <span className="ml-auto text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-950/60 border border-slate-800 text-slate-400">
             contract v{EXTENSION_CONTRACT_VERSION}
           </span>
         </div>
 
         <p className="text-slate-400 text-xs leading-relaxed">
-          Registered extension hosts, including trusted in-process Control Plane components and
-          remote bundles. Trust tiers and capability scopes are enforced server-side; this view is read-only inventory.
+          Registered console extensions, including server-registered components and
+          signed remote extensions. Trust tiers and capability scopes are enforced server-side; this view is read-only inventory.
         </p>
 
         {extensions === null ? (
           <p className="text-xs text-slate-500 italic">Loading extension registry...</p>
         ) : extensions.length === 0 ? (
           <p className="text-xs text-slate-500 italic">
-            No extension hosts registered. Core runtime routes only.
+            No console extensions registered. Core runtime routes only.
           </p>
         ) : (
           <div className="space-y-2">
             {extensions.map((ext, i) => (
               <div
-                key={ext.id || ext.path || i}
-                className="flex flex-wrap items-center gap-x-3 gap-y-1 p-3 rounded-lg bg-slate-950/40 border border-slate-800/60"
+                key={ext.capabilityId || ext.extensionId || i}
+                className="flex flex-wrap items-center gap-x-3 gap-y-1.5 p-3 rounded-lg bg-slate-950/40 border border-slate-800/60"
               >
-                <span className="text-xs font-bold text-slate-200">
-                  {ext.name || ext.title || ext.id || 'Unnamed extension'}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-slate-200">
+                    {ext.capabilityId || ext.extensionId}
+                  </span>
+                  {ext.extensionId && ext.extensionId !== ext.capabilityId && (
+                    <span className="text-[10px] font-mono text-slate-500">
+                      ({ext.extensionId})
+                    </span>
+                  )}
+                </div>
+                <span
+                  data-testid="extension-kind-badge"
+                  className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border ${
+                    ext.registrationKind === 'remote_extension'
+                      ? 'bg-indigo-500/10 text-indigo-300 border-indigo-500/20'
+                      : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20'
+                  }`}
+                >
+                  {ext.registrationKind === 'remote_extension'
+                    ? 'Signed remote extension'
+                    : 'Server-registered component'}
                 </span>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border ${ext.remoteEntry
-                  ? 'bg-indigo-500/10 text-indigo-300 border-indigo-500/20'
-                  : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20'
-                  }`}>
-                  {ext.remoteEntry ? 'remote host' : 'in-process host'}
-                </span>
-                {ext.tier && (
+                {ext.trustTier && (
                   <span className="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
-                    {ext.tier}
+                    {ext.trustTier}
                   </span>
                 )}
+                {ext.version && (
+                  <span className="text-[10px] font-mono text-slate-400">v{ext.version}</span>
+                )}
+                {ext.publisher && (
+                  <span className="text-[10px] text-slate-400 font-mono">pub: {ext.publisher}</span>
+                )}
                 <span className="text-[10px] font-mono text-slate-500">api v{EXTENSION_CONTRACT_VERSION}</span>
-                <span className="text-[10px] font-mono text-slate-500 truncate ml-auto max-w-[40%]" title={ext.remoteEntry || ext.componentName}>
-                  {ext.remoteEntry || ext.componentName}
-                </span>
-                {ext.remoteEntry && !ext.sriHash && (
+
+                <div className="ml-auto flex items-center gap-2 max-w-[50%]">
+                  {ext.remoteEntry && (
+                    <span
+                      className="text-[10px] font-mono text-slate-400 truncate"
+                      title={`Remote entry: ${ext.remoteEntry}`}
+                    >
+                      {ext.remoteEntry}
+                    </span>
+                  )}
+                  {ext.componentName && (
+                    <span
+                      className="text-[10px] font-mono text-emerald-400/80 truncate"
+                      title={`Component: ${ext.componentName}`}
+                    >
+                      [{ext.componentName}]
+                    </span>
+                  )}
+                </div>
+
+                {ext.relatedRegistrationIds && ext.relatedRegistrationIds.length > 0 && (
+                  <div className="w-full text-[10px] text-slate-500 font-mono flex items-center gap-1.5 pt-0.5">
+                    <span className="text-slate-400 font-semibold">Related:</span>
+                    <span>{ext.relatedRegistrationIds.join(', ')}</span>
+                  </div>
+                )}
+
+                {ext.registrationKind === 'remote_extension' && !ext.sriHash && (
                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 uppercase tracking-wider">
                     no SRI
                   </span>
@@ -280,7 +312,7 @@ export const Settings: React.FC = () => {
 
         <p className="text-[10px] text-slate-500 leading-snug">
           Remote mount authorization is decided exclusively by the server-side verify-publisher trust root
-          (signature + publisher identity). In-process hosts are registered by the server plugin lifecycle.
+          (signature + publisher identity). Server-registered components are registered by the server plugin lifecycle.
           Client badges are informational and never grant access.
         </p>
       </div>

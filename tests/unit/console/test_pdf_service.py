@@ -352,7 +352,55 @@ def test_import_weasyprint_success_and_reportlab_failure():
         importlib.reload(pdf_service)
         assert pdf_service.REPORTLAB_AVAILABLE is False
 
+    # 3. WeasyPrint OSError path
+    def mock_wp_oserror(name, *args, **kwargs):
+        if "weasyprint" in name:
+            raise OSError("Mocked WeasyPrint GTK Missing")
+        return orig_import(name, *args, **kwargs)
+
+    with patch("builtins.__import__", side_effect=mock_wp_oserror):
+        from eval_runner.console import pdf_service
+
+        importlib.reload(pdf_service)
+        assert pdf_service.WEASYPRINT_AVAILABLE is False
+
     # Restore clean state
     from eval_runner.console import pdf_service
 
     importlib.reload(pdf_service)
+
+
+def test_generate_run_pdf_verified_and_pqc_status(tmp_path):
+    output_pqc = tmp_path / "pqc_run.pdf"
+    pqc_data = {
+        "run_id": "run-pqc",
+        "scenario": "pqc_scenario",
+        "passed": True,
+        "pqc_enabled": True,
+        "is_pqc": True,
+        "algorithm": "ML-DSA-65",
+        "has_certificate": True,
+    }
+    with patch("eval_runner.console.pdf_service.WEASYPRINT_AVAILABLE", False):
+        with patch("eval_runner.console.pdf_service.REPORTLAB_AVAILABLE", False):
+            res_pqc = generate_run_pdf(pqc_data, output_pqc)
+    assert res_pqc is True
+    pqc_txt = output_pqc.with_suffix(".txt").read_text(encoding="utf-8")
+    assert "QUANTUM_SECURE" in pqc_txt
+    assert "Verified Compliant" in pqc_txt
+
+    output_classical = tmp_path / "classical_run.pdf"
+    classical_data = {
+        "run_id": "run-classical",
+        "scenario": "classical_scenario",
+        "passed": True,
+        "has_certificate": True,
+        "is_pqc": False,
+        "pqc_enabled": False,
+    }
+    with patch("eval_runner.console.pdf_service.WEASYPRINT_AVAILABLE", False):
+        with patch("eval_runner.console.pdf_service.REPORTLAB_AVAILABLE", False):
+            res_classical = generate_run_pdf(classical_data, output_classical)
+    assert res_classical is True
+    classical_txt = output_classical.with_suffix(".txt").read_text(encoding="utf-8")
+    assert "CLASSICAL" in classical_txt

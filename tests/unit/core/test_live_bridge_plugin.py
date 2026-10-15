@@ -8,7 +8,27 @@ check branches, _post_event dispatch, and all event hook methods.
 
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from eval_runner.live_bridge_plugin import RemoteBridgePlugin, is_safe_url
+
+
+@pytest.fixture(autouse=True)
+def isolate_auth_provider(monkeypatch):
+    """Isolates the bridge tests from ambient environment or configured Enterprise backend."""
+    from eval_runner.console.auth_manager import register_authorization_backend
+
+    register_authorization_backend(None)
+    monkeypatch.delenv("AGENTV_AUTHORIZATION_BACKEND_FACTORY", raising=False)
+    monkeypatch.delenv("SERVICE_API_KEY", raising=False)
+    with patch("eval_runner.config.SERVICE_API_KEY", ""):
+        with patch(
+            "eval_runner.console.auth_manager.has_configured_authorization_backend",
+            return_value=False,
+        ):
+            yield
+    register_authorization_backend(None)
+
 
 # ---------------------------------------------------------------------------
 # is_safe_url
@@ -101,6 +121,7 @@ class TestCheckConsoleActive:
         plugin = RemoteBridgePlugin.__new__(RemoteBridgePlugin)
         plugin.endpoint = "http://localhost:5000/api/debugger/state"
         plugin.active = None
+        plugin._denied_diagnostic_emitted = False
         return plugin
 
     def test_cached_active_true_returns_immediately(self):
@@ -159,6 +180,27 @@ class TestCheckConsoleActive:
 
         assert result is False
         assert plugin.active is False
+        captured = capsys.readouterr()
+        assert "Bridge access denied (Unauthenticated (401))" in captured.out
+
+    def test_heartbeat_403_disables(self, capsys):
+        plugin = self._make_plugin()
+
+        mock_emitter = MagicMock()
+        mock_emitter._keyed_subscribers = {}
+
+        mock_response = MagicMock()
+        mock_response.status_code = 403
+
+        with patch("eval_runner.events.EventEmitter.get_global", return_value=mock_emitter):
+            with patch("eval_runner.config.DASHBOARD_API_KEY", ""):
+                with patch("requests.get", return_value=mock_response):
+                    result = plugin._check_console_active()
+
+        assert result is False
+        assert plugin.active is False
+        captured = capsys.readouterr()
+        assert "Bridge access denied (Unauthorized (403))" in captured.out
 
     def test_heartbeat_network_error_disables(self):
         plugin = self._make_plugin()
@@ -174,7 +216,8 @@ class TestCheckConsoleActive:
         assert result is False
         assert plugin.active is False
 
-    def test_heartbeat_with_api_key_header_sent(self):
+    def test_heartbeat_with_api_key_header_sent(self, monkeypatch):
+        monkeypatch.delenv("SERVICE_API_KEY", raising=False)
         plugin = self._make_plugin()
 
         mock_emitter = MagicMock()
@@ -184,12 +227,167 @@ class TestCheckConsoleActive:
         mock_response.status_code = 200
 
         with patch("eval_runner.events.EventEmitter.get_global", return_value=mock_emitter):
-            with patch("eval_runner.config.DASHBOARD_API_KEY", "secret-key"):
+            with patch("eval_runner.config.SERVICE_API_KEY", ""):
+                with patch("eval_runner.config.DASHBOARD_API_KEY", "secret-key"):
+                    with patch("requests.get", return_value=mock_response) as mock_get:
+                        plugin._check_console_active()
+
+        call_kwargs = mock_get.call_args[1]
+        assert call_kwargs["headers"]["X-AES-API-KEY"] == "secret-key"
+
+    def test_heartbeat_with_configured_backend_service_credential(self):
+        plugin = self._make_plugin()
+
+        mock_emitter = MagicMock()
+        mock_emitter._keyed_subscribers = {}
+
+        mock_provider = MagicMock()
+        mock_provider.get_service_credential.return_value = "backend-service-key-99"
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+
+        with patch("eval_runner.events.EventEmitter.get_global", return_value=mock_emitter):
+            with patch(
+                "eval_runner.console.auth_manager.has_configured_authorization_backend",
+                return_value=True,
+            ):
+                with patch(
+                    "eval_runner.console.auth_manager.get_auth_provider", return_value=mock_provider
+                ):
+                    with patch("requests.get", return_value=mock_response) as mock_get:
+                        plugin._check_console_active()
+
+        call_kwargs = mock_get.call_args[1]
+        assert call_kwargs["headers"]["X-AES-API-KEY"] == "backend-service-key-99"
+
+    def test_heartbeat_with_bearer_service_credential(self):
+        plugin = self._make_plugin()
+
+        mock_emitter = MagicMock()
+        mock_emitter._keyed_subscribers = {}
+
+        mock_provider = MagicMock()
+        mock_provider.get_service_credential.return_value = "Bearer jwt-token-xyz"
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+
+        with patch("eval_runner.events.EventEmitter.get_global", return_value=mock_emitter):
+            with patch(
+                "eval_runner.console.auth_manager.has_configured_authorization_backend",
+                return_value=True,
+            ):
+                with patch(
+                    "eval_runner.console.auth_manager.get_auth_provider", return_value=mock_provider
+                ):
+                    with patch("requests.get", return_value=mock_response) as mock_get:
+                        plugin._check_console_active()
+
+        call_kwargs = mock_get.call_args[1]
+        assert call_kwargs["headers"]["Authorization"] == "Bearer jwt-token-xyz"
+        assert "X-AES-API-KEY" not in call_kwargs["headers"]
+
+    def test_heartbeat_with_env_service_api_key(self, monkeypatch):
+        plugin = self._make_plugin()
+        monkeypatch.setenv("SERVICE_API_KEY", "env-service-secret")
+
+        mock_emitter = MagicMock()
+        mock_emitter._keyed_subscribers = {}
+
+        mock_provider = MagicMock()
+        mock_provider.get_service_credential.return_value = None
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+
+        with patch("eval_runner.events.EventEmitter.get_global", return_value=mock_emitter):
+            with patch(
+                "eval_runner.console.auth_manager.get_auth_provider", return_value=mock_provider
+            ):
                 with patch("requests.get", return_value=mock_response) as mock_get:
                     plugin._check_console_active()
 
         call_kwargs = mock_get.call_args[1]
-        assert call_kwargs["headers"]["X-AES-API-KEY"] == "secret-key"
+        assert call_kwargs["headers"]["X-AES-API-KEY"] == "env-service-secret"
+
+    def test_heartbeat_when_auth_provider_raises_exception(self, monkeypatch):
+        plugin = self._make_plugin()
+        monkeypatch.delenv("SERVICE_API_KEY", raising=False)
+        monkeypatch.delenv("DASHBOARD_API_KEY", raising=False)
+
+        mock_emitter = MagicMock()
+        mock_emitter._keyed_subscribers = {}
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+
+        with patch("eval_runner.events.EventEmitter.get_global", return_value=mock_emitter):
+            with patch(
+                "eval_runner.console.auth_manager.has_configured_authorization_backend",
+                return_value=True,
+            ):
+                with patch(
+                    "eval_runner.console.auth_manager.get_auth_provider",
+                    side_effect=RuntimeError("Auth backend uninitialized"),
+                ):
+                    with patch("eval_runner.config.DASHBOARD_API_KEY", ""):
+                        with patch("eval_runner.config.SERVICE_API_KEY", ""):
+                            with patch("requests.get", return_value=mock_response) as mock_get:
+                                plugin._check_console_active()
+
+        call_kwargs = mock_get.call_args[1]
+        assert "X-AES-API-KEY" not in call_kwargs["headers"]
+        assert "Authorization" not in call_kwargs["headers"]
+
+    def test_heartbeat_with_env_dashboard_api_key_fallback(self, monkeypatch):
+        plugin = self._make_plugin()
+        monkeypatch.delenv("SERVICE_API_KEY", raising=False)
+        monkeypatch.setenv("DASHBOARD_API_KEY", "env-dash-key-123")
+
+        mock_emitter = MagicMock()
+        mock_emitter._keyed_subscribers = {}
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+
+        with patch("eval_runner.events.EventEmitter.get_global", return_value=mock_emitter):
+            with patch(
+                "eval_runner.console.auth_manager.has_configured_authorization_backend",
+                return_value=False,
+            ):
+                with patch("eval_runner.config.DASHBOARD_API_KEY", None):
+                    with patch("eval_runner.config.SERVICE_API_KEY", ""):
+                        with patch("requests.get", return_value=mock_response) as mock_get:
+                            plugin._check_console_active()
+
+        call_kwargs = mock_get.call_args[1]
+        assert call_kwargs["headers"]["X-AES-API-KEY"] == "env-dash-key-123"
+
+    def test_heartbeat_with_no_credentials(self, monkeypatch):
+        plugin = self._make_plugin()
+        monkeypatch.delenv("SERVICE_API_KEY", raising=False)
+        monkeypatch.delenv("DASHBOARD_API_KEY", raising=False)
+
+        mock_emitter = MagicMock()
+        mock_emitter._keyed_subscribers = {}
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+
+        with patch("eval_runner.events.EventEmitter.get_global", return_value=mock_emitter):
+            with patch(
+                "eval_runner.console.auth_manager.has_configured_authorization_backend",
+                return_value=False,
+            ):
+                with patch("eval_runner.config.DASHBOARD_API_KEY", ""):
+                    with patch("eval_runner.config.SERVICE_API_KEY", ""):
+                        with patch("requests.get", return_value=mock_response) as mock_get:
+                            plugin._check_console_active()
+
+        call_kwargs = mock_get.call_args[1]
+        assert "X-AES-API-KEY" not in call_kwargs["headers"]
+        assert "Authorization" not in call_kwargs["headers"]
 
 
 # ---------------------------------------------------------------------------
@@ -202,6 +400,7 @@ class TestPostEvent:
         plugin = RemoteBridgePlugin.__new__(RemoteBridgePlugin)
         plugin.endpoint = "http://localhost:5000/api/debugger/state"
         plugin.active = True
+        plugin._denied_diagnostic_emitted = False
         return plugin
 
     def test_active_false_skips_post(self):
@@ -239,6 +438,32 @@ class TestPostEvent:
             with patch("requests.post", return_value=mock_response):
                 plugin._post_event("TEST_EVENT", {})
         assert plugin.active is False
+        captured = capsys.readouterr()
+        assert "Bridge access denied (Unauthenticated (401))" in captured.out
+
+    def test_post_403_disables_plugin(self, capsys):
+        plugin = self._make_active_plugin()
+        mock_response = MagicMock()
+        mock_response.status_code = 403
+        with patch("eval_runner.config.DASHBOARD_API_KEY", ""):
+            with patch("requests.post", return_value=mock_response):
+                plugin._post_event("TEST_EVENT", {})
+        assert plugin.active is False
+        captured = capsys.readouterr()
+        assert "Bridge access denied (Unauthorized (403))" in captured.out
+
+    def test_rate_limited_diagnostic_emitted_only_once(self, capsys):
+        plugin = self._make_active_plugin()
+        mock_response = MagicMock()
+        mock_response.status_code = 403
+        with patch("eval_runner.config.DASHBOARD_API_KEY", ""):
+            with patch("requests.post", return_value=mock_response):
+                plugin._post_event("TEST_EVENT_1", {})
+                # Subsequent post event should be a no-op because active is False
+                plugin._post_event("TEST_EVENT_2", {})
+        captured = capsys.readouterr()
+        # Ensure message was only printed once
+        assert captured.out.count("Bridge access denied") == 1
 
     def test_post_network_error_disables_plugin(self):
         plugin = self._make_active_plugin()
@@ -247,13 +472,15 @@ class TestPostEvent:
                 plugin._post_event("TEST_EVENT", {})
         assert plugin.active is False
 
-    def test_post_with_api_key_header(self):
+    def test_post_with_api_key_header(self, monkeypatch):
+        monkeypatch.delenv("SERVICE_API_KEY", raising=False)
         plugin = self._make_active_plugin()
         mock_response = MagicMock()
         mock_response.status_code = 200
-        with patch("eval_runner.config.DASHBOARD_API_KEY", "my-api-key"):
-            with patch("requests.post", return_value=mock_response) as mock_post:
-                plugin._post_event("TEST_EVENT", {})
+        with patch("eval_runner.config.SERVICE_API_KEY", ""):
+            with patch("eval_runner.config.DASHBOARD_API_KEY", "my-api-key"):
+                with patch("requests.post", return_value=mock_response) as mock_post:
+                    plugin._post_event("TEST_EVENT", {})
         call_kwargs = mock_post.call_args[1]
         assert call_kwargs["headers"]["X-AES-API-KEY"] == "my-api-key"
 

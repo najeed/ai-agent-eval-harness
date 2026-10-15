@@ -20,11 +20,13 @@ from flask import Flask
 
 from eval_runner import config
 from eval_runner.console.routes.runs import (
+    _run_is_in_active_context,
     is_run_alive,
     resolve_trace_path,
     run_bp,
     tail_file_generator,
 )
+from eval_runner.run_index import create_run_index, read_run_index
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -97,6 +99,37 @@ def test_resolve_trace_path_none(runs_jail, monkeypatch):
     monkeypatch.setattr(config, "RUN_LOG_DIR", runs_jail["runs"])
     result = resolve_trace_path("nonexistent-run-xyz")
     assert result is None
+
+
+def test_durable_scoped_run_index_allows_immediate_polling_and_hides_other_contexts(
+    runs_jail, runs_client, monkeypatch
+):
+    """Acceptance registration is durable before a runner emits any trace bytes."""
+    monkeypatch.setattr(config, "RUN_LOG_DIR", runs_jail["runs"])
+    owner = {
+        "org_id": "org-a",
+        "tenant_id": "tenant-a",
+        "workspace_id": "workspace-a",
+        "active_environment": "staging",
+    }
+    create_run_index(
+        run_id="pending-scoped-run",
+        context=owner,
+        scenario_id="scenario-a",
+    )
+    # A fresh read models a process restart: no in-memory backend/cache is required.
+    assert read_run_index("pending-scoped-run")["context"] == owner
+
+    with patch("eval_runner.console.routes.runs.active_runtime_context", return_value=owner):
+        assert _run_is_in_active_context("pending-scoped-run") is True
+        status = runs_client.get("/api/v1/runs/pending-scoped-run")
+        assert status.status_code == 200
+        assert status.get_json()["status"] == "PENDING"
+
+    other = {**owner, "tenant_id": "tenant-b", "workspace_id": "workspace-b"}
+    with patch("eval_runner.console.routes.runs.active_runtime_context", return_value=other):
+        assert _run_is_in_active_context("pending-scoped-run") is False
+        assert runs_client.get("/api/v1/runs/pending-scoped-run").status_code == 404
 
 
 # ---------------------------------------------------------------------------

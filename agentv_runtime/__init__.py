@@ -20,7 +20,19 @@ from agentv_runtime import (
     state_comparison,
 )
 from agentv_runtime.canonical import canonical_json_dumps, canonical_json_encode
-from agentv_runtime.config import ConfigResolver, ResolvedRuntimeConfig
+from agentv_runtime.config import (
+    ConfigDiagnosticError,
+    ConfigKeyDiagnostic,
+    ConfigResolutionError,
+    ConfigResolver,
+    ConfigSourceContributor,
+    ConfigurationRevisionRecord,
+    ConfigurationRevisionState,
+    DetailedResolutionResult,
+    InstanceObservation,
+    ResolvedRuntimeConfig,
+    RuntimeWorkerConfigConsumer,
+)
 from agentv_runtime.contracts import (
     MutationCampaignSpec,
     MutationContext,
@@ -39,6 +51,7 @@ from agentv_runtime.extension_contract import (
     EXTENSION_CONTRACT_VERSION,
     ExtensionContractError,
     ExtensionLifecycle,
+    ExtensionNavigation,
     ExtensionRoute,
     RuntimeExtension,
     is_compatible as extension_api_is_compatible,
@@ -90,6 +103,15 @@ __all__ = [
     "RunTrace",
     "ConfigResolver",
     "ResolvedRuntimeConfig",
+    "DetailedResolutionResult",
+    "ConfigKeyDiagnostic",
+    "ConfigSourceContributor",
+    "ConfigDiagnosticError",
+    "ConfigResolutionError",
+    "ConfigurationRevisionState",
+    "InstanceObservation",
+    "ConfigurationRevisionRecord",
+    "RuntimeWorkerConfigConsumer",
     "ExecutionManifest",
     "ManifestBuilder",
     "compute_scenario_hash",
@@ -104,6 +126,7 @@ __all__ = [
     "VerificationCertificate",
     "RuntimeExtension",
     "ExtensionRoute",
+    "ExtensionNavigation",
     "ExtensionLifecycle",
     "ExtensionContractError",
     "EXTENSION_CONTRACT_VERSION",

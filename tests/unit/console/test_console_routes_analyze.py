@@ -428,3 +428,31 @@ def test_analyze_forensic_diff_empty_old_skips_pk_detection(analyze_client):
         res = analyze_client.post("/api/forensics/diff", json={"old": [], "new": []})
     assert res.status_code == 200
     assert res.get_json()["detected_primary_key"] is None
+
+
+def test_analyze_cross_context_isolation(analyze_client, analyze_jail, monkeypatch):
+    import eval_runner.console.routes.analyze as analyze_mod
+
+    run_id = "cross_ctx_run"
+    run_dir = analyze_jail["runs"] / run_id
+    run_dir.mkdir()
+    (run_dir / "run_manifest.json").write_text("{}", encoding="utf-8")
+    (run_dir / "run.jsonl").write_text("{}", encoding="utf-8")
+
+    # Mock _run_is_in_active_context to return False
+    monkeypatch.setattr(analyze_mod, "_run_is_in_active_context", lambda rid: False)
+
+    # 1. Triage 404
+    res_triage = analyze_client.post(f"/api/triage/{run_id}")
+    assert res_triage.status_code == 404
+    assert res_triage.get_json()["error"] == "Run not found"
+
+    # 2. Compliance 404
+    res_comp = analyze_client.get(f"/api/compliance/{run_id}")
+    assert res_comp.status_code == 404
+    assert res_comp.get_json()["error"] == "Run not found"
+
+    # 3. Compliance summary skips run
+    res_summary = analyze_client.get("/api/compliance/summary")
+    assert res_summary.status_code == 200
+    assert res_summary.get_json()["total_certified"] == 0

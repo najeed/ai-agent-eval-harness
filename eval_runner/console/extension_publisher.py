@@ -10,6 +10,7 @@ import re
 import shutil
 import uuid
 from collections.abc import Callable
+from datetime import UTC
 from pathlib import Path
 
 from agentv_runtime.extension_contract import RuntimeExtension
@@ -24,6 +25,10 @@ _IMPORT_RE = re.compile(
 
 def _sri(data: bytes) -> str:
     return "sha3-256-" + base64.b64encode(hashlib.sha3_256(data).digest()).decode("ascii")
+
+
+def _active_record_path(root: Path, publisher: str, extension_id: str) -> Path:
+    return root / ".active-releases" / publisher / f"{extension_id}.json"
 
 
 def _record_path(root: Path, extension_id: str, version: str) -> Path:
@@ -72,6 +77,7 @@ def publish_extension(
     private_key_pem: Callable[[str], bytes],
     artifact_root: Path | None = None,
     manifest_declaration: dict | None = None,
+    activate: bool = False,
 ) -> dict:
     """Sign and atomically publish an ESM bundle to the configured local store."""
     entry = entry.resolve()
@@ -153,11 +159,21 @@ def publish_extension(
                 for item in staged_files
             ):
                 shutil.rmtree(staging)
-                return _descriptor(
+                desc = _descriptor(
                     RuntimeExtension.from_dict(
                         json.loads((target / "entry.manifest.json").read_text(encoding="utf-8"))
                     )
                 )
+                if activate:
+                    active_info = activate_extension(
+                        extension_id=extension_id,
+                        version=version,
+                        publisher=publisher,
+                        artifact_root=root,
+                    )
+                    desc["active"] = True
+                    desc["active_record"] = active_info.get("active_record")
+                return desc
             raise ValueError(
                 "extension version already published with different bytes; publish a new version"
             )
@@ -165,7 +181,17 @@ def publish_extension(
         record = _record_path(root, extension_id, version)
         record.parent.mkdir(parents=True, exist_ok=True)
         record.write_text(json.dumps(signed.to_dict(), sort_keys=True), encoding="utf-8")
-        return _descriptor(signed)
+        desc = _descriptor(signed)
+        if activate:
+            active_info = activate_extension(
+                extension_id=extension_id,
+                version=version,
+                publisher=publisher,
+                artifact_root=root,
+            )
+            desc["active"] = True
+            desc["active_record"] = active_info.get("active_record")
+        return desc
     except (OSError, ValueError):
         shutil.rmtree(staging, ignore_errors=True)
         raise
@@ -183,7 +209,158 @@ def unpublish_extension(
     quarantine.parent.mkdir(parents=True, exist_ok=True)
     os.replace(target, quarantine)
     shutil.rmtree(quarantine)
+
+    active_dir = root / ".active-releases"
+    if active_dir.is_dir():
+        for rec in active_dir.glob(f"*/{extension_id}.json"):
+            try:
+                data = json.loads(rec.read_text(encoding="utf-8"))
+                if data.get("version") == version:
+                    rec.unlink(missing_ok=True)
+            except (OSError, json.JSONDecodeError):
+                pass
+
     return {"status": "unpublished", "extension_id": extension_id, "version": version}
+
+
+def activate_extension(
+    *,
+    extension_id: str,
+    version: str,
+    publisher: str | None = None,
+    public_key_pem: Callable[[str], bytes | None] | None = None,
+    artifact_root: Path | None = None,
+) -> dict:
+    """Atomically activate an installed, verified extension release."""
+    from datetime import datetime
+
+    if not extension_id or "/" in extension_id or "\\" in extension_id or ".." in extension_id:
+        raise ValueError("extension_id must be a single safe identifier")
+    if not version or "/" in version or "\\" in version or ".." in version:
+        raise ValueError("version must be a single safe identifier")
+    root = (artifact_root or config.EXTENSION_ARTIFACT_DIR).resolve()
+    target = root / extension_id / version
+    if not target.is_dir():
+        raise ValueError(f"Extension '{extension_id}' version '{version}' is not installed")
+
+    if public_key_pem is None:
+        from .routes.trust import _public_key_pem_bytes
+
+        public_key_pem = _public_key_pem_bytes
+
+    verification = verify_extension(
+        extension_id=extension_id,
+        version=version,
+        public_key_pem=public_key_pem,
+        artifact_root=root,
+    )
+    if not verification.get("valid"):
+        reason = verification.get("reason", "unknown")
+        raise ValueError(f"Activation failed: release verification failed: {reason}")
+
+    manifest_file = target / "entry.manifest.json"
+    manifest = RuntimeExtension.from_dict(json.loads(manifest_file.read_text(encoding="utf-8")))
+    if publisher and manifest.publisher != publisher:
+        raise ValueError(
+            f"Activation failed: publisher mismatch (expected '{publisher}', "
+            f"got '{manifest.publisher}')"
+        )
+    eff_publisher = manifest.publisher
+
+    active_payload = {
+        "extension_id": extension_id,
+        "publisher": eff_publisher,
+        "version": version,
+        "activated_at": datetime.now(UTC).isoformat(),
+        "remote_entry": manifest.remote_entry,
+        "sri_hash": manifest.sri_hash,
+        "status": "active",
+    }
+
+    staging = root / ".staging" / f"activate-{uuid.uuid4().hex}"
+    staging.parent.mkdir(parents=True, exist_ok=True)
+    staging.write_text(json.dumps(active_payload, sort_keys=True), encoding="utf-8")
+
+    rec_path = _active_record_path(root, eff_publisher, extension_id)
+    rec_path.parent.mkdir(parents=True, exist_ok=True)
+    os.replace(staging, rec_path)
+
+    return {
+        "status": "activated",
+        "extension_id": extension_id,
+        "publisher": eff_publisher,
+        "version": version,
+        "active_record": active_payload,
+        **_descriptor(manifest),
+    }
+
+
+def rollback_extension(
+    *,
+    extension_id: str,
+    version: str,
+    publisher: str | None = None,
+    public_key_pem: Callable[[str], bytes | None] | None = None,
+    artifact_root: Path | None = None,
+) -> dict:
+    """Roll back to a retained verified release without re-signing it."""
+    res = activate_extension(
+        extension_id=extension_id,
+        version=version,
+        publisher=publisher,
+        public_key_pem=public_key_pem,
+        artifact_root=artifact_root,
+    )
+    res["status"] = "rolled_back"
+    return res
+
+
+def get_active_release(
+    *,
+    extension_id: str,
+    publisher: str | None = None,
+    artifact_root: Path | None = None,
+) -> dict | None:
+    """Retrieve the active release record for an extension identity."""
+    root = (artifact_root or config.EXTENSION_ARTIFACT_DIR).resolve()
+    if publisher:
+        rec = _active_record_path(root, publisher, extension_id)
+        if rec.is_file():
+            try:
+                return json.loads(rec.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                return None
+        return None
+    active_dir = root / ".active-releases"
+    if not active_dir.is_dir():
+        return None
+    matches = list(active_dir.glob(f"*/{extension_id}.json"))
+    if not matches:
+        return None
+    try:
+        return json.loads(matches[0].read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
+def list_active_releases(artifact_root: Path | None = None) -> list[dict]:
+    """List all active release records across all extensions."""
+    root = (artifact_root or config.EXTENSION_ARTIFACT_DIR).resolve()
+    active_dir = root / ".active-releases"
+    if not active_dir.is_dir():
+        return []
+    results: list[dict] = []
+    seen: set[str] = set()
+    for rec_file in sorted(active_dir.glob("*/*.json")):
+        try:
+            data = json.loads(rec_file.read_text(encoding="utf-8"))
+            ext_id = data.get("extension_id")
+            if ext_id and ext_id not in seen:
+                seen.add(ext_id)
+                results.append(data)
+        except (OSError, json.JSONDecodeError):
+            continue
+    return results
 
 
 def verify_extension(

@@ -4,9 +4,8 @@ import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-quer
 import { CommandPalette } from './components/CommandPalette';
 import {
   Home, FileText, Play, Activity, BarChart2, ShieldCheck,
-  Settings, BookOpen, ChevronDown, ChevronRight, Menu, HeartPulse,
-  AlertTriangle, CheckCircle2, Server, Bell, Layers, Cpu, Radio,
-  Terminal, Zap, ExternalLink, Shield, Compass, Sparkles
+  Settings, BookOpen, ChevronDown, ChevronRight, Menu,
+  AlertTriangle, CheckCircle2, Server, Terminal, ExternalLink, Shield, Sparkles, Database
 } from 'lucide-react';
 import { RBACProvider, useRBAC } from './context/RBACContext';
 
@@ -43,6 +42,7 @@ import {
 } from './types/extension-contract';
 import { verifySubresourceIntegrity } from './utils/crypto';
 import { authorizedRuntimeFetch } from './auth/runtimeAuthContext';
+import { resolveNavigationIcon } from './utils/navigationIcons';
 
 // Supported remote-extension ABI: a Vite extension externalizes React and
 // reads this singleton as its peer runtime.  It must never bundle React.
@@ -69,6 +69,7 @@ export interface NavItem {
   icon?: string | React.ReactNode;
   group?: string;               // Target nav group (e.g., "Operations", "Audit & Compliance", "Build", "System")
   badge?: string;               // Optional badge chip (e.g., "LIVE", "HOT-RELOAD", "FLEET", "APM", "◆ ENT")
+  provenance?: string;          // Signed extension presentation annotation
   tier?: 'core' | 'enterprise' | 'local'; // Visual delineation marker
   // 'local': unsigned plugin contribution — flagged in nav and limited to read-only host APIs.
   remoteEntry?: string;         // ESM bundle URL for dynamic micro-frontend mounting
@@ -85,58 +86,6 @@ export interface NavGroup {
 /**
  * Dynamic Icon Resolver: Maps string icon identifiers to Lucide icon elements
  */
-const resolveIcon = (icon: string | React.ReactNode | undefined): React.ReactNode => {
-  if (React.isValidElement(icon)) return icon;
-  if (typeof icon === 'string') {
-    const key = icon.toLowerCase().replace(/[-_]/g, '');
-    switch (key) {
-      case 'home':
-        return <Home className="w-4 h-4" />;
-      case 'filetext':
-        return <FileText className="w-4 h-4" />;
-      case 'play':
-        return <Play className="w-4 h-4" />;
-      case 'activity':
-        return <Activity className="w-4 h-4" />;
-      case 'barchart':
-      case 'barchart2':
-        return <BarChart2 className="w-4 h-4" />;
-      case 'shieldcheck':
-        return <ShieldCheck className="w-4 h-4" />;
-      case 'shield':
-        return <Shield className="w-4 h-4" />;
-      case 'settings':
-        return <Settings className="w-4 h-4" />;
-      case 'bookopen':
-      case 'docs':
-        return <BookOpen className="w-4 h-4" />;
-      case 'server':
-        return <Server className="w-4 h-4" />;
-      case 'bell':
-        return <Bell className="w-4 h-4" />;
-      case 'heartpulse':
-        return <HeartPulse className="w-4 h-4" />;
-      case 'layers':
-        return <Layers className="w-4 h-4" />;
-      case 'cpu':
-        return <Cpu className="w-4 h-4" />;
-      case 'radio':
-        return <Radio className="w-4 h-4" />;
-      case 'terminal':
-        return <Terminal className="w-4 h-4" />;
-      case 'zap':
-        return <Zap className="w-4 h-4" />;
-      case 'compass':
-        return <Compass className="w-4 h-4" />;
-      case 'sparkles':
-        return <Sparkles className="w-4 h-4" />;
-      default:
-        return <ChevronRight className="w-3.5 h-3.5" />;
-    }
-  }
-  return <ChevronRight className="w-3.5 h-3.5" />;
-};
-
 /**
  * Merges backend GET /api/nav items with hardcoded fallback base navigation groups.
  */
@@ -173,8 +122,9 @@ export function mergeNavManifest(
       id: rawItem.id,
       name,
       path,
-      icon: resolveIcon(rawItem.icon),
+      icon: resolveNavigationIcon(rawItem.icon),
       badge: rawItem.badge,
+      provenance: rawItem.provenance,
       tier: rawItem.tier,
       remoteEntry: rawItem.remoteEntry,
       sriHash: rawItem.sriHash || rawItem.integrity || rawItem.sri,
@@ -874,9 +824,9 @@ const ConsoleLayout: React.FC = () => {
       title: 'Advanced',
       items: [
         { name: 'Triage Center', path: '/triage', icon: <AlertTriangle className="w-4 h-4" /> },
-        { name: 'Adversarial Mutator', path: '/mutator', icon: <ChevronRight className="w-3.5 h-3.5" /> },
-        { name: 'Spec-to-Eval Importer', path: '/spec-import', icon: <ChevronRight className="w-3.5 h-3.5" /> },
-        { name: 'Failure Corpus', path: '/failures', icon: <ChevronRight className="w-3.5 h-3.5" /> },
+        { name: 'Adversarial Mutator', path: '/mutator', icon: <Sparkles className="w-4 h-4" /> },
+        { name: 'Spec-to-Eval Importer', path: '/spec-import', icon: <FileText className="w-4 h-4" /> },
+        { name: 'Failure Corpus', path: '/failures', icon: <Database className="w-4 h-4" /> },
       ],
     },
     {

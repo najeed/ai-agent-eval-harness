@@ -506,3 +506,159 @@ def test_evidence_package_unfinalized_run_reports_inconclusive(client, tmp_path:
     pkg = res.get_json()
     assert pkg["verdict"]["verified_outcome"] == "INCONCLUSIVE"
     assert pkg["evidence_chain_valid"] is False
+
+
+def test_evidence_routes_exhaustive_edge_cases(client, tmp_path: Path, monkeypatch) -> None:
+    from unittest.mock import patch
+
+    import eval_runner.console.routes.evidence as ev_module
+    from eval_runner.services.certification import CertificationService
+
+    runs_dir = Path(config.RUN_LOG_DIR)
+    run_id = f"run-edge-{int(datetime.now(UTC).timestamp())}"
+    run_vault = runs_dir / run_id
+    run_vault.mkdir(parents=True, exist_ok=True)
+    trace_file = run_vault / "run.jsonl"
+    trace_file.write_text("{}\n", encoding="utf-8")
+
+    # Active context denial on get and list
+    monkeypatch.setattr(ev_module, "_run_is_in_active_context", lambda rid: False)
+    res_get_denied = client.get(f"/api/v1/evidence/packages/{run_id}")
+    assert res_get_denied.status_code == 404
+
+    (run_vault / "run_manifest.json").write_text("{}", encoding="utf-8")
+    res_list = client.get("/api/v1/evidence/packages")
+    assert res_list.status_code == 200
+    assert len(res_list.get_json()["packages"]) == 0
+    monkeypatch.setattr(ev_module, "_run_is_in_active_context", lambda rid: True)
+
+    # Invalid non-dict package payload in verify route
+    res_verify_bad_pkg = client.post("/api/v1/evidence/verify", json={"package": "not-a-dict"})
+    assert res_verify_bad_pkg.status_code == 400
+    assert "package must be a JSON object" in res_verify_bad_pkg.get_json()["error"]
+
+    # Invalid base64 in verify route
+    res_verify_bad_b64 = client.post(
+        "/api/v1/evidence/verify",
+        json={"package": {}, "raw_trace_bytes": 12345},
+    )
+    assert res_verify_bad_b64.status_code == 400
+    assert "Invalid base64 trace payload" in res_verify_bad_b64.get_json()["error"]
+
+    # Path unsafe on certificate
+    from eval_runner.utils import is_path_safe as real_is_path_safe
+
+    cert_file = run_vault / "verification_certificate.json"
+    cert_file.write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(ev_module, "locate_certificate_file", lambda rid: cert_file)
+    monkeypatch.setattr(ev_module, "is_path_safe", lambda p, j: False)
+    pkg_unsafe_path = ev_module.build_verification_package(run_id)
+    assert pkg_unsafe_path is not None
+    assert pkg_unsafe_path["cryptographic_verification"]["verified"] is False
+    monkeypatch.setattr(ev_module, "is_path_safe", real_is_path_safe)
+
+    # Corrupt JSON in certificate, scenario, and manifest files
+    cert_file.write_text("not-a-json", encoding="utf-8")
+    scen_file = run_vault / "scenario_resolved.json"
+    scen_file.write_text("not-a-json", encoding="utf-8")
+    manifest_file = run_vault / "run_manifest.json"
+    manifest_file.write_text("not-a-json", encoding="utf-8")
+    pkg_corrupt_files = ev_module.build_verification_package(run_id)
+    assert pkg_corrupt_files is not None
+
+    # verify_trace_certificate ImportError and generic Exception handling
+    trace_file.write_text("{}\n", encoding="utf-8")
+    cert_file.write_text(json.dumps({"signature": "sig"}), encoding="utf-8")
+    monkeypatch.setattr(ev_module, "locate_certificate_file", lambda rid: cert_file)
+
+    with patch(
+        "eval_runner.verifier.verify_trace_certificate", side_effect=ImportError("no verifier")
+    ):
+        pkg_imp_err = ev_module.build_verification_package(run_id)
+        assert any(
+            "not available" in e for e in pkg_imp_err["cryptographic_verification"]["errors"]
+        )
+
+    with patch(
+        "eval_runner.verifier.verify_trace_certificate", side_effect=RuntimeError("verify crash")
+    ):
+        pkg_err = ev_module.build_verification_package(run_id)
+        assert any("verify crash" in e for e in pkg_err["cryptographic_verification"]["errors"])
+
+    # extract_finalization_record and extract_computed_run_outcome exceptions
+    with patch.object(
+        CertificationService, "extract_finalization_record", side_effect=RuntimeError("fin err")
+    ):
+        with patch.object(
+            CertificationService,
+            "extract_computed_run_outcome",
+            side_effect=RuntimeError("outcome err"),
+        ):
+            pkg_fin_err = ev_module.build_verification_package(run_id)
+            assert pkg_fin_err is not None
+
+    # Event-level assertions resolution and run_end assertions bypass
+    trace_file.write_text(
+        json.dumps({"event": "node_execution", "data": {"assertions": [{"passed": True}]}})
+        + "\n"
+        + json.dumps({"event": "run_end", "data": {}})
+        + "\n",
+        encoding="utf-8",
+    )
+    with patch.object(CertificationService, "extract_finalization_record", return_value=None):
+        with patch.object(
+            CertificationService, "extract_computed_run_outcome", return_value=(None, None)
+        ):
+            pkg_event_asserts = ev_module.build_verification_package(run_id)
+            assert len(pkg_event_asserts["verdict"]["assertions"]) == 1
+
+    # Direct run_end assertions presence
+    trace_file.write_text(
+        json.dumps({"event": "run_end", "data": {"assertions": [{"passed": True}]}}) + "\n",
+        encoding="utf-8",
+    )
+    with patch.object(CertificationService, "extract_finalization_record", return_value=None):
+        with patch.object(
+            CertificationService, "extract_computed_run_outcome", return_value=(None, None)
+        ):
+            pkg_direct_asserts = ev_module.build_verification_package(run_id)
+            assert len(pkg_direct_asserts["verdict"]["assertions"]) == 1
+
+    # Manifest data_block score fallback
+    trace_file.write_text(
+        json.dumps({"event": "run_end", "data": {"score": 0.88}}) + "\n",
+        encoding="utf-8",
+    )
+    with patch.object(CertificationService, "extract_finalization_record", return_value=None):
+        with patch.object(
+            CertificationService, "extract_computed_run_outcome", return_value=(None, None)
+        ):
+            pkg_data_score = ev_module.build_verification_package(run_id)
+            assert pkg_data_score["verdict"]["score"] == 0.88
+
+    # VERIFIED outcome score fallback to 1.0
+    trace_file.write_text(
+        json.dumps({"event": "run_end", "data": {}}) + "\n",
+        encoding="utf-8",
+    )
+    with patch.object(CertificationService, "extract_finalization_record", return_value=None):
+        with patch.object(
+            CertificationService, "extract_computed_run_outcome", return_value=("pass", None)
+        ):
+            with patch(
+                "eval_runner.verifier.verify_trace_certificate",
+                return_value={
+                    "verified": True,
+                    "manifest_hash_match": True,
+                    "signer_identity": "signer",
+                },
+            ):
+                pkg_verified_score = ev_module.build_verification_package(run_id)
+                assert pkg_verified_score["verdict"]["verified_outcome"] == "VERIFIED"
+                assert pkg_verified_score["verdict"]["score"] == 1.0
+
+    # Nonexistent RUN_LOG_DIR in list_verification_packages
+    monkeypatch.setattr(config, "RUN_LOG_DIR", str(tmp_path / "nonexistent_runs_dir"))
+    res_nonexistent = client.get("/api/v1/evidence/packages")
+    assert res_nonexistent.status_code == 200
+    assert res_nonexistent.get_json() == {"packages": []}

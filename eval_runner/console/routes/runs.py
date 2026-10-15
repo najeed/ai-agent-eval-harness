@@ -12,6 +12,7 @@ from flask import Blueprint, Response, jsonify, request, send_file
 from eval_runner import config
 from eval_runner.explainer import explain_trace
 from eval_runner.metrics import MetricRegistry
+from eval_runner.run_index import read_run_index, run_index_path
 from eval_runner.services.certification import CertificationService
 from eval_runner.services.run_summary import RunSummaryService
 
@@ -47,10 +48,13 @@ def _run_is_in_active_context(run_id: str, context: dict[str, str] | None = None
         context = active_runtime_context()
     if context is None:
         return True
+    record = read_run_index(run_id)
     manifest_path = config.RUN_LOG_DIR / run_id / "run_manifest.json"
-    if not manifest_path.exists():
+    if record is None and not manifest_path.exists():
         return False
     try:
+        if record is not None:
+            return context_allows_record(record, context)
         with manifest_path.open(encoding="utf-8") as manifest_file:
             return context_allows_record(json.load(manifest_file), context)
     except (OSError, ValueError, json.JSONDecodeError):
@@ -205,7 +209,6 @@ class RunsCache:
                 self._last_dir = config.RUN_LOG_DIR
 
         new_runs_map = {}
-        changes = False
 
         # 1. Scan direct fragments (.jsonl files)
         for p in config.RUN_LOG_DIR.glob("*.jsonl"):
@@ -215,7 +218,6 @@ class RunsCache:
                 if cached_mtime == mtime:
                     continue
 
-                changes = True
                 self._scanned_files[str(p)] = mtime
 
                 with open(p, encoding="utf-8") as f:
@@ -242,7 +244,31 @@ class RunsCache:
                 logger.debug(f"Parsing fragment warning: {e}")
                 continue
 
-        # 2. Scan vault folders (*/run.jsonl)
+        # 2. Scan durable control-plane indices.  They deliberately live
+        # outside evidence vault directories so acceptance does not reserve a
+        # run ID before the runner creates the vault.
+        index_dir = config.RUN_LOG_DIR / ".index"
+        for p in index_dir.glob("*.json") if index_dir.is_dir() else ():
+            try:
+                mtime = p.stat().st_mtime
+                cached_mtime = self._scanned_files.get(str(p))
+                if cached_mtime == mtime:
+                    continue
+                self._scanned_files[str(p)] = mtime
+                index = json.loads(p.read_text(encoding="utf-8"))
+                if not isinstance(index, dict) or not isinstance(index.get("run_id"), str):
+                    continue
+                new_runs_map[index["run_id"]] = {
+                    "run_id": index["run_id"],
+                    "scenario": index.get("scenario_id", ""),
+                    "timestamp": index.get("created_at", ""),
+                    "pending_status": index.get("status", "PENDING"),
+                    "_run_index": True,
+                }
+            except (OSError, ValueError, json.JSONDecodeError) as exc:
+                logger.warning("Unable to read durable run index %s: %s", p, exc)
+
+        # 3. Scan vault folders (*/run.jsonl)
         for p in config.RUN_LOG_DIR.glob("*/run.jsonl"):
             try:
                 mtime = p.stat().st_mtime
@@ -250,7 +276,6 @@ class RunsCache:
                 if cached_mtime == mtime:
                     continue
 
-                changes = True
                 self._scanned_files[str(p)] = mtime
 
                 with open(p, encoding="utf-8") as f:
@@ -391,7 +416,7 @@ class RunsCache:
                 logger.debug(f"Parsing vault run warning: {e}")
                 continue
 
-        if changes or new_runs_map or True:  # Always audit cache integrity
+        if True:  # Always audit cache integrity
             with self._lock:
                 # Merge new runs into existing runs
                 existing_map = {r["run_id"]: r for r in self._runs}
@@ -400,11 +425,14 @@ class RunsCache:
                 # Filter out runs that no longer exist on disk
                 pruned_map = {}
                 for rid, r in existing_map.items():
-                    path_val = r.get("path") or r.get("_fragment_path")
-                    if path_val:
-                        tp = config.RUN_LOG_DIR / path_val
+                    if r.get("_run_index"):
+                        tp = run_index_path(rid)
                     else:
-                        tp = resolve_trace_path(rid)
+                        path_val = r.get("path") or r.get("_fragment_path")
+                        if path_val:
+                            tp = config.RUN_LOG_DIR / path_val
+                        else:
+                            tp = resolve_trace_path(rid)
                     if tp and tp.exists():
                         pruned_map[rid] = r
 
@@ -438,6 +466,19 @@ def list_runs():
         rid = run.get("run_id") or ""
         if not _run_is_in_active_context(rid):
             continue
+        if run.get("_run_index") and resolve_trace_path(rid) is None:
+            enriched.append(
+                {
+                    "run_id": rid,
+                    "scenario": run.get("scenario"),
+                    "timestamp": run.get("timestamp"),
+                    "status": run.get("pending_status", "PENDING"),
+                    "lifecycle": run.get("pending_status", "PENDING"),
+                    "verification_status": "NOT_EXECUTED",
+                    "provisional": True,
+                }
+            )
+            continue
         summary = RunSummaryService.compute_summary(rid, cached_entry=run)
         enriched.append(summary)
     return jsonify({"runs": enriched})
@@ -468,6 +509,25 @@ def stream_runs_list():
                 if request_context is not None and not _run_is_in_active_context(
                     run_id, request_context
                 ):
+                    continue
+                if run.get("_run_index") and resolve_trace_path(run_id) is None:
+                    resolved_chunk.append(
+                        {
+                            "run_id": run_id,
+                            "scenario": run.get("scenario"),
+                            "timestamp": run.get("timestamp"),
+                            "start_time": run.get("timestamp"),
+                            "identifier": run.get("scenario"),
+                            "status": run.get("pending_status", "PENDING"),
+                            "lifecycle": run.get("pending_status", "PENDING"),
+                            "verification_status": "NOT_EXECUTED",
+                            "trace_integrity": "PENDING",
+                            "execution_mode": None,
+                            "provisional": True,
+                            "duration_seconds": None,
+                            "score": None,
+                        }
+                    )
                     continue
                 summary = RunSummaryService.compute_summary(run_id, cached_entry=run)
                 resolved_chunk.append(
@@ -545,6 +605,7 @@ def get_run_status(run_id):
     """Industrial Polling Primitive."""
     if not _run_is_in_active_context(run_id):
         return jsonify({"error": "Not found"}), 404
+    index_record = read_run_index(run_id)
     vault_trace = resolve_trace_path(run_id)
     scenario_data = None
 
@@ -692,6 +753,26 @@ def get_run_status(run_id):
                     "verification_status": _authoritative_verdict(run_id),
                 }
             )
+
+    # Durable acceptance record survives restarts and provides an immediate,
+    # stable representation before any trace artifact exists.
+    if index_record is not None:
+        return jsonify(
+            {
+                "run_id": run_id,
+                "status": index_record.get("status", "PENDING"),
+                "size": 0,
+                "mtime": 0,
+                "has_certificate": False,
+                "sourced_from_master": False,
+                "scenario": None,
+                "provisional": True,
+                "verification_status": "NOT_EXECUTED",
+                "timestamp": index_record.get("created_at"),
+                "start_time": index_record.get("created_at"),
+                "identifier": index_record.get("scenario_id"),
+            }
+        )
 
     # Check active execution backend in-memory state before returning 404
     try:

@@ -163,12 +163,210 @@ class DebuggerStateStore:
 system_bp = Blueprint("system", __name__)
 
 
+def canonicalize_nav_registry(nav_items: list[Any], inventory_view: bool = False) -> list[Any]:
+    """Normalizes and de-duplicates console extension registrations.
+
+    - Emits one canonical item per extension capability/version, rather than
+      duplicate rows caused by navigation registration details.
+    - When a signed remote extension supersedes or wraps a server-registered component,
+      exposes that relationship in the canonical item (retaining both implementation
+      details: remoteEntry and componentName, with relatedRegistrationIds declared).
+    - Preserves distinct capabilities separately.
+    - Presentation kind is stamped as 'remote_extension' or 'server_component'
+      (never 'host' or implying runtime execution workers/instances).
+    - If inventory_view is False, preserves non-extension core navigation items unchanged.
+    """
+    if not isinstance(nav_items, list):
+        return nav_items
+
+    core_items: list[Any] = []
+    extension_items: list[dict[str, Any]] = []
+
+    for item in nav_items:
+        if not isinstance(item, dict):
+            if not inventory_view:
+                core_items.append(item)
+            continue
+
+        is_ext = bool(
+            item.get("remoteEntry")
+            or item.get("componentName")
+            or item.get("type") == "component"
+            or item.get("registrationKind") in ("remote_extension", "server_component")
+            or item.get("extensionId")
+        )
+
+        if not is_ext:
+            if not inventory_view:
+                core_items.append(item)
+            continue
+
+        extension_items.append(item)
+
+    if not extension_items:
+        return [] if inventory_view else core_items
+
+    # Group extension items by capabilityId (or normalized identity)
+    capability_groups: dict[str, list[dict[str, Any]]] = {}
+    for item in extension_items:
+        raw_cap = (
+            item.get("capabilityId")
+            or item.get("capability")
+            or item.get("extensionId")
+            or item.get("componentName")
+            or (
+                item.get("id", "")
+                .replace("-nav", "")
+                .replace("-component", "")
+                .replace("-remote", "")
+                .replace("-ext", "")
+            )
+            or item.get("name")
+            or "unknown"
+        )
+        cap_id = str(raw_cap).strip().lower()
+        capability_groups.setdefault(cap_id, []).append(item)
+
+    canonical_extensions: list[dict[str, Any]] = []
+
+    for cap_id, group_items in capability_groups.items():
+        # Check if there are multiple distinct non-empty versions among remote extensions
+        remote_versions = list(
+            {
+                str(it.get("version") or "").strip()
+                for it in group_items
+                if it.get("remoteEntry") and str(it.get("version") or "").strip()
+            }
+        )
+
+        version_subgroups: list[list[dict[str, Any]]]
+        if len(remote_versions) > 1:
+            version_subgroups = [
+                [
+                    it
+                    for it in group_items
+                    if not it.get("version") or str(it.get("version")).strip() == v
+                ]
+                for v in remote_versions
+            ]
+        else:
+            version_subgroups = [group_items]
+
+        for items in version_subgroups:
+            remote_item = next(
+                (
+                    it
+                    for it in items
+                    if it.get("remoteEntry") or it.get("registrationKind") == "remote_extension"
+                ),
+                None,
+            )
+            comp_item = next(
+                (
+                    it
+                    for it in items
+                    if it.get("componentName")
+                    or it.get("type") == "component"
+                    or it.get("registrationKind") == "server_component"
+                ),
+                None,
+            )
+
+            primary = remote_item or items[0]
+            is_remote = bool(remote_item and remote_item.get("remoteEntry"))
+
+            all_ids: list[str] = []
+            for it in items:
+                item_id = it.get("id")
+                if item_id and item_id not in all_ids:
+                    all_ids.append(str(item_id))
+                for rel in it.get("relatedRegistrationIds", []):
+                    if rel and str(rel) not in all_ids:
+                        all_ids.append(str(rel))
+
+            canonical_item = dict(primary)
+
+            # Stable identity
+            stable_cap_id = (
+                primary.get("capabilityId")
+                or (comp_item.get("capabilityId") if comp_item else None)
+                or primary.get("capability")
+                or cap_id
+            )
+            stable_ext_id = (
+                primary.get("extensionId")
+                or (remote_item.get("extensionId") if remote_item else None)
+                or (comp_item.get("extensionId") if comp_item else None)
+                or stable_cap_id
+            )
+
+            canonical_item["capabilityId"] = str(stable_cap_id)
+            canonical_item["extensionId"] = str(stable_ext_id)
+            canonical_item["registrationKind"] = (
+                "remote_extension" if is_remote else "server_component"
+            )
+
+            if is_remote and remote_item:
+                canonical_item["remoteEntry"] = remote_item.get("remoteEntry")
+                sri = remote_item.get("sriHash") or remote_item.get("sri_hash")
+                if sri:
+                    canonical_item["sriHash"] = sri
+
+            # When remote wraps/supersedes server component, expose componentName
+            comp_name = (
+                comp_item.get("componentName")
+                if comp_item and comp_item.get("componentName")
+                else primary.get("componentName")
+            )
+            if comp_name:
+                canonical_item["componentName"] = comp_name
+
+            # Preserve publisher and version
+            publisher = primary.get("publisher") or (
+                comp_item.get("publisher") if comp_item else None
+            )
+            if publisher:
+                canonical_item["publisher"] = publisher
+
+            version = primary.get("version") or (comp_item.get("version") if comp_item else None)
+            if version:
+                canonical_item["version"] = version
+
+            tier = (
+                primary.get("trustTier")
+                or primary.get("tier")
+                or (comp_item.get("trustTier") or comp_item.get("tier") if comp_item else None)
+            )
+            if tier:
+                canonical_item["trustTier"] = str(tier)
+
+            if all_ids:
+                canonical_item["relatedRegistrationIds"] = all_ids
+
+            # Ensure title / name parity for schema compliance
+            if "title" not in canonical_item and "name" in canonical_item:
+                canonical_item["title"] = canonical_item["name"]
+            elif "name" not in canonical_item and "title" in canonical_item:
+                canonical_item["name"] = canonical_item["title"]
+            elif "title" not in canonical_item:
+                canonical_item["title"] = canonical_item.get("capabilityId", "Extension")
+
+            canonical_extensions.append(canonical_item)
+
+    if inventory_view:
+        return canonical_extensions
+    return core_items + canonical_extensions
+
+
 @system_bp.route("/nav", methods=["GET"])
 def get_nav():
-    """Returns the consolidated navigation registry."""
-    from flask import current_app
+    """Returns the consolidated navigation registry or normalized extension inventory."""
+    from flask import current_app, request
 
-    return jsonify({"nav": current_app.config.get("NAV_REGISTRY", [])})
+    raw_nav = current_app.config.get("NAV_REGISTRY", [])
+    inventory_view = request.args.get("view") == "inventory"
+    canonical_items = canonicalize_nav_registry(raw_nav, inventory_view=inventory_view)
+    return jsonify({"nav": canonical_items})
 
 
 def _resolve_legacy_docs_dir() -> Path:
@@ -555,10 +753,13 @@ def debugger_state():
             elif api_key:
                 user = provider.authenticate(api_key.strip())
 
+        if not user:
+            return jsonify({"error": "Unauthenticated: Missing or invalid credentials"}), 401
+
         required_perm = (
             Permission.DEBUG_EVENT if request.method == "POST" else Permission.DEBUG_READ
         )
-        has_perm = user and (
+        has_perm = (
             provider.has_permission(user, required_perm)
             or provider.has_permission(user, Permission.RUNS_WRITE)
             or provider.has_permission(user, Permission.RUNS_READ)

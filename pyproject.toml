@@ -33,7 +33,7 @@ dependencies = [
     "httpx==0.28.1",
     "sqlalchemy==2.1.4",
     "python-dotenv==1.2.4",
-    "Authlib==1.8.0",
+    "Authlib==1.9.1",
     "Pillow==12.3.0",
     "idna==3.20",
 ]
@@ -42,12 +42,12 @@ dependencies = [
 # 1. Direct Native Provider SDKs
 # (OpenAI, Anthropic, Grok, Ollama connect directly via aiohttp; no external Python SDKs required)
 provider-gemini = [
-    "google-genai==2.30.1",
+    "google-genai==2.31.0",
 ]
 
 # 2. Framework Environments (Evaluated and verified agent architectures)
 framework-langchain = [
-    "langchain==1.4.5",
+    "langchain==1.4.6",
     "langchain-core>=1.6.10",
 ]
 framework-langserve = [
@@ -65,7 +65,7 @@ framework-crewai = [
 
 # 3. Framework-to-Provider Integrations (LangChain Wrappers)
 langchain-openai = [
-    "langchain-openai==1.7.1",
+    "langchain-openai==1.7.2",
 ]
 langchain-anthropic = [
     "langchain-anthropic>=1.7.6",
@@ -96,12 +96,12 @@ pqc = [
     "cyclecore-pq==0.3.0",
 ]
 vcs = [
-    "GitPython==3.2.0",
+    "GitPython==3.2.1",
 ]
 
 # 5. Composed Ecosystem Extras
 frameworks = [
-    "langchain==1.4.5",
+    "langchain==1.4.6",
     "langchain-core>=1.6.10",
     "langserve>=0.3.3",
     "langgraph==1.2.15",
@@ -109,9 +109,9 @@ frameworks = [
 #    "crewai==1.15.27; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
 ]
 langchain-all = [
-    "langchain==1.4.5",
+    "langchain==1.4.6",
     "langchain-core>=1.6.10",
-    "langchain-openai==1.7.1",
+    "langchain-openai==1.7.2",
     "langchain-anthropic>=1.7.6",
     "langchain-google-genai>=4.4.2",
     "langchain-ollama>=1.1.0",
@@ -121,14 +121,14 @@ langchain-all = [
 all = [
     "sentence-transformers==6.1.0",
     "datasets==5.1.0",
-    "google-genai==2.30.1",
-    "langchain==1.4.5",
+    "google-genai==2.31.0",
+    "langchain==1.4.6",
     "langchain-core>=1.6.10",
     "langserve>=0.3.3",
     "langgraph==1.2.15",
     "ag2==1.1.2",
 #    "crewai==1.15.27; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
-    "langchain-openai==1.7.1",
+    "langchain-openai==1.7.2",
     "langchain-anthropic>=1.7.6",
     "langchain-google-genai>=4.4.2",
     "langchain-ollama>=1.1.0",
@@ -139,7 +139,7 @@ all = [
     "weasyprint>=70.0",
     "reportlab>=5.0.1",
     "cyclecore-pq==0.3.0",
-    "GitPython==3.2.0",
+    "GitPython==3.2.1",
 ]
 
 [build-system]

@@ -778,7 +778,7 @@ def test_get_verified_run_manifest_success(client, console_jail):
 
 
 def test_get_verified_run_manifest_corrupt_file(client, console_jail):
-    """Lines 264-265: corrupt manifest JSON returns 500."""
+    """Corrupt manifest JSON returns 500."""
     run_id = "manifest_corrupt"
     run_dir = console_jail["runs"] / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
@@ -787,3 +787,344 @@ def test_get_verified_run_manifest_corrupt_file(client, console_jail):
     res = client.get(f"/api/v1/verify/{run_id}/manifest")
     assert res.status_code == 500
     assert "Failed to load manifest" in res.get_json()["error"]
+
+
+def test_extract_computed_run_outcome_delegation(tmp_path):
+    from eval_runner.console.routes.trust import _extract_computed_run_outcome
+
+    with patch(
+        "eval_runner.services.certification.CertificationService.extract_computed_run_outcome",
+        return_value=("pass", 1.0),
+    ) as mock_fn:
+        res = _extract_computed_run_outcome(tmp_path, tmp_path / "run.jsonl")
+        assert res == ("pass", 1.0)
+        assert mock_fn.called
+
+
+def test_public_verify_run_unsafe_paths(client):
+    res_dot = client.get("/api/v1/verify/..run")
+    assert res_dot.status_code == 400
+    assert "Invalid or unsafe run_id" in res_dot.get_json()["error"]
+
+
+def test_public_verify_run_manifest_not_found(client, console_jail):
+    run_id = "trace_only_no_cert"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "run.jsonl").write_text("{}\n", encoding="utf-8")
+    with patch("eval_runner.console.routes.trust.locate_certificate_file", return_value=None):
+        res = client.get(f"/api/v1/verify/{run_id}")
+        assert res.status_code == 404
+        assert "Verification Failed: Trace or Certificate not found" in res.get_json()["error"]
+
+
+def test_public_verify_run_provisional_and_package_empty_line(client, console_jail):
+    from eval_runner.run_lifecycle import RunLifecycleState
+
+    run_id = "provisional_run"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    # Include an empty line to exercise trimmed line check
+    (run_dir / "run.jsonl").write_text('{"event": "start"}\n\n{"event": "end"}\n', encoding="utf-8")
+    manifest = {
+        "compliance_status": "pass",
+        "run_id": run_id,
+        "provisional": True,
+        "execution_mode": "simulated",
+        "verification_package": {"pkg": "data"},
+    }
+    (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+
+    with (
+        patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True),
+        patch(
+            "eval_runner.verifier.VerificationAuthority.verify_package_artifacts",
+            return_value={"verified": True},
+        ),
+        patch(
+            "eval_runner.run_lifecycle.get_run_lifecycle_state",
+            return_value=RunLifecycleState.SEALED,
+        ),
+    ):
+        res = client.get(f"/api/v1/verify/{run_id}")
+        assert res.status_code == 200
+        body = res.get_json()
+        assert body["verified"] is False
+        assert body["terminal_verdict"] == "PROVISIONAL"
+
+
+def test_private_key_pem_bytes_production_and_dev_branches():
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+
+    from eval_runner.console.routes.trust import _private_key_pem_bytes
+
+    real_key = ed25519.Ed25519PrivateKey.generate()
+
+    with patch("eval_runner.config.is_production", return_value=True):
+        # PermissionError in production
+        with patch(
+            "eval_runner.identity.IdentityService.get_private_key",
+            side_effect=PermissionError("no priv"),
+        ):
+            with pytest.raises(
+                ValueError, match="Automatic key provisioning is disabled in production"
+            ):
+                _private_key_pem_bytes("prod_identity")
+
+        # None key returned in production
+        with patch("eval_runner.identity.IdentityService.get_private_key", return_value=None):
+            with pytest.raises(
+                ValueError, match="Automatic key provisioning is disabled in production"
+            ):
+                _private_key_pem_bytes("prod_identity")
+
+        # Real key returned in production
+        with patch("eval_runner.identity.IdentityService.get_private_key", return_value=real_key):
+            pem_prod = _private_key_pem_bytes("valid_prod_identity")
+            assert pem_prod.startswith(b"-----BEGIN PRIVATE KEY-----")
+
+    # None key returned in dev
+    with patch("eval_runner.config.is_production", return_value=False):
+        with patch("eval_runner.identity.IdentityService.get_private_key", return_value=None):
+            with pytest.raises(ValueError, match="No signing identity available"):
+                _private_key_pem_bytes("dev_identity")
+
+    # Real key generated in dev
+    with patch("eval_runner.config.is_production", return_value=False):
+        dev_pem = _private_key_pem_bytes("valid_dev_identity")
+        assert dev_pem.startswith(b"-----BEGIN PRIVATE KEY-----")
+
+
+def test_verify_extension_publisher_identity_mismatch(client):
+    manifest = {
+        "extension_id": "com.acme.fleet",
+        "display_name": "Fleet Analytics",
+        "version": "1.2.3",
+        "api_version": "1.0.0",
+        "capabilities": ["routes", "navigation"],
+        "required_permissions": [],
+        "routes": [{"path": "/fleet", "label": "Fleet"}],
+        "nav_group": "extensions",
+        "remote_entry": "/static/extensions/fleet.js",
+        "sri_hash": "sha3-256-QUJDREVGR0hJSktMTU5PUA==",
+        "publisher": "acme_publisher",
+        "host_apis": ["runtime.runs.list"],
+        "signature": "1234abcd" * 8,
+    }
+    res = client.post(
+        "/api/v1/extensions/verify-publisher",
+        json={"manifest": manifest, "identity_id": "impostor_publisher"},
+    )
+    assert res.status_code == 400
+    data = res.get_json()
+    assert data["valid"] is False
+    assert data["reason"] == "signer-identity-mismatch"
+
+
+def test_extensions_publish_error_branches(client, console_jail):
+    # Non-string entry
+    res_non_str = client.post("/api/v1/extensions/publish", json={"entry": 12345})
+    assert res_non_str.status_code == 400
+    assert "entry must be a configured local ESM path" in res_non_str.get_json()["error"]
+
+    # Entry outside source root
+    res_outside = client.post(
+        "/api/v1/extensions/publish",
+        json={"entry": str(Path("C:/totally/outside/path/entry.js"))},
+    )
+    assert res_outside.status_code == 400
+    assert "outside the configured extension source root" in res_outside.get_json()["error"]
+
+    # ValueError from publish_extension
+    valid_entry = console_jail["root"] / "entry.js"
+    valid_entry.write_text("export default {};", encoding="utf-8")
+    with patch(
+        "eval_runner.console.extension_publisher.publish_extension",
+        side_effect=ValueError("Publish reject test"),
+    ):
+        res_err = client.post(
+            "/api/v1/extensions/publish",
+            json={"entry": str(valid_entry)},
+        )
+        assert res_err.status_code == 400
+        assert "Publish reject test" in res_err.get_json()["error"]
+
+
+def test_extensions_unpublish_branches(client):
+    # Non-string parameters
+    res_bad = client.post("/api/v1/extensions/unpublish", json={"extension_id": 123})
+    assert res_bad.status_code == 400
+    assert "extension_id and extension_version are required" in res_bad.get_json()["error"]
+
+    # Exception from unpublish_extension
+    with patch(
+        "eval_runner.console.extension_publisher.unpublish_extension",
+        side_effect=ValueError("Cannot unpublish active"),
+    ):
+        res_err = client.post(
+            "/api/v1/extensions/unpublish",
+            json={"extension_id": "com.test", "extension_version": "1.0.0"},
+        )
+        assert res_err.status_code == 400
+        assert "Cannot unpublish active" in res_err.get_json()["error"]
+
+    # Success
+    with patch(
+        "eval_runner.console.extension_publisher.unpublish_extension",
+        return_value={"unregistered": True},
+    ):
+        res_ok = client.post(
+            "/api/v1/extensions/unpublish",
+            json={"extension_id": "com.test", "extension_version": "1.0.0"},
+        )
+        assert res_ok.status_code == 200
+        assert res_ok.get_json()["unregistered"] is True
+
+
+def test_extensions_verify_branches(client):
+    # Missing required parameters
+    res_bad = client.post("/api/v1/extensions/verify", json={"extension_id": None})
+    assert res_bad.status_code == 400
+    assert "extension_id and extension_version are required" in res_bad.get_json()["error"]
+
+    # Valid is False -> 409
+    with patch(
+        "eval_runner.console.extension_publisher.verify_extension",
+        return_value={"valid": False, "reason": "corrupted"},
+    ):
+        res_conflict = client.post(
+            "/api/v1/extensions/verify",
+            json={"extension_id": "com.test", "extension_version": "1.0.0"},
+        )
+        assert res_conflict.status_code == 409
+        assert res_conflict.get_json()["valid"] is False
+
+    # Valid is True -> 200
+    with patch(
+        "eval_runner.console.extension_publisher.verify_extension",
+        return_value={"valid": True, "reason": "intact"},
+    ):
+        res_ok = client.post(
+            "/api/v1/extensions/verify",
+            json={"extension_id": "com.test", "extension_version": "1.0.0"},
+        )
+        assert res_ok.status_code == 200
+        assert res_ok.get_json()["valid"] is True
+
+
+def test_extensions_repair_branches(client, console_jail):
+    # Missing required parameters
+    res_bad = client.post("/api/v1/extensions/repair", json={})
+    assert res_bad.status_code == 400
+    assert (
+        "entry, extension_id, publisher, and extension_version are required"
+        in res_bad.get_json()["error"]
+    )
+
+    # Entry outside source root
+    res_outside = client.post(
+        "/api/v1/extensions/repair",
+        json={
+            "entry": str(Path("C:/outside/entry.js")),
+            "extension_id": "com.test",
+            "publisher": "pub",
+            "extension_version": "1.0.0",
+        },
+    )
+    assert res_outside.status_code == 400
+    assert "outside the configured extension source root" in res_outside.get_json()["error"]
+
+    # Error from repair_extension
+    valid_entry = console_jail["root"] / "repair_entry.js"
+    valid_entry.write_text("export default {};", encoding="utf-8")
+    with patch(
+        "eval_runner.console.extension_publisher.repair_extension",
+        side_effect=ValueError("Repair failed"),
+    ):
+        res_err = client.post(
+            "/api/v1/extensions/repair",
+            json={
+                "entry": str(valid_entry),
+                "extension_id": "com.test",
+                "publisher": "pub",
+                "extension_version": "1.0.0",
+            },
+        )
+        assert res_err.status_code == 400
+        assert "Repair failed" in res_err.get_json()["error"]
+
+    # Success
+    with patch(
+        "eval_runner.console.extension_publisher.repair_extension",
+        return_value={"repaired": True},
+    ):
+        res_ok = client.post(
+            "/api/v1/extensions/repair",
+            json={
+                "entry": str(valid_entry),
+                "extension_id": "com.test",
+                "publisher": "pub",
+                "extension_version": "1.0.0",
+            },
+        )
+        assert res_ok.status_code == 200
+        assert res_ok.get_json()["repaired"] is True
+
+
+def test_extensions_activate_and_rollback_error_branches(client):
+    # Activate missing parameters
+    res_act_bad = client.post("/api/v1/extensions/activate", json={})
+    assert res_act_bad.status_code == 400
+    assert "extension_id and extension_version are required" in res_act_bad.get_json()["error"]
+
+    # Activate exception
+    with patch(
+        "eval_runner.console.extension_publisher.activate_extension",
+        side_effect=ValueError("Activation error"),
+    ):
+        res_act_err = client.post(
+            "/api/v1/extensions/activate",
+            json={"extension_id": "com.test", "extension_version": "1.0.0"},
+        )
+        assert res_act_err.status_code == 400
+        assert "Activation error" in res_act_err.get_json()["error"]
+
+    # Rollback missing parameters
+    res_rb_bad = client.post("/api/v1/extensions/rollback", json={})
+    assert res_rb_bad.status_code == 400
+    assert "extension_id and extension_version are required" in res_rb_bad.get_json()["error"]
+
+    # Rollback exception
+    with patch(
+        "eval_runner.console.extension_publisher.rollback_extension",
+        side_effect=ValueError("Rollback error"),
+    ):
+        res_rb_err = client.post(
+            "/api/v1/extensions/rollback",
+            json={"extension_id": "com.test", "extension_version": "1.0.0"},
+        )
+        assert res_rb_err.status_code == 400
+        assert "Rollback error" in res_rb_err.get_json()["error"]
+
+
+def test_extensions_active_endpoint_branches(client):
+    # Query with extension_id not found -> 404
+    with patch("eval_runner.console.extension_publisher.get_active_release", return_value=None):
+        res_nf = client.get("/api/v1/extensions/active?extension_id=ghost")
+        assert res_nf.status_code == 404
+        assert res_nf.get_json()["status"] == "not_found"
+
+    # Query with extension_id found -> 200
+    with patch(
+        "eval_runner.console.extension_publisher.get_active_release",
+        return_value={"version": "1.0.0", "active": True},
+    ):
+        res_found = client.get("/api/v1/extensions/active?extension_id=com.test")
+        assert res_found.status_code == 200
+        assert res_found.get_json()["version"] == "1.0.0"
+
+    # Query without extension_id -> 200 list
+    with patch("eval_runner.console.extension_publisher.list_active_releases", return_value=[]):
+        res_list = client.get("/api/v1/extensions/active")
+        assert res_list.status_code == 200
+        assert res_list.get_json() == []

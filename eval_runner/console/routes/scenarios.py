@@ -21,6 +21,7 @@ from agentv_runtime.manifest import (
 )
 from eval_runner import config, engine, loader, mutator, spec_parser, taxonomy  # noqa: F401
 from eval_runner.catalog import ScenarioCatalog
+from eval_runner.run_index import create_run_index, update_run_index_status
 
 from ..auth_manager import Permission, active_runtime_context, require_permission
 
@@ -1547,6 +1548,14 @@ def evaluate_scenario():
         execution_mode=exec_mode,
     )
 
+    # Publish durable verified scope before returning or dispatching. Every
+    # run-facing route can now authorize an accepted asynchronous run even
+    # before the runner writes its full execution artifacts.
+    create_run_index(
+        run_id=run_id,
+        context=scope,
+        scenario_id=str(scen.get("id") or identifier),
+    )
     backend = InProcessExecutionBackend.get_instance()
     backend.submit(
         run_id=run_id,
@@ -1565,8 +1574,10 @@ def evaluate_scenario():
             "execution_mode": exec_mode,
             "execution_mode_declared": True,
             "execution_manifest": manifest.to_dict(),
+            "runtime_context": dict(scope),
         },
     )
+    update_run_index_status(run_id, "RUNNING")
 
     return jsonify(
         {

@@ -289,3 +289,25 @@ def test_finalization_record_verify_signature_formats_and_errors(trust_env):
     # 7. Unanchored identity without passed public_key -> False
     unknown_rec = replace(rec, evaluator_identity="unknown_identity_xyz")
     assert unknown_rec.verify_signature(trust_root=trust_env["trust_root"]) is False
+
+    # 8. signature property alias
+    assert rec.signature == rec.evaluator_signature
+
+    # 9. from_dict with require_authoritative=True and failed cryptographic verification
+    import pytest
+
+    data = rec.to_dict()
+    with pytest.raises(ValueError, match="EvaluatorSignatureVerificationFailed"):
+        EvaluatorFinalizationRecord.from_dict(
+            data,
+            require_authoritative=True,
+            public_key=other_pub,
+        )
+
+    # 10. from_dict with require_authoritative=True and valid public_key succeeds
+    auth_rec = EvaluatorFinalizationRecord.from_dict(
+        data,
+        require_authoritative=True,
+        public_key=pub,
+    )
+    assert auth_rec.finalization_id == rec.finalization_id

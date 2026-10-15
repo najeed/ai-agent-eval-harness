@@ -894,3 +894,66 @@ def test_agentv_runtime_metadata_and_exports():
     assert agentv_runtime.session_components.ToolExecutionCoordinator is not None
     assert agentv_runtime.session_components.SessionCheckpointManager is not None
     assert agentv_runtime.session_components.SessionApprovalManager is not None
+
+
+def test_interfaces_supports_transactional_seal_and_auth_principal_to_dict():
+    """
+    Contract Test: Validates default ArtifactStore.supports_transactional_seal,
+    AuthPrincipal.to_dict serialization, and ExternalStateAuthority unbounded state error.
+    """
+    import pytest
+
+    from agentv_runtime.contracts import EvidenceBoundednessViolationError
+    from agentv_runtime.interfaces import ArtifactStore, AuthPrincipal, BoundedStateProvider
+
+    class DummyArtifactStore(ArtifactStore):
+        def store_artifact(self, *args, **kwargs):
+            pass
+
+        def get_artifact(self, *args, **kwargs):
+            pass
+
+        def list_artifacts(self, *args, **kwargs):
+            return []
+
+        def seal(self, *args, **kwargs):
+            pass
+
+        def is_sealed(self, *args, **kwargs):
+            return False
+
+        def exists(self, run_id: str, artifact_name: str) -> bool:
+            return False
+
+    store = DummyArtifactStore()
+    assert store.supports_transactional_seal() is False
+
+    principal = AuthPrincipal(
+        principal_id="user_admin",
+        roles=["admin", "operator"],
+        permissions=["eval:trigger", "runs:read"],
+        metadata={"org_id": "org_core"},
+        context_version="1.0",
+        context={"tenant": "t1"},
+        authorized_contexts=["staging", "prod"],
+    )
+    p_dict = principal.to_dict()
+    assert p_dict["principal_id"] == "user_admin"
+    assert p_dict["roles"] == ["admin", "operator"]
+    assert p_dict["permissions"] == ["eval:trigger", "runs:read"]
+    assert p_dict["context_version"] == "1.0"
+    assert p_dict["context"] == {"tenant": "t1"}
+    assert p_dict["authorized_contexts"] == ["staging", "prod"]
+
+    class DummyStateAuthority(BoundedStateProvider):
+        def query_bounded_reference(self, *args, **kwargs):
+            pass
+
+        def commit_state_transition(self, *args, **kwargs):
+            pass
+
+    authority = DummyStateAuthority()
+    with pytest.raises(
+        EvidenceBoundednessViolationError, match="Unbounded state materialization prohibited"
+    ):
+        authority.get_all_state()

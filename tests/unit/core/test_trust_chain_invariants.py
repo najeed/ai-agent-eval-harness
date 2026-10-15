@@ -645,3 +645,92 @@ def test_sse_stream_uses_transport_cursor_not_forensic_sequence(tmp_path):
     assert "trace_sealed" in TERMINAL_TRACE_EVENTS
     assert "verification_certificate_issued" in TERMINAL_TRACE_EVENTS
     assert "certification_failed" in TERMINAL_TRACE_EVENTS
+
+
+def test_verification_package_coverage_helpers():
+    """Verify VerificationPackage content_hash alias, compute_content_hash, and commitment_graph."""
+    from agentv_runtime.package import VerificationPackage
+
+    pkg = VerificationPackage(
+        scenario_id="scen_01",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:scen",
+        manifest_id="man_01",
+        manifest_hash="sha3_256:man",
+        execution_identity={"run_id": "run_test_01"},
+        trace_hash="sha3_256:trc",
+        trace_seal={"status": "sealed"},
+        evidence_root_hash="sha3_256:ev",
+        required_oracle_ids=["oracle_1"],
+        executed_oracle_results=[{"oracle_id": "oracle_1", "passed": True}],
+        decision={"status": "PASS"},
+        package_id="pkg_test_01",
+        evaluation_hash="sha3_256:eval",
+        verification_hash="sha3_256:ver",
+        certificate_hash="sha3_256:cert",
+        signature="deadbeef",
+    )
+
+    assert pkg.content_hash == pkg.compute_package_hash()
+    assert pkg.compute_content_hash() == pkg.compute_package_hash()
+
+    graph = pkg.commitment_graph()
+    assert graph["evaluation_hash"] == "sha3_256:eval"
+    assert graph["verification_hash"] == "sha3_256:ver"
+    assert graph["certificate_hash"] == "sha3_256:cert"
+    assert graph["certificate_signature"] == "deadbeef"
+
+
+def test_agentv_runtime_edge_case_branches():
+    """Verify remaining edge-case branches in interfaces, evidence_graph, manifest, and scenario."""
+    from agentv_runtime.evidence_graph import index_events_by_seq
+    from agentv_runtime.interfaces import AuthorizationBackend
+    from agentv_runtime.manifest import compute_preflight_fingerprint
+    from agentv_runtime.scenario import CanonicalScenarioIR
+
+    # 1. AuthorizationBackend default get_service_credential returns None
+    class DummyAuth(AuthorizationBackend):
+        def validate_token(self, *args, **kwargs):
+            pass
+
+        def check_permission(self, *args, **kwargs):
+            pass
+
+    assert DummyAuth().get_service_credential() is None
+
+    # 2. index_events_by_seq when has_explicit_seq is True but event _seq is non-int
+    events = [
+        ({"_seq": 1, "msg": "first"}, '{"_seq": 1, "msg": "first"}'),
+        ({"_seq": None, "msg": "second"}, '{"_seq": null, "msg": "second"}'),
+    ]
+    idx = index_events_by_seq(events)
+    assert len(idx) == 1
+    assert 1 in idx
+
+    # 3. compute_preflight_fingerprint when max_turns is provided and in runtime_config
+    fp = compute_preflight_fingerprint(
+        scenario_id="scen_1",
+        endpoint="http://localhost:5000",
+        protocol="http",
+        max_turns=5,
+        runtime_config={"max_turns": 10},
+    )
+    assert fp is not None
+
+    # 4. CanonicalScenarioIR from scenario without evaluation plan
+    ir = CanonicalScenarioIR.from_scenario(
+        {
+            "id": "scen_no_eval",
+            "workflow": {
+                "nodes": [
+                    {
+                        "id": "node_1",
+                        "tool": "echo",
+                        "arguments": {"msg": "hi"},
+                        "success_criteria": [{"type": "exact_match", "expected": "hi"}],
+                    }
+                ]
+            },
+        }
+    )
+    assert ir.scenario_id == "scen_no_eval"

@@ -1,4 +1,6 @@
+import json
 import os
+from pathlib import Path
 from urllib.parse import urlparse
 
 import flask
@@ -53,6 +55,107 @@ def _configured_extension_origins() -> list[str]:
         elif parsed.scheme == "http" and parsed.hostname in {"localhost", "127.0.0.1"}:
             origins.append(f"http://{parsed.netloc}")
     return sorted(set(origins))
+
+
+def _safe_extension_route_prefix(path: str, reserved_roots: set[str]) -> str | None:
+    """Return a static, non-Core route prefix or reject it fail-closed."""
+    if not path.startswith("/") or path == "/":
+        return None
+    segments = path.lstrip("/").split("/")
+    if any(
+        not segment or segment in {".", ".."} or "<" in segment or ">" in segment
+        for segment in segments
+    ):
+        return None
+    if segments[0] in reserved_roots:
+        return None
+    return "/" + "/".join(segments)
+
+
+def _published_extension_spa_prefixes(
+    *, reserved_roots: set[str], verified_manifests: list | None = None
+) -> list[str]:
+    """Discover only currently verified signed extension route prefixes.
+
+    The artifact store is not itself authoritative: each sidecar must pass
+    Runtime contract, publisher, and artifact verification before its declared
+    SPA paths may resolve to the Console shell.
+    """
+    from agentv_runtime.extension_contract import RuntimeExtension
+
+    from .extension_publisher import verify_extension
+    from .routes.trust import _public_key_pem_bytes
+
+    root = Path(config.EXTENSION_ARTIFACT_DIR)
+    if not root.is_dir():
+        return []
+    enabled_raw = os.getenv("AGENTV_ENABLED_EXTENSION_IDS", "").strip()
+    enabled_ids = {item.strip() for item in enabled_raw.split(",") if item.strip()}
+    prefixes: set[str] = set()
+    active_dir = root / ".active-releases"
+    has_active_registry = active_dir.is_dir() and any(active_dir.glob("*/*.json"))
+
+    candidates: list[tuple[Path, str | None]] = []
+    if has_active_registry:
+        for active_rec_file in sorted(active_dir.glob("*/*.json")):
+            try:
+                active_data = json.loads(active_rec_file.read_text(encoding="utf-8"))
+                ext_id = active_data.get("extension_id")
+                ver = active_data.get("version")
+                pub = active_data.get("publisher")
+                if ext_id and ver:
+                    manifest_path = root / ext_id / ver / "entry.manifest.json"
+                    candidates.append((manifest_path, pub))
+            except (OSError, json.JSONDecodeError):
+                continue
+    else:
+        candidates = [(p, None) for p in root.glob("*/*/entry.manifest.json")]
+
+    seen_extension_ids: set[str] = set()
+    for manifest_file, expected_publisher in candidates:
+        if not manifest_file.is_file():
+            continue
+        try:
+            raw_manifest = json.loads(manifest_file.read_text(encoding="utf-8"))
+            manifest = RuntimeExtension.from_dict(raw_manifest)
+        except (OSError, json.JSONDecodeError, ValueError) as exc:
+            print(f"   [Console] Ignoring invalid extension sidecar {manifest_file}: {exc}")
+            continue
+        if (
+            manifest.extension_id != manifest_file.parent.parent.name
+            or manifest.version != manifest_file.parent.name
+            or manifest.validate()
+        ):
+            print(f"   [Console] Ignoring contract-invalid extension sidecar {manifest_file}")
+            continue
+        if expected_publisher and manifest.publisher != expected_publisher:
+            print(f"   [Console] Ignoring publisher mismatch on {manifest_file}")
+            continue
+        if manifest.extension_id in seen_extension_ids:
+            print(f"   [Console] Duplicate extension ID {manifest.extension_id!r} ignored")
+            continue
+        if enabled_raw and manifest.extension_id not in enabled_ids:
+            print(f"   [Console] Extension {manifest.extension_id!r} is not enabled")
+            continue
+        verification = verify_extension(
+            extension_id=manifest.extension_id,
+            version=manifest.version,
+            public_key_pem=_public_key_pem_bytes,
+            artifact_root=root,
+        )
+        if not verification["valid"]:
+            print(f"   [Console] Ignoring unverified extension sidecar {manifest_file}")
+            continue
+        seen_extension_ids.add(manifest.extension_id)
+        if verified_manifests is not None:
+            verified_manifests.append(manifest)
+        for route in manifest.routes:
+            prefix = _safe_extension_route_prefix(route.path, reserved_roots)
+            if prefix is None:
+                print(f"   [Console] Ignoring unsafe extension route {route.path!r}")
+                continue
+            prefixes.add(prefix)
+    return sorted(prefixes)
 
 
 def create_app():
@@ -203,8 +306,8 @@ def create_app():
     app.register_blueprint(scenario_bp, url_prefix="/api")
     app.register_blueprint(run_bp, url_prefix="/api")
     app.register_blueprint(analyze_bp, url_prefix="/api")
-    # /suites and /hitl are Control Plane extension routes.  OSS Runtime keeps
-    # the signed extension seam but does not mount enterprise endpoints itself.
+    # Extension-owned server routes are supplied through the signed extension
+    # contract; Core mounts no product-specific endpoints here.
     app.register_blueprint(evidence_bp, url_prefix="/api")
     app.register_blueprint(agent_targets_bp)
 
@@ -442,10 +545,7 @@ def create_app():
 
     # Canonical Primary Console Entrypoints & SPA Navigation
     # OSS SPA Navigation — only OSS routes are declared here.
-    # Enterprise extension routes (/hitl, /compliance, /packs, /publish, /cicd,
-    # /sync, /calibration, /metrics, /benchmarks, /suites, /translate) are NOT
-    # registered here; they are served dynamically by the extension host when
-    # a Control Plane extension is mounted.
+    # Verified extension prefixes are registered below.
     @app.route("/", defaults={"path": ""}, strict_slashes=False)
     @app.route("/scenarios", strict_slashes=False)
     @app.route("/reports", strict_slashes=False)
@@ -461,9 +561,64 @@ def create_app():
     @app.route("/docs", strict_slashes=False)
     @app.route("/docs/api", strict_slashes=False)
     def index(path=""):
+        return serve_console_shell()
+
+    def serve_console_shell(**_unused):
         if not os.path.exists(os.path.join(ui_path, "index.html")):
             return jsonify({"error": "Visual Console not built"}), 404
         return send_from_directory(ui_path, "index.html")
+
+    # A signed extension can contribute SPA route prefixes through its
+    # published RuntimeExtension manifest. This is intentionally a startup
+    # registry: unknown, uninstalled, disabled, or unverified paths remain
+    # ordinary 404s and extensions never add Flask routes themselves.
+    reserved_roots = {
+        rule.rule.lstrip("/").split("/", 1)[0]
+        for rule in app.url_map.iter_rules()
+        if rule.rule != "/" and "<" not in rule.rule
+    }
+    reserved_roots.update({"api", "auth", "assets", "extensions", "v2"})
+    verified_extension_manifests: list = []
+    extension_spa_prefixes = _published_extension_spa_prefixes(
+        reserved_roots=reserved_roots, verified_manifests=verified_extension_manifests
+    )
+    app.config["EXTENSION_SPA_PREFIXES"] = extension_spa_prefixes
+    # Navigation is derived only from server-verified signed manifest values;
+    # route permissions remain the sole visibility/access gate.
+    for manifest in verified_extension_manifests:
+        routes_by_path = {route.path: route for route in manifest.routes}
+        for navigation in manifest.navigation:
+            route = routes_by_path[navigation.path]
+            nav_registry.append(
+                {
+                    "id": navigation.id or f"{manifest.extension_id}:{navigation.path}",
+                    "name": navigation.title or route.label or navigation.path,
+                    "path": navigation.path,
+                    "group": navigation.group or manifest.nav_group,
+                    "badge": navigation.badge,
+                    "provenance": navigation.provenance,
+                    "remoteEntry": manifest.remote_entry,
+                    "sriHash": manifest.sri_hash,
+                    "required_permissions": route.required_permissions,
+                    **({"icon": navigation.icon} if navigation.icon is not None else {}),
+                }
+            )
+    for number, prefix in enumerate(extension_spa_prefixes):
+        endpoint = f"extension_spa_{number}"
+        app.add_url_rule(
+            prefix,
+            endpoint=endpoint,
+            view_func=serve_console_shell,
+            methods=["GET"],
+            strict_slashes=False,
+        )
+        app.add_url_rule(
+            f"{prefix}/<path:extension_path>",
+            endpoint=f"{endpoint}_deep_link",
+            view_func=serve_console_shell,
+            methods=["GET"],
+            strict_slashes=False,
+        )
 
     # Demo routes are only registered when ENABLE_DEMO=true
     if config.ENABLE_DEMO:
@@ -500,7 +655,7 @@ def manage_pid_file():
                 old_pid_str = f.read().strip()
                 if old_pid_str:
                     old_pid = int(old_pid_str)
-                    if psutil.pid_exists(old_pid):
+                    if old_pid != os.getpid() and psutil.pid_exists(old_pid):
                         proc = psutil.Process(old_pid)
                         # Only kill if it's actually similar to us (python/app)
                         if "python" in proc.name().lower():

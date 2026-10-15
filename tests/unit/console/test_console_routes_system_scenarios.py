@@ -1,6 +1,7 @@
 import json
 import os
 import tempfile
+import threading
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -8,6 +9,7 @@ import pytest
 from flask import Flask
 
 from eval_runner import config
+from eval_runner.console.routes.runs import run_bp
 from eval_runner.console.routes.scenarios import scenario_bp
 
 # SUT
@@ -40,6 +42,7 @@ def client(console_jail, monkeypatch):
     app.secret_key = "test-secret"
     app.register_blueprint(system_bp, url_prefix="/api")
     app.register_blueprint(scenario_bp, url_prefix="/api")
+    app.register_blueprint(run_bp, url_prefix="/api")
 
     monkeypatch.setattr(config, "PROJECT_ROOT", console_jail["root"])
     monkeypatch.setattr(config, "RUN_LOG_DIR", console_jail["runs"])
@@ -120,6 +123,51 @@ def test_evaluate_scenario_absolute_path(client, console_jail):
         assert res.status_code == 200
         assert "run-my" in res.get_json()["run_id"]
         assert mock_submit.called
+
+
+def test_async_evaluation_registration_does_not_reserve_evidence_vault(client, console_jail):
+    """Accepted async work can execute while status and stream authorize from the index."""
+    from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+
+    scenario_path = console_jail["root"] / "async.json"
+    scenario_path.write_text('{"id": "async-scenario"}', encoding="utf-8")
+    started = threading.Event()
+    release = threading.Event()
+    executed = threading.Event()
+
+    def runner_callable(_scenario, *, run_id, **_kwargs):
+        # This is the runner's collision boundary: acceptance must not have
+        # created an evidence-vault directory for this ID.
+        assert not (config.RUN_LOG_DIR / run_id).exists()
+        started.set()
+        assert release.wait(timeout=3)
+        executed.set()
+        return {"run_id": run_id}
+
+    backend = InProcessExecutionBackend(runner_callable=runner_callable)
+    with (
+        patch(
+            "eval_runner.reference.inprocess_backend.InProcessExecutionBackend.get_instance",
+            return_value=backend,
+        ),
+        patch("eval_runner.loader.load_scenario", return_value={"id": "async-scenario"}),
+    ):
+        response = client.post("/api/v1/evaluate", json={"path": str(scenario_path)})
+        assert response.status_code == 200
+        run_id = response.get_json()["run_id"]
+        assert started.wait(timeout=3)
+
+        status = client.get(f"/api/v1/runs/{run_id}")
+        assert status.status_code == 200
+        assert status.get_json()["status"] == "RUNNING"
+        stream = client.get(f"/api/v1/runs/{run_id}/stream")
+        assert stream.status_code == 200
+        assert b"Waiting for trace data" in stream.data
+
+        release.set()
+        backend._threads[run_id].join(timeout=3)
+
+    assert executed.is_set()
 
 
 def test_mutate_scenario_raw(client):

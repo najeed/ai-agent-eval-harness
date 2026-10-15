@@ -103,12 +103,26 @@ EXTENSION_TIERS = {
 @dataclass(frozen=True)
 class ExtensionRoute:
     path: str
-    label: str
-    icon: str | None = None
+    # Presentation is optional; route mounting and access use only path and
+    # verified permissions.
+    label: str | None = None
     required_permissions: list[str] = field(default_factory=list)
     # Legacy signed metadata retained for manifest compatibility; Runtime UI
     # presentation gates use required_permissions only.
     required_role: str | None = None
+
+
+@dataclass(frozen=True)
+class ExtensionNavigation:
+    """Signed, presentation-only navigation metadata for one declared route."""
+
+    path: str
+    id: str | None = None
+    title: str | None = None
+    icon: str | None = None
+    group: str | None = None
+    badge: str | None = None
+    provenance: str | None = None
 
 
 @dataclass(frozen=True)
@@ -138,6 +152,7 @@ class RuntimeExtension:
     capabilities: list[str] = field(default_factory=lambda: ["routes", "navigation"])
     required_permissions: list[str] = field(default_factory=list)
     routes: list[ExtensionRoute] = field(default_factory=list)
+    navigation: list[ExtensionNavigation] = field(default_factory=list)
     nav_group: str = "extensions"
     remote_entry: str = ""
     sri_hash: str = ""  # sha3-256 integrity digest of the ESM bundle
@@ -159,7 +174,20 @@ class RuntimeExtension:
         # asdict() recursively converts nested frozen dataclasses
         # (ExtensionRoute / ExtensionLifecycle); signature is preserved as a
         # field so consumers can persist the full signed manifest.
-        return asdict(self)
+        payload = asdict(self)
+        # Routes are authorization/mount declarations. Keep omitted optional
+        # presentation and legacy compatibility fields absent in both the
+        # publisher descriptor and canonical signed bytes, rather than
+        # inventing explicit null claims.
+        payload["routes"] = [
+            {
+                key: value
+                for key, value in route.items()
+                if not (key in {"label", "required_role"} and value is None)
+            }
+            for route in payload["routes"]
+        ]
+        return payload
 
     def canonical_bytes(self) -> bytes:
         """Deterministic serialization that `signature` commits to."""
@@ -185,6 +213,10 @@ class RuntimeExtension:
                 r if isinstance(r, ExtensionRoute) else ExtensionRoute(**r)
                 for r in data.get("routes", [])
             ]
+            navigation = [
+                item if isinstance(item, ExtensionNavigation) else ExtensionNavigation(**item)
+                for item in data.get("navigation", [])
+            ]
             lc_raw = data.get("lifecycle") or {}
             lifecycle = (
                 lc_raw if isinstance(lc_raw, ExtensionLifecycle) else ExtensionLifecycle(**lc_raw)
@@ -199,6 +231,7 @@ class RuntimeExtension:
                 capabilities=list(data.get("capabilities", ["routes", "navigation"])),
                 required_permissions=list(data.get("required_permissions", [])),
                 routes=routes,
+                navigation=navigation,
                 nav_group=str(data.get("nav_group", "extensions")),
                 remote_entry=str(data.get("remote_entry", "")),
                 sri_hash=str(data.get("sri_hash", "")),
@@ -291,11 +324,45 @@ class RuntimeExtension:
                 if not isinstance(integrity, str) or not integrity.startswith("sha3-256-"):
                     violations.append(f"verified_chunks integrity must be sha3-256 SRI: {path!r}")
 
+        route_paths: set[str] = set()
         for route in self.routes:
             if not route.path or not route.path.startswith("/"):
                 violations.append(f"Route path must be absolute: {route.path!r}")
-            if not route.label:
-                violations.append(f"Route label is required for path: {route.path!r}")
+            if route.path in route_paths:
+                violations.append(f"Duplicate route path: {route.path!r}")
+            route_paths.add(route.path)
+            if route.label is not None and not isinstance(route.label, str):
+                violations.append(f"Route label must be a string when supplied: {route.path!r}")
+            if not isinstance(route.required_permissions, list) or not all(
+                isinstance(permission, str) and permission
+                for permission in route.required_permissions
+            ):
+                violations.append(f"Route permissions must be non-empty strings: {route.path!r}")
+
+        navigation_paths: set[str] = set()
+        navigation_ids: set[str] = set()
+        for item in self.navigation:
+            if not item.path or item.path not in route_paths:
+                violations.append(f"Navigation path must name a declared route: {item.path!r}")
+            if item.path in navigation_paths:
+                violations.append(f"Duplicate navigation path: {item.path!r}")
+            navigation_paths.add(item.path)
+            if item.id is not None:
+                if not isinstance(item.id, str) or not item.id:
+                    violations.append(f"Navigation id must be a non-empty string: {item.path!r}")
+                elif item.id in navigation_ids:
+                    violations.append(f"Duplicate navigation id: {item.id!r}")
+                navigation_ids.add(item.id)
+            for field_name in ("title", "group", "badge", "provenance"):
+                value = getattr(item, field_name)
+                if value is not None and not isinstance(value, str):
+                    violations.append(
+                        f"Navigation {field_name} must be a string when supplied: {item.path!r}"
+                    )
+            if item.icon is not None and (not isinstance(item.icon, str) or not item.icon):
+                violations.append(
+                    f"Navigation icon must be a non-empty string when supplied: {item.path!r}"
+                )
 
         if self.tier is not None and self.tier not in EXTENSION_TIERS:
             violations.append(f"Unknown trust tier: {self.tier!r}")
@@ -327,6 +394,7 @@ __all__ = [
     "EXTENSION_TIERS",
     "ExtensionContractError",
     "ExtensionLifecycle",
+    "ExtensionNavigation",
     "ExtensionRoute",
     "KNOWN_CAPABILITIES",
     "KNOWN_HOST_APIS",

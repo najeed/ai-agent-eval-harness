@@ -216,6 +216,7 @@ class DefaultRunner(BaseRunner):
         policy_evaluator: Any | None = None,
         signing_backend: Any | None = None,
         execution_backend: Any | None = None,
+        revision_service: Any | None = None,
     ):
         """Sanity check for required directories and initialize storage / config wiring."""
         Path("scenarios").mkdir(exist_ok=True)
@@ -233,6 +234,7 @@ class DefaultRunner(BaseRunner):
         self.policy_evaluator = policy_evaluator
         self.signing_backend = signing_backend
         self.execution_backend = execution_backend
+        self.revision_service = revision_service
 
         # Wire dependency graph into execution_backend if supported
         if self.execution_backend and hasattr(self.execution_backend, "set_dependency_graph"):
@@ -682,6 +684,70 @@ class DefaultRunner(BaseRunner):
             "oracle_hash": oracle_h,
             "environment_fingerprint": env_fp,
         }
+
+        # Resolve server-side scope and adopt scoped runtime configuration revision
+        observed_revision_record = None
+        runtime_context = (
+            ctx.metadata.get("runtime_context") if isinstance(ctx.metadata, Mapping) else None
+        )
+        if not runtime_context:
+            from eval_runner.run_index import read_run_index
+
+            idx_rec = read_run_index(effective_run_id)
+            if idx_rec and isinstance(idx_rec.get("context"), Mapping):
+                runtime_context = idx_rec["context"]
+
+        if isinstance(runtime_context, Mapping):
+            try:
+                from agentv_runtime.config import (
+                    ConfigResolver as AgentVConfigResolver,
+                    RuntimeWorkerConfigConsumer,
+                )
+                from eval_runner.services.config_revision import (
+                    ConfigurationRevisionService,
+                    bind_revision_to_evidence,
+                    derive_verified_scope,
+                )
+
+                scope = derive_verified_scope(runtime_context)
+                revision_service = (
+                    getattr(self, "revision_service", None) or ConfigurationRevisionService()
+                )
+                adapter = revision_service.get_deployment_adapter()
+
+                worker_instance_id = (
+                    os.getenv("AGENTV_WORKER_INSTANCE_ID")
+                    or getattr(self, "worker_instance_id", None)
+                    or f"worker_{platform.node() or 'node'}_{os.getpid()}"
+                )
+
+                target_rev = adapter.get_pending_or_active_revision(
+                    scope, instance_id=worker_instance_id
+                )
+                if target_rev is not None:
+                    resolver_inst = (
+                        self.config_resolver
+                        if hasattr(self.config_resolver, "resolve_detailed")
+                        else AgentVConfigResolver()
+                    )
+                    consumer = RuntimeWorkerConfigConsumer(
+                        instance_id=worker_instance_id,
+                        resolver=resolver_inst,
+                    )
+                    observation = consumer.consume_and_reload(
+                        target_rev,
+                        config_dict=cfg_obj if isinstance(cfg_obj, dict) else None,
+                    )
+                    observed_revision_record = adapter.report_worker_observation(
+                        scope,
+                        target_rev.revision_id,
+                        observation,
+                    )
+                    bind_revision_to_evidence(manifest_metadata, observed_revision_record)
+            except Exception as rev_err:
+                logger.debug(
+                    "Runtime worker config revision adoption skipped or failed: %s", rev_err
+                )
 
         # Defense-in-depth: Ensure metadata values (including nested CLI args dicts)
         # do not retain dispatch callbacks or opaque runtime callables
@@ -1191,6 +1257,51 @@ class DefaultRunner(BaseRunner):
                     },
                     span_context=ctx.span_context,
                 )
+                if self.run_store:
+                    try:
+                        failed_manifest = {
+                            "run_id": effective_run_id,
+                            "scenario_id": str(scenario.get("id", "unknown")),
+                            "status": "FAILED",
+                            "error": (
+                                "Authoritative evaluator finalization signing failed: "
+                                f"{sign_err_msg}"
+                            ),
+                            "attempts": attempts,
+                            "pass_at_k": 0.0,
+                            "results": all_attempt_results,
+                        }
+                        runtime_context = (
+                            ctx.metadata.get("runtime_context")
+                            if isinstance(ctx.metadata, Mapping)
+                            else None
+                        )
+                        if not runtime_context:
+                            from eval_runner.run_index import read_run_index
+
+                            idx_rec = read_run_index(effective_run_id)
+                            if idx_rec and isinstance(idx_rec.get("context"), Mapping):
+                                runtime_context = idx_rec["context"]
+                        if isinstance(runtime_context, Mapping):
+                            failed_manifest["context"] = {
+                                field: runtime_context[field]
+                                for field in (
+                                    "org_id",
+                                    "tenant_id",
+                                    "workspace_id",
+                                    "active_environment",
+                                )
+                                if field in runtime_context
+                            }
+                        if observed_revision_record is not None:
+                            from eval_runner.services.config_revision import (
+                                bind_revision_to_evidence,
+                            )
+
+                            bind_revision_to_evidence(failed_manifest, observed_revision_record)
+                        self.run_store.save_run_manifest(effective_run_id, failed_manifest)
+                    except Exception as err:
+                        logger.debug("Failed saving failed run manifest on signing error: %s", err)
                 return EvaluationResult(
                     run_id=effective_run_id,
                     scenario_id=str(scenario.get("id", "unknown")),
@@ -1243,6 +1354,33 @@ class DefaultRunner(BaseRunner):
                         "results": all_attempt_results,
                         "config_hash": cfg_hash,
                     }
+                    runtime_context = (
+                        ctx.metadata.get("runtime_context")
+                        if isinstance(ctx.metadata, Mapping)
+                        else None
+                    )
+                    if not runtime_context:
+                        from eval_runner.run_index import read_run_index
+
+                        idx_rec = read_run_index(effective_run_id)
+                        if idx_rec and isinstance(idx_rec.get("context"), Mapping):
+                            runtime_context = idx_rec["context"]
+
+                    if isinstance(runtime_context, Mapping):
+                        manifest_data["context"] = {
+                            field: runtime_context[field]
+                            for field in (
+                                "org_id",
+                                "tenant_id",
+                                "workspace_id",
+                                "active_environment",
+                            )
+                            if field in runtime_context
+                        }
+                    if observed_revision_record is not None:
+                        from eval_runner.services.config_revision import bind_revision_to_evidence
+
+                        bind_revision_to_evidence(manifest_data, observed_revision_record)
                     self.run_store.save_run_manifest(effective_run_id, manifest_data)
                 except Exception as e:
                     logger.debug(f"Failed to save manifest to RunStore: {e}")

@@ -318,3 +318,33 @@ def test_agent_target_store_corrupt_file_and_missing_endpoints(targets_jail):
     res_unsaved_valid = client.post("/api/v1/agent-targets/test", json=VALID_PAYLOAD)
     assert res_unsaved_valid.status_code == 200
     assert "reachable" in res_unsaved_valid.get_json()
+
+
+def test_agent_target_context_and_delete_edge_cases(targets_jail, monkeypatch):
+    from unittest.mock import patch
+
+    import eval_runner.console.routes.agent_targets as at_module
+
+    client = targets_jail["client"]
+    store = at_module.AgentTargetStore(targets_jail["path"])
+
+    # Delete non-existent ID on store directly
+    assert store.delete("nonexistent_id") is False
+
+    # Save target with active runtime context
+    monkeypatch.setattr(at_module, "active_runtime_context", lambda: {"org_id": "org_1"})
+    res_save_ctx = _save(client, VALID_PAYLOAD)
+    assert res_save_ctx.status_code == 201
+    target_id = res_save_ctx.get_json()["id"]
+
+    # Update existing target from cross-org context returns 404
+    monkeypatch.setattr(at_module, "active_runtime_context", lambda: {"org_id": "org_2"})
+    update_payload = {**VALID_PAYLOAD, "id": target_id, "name": "updated-cross-org"}
+    res_update_denied = _save(client, update_payload)
+    assert res_update_denied.status_code == 404
+
+    # Delete where store.delete returns False
+    monkeypatch.setattr(at_module, "active_runtime_context", lambda: None)
+    with patch.object(at_module._store, "delete", return_value=False):
+        res_del_fail = client.delete(f"/api/v1/agent-targets/{target_id}")
+        assert res_del_fail.status_code == 404

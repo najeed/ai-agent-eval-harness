@@ -565,3 +565,25 @@ def test_trajectory_json_export(tmp_path):
         data = _json.load(f)
     assert data["metadata"]["id"] == "test_hitl_ci"
     assert "results" in data
+
+
+def test_rubric_registry_full():
+    """Verify RubricRegistry registration, listing, retrieval, and fallback behavior."""
+    from eval_runner.rubrics import RubricRegistry
+
+    # List rubrics
+    rubrics = RubricRegistry.list_rubrics()
+    assert "generic" in rubrics
+    assert "strategic_planning" in rubrics
+
+    # Get existing
+    assert "strategic" in RubricRegistry.get("strategic_planning").lower()
+
+    # Get fallback
+    fallback = RubricRegistry.get("nonexistent_rubric_xyz")
+    assert fallback == RubricRegistry.get("generic")
+
+    # Register custom rubric
+    RubricRegistry.register("custom_safety", "Custom Prompt {expected_outcome}")
+    assert "custom_safety" in RubricRegistry.list_rubrics()
+    assert RubricRegistry.get("custom_safety") == "Custom Prompt {expected_outcome}"

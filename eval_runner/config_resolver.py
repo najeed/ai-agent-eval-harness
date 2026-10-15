@@ -7,7 +7,12 @@ Re-exported from authoritative agentv_runtime.config.
 from agentv_runtime.config import (
     CORE_FIELDS,
     KNOWN_NAMESPACES,
+    ConfigDiagnosticError,
+    ConfigKeyDiagnostic,
+    ConfigResolutionError,
     ConfigResolver,
+    ConfigSourceContributor,
+    DetailedResolutionResult,
     ResolvedRuntimeConfig,
     _deep_merge,
 )
@@ -19,6 +24,11 @@ VALID_ARTIFACT_STORES = {"local_file", "s3", "gcs", "memory", "custom"}
 __all__ = [
     "ResolvedRuntimeConfig",
     "ConfigResolver",
+    "DetailedResolutionResult",
+    "ConfigKeyDiagnostic",
+    "ConfigSourceContributor",
+    "ConfigDiagnosticError",
+    "ConfigResolutionError",
     "VALID_EXECUTION_BACKENDS",
     "VALID_CHECKPOINT_STORES",
     "VALID_ARTIFACT_STORES",

@@ -171,12 +171,21 @@ class AuthManager(ABC):
         """Check if a user has the required granular permission node."""
         pass
 
+    def get_service_credential(self) -> str | None:
+        """Retrieve a service credential for background machine clients."""
+        return None
+
 
 class StaticKeyProvider(AuthManager):
     """Default OSS provider: Single Master/Root Key maps to explicit granular nodes."""
 
     def __init__(self, key: str, backend: AuthorizationBackend | None = None):
         self.key = key
+        # Only the built-in fallback backend represents the legacy static
+        # root key.  A supplied backend is the verified authority for its
+        # principal claims, even when it happens to use the reference backend
+        # implementation.
+        self._uses_configured_backend = backend is not None
         self.backend = backend or SimpleAPIKeyAuthBackend(master_key=key)
         self._register_demo_principals()
         self._jwks_client = None
@@ -246,18 +255,29 @@ class StaticKeyProvider(AuthManager):
         # Check backend first
         principal = self.backend.validate_token(credentials)
         if principal:
-            perms = principal.permissions
-            if "*" in perms:
-                perms = Permission.ADMIN()
+            perms = list(principal.permissions)
             ptype = principal.metadata.get(
                 "type", "static-root" if principal.principal_id == "root-admin" else "backend-auth"
             )
+            # Preserve configured/OIDC backend permissions exactly.  The
+            # finite Core expansion exists solely for the old unscoped static
+            # root-key compatibility path; replacing '*' elsewhere would
+            # erase extension-defined permission vocabularies.
+            if (
+                not self._uses_configured_backend
+                and ptype == "static-root"
+                and principal.principal_id == "root-admin"
+                and "*" in perms
+            ):
+                perms = Permission.ADMIN()
             user = {
                 "id": principal.principal_id,
                 "name": principal.metadata.get("name", principal.principal_id),
                 "permissions": perms,
                 "type": ptype,
             }
+            if principal.roles:
+                user["roles"] = list(principal.roles)
             # Context is supplied by the authorization backend, never by a
             # Console request.  Preserve it when a backend supports it.
             for claim in (
@@ -377,6 +397,26 @@ class StaticKeyProvider(AuthManager):
             print(f"   [Auth] [DENIED] Node '{permission_node}' not in user perms: {user_perms}")
         return result
 
+    def get_service_credential(self) -> str | None:
+        """
+        Resolves a machine credential for server-to-server operations.
+        Prioritizes the configured backend before static key fallback.
+        """
+        if self._uses_configured_backend and hasattr(self.backend, "get_service_credential"):
+            cred = self.backend.get_service_credential()
+            if cred:
+                return cred
+        from .. import config
+
+        return (
+            self.key
+            or os.getenv("SERVICE_API_KEY")
+            or getattr(config, "SERVICE_API_KEY", None)
+            or os.getenv("DASHBOARD_API_KEY")
+            or getattr(config, "DASHBOARD_API_KEY", None)
+            or None
+        )
+
 
 _configured_authorization_backend: AuthorizationBackend | None = None
 _AUTHORIZATION_BACKEND_FACTORY_ENV = "AGENTV_AUTHORIZATION_BACKEND_FACTORY"
@@ -386,6 +426,13 @@ def register_authorization_backend(backend: AuthorizationBackend | None) -> None
     """Explicit bootstrap seam for a configured non-OIDC authorization backend."""
     global _configured_authorization_backend
     _configured_authorization_backend = backend
+
+
+def has_configured_authorization_backend() -> bool:
+    """Returns True if a non-default authorization backend has been registered or configured."""
+    return _configured_authorization_backend is not None or bool(
+        os.getenv(_AUTHORIZATION_BACKEND_FACTORY_ENV, "").strip()
+    )
 
 
 def _load_configured_authorization_backend(factory_spec: str) -> AuthorizationBackend:
@@ -553,7 +600,7 @@ def require_permission(permission_node: str):
                     f"(Len: {len(api_key)}) for {request.path}",
                     flush=True,
                 )
-            elif bearer_token and not user:
+            else:
                 print(
                     f"   [Auth] 401 Unauthorized - Invalid Bearer Token for {request.path}",
                     flush=True,

@@ -243,6 +243,54 @@ It discovers static relative ESM imports, computes SHA3-256 SRI for the entry an
 
 Production extensions declare `react_peer: true`, externalize React/ReactDOM, and use the host singleton rather than bundling a second React runtime. Header extensions declare both `capabilities: ["header"]` and `slot: "header"`; `verified_chunks` is a signed map of safe relative paths to `sha3-256-...` SRI. Blob imports and SHA-2 SRI are not a supported production ABI.
 
+### Extension SPA deep links
+
+At Console startup, Runtime discovers the routes in installed signed extension
+manifests and registers their static prefixes only after contract, publisher,
+and artifact verification succeeds. A declared route such as `/generic` makes
+`/generic/...` return the Console shell for client-side routing; no extension
+adds Flask routes or response hooks. Set `AGENTV_ENABLED_EXTENSION_IDS` to a
+comma-separated allowlist when a deployment must selectively enable published
+extensions. When it is unset, all verified installed releases are enabled.
+Uninstalled, disabled, malformed, or unverified releases—and every unknown
+prefix—remain 404s. Prefixes that could shadow `/api`, `/auth`, static assets,
+or an existing Core application route are rejected at startup.
+
+Declare a prefix through the signed publish manifest, for example
+`{ "display_name": "Example", "capabilities": ["routes", "navigation"],
+"routes": [{ "path": "/generic", "label": "Example" }] }`, supplied to
+`agentv console extension publish --manifest ./manifest.json`. The publisher binds the
+extension ID, version, artifact URL, hashes, and signature; the browser never
+registers a prefix.
+
+Routes are mount/authorization declarations: they require `path` and may carry
+only `required_permissions` (with optional `label`). Put navigation
+presentation in the separate signed `navigation` list, keyed by `path`, with
+optional `id`, `title`, `icon`, `group`, `badge`, and `provenance`. Runtime rejects
+unknown paths, malformed records, duplicate route paths, duplicate navigation
+paths, and duplicate navigation IDs. The Console receives navigation entries
+only from the verified manifest and uses route permissions independently for
+visibility; presentation metadata never grants access or changes scope.
+
+### Asynchronous run registration
+
+When Runtime accepts an evaluation, it atomically writes a durable
+`run_index.json` before dispatching asynchronous execution. The record contains
+the run ID, pending/running lifecycle state, and the complete verified Runtime
+context tuple. Run status, stream, and list authorization read that same record
+until richer execution artifacts exist, so an in-scope caller can poll
+immediately and after a restart. The runner carries the tuple into subsequent
+run manifests; callers in another context, and unknown run IDs, continue to
+receive a non-enumerating `404`.
+
+`navigation.icon` is an allowlisted Lucide name. Supported names are `activity`,
+`bar-chart`, `bell`, `book-open`, `box`, `check-circle`, `clipboard-check`,
+`compass`, `cpu`, `database`, `file-check`, `file-text`, `git-branch`,
+`heart-pulse`, `home`, `layers`, `lock`, `play`, `radio`, `server`, `settings`,
+`shield`, `shield-check`, `sparkles`, `terminal`, `trending-up`, `users`, and
+`zap`. Kebab-case, snake_case, camelCase, and spaced forms normalize to the
+same name. Unknown icons use a neutral fallback and emit a development warning.
+
 To withdraw a bad release without directly mutating the artifact store, use `agentv console extension unpublish --extension-id example-header --extension-version 1.0.0`. It atomically removes the served release before quarantining and deleting it; a repeated call reports `not_found` without error.
 
 `publish` is idempotent only for byte-identical entry/chunk graphs and the same signed manifest; a changed version is rejected. Use `agentv console extension verify --extension-id example-header --extension-version 1.0.0` for a read-only entry, chunk, manifest, and publisher-trust check. `repair` requires a retained signed release record and candidate source whose bytes exactly match it; it atomically restores that exact version and never rebinds a version to different code.

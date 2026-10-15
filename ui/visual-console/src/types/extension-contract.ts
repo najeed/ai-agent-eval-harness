@@ -83,9 +83,19 @@ export function canCallHostApi(
 
 export interface ExtensionRoute {
   path: string;
-  label: string;
-  icon?: string;
+  label?: string;
   required_permissions?: string[];
+}
+
+/** Signed, presentation-only metadata keyed to one declared route. */
+export interface ExtensionNavigation {
+  path: string;
+  id?: string;
+  title?: string;
+  icon?: string;
+  group?: string;
+  badge?: string;
+  provenance?: string;
 }
 
 /** The only authenticated context surface supplied to mounted extensions. */
@@ -116,6 +126,7 @@ export interface RuntimeExtensionManifest {
   capabilities: string[];
   required_permissions: string[];
   routes: ExtensionRoute[];
+  navigation: ExtensionNavigation[];
   nav_group: string;
   remote_entry: string;
   sri_hash: string;
@@ -230,12 +241,45 @@ export function validateExtensionManifest(
     violations.push('Manifest declares routes but does not declare "routes" or "navigation" capability');
   }
 
+  const routePaths = new Set<string>();
   for (const route of routes) {
     if (!route.path || !route.path.startsWith('/')) {
       violations.push(`Route path must be non-empty and absolute: ${String(route.path)}`);
     }
-    if (!route.label) {
-      violations.push(`Route label is required for path: ${route.path}`);
+    if (routePaths.has(route.path)) violations.push(`Duplicate route path: ${route.path}`);
+    routePaths.add(route.path);
+    if (route.label !== undefined && typeof route.label !== 'string') violations.push(`Route label must be a string when supplied: ${route.path}`);
+    if (route.required_permissions !== undefined && (!Array.isArray(route.required_permissions) || route.required_permissions.some(permission => typeof permission !== 'string' || !permission))) {
+      violations.push(`Route permissions must be non-empty strings: ${route.path}`);
+    }
+  }
+
+  const navigation = m.navigation ?? [];
+  if (!Array.isArray(navigation)) {
+    violations.push('navigation must be an array');
+  } else {
+    const navigationPaths = new Set<string>();
+    const navigationIds = new Set<string>();
+    for (const item of navigation) {
+      if (!item || typeof item !== 'object' || typeof item.path !== 'string' || !routePaths.has(item.path)) {
+        violations.push(`Navigation path must name a declared route: ${String((item as any)?.path)}`);
+        continue;
+      }
+      if (navigationPaths.has(item.path)) violations.push(`Duplicate navigation path: ${item.path}`);
+      navigationPaths.add(item.path);
+      if (item.id !== undefined) {
+        if (typeof item.id !== 'string' || !item.id) violations.push(`Navigation id must be a non-empty string: ${item.path}`);
+        else if (navigationIds.has(item.id)) violations.push(`Duplicate navigation id: ${item.id}`);
+        navigationIds.add(item.id);
+      }
+      for (const field of ['title', 'group', 'badge', 'provenance'] as const) {
+        if (item[field] !== undefined && typeof item[field] !== 'string') {
+          violations.push(`Navigation ${field} must be a string when supplied: ${item.path}`);
+        }
+      }
+      if (item.icon !== undefined && (typeof item.icon !== 'string' || !item.icon)) {
+        violations.push(`Navigation icon must be a non-empty string when supplied: ${item.path}`);
+      }
     }
   }
 
@@ -257,4 +301,186 @@ export interface RuntimeExtensionModule {
   /** Default export may be the mount component; validated separately. */
   default?: unknown;
   [key: string]: unknown;
+}
+
+/**
+ * Normalized Console Extension Inventory contract.
+ * Represents a canonical extension capability/version without duplicate rows
+ * caused by navigation registration details, and explicitly defines the
+ * relationship when a signed remote extension supersedes or wraps a
+ * server-registered component.
+ */
+export interface ExtensionInventoryItem {
+  extensionId: string;
+  publisher?: string;
+  version?: string;
+  capabilityId: string;
+  registrationKind: 'remote_extension' | 'server_component';
+  remoteEntry?: string;
+  componentName?: string;
+  trustTier?: string;
+  sriHash?: string;
+  relatedRegistrationIds?: string[];
+}
+
+/**
+ * Normalizes and de-duplicates raw navigation and extension items into canonical
+ * ExtensionInventoryItem records.
+ *
+ * Rules:
+ * 1. Produces exactly one canonical inventory item per extension capability/version.
+ * 2. When a signed remote extension supersedes or wraps a server-registered component,
+ *    it exposes that relationship (with both remoteEntry and componentName preserved)
+ *    and sets registrationKind to 'remote_extension'.
+ * 3. Distinct capabilities remain separately visible.
+ * 4. Generates stable extension/capability identities independent of labels or routes.
+ * 5. Tags kind as 'remote_extension' or 'server_component' (never 'host').
+ */
+export function buildExtensionInventory(items: unknown[]): ExtensionInventoryItem[] {
+  if (!Array.isArray(items)) return [];
+
+  const candidates = items.filter((item): item is Record<string, any> => {
+    if (!item || typeof item !== 'object') return false;
+    const it = item as Record<string, any>;
+    return (
+      typeof it.remoteEntry === 'string' ||
+      typeof it.componentName === 'string' ||
+      it.type === 'component' ||
+      it.registrationKind === 'remote_extension' ||
+      it.registrationKind === 'server_component' ||
+      (typeof it.extensionId === 'string' && it.extensionId.length > 0)
+    );
+  });
+
+  // Group items by normalized capability identity
+  const capabilityGroups = new Map<string, Record<string, any>[]>();
+
+  for (const item of candidates) {
+    const rawCap =
+      item.capabilityId ||
+      item.capability ||
+      item.extensionId ||
+      item.componentName ||
+      (typeof item.id === 'string'
+        ? item.id.replace(/-nav$|-component$|-remote$|-ext$/, '')
+        : '') ||
+      item.name ||
+      'unknown';
+    const capId = String(rawCap).trim().toLowerCase();
+
+    if (!capabilityGroups.has(capId)) {
+      capabilityGroups.set(capId, []);
+    }
+    capabilityGroups.get(capId)!.push(item);
+  }
+
+  const inventory: ExtensionInventoryItem[] = [];
+
+  for (const [capIdKey, groupItems] of capabilityGroups.entries()) {
+    // Check if there are multiple distinct non-empty versions among remote extensions
+    const remoteVersions = Array.from(
+      new Set(
+        groupItems
+          .filter(it => Boolean(it.remoteEntry))
+          .map(it => (typeof it.version === 'string' ? it.version.trim() : ''))
+          .filter(Boolean)
+      )
+    );
+
+    const versionSubgroups: Record<string, any>[][] =
+      remoteVersions.length > 1
+        ? remoteVersions.map(v =>
+            groupItems.filter(it => !it.version || it.version === v)
+          )
+        : [groupItems];
+
+    for (const items of versionSubgroups) {
+      // Identify remote extension registration vs server component registration
+      const remoteItem = items.find(
+        it => typeof it.remoteEntry === 'string' || it.registrationKind === 'remote_extension'
+      );
+      const componentItem = items.find(
+        it => typeof it.componentName === 'string' || it.type === 'component' || it.registrationKind === 'server_component'
+      );
+
+      const primary = remoteItem || items[0];
+      const isRemote = Boolean(remoteItem && remoteItem.remoteEntry);
+
+      // Collect all unique registration IDs involved in this capability group
+      const relatedIds = new Set<string>();
+      for (const it of items) {
+        if (typeof it.id === 'string' && it.id) {
+          relatedIds.add(it.id);
+        }
+        if (Array.isArray(it.relatedRegistrationIds)) {
+          for (const rel of it.relatedRegistrationIds) {
+            if (typeof rel === 'string' && rel) {
+              relatedIds.add(rel);
+            }
+          }
+        }
+      }
+
+      const stableCapabilityId =
+        primary.capabilityId ||
+        (componentItem ? componentItem.capabilityId : undefined) ||
+        primary.capability ||
+        capIdKey;
+
+      const stableExtensionId =
+        primary.extensionId ||
+        (remoteItem ? remoteItem.extensionId : undefined) ||
+        (componentItem ? componentItem.extensionId : undefined) ||
+        stableCapabilityId;
+
+      const item: ExtensionInventoryItem = {
+        extensionId: String(stableExtensionId),
+        capabilityId: String(stableCapabilityId),
+        registrationKind: isRemote ? 'remote_extension' : 'server_component',
+      };
+
+      if (primary.publisher || (componentItem && componentItem.publisher)) {
+        item.publisher = primary.publisher || (componentItem ? componentItem.publisher : undefined);
+      }
+
+      if (primary.version || (componentItem && componentItem.version)) {
+        item.version = primary.version || (componentItem ? componentItem.version : undefined);
+      }
+
+      if (isRemote && remoteItem?.remoteEntry) {
+        item.remoteEntry = remoteItem.remoteEntry;
+        if (remoteItem.sriHash || remoteItem.sri_hash) {
+          item.sriHash = remoteItem.sriHash || remoteItem.sri_hash;
+        }
+      }
+
+      // Preserve componentName if present in group (even when remote supersedes it)
+      const compName =
+        (componentItem && typeof componentItem.componentName === 'string')
+          ? componentItem.componentName
+          : typeof primary.componentName === 'string'
+          ? primary.componentName
+          : undefined;
+
+      if (compName) {
+        item.componentName = compName;
+      }
+
+      const tier =
+        primary.trustTier ||
+        primary.tier ||
+        (componentItem ? componentItem.trustTier || componentItem.tier : undefined);
+      if (tier) {
+        item.trustTier = String(tier);
+      }
+
+      if (relatedIds.size > 0) {
+        item.relatedRegistrationIds = Array.from(relatedIds);
+      }
+
+      inventory.push(item);
+    }
+  }
+
+  return inventory;
 }

@@ -2537,6 +2537,8 @@ class SessionManager:
 
             for k in ("tenant_id", "correlation_id", "project_id", "environment"):
                 val = self.metadata.get(k) or scenario_meta.get(k)
+                if not val and k == "correlation_id":
+                    val = self.scenario.get("correlation_id")
                 if val:
                     req_metadata[k] = val
 

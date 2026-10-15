@@ -131,3 +131,17 @@ def test_execution_manifest_rich_provenance_support():
     assert restored.runtime_config["policy_hash"] == "sha3_256:policy123"
     assert restored.environment["environment_fingerprint"] == "sha3_256:envfp123"
     assert restored.compute_manifest_hash() == manifest.compute_manifest_hash()
+
+
+def test_compute_preflight_fingerprint_with_max_turns_precedence():
+    from agentv_runtime.manifest import compute_preflight_fingerprint
+
+    # When runtime_config already specifies max_turns, the max_turns argument
+    # branch is evaluated without overwriting.
+    fp = compute_preflight_fingerprint(
+        scenario_id="scen_preflight_override",
+        agent_config={"endpoint": "http://localhost:8000", "protocol": "http"},
+        runtime_config={"max_turns": 5},
+        max_turns=10,
+    )
+    assert len(fp) == 64

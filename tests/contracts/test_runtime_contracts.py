@@ -489,3 +489,321 @@ class TestEvidenceArtifact:
         d = ea.to_dict()
         assert d["certified"] is False
         assert d["metadata"] == {}
+
+
+class TestStateComparisonContract:
+    def test_state_comparison_to_dict_defaults(self):
+        from agentv_runtime.state_comparison import StateComparison
+
+        sc = StateComparison(
+            scenario_node_id="node_1",
+            execution_instance_id="exec_instance_01",
+            assertion_id="assert_db_parity",
+            expected={"status": "committed"},
+            actual={"status": "pending"},
+        )
+        d = sc.to_dict()
+        assert d["scenario_node_id"] == "node_1"
+        assert d["execution_instance_id"] == "exec_instance_01"
+        assert d["comparison"]["kind"] == "state_comparison"
+        assert d["comparison"]["result"] == "diverged"
+        assert d["comparison"]["failed_assertion"] == "assert_db_parity"
+        assert d["assertions"] == []
+
+    def test_state_comparison_to_dict_custom_comparison_and_assertions(self):
+        from agentv_runtime.state_comparison import StateComparison
+
+        custom_comp = {"kind": "semantic_diff", "score": 0.42}
+        assertions = [{"id": "a1", "passed": False}]
+        sc = StateComparison(
+            scenario_node_id="node_2",
+            execution_instance_id="exec_instance_02",
+            assertion_id="assert_semantic",
+            expected="ready",
+            actual="error",
+            comparison_result="failed",
+            evidence_ref="custom_trace.jsonl",
+            comparison=custom_comp,
+            assertions=assertions,
+            source="custom_validator",
+        )
+        d = sc.to_dict()
+        assert d["comparison"] == custom_comp
+        assert d["assertions"] == assertions
+        assert d["source"] == "custom_validator"
+
+
+class TestAdditionalRuntimeContracts:
+    def test_verification_result_unverified_signature_branches(self):
+        res_live = VerificationResult(
+            evaluation_run_id="run-test-live",
+            scenario_version_id="scen-01",
+            case_id="case1",
+            attempt_id="att1",
+            attempt_number=1,
+            verdict=Verdict.VERIFIED,
+            execution_mode="live",
+            signature_verified=False,
+            evidence_complete=True,
+        )
+        assert res_live.attestation_grade == "verifiable"
+
+        res_sim = VerificationResult(
+            evaluation_run_id="run-test-sim",
+            scenario_version_id="scen-01",
+            case_id="case1",
+            attempt_id="att1",
+            attempt_number=1,
+            verdict=Verdict.VERIFIED,
+            execution_mode="simulated",
+            signature_verified=False,
+            evidence_complete=True,
+        )
+        assert res_sim.attestation_grade == "simulated"
+
+    def test_evidence_reference_to_dict_and_from_dict(self):
+        from agentv_runtime.contracts import EvidenceReference
+
+        ref = EvidenceReference(
+            source_id="sql_db",
+            scope="users_table",
+            selector_hash="sel_hash_1",
+            query_or_operation_hash="query_hash_1",
+            result_hash="res_hash_1",
+            result_count=42,
+            source_version="v2.1",
+            sampled_result={"sample": "data"},
+            provenance={"server": "db.corp"},
+        )
+        d = ref.to_dict()
+        assert d["source_id"] == "sql_db"
+        assert d["result_count"] == 42
+        restored = EvidenceReference.from_dict(d)
+        assert restored.source_id == ref.source_id
+        assert restored.scope == ref.scope
+        assert restored.result_hash == ref.result_hash
+        assert restored.result_count == 42
+
+    def test_mutation_contracts_serialization(self):
+        from agentv_runtime.contracts import (
+            MutationCampaignSpec,
+            MutationContext,
+            MutationCoordinate,
+            MutationDescriptor,
+            MutationHandle,
+            MutationRecord,
+            MutationTier,
+        )
+
+        desc = MutationDescriptor(
+            id="mut_test_01",
+            label="Prompt Injection",
+            vector="input",
+            operation="inject_adversarial",
+            tier=MutationTier.T1_BEHAVIORAL,
+            source="core",
+            description="Tests prompt robustness",
+            target_field="prompt",
+            deterministic=True,
+        )
+        d_desc = desc.to_dict()
+        assert d_desc["id"] == "mut_test_01"
+        assert d_desc["vector"] == "input"
+
+        coord = MutationCoordinate(
+            vector="tool",
+            operation="drop_call",
+            tier=MutationTier.T2_STRUCTURAL,
+        )
+        d_coord = coord.to_dict()
+        assert d_coord["vector"] == "tool"
+        assert d_coord["operation"] == "drop_call"
+
+        ctx = MutationContext(scenario={"id": "s1"}, seed=42)
+        assert ctx.seed == 42
+        assert ctx.rng is not None
+
+        ctx_no_seed = MutationContext(scenario={"id": "s1"})
+        assert ctx_no_seed.seed is None
+
+        handle = MutationHandle(
+            mutation_id="mut_h1",
+            name="Drop Call",
+            applied=True,
+            coordinate=coord,
+            target="tool_execute",
+            details={"drop_count": 1},
+        )
+        d_handle = handle.to_dict()
+        assert d_handle["applied"] is True
+        assert d_handle["coordinate"]["vector"] == "tool"
+
+        rec = MutationRecord(
+            mutation_id="mut_rec_1",
+            name="Mut Record",
+            vector="state",
+            operation="corrupt_row",
+            tier="T1",
+            target="db_state",
+            applied_at_step=2,
+            details={"key": "val"},
+        )
+        d_rec = rec.to_dict()
+        assert d_rec["mutation_id"] == "mut_rec_1"
+        assert d_rec["applied_at_step"] == 2
+
+        camp = MutationCampaignSpec(
+            campaign_id="camp_01",
+            profile="enterprise_soak",
+            agents=["agent_a"],
+        )
+        d_camp = camp.to_dict()
+        assert d_camp["campaign_id"] == "camp_01"
+        assert d_camp["agents"] == ["agent_a"]
+
+
+class TestManifestSerializationContracts:
+    def test_to_json_compatible_callable_raises(self):
+        import pytest
+
+        from agentv_runtime.manifest import _to_json_compatible
+
+        with pytest.raises(ValueError, match="LossyScenarioError: Unsupported callable"):
+            _to_json_compatible(lambda x: x)
+
+    def test_to_json_compatible_set_sorting(self):
+        from agentv_runtime.manifest import _to_json_compatible
+
+        s = {"gamma", "alpha", "beta"}
+        result = _to_json_compatible(s)
+        assert isinstance(result, list)
+        assert result == ["alpha", "beta", "gamma"]
+
+    def test_to_json_compatible_custom_to_dict_and_unsupported_type(self):
+        import pytest
+
+        from agentv_runtime.manifest import _to_json_compatible
+
+        class CustomEntity:
+            def to_dict(self):
+                return {"entity_id": "ent_123"}
+
+        res = _to_json_compatible(CustomEntity())
+        assert res == {"entity_id": "ent_123"}
+
+        class UnsupportedEntity:
+            pass
+
+        with pytest.raises(TypeError, match="Unsupported non-canonical value"):
+            _to_json_compatible(UnsupportedEntity())
+
+    def test_preflight_fingerprint_endpoint_and_protocol_injection(self):
+        from agentv_runtime.manifest import compute_preflight_fingerprint
+
+        fp = compute_preflight_fingerprint(
+            scenario_id="scen_fp_1",
+            scen_hash="scen_hash_fp",
+            endpoint="http://agent.local:8080/eval",
+            protocol="HTTP",
+        )
+        assert isinstance(fp, str)
+        assert len(fp) == 64
+
+    def test_execution_manifest_from_scenario_resolved_mode(self):
+        from agentv_runtime.manifest import ManifestBuilder
+
+        scenario_data = {
+            "id": "scen_manifest_01",
+            "version": "1.0.0",
+            "metadata": {"name": "Test Scenario"},
+        }
+        manifest = ManifestBuilder.build(
+            scenario_data=scenario_data,
+            agent_config={"endpoint": "http://localhost:5000"},
+            execution_mode="live",
+        )
+        assert manifest.runtime_config["execution_mode"] == "live"
+        assert manifest.metadata["execution_mode"] == "live"
+
+
+class TestRuntimeScenarioAndInterfaceContracts:
+    def test_canonical_scenario_ir_from_scenario_without_evaluation_plan(self, monkeypatch):
+        import eval_runner.execution_ir as exec_ir
+        from agentv_runtime.scenario import CanonicalScenarioIR
+
+        orig_compile = exec_ir.compile_workflow
+
+        def mock_compile_workflow(data):
+            plan = orig_compile(data)
+            plan.evaluation_plan = None
+            return plan
+
+        monkeypatch.setattr(exec_ir, "compile_workflow", mock_compile_workflow)
+
+        scenario = {
+            "id": "scen_no_eval_plan",
+            "version": "1.0.0",
+            "workflow": [
+                {
+                    "id": "step_1",
+                    "task": "hello",
+                    "success_criteria": [{"metric": "exact_match", "assertion": "=="}],
+                }
+            ],
+        }
+        ir = CanonicalScenarioIR.from_scenario(scenario)
+        assert ir.scenario_id == "scen_no_eval_plan"
+        assert ir.evaluation_plan == {}
+
+    def test_authorization_backend_default_service_credential(self):
+        from agentv_runtime.interfaces import AuthorizationBackend
+
+        class TestAuthBackend(AuthorizationBackend):
+            def authorize_request(self, request):
+                return True
+
+            def check_permission(self, subject, action, resource):
+                return True
+
+            def validate_token(self, token):
+                return {}
+
+        backend = TestAuthBackend()
+        assert backend.get_service_credential() is None
+
+    def test_runtime_approval_request_lifecycle(self):
+        from agentv_runtime.interfaces import ApprovalRequest
+
+        req = ApprovalRequest(
+            approval_token="tok_123",
+            run_id="run_456",
+            turn_index=2,
+            outbound_payload_hash="sha3_256:abcd",
+            required_role="approver",
+            reviewer_credentials={"role": "admin"},
+            status="PENDING",
+            rule_id="rule_sec",
+            checkpoint_id="chk_01",
+            action_payload={"key": "val"},
+            prompt="Authorize action",
+            created_at=1700000000.0,
+            decision="APPROVED",
+            decision_reason="Policy compliant",
+            decided_by="operator@local",
+            decided_at=1700000010.0,
+            metadata={"source": "test"},
+        )
+        d = req.to_dict()
+        assert d["approval_token"] == "tok_123"
+        assert d["run_id"] == "run_456"
+        assert d["decision"] == "APPROVED"
+
+        restored = ApprovalRequest.from_dict(d)
+        assert restored.approval_token == req.approval_token
+        assert restored.run_id == req.run_id
+        assert restored.turn_index == req.turn_index
+        assert restored.outbound_payload_hash == req.outbound_payload_hash
+        assert restored.required_role == req.required_role
+        assert restored.reviewer_credentials == req.reviewer_credentials
+        assert restored.decision == req.decision
+        assert restored.metadata == req.metadata

@@ -421,3 +421,58 @@ def test_compute_evidence_graph_root_mapping_and_dicts():
     d2 = {"custom_data": "value"}
     root = compute_evidence_graph_root([d1, d2])
     assert root.startswith("sha3_256:")
+
+    # 3. Sequence with item that is neither str nor Mapping
+    root_mixed = compute_evidence_graph_root([d1, 12345, None])
+    assert root_mixed.startswith("sha3_256:")
+
+
+def test_build_evidence_graph_actual_after_and_non_dict_terminal_assertions():
+    from agentv_runtime.evidence_graph import build_evidence_graph_from_events
+
+    events = [
+        {"event": "run_start", "_seq": 1},
+        {
+            "event": "run_end",
+            "_seq": 2,
+            "data": {
+                "assertions": [
+                    {
+                        "oracle_id": "oracle_actual_after",
+                        "actual_after": "state_val_after",
+                        "outcome": "PASS",
+                    },
+                    "not_a_dict_assertion",
+                ],
+            },
+        },
+    ]
+    graph = build_evidence_graph_from_events(events)
+    assert graph["evidence_count"] == 1
+    node = graph["nodes"][0]
+    assert node["actual"] == "state_val_after"
+
+
+def test_index_events_by_seq_with_mixed_non_int_seq():
+    # When explicit sequence numbering is detected, any event missing an integer sequence is skipped
+    events_with_lines = [
+        ({"event": "run_start", "_seq": 1}, '{"event": "run_start", "_seq": 1}'),
+        ({"event": "heartbeat", "_seq": None}, '{"event": "heartbeat"}'),
+        ({"event": "run_end", "_seq": 2}, '{"event": "run_end", "_seq": 2}'),
+    ]
+    index = index_events_by_seq(events_with_lines)
+    assert 1 in index
+    assert 2 in index
+    assert None not in index
+
+
+def test_link_assertion_with_expected_and_actual_values():
+    assertion = {
+        "oracle_id": "oracle_expected_actual",
+        "expected": "expected_contract_output",
+        "actual": "actual_contract_output",
+        "outcome": "PASS",
+    }
+    node = link_assertion(assertion, seq_index={1: "dummy_hash"}, fallback_seq=1)
+    assert node["expected"] == "expected_contract_output"
+    assert node["actual"] == "actual_contract_output"

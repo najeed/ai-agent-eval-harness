@@ -243,6 +243,15 @@ class InProcessExecutionBackend(ExecutionBackend):
                         else:
                             self._active_runs[run_id]["status"] = "COMPLETED"
                         self._active_runs[run_id]["results"] = results
+                try:
+                    from eval_runner.run_index import update_run_index_status
+
+                    if cancel_ev.is_set():
+                        update_run_index_status(run_id, "ABORTED")
+                    else:
+                        update_run_index_status(run_id, "COMPLETED")
+                except Exception as idx_err:
+                    logger.debug("Failed updating run index on completion: %s", idx_err)
                 return results
             except RunSuspendedForApproval as susp:
                 logger.info("Run %s entered durable suspension: %s", run_id, susp)
@@ -252,6 +261,12 @@ class InProcessExecutionBackend(ExecutionBackend):
                         self._active_runs[run_id]["approval_token"] = susp.approval_token
                         self._active_runs[run_id]["checkpoint_id"] = susp.checkpoint_id
                         self._active_runs[run_id]["resumption_checkpoint"] = susp.checkpoint
+                try:
+                    from eval_runner.run_index import update_run_index_status
+
+                    update_run_index_status(run_id, "PAUSED_FOR_APPROVAL")
+                except Exception as idx_err:
+                    logger.debug("Failed updating run index on suspension: %s", idx_err)
                 return {
                     "status": "PAUSED_FOR_APPROVAL",
                     "run_id": run_id,
@@ -264,6 +279,36 @@ class InProcessExecutionBackend(ExecutionBackend):
                     if run_id in self._active_runs:
                         self._active_runs[run_id]["status"] = "FAILED"
                         self._active_runs[run_id]["error"] = str(e)
+                try:
+                    from eval_runner import config
+                    from eval_runner.run_index import read_run_index, update_run_index_status
+
+                    update_run_index_status(run_id, "FAILED")
+                    manifest_path = config.RUN_LOG_DIR / run_id / "run_manifest.json"
+                    if not manifest_path.exists():
+                        idx_rec = read_run_index(run_id) or {}
+                        failed_manifest = {
+                            "run_id": run_id,
+                            "scenario_id": str(
+                                scenario_data.get("id")
+                                or scenario_data.get("metadata", {}).get("name")
+                                or run_id
+                            ),
+                            "status": "FAILED",
+                            "error": str(e),
+                            "attempts": kwargs.get("attempts", 1),
+                            "pass_at_k": 0.0,
+                            "results": [],
+                            "context": idx_rec.get("context", {}),
+                        }
+                        if self._run_store and hasattr(self._run_store, "save_run_manifest"):
+                            self._run_store.save_run_manifest(run_id, failed_manifest)
+                        else:
+                            from eval_runner.reference.local_run_store import LocalFileRunStore
+
+                            LocalFileRunStore().save_run_manifest(run_id, failed_manifest)
+                except Exception as save_err:
+                    logger.debug("Failed saving failed manifest in inprocess_backend: %s", save_err)
                 if not background:
                     raise
 
@@ -298,6 +343,12 @@ class InProcessExecutionBackend(ExecutionBackend):
             if run_id in self._active_runs:
                 self._active_runs[run_id]["status"] = "ABORTED"
                 self._active_runs[run_id]["cancel_reason"] = reason or "Cancelled by user"
+                try:
+                    from eval_runner.run_index import update_run_index_status
+
+                    update_run_index_status(run_id, "ABORTED")
+                except Exception as idx_err:
+                    logger.debug("Failed updating run index on cancel: %s", idx_err)
                 return True
             return False
 

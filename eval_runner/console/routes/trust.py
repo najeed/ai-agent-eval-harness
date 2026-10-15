@@ -436,6 +436,7 @@ def publish_extension_bundle():
             version=str(data.get("version") or ""),
             private_key_pem=_private_key_pem_bytes,
             manifest_declaration=data.get("manifest"),
+            activate=bool(data.get("activate", False)),
         )
     except (OSError, ValueError) as exc:
         logger.warning("[Extensions] publish rejected: %s", exc)
@@ -507,6 +508,68 @@ def repair_extension_bundle():
     except (OSError, ValueError) as exc:
         logger.warning("[Extensions] repair rejected: %s", exc)
         return jsonify({"error": str(exc)}), 400
+
+
+@trust_bp.route("/v1/extensions/activate", methods=["POST"])
+@require_permission(Permission.CERTIFY_WRITE)
+def activate_extension_bundle():
+    from eval_runner.console.extension_publisher import activate_extension
+
+    data = request.json or {}
+    extension_id = data.get("extension_id")
+    version = data.get("extension_version") or data.get("version")
+    publisher = data.get("publisher")
+    if not isinstance(extension_id, str) or not isinstance(version, str):
+        return jsonify({"error": "extension_id and extension_version are required"}), 400
+    try:
+        res = activate_extension(
+            extension_id=extension_id,
+            version=version,
+            publisher=publisher,
+            public_key_pem=_public_key_pem_bytes,
+        )
+        return jsonify(res), 200
+    except (OSError, ValueError) as exc:
+        logger.warning("[Extensions] activate rejected: %s", exc)
+        return jsonify({"error": str(exc)}), 400
+
+
+@trust_bp.route("/v1/extensions/rollback", methods=["POST"])
+@require_permission(Permission.CERTIFY_WRITE)
+def rollback_extension_bundle():
+    from eval_runner.console.extension_publisher import rollback_extension
+
+    data = request.json or {}
+    extension_id = data.get("extension_id")
+    version = data.get("extension_version") or data.get("version")
+    publisher = data.get("publisher")
+    if not isinstance(extension_id, str) or not isinstance(version, str):
+        return jsonify({"error": "extension_id and extension_version are required"}), 400
+    try:
+        res = rollback_extension(
+            extension_id=extension_id,
+            version=version,
+            publisher=publisher,
+            public_key_pem=_public_key_pem_bytes,
+        )
+        return jsonify(res), 200
+    except (OSError, ValueError) as exc:
+        logger.warning("[Extensions] rollback rejected: %s", exc)
+        return jsonify({"error": str(exc)}), 400
+
+
+@trust_bp.route("/v1/extensions/active", methods=["GET"])
+def get_active_extensions_endpoint():
+    from eval_runner.console.extension_publisher import get_active_release, list_active_releases
+
+    extension_id = request.args.get("extension_id")
+    publisher = request.args.get("publisher")
+    if extension_id:
+        active = get_active_release(extension_id=extension_id, publisher=publisher)
+        if not active:
+            return jsonify({"status": "not_found", "extension_id": extension_id}), 404
+        return jsonify(active), 200
+    return jsonify(list_active_releases()), 200
 
 
 @trust_bp.route("/v1/extensions/verify-publisher", methods=["POST"])

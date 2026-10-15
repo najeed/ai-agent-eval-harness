@@ -46,8 +46,10 @@ def _add_pqc_args(parser: argparse.ArgumentParser):
 def _dispatch_console(args):
     if getattr(args, "console_command", None) == "extension":
         from .console.extension_publisher import (
+            activate_extension,
             publish_extension,
             repair_extension,
+            rollback_extension,
             unpublish_extension,
             verify_extension,
         )
@@ -74,6 +76,20 @@ def _dispatch_console(args):
                 version=args.extension_version,
                 public_key_pem=_public_key_pem_bytes,
             )
+        elif args.extension_command == "activate":
+            descriptor = activate_extension(
+                extension_id=args.extension_id,
+                version=args.extension_version,
+                publisher=getattr(args, "publisher", None),
+                public_key_pem=_public_key_pem_bytes,
+            )
+        elif args.extension_command == "rollback":
+            descriptor = rollback_extension(
+                extension_id=args.extension_id,
+                version=args.extension_version,
+                publisher=getattr(args, "publisher", None),
+                public_key_pem=_public_key_pem_bytes,
+            )
         else:
             descriptor = publish_extension(
                 entry=Path(args.entry),
@@ -86,6 +102,7 @@ def _dispatch_console(args):
                     if args.manifest
                     else None
                 ),
+                activate=bool(getattr(args, "activate", False)),
             )
         print(json.dumps(descriptor, sort_keys=True))
         return 0
@@ -390,6 +407,24 @@ Usage: agentv <command> [options]
     publish_parser.add_argument(
         "--manifest", help="Validated generic extension manifest declaration JSON"
     )
+    publish_parser.add_argument(
+        "--activate",
+        action="store_true",
+        default=False,
+        help="Atomically activate this release upon successful publish",
+    )
+    activate_parser = extension_subparsers.add_parser(
+        "activate", help="Atomically activate an installed verified extension version"
+    )
+    activate_parser.add_argument("--extension-id", required=True)
+    activate_parser.add_argument("--extension-version", required=True, dest="extension_version")
+    activate_parser.add_argument("--publisher", default=None)
+    rollback_parser = extension_subparsers.add_parser(
+        "rollback", help="Atomically roll back to a retained verified extension version"
+    )
+    rollback_parser.add_argument("--extension-id", required=True)
+    rollback_parser.add_argument("--extension-version", required=True, dest="extension_version")
+    rollback_parser.add_argument("--publisher", default=None)
     unpublish_parser = extension_subparsers.add_parser(
         "unpublish", help="Atomically withdraw a published extension version"
     )

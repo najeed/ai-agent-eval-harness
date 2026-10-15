@@ -18,6 +18,7 @@ from agentv_runtime.extension_contract import (
     EXTENSION_CONTRACT_VERSION,
     ExtensionContractError,
     ExtensionLifecycle,
+    ExtensionNavigation,
     ExtensionRoute,
     RuntimeExtension,
     is_compatible,
@@ -57,6 +58,7 @@ def test_package_root_reexports_contract_surface():
     for name in (
         "RuntimeExtension",
         "ExtensionRoute",
+        "ExtensionNavigation",
         "ExtensionLifecycle",
         "ExtensionContractError",
         "EXTENSION_CONTRACT_VERSION",
@@ -117,6 +119,57 @@ def test_validate_enforces_semver_and_absolute_routes():
     violations = RuntimeExtension.from_dict(bad).validate(require_signature=False)
     assert any("SemVer" in v for v in violations)
     assert any("absolute" in v for v in violations)
+
+
+def test_routes_are_mountable_without_presentation_and_navigation_is_signed():
+    manifest = {
+        **VALID_MANIFEST,
+        "routes": [{"path": "/generic", "required_permissions": ["runs:read"]}],
+        "navigation": [
+            {
+                "path": "/generic",
+                "id": "generic-nav",
+                "title": "Generic",
+                "icon": "shield",
+                "group": "Extensions",
+                "badge": "NEW",
+                "provenance": "publisher",
+            }
+        ],
+    }
+    extension = RuntimeExtension.from_dict(manifest)
+    assert extension.validate() == []
+    assert isinstance(extension.navigation[0], ExtensionNavigation)
+    published_route = extension.to_dict()["routes"][0]
+    assert "label" not in published_route
+    assert "required_role" not in published_route
+    assert b'"badge":"NEW"' in extension.canonical_bytes()
+    assert b'"required_role":null' not in extension.canonical_bytes()
+    assert (
+        extension.canonical_bytes()
+        != RuntimeExtension.from_dict(
+            {**manifest, "navigation": [{**manifest["navigation"][0], "icon": "activity"}]}
+        ).canonical_bytes()
+    )
+
+
+def test_duplicate_signed_route_or_navigation_metadata_is_rejected():
+    duplicate_route = RuntimeExtension.from_dict(
+        {**VALID_MANIFEST, "routes": [{"path": "/generic"}, {"path": "/generic"}]}
+    )
+    assert any("Duplicate route path" in item for item in duplicate_route.validate())
+    duplicate_navigation = RuntimeExtension.from_dict(
+        {
+            **VALID_MANIFEST,
+            "navigation": [
+                {"path": "/acme/fleet", "id": "duplicate"},
+                {"path": "/acme/fleet", "id": "duplicate"},
+            ],
+        }
+    )
+    violations = duplicate_navigation.validate()
+    assert any("Duplicate navigation path" in item for item in violations)
+    assert any("Duplicate navigation id" in item for item in violations)
 
 
 # ---------------------------------------------------------------------------
@@ -247,3 +300,129 @@ def test_versions_namespace_is_single_source():
     assert ir_mod.EXECUTION_IR_VERSION == V.EXECUTION_IR_VERSION == "2.0.0"
     assert verifier_mod.VC_V3_SCHEMA_VERSION == V.VC_SCHEMA_VERSION == "3.0.0"
     assert ev.VERIFICATION_PACKAGE_VERSION == V.VERIFICATION_PACKAGE_VERSION
+
+
+def test_extension_contract_parse_semver_invalid_int():
+    with pytest.raises(ValueError, match="Not a SemVer core"):
+        parse_semver("1.invalid.0")
+
+
+def test_runtime_extension_from_dict_non_dict():
+    with pytest.raises(ExtensionContractError, match="manifest must be an object"):
+        RuntimeExtension.from_dict(["not", "a", "dict"])
+
+
+def test_runtime_extension_validation_missing_core_fields_and_bad_types():
+    # Missing required core fields
+    ext_missing = RuntimeExtension.from_dict(
+        {
+            "extension_id": "",
+            "display_name": "",
+            "version": "",
+            "remote_entry": "",
+            "sri_hash": "",
+        }
+    )
+    v = ext_missing.validate()
+    assert any("extension_id and display_name are required" in msg for msg in v)
+    assert any("version is required" in msg for msg in v)
+    assert any("remote_entry is required" in msg for msg in v)
+    assert any("sri_hash (integrity digest) is required" in msg for msg in v)
+
+
+def test_runtime_extension_validation_routes_and_slots_and_chunks():
+    base = _base_valid_manifest()
+
+    # Routes declared without "routes" or "navigation" in capabilities
+    m_no_route_cap = {
+        **base,
+        "capabilities": ["runs:read"],
+        "routes": [{"path": "/test/path"}],
+    }
+    v1 = RuntimeExtension.from_dict(m_no_route_cap).validate()
+    assert any('Manifest declares routes but does not declare "routes"' in msg for msg in v1)
+
+    # Slot validation
+    m_bad_slot = {**base, "slot": "sidebar"}
+    v2 = RuntimeExtension.from_dict(m_bad_slot).validate()
+    assert any("Unknown extension slot" in msg for msg in v2)
+
+    m_header_no_cap = {**base, "slot": "header", "capabilities": ["routes", "navigation"]}
+    v3 = RuntimeExtension.from_dict(m_header_no_cap).validate()
+    assert any('Header slot requires the "header" capability' in msg for msg in v3)
+
+    # react_peer and verified_chunks type violations
+    m_bad_types = {
+        **base,
+        "react_peer": "not_a_bool",
+        "verified_chunks": "not_a_dict",
+    }
+    v4 = RuntimeExtension.from_dict(m_bad_types).validate()
+    assert any("react_peer must be a boolean" in msg for msg in v4)
+    assert any("verified_chunks must be a map" in msg for msg in v4)
+
+    # verified_chunks unsafe path and integrity checks
+    m_bad_chunks = {
+        **base,
+        "verified_chunks": {
+            "/absolute/path.js": "sha3-256-abc",
+            "../traversal.js": "sha3-256-abc",
+            "safe.js": "sha256-wrong-prefix",
+        },
+    }
+    v5 = RuntimeExtension.from_dict(m_bad_chunks).validate()
+    assert any("verified_chunks path must be a safe relative path" in msg for msg in v5)
+    assert any("verified_chunks integrity must be sha3-256 SRI" in msg for msg in v5)
+
+
+def test_runtime_extension_validation_route_and_navigation_details():
+    base = _base_valid_manifest()
+
+    # Route bad label and bad permissions
+    m_route_details = {
+        **base,
+        "routes": [
+            {"path": "/acme/fleet", "label": 12345, "required_permissions": [123]},
+        ],
+    }
+    v1 = RuntimeExtension.from_dict(m_route_details).validate()
+    assert any("Route label must be a string" in msg for msg in v1)
+    assert any("Route permissions must be non-empty strings" in msg for msg in v1)
+
+    # Navigation path not matching route, bad id, duplicate id, bad string fields, bad icon
+    m_nav_details = {
+        **base,
+        "navigation": [
+            {
+                "path": "/acme/fleet",
+                "id": "",
+                "title": 123,
+                "icon": "",
+            },
+            {
+                "path": "/acme/unknown",
+                "id": "dup_id",
+            },
+            {
+                "path": "/acme/fleet",
+                "id": "dup_id",
+            },
+            {
+                "path": "/acme/fleet",
+                "title": "Fleet Overview",
+            },
+        ],
+    }
+    v2 = RuntimeExtension.from_dict(m_nav_details).validate()
+    assert any("Navigation path must name a declared route" in msg for msg in v2)
+    assert any("Navigation id must be a non-empty string" in msg for msg in v2)
+    assert any("Navigation title must be a string when supplied" in msg for msg in v2)
+    assert any("Navigation icon must be a non-empty string when supplied" in msg for msg in v2)
+
+
+def test_validate_remote_module_exports_non_dict_manifest():
+    class DummyModule:
+        default = "not-a-dict-manifest"
+
+    violations = validate_remote_module_exports(DummyModule)
+    assert violations == []

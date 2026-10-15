@@ -1,3 +1,4 @@
+import logging
 import os
 import socket
 from urllib.parse import urlparse
@@ -6,6 +7,8 @@ import requests
 
 from .events import CoreEvents
 from .plugins import BaseEvalPlugin
+
+logger = logging.getLogger(__name__)
 
 
 def is_safe_url(url_str: str) -> bool:
@@ -53,6 +56,76 @@ class RemoteBridgePlugin(BaseEvalPlugin):
                 return
 
         self.active = None  # Unknown
+        self._denied_diagnostic_emitted = False
+
+    def _resolve_service_headers(self) -> dict[str, str]:
+        """
+        Resolves generic server-side machine credentials for the background bridge client.
+        Prioritizes the active configured authorization backend and SERVICE_API_KEY
+        over legacy static DASHBOARD_API_KEY.
+        Never copies browser session cookies, user handoff tokens, tenant headers,
+        or URL query parameters into background Runtime traffic.
+        """
+        headers: dict[str, str] = {}
+        cred: str | None = None
+
+        # 1. Attempt to resolve from active configured authorization backend
+        try:
+            from .console.auth_manager import (
+                get_auth_provider,
+                has_configured_authorization_backend,
+            )
+
+            if has_configured_authorization_backend():
+                provider = get_auth_provider()
+                if hasattr(provider, "get_service_credential") and callable(
+                    provider.get_service_credential
+                ):
+                    cred = provider.get_service_credential()
+        except (ImportError, AttributeError, RuntimeError) as exc:
+            logger.debug("Failed resolving bridge credential from auth provider: %s", exc)
+            cred = None
+
+        # 2. Check deployment-secret variable SERVICE_API_KEY
+        if not cred:
+            env_service = os.getenv("SERVICE_API_KEY")
+            if env_service and env_service.strip():
+                cred = env_service.strip()
+
+        # 3. Compatible fallback to deployment-configured static DASHBOARD_API_KEY
+        if not cred:
+            from . import config
+
+            configured_key = getattr(config, "DASHBOARD_API_KEY", None) or os.getenv(
+                "DASHBOARD_API_KEY"
+            )
+            if configured_key and str(configured_key).strip():
+                cred = str(configured_key).strip()
+
+        if cred and isinstance(cred, str) and cred.strip():
+            clean_cred = cred.strip()
+            if clean_cred.startswith("Bearer "):
+                headers["Authorization"] = clean_cred
+            else:
+                headers["X-AES-API-KEY"] = clean_cred
+
+        return headers
+
+    def _handle_denied_response(self, status_code: int) -> None:
+        """
+        Emits exactly one rate-limited diagnostic per bridge instance
+        and disables further traffic.
+        """
+        self.active = False
+        if not getattr(self, "_denied_diagnostic_emitted", False):
+            self._denied_diagnostic_emitted = True
+            reason = "Unauthenticated (401)" if status_code == 401 else "Unauthorized (403)"
+            print(
+                f"[RemoteBridgePlugin] Bridge access denied ({reason}): "
+                f"Service principal missing or lacks required debugger permissions for "
+                f"{self.endpoint}. Disabling further bridge traffic for this instance.",
+                flush=True,
+            )
 
     def _check_console_active(self):
         """Perform a heartbeat check to see if the Visual Debugger is alive."""
@@ -69,24 +142,18 @@ class RemoteBridgePlugin(BaseEvalPlugin):
             self.active = False
             return False
 
-        from . import config
-
-        headers = {}
-        if config.DASHBOARD_API_KEY:
-            headers["X-AES-API-KEY"] = config.DASHBOARD_API_KEY
+        headers = self._resolve_service_headers()
 
         try:
             # We use a simple GET on the state endpoint as a heartbeat
             response = requests.get(self.endpoint, headers=headers, timeout=0.2)
             # 200 (Success) means the console is active and accessible.
-            # 401 (Unauthorized) means we have no access, so we should stay inactive to stop looping., E501, E501  # noqa: E501
-            if response.status_code == 401:
-                print(
-                    f"[RemoteBridgePlugin] Unauthorized: Invalid or missing API Key for {self.endpoint}"  # noqa: E501
-                )
-                self.active = False
-            else:
-                self.active = response.status_code == 200
+            # 401/403 (Denied) means unauthenticated or unauthorized;
+            # disable bridge and halt looping.
+            if response.status_code in (401, 403):
+                self._handle_denied_response(response.status_code)
+                return False
+            self.active = response.status_code == 200
         except Exception:
             self.active = False
         return self.active
@@ -100,11 +167,7 @@ class RemoteBridgePlugin(BaseEvalPlugin):
             if not self._check_console_active():
                 return
 
-        from . import config
-
-        headers = {}
-        if config.DASHBOARD_API_KEY:
-            headers["X-AES-API-KEY"] = config.DASHBOARD_API_KEY
+        headers = self._resolve_service_headers()
 
         try:
             response = requests.post(
@@ -113,9 +176,8 @@ class RemoteBridgePlugin(BaseEvalPlugin):
                 json={"event": event_name, "data": data},
                 timeout=0.5,
             )
-            if response.status_code == 401:
-                print("[RemoteBridgePlugin] Unauthorized: Disabling bridge for this run.")
-                self.active = False
+            if response.status_code in (401, 403):
+                self._handle_denied_response(response.status_code)
         except Exception:
             # If the console dies, stop trying for this run
             self.active = False

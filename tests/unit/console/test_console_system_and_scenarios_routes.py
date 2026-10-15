@@ -203,6 +203,106 @@ def test_navigation_registry_delivery(client):
         assert res.get_json()["nav"] == ["item1", "item2"]
 
 
+def test_nav_extension_inventory_paired_registration_deduplication(client):
+    """Verify paired registrations merge into one canonical item with declared relationships."""
+    paired_nav = [
+        {
+            "id": "audit-server-comp",
+            "name": "Audit Component",
+            "path": "/audit",
+            "type": "component",
+            "componentName": "AuditPluginView",
+            "capabilityId": "compliance_audit",
+            "extensionId": "com.enterprise.audit",
+        },
+        {
+            "id": "audit-remote-ext",
+            "name": "Audit Extension",
+            "path": "/audit",
+            "remoteEntry": "/extensions/audit/entry.mjs",
+            "sriHash": "sha3-256-audit999",
+            "capabilityId": "compliance_audit",
+            "extensionId": "com.enterprise.audit",
+            "publisher": "Enterprise Corp",
+            "version": "1.4.0",
+            "tier": "official",
+        },
+    ]
+    with patch.dict(client.application.config, {"NAV_REGISTRY": paired_nav}):
+        # Default /api/nav de-duplicates the extension capability
+        res = client.get("/api/nav")
+        assert res.status_code == 200
+        data = res.get_json()
+        assert len(data["nav"]) == 1
+        canonical = data["nav"][0]
+        assert canonical["capabilityId"] == "compliance_audit"
+        assert canonical["extensionId"] == "com.enterprise.audit"
+        assert canonical["registrationKind"] == "remote_extension"
+        assert canonical["remoteEntry"] == "/extensions/audit/entry.mjs"
+        assert canonical["componentName"] == "AuditPluginView"
+        assert canonical["sriHash"] == "sha3-256-audit999"
+        assert canonical["publisher"] == "Enterprise Corp"
+        assert canonical["version"] == "1.4.0"
+        assert canonical["trustTier"] == "official"
+        assert "audit-server-comp" in canonical["relatedRegistrationIds"]
+        assert "audit-remote-ext" in canonical["relatedRegistrationIds"]
+
+
+def test_nav_extension_inventory_view_and_navigation_detail_deduplication(client):
+    """Verify ?view=inventory returns only canonical extensions and collapses nav details."""
+    multi_nav = [
+        {"id": "dashboard", "title": "Dashboard", "path": "/", "type": "internal"},
+        {
+            "id": "ops-dashboard",
+            "title": "Ops Dashboard",
+            "path": "/ops",
+            "remoteEntry": "/extensions/ops/entry.js",
+            "capabilityId": "ops",
+            "extensionId": "com.enterprise.ops",
+            "version": "2.0.0",
+        },
+        {
+            "id": "ops-settings",
+            "title": "Ops Settings",
+            "path": "/ops/settings",
+            "remoteEntry": "/extensions/ops/entry.js",
+            "capabilityId": "ops",
+            "extensionId": "com.enterprise.ops",
+            "version": "2.0.0",
+        },
+        {
+            "id": "health-comp",
+            "title": "Health Status",
+            "path": "/health",
+            "type": "component",
+            "componentName": "HealthWidget",
+            "capabilityId": "health",
+        },
+    ]
+    with patch.dict(client.application.config, {"NAV_REGISTRY": multi_nav}):
+        # Query view=inventory: filters out core nav and returns canonical extension inventory
+        res = client.get("/api/nav?view=inventory")
+        assert res.status_code == 200
+        data = res.get_json()
+        assert len(data["nav"]) == 2  # exactly 2 distinct capabilities (ops and health)
+
+        by_cap = {item["capabilityId"]: item for item in data["nav"]}
+        assert "ops" in by_cap
+        assert "health" in by_cap
+
+        ops = by_cap["ops"]
+        assert ops["registrationKind"] == "remote_extension"
+        assert ops["remoteEntry"] == "/extensions/ops/entry.js"
+        assert "ops-dashboard" in ops["relatedRegistrationIds"]
+        assert "ops-settings" in ops["relatedRegistrationIds"]
+
+        health = by_cap["health"]
+        assert health["registrationKind"] == "server_component"
+        assert health["componentName"] == "HealthWidget"
+        assert health.get("remoteEntry") is None
+        assert "health-comp" in health["relatedRegistrationIds"]
+
+
 def test_list_docs_categorization_and_hidden_file_filtering(client, console_jail):
     """Verify list_docs categorizes documentation and filters hidden directories."""
     docs_dir = console_jail["docs"]
@@ -969,12 +1069,12 @@ def test_debugger_state_path_traversal_and_auth_hardening(client, console_jail, 
     # 5. Auth verification without bypass
     monkeypatch.delenv("AGENTV_TEST_AUTH_BYPASS", raising=False)
     res_unauth_get = client.get("/api/debugger/state")
-    assert res_unauth_get.status_code == 403
+    assert res_unauth_get.status_code == 401
 
     res_unauth_post = client.post("/api/debugger/state", json={"event": "debug"})
-    assert res_unauth_post.status_code == 403
+    assert res_unauth_post.status_code == 401
 
-    # Authenticated via mock provider
+    # Authenticated via mock provider with permissions
     mock_provider = MagicMock()
     mock_provider.verify_token.return_value = {
         "id": "user1",
@@ -982,6 +1082,12 @@ def test_debugger_state_path_traversal_and_auth_hardening(client, console_jail, 
         "permissions": ["debugger:event", "debugger:read"],
     }
     mock_provider.has_permission.return_value = True
+
+    mock_provider.authenticate.return_value = {
+        "id": "key_user",
+        "role": "Service Principal",
+        "permissions": ["debugger:event", "debugger:read"],
+    }
 
     with patch("eval_runner.console.auth_manager.get_auth_provider", return_value=mock_provider):
         res_auth_get = client.get(
@@ -996,6 +1102,45 @@ def test_debugger_state_path_traversal_and_auth_hardening(client, console_jail, 
             headers={"Authorization": "Bearer valid-token"},
         )
         assert res_auth_post.status_code == 200
+
+        # Also test API key authentication via X-AES-API-KEY header
+        res_key_get = client.get(
+            "/api/debugger/state",
+            headers={"X-AES-API-KEY": "valid-api-key"},
+        )
+        assert res_key_get.status_code == 200
+
+        res_key_post = client.post(
+            "/api/debugger/state",
+            json={"event": "debug_api_key_ok"},
+            headers={"X-AES-API-KEY": "valid-api-key"},
+        )
+        assert res_key_post.status_code == 200
+
+    # Authenticated user lacking permissions returns 403
+    mock_noperm_provider = MagicMock()
+    mock_noperm_provider.verify_token.return_value = {
+        "id": "user_noperm",
+        "role": "Viewer",
+        "permissions": ["identity:read"],
+    }
+    mock_noperm_provider.has_permission.return_value = False
+
+    with patch(
+        "eval_runner.console.auth_manager.get_auth_provider", return_value=mock_noperm_provider
+    ):
+        res_noperm_get = client.get(
+            "/api/debugger/state",
+            headers={"Authorization": "Bearer valid-token"},
+        )
+        assert res_noperm_get.status_code == 403
+
+        res_noperm_post = client.post(
+            "/api/debugger/state",
+            json={"event": "debug_noperm"},
+            headers={"Authorization": "Bearer valid-token"},
+        )
+        assert res_noperm_post.status_code == 403
 
     # 6. SessionManager.fork() state propagation verification
     scenario = {"metadata": {"id": "fork_test"}, "workflow": {"nodes": [{"id": "n1"}]}}

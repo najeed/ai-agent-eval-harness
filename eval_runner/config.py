@@ -224,6 +224,235 @@ class RegistryManager:
         _SHIM_REGISTRY_CACHE = registry
         return registry
 
+    @classmethod
+    def resolve_detailed(
+        cls,
+        provider_name: str = "eval_runner.config.RegistryManager",
+        fail_closed: bool | None = None,
+    ):
+        """Returns a generic read-only DetailedResolutionResult for RegistryManager."""
+        import hashlib
+        from typing import Any
+
+        from agentv_runtime.config import (
+            ConfigDiagnosticError,
+            ConfigKeyDiagnostic,
+            ConfigResolutionError,
+            ConfigSourceContributor,
+            DetailedResolutionResult,
+            classify_sensitivity,
+            redact_sensitive_value,
+        )
+
+        errors: list[ConfigDiagnosticError] = []
+        precedence_order = ["internal_baseline", "filesystem_discovery", "env_override"]
+
+        raw_merged: dict[str, Any] = {"shims": {}, "forensics": {}}
+        contributors_by_key: dict[str, list[ConfigSourceContributor]] = {}
+
+        def record_contributions(
+            prefix: str, data: Any, source_type: str, source_name: str
+        ) -> None:
+            if isinstance(data, dict):
+                for k, v in data.items():
+                    full_k = f"{prefix}.{k}" if prefix else k
+                    record_contributions(full_k, v, source_type, source_name)
+            else:
+                redacted_val = redact_sensitive_value(prefix, data)
+                contributor = ConfigSourceContributor(
+                    source_type=source_type,
+                    source_name=source_name,
+                    value=redacted_val,
+                    applied=False,
+                )
+                contributors_by_key.setdefault(prefix, []).append(contributor)
+
+        # 1. Internal Package Baseline (Sanctioned Core)
+        if SHIM_RESOURCES_INTERNAL_PATH.exists():
+            try:
+                with open(SHIM_RESOURCES_INTERNAL_PATH, encoding="utf-8") as f:
+                    content = json.load(f)
+                    if isinstance(content, dict):
+                        RegistryManager._deep_merge(raw_merged, content)
+                        record_contributions(
+                            "",
+                            content,
+                            "internal_baseline",
+                            f"file:{SHIM_RESOURCES_INTERNAL_PATH.name}",
+                        )
+                    elif content is not None:
+                        errors.append(
+                            ConfigDiagnosticError(
+                                source=f"file:{SHIM_RESOURCES_INTERNAL_PATH}",
+                                error_type="malformed_file",
+                                message="Root of internal baseline must be a dictionary",
+                            )
+                        )
+            except Exception as e:
+                logger.debug("Failed loading internal baseline in resolve_detailed: %s", e)
+                errors.append(
+                    ConfigDiagnosticError(
+                        source=f"file:{SHIM_RESOURCES_INTERNAL_PATH}",
+                        error_type="parse_error",
+                        message=f"Failed to parse internal baseline: {e}",
+                    )
+                )
+
+        # 2. Universal Config Discovery (.aes/config/*)
+        if AES_CONFIG_DIR.exists() and AES_CONFIG_DIR.is_dir():
+            affinity_map = {
+                "forensics": "forensics",
+                "forensics.d": "forensics",
+                "routing": "routing",
+                "routing.d": "routing",
+                "shims.d": "shims",
+                "plugins": "plugins",
+                "adapters": "adapters",
+                "adapters.d": "adapters",
+            }
+            subdirs = sorted([d for d in AES_CONFIG_DIR.iterdir() if d.is_dir()])
+            for d_dir in subdirs:
+                affinity_key = affinity_map.get(d_dir.name)
+                paths = sorted(
+                    list(d_dir.glob("*.json"))
+                    + list(d_dir.glob("*.yaml"))
+                    + list(d_dir.glob("*.yml"))
+                )
+                for path in paths:
+                    try:
+                        content_str = path.read_text(encoding="utf-8")
+                        if path.suffix in [".yaml", ".yml"]:
+                            import yaml
+
+                            ext = yaml.safe_load(content_str)
+                        else:
+                            ext = json.loads(content_str)
+
+                        if isinstance(ext, dict):
+                            if affinity_key:
+                                if affinity_key in ext:
+                                    c_val = ext[affinity_key]
+                                else:
+                                    c_val = ext
+                                if (
+                                    affinity_key == "routing"
+                                    and isinstance(c_val, dict)
+                                    and "mappings" not in c_val
+                                ):
+                                    c_val = {"mappings": c_val}
+                                ext = {affinity_key: c_val}
+
+                            RegistryManager._deep_merge(raw_merged, ext)
+                            record_contributions(
+                                "",
+                                ext,
+                                "filesystem_discovery",
+                                f"file:{d_dir.name}/{path.name}",
+                            )
+                        elif ext is not None:
+                            errors.append(
+                                ConfigDiagnosticError(
+                                    source=f"file:{d_dir.name}/{path.name}",
+                                    error_type="malformed_file",
+                                    message=f"Root of config file {path.name} must be a dictionary",
+                                )
+                            )
+                    except Exception as e:
+                        logger.debug("Failed parsing config file in resolve_detailed: %s", e)
+                        errors.append(
+                            ConfigDiagnosticError(
+                                source=f"file:{d_dir.name}/{path.name}",
+                                error_type="parse_error",
+                                message=f"Failed to parse configuration: {e}",
+                            )
+                        )
+
+        # 3. Environment Overrides (Ultimate Authority)
+        env_json = os.getenv("AES_SHIM_RESOURCES_JSON")
+        if env_json:
+            try:
+                env_override = json.loads(env_json)
+                if isinstance(env_override, dict):
+                    RegistryManager._deep_merge(raw_merged, env_override)
+                    record_contributions(
+                        "",
+                        env_override,
+                        "env_override",
+                        "env:AES_SHIM_RESOURCES_JSON",
+                    )
+                else:
+                    errors.append(
+                        ConfigDiagnosticError(
+                            source="env:AES_SHIM_RESOURCES_JSON",
+                            error_type="invalid_env_override",
+                            message="AES_SHIM_RESOURCES_JSON must be a JSON object",
+                            raw_value=env_json,
+                        )
+                    )
+            except Exception as e:
+                logger.debug("Failed parsing AES_SHIM_RESOURCES_JSON in resolve_detailed: %s", e)
+                errors.append(
+                    ConfigDiagnosticError(
+                        source="env:AES_SHIM_RESOURCES_JSON",
+                        error_type="invalid_env_override",
+                        message=f"Failed to parse AES_SHIM_RESOURCES_JSON: {e}",
+                        raw_value=env_json,
+                    )
+                )
+
+        # Mark applied contributors & construct key entries
+        entries: dict[str, ConfigKeyDiagnostic] = {}
+        for canonical_key, contrib_list in contributors_by_key.items():
+            if contrib_list:
+                contrib_list[-1].applied = True
+
+            parts = canonical_key.split(".")
+            val: Any = raw_merged
+            found = True
+            for part in parts:
+                if isinstance(val, dict) and part in val:
+                    val = val[part]
+                else:
+                    found = False
+                    break
+
+            effective_val = val if found else (contrib_list[-1].value if contrib_list else None)
+            redacted_eff = redact_sensitive_value(canonical_key, effective_val)
+            sensitivity, is_sec = classify_sensitivity(canonical_key)
+
+            entries[canonical_key] = ConfigKeyDiagnostic(
+                canonical_key=canonical_key,
+                effective_value=redacted_eff,
+                contributors=contrib_list,
+                validation_diagnostics=[],
+                sensitivity=sensitivity,
+                is_secret=is_sec,
+            )
+
+        sanitized_merged = cls._redact_sensitive_data(raw_merged)
+        fp_bytes = json.dumps(sanitized_merged, sort_keys=True, default=str).encode("utf-8")
+        snapshot_fingerprint = hashlib.sha256(fp_bytes).hexdigest()
+
+        should_fail_closed = is_production() if fail_closed is None else fail_closed
+        if should_fail_closed and errors:
+            msg = (
+                f"RegistryManager resolution failed in fail-closed mode with {len(errors)} error(s)"
+            )
+            raise ConfigResolutionError(
+                msg,
+                errors=errors,
+            )
+
+        return DetailedResolutionResult(
+            provider_name=provider_name,
+            precedence_order=precedence_order,
+            snapshot_fingerprint=snapshot_fingerprint,
+            entries=entries,
+            errors=errors,
+            effective_snapshot=sanitized_merged,
+            is_valid=len(errors) == 0,
+        )
+
     @staticmethod
     def reload():
         """Clears the internal cache, forcing a re-load of the registry state."""

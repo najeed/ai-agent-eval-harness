@@ -294,6 +294,13 @@ class AuthorizationBackend(ABC):
         """Checks if the principal is authorized to perform action on resource."""
         raise NotImplementedError
 
+    def get_service_credential(self) -> str | None:
+        """
+        Returns a configured machine/service credential for server-to-server operations.
+        Returns None if not configured or not supported.
+        """
+        return None
+
 
 # ==============================================================================
 # 7. CatalogStore Contract

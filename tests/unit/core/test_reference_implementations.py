@@ -1673,6 +1673,22 @@ class TestAuthAndCatalogExtraBranches:
         assert principals[0]["principal_id"] == "root-admin"
         assert "key_preview" in principals[0]
 
+        # 5. Service credential resolution
+        assert backend.get_service_credential() == "k1"
+        assert backend2.get_service_credential() is None
+        assert backend4.get_service_credential() == backend4.master_key
+
+        from agentv_runtime.interfaces import AuthorizationBackend
+
+        class MinimalAuth(AuthorizationBackend):
+            def validate_token(self, token: str):
+                return None
+
+            def check_permission(self, principal, permission):
+                return False
+
+        assert MinimalAuth().get_service_credential() is None
+
     def test_inprocess_backend_complete_branches(self, tmp_path):
         import threading
         from uuid import uuid4

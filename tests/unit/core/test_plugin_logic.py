@@ -837,3 +837,18 @@ def test_plugin_provenance_duplicate_and_root_discovery():
     prev_len = len(pm.provenance_map)
     pm._record_provenance(RootSamplePlugin(), origin="PROJECT")
     assert len(pm.provenance_map) == prev_len
+
+
+def test_coverage_plugin_execution():
+    """Verify CoveragePlugin after_evaluation invokes generate_coverage_report."""
+    from eval_runner.context import EvaluationContext
+    from eval_runner.coverage_plugin import CoveragePlugin
+
+    ctx = EvaluationContext(identifier="scen_cov_test", scenario_data={"id": "scen_cov_test"})
+    plugin = CoveragePlugin()
+    with patch("eval_runner.coverage_plugin.generate_coverage_report") as mock_gen:
+        plugin.after_evaluation(ctx, [])
+        mock_gen.assert_called_once()
+        args, _ = mock_gen.call_args
+        assert args[0] == ctx
+        assert str(args[1]).replace("\\", "/").endswith("scen_cov_test_coverage.html")
