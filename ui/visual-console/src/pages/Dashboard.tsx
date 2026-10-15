@@ -36,7 +36,7 @@ interface RunItem {
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { tenantId, workspaceId } = useRBAC();
+  const { tenantId, workspaceId, canRunEval, canEditScenario } = useRBAC();
 
   const [runs, setRuns] = useState<RunItem[]>([]);
   const [scenarios, setScenarios] = useState<any[]>([]);
@@ -229,21 +229,25 @@ export const Dashboard: React.FC = () => {
           </p>
 
           <div className="flex flex-wrap items-center gap-4 pt-2">
-            <button
-              onClick={() => setShowWizard(true)}
-              className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-bold text-sm shadow-xl shadow-indigo-500/25 flex items-center gap-2.5 transition transform active:scale-95"
-            >
-              <Play className="w-4 h-4 fill-current" />
-              New Verification
-            </button>
+            {canRunEval && (
+              <button
+                onClick={() => setShowWizard(true)}
+                className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-bold text-sm shadow-xl shadow-indigo-500/25 flex items-center gap-2.5 transition transform active:scale-95"
+              >
+                <Play className="w-4 h-4 fill-current" />
+                New Verification
+              </button>
+            )}
 
-            <button
-              onClick={() => navigate('/scenarios/compose')}
-              className="px-5 py-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white font-semibold text-sm border border-slate-750 flex items-center gap-2 transition"
-            >
-              <PlusCircle className="w-4 h-4 text-slate-400" />
-              Compose Assurance Contract
-            </button>
+            {canEditScenario && (
+              <button
+                onClick={() => navigate('/scenarios/compose')}
+                className="px-5 py-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white font-semibold text-sm border border-slate-750 flex items-center gap-2 transition"
+              >
+                <PlusCircle className="w-4 h-4 text-slate-400" />
+                Compose Assurance Contract
+              </button>
+            )}
           </div>
         </div>
 

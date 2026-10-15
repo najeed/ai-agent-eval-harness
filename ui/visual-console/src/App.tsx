@@ -8,7 +8,6 @@ import {
   AlertTriangle, CheckCircle2, Server, Terminal, ExternalLink, Shield, Sparkles, Database
 } from 'lucide-react';
 import { RBACProvider, useRBAC } from './context/RBACContext';
-
 // Import P1 Pages (Runtime OSS Core)
 import { Settings as SettingsPage } from './pages/Settings';
 import { Docs as DocsPage } from './pages/Docs';
@@ -19,14 +18,12 @@ import { ScenarioLibrary as ScenarioLibraryPage } from './pages/ScenarioLibrary'
 import { ScenarioComposer as ScenarioComposerPage } from './pages/ScenarioComposer';
 import { LiveDebugger as LiveDebuggerPage } from './pages/LiveDebugger';
 import { RunsReports as RunsReportsPage } from './pages/RunsReports';
-
 // Import Diagnostics & Tooling Pages (Runtime OSS Diagnostics)
 import { FailureCorpus } from './pages/FailureCorpus';
 import { Triage } from './pages/Triage';
 import { SpecToEvalImporter } from './pages/SpecToEvalImporter';
 import { AdversarialMutator } from './pages/AdversarialMutator';
 import { LoginModal } from './components/LoginModal';
-
 // Extension host: generic load/contract fallback + RuntimeExtension contract
 import { ExtensionLoadError } from './components/ExtensionLoadError';
 import { RemoteErrorBoundary } from './components/RemoteErrorBoundary';
@@ -43,16 +40,12 @@ import {
 import { verifySubresourceIntegrity } from './utils/crypto';
 import { authorizedRuntimeFetch } from './auth/runtimeAuthContext';
 import { resolveNavigationIcon } from './utils/navigationIcons';
-
 // Supported remote-extension ABI: a Vite extension externalizes React and
 // reads this singleton as its peer runtime.  It must never bundle React.
 (globalThis as typeof globalThis & { __AGENTV_EXTENSION_REACT__?: typeof React })
   .__AGENTV_EXTENSION_REACT__ = React;
 
-
-
 const queryClient = new QueryClient({
-
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
@@ -60,7 +53,6 @@ const queryClient = new QueryClient({
     },
   },
 });
-
 // Extended Nav Item schema
 export interface NavItem {
   id?: string;
@@ -77,12 +69,10 @@ export interface NavItem {
   required_permissions?: string[];
   slot?: 'header';
 }
-
 export interface NavGroup {
   title: string;
   items: NavItem[];
 }
-
 /**
  * Dynamic Icon Resolver: Maps string icon identifiers to Lucide icon elements
  */
@@ -96,16 +86,13 @@ export function mergeNavManifest(
   if (!remoteItems || !Array.isArray(remoteItems) || remoteItems.length === 0) {
     return baseGroups;
   }
-
   // Deep clone base groups
   const merged: NavGroup[] = baseGroups.map(g => ({
     title: g.title,
     items: [...g.items],
   }));
-
   const existingPaths = new Set<string>();
   merged.forEach(g => g.items.forEach(item => existingPaths.add(item.path)));
-
   for (const rawItem of remoteItems) {
     if (!rawItem || typeof rawItem !== 'object') continue;
     if (rawItem.type === 'heading') continue;
@@ -117,7 +104,6 @@ export function mergeNavManifest(
     const required_permissions = Array.isArray(rawPerms)
       ? rawPerms
       : (typeof rawPerms === 'string' ? [rawPerms] : undefined);
-
     if (existingPaths.has(path)) {
       const existingItem = merged.flatMap(g => g.items).find(i => i.path === path);
       if (existingItem) {
@@ -129,10 +115,8 @@ export function mergeNavManifest(
       }
       continue;
     }
-
     const targetGroupTitle =
       rawItem.group || (rawItem.tier === 'enterprise' ? 'Enterprise' : 'System');
-
     const navItem: NavItem = {
       id: rawItem.id,
       name,
@@ -152,7 +136,6 @@ export function mergeNavManifest(
           ? { tier: 'local' as const }
           : {}),
     };
-
     let targetGroup = merged.find(
       g => g.title.toLowerCase() === targetGroupTitle.toLowerCase()
     );
@@ -168,10 +151,8 @@ export function mergeNavManifest(
     targetGroup.items.push(navItem);
     existingPaths.add(path);
   }
-
   return merged;
 }
-
 // ---------------------------------------------------------------------------
 // [D2] Extension host API surface.
 // SECURITY NOTICE: Dynamic extensions execute directly within the console origin
@@ -180,23 +161,19 @@ export function mergeNavManifest(
 // In production builds (import.meta.env.PROD), unsigned extensions are strictly
 // rejected and cannot be loaded under any circumstance.
 // ---------------------------------------------------------------------------
-
 interface ExtensionHostApiInfo {
   tier: ExtensionTier;
   allowedApis: readonly string[];
   /** Tier-gated host-API authorization check (string-typed for forward compat). */
   can(call: string): boolean;
 }
-
 const ExtensionHostContext = React.createContext<ExtensionHostApiInfo>({
   tier: 'unsigned-local',
   allowedApis: READ_ONLY_HOST_APIS,
   can: () => false,
 });
-
 export const useExtensionHost = (): ExtensionHostApiInfo =>
   React.useContext(ExtensionHostContext);
-
 const ExtensionHostProvider: React.FC<{
   tier: ExtensionTier;
   manifest?: RuntimeExtensionManifest;
@@ -220,13 +197,11 @@ const ExtensionHostProvider: React.FC<{
     return <ExtensionHostContext.Provider value={value}>{children}</ExtensionHostContext.Provider>;
   };
 
-
 /**
  * Generic Runtime Micro-Frontend Remote Loader:
  * Loads dynamic ESM components on demand behind a signed origin and cryptographic SRI verification policy.
  * Natively enforces FIPS 202 SHA3-256 / SHA3-384 / SHA3-512 with legacy WebCrypto SHA-2 fallback.
  */
-
 export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: string; route?: import('./types/extension-contract').ExtensionRoute }> = ({ entryUrl, sriHash, route }) => {
   const { authorizedContexts, workspaceId, tenantId, user, switchContext } = useRBAC();
   const extensionIdRef = useRef('');
@@ -260,7 +235,6 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
     manifest?: RuntimeExtensionManifest;
   }>({ status: 'idle' });
 
-
   const isTrustedOrigin = useMemo(() => {
     try {
       if (entryUrl.startsWith('/') || entryUrl.startsWith('./')) return true;
@@ -277,22 +251,17 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
     }
   }, [entryUrl, sriHash]);
 
-
   useEffect(() => {
     let active = true;
-
     async function loadAndVerifyModule() {
       if (!isTrustedOrigin) {
         if (active) setLoadingState({ status: 'untrusted_origin' });
         return;
       }
-
       try {
         if (active) setLoadingState({ status: 'verifying' });
-
         // [D2] Trust-tier classification for this entry.
         const isRemotePinned = !!sriHash;
-
         // Resolve the trust tier for an already-validated manifest.
         //   signature present -> server-side publisher verification
         //   no signature      -> ONLY locally-served modules qualify, as
@@ -338,7 +307,6 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
             throw { kind: 'publisher', reason: 'verification-unavailable' };
           }
         }
-
         // If SRI hash is provided, enforce byte-level integrity verification
         if (isRemotePinned) {
           const res = await fetch(entryUrl);
@@ -346,9 +314,7 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
             throw new Error(`HTTP ${res.status}: Failed to fetch remote module.`);
           }
           const buffer = await res.arrayBuffer();
-
           const { valid, computed, algorithm } = await verifySubresourceIntegrity(buffer, sriHash);
-
           if (!valid) {
             console.error(`[ZeroTrust SRI] ${algorithm} digest mismatch for ${entryUrl}. Expected: ${sriHash}, Computed: ${computed}`);
             if (active) {
@@ -360,7 +326,6 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
             }
             return;
           }
-
           // Pre-execution Manifest Verification: deterministic sidecar .manifest.json contract
           let preManifest: any = null;
           try {
@@ -372,7 +337,6 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
           } catch {
             // Sidecar manifest fetch failed
           }
-
           if (!preManifest && !import.meta.env.PROD) {
             try {
               const sourceText = new TextDecoder().decode(buffer);
@@ -384,7 +348,6 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
               // Static regex parse failed
             }
           }
-
           if (!preManifest) {
             if (active) {
               setLoadingState({
@@ -398,7 +361,6 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
             }
             return;
           }
-
           const preViolations = validateExtensionManifest(preManifest, { requireSignature: true });
           if (import.meta.env.PROD && preManifest.react_peer !== true) {
             preViolations.push('Production extensions must declare react_peer: true and use the host React singleton.');
@@ -407,11 +369,9 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
             if (active) setLoadingState({ status: 'contract_violation', violations: preViolations });
             return;
           }
-
           // Enforce binding between requested entryUrl/sriHash and preManifest declarations
           const manifestRemoteEntry = (preManifest as any).remote_entry ?? (preManifest as any).remoteEntry;
           const manifestSriHash = (preManifest as any).sri_hash ?? (preManifest as any).sriHash;
-
           const bindingViolations: string[] = [];
           if (manifestRemoteEntry) {
             let matches = manifestRemoteEntry === entryUrl;
@@ -435,7 +395,6 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
               `Manifest sri_hash mismatch: manifest declared '${manifestSriHash}', but requested '${sriHash}'`
             );
           }
-
           if (bindingViolations.length > 0) {
             if (active) {
               setLoadingState({
@@ -445,7 +404,6 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
             }
             return;
           }
-
           const tier = await resolveTier(preManifest);
           // Verify every declared relative chunk before importing the entry by
           // its real URL. Blob imports break standard ESM relative resolution;
@@ -466,7 +424,6 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
           }
           const mod = await import(/* @vite-ignore */ entryUrl);
           const manifestObj = (mod as any)?.manifest || preManifest;
-
           // Mandatory manifest confirmation post-import
           const violations = validateExtensionManifest(manifestObj, { requireSignature: true });
           if (violations.length > 0) {
@@ -474,7 +431,6 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
             if (active) setLoadingState({ status: 'contract_violation', violations });
             return;
           }
-
           const ResolvedComp = mod.default || mod[Object.keys(mod)[0]] || mod;
           extensionIdRef.current = manifestObj.extension_id || manifestObj.id || 'enterprise';
           if (active) setLoadingState({ status: 'ready', Component: ResolvedComp, tier, manifest: manifestObj });
@@ -509,7 +465,6 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
           } catch {
             // Static fetch attempt failed
           }
-
           if (!preManifest) {
             try {
               const manifestUrl = entryUrl.replace(/\.[^/.]+$/, '') + '.manifest.json';
@@ -521,7 +476,6 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
               // Manifest file fetch failed
             }
           }
-
           if (preManifest) {
             const preViolations = validateExtensionManifest(preManifest, { requireSignature: false });
             if (preViolations.length > 0 && active) {
@@ -529,10 +483,8 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
               return;
             }
           }
-
           const mod = await import(/* @vite-ignore */ entryUrl);
           const manifestObj = (mod as any)?.manifest || preManifest;
-
           const violations = !manifestObj
             ? [
               "Module exports no 'manifest' — every extension must declare its identity, capabilities and host-API usage (RuntimeExtension contract).",
@@ -542,7 +494,6 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
             setLoadingState({ status: 'contract_violation', violations });
             return;
           }
-
           const tier = await resolveTier(manifestObj);
           const ResolvedComp = mod.default || mod[Object.keys(mod)[0]] || mod;
           extensionIdRef.current = manifestObj?.extension_id || manifestObj?.id || 'enterprise';
@@ -568,14 +519,11 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
         });
       }
     }
-
     loadAndVerifyModule();
-
     return () => {
       active = false;
     };
   }, [entryUrl, sriHash, isTrustedOrigin]);
-
   if (loadingState.status === 'untrusted_origin') {
     return (
       <ExtensionLoadError
@@ -585,7 +533,6 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
       />
     );
   }
-
   if (loadingState.status === 'sri_failed') {
     return (
       <ExtensionLoadError
@@ -599,7 +546,6 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
       />
     );
   }
-
   if (loadingState.status === 'publisher_failed') {
     return (
       <ExtensionLoadError
@@ -614,7 +560,6 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
       />
     );
   }
-
   if (loadingState.status === 'contract_violation') {
     return (
       <ExtensionLoadError
@@ -625,7 +570,6 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
       />
     );
   }
-
   if (loadingState.status === 'load_error') {
     return (
       <ExtensionLoadError
@@ -635,7 +579,6 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
       />
     );
   }
-
   if (loadingState.status === 'ready' && loadingState.Component) {
     const Component = loadingState.Component;
     const tier: ExtensionTier = loadingState.tier ?? 'unsigned-local';
@@ -644,7 +587,6 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
     }
     return (
       <ExtensionHostProvider tier={tier} manifest={loadingState.manifest}>
-
         {tier === 'unsigned-local' && (
           <div className="bg-amber-500/10 border-b border-amber-500/20 px-6 py-2 flex items-center gap-2 text-[10px] text-amber-300 font-medium shrink-0">
             <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
@@ -660,7 +602,6 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
       </ExtensionHostProvider>
     );
   }
-
   return (
     <div className="flex h-full min-h-[400px] items-center justify-center p-8">
       <div className="flex flex-col items-center gap-3">
@@ -672,9 +613,7 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
     </div>
   );
 };
-
 const ConsoleLayout: React.FC = () => {
-
   const location = useLocation();
   // [P1-15] RBAC is presentation gating only. The role shown here comes from
   // the server (/api/auth/me); there is no client-side persona switching.
@@ -687,6 +626,7 @@ const ConsoleLayout: React.FC = () => {
     openLoginModal,
     closeLoginModal,
     logout,
+    canRunEval,
     canAccessSettings,
     canEditScenario,
     canVerifyCert,
@@ -703,7 +643,6 @@ const ConsoleLayout: React.FC = () => {
     Advanced: false,
     Settings: false,
   });
-
   // Authoritative RuntimeHealth (P0-1) + operating mode (P0-5).
   const {
     data: runtimeHealth,
@@ -718,7 +657,6 @@ const ConsoleLayout: React.FC = () => {
     refetchInterval: 30_000,
     retry: 1,
   });
-
   // Dynamic Manifest Query (TanStack Query)
   const { data: remoteNav } = useQuery({
     queryKey: ['console-nav-registry'],
@@ -731,7 +669,6 @@ const ConsoleLayout: React.FC = () => {
     staleTime: 60_000,
     enabled: !isAuthResolving,
   });
-
   useEffect(() => {
     const handleToast = (e: Event) => {
       const detail = (e as CustomEvent).detail;
@@ -741,9 +678,7 @@ const ConsoleLayout: React.FC = () => {
         setToasts(prev => prev.filter(t => t.id !== id));
       }, 4000);
     };
-
     window.addEventListener('agentv-toast', handleToast);
-
     // [N2/J2 Scoped Network & Auth Signaling Interceptor]
     const originalFetch = window.fetch;
     const isInternalApi = (urlStr: string): boolean => {
@@ -756,7 +691,6 @@ const ConsoleLayout: React.FC = () => {
         return urlStr.startsWith('/api/') || urlStr.startsWith('/v1/');
       }
     };
-
     window.fetch = async (...args) => {
       const urlStr = typeof args[0] === 'string' ? args[0] : (args[0] as Request)?.url || '';
       if (!isInternalApi(urlStr)) {
@@ -790,19 +724,15 @@ const ConsoleLayout: React.FC = () => {
         throw err;
       }
     };
-
     return () => {
       window.removeEventListener('agentv-toast', handleToast);
       window.fetch = originalFetch;
     };
   }, []);
 
-
-
   const toggleGroup = (title: string) => {
     setExpandedGroups(prev => ({ ...prev, [title]: !prev[title] }));
   };
-
   // [G6] Navigation is organized around user jobs, not internal feature
   // names. Primary jobs are expanded by default; power tools live in the
   // collapsed "Advanced" group and stay reachable via routes/⌘K.
@@ -810,7 +740,7 @@ const ConsoleLayout: React.FC = () => {
     {
       title: 'Verify',
       items: [
-        { name: 'New Verification', path: '/', icon: <Home className="w-4 h-4" /> },
+        { name: 'New Verification', path: '/', icon: <Home className="w-4 h-4" />, required_permissions: ['eval:trigger'] },
       ],
     },
     {
@@ -851,7 +781,6 @@ const ConsoleLayout: React.FC = () => {
       ],
     },
   ];
-
   // Merge dynamic plugin groups with core built-in navigation
   const navGroups = useMemo(() => {
     return mergeNavManifest(baseNavGroups, remoteNav);
@@ -860,22 +789,20 @@ const ConsoleLayout: React.FC = () => {
     () => (Array.isArray(remoteNav) ? remoteNav.filter(item => item?.slot === 'header' && item?.remoteEntry) : []),
     [remoteNav],
   );
-
   // Verified-permission-only navigation gating.
   const isNavItemRestricted = (item: NavItem): boolean => {
     // Admin / wildcard bypass
     if (user?.permissions?.includes('*') || role === 'System Admin') return false;
-
     if (item.required_permissions && item.required_permissions.length > 0) {
       if (!item.required_permissions.every(permission => hasPermission(permission))) return true;
     }
+    if (item.path === '/' && !canRunEval) return true;
     if (item.path === '/settings' && !canAccessSettings) return true;
     if (item.path === '/editor' && !canEditScenario) return true;
     if (item.path === '/trust' && !canVerifyCert) return true;
     if (item.path === '/mutator' && !canEditScenario) return true;
     return false;
   };
-
   const roleColors: Record<string, string> = {
     'System Admin': 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
     'Compliance Auditor': 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
@@ -883,7 +810,6 @@ const ConsoleLayout: React.FC = () => {
     'MultiAgentOps Eng.': 'text-amber-400 bg-amber-500/10 border-amber-500/20',
     'Viewer': 'text-slate-400 bg-slate-500/10 border-slate-500/20',
   };
-
   if (isAuthResolving) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-slate-950 text-slate-400">
@@ -896,12 +822,9 @@ const ConsoleLayout: React.FC = () => {
       </div>
     );
   }
-
   return (
-
     <div className="flex h-screen w-screen overflow-hidden bg-navy-base font-sans antialiased text-slate-200">
       <CommandPalette isOpen={isCmdOpen} setIsOpen={setIsCmdOpen} />
-
       {/* Sidebar Navigation */}
       <aside
         className={`bg-slate-950/40 border-r border-slate-900 flex flex-col shrink-0 transition-all duration-300 ${sidebarCollapsed ? 'w-16' : 'w-64'
@@ -935,7 +858,6 @@ const ConsoleLayout: React.FC = () => {
             <Menu className="w-4 h-4" />
           </button>
         </div>
-
         {/* Navigation Groups */}
         <div className="flex-1 overflow-y-auto p-3 space-y-4">
           {navGroups.map(group => {
@@ -952,7 +874,6 @@ const ConsoleLayout: React.FC = () => {
                     {isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
                   </button>
                 )}
-
                 {/* Group Items */}
                 {(isExpanded || sidebarCollapsed) && (
                   <div className="space-y-0.5">
@@ -963,7 +884,6 @@ const ConsoleLayout: React.FC = () => {
                         : location.pathname === item.path && (!location.search || !location.search.includes('view='));
                       const restricted = isNavItemRestricted(item);
                       const isExternal = item.path.startsWith('http://') || item.path.startsWith('https://');
-
                       if (restricted) {
                         return (
                           <div
@@ -977,7 +897,6 @@ const ConsoleLayout: React.FC = () => {
                           </div>
                         );
                       }
-
                       if (isExternal) {
                         return (
                           <a
@@ -993,7 +912,6 @@ const ConsoleLayout: React.FC = () => {
                           </a>
                         );
                       }
-
                       return (
                         <Link
                           key={item.id || item.name}
@@ -1027,7 +945,6 @@ const ConsoleLayout: React.FC = () => {
             );
           })}
         </div>
-
         {/* Global User Profile Footer */}
         <div className="p-3 border-t border-slate-900 bg-slate-950/20">
           <div className="flex items-center justify-between gap-2">
@@ -1046,7 +963,6 @@ const ConsoleLayout: React.FC = () => {
           </div>
         </div>
       </aside>
-
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top Operational Bar */}
@@ -1063,7 +979,6 @@ const ConsoleLayout: React.FC = () => {
               </kbd>
             </button>
           </div>
-
           <div className="flex items-center gap-3">
             {/* User Persona & Authentication Gateway */}
             {isAuthenticated ? (
@@ -1090,7 +1005,6 @@ const ConsoleLayout: React.FC = () => {
                 <span>Sign In</span>
               </button>
             )}
-
             {headerExtensions.map(item => (
               <RemoteComponentLoader
                 key={item.id || item.remoteEntry}
@@ -1098,7 +1012,6 @@ const ConsoleLayout: React.FC = () => {
                 sriHash={item.sriHash || item.integrity || item.sri}
               />
             ))}
-
             {/* Authoritative Runtime Health (P0-1): server-derived only.
                 Never render READY without a successful health verification. */}
             {(() => {
@@ -1141,7 +1054,6 @@ const ConsoleLayout: React.FC = () => {
             })()}
           </div>
         </header>
-
         {/* Demo-mode banner (P0-5): production never shows it. */}
         {runtimeHealth?.mode === 'demo' && (
           <div className="px-6 py-1.5 bg-amber-500/10 border-b border-amber-500/20 text-[11px] font-mono text-amber-300 flex items-center gap-2">
@@ -1150,13 +1062,11 @@ const ConsoleLayout: React.FC = () => {
           </div>
         )}
 
-
         {/* Page Content Viewport */}
         <main className="flex-1 overflow-y-auto bg-navy-base">
           <Outlet />
         </main>
       </div>
-
       {/* Global Toast Container */}
       <div className="fixed top-4 right-4 z-50 space-y-2 pointer-events-none">
         {toasts.map(t => (
@@ -1176,7 +1086,6 @@ const ConsoleLayout: React.FC = () => {
           </div>
         ))}
       </div>
-
       {/* Authentication Gateway Modal */}
       <LoginModal
         isOpen={isLoginModalOpen}
@@ -1186,11 +1095,9 @@ const ConsoleLayout: React.FC = () => {
     </div>
   );
 };
-
 const RemoteRouteGuard: React.FC<{ item: any }> = ({ item }) => {
   const { hasPermission } = useRBAC();
   const requiredPerm = item.required_permission || item.permission;
-
   const requiredPermissions = Array.isArray(item.required_permissions)
     ? item.required_permissions
     : requiredPerm ? [requiredPerm] : [];
@@ -1202,7 +1109,6 @@ const RemoteRouteGuard: React.FC<{ item: any }> = ({ item }) => {
       </div>
     );
   }
-
   return (
     <RemoteComponentLoader
       entryUrl={item.remoteEntry}
@@ -1211,7 +1117,50 @@ const RemoteRouteGuard: React.FC<{ item: any }> = ({ item }) => {
     />
   );
 };
-
+const PermissionRouteGuard: React.FC<{
+  permissions: string[];
+  element: React.ReactElement;
+}> = ({ permissions, element }) => {
+  const { hasPermission, user, role } = useRBAC();
+  if (user?.permissions?.includes('*') || role === 'System Admin') return element;
+  if (!permissions.every(p => hasPermission(p))) {
+    return (
+      <div className="p-8 text-center text-slate-400">
+        <h3 className="text-lg font-bold text-red-400 mb-2">Access Denied</h3>
+        <p className="text-sm">Verified permission is required to access this view.</p>
+      </div>
+    );
+  }
+  return element;
+};
+const RootVerificationRoute: React.FC = () => {
+  const { canRunEval, hasPermission } = useRBAC();
+  if (canRunEval) {
+    return <VerificationWorkflowPage />;
+  }
+  if (
+    hasPermission('enterprise.triage.read') ||
+    hasPermission('enterprise:triage:read') ||
+    hasPermission('hitl:resolve') ||
+    hasPermission('hitl.resolve')
+  ) {
+    return <Navigate to="/enterprise/hitl-triage" replace />;
+  }
+  if (
+    hasPermission('eval:read') ||
+    hasPermission('eval.read') ||
+    hasPermission('runs:read') ||
+    hasPermission('runs.read')
+  ) {
+    return <Navigate to="/reports" replace />;
+  }
+  return (
+    <div className="p-8 text-center text-slate-400">
+      <h3 className="text-lg font-bold text-red-400 mb-2">Access Denied</h3>
+      <p className="text-sm">Verified evaluation execution permission (eval:trigger) is required to access the verification runner.</p>
+    </div>
+  );
+};
 export function ConsoleRoutes() {
   const { data: remoteNav } = useQuery({
     queryKey: ['console-nav-registry'],
@@ -1223,7 +1172,6 @@ export function ConsoleRoutes() {
     },
     staleTime: 60_000,
   });
-
   const remoteRoutes = useMemo(() => {
     if (!remoteNav || !Array.isArray(remoteNav)) return [];
     return remoteNav.filter(
@@ -1235,18 +1183,22 @@ export function ConsoleRoutes() {
         !item.path.startsWith('https://')
     );
   }, [remoteNav]);
-
   return (
     <Routes>
       <Route element={<ConsoleLayout />}>
         {/* Primary Product Spine (P1-12): Connect → Verify → Diagnose */}
-        <Route path="/" element={<VerificationWorkflowPage />} />
+        <Route path="/" element={<RootVerificationRoute />} />
         <Route path="/dashboard" element={<DashboardPage />} />
-
         {/* Runtime OSS Core Screens */}
         <Route path="/scenarios" element={<ScenarioLibraryPage />} />
-        <Route path="/scenarios/compose" element={<ScenarioComposerPage />} />
-        <Route path="/editor" element={<ScenarioComposerPage />} />
+        <Route
+          path="/scenarios/compose"
+          element={<PermissionRouteGuard permissions={['scenarios:write']} element={<ScenarioComposerPage />} />}
+        />
+        <Route
+          path="/editor"
+          element={<PermissionRouteGuard permissions={['scenarios:write']} element={<ScenarioComposerPage />} />}
+        />
         {/* [G1] The standalone runner page was folded into the verification
             workflow's Advanced execution settings drawer. Old /runner links
             redirect to the primary spine. */}
@@ -1260,13 +1212,14 @@ export function ConsoleRoutes() {
         <Route path="/docs" element={<DocsPage />} />
         <Route path="/docs/:docId" element={<DocsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
-
         {/* Runtime OSS Diagnostics & Tooling */}
         <Route path="/spec-import" element={<SpecToEvalImporter />} />
-        <Route path="/mutator" element={<AdversarialMutator />} />
+        <Route
+          path="/mutator"
+          element={<PermissionRouteGuard permissions={['scenarios:write']} element={<AdversarialMutator />} />}
+        />
         <Route path="/failures" element={<FailureCorpus />} />
         <Route path="/triage" element={<Triage />} />
-
         {/* Dynamic Micro-Frontend Remote Routes (Control Plane extensions).
             Enterprise routes are NOT declared in OSS; they exist only when a
             signed extension manifest contributes them via /api/nav. */}
@@ -1277,19 +1230,16 @@ export function ConsoleRoutes() {
             element={<RemoteRouteGuard item={item} />}
           />
         ))}
-
       </Route>
     </Routes>
   );
 }
-
 const getConsoleBasename = () => {
   if (typeof window !== 'undefined' && window.location.pathname.startsWith('/v2')) {
     return '/v2';
   }
   return '';
 };
-
 export function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -1301,6 +1251,4 @@ export function App() {
     </QueryClientProvider>
   );
 }
-
 export default App;
-

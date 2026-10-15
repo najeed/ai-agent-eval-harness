@@ -1065,10 +1065,15 @@ def test_execution_readiness_extended_matrix(client, tmp_path):
                 return m
 
             def __exit__(self, exc_type, exc_val, exc_tb):
+                import ctypes
                 import sys
 
                 f = sys._getframe(1)
                 f.f_locals["probe_status"] = "WARNING"
+                try:
+                    ctypes.pythonapi.PyFrame_LocalsToFast(ctypes.py_object(f), ctypes.c_int(0))
+                except (AttributeError, TypeError, ValueError):
+                    pass
                 return False
 
         with patch(
