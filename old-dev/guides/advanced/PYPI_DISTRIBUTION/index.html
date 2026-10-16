@@ -4077,7 +4077,9 @@
 
 
 <h1 id="pypi-distribution-guide">PyPI Distribution Guide<a class="headerlink" href="#pypi-distribution-guide" title="Permanent link">&para;</a></h1>
-<p>This guide details the process of building and publishing the <code>eval_runner</code> package (AgentV) to PyPI.</p>
+<p>This guide details the process of building and publishing the <code>agentv-runtime</code> distribution
+(AgentV) to PyPI. The installed CLI remains <code>agentv</code> and the public Python namespace remains
+<code>agentv_runtime</code>.</p>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <ol>
 <li><strong>PyPI Account</strong>: You need an account on <a href="https://pypi.org/">PyPI</a>.</li>
@@ -4089,7 +4091,7 @@
 <h2 id="step-1-prepare-the-package">Step 1: Prepare the Package<a class="headerlink" href="#step-1-prepare-the-package" title="Permanent link">&para;</a></h2>
 <p>Ensure the <code>version</code> in <code>pyproject.toml</code> is correct for your new release.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">[project]</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"agentv"</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"agentv-runtime"</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"1.5.0"</span><span class="w"> </span><span class="c1"># Update this</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="p">...</span>
 </code></pre></div>
@@ -4118,8 +4120,8 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>twine<span class="w"> </span>upload<span class="w"> </span>--repository<span class="w"> </span>testpypi<span class="w"> </span>dist/*
 </code></pre></div>
 <p>You can then try installing it from TestPyPI:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Use the new package name</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>pip<span class="w"> </span>install<span class="w"> </span>--index-url<span class="w"> </span>https://test.pypi.org/simple/<span class="w"> </span>--no-deps<span class="w"> </span>agentv
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Install the distribution name (the executable remains `agentv`).</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>pip<span class="w"> </span>install<span class="w"> </span>--index-url<span class="w"> </span>https://test.pypi.org/simple/<span class="w"> </span>--no-deps<span class="w"> </span>agentv-runtime
 </code></pre></div></p>
 <h2 id="step-5-upload-to-pypi">Step 5: Upload to PyPI<a class="headerlink" href="#step-5-upload-to-pypi" title="Permanent link">&para;</a></h2>
 <p>Once verified, publish to the official PyPI:</p>
