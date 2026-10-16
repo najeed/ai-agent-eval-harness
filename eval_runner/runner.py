@@ -225,6 +225,7 @@ class DefaultRunner(BaseRunner):
 
         from agentv_runtime.discovery import resolve_extension
         from eval_runner.config_resolver import ConfigResolver
+        from eval_runner.reference.local_artifact import LocalFileArtifactStore
         from eval_runner.reference.local_run_store import LocalFileRunStore
 
         self.run_store = (
@@ -234,7 +235,11 @@ class DefaultRunner(BaseRunner):
         )
         self.config_resolver = config_resolver or ConfigResolver
         self.resolved_config = self.config_resolver.resolve()
-        self.artifact_store = artifact_store
+        self.artifact_store = resolve_extension(
+            "artifact_stores",
+            explicit=artifact_store,
+            default_factory=LocalFileArtifactStore,
+        )
         self.checkpoint_store = checkpoint_store
         self.policy_evaluator = policy_evaluator
         self.signing_backend = signing_backend

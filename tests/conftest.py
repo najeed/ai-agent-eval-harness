@@ -10,6 +10,7 @@ import json
 import logging
 import os
 import tracemalloc
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -21,6 +22,11 @@ from cryptography.hazmat.primitives.asymmetric import ed25519
 
 # Enforce repository isolation in test execution (never load external unisolated entry-points)
 os.environ.setdefault("AGENTV_DISABLE_EXTERNAL_PLUGINS", "1")
+os.environ.setdefault("PYDANTIC_DISABLE_PLUGINS", "1")
+warnings.filterwarnings(
+    "ignore", category=UserWarning, module=r"pydantic\.plugin\._schema_validator"
+)
+warnings.filterwarnings("ignore", message=r".*logfire-plugin.*", category=UserWarning)
 
 _MEMORY_FORENSICS_ENV = "AGENTV_TEST_MEMORY_FORENSICS"
 _MEMORY_FORENSICS_DIR_ENV = "AGENTV_TEST_MEMORY_FORENSICS_DIR"

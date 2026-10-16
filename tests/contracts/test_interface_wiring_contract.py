@@ -957,3 +957,140 @@ def test_interfaces_supports_transactional_seal_and_auth_principal_to_dict():
         EvidenceBoundednessViolationError, match="Unbounded state materialization prohibited"
     ):
         authority.get_all_state()
+
+
+def test_default_runner_resolves_pluggable_artifact_store(monkeypatch):
+    """Contract: DefaultRunner resolves pluggable ArtifactStore via runtime discovery."""
+    from agentv_runtime.discovery import ENTRY_POINT_NAMESPACE, reset_extensions
+    from agentv_runtime.interfaces import ArtifactStore
+    from eval_runner.runner import DefaultRunner
+
+    class CustomPluggableArtifactStore(ArtifactStore):
+        def store_artifact(self, *args, **kwargs):
+            pass
+
+        def get_artifact(self, *args, **kwargs):
+            pass
+
+        def list_artifacts(self, *args, **kwargs):
+            return []
+
+        def seal(self, *args, **kwargs):
+            pass
+
+        def is_sealed(self, *args, **kwargs):
+            return False
+
+        def exists(self, run_id: str, artifact_name: str) -> bool:
+            return False
+
+    reset_extensions()
+    try:
+        custom_instance = CustomPluggableArtifactStore()
+        ep = SimpleNamespace(name="custom_contract_store", load=lambda: lambda: custom_instance)
+        monkeypatch.setattr(
+            "importlib.metadata.entry_points",
+            lambda group=None: [ep] if group == f"{ENTRY_POINT_NAMESPACE}.artifact_stores" else [],
+        )
+        monkeypatch.setenv("AGENTV_ARTIFACT_STORE", "custom_contract_store")
+
+        runner = DefaultRunner()
+        assert runner.artifact_store is custom_instance
+    finally:
+        reset_extensions()
+
+
+def test_flight_recorder_resolves_pluggable_artifact_store_by_default(monkeypatch, tmp_path):
+    """Contract: FlightRecorderPlugin resolves pluggable ArtifactStore by default."""
+    from agentv_runtime.discovery import ENTRY_POINT_NAMESPACE, reset_extensions
+    from agentv_runtime.interfaces import ArtifactStore
+
+    class CustomPluggableArtifactStore(ArtifactStore):
+        def store_artifact(self, *args, **kwargs):
+            pass
+
+        def get_artifact(self, *args, **kwargs):
+            pass
+
+        def list_artifacts(self, *args, **kwargs):
+            return []
+
+        def seal(self, *args, **kwargs):
+            pass
+
+        def is_sealed(self, *args, **kwargs):
+            return False
+
+        def exists(self, run_id: str, artifact_name: str) -> bool:
+            return False
+
+    reset_extensions()
+    try:
+        custom_instance = CustomPluggableArtifactStore()
+        ep = SimpleNamespace(name="custom_fr_store", load=lambda: lambda: custom_instance)
+        monkeypatch.setattr(
+            "importlib.metadata.entry_points",
+            lambda group=None: [ep] if group == f"{ENTRY_POINT_NAMESPACE}.artifact_stores" else [],
+        )
+        monkeypatch.setenv("AGENTV_ARTIFACT_STORE", "custom_fr_store")
+
+        # Default instantiation (e.g. PluginManager auto-discovery) resolves pluggable store
+        plugin = FlightRecorderPlugin()
+        assert plugin.artifact_store is custom_instance
+
+        # Explicit log_dir override binds isolated LocalFileArtifactStore without mutating registry
+        isolated_plugin = FlightRecorderPlugin(log_dir=tmp_path)
+        from eval_runner.reference.local_artifact import LocalFileArtifactStore
+
+        assert isinstance(isolated_plugin.artifact_store, LocalFileArtifactStore)
+        assert isolated_plugin.artifact_store.base_dir == tmp_path
+    finally:
+        reset_extensions()
+
+
+def test_flight_recorder_resolves_pluggable_signing_backend_over_key_path(monkeypatch, tmp_path):
+    """Contract: FlightRecorderPlugin prioritizes pluggable SigningBackend over local key file."""
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+
+    from agentv_runtime.discovery import ENTRY_POINT_NAMESPACE, reset_extensions
+    from agentv_runtime.interfaces import SigningBackend
+
+    key_file = tmp_path / "signing.key"
+    private_key = ed25519.Ed25519PrivateKey.generate()
+    key_bytes = private_key.private_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PrivateFormat.Raw,
+        encryption_algorithm=serialization.NoEncryption(),
+    )
+    key_file.write_bytes(key_bytes)
+    monkeypatch.setenv("FLIGHT_RECORDER_KEY_PATH", str(key_file))
+
+    class CustomKmsSigningBackend(SigningBackend):
+        def sign_payload(
+            self, payload: bytes, key_identifier: str | Path | Any = None, **kwargs: Any
+        ) -> str | dict[str, Any]:
+            return "custom_kms_signature"
+
+        def verify_signature(
+            self,
+            payload: bytes,
+            signature: str | dict[str, Any],
+            public_key_identifier: str | Path | Any = None,
+            **kwargs: Any,
+        ) -> bool:
+            return True
+
+    reset_extensions()
+    try:
+        custom_kms = CustomKmsSigningBackend()
+        ep = SimpleNamespace(name="custom_kms", load=lambda: lambda: custom_kms)
+        monkeypatch.setattr(
+            "importlib.metadata.entry_points",
+            lambda group=None: [ep] if group == f"{ENTRY_POINT_NAMESPACE}.signing_backends" else [],
+        )
+        monkeypatch.setenv("AGENTV_SIGNING_BACKEND", "custom_kms")
+
+        plugin = FlightRecorderPlugin(log_dir=tmp_path)
+        assert plugin.signing_backend is custom_kms
+    finally:
+        reset_extensions()

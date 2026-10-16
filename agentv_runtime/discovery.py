@@ -45,7 +45,13 @@ def resolve_extension(  # noqa: UP047
         if family in _extension_registry and _extension_registry[family] is not None:
             return _extension_registry[family]
 
-        target_name = os.getenv(env_var or f"AGENTV_{family.upper()}")
+        singular_family = family[:-1] if family.endswith("s") else family
+        target_name = (
+            os.getenv(env_var)
+            if env_var
+            else os.getenv(f"AGENTV_{family.upper()}")
+            or os.getenv(f"AGENTV_{singular_family.upper()}")
+        )
         entry_point_group = f"{ENTRY_POINT_NAMESPACE}.{family}"
 
         discovered = {}
@@ -86,11 +92,11 @@ def resolve_extension(  # noqa: UP047
                     "Failed to load single registered %s provider '%s': %s", family, name, exc
                 )
 
-        if instance is None:
-            instance = default_factory()
+        if instance is not None:
+            _extension_registry[family] = instance
+            return instance
 
-        _extension_registry[family] = instance
-        return instance
+        return default_factory()
 
 
 def set_extension(family: str, instance: Any) -> None:

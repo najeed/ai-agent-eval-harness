@@ -54,6 +54,38 @@ def test_resolve_extension_env_var_selected(monkeypatch):
     assert resolved is custom_inst
 
 
+def test_resolve_extension_singular_env_var_selected(monkeypatch):
+    monkeypatch.setenv("AGENTV_RUN_STORE", "custom_singular")
+    custom_inst = MockExtension("custom_singular")
+    ep = SimpleNamespace(name="custom_singular", load=lambda: lambda: custom_inst)
+
+    monkeypatch.setattr(
+        "importlib.metadata.entry_points",
+        lambda group=None: [ep] if group == f"{ENTRY_POINT_NAMESPACE}.run_stores" else [],
+    )
+
+    resolved = resolve_extension("run_stores", default_factory=MockExtension)
+    assert resolved is custom_inst
+
+
+def test_resolve_extension_explicit_env_var_priority(monkeypatch):
+    monkeypatch.setenv("CUSTOM_ENV_VAR", "explicit_choice")
+    monkeypatch.setenv("AGENTV_RUN_STORE", "ignored_singular")
+    monkeypatch.setenv("AGENTV_RUN_STORES", "ignored_plural")
+    chosen_inst = MockExtension("explicit_choice")
+    ep = SimpleNamespace(name="explicit_choice", load=lambda: lambda: chosen_inst)
+
+    monkeypatch.setattr(
+        "importlib.metadata.entry_points",
+        lambda group=None: [ep] if group == f"{ENTRY_POINT_NAMESPACE}.run_stores" else [],
+    )
+
+    resolved = resolve_extension(
+        "run_stores", env_var="CUSTOM_ENV_VAR", default_factory=MockExtension
+    )
+    assert resolved is chosen_inst
+
+
 def test_resolve_extension_env_var_load_failure(monkeypatch, caplog):
     monkeypatch.setenv("AGENTV_RUN_STORES", "failing")
 

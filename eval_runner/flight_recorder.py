@@ -76,23 +76,24 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         if artifact_store is not None:
             self.artifact_store = artifact_store
         elif log_dir is not None:
+            # Explicit vault scope requested by caller; bind isolated store
             self.artifact_store = LocalFileArtifactStore(base_dir=self.log_dir)
         else:
-            resolved = resolve_extension(
+            self.artifact_store = resolve_extension(
                 "artifact_stores",
-                default_factory=lambda: LocalFileArtifactStore(base_dir=self.log_dir),
+                default_factory=LocalFileArtifactStore,
             )
-            if resolved is not None and type(resolved) is not LocalFileArtifactStore:
-                self.artifact_store = resolved
-            else:
-                self.artifact_store = LocalFileArtifactStore(base_dir=self.log_dir)
 
         if signing_backend is not None:
             self.signing_backend = signing_backend
-        elif self._private_key_path:
-            self.signing_backend = LocalEd25519SigningBackend()
         else:
-            self.signing_backend = NullSigningBackend()
+            resolved_backend = resolve_extension("signing_backends", default_factory=lambda: None)
+            if resolved_backend is not None:
+                self.signing_backend = resolved_backend
+            elif self._private_key_path:
+                self.signing_backend = LocalEd25519SigningBackend()
+            else:
+                self.signing_backend = NullSigningBackend()
 
         # [Event Duplication Remediation]
         # Only subscribe to the global event bus once (Singleton Pattern)
