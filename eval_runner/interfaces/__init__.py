@@ -16,6 +16,7 @@ from agentv_runtime.interfaces import (
     LeaderboardStore,
     PolicyEvaluationResult,
     PolicyEvaluator,
+    RunStorageProvider,
     RunStore,
     SigningBackend,
 )
@@ -33,5 +34,6 @@ __all__ = [
     "AuthPrincipal",
     "CatalogStore",
     "RunStore",
+    "RunStorageProvider",
     "LeaderboardStore",
 ]

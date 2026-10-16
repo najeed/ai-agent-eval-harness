@@ -319,7 +319,7 @@ class PluginManager:
             and _external_plugin_discovery_enabled.get()
             and not os.getenv("AGENTV_DISABLE_EXTERNAL_PLUGINS")
         ):
-            for entry_point in importlib.metadata.entry_points(group="eval_runner.plugins"):
+            for entry_point in importlib.metadata.entry_points(group="agentv_runtime.plugins"):
                 try:
                     plugin_cls = entry_point.load()
                     if not any(isinstance(p, plugin_cls) for p in self.plugins):

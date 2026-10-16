@@ -479,7 +479,13 @@ class TraceVerifier:
         Signs a raw payload using an Ed25519 private key via SigningBackend.
         Used for trace-level forensic integrity.
         """
-        backend = signing_backend or LocalEd25519SigningBackend()
+        from agentv_runtime.discovery import resolve_extension
+
+        backend = resolve_extension(
+            "signing_backends",
+            explicit=signing_backend,
+            default_factory=LocalEd25519SigningBackend,
+        )
         return backend.sign_payload(payload, private_key_path)
 
     @classmethod
@@ -659,7 +665,13 @@ class TraceVerifier:
             except OSError as trunc_err:
                 logger.debug(f"      [Verifier] Trace rollback truncate notice: {trunc_err}")
 
-        store = artifact_store or LocalFileArtifactStore()
+        from agentv_runtime.discovery import resolve_extension
+
+        store = resolve_extension(
+            "artifact_stores",
+            explicit=artifact_store,
+            default_factory=LocalFileArtifactStore,
+        )
 
         # 1. FREEZE: hash evidence + seal-hash BEFORE any mutation
         manifest_sidecars = [
@@ -669,6 +681,8 @@ class TraceVerifier:
             "certificate.json",
             "trace_seal.json",
             "certification_receipt.json",
+            "run_record.json",
+            ".run_lifecycle",
             ".sealed",
         ]
         evidence_ledger = _stage("freeze")(
@@ -1559,7 +1573,6 @@ class TraceVerifier:
             Final Irreversible Operation:
             Seal vault only after all artifacts are verified and published.
             """
-            from eval_runner.reference.local_artifact import LocalFileArtifactStore
             from eval_runner.run_lifecycle import RunLifecycleState, transition_run_lifecycle
 
             try:
@@ -1585,18 +1598,23 @@ class TraceVerifier:
                             "immutable ArtifactStore (e.g., S3 Object Lock)."
                         )
 
-                # Local lifecycle owns .sealed.  Calling LocalFileArtifactStore.seal
+                # Local lifecycle owns .sealed. Calling LocalFileArtifactStore.seal
                 # first created a second irreversible write, so a subsequent
                 # lifecycle persistence failure could leave a sealed-but-unpublished
-                # vault.  The lifecycle transition is the one final local commit.
-                if not isinstance(store, LocalFileArtifactStore):
+                # vault. The lifecycle transition is the one final local commit.
+                from eval_runner.reference.local_artifact import LocalFileArtifactStore
+
+                is_local = getattr(store, "is_local_store", False) is True or isinstance(
+                    store, LocalFileArtifactStore
+                )
+                if not is_local:
                     if not store.supports_transactional_seal():
                         raise CertificationFailedError(
                             "NonAtomicArtifactStore: remote artifact stores must explicitly "
                             "support transactional sealing before certification can commit."
                         )
                     # A remote/object store can reject its immutable-write
-                    # operation.  Attempt it before the local irreversible
+                    # operation. Attempt it before the local irreversible
                     # lifecycle marker so that rejection leaves the run OPEN
                     # and rollback remains possible.
                     store.seal(

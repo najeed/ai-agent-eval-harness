@@ -1850,7 +1850,7 @@ class MutationService(MutationEngine):
         try:
             from importlib.metadata import entry_points
 
-            eps = entry_points(group="agentv.mutators")
+            eps = entry_points(group="agentv_runtime.mutation_engines")
             for ep in eps:
                 mutator_cls = ep.load()
                 mutator_inst = mutator_cls()

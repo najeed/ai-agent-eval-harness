@@ -7,6 +7,7 @@ from typing import Any
 
 from flask import Blueprint, jsonify, request
 
+from agentv_runtime.discovery import resolve_extension
 from eval_runner import config, identity
 from eval_runner.reference.signing import LocalEd25519SigningBackend
 from eval_runner.services.certification import (
@@ -398,7 +399,8 @@ def sign_extension_manifest():
     try:
         pem = _private_key_pem_bytes(identity_id)
         canonical = _canonical_manifest_bytes(manifest)
-        signature_hex = LocalEd25519SigningBackend().sign_payload(canonical, pem)
+        signer = resolve_extension("signing_backends", default_factory=LocalEd25519SigningBackend)
+        signature_hex = signer.sign_payload(canonical, pem)
     except Exception as e:
         logger.error(f"[Extensions] Signing failed for '{identity_id}': {e}")
         return jsonify({"error": f"Signing failed: {e}"}), 500
@@ -654,9 +656,8 @@ def verify_extension_publisher():
             }
         )
 
-    valid = LocalEd25519SigningBackend().verify_signature(
-        _canonical_manifest_bytes(manifest), signature_hex, pub_pem
-    )
+    signer = resolve_extension("signing_backends", default_factory=LocalEd25519SigningBackend)
+    valid = signer.verify_signature(_canonical_manifest_bytes(manifest), signature_hex, pub_pem)
 
     # [Trust hardening] The BACKEND owns tier classification. A signed
     # manifest cannot self-promote to 'official': only publishers listed in

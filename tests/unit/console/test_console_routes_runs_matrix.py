@@ -1,7 +1,7 @@
 """
 Branch coverage matrix for eval_runner/console/routes/runs.py.
 
-Statement and branch coverage for RunsCache,
+Statement and branch coverage for RunStorageProvider,
 stream endpoints, authoritative verdicts, polling, tail generators,
 and verification endpoints.
 """
@@ -16,7 +16,6 @@ from flask import Flask
 
 from eval_runner import config
 from eval_runner.console.routes.runs import (
-    RunsCache,
     _authoritative_verdict,
     run_bp,
     tail_file_generator,
@@ -42,49 +41,22 @@ def client(tmp_path):
             yield c
 
 
-def test_runs_cache_lifecycle_and_edge_branches(tmp_path):
-    cache = RunsCache()
-
-    # RUN_LOG_DIR is None or does not exist
-    with patch.object(config, "RUN_LOG_DIR", tmp_path / "non_existent_dir"):
-        cache.update_cache()
-        assert cache._runs == []
-
-        # Fragment scanning with empty lines and parse exceptions
+def test_list_runs_endpoint_queries_active_provider(client, tmp_path):
     runs_dir = tmp_path / "runs"
     runs_dir.mkdir(parents=True, exist_ok=True)
-    with patch.object(config, "RUN_LOG_DIR", runs_dir):
-        frag_file = runs_dir / "frag1.jsonl"
-        frag_file.write_text(
-            "\n   \n"
-            + json.dumps({"event": "run_start", "run_id": "run-f1", "scenario": "sc1"})
-            + "\n"
-            + "invalid_json_line\n",
-            encoding="utf-8",
-        )
-        cache.update_cache()
-        assert any(r["run_id"] == "run-f1" for r in cache.get_runs())
 
-        # Large vault run.jsonl (>= 512KB) and reversed line parsing
-        vault_dir = runs_dir / "run-v1"
-        vault_dir.mkdir(parents=True, exist_ok=True)
-        v_file = vault_dir / "run.jsonl"
-        start_ev = json.dumps({"event": "run_start", "run_id": "run-v1"}) + "\n"
-        end_ev = json.dumps({"event": "run_end", "data": {"passed": True, "duration": 1.2}}) + "\n"
-        padding = " " * (513 * 1024) + "\n"
-        v_file.write_text(start_ev + padding + end_ev, encoding="utf-8")
+    # Create run vault
+    vault_dir = runs_dir / "run-v1"
+    vault_dir.mkdir(parents=True, exist_ok=True)
+    v_file = vault_dir / "run.jsonl"
+    start_ev = json.dumps({"event": "run_start", "run_id": "run-v1", "scenario": "sc1"}) + "\n"
+    end_ev = json.dumps({"event": "run_end", "data": {"passed": True, "duration": 1.2}}) + "\n"
+    v_file.write_text(start_ev + end_ev, encoding="utf-8")
 
-        cache.update_cache()
-        assert any(r["run_id"] == "run-v1" for r in cache.get_runs())
-
-        # Vault run without start scenario name fallback for single dash run id
-        vault_dash = runs_dir / "run-scenonly"
-        vault_dash.mkdir(parents=True, exist_ok=True)
-        (vault_dash / "run.jsonl").write_text(
-            json.dumps({"event": "run_start", "run_id": "run-scenonly"}) + "\n",
-            encoding="utf-8",
-        )
-        cache.update_cache()
+    res = client.get("/runs?q=sc1")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert any(r["run_id"] == "run-v1" for r in data.get("runs", []))
 
 
 def test_authoritative_verdict_edge_cases(tmp_path):

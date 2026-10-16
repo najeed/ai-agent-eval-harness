@@ -20,7 +20,12 @@ class SessionCheckpointManager:
     @property
     def store(self) -> CheckpointStore:
         if self._store is None:
-            self._store = SQLiteCheckpointStore()
+            from agentv_runtime.discovery import resolve_extension
+
+            self._store = resolve_extension(
+                "checkpoint_stores",
+                default_factory=SQLiteCheckpointStore,
+            )
         return self._store
 
     def create_checkpoint(

@@ -21,7 +21,6 @@ from eval_runner.reference.local_artifact import LocalFileArtifactStore
 from eval_runner.reference.signing import (
     LocalEd25519SigningBackend,
     NullSigningBackend,
-    PQCSigningBackend,
 )
 
 from . import config
@@ -72,7 +71,21 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         self._audit_level = int(os.getenv("AUDIT_LEVEL", "2"))
 
         # Interface Wiring: ArtifactStore & SigningBackend
-        self.artifact_store = artifact_store or LocalFileArtifactStore(base_dir=self.log_dir)
+        from agentv_runtime.discovery import resolve_extension
+
+        if artifact_store is not None:
+            self.artifact_store = artifact_store
+        elif log_dir is not None:
+            self.artifact_store = LocalFileArtifactStore(base_dir=self.log_dir)
+        else:
+            resolved = resolve_extension(
+                "artifact_stores",
+                default_factory=lambda: LocalFileArtifactStore(base_dir=self.log_dir),
+            )
+            if resolved is not None and type(resolved) is not LocalFileArtifactStore:
+                self.artifact_store = resolved
+            else:
+                self.artifact_store = LocalFileArtifactStore(base_dir=self.log_dir)
 
         if signing_backend is not None:
             self.signing_backend = signing_backend
@@ -144,6 +157,8 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                 configured_log_dir = os.getenv("RUN_LOG_DIR")
                 if configured_log_dir:
                     self.log_dir = Path(configured_log_dir)
+                    if isinstance(self.artifact_store, LocalFileArtifactStore):
+                        self.artifact_store.base_dir = self.log_dir
                 self.per_run = os.getenv("RUN_LOG_PER_RUN", "true").lower() == "true"
                 self.master = os.getenv("RUN_LOG_MASTER", "true").lower() == "true"
 
@@ -180,7 +195,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                         # A run-local trace is mandatory evidence.  Create it
                         # before dispatching the RUN_START event so HITL and
                         # other early events can never be master-log-only.
-                        run_vault_dir.mkdir(parents=True, exist_ok=False)
+                        run_vault_dir.mkdir(parents=True, exist_ok=True)
                     else:
                         if lifecycle_state in (
                             RunLifecycleState.FINALIZING,
@@ -274,7 +289,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
 
         # Resolve paths dynamically to support parallel runs in the same process
         per_run_log_path = None
-        if run_id != "unknown":
+        if run_id and run_id != "unknown":
             run_vault_dir = self.log_dir / run_id
             per_run_log_path = run_vault_dir / "run.jsonl"
 
@@ -293,12 +308,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             raise RuntimeError(err)
 
         # [Trace-level integrity (Fail-Closed Cryptography via SigningBackend)]
-        backend_can_sign = not isinstance(self.signing_backend, NullSigningBackend) and (
-            self._private_key_path is not None
-            or getattr(self.signing_backend, "is_remote", False)
-            or hasattr(self.signing_backend, "can_sign")
-            or isinstance(self.signing_backend, PQCSigningBackend)
-        )
+        backend_can_sign = getattr(self.signing_backend, "can_sign", lambda: False)()
         should_sign = (
             self._audit_level >= 2 and (self._private_key_path is not None or backend_can_sign)
         ) or backend_can_sign
@@ -338,6 +348,9 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                 self._handles[path_str].write(content)
 
         try:
+            if self.master:
+                _write_buffered(self.master_log_path, content)
+
             if per_run_log_path:
                 if run_id and run_id != "unknown" and self.artifact_store:
                     self.artifact_store.store_artifact(
@@ -348,13 +361,8 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                         metadata={"event": data.get("event"), "seq": data.get("seq")},
                         append=True,
                     )
-                # LocalFileArtifactStore already appends to this exact path.
-                # Remote stores require the local evidence mirror as well.
                 if not isinstance(self.artifact_store, LocalFileArtifactStore):
                     _write_buffered(per_run_log_path, content)
-
-            if self.master:
-                _write_buffered(self.master_log_path, content)
         except Exception as e:
             sys.stderr.write(f"   [FlightRecorder] [ERROR] File I/O Error: {e}\n")
             with self._lock:
@@ -510,7 +518,10 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                         from agentv_runtime.canonical import canonical_json_encode
 
                         seal_bytes = canonical_json_encode(seal_envelope)
-                        raw_sig = signer.sign(seal_bytes)
+                        if hasattr(signer, "sign"):
+                            raw_sig = signer.sign(seal_bytes)
+                        else:
+                            raw_sig = signer.sign_payload(seal_bytes)
                         seal_envelope["signature"] = (
                             raw_sig.hex() if isinstance(raw_sig, bytes) else str(raw_sig)
                         )

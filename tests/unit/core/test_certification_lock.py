@@ -300,7 +300,7 @@ def test_per_run_certification_lock_full_branch_matrix(tmp_path, monkeypatch):
     # 3. POSIX flock path during acquire and release
     mock_fcntl = MagicMock()
     with patch.dict(sys.modules, {"fcntl": mock_fcntl}):
-        with patch("os.name", "posix"):
+        with patch("eval_runner.certification_lock._IS_NT", False):
             lock_posix = PerRunCertificationLock("posix_run", timeout_seconds=1.0)
             lock_posix.acquire()
             assert mock_fcntl.flock.called

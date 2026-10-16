@@ -46,11 +46,6 @@ def client(console_jail, monkeypatch):
     monkeypatch.setattr(config, "RUN_LOG_DIR", console_jail["runs"])
     monkeypatch.setattr(config, "REPORTS_DIR", console_jail["reports"])
 
-    from eval_runner.console.routes.runs import runs_cache
-
-    runs_cache._runs = []
-    runs_cache._scanned_files = {}
-
     with patch("eval_runner.console.auth_manager.require_permission", lambda _: lambda f: f):
         yield app.test_client()
 
@@ -489,7 +484,6 @@ def test_runs_route_get_verification_certificate_corrupt_first_check(client, con
 
 def test_runs_route_is_run_alive_helper():
     """Test is_run_alive helper with threads"""
-    import threading
 
     from eval_runner.console.routes.runs import is_run_alive
 
@@ -702,40 +696,12 @@ def test_runs_route_stream_tail_generator_step_b_read(console_jail):
             next(gen)
 
 
-def test_runs_cache_start_twice():
-    """start() returns early if already started and stop() cleanly halts."""
-    from eval_runner.console.routes.runs import RunsCache
-
-    cache = RunsCache()
-    with patch.object(threading.Thread, "start"):
-        cache.start()
-        assert cache._started is True
-        cache.start()  # Idempotent no-op
-        assert cache._started is True
-        cache.stop()
-        assert cache._started is False
-
-
 def test_get_runs_retrieval():
     """get_runs returns run list and supports query filtering."""
-    from eval_runner.console.routes.runs import runs_cache
+    from eval_runner.console.routes.runs import _active_run_store
 
-    res = runs_cache.get_runs()
+    res = _active_run_store().list_runs()
     assert isinstance(res, list)
-
-
-def test_runs_cache_scan_exception():
-    """update_cache scan exceptions in _update_loop"""
-    from eval_runner.console.routes.runs import RunsCache
-
-    cache = RunsCache()
-    # Mock update_cache to raise exception
-    with patch.object(cache, "update_cache", side_effect=ValueError("Background scan error")):
-        with patch("time.sleep", side_effect=[0, Exception("break loop")]):
-            try:
-                cache._update_loop()
-            except Exception as e:
-                assert "break loop" in str(e)
 
 
 def test_runs_route_stream_runs_list(client, console_jail):
@@ -887,17 +853,6 @@ def test_runs_route_stream_run_logs_uncovered_branches(client, console_jail):
         assert "run_end" in data
 
 
-def test_runs_cache_prune_no_path_attributes(client):
-    """runs_cache pruning when path and _fragment_path are absent."""
-    from eval_runner.console.routes.runs import runs_cache
-
-    runs_cache._runs = [{"run_id": "no_path_run", "scenario": "scen"}]
-    # Trigger get_runs which updates cache. Since "no_path_run" does not exist anywhere,
-    # it resolves via resolve_trace_path to None and is pruned from the cache.
-    res = runs_cache.get_runs()
-    assert not any(r["run_id"] == "no_path_run" for r in res)
-
-
 def test_runs_route_stream_run_logs_exist(client, console_jail):
     """stream_run_logs when log_path exists."""
     runs_dir = console_jail["runs"]
@@ -1044,191 +999,6 @@ def test_runs_routes_blocked_by_active_context(client, monkeypatch):
     assert client.get(f"/api/v1/runs/{r_id}/verify").status_code == 404
 
 
-def test_runs_cache_autostart_and_stop_lifecycle():
-    from eval_runner.console.routes.runs import RunsCache
-
-    cache = RunsCache(autostart=True)
-    assert cache._started is True
-    assert cache._thread is not None
-
-    # Stopping running cache
-    cache.stop()
-    assert cache._started is False
-    assert cache._thread is None
-
-    # Calling stop on already-stopped cache returns early
-    cache.stop()
-    assert cache._started is False
-
-
-def test_runs_cache_durable_index_and_corrupt_fragments(console_jail, monkeypatch):
-    from eval_runner.console.routes.runs import RunsCache
-
-    runs_dir = console_jail["runs"]
-    monkeypatch.setattr(config, "RUN_LOG_DIR", runs_dir)
-    cache = RunsCache()
-
-    # 1. Fragment stat error
-    broken_frag = runs_dir / "broken.jsonl"
-    broken_frag.write_text('{"event": "run_start"}\n', encoding="utf-8")
-    orig_stat = Path.stat
-
-    def mock_stat(self, *args, **kwargs):
-        if self.name == "broken.jsonl":
-            raise OSError("Simulated stat error")
-        return orig_stat(self, *args, **kwargs)
-
-    monkeypatch.setattr(Path, "stat", mock_stat)
-    cache.update_cache()
-    monkeypatch.setattr(Path, "stat", orig_stat)
-
-    # 2. Durable run index processing
-    index_dir = runs_dir / ".index"
-    index_dir.mkdir(parents=True, exist_ok=True)
-
-    # Valid run index
-    idx_file = index_dir / "run_idx_valid.json"
-    idx_file.write_text(
-        json.dumps(
-            {
-                "run_id": "run_idx_valid",
-                "scenario_id": "scenario_idx",
-                "created_at": "2026-10-15T00:00:00Z",
-                "status": "PENDING",
-            }
-        ),
-        encoding="utf-8",
-    )
-
-    # Non-dict JSON in index
-    (index_dir / "run_idx_list.json").write_text('["not_a_dict"]\n', encoding="utf-8")
-
-    # Non-string run_id
-    (index_dir / "run_idx_bad_id.json").write_text('{"run_id": 12345}\n', encoding="utf-8")
-
-    # Corrupt JSON in index
-    (index_dir / "run_idx_corrupt.json").write_text("{corrupt_json\n", encoding="utf-8")
-
-    cache.update_cache()
-    runs = cache.get_runs()
-    found = [r for r in runs if r.get("run_id") == "run_idx_valid"]
-    assert len(found) == 1
-    assert found[0]["pending_status"] == "PENDING"
-    assert found[0]["_run_index"] is True
-
-    # Re-running update_cache when mtime matches cached mtime (skips re-reading)
-    cache.update_cache()
-
-    # Prune test with _run_index where run_index_path does not exist
-    monkeypatch.setattr(
-        "eval_runner.console.routes.runs.run_index_path",
-        lambda rid: Path("/nonexistent/path/for/prune.json"),
-    )
-    cache.update_cache()
-    assert not any(r.get("run_id") == "run_idx_valid" for r in cache.get_runs())
-
-
-def test_runs_cache_vault_parsing_durations_and_scores(console_jail, monkeypatch):
-    from eval_runner.console.routes.runs import RunsCache
-
-    runs_dir = console_jail["runs"]
-    monkeypatch.setattr(config, "RUN_LOG_DIR", runs_dir)
-    cache = RunsCache()
-
-    # Vault 1: Invalid duration and score values to exercise exception handlers
-    v1_dir = runs_dir / "v_invalid_vals"
-    v1_dir.mkdir(parents=True, exist_ok=True)
-    v1_file = v1_dir / "run.jsonl"
-    v1_file.write_text(
-        '{"event": "run_start", "run_id": "v_invalid_vals", '
-        '"timestamp": "2026-10-15T00:00:00Z"}\n'
-        '{"event": "run_end", "data": {"duration": "not_a_float", '
-        '"score": "not_a_float", "passed": true}}\n',
-        encoding="utf-8",
-    )
-
-    # Vault 2: Valid score and duration from terminal event
-    v2_dir = runs_dir / "v_valid_vals"
-    v2_dir.mkdir(parents=True, exist_ok=True)
-    v2_file = v2_dir / "run.jsonl"
-    v2_file.write_text(
-        '{"event": "run_start", "run_id": "v_valid_vals", "timestamp": "2026-10-15T00:00:00Z"}\n'
-        '{"event": "run_end", "data": {"duration": 18.2, "score": 95.0, "status": "SUCCESS"}}\n',
-        encoding="utf-8",
-    )
-
-    # Vault 3: Fallback duration computed from timestamps (t1 >= t0)
-    v3_dir = runs_dir / "v_timestamp_diff"
-    v3_dir.mkdir(parents=True, exist_ok=True)
-    v3_file = v3_dir / "run.jsonl"
-    v3_file.write_text(
-        '{"event": "run_start", "run_id": "v_timestamp_diff", '
-        '"timestamp": "2026-10-15T10:00:00+00:00"}\n'
-        '{"event": "step", "timestamp": "2026-10-15T10:00:25+00:00"}\n',
-        encoding="utf-8",
-    )
-
-    # Vault 4: Fallback timestamp where t1 < t0
-    v4_dir = runs_dir / "v_timestamp_negative"
-    v4_dir.mkdir(parents=True, exist_ok=True)
-    v4_file = v4_dir / "run.jsonl"
-    v4_file.write_text(
-        '{"event": "run_start", "run_id": "v_timestamp_negative", '
-        '"timestamp": "2026-10-15T12:00:00+00:00"}\n'
-        '{"event": "step", "timestamp": "2026-10-15T11:00:00+00:00"}\n',
-        encoding="utf-8",
-    )
-
-    # Vault 5: Fallback timestamp with unparseable datetime
-    v5_dir = runs_dir / "v_timestamp_unparseable"
-    v5_dir.mkdir(parents=True, exist_ok=True)
-    v5_file = v5_dir / "run.jsonl"
-    v5_file.write_text(
-        '{"event": "run_start", "run_id": "v_timestamp_unparseable", '
-        '"timestamp": "invalid_date_start"}\n'
-        '{"event": "step", "timestamp": "invalid_date_end"}\n',
-        encoding="utf-8",
-    )
-
-    # Vault 6: Large file (st_size >= 1MB) to exercise size cap branch (309->397)
-    v6_dir = runs_dir / "v_large_vault"
-    v6_dir.mkdir(parents=True, exist_ok=True)
-    v6_file = v6_dir / "run.jsonl"
-    with open(v6_file, "wb") as f_large:
-        f_large.write(b'{"event": "run_start", "run_id": "v_large_vault"}\n')
-        f_large.seek(1024 * 1024 + 10)
-        f_large.write(b"\n")
-
-    # Vault 7: Multi-event reverse scan to exercise branches 320->326 and 347->369
-    v7_dir = runs_dir / "v_multi"
-    v7_dir.mkdir(parents=True, exist_ok=True)
-    v7_file = v7_dir / "run.jsonl"
-    v7_file.write_text(
-        '{"event": "run_start", "run_id": "v_multi", "timestamp": "2026-10-15T00:00:00Z"}\n'
-        '{"event": "evaluation_result", "data": {"score": 99.0}, '
-        '"timestamp": "2026-10-15T00:00:01Z"}\n'
-        '{"event": "step", "data": {"status": "PASS"}, "timestamp": "2026-10-15T00:00:02Z"}\n'
-        '{"event": "run_end", "data": {"status": "PASS", "duration": 4.5}, '
-        '"timestamp": "2026-10-15T00:00:03Z"}\n',
-        encoding="utf-8",
-    )
-
-    cache.update_cache()
-    runs = {r["run_id"]: r for r in cache.get_runs()}
-
-    assert runs["v_valid_vals"]["score"] == 95.0
-    assert runs["v_valid_vals"]["duration_seconds"] == 18.2
-    assert runs["v_valid_vals"]["result_status"] == "PASS"
-
-    assert runs["v_timestamp_diff"]["duration_seconds"] == 25.0
-    assert runs["v_timestamp_negative"]["duration_seconds"] is None
-    assert runs["v_timestamp_unparseable"]["duration_seconds"] is None
-    assert "v_large_vault" in runs
-    assert runs["v_multi"]["score"] == 99.0
-    assert runs["v_multi"]["duration_seconds"] == 4.5
-    assert runs["v_multi"]["result_status"] == "PASS"
-
-
 def test_list_runs_and_stream_with_provisional_run_index(client, console_jail):
     runs_dir = console_jail["runs"]
     index_dir = runs_dir / ".index"
@@ -1246,10 +1016,6 @@ def test_list_runs_and_stream_with_provisional_run_index(client, console_jail):
         ),
         encoding="utf-8",
     )
-
-    from eval_runner.console.routes.runs import runs_cache
-
-    runs_cache.update_cache()
 
     # 1. list_runs enrichment for provisional index
     res = client.get("/api/runs")
@@ -1710,40 +1476,47 @@ def test_tail_file_generator_deep_coverage(tmp_path, monkeypatch):
 
 
 def test_runs_filtering_unverified_context_in_list_and_stream(client, console_jail, monkeypatch):
-    from eval_runner.console.routes.runs import runs_cache
+    from unittest.mock import MagicMock
 
-    runs_dir = console_jail["runs"]
-    monkeypatch.setattr(config, "RUN_LOG_DIR", runs_dir)
+    from agentv_runtime.discovery import reset_extensions, set_extension
 
-    # Put a forbidden run into cache
-    runs_cache._runs = [
+    mock_store = MagicMock()
+    mock_runs = [
         {"run_id": "forbidden_run_1", "scenario": "scen_f"},
         {"run_id": "allowed_run_1", "scenario": "scen_a"},
     ]
+    mock_store.search_runs.return_value = mock_runs
+    mock_store.list_runs.return_value = mock_runs
+    set_extension("run_stores", mock_store)
 
-    # Context allows allowed_run_1, forbids forbidden_run_1
-    def mock_context_check(run_id, ctx=None):
-        return run_id == "allowed_run_1"
+    try:
+        # Context allows allowed_run_1, forbids forbidden_run_1
+        def mock_context_check(run_id, ctx=None):
+            return run_id == "allowed_run_1"
 
-    monkeypatch.setattr(
-        "eval_runner.console.routes.runs._run_is_in_active_context", mock_context_check
-    )
-    monkeypatch.setattr(
-        "eval_runner.console.routes.runs.active_runtime_context", lambda: {"tenant_id": "t1"}
-    )
+        monkeypatch.setattr(
+            "eval_runner.console.routes.runs._run_is_in_active_context", mock_context_check
+        )
+        monkeypatch.setattr(
+            "eval_runner.console.routes.runs.active_runtime_context", lambda: {"tenant_id": "t1"}
+        )
 
-    # 1. list_runs filters forbidden_run_1
-    res = client.get("/api/runs")
-    assert res.status_code == 200
-    runs = res.get_json()["runs"]
-    ids = [r["run_id"] for r in runs]
-    assert "forbidden_run_1" not in ids
+        # 1. list_runs filters forbidden_run_1
+        res = client.get("/api/runs")
+        assert res.status_code == 200
+        runs = res.get_json()["runs"]
+        ids = [r["run_id"] for r in runs]
+        assert "forbidden_run_1" not in ids
+        assert "allowed_run_1" in ids
 
-    # 2. stream_runs_list filters forbidden_run_1
-    stream_res = client.get("/api/v1/runs/stream-list")
-    assert stream_res.status_code == 200
-    stream_data = stream_res.get_data(as_text=True)
-    assert "forbidden_run_1" not in stream_data
+        # 2. stream_runs_list filters forbidden_run_1
+        stream_res = client.get("/api/v1/runs/stream-list")
+        assert stream_res.status_code == 200
+        stream_data = stream_res.get_data(as_text=True)
+        assert "forbidden_run_1" not in stream_data
+        assert "allowed_run_1" in stream_data
+    finally:
+        reset_extensions("run_stores")
 
 
 def test_tail_file_generator_tail_loop_branches(tmp_path, monkeypatch):

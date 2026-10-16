@@ -472,9 +472,16 @@ def get_auth_provider() -> AuthManager:
     # Industrial Hardening: Prefer dedicated SERVICE_API_KEY for programmatic access
     backend = _configured_authorization_backend
     if backend is None:
-        factory_spec = os.getenv(_AUTHORIZATION_BACKEND_FACTORY_ENV, "").strip()
-        if factory_spec:
-            backend = _load_configured_authorization_backend(factory_spec)
+        from agentv_runtime.discovery import resolve_extension
+
+        backend = resolve_extension(
+            "authorization_backends",
+            default_factory=lambda: None,
+        )
+        if backend is None:
+            factory_spec = os.getenv(_AUTHORIZATION_BACKEND_FACTORY_ENV, "").strip()
+            if factory_spec:
+                backend = _load_configured_authorization_backend(factory_spec)
     return StaticKeyProvider(config.SERVICE_API_KEY, backend=backend)
 
 
@@ -634,7 +641,7 @@ def context_allows_record(record: dict, context: dict[str, str] | None) -> bool:
     metadata = record.get("metadata")
     if isinstance(metadata, dict) and isinstance(metadata.get("runtime_context"), dict):
         source = metadata["runtime_context"]
-    return all(source.get(field) == context[field] for field in CONTEXT_FIELDS)
+    return all(source.get(field) == context[field] for field in CONTEXT_FIELDS if field in context)
 
 
 def require_sse_permission(permission_node: str):

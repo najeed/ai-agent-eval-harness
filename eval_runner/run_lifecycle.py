@@ -12,7 +12,6 @@ Invariants:
 
 from __future__ import annotations
 
-import json
 import logging
 from enum import StrEnum
 from pathlib import Path
@@ -86,52 +85,43 @@ _VALID_TRANSITIONS: dict[RunLifecycleState, set[RunLifecycleState]] = {
 }
 
 
-def _lifecycle_file_path(run_id: str, log_dir: Path | None = None) -> Path:
-    base = log_dir if log_dir is not None else config.RUN_LOG_DIR
-    return base / run_id / ".run_lifecycle"
-
-
 def get_run_lifecycle_state(run_id: str, log_dir: Path | None = None) -> RunLifecycleState:
     """
-    Returns the authoritative lifecycle state of the given run.
-    Fails closed to INVALID if the lifecycle marker exists but is corrupted or unparseable.
+    Returns the authoritative lifecycle state from the active storage provider.
 
-    ``log_dir`` scopes the filesystem probe to a specific directory. When None (the
-    default) the global ``config.RUN_LOG_DIR`` is used, which is the production path.
+    ``log_dir`` is retained only as an explicit local-store scope for isolated tests.
     """
     if not run_id or run_id == "unknown":
         return RunLifecycleState.OPEN
 
-    lf_path = _lifecycle_file_path(run_id, log_dir)
-    if lf_path.exists():
-        if not lf_path.is_file():
-            return RunLifecycleState.INVALID
-        try:
-            content = lf_path.read_text(encoding="utf-8").strip()
-            if not content:
-                return RunLifecycleState.INVALID
-            try:
-                data = json.loads(content)
-                if not isinstance(data, dict):
-                    return RunLifecycleState.INVALID
-                state_str = str(data.get("state", "")).upper()
-            except Exception:
-                state_str = content.upper()
-            if state_str in RunLifecycleState._value2member_map_:
-                return RunLifecycleState(state_str)
-            return RunLifecycleState.INVALID
-        except OSError as e:
-            logger.error("Failed reading lifecycle marker for %s: %s", run_id, e)
-            return RunLifecycleState.INVALID
+    if log_dir is not None:
+        from eval_runner.reference.local_run_store import LocalFileRunStore
 
-    # Check fallback markers: if sealed artifact exists, state is SEALED
-    base = log_dir if log_dir is not None else config.RUN_LOG_DIR
-    vault_dir = base / run_id
-    if vault_dir.is_dir():
-        if (vault_dir / ".sealed").exists() or (vault_dir / "trace_seal.json").exists():
-            return RunLifecycleState.SEALED
+        record = LocalFileRunStore(log_dir).get_run(run_id)
+    else:
+        from eval_runner.storage_resolver import resolve_run_storage_provider
 
-    return RunLifecycleState.OPEN
+        provider = resolve_run_storage_provider()
+        record = provider.get_run(run_id)
+        # Test and embedded runtimes may re-scope RUN_LOG_DIR after the default
+        # local provider was constructed. This remains provider access, not a
+        # direct lifecycle-file authority.
+        if record is None:
+            from eval_runner.reference.local_run_store import LocalFileRunStore
+
+            if (
+                isinstance(provider, LocalFileRunStore)
+                and provider.log_dir != config.RUN_LOG_DIR.resolve()
+            ):
+                record = LocalFileRunStore(config.RUN_LOG_DIR).get_run(run_id)
+    if record is None:
+        return RunLifecycleState.OPEN
+    state = str(record.get("lifecycle") or record.get("status") or "OPEN").upper()
+    if state in ("PENDING", "RUNNING", "STARTED", "QUEUED"):
+        return RunLifecycleState.OPEN
+    if state in RunLifecycleState._value2member_map_:
+        return RunLifecycleState(state)
+    return RunLifecycleState.INVALID
 
 
 def transition_run_lifecycle(
@@ -144,8 +134,8 @@ def transition_run_lifecycle(
     Transitions the run's lifecycle strictly forward: OPEN → FINALIZING → SEALED.
     Raises ValueError if an illegal or backward transition is attempted.
 
-    ``log_dir`` scopes the lifecycle marker to a specific directory. When None (the
-    default) the global ``config.RUN_LOG_DIR`` is used.
+    ``log_dir`` is supported only for isolated local-store tests; production
+    transitions always use the active storage provider.
     """
     if not run_id or run_id == "unknown":
         return RunLifecycleState.OPEN
@@ -165,32 +155,16 @@ def transition_run_lifecycle(
             f"from '{current.value}' to '{target.value}' (must be monotonic forward)."
         )
 
-    base = log_dir if log_dir is not None else config.RUN_LOG_DIR
-    vault_dir = base / run_id
-    vault_dir.mkdir(parents=True, exist_ok=True)
-    lf_path = _lifecycle_file_path(run_id, log_dir)
+    if log_dir is not None:
+        from eval_runner.reference.local_run_store import LocalFileRunStore
 
-    payload = {
-        "run_id": run_id,
-        "state": target.value,
-        "updated_at": config.now_iso() if hasattr(config, "now_iso") else "",
-        "metadata": metadata or {},
-    }
-    tmp_path = vault_dir / f".run_lifecycle.tmp_{run_id}"
-    try:
-        tmp_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-        tmp_path.replace(lf_path)
-    except OSError as e:
-        logger.error("Failed writing lifecycle marker for %s: %s", run_id, e)
-        raise
+        provider = LocalFileRunStore(log_dir)
+    else:
+        from eval_runner.storage_resolver import resolve_run_storage_provider
 
-    if target == RunLifecycleState.SEALED:
-        sealed_marker = vault_dir / ".sealed"
-        if not sealed_marker.exists():
-            try:
-                sealed_marker.write_text("SEALED", encoding="utf-8")
-            except OSError as seal_err:
-                logger.debug("Failed writing secondary .sealed marker for %s: %s", run_id, seal_err)
+        provider = resolve_run_storage_provider()
+    if not provider.update_run_status(run_id, target.value, metadata):
+        raise RuntimeError(f"RunStorageProvider rejected lifecycle update for '{run_id}'.")
 
     return target
 
@@ -201,8 +175,8 @@ def can_write_trace(run_id: str, log_dir: Path | None = None) -> tuple[bool, str
     Writes are rejected if the run is in FINALIZING, SEALED, or INVALID state,
     or if an exclusive certification lock is active.
 
-    ``log_dir`` scopes the filesystem probe. When None (the default) the global
-    ``config.RUN_LOG_DIR`` is used.
+    ``log_dir`` is supported only for isolated local-store tests; production
+    checks query the active storage provider.
     """
     if not run_id or run_id == "unknown":
         return True, ""
@@ -255,11 +229,16 @@ def rollback_run_lifecycle_to_open(run_id: str, log_dir: Path | None = None) -> 
     if current == RunLifecycleState.SEALED:
         raise ValueError(f"Cannot rollback lifecycle for SEALED run '{run_id}'.")
 
-    lf_path = _lifecycle_file_path(run_id, log_dir)
-    try:
-        lf_path.unlink(missing_ok=True)
-    except OSError as e:
-        logger.debug("Failed unlinking lifecycle marker during rollback: %s", e)
+    if log_dir is not None:
+        from eval_runner.reference.local_run_store import LocalFileRunStore
+
+        provider = LocalFileRunStore(log_dir)
+    else:
+        from eval_runner.storage_resolver import resolve_run_storage_provider
+
+        provider = resolve_run_storage_provider()
+    if not provider.update_run_status(run_id, RunLifecycleState.OPEN.value):
+        raise RuntimeError(f"RunStorageProvider rejected lifecycle rollback for '{run_id}'.")
 
     return RunLifecycleState.OPEN
 

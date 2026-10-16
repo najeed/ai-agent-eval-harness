@@ -1005,7 +1005,7 @@ def test_mutation_service_plugin_discovery_and_reset(monkeypatch):
     mock_ep.load.return_value = DiscoveredMutator
 
     def mock_entry_points(group=None):
-        if group == "agentv.mutators":
+        if group == "agentv_runtime.mutation_engines":
             return [mock_ep]
         return []
 

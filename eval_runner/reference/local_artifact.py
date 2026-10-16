@@ -29,10 +29,28 @@ class LocalFileArtifactStore(ArtifactStore):
     external WORM/retention system (for example Object Lock).
     """
 
+    is_local_store: bool = True
+    is_remote: bool = False
+
     def __init__(self, base_dir: str | Path | None = None):
-        self.base_dir = Path(base_dir or config.RUN_LOG_DIR).resolve()
-        self.base_dir.mkdir(parents=True, exist_ok=True)
+        self._custom_base_dir = Path(base_dir).resolve() if base_dir is not None else None
         self.immutability_guarantee = "TAMPER_EVIDENT_LOGICAL_SEAL"
+
+    @property
+    def base_dir(self) -> Path:
+        if self._custom_base_dir is not None:
+            return self._custom_base_dir
+        base = config.RUN_LOG_DIR
+        if isinstance(base, Path):
+            base.mkdir(parents=True, exist_ok=True)
+            return base
+        res = Path(base).resolve()
+        res.mkdir(parents=True, exist_ok=True)
+        return res
+
+    @base_dir.setter
+    def base_dir(self, value: str | Path | None) -> None:
+        self._custom_base_dir = Path(value).resolve() if value is not None else None
 
     def _get_run_dir(self, run_id: str, create: bool = False) -> Path:
         return SafeRunPathResolver.resolve_run_dir(self.base_dir, run_id, create=create)

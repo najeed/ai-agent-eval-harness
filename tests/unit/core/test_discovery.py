@@ -1,153 +1,184 @@
-import pkgutil
-import unittest
-from pathlib import Path
-from unittest.mock import MagicMock, patch
+"""Contract and behavioral tests for agentv_runtime.discovery."""
 
-# SUT
-import eval_runner.discovery as discovery
+from __future__ import annotations
 
+import logging
+from types import SimpleNamespace
 
-class BaseTest:
-    pass
+import pytest
 
-
-class SubTest(BaseTest):
-    pass
-
-
-class TestDiscovery(unittest.TestCase):
-    def setUp(self):
-        self.print_patch = patch("builtins.print")
-        self.print_patch.start()
-
-    def tearDown(self):
-        self.print_patch.stop()
-
-    def test_discover_classes_in_module(self):
-        mock_module = MagicMock()
-        mock_module.__name__ = "mock_mod"
-        SubTest.__module__ = "mock_mod"
-        BaseTest.__module__ = "mock_mod"
-
-        members = [("SubTest", SubTest), ("BaseTest", BaseTest), ("Other", 123)]
-
-        with patch("eval_runner.discovery.inspect.getmembers", return_value=members):
-            with patch(
-                "eval_runner.discovery.inspect.isclass", side_effect=lambda x: isinstance(x, type)
-            ):
-                found = discovery.discover_classes_in_module(
-                    mock_module, BaseTest, instantiate=False
-                )
-                self.assertEqual(len(found), 1)
-                self.assertEqual(found[0], SubTest)
-
-    def test_discover_plugins_in_directory_various_cases(self):
-        mock_dir = MagicMock(spec=Path)
-
-        # Scenario 1: Exists but not a directory
-        mock_dir.exists.return_value = True
-        mock_dir.is_dir.return_value = False
-        self.assertEqual(discovery.discover_plugins_in_directory(mock_dir, BaseTest), [])
-
-        # Scenario 2:
-        mock_dir.is_dir.return_value = True
-        init_file = MagicMock(spec=Path)
-        init_file.name = "__init__.py"
-
-        valid_file = MagicMock(spec=Path)
-        valid_file.name = "plugin.py"
-        valid_file.stem = "plugin"
-
-        broken_file = MagicMock(spec=Path)
-        broken_file.name = "broken.py"
-        broken_file.stem = "broken"
-
-        mock_dir.glob.return_value = [init_file, valid_file, broken_file]
-
-        def import_side(name):
-            if "broken" in name:
-                raise Exception("Boom")
-            m = MagicMock()
-            m.__name__ = name
-            return m
-
-        with patch.object(
-            discovery, "importlib", MagicMock(import_module=MagicMock(side_effect=import_side))
-        ):
-            with patch.object(discovery, "discover_classes_in_module", return_value=["Inst"]):
-                # Test with prefix
-                plugins = discovery.discover_plugins_in_directory(
-                    mock_dir, BaseTest, package_prefix="prefix"
-                )
-                self.assertEqual(plugins, ["Inst"])
-
-                # Test without prefix
-                plugins = discovery.discover_plugins_in_directory(mock_dir, BaseTest)
-                self.assertEqual(plugins, ["Inst"])
-
-    def test_discover_classes_in_package_resilience(self):
-        mock_pkg = MagicMock()
-        mock_pkg.__path__ = ["/path"]
-        mock_pkg.__name__ = "pkg"
-
-        ModuleInfo = pkgutil.ModuleInfo
-        mock_pkgutil = MagicMock()
-        mock_pkgutil.walk_packages.return_value = [
-            ModuleInfo(None, "pkg.sub", False),
-            ModuleInfo(None, "pkg.broken", False),
-        ]
-
-        def import_side(name):
-            if "broken" in name:
-                raise Exception("Inner Boom")
-            return MagicMock()
-
-        with patch.object(discovery, "pkgutil", mock_pkgutil):
-            with patch.object(
-                discovery, "importlib", MagicMock(import_module=MagicMock(side_effect=import_side))
-            ):
-                with patch.object(
-                    discovery, "discover_classes_in_module", return_value=["SomeClass"]
-                ):
-                    # results set to hit silent fail
-                    res = discovery.discover_classes_in_package(mock_pkg, BaseTest)
-                    self.assertIn("sub", res)
-                    self.assertEqual(res["sub"], "SomeClass")
-                    self.assertNotIn("broken", res)
-
-    def test_scan_package_for_adapters_resilience(self):
-        mock_pkg = MagicMock()
-        mock_pkg.__path__ = ["/path"]
-        mock_pkg.__name__ = "pkg"
-
-        ModuleInfo = pkgutil.ModuleInfo
-        mock_pkgutil = MagicMock()
-        mock_pkgutil.iter_modules.return_value = [
-            ModuleInfo(None, "valid", False),
-            ModuleInfo(None, "broken", False),
-        ]
-
-        def import_side(name):
-            if "broken" in name:
-                raise Exception("Outer Boom")
-            m = MagicMock()
-            m.adapter = lambda: "ok"
-            return m
-
-        results = {}
-
-        def reg(name, func):
-            results[name] = func
-
-        with patch.object(discovery, "pkgutil", mock_pkgutil):
-            with patch.object(
-                discovery, "importlib", MagicMock(import_module=MagicMock(side_effect=import_side))
-            ):
-                # hit silent fail
-                discovery.scan_package_for_adapters(mock_pkg, reg)
-                self.assertIn("valid", results)
-                self.assertNotIn("broken", results)
+from agentv_runtime.discovery import (
+    ENTRY_POINT_NAMESPACE,
+    reset_extensions,
+    resolve_extension,
+    set_extension,
+)
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.fixture(autouse=True)
+def clean_registry():
+    reset_extensions()
+    yield
+    reset_extensions()
+
+
+class MockExtension:
+    def __init__(self, name: str = "mock"):
+        self.name = name
+
+
+def test_resolve_extension_explicit_returns_immediately():
+    explicit = MockExtension("explicit")
+    resolved = resolve_extension("run_stores", explicit=explicit, default_factory=MockExtension)
+    assert resolved is explicit
+
+
+def test_resolve_extension_cached_registry():
+    pre_set = MockExtension("preset")
+    set_extension("run_stores", pre_set)
+    resolved = resolve_extension("run_stores", default_factory=MockExtension)
+    assert resolved is pre_set
+
+
+def test_resolve_extension_env_var_selected(monkeypatch):
+    monkeypatch.setenv("AGENTV_RUN_STORES", "custom")
+    custom_inst = MockExtension("custom")
+    ep = SimpleNamespace(name="custom", load=lambda: lambda: custom_inst)
+
+    monkeypatch.setattr(
+        "importlib.metadata.entry_points",
+        lambda group=None: [ep] if group == f"{ENTRY_POINT_NAMESPACE}.run_stores" else [],
+    )
+
+    resolved = resolve_extension("run_stores", default_factory=MockExtension)
+    assert resolved is custom_inst
+
+
+def test_resolve_extension_env_var_load_failure(monkeypatch, caplog):
+    monkeypatch.setenv("AGENTV_RUN_STORES", "failing")
+
+    def broken_loader():
+        raise RuntimeError("Load failed")
+
+    ep = SimpleNamespace(name="failing", load=broken_loader)
+
+    monkeypatch.setattr(
+        "importlib.metadata.entry_points",
+        lambda group=None: [ep] if group == f"{ENTRY_POINT_NAMESPACE}.run_stores" else [],
+    )
+
+    with caplog.at_level(logging.WARNING):
+        resolved = resolve_extension(
+            "run_stores", default_factory=lambda: MockExtension("fallback")
+        )
+    assert resolved.name == "fallback"
+    assert "Failed to load configured run_stores provider 'failing'" in caplog.text
+
+
+def test_resolve_extension_default_entry_point(monkeypatch):
+    default_inst = MockExtension("default")
+    other_inst = MockExtension("other")
+    ep_default = SimpleNamespace(name="default", load=lambda: lambda: default_inst)
+    ep_other = SimpleNamespace(name="other", load=lambda: lambda: other_inst)
+
+    monkeypatch.setattr(
+        "importlib.metadata.entry_points",
+        lambda group=None: (
+            [ep_default, ep_other] if group == f"{ENTRY_POINT_NAMESPACE}.artifact_stores" else []
+        ),
+    )
+
+    resolved = resolve_extension("artifact_stores", default_factory=MockExtension)
+    assert resolved is default_inst
+
+
+def test_resolve_extension_default_entry_point_load_failure(monkeypatch, caplog):
+    def broken_loader():
+        raise RuntimeError("Default load failed")
+
+    ep_default = SimpleNamespace(name="default", load=broken_loader)
+    other_inst = MockExtension("other")
+    ep_other = SimpleNamespace(name="other", load=lambda: lambda: other_inst)
+
+    monkeypatch.setattr(
+        "importlib.metadata.entry_points",
+        lambda group=None: (
+            [ep_default, ep_other] if group == f"{ENTRY_POINT_NAMESPACE}.artifact_stores" else []
+        ),
+    )
+
+    with caplog.at_level(logging.WARNING):
+        resolved = resolve_extension(
+            "artifact_stores", default_factory=lambda: MockExtension("fallback")
+        )
+    assert resolved.name == "fallback"
+    assert "Failed to load default registered artifact_stores provider" in caplog.text
+
+
+def test_resolve_extension_single_entry_point_auto_bind(monkeypatch):
+    unique_inst = MockExtension("unique")
+    ep_unique = SimpleNamespace(name="isolated", load=lambda: lambda: unique_inst)
+
+    monkeypatch.setattr(
+        "importlib.metadata.entry_points",
+        lambda group=None: (
+            [ep_unique] if group == f"{ENTRY_POINT_NAMESPACE}.checkpoint_stores" else []
+        ),
+    )
+
+    resolved = resolve_extension("checkpoint_stores", default_factory=MockExtension)
+    assert resolved is unique_inst
+
+
+def test_resolve_extension_single_entry_point_auto_bind_failure(monkeypatch, caplog):
+    def broken_loader():
+        raise RuntimeError("Single load failed")
+
+    ep_unique = SimpleNamespace(name="isolated", load=broken_loader)
+
+    monkeypatch.setattr(
+        "importlib.metadata.entry_points",
+        lambda group=None: (
+            [ep_unique] if group == f"{ENTRY_POINT_NAMESPACE}.checkpoint_stores" else []
+        ),
+    )
+
+    with caplog.at_level(logging.WARNING):
+        resolved = resolve_extension(
+            "checkpoint_stores", default_factory=lambda: MockExtension("fallback")
+        )
+    assert resolved.name == "fallback"
+    assert "Failed to load single registered checkpoint_stores provider 'isolated'" in caplog.text
+
+
+def test_resolve_extension_enumeration_failure(monkeypatch, caplog):
+    def failing_entry_points(group=None):
+        raise OSError("Package metadata corrupted")
+
+    monkeypatch.setattr("importlib.metadata.entry_points", failing_entry_points)
+
+    with caplog.at_level(logging.WARNING):
+        resolved = resolve_extension(
+            "signing_backends", default_factory=lambda: MockExtension("fallback")
+        )
+    assert resolved.name == "fallback"
+    assert "Failed to enumerate entry points for 'agentv_runtime.signing_backends'" in caplog.text
+
+
+def test_resolve_extension_fallback_factory_called():
+    fallback = MockExtension("factory_fallback")
+    resolved = resolve_extension(
+        "policy_evaluators",
+        default_factory=lambda: fallback,
+    )
+    assert resolved is fallback
+
+
+def test_set_extension_none_removes_entry():
+    set_extension("test_family", MockExtension("active"))
+    assert resolve_extension("test_family", default_factory=MockExtension).name == "active"
+    set_extension("test_family", None)
+    assert (
+        resolve_extension("test_family", default_factory=lambda: MockExtension("reset")).name
+        == "reset"
+    )

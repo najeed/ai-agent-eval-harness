@@ -461,25 +461,24 @@ def get_default_approval_store(
     Returns the configured or singleton ApprovalStore reference implementation.
     Defaults to lightweight FileApprovalStore (.agentv/approvals/<run_id>.json).
     """
-    global _default_store
+    from agentv_runtime.discovery import resolve_extension
+
     kind = store_type or os.getenv("AGENTV_APPROVAL_STORE", "file").lower()
     if base_dir is not None:
         if kind == "sqlite":
             return SQLiteApprovalStore(db_path=base_dir)
         return FileApprovalStore(base_dir=base_dir)
 
-    with _store_lock:
-        if _default_store is None:
-            if kind == "sqlite":
-                _default_store = SQLiteApprovalStore()
-            else:
-                _default_store = FileApprovalStore()
-        return _default_store
+    default_factory = SQLiteApprovalStore if kind == "sqlite" else FileApprovalStore
+    return resolve_extension("approval_stores", default_factory=default_factory)
 
 
 def reset_default_approval_store() -> None:
     """Resets the singleton store instance for tests."""
     global _default_store
+    from agentv_runtime.discovery import reset_extensions
+
+    reset_extensions("approval_stores")
     with _store_lock:
         _default_store = None
 

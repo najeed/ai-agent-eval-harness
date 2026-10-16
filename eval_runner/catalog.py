@@ -59,6 +59,7 @@ class ScenarioCatalog:
         if getattr(self, "_attrs_initialized", False):
             return
 
+        from agentv_runtime.discovery import resolve_extension
         from eval_runner import config
         from eval_runner.reference.local_catalog import LocalFileCatalogStore
 
@@ -71,7 +72,11 @@ class ScenarioCatalog:
         else:
             self.index_path = self.root_dir / "scenarios" / "index.json"
 
-        self.store = store or LocalFileCatalogStore(base_dir=self.root_dir)
+        self.store = resolve_extension(
+            "catalog_stores",
+            explicit=store,
+            default_factory=lambda: LocalFileCatalogStore(base_dir=self.root_dir),
+        )
         self.scenarios: list[dict[str, Any]] = []
         self._disk_count = 0
         self._last_sync_check = 0

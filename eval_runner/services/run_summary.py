@@ -35,13 +35,16 @@ class RunSummaryService:
         if not run_id:
             return "NOT_EXECUTED"
 
-        tp = resolve_trace_path(run_id, allow_master_recovery=False)
-        if not tp or not tp.exists():
-            return "NOT_EXECUTED"
-
         from eval_runner.verifier import TraceVerifier, locate_certificate_file
 
         manifest_path = locate_certificate_file(run_id)
+        tp = resolve_trace_path(run_id, allow_master_recovery=False)
+        if manifest_path is not None and manifest_path.exists():
+            if not tp or not tp.exists():
+                return "UNKNOWN"
+        elif not tp or not tp.exists():
+            return "NOT_EXECUTED"
+
         if manifest_path is None or not manifest_path.exists():
             return "UNKNOWN"
 

@@ -1556,7 +1556,12 @@ def evaluate_scenario():
         context=scope,
         scenario_id=str(scen.get("id") or identifier),
     )
-    backend = InProcessExecutionBackend.get_instance()
+    from agentv_runtime.discovery import resolve_extension
+
+    backend = resolve_extension(
+        "execution_backends",
+        default_factory=InProcessExecutionBackend.get_instance,
+    )
     backend.submit(
         run_id=run_id,
         scenario_data=scen,

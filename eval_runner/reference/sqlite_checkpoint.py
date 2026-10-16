@@ -21,10 +21,13 @@ class SQLiteCheckpointStore(CheckpointStore):
     """
 
     def __init__(self, db_path: str | None = None):
-        if not db_path:
-            db_path = str(Path(config.RUN_LOG_DIR) / "checkpoints.db")
-        self.db_path = db_path
-        self._initialized = False
+        self._custom_db_path = str(db_path) if db_path is not None else None
+
+    @property
+    def db_path(self) -> str:
+        if self._custom_db_path is not None:
+            return self._custom_db_path
+        return str(Path(config.RUN_LOG_DIR) / "checkpoints.db")
 
     def _get_connection(self) -> sqlite3.Connection:
         Path(self.db_path).parent.mkdir(parents=True, exist_ok=True)
@@ -33,32 +36,30 @@ class SQLiteCheckpointStore(CheckpointStore):
         return conn
 
     def _ensure_initialized(self):
-        if not self._initialized:
-            Path(self.db_path).parent.mkdir(parents=True, exist_ok=True)
-            with closing(self._get_connection()) as conn:
-                with conn:
-                    conn.execute(
-                        """
-                        CREATE TABLE IF NOT EXISTS session_checkpoints (
-                            run_id TEXT NOT NULL,
-                            checkpoint_id TEXT NOT NULL,
-                            turn_number INTEGER NOT NULL DEFAULT 0,
-                            state_json TEXT NOT NULL,
-                            metadata_json TEXT,
-                            created_at TEXT NOT NULL,
-                            PRIMARY KEY (run_id, checkpoint_id)
-                        )
-                        """
+        Path(self.db_path).parent.mkdir(parents=True, exist_ok=True)
+        with closing(self._get_connection()) as conn:
+            with conn:
+                conn.execute(
+                    """
+                    CREATE TABLE IF NOT EXISTS session_checkpoints (
+                        run_id TEXT NOT NULL,
+                        checkpoint_id TEXT NOT NULL,
+                        turn_number INTEGER NOT NULL DEFAULT 0,
+                        state_json TEXT NOT NULL,
+                        metadata_json TEXT,
+                        created_at TEXT NOT NULL,
+                        PRIMARY KEY (run_id, checkpoint_id)
                     )
-                    # Auto-migration for existing tables without turn_number
-                    try:
-                        conn.execute(
-                            "ALTER TABLE session_checkpoints "
-                            "ADD COLUMN turn_number INTEGER NOT NULL DEFAULT 0"
-                        )
-                    except sqlite3.OperationalError:
-                        pass
-            self._initialized = True
+                    """
+                )
+                # Auto-migration for existing tables without turn_number
+                try:
+                    conn.execute(
+                        "ALTER TABLE session_checkpoints "
+                        "ADD COLUMN turn_number INTEGER NOT NULL DEFAULT 0"
+                    )
+                except sqlite3.OperationalError:
+                    pass
 
     def save(
         self,

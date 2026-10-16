@@ -371,9 +371,9 @@ Usage: agentv <command> [options]
         import importlib.metadata
 
         try:
-            eps = importlib.metadata.entry_points(group="agentv.extensions")
+            eps = importlib.metadata.entry_points(group="agentv_runtime.cli_extensions")
         except TypeError:
-            eps = importlib.metadata.entry_points().get("agentv.extensions", [])
+            eps = importlib.metadata.entry_points().get("agentv_runtime.cli_extensions", [])
 
         for ep in eps:
             try:

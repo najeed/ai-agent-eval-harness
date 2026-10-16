@@ -75,11 +75,17 @@ class InProcessExecutionBackend(ExecutionBackend):
                     config_resolver=config_resolver,
                     run_store=run_store,
                 )
+            from agentv_runtime.discovery import set_extension
+
+            set_extension("execution_backends", cls._instance)
             return cls._instance
 
     @classmethod
     def clear_instance(cls) -> None:
         """Resets singleton instance for test isolation."""
+        from agentv_runtime.discovery import reset_extensions
+
+        reset_extensions("execution_backends")
         with cls._singleton_lock:
             cls._instance = None
 
@@ -140,7 +146,12 @@ class InProcessExecutionBackend(ExecutionBackend):
     @property
     def checkpoint_store(self):
         if self._checkpoint_store is None:
-            self._checkpoint_store = SQLiteCheckpointStore()
+            from agentv_runtime.discovery import resolve_extension
+
+            self._checkpoint_store = resolve_extension(
+                "checkpoint_stores",
+                default_factory=SQLiteCheckpointStore,
+            )
         return self._checkpoint_store
 
     def submit(

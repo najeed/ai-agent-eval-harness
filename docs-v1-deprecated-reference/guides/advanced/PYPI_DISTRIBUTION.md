@@ -1,6 +1,8 @@
 # PyPI Distribution Guide
 
-This guide details the process of building and publishing the `eval_runner` package (AgentV) to PyPI.
+This guide details the process of building and publishing the `agentv-runtime` distribution
+(AgentV) to PyPI. The installed CLI remains `agentv` and the public Python namespace remains
+`agentv_runtime`.
 
 ## Prerequisites
 
@@ -17,7 +19,7 @@ Ensure the `version` in `pyproject.toml` is correct for your new release.
 
 ```toml
 [project]
-name = "agentv"
+name = "agentv-runtime"
 version = "1.5.0" # Update this
 ...
 ```
@@ -67,8 +69,8 @@ twine upload --repository testpypi dist/*
 
 You can then try installing it from TestPyPI:
 ```bash
-# Use the new package name
-pip install --index-url https://test.pypi.org/simple/ --no-deps agentv
+# Install the distribution name (the executable remains `agentv`).
+pip install --index-url https://test.pypi.org/simple/ --no-deps agentv-runtime
 ```
 
 ## Step 5: Upload to PyPI

@@ -24,6 +24,8 @@ from eval_runner import config
 
 logger = logging.getLogger(__name__)
 
+_IS_NT: bool = os.name == "nt"
+
 
 def _is_process_alive(pid: int) -> bool:
     """Checks if a process ID is currently running on the local system."""
@@ -195,7 +197,7 @@ class PerRunCertificationLock:
                         os.O_CREAT | os.O_EXCL | os.O_RDWR,
                         0o600,
                     )
-                    if os.name == "nt":
+                    if _IS_NT:
                         import msvcrt
 
                         try:
@@ -280,7 +282,7 @@ class PerRunCertificationLock:
         try:
             if self._fd is not None:
                 try:
-                    if os.name == "nt":
+                    if _IS_NT:
                         import msvcrt
 
                         try:

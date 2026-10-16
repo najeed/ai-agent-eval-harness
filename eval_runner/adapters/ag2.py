@@ -803,7 +803,7 @@ class AG2AdapterPlugin(BaseEvalPlugin, BaseAdapter):
         except ImportError:
             raise ImportError(
                 "AG2 SDK is not installed. Install the AgentV AG2 extra "
-                "with `pip install 'agentv[framework-ag2]'`."
+                "with `pip install 'agentv-runtime[framework-ag2]'`."
             ) from None
 
     @staticmethod

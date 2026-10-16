@@ -223,10 +223,15 @@ class DefaultRunner(BaseRunner):
         Path("industries").mkdir(exist_ok=True)
         Path(".aes").mkdir(exist_ok=True)
 
+        from agentv_runtime.discovery import resolve_extension
         from eval_runner.config_resolver import ConfigResolver
         from eval_runner.reference.local_run_store import LocalFileRunStore
 
-        self.run_store = run_store or LocalFileRunStore()
+        self.run_store = (
+            run_store
+            if run_store is not None
+            else resolve_extension("run_stores", default_factory=LocalFileRunStore)
+        )
         self.config_resolver = config_resolver or ConfigResolver
         self.resolved_config = self.config_resolver.resolve()
         self.artifact_store = artifact_store
@@ -770,7 +775,7 @@ class DefaultRunner(BaseRunner):
         )
         exec_manifest_hash = exec_manifest.compute_manifest_hash()
 
-        run_vault_dir = config.RUN_LOG_DIR / effective_run_id
+        run_vault_dir = Path(config.RUN_LOG_DIR).resolve() / effective_run_id
         is_resume = (resumption_checkpoint is not None) or bool(resumption_token)
         manifest_file = run_vault_dir / "execution_manifest.json"
         scenario_snapshot_file = run_vault_dir / "scenario_resolved.json"
@@ -859,6 +864,15 @@ class DefaultRunner(BaseRunner):
                     json.dump(exec_manifest.to_dict(), mf, indent=2)
                 with open(scenario_snapshot_file, "w", encoding="utf-8") as sf:
                     json.dump(scenario_snapshot, sf, indent=2)
+
+            if self.run_store is not None:
+                self.run_store.create_run(
+                    run_id=effective_run_id,
+                    scenario_id=str(scenario_identifier),
+                    agent_id=(metadata or {}).get("agent_id"),
+                    metadata=dict(ctx.metadata) if ctx.metadata else {},
+                    context=(metadata or {}).get("runtime_context"),
+                )
 
             plugins.manager.trigger("before_evaluation", ctx)
 

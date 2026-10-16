@@ -206,20 +206,66 @@ class EnterpriseCatalogStore(CatalogStore):
 class EnterpriseRunStore(RunStore):
     def __init__(self):
         self.runs = {}
+        self.events = {}
         self.manifest_count = 0
 
-    def get_run(self, run_id: str) -> dict[str, Any] | None:
+    def create_run(
+        self, run_id, scenario_id, agent_id=None, metadata=None, status="OPEN", context=None
+    ):
+        return self.runs.setdefault(
+            run_id,
+            {
+                "run_id": run_id,
+                "scenario_id": scenario_id,
+                "agent_id": agent_id,
+                "metadata": metadata or {},
+                "context": context or {},
+                "status": status,
+            },
+        )
+
+    def get_run(self, run_id: str, context=None) -> dict[str, Any] | None:
         return self.runs.get(run_id)
 
-    def list_runs(self, limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
+    def get_manifest(self, run_id, context=None):
+        run = self.runs.get(run_id)
+        return run.get("manifest") if run else None
+
+    def get_events(self, run_id, offset=0, limit=1000, context=None):
+        return self.events.get(run_id, [])[offset : offset + limit]
+
+    def update_run_status(self, run_id, status, details=None, context=None):
+        run = self.runs.get(run_id)
+        if run is None:
+            return False
+        run["status"] = status
+        if details:
+            run["status_details"] = details
+        return True
+
+    def append_events(self, run_id, events, context=None):
+        self.events.setdefault(run_id, []).extend(events)
+        return len(events)
+
+    def list_runs(self, limit: int = 100, offset: int = 0, context=None) -> list[dict[str, Any]]:
         return list(self.runs.values())[offset : offset + limit]
 
-    def save_run_manifest(self, run_id: str, manifest: dict[str, Any]) -> str:
+    def search_runs(self, query="", filters=None, limit=100, offset=0, context=None):
+        matches = [run for run in self.runs.values() if query.lower() in str(run).lower()]
+        return matches[offset : offset + limit]
+
+    def stream_events(self, run_id, from_seq=0, context=None):
+        yield from self.events.get(run_id, [])[from_seq:]
+
+    def save_run_manifest(self, run_id: str, manifest: dict[str, Any], context=None) -> str:
         self.manifest_count += 1
-        self.runs[run_id] = manifest
+        run = self.create_run(run_id, manifest.get("scenario_id", "unknown"))
+        run.update(manifest)
+        run["manifest"] = manifest
         return f"ent-runs://{run_id}"
 
-    def delete_run(self, run_id: str) -> bool:
+    def delete_run(self, run_id: str, context=None) -> bool:
+        self.events.pop(run_id, None)
         return self.runs.pop(run_id, None) is not None
 
 

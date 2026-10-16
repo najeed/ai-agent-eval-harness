@@ -11,6 +11,7 @@ from agentv_runtime import (
     canonical,
     config,
     contracts,
+    discovery,
     extension_contract,
     interfaces,
     manifest,
@@ -45,6 +46,12 @@ from agentv_runtime.contracts import (
     MutationVector,
     ReadinessState,
     ReadinessTier,
+)
+from agentv_runtime.discovery import (
+    ENTRY_POINT_NAMESPACE,
+    reset_extensions,
+    resolve_extension,
+    set_extension,
 )
 from agentv_runtime.extension_contract import (
     EXTENSION_CONTRACT_STATUS,
@@ -87,6 +94,11 @@ __extension_contract_version__ = EXTENSION_CONTRACT_VERSION
 
 __all__ = [
     "interfaces",
+    "discovery",
+    "ENTRY_POINT_NAMESPACE",
+    "resolve_extension",
+    "set_extension",
+    "reset_extensions",
     "results",
     "config",
     "contracts",

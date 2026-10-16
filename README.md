@@ -77,7 +77,7 @@ graph TD
 ## TL;DR: Impact in 60s
 Get from zero to evaluated in seconds:
 ```bash
-pip install -e .
+pip install agentv-runtime
 agentv quickstart
 ```
 *   **Result**: Launches mock agent, executes a telecom scenario, and builds a report.

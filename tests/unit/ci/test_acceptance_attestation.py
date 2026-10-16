@@ -59,7 +59,7 @@ def test_resolve_commit_sha(monkeypatch):
 def test_create_and_verify_attestation_full_lifecycle(tmp_path, monkeypatch):
     summary_file = tmp_path / "acceptance-summary.json"
     manifest_file = tmp_path / "release.yaml"
-    wheel_file = tmp_path / "agentv-2.0.0-py3-none-any.whl"
+    wheel_file = tmp_path / "agentv_runtime-2.0.0-py3-none-any.whl"
     attestation_file = tmp_path / "acceptance-attestation.json"
 
     wheel_file.write_bytes(b"PK\x03\x04fake_wheel_content")

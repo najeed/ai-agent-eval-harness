@@ -36,7 +36,7 @@ python -m pip install -r requirements.txt
 ```
 
 > ```text
-> Successfully installed agentv-<version> ...
+> Successfully installed agentv-runtime-<version> ...
 > ```
 
 ### ✅ Step 2: Verify the CLI is available

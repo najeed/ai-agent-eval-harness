@@ -4,7 +4,7 @@ version = "1.0.0"
 description = "Enterprise Extension Plugin testing AgentV Zero-Touch Compatibility"
 requires-python = ">=3.12"
 dependencies = [
-    "agentv>=2.0.0",
+    "agentv-runtime>=2.0.0",
 ]
 
 [build-system]

@@ -122,8 +122,14 @@ class AbstractSandbox(ABC):
         jail_root: Path | None = None,
         policy_evaluator: PolicyEvaluator | None = None,
     ):
+        from agentv_runtime.discovery import resolve_extension
+
         self.scenario = scenario
-        self.policy_evaluator = policy_evaluator or BasicFieldPolicyEvaluator()
+        self.policy_evaluator = resolve_extension(
+            "policy_evaluators",
+            explicit=policy_evaluator,
+            default_factory=BasicFieldPolicyEvaluator,
+        )
         self.state = scenario.get("initial_state", {}).copy()
         topology = scenario.get("metadata", {}).get("agent_topology", {})
         self.shared_state = SharedStateRegistry(topology, event_bus=event_bus)

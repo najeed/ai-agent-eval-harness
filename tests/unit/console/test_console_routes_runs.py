@@ -1268,97 +1268,47 @@ def test_runs_cancel_and_resume_endpoints(runs_client):
 
 def test_runs_backend_status_fallback_when_trace_missing(runs_client):
     """Verify GET /v1/runs/<run_id> returns in-memory status if trace file is not on disk."""
-    from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+    from agentv_runtime.discovery import reset_extensions, set_extension
 
-    backend = InProcessExecutionBackend.get_instance()
-
-    with patch("eval_runner.console.routes.runs.resolve_trace_path", return_value=None):
-        st_data = {"status": "RUNNING", "scenario_data": {"id": "s1"}}
-        with patch.object(backend, "status", return_value=st_data):
+    mock_backend = MagicMock()
+    mock_backend.status.return_value = {"status": "RUNNING", "scenario_data": {"id": "s1"}}
+    set_extension("execution_backends", mock_backend)
+    try:
+        with patch("eval_runner.console.routes.runs.resolve_trace_path", return_value=None):
             res = runs_client.get("/api/v1/runs/run-in-memory")
             assert res.status_code == 200
             data = res.get_json()
             assert data["status"] == "RUNNING"
             assert data["scenario"]["id"] == "s1"
-
-
-def test_runs_cache_thread_start_and_update_loop():
-    """Verify RunsCache starts and stops background thread properly."""
-    from eval_runner.console.routes.runs import RunsCache
-
-    cache = RunsCache()
-    with patch.object(threading.Thread, "start") as mock_start:
-        cache.start()
-        assert cache._started is True
-        mock_start.assert_called_once()
-        cache.stop()
-        assert cache._started is False
+    finally:
+        reset_extensions("execution_backends")
 
 
 def test_runs_stream_list_sse(runs_client, runs_jail):
     """Verify GET /v1/runs/stream-list streams run list in chunks."""
-    from eval_runner.console.routes.runs import runs_cache
+    from agentv_runtime.discovery import reset_extensions, set_extension
 
+    mock_store = MagicMock()
     now_iso = datetime.now(UTC).isoformat()
-    with patch.object(
-        runs_cache,
-        "get_runs",
-        return_value=[
-            {"run_id": "stream_run_1", "scenario": "scen_1", "timestamp": now_iso},
-            {"run_id": "stream_run_2", "scenario": "scen_2", "timestamp": now_iso},
-        ],
-    ):
+    mock_store.list_runs.return_value = [
+        {"run_id": "stream_run_1", "scenario": "scen_1", "timestamp": now_iso},
+        {"run_id": "stream_run_2", "scenario": "scen_2", "timestamp": now_iso},
+    ]
+    set_extension("run_stores", mock_store)
+    try:
         with patch("time.sleep", return_value=None):
             res = runs_client.get("/api/v1/runs/stream-list")
             assert res.status_code == 200
             assert "text/event-stream" in res.headers.get("Content-Type", "")
             data_chunks = res.get_data(as_text=True)
             assert "stream_run_1" in data_chunks
-
-
-def test_runs_cache_update_cache_direct_and_vaults(runs_jail, monkeypatch):
-    """Verify RunsCache scans fragments, vaults, and query filtering."""
-    from eval_runner.console.routes.runs import RunsCache
-
-    monkeypatch.setattr(config, "RUN_LOG_DIR", runs_jail["runs"])
-    cache = RunsCache()
-    # 1. Direct fragment
-    frag = runs_jail["runs"] / "frag_1.jsonl"
-    t0 = datetime.now(UTC).isoformat()
-    frag_event = {
-        "event": "run_start",
-        "run_id": "run-frag-1",
-        "scenario": "scen_frag",
-        "timestamp": t0,
-    }
-    frag.write_text(json.dumps(frag_event) + "\n", encoding="utf-8")
-
-    # 2. Vault run
-    vault_dir = runs_jail["runs"] / "run-vault-1"
-    vault_dir.mkdir(exist_ok=True)
-    vault_event = {
-        "event": "run_start",
-        "run_id": "run-vault-1",
-        "scenario": "scen_vault",
-        "timestamp": t0,
-    }
-    (vault_dir / "run.jsonl").write_text(json.dumps(vault_event) + "\n", encoding="utf-8")
-
-    cache.update_cache()
-    runs = cache.get_runs()
-    rids = [r["run_id"] for r in runs]
-    assert "run-frag-1" in rids
-    assert "run-vault-1" in rids
-
-    # Query filter
-    filtered = cache.get_runs(query="run-vault-1")
-    assert len(filtered) == 1
-    assert filtered[0]["run_id"] == "run-vault-1"
+    finally:
+        reset_extensions("run_stores")
 
 
 def test_runs_stream_list_sse_status_resolution(runs_client, runs_jail):
     """Verify GET /v1/runs/stream-list resolves certified, failed, and running statuses."""
-    from eval_runner.console.routes.runs import runs_cache
+    from agentv_runtime.discovery import reset_extensions, set_extension
 
     t0 = datetime.now(UTC)
     r1_dir = runs_jail["runs"] / "run-certified-stream"
@@ -1393,16 +1343,15 @@ def test_runs_stream_list_sse_status_resolution(runs_client, runs_jail):
         encoding="utf-8",
     )
 
-    with patch.object(
-        runs_cache,
-        "get_runs",
-        return_value=[
-            {"run_id": "run-certified-stream", "scenario": "s1", "timestamp": t0.isoformat()},
-            {"run_id": "run-failed-stream", "scenario": "s2", "timestamp": t0.isoformat()},
-            {"run_id": "run-running-stream", "scenario": "s3", "timestamp": t0.isoformat()},
-            {"run_id": "run-passed-stream", "scenario": "s4", "timestamp": t0.isoformat()},
-        ],
-    ):
+    mock_store = MagicMock()
+    mock_store.list_runs.return_value = [
+        {"run_id": "run-certified-stream", "scenario": "s1", "timestamp": t0.isoformat()},
+        {"run_id": "run-failed-stream", "scenario": "s2", "timestamp": t0.isoformat()},
+        {"run_id": "run-running-stream", "scenario": "s3", "timestamp": t0.isoformat()},
+        {"run_id": "run-passed-stream", "scenario": "s4", "timestamp": t0.isoformat()},
+    ]
+    set_extension("run_stores", mock_store)
+    try:
         with patch("time.sleep", return_value=None):
             res = runs_client.get("/api/v1/runs/stream-list")
             assert res.status_code == 200
@@ -1411,6 +1360,8 @@ def test_runs_stream_list_sse_status_resolution(runs_client, runs_jail):
             assert "run-certified-stream" in data_chunks
             assert "run-failed-stream" in data_chunks
             assert "run-passed-stream" in data_chunks
+    finally:
+        reset_extensions("run_stores")
 
 
 def test_runs_master_log_stream_and_not_found(runs_client, runs_jail, tmp_path):
@@ -1515,28 +1466,17 @@ def test_runs_tail_generator_safeguards_and_corrupt_trace(runs_jail, runs_client
 
 def test_runs_active_runner_fallback(runs_client):
     """Verify get_run falls back to active InProcessExecutionBackend when file not found on disk."""
+    from agentv_runtime.discovery import reset_extensions, set_extension
+
     mock_backend = MagicMock()
     mock_backend.status.return_value = {
         "status": "RUNNING",
         "scenario_data": {"title": "Active in memory"},
     }
-    with patch(
-        "eval_runner.reference.inprocess_backend.InProcessExecutionBackend.get_instance",
-        return_value=mock_backend,
-    ):
+    set_extension("execution_backends", mock_backend)
+    try:
         res = runs_client.get("/api/v1/runs/run-in-flight-001")
         assert res.status_code == 200
         assert res.get_json()["status"] == "RUNNING"
-
-
-def test_runs_cache_update_loop_error_resilience():
-    """Verify RunsCache._update_loop recovers from exceptions."""
-    from eval_runner.console.routes.runs import RunsCache
-
-    cache = RunsCache()
-    with patch.object(cache, "update_cache", side_effect=[Exception("scan error"), StopIteration]):
-        with patch("time.sleep", side_effect=StopIteration):
-            try:
-                cache._update_loop()
-            except StopIteration:
-                pass
+    finally:
+        reset_extensions("execution_backends")

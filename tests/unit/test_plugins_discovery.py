@@ -90,35 +90,36 @@ def test_path_aware_unregistration(isolated_registry, tmp_path):
 
 def test_plugin_manager_external_plugins_env_switch(monkeypatch):
     """Verify AGENTV_DISABLE_EXTERNAL_PLUGINS suppresses external entry point loading."""
-    from unittest.mock import patch
+    from unittest.mock import call, patch
 
     pm = PluginManager()
-    with patch("importlib.metadata.entry_points") as mock_ep:
+    with patch("importlib.metadata.entry_points", return_value=[]) as mock_ep:
         # When disabled via env var
         monkeypatch.setenv("AGENTV_DISABLE_EXTERNAL_PLUGINS", "1")
         pm.load_plugins(force=True)
-        mock_ep.assert_not_called()
+        assert call(group="agentv_runtime.plugins") not in mock_ep.mock_calls
 
         # When enabled (env var removed)
-        mock_ep.return_value = []
+        mock_ep.reset_mock()
         monkeypatch.delenv("AGENTV_DISABLE_EXTERNAL_PLUGINS", raising=False)
         pm.load_plugins(force=True)
-        mock_ep.assert_called_once_with(group="eval_runner.plugins")
+        assert call(group="agentv_runtime.plugins") in mock_ep.mock_calls
 
 
 def test_external_plugin_discovery_can_be_suppressed_per_execution_flow(monkeypatch):
     """A self-contained run must not import external entry-point code."""
-    from unittest.mock import patch
+    from unittest.mock import call, patch
 
     pm = PluginManager()
     monkeypatch.delenv("AGENTV_DISABLE_EXTERNAL_PLUGINS", raising=False)
     with patch("importlib.metadata.entry_points", return_value=[]) as mock_ep:
         with disable_external_plugin_discovery():
             pm.load_plugins(force=True)
-        mock_ep.assert_not_called()
+        assert call(group="agentv_runtime.plugins") not in mock_ep.mock_calls
 
+        mock_ep.reset_mock()
         pm.load_plugins(force=True)
-        mock_ep.assert_called_once_with(group="eval_runner.plugins")
+        assert call(group="agentv_runtime.plugins") in mock_ep.mock_calls
 
 
 def test_persistent_plugin_registry_can_be_suppressed_per_execution_flow(

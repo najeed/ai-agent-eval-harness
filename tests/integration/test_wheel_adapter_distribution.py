@@ -50,7 +50,7 @@ def test_wheel_installs_and_discovers_all_adapter_modules(tmp_path: Path) -> Non
     )
 
     venv_python = venv_dir / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
-    wheel = next(wheel_dir.glob("agentv-*.whl"))
+    wheel = next(wheel_dir.glob("agentv_runtime-*.whl"))
     subprocess.run(
         [str(venv_python), "-m", "pip", "install", str(wheel)],
         check=True,

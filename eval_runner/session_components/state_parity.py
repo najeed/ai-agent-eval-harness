@@ -268,7 +268,12 @@ class SessionStateParityVerifier:
                 )
                 return None, "__unobserved_source__"
 
-            evaluator = BasicFieldPolicyEvaluator()
+            from agentv_runtime.discovery import resolve_extension
+
+            evaluator = resolve_extension(
+                "policy_evaluators",
+                default_factory=BasicFieldPolicyEvaluator,
+            )
             eval_res = evaluator.evaluate_policy(policy_spec, observed)
             if property_path == "violations":
                 return eval_res.violations, None

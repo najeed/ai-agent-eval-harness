@@ -21,7 +21,7 @@ from eval_runner import config
 from eval_runner.console.routes import core_bp
 from eval_runner.console.routes.agent_targets import agent_targets_bp
 from eval_runner.console.routes.evidence import evidence_bp
-from eval_runner.console.routes.runs import run_bp, runs_cache
+from eval_runner.console.routes.runs import run_bp
 from eval_runner.console.routes.scenarios import scenario_bp
 from eval_runner.console.routes.system import system_bp
 
@@ -105,10 +105,13 @@ def _validate_payload(schema_file: str, payload) -> None:
 
 def test_runs_contract(api_client, monkeypatch):
     """GET /api/runs — envelope plus server-authoritative verdict badges."""
+    from unittest.mock import MagicMock
+
+    mock_store = MagicMock()
+    mock_store.list_runs.return_value = [{"run_id": "run-r1", "result_status": "success"}]
     monkeypatch.setattr(
-        runs_cache,
-        "get_runs",
-        lambda query="": [{"run_id": "run-r1", "result_status": "success"}],
+        "eval_runner.console.routes.runs._active_run_store",
+        lambda: mock_store,
     )
     res = api_client.get("/api/runs")
     assert res.status_code == 200

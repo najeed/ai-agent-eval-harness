@@ -20,6 +20,9 @@ class LocalEd25519SigningBackend(SigningBackend):
     against an Ed25519 PEM public key.
     """
 
+    def can_sign(self) -> bool:
+        return True
+
     def sign_payload(
         self, payload: bytes, key_identifier: str | Path | bytes, **kwargs: Any
     ) -> str:
@@ -68,12 +71,12 @@ class LocalEd25519SigningBackend(SigningBackend):
                 elif isinstance(public_key_identifier, str):
                     pub_bytes = public_key_identifier.encode("utf-8")
                 else:
-                    pub_bytes = bytes(public_key_identifier)
+                    return False
             except (OSError, ValueError):
                 pub_bytes = (
                     public_key_identifier.encode("utf-8")
                     if isinstance(public_key_identifier, str)
-                    else bytes(public_key_identifier)
+                    else str(public_key_identifier).encode("utf-8")
                 )
         elif isinstance(public_key_identifier, bytes):
             pub_bytes = public_key_identifier
@@ -97,6 +100,9 @@ class NullSigningBackend(SigningBackend):
     Never signs and always returns false for verification.
     """
 
+    def can_sign(self) -> bool:
+        return False
+
     def sign_payload(self, payload: bytes, key_identifier: str | Path, **kwargs: Any) -> str:
         return ""
 
@@ -111,6 +117,11 @@ class PQCSigningBackend(SigningBackend):
     Post-Quantum Cryptography (PQC) signing backend using ML-DSA-65 (FIPS 204)
     via IdentityService and Zero-Exposure Signing (ZES).
     """
+
+    def can_sign(self) -> bool:
+        from eval_runner.identity import IdentityService
+
+        return IdentityService.get_pqc_client() is not None
 
     def sign_payload(
         self, payload: bytes, key_identifier: str | Path | None = None, **kwargs: Any

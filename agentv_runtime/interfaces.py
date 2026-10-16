@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import time
 from abc import ABC, abstractmethod
+from collections.abc import Generator
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -100,6 +101,10 @@ class SigningBackend(ABC):
     Control Plane / Enterprise: KMSSigningBackend / VaultSigningBackend
     """
 
+    def can_sign(self) -> bool:
+        """Indicates whether this signing backend is configured and capable of signing payloads."""
+        return True
+
     @abstractmethod
     def sign_payload(
         self, payload: bytes, key_identifier: str | Path | Any = None, **kwargs: Any
@@ -132,6 +137,8 @@ class ArtifactStore(ABC):
     OSS Reference: LocalFileArtifactStore
     Control Plane / Enterprise: S3ArtifactStore / GCSArtifactStore / AzureBlobArtifactStore
     """
+
+    is_remote: bool = False
 
     @abstractmethod
     def store_artifact(
@@ -340,32 +347,103 @@ class CatalogStore(ABC):
 # ==============================================================================
 
 
-class RunStore(ABC):
+class RunStorageProvider(ABC):
     """
-    Abstraction for evaluation run metadata, manifest retrieval, and run lifecycle query.
+    Authoritative CRUDS and trace-streaming abstraction for evaluation runs.
     OSS Reference: LocalFileRunStore
     Control Plane / Enterprise: PostgresRunStore / ClickHouseRunStore
     """
 
     @abstractmethod
-    def get_run(self, run_id: str) -> dict[str, Any] | None:
-        """Retrieves run summary, manifest, and status by run ID."""
+    def create_run(
+        self,
+        run_id: str,
+        scenario_id: str,
+        agent_id: str | None = None,
+        metadata: dict[str, Any] | None = None,
+        status: str = "OPEN",
+        context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Creates the authoritative run record."""
         raise NotImplementedError
 
     @abstractmethod
-    def list_runs(self, limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
+    def get_run(self, run_id: str, context: dict[str, Any] | None = None) -> dict[str, Any] | None:
+        """Retrieves a run summary by ID."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_manifest(
+        self, run_id: str, context: dict[str, Any] | None = None
+    ) -> dict[str, Any] | None:
+        """Retrieves the published manifest."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_events(
+        self, run_id: str, offset: int = 0, limit: int = 1000, context: dict[str, Any] | None = None
+    ) -> list[dict[str, Any]]:
+        """Retrieves persisted trace events."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def update_run_status(
+        self,
+        run_id: str,
+        status: str,
+        details: dict[str, Any] | None = None,
+        context: dict[str, Any] | None = None,
+    ) -> bool:
+        """Updates the lifecycle status."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def append_events(
+        self, run_id: str, events: list[dict[str, Any]], context: dict[str, Any] | None = None
+    ) -> int:
+        """Appends a batch of trace events."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def save_run_manifest(
+        self, run_id: str, manifest: dict[str, Any], context: dict[str, Any] | None = None
+    ) -> str:
+        """Publishes the final immutable manifest."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete_run(self, run_id: str, context: dict[str, Any] | None = None) -> bool:
+        """Deletes a run and its metadata."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_runs(
+        self, limit: int = 100, offset: int = 0, context: dict[str, Any] | None = None
+    ) -> list[dict[str, Any]]:
         """Lists runs with pagination."""
         raise NotImplementedError
 
     @abstractmethod
-    def save_run_manifest(self, run_id: str, manifest: dict[str, Any]) -> str:
-        """Saves a run manifest and returns the record ID or URI."""
+    def search_runs(
+        self,
+        query: str = "",
+        filters: dict[str, Any] | None = None,
+        limit: int = 100,
+        offset: int = 0,
+        context: dict[str, Any] | None = None,
+    ) -> list[dict[str, Any]]:
+        """Searches runs within the caller context."""
         raise NotImplementedError
 
     @abstractmethod
-    def delete_run(self, run_id: str) -> bool:
-        """Deletes a run and its metadata."""
+    def stream_events(
+        self, run_id: str, from_seq: int = 0, context: dict[str, Any] | None = None
+    ) -> Generator[dict[str, Any], None, None]:
+        """Streams events starting at a sequence index."""
         raise NotImplementedError
+
+
+RunStore = RunStorageProvider
 
 
 # ==============================================================================
@@ -637,6 +715,7 @@ __all__ = [
     "MutationEngine",
     "PolicyEvaluationResult",
     "PolicyEvaluator",
+    "RunStorageProvider",
     "RunStore",
     "SigningBackend",
 ]

@@ -12,14 +12,14 @@ from flask import Blueprint, Response, jsonify, request, send_file
 from eval_runner import config
 from eval_runner.explainer import explain_trace
 from eval_runner.metrics import MetricRegistry
-from eval_runner.run_index import read_run_index, run_index_path
+from eval_runner.run_index import read_run_index
 from eval_runner.services.certification import CertificationService
 from eval_runner.services.run_summary import RunSummaryService
+from eval_runner.storage_resolver import resolve_run_storage_provider
 
 from ..auth_manager import (
     Permission,
     active_runtime_context,
-    context_allows_record,
     require_permission,
     require_sse_permission,
 )
@@ -43,23 +43,31 @@ def resolve_trace_path(run_id: str) -> Path | None:
 
 
 def _run_is_in_active_context(run_id: str, context: dict[str, str] | None = None) -> bool:
-    """Hide a run when its persisted manifest is outside the verified scope."""
+    """Hide a run when the authoritative provider denies the active scope."""
     if context is None:
         context = active_runtime_context()
     if context is None:
         return True
-    record = read_run_index(run_id)
-    manifest_path = config.RUN_LOG_DIR / run_id / "run_manifest.json"
-    if record is None and not manifest_path.exists():
-        return False
-    try:
-        if record is not None:
-            return context_allows_record(record, context)
-        with manifest_path.open(encoding="utf-8") as manifest_file:
-            return context_allows_record(json.load(manifest_file), context)
-    except (OSError, ValueError, json.JSONDecodeError):
-        logger.warning("Unable to verify context for run %s", run_id, exc_info=True)
-        return False
+    return _active_run_store().get_run(run_id, context=context) is not None
+
+
+def _summary_from_provider(run: dict) -> dict:
+    """Use provider-native summaries for remote stores; local stores retain forensic enrichment."""
+    if run.get("vault_path"):
+        return RunSummaryService.compute_summary(run["run_id"], cached_entry=run)
+    manifest = run.get("manifest") or {}
+    status = str(run.get("status") or manifest.get("status") or "OPEN").upper()
+    return {
+        **run,
+        "scenario": run.get("scenario") or run.get("scenario_id"),
+        "timestamp": run.get("created_at") or run.get("timestamp"),
+        "status": status,
+        "lifecycle": run.get("lifecycle") or status,
+        "verification_status": run.get("verification_status", "UNKNOWN"),
+        "trace_integrity": run.get("trace_integrity", "PROVIDER_MANAGED"),
+        "execution_mode": run.get("execution_mode") or manifest.get("execution_mode"),
+        "provisional": bool(run.get("provisional", False)),
+    }
 
 
 @run_bp.route("/v1/explain/<run_id>", methods=["GET"])
@@ -126,327 +134,9 @@ def explain_run(run_id):
         return jsonify({"error": str(e)}), 500
 
 
-class RunsCache:
-    """Thread-safe in-memory cache for recent run logs, updated incrementally."""
-
-    def __init__(self, autostart: bool = False):
-        self._lock = threading.Lock()
-        self._runs = []
-        self._scanned_files = {}  # path -> mtime
-        self._last_dir = None
-        self._started = False
-        self._stop_event = threading.Event()
-        self._thread = None
-        if autostart:
-            self.start()
-
-    def start(self):
-        """Starts background updater thread if not already running."""
-        with self._lock:
-            if self._started:
-                return
-            self._started = True
-            self._stop_event.clear()
-            self._thread = threading.Thread(
-                target=self._update_loop, name="runs-cache-updater", daemon=True
-            )
-            self._thread.start()
-
-    def stop(self):
-        """Stops background updater thread."""
-        with self._lock:
-            if not self._started:
-                return
-            self._stop_event.set()
-            self._started = False
-            self._thread = None
-
-    def get_runs(self, query=None):
-        """Retrieves cached runs, ensuring directory freshness."""
-        self.update_cache()
-        with self._lock:
-            results = list(self._runs)
-
-        if query:
-            query = query.lower()
-            results = [
-                r
-                for r in results
-                if query in r["run_id"].lower() or query in r.get("scenario", "").lower()
-            ]
-        return results
-
-    def _update_loop(self):
-        # Initial scan
-        try:
-            self.update_cache()
-        except Exception as e:
-            logger.warning(f"Error in initial runs cache scan: {e}")
-
-        while not self._stop_event.is_set():
-            time.sleep(1.0)
-            try:
-                self.update_cache()
-            except Exception as e:
-                logger.warning(f"Error in runs cache background update: {e}")
-
-    def update_cache(self):
-        """Scans RUN_LOG_DIR differentially for changes."""
-        from eval_runner import config
-
-        if not config.RUN_LOG_DIR or not config.RUN_LOG_DIR.exists():
-            with self._lock:
-                self._runs = []
-                self._scanned_files = {}
-                self._last_dir = config.RUN_LOG_DIR
-            return
-
-        with self._lock:
-            # If the monitored directory path changed (e.g. reconfigured in runtime), reset state
-            if self._last_dir != config.RUN_LOG_DIR:
-                self._runs = []
-                self._scanned_files = {}
-                self._last_dir = config.RUN_LOG_DIR
-
-        new_runs_map = {}
-
-        # 1. Scan direct fragments (.jsonl files)
-        for p in config.RUN_LOG_DIR.glob("*.jsonl"):
-            try:
-                mtime = p.stat().st_mtime
-                cached_mtime = self._scanned_files.get(str(p))
-                if cached_mtime == mtime:
-                    continue
-
-                self._scanned_files[str(p)] = mtime
-
-                with open(p, encoding="utf-8") as f:
-                    for line in f:
-                        line_str = line.strip()
-                        if not line_str:
-                            continue
-                        try:
-                            event = json.loads(line_str)
-                            if event.get("event") == "run_start":
-                                rid = event.get("run_id") or ""
-                                scenario = event.get("scenario") or ""
-                                timestamp = event.get("timestamp") or event.get("_ts_iso") or ""
-                                new_runs_map[rid] = {
-                                    "run_id": rid,
-                                    "scenario": scenario,
-                                    "timestamp": timestamp,
-                                    "_fragment_path": str(p.relative_to(config.RUN_LOG_DIR)),
-                                }
-                        except Exception as e:
-                            logger.debug(f"Parsing run line warning: {e}")
-                            continue
-            except Exception as e:
-                logger.debug(f"Parsing fragment warning: {e}")
-                continue
-
-        # 2. Scan durable control-plane indices.  They deliberately live
-        # outside evidence vault directories so acceptance does not reserve a
-        # run ID before the runner creates the vault.
-        index_dir = config.RUN_LOG_DIR / ".index"
-        for p in index_dir.glob("*.json") if index_dir.is_dir() else ():
-            try:
-                mtime = p.stat().st_mtime
-                cached_mtime = self._scanned_files.get(str(p))
-                if cached_mtime == mtime:
-                    continue
-                self._scanned_files[str(p)] = mtime
-                index = json.loads(p.read_text(encoding="utf-8"))
-                if not isinstance(index, dict) or not isinstance(index.get("run_id"), str):
-                    continue
-                new_runs_map[index["run_id"]] = {
-                    "run_id": index["run_id"],
-                    "scenario": index.get("scenario_id", ""),
-                    "timestamp": index.get("created_at", ""),
-                    "pending_status": index.get("status", "PENDING"),
-                    "_run_index": True,
-                }
-            except (OSError, ValueError, json.JSONDecodeError) as exc:
-                logger.warning("Unable to read durable run index %s: %s", p, exc)
-
-        # 3. Scan vault folders (*/run.jsonl)
-        for p in config.RUN_LOG_DIR.glob("*/run.jsonl"):
-            try:
-                mtime = p.stat().st_mtime
-                cached_mtime = self._scanned_files.get(str(p))
-                if cached_mtime == mtime:
-                    continue
-
-                self._scanned_files[str(p)] = mtime
-
-                with open(p, encoding="utf-8") as f:
-                    first_line = f.readline()
-                    if not first_line.strip():
-                        continue
-                    event = json.loads(first_line)
-                    rid = event.get("run_id") or p.parent.name or ""
-                    scenario = event.get("scenario")
-                    timestamp = (
-                        event.get("timestamp") or event.get("_ts_iso") or event.get("time") or ""
-                    )
-
-                    # [G5] Primary identifiers: agent identity + terminal
-                    # result/duration from the authoritative run_end event.
-                    identifier = event.get("identifier") or ""
-                    duration_seconds = None
-                    result_status = None
-                    # Capture execution_mode from the run_start event so list endpoints
-                    # can surface it without a per-row truth-level lookup.
-                    execution_mode_cached = (
-                        event.get("execution_mode")
-                        or (event.get("data") or {}).get("execution_mode")
-                        or (event.get("metadata") or {}).get("execution_mode")
-                    )
-                    score_cached = None
-                    if p.stat().st_size < 1024 * 1024:
-                        lines = f.readlines()
-                        last_ts = None
-                        for ln in reversed(lines):
-                            ln = ln.strip()
-                            if not ln:
-                                continue
-                            try:
-                                last_ev = json.loads(ln)
-                            except Exception:
-                                continue
-                            if not last_ts:
-                                last_ts = (
-                                    last_ev.get("timestamp")
-                                    or last_ev.get("_ts_iso")
-                                    or last_ev.get("time")
-                                )
-                            ev_name = last_ev.get("event")
-                            if ev_name in (
-                                "run_end",
-                                "end",
-                                "session_decision",
-                                "evaluation_result",
-                                "workflow_verdict",
-                            ):
-                                data_block = (
-                                    last_ev.get("data")
-                                    if isinstance(last_ev.get("data"), dict)
-                                    else last_ev
-                                )
-                                if (
-                                    duration_seconds is None
-                                    and data_block.get("duration") is not None
-                                ):
-                                    try:
-                                        duration_seconds = float(data_block["duration"])
-                                    except (ValueError, TypeError):
-                                        pass
-                                if result_status is None:
-                                    raw_st = (
-                                        str(
-                                            data_block.get("outcome")
-                                            or data_block.get("status")
-                                            or ""
-                                        )
-                                        .strip()
-                                        .upper()
-                                    )
-                                    if data_block.get("passed") is True or raw_st in (
-                                        "PASS",
-                                        "PASSED",
-                                        "SUCCESS",
-                                    ):
-                                        result_status = "PASS"
-                                    elif data_block.get("passed") is False or raw_st in (
-                                        "FAIL",
-                                        "FAILED",
-                                        "ERROR",
-                                    ):
-                                        result_status = "FAIL"
-                                if score_cached is None and data_block.get("score") is not None:
-                                    try:
-                                        score_cached = float(data_block["score"])
-                                    except (ValueError, TypeError):
-                                        pass
-                                if (
-                                    duration_seconds is not None
-                                    and result_status is not None
-                                    and score_cached is not None
-                                ):
-                                    break
-                        if duration_seconds is None and timestamp and last_ts:
-                            try:
-                                from datetime import datetime
-
-                                t0 = datetime.fromisoformat(
-                                    timestamp.replace("Z", "+00:00").split("+00:00")[0]
-                                ).timestamp()
-                                t1 = datetime.fromisoformat(
-                                    last_ts.replace("Z", "+00:00").split("+00:00")[0]
-                                ).timestamp()
-                                if t1 >= t0:
-                                    duration_seconds = round(t1 - t0, 1)
-                            except Exception as e:
-                                logger.debug(
-                                    "Failed computing fallback duration from timestamps: %s", e
-                                )
-
-                    if not scenario and rid.startswith("run-"):
-                        parts = rid.split("-")
-                        if len(parts) > 2:
-                            scenario = "-".join(parts[1:-1])
-                        else:
-                            scenario = parts[1]
-                    elif not scenario:
-                        scenario = rid
-
-                    scenario = scenario or ""
-                    timestamp = event.get("timestamp") or event.get("_ts_iso") or ""
-                    new_runs_map[rid] = {
-                        "run_id": rid,
-                        "scenario": scenario,
-                        "timestamp": timestamp,
-                        "path": str(p.relative_to(config.RUN_LOG_DIR)),
-                        "identifier": identifier,
-                        "duration_seconds": duration_seconds,
-                        "result_status": result_status,
-                        "execution_mode": execution_mode_cached,
-                        "score": score_cached,
-                    }
-            except Exception as e:
-                logger.debug(f"Parsing vault run warning: {e}")
-                continue
-
-        if True:  # Always audit cache integrity
-            with self._lock:
-                # Merge new runs into existing runs
-                existing_map = {r["run_id"]: r for r in self._runs}
-                existing_map.update(new_runs_map)
-
-                # Filter out runs that no longer exist on disk
-                pruned_map = {}
-                for rid, r in existing_map.items():
-                    if r.get("_run_index"):
-                        tp = run_index_path(rid)
-                    else:
-                        path_val = r.get("path") or r.get("_fragment_path")
-                        if path_val:
-                            tp = config.RUN_LOG_DIR / path_val
-                        else:
-                            tp = resolve_trace_path(rid)
-                    if tp and tp.exists():
-                        pruned_map[rid] = r
-
-                # Sort runs by timestamp descending
-                sorted_runs = list(pruned_map.values())
-                sorted_runs.sort(key=lambda x: str(x.get("timestamp") or ""), reverse=True)
-
-                # Cap the cache to the most recent 500 runs
-                self._runs = sorted_runs[:500]
-                self._last_scan_time = time.time()
-
-
-# Thread-safe runs cache instance
-runs_cache = RunsCache()
+def _active_run_store():
+    """Resolve the process-wide authoritative run storage provider."""
+    return resolve_run_storage_provider()
 
 
 @run_bp.route("/runs", methods=["GET"])
@@ -459,27 +149,14 @@ def list_runs():
     CURRENT trace bytes (SHA3-256). Presence of a certificate alone is never
     treated as proof; unverifiable runs report UNKNOWN.
     """
-    query = request.args.get("q", "").lower()
-    runs = runs_cache.get_runs(query=query)
+    query = request.args.get("q", "")
+    runs = _active_run_store().search_runs(query=query, limit=200, context=active_runtime_context())
     enriched = []
     for run in runs[:200]:
         rid = run.get("run_id") or ""
         if not _run_is_in_active_context(rid):
             continue
-        if run.get("_run_index") and resolve_trace_path(rid) is None:
-            enriched.append(
-                {
-                    "run_id": rid,
-                    "scenario": run.get("scenario"),
-                    "timestamp": run.get("timestamp"),
-                    "status": run.get("pending_status", "PENDING"),
-                    "lifecycle": run.get("pending_status", "PENDING"),
-                    "verification_status": "NOT_EXECUTED",
-                    "provisional": True,
-                }
-            )
-            continue
-        summary = RunSummaryService.compute_summary(rid, cached_entry=run)
+        summary = _summary_from_provider(run)
         enriched.append(summary)
     return jsonify({"runs": enriched})
 
@@ -499,7 +176,7 @@ def stream_runs_list():
     request_context = active_runtime_context()
 
     def generate():
-        runs = runs_cache.get_runs()
+        runs = _active_run_store().list_runs(limit=200, context=request_context)
         chunk_size = 10  # Yield 10 runs at a time
         for i in range(0, len(runs), chunk_size):
             chunk = runs[i : i + chunk_size]
@@ -510,26 +187,7 @@ def stream_runs_list():
                     run_id, request_context
                 ):
                     continue
-                if run.get("_run_index") and resolve_trace_path(run_id) is None:
-                    resolved_chunk.append(
-                        {
-                            "run_id": run_id,
-                            "scenario": run.get("scenario"),
-                            "timestamp": run.get("timestamp"),
-                            "start_time": run.get("timestamp"),
-                            "identifier": run.get("scenario"),
-                            "status": run.get("pending_status", "PENDING"),
-                            "lifecycle": run.get("pending_status", "PENDING"),
-                            "verification_status": "NOT_EXECUTED",
-                            "trace_integrity": "PENDING",
-                            "execution_mode": None,
-                            "provisional": True,
-                            "duration_seconds": None,
-                            "score": None,
-                        }
-                    )
-                    continue
-                summary = RunSummaryService.compute_summary(run_id, cached_entry=run)
+                summary = _summary_from_provider(run)
                 resolved_chunk.append(
                     {
                         "run_id": run_id,
@@ -776,9 +434,13 @@ def get_run_status(run_id):
 
     # Check active execution backend in-memory state before returning 404
     try:
+        from agentv_runtime.discovery import resolve_extension
         from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
 
-        backend = InProcessExecutionBackend.get_instance()
+        backend = resolve_extension(
+            "execution_backends",
+            default_factory=InProcessExecutionBackend.get_instance,
+        )
         st = backend.status(run_id)
         if st and st.get("status") != "UNKNOWN":
             return jsonify(
@@ -1125,7 +787,8 @@ def tail_file_generator(
 @require_sse_permission(Permission.RUNS_READ)
 def stream_run_logs(run_id):
     """SSE streaming endpoint for live run traces with Last-Event-ID replay support."""
-    if not _run_is_in_active_context(run_id):
+    req_context = active_runtime_context()
+    if not _run_is_in_active_context(run_id, req_context):
         return jsonify({"error": "Not found"}), 404
     last_id_str = (
         request.headers.get("Last-Event-ID")
@@ -1137,10 +800,48 @@ def stream_run_logs(run_id):
     except (ValueError, TypeError):
         last_event_id = 0
 
+    provider = _active_run_store()
+    run_record = provider.get_run(run_id, context=req_context)
     log_path = resolve_trace_path(run_id)
-    if log_path:
+    has_trace = bool(
+        (run_record and run_record.get("has_trace")) or (log_path and log_path.exists())
+    )
+
+    def provider_events():
+        next_offset = last_event_id
+        for _ in range(300):  # Five-minute bounded connection; clients may reconnect.
+            emitted = False
+            for index, event in enumerate(
+                provider.stream_events(run_id, from_seq=next_offset, context=req_context),
+                start=next_offset + 1,
+            ):
+                event_id = int(event.get("_seq", index))
+                next_offset = max(next_offset + 1, event_id)
+                emitted = True
+                yield f"id: {event_id}\ndata: {json.dumps(event)}\n\n"
+                if event.get("event") in TERMINAL_TRACE_EVENTS:
+                    return
+            record = provider.get_run(run_id, context=req_context) or {}
+            terminal_states = {
+                "SEALED",
+                "FAILED",
+                "CANCELLED",
+                "COMPLETED",
+                "PASSED",
+                "PASS",
+                "FAIL",
+            }
+            if str(record.get("status", "")).upper() in terminal_states:
+                return
+            if not emitted and not is_run_alive(run_id):
+                return
+            if not emitted:
+                yield ": heartbeat\n\n"
+            time.sleep(1.0)
+
+    if has_trace:
         return Response(
-            tail_file_generator(log_path, run_id, last_event_id=last_event_id),
+            provider_events(),
             mimetype="text/event-stream",
             headers={
                 "Cache-Control": "no-cache",
@@ -1149,20 +850,29 @@ def stream_run_logs(run_id):
             },
         )
 
-    # Fallback: stream matching events from master log runs/run.jsonl directly
     master_log = config.RUN_LOG_DIR / "run.jsonl"
     if master_log.exists():
-        return Response(
-            tail_file_generator(
-                master_log, run_id, target_run_id=run_id, last_event_id=last_event_id
-            ),
-            mimetype="text/event-stream",
-            headers={
-                "Cache-Control": "no-cache",
-                "X-Accel-Buffering": "no",
-                "Connection": "keep-alive",
-            },
-        )
+        has_master_events = False
+        try:
+            with open(master_log, encoding="utf-8") as mf:
+                for line in mf:
+                    if f'"{run_id}"' in line:
+                        has_master_events = True
+                        break
+        except Exception as exc:
+            logger.debug(f"Failed scanning master log for run '{run_id}': {exc}")
+        if has_master_events:
+            return Response(
+                tail_file_generator(
+                    master_log, run_id, target_run_id=run_id, last_event_id=last_event_id
+                ),
+                mimetype="text/event-stream",
+                headers={
+                    "Cache-Control": "no-cache",
+                    "X-Accel-Buffering": "no",
+                    "Connection": "keep-alive",
+                },
+            )
 
     def stream_not_found():
         import json as _json
