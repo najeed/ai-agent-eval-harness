@@ -25,7 +25,7 @@ from agentv_runtime.contracts import (
     VerificationResult,
 )
 from agentv_runtime.evidence_graph import index_events_by_seq
-from agentv_runtime.manifest import ManifestBuilder
+from agentv_runtime.manifest import ExecutionManifest, ManifestBuilder
 from agentv_runtime.package import VerificationPackage
 from eval_runner.console.routes.scenarios import scenario_bp
 from eval_runner.events import Event
@@ -970,3 +970,69 @@ def test_trace_seal_trust_envelope_tamper_detected(tmp_path, monkeypatch):
         "TraceSealUntrustedSigner" in r or "TraceSealSignatureInvalid" in r
         for r in tampered_res["failures"]
     )
+
+
+def test_unified_verdict_contract_attested_fail_is_valid_not_certified():
+    events = [
+        {"event": "run_start", "_seq": 1},
+        {
+            "event": "assertion_evaluated",
+            "_seq": 2,
+            "assertion": "oracle_required",
+            "passed": False,
+            "outcome": "FAIL",
+        },
+        {"event": "run_end", "_seq": 3},
+    ]
+    raw_trace = "".join(json.dumps(e) + "\n" for e in events).encode("utf-8")
+    trace_h = hashlib.sha3_256(raw_trace).hexdigest()
+
+    from agentv_runtime.evidence_graph import build_evidence_graph_from_events
+
+    ev_graph = build_evidence_graph_from_events(events)
+    ev_root = ev_graph["evidence_root_hash"]
+
+    manifest = ExecutionManifest(
+        manifest_id="m_test",
+        scenario_id="s_test",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:abcd",
+    )
+    m_hash = manifest.compute_manifest_hash()
+
+    pkg = VerificationPackage(
+        scenario_id="s_test",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:abcd",
+        manifest_id="m_test",
+        manifest_hash=m_hash,
+        execution_identity={"evaluator": "test_runner"},
+        trace_hash=f"sha3_256:{trace_h}",
+        trace_seal={"digest": f"sha3_256:{trace_h}", "event_count": 3},
+        evidence_root_hash=ev_root,
+        required_oracle_ids=["oracle_required"],
+        executed_oracle_results=[
+            {
+                "oracle_id": "oracle_required",
+                "outcome": "FAIL",
+                "passed": False,
+                "resolver": "builtin_v1",
+            }
+        ],
+        decision={"decision": "FAIL", "verdict": "FAIL"},
+    )
+
+    res = VerificationAuthority.verify_package(
+        pkg,
+        raw_trace_bytes=raw_trace,
+        raw_trace_events=events,
+        canonical_manifest=manifest,
+        require_signature=False,
+        require_scenario_binding=False,
+    )
+
+    # Valid negative attestation: verified=True, status="ATTESTED_FAIL",
+    # never CERTIFIED and never UNVERIFIED
+    assert res["verified"] is True
+    assert res["status"] == "ATTESTED_FAIL"
+    assert res["failures"] == []

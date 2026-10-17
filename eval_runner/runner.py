@@ -1524,7 +1524,7 @@ class DefaultRunner(BaseRunner):
             if res.get("evaluation_valid") is False:
                 return False
 
-            # [P2.7] First-class NodeVerdict gating across all typed evidence dimensions
+            # First-class NodeVerdict gating across all typed evidence dimensions
             if "node_verdict" in res and isinstance(res["node_verdict"], dict):
                 nv = res["node_verdict"]
                 if nv.get("verification") in ("fail", "invalid"):
@@ -1533,7 +1533,16 @@ class DefaultRunner(BaseRunner):
                     return False
                 if nv.get("parity") == "fail":
                     return False
+                if nv.get("reconciliation") in ("fail", "invalid"):
+                    return False
                 if nv.get("overall") not in ("success", "not_applicable"):
+                    return False
+
+            # Mandatory State Reconciliation Gating: Missing observations
+            # or mismatched state fail closed
+            if "reconciliation" in res and isinstance(res["reconciliation"], dict):
+                recon = res["reconciliation"]
+                if recon.get("expected_change_checks") and not recon.get("reconciled"):
                     return False
 
             # Typed OracleResult requiredness lattice evaluation

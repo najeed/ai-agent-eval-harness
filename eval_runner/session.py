@@ -697,7 +697,7 @@ class SessionManager:
                         )
                     except Exception:  # noqa: BLE001 - evidence capture must not break execution
                         state_after = None
-                    result["reconciliation"] = build_reconciliation_record(
+                    recon = build_reconciliation_record(
                         node_id=node_id_local,
                         execution_mode=identity.execution_mode.value,
                         state_before=state_before,
@@ -706,9 +706,24 @@ class SessionManager:
                         observations={"used_tools": list(result.get("used_tools") or [])},
                     )
                     # Reconciliation evidence is instance-addressable.
-                    result["reconciliation"]["execution_instance_id"] = exec_id
-                    result["reconciliation"]["attempt_id"] = identity.attempt_id
-                    result["reconciliation"]["scenario_node_id"] = node_id_local
+                    recon["execution_instance_id"] = exec_id
+                    recon["attempt_id"] = identity.attempt_id
+                    recon["scenario_node_id"] = node_id_local
+                    result["reconciliation"] = recon
+
+                    # Incorporate mandatory reconciliation into authoritative
+                    # node and workflow verdict
+                    expected_changes = node_def.get("expected_state_changes") or []
+                    if expected_changes and not recon.get("reconciled"):
+                        result["status"] = "failure"
+                        result["triage_tag"] = "RECONCILIATION_FAILED"
+                        result["message"] = (
+                            f"RECONCILIATION_FAILED on node '{node_id_local}': "
+                            "observed state did not reconcile with expected state changes."
+                        )
+                        if isinstance(result.get("node_verdict"), dict):
+                            result["node_verdict"]["reconciliation"] = "fail"
+                            result["node_verdict"]["overall"] = "reconciliation_failed"
 
                 return result
 
@@ -1785,11 +1800,17 @@ class SessionManager:
             "denied" if denied_ids else ("pass" if new_policy_decisions else "not_applicable")
         )
 
+        recon_component = "not_applicable"
+        recon = task_results.get("reconciliation")
+        if isinstance(recon, dict) and recon.get("expected_change_checks"):
+            recon_component = "pass" if recon.get("reconciled") else "fail"
+
         verdict = NodeVerdict(
             execution="success" if node_success else "failed",
             verification=verification,
             policy=policy_component,
             parity="pass" if parity_success else "fail",
+            reconciliation=recon_component,
             failed_assertion=(
                 {
                     **{k: v for k, v in first_fail[0].items() if k != "success"},
@@ -1827,6 +1848,12 @@ class SessionManager:
                 f"'{fa.get('metric') or fa.get('assertion') or 'unnamed'}' "
                 f"(source={fa.get('source')}) did not pass. "
                 f"Expected: {fa.get('expected')} | Actual: {fa.get('actual')}"
+            )
+        elif overall == "reconciliation_failed":
+            task_results["triage_tag"] = "RECONCILIATION_FAILED"
+            task_results["message"] = (
+                f"RECONCILIATION_FAILED on node '{node_id}': observed state "
+                "did not reconcile with expected state changes."
             )
         elif overall == "evaluation_invalid":
             task_results["triage_tag"] = "EVALUATION_INVALID"

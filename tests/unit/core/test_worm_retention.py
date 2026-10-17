@@ -313,7 +313,7 @@ def test_sealed_artifact_store_prohibits_all_mutations_and_resealing(tmp_path: P
     with pytest.raises(PermissionError):
         store.store_artifact(run_id, "trace_seal.json", b"{}", overwrite=True)
 
-    # Resealing raises PermissionError
-    with pytest.raises(PermissionError) as exc_seal:
-        store.seal(run_id)
-    assert "cannot reseal" in str(exc_seal.value)
+    # Calling seal() on an already sealed vault is an immutable no-op
+    marker_content = (tmp_path / run_id / ".sealed").read_text(encoding="utf-8")
+    store.seal(run_id, {"metadata": "tampered_after_seal"})
+    assert (tmp_path / run_id / ".sealed").read_text(encoding="utf-8") == marker_content

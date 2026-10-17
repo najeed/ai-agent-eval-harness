@@ -102,11 +102,13 @@ class NodeVerdict:
         policy: str,
         parity: str,
         failed_assertion: dict[str, Any] | None = None,
+        reconciliation: str = "not_applicable",
     ):
         self.execution = execution
         self.verification = verification
         self.policy = policy
         self.parity = parity
+        self.reconciliation = reconciliation
         self.failed_assertion = failed_assertion
 
     @property
@@ -121,6 +123,8 @@ class NodeVerdict:
             return "policy_denied"
         if self.parity == "fail":
             return "parity_failed"
+        if self.reconciliation == "fail":
+            return "reconciliation_failed"
         # Strict conjunctive validation: every component must be explicitly pass or not_applicable
         if self.verification not in ("pass", "not_applicable"):
             return "verification_failed"
@@ -128,6 +132,8 @@ class NodeVerdict:
             return "policy_denied"
         if self.parity not in ("pass", "not_applicable"):
             return "parity_failed"
+        if self.reconciliation not in ("pass", "not_applicable"):
+            return "reconciliation_failed"
         return "success"
 
     @property
@@ -140,6 +146,7 @@ class NodeVerdict:
             "verification": self.verification,
             "policy": self.policy,
             "parity": self.parity,
+            "reconciliation": self.reconciliation,
             "overall": self.overall,
         }
         if self.failed_assertion is not None:

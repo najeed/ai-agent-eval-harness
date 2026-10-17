@@ -1,5 +1,5 @@
 """
-eval_runner.reconciliation — [E4] LIVE/HYBRID evidence reconciliation.
+eval_runner.reconciliation — LIVE/HYBRID evidence reconciliation.
 
 For live/hybrid executions the kernel records an independent, per-node
 reconciliation of the OBSERVED world state against the DECLARED expectations:
@@ -57,13 +57,15 @@ def build_reconciliation_record(
             }
         )
 
+    reconciled = bool(checks) and all(c["matched"] for c in checks)
+
     return {
         "node_id": node_id,
         "execution_mode": execution_mode,
         "state_hash_before": _state_hash(state_before),
         "state_hash_after": _state_hash(state_after),
         "expected_change_checks": checks,
-        "reconciled": bool(checks) and all(c["matched"] for c in checks),
+        "reconciled": reconciled,
         # Real captured observations only — never synthesized.
         "observations": dict(observations or {}),
     }

@@ -1377,15 +1377,11 @@ class TraceVerifier:
                 manifest["execution_manifest_hash"] = m_h_val
                 ev_root_val = manifest_evidence_root or ""
                 pkg_req_oracles = list(req_oracles or [])
-                seen_oracle_ids = set()
                 executed_oracles = []
-                for n in reversed(ev_graph.get("nodes", []) if ev_graph else []):
+                for idx, n in enumerate(ev_graph.get("nodes", []) if ev_graph else []):
                     oid = n.get("oracle_id")
                     if not oid:
                         continue
-                    if oid in seen_oracle_ids:
-                        continue
-                    seen_oracle_ids.add(oid)
                     res_val = (
                         n.get("resolver")
                         or (
@@ -1398,20 +1394,26 @@ class TraceVerifier:
                         or "deterministic"
                     )
                     ev_refs = [n["source_ref"]] if n.get("source_ref") else []
+                    raw_outcome = n.get("outcome") or ("PASS" if n.get("passed") else "FAIL")
                     executed_oracles.append(
                         {
                             "oracle_id": oid,
-                            "outcome": "PASS" if n.get("passed") else "FAIL",
-                            "passed": n.get("passed"),
+                            "outcome": str(raw_outcome).upper(),
+                            "passed": bool(n.get("passed")),
                             "resolver": str(res_val),
                             "evidence_refs": ev_refs,
+                            "execution_instance_id": str(
+                                n.get("execution_instance_id") or n.get("instance_id") or ""
+                            ),
+                            "attempt": n.get("attempt") or n.get("attempt_id") or 0,
+                            "sequence": n.get("sequence") or n.get("_seq") or idx,
                             "source_type": n.get("source_type"),
                             "source_ref": n.get("source_ref"),
+                            "source_hash": str(n.get("source_hash") or n.get("content_hash") or ""),
                             "content_hash": n.get("content_hash"),
                             "is_direct_provenance": n.get("is_direct_provenance"),
                         }
                     )
-                executed_oracles.reverse()
 
                 # Derive authoritative sub-hashes:
                 # evaluation_hash, verification_hash, certificate_hash
@@ -2950,6 +2952,7 @@ class VerificationAuthority:
                 failures.append(f"ManifestVerificationFailed: {m_err}")
 
         # 3. Evidence root binding & reconstruction from stream events
+        ev_graph: dict[str, Any] | None = None
         if not effective_events_with_lines:
             failures.append("TraceEventsMissing: artifact verification requires raw trace events")
         else:
@@ -3079,51 +3082,148 @@ class VerificationAuthority:
             failures.append(f"UnverifiedDecision: decision was '{decision_raw}'")
         requires_oracle_pass = decision_val in ("PASS", "VERIFIED")
 
-        # 7. Required oracle inventory & outcome check
-        seen_oracle_ids: set[str] = set()
-        executed_oracles: dict[str, dict[str, Any]] = {}
+        # 7. Semantic reconciliation of packaged oracles against raw trace evidence
+        raw_evidence_nodes = (
+            ev_graph.get("nodes", []) if (ev_graph and isinstance(ev_graph, dict)) else []
+        )
+        if raw_evidence_nodes:
+            raw_node_by_identity: dict[tuple, dict[str, Any]] = {}
+            raw_nodes_by_oid: dict[str, list[dict[str, Any]]] = {}
+            for rn in raw_evidence_nodes:
+                oid = rn.get("oracle_id")
+                if not oid:
+                    continue
+                raw_nodes_by_oid.setdefault(oid, []).append(rn)
+                key = (
+                    oid,
+                    str(rn.get("execution_instance_id") or rn.get("instance_id") or ""),
+                    rn.get("sequence") or rn.get("_seq"),
+                    str(rn.get("source_hash") or rn.get("content_hash") or ""),
+                )
+                raw_node_by_identity[key] = rn
+
+            for o in pkg.executed_oracle_results:
+                o_id = str(o.get("oracle_id") or o.get("metric") or o.get("assertion") or "")
+                if not o_id:
+                    continue
+                matching_raw = None
+                key = (
+                    o_id,
+                    str(o.get("execution_instance_id") or o.get("instance_id") or ""),
+                    o.get("sequence") or o.get("_seq"),
+                    str(o.get("source_hash") or o.get("content_hash") or ""),
+                )
+                if key in raw_node_by_identity:
+                    matching_raw = raw_node_by_identity[key]
+                elif o_id in raw_nodes_by_oid:
+                    candidates = raw_nodes_by_oid[o_id]
+                    for cand in candidates:
+                        cand_inst = str(
+                            cand.get("execution_instance_id") or cand.get("instance_id") or ""
+                        )
+                        o_inst = str(o.get("execution_instance_id") or o.get("instance_id") or "")
+                        cand_hash = str(cand.get("source_hash") or cand.get("content_hash") or "")
+                        o_hash = str(o.get("source_hash") or o.get("content_hash") or "")
+                        if (cand_inst and cand_inst == o_inst) or (
+                            cand_hash and cand_hash == o_hash
+                        ):
+                            matching_raw = cand
+                            break
+                    if not matching_raw and len(candidates) == 1:
+                        matching_raw = candidates[0]
+
+                if matching_raw:
+                    raw_outcome = str(
+                        matching_raw.get("outcome")
+                        or ("PASS" if matching_raw.get("passed") is True else "FAIL")
+                    ).upper()
+                    pkg_outcome = str(
+                        o.get("outcome") or ("PASS" if o.get("passed") is True else "FAIL")
+                    ).upper()
+                    if pkg_outcome != raw_outcome:
+                        failures.append(
+                            "PackagedEvidenceDivergence: packaged oracle "
+                            f"'{o_id}' outcome '{pkg_outcome}' contradicts "
+                            f"raw trace evidence node outcome '{raw_outcome}'"
+                        )
+                    pkg_passed = o.get("passed")
+                    if pkg_passed is None and pkg_outcome in ("PASS", "FAIL"):
+                        pkg_passed = pkg_outcome == "PASS"
+                    raw_passed = matching_raw.get("passed")
+                    if raw_passed is None and raw_outcome in ("PASS", "FAIL"):
+                        raw_passed = raw_outcome == "PASS"
+                    if (
+                        pkg_passed is not None
+                        and raw_passed is not None
+                        and bool(pkg_passed) != bool(raw_passed)
+                    ):
+                        failures.append(
+                            f"PackagedEvidenceDivergence: packaged oracle '{o_id}' "
+                            "passed={o.get('passed')} contradicts "
+                            f"raw trace evidence passed={matching_raw.get('passed')}"
+                        )
+                else:
+                    failures.append(
+                        f"UngroundedPackagedOracle: packaged oracle '{o_id}' has no "
+                        "corresponding raw trace evidence node in recomputed evidence graph"
+                    )
+
+        seen_oracle_keys: set[tuple | str] = set()
+        executed_oracles_by_id: dict[str, list[dict[str, Any]]] = {}
         for o in pkg.executed_oracle_results:
             o_id = str(o.get("oracle_id") or o.get("metric") or o.get("assertion") or "")
             if not o_id:
                 continue
-            if o_id in seen_oracle_ids:
+            inst_key = (
+                o_id,
+                str(o.get("execution_instance_id") or o.get("instance_id") or ""),
+                o.get("attempt") or o.get("attempt_id") or 0,
+                o.get("sequence") or o.get("_seq"),
+                str(o.get("source_hash") or o.get("content_hash") or ""),
+            )
+            dedup_key: tuple | str = inst_key if any(inst_key[1:]) else o_id
+            if dedup_key in seen_oracle_keys:
                 failures.append(f"DuplicateOracleId: duplicate oracle evaluation for '{o_id}'")
-            seen_oracle_ids.add(o_id)
-            executed_oracles[o_id] = o
+            seen_oracle_keys.add(dedup_key)
+            executed_oracles_by_id.setdefault(o_id, []).append(o)
 
         for req in pkg.required_oracle_ids:
             if not req:
                 continue
-            if req not in executed_oracles:
+            if req not in executed_oracles_by_id:
                 failures.append(f"MissingRequiredOracles: required oracle '{req}' was not executed")
                 continue
 
-            o_res = executed_oracles[req]
-            outcome = str(
-                o_res.get("outcome") or ("PASS" if o_res.get("passed") is True else "FAIL")
-            ).upper()
-            if outcome not in ("PASS", "FAIL"):
-                failures.append(
-                    f"RequiredOracleNotExecuted: required oracle '{req}' outcome is '{outcome}' "
-                    "(only genuinely executed PASS/FAIL oracles satisfy completeness)"
-                )
-            elif requires_oracle_pass and outcome != "PASS":
-                failures.append(
-                    f"RequiredOracleFailed: required oracle '{req}' outcome is '{outcome}'"
-                )
+            for o_res in executed_oracles_by_id[req]:
+                outcome = str(
+                    o_res.get("outcome") or ("PASS" if o_res.get("passed") is True else "FAIL")
+                ).upper()
+                if outcome not in ("PASS", "FAIL"):
+                    failures.append(
+                        "RequiredOracleNotExecuted: required oracle "
+                        f"'{req}' outcome is '{outcome}' "
+                        "(only genuinely executed PASS/FAIL oracles satisfy completeness)"
+                    )
+                elif requires_oracle_pass and outcome != "PASS":
+                    failures.append(
+                        f"RequiredOracleFailed: required oracle '{req}' outcome is '{outcome}'"
+                    )
 
-            resolver = o_res.get("resolver") or o_res.get("evaluator") or o_res.get("metric_type")
-            if not resolver or not isinstance(resolver, str):
-                failures.append(
-                    f"InvalidOracleResolver: required oracle '{req}' missing resolver specification"
+                resolver = (
+                    o_res.get("resolver") or o_res.get("evaluator") or o_res.get("metric_type")
                 )
+                if not resolver or not isinstance(resolver, str):
+                    failures.append(
+                        f"InvalidOracleResolver: required oracle '{req}' "
+                        "missing resolver specification"
+                    )
 
-            ev_refs = o_res.get("evidence_refs")
-            if ev_refs is not None and not isinstance(ev_refs, list):
-                failures.append(
-                    f"InvalidOracleEvidenceRefs: required oracle '{req}' "
-                    "evidence_refs must be a list"
-                )
+                ev_refs = o_res.get("evidence_refs")
+                if ev_refs is not None and not isinstance(ev_refs, list):
+                    failures.append(
+                        f"InvalidOracleEvidenceRefs: required oracle '{req}' "
+                        "evidence_refs must be a list"
+                    )
 
         # 8. Signature verification against external trust root
         if pkg.signature:
@@ -3659,50 +3759,62 @@ class VerificationAuthority:
         requires_oracle_pass = decision_val in ("PASS", "VERIFIED")
 
         # 7. Required oracle inventory & outcome check
-        seen_oracle_ids: set[str] = set()
-        executed_oracles: dict[str, dict[str, Any]] = {}
+        seen_oracle_keys: set[tuple | str] = set()
+        executed_oracles_by_id: dict[str, list[dict[str, Any]]] = {}
         for o in pkg.executed_oracle_results:
             o_id = str(o.get("oracle_id") or o.get("metric") or o.get("assertion") or "")
             if not o_id:
                 continue
-            if o_id in seen_oracle_ids:
+            inst_key = (
+                o_id,
+                str(o.get("execution_instance_id") or o.get("instance_id") or ""),
+                o.get("attempt") or o.get("attempt_id") or 0,
+                o.get("sequence") or o.get("_seq"),
+                str(o.get("source_hash") or o.get("content_hash") or ""),
+            )
+            dedup_key: tuple | str = inst_key if any(inst_key[1:]) else o_id
+            if dedup_key in seen_oracle_keys:
                 failures.append(f"DuplicateOracleId: duplicate oracle evaluation for '{o_id}'")
-            seen_oracle_ids.add(o_id)
-            executed_oracles[o_id] = o
+            seen_oracle_keys.add(dedup_key)
+            executed_oracles_by_id.setdefault(o_id, []).append(o)
 
         for req in pkg.required_oracle_ids:
             if not req:
                 continue
-            if req not in executed_oracles:
+            if req not in executed_oracles_by_id:
                 failures.append(f"MissingRequiredOracles: required oracle '{req}' was not executed")
                 continue
 
-            o_res = executed_oracles[req]
-            outcome = str(
-                o_res.get("outcome") or ("PASS" if o_res.get("passed") is True else "FAIL")
-            ).upper()
-            if outcome not in ("PASS", "FAIL"):
-                failures.append(
-                    f"RequiredOracleNotExecuted: required oracle '{req}' outcome is '{outcome}' "
-                    "(only genuinely executed PASS/FAIL oracles satisfy completeness)"
-                )
-            elif requires_oracle_pass and outcome != "PASS":
-                failures.append(
-                    f"RequiredOracleFailed: required oracle '{req}' outcome is '{outcome}'"
-                )
+            for o_res in executed_oracles_by_id[req]:
+                outcome = str(
+                    o_res.get("outcome") or ("PASS" if o_res.get("passed") is True else "FAIL")
+                ).upper()
+                if outcome not in ("PASS", "FAIL"):
+                    failures.append(
+                        "RequiredOracleNotExecuted: required oracle "
+                        f"'{req}' outcome is '{outcome}' "
+                        "(only genuinely executed PASS/FAIL oracles satisfy completeness)"
+                    )
+                elif requires_oracle_pass and outcome != "PASS":
+                    failures.append(
+                        f"RequiredOracleFailed: required oracle '{req}' outcome is '{outcome}'"
+                    )
 
-            resolver = o_res.get("resolver") or o_res.get("evaluator") or o_res.get("metric_type")
-            if not resolver or not isinstance(resolver, str):
-                failures.append(
-                    f"InvalidOracleResolver: required oracle '{req}' missing resolver specification"
+                resolver = (
+                    o_res.get("resolver") or o_res.get("evaluator") or o_res.get("metric_type")
                 )
+                if not resolver or not isinstance(resolver, str):
+                    failures.append(
+                        f"InvalidOracleResolver: required oracle '{req}' "
+                        "missing resolver specification"
+                    )
 
-            ev_refs = o_res.get("evidence_refs")
-            if ev_refs is not None and not isinstance(ev_refs, list):
-                failures.append(
-                    f"InvalidOracleEvidenceRefs: required oracle '{req}' "
-                    "evidence_refs must be a list"
-                )
+                ev_refs = o_res.get("evidence_refs")
+                if ev_refs is not None and not isinstance(ev_refs, list):
+                    failures.append(
+                        f"InvalidOracleEvidenceRefs: required oracle '{req}' "
+                        "evidence_refs must be a list"
+                    )
 
         # 8. Signature verification against external trust root
         if pkg.signature:

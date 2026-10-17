@@ -78,10 +78,7 @@ class LocalFileArtifactStore(ArtifactStore):
             )
 
         if seal_marker.exists() or self.is_sealed(run_id):
-            raise PermissionError(
-                f"Artifact vault for run '{run_id}' is already sealed; "
-                "cannot reseal or overwrite seal marker."
-            )
+            return
 
         seal_data = dict(metadata or {})
         seal_data.setdefault("sealed", True)

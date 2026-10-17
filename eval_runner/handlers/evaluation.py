@@ -498,7 +498,7 @@ async def handle_verify_package(args):
             require_scenario_binding=require_scen,
         )
 
-        if res.get("verified"):
+        if res.get("verified") and res.get("status") not in ("ATTESTED_FAIL", "FAIL", "UNVERIFIED"):
             print(f"✅ VERIFIED: Verification package '{pkg_path.name}' is valid.")
             print(f"    - Package ID: {res.get('package_id')}")
             print(f"    - Scenario ID: {res.get('scenario_id')}")
@@ -506,7 +506,11 @@ async def handle_verify_package(args):
             print(f"    - Status: {res.get('status')}")
             return 0
         else:
-            print(f"❌ FAILED: Verification package '{pkg_path.name}' verification failed.")
+            status_desc = res.get("status", "FAILED")
+            print(
+                f"❌ {status_desc}: Verification package '{pkg_path.name}' "
+                "verification failed or attested negative outcome."
+            )
             for failure in res.get("failures", []):
                 print(f"    - Failure: {failure}")
             return 1

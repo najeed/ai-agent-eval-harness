@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import time
 from datetime import datetime
+from pathlib import Path
 from unittest.mock import patch
 
 from eval_runner.services.run_summary import RunSummaryService
@@ -517,3 +518,44 @@ def test_compute_summary_duration_edge_cases(tmp_path, monkeypatch):
             "run_dur", cached_entry={"path": "run_dur/run.jsonl"}
         )
         assert s_dur_inv["duration_seconds"] is None
+
+
+def test_run_summary_service_attested_fail_verdict_and_status(tmp_path: Path, monkeypatch):
+    """
+    A valid verification with a negative outcome resolves to ATTESTED_FAIL
+    and never CERTIFIED.
+    """
+    run_id = "run_attested_fail"
+    run_dir = tmp_path / run_id
+    run_dir.mkdir(parents=True)
+    trace_file = run_dir / "run.jsonl"
+    cert_file = run_dir / "certificate.json"
+
+    trace_file.write_text('{"event": "start"}\n{"event": "run_end"}\n', encoding="utf-8")
+    cert_file.write_text(
+        json.dumps(
+            {
+                "run_id": run_id,
+                "execution_mode": "live",
+                "provisional": False,
+                "compliance": {"status": "FAIL"},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
+
+    with (
+        patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True),
+        patch("eval_runner.verifier.locate_certificate_file", return_value=cert_file),
+    ):
+        verdict = RunSummaryService.get_authoritative_verdict(run_id)
+        assert verdict == "ATTESTED_FAIL"
+
+        summary = RunSummaryService.compute_summary(
+            run_id, cached_entry={"path": f"{run_id}/run.jsonl"}
+        )
+        assert summary["status"] == "ATTESTED_FAIL"
+        assert summary["status"] != "CERTIFIED"
+        assert summary["lifecycle"] == "SEALED"
