@@ -611,7 +611,9 @@ def append_authoritative_finalization(
         evidence_root_hash=ev_root,
         outcome=outcome,
         score=score,
-        terminal_seq=len(parsed) + 1,
+        terminal_seq=max(
+            (e.get("_seq") for e in parsed if isinstance(e.get("_seq"), int)), default=len(parsed)
+        ),
     ).sign()
 
     fin_line = json.dumps({"event": "evaluator_finalization", "data": fin.to_dict()})

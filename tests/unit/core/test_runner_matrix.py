@@ -1464,7 +1464,7 @@ async def test_runner_certification_evaluation_kernel_fallback_and_signing_error
             if v.is_dir():
                 run_file = v / "run.jsonl"
                 if not run_file.exists():
-                    run_file.write_text('{"event": "run_start"}\n', encoding="utf-8")
+                    run_file.write_text('{"event": "run_start", "_seq": 1}\n', encoding="utf-8")
         return [{"workflow_verdict": {"status": "COMPLETED"}}]
 
     monkeypatch.setattr("eval_runner.session.SessionManager.execute_tasks", mock_exec)

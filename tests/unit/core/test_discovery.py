@@ -99,12 +99,10 @@ def test_resolve_extension_env_var_load_failure(monkeypatch, caplog):
         lambda group=None: [ep] if group == f"{ENTRY_POINT_NAMESPACE}.run_stores" else [],
     )
 
-    with caplog.at_level(logging.WARNING):
-        resolved = resolve_extension(
-            "run_stores", default_factory=lambda: MockExtension("fallback")
-        )
-    assert resolved.name == "fallback"
-    assert "Failed to load configured run_stores provider 'failing'" in caplog.text
+    with pytest.raises(
+        RuntimeError, match="Configured run_stores provider 'failing' failed to load"
+    ):
+        resolve_extension("run_stores", default_factory=lambda: MockExtension("fallback"))
 
 
 def test_resolve_extension_default_entry_point(monkeypatch):

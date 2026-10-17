@@ -470,6 +470,8 @@ def get_default_approval_store(
         return FileApprovalStore(base_dir=base_dir)
 
     default_factory = SQLiteApprovalStore if kind == "sqlite" else FileApprovalStore
+    if kind in ("sqlite", "file"):
+        return default_factory()
     return resolve_extension("approval_stores", default_factory=default_factory)
 
 

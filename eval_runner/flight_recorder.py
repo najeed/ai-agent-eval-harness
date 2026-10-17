@@ -335,8 +335,9 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                     )
                     raise RuntimeError(err) from e
 
-        # Serialize and write
-        content = json.dumps(data) + "\n"
+        # The RunStorageProvider is the sole authoritative per-run trace
+        # persistence contract.  The master log remains diagnostic only.
+        content = json.dumps(data, default=str, separators=(",", ":")) + "\n"
 
         def _write_buffered(path, content):
             # [WinHardening] Persistent handles with thread safety
@@ -352,18 +353,33 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             if self.master:
                 _write_buffered(self.master_log_path, content)
 
-            if per_run_log_path:
-                if run_id and run_id != "unknown" and self.artifact_store:
+            if per_run_log_path and run_id and run_id != "unknown":
+                if self.artifact_store is not None:
                     self.artifact_store.store_artifact(
                         run_id=run_id,
                         artifact_name="run.jsonl",
                         content=content,
                         content_type="application/x-ndjson",
-                        metadata={"event": data.get("event"), "seq": data.get("seq")},
+                        metadata={"event": data.get("event"), "seq": data.get("_seq")},
                         append=True,
                     )
-                if not isinstance(self.artifact_store, LocalFileArtifactStore):
-                    _write_buffered(per_run_log_path, content)
+                from eval_runner.reference.local_run_store import LocalFileRunStore
+                from eval_runner.storage_resolver import resolve_run_storage_provider
+
+                run_store = resolve_run_storage_provider()
+                run_store_dir = getattr(run_store, "log_dir", getattr(run_store, "base_dir", None))
+                art_store_dir = getattr(
+                    self.artifact_store, "base_dir", getattr(self.artifact_store, "log_dir", None)
+                )
+                is_same_local = (
+                    type(self.artifact_store) is LocalFileArtifactStore
+                    and type(run_store) is LocalFileRunStore
+                    and art_store_dir is not None
+                    and run_store_dir is not None
+                    and Path(art_store_dir).resolve() == Path(run_store_dir).resolve()
+                )
+                if not is_same_local:
+                    run_store.append_events(run_id, [data])
         except Exception as e:
             sys.stderr.write(f"   [FlightRecorder] [ERROR] File I/O Error: {e}\n")
             with self._lock:

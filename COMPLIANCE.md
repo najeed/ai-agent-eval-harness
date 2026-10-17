@@ -34,7 +34,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **python-dotenv** | 1.2.4 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **PyYAML** | 6.0.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **requests** | 2.34.2 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **sqlalchemy** | 2.1.4 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **sqlalchemy** | 2.1.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **urllib3** | 2.8.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **Werkzeug** | 3.1.9 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 
@@ -87,7 +87,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **google-genai** | 2.31.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **langchain** | 1.4.6 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-anthropic** | 1.7.6 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langchain-core** | 1.6.11 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-core** | 1.6.12 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-google-genai** | 4.4.2 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **langchain-ollama** | 1.1.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-openai** | 1.7.2 | MIT | [MIT.txt](LICENSES/MIT.txt) |

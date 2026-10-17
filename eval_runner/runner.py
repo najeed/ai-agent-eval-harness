@@ -707,7 +707,10 @@ class DefaultRunner(BaseRunner):
             if idx_rec and isinstance(idx_rec.get("context"), Mapping):
                 runtime_context = idx_rec["context"]
 
-        if isinstance(runtime_context, Mapping):
+        if isinstance(runtime_context, Mapping) and all(
+            bool(runtime_context.get(k))
+            for k in ("org_id", "tenant_id", "workspace_id", "active_environment")
+        ):
             try:
                 from agentv_runtime.config import (
                     ConfigResolver as AgentVConfigResolver,
@@ -755,9 +758,14 @@ class DefaultRunner(BaseRunner):
                     )
                     bind_revision_to_evidence(manifest_metadata, observed_revision_record)
             except Exception as rev_err:
-                logger.debug(
-                    "Runtime worker config revision adoption skipped or failed: %s", rev_err
-                )
+                # A scoped runtime context declares that configuration is part
+                # of the execution contract.  Continuing after a failed
+                # adoption would produce evidence for a configuration the
+                # worker did not prove it used.
+                raise RuntimeError(
+                    "ScopedConfigurationAdoptionFailed: unable to adopt and "
+                    "bind the active scoped configuration revision"
+                ) from rev_err
 
         # Defense-in-depth: Ensure metadata values (including nested CLI args dicts)
         # do not retain dispatch callbacks or opaque runtime callables
@@ -1103,27 +1111,25 @@ class DefaultRunner(BaseRunner):
                 span_context=ctx.span_context,
             )
 
-            final_trace_path = run_vault_dir / "run.jsonl"
             trace_events: list[tuple[dict[str, Any], str]] = []
             trace_read_error: str | None = None
-            last_read_idx = 0
-            if final_trace_path.exists():
-                try:
-                    with open(final_trace_path, encoding="utf-8") as tf:
-                        for line_idx, line in enumerate(tf, start=1):
-                            last_read_idx = line_idx
-                            s = line.strip()
-                            if s:
-                                # Evidence roots commit to the recorded JSONL payload,
-                                # not a canonical reserialization of the event object.
-                                trace_events.append((json.loads(s), line.rstrip("\r\n")))
-                except Exception as read_err:
-                    trace_read_error = (
-                        f"Physical trace read failure at line {last_read_idx}: {read_err}"
+            try:
+                stored_events = self.run_store.get_events(
+                    effective_run_id, offset=0, limit=10_000_000
+                )
+                trace_events = [
+                    (
+                        event,
+                        json.dumps(event, default=str, separators=(",", ":")),
                     )
-                    logger.debug("Failed reading trace for evidence graph root: %s", read_err)
-            else:
-                trace_read_error = f"Physical trace '{final_trace_path}' not found."
+                    for event in stored_events
+                    if isinstance(event, dict)
+                ]
+                if not trace_events:
+                    trace_read_error = "RunStorageProvider returned no trace events."
+            except Exception as read_err:
+                trace_read_error = f"RunStorageProvider event retrieval failed: {read_err}"
+                logger.debug("Failed reading provider trace for evidence graph root: %s", read_err)
 
             # [Item 2: P0 Physical Trace Exclusivity]
             if is_certification and (trace_read_error is not None or not trace_events):
@@ -1190,25 +1196,39 @@ class DefaultRunner(BaseRunner):
                 trace_events, required_oracle_ids=req_oracles
             )
             evidence_root = ev_graph["evidence_root_hash"]
+            trace_sequence_numbers = [
+                event[0].get("_seq")
+                for event in trace_events
+                if isinstance(event[0].get("_seq"), int)
+            ]
+            terminal_trace_seq = max(trace_sequence_numbers, default=len(trace_events))
 
             # Authenticated EvaluatorFinalizationRecord bound to upfront manifest hash
             evaluator_id = getattr(self, "evaluator_identity", None) or "system_id"
             sign_err_msg = None
             eval_priv = None
             try:
-                from eval_runner.identity import IdentityService
-
-                # [Item 4: P0 External Trust Root for Evaluator Signing]
-                # Auto-provisioning is disabled for certification runs; keys must be pre-provisioned
-                eval_priv = IdentityService.get_private_key(
-                    evaluator_id, auto_provision=not is_certification
+                backend_can_sign = bool(
+                    self.signing_backend
+                    and getattr(self.signing_backend, "can_sign", lambda: True)()
                 )
-                if not eval_priv and evaluator_id != "eval_runner.runner.EvaluationKernel":
+                if backend_can_sign:
+                    eval_priv = self.signing_backend
+                else:
+                    from eval_runner.identity import IdentityService
+
+                    # Local reference fallback only. External signing backends
+                    # must not be forced to export a PEM private key.
                     eval_priv = IdentityService.get_private_key(
-                        "eval_runner.runner.EvaluationKernel", auto_provision=not is_certification
+                        evaluator_id, auto_provision=not is_certification
                     )
-                    if eval_priv:
-                        evaluator_id = "eval_runner.runner.EvaluationKernel"
+                    if not eval_priv and evaluator_id != "eval_runner.runner.EvaluationKernel":
+                        eval_priv = IdentityService.get_private_key(
+                            "eval_runner.runner.EvaluationKernel",
+                            auto_provision=not is_certification,
+                        )
+                        if eval_priv:
+                            evaluator_id = "eval_runner.runner.EvaluationKernel"
                 if not eval_priv:
                     sign_err_msg = (
                         f"Evaluator private key for '{evaluator_id}' not found in TRUST_ROOT or "
@@ -1233,7 +1253,9 @@ class DefaultRunner(BaseRunner):
                 evidence_root_hash=evidence_root,
                 outcome="pass" if pass_at_k > 0 else "fail",
                 score=float(pass_at_k),
-                terminal_seq=len(all_attempt_results),
+                # This is a trace boundary, not an attempt count.  It binds
+                # finalization to the last event committed before finalization.
+                terminal_seq=terminal_trace_seq,
             )
             try:
                 if eval_priv:
@@ -1372,6 +1394,8 @@ class DefaultRunner(BaseRunner):
                         "reproducibility": repro_contract,
                         "results": all_attempt_results,
                         "config_hash": cfg_hash,
+                        "execution_manifest": exec_manifest.to_dict(),
+                        "scenario_data": scenario,
                     }
                     runtime_context = (
                         ctx.metadata.get("runtime_context")
@@ -1487,12 +1511,11 @@ class DefaultRunner(BaseRunner):
                 for or_res in res["oracle_results"]:
                     req_level = str(or_res.get("requiredness", "REQUIRED")).upper()
                     outcome = str(or_res.get("outcome", "NOT_EVALUATED")).upper()
-                    if req_level == "REQUIRED":
-                        if outcome in ("FAIL", "INVALID", "NOT_EVALUATED"):
-                            return False
+                    if req_level == "REQUIRED" and outcome != "PASS":
+                        return False
                     # OPTIONAL and INFORMATIONAL oracles never gate attempt success
 
-            # 3. Oracle rows: invalid or failed assertions veto the attempt.
+            # 3. Oracle rows: invalid or non-PASS assertions veto the attempt.
             for m in res.get("metrics") or []:
                 if not isinstance(m, dict):
                     continue
@@ -1501,23 +1524,47 @@ class DefaultRunner(BaseRunner):
                 ).upper() in ("OPTIONAL", "INFORMATIONAL")
                 if is_opt_or_info:
                     continue
-                if m.get("success") is False or m.get("outcome") == "FAIL":
+                if m.get("invalid") or m.get("status") == "EVALUATION_INVALID":
+                    return False
+                outcome = str(m.get("outcome", "")).upper()
+                if outcome:
+                    if outcome != "PASS":
+                        return False
+                elif m.get("success") is not True:
+                    return False
+                if m.get("success") is False:
                     return False
 
             for h in res.get("state_hygiene") or []:
+                if not isinstance(h, dict):
+                    continue
                 if h.get("invalid") or h.get("status") == "EVALUATION_INVALID":
                     return False
                 if str(h.get("requiredness", "")).upper() in ("OPTIONAL", "INFORMATIONAL"):
                     continue
-                if h.get("success") is False or h.get("outcome") == "FAIL":
+                outcome = str(h.get("outcome", "")).upper()
+                if outcome:
+                    if outcome != "PASS":
+                        return False
+                elif h.get("success") is not True:
+                    return False
+                if h.get("success") is False:
                     return False
 
             for p in res.get("state_parity") or []:
+                if not isinstance(p, dict):
+                    continue
                 if p.get("invalid") or p.get("status") == "EVALUATION_INVALID":
                     return False
                 if str(p.get("requiredness", "")).upper() in ("OPTIONAL", "INFORMATIONAL"):
                     continue
-                if p.get("success") is False or p.get("outcome") == "FAIL":
+                outcome = str(p.get("outcome", "")).upper()
+                if outcome:
+                    if outcome != "PASS":
+                        return False
+                elif p.get("success") is not True:
+                    return False
+                if p.get("success") is False:
                     return False
 
             # 4. Policy denials are gating (first-class policy assertions).

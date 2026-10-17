@@ -63,15 +63,20 @@ def resolve_extension(  # noqa: UP047
 
         instance: T | None = None
 
-        if target_name and target_name in discovered:
+        if target_name:
+            if target_name not in discovered:
+                raise RuntimeError(
+                    f"Configured {family} provider '{target_name}' was not discovered in "
+                    f"entry-point group '{entry_point_group}'."
+                )
             try:
                 provider_cls = discovered[target_name].load()
                 instance = provider_cls()
                 logger.info("Using configured %s provider '%s'", family, target_name)
             except Exception as exc:
-                logger.warning(
-                    "Failed to load configured %s provider '%s': %s", family, target_name, exc
-                )
+                raise RuntimeError(
+                    f"Configured {family} provider '{target_name}' failed to load."
+                ) from exc
 
         if instance is None and "default" in discovered:
             try:

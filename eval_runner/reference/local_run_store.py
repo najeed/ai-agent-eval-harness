@@ -79,6 +79,10 @@ class LocalFileRunStore(RunStore):
         res.mkdir(parents=True, exist_ok=True)
         return res
 
+    @property
+    def base_dir(self) -> Path:
+        return self.log_dir
+
     def _get_run_vault(self, run_id: str, create: bool = False) -> Path:
         return SafeRunPathResolver.resolve_run_dir(self.log_dir, run_id, create=create)
 

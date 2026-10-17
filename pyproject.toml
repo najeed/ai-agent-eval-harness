@@ -31,7 +31,7 @@ dependencies = [
     "opentelemetry-sdk==1.45.1",
     "psutil==7.2.2",
     "httpx==0.28.1",
-    "sqlalchemy==2.1.4",
+    "sqlalchemy==2.1.5",
     "python-dotenv==1.2.4",
     "Authlib==1.9.1",
     "Pillow==12.3.0",
@@ -48,7 +48,7 @@ provider-gemini = [
 # 2. Framework Environments (Evaluated and verified agent architectures)
 framework-langchain = [
     "langchain==1.4.6",
-    "langchain-core>=1.6.11",
+    "langchain-core>=1.6.12",
 ]
 framework-langserve = [
     "langserve>=0.3.3",
@@ -102,7 +102,7 @@ vcs = [
 # 5. Composed Ecosystem Extras
 frameworks = [
     "langchain==1.4.6",
-    "langchain-core>=1.6.11",
+    "langchain-core>=1.6.12",
     "langserve>=0.3.3",
     "langgraph==1.2.15",
     "ag2==1.1.2",
@@ -110,7 +110,7 @@ frameworks = [
 ]
 langchain-all = [
     "langchain==1.4.6",
-    "langchain-core>=1.6.11",
+    "langchain-core>=1.6.12",
     "langchain-openai==1.7.2",
     "langchain-anthropic>=1.7.6",
     "langchain-google-genai>=4.4.2",
@@ -123,7 +123,7 @@ all = [
     "datasets==5.1.0",
     "google-genai==2.31.0",
     "langchain==1.4.6",
-    "langchain-core>=1.6.11",
+    "langchain-core>=1.6.12",
     "langserve>=0.3.3",
     "langgraph==1.2.15",
     "ag2==1.1.2",

@@ -161,13 +161,16 @@ class CoreTraceSigner(TraceVerificationInterceptor):
 
             from eval_runner.reference.signing import LocalEd25519SigningBackend
 
-            private_key = IdentityService.get_private_key(identity_id, auto_provision=False)
-            if private_key is None:
-                raise CertificationFailedError(
-                    f"Pre-existing trusted private key not found for certification identity "
-                    f"'{identity_id}' "
-                    "(fail-closed: certification identities cannot be dynamically minted)."
-                )
+            signing_backend = context.get("signing_backend")
+            private_key = None
+            if signing_backend is None:
+                private_key = IdentityService.get_private_key(identity_id, auto_provision=False)
+                if private_key is None:
+                    raise CertificationFailedError(
+                        f"Pre-existing trusted private key not found for certification identity "
+                        f"'{identity_id}' "
+                        "(fail-closed: certification identities cannot be dynamically minted)."
+                    )
             # Standard: Sign the manifest content (excluding transient fields like provenance_chain)
             manifest_to_sign = manifest.copy()
             manifest_to_sign.pop("provenance_chain", None)
@@ -183,7 +186,15 @@ class CoreTraceSigner(TraceVerificationInterceptor):
 
             manifest_bytes = canonical_json_encode(manifest_to_sign)
 
-            if hasattr(private_key, "private_bytes") and callable(private_key.private_bytes):
+            if signing_backend is not None:
+                signature = signing_backend.sign_payload(manifest_bytes, identity_id)
+                if isinstance(signature, dict):
+                    signature = signature.get("signature") or signature.get("sig")
+                if not signature:
+                    raise CertificationFailedError(
+                        "Signing backend returned an empty manifest signature"
+                    )
+            elif hasattr(private_key, "private_bytes") and callable(private_key.private_bytes):
                 try:
                     priv_pem = private_key.private_bytes(
                         encoding=serialization.Encoding.PEM,
@@ -508,6 +519,7 @@ class TraceVerifier:
         consensus: dict[str, Any] | None = None,
         scenario_data: Mapping[str, Any] | None = None,
         require_finalization: bool = False,
+        signing_backend: SigningBackend | None = None,
     ) -> dict[str, Any]:
         """
         Signs a trace file and issues a standardized Verification Certificate (VC) v3
@@ -754,18 +766,24 @@ class TraceVerifier:
                         if stripped:
                             try:
                                 parsed_ev = json.loads(stripped)
-                                terminal_finalization = parsed_ev.get("event") in (
-                                    "run_end",
-                                    "verification_decision",
-                                    "session_decision",
-                                ) and isinstance(
-                                    parsed_ev.get("finalization")
-                                    or (
-                                        parsed_ev.get("data", {}).get("finalization")
-                                        if isinstance(parsed_ev.get("data"), dict)
-                                        else None
-                                    ),
-                                    dict,
+                                terminal_finalization = parsed_ev.get(
+                                    "event"
+                                ) == "evaluator_finalization" or (
+                                    parsed_ev.get("event")
+                                    in (
+                                        "run_end",
+                                        "verification_decision",
+                                        "session_decision",
+                                    )
+                                    and isinstance(
+                                        parsed_ev.get("finalization")
+                                        or (
+                                            parsed_ev.get("data", {}).get("finalization")
+                                            if isinstance(parsed_ev.get("data"), dict)
+                                            else None
+                                        ),
+                                        dict,
+                                    )
                                 )
                                 # The evaluator finalization record binds the
                                 # pre-finalization evidence stream.  Its own
@@ -863,6 +881,89 @@ class TraceVerifier:
                         ) from fin_err
 
         if fin_record:
+            all_trace_events = events_list + terminal_events
+            finalization_event = next(
+                (
+                    event
+                    for event in all_trace_events
+                    if (
+                        event.get("event") == "evaluator_finalization"
+                        and (
+                            (
+                                isinstance(event.get("data"), dict)
+                                and event["data"].get("finalization_hash")
+                                == fin_record.finalization_hash
+                            )
+                            or event.get("finalization_hash") == fin_record.finalization_hash
+                        )
+                    )
+                    or (
+                        isinstance(event.get("finalization"), dict)
+                        and event["finalization"].get("finalization_hash")
+                        == fin_record.finalization_hash
+                    )
+                    or (
+                        isinstance(event.get("data"), dict)
+                        and isinstance(event["data"].get("finalization"), dict)
+                        and event["data"]["finalization"].get("finalization_hash")
+                        == fin_record.finalization_hash
+                    )
+                ),
+                None,
+            )
+            finalization_sequence = (
+                finalization_event.get("_seq") if finalization_event is not None else None
+            )
+            prior_sequences = sorted(
+                event.get("_seq")
+                for event in all_trace_events
+                if isinstance(event.get("_seq"), int)
+                and (
+                    (
+                        finalization_sequence is not None
+                        and event.get("_seq") < finalization_sequence
+                    )
+                    or (
+                        finalization_sequence is None
+                        and event is not all_trace_events[-1]
+                        and event.get("event") not in ("run_end", "evaluator_finalization")
+                    )
+                )
+            )
+            if prior_sequences:
+                if fin_record.terminal_seq not in (prior_sequences[-1], 0):
+                    raise CertificationFailedError(
+                        "TerminalSequenceMismatch: evaluator finalization does not bind "
+                        "the last pre-finalization trace event"
+                    )
+            elif fin_record.terminal_seq not in (0, 1, len(all_trace_events)):
+                raise CertificationFailedError(
+                    "TerminalTraceSequenceMissing: finalization must have an explicit "
+                    "recorder sequence and a preceding trace boundary"
+                )
+            # Signing a package is an assertion about the evaluator's result.
+            # Structural parsing alone is insufficient: authenticate the
+            # evaluator record before any package/manifest signature is made.
+            evaluator_public_key = None
+            if signing_backend is not None:
+                get_backend_public_key = getattr(
+                    signing_backend, "get_public_key", lambda _id: None
+                )
+                evaluator_public_key = get_backend_public_key(fin_record.evaluator_identity)
+            if evaluator_public_key is None:
+                from eval_runner.identity import IdentityService
+
+                evaluator_public_key = IdentityService.get_public_key(
+                    fin_record.evaluator_identity, auto_provision=False
+                )
+            if evaluator_public_key is None or not fin_record.verify_authoritative(
+                public_key=evaluator_public_key,
+                trust_root=config.TRUST_ROOT,
+            ):
+                raise CertificationFailedError(
+                    "EvaluatorSignatureVerificationFailed: evaluator finalization "
+                    "must be cryptographically valid before certification signing"
+                )
             if fin_record.run_id != run_id:
                 raise CertificationFailedError(
                     f"RunIdMismatch: EvaluatorFinalizationRecord run_id "
@@ -1093,6 +1194,23 @@ class TraceVerifier:
             "metadata": metadata or {},
             "behavioral_fingerprint_id": behavioral_fingerprint_id or "default_v1",
         }
+        # Preserve the provider-published execution inputs with the sealed
+        # certificate.  They are not optional sidecars: remote RunStorage
+        # implementations expose this manifest as the complete verification
+        # object.
+        if isinstance(scenario_data, Mapping):
+            manifest["scenario_data"] = dict(scenario_data)
+        execution_manifest_path = p.parent / "execution_manifest.json"
+        if execution_manifest_path.exists():
+            try:
+                execution_manifest = json.loads(execution_manifest_path.read_text(encoding="utf-8"))
+                if isinstance(execution_manifest, dict):
+                    manifest["execution_manifest"] = execution_manifest
+            except Exception as execution_manifest_error:
+                logger.debug(
+                    "Failed to include execution manifest in certificate: %s",
+                    execution_manifest_error,
+                )
         manifest_evidence_root = evidence_root_hash or computed_evidence_root
         if manifest_evidence_root:
             manifest["evidence_root_hash"] = manifest_evidence_root
@@ -1177,6 +1295,7 @@ class TraceVerifier:
             manifest["signing_context"] = {
                 "identity_id": identity_id,
                 "timestamp": timestamp,
+                "signing_backend": signing_backend,
             }
             format_str = "hybrid" if config.PQC_ENABLED else "ED25519"
             try:
@@ -1299,7 +1418,7 @@ class TraceVerifier:
                 import hashlib
 
                 eval_hash = ""
-                for ev in reversed(events_list):
+                for ev in reversed(events_list + terminal_events):
                     if ev.get("event") == "evaluator_finalization":
                         eval_hash = str(
                             ev.get("finalization_hash")
@@ -1389,20 +1508,35 @@ class TraceVerifier:
 
                 from eval_runner.identity import IdentityService
 
-                priv_key = IdentityService.get_private_key(identity_id)
-                if not (
-                    hasattr(priv_key, "sign")
-                    or (hasattr(priv_key, "private_bytes") and callable(priv_key.private_bytes))
-                ):
-                    raise CertificationFailedError(
-                        f"Identity '{identity_id}' exposes no usable signing capability "
-                        "(fail-closed: degenerate placeholder signatures are prohibited)"
-                    )
                 pkg_sig = None
                 pub_pem = None
-                if priv_key and hasattr(priv_key, "sign"):
-                    pkg_sig = priv_key.sign(pkg.canonical_payload_bytes()).hex()
-                    if hasattr(priv_key, "public_key"):
+                if signing_backend is not None:
+                    pkg_sig = signing_backend.sign_payload(
+                        pkg.canonical_payload_bytes(), identity_id
+                    )
+                    if isinstance(pkg_sig, dict):
+                        pkg_sig = pkg_sig.get("signature") or pkg_sig.get("sig")
+                    get_backend_public_key = getattr(
+                        signing_backend, "get_public_key", lambda _id: None
+                    )
+                    backend_public_key = get_backend_public_key(identity_id)
+                    if isinstance(backend_public_key, bytes):
+                        pub_pem = backend_public_key.decode("utf-8")
+                    elif isinstance(backend_public_key, str):
+                        pub_pem = backend_public_key
+                else:
+                    priv_key = IdentityService.get_private_key(identity_id)
+                    if not (
+                        hasattr(priv_key, "sign")
+                        or (hasattr(priv_key, "private_bytes") and callable(priv_key.private_bytes))
+                    ):
+                        raise CertificationFailedError(
+                            f"Identity '{identity_id}' exposes no usable signing capability "
+                            "(fail-closed: degenerate placeholder signatures are prohibited)"
+                        )
+                    if priv_key and hasattr(priv_key, "sign"):
+                        pkg_sig = priv_key.sign(pkg.canonical_payload_bytes()).hex()
+                    if priv_key and hasattr(priv_key, "public_key"):
                         from cryptography.hazmat.primitives import serialization
 
                         pub_pem = (
@@ -2666,15 +2800,18 @@ class VerificationAuthority:
         # Derive authoritative event stream from parsed raw trace bytes
         def _is_finalization_carrier(event: dict[str, Any]) -> bool:
             return bool(
-                event.get("event") in ("run_end", "verification_decision", "session_decision")
-                and isinstance(
-                    event.get("finalization")
-                    or (
-                        event.get("data", {}).get("finalization")
-                        if isinstance(event.get("data"), dict)
-                        else None
-                    ),
-                    dict,
+                event.get("event") == "evaluator_finalization"
+                or (
+                    event.get("event") in ("run_end", "verification_decision", "session_decision")
+                    and isinstance(
+                        event.get("finalization")
+                        or (
+                            event.get("data", {}).get("finalization")
+                            if isinstance(event.get("data"), dict)
+                            else None
+                        ),
+                        dict,
+                    )
                 )
             )
 
@@ -2932,10 +3069,15 @@ class VerificationAuthority:
             except Exception as s_err:
                 failures.append(f"ScenarioVerificationFailed: {s_err}")
 
-        # 6. Decision verdict check
-        decision_val = pkg.decision.get("decision") or pkg.decision.get("verdict")
+        # 6. Behavioral outcome is distinct from cryptographic evidence validity.
+        # A complete signed FAIL is an attestable negative evaluation, not a
+        # malformed package. Only explicit PASS claims require all mandatory
+        # oracle outcomes to be PASS.
+        decision_raw = (pkg.decision or {}).get("decision") or (pkg.decision or {}).get("verdict")
+        decision_val = str(decision_raw or "").upper()
         if decision_val not in ("PASS", "VERIFIED"):
-            failures.append(f"UnverifiedDecision: decision was '{decision_val}'")
+            failures.append(f"UnverifiedDecision: decision was '{decision_raw}'")
+        requires_oracle_pass = decision_val in ("PASS", "VERIFIED")
 
         # 7. Required oracle inventory & outcome check
         seen_oracle_ids: set[str] = set()
@@ -2960,7 +3102,7 @@ class VerificationAuthority:
             outcome = str(
                 o_res.get("outcome") or ("PASS" if o_res.get("passed") is True else "FAIL")
             ).upper()
-            if outcome != "PASS":
+            if requires_oracle_pass and outcome != "PASS":
                 failures.append(
                     f"RequiredOracleFailed: required oracle '{req}' outcome is '{outcome}'"
                 )
@@ -2997,13 +3139,9 @@ class VerificationAuthority:
             failures.append("UnsignedPackage: package signature is required")
 
         # 9. Sub-hash bindings: evaluation_hash, verification_hash, certificate_hash
-        if pkg.evaluation_hash and effective_events:
+        if pkg.evaluation_hash and parsed_events:
             fin_ev = next(
-                (
-                    e
-                    for e in reversed(effective_events)
-                    if e.get("event") == "evaluator_finalization"
-                ),
+                (e for e in reversed(parsed_events) if e.get("event") == "evaluator_finalization"),
                 None,
             )
             if fin_ev:
@@ -3497,10 +3635,13 @@ class VerificationAuthority:
                 "ScenarioArtifactMissing: package certification requires bound scenario artifact"
             )
 
-        # 6. Decision verdict check
-        decision_val = pkg.decision.get("decision") or pkg.decision.get("verdict")
+        # 6. A signed FAIL is a valid negative attestation.  Only a positive
+        # certification claim requires PASS outcomes for mandatory oracles.
+        decision_raw = (pkg.decision or {}).get("decision") or (pkg.decision or {}).get("verdict")
+        decision_val = str(decision_raw or "").upper()
         if decision_val not in ("PASS", "VERIFIED"):
-            failures.append(f"UnverifiedDecision: decision was '{decision_val}'")
+            failures.append(f"UnverifiedDecision: decision was '{decision_raw}'")
+        requires_oracle_pass = decision_val in ("PASS", "VERIFIED")
 
         # 7. Required oracle inventory & outcome check
         seen_oracle_ids: set[str] = set()
@@ -3525,7 +3666,7 @@ class VerificationAuthority:
             outcome = str(
                 o_res.get("outcome") or ("PASS" if o_res.get("passed") is True else "FAIL")
             ).upper()
-            if outcome != "PASS":
+            if requires_oracle_pass and outcome != "PASS":
                 failures.append(
                     f"RequiredOracleFailed: required oracle '{req}' outcome is '{outcome}'"
                 )
@@ -3817,6 +3958,59 @@ class VerificationAuthority:
                     f"EvaluationHashMismatch: package={pkg.evaluation_hash} "
                     f"evaluator={fin_record.finalization_hash}"
                 )
+            # The signed terminal sequence is the trace boundary immediately
+            # before the event carrying finalization, never an attempt count.
+            finalization_event_index = next(
+                (
+                    idx
+                    for idx, event in enumerate(parsed_events)
+                    if (
+                        event.get("event") == "evaluator_finalization"
+                        and (
+                            (
+                                isinstance(event.get("data"), dict)
+                                and event["data"].get("finalization_hash")
+                                == fin_record.finalization_hash
+                            )
+                            or event.get("finalization_hash") == fin_record.finalization_hash
+                        )
+                    )
+                    or (
+                        (
+                            isinstance(event.get("finalization"), dict)
+                            and event["finalization"].get("finalization_hash")
+                            == fin_record.finalization_hash
+                        )
+                        or (
+                            isinstance(event.get("data"), dict)
+                            and isinstance(event["data"].get("finalization"), dict)
+                            and event["data"]["finalization"].get("finalization_hash")
+                            == fin_record.finalization_hash
+                        )
+                    )
+                ),
+                None,
+            )
+            if finalization_event_index is None:
+                failures.append("FinalizationTraceCarrierMissing")
+            else:
+                prior_sequences = [
+                    event.get("_seq")
+                    for event in parsed_events[:finalization_event_index]
+                    if isinstance(event.get("_seq"), int)
+                ]
+                if prior_sequences:
+                    if fin_record.terminal_seq not in (prior_sequences[-1], 0):
+                        failures.append(
+                            "TerminalSequenceMismatch: finalization terminal_seq="
+                            f"{fin_record.terminal_seq} trace={prior_sequences[-1]}"
+                        )
+                elif fin_record.terminal_seq not in (
+                    0,
+                    1,
+                    len(parsed_events[:finalization_event_index]),
+                ):
+                    failures.append("TerminalTraceSequenceMissing")
             package_decision = str((pkg.decision or {}).get("decision") or "").lower()
             expected_decision = "pass" if fin_record.outcome == "pass" else "fail"
             if package_decision != expected_decision:

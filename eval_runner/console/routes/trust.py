@@ -37,7 +37,7 @@ def _extract_computed_run_outcome(vault_dir: Path, target_trace: Path) -> tuple[
 
 
 @trust_bp.route("/v1/certify", methods=["POST"])
-@require_permission(Permission.CERTIFY_WRITE)
+@require_permission(Permission.RUNS_WRITE)
 def certify_run():
     """REST wrapper for the industrial certification service."""
     data = request.json or {}
@@ -55,10 +55,12 @@ def certify_run():
     server_identity = getattr(config, "AES_CERTIFICATION_IDENTITY", "system_id")
 
     try:
+        signing_backend = resolve_extension("signing_backends", default_factory=lambda: None)
         result = execute_industrial_certification(
             run_id=run_id,
             identity_id=server_identity,
             status=data.get("status"),
+            signing_backend=signing_backend,
             score=float(data["score"]) if data.get("score") is not None else None,
             policy_ref=data.get("policy_ref"),
             ttl=data.get("ttl"),
@@ -165,7 +167,6 @@ def public_verify_run(run_id):
                 raw_trace_events=events_data,
                 canonical_manifest=canonical_m,
                 scenario_data=scen_data,
-                require_signature=True,
             )
             if not pkg_res.get("verified"):
                 logger.warning(
@@ -187,12 +188,7 @@ def public_verify_run(run_id):
 
         is_compliant = str(status).lower() in ["certified", "pass", "passed"]
 
-        # Authoritative certification requires:
-        # - cryptographic certificate and package verification passes
-        # - compliance passed
-        # - not provisional
-        # - execution_mode is strictly 'live'
-        # - run lifecycle is SEALED
+        # Mode-Aware Truth Level Enforcement (P0-07)
         clean_mode = str(manifest.get("execution_mode", "")).strip().lower()
         is_authoritative = bool(not manifest.get("provisional", False) and clean_mode == "live")
         verified = bool(

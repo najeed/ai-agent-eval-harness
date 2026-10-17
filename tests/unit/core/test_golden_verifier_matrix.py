@@ -1242,7 +1242,9 @@ def _append_authoritative_finalization(trace_file: Path, run_id: str, run_dir: P
         evidence_root_hash=ev_root,
         outcome="pass",
         score=1.0,
-        terminal_seq=len(parsed) + 1,
+        terminal_seq=max(
+            (e.get("_seq") for e in parsed if isinstance(e.get("_seq"), int)), default=len(parsed)
+        ),
     ).sign()
 
     fin_line = json.dumps({"event": "evaluator_finalization", "data": fin.to_dict()})

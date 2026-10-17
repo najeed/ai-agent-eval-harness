@@ -230,19 +230,20 @@ class LocalFileArtifactStore(ArtifactStore):
         with open(meta_path, "w", encoding="utf-8") as f:
             json.dump(meta_dict, f, indent=2)
 
-        # Zero-Touch extension hook: notify plugins of artifact creation
-        try:
-            from eval_runner.plugins import manager
+        # Zero-Touch extension hook: notify plugins of artifact creation (new files only)
+        if not append:
+            try:
+                from eval_runner.plugins import manager
 
-            manager.trigger(
-                "on_artifact_created",
-                run_id=run_id,
-                artifact_name=artifact_name,
-                artifact_path=str(target_path),
-                metadata=meta_dict,
-            )
-        except Exception as p_err:
-            logger.debug("on_artifact_created plugin dispatch notice: %s", p_err)
+                manager.trigger(
+                    "on_artifact_created",
+                    run_id=run_id,
+                    artifact_name=artifact_name,
+                    artifact_path=str(target_path),
+                    metadata=meta_dict,
+                )
+            except Exception as p_err:
+                logger.debug("on_artifact_created plugin dispatch notice: %s", p_err)
 
         return str(target_path)
 

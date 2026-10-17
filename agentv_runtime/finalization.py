@@ -282,10 +282,19 @@ class EvaluatorFinalizationRecord:
         payload_bytes = self.canonical_payload_bytes()
         if hasattr(signer, "sign") and callable(signer.sign):
             sig_raw = signer.sign(payload_bytes)
+        elif hasattr(signer, "sign_payload") and callable(signer.sign_payload):
+            # Signing backends may hold non-exportable KMS/HSM key material.
+            # Pass the evaluator identity as the opaque key selector rather
+            # than resolving a PEM key in the runtime process.
+            sig_raw = signer.sign_payload(payload_bytes, self.evaluator_identity)
         else:
             raise ValueError(f"Invalid signer object: {type(signer)}")
 
-        sig_hex = sig_raw.hex() if isinstance(sig_raw, bytes) else str(sig_raw)
+        if isinstance(sig_raw, dict):
+            sig_raw = sig_raw.get("signature") or sig_raw.get("sig")
+        sig_hex = sig_raw.hex() if isinstance(sig_raw, bytes) else str(sig_raw or "")
+        if not sig_hex:
+            raise ValueError("Signing backend returned an empty finalization signature")
         data = asdict(self)
         data["finalization_hash"] = self.compute_finalization_hash()
         data["evaluator_signature"] = sig_hex

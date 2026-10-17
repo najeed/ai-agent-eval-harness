@@ -105,6 +105,32 @@ class TestVerdictAuthoritativeSuccess:
         ]
         assert runner._is_attempt_successful(rows) is False
 
+    @pytest.mark.parametrize(
+        "non_pass_outcome",
+        ["SKIPPED", "ERROR", "NOT_APPLICABLE", "NOT_EVALUATED", "INVALID"],
+    )
+    def test_mandatory_oracle_non_pass_outcomes_veto_attempt(self, runner, non_pass_outcome):
+        # P0-3: Mandatory oracles must accept only explicit PASS
+        rows = _completed_attempt()
+        rows[0]["metrics"] = [{"metric": "mandatory_metric", "outcome": non_pass_outcome}]
+        assert runner._is_attempt_successful(rows) is False
+
+        rows_h = _completed_attempt()
+        rows_h[0]["state_hygiene"] = [{"check": "h1", "outcome": non_pass_outcome}]
+        assert runner._is_attempt_successful(rows_h) is False
+
+        rows_p = _completed_attempt()
+        rows_p[0]["state_parity"] = [{"check": "p1", "outcome": non_pass_outcome}]
+        assert runner._is_attempt_successful(rows_p) is False
+
+    @pytest.mark.parametrize("non_pass_outcome", ["SKIPPED", "ERROR", "NOT_APPLICABLE"])
+    def test_optional_oracle_non_pass_outcomes_do_not_veto(self, runner, non_pass_outcome):
+        rows = _completed_attempt()
+        rows[0]["metrics"].append(
+            {"metric": "opt_metric", "requiredness": "OPTIONAL", "outcome": non_pass_outcome}
+        )
+        assert runner._is_attempt_successful(rows) is True
+
 
 def test_verdict_host_rows_are_never_task_rows():
     """[P2.10] Verdict hosts must be structurally unmistakable: the

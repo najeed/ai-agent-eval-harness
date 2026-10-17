@@ -25,6 +25,7 @@ from agentv_runtime.manifest import compute_scenario_hash
 from eval_runner import config
 from eval_runner.console.routes.trust import trust_bp
 from eval_runner.identity import IdentityService
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.services.certification import (
     CertificationService,
     execute_industrial_certification,
@@ -66,6 +67,8 @@ def _create_trace(
 
     final_events = list(events)
     has_finalization = any(e.get("event") == "evaluator_finalization" for e in final_events)
+    for sequence, event in enumerate(final_events, start=1):
+        event.setdefault("_seq", sequence)
 
     terminal_count = sum(
         1 for e in final_events if e.get("event") in ("session_decision", "evaluation_result")
@@ -130,10 +133,17 @@ def _create_trace(
             evidence_root_hash=ev_root,
             outcome=outcome,
             score=score,
+            terminal_seq=len(final_events),
         )
         fin_rec = fin_rec.sign()
         fin_dict = fin_rec.to_dict()
-        final_events.append({"event": "evaluator_finalization", "data": fin_dict})
+        final_events.append(
+            {
+                "event": "evaluator_finalization",
+                "data": fin_dict,
+                "_seq": len(final_events) + 1,
+            }
+        )
 
     with open(trace, "w", encoding="utf-8") as f:
         for ev in final_events:
@@ -305,6 +315,213 @@ def test_public_verification_endpoint_semantics(cert_vault):
     assert data["cryptographically_valid"] is True
     assert data["evaluation_passed"] is True
     assert data["certificate_authoritative"] is True
+
+
+def test_invalid_evaluator_signature_blocks_certification_signing(cert_vault):
+    """A package must never be signed over an unauthenticated evaluator result."""
+    run_id = "run-invalid-evaluator-signature"
+    scenario = {"id": "scen_invalid_signature", "version": "1.0.0"}
+    _, trace = _create_trace(
+        cert_vault["runs"],
+        run_id,
+        [
+            {"event": "run_start", "execution_mode": "live", "scenario_id": scenario["id"]},
+            {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": True},
+            {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
+        ],
+        scenario_data=scenario,
+    )
+    records = [json.loads(line) for line in trace.read_text(encoding="utf-8").splitlines()]
+    records[-1]["data"]["evaluator_signature"] = "00"
+    trace.write_text("\n".join(json.dumps(record) for record in records) + "\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="inconclusive outcome"):
+        execute_industrial_certification(
+            run_id=run_id,
+            identity_id="system_id",
+            scenario_data=scenario,
+        )
+
+
+def test_terminal_sequence_mismatch_blocks_certification(cert_vault):
+    """The signed finalization boundary must be the last pre-finalization event."""
+    run_id = "run-terminal-sequence-mismatch"
+    scenario = {"id": "scen_terminal_sequence", "version": "1.0.0"}
+    _, trace = _create_trace(
+        cert_vault["runs"],
+        run_id,
+        [
+            {"event": "run_start", "execution_mode": "live", "scenario_id": scenario["id"]},
+            {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": True},
+            {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
+        ],
+        scenario_data=scenario,
+    )
+    records = [json.loads(line) for line in trace.read_text(encoding="utf-8").splitlines()]
+    finalization = records[-1]["data"]
+    finalization["terminal_seq"] = 1
+    records[-1]["data"] = (
+        EvaluatorFinalizationRecord.from_dict(finalization, require_authoritative=False)
+        .sign()
+        .to_dict()
+    )
+    trace.write_text("\n".join(json.dumps(record) for record in records) + "\n", encoding="utf-8")
+
+    with pytest.raises(Exception, match="TerminalSequenceMismatch"):
+        execute_industrial_certification(
+            run_id=run_id,
+            identity_id="system_id",
+            scenario_data=scenario,
+        )
+
+
+def test_live_certification_rejects_mandatory_shim_state_evidence(cert_vault):
+    """Declaring live mode cannot turn simulator evidence into real-world proof."""
+    run_id = "run-live-shim-evidence"
+    scenario = {"id": "scen_live_shim", "version": "1.0.0"}
+    _create_trace(
+        cert_vault["runs"],
+        run_id,
+        [
+            {"event": "run_start", "execution_mode": "live", "scenario_id": scenario["id"]},
+            {
+                "event": "assertion_evaluated",
+                "assertion": {"target": "shim:billing.invoice.status", "expected": "paid"},
+                "passed": True,
+                "outcome": "PASS",
+            },
+            {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
+        ],
+        scenario_data=scenario,
+    )
+
+    with pytest.raises(ValueError, match="SimulatedStateEvidenceProhibited"):
+        execute_industrial_certification(
+            run_id=run_id,
+            identity_id="system_id",
+            scenario_data=scenario,
+        )
+
+
+def test_certification_uses_non_exportable_signing_backend_end_to_end(cert_vault, monkeypatch):
+    """Evaluator, package, and manifest signing work without PEM-key export."""
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
+    class NonExportableBackend:
+        def __init__(self):
+            self.__key = Ed25519PrivateKey.generate()
+
+        def can_sign(self):
+            return True
+
+        def sign_payload(self, payload, key_identifier, **_kwargs):
+            return self.__key.sign(payload).hex()
+
+        def get_public_key(self, _key_identifier):
+            return self.__key.public_key()
+
+        def public_key_pem(self):
+            return self.__key.public_key().public_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PublicFormat.SubjectPublicKeyInfo,
+            )
+
+    run_id = "run-non-exportable-backend"
+    scenario = {"id": "scen_non_exportable", "version": "1.0.0"}
+    _, trace = _create_trace(
+        cert_vault["runs"],
+        run_id,
+        [
+            {"event": "run_start", "execution_mode": "live", "scenario_id": scenario["id"]},
+            {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": True},
+            {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
+        ],
+        scenario_data=scenario,
+    )
+    backend = NonExportableBackend()
+    for identity in ("kms-evaluator", "kms-certifier"):
+        trusted_key = cert_vault["trust"] / identity
+        trusted_key.mkdir()
+        (trusted_key / "public_key.pem").write_bytes(backend.public_key_pem())
+    records = [json.loads(line) for line in trace.read_text(encoding="utf-8").splitlines()]
+    finalization = records[-1]["data"]
+    finalization["evaluator_identity"] = "kms-evaluator"
+    records[-1]["data"] = (
+        EvaluatorFinalizationRecord.from_dict(finalization, require_authoritative=False)
+        .sign(backend)
+        .to_dict()
+    )
+    trace.write_text("\n".join(json.dumps(record) for record in records) + "\n", encoding="utf-8")
+
+    monkeypatch.setattr(
+        IdentityService,
+        "get_private_key",
+        staticmethod(lambda *_args, **_kwargs: (_ for _ in ()).throw(AssertionError("PEM export"))),
+    )
+    result = execute_industrial_certification(
+        run_id=run_id,
+        identity_id="kms-certifier",
+        scenario_data=scenario,
+        signing_backend=backend,
+    )
+
+    assert result["certified"] is True
+    assert result["verification_package"]["signer_identity"] == "kms-certifier"
+
+
+def test_certification_uses_provider_events_and_manifest_as_source(cert_vault):
+    """Certification can be sourced from the RunStorageProvider, not a vault read."""
+    run_id = "run-provider-certification"
+    scenario = {"id": "scen_provider_certification", "version": "1.0.0"}
+    vault, _trace = _create_trace(
+        cert_vault["runs"],
+        run_id,
+        [
+            {"event": "run_start", "execution_mode": "live", "scenario_id": scenario["id"]},
+            {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": True},
+            {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
+        ],
+        scenario_data=scenario,
+    )
+    provider = LocalFileRunStore(cert_vault["runs"])
+    # Provider-backed traces use the contract's compact event serialization.
+    # Rebuild the fixture finalization over that exact representation.
+    provider_events = provider.get_events(run_id, limit=10_000_000)
+    from agentv_runtime.evidence_graph import build_evidence_graph_from_events
+
+    provider_root = build_evidence_graph_from_events(
+        [(event, json.dumps(event, separators=(",", ":"))) for event in provider_events[:-1]]
+    )["evidence_root_hash"]
+    provider_events[-1]["data"]["evidence_root_hash"] = provider_root
+    provider_events[-1]["data"] = (
+        EvaluatorFinalizationRecord.from_dict(
+            provider_events[-1]["data"], require_authoritative=False
+        )
+        .sign()
+        .to_dict()
+    )
+    (vault / "run.jsonl").write_text(
+        "".join(json.dumps(event, separators=(",", ":")) + "\n" for event in provider_events),
+        encoding="utf-8",
+    )
+    execution_manifest = json.loads((vault / "execution_manifest.json").read_text(encoding="utf-8"))
+    provider.save_run_manifest(
+        run_id,
+        {"execution_manifest": execution_manifest, "scenario_data": scenario},
+    )
+    events = provider.get_events(run_id, limit=10_000_000)
+    assert events
+
+    result = execute_industrial_certification(
+        run_id=run_id,
+        identity_id="system_id",
+        scenario_data=scenario,
+        run_store=provider,
+    )
+
+    assert result["certified"] is True
+    assert provider.get_manifest(run_id)["verification_package"]
 
 
 def test_invalid_run_ids_rejected(cert_vault):

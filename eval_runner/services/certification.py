@@ -73,14 +73,16 @@ class CertificationService:
         return events
 
     @classmethod
-    def read_run_truth_level(cls, run_id: str) -> tuple[str | None, bool]:
+    def read_run_truth_level(
+        cls, run_id: str, trace_path: Path | None = None
+    ) -> tuple[str | None, bool]:
         """
         Inspect the run's raw trace file to extract the authoritative execution mode.
         Explicit, recognized execution_mode is a hard prerequisite.
         None, unknown, simulated, or provisional mode marks provisional=True.
         Returns (execution_mode, is_provisional).
         """
-        trace = resolve_trace_path(run_id) if run_id else None
+        trace = trace_path or (resolve_trace_path(run_id) if run_id else None)
         if not trace or not trace.is_file() or not is_path_safe(trace, config.RUN_LOG_DIR):
             return None, False
 
@@ -113,6 +115,35 @@ class CertificationService:
             logger.debug("Error reading execution truth level for %s: %s", run_id, e)
             return "unknown", True
 
+    @staticmethod
+    def materialize_provider_trace(run_id: str, run_store: Any) -> tuple[Path, dict[str, Any]]:
+        """Create a transient derived trace from provider-authoritative events."""
+        events = run_store.get_events(run_id, offset=0, limit=10_000_000)
+        if not events:
+            raise FileNotFoundError(f"Run storage provider has no trace for {run_id}")
+        manifest = run_store.get_manifest(run_id) or {}
+        # TraceVerifier's immutable artifact contract uses the canonical
+        # runs/<run_id>/run.jsonl location.  This file is derived entirely
+        # from provider data; it is never used as a source for certification.
+        staging_root = Path(config.RUN_LOG_DIR) / run_id
+        staging_root.mkdir(parents=True, exist_ok=True)
+        trace_path = staging_root / "run.jsonl"
+        trace_path.write_text(
+            "".join(
+                json.dumps(event, default=str, separators=(",", ":")) + "\n"
+                for event in events
+                if isinstance(event, dict)
+            ),
+            encoding="utf-8",
+        )
+        for filename, value in (
+            ("execution_manifest.json", manifest.get("execution_manifest")),
+            ("scenario_resolved.json", manifest.get("scenario_data")),
+        ):
+            if isinstance(value, dict):
+                (staging_root / filename).write_text(json.dumps(value), encoding="utf-8")
+        return trace_path, manifest
+
     @classmethod
     def count_assertion_and_evidence_nodes(cls, target_trace: Path) -> int:
         """Counts substantive evaluation assertions and evidence events in the trace."""
@@ -135,7 +166,9 @@ class CertificationService:
         return count
 
     @classmethod
-    def extract_finalization_record(cls, target_trace: Path) -> EvaluatorFinalizationRecord | None:
+    def extract_finalization_record(
+        cls, target_trace: Path, signing_backend: Any | None = None
+    ) -> EvaluatorFinalizationRecord | None:
         """Extracts and validates an EvaluatorFinalizationRecord if present in the trace."""
         if not target_trace.exists():
             return None
@@ -167,11 +200,18 @@ class CertificationService:
                         )
 
                         # Authoritative Evaluator Signature Verification (Defect 1)
-                        from eval_runner.identity import IdentityService
+                        eval_pub = None
+                        if signing_backend is not None:
+                            get_backend_public_key = getattr(
+                                signing_backend, "get_public_key", lambda _id: None
+                            )
+                            eval_pub = get_backend_public_key(rec.evaluator_identity)
+                        if eval_pub is None:
+                            from eval_runner.identity import IdentityService
 
-                        eval_pub = IdentityService.get_public_key(
-                            rec.evaluator_identity, auto_provision=False
-                        )
+                            eval_pub = IdentityService.get_public_key(
+                                rec.evaluator_identity, auto_provision=False
+                            )
                         if not eval_pub:
                             raise ValueError(
                                 f"EvaluatorIdentityUntrusted: evaluator '{rec.evaluator_identity}' "
@@ -190,7 +230,11 @@ class CertificationService:
         return None
 
     @staticmethod
-    def extract_computed_run_outcome(vault_dir: Path, target_trace: Path) -> tuple[str, float]:
+    def extract_computed_run_outcome(
+        vault_dir: Path,
+        target_trace: Path,
+        signing_backend: Any | None = None,
+    ) -> tuple[str, float]:
         """
         Extracts the authoritative computed outcome directly from the immutable trace.
         Never reads previous run_manifest.json to avoid circular trust.
@@ -247,11 +291,18 @@ class CertificationService:
                             )
 
                             # Authoritative Evaluator Signature Verification (Defect 1)
-                            from eval_runner.identity import IdentityService
+                            eval_pub = None
+                            if signing_backend is not None:
+                                get_backend_public_key = getattr(
+                                    signing_backend, "get_public_key", lambda _id: None
+                                )
+                                eval_pub = get_backend_public_key(rec.evaluator_identity)
+                            if eval_pub is None:
+                                from eval_runner.identity import IdentityService
 
-                            eval_pub = IdentityService.get_public_key(
-                                rec.evaluator_identity, auto_provision=False
-                            )
+                                eval_pub = IdentityService.get_public_key(
+                                    rec.evaluator_identity, auto_provision=False
+                                )
                             if not eval_pub or not rec.verify_signature(eval_pub):
                                 logger.error(
                                     "Invalid evaluator signature for '%s' in trace",
@@ -401,6 +452,8 @@ class CertificationService:
         scenario_data: Mapping[str, Any] | None = None,
         trace_path: str | Path | None = None,
         artifact_store: Any | None = None,
+        signing_backend: Any | None = None,
+        run_store: Any | None = None,
     ) -> dict[str, Any]:
         """
         Authoritative Industrial Certification Service.
@@ -419,7 +472,14 @@ class CertificationService:
 
         lock = PerRunCertificationLock(run_id)
         with lock:
-            if trace_path:
+            provider_manifest: dict[str, Any] = {}
+            if run_store is not None:
+                target_trace, provider_manifest = cls.materialize_provider_trace(run_id, run_store)
+                if scenario_data is None and isinstance(
+                    provider_manifest.get("scenario_data"), dict
+                ):
+                    scenario_data = provider_manifest["scenario_data"]
+            elif trace_path:
                 candidate_trace = Path(trace_path)
                 if not candidate_trace.is_absolute():
                     candidate_trace = (config.RUN_LOG_DIR / candidate_trace).resolve()
@@ -464,7 +524,7 @@ class CertificationService:
             cls.parse_trace_strict(target_trace, run_id)
 
             # 1. Execution Truth Level Verification ('live' execution only)
-            execution_mode, provisional = cls.read_run_truth_level(run_id)
+            execution_mode, provisional = cls.read_run_truth_level(run_id, trace_path=target_trace)
             clean_mode = str(execution_mode).strip().lower() if execution_mode else ""
             if provisional or not clean_mode or clean_mode != "live":
                 logger.error(
@@ -481,7 +541,7 @@ class CertificationService:
 
             # 2. Immutable Evaluation Outcome Extraction (Zero Circular Manifest Reading)
             computed_status, computed_score = cls.extract_computed_run_outcome(
-                vault_dir, target_trace
+                vault_dir, target_trace, signing_backend=signing_backend
             )
             if computed_status == "inconclusive":
                 logger.error(
@@ -495,7 +555,9 @@ class CertificationService:
                 )
 
             # Mandatory EvaluatorFinalizationRecord check (P0)
-            fin_record = cls.extract_finalization_record(target_trace)
+            fin_record = cls.extract_finalization_record(
+                target_trace, signing_backend=signing_backend
+            )
             if fin_record is None:
                 logger.error(
                     "   [Certification] FAIL CLOSED: Trace %s missing mandatory "
@@ -537,9 +599,14 @@ class CertificationService:
                             # self-referential second evidence root.  Bind the root
                             # to the exact pre-finalization raw JSONL lines instead.
                             if not (
-                                ev_name in ("run_end", "verification_decision", "session_decision")
-                                and isinstance(
-                                    rec.get("finalization") or rec_data.get("finalization"), dict
+                                ev_name == "evaluator_finalization"
+                                or (
+                                    ev_name
+                                    in ("run_end", "verification_decision", "session_decision")
+                                    and isinstance(
+                                        rec.get("finalization") or rec_data.get("finalization"),
+                                        dict,
+                                    )
                                 )
                             ):
                                 raw_events.append((rec, line.rstrip("\r\n")))
@@ -591,6 +658,29 @@ class CertificationService:
                 raise ValueError(
                     "DirectProvenanceViolation: Evidence graph contains unresolved or "
                     "carrier fallback provenance."
+                )
+
+            # A declared live mode alone is not evidence that real-world
+            # business state was observed.  Simulator/shim snapshots remain
+            # useful for non-authoritative execution, but mandatory state
+            # assertions backed by them can never support a live certificate.
+            def _has_required_shim_assertion(value: Any) -> bool:
+                if isinstance(value, Mapping):
+                    target = value.get("target")
+                    requiredness = str(
+                        value.get("severity") or value.get("requiredness") or "required"
+                    ).lower()
+                    if isinstance(target, str) and target.startswith("shim:"):
+                        return requiredness not in {"optional", "informational"}
+                    return any(_has_required_shim_assertion(item) for item in value.values())
+                if isinstance(value, (list, tuple)):
+                    return any(_has_required_shim_assertion(item) for item in value)
+                return False
+
+            if _has_required_shim_assertion(raw_events):
+                raise ValueError(
+                    "SimulatedStateEvidenceProhibited: mandatory shim-backed state "
+                    "assertions cannot support authoritative live certification."
                 )
 
             # Mandatory Scenario identity & authoritative scenario_hash verification
@@ -828,7 +918,25 @@ class CertificationService:
                 scenario_data=effective_scenario_data,
                 require_finalization=True,
                 artifact_store=artifact_store,
+                signing_backend=signing_backend,
             )
+
+            if run_store is not None:
+                try:
+                    run_store.save_run_manifest(run_id, manifest)
+                except Exception:
+                    # The local reference provider sees the signer-published
+                    # immutable manifest at the same canonical location.
+                    # Remote providers receive the explicit publication above.
+                    existing_manifest = run_store.get_manifest(run_id) or {}
+                    if existing_manifest.get("verification_package") != manifest.get(
+                        "verification_package"
+                    ):
+                        raise
+                # The lifecycle is provider-owned too.  Do this only after the
+                # immutable package was published successfully.
+                if not run_store.update_run_status(run_id, "SEALED"):
+                    raise ValueError(f"RunStorageSealFailed: could not seal run '{run_id}'")
 
             lock.verify_active()
             manifest_path = vault_dir / "run_manifest.json"
@@ -864,6 +972,8 @@ def execute_industrial_certification(
     scenario_data: Mapping[str, Any] | None = None,
     trace_path: str | Path | None = None,
     artifact_store: Any | None = None,
+    signing_backend: Any | None = None,
+    run_store: Any | None = None,
 ) -> dict[str, Any]:
     """Top-level convenience function delegating to CertificationService."""
     return CertificationService.execute_industrial_certification(
@@ -877,4 +987,6 @@ def execute_industrial_certification(
         scenario_data=scenario_data,
         trace_path=trace_path,
         artifact_store=artifact_store,
+        signing_backend=signing_backend,
+        run_store=run_store,
     )

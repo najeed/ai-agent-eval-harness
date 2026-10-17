@@ -112,6 +112,24 @@ def explain_run(run_id):
                     return jsonify({"error": str(e)}), 500
 
     if not trace_path:
+        events = _active_run_store().get_events(
+            run_id, offset=0, limit=10_000_000, context=active_runtime_context()
+        )
+        if events:
+            import uuid
+
+            temp_path = config.RUN_LOG_DIR / f"temp_explain_{run_id}_{uuid.uuid4().hex}.jsonl"
+            try:
+                with open(temp_path, "w", encoding="utf-8") as out:
+                    for ev in events:
+                        out.write(json.dumps(ev, default=str, separators=(",", ":")) + "\n")
+                trace_path = temp_path
+            except Exception as e:
+                if temp_path.exists():
+                    temp_path.unlink()
+                return jsonify({"error": str(e)}), 500
+
+    if not trace_path:
         return jsonify({"error": "Trace not found"}), 404
 
     try:
@@ -221,11 +239,15 @@ def download_run_report_pdf(run_id: str):
     """Generate a human-readable PDF report without mutating the sealed run vault."""
     trace_path = resolve_trace_path(run_id)
     if trace_path is None or not trace_path.exists():
-        return jsonify({"error": "Run not found"}), 404
+        run = _active_run_store().get_run(run_id, context=active_runtime_context())
+        if run is None:
+            return jsonify({"error": "Run not found"}), 404
+        summary = _summary_from_provider(run)
+    else:
+        summary = RunSummaryService.compute_summary(run_id)
 
     from eval_runner.console.pdf_service import generate_run_pdf
 
-    summary = RunSummaryService.compute_summary(run_id)
     report_data = {
         **summary,
         "run_id": run_id,
@@ -263,6 +285,50 @@ def get_run_status(run_id):
     """Industrial Polling Primitive."""
     if not _run_is_in_active_context(run_id):
         return jsonify({"error": "Not found"}), 404
+    store = _active_run_store()
+    context = active_runtime_context()
+    run = store.get_run(run_id, context=context)
+    if run is not None and not run.get("vault_path"):
+        events = store.get_events(run_id, offset=0, limit=10_000_000, context=context)
+        manifest = store.get_manifest(run_id, context=context) or run.get("manifest") or {}
+        summary = _summary_from_provider(run)
+        event_count = len(events)
+        terminal_events = {
+            "run_end",
+            "session_decision",
+            "evaluation_result",
+            "verification_certificate_issued",
+            "trace_sealed",
+        }
+        terminal = any(event.get("event") in terminal_events for event in events)
+        raw_status = str(run.get("status") or manifest.get("status") or "OPEN").upper()
+        if terminal and raw_status in {"OPEN", "RUNNING"}:
+            status = "COMPLETED"
+        elif raw_status == "OPEN" and events:
+            status = "RUNNING"
+        else:
+            status = raw_status
+        scenario = manifest.get("scenario_data") or run.get("scenario_data")
+        return jsonify(
+            {
+                "run_id": run_id,
+                "status": status,
+                "size": event_count,
+                "mtime": run.get("updated_at") or run.get("created_at"),
+                "has_certificate": bool(manifest.get("verification_package")),
+                "sourced_from_master": False,
+                "scenario": scenario,
+                "execution_mode": summary.get("execution_mode") or manifest.get("execution_mode"),
+                "provisional": bool(summary.get("provisional", manifest.get("provisional", False))),
+                "verification_status": summary.get("verification_status", "PROVIDER_MANAGED"),
+                "duration_seconds": summary.get("duration_seconds"),
+                "score": summary.get("score") or (manifest.get("compliance") or {}).get("score"),
+                "timestamp": summary.get("timestamp") or run.get("created_at"),
+                "start_time": summary.get("timestamp") or run.get("created_at"),
+                "identifier": summary.get("identifier") or run.get("run_id"),
+            }
+        )
+
     index_record = read_run_index(run_id)
     vault_trace = resolve_trace_path(run_id)
     scenario_data = None
