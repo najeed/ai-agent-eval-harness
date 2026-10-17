@@ -27,7 +27,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **numpy** | 2.5.4 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **opentelemetry-api** | 1.45.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **opentelemetry-sdk** | 1.45.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **Pillow** | 12.3.0 | HPND | [HPND.txt](LICENSES/HPND.txt) |
+| **Pillow** | 13.0.0 | HPND | [HPND.txt](LICENSES/HPND.txt) |
 | **psutil** | 7.2.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **pydantic** | 2.14.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **PyJWT** | 2.15.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
@@ -91,7 +91,7 @@ The following tables summarize the licenses of our core dependencies and optiona
 | **langchain-google-genai** | 4.4.2 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **langchain-ollama** | 1.1.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langchain-openai** | 1.7.2 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langgraph** | 1.2.15 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langgraph** | 1.2.16 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langserve** | 0.3.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langsmith** | 0.14.11 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **lxml** | 6.1.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |

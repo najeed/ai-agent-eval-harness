@@ -34,7 +34,7 @@ dependencies = [
     "sqlalchemy==2.1.5",
     "python-dotenv==1.2.4",
     "Authlib==1.9.1",
-    "Pillow==12.3.0",
+    "Pillow==13.0.0",
     "idna==3.20",
 ]
 
@@ -54,7 +54,7 @@ framework-langserve = [
     "langserve>=0.3.3",
 ]
 framework-langgraph = [
-    "langgraph==1.2.15",
+    "langgraph==1.2.16",
 ]
 framework-ag2 = [
     "ag2==1.1.2",
@@ -104,7 +104,7 @@ frameworks = [
     "langchain==1.4.6",
     "langchain-core>=1.6.12",
     "langserve>=0.3.3",
-    "langgraph==1.2.15",
+    "langgraph==1.2.16",
     "ag2==1.1.2",
 #    "crewai==1.15.27; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
 ]
@@ -125,7 +125,7 @@ all = [
     "langchain==1.4.6",
     "langchain-core>=1.6.12",
     "langserve>=0.3.3",
-    "langgraph==1.2.15",
+    "langgraph==1.2.16",
     "ag2==1.1.2",
 #    "crewai==1.15.27; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
     "langchain-openai==1.7.2",
