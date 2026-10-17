@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -510,3 +511,18 @@ def test_local_file_run_store_lifecycle_marker_and_master_log_branches(tmp_path,
     # append_events on sealed vault raises RunManifestImmutableError
     with pytest.raises(RunManifestImmutableError):
         store.append_events("run-sealed-only", [{"event": "ev2"}])
+
+
+def test_local_run_store_rejects_corrupted_jsonl(tmp_path: Path):
+    """Corrupted lines in JSONL must raise ValueError under strict validation."""
+    store = LocalFileRunStore(tmp_path)
+    run_id = "run-corrupted-trace"
+    run_dir = store._get_run_vault(run_id, create=True)
+    trace_file = run_dir / "run.jsonl"
+
+    valid_record = json.dumps({"event": "step_1", "seq": 1})
+    trace_file.write_text(f"{valid_record}\n{{malformed_json_not_valid\n", encoding="utf-8")
+
+    with pytest.raises(ValueError) as exc_info:
+        store.get_events(run_id)
+    assert "MalformedTraceRecord" in str(exc_info.value)

@@ -1669,3 +1669,44 @@ def test_execute_industrial_certification_manifest_semantic_mismatches(cert_vaul
     _update_fin_and_manifest(m6, {"required_oracle_ids": ["oracle_fin_only"]})
     with pytest.raises(ValueError, match="ManifestRequiredOracleMismatch"):
         execute_industrial_certification(run_id, scenario_data=scen_data)
+
+
+def test_certification_pipeline_does_not_overwrite_canonical_trace(tmp_path: Path, monkeypatch):
+    """materialize_provider_trace must validate against canonical trace without overwriting it."""
+    from unittest.mock import MagicMock
+
+    run_id = "run-materialize-safe"
+    staging_root = tmp_path / run_id
+    staging_root.mkdir(parents=True, exist_ok=True)
+    canonical_trace = staging_root / "run.jsonl"
+    canonical_trace.write_text('{"event": "start", "_seq": 1}\n', encoding="utf-8")
+
+    monkeypatch.setattr(config, "RUN_LOG_DIR", str(tmp_path))
+
+    mock_store = MagicMock()
+    mock_store.get_events.return_value = [{"event": "start", "_seq": 1}]
+    mock_store.get_manifest.return_value = {"run_id": run_id}
+
+    path, manifest = CertificationService.materialize_provider_trace(run_id, mock_store)
+    assert path == canonical_trace
+    assert canonical_trace.read_text(encoding="utf-8") == '{"event": "start", "_seq": 1}\n'
+
+    # If provider stream diverges from canonical trace, must raise ValueError
+    mock_store.get_events.return_value = [{"event": "different_event", "_seq": 1}]
+    with pytest.raises(ValueError, match="ProviderStreamDivergence"):
+        CertificationService.materialize_provider_trace(run_id, mock_store)
+
+
+def test_certification_pipeline_rejects_incomplete_provider_stream(tmp_path: Path, monkeypatch):
+    """materialize_provider_trace rejects incomplete or sanitized provider streams."""
+    from unittest.mock import MagicMock
+
+    run_id = "run-incomplete-stream"
+    monkeypatch.setattr(config, "RUN_LOG_DIR", str(tmp_path))
+
+    mock_store = MagicMock()
+    mock_store.get_events.return_value = [{"event": "intermediate_step"}]
+    mock_store.get_manifest.return_value = {"run_id": run_id}
+
+    with pytest.raises(ValueError, match="IncompleteProviderStream"):
+        CertificationService.materialize_provider_trace(run_id, mock_store)

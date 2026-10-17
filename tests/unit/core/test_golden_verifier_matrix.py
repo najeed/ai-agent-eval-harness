@@ -9,6 +9,7 @@ prevent symmetrical verification bugs.
 from __future__ import annotations
 
 import copy
+import dataclasses
 import hashlib
 import json
 from datetime import datetime
@@ -1832,7 +1833,7 @@ def test_verification_authority_comprehensive_matrix():
         evidence_root_hash="sha3_256:evroot",
         required_oracle_ids=[],
         executed_oracle_results=[],
-        decision={"verdict": "FAIL"},
+        decision={"verdict": "UNKNOWN"},
     )
     res_failed = VerificationAuthority.verify_package(pkg_failed)
     assert any("UnverifiedDecision" in f for f in res_failed["failures"])
@@ -3528,7 +3529,7 @@ def test_verify_package_artifacts_scenario_decision_oracle_and_sig_branches():
             evidence_root_hash="sha3_256:ev_root",
             required_oracle_ids=[],
             executed_oracle_results=[],
-            decision={"decision": "FAIL"},
+            decision={"decision": "UNKNOWN"},
             signature="deadbeef",
             signer_identity="test_signer",
         )
@@ -3542,6 +3543,19 @@ def test_verify_package_artifacts_scenario_decision_oracle_and_sig_branches():
                 require_signature=False,
             )
             assert any("UnverifiedDecision" in f for f in res_dec["failures"])
+
+        pkg_attested_fail = dataclasses.replace(pkg_failed_decision, decision={"decision": "FAIL"})
+        with patch.object(VerificationPackage, "verify_signature", return_value=True):
+            res_fail = VerificationAuthority.verify_package_artifacts(
+                package=pkg_attested_fail,
+                raw_trace_bytes=trace_bytes,
+                raw_trace_events=events,
+                canonical_manifest=m_bytes,
+                scenario_data=scen_data,
+                require_signature=False,
+            )
+            assert res_fail["status"] == "ATTESTED_FAIL"
+            assert not any("UnverifiedDecision" in f for f in res_fail["failures"])
 
         # 4. Missing required oracles
         pkg_missing_oracles = VerificationPackage(

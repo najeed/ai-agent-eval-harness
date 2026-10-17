@@ -3075,7 +3075,7 @@ class VerificationAuthority:
         # oracle outcomes to be PASS.
         decision_raw = (pkg.decision or {}).get("decision") or (pkg.decision or {}).get("verdict")
         decision_val = str(decision_raw or "").upper()
-        if decision_val not in ("PASS", "VERIFIED"):
+        if decision_val not in ("PASS", "VERIFIED", "FAIL", "ATTESTED_FAIL"):
             failures.append(f"UnverifiedDecision: decision was '{decision_raw}'")
         requires_oracle_pass = decision_val in ("PASS", "VERIFIED")
 
@@ -3102,7 +3102,12 @@ class VerificationAuthority:
             outcome = str(
                 o_res.get("outcome") or ("PASS" if o_res.get("passed") is True else "FAIL")
             ).upper()
-            if requires_oracle_pass and outcome != "PASS":
+            if outcome not in ("PASS", "FAIL"):
+                failures.append(
+                    f"RequiredOracleNotExecuted: required oracle '{req}' outcome is '{outcome}' "
+                    "(only genuinely executed PASS/FAIL oracles satisfy completeness)"
+                )
+            elif requires_oracle_pass and outcome != "PASS":
                 failures.append(
                     f"RequiredOracleFailed: required oracle '{req}' outcome is '{outcome}'"
                 )
@@ -3210,9 +3215,19 @@ class VerificationAuthority:
                 failures.append(f"CertificateHashError: {ch_err}")
 
         is_valid = len(failures) == 0
+        if is_valid:
+            if decision_val in ("PASS", "VERIFIED"):
+                pkg_status = "CERTIFIED"
+            elif decision_val in ("FAIL", "ATTESTED_FAIL"):
+                pkg_status = "ATTESTED_FAIL"
+            else:
+                pkg_status = "UNVERIFIED"
+        else:
+            pkg_status = "UNVERIFIED"
+
         return {
             "verified": is_valid,
-            "status": "CERTIFIED" if is_valid else "UNVERIFIED",
+            "status": pkg_status,
             "failures": failures,
             "package_id": pkg.package_id,
             "scenario_id": pkg.scenario_id,
@@ -3639,7 +3654,7 @@ class VerificationAuthority:
         # certification claim requires PASS outcomes for mandatory oracles.
         decision_raw = (pkg.decision or {}).get("decision") or (pkg.decision or {}).get("verdict")
         decision_val = str(decision_raw or "").upper()
-        if decision_val not in ("PASS", "VERIFIED"):
+        if decision_val not in ("PASS", "VERIFIED", "FAIL", "ATTESTED_FAIL"):
             failures.append(f"UnverifiedDecision: decision was '{decision_raw}'")
         requires_oracle_pass = decision_val in ("PASS", "VERIFIED")
 
@@ -3666,7 +3681,12 @@ class VerificationAuthority:
             outcome = str(
                 o_res.get("outcome") or ("PASS" if o_res.get("passed") is True else "FAIL")
             ).upper()
-            if requires_oracle_pass and outcome != "PASS":
+            if outcome not in ("PASS", "FAIL"):
+                failures.append(
+                    f"RequiredOracleNotExecuted: required oracle '{req}' outcome is '{outcome}' "
+                    "(only genuinely executed PASS/FAIL oracles satisfy completeness)"
+                )
+            elif requires_oracle_pass and outcome != "PASS":
                 failures.append(
                     f"RequiredOracleFailed: required oracle '{req}' outcome is '{outcome}'"
                 )
@@ -3779,9 +3799,19 @@ class VerificationAuthority:
                 failures.append(f"CertificateHashError: {ch_err}")
 
         is_valid = len(failures) == 0
+        if is_valid:
+            if decision_val in ("PASS", "VERIFIED"):
+                pkg_status = "CERTIFIED"
+            elif decision_val in ("FAIL", "ATTESTED_FAIL"):
+                pkg_status = "ATTESTED_FAIL"
+            else:
+                pkg_status = "UNVERIFIED"
+        else:
+            pkg_status = "UNVERIFIED"
+
         return {
             "verified": is_valid,
-            "status": "CERTIFIED" if is_valid else "UNVERIFIED",
+            "status": pkg_status,
             "failures": failures,
             "package_id": pkg.package_id,
             "scenario_id": pkg.scenario_id,

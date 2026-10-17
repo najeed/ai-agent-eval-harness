@@ -448,12 +448,19 @@ def test_verification_authority_comprehensive_failure_branches():
     assert any("ScenarioIdMismatch" in f for f in res["failures"])
     assert any("ScenarioVersionMismatch" in f for f in res["failures"])
 
-    # 5. UnverifiedDecision
-    p_bad_dec = dataclasses.replace(base_pkg, decision={"decision": "FAIL"})
+    # 5. UnverifiedDecision (unknown/invalid decisions) and valid ATTESTED_FAIL
+    p_bad_dec = dataclasses.replace(base_pkg, decision={"decision": "UNKNOWN"})
     res = VerificationAuthority.verify_package(
         p_bad_dec, scenario_data=scenario_data, require_signature=False
     )
     assert any("UnverifiedDecision" in f for f in res["failures"])
+
+    p_fail_dec = dataclasses.replace(base_pkg, decision={"decision": "FAIL"})
+    res_fail = VerificationAuthority.verify_package(
+        p_fail_dec, scenario_data=scenario_data, require_signature=False
+    )
+    assert res_fail["status"] == "ATTESTED_FAIL"
+    assert not any("UnverifiedDecision" in f for f in res_fail["failures"])
 
     # 6. DuplicateOracleId
     p_dup_oracle = dataclasses.replace(

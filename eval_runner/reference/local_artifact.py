@@ -67,6 +67,22 @@ class LocalFileArtifactStore(ArtifactStore):
     def seal(self, run_id: str, metadata: dict[str, Any] | None = None) -> None:
         run_dir = self._get_run_dir(run_id, create=True)
         seal_marker = run_dir / ".sealed"
+
+        # Deployments claiming immutable WORM retention must use
+        # externally enforced immutable storage
+        if getattr(config, "REQUIRE_IMMUTABLE_WORM", False):
+            raise PermissionError(
+                "ImmutableRetentionRequired: LocalFileArtifactStore provides "
+                "TAMPER_EVIDENT_LOGICAL_SEAL, but deployment claims/requires "
+                "externally enforced immutable storage (e.g. S3 Object Lock)."
+            )
+
+        if seal_marker.exists() or self.is_sealed(run_id):
+            raise PermissionError(
+                f"Artifact vault for run '{run_id}' is already sealed; "
+                "cannot reseal or overwrite seal marker."
+            )
+
         seal_data = dict(metadata or {})
         seal_data.setdefault("sealed", True)
         seal_data.setdefault("run_id", run_id)
@@ -153,11 +169,8 @@ class LocalFileArtifactStore(ArtifactStore):
         append: bool = False,
         **kwargs: Any,
     ) -> str:
-        # Check if already sealed (only internal seal markers allowed)
-        if self.is_sealed(run_id) and artifact_name not in (
-            ".sealed",
-            "trace_seal.json",
-        ):
+        # Check if already sealed: normal write operations are strictly prohibited once sealed
+        if self.is_sealed(run_id):
             raise PermissionError(
                 f"Artifact vault for run '{run_id}' is sealed; "
                 "mutations and new artifacts are prohibited."

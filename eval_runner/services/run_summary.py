@@ -61,6 +61,17 @@ class RunSummaryService:
                         "unknown",
                     ):
                         return "VERIFIED_PROVISIONAL"
+
+                    compliance = m_data.get("compliance") or {}
+                    c_status = (
+                        compliance.get("status")
+                        or m_data.get("compliance_status")
+                        or m_data.get("status")
+                        or ""
+                    )
+                    clean_c_status = str(c_status).lower()
+                    if clean_c_status in ("fail", "failed", "attested_fail"):
+                        return "ATTESTED_FAIL"
             except Exception as prov_err:
                 logger.debug(f"Provisional manifest check note for {run_id}: {prov_err}")
 
@@ -198,6 +209,9 @@ class RunSummaryService:
 
         if auth_verdict == "VERIFIED":
             status = "CERTIFIED"
+            lifecycle = "SEALED"
+        elif auth_verdict == "ATTESTED_FAIL":
+            status = "ATTESTED_FAIL"
             lifecycle = "SEALED"
         elif auth_verdict == "VERIFIED_PROVISIONAL":
             status = "PROVISIONAL"

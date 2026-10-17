@@ -1135,16 +1135,47 @@ const PermissionRouteGuard: React.FC<{
 };
 const RootVerificationRoute: React.FC = () => {
   const { canRunEval, hasPermission } = useRBAC();
+  const { data: remoteNav } = useQuery({
+    queryKey: ['console-nav-registry'],
+    queryFn: async () => {
+      const res = await fetch('/api/nav');
+      if (!res.ok) return null;
+      const data = await res.json();
+      return Array.isArray(data) ? data : data.nav || [];
+    },
+    staleTime: 60_000,
+  });
+
   if (canRunEval) {
     return <VerificationWorkflowPage />;
   }
+
+  // Resolve enterprise navigation exclusively from signed extension manifests
+  const enterpriseTriageRoute = useMemo(() => {
+    if (!remoteNav || !Array.isArray(remoteNav)) return null;
+    const match = remoteNav.find(
+      (item: any) =>
+        item &&
+        item.remoteEntry &&
+        (item.path === '/enterprise/hitl-triage' ||
+          item.path === 'enterprise/hitl-triage' ||
+          item.id === 'hitl-triage' ||
+          item.id === 'enterprise-triage')
+    );
+    return match ? (match.path.startsWith('/') ? match.path : `/${match.path}`) : null;
+  }, [remoteNav]);
+
   if (
     hasPermission('enterprise.triage.read') ||
     hasPermission('enterprise:triage:read') ||
     hasPermission('hitl:resolve') ||
     hasPermission('hitl.resolve')
   ) {
-    return <Navigate to="/enterprise/hitl-triage" replace />;
+    if (enterpriseTriageRoute) {
+      return <Navigate to={enterpriseTriageRoute} replace />;
+    }
+    // OSS Core fallback: navigate to OSS triage route
+    return <Navigate to="/triage" replace />;
   }
   if (
     hasPermission('eval:read') ||

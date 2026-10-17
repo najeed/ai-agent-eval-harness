@@ -24,8 +24,40 @@ EVIDENCE_GRAPH_VERSION = "1.0.0"
 # These are the evaluator's declared result states.  Keeping the complete enum
 # here is strict schema validation, not permissive string coercion.
 _DECLARED_OUTCOMES = frozenset(
-    {"PASS", "FAIL", "INVALID", "SKIPPED", "ERROR", "NOT_APPLICABLE", "NOT_EVALUATED"}
+    {
+        "PASS",
+        "FAIL",
+        "INVALID",
+        "SKIPPED",
+        "ERROR",
+        "NOT_APPLICABLE",
+        "NOT_EVALUATED",
+        "UNOBSERVABLE",
+    }
 )
+
+
+def _extract_typed_outcome(result: Mapping[str, Any]) -> str:
+    """Extract and validate the authoritative typed outcome for an evidence record."""
+    if "outcome" in result and result.get("outcome") is not None:
+        raw = str(result["outcome"]).strip().upper()
+        if raw in _DECLARED_OUTCOMES:
+            return raw
+    if "status" in result and result.get("status") is not None:
+        raw_status = str(result["status"]).strip().upper()
+        if raw_status in ("SKIPPED", "SKIP"):
+            return "SKIPPED"
+        if raw_status in ("ERROR", "EXCEPTION"):
+            return "ERROR"
+        if raw_status in ("INVALID", "EVALUATION_INVALID"):
+            return "INVALID"
+        if raw_status in ("UNOBSERVABLE",):
+            return "UNOBSERVABLE"
+    if "passed" in result or "success" in result:
+        val = result.get("passed") if "passed" in result else result.get("success")
+        if isinstance(val, bool):
+            return "PASS" if val else "FAIL"
+    return "UNKNOWN"
 
 
 def _strict_result_value(result: Mapping[str, Any]) -> bool:
@@ -135,14 +167,21 @@ def link_assertion(
             outcome_state = "SKIPPED"
         elif raw_upper in ("ERROR", "EXCEPTION"):
             outcome_state = "ERROR"
+        elif raw_upper in ("UNOBSERVABLE", "NOT_EVALUATED", "NOT_APPLICABLE"):
+            outcome_state = raw_upper
         else:
             outcome_state = "UNKNOWN"
     else:
         outcome_state = "PASS" if bool(assertion.get("passed", False)) else "FAIL"
 
-    is_invalid = bool(assertion.get("invalid", False) or outcome_state in ("INVALID", "ERROR"))
+    is_invalid = bool(
+        assertion.get("invalid", False)
+        or outcome_state in ("INVALID", "ERROR", "UNOBSERVABLE", "UNKNOWN")
+    )
     is_passed = bool(outcome_state == "PASS" and not is_invalid)
-    has_res = bool(has_res and outcome_state in ("PASS", "FAIL", "INVALID", "SKIPPED", "ERROR"))
+    has_res = bool(
+        has_res and outcome_state in ("PASS", "FAIL", "INVALID", "SKIPPED", "ERROR", "UNOBSERVABLE")
+    )
 
     raw_sev = str(assertion.get("severity") or assertion.get("requiredness") or "required").lower()
     sev = "informational" if raw_sev in ("informational", "optional") else "required"
@@ -287,6 +326,7 @@ def build_evidence_graph(
         and (n.get("is_direct_provenance") or n.get("source_type") == "artifact")
         and not n.get("invalid")
         and n.get("has_result")
+        and n.get("outcome") in ("PASS", "FAIL")
     }
 
     missing_required_oracles: list[str] = []
@@ -392,7 +432,10 @@ def build_evidence_graph_from_events(
                 or any(k in ev_data for k in ("passed", "success", "score", "outcome", "status"))
             )
             result_fields = dict(ev_data)
-            result_fields.update({k: evt[k] for k in ("passed", "success", "outcome") if k in evt})
+            result_fields.update(
+                {k: evt[k] for k in ("passed", "success", "outcome", "status") if k in evt}
+            )
+            typed_outcome = _extract_typed_outcome(result_fields)
             raw_assertions.append(
                 {
                     "source": "trace_event",
@@ -406,9 +449,15 @@ def build_evidence_graph_from_events(
                         or ev_data.get("node")
                         or ev_data.get("node_id")
                     ),
+                    "outcome": typed_outcome,
                     "passed": _strict_result_value(result_fields),
                     "event_seq": seq_val,
                     "has_result": has_res,
+                    "invalid": bool(
+                        evt.get("invalid")
+                        or ev_data.get("invalid")
+                        or typed_outcome in ("INVALID", "ERROR", "UNOBSERVABLE")
+                    ),
                 }
             )
 
@@ -418,13 +467,16 @@ def build_evidence_graph_from_events(
             node_id = evt.get("scenario_node_id") or evt.get("node_id") or data.get("node_id")
             for m in data.get("metrics", []):
                 if isinstance(m, dict):
+                    m_fields = dict(m)
+                    typed_outcome = _extract_typed_outcome(m_fields)
                     raw_assertions.append(
                         {
                             "source": "execution_graph_node",
-                            "oracle_id": m.get("oracle_id") or m.get("metric") or m.get("name"),
+                            "oracle_id": m.get("metric") or m.get("oracle_id") or m.get("name"),
                             "metric": m.get("metric") or m.get("name"),
                             "node": node_id,
-                            "passed": _strict_result_value(m),
+                            "outcome": typed_outcome,
+                            "passed": _strict_result_value(m_fields),
                             "event_seq": seq_val,
                             "has_result": (
                                 "outcome" in m
@@ -435,18 +487,21 @@ def build_evidence_graph_from_events(
                             ),
                             "invalid": bool(m.get("invalid", False))
                             or (m.get("status") == "EVALUATION_INVALID")
-                            or (m.get("outcome") == "INVALID"),
+                            or (typed_outcome in ("INVALID", "ERROR", "UNOBSERVABLE")),
                         }
                     )
             for or_res in data.get("oracle_results", []):
                 if isinstance(or_res, dict):
+                    or_fields = dict(or_res)
+                    typed_outcome = _extract_typed_outcome(or_fields)
                     raw_assertions.append(
                         {
                             "source": "execution_graph_node",
                             "oracle_id": or_res.get("oracle_id") or or_res.get("id"),
                             "metric": or_res.get("metric") or or_res.get("name"),
                             "node": node_id,
-                            "passed": _strict_result_value(or_res),
+                            "outcome": typed_outcome,
+                            "passed": _strict_result_value(or_fields),
                             "event_seq": seq_val,
                             "has_result": (
                                 "outcome" in or_res
@@ -456,7 +511,7 @@ def build_evidence_graph_from_events(
                                 or "status" in or_res
                             ),
                             "invalid": bool(or_res.get("invalid", False))
-                            or (or_res.get("outcome") == "INVALID"),
+                            or (typed_outcome in ("INVALID", "ERROR", "UNOBSERVABLE")),
                         }
                     )
 

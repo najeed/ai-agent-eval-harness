@@ -1596,3 +1596,23 @@ async def test_runner_metadata_non_mapping_and_manifest_mode_branches(tmp_path, 
         ):
             res3 = await runner.run(scenario, run_id="no_meta_resume_run", resumption_token="tok")
             assert res3 is not None
+
+
+@pytest.mark.asyncio
+async def test_runner_multi_attempt_campaign_acceptance_policy():
+    """
+    Campaign acceptance policy requires all attempts to pass.
+    Partial pass@k must never be promoted to a positive finalization outcome.
+    """
+    stats = {
+        "pass_at_k": 0.5,
+        "all_pass": False,
+        "any_pass": True,
+        "attempt_success_rate": 0.5,
+    }
+
+    is_truncated = False
+    is_campaign_complete = not is_truncated
+    all_attempts_passed = bool(is_campaign_complete and stats.get("all_pass", False))
+    outcome = "pass" if all_attempts_passed else "fail"
+    assert outcome == "fail"

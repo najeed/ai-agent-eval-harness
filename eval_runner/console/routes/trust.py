@@ -200,10 +200,10 @@ def public_verify_run(run_id):
 
         if verified:
             terminal_verdict = "CERTIFIED_PASS"
-        elif is_valid and not is_compliant:
-            terminal_verdict = "ATTESTED_FAIL"
         elif not is_authoritative:
             terminal_verdict = "PROVISIONAL"
+        elif is_valid and not is_compliant and lifecycle_state == RunLifecycleState.SEALED:
+            terminal_verdict = "ATTESTED_FAIL"
         else:
             terminal_verdict = "UNVERIFIED"
 

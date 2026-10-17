@@ -289,3 +289,31 @@ class TestImmutableWORMEnforcement:
                 )
             assert "ImmutableRetentionRequired" in str(exc_info.value)
             assert "TAMPER_EVIDENT_LOGICAL_SEAL" in str(exc_info.value)
+
+
+def test_sealed_artifact_store_prohibits_all_mutations_and_resealing(tmp_path: Path):
+    """LocalFileArtifactStore strictly forbids writing any artifact or resealing once sealed."""
+    store = LocalFileArtifactStore(tmp_path)
+    run_id = "run-sealed-vault-strict"
+
+    store.store_artifact(run_id, "output.txt", b"initial output")
+    store.seal(run_id, {"metadata": "audit_complete"})
+
+    assert store.is_sealed(run_id) is True
+
+    # Mutating existing artifact raises PermissionError
+    with pytest.raises(PermissionError) as exc_info:
+        store.store_artifact(run_id, "output.txt", b"modified output", overwrite=True)
+    assert "sealed" in str(exc_info.value)
+
+    # Writing seal marker post-sealing raises PermissionError
+    with pytest.raises(PermissionError):
+        store.store_artifact(run_id, ".sealed", b"{}", overwrite=True)
+
+    with pytest.raises(PermissionError):
+        store.store_artifact(run_id, "trace_seal.json", b"{}", overwrite=True)
+
+    # Resealing raises PermissionError
+    with pytest.raises(PermissionError) as exc_seal:
+        store.seal(run_id)
+    assert "cannot reseal" in str(exc_seal.value)

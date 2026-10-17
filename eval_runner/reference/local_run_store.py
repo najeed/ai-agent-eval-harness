@@ -500,16 +500,30 @@ class LocalFileRunStore(RunStore):
             trace = self._get_run_vault(run_id) / "run.jsonl"
         except (ValueError, PermissionError):
             return []
+        if not trace.exists():
+            return []
         events: list[dict[str, Any]] = []
         try:
             with trace.open(encoding="utf-8") as stream:
-                for line in stream:
-                    event = self._read_event(line)
-                    if event is not None:
-                        events.append(event)
+                for line_number, line in enumerate(stream, start=1):
+                    raw = line.strip()
+                    if not raw:
+                        continue
+                    event = self._read_event_strict(raw, line_number)
+                    events.append(event)
         except OSError:
             return []
         return events[max(offset, 0) : max(offset, 0) + max(limit, 0)]
+
+    @staticmethod
+    def _read_event_strict(line: str, line_number: int = 1) -> dict[str, Any]:
+        try:
+            value = json.loads(line)
+        except (ValueError, json.JSONDecodeError) as exc:
+            raise ValueError(f"MalformedTraceRecord:{line_number}") from exc
+        if not isinstance(value, dict):
+            raise ValueError(f"InvalidTraceRecord:{line_number}: expected object")
+        return value
 
     @staticmethod
     def _read_event(line: str) -> dict[str, Any] | None:

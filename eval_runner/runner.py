@@ -1240,6 +1240,31 @@ class DefaultRunner(BaseRunner):
                 sign_err_msg = str(key_err)
                 logger.error("Evaluator private key retrieval error: %s", key_err)
 
+            # Campaign acceptance policy:
+            # 1. Reject incomplete campaigns (truncated by cancellation or early termination).
+            # 2. Enforce explicit acceptance across required attempts:
+            # all required attempts must pass.
+            is_truncated = bool(
+                attempt_statistics.get("truncated_by_cancellation")
+                or len(all_attempt_results) < attempts
+            )
+            is_campaign_complete = not is_truncated and len(all_attempt_results) == attempts
+            all_attempts_passed = bool(
+                is_campaign_complete and attempt_statistics.get("all_pass", False)
+            )
+
+            # Separate statistical reliability from certification eligibility.
+            finalization_outcome = "pass" if all_attempts_passed else "fail"
+            finalization_score = (
+                1.0
+                if all_attempts_passed
+                else (
+                    float(successful_attempts_count) / float(len(all_attempt_results))
+                    if all_attempt_results
+                    else 0.0
+                )
+            )
+
             finalization_record = EvaluatorFinalizationRecord(
                 finalization_id=f"fin_{effective_run_id}",
                 run_id=effective_run_id,
@@ -1251,8 +1276,8 @@ class DefaultRunner(BaseRunner):
                 evaluator_config_hash=getattr(self.resolved_config, "config_hash", "") or "none",
                 required_oracle_ids=req_oracles,
                 evidence_root_hash=evidence_root,
-                outcome="pass" if pass_at_k > 0 else "fail",
-                score=float(pass_at_k),
+                outcome=finalization_outcome,
+                score=finalization_score,
                 # This is a trace boundary, not an attempt count.  It binds
                 # finalization to the last event committed before finalization.
                 terminal_seq=terminal_trace_seq,
@@ -1362,9 +1387,9 @@ class DefaultRunner(BaseRunner):
                 events.CoreEvents.RUN_END,
                 {
                     "run_id": effective_run_id,
-                    "status": "success" if pass_at_k > 0 else "failure",
-                    "passed": bool(pass_at_k > 0),
-                    "score": float(pass_at_k),
+                    "status": "success" if finalization_outcome == "pass" else "failure",
+                    "passed": bool(finalization_outcome == "pass"),
+                    "score": finalization_score,
                     "pass_at_k": pass_at_k,
                     "attempt_success_rate": attempt_statistics.get("attempt_success_rate", 0.0),
                     "all_pass": attempt_statistics.get("all_pass", False),
@@ -1372,6 +1397,8 @@ class DefaultRunner(BaseRunner):
                     "successful_attempts": successful_attempts_count,
                     "total_attempts": attempts,
                     "executed_attempts": len(all_attempt_results),
+                    "campaign_complete": is_campaign_complete,
+                    "acceptance_policy": "all_required_attempts_pass",
                     "metadata": dict(ctx.metadata),
                     "finalization": fin_dict,
                     "assertions": collected_assertions,
@@ -1432,6 +1459,9 @@ class DefaultRunner(BaseRunner):
             result_metadata["execution_mode"] = str(execution_mode)
             result_metadata["reproducibility"] = repro_contract
             result_metadata["reproducibility_fingerprint"] = fingerprint(repro_contract)
+            result_metadata["campaign_complete"] = is_campaign_complete
+            result_metadata["acceptance_policy"] = "all_required_attempts_pass"
+            result_metadata["outcome"] = finalization_outcome
 
             return EvaluationResult(
                 run_id=effective_run_id,

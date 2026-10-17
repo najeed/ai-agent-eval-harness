@@ -5,6 +5,7 @@ E1/E2: Evidence Graph v1 — provenance-linked assertions and root commitments.
 from agentv_runtime.evidence_graph import (
     _strict_result_value,
     build_evidence_graph,
+    build_evidence_graph_from_events,
     compute_evidence_graph_root,
     hash_source_line,
     index_events_by_seq,
@@ -476,3 +477,38 @@ def test_link_assertion_with_expected_and_actual_values():
     node = link_assertion(assertion, seq_index={1: "dummy_hash"}, fallback_seq=1)
     assert node["expected"] == "expected_contract_output"
     assert node["actual"] == "actual_contract_output"
+
+
+def test_evidence_graph_preserves_typed_outcomes_and_completeness():
+    """
+    Only genuine PASS/FAIL satisfy required oracles.
+    SKIPPED/INVALID/ERROR are kept typed and uncertifiable.
+    """
+    events = [
+        {
+            "_seq": 1,
+            "event": "oracle_evaluated",
+            "metric": "security_boundary",
+            "outcome": "SKIPPED",
+            "status": "SKIPPED",
+        },
+        {
+            "_seq": 2,
+            "event": "oracle_evaluated",
+            "metric": "integrity_check",
+            "outcome": "PASS",
+            "passed": True,
+        },
+    ]
+
+    graph = build_evidence_graph_from_events(
+        events, required_oracle_ids=["security_boundary", "integrity_check"]
+    )
+
+    nodes_by_metric = {n["label"]: n for n in graph["nodes"]}
+    assert nodes_by_metric["security_boundary"]["outcome"] == "SKIPPED"
+    assert nodes_by_metric["integrity_check"]["outcome"] == "PASS"
+
+    # Completeness must fail because security_boundary was SKIPPED, not genuinely PASS/FAIL
+    assert graph["has_all_required"] is False
+    assert "security_boundary" in graph["missing_required_oracles"]

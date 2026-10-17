@@ -115,33 +115,92 @@ class CertificationService:
             logger.debug("Error reading execution truth level for %s: %s", run_id, e)
             return "unknown", True
 
-    @staticmethod
-    def materialize_provider_trace(run_id: str, run_store: Any) -> tuple[Path, dict[str, Any]]:
-        """Create a transient derived trace from provider-authoritative events."""
+    @classmethod
+    def materialize_provider_trace(cls, run_id: str, run_store: Any) -> tuple[Path, dict[str, Any]]:
+        """
+        Create or validate a trace from provider-authoritative events
+        without overwriting canonical evidence.
+        """
         events = run_store.get_events(run_id, offset=0, limit=10_000_000)
         if not events:
             raise FileNotFoundError(f"Run storage provider has no trace for {run_id}")
         manifest = run_store.get_manifest(run_id) or {}
-        # TraceVerifier's immutable artifact contract uses the canonical
-        # runs/<run_id>/run.jsonl location.  This file is derived entirely
-        # from provider data; it is never used as a source for certification.
+
         staging_root = Path(config.RUN_LOG_DIR) / run_id
-        staging_root.mkdir(parents=True, exist_ok=True)
         trace_path = staging_root / "run.jsonl"
-        trace_path.write_text(
-            "".join(
-                json.dumps(event, default=str, separators=(",", ":")) + "\n"
-                for event in events
-                if isinstance(event, dict)
-            ),
-            encoding="utf-8",
+
+        # If canonical evidence already exists on disk: NEVER overwrite it.
+        # Enforce strict original-byte validation and verify that the provider stream matches.
+        if trace_path.exists():
+            strict_canonical = cls.parse_trace_strict(trace_path, run_id)
+            if len(strict_canonical) != len(events):
+                raise ValueError(
+                    f"ProviderStreamDivergence: provider event count ({len(events)}) "
+                    f"does not match canonical trace event count ({len(strict_canonical)})"
+                )
+            for idx, (p_ev, c_ev) in enumerate(
+                zip(events, strict_canonical, strict=False), start=1
+            ):
+                p_name = p_ev.get("event") if isinstance(p_ev, dict) else None
+                c_name = c_ev.get("event") if isinstance(c_ev, dict) else None
+                if p_name != c_name:
+                    raise ValueError(
+                        f"ProviderStreamDivergence: event #{idx} mismatch: "
+                        f"provider='{p_name}', canonical='{c_name}'"
+                    )
+            return trace_path, manifest
+
+        # Vault does not yet have canonical trace on disk. Check sealing restrictions.
+        if (staging_root / ".sealed").exists():
+            raise PermissionError(
+                f"Artifact vault for run '{run_id}' is sealed; "
+                "mutations and new traces are prohibited."
+            )
+
+        # Reject incomplete or sanitized provider streams
+        has_start = any(
+            isinstance(e, dict) and e.get("event") in ("run_start", "start") for e in events
         )
+        has_terminal = any(
+            isinstance(e, dict)
+            and (
+                e.get("event") == "evaluator_finalization"
+                or (
+                    e.get("event") in ("run_end", "verification_decision", "session_decision")
+                    and (
+                        "finalization" in e
+                        or (isinstance(e.get("data"), dict) and "finalization" in e["data"])
+                    )
+                )
+            )
+            for e in events
+        )
+        if not has_start or not has_terminal:
+            raise ValueError(
+                f"IncompleteProviderStream: provider stream for run '{run_id}' is missing "
+                f"mandatory lifecycle events (has_start={has_start}, has_terminal={has_terminal})"
+            )
+
+        staging_root.mkdir(parents=True, exist_ok=True)
+        content = "".join(
+            json.dumps(event, default=str, separators=(",", ":")) + "\n"
+            for event in events
+            if isinstance(event, dict)
+        )
+        trace_path.write_text(content, encoding="utf-8")
+
+        # Validate newly written byte stream immediately
+        cls.parse_trace_strict(trace_path, run_id)
+
         for filename, value in (
             ("execution_manifest.json", manifest.get("execution_manifest")),
             ("scenario_resolved.json", manifest.get("scenario_data")),
         ):
             if isinstance(value, dict):
-                (staging_root / filename).write_text(json.dumps(value), encoding="utf-8")
+                target_file = staging_root / filename
+                if not target_file.exists():
+                    target_file.write_text(json.dumps(value), encoding="utf-8")
+
         return trace_path, manifest
 
     @classmethod
