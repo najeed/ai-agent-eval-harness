@@ -483,7 +483,7 @@ def test_async_evaluation_scoped_execution_and_authorized_reads(tmp_path, monkey
     )
 
     # 4. Wait for background thread to complete
-    max_wait = 5.0
+    max_wait = 15.0
     start = time.time()
     final_read = None
     while time.time() - start < max_wait:

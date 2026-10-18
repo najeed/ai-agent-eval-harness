@@ -1226,3 +1226,71 @@ class TestConsoleAppExhaustiveCoverage:
                     threaded=True,
                     extra_files=[],
                 )
+
+    def test_telemetry_loopback_filtering_in_debug_and_production(self, monkeypatch, tmp_path):
+        import io
+        import logging
+
+        from eval_runner.console.app import create_app
+
+        # 1. Production Mode: loopback filtered
+        monkeypatch.setenv("AGENTV_DEBUG", "0")
+        monkeypatch.setenv("DEBUG", "0")
+        app = create_app()
+        app.debug = False
+        client = app.test_client()
+
+        # Check Werkzeug log filter
+        w_logger = logging.getLogger("werkzeug")
+        assert any(f.__class__.__name__ == "TelemetryLoopbackFilter" for f in w_logger.filters)
+        telemetry_filter = next(
+            f for f in w_logger.filters if f.__class__.__name__ == "TelemetryLoopbackFilter"
+        )
+        rec_200 = logging.LogRecord(
+            name="werkzeug",
+            level=logging.INFO,
+            pathname="",
+            lineno=0,
+            msg='127.0.0.1 - - "POST /api/debugger/state HTTP/1.1" 200 -',
+            args=(),
+            exc_info=None,
+        )
+        assert telemetry_filter.filter(rec_200) is False
+
+        rec_500 = logging.LogRecord(
+            name="werkzeug",
+            level=logging.ERROR,
+            pathname="",
+            lineno=0,
+            msg='127.0.0.1 - - "POST /api/debugger/state HTTP/1.1" 500 -',
+            args=(),
+            exc_info=None,
+        )
+        assert telemetry_filter.filter(rec_500) is True
+
+        # Check request/response stderr tracing in production
+        stderr_capture = io.StringIO()
+        monkeypatch.setattr("sys.stderr", stderr_capture)
+
+        # GET /api/debugger/state (returns 200 or 204 or whatever is configured)
+        client.get("/api/debugger/state")
+        trace_output = stderr_capture.getvalue()
+        assert "/api/debugger/state" not in trace_output
+
+        # Non-telemetry endpoint still emits trace
+        stderr_capture.truncate(0)
+        stderr_capture.seek(0)
+        client.get("/favicon.svg")
+        trace_output = stderr_capture.getvalue()
+        assert "[Trace] GET /favicon.svg" in trace_output
+
+        # 2. Debug Mode: loopback trace is preserved
+        monkeypatch.setenv("AGENTV_DEBUG", "1")
+        app_debug = create_app()
+        client_debug = app_debug.test_client()
+
+        stderr_capture.truncate(0)
+        stderr_capture.seek(0)
+        client_debug.get("/api/debugger/state")
+        debug_trace_output = stderr_capture.getvalue()
+        assert "[Trace] GET /api/debugger/state" in debug_trace_output

@@ -479,11 +479,11 @@ def test_verification_workflow_journey_playwright(journey_console_server):
 
             # Executed topology derives solely from execution_graph evidence.
             page.get_by_role("button", name="executed").click()
-            page.wait_for_timeout(250)
             for node_id in ("intake", "eligibility", "decision"):
                 page.get_by_test_id(f"rf__node-{node_id}").wait_for(state="visible", timeout=10000)
             # notify and its branch are planned-only in this fixture.  Their
             # absence proves the Executed layer is not a dimmed scenario DAG.
+            page.get_by_test_id("rf__node-notify").wait_for(state="hidden", timeout=10000)
             assert not page.get_by_test_id("rf__node-notify").is_visible()
             assert page.locator(".react-flow__edge").count() == 2
             page.get_by_test_id("rf__node-decision").get_by_text(
@@ -506,7 +506,7 @@ def test_verification_workflow_journey_playwright(journey_console_server):
                 window.dispatchEvent(new PopStateEvent('popstate'));
                 """
             )
-            page.wait_for_timeout(250)
+            page.get_by_test_id("rf__node-decision").wait_for(state="hidden", timeout=10000)
             assert not page.get_by_test_id("rf__node-decision").is_visible()
             page.evaluate(
                 """

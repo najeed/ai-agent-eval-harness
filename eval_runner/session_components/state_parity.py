@@ -429,6 +429,7 @@ class SessionStateParityVerifier:
                 pre_observation = (external_state_before or {}).get(authority_source or "")
                 if authority_source and (not pre_observation or pre_observation.get("invalid")):
                     all_passed = False
+                    has_terminal_failure = True
                     failed_reason = (
                         f"Unobservable pre-execution authority target '{authority_source}'"
                     )
@@ -475,6 +476,9 @@ class SessionStateParityVerifier:
                 # value — fail closed immediately instead of comparing None.
                 if property_path == "__unobserved_source__":
                     all_passed = False
+                    has_terminal_failure = (
+                        has_terminal_failure or not self._can_settle_asynchronously(assertion)
+                    )
                     failed_reason = (
                         f"Unobservable oracle target '{assertion.get('target')}': "
                         "no active shim/simulator produced a snapshot. Missing "

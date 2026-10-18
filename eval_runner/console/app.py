@@ -324,9 +324,36 @@ def create_app():
     # Mount critical diagnostic shims directly into the Root /v1 namespace
     # to align with documentation.
 
+    # Filter high-frequency telemetry loopback unless debug mode is enabled
+    is_debug_mode = bool(
+        app.debug
+        or os.getenv("AGENTV_DEBUG", "0").lower() in ("1", "true", "yes")
+        or os.getenv("DEBUG", "0").lower() in ("1", "true", "yes")
+    )
+    if not is_debug_mode:
+        import logging
+
+        class TelemetryLoopbackFilter(logging.Filter):
+            def filter(self, record: logging.LogRecord) -> bool:
+                msg = record.getMessage()
+                if "/api/debugger/state" in msg and " 200 " in msg:
+                    return False
+                return True
+
+        logging.getLogger("werkzeug").addFilter(TelemetryLoopbackFilter())
+
     @app.before_request
     def trace_request():
         import sys
+
+        is_debug = (
+            app.debug
+            or os.getenv("AGENTV_DEBUG", "0").lower() in ("1", "true", "yes")
+            or os.getenv("DEBUG", "0").lower() in ("1", "true", "yes")
+        )
+        if not is_debug and flask.request.path.startswith("/api/debugger/state"):
+            flask.g._skip_trace = True
+            return
 
         sys.stderr.write(
             f"   [Trace] {flask.request.method} {flask.request.path} "
@@ -338,8 +365,17 @@ def create_app():
     def trace_response(response):
         import sys
 
-        sys.stderr.write(f"   [Trace] Status: {response.status_code}\n")
-        sys.stderr.flush()
+        if not getattr(flask.g, "_skip_trace", False):
+            sys.stderr.write(f"   [Trace] Status: {response.status_code}\n")
+            sys.stderr.flush()
+        elif response.status_code >= 400:
+            # Preserve error visibility: never swallow non-200 responses even for telemetry paths
+            sys.stderr.write(
+                f"   [Trace] {flask.request.method} {flask.request.path} "
+                f"(Endpoint: {flask.request.endpoint})\n"
+                f"   [Trace] Status: {response.status_code}\n"
+            )
+            sys.stderr.flush()
         # Surface the current operational mode to all clients
         mode = "demo" if config.ENABLE_DEMO else "production"
         response.headers["X-AgentV-Mode"] = mode

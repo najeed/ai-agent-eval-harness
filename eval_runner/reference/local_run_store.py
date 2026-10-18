@@ -36,6 +36,12 @@ class RunManifestImmutableError(PermissionError):
         self.vault_path = str(vault_path)
 
 
+class TraceCorruptionError(ValueError):
+    """Raised when a trace contains malformed JSON or corrupted records."""
+
+    pass
+
+
 def _canonical_digest(manifest: dict[str, Any]) -> str:
     """
     SHA3-256 canonical manifest digest via the unified hash utility layer
@@ -234,12 +240,12 @@ class LocalFileRunStore(RunStore):
                             first_ev = self._read_event(first_line.strip())
                             if not first_ev:
                                 return None
+                            record = {
+                                "run_id": run_id,
+                                "status": "SEALED" if self._is_sealed(run_vault) else "OPEN",
+                            }
                     except (OSError, UnicodeDecodeError):
                         return None
-                    record = {
-                        "run_id": run_id,
-                        "status": "SEALED" if self._is_sealed(run_vault) else "OPEN",
-                    }
             elif marker_status and record.get("status") != marker_status:
                 record["status"] = marker_status
                 record["lifecycle"] = marker_status
@@ -250,7 +256,7 @@ class LocalFileRunStore(RunStore):
                 if manifest_data is not None and not context_allows_record(manifest_data, context):
                     return None
 
-            trace_path = run_vault / "run.jsonl"
+            trace_path = self._resolve_trace_file(run_id) or (run_vault / "run.jsonl")
             scenario = record.get("scenario") or record.get("scenario_id")
             if not scenario and manifest_data:
                 scenario = (
@@ -489,18 +495,40 @@ class LocalFileRunStore(RunStore):
             record = self._read_json(self._record_path(vault)) or {}
             if any(record.get("context", {}).get(k) not in (None, v) for k, v in context.items()):
                 return None
-        return self._read_json(vault / "run_manifest.json")
+        manifest = self._read_json(vault / "run_manifest.json")
+        if manifest is None:
+            manifest = {}
+        if "scenario_data" not in manifest:
+            # These files are part of the local provider's immutable run
+            # record.  Expose them through the provider rather than allowing
+            # console consumers to inspect the vault directly.
+            scenario = self._read_json(vault / "scenario_resolved.json")
+            if scenario is None:
+                scenario = self._read_json(vault / "scenario_original.json")
+            if scenario is not None:
+                manifest = {**manifest, "scenario_data": scenario}
+        return manifest or None
+
+    def _resolve_trace_file(self, run_id: str) -> Path | None:
+        try:
+            vault = self._get_run_vault(run_id)
+            for cand in [vault / "run.jsonl", vault / f"{run_id}.jsonl"]:
+                if cand.is_file():
+                    return cand
+        except (ValueError, PermissionError):
+            pass
+        frag = self.log_dir / f"{run_id}.jsonl"
+        if frag.is_file():
+            return frag
+        return None
 
     def get_events(
         self, run_id: str, offset: int = 0, limit: int = 1000, context: dict[str, Any] | None = None
     ) -> list[dict[str, Any]]:
         if context and self.get_run(run_id, context=context) is None:
             return []
-        try:
-            trace = self._get_run_vault(run_id) / "run.jsonl"
-        except (ValueError, PermissionError):
-            return []
-        if not trace.exists():
+        trace = self._resolve_trace_file(run_id)
+        if trace is None or not trace.exists():
             return []
         events: list[dict[str, Any]] = []
         try:
@@ -515,14 +543,30 @@ class LocalFileRunStore(RunStore):
             return []
         return events[max(offset, 0) : max(offset, 0) + max(limit, 0)]
 
+    def get_trace_bytes(self, run_id: str, context: dict[str, Any] | None = None) -> bytes | None:
+        """Return the exact trace serialization owned by this provider.
+
+        This is deliberately exposed through the storage contract so signature
+        verification never reaches around a provider to a filesystem path.
+        """
+        if context and self.get_run(run_id, context=context) is None:
+            return None
+        trace = self._resolve_trace_file(run_id)
+        if trace is None:
+            return None
+        try:
+            return trace.read_bytes() if trace.exists() else None
+        except OSError:
+            return None
+
     @staticmethod
     def _read_event_strict(line: str, line_number: int = 1) -> dict[str, Any]:
         try:
             value = json.loads(line)
         except (ValueError, json.JSONDecodeError) as exc:
-            raise ValueError(f"MalformedTraceRecord:{line_number}") from exc
+            raise TraceCorruptionError(f"MalformedTraceRecord:{line_number}") from exc
         if not isinstance(value, dict):
-            raise ValueError(f"InvalidTraceRecord:{line_number}: expected object")
+            raise TraceCorruptionError(f"InvalidTraceRecord:{line_number}: expected object")
         return value
 
     @staticmethod

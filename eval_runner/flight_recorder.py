@@ -51,6 +51,9 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             else Path(os.getenv("RUN_LOG_DIR", str(config.RUN_LOG_DIR)))
         )
         self.per_run = os.getenv("RUN_LOG_PER_RUN", "true").lower() == "true"
+        # The master log is an optional diagnostic projection.  It is never
+        # consulted as run evidence; RunStorageProvider owns all lifecycle and
+        # certification reads.
         self.master = os.getenv("RUN_LOG_MASTER", "true").lower() == "true"
 
         self._enforce_safety_floor()

@@ -8,6 +8,7 @@ for AgentV OS Runtime and Control Plane seams.
 
 from __future__ import annotations
 
+import json
 import time
 from abc import ABC, abstractmethod
 from collections.abc import Generator
@@ -385,6 +386,23 @@ class RunStorageProvider(ABC):
     ) -> list[dict[str, Any]]:
         """Retrieves persisted trace events."""
         raise NotImplementedError
+
+    def get_trace_bytes(self, run_id: str, context: dict[str, Any] | None = None) -> bytes | None:
+        """Returns the provider's authoritative serialization of a run trace.
+
+        Providers which store event records rather than a byte stream may use the
+        canonical JSONL fallback.  A provider that preserves the original signed
+        serialization should override this method.  Callers must obtain trace
+        bytes through the provider; they must not read a parallel filesystem copy.
+        """
+        events = self.get_events(run_id, offset=0, limit=10_000_000, context=context)
+        if not events:
+            return None
+        return b"".join(
+            json.dumps(event, default=str, separators=(",", ":")).encode("utf-8") + b"\n"
+            for event in events
+            if isinstance(event, dict)
+        )
 
     @abstractmethod
     def update_run_status(

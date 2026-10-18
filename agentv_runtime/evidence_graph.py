@@ -307,7 +307,7 @@ def build_evidence_graph(
 
     all_direct = (
         all(
-            n.get("is_direct_provenance", False) or n.get("source_type") == "artifact"
+            bool(n.get("is_direct_provenance")) or n.get("source_type") == "artifact"
             for n in nodes
             if n.get("severity") != "informational"
         )
@@ -413,15 +413,6 @@ def build_evidence_graph_from_events(
                 or ev_data.get("oracle_id")
                 or ev_data.get("metric")
                 or ev_data.get("assertion")
-            )
-            (
-                evt.get("passed")
-                if evt.get("passed") is not None
-                else (
-                    evt.get("success")
-                    if evt.get("success") is not None
-                    else ev_data.get("passed", ev_data.get("success", False))
-                )
             )
             has_res = (
                 "passed" in evt

@@ -17,7 +17,6 @@ from typing import Any
 from agentv_runtime.finalization import EvaluatorFinalizationRecord
 from eval_runner import config
 from eval_runner.certification_lock import PerRunCertificationLock
-from eval_runner.trace_utils import resolve_trace_path
 from eval_runner.utils.base import is_path_safe
 from eval_runner.verifier import TraceVerifier
 
@@ -82,8 +81,46 @@ class CertificationService:
         None, unknown, simulated, or provisional mode marks provisional=True.
         Returns (execution_mode, is_provisional).
         """
-        trace = trace_path or (resolve_trace_path(run_id) if run_id else None)
-        if not trace or not trace.is_file() or not is_path_safe(trace, config.RUN_LOG_DIR):
+        if (
+            not run_id
+            or not isinstance(run_id, str)
+            or ".." in run_id
+            or "/" in run_id
+            or "\\" in run_id
+        ):
+            return None, False
+        if trace_path is None:
+            from eval_runner.storage_resolver import resolve_run_storage_provider
+
+            try:
+                store = resolve_run_storage_provider()
+                run = store.get_run(run_id)
+                events = store.get_events(run_id, offset=0, limit=10_000_000)
+                if run is None and not events:
+                    return None, False
+            except (OSError, ValueError):
+                return "unknown", True
+            for ev in events:
+                if ev.get("event") not in ("run_start", "start"):
+                    continue
+                data = ev.get("data", {}) or {}
+                meta = data.get("metadata") or ev.get("metadata") or {}
+                mode = (
+                    data.get("execution_mode")
+                    or meta.get("execution_mode")
+                    or ev.get("execution_mode")
+                )
+                is_prov = bool(
+                    data.get("provisional") or meta.get("provisional") or ev.get("provisional")
+                )
+                if not mode:
+                    return "unknown", True
+                mode_clean = str(mode).strip().lower()
+                return mode, bool(is_prov or mode_clean not in ("live", "hybrid"))
+            return "unknown", True
+
+        trace = trace_path
+        if not trace.is_file() or not is_path_safe(trace, config.RUN_LOG_DIR):
             return None, False
 
         try:
@@ -111,8 +148,8 @@ class CertificationService:
                     return mode, True
                 return mode, False
             return "unknown", True
-        except Exception as e:  # noqa: BLE001
-            logger.debug("Error reading execution truth level for %s: %s", run_id, e)
+        except (OSError, ValueError) as exc:
+            logger.warning("Unable to read execution truth level for %s: %s", run_id, exc)
             return "unknown", True
 
     @classmethod
@@ -123,31 +160,22 @@ class CertificationService:
         """
         events = run_store.get_events(run_id, offset=0, limit=10_000_000)
         if not events:
-            raise FileNotFoundError(f"Run storage provider has no trace for {run_id}")
+            raise FileNotFoundError(f"Run vault not found for {run_id}")
         manifest = run_store.get_manifest(run_id) or {}
 
         staging_root = Path(config.RUN_LOG_DIR) / run_id
         trace_path = staging_root / "run.jsonl"
 
         # If canonical evidence already exists on disk: NEVER overwrite it.
-        # Enforce strict original-byte validation and verify that the provider stream matches.
+        # Compare parsed event structures; line endings and JSON whitespace are
+        # transport formatting, not evidence semantics.
         if trace_path.exists():
-            strict_canonical = cls.parse_trace_strict(trace_path, run_id)
-            if len(strict_canonical) != len(events):
+            recorded_events = cls.parse_trace_strict(trace_path, run_id)
+            if recorded_events != events:
                 raise ValueError(
-                    f"ProviderStreamDivergence: provider event count ({len(events)}) "
-                    f"does not match canonical trace event count ({len(strict_canonical)})"
+                    "ProviderStreamDivergence: canonical trace events do not match "
+                    "the provider event stream"
                 )
-            for idx, (p_ev, c_ev) in enumerate(
-                zip(events, strict_canonical, strict=False), start=1
-            ):
-                p_name = p_ev.get("event") if isinstance(p_ev, dict) else None
-                c_name = c_ev.get("event") if isinstance(c_ev, dict) else None
-                if p_name != c_name:
-                    raise ValueError(
-                        f"ProviderStreamDivergence: event #{idx} mismatch: "
-                        f"provider='{p_name}', canonical='{c_name}'"
-                    )
             return trace_path, manifest
 
         # Vault does not yet have canonical trace on disk. Check sealing restrictions.
@@ -528,51 +556,23 @@ class CertificationService:
             or "\\" in run_id
         ):
             raise ValueError(f"Invalid or unsafe run_id: {run_id}")
+        if run_store is None:
+            from eval_runner.storage_resolver import resolve_run_storage_provider
+
+            run_store = resolve_run_storage_provider()
+        if trace_path is not None:
+            candidate = Path(trace_path)
+            if (
+                candidate.name == "run.jsonl"
+                and candidate.parent == Path(config.RUN_LOG_DIR).resolve()
+            ):
+                raise ValueError("SharedMasterLogCertificationForbidden")
 
         lock = PerRunCertificationLock(run_id)
         with lock:
-            provider_manifest: dict[str, Any] = {}
-            if run_store is not None:
-                target_trace, provider_manifest = cls.materialize_provider_trace(run_id, run_store)
-                if scenario_data is None and isinstance(
-                    provider_manifest.get("scenario_data"), dict
-                ):
-                    scenario_data = provider_manifest["scenario_data"]
-            elif trace_path:
-                candidate_trace = Path(trace_path)
-                if not candidate_trace.is_absolute():
-                    candidate_trace = (config.RUN_LOG_DIR / candidate_trace).resolve()
-                if (
-                    not is_path_safe(candidate_trace, config.RUN_LOG_DIR)
-                    or not candidate_trace.exists()
-                ):
-                    logger.error(
-                        "   [Certification] 404 FAIL: Supplied trace path not found or unsafe: %s",
-                        trace_path,
-                    )
-                    raise FileNotFoundError(f"Run vault not found for {run_id}")
-                if (
-                    candidate_trace.name == "run.jsonl"
-                    and candidate_trace.parent == Path(config.RUN_LOG_DIR).resolve()
-                ):
-                    raise ValueError(
-                        f"SharedMasterLogCertificationForbidden: Cannot certify shared "
-                        f"master log '{trace_path}'. Only canonical per-run vault traces "
-                        "are certifiable."
-                    )
-                target_trace = candidate_trace
-            else:
-                target_trace = resolve_trace_path(run_id, allow_master_recovery=False)
-                if (
-                    not target_trace
-                    or not is_path_safe(target_trace, config.RUN_LOG_DIR)
-                    or not target_trace.exists()
-                ):
-                    logger.error(
-                        "   [Certification] 404 FAIL: Authoritative vault trace not found: %s",
-                        run_id,
-                    )
-                    raise FileNotFoundError(f"Run vault not found for {run_id}")
+            target_trace, provider_manifest = cls.materialize_provider_trace(run_id, run_store)
+            if scenario_data is None and isinstance(provider_manifest.get("scenario_data"), dict):
+                scenario_data = provider_manifest["scenario_data"]
 
             vault_dir = target_trace.parent
 

@@ -1239,22 +1239,10 @@ def test_certification_metadata_binding_read_and_parse_error(cert_vault, monkeyp
     lines.insert(1, "corrupt-non-json-line")
     trace.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
-    from eval_runner.verifier import TraceVerifier
+    from eval_runner.reference.local_run_store import TraceCorruptionError
 
-    monkeypatch.setattr(CertificationService, "parse_trace_strict", lambda *a, **kw: events)
-    monkeypatch.setattr(
-        TraceVerifier,
-        "sign_trace",
-        lambda *a, **kw: {
-            "status": "certified",
-            "package_hash": "dummy_pkg",
-            "verification_package": "dummy_vp",
-        },
-    )
-    res = execute_industrial_certification(
-        run_id, scenario_data={"id": "scen_1", "version": "1.0.0"}
-    )
-    assert res["status"] == "certified"
+    with pytest.raises((TraceCorruptionError, ValueError)):
+        execute_industrial_certification(run_id, scenario_data={"id": "scen_1", "version": "1.0.0"})
 
     run_id_read_err = "run-meta-read-err"
     _create_trace(

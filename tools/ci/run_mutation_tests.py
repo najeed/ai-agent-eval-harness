@@ -81,11 +81,6 @@ FAST_PYTEST_FLAGS = [
 #
 # Only fast, synchronous unit tests qualify — integration/chaos/security tests that
 # spawn subprocesses or do async I/O exceed the timeout budget.
-#
-# Measured wall-clock subprocess times (un-mutated baseline, Windows):
-#   verifier.py corpus  (test_golden_verifier_matrix) : 7.67s
-#   tool_sandbox corpus (test_tool_sandbox)            : 8.84s
-#   base.py corpus      (test_core_utilities)          : 9.46s
 @dataclass(frozen=True)
 class CriticalMutationTarget:
     """An explicit Runtime trust boundary and its authoritative fast corpus."""
@@ -277,9 +272,6 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
         ),
         frozenset({"commitment"}),
         frozenset({"commitment", "guard", "comparison", "boolean"}),
-        # These candidates are proven non-observable in the public graph API:
-        # every node is created by link_assertion with an explicit directness
-        # flag, and the standalone passed/success expression is discarded.
         frozenset(
             {
                 ("build_evidence_graph", 271, "False", "True"),
@@ -1376,7 +1368,9 @@ def evaluate_mutant(
         return "incompetent"
 
 
-def verify_sentinel_preconditions() -> tuple[dict[str, float], dict[Path, float]]:
+def verify_sentinel_preconditions(
+    active_targets: list[Path] | None = None,
+) -> tuple[dict[str, float], dict[Path, float]]:
     """
     Self-validating precondition checks executed before any mutation testing begins.
 
@@ -1388,10 +1382,11 @@ def verify_sentinel_preconditions() -> tuple[dict[str, float], dict[Path, float]
     """
     import time
 
+    targets_to_check = active_targets if active_targets is not None else list(TARGET_MODULES)
     print("\n1. Running Self-Validating Sentinel Precondition Checks...")
 
     # Check target modules existence
-    for target in TARGET_MODULES:
+    for target in targets_to_check:
         if not target.exists():
             rel = target.relative_to(BASE_DIR)
             print(f"  [FAIL] Target module missing: {rel}")
@@ -1426,9 +1421,9 @@ def verify_sentinel_preconditions() -> tuple[dict[str, float], dict[Path, float]
             sys.exit(1)
 
     # Check test file existence
-    all_test_paths = set(BASELINE_TESTS)
-    for test_list in MODULE_TEST_MAP.values():
-        all_test_paths.update(test_list)
+    all_test_paths = set(BASELINE_TESTS) if active_targets is None else set()
+    for target in targets_to_check:
+        all_test_paths.update(MODULE_TEST_MAP.get(target, ()))
 
     for test_path in all_test_paths:
         full_path = BASE_DIR / test_path
@@ -1439,7 +1434,8 @@ def verify_sentinel_preconditions() -> tuple[dict[str, float], dict[Path, float]
     # Explicit source-scope mappings are executable configuration, not best
     # effort hints.  Fail before mutation fan-out if a renamed test would turn
     # a critical boundary back into an expensive and less precise fallback.
-    for target, scope_map in MODULE_SCOPE_TEST_MAP.items():
+    for target in targets_to_check:
+        scope_map = MODULE_SCOPE_TEST_MAP.get(target, {})
         declared_names = _declared_test_names(_tests_for_module(target))
         for scope, test_names in scope_map.items():
             unknown_names = set(test_names) - declared_names
@@ -1461,7 +1457,7 @@ def verify_sentinel_preconditions() -> tuple[dict[str, float], dict[Path, float]
     baseline_durations: dict[Path, float] = {}
     baseline_cache = _load_baseline_cache()
     corpus_groups: dict[tuple[str, ...], list[Path]] = {}
-    for target in TARGET_MODULES:
+    for target in targets_to_check:
         corpus_groups.setdefault(tuple(_tests_for_module(target)), []).append(target)
 
     for tests, targets in corpus_groups.items():
@@ -1708,6 +1704,12 @@ def run_mutation_sentinel() -> None:
         default=1,
         help="Number of concurrent worker threads for parallel module evaluation (default: 1).",
     )
+    parser.add_argument(
+        "--target",
+        type=str,
+        default=None,
+        help="Optional module name or path substring to filter targets (e.g. evidence_graph.py).",
+    )
     args = parser.parse_args()
 
     seed_suffix = f", seed={args.seed}" if args.seed is not None else ""
@@ -1802,8 +1804,20 @@ def run_mutation_sentinel() -> None:
     # Ensure all target modules are pristine before starting
     emergency_restore()
 
+    if args.target:
+        active_targets = [
+            t
+            for t in TARGET_MODULES
+            if args.target.lower() in t.name.lower() or args.target.lower() in str(t).lower()
+        ]
+        if not active_targets:
+            print(f"  [FAIL] No target modules matched filter: {args.target}")
+            sys.exit(1)
+    else:
+        active_targets = list(TARGET_MODULES)
+
     # 1. Self-Validating Precondition Verification
-    module_timeouts, baseline_durations = verify_sentinel_preconditions()
+    module_timeouts, baseline_durations = verify_sentinel_preconditions(active_targets)
 
     # 2. Mutation Discovery & Testing
     total_killed = 0
@@ -1819,7 +1833,7 @@ def run_mutation_sentinel() -> None:
     cache_lock = threading.Lock()
     try:
         print(f"2. Mutating Verification Modules & Scoring Test Suite ({mode_label})...")
-        for target in TARGET_MODULES:
+        for target in active_targets:
             k, s, t, ind, inc, recs, timing = _evaluate_target_module(
                 target,
                 args,
