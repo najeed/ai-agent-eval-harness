@@ -31,6 +31,7 @@ from agentv_runtime.config import (
     InstanceObservation,
     RuntimeWorkerConfigConsumer,
 )
+from eval_runner import config
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +81,7 @@ class ConfigurationRevisionService:
         if storage_root is not None:
             self._root = Path(storage_root)
         else:
-            base_dir = Path(os.getenv("AGENTV_CONFIG_DIR") or ".aes")
+            base_dir = Path(os.getenv("AGENTV_CONFIG_DIR") or (config.PROJECT_ROOT / ".aes"))
             self._root = base_dir / "revisions"
         self._lock = threading.Lock()
 

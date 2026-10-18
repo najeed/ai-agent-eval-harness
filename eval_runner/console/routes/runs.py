@@ -67,6 +67,10 @@ def _summary_from_provider(run: dict) -> dict:
         "trace_integrity": run.get("trace_integrity", "PROVIDER_MANAGED"),
         "execution_mode": run.get("execution_mode") or manifest.get("execution_mode"),
         "provisional": bool(run.get("provisional", False)),
+        "score_reason": run.get("score_reason"),
+        "score_category": run.get("score_category"),
+        "failure_reasons": run.get("failure_reasons", []),
+        "failed_oracles": run.get("failed_oracles", []),
     }
 
 
@@ -323,6 +327,10 @@ def get_run_status(run_id):
                 "verification_status": summary.get("verification_status", "PROVIDER_MANAGED"),
                 "duration_seconds": summary.get("duration_seconds"),
                 "score": summary.get("score") or (manifest.get("compliance") or {}).get("score"),
+                "score_reason": summary.get("score_reason"),
+                "score_category": summary.get("score_category"),
+                "failure_reasons": summary.get("failure_reasons", []),
+                "failed_oracles": summary.get("failed_oracles", []),
                 "timestamp": summary.get("timestamp") or run.get("created_at"),
                 "start_time": summary.get("timestamp") or run.get("created_at"),
                 "identifier": summary.get("identifier") or run.get("run_id"),
@@ -401,6 +409,10 @@ def get_run_status(run_id):
                 "verification_status": summary["verification_status"],
                 "duration_seconds": summary.get("duration_seconds"),
                 "score": summary.get("score"),
+                "score_reason": summary.get("score_reason"),
+                "score_category": summary.get("score_category"),
+                "failure_reasons": summary.get("failure_reasons", []),
+                "failed_oracles": summary.get("failed_oracles", []),
                 "timestamp": summary.get("timestamp"),
                 "start_time": summary.get("timestamp"),
                 "identifier": summary.get("identifier") or summary.get("timestamp"),

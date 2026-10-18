@@ -9,6 +9,7 @@ gating, run_scenario synchronous orchestrator, and error handlers.
 from __future__ import annotations
 
 import asyncio
+import json
 import threading
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -16,9 +17,69 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from agentv_runtime.config import ResolvedRuntimeConfig
+from agentv_runtime.manifest import ExecutionManifest
 from eval_runner.events import CoreEvents
 from eval_runner.execution_ir import WorkflowStatus
 from eval_runner.runner import DefaultRunner, run_scenario
+
+
+@pytest.mark.asyncio
+async def test_runner_finalization_binds_the_physical_execution_manifest(tmp_path):
+    """Fresh-run certification must use the evaluator-owned vault manifest."""
+    run_id = "run-manifest-finalization-binding"
+    scenario = {
+        "id": "scenario-manifest-binding",
+        "workflow": {"nodes": [{"id": "n1", "success_criteria": [{"metric": "m1"}]}]},
+    }
+    runner = DefaultRunner(run_store=None)
+    vault = tmp_path / run_id
+    vault.mkdir()
+    stale_manifest = ExecutionManifest(
+        manifest_id="preflight-manifest",
+        scenario_id="stale-scenario",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:stale",
+    )
+    (vault / "execution_manifest.json").write_text(
+        json.dumps(stale_manifest.to_dict()), encoding="utf-8"
+    )
+    original_exists = Path.exists
+
+    def _exists(path):
+        # Model a launcher creating the vault immediately before the evaluator
+        # claims it.  The runner must not let that provisional file become the
+        # evaluator's certification artifact.
+        if path == vault:
+            return False
+        return original_exists(path)
+
+    with (
+        patch("eval_runner.config.RUN_LOG_DIR", tmp_path),
+        patch.object(Path, "exists", _exists),
+        patch(
+            "eval_runner.session.SessionManager.execute_tasks", new_callable=AsyncMock
+        ) as mock_exec,
+    ):
+        mock_exec.return_value = [
+            {
+                "workflow_verdict": {"status": WorkflowStatus.COMPLETED.value},
+                "evaluation_valid": True,
+            }
+        ]
+        await runner.run(scenario=scenario, attempts=1, run_id=run_id)
+
+    execution_manifest = ExecutionManifest.from_dict(
+        json.loads((vault / "execution_manifest.json").read_text(encoding="utf-8"))
+    )
+    finalization = next(
+        record["finalization"]
+        for record in (
+            json.loads(line)
+            for line in (vault / "run.jsonl").read_text(encoding="utf-8").splitlines()
+        )
+        if record.get("finalization")
+    )
+    assert finalization["execution_manifest_hash"] == execution_manifest.compute_manifest_hash()
 
 
 @pytest.mark.asyncio

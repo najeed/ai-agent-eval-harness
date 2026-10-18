@@ -42,7 +42,7 @@ def _matches_scope(req: ApprovalRequest, scope: ScopeToken | None) -> bool:
         return False
     if req.scope_digest and scope.digest:
         return req.scope_digest == scope.digest
-    req_token = ScopeToken.from_tags(req.scope_tags)
+    req_token = ScopeToken.from_tags(req.scope)
     return req_token.matches(scope)
 
 
@@ -334,13 +334,13 @@ class SQLiteApprovalStore(ApprovalStore):
                             decided_by TEXT,
                             decided_at REAL,
                             metadata TEXT,
-                            scope_tags TEXT,
+                            scope TEXT,
                             scope_digest TEXT,
                             manifest_id TEXT,
                             idempotency_key TEXT
                         )
                     """)
-                    for col in ("scope_tags", "scope_digest", "manifest_id", "idempotency_key"):
+                    for col in ("scope", "scope_digest", "manifest_id", "idempotency_key"):
                         try:
                             cursor.execute(f"ALTER TABLE approval_requests ADD COLUMN {col} TEXT")
                         except sqlite3.OperationalError:
@@ -369,12 +369,12 @@ class SQLiteApprovalStore(ApprovalStore):
             ) from e
 
     def _row_to_request(self, row: tuple) -> ApprovalRequest:
-        scope_tags = {}
+        scope = {}
         scope_digest = ""
         manifest_id = None
         idempotency_key = None
         if len(row) >= 21:
-            scope_tags = json.loads(row[17]) if row[17] else {}
+            scope = json.loads(row[17]) if row[17] else {}
             scope_digest = str(row[18] or "")
             manifest_id = row[19]
             idempotency_key = row[20]
@@ -397,7 +397,7 @@ class SQLiteApprovalStore(ApprovalStore):
             decided_by=row[14],
             decided_at=row[15],
             metadata=json.loads(row[16]) if row[16] else {},
-            scope_tags=scope_tags,
+            scope=scope,
             scope_digest=scope_digest,
             manifest_id=manifest_id,
             idempotency_key=idempotency_key,
@@ -415,7 +415,7 @@ class SQLiteApprovalStore(ApprovalStore):
                             required_role, reviewer_credentials, status, rule_id,
                             checkpoint_id, action_payload, prompt, created_at,
                             decision, decision_reason, decided_by, decided_at, metadata,
-                            scope_tags, scope_digest, manifest_id, idempotency_key
+                            scope, scope_digest, manifest_id, idempotency_key
                         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         ON CONFLICT(approval_token) DO UPDATE SET
                             status=excluded.status,
@@ -424,7 +424,7 @@ class SQLiteApprovalStore(ApprovalStore):
                             decided_by=excluded.decided_by,
                             decided_at=excluded.decided_at,
                             metadata=excluded.metadata,
-                            scope_tags=excluded.scope_tags,
+                            scope=excluded.scope,
                             scope_digest=excluded.scope_digest,
                             manifest_id=excluded.manifest_id,
                             idempotency_key=excluded.idempotency_key
@@ -447,7 +447,7 @@ class SQLiteApprovalStore(ApprovalStore):
                             request.decided_by,
                             request.decided_at,
                             json.dumps(request.metadata),
-                            json.dumps(request.scope_tags),
+                            json.dumps(request.scope),
                             request.scope_digest,
                             request.manifest_id,
                             request.idempotency_key,
@@ -458,6 +458,7 @@ class SQLiteApprovalStore(ApprovalStore):
                 raise ApprovalStorageDegradedError(
                     f"SQLite database error writing approval request: {exc}"
                 ) from exc
+
         return request
 
     def get_request(
@@ -474,7 +475,7 @@ class SQLiteApprovalStore(ApprovalStore):
                         "required_role, reviewer_credentials, status, rule_id, "
                         "checkpoint_id, action_payload, prompt, created_at, decision, "
                         "decision_reason, decided_by, decided_at, metadata, "
-                        "scope_tags, scope_digest, manifest_id, idempotency_key "
+                        "scope, scope_digest, manifest_id, idempotency_key "
                         "FROM approval_requests WHERE approval_token = ?",
                         (approval_token,),
                     )
@@ -502,7 +503,7 @@ class SQLiteApprovalStore(ApprovalStore):
                         "required_role, reviewer_credentials, status, rule_id, "
                         "checkpoint_id, action_payload, prompt, created_at, decision, "
                         "decision_reason, decided_by, decided_at, metadata, "
-                        "scope_tags, scope_digest, manifest_id, idempotency_key "
+                        "scope, scope_digest, manifest_id, idempotency_key "
                         "FROM approval_requests WHERE run_id = ? "
                         "ORDER BY created_at DESC",
                         (run_id,),
@@ -548,7 +549,7 @@ class SQLiteApprovalStore(ApprovalStore):
                         "required_role, reviewer_credentials, status, rule_id, "
                         "checkpoint_id, action_payload, prompt, created_at, decision, "
                         "decision_reason, decided_by, decided_at, metadata, "
-                        "scope_tags, scope_digest, manifest_id, idempotency_key "
+                        "scope, scope_digest, manifest_id, idempotency_key "
                         "FROM approval_requests WHERE approval_token = ?",
                         (approval_token,),
                     )
@@ -611,7 +612,7 @@ class SQLiteApprovalStore(ApprovalStore):
                         "required_role, reviewer_credentials, status, rule_id, "
                         "checkpoint_id, action_payload, prompt, created_at, decision, "
                         "decision_reason, decided_by, decided_at, metadata, "
-                        "scope_tags, scope_digest, manifest_id, idempotency_key "
+                        "scope, scope_digest, manifest_id, idempotency_key "
                         "FROM approval_requests WHERE status = 'PENDING'"
                     )
                     params: list[Any] = []
@@ -741,7 +742,7 @@ def migrate_unscoped_approval(
             f"Scope digest mismatch in run provenance: {token.digest} vs {verified_scope_digest}."
         )
 
-    req.scope_tags = token.tags
+    req.scope = token.tags
     req.scope_digest = token.digest
     if verified_manifest_id:
         req.manifest_id = verified_manifest_id

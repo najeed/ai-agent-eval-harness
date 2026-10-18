@@ -221,7 +221,9 @@ class DefaultRunner(BaseRunner):
         """Sanity check for required directories and initialize storage / config wiring."""
         Path("scenarios").mkdir(exist_ok=True)
         Path("industries").mkdir(exist_ok=True)
-        Path(".aes").mkdir(exist_ok=True)
+        # Runtime state is project-owned, never process-CWD-owned. Console
+        # launches may originate from the UI directory.
+        (config.PROJECT_ROOT / ".aes").mkdir(exist_ok=True)
 
         from agentv_runtime.discovery import resolve_extension
         from eval_runner.config_resolver import ConfigResolver
@@ -881,13 +883,23 @@ class DefaultRunner(BaseRunner):
                 span_context=ctx.span_context,
             )
 
-            # Only write manifests if they do not already exist (preserves on resume)
-            if not manifest_file.exists():
+            # The evaluator owns the authoritative execution manifest.  A
+            # launcher/preflight may have written a provisional manifest into
+            # the vault, but it can describe a different resolved scenario or
+            # runtime configuration.  On a fresh run it must never survive as
+            # the certification artifact: finalization is signed against this
+            # evaluator-built manifest.  A resume is different—the initial
+            # authoritative manifest is immutable and was reloaded above.
+            if not is_resume:
                 run_vault_dir.mkdir(parents=True, exist_ok=True)
-                with open(manifest_file, "w", encoding="utf-8") as mf:
+                manifest_tmp = manifest_file.with_suffix(".json.tmp")
+                scenario_tmp = scenario_snapshot_file.with_suffix(".json.tmp")
+                with open(manifest_tmp, "w", encoding="utf-8") as mf:
                     json.dump(exec_manifest.to_dict(), mf, indent=2)
-                with open(scenario_snapshot_file, "w", encoding="utf-8") as sf:
+                with open(scenario_tmp, "w", encoding="utf-8") as sf:
                     json.dump(scenario_snapshot, sf, indent=2)
+                manifest_tmp.replace(manifest_file)
+                scenario_tmp.replace(scenario_snapshot_file)
 
             if self.run_store is not None:
                 self.run_store.create_run(

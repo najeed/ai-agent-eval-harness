@@ -259,10 +259,10 @@ export const AdversarialMutator: React.FC = () => {
       const parsedSeed = seed ? parseInt(seed, 10) : undefined;
       const injectionOptions = isPromptInjection
         ? {
-            profile: injectionProfile,
-            placement: injectionPlacement,
-            ...(!injectionTargetsAll ? { target_node_ids: injectionTargetNodeIds } : {}),
-          }
+          profile: injectionProfile,
+          placement: injectionPlacement,
+          ...(!injectionTargetsAll ? { target_node_ids: injectionTargetNodeIds } : {}),
+        }
         : {};
       const res = await fetch('/api/v1/mutate', {
         method: 'POST',
@@ -318,6 +318,9 @@ export const AdversarialMutator: React.FC = () => {
     const mutantCopy = {
       ...mutatedJson,
       metadata: {
+        attribution:
+          mutatedJson.metadata?.attribution ||
+          canonicalBaseScenario?.metadata?.attribution,
         ...(mutatedJson.metadata || {}),
         id: targetId,
         parent_scenario_id: selectedId,
@@ -570,11 +573,10 @@ export const AdversarialMutator: React.FC = () => {
                             key={vec}
                             type="button"
                             onClick={() => setSelectedVector(vec)}
-                            className={`px-2 py-1 rounded text-[10px] font-mono transition-colors ${
-                              selectedVector === vec
+                            className={`px-2 py-1 rounded text-[10px] font-mono transition-colors ${selectedVector === vec
                                 ? 'bg-indigo-600 text-white font-bold'
                                 : 'text-slate-400 hover:text-white hover:bg-slate-900'
-                            }`}
+                              }`}
                           >
                             {vec}
                           </button>
@@ -761,8 +763,11 @@ export const AdversarialMutator: React.FC = () => {
                   <Shield className="w-4 h-4 text-emerald-400" />
                   <span>Scenario State Attribution Diff</span>
                   {mutatedJson && (
-                    <span className="text-[9px] text-slate-500 font-mono flex items-center gap-1 lowercase">
-                      ({selectedId} <ArrowRight className="w-3 h-3" /> {mutatedJson.id || mutatedJson.metadata?.id})
+                    <span className="text-[9px] text-slate-500 font-mono inline-flex items-center gap-1.5 lowercase">
+                      <span>({selectedId}</span>
+                      <ArrowRight className="w-3 h-3 text-indigo-400 shrink-0" />
+                      <span className="sr-only">→</span>
+                      <span>{mutatedJson.id || mutatedJson.metadata?.id})</span>
                     </span>
                   )}
                 </h3>
@@ -776,11 +781,10 @@ export const AdversarialMutator: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setDiffMode('prompt')}
-                        className={`px-2 py-1 rounded text-[10px] font-mono flex items-center gap-1 transition-colors ${
-                          diffMode === 'prompt'
+                        className={`px-2 py-1 rounded text-[10px] font-mono flex items-center gap-1 transition-colors ${diffMode === 'prompt'
                             ? 'bg-indigo-600 text-white font-bold'
                             : 'text-slate-400 hover:text-white'
-                        }`}
+                          }`}
                       >
                         <FileText className="w-3 h-3" />
                         <span>Prompts {isLinguistic && '★'}</span>
@@ -788,11 +792,10 @@ export const AdversarialMutator: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setDiffMode('json')}
-                        className={`px-2 py-1 rounded text-[10px] font-mono flex items-center gap-1 transition-colors ${
-                          diffMode === 'json'
+                        className={`px-2 py-1 rounded text-[10px] font-mono flex items-center gap-1 transition-colors ${diffMode === 'json'
                             ? 'bg-indigo-600 text-white font-bold'
                             : 'text-slate-400 hover:text-white'
-                        }`}
+                          }`}
                       >
                         <Code2 className="w-3 h-3" />
                         <span>Full Spec JSON {!isLinguistic && '★'}</span>
@@ -803,11 +806,10 @@ export const AdversarialMutator: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setSplitView(true)}
-                        className={`px-2 py-1 rounded text-[10px] font-mono transition-colors ${
-                          splitView
+                        className={`px-2 py-1 rounded text-[10px] font-mono transition-colors ${splitView
                             ? 'bg-indigo-600 text-white font-bold'
                             : 'text-slate-400 hover:text-white'
-                        }`}
+                          }`}
                         title="Side-by-side 50/50 split diff view"
                       >
                         <span>Split</span>
@@ -815,11 +817,10 @@ export const AdversarialMutator: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setSplitView(false)}
-                        className={`px-2 py-1 rounded text-[10px] font-mono transition-colors ${
-                          !splitView
+                        className={`px-2 py-1 rounded text-[10px] font-mono transition-colors ${!splitView
                             ? 'bg-indigo-600 text-white font-bold'
                             : 'text-slate-400 hover:text-white'
-                        }`}
+                          }`}
                         title="Single unified inline diff view"
                       >
                         <span>Unified</span>
@@ -830,11 +831,10 @@ export const AdversarialMutator: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setWrapLines(false)}
-                        className={`px-2 py-1 rounded text-[10px] font-mono transition-colors ${
-                          !wrapLines
+                        className={`px-2 py-1 rounded text-[10px] font-mono transition-colors ${!wrapLines
                             ? 'bg-indigo-600 text-white font-bold'
                             : 'text-slate-400 hover:text-white'
-                        }`}
+                          }`}
                         title="Horizontal scroll view (no line wrap)"
                       >
                         <span>Scroll</span>
@@ -842,11 +842,10 @@ export const AdversarialMutator: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setWrapLines(true)}
-                        className={`px-2 py-1 rounded text-[10px] font-mono transition-colors ${
-                          wrapLines
+                        className={`px-2 py-1 rounded text-[10px] font-mono transition-colors ${wrapLines
                             ? 'bg-indigo-600 text-white font-bold'
                             : 'text-slate-400 hover:text-white'
-                        }`}
+                          }`}
                         title="Wrap text lines within column"
                       >
                         <span>Wrap</span>
@@ -898,26 +897,24 @@ export const AdversarialMutator: React.FC = () => {
               <div className="flex-1 flex flex-col gap-3 min-h-[600px] h-[calc(100vh-270px)]">
                 {lintReport && (
                   <div
-                    className={`p-3 rounded-lg border flex flex-col gap-2 shrink-0 ${
-                      lintReport.status === 'pass'
+                    className={`p-3 rounded-lg border flex flex-col gap-2 shrink-0 ${lintReport.status === 'pass'
                         ? 'bg-emerald-950/20 border-emerald-500/30'
                         : lintReport.status === 'warning'
-                        ? 'bg-amber-950/20 border-amber-500/30'
-                        : 'bg-rose-950/20 border-rose-500/30'
-                    }`}
+                          ? 'bg-amber-950/20 border-amber-500/30'
+                          : 'bg-rose-950/20 border-rose-500/30'
+                      }`}
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wider font-mono uppercase ${
-                            lintReport.tier === 'GOLD'
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wider font-mono uppercase ${lintReport.tier === 'GOLD'
                               ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
                               : lintReport.tier === 'SILVER'
-                              ? 'bg-slate-300/20 text-slate-200 border border-slate-400/40'
-                              : lintReport.tier === 'BRONZE'
-                              ? 'bg-orange-800/20 text-orange-400 border border-orange-700/40'
-                              : 'bg-rose-950/40 text-rose-400 border border-rose-800/40'
-                          }`}
+                                ? 'bg-slate-300/20 text-slate-200 border border-slate-400/40'
+                                : lintReport.tier === 'BRONZE'
+                                  ? 'bg-orange-800/20 text-orange-400 border border-orange-700/40'
+                                  : 'bg-rose-950/40 text-rose-400 border border-rose-800/40'
+                            }`}
                         >
                           {lintReport.tier} TIER
                         </span>
@@ -925,19 +922,18 @@ export const AdversarialMutator: React.FC = () => {
                           Lint Score: <span className="font-mono">{lintReport.score}</span>/100
                         </span>
                         <span
-                          className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
-                            lintReport.status === 'pass'
+                          className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${lintReport.status === 'pass'
                               ? 'text-emerald-400 bg-emerald-500/10'
                               : lintReport.status === 'warning'
-                              ? 'text-amber-400 bg-amber-500/10'
-                              : 'text-rose-400 bg-rose-500/10'
-                          }`}
+                                ? 'text-amber-400 bg-amber-500/10'
+                                : 'text-rose-400 bg-rose-500/10'
+                            }`}
                         >
                           {lintReport.status === 'pass'
                             ? '100% AES 1.4 Validated'
                             : lintReport.status === 'warning'
-                            ? 'AES 1.4 Adherent (Advisory Warnings)'
-                            : 'AES Schema / Spec Validation Errors'}
+                              ? 'AES 1.4 Adherent (Advisory Warnings)'
+                              : 'AES Schema / Spec Validation Errors'}
                         </span>
                       </div>
                       <span className="text-[10px] text-slate-500 font-mono">
@@ -971,83 +967,83 @@ export const AdversarialMutator: React.FC = () => {
 
                 <div className="border border-slate-900 rounded-xl bg-slate-950 text-xs leading-relaxed overflow-x-auto overflow-y-auto flex-1">
                   <ReactDiffViewer
-                  oldValue={
-                    diffMode === 'prompt'
-                      ? getScenarioText(canonicalBaseScenario || chosenScenario)
-                      : JSON.stringify(canonicalBaseScenario || chosenScenario, null, 2)
-                  }
-                  newValue={
-                    diffMode === 'prompt'
-                      ? getScenarioText(mutatedJson)
-                      : JSON.stringify(mutatedJson, null, 2)
-                  }
-                  splitView={splitView}
-                  leftTitle="Baseline Scenario (Original Specification)"
-                  rightTitle={`Mutated Scenario (+ Perturbations: ${selectedDescriptor?.label || mutationType})`}
-                  useDarkTheme={true}
-                  summary={
-                    <span
-                      title="Expand/Fold unchanged blocks. The number indicates total changed lines; colored blocks show additions (green) vs deletions (red) ratio."
-                      className="text-[10px] text-slate-400 font-sans cursor-help flex items-center gap-1.5 ml-2"
-                    >
-                      <span className="text-slate-600 font-mono">|</span>
-                      <span>Fold/Expand toggle &amp; line diff metrics (green=added, red=deleted)</span>
-                    </span>
-                  }
-                  styles={{
-                    variables: {
-                      dark: {
-                        diffViewerBackground: '#020617',
-                        diffViewerColor: '#cbd5e1',
-                        addedBackground: '#064e3b',
-                        addedColor: '#34d399',
-                        removedBackground: '#7f1d1d',
-                        removedColor: '#f87171',
-                        wordAddedBackground: '#047857',
-                        wordRemovedBackground: '#991b1b',
-                        diffViewerTitleBackground: '#0b1329',
-                        diffViewerTitleColor: '#cbd5e1',
-                        diffViewerTitleBorderColor: '#1e293b',
+                    oldValue={
+                      diffMode === 'prompt'
+                        ? getScenarioText(canonicalBaseScenario || chosenScenario)
+                        : JSON.stringify(canonicalBaseScenario || chosenScenario, null, 2)
+                    }
+                    newValue={
+                      diffMode === 'prompt'
+                        ? getScenarioText(mutatedJson)
+                        : JSON.stringify(mutatedJson, null, 2)
+                    }
+                    splitView={splitView}
+                    leftTitle="Baseline Scenario (Original Specification)"
+                    rightTitle={`Mutated Scenario (+ Perturbations: ${selectedDescriptor?.label || mutationType})`}
+                    useDarkTheme={true}
+                    summary={
+                      <span
+                        title="Expand/Fold unchanged blocks. The number indicates total changed lines; colored blocks show additions (green) vs deletions (red) ratio."
+                        className="text-[10px] text-slate-400 font-sans cursor-help flex items-center gap-1.5 ml-2"
+                      >
+                        <span className="text-slate-600 font-mono">|</span>
+                        <span>Fold/Expand toggle &amp; line diff metrics (green=added, red=deleted)</span>
+                      </span>
+                    }
+                    styles={{
+                      variables: {
+                        dark: {
+                          diffViewerBackground: '#020617',
+                          diffViewerColor: '#cbd5e1',
+                          addedBackground: '#064e3b',
+                          addedColor: '#34d399',
+                          removedBackground: '#7f1d1d',
+                          removedColor: '#f87171',
+                          wordAddedBackground: '#047857',
+                          wordRemovedBackground: '#991b1b',
+                          diffViewerTitleBackground: '#0b1329',
+                          diffViewerTitleColor: '#cbd5e1',
+                          diffViewerTitleBorderColor: '#1e293b',
+                        },
                       },
-                    },
-                    diffContainer: {
-                      tableLayout: 'fixed',
-                      width: '100%',
-                      minWidth: wrapLines ? '100%' : (splitView ? '1200px' : '800px'),
-                      overflowX: 'auto',
-                    },
-                    splitView: {
-                      width: '100%',
-                    },
-                    content: {
-                      width: splitView ? '50%' : '100%',
-                      overflowX: 'visible',
-                    },
-                    titleBlock: {
-                      width: splitView ? '50%' : '100%',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      padding: '6px 12px',
-                      fontSize: '11px',
-                      fontWeight: 600,
-                    },
-                    line: {
-                      fontSize: '11px',
-                      fontFamily: 'monospace',
-                      lineHeight: '1.4',
-                      whiteSpace: wrapLines ? 'pre-wrap' : 'pre',
-                      wordBreak: wrapLines ? 'break-all' : 'normal',
-                    },
-                    contentText: {
-                      whiteSpace: wrapLines ? 'pre-wrap' : 'pre',
-                      wordBreak: wrapLines ? 'break-all' : 'normal',
-                    },
-                  }}
-                />
+                      diffContainer: {
+                        tableLayout: 'fixed',
+                        width: '100%',
+                        minWidth: wrapLines ? '100%' : (splitView ? '1200px' : '800px'),
+                        overflowX: 'auto',
+                      },
+                      splitView: {
+                        width: '100%',
+                      },
+                      content: {
+                        width: splitView ? '50%' : '100%',
+                        overflowX: 'visible',
+                      },
+                      titleBlock: {
+                        width: splitView ? '50%' : '100%',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        padding: '6px 12px',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                      },
+                      line: {
+                        fontSize: '11px',
+                        fontFamily: 'monospace',
+                        lineHeight: '1.4',
+                        whiteSpace: wrapLines ? 'pre-wrap' : 'pre',
+                        wordBreak: wrapLines ? 'break-all' : 'normal',
+                      },
+                      contentText: {
+                        whiteSpace: wrapLines ? 'pre-wrap' : 'pre',
+                        wordBreak: wrapLines ? 'break-all' : 'normal',
+                      },
+                    }}
+                  />
+                </div>
               </div>
-            </div>
-          )}
+            )}
           </div>
 
           {mutatedJson && (

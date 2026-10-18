@@ -1480,3 +1480,56 @@ def test_runs_active_runner_fallback(runs_client):
         assert res.get_json()["status"] == "RUNNING"
     finally:
         reset_extensions("execution_backends")
+
+
+def test_get_run_status_returns_authoritative_score_diagnostics(runs_client, runs_jail):
+    """Verify /api/v1/runs/<run_id> returns score_reason, score_category,
+    failure_reasons, and failed_oracles."""
+    run_id = "run-diag-test-001"
+    run_dir = runs_jail["runs"] / run_id
+    run_dir.mkdir(parents=True)
+    trace_file = run_dir / "run.jsonl"
+    trace_file.write_text(
+        json.dumps({"event": "run_start", "run_id": run_id, "timestamp": "2026-10-19T00:00:00Z"})
+        + "\n"
+        + json.dumps(
+            {"event": "run_end", "run_id": run_id, "data": {"status": "FAILED", "score": 0.0}}
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    manifest_file = run_dir / "run_manifest.json"
+    manifest_file.write_text(
+        json.dumps(
+            {
+                "run_id": run_id,
+                "score": 0.0,
+                "verification_package": {
+                    "executed_oracle_results": [
+                        {
+                            "oracle_id": "clinical_evaluator:conservative_therapy_oracle",
+                            "outcome": "FAIL",
+                            "passed": False,
+                            "resolver": "policy_checker",
+                        }
+                    ],
+                    "decision": {"decision": "FAIL", "reason": "Failed clinical policy check"},
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    res = runs_client.get(f"/api/v1/runs/{run_id}")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["run_id"] == run_id
+    assert data["score"] == 0.0
+    assert data["score_category"] == "ORACLE_DEFECT"
+    assert "conservative_therapy_oracle" in data["score_reason"]
+    assert len(data["failed_oracles"]) == 1
+    assert (
+        data["failed_oracles"][0]["oracle_id"] == "clinical_evaluator:conservative_therapy_oracle"
+    )
+    assert data["failed_oracles"][0]["outcome"] == "FAIL"
+    assert any("conservative_therapy_oracle" in r for r in data["failure_reasons"])

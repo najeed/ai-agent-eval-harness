@@ -2020,6 +2020,16 @@ class MutationService(MutationEngine):
                         meta["id"] = f"{curr_meta_id}{suffix}"
                 elif isinstance(orig_meta_id, str):
                     meta["id"] = f"{orig_meta_id}{suffix}"
+
+                # Ensure attribution compliance under AES 1.4
+                if "attribution" not in meta:
+                    orig_attr = (
+                        orig_meta.get("attribution") if isinstance(orig_meta, dict) else None
+                    )
+                    if orig_attr:
+                        meta["attribution"] = f"{orig_attr} (Mutated: {mut_type})"
+                    else:
+                        meta["attribution"] = f"AgentV Adversarial Mutator ({mut_type})"
             # Strict AES 1.4 additionalProperties schema guard:
             # Do not retain root 'id' or 'name' if not present in the original scenario
             if isinstance(safe_scenario, dict):

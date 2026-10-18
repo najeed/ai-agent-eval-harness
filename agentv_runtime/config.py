@@ -640,7 +640,10 @@ class ConfigResolver:
         eff_config_dir = config_dir or os.getenv("AGENTV_CONFIG_DIR")
         if eff_config_dir:
             search_dirs.append(Path(eff_config_dir))
-        search_dirs.append(Path(".aes") / "config")
+        # Default configuration is repository/application-root owned, not
+        # relative to whichever directory started the Console process.
+        runtime_root = Path(os.getenv("PROJECT_ROOT") or Path(__file__).resolve().parents[1])
+        search_dirs.append(runtime_root / ".aes" / "config")
 
         for sdir in search_dirs:
             if sdir.exists() and sdir.is_dir():

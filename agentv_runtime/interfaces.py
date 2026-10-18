@@ -640,7 +640,7 @@ class ApprovalRequest:
         decided_by: str | None = None,
         decided_at: float | None = None,
         metadata: dict[str, Any] | None = None,
-        scope_tags: Mapping[str, str] | None = None,
+        scope: Mapping[str, str] | None = None,
         scope_digest: str = "",
         manifest_id: str | None = None,
         idempotency_key: str | None = None,
@@ -678,15 +678,15 @@ class ApprovalRequest:
         self.metadata = dict(metadata or {})
 
         # Scope binding
-        self.scope_tags: dict[str, str] = {
-            str(k): str(v) for k, v in (scope_tags or {}).items() if v is not None
+        self.scope: dict[str, str] = {
+            str(k): str(v) for k, v in (scope or {}).items() if v is not None
         }
         if scope_digest:
             self.scope_digest = str(scope_digest)
-        elif self.scope_tags:
+        elif self.scope:
             from agentv_runtime.scope import ScopeToken
 
-            self.scope_digest = ScopeToken.from_tags(self.scope_tags).digest
+            self.scope_digest = ScopeToken.from_tags(self.scope).digest
         else:
             self.scope_digest = ""
 
@@ -704,7 +704,7 @@ class ApprovalRequest:
     @property
     def is_legacy_unscoped(self) -> bool:
         """Classify approvals without verified scope as UNSCOPED_LEGACY."""
-        return not bool(self.scope_digest and self.scope_tags)
+        return not bool(self.scope_digest and self.scope)
 
     @property
     def scope_status(self) -> str:
@@ -730,7 +730,7 @@ class ApprovalRequest:
             "decided_by": self.decided_by,
             "decided_at": self.decided_at,
             "metadata": self.metadata,
-            "scope_tags": self.scope_tags,
+            "scope": self.scope,
             "scope_digest": self.scope_digest,
             "manifest_id": self.manifest_id,
             "idempotency_key": self.idempotency_key,
@@ -758,7 +758,7 @@ class ApprovalRequest:
             decided_by=data.get("decided_by"),
             decided_at=data.get("decided_at"),
             metadata=data.get("metadata"),
-            scope_tags=data.get("scope_tags"),
+            scope=data.get("scope"),
             scope_digest=str(data.get("scope_digest", "")),
             manifest_id=data.get("manifest_id"),
             idempotency_key=data.get("idempotency_key"),

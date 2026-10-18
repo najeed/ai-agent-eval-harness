@@ -247,7 +247,7 @@ class SessionManager:
         scope_ctx = (
             self.metadata.get("runtime_context")
             or self.metadata.get("context")
-            or self.metadata.get("scope_tags")
+            or self.metadata.get("scope")
         )
         if isinstance(scope_ctx, Mapping):
             from agentv_runtime.scope import ScopeToken
@@ -2693,7 +2693,11 @@ class SessionManager:
                     decision_reason=approval.response,
                 )
                 now_ts = time.time()
-                p_start = durable_req.created_at or pause_start_ts
+                p_start = (
+                    durable_req.created_at.timestamp()
+                    if isinstance(durable_req.created_at, datetime)
+                    else float(durable_req.created_at or pause_start_ts)
+                )
                 wait_dur = round((now_ts - p_start) * 1000, 2) if p_start else None
                 self.event_bus.emit(
                     CoreEvents.HITL_RESUME,
@@ -2718,7 +2722,11 @@ class SessionManager:
                 decision_reason=approval.response,
             )
             now_ts = time.time()
-            p_start = durable_req.created_at or pause_start_ts
+            p_start = (
+                durable_req.created_at.timestamp()
+                if isinstance(durable_req.created_at, datetime)
+                else float(durable_req.created_at or pause_start_ts)
+            )
             wait_dur = round((now_ts - p_start) * 1000, 2) if p_start else None
             self.event_bus.emit(
                 CoreEvents.HITL_RESUME,

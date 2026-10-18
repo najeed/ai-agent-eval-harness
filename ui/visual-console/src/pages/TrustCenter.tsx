@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, ShieldAlert, Award, CheckCircle, XCircle, Search, Key, RefreshCw, AlertCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ShieldCheck, ShieldAlert, Award, CheckCircle, XCircle, Search, Key, RefreshCw, AlertCircle, Clock, ExternalLink, ChevronDown, ChevronRight } from 'lucide-react';
 import { useRBAC } from '../context/RBACContext';
 import { ProvisionalBadge } from '../components/ProvisionalBadge';
 
@@ -40,6 +41,7 @@ export const TrustCenter: React.FC = () => {
 
   // Key State
   const [resolvedKey, setResolvedKey] = useState('');
+  const [showDiagnostics, setShowDiagnostics] = useState(false);
   const certificationPending = Boolean(runDetails && !runDetails.has_certificate);
 
   const inspectTargetRun = async (rid: string) => {
@@ -394,6 +396,70 @@ export const TrustCenter: React.FC = () => {
                         </span>
                       </div>
                     </div>
+
+                    {/* Authoritative Score Diagnostics & Provenance */}
+                    {runDetails.score !== undefined && (runDetails.score < 1.0 || runDetails.score_reason || runDetails.status === 'PAUSED_FOR_APPROVAL') && (
+                      <div className={`p-2.5 rounded-lg border text-[11px] space-y-1.5 transition-all ${
+                        runDetails.score_category === 'GOVERNANCE_PAUSE' || runDetails.status === 'PAUSED_FOR_APPROVAL'
+                          ? 'bg-amber-950/20 border-amber-800/50 text-amber-300'
+                          : runDetails.score_category === 'ORACLE_DEFECT' || runDetails.score === 0
+                          ? 'bg-rose-950/20 border-rose-800/50 text-rose-300'
+                          : 'bg-slate-900/60 border-slate-800 text-slate-300'
+                      }`}>
+                        <div className="flex items-center justify-between font-semibold">
+                          <span className="flex items-center gap-1.5">
+                            {runDetails.score_category === 'GOVERNANCE_PAUSE' || runDetails.status === 'PAUSED_FOR_APPROVAL' ? (
+                              <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                            ) : (
+                              <ShieldAlert className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                            )}
+                            <span className="uppercase tracking-wider text-[10px]">
+                              {runDetails.score_category || (runDetails.status === 'PAUSED_FOR_APPROVAL' ? 'GOVERNANCE_PAUSE' : 'SCORE_DIAGNOSTIC')}
+                            </span>
+                          </span>
+                          {runDetails.status === 'PAUSED_FOR_APPROVAL' && (
+                            <Link
+                              to={`/triage?run_id=${encodeURIComponent(runDetails.run_id)}`}
+                              className="text-[10px] text-indigo-400 hover:text-indigo-300 underline font-medium flex items-center gap-1"
+                            >
+                              <span>Resolve in Triage</span>
+                              <ExternalLink className="w-2.5 h-2.5" />
+                            </Link>
+                          )}
+                        </div>
+
+                        <p className="leading-relaxed font-mono text-[11px] text-slate-200">
+                          {runDetails.score_reason || (runDetails.status === 'PAUSED_FOR_APPROVAL'
+                            ? 'Run paused for human approval (HITL); awaiting decision before evaluation can finalize.'
+                            : `Evaluation criteria not met (authoritative score: ${runDetails.score}).`)}
+                        </p>
+
+                        {/* Failed Oracles Breakdown */}
+                        {Array.isArray(runDetails.failed_oracles) && runDetails.failed_oracles.length > 0 && (
+                          <div className="pt-1.5 space-y-1.5 border-t border-slate-800/80">
+                            <button
+                              type="button"
+                              onClick={() => setShowDiagnostics(!showDiagnostics)}
+                              className="flex items-center justify-between w-full text-[10px] text-slate-400 hover:text-slate-200 uppercase font-semibold transition-colors"
+                            >
+                              <span>Failed Validation Oracles ({runDetails.failed_oracles.length})</span>
+                              {showDiagnostics ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+                            </button>
+                            {showDiagnostics && (
+                              <div className="space-y-1 pt-0.5">
+                                {runDetails.failed_oracles.map((oracle: any, idx: number) => (
+                                  <div key={idx} className="flex items-center justify-between bg-slate-950/80 px-2 py-1 rounded text-[10px] font-mono border border-slate-800">
+                                    <span className="text-slate-300 truncate max-w-[190px]" title={oracle.oracle_id}>{oracle.oracle_id}</span>
+                                    <span className="text-rose-400 font-bold uppercase">{oracle.outcome || 'FAIL'}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     <div className="flex items-center justify-between pt-1 text-[11px]">
                       <span className="text-slate-400">Execution Mode:</span>
                       <div className="flex items-center gap-2">

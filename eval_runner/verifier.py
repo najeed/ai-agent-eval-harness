@@ -1419,21 +1419,22 @@ class TraceVerifier:
                 # evaluation_hash, verification_hash, certificate_hash
                 import hashlib
 
-                eval_hash = ""
-                for ev in reversed(events_list + terminal_events):
-                    if ev.get("event") == "evaluator_finalization":
-                        eval_hash = str(
-                            ev.get("finalization_hash")
-                            or (ev.get("data", {}) or {}).get("finalization_hash")
-                            or ""
-                        )
-                        if eval_hash:
-                            break
-                    elif ev.get("event") in ("evaluation_result", "run_end"):
-                        d = ev.get("data", {}) or {}
-                        eval_hash = str(d.get("content_hash") or ev.get("content_hash") or "")
-                        if eval_hash:
-                            break
+                eval_hash = str(fin_record.finalization_hash) if fin_record else ""
+                if not eval_hash:
+                    for ev in reversed(events_list + terminal_events):
+                        if ev.get("event") == "evaluator_finalization":
+                            eval_hash = str(
+                                ev.get("finalization_hash")
+                                or (ev.get("data", {}) or {}).get("finalization_hash")
+                                or ""
+                            )
+                            if eval_hash:
+                                break
+                        elif ev.get("event") in ("evaluation_result", "run_end"):
+                            d = ev.get("data", {}) or {}
+                            eval_hash = str(d.get("content_hash") or ev.get("content_hash") or "")
+                            if eval_hash:
+                                break
                 if not eval_hash and metadata:
                     eval_hash = str(
                         metadata.get("evaluator_config_hash")

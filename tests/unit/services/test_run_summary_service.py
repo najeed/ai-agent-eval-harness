@@ -559,3 +559,153 @@ def test_run_summary_service_attested_fail_verdict_and_status(tmp_path: Path, mo
         assert summary["status"] == "ATTESTED_FAIL"
         assert summary["status"] != "CERTIFIED"
         assert summary["lifecycle"] == "SEALED"
+
+
+def test_compute_summary_derives_governance_pause_diagnostics(tmp_path, monkeypatch):
+    """Test that PAUSED_FOR_APPROVAL status derives GOVERNANCE_PAUSE diagnostic reason."""
+    run_id = "run-paused-diagnostics"
+    run_dir = tmp_path / run_id
+    run_dir.mkdir(parents=True)
+    trace_file = run_dir / "run.jsonl"
+    trace_file.write_text(
+        json.dumps({"event": "run_start", "run_id": run_id, "timestamp": "2026-10-19T00:00:00Z"})
+        + "\n",
+        encoding="utf-8",
+    )
+    em_file = run_dir / "execution_manifest.json"
+    em_file.write_text(
+        json.dumps({"status": "PAUSED_FOR_APPROVAL", "run_id": run_id}),
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
+
+    summary = RunSummaryService.compute_summary(run_id)
+    assert summary["score_category"] == "GOVERNANCE_PAUSE"
+    assert "Run paused for human approval (HITL)" in summary["score_reason"]
+    assert any("Run paused for human approval (HITL)" in r for r in summary["failure_reasons"])
+
+
+def test_compute_summary_derives_failed_oracle_diagnostics(tmp_path, monkeypatch):
+    """Test that failed oracle results in package manifest derive ORACLE_DEFECT diagnostics."""
+    run_id = "run-oracle-failure-diagnostics"
+    run_dir = tmp_path / run_id
+    run_dir.mkdir(parents=True)
+    trace_file = run_dir / "run.jsonl"
+    trace_file.write_text(
+        json.dumps({"event": "run_start", "run_id": run_id})
+        + "\n"
+        + json.dumps(
+            {"event": "run_end", "run_id": run_id, "data": {"status": "FAILED", "score": 0.0}}
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    manifest_file = run_dir / "run_manifest.json"
+    manifest_file.write_text(
+        json.dumps(
+            {
+                "run_id": run_id,
+                "score": 0.0,
+                "verification_package": {
+                    "executed_oracle_results": [
+                        {
+                            "oracle_id": "physician_adverse_review:sc:generic_accuracy",
+                            "outcome": "FAIL",
+                            "passed": False,
+                            "resolver": "threshold_evaluator",
+                        }
+                    ],
+                    "decision": {"decision": "FAIL", "reason": "Threshold not met"},
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
+
+    summary = RunSummaryService.compute_summary(run_id)
+    assert summary["score"] == 0.0
+    assert summary["score_category"] == "ORACLE_DEFECT"
+    assert "physician_adverse_review:sc:generic_accuracy" in summary["score_reason"]
+    assert len(summary["failed_oracles"]) == 1
+    assert (
+        summary["failed_oracles"][0]["oracle_id"] == "physician_adverse_review:sc:generic_accuracy"
+    )
+    assert summary["failed_oracles"][0]["outcome"] == "FAIL"
+
+
+def test_compute_summary_derives_policy_breach_root_cause_diagnostics(tmp_path, monkeypatch):
+    """Test that trace root-cause events derive POLICY_BREACH diagnostics."""
+    run_id = "run-policy-breach-diagnostics"
+    run_dir = tmp_path / run_id
+    run_dir.mkdir(parents=True)
+    trace_file = run_dir / "run.jsonl"
+    trace_file.write_text(
+        json.dumps({"event": "run_start", "run_id": run_id})
+        + "\n"
+        + json.dumps(
+            {
+                "event": "guardrail_violation",
+                "is_root_cause": True,
+                "message": "Clinical review breached conservative therapy protocol",
+            }
+        )
+        + "\n"
+        + json.dumps(
+            {"event": "run_end", "run_id": run_id, "data": {"status": "FAILED", "score": 0.0}}
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
+
+    summary = RunSummaryService.compute_summary(run_id)
+    assert summary["score"] == 0.0
+    assert summary["score_category"] == "POLICY_BREACH"
+    assert any("breached conservative therapy protocol" in r for r in summary["failure_reasons"])
+
+
+def test_compute_summary_derives_verified_pass_score_diagnostics(tmp_path, monkeypatch):
+    """Test that passing certified runs derive VERIFIED_PASS diagnostics."""
+    run_id = "run-verified-pass-diagnostics"
+    run_dir = tmp_path / run_id
+    run_dir.mkdir(parents=True)
+    trace_file = run_dir / "run.jsonl"
+    trace_file.write_text(
+        json.dumps({"event": "run_start", "run_id": run_id})
+        + "\n"
+        + json.dumps(
+            {"event": "run_end", "run_id": run_id, "data": {"status": "COMPLETED", "score": 1.0}}
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    (run_dir / ".sealed").touch()
+    cert_file = tmp_path / f"{run_id}_vc.json"
+    cert_file.write_text(
+        json.dumps(
+            {
+                "score": 1.0,
+                "execution_mode": "live",
+                "provisional": False,
+                "compliance": {"status": "PASS", "score": 1.0},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
+
+    with (
+        patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True),
+        patch("eval_runner.verifier.locate_certificate_file", return_value=cert_file),
+    ):
+        summary = RunSummaryService.compute_summary(run_id)
+        assert summary["score"] == 1.0
+        assert summary["score_category"] == "VERIFIED_PASS"
+        assert (
+            "all governance policies and evaluation criteria satisfied" in summary["score_reason"]
+        )

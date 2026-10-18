@@ -159,12 +159,7 @@ class SessionApprovalManager:
         elif self.scope is not None:
             candidate_scope = self.scope
         else:
-            raw_ctx = (
-                meta.get("runtime_context")
-                or meta.get("context")
-                or meta.get("scope")
-                or meta.get("scope_tags")
-            )
+            raw_ctx = meta.get("runtime_context") or meta.get("context") or meta.get("scope")
             if not raw_ctx:
                 from eval_runner.run_index import read_run_index
 
@@ -221,7 +216,7 @@ class SessionApprovalManager:
         else:
             verified_token = ScopeToken(tags={}, digest="", is_system=False)
 
-        scope_tags = dict(verified_token.tags)
+        scope = dict(verified_token.tags)
         scope_digest = verified_token.digest
 
         if not outbound_payload_hash and action_payload:
@@ -244,7 +239,7 @@ class SessionApprovalManager:
                 "action_payload": action_payload or {},
                 "metadata": meta,
                 "durable": True,
-                "scope_tags": scope_tags,
+                "scope": scope,
                 "scope_digest": scope_digest,
                 "idempotency_key": idempotency_key,
             }
@@ -281,8 +276,7 @@ class SessionApprovalManager:
                         "Scope digest mismatch between execution "
                         f"manifest ({em_digest}) and approval ({scope_digest})."
                     )
-                em_data["scope"] = scope_tags
-                em_data["scope_tags"] = scope_tags
+                em_data["scope"] = scope
                 em_data["scope_digest"] = scope_digest
                 if resolved_manifest_id and not em_data.get("manifest_id"):
                     em_data["manifest_id"] = resolved_manifest_id
@@ -302,8 +296,7 @@ class SessionApprovalManager:
                     "manifest_id": resolved_manifest_id,
                     "run_id": self.run_id,
                     "status": "PAUSED_FOR_APPROVAL",
-                    "scope": scope_tags,
-                    "scope_tags": scope_tags,
+                    "scope": scope,
                     "scope_digest": scope_digest,
                     "created_at": created_at.isoformat(),
                 }
@@ -336,7 +329,7 @@ class SessionApprovalManager:
                 except Exception as exc:
                     logger.debug("Failed extracting scenario_id from state_provider: %s", exc)
             try:
-                create_run_index(run_id=self.run_id, context=scope_tags, scenario_id=scenario_id)
+                create_run_index(run_id=self.run_id, context=scope, scenario_id=scenario_id)
                 update_run_index_status(self.run_id, "PAUSED_FOR_APPROVAL")
             except Exception as exc:
                 logger.debug("Failed creating run index for approval pause: %s", exc)
@@ -351,7 +344,7 @@ class SessionApprovalManager:
                 "status": "PAUSED_FOR_APPROVAL",
                 "approval_token": token,
                 "action_payload": action_payload or {},
-                "scope_tags": scope_tags,
+                "scope": scope,
                 "scope_digest": scope_digest,
                 "manifest_id": resolved_manifest_id,
                 "idempotency_key": idempotency_key,
@@ -372,7 +365,7 @@ class SessionApprovalManager:
                     "approval_token": token,
                     "turn": turn_index,
                     "rule_id": rule_id,
-                    "scope_tags": scope_tags,
+                    "scope": scope,
                     "scope_digest": scope_digest,
                     "manifest_id": resolved_manifest_id,
                     "idempotency_key": idempotency_key,
@@ -393,7 +386,7 @@ class SessionApprovalManager:
             action_payload=action_payload or {},
             prompt=prompt or f"Approval required for run '{self.run_id}' turn {turn_index}",
             metadata=meta,
-            scope_tags=scope_tags,
+            scope=scope,
             scope_digest=scope_digest,
             manifest_id=resolved_manifest_id,
             idempotency_key=idempotency_key,
@@ -452,7 +445,7 @@ class SessionApprovalManager:
                         "required_role": pending.required_role,
                         "action_payload": pending.action_payload,
                         "metadata": pending.metadata,
-                        "scope_tags": dict(pending.scope_tags),
+                        "scope": dict(pending.scope),
                         "scope_digest": pending.scope_digest,
                     }
                 )

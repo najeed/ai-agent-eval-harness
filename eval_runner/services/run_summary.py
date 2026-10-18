@@ -317,6 +317,188 @@ class RunSummaryService:
             elif status == "FAILED" or cached_result_status == "FAIL":
                 score = 0.0
 
+        # Derive authoritative score diagnostics & failure reasons
+        score_reason: str | None = None
+        score_category: str | None = None
+        failure_reasons: list[str] = []
+        failed_oracles: list[dict[str, Any]] = []
+
+        # 1. Inspect verification package or manifest sidecar for failed oracles
+        manifest_obj: dict[str, Any] | None = None
+        if has_certificate and certificate_path:
+            try:
+                with open(certificate_path, encoding="utf-8") as f_cert:
+                    manifest_obj = json.load(f_cert)
+            except Exception as e_cert:
+                logger.debug("Could not read certificate for diagnostics: %s", e_cert)
+        if manifest_obj is None and tp and tp.exists():
+            for m_cand in ("run_manifest.json", "verification_package.json"):
+                cand_path = tp.parent / m_cand
+                if cand_path.exists():
+                    try:
+                        with open(cand_path, encoding="utf-8") as f_m:
+                            manifest_obj = json.load(f_m)
+                            break
+                    except Exception as e_m:
+                        logger.debug("Could not read %s for diagnostics: %s", m_cand, e_m)
+
+        if manifest_obj:
+            pkg_dict = manifest_obj.get("verification_package") or manifest_obj
+            for o in pkg_dict.get("executed_oracle_results") or []:
+                outcome_str = str(
+                    o.get("outcome") or ("PASS" if o.get("passed") else "FAIL")
+                ).upper()
+                is_pass = bool(o.get("passed")) or outcome_str in ("PASS", "PASSED")
+                if not is_pass:
+                    oid = str(o.get("oracle_id") or "unnamed_oracle")
+                    res = str(o.get("resolver") or "oracle")
+                    failed_oracles.append(
+                        {
+                            "oracle_id": oid,
+                            "outcome": outcome_str,
+                            "resolver": res,
+                            "source_ref": o.get("source_ref"),
+                        }
+                    )
+                    failure_reasons.append(
+                        f"Oracle '{oid}' failed ({outcome_str}) via resolver '{res}'."
+                    )
+
+            decision = pkg_dict.get("decision") or {}
+            if decision.get("reason"):
+                d_reason = str(decision["reason"]).strip()
+                if d_reason and d_reason not in failure_reasons:
+                    failure_reasons.append(d_reason)
+
+            compliance = manifest_obj.get("compliance") or {}
+            if compliance.get("reason"):
+                c_reason = str(compliance["reason"]).strip()
+                if c_reason and c_reason not in failure_reasons:
+                    failure_reasons.append(c_reason)
+
+        # 2. Inspect active lifecycle and execution manifest for governance pause
+        from eval_runner.run_index import read_run_index
+
+        idx_rec = read_run_index(run_id)
+        is_paused = False
+        if idx_rec and idx_rec.get("status") == "PAUSED_FOR_APPROVAL":
+            is_paused = True
+        elif manifest_obj and manifest_obj.get("status") == "PAUSED_FOR_APPROVAL":
+            is_paused = True
+        elif status == "PAUSED_FOR_APPROVAL":
+            is_paused = True
+        elif tp and tp.exists():
+            em_file = tp.parent / "execution_manifest.json"
+            if em_file.exists():
+                try:
+                    em_data = json.loads(em_file.read_text(encoding="utf-8"))
+                    if em_data.get("status") == "PAUSED_FOR_APPROVAL":
+                        is_paused = True
+                except Exception as e_em:
+                    logger.debug("Could not read execution_manifest.json for pause check: %s", e_em)
+
+        # 3. Scan physical trace for root-cause events and evaluator finalization metadata
+        if tp and tp.exists():
+            try:
+                with open(tp, encoding="utf-8") as tf:
+                    for line in tf:
+                        trimmed = line.strip()
+                        if not trimmed or "{" not in trimmed:
+                            continue
+                        ev = json.loads(trimmed[trimmed.find("{") :])
+                        ev_name = ev.get("event")
+                        data = ev.get("data") if isinstance(ev.get("data"), dict) else {}
+
+                        if ev.get("is_root_cause") is True or data.get("is_root_cause") is True:
+                            rc_msg = (
+                                ev.get("message")
+                                or data.get("message")
+                                or ev.get("error")
+                                or data.get("error")
+                                or ev.get("reason")
+                                or data.get("reason")
+                            )
+                            if rc_msg:
+                                rc_str = f"Root cause: {rc_msg}"
+                                if rc_str not in failure_reasons:
+                                    failure_reasons.append(rc_str)
+                                if not score_category:
+                                    score_category = "POLICY_BREACH"
+
+                        if ev_name == "evaluator_finalization":
+                            fin_data = ev.get("data") or ev
+                            fin_meta = fin_data.get("metadata") or {}
+                            if isinstance(fin_meta, dict):
+                                for r in fin_meta.get("failure_reasons", []):
+                                    if r and str(r) not in failure_reasons:
+                                        failure_reasons.append(str(r))
+                                if (
+                                    fin_meta.get("reason")
+                                    and str(fin_meta["reason"]) not in failure_reasons
+                                ):
+                                    failure_reasons.append(str(fin_meta["reason"]))
+
+                        if ev_name in ("evaluation_result", "session_decision", "run_end"):
+                            err_msg = (
+                                data.get("error")
+                                or data.get("reason")
+                                or ev.get("error")
+                                or ev.get("reason")
+                            )
+                            if err_msg and str(err_msg).strip().lower() not in (
+                                "fail",
+                                "failed",
+                                "pass",
+                                "passed",
+                            ):
+                                err_str = str(err_msg).strip()
+                                if err_str not in failure_reasons:
+                                    failure_reasons.append(err_str)
+            except Exception as scan_err:
+                logger.debug("Failed scanning trace for failure diagnostics: %s", scan_err)
+
+        # 4. Synthesize authoritative score reason and category
+        effective_score = float(score) if score is not None else 0.0
+        if effective_score >= 1.0 and status in ("CERTIFIED", "PASSED", "SEALED"):
+            score_category = "VERIFIED_PASS"
+            score_reason = (
+                "Authoritative score 1.0: all governance policies and "
+                "evaluation criteria satisfied."
+            )
+        elif is_paused:
+            score_category = "GOVERNANCE_PAUSE"
+            score_reason = (
+                "Run paused for human approval (HITL); awaiting decision "
+                "before evaluation can finalize."
+            )
+            if score_reason not in failure_reasons:
+                failure_reasons.insert(0, score_reason)
+        elif status in ("RUNNING", "OPEN") and not (tp and (tp.parent / ".sealed").exists()):
+            score_category = "IN_PROGRESS"
+            score_reason = "Run execution in progress; evaluation finalization pending."
+        elif status == "STALLED":
+            score_category = "STALLED"
+            score_reason = (
+                "Execution halted unexpectedly before evaluation finalization record was emitted."
+            )
+            if score_reason not in failure_reasons:
+                failure_reasons.insert(0, score_reason)
+        elif failed_oracles:
+            score_category = score_category or "ORACLE_DEFECT"
+            primary_oracle = failed_oracles[0]["oracle_id"]
+            score_reason = score_reason or (
+                f"Authoritative score {score or 0}: Oracle '{primary_oracle}' "
+                "failed validation criteria."
+            )
+        elif failure_reasons:
+            score_category = score_category or "EVALUATION_FAILED"
+            score_reason = score_reason or f"Authoritative score {score or 0}: {failure_reasons[0]}"
+        elif effective_score < 1.0:
+            score_category = score_category or "EVALUATION_FAILED"
+            score_reason = score_reason or (
+                f"Authoritative score {score or 0}: Evaluation criteria not met (status: {status})."
+            )
+
         # If duration_seconds is still None and trace exists, derive from timestamps
         if duration_seconds is None and tp and tp.exists():
             try:
@@ -368,6 +550,10 @@ class RunSummaryService:
             "result_status": cached_result_status,
             "duration_seconds": duration_seconds,
             "score": score,
+            "score_reason": score_reason,
+            "score_category": score_category,
+            "failure_reasons": failure_reasons,
+            "failed_oracles": failed_oracles,
             "execution_mode": exec_mode,
             "provisional": provisional,
             "trace_integrity": trace_integrity,

@@ -167,6 +167,7 @@ class ExecutionManifest:
     def __post_init__(self):
         if not self.parent_artifact_refs and self.scenario_hash:
             object.__setattr__(self, "parent_artifact_refs", [self.scenario_hash])
+
         if not self.scope_digest and self.scope:
             from agentv_runtime.scope import ScopeToken
 
@@ -199,7 +200,12 @@ class ExecutionManifest:
     @classmethod
     def from_dict(cls, data: Mapping[str, Any]) -> ExecutionManifest:
         """Constructs an immutable ExecutionManifest from a closed mapping."""
-        allowed = {f.name for f in fields(cls)} | {"content_hash", "timestamp"}
+        allowed = {f.name for f in fields(cls)} | {
+            "content_hash",
+            "timestamp",
+            "status",
+            "run_id",
+        }
         unknown = set(data) - allowed
         if unknown:
             raise ValueError(f"ExecutionManifestUnknownFields: {sorted(unknown)}")

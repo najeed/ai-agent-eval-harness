@@ -527,6 +527,41 @@ class CertificationService:
         return "inconclusive", 0.0
 
     @classmethod
+    def issue_certification(
+        cls,
+        run_id: str,
+        identity_id: str = "system_id",
+        status: str | None = None,
+        score: float | None = None,
+        policy_ref: str | None = None,
+        ttl: int | None = None,
+        behavioral_fingerprint_id: str | None = None,
+        scenario_data: Mapping[str, Any] | None = None,
+        trace_path: str | Path | None = None,
+        artifact_store: Any | None = None,
+        signing_backend: Any | None = None,
+        run_store: Any | None = None,
+    ) -> dict[str, Any]:
+        """
+        Issue an authoritative industrial cryptographic certification for an evaluated run.
+        Direct alias for execute_industrial_certification satisfying the core domain contract.
+        """
+        return cls.execute_industrial_certification(
+            run_id=run_id,
+            identity_id=identity_id,
+            status=status,
+            score=score,
+            policy_ref=policy_ref,
+            ttl=ttl,
+            behavioral_fingerprint_id=behavioral_fingerprint_id,
+            scenario_data=scenario_data,
+            trace_path=trace_path,
+            artifact_store=artifact_store,
+            signing_backend=signing_backend,
+            run_store=run_store,
+        )
+
+    @classmethod
     def execute_industrial_certification(
         cls,
         run_id: str,
@@ -1038,6 +1073,37 @@ def execute_industrial_certification(
 ) -> dict[str, Any]:
     """Top-level convenience function delegating to CertificationService."""
     return CertificationService.execute_industrial_certification(
+        run_id=run_id,
+        identity_id=identity_id,
+        status=status,
+        score=score,
+        policy_ref=policy_ref,
+        ttl=ttl,
+        behavioral_fingerprint_id=behavioral_fingerprint_id,
+        scenario_data=scenario_data,
+        trace_path=trace_path,
+        artifact_store=artifact_store,
+        signing_backend=signing_backend,
+        run_store=run_store,
+    )
+
+
+def issue_certification(
+    run_id: str,
+    identity_id: str = "system_id",
+    status: str | None = None,
+    score: float | None = None,
+    policy_ref: str | None = None,
+    ttl: int | None = None,
+    behavioral_fingerprint_id: str | None = None,
+    scenario_data: Mapping[str, Any] | None = None,
+    trace_path: str | Path | None = None,
+    artifact_store: Any | None = None,
+    signing_backend: Any | None = None,
+    run_store: Any | None = None,
+) -> dict[str, Any]:
+    """Top-level convenience function issuing authoritative cryptographic certification."""
+    return CertificationService.issue_certification(
         run_id=run_id,
         identity_id=identity_id,
         status=status,

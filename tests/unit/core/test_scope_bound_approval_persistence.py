@@ -105,13 +105,13 @@ def test_four_way_scope_digest_binding(tmp_path: Path, monkeypatch: pytest.Monke
     monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "runs")
     (tmp_path / "runs").mkdir(parents=True, exist_ok=True)
 
-    scope_tags = {
+    scope_data = {
         "org_id": "org_acme",
         "tenant_id": "tenant_prod",
         "workspace_id": "ws_fin",
         "active_environment": "production",
     }
-    token = ScopeToken.from_tags(scope_tags)
+    token = ScopeToken.from_tags(scope_data)
     run_id = "run_four_way_01"
 
     store = FileApprovalStore(base_dir=tmp_path / "approvals")
@@ -132,7 +132,7 @@ def test_four_way_scope_digest_binding(tmp_path: Path, monkeypatch: pytest.Monke
 
     # 1. Approval record
     assert persisted.scope_digest == token.digest
-    assert persisted.scope_tags == scope_tags
+    assert persisted.scope == scope_data
     assert persisted.scope_status == "SCOPED"
     assert persisted.is_legacy_unscoped is False
     assert persisted.manifest_id is not None
@@ -143,21 +143,25 @@ def test_four_way_scope_digest_binding(tmp_path: Path, monkeypatch: pytest.Monke
     assert len(chk_mgr.checkpoints) == 1
     chk_data = list(chk_mgr.checkpoints.values())[0]
     assert chk_data["metadata"]["scope_digest"] == token.digest
-    assert chk_data["metadata"]["scope_tags"] == scope_tags
+    assert chk_data["metadata"]["scope"] == scope_data
     assert chk_data["state"]["scope_digest"] == token.digest
 
     # 3. Run Index
     idx_rec = read_run_index(run_id, root=tmp_path / "runs")
     assert idx_rec is not None
     assert idx_rec["scope_digest"] == token.digest
-    assert idx_rec["context"] == scope_tags
+    assert idx_rec["context"] == scope_data
 
     # 4. Execution Manifest
     manifest_file = tmp_path / "runs" / run_id / "execution_manifest.json"
     assert manifest_file.exists()
     manifest_data = json.loads(manifest_file.read_text(encoding="utf-8"))
     assert manifest_data["scope_digest"] == token.digest
-    assert manifest_data["scope_tags"] == scope_tags
+    assert manifest_data["scope"] == scope_data
+    from agentv_runtime.manifest import ExecutionManifest
+
+    manifest_obj = ExecutionManifest.from_dict(manifest_data)
+    assert manifest_obj.scope == scope_data
 
     # All four match exactly
     assert (
@@ -187,7 +191,7 @@ def test_cross_scope_isolation_read_and_resolve(tmp_path: Path, store_type: str)
         turn_index=1,
         status="PENDING",
         prompt="Transfer authorization",
-        scope_tags=dict(scope_a.tags),
+        scope=dict(scope_a.tags),
         scope_digest=scope_a.digest,
         manifest_id=f"man_{run_id}",
     )
@@ -232,7 +236,7 @@ def test_cross_scope_isolation_read_and_resolve(tmp_path: Path, store_type: str)
 
 @pytest.mark.parametrize("store_type", ["file", "sqlite"])
 def test_atomic_persistence_of_scope_fields(tmp_path: Path, store_type: str):
-    """AC 4: Stores persist scope_tags, scope_digest, manifest_id, idempotency_key atomically."""
+    """AC 4: Stores persist scope, scope_digest, manifest_id, idempotency_key atomically."""
     if store_type == "file":
         store = FileApprovalStore(base_dir=tmp_path / f"approvals_atom_{store_type}")
     else:
@@ -254,7 +258,7 @@ def test_atomic_persistence_of_scope_fields(tmp_path: Path, store_type: str):
         action_payload={"tx_id": "tx_9988"},
         prompt="Sign off financial transaction",
         metadata={"custom_flag": True},
-        scope_tags=dict(scope.tags),
+        scope=dict(scope.tags),
         scope_digest=scope.digest,
         manifest_id="manifest_rev_001",
         idempotency_key="key_idempotent_99",
@@ -269,7 +273,7 @@ def test_atomic_persistence_of_scope_fields(tmp_path: Path, store_type: str):
     assert loaded is not None
     assert loaded.approval_token == req.approval_token
     assert loaded.scope_digest == scope.digest
-    assert loaded.scope_tags == scope.tags
+    assert loaded.scope == scope.tags
     assert loaded.manifest_id == "manifest_rev_001"
     assert loaded.idempotency_key == "key_idempotent_99"
     assert loaded.required_role == "security_officer"
@@ -327,7 +331,7 @@ def test_legacy_unscoped_approvals_hidden_and_migratable(
         turn_index=1,
         status="PENDING",
         prompt="Legacy un-scoped action",
-        scope_tags={},
+        scope={},
         scope_digest="",  # Unscoped
     )
     store.create_request(legacy_req)
@@ -376,7 +380,7 @@ def test_legacy_unscoped_approvals_hidden_and_migratable(
     )
 
     assert migrated.scope_digest == tenant_scope.digest
-    assert migrated.scope_tags == tenant_scope.tags
+    assert migrated.scope == tenant_scope.tags
     assert migrated.scope_status == "SCOPED"
     assert migrated.is_legacy_unscoped is False
     assert "migration" in migrated.metadata

@@ -11,6 +11,7 @@
       "ISO_42001"
     ],
     "description": "Synthetic utilization-management demo: external physician review occurs in the target application; AgentV durably pauses before downstream verification and independently observes the resulting business state.",
+    "attribution": "Clinical AI Governance & Verification Team",
     "complexity": "high",
     "org_id": "tenant-default",
     "correlation_id": "corr-um-adverse-4402",
