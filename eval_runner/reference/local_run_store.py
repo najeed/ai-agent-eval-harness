@@ -509,6 +509,8 @@ class LocalFileRunStore(RunStore):
                 manifest = {**manifest, "scenario_data": scenario}
         return manifest or None
 
+    get_run_manifest = get_manifest
+
     def _resolve_trace_file(self, run_id: str) -> Path | None:
         try:
             vault = self._get_run_vault(run_id)

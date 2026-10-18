@@ -236,6 +236,7 @@ def get_handoff_token():
     from .auth_manager import (
         Permission,
         extract_credentials_from_context,
+        get_active_scope_policy,
         get_auth_provider,
         normalize_entitlements,
     )
@@ -259,6 +260,13 @@ def get_handoff_token():
         user = normalize_entitlements(user)
     except ValueError:
         return jsonify({"error": "Invalid configured principal entitlements"}), 403
+
+    scope_policy = get_active_scope_policy()
+    active_scope = scope_policy.resolve_scope(user)
+    if active_scope is None and scope_policy.is_scope_mandatory():
+        return jsonify(
+            {"error": "Forbidden: An active authorized context is required for extension access."}
+        ), 403
 
     if not provider.has_permission(user, Permission.EXTENSIONS_RUN):
         return jsonify(
@@ -359,7 +367,10 @@ def get_current_user():
     roles = user.get("roles", [])
     if isinstance(roles, str):
         roles = [roles]
-    context = {claim: user.get(claim) for claim in CONTEXT_CLAIMS}
+    if isinstance(user.get("context"), dict):
+        context = dict(user["context"])
+    else:
+        context = {claim: user.get(claim) for claim in CONTEXT_CLAIMS}
     # Infer standard role label from permissions if not explicitly stored
     role = user.get("role")
     if not role:

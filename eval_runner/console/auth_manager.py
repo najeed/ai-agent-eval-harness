@@ -4,6 +4,12 @@ import os
 from abc import ABC, abstractmethod
 from pathlib import Path
 
+from agentv_runtime.scope import (
+    EnterpriseTaggedScopePolicy,
+    LocalOrSingleTenantScopePolicy,
+    ScopePolicy,
+    ScopeToken,
+)
 from eval_runner.interfaces.auth import AuthorizationBackend, AuthPrincipal
 from eval_runner.reference.auth import SimpleAPIKeyAuthBackend
 
@@ -64,24 +70,62 @@ class Permission:
 CONTEXT_VERSION = "2"
 CONTEXT_FIELDS = ("org_id", "tenant_id", "workspace_id", "active_environment")
 
+_active_scope_policy: ScopePolicy | None = None
+
+
+def get_active_scope_policy() -> ScopePolicy:
+    """
+    Return the active scope policy via discovery engine,
+    defaulting to LocalOrSingleTenantScopePolicy.
+    """
+    if _active_scope_policy is not None:
+        return _active_scope_policy
+    if os.environ.get("AGENTV_REQUIRE_ENTERPRISE_CONTEXT") == "1":
+        return EnterpriseTaggedScopePolicy()
+    from agentv_runtime.discovery import resolve_extension
+
+    return resolve_extension(
+        "scope_policies",
+        default_factory=LocalOrSingleTenantScopePolicy,
+    )
+
+
+def set_active_scope_policy(policy: ScopePolicy | None) -> None:
+    """Explicitly override the active scope policy (for tests or enterprise plugins)."""
+    global _active_scope_policy
+    _active_scope_policy = policy
+
 
 def normalize_entitlements(user: dict) -> dict:
     """Return a fail-closed, provider-owned normalized principal.
 
     A principal without any context claims is a valid unscoped service
-    principal.  Once a provider supplies entitlement claims, however, the v2
-    claim is mandatory and every active scope must be an allowlisted tuple.
+    principal. When explicit CP v2 entitlement claims are provided, the v2
+    contract is mandatory. When a generic context dictionary is provided,
+    its key-values are normalized as opaque scope tags.
     """
-    has_entitlements = any(k in user for k in ("context_version", "context", "authorized_contexts"))
+    has_cp_v2_claims = (
+        user.get("context_version") == CONTEXT_VERSION or "authorized_contexts" in user
+    )
     has_legacy_context = any(k in user for k in CONTEXT_FIELDS)
-    if not has_entitlements and not has_legacy_context:
+
+    # 1. Generic principal with opaque context or unscoped
+    if not has_cp_v2_claims and not has_legacy_context:
+        context = user.get("context")
+        if context is not None:
+            if not isinstance(context, dict) or any(
+                not isinstance(k, str) or not isinstance(v, str) or not k or not v
+                for k, v in context.items()
+            ):
+                raise ValueError("invalid active entitlement context")
+            result = dict(user)
+            result["context"] = dict(context)
+            return result
         return dict(user)
 
     version = user.get("context_version")
     context = user.get("context")
     entries = user.get("authorized_contexts")
-    # Flat provider fields are accepted only as a compatibility input and are
-    # normalized before storage; request values never enter this function.
     if context is None and has_legacy_context:
         context = {field: user.get(field) for field in CONTEXT_FIELDS}
     if entries is None and has_legacy_context:
@@ -540,16 +584,44 @@ def require_permission(permission_node: str):
             user = session.get("user")
 
             def bind_verified_scope(principal: dict) -> bool:
-                """Bind only provider/session context for downstream data routes."""
+                """Bind the verified context and scope for Console data routes."""
                 from flask import g
 
-                try:
-                    normalized = normalize_entitlements(principal)
-                except ValueError:
+                policy = get_active_scope_policy()
+                has_enterprise_claims = any(
+                    k in principal for k in ("context_version", "context", "authorized_contexts")
+                ) or any(k in principal for k in CONTEXT_FIELDS)
+
+                if has_enterprise_claims:
+                    try:
+                        normalized = normalize_entitlements(principal)
+                    except ValueError:
+                        return False
+                else:
+                    normalized = dict(principal)
+
+                scope = policy.resolve_scope(normalized)
+                if scope is None and policy.is_scope_mandatory():
                     return False
+
                 g.verified_principal = normalized
-                g.runtime_context = normalized.get("context")
+                g.runtime_scope = scope
+                g.runtime_context = (
+                    scope.tags if scope and scope.tags else normalized.get("context")
+                )
                 return True
+
+            def check_user_permission(principal: dict) -> bool:
+                """Delegate permission checking to active ScopePolicy, deferring to AuthProvider."""
+                from flask import g
+
+                policy = get_active_scope_policy()
+                scope = getattr(g, "runtime_scope", None)
+                if hasattr(policy, "allows_permission"):
+                    decision = policy.allows_permission(principal, permission_node, scope)
+                    if decision is not None:
+                        return decision
+                return provider.has_permission(principal, permission_node)
 
             # NOTE: No implicit localhost trust, even in demo mode.
             # All API access — including local developer setups — requires a valid
@@ -559,8 +631,8 @@ def require_permission(permission_node: str):
             # 1. Check Session (Browser UI)
             if user:
                 if not bind_verified_scope(user):
-                    return jsonify({"error": "Invalid configured principal entitlements"}), 403
-                if provider.has_permission(user, permission_node):
+                    return jsonify({"error": "An active authorized context is required."}), 403
+                if check_user_permission(user):
                     return f(*args, **kwargs)
                 return jsonify(
                     {"error": f"Forbidden: Permission '{permission_node}' required"}
@@ -575,8 +647,8 @@ def require_permission(permission_node: str):
                 user = provider.verify_token(bearer_token)
                 if user:
                     if not bind_verified_scope(user):
-                        return jsonify({"error": "Invalid configured principal entitlements"}), 403
-                    if provider.has_permission(user, permission_node):
+                        return jsonify({"error": "An active authorized context is required."}), 403
+                    if check_user_permission(user):
                         return f(*args, **kwargs)
                     return jsonify(
                         {"error": f"Forbidden: Permission '{permission_node}' required"}
@@ -586,8 +658,8 @@ def require_permission(permission_node: str):
                 user = provider.authenticate(api_key)
                 if user:
                     if not bind_verified_scope(user):
-                        return jsonify({"error": "Invalid configured principal entitlements"}), 403
-                    if provider.has_permission(user, permission_node):
+                        return jsonify({"error": "An active authorized context is required."}), 403
+                    if check_user_permission(user):
                         return f(*args, **kwargs)
                     return jsonify(
                         {"error": f"Forbidden: Permission '{permission_node}' required"}
@@ -628,20 +700,30 @@ def active_runtime_context() -> dict[str, str] | None:
     return dict(context) if isinstance(context, dict) else None
 
 
-def context_allows_record(record: dict, context: dict[str, str] | None) -> bool:
-    """Non-enumerating scope test for a stored Runtime object.
+def active_runtime_scope() -> ScopeToken | None:
+    """Return the request-bound verified ScopeToken, if any."""
+    from flask import g
 
-    Records without scope are available only to unscoped legacy service
-    principals. A scoped principal never receives a record whose declared
-    tuple differs or is absent.
-    """
+    return getattr(g, "runtime_scope", None)
+
+
+def context_allows_record(record: dict, context: dict[str, str] | None) -> bool:
+    """Non-enumerating scope test for a stored Runtime object."""
     if context is None:
         return True
+    if not isinstance(record, dict):
+        return False
+    if record.get("scope_digest") and context:
+        expected_digest = ScopeToken.from_tags(context).digest
+        if record["scope_digest"] == expected_digest:
+            return True
     source = record.get("context") if isinstance(record.get("context"), dict) else record
     metadata = record.get("metadata")
     if isinstance(metadata, dict) and isinstance(metadata.get("runtime_context"), dict):
         source = metadata["runtime_context"]
-    return all(source.get(field) == context[field] for field in CONTEXT_FIELDS if field in context)
+    if not isinstance(source, dict):
+        return False
+    return all(source.get(k) == v for k, v in context.items())
 
 
 def require_sse_permission(permission_node: str):

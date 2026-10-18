@@ -776,6 +776,15 @@ class DefaultRunner(BaseRunner):
             elif not callable(mv):
                 cleaned_manifest_metadata[mk] = mv
 
+        exec_manifest_scope: dict[str, str] = {}
+        exec_manifest_scope_digest: str = ""
+        if isinstance(runtime_context, Mapping):
+            from agentv_runtime.scope import ScopeToken
+
+            scope_tok = ScopeToken.from_tags(runtime_context)
+            exec_manifest_scope = dict(scope_tok.tags)
+            exec_manifest_scope_digest = scope_tok.digest
+
         exec_manifest = ExecutionManifest(
             manifest_id=f"man_{effective_run_id}",
             scenario_id=str(scenario_identifier),
@@ -785,6 +794,8 @@ class DefaultRunner(BaseRunner):
             runtime_config=resolved_runtime_config,
             environment=env_dict,
             metadata=cleaned_manifest_metadata,
+            scope=exec_manifest_scope,
+            scope_digest=exec_manifest_scope_digest,
         )
         exec_manifest_hash = exec_manifest.compute_manifest_hash()
 
@@ -1349,16 +1360,11 @@ class DefaultRunner(BaseRunner):
                             if idx_rec and isinstance(idx_rec.get("context"), Mapping):
                                 runtime_context = idx_rec["context"]
                         if isinstance(runtime_context, Mapping):
-                            failed_manifest["context"] = {
-                                field: runtime_context[field]
-                                for field in (
-                                    "org_id",
-                                    "tenant_id",
-                                    "workspace_id",
-                                    "active_environment",
-                                )
-                                if field in runtime_context
-                            }
+                            from agentv_runtime.scope import ScopeToken
+
+                            token = ScopeToken.from_tags(runtime_context)
+                            failed_manifest["context"] = token.tags
+                            failed_manifest["scope_digest"] = token.digest
                         if observed_revision_record is not None:
                             from eval_runner.services.config_revision import (
                                 bind_revision_to_evidence,
@@ -1437,16 +1443,11 @@ class DefaultRunner(BaseRunner):
                             runtime_context = idx_rec["context"]
 
                     if isinstance(runtime_context, Mapping):
-                        manifest_data["context"] = {
-                            field: runtime_context[field]
-                            for field in (
-                                "org_id",
-                                "tenant_id",
-                                "workspace_id",
-                                "active_environment",
-                            )
-                            if field in runtime_context
-                        }
+                        from agentv_runtime.scope import ScopeToken
+
+                        token = ScopeToken.from_tags(runtime_context)
+                        manifest_data["context"] = token.tags
+                        manifest_data["scope_digest"] = token.digest
                     if observed_revision_record is not None:
                         from eval_runner.services.config_revision import bind_revision_to_evidence
 

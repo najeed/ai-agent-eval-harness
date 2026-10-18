@@ -15,7 +15,9 @@ import logging
 import os
 import sys
 import time
+from collections.abc import Mapping
 from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path  # noqa: E402
 from typing import Any  # noqa: E402
 
@@ -241,6 +243,17 @@ class SessionManager:
         self.checkpoint_manager = SessionCheckpointManager(
             run_id=self.run_id, store=self.checkpoint_store
         )
+        session_scope = None
+        scope_ctx = (
+            self.metadata.get("runtime_context")
+            or self.metadata.get("context")
+            or self.metadata.get("scope_tags")
+        )
+        if isinstance(scope_ctx, Mapping):
+            from agentv_runtime.scope import ScopeToken
+
+            session_scope = ScopeToken.from_tags(scope_ctx)
+
         self.approval_manager = SessionApprovalManager(
             run_id=self.run_id,
             checkpoint_manager=self.checkpoint_manager,
@@ -256,6 +269,7 @@ class SessionManager:
             },
             plugin_manager=self.plugin_manager,
             event_bus=self.event_bus,
+            scope=session_scope,
         )
         self.tool_execution_coordinator = ToolExecutionCoordinator()
         self.metrics_calculator = SessionMetricsCalculator(session_manager=self)
@@ -685,7 +699,7 @@ class SessionManager:
                         self._completed_node_results = {}
                     self._completed_node_results[node_id_local] = result
 
-                # [E4] LIVE/HYBRID reconciliation: independently capture the
+                # LIVE/HYBRID reconciliation: independently capture the
                 # post-node world state and reconcile it against the node's
                 # declared expectations using real observations only.
                 if identity.execution_mode in (ExecutionMode.LIVE, ExecutionMode.HYBRID):
@@ -729,7 +743,7 @@ class SessionManager:
 
             def _on_batch_complete(exec_ids: list[str]) -> None:
                 """
-                [F1] Deterministic post-gather state merge.
+                Deterministic post-gather state merge.
                 Merges branch sandboxes in strict canonical sorted order.
                 """
                 merged_keys: set[str] = set()
@@ -792,7 +806,6 @@ class SessionManager:
                     for item in ctx.history[ctx.initial_history_len :]
                 ]
 
-            # 🧬 Global Evaluation Pass (Industrial AES v1.6.0)
             # Process metrics defined at the scenario level (e.g. DNA_STABLE)
             global_evaluation = self.scenario.get("evaluation", {})
             global_metrics = global_evaluation.get("metrics", [])
@@ -2435,16 +2448,20 @@ class SessionManager:
                     if req_task == task_id or not req_task:
                         resolved_msg = res_req.decision_reason or res_req.decision or "APPROVED"
                         wait_duration_ms = None
-                        if (
-                            res_req.created_at
-                            and res_req.decided_at
-                            and res_req.decided_at >= res_req.created_at
-                        ):
-                            wait_duration_ms = round(
-                                (res_req.decided_at - res_req.created_at) * 1000, 2
-                            )
-                        elif res_req.created_at:
-                            wait_duration_ms = round((time.time() - res_req.created_at) * 1000, 2)
+                        created_ts = (
+                            res_req.created_at.timestamp()
+                            if isinstance(res_req.created_at, datetime)
+                            else float(res_req.created_at or 0.0)
+                        )
+                        decided_ts = (
+                            res_req.decided_at.timestamp()
+                            if isinstance(res_req.decided_at, datetime)
+                            else float(res_req.decided_at or 0.0)
+                        )
+                        if created_ts and decided_ts and decided_ts >= created_ts:
+                            wait_duration_ms = round((decided_ts - created_ts) * 1000, 2)
+                        elif created_ts:
+                            wait_duration_ms = round((time.time() - created_ts) * 1000, 2)
                         stored_pre_dur = (
                             res_req.metadata.get("pre_pause_duration_ms")
                             if isinstance(res_req.metadata, dict)
@@ -2456,8 +2473,8 @@ class SessionManager:
                                 "task_id": task_id,
                                 "response": resolved_msg,
                                 "approval_token": self.resumption_token,
-                                "resume_ts": res_req.decided_at or time.time(),
-                                "pause_start_ts": res_req.created_at,
+                                "resume_ts": decided_ts or time.time(),
+                                "pause_start_ts": created_ts,
                                 "wait_duration_ms": wait_duration_ms,
                                 "pre_pause_duration_ms": stored_pre_dur,
                             },

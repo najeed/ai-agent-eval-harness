@@ -33,8 +33,11 @@ def _execution_scope_for_request(data: dict[str, Any]) -> dict[str, str] | None:
     context = active_runtime_context()
     if context is not None:
         return context
+    scope = getattr(g, "runtime_scope", None)
+    if scope is not None and scope.tags:
+        return scope.tags
     # Backward-compatible unscoped service principals are authenticated but
-    # cannot select a tenant from a request.  Persist empty provenance rather
+    # cannot select a tenant from a request. Persist empty provenance rather
     # than inventing a Core-owned tenant/workspace name.
     if getattr(g, "verified_principal", None) is not None:
         return {
@@ -45,7 +48,7 @@ def _execution_scope_for_request(data: dict[str, Any]) -> dict[str, str] | None:
         }
     if os.getenv("AGENTV_TEST_AUTH_BYPASS") == "1":
         return {
-            "org_id": "test-org",
+            "org_id": str(data.get("org_id", "default")),
             "tenant_id": str(data.get("tenant_id", "default")),
             "workspace_id": str(data.get("workspace_id", "default")),
             "active_environment": str(data.get("active_environment", "test")),
@@ -1063,8 +1066,9 @@ def check_execution_readiness():
         or scen_meta.get("execution_mode")
         or ""
     )
+    canonical_scenario_id = str((scen_data or {}).get("id") or scen_meta.get("id") or scen_id)
     pfp = compute_preflight_fingerprint(
-        scenario_id=scen_id,
+        scenario_id=canonical_scenario_id,
         scen_hash=scen_hash,
         endpoint=endpoint,
         protocol=proto,
@@ -1074,13 +1078,14 @@ def check_execution_readiness():
         scenario_version=str(scen_meta.get("version", "1.0.0")),
         tenant_id=scope["tenant_id"],
         workspace_id=scope["workspace_id"],
+        scope=scope,
         seed=data.get("seed") or scen_meta.get("seed"),
         execution_mode=exec_mode,
         evaluators=data.get("evaluators"),
     )
 
     manifest = {
-        "scenario_id": scen_id,
+        "scenario_id": canonical_scenario_id,
         "scenario_version": str(scen_meta.get("version", "1.0.0")),
         "scenario_hash": scen_hash,
         "readiness_state": readiness_state,
@@ -1494,8 +1499,9 @@ def evaluate_scenario():
         agent_config=agent_config,
         runtime_config=runtime_config,
         scenario_version=str(scen_meta.get("version", "1.0.0")),
-        tenant_id=scope["tenant_id"],
-        workspace_id=scope["workspace_id"],
+        tenant_id=str(scope.get("tenant_id") or "default"),
+        workspace_id=str(scope.get("workspace_id") or "default"),
+        scope=scope,
         seed=data.get("seed") or scen_meta.get("seed"),
         execution_mode=exec_mode,
         evaluators=data.get("evaluators"),
@@ -1538,8 +1544,9 @@ def evaluate_scenario():
         scenario_data=scen,
         agent_config=agent_config,
         runtime_config=runtime_config,
-        tenant_id=scope["tenant_id"],
-        workspace_id=scope["workspace_id"],
+        tenant_id=str(scope.get("tenant_id") or "default"),
+        workspace_id=str(scope.get("workspace_id") or "default"),
+        scope=scope,
         created_by=str(getattr(g, "verified_principal", {}).get("id", "system")),
         metadata={
             **(data.get("metadata") if isinstance(data.get("metadata"), dict) else {}),
@@ -1612,7 +1619,7 @@ def list_available_mutations():
     """Returns the unified mutation catalog (Core + Enterprise + Tenant), tenant-filtered."""
     context = active_runtime_context()
     # Query parameters are presentation inputs, never mutation catalog scope.
-    org_id = context["org_id"] if context is not None else None
+    org_id = context.get("org_id") if context is not None else None
     catalog = eval_runner.mutator.mutation_service.list_mutation_catalog(org_id=org_id)
     return jsonify(
         {

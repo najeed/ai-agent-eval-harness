@@ -87,6 +87,8 @@ def compute_preflight_fingerprint(
     scenario_version: str = "1.0.0",
     tenant_id: str = "default",
     workspace_id: str = "default",
+    scope: Mapping[str, Any] | None = None,
+    scope_digest: str = "",
     seed: Any = None,
     execution_mode: str = "",
     evaluators: Any = None,
@@ -98,6 +100,8 @@ def compute_preflight_fingerprint(
     scenario ID/version/hash, complete agent config (including model and endpoint),
     runtime config, evaluators, execution mode, seed, and tenant/workspace context.
     """
+    from agentv_runtime.scope import ScopeToken
+
     ac = dict(agent_config or {})
     if endpoint and "endpoint" not in ac:
         ac["endpoint"] = str(endpoint)
@@ -108,6 +112,12 @@ def compute_preflight_fingerprint(
         rc["max_turns"] = int(max_turns)
 
     eval_list = sorted(str(e) for e in (evaluators or [])) if evaluators else []
+
+    if scope:
+        token = ScopeToken.from_tags(scope)
+        scope_digest = scope_digest or token.digest
+        tenant_id = str(scope.get("tenant_id") or tenant_id or "default")
+        workspace_id = str(scope.get("workspace_id") or workspace_id or "default")
 
     raw = {
         "agent_config": _to_json_compatible(ac),
@@ -141,6 +151,8 @@ class ExecutionManifest:
     scenario_hash: str
     tenant_id: str = "default"
     workspace_id: str = "default"
+    scope_digest: str = ""
+    scope: dict[str, str] = field(default_factory=dict)
     agent_config: dict[str, Any] = field(default_factory=dict)
     runtime_config: dict[str, Any] = field(default_factory=dict)
     environment: dict[str, Any] = field(default_factory=dict)
@@ -155,6 +167,19 @@ class ExecutionManifest:
     def __post_init__(self):
         if not self.parent_artifact_refs and self.scenario_hash:
             object.__setattr__(self, "parent_artifact_refs", [self.scenario_hash])
+        if not self.scope_digest and self.scope:
+            from agentv_runtime.scope import ScopeToken
+
+            object.__setattr__(self, "scope_digest", ScopeToken.from_tags(self.scope).digest)
+        elif not self.scope_digest and (
+            self.tenant_id != "default" or self.workspace_id != "default"
+        ):
+            from agentv_runtime.scope import ScopeToken
+
+            derived = {"tenant_id": self.tenant_id, "workspace_id": self.workspace_id}
+            if not self.scope:
+                object.__setattr__(self, "scope", derived)
+            object.__setattr__(self, "scope_digest", ScopeToken.from_tags(derived).digest)
 
     @property
     def content_hash(self) -> str:
@@ -180,6 +205,8 @@ class ExecutionManifest:
             raise ValueError(f"ExecutionManifestUnknownFields: {sorted(unknown)}")
         scen_hash = str(data.get("scenario_hash", ""))
         parent_refs = list(data.get("parent_artifact_refs") or ([scen_hash] if scen_hash else []))
+        scope_data = dict(data.get("scope") or {})
+        scope_digest = str(data.get("scope_digest", ""))
         return cls(
             manifest_id=str(data.get("manifest_id", "")),
             scenario_id=str(data.get("scenario_id", "")),
@@ -187,6 +214,8 @@ class ExecutionManifest:
             scenario_hash=scen_hash,
             tenant_id=str(data.get("tenant_id", "default")),
             workspace_id=str(data.get("workspace_id", "default")),
+            scope_digest=scope_digest,
+            scope=scope_data,
             agent_config=dict(data.get("agent_config") or {}),
             runtime_config=dict(data.get("runtime_config") or {}),
             environment=dict(data.get("environment") or {}),
@@ -218,6 +247,8 @@ class ExecutionManifest:
             "scenario_id": self.scenario_id,
             "scenario_version": self.scenario_version,
             "schema_version": self.schema_version,
+            "scope": self.scope,
+            "scope_digest": self.scope_digest,
             "tenant_id": self.tenant_id,
             "workspace_id": self.workspace_id,
         }
@@ -234,6 +265,8 @@ class ManifestBuilder:
         runtime_config: Mapping[str, Any] | None = None,
         tenant_id: str = "default",
         workspace_id: str = "default",
+        scope: Mapping[str, Any] | None = None,
+        scope_digest: str = "",
         created_by: str = "system",
         metadata: Mapping[str, Any] | None = None,
         execution_mode: str | None = None,
@@ -266,9 +299,19 @@ class ManifestBuilder:
             runtime_dict["execution_mode"] = str(resolved_mode)
             meta_dict["execution_mode"] = str(resolved_mode)
 
+        scope_dict: dict[str, str] = {}
+        if scope:
+            from agentv_runtime.scope import ScopeToken
+
+            token = ScopeToken.from_tags(scope)
+            scope_dict = token.tags
+            scope_digest = scope_digest or token.digest
+            tenant_id = str(scope.get("tenant_id") or tenant_id)
+            workspace_id = str(scope.get("workspace_id") or workspace_id)
+
         now_iso = datetime.now(UTC).isoformat()
         agent_hex = _canonical_json_bytes(agent_dict).hex()
-        seed = f"{tenant_id}:{workspace_id}:{scen_hash}:{agent_hex}:{now_iso}"
+        seed = f"{tenant_id}:{workspace_id}:{scope_digest}:{scen_hash}:{agent_hex}:{now_iso}"
         manifest_id = f"man_{hashlib.sha3_256(seed.encode('utf-8')).hexdigest()[:16]}"
 
         return ExecutionManifest(
@@ -278,6 +321,8 @@ class ManifestBuilder:
             scenario_hash=scen_hash,
             tenant_id=tenant_id,
             workspace_id=workspace_id,
+            scope_digest=scope_digest,
+            scope=scope_dict,
             agent_config=agent_dict,
             runtime_config=runtime_dict,
             environment=env,

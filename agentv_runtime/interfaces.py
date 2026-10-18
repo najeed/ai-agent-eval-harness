@@ -11,9 +11,11 @@ from __future__ import annotations
 import json
 import time
 from abc import ABC, abstractmethod
-from collections.abc import Generator
+from collections.abc import Generator, Iterable, Iterator, Mapping
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
     from agentv_runtime.contracts import MutationDescriptor
@@ -582,22 +584,49 @@ class BoundedStateProvider(ABC):
 
 
 # ==============================================================================
-# 13. ApprovalStore & ApprovalRequest Contract (HITL Queue)
+# 13. ApprovalStore & ApprovalRequest Contract (HITL Queue & Ledger)
 # ==============================================================================
+
+
+class ApprovalStoreError(RuntimeError, OSError):
+    """Base exception for approval store degradation and persistence failures."""
+
+
+class ApprovalStorageDegradedError(ApprovalStoreError):
+    """Raised when approval storage cannot be read or is corrupt (never return empty queue)."""
+
+
+class MandatoryScopeMissingError(PermissionError):
+    """Raised when durable pause creation is attempted without verified scope
+    under mandatory scope policy.
+    """
+
+
+class ScopeMismatchError(PermissionError):
+    """Raised when an operation is attempted across an isolation scope boundary."""
+
+
+@dataclass(frozen=True)
+class ApprovalEvent:
+    """Immutable event emitted when an approval request is created, updated, or resolved."""
+
+    event_type: str
+    request: ApprovalRequest
+    timestamp: float = field(default_factory=time.time)
 
 
 class ApprovalRequest:
     """
     Durable record for Human-In-The-Loop approval requests in neutral runtime.
-    Captures cryptographic bindings to the outbound action and session state.
+    Captures cryptographic bindings to the outbound action, session state, and tenant scope.
     """
 
     def __init__(
         self,
         approval_token: str,
         run_id: str,
-        turn_index: int,
-        outbound_payload_hash: str,
+        turn_index: int = 0,
+        outbound_payload_hash: str = "",
         required_role: str | None = None,
         reviewer_credentials: dict[str, Any] | None = None,
         status: str = "PENDING",
@@ -605,30 +634,81 @@ class ApprovalRequest:
         checkpoint_id: str | None = None,
         action_payload: dict[str, Any] | None = None,
         prompt: str | None = None,
-        created_at: float | None = None,
+        created_at: datetime | str | float | None = None,
         decision: str | None = None,
         decision_reason: str | None = None,
         decided_by: str | None = None,
         decided_at: float | None = None,
         metadata: dict[str, Any] | None = None,
+        scope_tags: Mapping[str, str] | None = None,
+        scope_digest: str = "",
+        manifest_id: str | None = None,
+        idempotency_key: str | None = None,
     ):
         self.approval_token = approval_token
         self.run_id = run_id
         self.turn_index = turn_index
         self.outbound_payload_hash = outbound_payload_hash
         self.required_role = required_role
-        self.reviewer_credentials = reviewer_credentials or {}
+        self.reviewer_credentials = dict(reviewer_credentials or {})
         self.status = status
         self.rule_id = rule_id
         self.checkpoint_id = checkpoint_id
-        self.action_payload = action_payload or {}
+        self.action_payload = dict(action_payload or {})
         self.prompt = prompt or f"Approval required for run '{run_id}' turn {turn_index}"
-        self.created_at = created_at if created_at is not None else time.time()
+
+        # Normalize created_at to UTC datetime
+        if isinstance(created_at, datetime):
+            self.created_at = created_at if created_at.tzinfo else created_at.replace(tzinfo=UTC)
+        elif isinstance(created_at, (int, float)):
+            self.created_at = datetime.fromtimestamp(created_at, tz=UTC)
+        elif isinstance(created_at, str) and created_at:
+            try:
+                dt = datetime.fromisoformat(created_at)
+                self.created_at = dt if dt.tzinfo else dt.replace(tzinfo=UTC)
+            except ValueError:
+                self.created_at = datetime.now(UTC)
+        else:
+            self.created_at = datetime.now(UTC)
+
         self.decision = decision
         self.decision_reason = decision_reason
         self.decided_by = decided_by
         self.decided_at = decided_at
-        self.metadata = metadata or {}
+        self.metadata = dict(metadata or {})
+
+        # Scope binding
+        self.scope_tags: dict[str, str] = {
+            str(k): str(v) for k, v in (scope_tags or {}).items() if v is not None
+        }
+        if scope_digest:
+            self.scope_digest = str(scope_digest)
+        elif self.scope_tags:
+            from agentv_runtime.scope import ScopeToken
+
+            self.scope_digest = ScopeToken.from_tags(self.scope_tags).digest
+        else:
+            self.scope_digest = ""
+
+        self.manifest_id = manifest_id
+
+        # Idempotency key
+        if idempotency_key:
+            self.idempotency_key = str(idempotency_key)
+        else:
+            import hashlib
+
+            seed = f"{self.run_id}:{self.turn_index}:{self.approval_token}:{self.scope_digest}"
+            self.idempotency_key = f"idem_{hashlib.sha3_256(seed.encode('utf-8')).hexdigest()[:24]}"
+
+    @property
+    def is_legacy_unscoped(self) -> bool:
+        """Classify approvals without verified scope as UNSCOPED_LEGACY."""
+        return not bool(self.scope_digest and self.scope_tags)
+
+    @property
+    def scope_status(self) -> str:
+        return "UNSCOPED_LEGACY" if self.is_legacy_unscoped else "SCOPED"
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -643,38 +723,66 @@ class ApprovalRequest:
             "checkpoint_id": self.checkpoint_id,
             "action_payload": self.action_payload,
             "prompt": self.prompt,
-            "created_at": self.created_at,
+            "created_at": self.created_at.isoformat(),
+            "created_at_ts": self.created_at.timestamp(),
             "decision": self.decision,
             "decision_reason": self.decision_reason,
             "decided_by": self.decided_by,
             "decided_at": self.decided_at,
             "metadata": self.metadata,
+            "scope_tags": self.scope_tags,
+            "scope_digest": self.scope_digest,
+            "manifest_id": self.manifest_id,
+            "idempotency_key": self.idempotency_key,
+            "scope_status": self.scope_status,
         }
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> ApprovalRequest:
+        raw_created = data.get("created_at") or data.get("created_at_ts")
         return cls(
-            approval_token=data.get("approval_token", ""),
-            run_id=data.get("run_id", ""),
-            turn_index=data.get("turn_index", 0),
-            outbound_payload_hash=data.get("outbound_payload_hash", ""),
+            approval_token=str(data.get("approval_token", "")),
+            run_id=str(data.get("run_id", "")),
+            turn_index=int(data.get("turn_index", 0)),
+            outbound_payload_hash=str(data.get("outbound_payload_hash", "")),
             required_role=data.get("required_role"),
             reviewer_credentials=data.get("reviewer_credentials"),
-            status=data.get("status", "PENDING"),
+            status=str(data.get("status", "PENDING")),
             rule_id=data.get("rule_id"),
             checkpoint_id=data.get("checkpoint_id"),
             action_payload=data.get("action_payload"),
             prompt=data.get("prompt"),
-            created_at=data.get("created_at"),
+            created_at=raw_created,
             decision=data.get("decision"),
             decision_reason=data.get("decision_reason"),
             decided_by=data.get("decided_by"),
             decided_at=data.get("decided_at"),
             metadata=data.get("metadata"),
+            scope_tags=data.get("scope_tags"),
+            scope_digest=str(data.get("scope_digest", "")),
+            manifest_id=data.get("manifest_id"),
+            idempotency_key=data.get("idempotency_key"),
         )
 
 
-class ApprovalStore(ABC):
+@runtime_checkable
+class ApprovalLedger(Protocol):
+    """Authoritative Core approval ledger protocol with scope-filtered reads and streaming."""
+
+    def get(self, approval_token: str) -> ApprovalRequest | None:
+        """Retrieves an approval request by its unique approval token."""
+        ...  # pragma: no cover
+
+    def list_pending(self, scope: ScopeToken) -> Iterable[ApprovalRequest]:
+        """Lists pending approval requests belonging to the verified scope."""
+        ...  # pragma: no cover
+
+    def stream_pending(self, scope: ScopeToken) -> Iterator[ApprovalEvent]:
+        """Streams pending approval events belonging to the verified scope."""
+        ...  # pragma: no cover
+
+
+class ApprovalStore(ApprovalLedger, ABC):
     """
     Abstract storage interface for durable human-in-the-loop approval queues.
     Enables neutral, decoupling from external workflow orchestrators (Temporal/Step Functions).
@@ -684,16 +792,24 @@ class ApprovalStore(ABC):
 
     @abstractmethod
     def create_request(self, request: ApprovalRequest) -> ApprovalRequest:
-        """Persists a new pending approval request record."""
+        """Persists a new pending approval request record atomically."""
         raise NotImplementedError
 
     @abstractmethod
-    def get_request(self, approval_token: str) -> ApprovalRequest | None:
-        """Retrieves an approval request by its unique approval token."""
+    def get_request(
+        self, approval_token: str, scope: ScopeToken | None = None
+    ) -> ApprovalRequest | None:
+        """Retrieves an approval request by its unique approval token, optionally scope-checked."""
         raise NotImplementedError
 
+    def get(self, approval_token: str) -> ApprovalRequest | None:
+        """Conforms to the ApprovalLedger protocol."""
+        return self.get_request(approval_token)
+
     @abstractmethod
-    def get_request_by_run_id(self, run_id: str) -> ApprovalRequest | None:
+    def get_request_by_run_id(
+        self, run_id: str, scope: ScopeToken | None = None
+    ) -> ApprovalRequest | None:
         """Retrieves the latest approval request associated with a run ID."""
         raise NotImplementedError
 
@@ -704,24 +820,42 @@ class ApprovalStore(ABC):
         decision: str,
         decided_by: str | None = None,
         decision_reason: str | None = None,
+        scope: ScopeToken | None = None,
     ) -> ApprovalRequest:
-        """Resolves an approval request (APPROVED / REJECTED)."""
+        """Resolves an approval request (APPROVED / REJECTED) with optional scope authorization."""
         raise NotImplementedError
 
     @abstractmethod
-    def list_pending(self, run_id: str | None = None) -> list[ApprovalRequest]:
-        """Lists active PENDING approval requests."""
+    def list_pending(
+        self, run_id: str | None = None, scope: ScopeToken | None = None
+    ) -> list[ApprovalRequest]:
+        """Lists active PENDING approval requests filtered by run_id and/or ScopeToken."""
         raise NotImplementedError
 
+    def stream_pending(self, scope: ScopeToken) -> Iterator[ApprovalEvent]:
+        """Yields pending approval events matching the scope."""
+        for req in self.list_pending(scope=scope):
+            yield ApprovalEvent(event_type="PENDING", request=req)
+
     @abstractmethod
-    def delete_request(self, approval_token: str) -> bool:
+    def delete_request(self, approval_token: str, scope: ScopeToken | None = None) -> bool:
         """Deletes an approval request record."""
         raise NotImplementedError
 
 
+# ==============================================================================
+# 14. ScopePolicy & ScopeToken Contract (Tenant & Boundary Isolation)
+# ==============================================================================
+
+from agentv_runtime.scope import ScopePolicy, ScopeToken  # noqa: E402
+
 __all__ = [
+    "ApprovalEvent",
+    "ApprovalLedger",
     "ApprovalRequest",
+    "ApprovalStorageDegradedError",
     "ApprovalStore",
+    "ApprovalStoreError",
     "ArtifactStore",
     "AuthPrincipal",
     "AuthorizationBackend",
@@ -730,10 +864,14 @@ __all__ = [
     "CheckpointStore",
     "ExecutionBackend",
     "LeaderboardStore",
+    "MandatoryScopeMissingError",
     "MutationEngine",
     "PolicyEvaluationResult",
     "PolicyEvaluator",
     "RunStorageProvider",
     "RunStore",
+    "ScopeMismatchError",
+    "ScopePolicy",
+    "ScopeToken",
     "SigningBackend",
 ]
