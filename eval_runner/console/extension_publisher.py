@@ -14,8 +14,50 @@ from datetime import UTC
 from pathlib import Path
 
 from agentv_runtime.extension_contract import RuntimeExtension
-from eval_runner import config
+from eval_runner import config, identity
 from eval_runner.reference.signing import LocalEd25519SigningBackend
+
+
+def _private_key_pem_bytes(identity_id: str) -> bytes:
+    from cryptography.hazmat.primitives import serialization
+
+    # Fail closed in production: NEVER auto-provision signing keys on the fly
+    if config.is_production():
+        try:
+            key = identity.IdentityService.get_private_key(identity_id, auto_provision=False)
+        except (PermissionError, RuntimeError) as exc:
+            raise ValueError(
+                "Automatic key provisioning is disabled in production for signing "
+                f"identity '{identity_id}'"
+            ) from exc
+        if key is None:
+            raise ValueError(
+                "Automatic key provisioning is disabled in production for signing "
+                f"identity '{identity_id}'"
+            )
+    else:
+        key = identity.IdentityService.get_private_key(identity_id, auto_provision=True)
+        if key is None:
+            raise ValueError(f"No signing identity available for '{identity_id}'")
+
+    return key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption(),
+    )
+
+
+def _public_key_pem_bytes(identity_id: str) -> bytes | None:
+    from cryptography.hazmat.primitives import serialization
+
+    key = identity.IdentityService.get_public_key(identity_id, auto_provision=False)
+    if key is None:
+        return None
+    return key.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )
+
 
 _IMPORT_RE = re.compile(
     r"(?:import|export)\s+(?:[^'\"]+?\s+from\s+)?['\"]([^'\"]+)['\"]|"

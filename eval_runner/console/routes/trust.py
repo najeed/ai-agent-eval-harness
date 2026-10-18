@@ -9,6 +9,10 @@ from flask import Blueprint, jsonify, request
 
 from agentv_runtime.discovery import resolve_extension
 from eval_runner import config, identity
+from eval_runner.console.extension_publisher import (
+    _private_key_pem_bytes,
+    _public_key_pem_bytes,
+)
 from eval_runner.reference.signing import LocalEd25519SigningBackend
 from eval_runner.services.certification import (
     CertificationService,
@@ -296,48 +300,6 @@ def get_identity_public_key(identity_id):
 # ---------------------------------------------------------------------------
 
 DEFAULT_DEV_PUBLISHER_IDENTITY = "dev_publisher"
-
-
-def _private_key_pem_bytes(identity_id: str) -> bytes:
-    from cryptography.hazmat.primitives import serialization
-
-    # Disable automatic key provisioning for production signing
-    is_production = config.is_production()
-    if is_production:
-        try:
-            key = identity.IdentityService.get_private_key(identity_id, auto_provision=False)
-        except PermissionError as exc:
-            raise ValueError(
-                "Automatic key provisioning is disabled in production for signing "
-                f"identity '{identity_id}'"
-            ) from exc
-        if key is None:
-            raise ValueError(
-                "Automatic key provisioning is disabled in production for signing "
-                f"identity '{identity_id}'"
-            )
-    else:
-        key = identity.IdentityService.get_private_key(identity_id, auto_provision=True)
-        if key is None:
-            raise ValueError(f"No signing identity available for '{identity_id}'")
-
-    return key.private_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PrivateFormat.PKCS8,
-        encryption_algorithm=serialization.NoEncryption(),
-    )
-
-
-def _public_key_pem_bytes(identity_id: str) -> bytes | None:
-    from cryptography.hazmat.primitives import serialization
-
-    key = identity.IdentityService.get_public_key(identity_id, auto_provision=False)
-    if key is None:
-        return None
-    return key.public_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PublicFormat.SubjectPublicKeyInfo,
-    )
 
 
 def _canonical_manifest_bytes(manifest: dict) -> bytes:

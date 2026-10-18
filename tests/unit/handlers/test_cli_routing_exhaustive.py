@@ -111,3 +111,40 @@ def test_cli_routing_contribute(mock_handlers, mock_sys_exit):
         main()
         mock_handlers["contribute"].assert_called_once()
         mock_sys_exit.assert_called_with(0)
+
+
+def test_cli_routing_extension(mock_sys_exit):
+    """Verify top-level extension command routing."""
+    with patch("eval_runner.cli._dispatch_extension", return_value=0) as mock_dispatch:
+        argv = [
+            "agentv",
+            "extension",
+            "verify",
+            "--extension-id",
+            "e1",
+            "--extension-version",
+            "1.0",
+        ]
+        with patch("sys.argv", argv):
+            main()
+            mock_dispatch.assert_called_once()
+            mock_sys_exit.assert_called_with(0)
+
+
+def test_cli_routing_console_extension_alias(mock_sys_exit):
+    """Verify legacy console extension alias command routing."""
+    with patch("eval_runner.cli._dispatch_extension", return_value=0) as mock_dispatch:
+        argv = [
+            "agentv",
+            "console",
+            "extension",
+            "verify",
+            "--extension-id",
+            "e1",
+            "--extension-version",
+            "1.0",
+        ]
+        with patch("sys.argv", argv):
+            main()
+            mock_dispatch.assert_called_once()
+            mock_sys_exit.assert_called_with(0)

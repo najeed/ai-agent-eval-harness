@@ -26,6 +26,8 @@ Commands route through categorized dispatcher functions:
 - `_dispatch_scenarios`: Routes `list`, `inspect`, `mutate`, `catalog-search`, `catalog-refresh`, `spec-to-eval`, `aes`, `lint`.
 - `_dispatch_analysis`: Routes `report`, `leaderboard`, `calibrate`, `trend`, `list-metrics`, `taxonomy`.
 - `_dispatch_environment`: Routes `ci`, `registry`, `export`, `plugin`, `list-plugins`, `analyze`, `auto-translate`.
+- `_dispatch_extension`: Routes standalone extension lifecycle commands (`publish`, `activate`, `rollback`, `unpublish`, `verify`, `repair`) with zero web server dependencies.
+- `_dispatch_console`: Routes `console` server launch and legacy `console extension` aliases.
 
 ---
 

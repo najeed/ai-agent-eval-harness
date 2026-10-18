@@ -97,6 +97,7 @@ export function mergeNavManifest(
     if (!rawItem || typeof rawItem !== 'object') continue;
     if (rawItem.type === 'heading') continue;
     if (rawItem.slot === 'header') continue;
+    if (rawItem.hidden) continue;
     if (!rawItem.path && !rawItem.remoteEntry) continue;
     const name = rawItem.name || rawItem.title || rawItem.id || 'Plugin Item';
     const path = rawItem.path || (rawItem.id ? `/${rawItem.id}` : '#');
@@ -203,7 +204,15 @@ const ExtensionHostProvider: React.FC<{
  * Natively enforces FIPS 202 SHA3-256 / SHA3-384 / SHA3-512 with legacy WebCrypto SHA-2 fallback.
  */
 export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: string; route?: import('./types/extension-contract').ExtensionRoute }> = ({ entryUrl, sriHash, route }) => {
-  const { authorizedContexts, workspaceId, tenantId, user, switchContext } = useRBAC();
+  const {
+    authorizedContexts,
+    workspaceId,
+    tenantId,
+    user,
+    switchContext,
+    isAuthenticated,
+    isAuthResolving,
+  } = useRBAC();
   const extensionIdRef = useRef('');
   const extensionContext = useMemo<ExtensionRuntimeContextApi>(() => ({
     context: {
@@ -254,6 +263,13 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
   useEffect(() => {
     let active = true;
     async function loadAndVerifyModule() {
+      // Publisher verification is an authenticated Runtime operation.  Do not
+      // turn the expected pre-login 401 into a terminal publisher failure;
+      // this effect reruns after a successful login.
+      if (isAuthResolving || !isAuthenticated) {
+        if (active) setLoadingState({ status: 'idle' });
+        return;
+      }
       if (!isTrustedOrigin) {
         if (active) setLoadingState({ status: 'untrusted_origin' });
         return;
@@ -523,7 +539,7 @@ export const RemoteComponentLoader: React.FC<{ entryUrl: string; sriHash?: strin
     return () => {
       active = false;
     };
-  }, [entryUrl, sriHash, isTrustedOrigin]);
+  }, [entryUrl, sriHash, isTrustedOrigin, isAuthenticated, isAuthResolving]);
   if (loadingState.status === 'untrusted_origin') {
     return (
       <ExtensionLoadError
@@ -691,6 +707,26 @@ const ConsoleLayout: React.FC = () => {
         return urlStr.startsWith('/api/') || urlStr.startsWith('/v1/');
       }
     };
+    const isAmbientBackgroundApi = (urlStr: string): boolean => {
+      try {
+        const parsed = new URL(urlStr, window.location.origin);
+        const p = parsed.pathname;
+        return (
+          p.startsWith('/api/scenarios') ||
+          p.startsWith('/api/v1/doctor') ||
+          p.startsWith('/api/v1/agent-targets') ||
+          p.startsWith('/api/runs') ||
+          p.startsWith('/api/v1/extensions/verify-publisher') ||
+          p.startsWith('/api/auth/') ||
+          p.startsWith('/api/status') ||
+          p.startsWith('/api/nav') ||
+          p.startsWith('/api/info') ||
+          p.startsWith('/api/ping')
+        );
+      } catch {
+        return false;
+      }
+    };
     window.fetch = async (...args) => {
       const urlStr = typeof args[0] === 'string' ? args[0] : (args[0] as Request)?.url || '';
       if (!isInternalApi(urlStr)) {
@@ -698,7 +734,17 @@ const ConsoleLayout: React.FC = () => {
       }
       try {
         const response = await originalFetch(...args);
-        if (response.status === 401 || response.status === 403) {
+        if (
+          // A 401 means the session is absent or expired.  A 403 means the
+          // session is valid but lacks permission (for example, a
+          // Configuration Center scope or permission).  Prompting to log in
+          // again for a 403 creates an authentication loop that cannot grant
+          // the missing authorization.
+          response.status === 401 &&
+          !isAmbientBackgroundApi(urlStr) &&
+          !window.location.pathname.startsWith('/trust') &&
+          !window.location.pathname.startsWith('/verify')
+        ) {
           window.dispatchEvent(new CustomEvent('agentv-auth-required'));
           window.dispatchEvent(
             new CustomEvent('agentv-toast', {
@@ -1146,10 +1192,6 @@ const RootVerificationRoute: React.FC = () => {
     staleTime: 60_000,
   });
 
-  if (canRunEval) {
-    return <VerificationWorkflowPage />;
-  }
-
   // Resolve enterprise navigation exclusively from signed extension manifests
   const enterpriseTriageRoute = useMemo(() => {
     if (!remoteNav || !Array.isArray(remoteNav)) return null;
@@ -1164,6 +1206,13 @@ const RootVerificationRoute: React.FC = () => {
     );
     return match ? (match.path.startsWith('/') ? match.path : `/${match.path}`) : null;
   }, [remoteNav]);
+
+  // Hooks must run in the same order before we branch on a newly-authenticated
+  // user's permissions.  Otherwise login changes this component from the
+  // memoized enterprise path to an early return and React unmounts the UI.
+  if (canRunEval) {
+    return <VerificationWorkflowPage />;
+  }
 
   if (
     hasPermission('enterprise.triage.read') ||

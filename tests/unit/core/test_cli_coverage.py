@@ -124,12 +124,152 @@ def test_dispatch_console():
     mock_run_server = MagicMock()
     with patch("eval_runner.console.app.run_server", mock_run_server):
         args = MagicMock()
+        args.console_command = None
         args.host = "0.0.0.0"  # nosec B104
         args.port = 8080
         args.debug = False
         result = cli._dispatch_console(args)
     assert result == 0
     mock_run_server.assert_called_once_with(host="0.0.0.0", port=8080, debug=False)  # nosec B104
+
+
+def test_dispatch_console_unknown_subcommand(capsys):
+    _reset_cache()
+    args = MagicMock()
+    args.console_command = "unknown_cmd"
+    result = cli._dispatch_console(args)
+    assert result == 2
+    captured = capsys.readouterr()
+    assert "Unknown console subcommand: unknown_cmd" in captured.err
+
+
+def test_dispatch_console_forwards_to_extension():
+    _reset_cache()
+    args = MagicMock()
+    args.console_command = "extension"
+    with patch("eval_runner.cli._dispatch_extension", return_value=0) as mock_ext:
+        result = cli._dispatch_console(args)
+    assert result == 0
+    mock_ext.assert_called_once_with(args)
+
+
+def test_dispatch_extension_unpublish(capsys):
+    _reset_cache()
+    args = MagicMock()
+    args.extension_command = "unpublish"
+    args.extension_id = "test-ext"
+    args.extension_version = "1.0.0"
+    with patch(
+        "eval_runner.console.extension_publisher.unpublish_extension",
+        return_value={"status": "unpublished"},
+    ):
+        result = cli._dispatch_extension(args)
+    assert result == 0
+    assert "unpublished" in capsys.readouterr().out
+
+
+def test_dispatch_extension_verify_valid(capsys):
+    _reset_cache()
+    args = MagicMock()
+    args.extension_command = "verify"
+    args.extension_id = "test-ext"
+    args.extension_version = "1.0.0"
+    with patch(
+        "eval_runner.console.extension_publisher.verify_extension",
+        return_value={"valid": True, "descriptor": {}},
+    ):
+        result = cli._dispatch_extension(args)
+    assert result == 0
+    assert '"valid": true' in capsys.readouterr().out
+
+
+def test_dispatch_extension_verify_invalid(capsys):
+    _reset_cache()
+    args = MagicMock()
+    args.extension_command = "verify"
+    args.extension_id = "test-ext"
+    args.extension_version = "1.0.0"
+    with patch(
+        "eval_runner.console.extension_publisher.verify_extension",
+        return_value={"valid": False, "reason": "corrupt"},
+    ):
+        result = cli._dispatch_extension(args)
+    assert result == 1
+    assert '"valid": false' in capsys.readouterr().out
+
+
+def test_dispatch_extension_repair(capsys, tmp_path):
+    _reset_cache()
+    entry_file = tmp_path / "entry.mjs"
+    entry_file.write_text("export default {};")
+    args = MagicMock()
+    args.extension_command = "repair"
+    args.entry = str(entry_file)
+    args.extension_id = "test-ext"
+    args.publisher = "pub"
+    args.extension_version = "1.0.0"
+    with patch(
+        "eval_runner.console.extension_publisher.repair_extension",
+        return_value={"status": "repaired"},
+    ):
+        result = cli._dispatch_extension(args)
+    assert result == 0
+    assert "repaired" in capsys.readouterr().out
+
+
+def test_dispatch_extension_activate(capsys):
+    _reset_cache()
+    args = MagicMock()
+    args.extension_command = "activate"
+    args.extension_id = "test-ext"
+    args.extension_version = "1.0.0"
+    args.publisher = "pub"
+    with patch(
+        "eval_runner.console.extension_publisher.activate_extension",
+        return_value={"status": "activated"},
+    ):
+        result = cli._dispatch_extension(args)
+    assert result == 0
+    assert "activated" in capsys.readouterr().out
+
+
+def test_dispatch_extension_rollback(capsys):
+    _reset_cache()
+    args = MagicMock()
+    args.extension_command = "rollback"
+    args.extension_id = "test-ext"
+    args.extension_version = "1.0.0"
+    args.publisher = "pub"
+    with patch(
+        "eval_runner.console.extension_publisher.rollback_extension",
+        return_value={"status": "rolled_back"},
+    ):
+        result = cli._dispatch_extension(args)
+    assert result == 0
+    assert "rolled_back" in capsys.readouterr().out
+
+
+def test_dispatch_extension_publish(capsys, tmp_path):
+    _reset_cache()
+    entry_file = tmp_path / "entry.mjs"
+    entry_file.write_text("export default {};")
+    manifest_file = tmp_path / "manifest.json"
+    manifest_file.write_text('{"name": "test"}')
+    args = MagicMock()
+    args.extension_command = "publish"
+    args.entry = str(entry_file)
+    args.extension_id = "test-ext"
+    args.publisher = "pub"
+    args.extension_version = "1.0.0"
+    args.manifest = str(manifest_file)
+    args.activate = True
+    with patch(
+        "eval_runner.console.extension_publisher.publish_extension",
+        return_value={"status": "published"},
+    ):
+        result = cli._dispatch_extension(args)
+    assert result == 0
+    assert "published" in capsys.readouterr().out
 
 
 # ---------------------------------------------------------------------------

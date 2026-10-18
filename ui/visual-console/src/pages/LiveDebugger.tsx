@@ -537,7 +537,7 @@ export const LiveDebugger: React.FC = () => {
               setConnectionStatus('FINISHED');
             }
           })
-          .catch(() => {});
+          .catch(() => { });
         return;
       }
       if (data.event === 'stream_end' || data.event === 'end') {

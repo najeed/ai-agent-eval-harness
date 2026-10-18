@@ -443,6 +443,10 @@ def build_evidence_graph_from_events(
                     "outcome": typed_outcome,
                     "passed": _strict_result_value(result_fields),
                     "event_seq": seq_val,
+                    "severity": evt.get("severity")
+                    or evt.get("requiredness")
+                    or ev_data.get("severity")
+                    or ev_data.get("requiredness"),
                     "has_result": has_res,
                     "invalid": bool(
                         evt.get("invalid")
@@ -469,6 +473,7 @@ def build_evidence_graph_from_events(
                             "outcome": typed_outcome,
                             "passed": _strict_result_value(m_fields),
                             "event_seq": seq_val,
+                            "severity": m.get("severity") or m.get("requiredness"),
                             "has_result": (
                                 "outcome" in m
                                 or "success" in m
@@ -494,6 +499,7 @@ def build_evidence_graph_from_events(
                             "outcome": typed_outcome,
                             "passed": _strict_result_value(or_fields),
                             "event_seq": seq_val,
+                            "severity": or_res.get("severity") or or_res.get("requiredness"),
                             "has_result": (
                                 "outcome" in or_res
                                 or "success" in or_res

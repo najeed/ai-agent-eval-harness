@@ -933,25 +933,27 @@ class CertificationService:
                     raise ValueError(
                         f"MissingRequiredOracles: trace missing required oracles: {missing_oracles}"
                     )
-                # A negative result is complete when its required oracles have
-                # typed direct outcomes, including FAIL.  A positive evaluator
-                # finalization, however, must agree with every required oracle:
-                # it cannot certify PASS over a required FAIL/SKIPPED result.
+                # Positive certification is valid only when every applicable
+                # blocking assertion passed.  The compiled required-oracle
+                # inventory is necessary but not sufficient: a trace can carry
+                # additional mandatory assertions (for example policy controls)
+                # that must never be overridden by a signed PASS finalization.
+                # Optional and informational assertions are explicitly
+                # represented as non-blocking evidence.
                 if effective_status == "pass":
-                    required_ids = {str(oracle_id) for oracle_id in fin_record.required_oracle_ids}
-                    non_passing_required = sorted(
+                    non_passing_blocking = sorted(
                         {
                             str(node.get("oracle_id"))
                             for node in ev_graph.get("nodes", [])
-                            if str(node.get("oracle_id")) in required_ids
+                            if node.get("severity") != "informational"
                             and node.get("outcome") != "PASS"
                         }
                     )
-                    if non_passing_required:
+                    if non_passing_blocking:
                         raise ValueError(
-                            "RequiredOracleOutcomeMismatch: evaluator finalization claims PASS "
-                            "but required oracle outcomes are non-passing: "
-                            f"{non_passing_required}"
+                            "BlockingAssertionOutcomeMismatch: evaluator finalization claims PASS "
+                            "but blocking assertion outcomes are non-passing: "
+                            f"{non_passing_blocking}"
                         )
             except ValueError:
                 raise

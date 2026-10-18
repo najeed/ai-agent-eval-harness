@@ -295,8 +295,8 @@ export const RunsReports: React.FC = () => {
                             <p className="text-xs text-slate-400 mt-1 leading-relaxed">
                               {runs.length === 0
                                 ? (activeView === 'packages'
-                                    ? 'No cryptographic evidence packages, sealed manifests, or verification certificates have been cataloged in this workspace.'
-                                    : 'No evaluation runs, verification verdicts, or execution logs were found in the database. Run an evaluation workflow to populate the catalog.')
+                                  ? 'No cryptographic evidence packages, sealed manifests, or verification certificates have been cataloged in this workspace.'
+                                  : 'No evaluation runs, verification verdicts, or execution logs were found in the database. Run an evaluation workflow to populate the catalog.')
                                 : `No catalog items matched search "${search}" with status filter "${statusFilter}". Try adjusting or resetting your filter.`}
                             </p>
                           </div>
@@ -332,95 +332,95 @@ export const RunsReports: React.FC = () => {
                     </tr>
                   ) : (
                     filteredRuns.map((r) => {
-                    //Server-authoritative verdict only, no inference.
-                    // Server-authoritative verdict only, no inference.
-                    const isProv = r.provisional || r.verdict === 'VERIFIED_PROVISIONAL';
-                    const isVer = r.verdict === 'VERIFIED' || isProv;
-                    const isFailed = r.verdict === 'FAILED_VERIFICATION';
-                    const verdictLabel = isProv
-                      ? 'Verified (Provisional)'
-                      : isVer
-                        ? 'Verified'
-                        : isFailed
-                          ? 'Failed Verification'
-                          : 'Unknown';
+                      //Server-authoritative verdict only, no inference.
+                      // Server-authoritative verdict only, no inference.
+                      const isProv = r.provisional || r.verdict === 'VERIFIED_PROVISIONAL';
+                      const isVer = r.verdict === 'VERIFIED' || isProv;
+                      const isFailed = r.verdict === 'FAILED_VERIFICATION';
+                      const verdictLabel = isProv
+                        ? 'Verified (Provisional)'
+                        : isVer
+                          ? 'Verified'
+                          : isFailed
+                            ? 'Failed Verification'
+                            : 'Unknown';
 
-                    return (
-                      <tr key={r.run_id} className="hover:bg-slate-850/50 transition">
-                        <td className="px-6 py-4 font-sans font-medium text-white max-w-[280px]">
-                          <div className="flex items-center gap-2 truncate" title={r.scenario}>
-                            <span className="truncate">{r.scenario}</span>
-                            <ProvisionalBadge
-                              provisional={isProv}
-                              executionMode={r.execution_mode}
-                              size="sm"
-                            />
-                          </div>
-                          <button
-                            onClick={() => navigator.clipboard?.writeText(r.run_id)}
-                            title="Copy run ID"
-                            className="mt-1 px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-[9px] font-mono text-slate-400 hover:text-indigo-300 align-middle"
-                          >
-                            {r.run_id.length > 14 ? r.run_id.slice(0, 14) + '…' : r.run_id} ⧉
-                          </button>
-                        </td>
-                        <td className="px-6 py-4 font-sans text-slate-400 max-w-[180px] truncate" title={r.agent || 'Unknown agent'}>
-                          {r.agent || '—'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            title={
-                              isProv
-                                ? 'Certificate signature is valid, but the run was marked provisional.'
-                                : isVer
-                                  ? 'Certificate trace-hash matches the current trace (server-verified).'
-                                  : isFailed
-                                    ? 'Certificate trace-hash does NOT match the current trace.'
-                                    : 'No certificate available, or the server could not verify this run.'
-                            }
-                            className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5 ${isProv
-                              ? 'bg-amber-500/10 border border-amber-500/30 text-amber-300'
-                              : isVer
-                                ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
-                                : isFailed
-                                  ? 'bg-red-500/10 border border-red-500/20 text-red-400'
-                                  : 'bg-slate-500/10 border border-slate-500/20 text-slate-400'
-                              }`}
-                          >
-                            {isVer ? <ShieldCheck className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}
-                            {verdictLabel}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-slate-400 whitespace-nowrap" title={r.timestamp}>
-                          {formatStarted(r.timestamp)}
-                        </td>
-                        <td className="px-6 py-4 text-slate-400 whitespace-nowrap">
-                          {r.duration != null ? `${r.duration.toFixed(1)}s` : '-'}
-                        </td>
-                        <td className="px-6 py-4 text-right whitespace-nowrap min-w-[260px]">
-                          <div className="flex items-center justify-end gap-2 font-sans">
+                      return (
+                        <tr key={r.run_id} className="hover:bg-slate-850/50 transition">
+                          <td className="px-6 py-4 font-sans font-medium text-white max-w-[280px]">
+                            <div className="flex items-center gap-2 truncate" title={r.scenario}>
+                              <span className="truncate">{r.scenario}</span>
+                              <ProvisionalBadge
+                                provisional={isProv}
+                                executionMode={r.execution_mode}
+                                size="sm"
+                              />
+                            </div>
                             <button
-                              onClick={() => setSelectedRun(r)}
-                              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition"
+                              onClick={() => navigator.clipboard?.writeText(r.run_id)}
+                              title="Copy run ID"
+                              className="mt-1 px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-[9px] font-mono text-slate-400 hover:text-indigo-300 align-middle"
                             >
-                              <Eye className="w-3.5 h-3.5 text-indigo-400" />
-                              Inspect Detail
+                              {r.run_id.length > 14 ? r.run_id.slice(0, 14) + '…' : r.run_id} ⧉
                             </button>
-                            <a
-                              href={`/api/v1/evidence/packages/${r.run_id}?download=true`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="px-3 py-1.5 rounded-lg bg-indigo-950/60 hover:bg-indigo-900 border border-indigo-500/30 text-indigo-300 text-xs font-semibold flex items-center gap-1.5 transition"
+                          </td>
+                          <td className="px-6 py-4 font-sans text-slate-400 max-w-[180px] truncate" title={r.agent || 'Unknown agent'}>
+                            {r.agent || '—'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              title={
+                                isProv
+                                  ? 'Certificate signature is valid, but the run was marked provisional.'
+                                  : isVer
+                                    ? 'Certificate trace-hash matches the current trace (server-verified).'
+                                    : isFailed
+                                      ? 'Certificate trace-hash does NOT match the current trace.'
+                                      : 'No certificate available, or the server could not verify this run.'
+                              }
+                              className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5 ${isProv
+                                ? 'bg-amber-500/10 border border-amber-500/30 text-amber-300'
+                                : isVer
+                                  ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
+                                  : isFailed
+                                    ? 'bg-red-500/10 border border-red-500/20 text-red-400'
+                                    : 'bg-slate-500/10 border border-slate-500/20 text-slate-400'
+                                }`}
                             >
-                              <Download className="w-3.5 h-3.5" />
-                              Package
-                            </a>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
+                              {isVer ? <ShieldCheck className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}
+                              {verdictLabel}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-slate-400 whitespace-nowrap" title={r.timestamp}>
+                            {formatStarted(r.timestamp)}
+                          </td>
+                          <td className="px-6 py-4 text-slate-400 whitespace-nowrap">
+                            {r.duration != null ? `${r.duration.toFixed(1)}s` : '-'}
+                          </td>
+                          <td className="px-6 py-4 text-right whitespace-nowrap min-w-[260px]">
+                            <div className="flex items-center justify-end gap-2 font-sans">
+                              <button
+                                onClick={() => setSelectedRun(r)}
+                                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition"
+                              >
+                                <Eye className="w-3.5 h-3.5 text-indigo-400" />
+                                Inspect Detail
+                              </button>
+                              <a
+                                href={`/api/v1/evidence/packages/${r.run_id}?download=true`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-3 py-1.5 rounded-lg bg-indigo-950/60 hover:bg-indigo-900 border border-indigo-500/30 text-indigo-300 text-xs font-semibold flex items-center gap-1.5 transition"
+                              >
+                                <Download className="w-3.5 h-3.5" />
+                                Package
+                              </a>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             </div>

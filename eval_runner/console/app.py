@@ -623,8 +623,10 @@ def create_app():
     # route permissions remain the sole visibility/access gate.
     for manifest in verified_extension_manifests:
         routes_by_path = {route.path: route for route in manifest.routes}
+        navigation_paths = set()
         for navigation in manifest.navigation:
             route = routes_by_path[navigation.path]
+            navigation_paths.add(navigation.path)
             nav_registry.append(
                 {
                     "id": navigation.id or f"{manifest.extension_id}:{navigation.path}",
@@ -637,6 +639,23 @@ def create_app():
                     "sriHash": manifest.sri_hash,
                     "required_permissions": route.required_permissions,
                     **({"icon": navigation.icon} if navigation.icon is not None else {}),
+                }
+            )
+        # Deep-linkable routes (such as sub-tabs) need client
+        # route registration even when they intentionally have no sidebar
+        # entry.  They are still derived from the verified signed manifest.
+        for route in manifest.routes:
+            if route.path in navigation_paths:
+                continue
+            nav_registry.append(
+                {
+                    "id": f"{manifest.extension_id}:route:{route.path}",
+                    "name": route.label or route.path,
+                    "path": route.path,
+                    "hidden": True,
+                    "remoteEntry": manifest.remote_entry,
+                    "sriHash": manifest.sri_hash,
+                    "required_permissions": route.required_permissions,
                 }
             )
     for number, prefix in enumerate(extension_spa_prefixes):

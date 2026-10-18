@@ -761,7 +761,9 @@ def test_evidence_root_mismatch_fails_closed(matrix_env):
 # ==============================================================================
 
 
-def test_required_oracle_failed_outcome_blocks_positive_certification(matrix_env):
+def test_failed_blocking_assertion_outside_required_inventory_blocks_positive_certification(
+    matrix_env,
+):
     run_id = "run-p0-3-oracle-failed"
     scen_data = {
         "id": "scen_p0_3",
@@ -769,12 +771,20 @@ def test_required_oracle_failed_outcome_blocks_positive_certification(matrix_env
         "required_oracles": ["required_check_1"],
     }
     scen_hash = compute_scenario_hash(scen_data)
-    # Required oracle is present but has outcome="FAIL"
+    # The required oracle passes, but an additional blocking assertion fails.
+    # Certification must enforce every blocking assertion, not merely IDs in
+    # the compiled required-oracle inventory.
     events = [
         {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_p0_3"},
         {
             "event": "assertion_evaluated",
             "assertion": "required_check_1",
+            "passed": True,
+            "outcome": "PASS",
+        },
+        {
+            "event": "assertion_evaluated",
+            "assertion": "additional_blocking_check",
             "passed": False,
             "outcome": "FAIL",
         },
@@ -824,7 +834,7 @@ def test_required_oracle_failed_outcome_blocks_positive_certification(matrix_env
         write_manifest=False,
     )
 
-    with pytest.raises(ValueError, match="RequiredOracleOutcomeMismatch"):
+    with pytest.raises(ValueError, match="BlockingAssertionOutcomeMismatch"):
         execute_industrial_certification(run_id=run_id, scenario_data=scen_data)
 
 

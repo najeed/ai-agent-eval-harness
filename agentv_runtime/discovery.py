@@ -1,6 +1,6 @@
 """
 agentv_runtime.discovery
-Canonical, zero-bloat extension discovery engine for AgentV OS.
+Canonical extension discovery engine for AgentV OS.
 """
 
 from __future__ import annotations

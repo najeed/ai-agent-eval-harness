@@ -236,8 +236,9 @@ generic and does not expose tenant/org mutation APIs.
 Runtime publishes signed extensions through its configured local artifact store; publishers never provide a Console hostname or calculate integrity values in a browser. Run this command on the Runtime host (where the configured trust-root signer is available):
 
 ```text
-agentv console extension publish --entry ./dist/entry.mjs --extension-id example-header --publisher configured-publisher --extension-version 1.0.0
+agentv extension publish --entry ./dist/entry.mjs --extension-id example-header --publisher configured-publisher --extension-version 1.0.0
 ```
+*(Note: `agentv console extension publish ...` is supported as a backward-compatible alias).*
 
 It discovers static relative ESM imports, computes SHA3-256 SRI for the entry and every chunk, signs the canonical `RuntimeExtension` sidecar with the configured publisher identity, and atomically publishes the version. The returned descriptor contains an origin-relative `remoteEntry` and `sriHash`; use it unchanged in the configured navigation descriptor. A failed publish leaves no partially visible version.
 
@@ -259,7 +260,7 @@ or an existing Core application route are rejected at startup.
 Declare a prefix through the signed publish manifest, for example
 `{ "display_name": "Example", "capabilities": ["routes", "navigation"],
 "routes": [{ "path": "/generic", "label": "Example" }] }`, supplied to
-`agentv console extension publish --manifest ./manifest.json`. The publisher binds the
+`agentv extension publish --manifest ./manifest.json`. The publisher binds the
 extension ID, version, artifact URL, hashes, and signature; the browser never
 registers a prefix.
 
@@ -291,6 +292,6 @@ receive a non-enumerating `404`.
 `zap`. Kebab-case, snake_case, camelCase, and spaced forms normalize to the
 same name. Unknown icons use a neutral fallback and emit a development warning.
 
-To withdraw a bad release without directly mutating the artifact store, use `agentv console extension unpublish --extension-id example-header --extension-version 1.0.0`. It atomically removes the served release before quarantining and deleting it; a repeated call reports `not_found` without error.
+To withdraw a bad release without directly mutating the artifact store, use `agentv extension unpublish --extension-id example-header --extension-version 1.0.0`. It atomically removes the served release before quarantining and deleting it; a repeated call reports `not_found` without error.
 
-`publish` is idempotent only for byte-identical entry/chunk graphs and the same signed manifest; a changed version is rejected. Use `agentv console extension verify --extension-id example-header --extension-version 1.0.0` for a read-only entry, chunk, manifest, and publisher-trust check. `repair` requires a retained signed release record and candidate source whose bytes exactly match it; it atomically restores that exact version and never rebinds a version to different code.
+`publish` is idempotent only for byte-identical entry/chunk graphs and the same signed manifest; a changed version is rejected. Use `agentv extension verify --extension-id example-header --extension-version 1.0.0` for a read-only entry, chunk, manifest, and publisher-trust check. `repair` requires a retained signed release record and candidate source whose bytes exactly match it; it atomically restores that exact version and never rebinds a version to different code.

@@ -43,69 +43,131 @@ def _add_pqc_args(parser: argparse.ArgumentParser):
     parser.add_argument("--no-pqc", action="store_true", default=None, help="Disable Hybrid PQC")
 
 
+def _register_extension_subcommands(extension_parser: argparse.ArgumentParser):
+    """Register extension lifecycle subcommands on a parser."""
+    extension_parser.set_defaults(func=_dispatch_extension)
+    extension_subparsers = extension_parser.add_subparsers(dest="extension_command", required=True)
+    publish_parser = extension_subparsers.add_parser(
+        "publish", help="Sign and atomically publish an ESM extension"
+    )
+    publish_parser.add_argument(
+        "--entry", required=True, help="Local ESM entry file under the configured source root"
+    )
+    publish_parser.add_argument("--extension-id", required=True)
+    publish_parser.add_argument("--publisher", required=True, help="Configured trust-root identity")
+    publish_parser.add_argument("--extension-version", required=True, dest="extension_version")
+    publish_parser.add_argument(
+        "--manifest", help="Validated generic extension manifest declaration JSON"
+    )
+    publish_parser.add_argument(
+        "--activate",
+        action="store_true",
+        default=False,
+        help="Atomically activate this release upon successful publish",
+    )
+    activate_parser = extension_subparsers.add_parser(
+        "activate", help="Atomically activate an installed verified extension version"
+    )
+    activate_parser.add_argument("--extension-id", required=True)
+    activate_parser.add_argument("--extension-version", required=True, dest="extension_version")
+    activate_parser.add_argument("--publisher", default=None)
+    rollback_parser = extension_subparsers.add_parser(
+        "rollback", help="Atomically roll back to a retained verified extension version"
+    )
+    rollback_parser.add_argument("--extension-id", required=True)
+    rollback_parser.add_argument("--extension-version", required=True, dest="extension_version")
+    rollback_parser.add_argument("--publisher", default=None)
+    unpublish_parser = extension_subparsers.add_parser(
+        "unpublish", help="Atomically withdraw a published extension version"
+    )
+    unpublish_parser.add_argument("--extension-id", required=True)
+    unpublish_parser.add_argument("--extension-version", required=True, dest="extension_version")
+    verify_parser = extension_subparsers.add_parser(
+        "verify", help="Verify installed entry, chunks, manifest, and publisher"
+    )
+    verify_parser.add_argument("--extension-id", required=True)
+    verify_parser.add_argument("--extension-version", required=True, dest="extension_version")
+    repair_parser = extension_subparsers.add_parser(
+        "repair", help="Restore only bytes matching a retained signed release"
+    )
+    repair_parser.add_argument("--entry", required=True)
+    repair_parser.add_argument("--extension-id", required=True)
+    repair_parser.add_argument("--publisher", required=True)
+    repair_parser.add_argument("--extension-version", required=True, dest="extension_version")
+
+
+def _dispatch_extension(args):
+    from .console.extension_publisher import (
+        _private_key_pem_bytes,
+        _public_key_pem_bytes,
+        activate_extension,
+        publish_extension,
+        repair_extension,
+        rollback_extension,
+        unpublish_extension,
+        verify_extension,
+    )
+
+    if args.extension_command == "unpublish":
+        descriptor = unpublish_extension(
+            extension_id=args.extension_id, version=args.extension_version
+        )
+    elif args.extension_command == "verify":
+        descriptor = verify_extension(
+            extension_id=args.extension_id,
+            version=args.extension_version,
+            public_key_pem=_public_key_pem_bytes,
+        )
+        if not descriptor["valid"]:
+            print(json.dumps(descriptor, sort_keys=True))
+            return 1
+    elif args.extension_command == "repair":
+        descriptor = repair_extension(
+            entry=Path(args.entry),
+            extension_id=args.extension_id,
+            publisher=args.publisher,
+            version=args.extension_version,
+            public_key_pem=_public_key_pem_bytes,
+        )
+    elif args.extension_command == "activate":
+        descriptor = activate_extension(
+            extension_id=args.extension_id,
+            version=args.extension_version,
+            publisher=getattr(args, "publisher", None),
+            public_key_pem=_public_key_pem_bytes,
+        )
+    elif args.extension_command == "rollback":
+        descriptor = rollback_extension(
+            extension_id=args.extension_id,
+            version=args.extension_version,
+            publisher=getattr(args, "publisher", None),
+            public_key_pem=_public_key_pem_bytes,
+        )
+    else:
+        descriptor = publish_extension(
+            entry=Path(args.entry),
+            extension_id=args.extension_id,
+            publisher=args.publisher,
+            version=args.extension_version,
+            private_key_pem=_private_key_pem_bytes,
+            manifest_declaration=(
+                json.loads(Path(args.manifest).read_text(encoding="utf-8"))
+                if args.manifest
+                else None
+            ),
+            activate=bool(getattr(args, "activate", False)),
+        )
+    print(json.dumps(descriptor, sort_keys=True))
+    return 0
+
+
 def _dispatch_console(args):
     if getattr(args, "console_command", None) == "extension":
-        from .console.extension_publisher import (
-            activate_extension,
-            publish_extension,
-            repair_extension,
-            rollback_extension,
-            unpublish_extension,
-            verify_extension,
-        )
-        from .console.routes.trust import _private_key_pem_bytes, _public_key_pem_bytes
+        return _dispatch_extension(args)
+    if getattr(args, "console_command", None) is not None:
+        sys.stderr.write(f"[CLI] Unknown console subcommand: {args.console_command}\n")
+        return 2
 
-        if args.extension_command == "unpublish":
-            descriptor = unpublish_extension(
-                extension_id=args.extension_id, version=args.extension_version
-            )
-        elif args.extension_command == "verify":
-            descriptor = verify_extension(
-                extension_id=args.extension_id,
-                version=args.extension_version,
-                public_key_pem=_public_key_pem_bytes,
-            )
-            if not descriptor["valid"]:
-                print(json.dumps(descriptor, sort_keys=True))
-                return 1
-        elif args.extension_command == "repair":
-            descriptor = repair_extension(
-                entry=Path(args.entry),
-                extension_id=args.extension_id,
-                publisher=args.publisher,
-                version=args.extension_version,
-                public_key_pem=_public_key_pem_bytes,
-            )
-        elif args.extension_command == "activate":
-            descriptor = activate_extension(
-                extension_id=args.extension_id,
-                version=args.extension_version,
-                publisher=getattr(args, "publisher", None),
-                public_key_pem=_public_key_pem_bytes,
-            )
-        elif args.extension_command == "rollback":
-            descriptor = rollback_extension(
-                extension_id=args.extension_id,
-                version=args.extension_version,
-                publisher=getattr(args, "publisher", None),
-                public_key_pem=_public_key_pem_bytes,
-            )
-        else:
-            descriptor = publish_extension(
-                entry=Path(args.entry),
-                extension_id=args.extension_id,
-                publisher=args.publisher,
-                version=args.extension_version,
-                private_key_pem=_private_key_pem_bytes,
-                manifest_declaration=(
-                    json.loads(Path(args.manifest).read_text(encoding="utf-8"))
-                    if args.manifest
-                    else None
-                ),
-                activate=bool(getattr(args, "activate", False)),
-            )
-        print(json.dumps(descriptor, sort_keys=True))
-        return 0
     from .console.app import run_server
 
     print(f"[CLI] Launching Visual Debugger on http://{args.host}:{args.port}")
@@ -209,7 +271,6 @@ DISCOVERY_COMMANDS = {
     "playground",
     "record",
     "init",
-    "console",
     "doctor",
     "hitl-resume",
 }
@@ -230,6 +291,7 @@ BUILTIN_COMMANDS = {
     "evaluate",
     "explain",
     "export",
+    "extension",
     "failures",
     "gate",
     "hitl-resume",
@@ -350,8 +412,9 @@ Usage: agentv <command> [options]
   registry       Synchronize industry scenario registries
 
 8. Maintenance & Control
+  extension      Manage signed runtime & console extensions
+                 (verify | publish | activate | rollback | unpublish | repair)
   console        Launch the Visual Debugger (Web UI & REST API)
-                 Extension lifecycle: `console extension publish|inspect|unpublish`
   contribute     Start the interactive contribution wizard
   cleanup-runs   Prune old traces and rotate log artifacts
   doctor         Audit the environment and dependencies
@@ -385,63 +448,21 @@ Usage: agentv <command> [options]
     # --- CORE COMMANDS ---
 
     # 1. MAINTENANCE & CONTROL
+    top_extension_parser = subparsers.add_parser(
+        "extension", help="Manage signed runtime & console extensions"
+    )
+    _register_extension_subcommands(top_extension_parser)
+
     console_parser = subparsers.add_parser("console", help="Launch the Visual Debugger")
     console_parser.add_argument("--host", default="127.0.0.1")
     console_parser.add_argument("--port", type=int, default=5000)
     console_parser.add_argument("--debug", action="store_true")
     console_parser.set_defaults(func=_dispatch_console)
     console_subparsers = console_parser.add_subparsers(dest="console_command")
-    extension_parser = console_subparsers.add_parser(
-        "extension", help="Manage signed console extensions"
+    console_extension_parser = console_subparsers.add_parser(
+        "extension", help="Manage signed console extensions (alias for 'agentv extension')"
     )
-    extension_subparsers = extension_parser.add_subparsers(dest="extension_command", required=True)
-    publish_parser = extension_subparsers.add_parser(
-        "publish", help="Sign and atomically publish an ESM extension"
-    )
-    publish_parser.add_argument(
-        "--entry", required=True, help="Local ESM entry file under the configured source root"
-    )
-    publish_parser.add_argument("--extension-id", required=True)
-    publish_parser.add_argument("--publisher", required=True, help="Configured trust-root identity")
-    publish_parser.add_argument("--extension-version", required=True, dest="extension_version")
-    publish_parser.add_argument(
-        "--manifest", help="Validated generic extension manifest declaration JSON"
-    )
-    publish_parser.add_argument(
-        "--activate",
-        action="store_true",
-        default=False,
-        help="Atomically activate this release upon successful publish",
-    )
-    activate_parser = extension_subparsers.add_parser(
-        "activate", help="Atomically activate an installed verified extension version"
-    )
-    activate_parser.add_argument("--extension-id", required=True)
-    activate_parser.add_argument("--extension-version", required=True, dest="extension_version")
-    activate_parser.add_argument("--publisher", default=None)
-    rollback_parser = extension_subparsers.add_parser(
-        "rollback", help="Atomically roll back to a retained verified extension version"
-    )
-    rollback_parser.add_argument("--extension-id", required=True)
-    rollback_parser.add_argument("--extension-version", required=True, dest="extension_version")
-    rollback_parser.add_argument("--publisher", default=None)
-    unpublish_parser = extension_subparsers.add_parser(
-        "unpublish", help="Atomically withdraw a published extension version"
-    )
-    unpublish_parser.add_argument("--extension-id", required=True)
-    unpublish_parser.add_argument("--extension-version", required=True, dest="extension_version")
-    verify_parser = extension_subparsers.add_parser(
-        "verify", help="Verify installed entry, chunks, manifest, and publisher"
-    )
-    verify_parser.add_argument("--extension-id", required=True)
-    verify_parser.add_argument("--extension-version", required=True, dest="extension_version")
-    repair_parser = extension_subparsers.add_parser(
-        "repair", help="Restore only bytes matching a retained signed release"
-    )
-    repair_parser.add_argument("--entry", required=True)
-    repair_parser.add_argument("--extension-id", required=True)
-    repair_parser.add_argument("--publisher", required=True)
-    repair_parser.add_argument("--extension-version", required=True, dest="extension_version")
+    _register_extension_subcommands(console_extension_parser)
 
     contribute_parser = subparsers.add_parser("contribute", help="Interactive wizard")
     contribute_parser.set_defaults(func=_dispatch_contribute)
