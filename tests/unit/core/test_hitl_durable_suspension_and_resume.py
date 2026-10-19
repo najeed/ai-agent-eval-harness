@@ -17,6 +17,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from agentv_runtime.interfaces import ApprovalRequest
+from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
 from eval_runner import config
 from eval_runner.context import TurnContext
 from eval_runner.events import CoreEvents, Event
@@ -39,7 +40,7 @@ from eval_runner.run_lifecycle import (
     rollback_run_lifecycle_to_open,
     transition_run_lifecycle,
 )
-from eval_runner.runner import DefaultRunner, run_scenario
+from eval_runner.runner import DefaultRunner, compile_required_oracle_ids, run_scenario
 from eval_runner.session import SessionManager
 from eval_runner.session_components import SessionCheckpointManager
 
@@ -267,14 +268,6 @@ async def test_p0_2_runner_resumption_preserves_manifest_and_completes(
     vault_dir = runs_dir / run_id
     vault_dir.mkdir(parents=True, exist_ok=True)
 
-    manifest_data = {
-        "manifest_version": "1.0.0",
-        "run_id": run_id,
-        "scenario_digest": "sha256:abc123canonical",
-    }
-    manifest_path = vault_dir / "execution_manifest.json"
-    manifest_path.write_text(json.dumps(manifest_data), encoding="utf-8")
-
     scenario = {
         "id": "scen_resume_test",
         "metadata": {"org_id": "org_test"},
@@ -287,6 +280,17 @@ async def test_p0_2_runner_resumption_preserves_manifest_and_completes(
             },
         ],
     }
+    manifest = ExecutionManifest(
+        manifest_id=f"man_{run_id}",
+        scenario_id="scen_resume_test",
+        scenario_version="1.0.0",
+        scenario_hash=compute_scenario_hash(scenario),
+        metadata={"required_oracle_ids": compile_required_oracle_ids(scenario)},
+    )
+    manifest_data = manifest.to_dict()
+    manifest_path = vault_dir / "execution_manifest.json"
+    manifest_path.write_text(json.dumps(manifest_data), encoding="utf-8")
+    (vault_dir / "scenario_resolved.json").write_text(json.dumps(scenario), encoding="utf-8")
 
     # Pre-set lifecycle OPEN then PAUSED_FOR_APPROVAL
     transition_run_lifecycle(run_id, RunLifecycleState.OPEN, log_dir=runs_dir)
@@ -403,6 +407,19 @@ async def test_p0_3_and_p0_4_cold_restart_hitl_bridge(tmp_path: Path):
             }
         ],
     }
+    vault_dir = Path(config.RUN_LOG_DIR) / run_id
+    vault_dir.mkdir(parents=True, exist_ok=True)
+    manifest = ExecutionManifest(
+        manifest_id=f"man_{run_id}",
+        scenario_id="scen_bridge",
+        scenario_version="1.0.0",
+        scenario_hash=compute_scenario_hash(scenario),
+        metadata={"required_oracle_ids": compile_required_oracle_ids(scenario)},
+    )
+    (vault_dir / "execution_manifest.json").write_text(
+        json.dumps(manifest.to_dict()), encoding="utf-8"
+    )
+    (vault_dir / "scenario_resolved.json").write_text(json.dumps(scenario), encoding="utf-8")
 
     # Persist durable checkpoint and approval request
     chk_store.save(

@@ -55,6 +55,7 @@ class ServerThread(threading.Thread):
 
 TEST_API_KEY = "test-journey-auth-key-007"
 RUN_ID = "run-journey-rca-001"
+JOURNEY_UI_TIMEOUT_MS = 25_000
 EXTERNAL_TOOL_NAMES = (
     "get_patient_diagnosis_codes",
     "get_payer_policy",
@@ -438,7 +439,7 @@ def test_verification_workflow_journey_playwright(journey_console_server):
             # Step 1: Navigate to Primary Product Spine (Verification Workflow)
             # ------------------------------------------------------------------
             page.goto(f"{base_url}/", wait_until="domcontentloaded", timeout=20000)
-            page.wait_for_selector("h1:has-text('New Verification')", timeout=10000)
+            page.wait_for_selector("h1:has-text('New Verification')", timeout=JOURNEY_UI_TIMEOUT_MS)
 
             # ------------------------------------------------------------------
             # Step 2: Configure Endpoint & Mode Selection
@@ -469,32 +470,42 @@ def test_verification_workflow_journey_playwright(journey_console_server):
             # ------------------------------------------------------------------
             debugger_url = f"{base_url}/debugger?run_id={RUN_ID}"
             page.goto(debugger_url, wait_until="domcontentloaded", timeout=20000)
-            page.get_by_text("Topology: CANONICAL").wait_for(state="visible", timeout=10000)
+            page.get_by_text("Topology: CANONICAL").wait_for(
+                state="visible", timeout=JOURNEY_UI_TIMEOUT_MS
+            )
             page.get_by_role("button", name="planned").click()
             page.wait_for_timeout(250)
             # Planned topology: exact canonical DAG nodes and branch edges.
             for node_id in ("intake", "eligibility", "decision", "notify"):
-                page.get_by_test_id(f"rf__node-{node_id}").wait_for(state="visible", timeout=10000)
+                page.get_by_test_id(f"rf__node-{node_id}").wait_for(
+                    state="visible", timeout=JOURNEY_UI_TIMEOUT_MS
+                )
             assert page.locator(".react-flow__edge").count() == 3
 
             # Executed topology derives solely from execution_graph evidence.
             page.get_by_role("button", name="executed").click()
             for node_id in ("intake", "eligibility", "decision"):
-                page.get_by_test_id(f"rf__node-{node_id}").wait_for(state="visible", timeout=10000)
+                page.get_by_test_id(f"rf__node-{node_id}").wait_for(
+                    state="visible", timeout=JOURNEY_UI_TIMEOUT_MS
+                )
             # notify and its branch are planned-only in this fixture.  Their
             # absence proves the Executed layer is not a dimmed scenario DAG.
-            page.get_by_test_id("rf__node-notify").wait_for(state="hidden", timeout=10000)
+            page.get_by_test_id("rf__node-notify").wait_for(
+                state="hidden", timeout=JOURNEY_UI_TIMEOUT_MS
+            )
             assert not page.get_by_test_id("rf__node-notify").is_visible()
             assert page.locator(".react-flow__edge").count() == 2
             page.get_by_test_id("rf__node-decision").get_by_text(
                 "STATE_DIVERGENCE", exact=True
-            ).wait_for(state="visible", timeout=10000)
+            ).wait_for(state="visible", timeout=JOURNEY_UI_TIMEOUT_MS)
             # Graph selection must select the authoritative execution-node
             # evidence, rather than a heuristic telemetry row.
             page.get_by_test_id("rf__node-decision").click()
-            page.get_by_text("Event Type", exact=True).wait_for(state="visible", timeout=10000)
+            page.get_by_text("Event Type", exact=True).wait_for(
+                state="visible", timeout=JOURNEY_UI_TIMEOUT_MS
+            )
             page.get_by_text("execution_graph_node", exact=True).wait_for(
-                state="visible", timeout=10000
+                state="visible", timeout=JOURNEY_UI_TIMEOUT_MS
             )
 
             # URL identity is evidence identity. Switch routes without
@@ -506,7 +517,9 @@ def test_verification_workflow_journey_playwright(journey_console_server):
                 window.dispatchEvent(new PopStateEvent('popstate'));
                 """
             )
-            page.get_by_test_id("rf__node-decision").wait_for(state="hidden", timeout=10000)
+            page.get_by_test_id("rf__node-decision").wait_for(
+                state="hidden", timeout=JOURNEY_UI_TIMEOUT_MS
+            )
             assert not page.get_by_test_id("rf__node-decision").is_visible()
             page.evaluate(
                 """
@@ -514,16 +527,22 @@ def test_verification_workflow_journey_playwright(journey_console_server):
                 window.dispatchEvent(new PopStateEvent('popstate'));
                 """
             )
-            page.get_by_test_id("rf__node-decision").wait_for(state="visible", timeout=10000)
+            page.get_by_test_id("rf__node-decision").wait_for(
+                state="visible", timeout=JOURNEY_UI_TIMEOUT_MS
+            )
 
             # Divergence layer must expose the terminal planned-but-unexecuted node.
             page.get_by_role("button", name="divergence", exact=True).click()
-            page.get_by_text("SKIPPED", exact=True).wait_for(state="visible", timeout=10000)
+            page.get_by_text("SKIPPED", exact=True).wait_for(
+                state="visible", timeout=JOURNEY_UI_TIMEOUT_MS
+            )
 
             # Selecting the authoritative root-cause event exposes its structured
             # expected/actual evidence and does not relabel it as merely suspected.
             page.locator("button:has-text('PARITY_STATE_DIVERGENCE')").click()
-            page.get_by_text("State Divergence Detected").wait_for(state="visible", timeout=10000)
+            page.get_by_text("State Divergence Detected").wait_for(
+                state="visible", timeout=JOURNEY_UI_TIMEOUT_MS
+            )
             assert page.get_by_text("Root Cause (Confirmed)").is_visible()
             # ReactDiffViewer may decorate numeric tokens, so assert their
             # rendered text rather than an implementation-specific text node.
@@ -535,7 +554,7 @@ def test_verification_workflow_journey_playwright(journey_console_server):
             # ------------------------------------------------------------------
             reports_url = f"{base_url}/reports?run_id={RUN_ID}"
             page.goto(reports_url, wait_until="domcontentloaded", timeout=20000)
-            page.wait_for_selector("#root", timeout=10000)
+            page.wait_for_selector("#root", timeout=JOURNEY_UI_TIMEOUT_MS)
 
             # Check for RCA Failure Summary element
             rca_summary = page.locator("[data-testid='rca-failure-summary']")

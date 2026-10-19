@@ -12,6 +12,7 @@ Proves that:
 
 from __future__ import annotations
 
+import json
 import os
 import tempfile
 from pathlib import Path
@@ -20,6 +21,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from agentv_runtime.interfaces import ApprovalRequest
+from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
 from agentv_runtime.results import EvaluationResult
 from eval_runner.reference.approval_store import FileApprovalStore
 from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
@@ -62,6 +64,21 @@ class TestColdRestartDurabilityContract:
                         }
                     },
                 }
+                vault_dir = runs_dir / run_id
+                vault_dir.mkdir(parents=True, exist_ok=True)
+                manifest = ExecutionManifest(
+                    manifest_id=f"man_{run_id}",
+                    scenario_id="cold_restart_scenario",
+                    scenario_version="1.0.0",
+                    scenario_hash=compute_scenario_hash(scenario),
+                    metadata={"required_oracle_ids": []},
+                )
+                (vault_dir / "execution_manifest.json").write_text(
+                    json.dumps(manifest.to_dict()), encoding="utf-8"
+                )
+                (vault_dir / "scenario_resolved.json").write_text(
+                    json.dumps(scenario), encoding="utf-8"
+                )
 
                 # 1. Simulate active execution pausing at HITL checkpoint
                 checkpoint_data = {

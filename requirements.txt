@@ -12,9 +12,9 @@ Werkzeug==3.1.9
 jsonschema==4.26.0
 PyYAML==6.0.3
 pydantic==2.14.1
-numpy==2.5.4
+numpy==2.4.6
 PyJWT==2.15.1
-cryptography==50.0.2
+cryptography>=48.0.1,<49
 opentelemetry-api==1.45.1
 opentelemetry-sdk==1.45.1
 psutil==7.2.2

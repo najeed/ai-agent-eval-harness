@@ -17,7 +17,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from agentv_runtime.config import ResolvedRuntimeConfig
-from agentv_runtime.manifest import ExecutionManifest
+from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
 from eval_runner.events import CoreEvents
 from eval_runner.execution_ir import WorkflowStatus
 from eval_runner.runner import DefaultRunner, run_scenario
@@ -80,6 +80,11 @@ async def test_runner_finalization_binds_the_physical_execution_manifest(tmp_pat
         if record.get("finalization")
     )
     assert finalization["execution_manifest_hash"] == execution_manifest.compute_manifest_hash()
+    scenario_snapshot = json.loads((vault / "scenario_resolved.json").read_text(encoding="utf-8"))
+    assert compute_scenario_hash(scenario_snapshot) == execution_manifest.scenario_hash
+    assert finalization["scenario_id"] == execution_manifest.scenario_id
+    assert finalization["scenario_version"] == execution_manifest.scenario_version
+    assert finalization["scenario_hash"] == execution_manifest.scenario_hash
 
 
 @pytest.mark.asyncio
@@ -1390,7 +1395,7 @@ async def test_runner_vault_collision_and_resumption_lifecycle(tmp_path, monkeyp
                 "manifest_id": "man_active_resume_run",
                 "scenario_id": "vault_scen",
                 "scenario_version": "1.0.0",
-                "scenario_hash": "mock_scen_hash",
+                "scenario_hash": compute_scenario_hash(scenario),
                 "agent_config": {},
                 "runtime_config": {"execution_mode": "hybrid"},
                 "environment": {},
@@ -1417,8 +1422,8 @@ async def test_runner_vault_collision_and_resumption_lifecycle(tmp_path, monkeyp
 
 
 @pytest.mark.asyncio
-async def test_runner_resumption_corrupt_manifest_and_snapshot_handling(tmp_path, monkeypatch):
-    """Verify resumption handles corrupted manifest and snapshot files gracefully."""
+async def test_runner_resumption_rejects_corrupt_manifest_and_snapshot(tmp_path, monkeypatch):
+    """A resume must fail before execution when immutable artifacts are corrupt."""
     from eval_runner.run_lifecycle import RunLifecycleState, transition_run_lifecycle
 
     monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
@@ -1434,17 +1439,14 @@ async def test_runner_resumption_corrupt_manifest_and_snapshot_handling(tmp_path
     snapshot_file = corrupt_vault / "scenario_resolved.json"
     snapshot_file.write_text("{ corrupt json ", encoding="utf-8")
 
-    with patch(
-        "eval_runner.session.SessionManager.execute_tasks",
-        new_callable=AsyncMock,
-        return_value=[{"workflow_verdict": {"status": "COMPLETED"}}],
-    ):
-        res = await runner.run(
-            scenario,
-            run_id="corrupt_resume_run",
-            resumption_token="corrupt_tok",
-        )
-        assert res is not None
+    with patch("eval_runner.session.SessionManager") as session_constructor:
+        with pytest.raises(RuntimeError, match="ResumptionManifestInvalid"):
+            await runner.run(
+                scenario,
+                run_id="corrupt_resume_run",
+                resumption_token="corrupt_tok",
+            )
+        session_constructor.assert_not_called()
 
 
 @pytest.mark.asyncio
@@ -1615,13 +1617,14 @@ async def test_runner_metadata_non_mapping_and_manifest_mode_branches(tmp_path, 
                 "manifest_id": "man_no_mode_resume_run",
                 "scenario_id": "non_map_scen",
                 "scenario_version": "1.0.0",
-                "scenario_hash": "h123",
+                "scenario_hash": compute_scenario_hash(scenario),
                 "runtime_config": {},
-                "metadata": {},
+                "metadata": {"required_oracle_ids": []},
             }
         ),
         encoding="utf-8",
     )
+    (vault / "scenario_resolved.json").write_text(json.dumps(scenario), encoding="utf-8")
     with patch(
         "eval_runner.session.SessionManager.execute_tasks",
         new_callable=AsyncMock,
@@ -1642,13 +1645,14 @@ async def test_runner_metadata_non_mapping_and_manifest_mode_branches(tmp_path, 
                 "manifest_id": "man_no_meta_resume_run",
                 "scenario_id": "non_map_scen",
                 "scenario_version": "1.0.0",
-                "scenario_hash": "h123",
+                "scenario_hash": compute_scenario_hash(scenario),
                 "runtime_config": {"execution_mode": "hybrid"},
-                "metadata": {},
+                "metadata": {"required_oracle_ids": []},
             }
         ),
         encoding="utf-8",
     )
+    (vault3 / "scenario_resolved.json").write_text(json.dumps(scenario), encoding="utf-8")
     with patch("eval_runner.runner.EvaluationContext.__init__", mock_ctx_init):
         with patch(
             "eval_runner.session.SessionManager.execute_tasks",

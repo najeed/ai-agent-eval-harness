@@ -23,6 +23,7 @@ from eval_runner.reference.approval_store import (
     reset_default_approval_store,
 )
 from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+from eval_runner.run_lifecycle import RunLifecycleState
 from eval_runner.session_components.approval_manager import SessionApprovalManager
 
 
@@ -703,6 +704,7 @@ class TestInProcessBackendResumptionGuard:
                 "eval_runner.reference.approval_store.get_default_approval_store",
                 return_value=approval_store,
             ),
+            patch("eval_runner.reference.inprocess_backend.transition_run_lifecycle") as reopen,
             patch.object(
                 backend, "submit", return_value={"status": "resumed_from_checkpoint"}
             ) as submit,
@@ -710,6 +712,7 @@ class TestInProcessBackendResumptionGuard:
             res = backend.resume(run_id=run_id, resumption_token="tok_test_resume")
         assert res == {"status": "resumed_from_checkpoint"}
         assert submit.call_args.kwargs["resumption_token"] == "tok_test_resume"
+        reopen.assert_called_once_with(run_id, RunLifecycleState.OPEN)
 
         # 2. Resuming with checkpoint invokes submit
         mock_checkpoint_store = MagicMock()
@@ -719,9 +722,14 @@ class TestInProcessBackendResumptionGuard:
             "session_state": {"approval_token": "tok_chk_123"},
         }
         backend_chk = InProcessExecutionBackend(checkpoint_store=mock_checkpoint_store)
-        with patch(
-            "eval_runner.reference.approval_store.get_default_approval_store",
-            return_value=approval_store,
+        with (
+            patch(
+                "eval_runner.reference.approval_store.get_default_approval_store",
+                return_value=approval_store,
+            ),
+            patch(
+                "eval_runner.reference.inprocess_backend.transition_run_lifecycle"
+            ) as reopen_checkpoint,
         ):
             with patch.object(backend_chk, "submit") as mock_submit:
                 mock_submit.return_value = {"status": "resumed_from_checkpoint"}
@@ -731,6 +739,9 @@ class TestInProcessBackendResumptionGuard:
                 assert res_chk == {"status": "resumed_from_checkpoint"}
                 mock_submit.assert_called_once()
                 assert mock_submit.call_args[1]["resumption_token"] == "tok_chk_123"
+                reopen_checkpoint.assert_called_once_with(
+                    "run_cold_restart", RunLifecycleState.OPEN
+                )
 
 
 @pytest.mark.asyncio
@@ -845,6 +856,50 @@ class TestHitlResumeCliHandler:
                 store=None,
             )
             assert await handle_hitl_resume(args) == 0
+
+    async def test_hitl_resume_already_approved_skips_resolution_hooks(self, tmp_path: Path):
+        store = FileApprovalStore(base_dir=tmp_path / "approvals")
+        store.create_request(
+            ApprovalRequest(
+                approval_token="tok_already_approved",
+                run_id="run_already_approved",
+                turn_index=1,
+                outbound_payload_hash="h_approved",
+                status="APPROVED",
+                decided_by="system-administrator",
+            )
+        )
+        backend = MagicMock()
+
+        with (
+            patch(
+                "eval_runner.reference.approval_store.get_default_approval_store",
+                return_value=store,
+            ),
+            patch(
+                "eval_runner.session_components.approval_manager.SessionApprovalManager",
+                side_effect=AssertionError("resolution hooks must not be replayed"),
+            ),
+            patch(
+                "eval_runner.reference.inprocess_backend.get_execution_backend",
+                return_value=backend,
+            ),
+        ):
+            args = argparse.Namespace(
+                run_id="run_already_approved",
+                approval_token="tok_already_approved",
+                decision="APPROVED",
+                reviewer="cli_reviewer",
+                reason=None,
+                store=None,
+            )
+            assert await handle_hitl_resume(args) == 0
+
+        backend.resume.assert_called_once_with(
+            run_id="run_already_approved",
+            resumption_token="tok_already_approved",
+            background=False,
+        )
 
     async def test_hitl_resume_store_overrides(self, tmp_path: Path):
         db_path = tmp_path / "override.db"

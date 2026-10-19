@@ -716,7 +716,8 @@ async def handle_hitl_resume(args):
             )
             return 1
 
-        if request.status in ("APPROVED", "REJECTED"):
+        already_resolved = request.status in ("APPROVED", "REJECTED")
+        if already_resolved:
             print(
                 f"⚠️  Notice: Approval request '{approval_token}' "
                 f"was already resolved as '{request.status}' "
@@ -725,21 +726,24 @@ async def handle_hitl_resume(args):
             if request.status == "REJECTED":
                 return 0
 
-        # Use the shared runtime approval boundary so CLI resolution receives
-        # the same pre-resolution interceptor checks as in-session approval.
-        from .. import plugins
-        from ..session_components.approval_manager import SessionApprovalManager
+        if not already_resolved:
+            # A pending approval must pass the shared Runtime resolution
+            # boundary exactly once. Replaying those hooks for a durable
+            # APPROVED request can block retry/resume on unrelated plugin or
+            # projection work and is not a state transition.
+            from .. import plugins
+            from ..session_components.approval_manager import SessionApprovalManager
 
-        SessionApprovalManager(
-            run_id=run_id,
-            approval_store=store,
-            plugin_manager=plugins.manager,
-        ).resolve_durable_request(
-            approval_token=approval_token,
-            decision=normalized_decision,
-            decided_by=reviewer,
-            decision_reason=reason,
-        )
+            SessionApprovalManager(
+                run_id=run_id,
+                approval_store=store,
+                plugin_manager=plugins.manager,
+            ).resolve_durable_request(
+                approval_token=approval_token,
+                decision=normalized_decision,
+                decided_by=reviewer,
+                decision_reason=reason,
+            )
 
         if normalized_decision == "REJECTED":
             print(f"🛑 Approval REJECTED for run '{run_id}'.")

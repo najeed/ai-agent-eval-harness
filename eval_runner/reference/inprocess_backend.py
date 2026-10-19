@@ -20,7 +20,11 @@ from typing import Any
 from eval_runner import config
 from eval_runner.interfaces.backend import ExecutionBackend
 from eval_runner.reference.sqlite_checkpoint import SQLiteCheckpointStore
-from eval_runner.run_lifecycle import RunSuspendedForApproval
+from eval_runner.run_lifecycle import (
+    RunLifecycleState,
+    RunSuspendedForApproval,
+    transition_run_lifecycle,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -460,6 +464,14 @@ class InProcessExecutionBackend(ExecutionBackend):
                     raise PermissionError(
                         f"Cannot resume run '{run_id}': approval payload binding is invalid."
                     )
+
+        # Re-open the durable lifecycle before the background runner emits its
+        # first event.  The approval gate deliberately closes trace writes;
+        # changing only this backend's in-memory status leaves an enterprise
+        # RunStore at PAUSED_FOR_APPROVAL and rejects every resumed event.
+        # This is deliberately after approval validation, so an unapproved
+        # token can never reopen a paused evidence stream.
+        transition_run_lifecycle(run_id, RunLifecycleState.OPEN)
 
         with self._lock:
             if run_id in self._active_runs:

@@ -364,7 +364,7 @@ class DefaultRunner(BaseRunner):
         if isinstance(ctx.metadata, Mapping):
             from .context import _freeze_dict
 
-            new_meta = dict(ctx.metadata)
+            new_meta = dict(ctx.metadata) if isinstance(ctx.metadata, Mapping) else {}
             new_meta["execution_mode"] = execution_mode
             new_meta["execution_mode_declared"] = execution_mode_declared
             object.__setattr__(ctx, "metadata", _freeze_dict(new_meta))
@@ -825,37 +825,101 @@ class DefaultRunner(BaseRunner):
                 )
             transition_run_lifecycle(effective_run_id, RunLifecycleState.OPEN)
 
-        # On resumption, authoritative ExecutionManifest and scenario snapshot are locked
-        # from the initial run launch to preserve cryptographic binding.
-        if is_resume and manifest_file.exists():
+        # On resumption, the authoritative manifest and scenario snapshot are
+        # an inseparable immutable contract.  Reject before emitting new trace
+        # events or executing work when either artifact is absent, malformed,
+        # or inconsistent with the other.
+        if is_resume:
+            if not manifest_file.is_file() or not scenario_snapshot_file.is_file():
+                raise RuntimeError(
+                    "ResumptionArtifactMissing: immutable execution_manifest.json and "
+                    "scenario_resolved.json are required to resume a run."
+                )
             try:
                 with open(manifest_file, encoding="utf-8") as mf:
                     loaded_m_data = json.load(mf)
                 exec_manifest = ExecutionManifest.from_dict(loaded_m_data)
                 exec_manifest_hash = exec_manifest.compute_manifest_hash()
-                scen_hash = exec_manifest.scenario_hash
-                manifest_mode = exec_manifest.runtime_config.get(
-                    "execution_mode"
-                ) or exec_manifest.metadata.get("execution_mode")
-                if manifest_mode:
-                    execution_mode = manifest_mode
-                    execution_mode_declared = True
-                    if isinstance(ctx.metadata, Mapping):
-                        from .context import _freeze_dict
+            except (OSError, TypeError, ValueError, json.JSONDecodeError) as em_err:
+                raise RuntimeError(
+                    "ResumptionManifestInvalid: immutable execution_manifest.json "
+                    "cannot be verified for resume."
+                ) from em_err
 
-                        new_meta = dict(ctx.metadata)
-                        new_meta["execution_mode"] = execution_mode
-                        new_meta["execution_mode_declared"] = True
-                        object.__setattr__(ctx, "metadata", _freeze_dict(new_meta))
-            except Exception as em_err:
-                logger.warning("Failed reloading authoritative manifest on resume: %s", em_err)
-
-        if is_resume and scenario_snapshot_file.exists():
             try:
                 with open(scenario_snapshot_file, encoding="utf-8") as sf:
-                    scenario_snapshot = json.load(sf)
-            except Exception as sf_err:
-                logger.warning("Failed reloading scenario snapshot on resume: %s", sf_err)
+                    loaded_snapshot = json.load(sf)
+                if not isinstance(loaded_snapshot, dict):
+                    raise ValueError("scenario_resolved.json is not a JSON object")
+                scenario_snapshot = loaded_snapshot
+            except (OSError, TypeError, ValueError, json.JSONDecodeError) as sf_err:
+                raise RuntimeError(
+                    "ResumptionSnapshotInvalid: immutable scenario_resolved.json "
+                    "cannot be verified for resume."
+                ) from sf_err
+
+            snapshot_hash = compute_scenario_hash(scenario_snapshot)
+            if snapshot_hash != exec_manifest.scenario_hash:
+                raise RuntimeError(
+                    "ResumptionScenarioHashMismatch: scenario_resolved.json does not match "
+                    "the authoritative execution manifest."
+                )
+
+            snapshot_id = (
+                scenario_snapshot.get("id")
+                or (scenario_snapshot.get("metadata") or {}).get("id")
+                or (scenario_snapshot.get("metadata") or {}).get("name")
+                or "unknown"
+            )
+            snapshot_version = str(
+                scenario_snapshot.get("version")
+                or (scenario_snapshot.get("metadata") or {}).get("version")
+                or "1.0.0"
+            )
+            if (
+                str(snapshot_id) != exec_manifest.scenario_id
+                or snapshot_version != exec_manifest.scenario_version
+            ):
+                raise RuntimeError(
+                    "ResumptionScenarioIdentityMismatch: scenario_resolved.json does not "
+                    "match the authoritative execution manifest."
+                )
+
+            resumed_req_oracles = compile_required_oracle_ids(
+                scenario_snapshot, resolved_policy=self.policy_evaluator
+            )
+            manifest_req_oracles = sorted(
+                set(
+                    exec_manifest.metadata.get("required_oracle_ids")
+                    or exec_manifest.runtime_config.get("required_oracle_ids")
+                    or []
+                )
+            )
+            if resumed_req_oracles != manifest_req_oracles:
+                raise RuntimeError(
+                    "ResumptionOracleInventoryMismatch: scenario snapshot and execution "
+                    "manifest required-oracle inventories differ."
+                )
+
+            scenario = scenario_snapshot
+            scenario_identifier = exec_manifest.scenario_id
+            scen_ver = exec_manifest.scenario_version
+            scen_hash = exec_manifest.scenario_hash
+            req_oracles = resumed_req_oracles
+            manifest_mode = exec_manifest.runtime_config.get(
+                "execution_mode"
+            ) or exec_manifest.metadata.get("execution_mode")
+            if manifest_mode:
+                execution_mode = manifest_mode
+                execution_mode_declared = True
+            from .context import _freeze_dict
+
+            new_meta = dict(ctx.metadata) if isinstance(ctx.metadata, Mapping) else {}
+            new_meta["execution_mode"] = execution_mode
+            new_meta["execution_mode_declared"] = execution_mode_declared
+            object.__setattr__(ctx, "identifier", str(scenario_identifier))
+            object.__setattr__(ctx, "scenario_data", _freeze_dict(scenario_snapshot))
+            object.__setattr__(ctx, "metadata", _freeze_dict(new_meta))
 
         try:
             events.emit(
@@ -939,8 +1003,11 @@ class DefaultRunner(BaseRunner):
                     random.seed(current_seed)
                     print(f"      [Runner] Seeding attempt {k} with {current_seed}")
 
-                # Inject max_turns into scenario copy for SessionManager consumption
-                scenario_copy = copy.deepcopy(scenario)
+                # A resumed run must execute the exact frozen scenario
+                # contract, not a caller-supplied scenario that may have
+                # changed while the run was awaiting approval.
+                session_contract = scenario_snapshot if is_resume else scenario
+                scenario_copy = copy.deepcopy(session_contract)
                 if max_turns:
                     scenario_copy["max_turns"] = max_turns
 
@@ -950,7 +1017,7 @@ class DefaultRunner(BaseRunner):
                     # Bind the persisted scenario snapshot to the exact
                     # pre-execution contract hashed above. ``scenario_copy``
                     # carries runtime-only controls such as max_turns.
-                    scenario_contract=scenario,
+                    scenario_contract=session_contract,
                     metadata=ctx.metadata,
                     seed=current_seed,
                     cancellation_event=cancellation_event,
@@ -1292,9 +1359,11 @@ class DefaultRunner(BaseRunner):
                 finalization_id=f"fin_{effective_run_id}",
                 run_id=effective_run_id,
                 execution_manifest_hash=exec_manifest_hash,
-                scenario_id=str(scenario_identifier),
-                scenario_version=scen_ver,
-                scenario_hash=scen_hash,
+                # Finalization binds the same immutable identity carried by
+                # the execution manifest, never a mutable working scenario.
+                scenario_id=exec_manifest.scenario_id,
+                scenario_version=exec_manifest.scenario_version,
+                scenario_hash=exec_manifest.scenario_hash,
                 evaluator_identity=evaluator_id,
                 evaluator_config_hash=getattr(self.resolved_config, "config_hash", "") or "none",
                 required_oracle_ids=req_oracles,

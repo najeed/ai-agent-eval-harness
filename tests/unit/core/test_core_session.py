@@ -1,4 +1,5 @@
 import asyncio
+import json
 import threading
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -54,6 +55,17 @@ def test_session_manager_initialization(base_scenario, tmp_path):
     assert session.run_vault == tmp_path / "test_run_456"
     assert (session.run_vault / "scenario_original.json").exists()
     assert (session.run_vault / "scenario_resolved.json").exists()
+
+
+def test_session_rejects_conflicting_frozen_scenario_snapshot(base_scenario, tmp_path):
+    run_vault = tmp_path / "test_run_456"
+    run_vault.mkdir()
+    frozen = dict(base_scenario)
+    frozen["description"] = "the runner-frozen contract"
+    (run_vault / "scenario_resolved.json").write_text(json.dumps(frozen), encoding="utf-8")
+
+    with pytest.raises(RuntimeError, match="ScenarioSnapshotHashMismatch"):
+        SessionManager("test_run_456", base_scenario, log_root=tmp_path)
 
 
 def test_session_manager_routing_discovery(base_scenario, tmp_path):

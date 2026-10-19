@@ -2,6 +2,7 @@ import hashlib
 import json
 import os
 import subprocess
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -10,6 +11,27 @@ from agentv_runtime.evidence_graph import build_evidence_graph_from_events
 from agentv_runtime.finalization import EvaluatorFinalizationRecord
 from agentv_runtime.manifest import compute_scenario_hash
 from eval_runner import config
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+def _subprocess_env(cli_env: dict[str, Any]) -> dict[str, str]:
+    """Build an isolated runtime environment with the source packages importable."""
+    env = os.environ.copy()
+    existing_pythonpath = env.get("PYTHONPATH", "")
+    env["PYTHONPATH"] = (
+        f"{REPO_ROOT}{os.pathsep}{existing_pythonpath}" if existing_pythonpath else str(REPO_ROOT)
+    )
+    env.update(
+        {
+            "PYTHONIOENCODING": "utf-8",
+            "PROJECT_ROOT": str(cli_env["tmp_path"]),
+            "RUN_LOG_DIR": str(cli_env["runs_dir"]),
+            "REPORTS_DIR": str(cli_env["tmp_path"] / "reports"),
+            "TRUST_ROOT": str(config.TRUST_ROOT),
+        }
+    )
+    return env
 
 
 def _make_finalization_event(
@@ -141,13 +163,7 @@ def test_cli_certify_success(cli_env, monkeypatch):
         "CI-P-01",
     ]
 
-    # Explicitly pass PROJECT_ROOT to the subprocess to prevent pollution
-    env = os.environ.copy()
-    env["PYTHONIOENCODING"] = "utf-8"
-    env["PROJECT_ROOT"] = str(cli_env["tmp_path"])
-    env["RUN_LOG_DIR"] = str(cli_env["runs_dir"])
-    env["REPORTS_DIR"] = str(cli_env["tmp_path"] / "reports")
-    env["TRUST_ROOT"] = str(config.TRUST_ROOT)
+    env = _subprocess_env(cli_env)
 
     result = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", env=env)
     assert result.returncode == 0
@@ -168,13 +184,7 @@ def test_cli_gate_success(cli_env, monkeypatch):
     """Verify gate command with Run ID centric discovery."""
     run_id = cli_env["run_id"]
 
-    # Explicitly pass PROJECT_ROOT to the subprocess to prevent pollution
-    env = os.environ.copy()
-    env["PYTHONIOENCODING"] = "utf-8"
-    env["PROJECT_ROOT"] = str(cli_env["tmp_path"])
-    env["RUN_LOG_DIR"] = str(cli_env["runs_dir"])
-    env["REPORTS_DIR"] = str(cli_env["tmp_path"] / "reports")
-    env["TRUST_ROOT"] = str(config.TRUST_ROOT)
+    env = _subprocess_env(cli_env)
 
     # 1. Certify first
     subprocess.run(
@@ -196,13 +206,7 @@ def test_cli_gate_failure_tampered(cli_env, monkeypatch):
     run_id = cli_env["run_id"]
     trace_path = cli_env["trace_path"]
 
-    # Explicitly pass PROJECT_ROOT to the subprocess to prevent pollution
-    env = os.environ.copy()
-    env["PYTHONIOENCODING"] = "utf-8"
-    env["PROJECT_ROOT"] = str(cli_env["tmp_path"])
-    env["RUN_LOG_DIR"] = str(cli_env["runs_dir"])
-    env["REPORTS_DIR"] = str(cli_env["tmp_path"] / "reports")
-    env["TRUST_ROOT"] = str(config.TRUST_ROOT)
+    env = _subprocess_env(cli_env)
 
     # 1. Certify
     subprocess.run(

@@ -396,15 +396,9 @@ async def test_lifecycle_fails_closed_on_unknown_serialized_field(
         decision_reason="Test approval",
     )
 
-    # Invariant: Resumption reloads authoritative manifest; when corrupted, certification fails
-    clinical_pass_content = (
-        "Clinical determination reviewed and approved by Medical Director: Adverse notice issued."
-    )
-    mock_agent = {"action": "final_answer", "content": clinical_pass_content}
-    with patch(
-        "eval_runner.session.AgentAdapterRegistry.call_agent",
-        AsyncMock(return_value=mock_agent),
-    ):
+    # Invariant: a corrupted immutable manifest blocks resumption before any
+    # further execution can append evidence to the run.
+    with pytest.raises(RuntimeError, match="ResumptionManifestInvalid"):
         await runner.run(
             scenario=governance_scenario,
             run_id=run_id,
@@ -413,12 +407,9 @@ async def test_lifecycle_fails_closed_on_unknown_serialized_field(
             metadata={"execution_mode": "live", "execution_mode_declared": True},
         )
 
-    # Re-inject the unknown field after runner completion to verify certification gate
-    manifest_file.write_text(json.dumps(m_data, indent=2), encoding="utf-8")
-
-    # Invariant: CertificationService.issue_certification must fail closed
-    with pytest.raises(ValueError, match="ExecutionManifestUnknownFields"):
-        CertificationService.issue_certification(run_id=run_id)
+    # The malformed artifact was rejected both by the manifest parser and at
+    # the earlier resumption boundary; no post-resume certification path may
+    # be reached for this run.
 
 
 @pytest.mark.asyncio

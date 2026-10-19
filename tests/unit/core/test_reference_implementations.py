@@ -1733,8 +1733,29 @@ class TestAuthAndCatalogExtraBranches:
 
         # Resume with checkpoint dict and background=False
         run_id_chk = f"run-chk-resume-{uuid4().hex}"
+        checkpoint_scenario = {
+            "id": "scen_chk",
+            "metadata": {"name": "From Checkpoint"},
+        }
+        checkpoint_vault = Path(config.RUN_LOG_DIR) / run_id_chk
+        checkpoint_vault.mkdir(parents=True, exist_ok=True)
+        from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
+
+        checkpoint_manifest = ExecutionManifest(
+            manifest_id=f"man_{run_id_chk}",
+            scenario_id="scen_chk",
+            scenario_version="1.0.0",
+            scenario_hash=compute_scenario_hash(checkpoint_scenario),
+            metadata={"required_oracle_ids": []},
+        )
+        (checkpoint_vault / "execution_manifest.json").write_text(
+            json.dumps(checkpoint_manifest.to_dict()), encoding="utf-8"
+        )
+        (checkpoint_vault / "scenario_resolved.json").write_text(
+            json.dumps(checkpoint_scenario), encoding="utf-8"
+        )
         chk_dict = {
-            "scenario_data": {"id": "scen_chk", "metadata": {"name": "From Checkpoint"}},
+            "scenario_data": checkpoint_scenario,
             "checkpoint_id": "c1",
         }
         mock_chk_store = MagicMock()

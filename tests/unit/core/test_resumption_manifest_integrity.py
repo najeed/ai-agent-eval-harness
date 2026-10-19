@@ -85,7 +85,9 @@ async def test_resumption_preserves_root_execution_manifest_and_mode(tmp_path):
 
         mock_session.execute_tasks = fake_execute_tasks
 
-        with patch("eval_runner.session.SessionManager", return_value=mock_session):
+        with patch(
+            "eval_runner.session.SessionManager", return_value=mock_session
+        ) as mock_session_constructor:
             # Execute with is_resume=True and WITHOUT explicit execution_mode
             # (simulates resumption call where mode was not declared in request)
             resumption_checkpoint = {
@@ -93,8 +95,12 @@ async def test_resumption_preserves_root_execution_manifest_and_mode(tmp_path):
                 "metadata": {"execution_mode": "live"},
             }
 
+            resume_request_scenario = {
+                **scenario_data,
+                "caller_supplied_after_pause": "must-not-enter-resumed-session",
+            }
             result = await runner.run(
-                scenario=scenario_data,
+                scenario=resume_request_scenario,
                 attempts=1,
                 run_id=run_id,
                 resumption_checkpoint=resumption_checkpoint,
@@ -103,6 +109,8 @@ async def test_resumption_preserves_root_execution_manifest_and_mode(tmp_path):
 
             assert result is not None
             assert result.metadata["execution_mode"] == "live"
+            assert mock_session_constructor.call_args.args[1] == scenario_data
+            assert mock_session_constructor.call_args.kwargs["scenario_contract"] == scenario_data
 
     # 3. Verify CertificationService._verify_execution_integrity against the resumed state
     fin_record = EvaluatorFinalizationRecord(
@@ -129,6 +137,47 @@ async def test_resumption_preserves_root_execution_manifest_and_mode(tmp_path):
     assert actual_manifest_hash == fin_record.execution_manifest_hash
     assert manifest_on_disk.runtime_config.get("execution_mode") == "live"
     assert fin_record.scenario_hash == manifest_on_disk.scenario_hash
+
+
+@pytest.mark.asyncio
+async def test_resumption_rejects_snapshot_that_does_not_match_manifest(tmp_path):
+    """A syntactically valid replacement snapshot must not execute on resume."""
+    run_id = "run-test-resumption-snapshot-tamper"
+    runs_dir = tmp_path / "runs"
+    run_vault = runs_dir / run_id
+    run_vault.mkdir(parents=True, exist_ok=True)
+
+    frozen_scenario = {
+        "id": "frozen-scenario",
+        "version": "1.0.0",
+        "workflow": {"nodes": []},
+    }
+    manifest = ExecutionManifest(
+        manifest_id=f"man_{run_id}",
+        scenario_id="frozen-scenario",
+        scenario_version="1.0.0",
+        scenario_hash=compute_scenario_hash(frozen_scenario),
+        metadata={"required_oracle_ids": []},
+    )
+    (run_vault / "execution_manifest.json").write_text(
+        json.dumps(manifest.to_dict()), encoding="utf-8"
+    )
+    (run_vault / "scenario_resolved.json").write_text(
+        json.dumps({**frozen_scenario, "tampered": True}), encoding="utf-8"
+    )
+
+    runner = DefaultRunner()
+    with (
+        patch.object(config, "RUN_LOG_DIR", runs_dir),
+        patch("eval_runner.session.SessionManager") as session_constructor,
+    ):
+        with pytest.raises(RuntimeError, match="ResumptionScenarioHashMismatch"):
+            await runner.run(
+                frozen_scenario,
+                run_id=run_id,
+                resumption_token="approved-token",
+            )
+        session_constructor.assert_not_called()
 
 
 def test_inprocess_backend_resume_preserves_mode_and_contract(tmp_path):

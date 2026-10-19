@@ -446,13 +446,37 @@ class SessionManager:
             self.scenario["metadata"]["protocol"] = self.metadata["protocol"]
             self.scenario["metadata"]["agent"] = self.metadata["agent"]
 
-        # Persist the immutable scenario contract that was hashed at evaluation
-        # start, not the mutable execution copy.  Routing and run affinity are
-        # recorded separately in the execution manifest and trace.
-        if not (
-            (self.resumption_checkpoint or self.resumption_token)
-            and (self.run_vault / "scenario_resolved.json").exists()
-        ):
+        # The runner writes scenario_resolved.json before RUN_START, together
+        # with the execution manifest whose scenario_hash it carries.  A
+        # session must never replace that frozen artifact: doing so permits
+        # finalization and subsequent certification to bind different
+        # scenario documents.  A pre-existing snapshot is accepted only when
+        # it is cryptographically the same contract.
+        scenario_snapshot_path = self.run_vault / "scenario_resolved.json"
+        if scenario_snapshot_path.exists():
+            try:
+                with open(scenario_snapshot_path, encoding="utf-8") as f:
+                    stored_contract = json.load(f)
+                if not isinstance(stored_contract, dict):
+                    raise ValueError("snapshot is not a JSON object")
+
+                from agentv_runtime.manifest import compute_scenario_hash
+
+                stored_hash = compute_scenario_hash(stored_contract)
+                contract_hash = compute_scenario_hash(self._scenario_contract)
+                if stored_hash != contract_hash:
+                    raise RuntimeError(
+                        "ScenarioSnapshotHashMismatch: existing scenario_resolved.json "
+                        "does not match the session's immutable scenario contract."
+                    )
+            except RuntimeError:
+                raise
+            except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+                raise RuntimeError(
+                    "ScenarioSnapshotInvalid: existing scenario_resolved.json cannot "
+                    "be validated against the immutable scenario contract."
+                ) from exc
+        else:
             with open(self.run_vault / "scenario_resolved.json", "w", encoding="utf-8") as f:
                 json.dump(self._scenario_contract, f, indent=2)
 
@@ -2878,6 +2902,9 @@ class SessionManager:
         new_session = SessionManager(
             self.run_id,
             scenario_copy,
+            # Forks reuse the parent run's frozen contract. self.scenario is a
+            # mutable execution copy, so it must not become a competing snapshot.
+            scenario_contract=copy.deepcopy(self._scenario_contract),
             metadata=copy.deepcopy(self.metadata),
             log_root=self.log_root,
             resumption_checkpoint=copy.deepcopy(sandbox_state) if sandbox_state else None,
