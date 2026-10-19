@@ -60,7 +60,7 @@ export const parseStateComparison = (evt: unknown): StateComparisonPayload | nul
 
 
 export const LiveDebugger: React.FC = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const runIdParam = searchParams.get('run_id');
 
   const [runId, setRunId] = useState(runIdParam || '');
@@ -888,7 +888,16 @@ export const LiveDebugger: React.FC = () => {
             <label className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Inspect Trace Run:</label>
             <select
               value={runId}
-              onChange={(e) => setRunId(e.target.value)}
+              onChange={(e) => {
+                const nextRunId = e.target.value;
+                setRunId(nextRunId);
+                setSearchParams(current => {
+                  const next = new URLSearchParams(current);
+                  if (nextRunId) next.set('run_id', nextRunId);
+                  else next.delete('run_id');
+                  return next;
+                });
+              }}
               className="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-mono"
             >
               {runsList.length === 0 ? (
@@ -1709,6 +1718,5 @@ export const LiveDebugger: React.FC = () => {
     </div>
   );
 };
-
 
 

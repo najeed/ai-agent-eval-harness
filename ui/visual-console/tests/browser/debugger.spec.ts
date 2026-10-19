@@ -1,5 +1,41 @@
 import { expect, test } from '@playwright/test';
 
+test('debugger switches to the run selected in the dropdown', async ({ page }) => {
+  const requestedRuns: string[] = [];
+  const scenarios = {
+    'latest-run': { workflow: { nodes: [{ id: 'latest-node' }] } },
+    'archived-run': { workflow: { nodes: [{ id: 'archived-node' }] } },
+  };
+
+  await page.route('**/api/status', route => route.fulfill({ json: { status: 'ok' } }));
+  await page.route('**/api/nav', route => route.fulfill({ json: { items: [] } }));
+  await page.route('**/api/auth/me', route => route.fulfill({ json: { user: { id: 'test', roles: ['admin'] } } }));
+  await page.route('**/api/runs', route => route.fulfill({
+    json: { runs: [{ run_id: 'latest-run' }, { run_id: 'archived-run' }] },
+  }));
+  await page.route('**/api/v1/runs/*/stream**', route => {
+    const runId = route.request().url().match(/\/runs\/([^/]+)\/stream/)?.[1] ?? '';
+    const scenario = scenarios[runId as keyof typeof scenarios];
+    return route.fulfill({
+      contentType: 'text/event-stream',
+      body: `id: 1\ndata: ${JSON.stringify({ event: 'run_start', _seq: 1, scenario_data: scenario })}\n\n`,
+    });
+  });
+  await page.route('**/api/v1/runs/*', route => {
+    const runId = route.request().url().match(/\/runs\/([^/?]+)/)?.[1] ?? '';
+    requestedRuns.push(runId);
+    return route.fulfill({ json: { status: 'COMPLETED', scenario: scenarios[runId as keyof typeof scenarios] } });
+  });
+
+  await page.goto('/debugger?run_id=latest-run');
+  await expect(page.locator('select')).toHaveValue('latest-run');
+
+  await page.locator('select').selectOption('archived-run');
+  await expect(page).toHaveURL(/\/debugger\?run_id=archived-run$/);
+  await expect(page.locator('select')).toHaveValue('archived-run');
+  await expect.poll(() => requestedRuns.includes('archived-run')).toBe(true);
+});
+
 test('debugger renders canonical workflow nodes and edges', async ({ page }) => {
   const scenario = {
     workflow: {
