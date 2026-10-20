@@ -23,7 +23,7 @@ numpy==2.5.2
 datasets==5.0.1
 
 # --- Security & Auth ---
-PyJWT==2.13.0
+PyJWT==2.15.0
 cryptography==50.0.0
 
 # --- Observability & SDKs ---
