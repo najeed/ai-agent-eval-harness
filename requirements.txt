@@ -10,7 +10,7 @@ flask-cors==6.0.5
 requests==2.34.2
 aiohttp==3.14.3
 httpx==0.28.1
-Werkzeug==3.1.8
+Werkzeug==3.1.9
 
 # --- Data & Schemas ---
 jsonschema==4.26.0
