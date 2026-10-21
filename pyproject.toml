@@ -48,8 +48,8 @@ provider-gemini = [
 
 # 2. Framework Environments (Evaluated and verified agent architectures)
 framework-langchain = [
-    "langchain==1.4.6",
-    "langchain-core>=1.6.12",
+    "langchain==1.4.7",
+    "langchain-core>=1.6.13",
 ]
 framework-langserve = [
     "langserve>=0.3.3",
@@ -58,10 +58,10 @@ framework-langgraph = [
     "langgraph==1.2.16",
 ]
 framework-ag2 = [
-    "ag2==1.1.2",
+    "ag2==1.2.1",
 ]
 framework-crewai = [
-#    "crewai==1.15.27; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
+#    "crewai==1.15.28; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
 ]
 
 # 3. Framework-to-Provider Integrations (LangChain Wrappers)
@@ -78,7 +78,7 @@ langchain-ollama = [
     "langchain-ollama>=1.1.0",
 ]
 langsmith = [
-    "langsmith==0.14.11",
+    "langsmith==0.14.12",
 ]
 
 # 4. Domain & Task Extras
@@ -103,21 +103,21 @@ vcs = [
 
 # 5. Composed Ecosystem Extras
 frameworks = [
-    "langchain==1.4.6",
-    "langchain-core>=1.6.12",
+    "langchain==1.4.7",
+    "langchain-core>=1.6.13",
     "langserve>=0.3.3",
     "langgraph==1.2.16",
-    "ag2==1.1.2",
-#    "crewai==1.15.27; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
+    "ag2==1.2.1",
+#    "crewai==1.15.28; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
 ]
 langchain-all = [
-    "langchain==1.4.6",
-    "langchain-core>=1.6.12",
+    "langchain==1.4.7",
+    "langchain-core>=1.6.13",
     "langchain-openai==1.7.2",
     "langchain-anthropic>=1.7.6",
     "langchain-google-genai>=4.4.2",
     "langchain-ollama>=1.1.0",
-    "langsmith==0.14.11",
+    "langsmith==0.14.12",
 ]
 
 all = [
@@ -125,17 +125,17 @@ all = [
     "transformers==5.20.2",
     "datasets==5.1.0",
     "google-genai==2.31.0",
-    "langchain==1.4.6",
-    "langchain-core>=1.6.12",
+    "langchain==1.4.7",
+    "langchain-core>=1.6.13",
     "langserve>=0.3.3",
     "langgraph==1.2.16",
-    "ag2==1.1.2",
-#    "crewai==1.15.27; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
+    "ag2==1.2.1",
+#    "crewai==1.15.28; python_version < '3.14'",    # crewai doesn't support python 3.14 yet. add when it does.
     "langchain-openai==1.7.2",
     "langchain-anthropic>=1.7.6",
     "langchain-google-genai>=4.4.2",
     "langchain-ollama>=1.1.0",
-    "langsmith==0.14.11",
+    "langsmith==0.14.12",
     "pypdf==6.21.1",
     "python-docx==1.2.0",
     "lxml==6.1.3",
@@ -160,7 +160,7 @@ include = ["eval_runner*", "dataproc_engine*", "industries*", "agentv_runtime*"]
 [project.scripts]
 agentv = "eval_runner.cli:main"
 
-[project.entry-points."eval_runner.plugins"]
+[project.entry-points."agentv_runtime.plugins"]
 coverage = "eval_runner.coverage_plugin:CoveragePlugin"
 
 [tool.pytest.ini_options]
