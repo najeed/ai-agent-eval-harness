@@ -42,7 +42,7 @@ dependencies = [
     "langchain-openai==1.5.1",
     "langsmith==0.11.0",
     "lxml==6.1.1",
-    "Pillow==12.3.0",
+    "Pillow==13.0.0",
     "cyclecore-pq==0.3.0",
     "idna==3.18",
     "weasyprint>=69.0",
