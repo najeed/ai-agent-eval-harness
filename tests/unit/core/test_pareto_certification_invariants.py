@@ -39,7 +39,7 @@ from eval_runner.identity import IdentityService
 from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.services.certification import (
     CertificationService,
-    execute_industrial_certification,
+    execute_industrial_certification as _execute_industrial_certification,
 )
 from eval_runner.verifier import TraceVerifier
 
@@ -154,6 +154,27 @@ def _create_trace(
     return vault, trace
 
 
+def _fixture_run_store(run_id: str) -> LocalFileRunStore:
+    """Materialize a legacy fixture through the explicit local provider."""
+    provider = LocalFileRunStore(config.RUN_LOG_DIR)
+    if provider.get_run(run_id) is None:
+        provider.create_run(run_id, "fixture-scenario")
+    execution_manifest_path = Path(config.RUN_LOG_DIR) / run_id / "execution_manifest.json"
+    if execution_manifest_path.exists() and not provider.get_manifest(run_id):
+        execution_manifest = json.loads(execution_manifest_path.read_text(encoding="utf-8"))
+        provider.save_run_manifest(
+            run_id,
+            {"execution_manifest": execution_manifest},
+        )
+    return provider
+
+
+def execute_industrial_certification(run_id: str, **kwargs: Any):
+    """Test adapter: legacy fixture bytes are exposed via a local provider."""
+    kwargs.setdefault("run_store", _fixture_run_store(run_id))
+    return _execute_industrial_certification(run_id, **kwargs)
+
+
 # ==============================================================================
 # Invariant 1: No execution-mode truth → no certification (T1)
 # ==============================================================================
@@ -169,7 +190,9 @@ def test_invariant_1_no_execution_mode_truth_blocks_certification(cert_env):
     ]
     _create_trace(cert_env["runs"], run_id, events)
 
-    mode, is_prov = CertificationService.read_run_truth_level(run_id)
+    mode, is_prov = CertificationService.read_run_truth_level(
+        run_id, run_store=_fixture_run_store(run_id)
+    )
     assert is_prov is True
     assert mode == "unknown"
 
@@ -189,7 +212,9 @@ def test_invariant_1_simulated_mode_blocks_certification(cert_env):
     ]
     _create_trace(cert_env["runs"], run_id, events)
 
-    mode, is_prov = CertificationService.read_run_truth_level(run_id)
+    mode, is_prov = CertificationService.read_run_truth_level(
+        run_id, run_store=_fixture_run_store(run_id)
+    )
     assert is_prov is True
     assert mode == "simulated"
 

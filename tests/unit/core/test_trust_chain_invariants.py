@@ -46,6 +46,7 @@ from eval_runner import config, events
 from eval_runner.console.routes.runs import TERMINAL_TRACE_EVENTS
 from eval_runner.console.routes.scenarios import validate_scenario_structure
 from eval_runner.identity import IdentityService
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.services.certification import CertificationService
 from eval_runner.verifier import VerificationAuthority
 
@@ -200,6 +201,20 @@ def _build_valid_test_vault(
     return vault, trace_path, exec_manifest, fin_record
 
 
+def _fixture_run_store(run_id: str) -> LocalFileRunStore:
+    """Expose a legacy JSONL fixture through an explicit local provider."""
+    provider = LocalFileRunStore(config.RUN_LOG_DIR)
+    if provider.get_run(run_id) is None:
+        provider.create_run(run_id, "fixture-scenario")
+    manifest_path = Path(config.RUN_LOG_DIR) / run_id / "execution_manifest.json"
+    if manifest_path.exists() and not provider.get_manifest(run_id):
+        provider.save_run_manifest(
+            run_id,
+            {"execution_manifest": json.loads(manifest_path.read_text(encoding="utf-8"))},
+        )
+    return provider
+
+
 def test_required_oracle_omitted_fails_certification(cert_vault):
     """P0-1: A required oracle that does not execute fails closed; certification is rejected."""
     run_id = "run-omitted-oracle-001"
@@ -219,7 +234,9 @@ def test_required_oracle_omitted_fails_certification(cert_vault):
     )
 
     with pytest.raises(ValueError, match="MissingRequiredOracles"):
-        CertificationService.execute_industrial_certification(run_id=run_id)
+        CertificationService.execute_industrial_certification(
+            run_id=run_id, run_store=_fixture_run_store(run_id)
+        )
 
 
 def test_manifest_agent_or_runtime_mutation_fails(cert_vault):
@@ -238,7 +255,9 @@ def test_manifest_agent_or_runtime_mutation_fails(cert_vault):
         json.dump(data, f)
 
     with pytest.raises(ValueError, match="(ManifestHashMismatch|ManifestExecutionModeMismatch)"):
-        CertificationService.execute_industrial_certification(run_id=run_id)
+        CertificationService.execute_industrial_certification(
+            run_id=run_id, run_store=_fixture_run_store(run_id)
+        )
 
 
 def test_immutable_manifest_provenance_mutation_changes_hash():
@@ -343,7 +362,9 @@ def test_manifest_finalization_semantic_discrepancy_fails(cert_vault):
             line["data"] = fin_tampered.to_dict()
     trace_file.write_text("\n".join(json.dumps(entry) for entry in lines) + "\n", encoding="utf-8")
     with pytest.raises(ValueError, match="ScenarioIdMismatch|ManifestScenarioIdMismatch"):
-        CertificationService.execute_industrial_certification(run_id=run_id)
+        CertificationService.execute_industrial_certification(
+            run_id=run_id, run_store=_fixture_run_store(run_id)
+        )
 
     # 2. Required oracles mismatch between manifest and finalization
     run_id_req = f"{run_id_base}-req-oracles"
@@ -387,7 +408,9 @@ def test_manifest_finalization_semantic_discrepancy_fails(cert_vault):
         "\n".join(json.dumps(entry) for entry in lines) + "\n", encoding="utf-8"
     )
     with pytest.raises(ValueError, match="ManifestRequiredOracleMismatch"):
-        CertificationService.execute_industrial_certification(run_id=run_id_req)
+        CertificationService.execute_industrial_certification(
+            run_id=run_id_req, run_store=_fixture_run_store(run_id_req)
+        )
 
 
 def test_verification_package_commitment_dag_integrity():

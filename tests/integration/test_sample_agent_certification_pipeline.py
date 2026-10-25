@@ -9,7 +9,8 @@ import pytest
 from werkzeug.serving import make_server
 
 from eval_runner import config
-from eval_runner.engine import run_evaluation
+from eval_runner.reference.local_run_store import LocalFileRunStore
+from eval_runner.runner import DefaultRunner
 from eval_runner.services.certification import execute_industrial_certification
 from eval_runner.verifier import TraceVerifier
 from sample_agent.agent_app import app as sample_agent_app
@@ -77,14 +78,16 @@ async def test_sample_agent_real_http_run_is_certified_and_verified(tmp_path, mo
     }
     run_id = "sample-agent-certification-smoke"
     try:
-        await run_evaluation(
-            scenario, run_id=run_id, metadata={"execution_mode": "live"}, max_turns=1
+        run_store = LocalFileRunStore(runs_dir)
+        runner = DefaultRunner(run_store=run_store)
+        await runner.run(scenario, run_id=run_id, metadata={"execution_mode": "live"}, max_turns=1)
+        certificate = execute_industrial_certification(
+            run_id=run_id, scenario_data=scenario, run_store=run_store
         )
-        certificate = execute_industrial_certification(run_id=run_id, scenario_data=scenario)
-        trace_path = runs_dir / run_id / "run.jsonl"
-        manifest_path = runs_dir / run_id / "run_manifest.json"
         assert certificate["certified"] is True
-        assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path))
+        assert TraceVerifier.verify_trace(
+            run_store.get_trace_bytes(run_id), run_store.get_manifest(run_id), run_store=run_store
+        )
     finally:
         server.shutdown()
         server.join(timeout=3)

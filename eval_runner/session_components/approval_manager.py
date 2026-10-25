@@ -1,10 +1,8 @@
 import hashlib
-import json
 import logging
 import secrets
 from collections.abc import Mapping
 from datetime import UTC, datetime
-from pathlib import Path
 from typing import Any
 
 import eval_runner.hitl.pending as hitl_pending
@@ -15,10 +13,38 @@ from agentv_runtime.interfaces import (
     ScopeMismatchError,
 )
 from agentv_runtime.scope import ScopeToken, get_active_scope_policy
-from eval_runner import config
 from eval_runner.runtime_services import resolve_approval_store
 
 logger = logging.getLogger(__name__)
+
+
+class ApprovalBoundaryRejected(PermissionError):
+    """A policy rejection at the durable HITL boundary.
+
+    This is deliberately distinct from an ordinary permission error so the
+    execution layer can emit a terminal, root-cause-marked evidence event
+    rather than presenting the run as waiting for a human decision.
+    """
+
+    def __init__(
+        self,
+        reason: str,
+        *,
+        phase: str,
+        details: Mapping[str, Any] | None = None,
+    ) -> None:
+        super().__init__(reason)
+        self.phase = phase
+        self.details = dict(details or {})
+
+
+def _provider_context(scope: ScopeToken | Mapping[str, Any] | None) -> dict[str, Any] | None:
+    """Normalize scope values before passing them to a storage provider."""
+    if isinstance(scope, ScopeToken):
+        return dict(scope.tags)
+    if isinstance(scope, Mapping):
+        return dict(scope)
+    return None
 
 
 class SessionApprovalManager:
@@ -79,7 +105,11 @@ class SessionApprovalManager:
                     or (intercept.get("error") if isinstance(intercept, dict) else None)
                     or "Approval rejected by security policy"
                 )
-                raise PermissionError(err_msg)
+                raise ApprovalBoundaryRejected(
+                    err_msg,
+                    phase="request",
+                    details=getattr(self.plugin_manager, "last_rejection_details", None),
+                )
         # Durable HITL snapshotting: persist state checkpoint before entering approval wait
         if self.checkpoint_manager:
             checkpoint_state = {
@@ -162,12 +192,6 @@ class SessionApprovalManager:
             candidate_scope = self.scope
         else:
             raw_ctx = meta.get("runtime_context") or meta.get("context") or meta.get("scope")
-            if not raw_ctx:
-                from eval_runner.run_index import read_run_index
-
-                idx_rec = read_run_index(self.run_id)
-                if idx_rec and isinstance(idx_rec.get("context"), Mapping):
-                    raw_ctx = idx_rec["context"]
             if not raw_ctx and callable(self.state_provider):
                 try:
                     st = self.state_provider()
@@ -254,97 +278,64 @@ class SessionApprovalManager:
                     or (intercept.get("error") if isinstance(intercept, dict) else None)
                     or "Durable approval rejected by security policy"
                 )
-                raise PermissionError(err_msg)
+                raise ApprovalBoundaryRejected(
+                    err_msg,
+                    phase="request",
+                    details=getattr(self.plugin_manager, "last_rejection_details", None),
+                )
 
         token = secrets.token_urlsafe(24)
         created_at = datetime.now(UTC)
         resolved_manifest_id = manifest_id or meta.get("manifest_id")
 
-        # Bind ScopeToken across the four authoritative places:
-        # 1. Execution Manifest
-        run_vault = Path(config.RUN_LOG_DIR).resolve() / self.run_id
-        exec_manifest_path = run_vault / "execution_manifest.json"
-        if exec_manifest_path.exists():
-            try:
-                with open(exec_manifest_path, encoding="utf-8") as emf:
-                    em_data = json.load(emf)
-                resolved_manifest_id = resolved_manifest_id or em_data.get("manifest_id")
-                em_digest = em_data.get("scope_digest", "")
-                if em_digest and scope_digest and em_digest != scope_digest:
-                    raise ScopeMismatchError(
-                        "Scope digest mismatch between execution "
-                        f"manifest ({em_digest}) and approval ({scope_digest})."
-                    )
-                em_data["scope"] = scope
-                em_data["scope_digest"] = scope_digest
-                if resolved_manifest_id and not em_data.get("manifest_id"):
-                    em_data["manifest_id"] = resolved_manifest_id
-                tmp_emf = exec_manifest_path.with_suffix(f".{secrets.token_hex(4)}.tmp")
-                with open(tmp_emf, "w", encoding="utf-8") as emf:
-                    json.dump(em_data, emf, indent=2)
-                tmp_emf.replace(exec_manifest_path)
-            except ScopeMismatchError:
-                raise
-            except Exception as exc:
-                logger.debug("Failed updating execution_manifest.json: %s", exc)
-        else:
-            resolved_manifest_id = resolved_manifest_id or f"man_{self.run_id}"
-            try:
-                run_vault.mkdir(parents=True, exist_ok=True)
-                em_data = {}
-                if self.run_store is not None:
-                    try:
-                        store_m = self.run_store.get_manifest(self.run_id)
-                        if store_m and isinstance(store_m.get("execution_manifest"), Mapping):
-                            em_data = dict(store_m["execution_manifest"])
-                    except Exception as exc:
-                        logger.debug("Failed checking run_store for execution_manifest: %s", exc)
-                em_data.update(
-                    {
-                        "manifest_id": resolved_manifest_id
-                        or em_data.get("manifest_id", f"man_{self.run_id}"),
-                        "run_id": self.run_id,
-                        "status": "PAUSED_FOR_APPROVAL",
-                        "scope": scope,
-                        "scope_digest": scope_digest,
-                        "created_at": created_at.isoformat(),
-                    }
+        # The execution provider owns both the manifest and lifecycle state.
+        # Approval handling may validate immutable scope, but must never
+        # recover or mutate a local run projection.
+        if self.run_store is None:
+            raise RuntimeError(
+                "RunStorageProviderBindingRequired: approval lifecycle requires "
+                f"the execution owner's provider for '{self.run_id}'."
+            )
+        provider_context = _provider_context(scope)
+        try:
+            # Scope must establish ownership before an approval credential is
+            # created.  An empty manifest is not proof that an out-of-scope
+            # run may receive a durable approval record.
+            if self.run_store.get_run(self.run_id, context=provider_context) is None:
+                raise RuntimeError(
+                    "RunStorageProviderScopeViolation: approval run is unavailable "
+                    "from the supplied provider scope."
                 )
-                tmp_emf = exec_manifest_path.with_suffix(f".{secrets.token_hex(4)}.tmp")
-                with open(tmp_emf, "w", encoding="utf-8") as emf:
-                    json.dump(em_data, emf, indent=2)
-                tmp_emf.replace(exec_manifest_path)
-            except Exception as exc:
-                logger.debug("Failed writing initial execution_manifest.json: %s", exc)
-
-        # 2. Run Index
-        from eval_runner.run_index import create_run_index, read_run_index, update_run_index_status
-
-        idx_rec = read_run_index(self.run_id)
-        if idx_rec is not None:
-            idx_digest = idx_rec.get("scope_digest", "")
-            if idx_digest and scope_digest and idx_digest != scope_digest:
+            store_manifest = (
+                self.run_store.get_manifest(self.run_id, context=provider_context) or {}
+            )
+            execution_manifest = store_manifest.get("execution_manifest")
+            if not isinstance(execution_manifest, Mapping):
+                execution_manifest = {}
+            resolved_manifest_id = resolved_manifest_id or execution_manifest.get("manifest_id")
+            manifest_digest = execution_manifest.get("scope_digest", "")
+            if manifest_digest and scope_digest and manifest_digest != scope_digest:
                 raise ScopeMismatchError(
-                    f"Scope digest mismatch between run index ({idx_digest}) "
-                    f"and approval ({scope_digest})."
+                    "Scope digest mismatch between provider execution manifest "
+                    f"({manifest_digest}) and approval ({scope_digest})."
                 )
-            update_run_index_status(self.run_id, "PAUSED_FOR_APPROVAL")
-        else:
-            scenario_id = meta.get("scenario_id") or "unknown"
-            if callable(self.state_provider):
-                try:
-                    st_val = self.state_provider()
-                    if isinstance(st_val, dict) and "scenario_data" in st_val:
-                        scenario_id = str(st_val["scenario_data"].get("id", scenario_id))
-                except Exception as exc:
-                    logger.debug("Failed extracting scenario_id from state_provider: %s", exc)
-            try:
-                create_run_index(run_id=self.run_id, context=scope, scenario_id=scenario_id)
-                update_run_index_status(self.run_id, "PAUSED_FOR_APPROVAL")
-            except Exception as exc:
-                logger.debug("Failed creating run index for approval pause: %s", exc)
+        except ScopeMismatchError:
+            raise
+        except RuntimeError as exc:
+            if str(exc).startswith("RunStorageProviderScopeViolation:"):
+                raise
+            raise RuntimeError(
+                "RunStorageProviderBindingRequired: approval scope could not be "
+                f"validated for '{self.run_id}'."
+            ) from exc
+        except Exception as exc:
+            raise RuntimeError(
+                "RunStorageProviderBindingRequired: approval scope could not be "
+                f"validated for '{self.run_id}'."
+            ) from exc
+        resolved_manifest_id = resolved_manifest_id or f"man_{self.run_id}"
 
-        # 3. Checkpoint
+        # 2. Checkpoint
         checkpoint_id = None
         if self.checkpoint_manager:
             checkpoint_state = {
@@ -382,7 +373,7 @@ class SessionApprovalManager:
                 },
             )
 
-        # 4. Persisted Approval Record
+        # 3. Persisted Approval Record
         req = ApprovalRequest(
             approval_token=token,
             run_id=self.run_id,
@@ -404,6 +395,11 @@ class SessionApprovalManager:
         )
         persisted = self.approval_store.create_request(req)
 
+        # Emit the approval evidence while the run remains writable.  The
+        # session emits HITL_PAUSE immediately afterwards and only then
+        # transitions the provider record to PAUSED_FOR_APPROVAL.  Reversing
+        # that order drops both events because a paused run rejects trace
+        # writes, leaving the debugger's last graph node as RUNNING.
         # Trigger on_approval_created hook (best-effort, fail-safe)
         if self.plugin_manager:
             try:
@@ -471,7 +467,11 @@ class SessionApprovalManager:
                     or (intercept.get("error") if isinstance(intercept, dict) else None)
                     or "Durable approval resolution rejected by security policy"
                 )
-                raise PermissionError(err_msg)
+                raise ApprovalBoundaryRejected(
+                    err_msg,
+                    phase="resolution",
+                    details=getattr(self.plugin_manager, "last_rejection_details", None),
+                )
 
         resolved = self.approval_store.resolve_request(
             approval_token=approval_token,
@@ -490,7 +490,7 @@ class SessionApprovalManager:
             from eval_runner.flight_recorder import FlightRecorderPlugin
             from eval_runner.run_lifecycle import RunLifecycleState, transition_run_lifecycle
 
-            run_context = dict(active_scope.tags) if active_scope is not None else None
+            run_context = _provider_context(active_scope)
             FlightRecorderPlugin.bind_active_recorder(
                 self.run_id, self.run_store, context=run_context
             )

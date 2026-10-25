@@ -23,6 +23,7 @@ from eval_runner.reference.approval_store import (
     reset_default_approval_store,
 )
 from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.run_lifecycle import RunLifecycleState
 from eval_runner.session_components.approval_manager import SessionApprovalManager
 
@@ -463,12 +464,15 @@ class TestSessionApprovalManagerDurable:
         store = FileApprovalStore(base_dir=tmp_path / "approvals")
         mock_checkpoint_mgr = MagicMock()
         mock_checkpoint_mgr.create_checkpoint.return_value = "chk_mock_001"
+        run_store = LocalFileRunStore(tmp_path / "runs")
+        run_store.create_run("run_session_01", "scen_1")
 
         mgr = SessionApprovalManager(
             run_id="run_session_01",
             checkpoint_manager=mock_checkpoint_mgr,
             state_provider=lambda: {"scenario_data": {"id": "scen_1"}, "state": "test"},
             approval_store=store,
+            run_store=run_store,
         )
 
         durable_req = mgr.create_durable_request(
@@ -515,6 +519,8 @@ class TestSessionApprovalManagerDurable:
     def test_state_provider_exception_resilience(self, tmp_path: Path):
         store = FileApprovalStore(base_dir=tmp_path / "approvals")
         mock_chk = MagicMock()
+        run_store = LocalFileRunStore(tmp_path / "runs")
+        run_store.create_run("run_failing_state", "scen_1")
 
         def failing_state():
             raise RuntimeError("Corrupted state")
@@ -524,6 +530,7 @@ class TestSessionApprovalManagerDurable:
             checkpoint_manager=mock_chk,
             state_provider=failing_state,
             approval_store=store,
+            run_store=run_store,
         )
 
         req = mgr.create_durable_request(turn_index=1, action_payload={"step": 1})

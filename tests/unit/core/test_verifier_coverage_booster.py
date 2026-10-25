@@ -112,7 +112,7 @@ def test_verify_trace_bytes_none_run_id_or_run_store():
     )
 
 
-def test_verify_trace_bytes_ledger_without_vault_log_dir():
+def test_verify_trace_bytes_ledger_requires_provider_contract():
     trace_bytes = b'{"event":"run_end"}\n'
     trace_hash = f"sha3_256:{hashlib.sha3_256(trace_bytes).hexdigest()}"
     manifest = {
@@ -139,7 +139,7 @@ def test_verify_trace_bytes_ledger_without_vault_log_dir():
                 run_store=mock_store,
                 verify_ledger=True,
             )
-            assert result is True
+            assert result is False
 
 
 def test_verify_trace_bytes_ledger_file_hash_exception(tmp_path):
@@ -180,51 +180,18 @@ def test_verify_trace_bytes_ledger_file_hash_exception(tmp_path):
             assert result is False
 
 
-def test_verify_trace_path_inputs_and_fallbacks(tmp_path):
-    missing_trace = tmp_path / "missing_trace.jsonl"
-    missing_manifest = tmp_path / "missing_manifest.json"
-    assert not TraceVerifier.verify_trace(missing_trace, missing_manifest)
-
-    valid_trace = tmp_path / "trace.jsonl"
-    valid_trace.write_bytes(b'{"event":"run_end"}\n')
-    invalid_manifest = tmp_path / "invalid_manifest.json"
-    invalid_manifest.write_text("{corrupt-json")
-    assert not TraceVerifier.verify_trace(valid_trace, invalid_manifest)
-
+def test_verify_trace_requires_provider_owned_bytes(tmp_path):
     assert not TraceVerifier.verify_trace(b"trace", 12345)
-
-    valid_manifest = tmp_path / "valid_manifest.json"
+    trace_bytes = b'{"event":"run_end"}\n'
     manifest_dict = {
         "run_id": "run-path-ok",
-        "trace_hash": f"sha3_256:{hashlib.sha3_256(b'{"event":"run_end"}\\n').hexdigest()}",
+        "trace_hash": f"sha3_256:{hashlib.sha3_256(trace_bytes).hexdigest()}",
     }
-    valid_manifest.write_text(json.dumps(manifest_dict))
 
     with patch.object(TraceVerifier, "verify_trace_bytes", return_value=True):
         mock_store = MagicMock()
-        assert TraceVerifier.verify_trace(valid_trace, manifest_dict, run_store=mock_store) is True
-        assert (
-            TraceVerifier.verify_trace(
-                b'{"event":"run_end"}\n', valid_manifest, run_store=mock_store
-            )
-            is True
-        )
-
-    with patch(
-        "eval_runner.runtime_services.resolve_run_store",
-        side_effect=RuntimeError("Storage unavailable"),
-    ):
-        assert not TraceVerifier.verify_trace(valid_trace, valid_manifest, run_store=None)
-
-    mock_store = MagicMock()
-    with patch(
-        "eval_runner.runtime_services.resolve_run_store",
-        return_value=mock_store,
-    ):
-        with patch.object(TraceVerifier, "verify_trace_bytes", return_value=True) as mock_vtb:
-            res = TraceVerifier.verify_trace(valid_trace, valid_manifest, run_store=None)
-            assert res is True
-            assert mock_vtb.called
+        assert TraceVerifier.verify_trace(trace_bytes, manifest_dict, run_store=mock_store) is True
+    assert not TraceVerifier.verify_trace(trace_bytes, manifest_dict, run_store=None)
 
 
 def test_verify_run_anomalies_and_exceptions():

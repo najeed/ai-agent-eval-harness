@@ -487,12 +487,14 @@ def test_async_evaluation_scoped_execution_and_authorized_reads(tmp_path, monkey
         context=context,
     )
 
-    # 4. Wait for background thread to complete
+    # 4. Wait for provider-owned terminal state.  The queue index records
+    # asynchronous acceptance only; it is not an authority for run lifecycle
+    # or console reads.
     max_wait = 15.0
     start = time.time()
     final_read = None
     while time.time() - start < max_wait:
-        rec = read_run_index(run_id, root=tmp_path)
+        rec = run_store.get_run(run_id, context=context)
         if rec and rec["status"] == "COMPLETED":
             final_read = rec
             break
@@ -502,10 +504,9 @@ def test_async_evaluation_scoped_execution_and_authorized_reads(tmp_path, monkey
     assert final_read["status"] == "COMPLETED"
     assert final_read["context"] == context
 
-    # 5. Manifest on disk preserves immutable scope tuple
-    manifest_file = tmp_path / run_id / "run_manifest.json"
-    assert manifest_file.exists()
-    manifest_data = json.loads(manifest_file.read_text(encoding="utf-8"))
+    # 5. Provider manifest preserves the immutable scope tuple.
+    manifest_data = run_store.get_manifest(run_id, context=context)
+    assert manifest_data is not None
     assert manifest_data["status"] == "COMPLETED"
     assert manifest_data["context"] == context
 

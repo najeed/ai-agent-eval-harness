@@ -397,35 +397,10 @@ def test_certify_run_generic_exception(client, console_jail):
 
 
 def test_read_run_truth_level_branches(client, console_jail):
-    from eval_runner.console.routes.trust import _read_run_truth_level
-
-    # Nonexistent trace
-    mode, prov = _read_run_truth_level("nonexistent_run")
-    assert mode is None
-    assert prov is False
-
-    # Trace with empty line and non-run_start event
-    run_id = "truth_level_test"
-    run_dir = console_jail["runs"] / run_id
-    run_dir.mkdir(parents=True, exist_ok=True)
-    (run_dir / "run.jsonl").write_text(
-        "\n"
-        + json.dumps({"event": "other_event"})
-        + "\n"
-        + json.dumps(
-            {
-                "event": "run_start",
-                "data": {"execution_mode": "LIVE_API", "execution_mode_declared": True},
-            }
-        )
-        + "\n",
-        encoding="utf-8",
-    )
-    mode, prov = _read_run_truth_level(run_id)
-    assert mode == "LIVE_API"
-    # LIVE_API is not a recognized canonical execution mode (only 'live' and 'hybrid' are);
-    # therefore it is correctly classified as provisional=True per the T1 contract.
-    assert prov is True
+    # Truth level is derived from the provider manifest by the verification
+    # route; there is no console-side trace scanner any more.
+    res = client.get("/api/v1/verify/nonexistent_run")
+    assert res.status_code == 404
 
 
 def test_get_identity_public_key_none_and_private_key_none(client):
@@ -804,16 +779,12 @@ def test_get_verified_run_manifest_corrupt_file(client, console_jail):
     assert "Failed to load manifest" in res.get_json()["error"]
 
 
-def test_extract_computed_run_outcome_delegation(tmp_path):
-    from eval_runner.console.routes.trust import _extract_computed_run_outcome
+def test_extract_computed_run_outcome_provider_events():
+    from eval_runner.services.certification import CertificationService
 
-    with patch(
-        "eval_runner.services.certification.CertificationService.extract_computed_run_outcome",
-        return_value=("pass", 1.0),
-    ) as mock_fn:
-        res = _extract_computed_run_outcome(tmp_path, tmp_path / "run.jsonl")
-        assert res == ("pass", 1.0)
-        assert mock_fn.called
+    assert CertificationService.extract_computed_run_outcome(
+        events=[{"event": "evaluation_result", "data": {"status": "PASS", "score": 1.0}}]
+    ) == ("pass", 1.0)
 
 
 def test_public_verify_run_unsafe_paths(client):

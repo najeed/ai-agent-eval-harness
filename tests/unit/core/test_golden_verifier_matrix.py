@@ -1680,24 +1680,24 @@ def _append_authoritative_finalization(trace_file: Path, run_id: str, run_dir: P
         f.write(fin_line + "\n")
 
 
-def test_verify_run_directory_status_matrix(clean_vault_setup):
-    """Every verify_run_directory terminal state reports exact, truthful fields."""
+def test_verify_run_provider_status_matrix(clean_vault_setup):
+    """Every provider-native verification terminal state reports truthful fields."""
     project_root = clean_vault_setup["project_root"]
-    run_log_dir = clean_vault_setup["run_log_dir"]
     run_id = clean_vault_setup["run_id"]
     run_dir = clean_vault_setup["run_dir"]
     trace_file = clean_vault_setup["trace_file"]
+    run_store = clean_vault_setup["run_store"]
 
     # NOT_FOUND: run directory absent.
-    missing = TraceVerifier.verify_run_directory(run_log_dir / "does-not-exist")
+    missing = TraceVerifier.verify_run("does-not-exist", run_store=run_store)
     assert missing["verification_status"] == "NOT_FOUND"
     assert missing["is_valid"] is False
     assert missing["has_certificate"] is False
     assert missing["has_signature"] is False
-    assert missing["failure_reason"] == "Run directory does not exist"
+    assert missing["failure_reason"] == "Run not found by storage provider."
 
     # UNVERIFIED: directory + trace exist but no certificate anywhere.
-    unverified = TraceVerifier.verify_run_directory(run_dir)
+    unverified = TraceVerifier.verify_run(run_id, run_store=run_store)
     assert unverified["verification_status"] == "UNVERIFIED"
     assert unverified["is_valid"] is False
     assert unverified["has_certificate"] is False
@@ -1707,20 +1707,25 @@ def test_verify_run_directory_status_matrix(clean_vault_setup):
     cert_path = run_dir / "run_manifest.json"
     cert_path.write_text(json.dumps({"vc_version": "3.0.0"}), encoding="utf-8")
     trace_file.unlink()
-    orphan_cert = TraceVerifier.verify_run_directory(run_dir)
+    orphan_cert = TraceVerifier.verify_run(run_id, run_store=run_store)
     assert orphan_cert["verification_status"] == "FAILED_VERIFICATION"
     assert orphan_cert["is_valid"] is False
     assert orphan_cert["has_certificate"] is True
     assert orphan_cert["has_signature"] is False
-    assert "missing" in orphan_cert["failure_reason"].lower()
+    assert "trace bytes" in orphan_cert["failure_reason"].lower()
 
     # VERIFIED: freshly certified vault passes with full chain validation.
     trace_file.write_text(VC_EVENT_LINE, encoding="utf-8")
+    cert_path.unlink()
     _append_authoritative_finalization(trace_file, run_id, run_dir)
-    TraceVerifier.sign_trace(
-        str(trace_file), identity_id="test_signer", run_id=run_id, execution_mode="live"
+    sign_and_save(
+        run_id,
+        trace_file.read_bytes(),
+        run_store=run_store,
+        identity_id="test_signer",
+        execution_mode="live",
     )
-    verified = TraceVerifier.verify_run_directory(run_dir)
+    verified = TraceVerifier.verify_run(run_id, run_store=run_store)
     assert verified["verification_status"] == "VERIFIED"
     assert verified["is_valid"] is True
     assert verified["has_certificate"] is True
@@ -1729,19 +1734,20 @@ def test_verify_run_directory_status_matrix(clean_vault_setup):
     # FAILED_VERIFICATION: post-certification trace tampering is detected.
     with open(trace_file, "ab") as f:
         f.write(b'{"event": "injected"}\n')
-    tampered = TraceVerifier.verify_run_directory(run_dir)
+    tampered = TraceVerifier.verify_run(run_id, run_store=run_store)
     assert tampered["verification_status"] == "FAILED_VERIFICATION"
     assert tampered["is_valid"] is False
     assert tampered["failure_reason"]
 
-    # FAILED_VERIFICATION: unreadable certificate surfaces a verification error.
+    # An unreadable provider manifest is unavailable evidence, not a path
+    # recovery candidate; verification remains conservatively unverified.
     cert_path.write_text("{not valid json", encoding="utf-8")
-    corrupt = TraceVerifier.verify_run_directory(run_dir)
-    assert corrupt["verification_status"] == "FAILED_VERIFICATION"
+    corrupt = TraceVerifier.verify_run(run_id, run_store=run_store)
+    assert corrupt["verification_status"] == "UNVERIFIED"
     assert corrupt["is_valid"] is False
-    assert corrupt["has_certificate"] is True
+    assert corrupt["has_certificate"] is False
     assert corrupt["has_signature"] is False
-    assert "Verification error" in corrupt["failure_reason"]
+    assert corrupt["failure_reason"]
 
     assert project_root.exists()  # jail intact throughout
 
@@ -1763,30 +1769,35 @@ def test_verify_trace_only_mode_skips_ledger_check(clean_vault_setup):
     assert TraceVerifier.verify_trace(trace_file, manifest_path, trace_only=True) is True
 
 
-def test_verify_run_directory_enforces_full_evidence_chain(clean_vault_setup):
+def test_verify_run_provider_detects_exact_trace_byte_tampering(clean_vault_setup):
     """
-    verify_run_directory must validate the FULL evidence chain: tampering a
-    ledger-referenced artifact (trace untouched) downgrades the verdict to
-    FAILED_VERIFICATION.
+    Provider-native verification must use the exact committed trace bytes;
+    an append after signing downgrades the verdict to FAILED_VERIFICATION.
     """
     run_id = clean_vault_setup["run_id"]
     run_dir = clean_vault_setup["run_dir"]
     trace_file = clean_vault_setup["trace_file"]
+    run_store = clean_vault_setup["run_store"]
 
-    evidence = trace_file.parent / f"{run_id}_artifact.txt"
-    evidence.write_text("original content", encoding="utf-8")
     _append_authoritative_finalization(trace_file, run_id, run_dir)
-    TraceVerifier.sign_trace(
-        str(trace_file), identity_id="test_signer", run_id=run_id, execution_mode="live"
+    sign_and_save(
+        run_id,
+        trace_file.read_bytes(),
+        run_store=run_store,
+        identity_id="test_signer",
+        execution_mode="live",
     )
 
     # Sanity: pristine evidence verifies cleanly.
-    assert TraceVerifier.verify_run_directory(run_dir)["verification_status"] == "VERIFIED"
+    pristine = TraceVerifier.verify_run(run_id, run_store=run_store)
+    assert pristine["verification_status"] == "VERIFIED"
 
-    # Tamper ONLY the ledger-referenced artifact; execution trace stays intact.
-    evidence.write_text("tampered malicious content", encoding="utf-8")
+    # Simulate an out-of-band backend corruption; verification must compare
+    # the provider's exact bytes with the signed commitment and reject it.
+    with open(trace_file, "ab") as stream:
+        stream.write(b'{"event":"injected","reason":"tamper"}\n')
 
-    res = TraceVerifier.verify_run_directory(run_dir)
+    res = TraceVerifier.verify_run(run_id, run_store=run_store)
     assert res["verification_status"] == "FAILED_VERIFICATION"
     assert res["is_valid"] is False
     assert res["failure_reason"]
@@ -2819,7 +2830,7 @@ def test_verification_authority_verify_package_incomplete_provenance_and_sig_exc
 
 def test_locate_certificate_file_boundary_cases():
     """Verifies boundary cases in locate_certificate_file helper."""
-    from eval_runner.verifier import locate_certificate_file
+    from eval_runner.reference.legacy_verifier_paths import locate_certificate_file
 
     assert locate_certificate_file("") is None
     assert locate_certificate_file(None) is None  # type: ignore
@@ -4229,6 +4240,7 @@ async def test_verifier_signer_and_utilities_full_coverage(clean_vault_setup):
     import json
     from collections.abc import Callable
 
+    from eval_runner.reference.legacy_verifier_paths import locate_certificate_file
     from eval_runner.verifier import (
         CertificationFailedError,
         CoreTraceSigner,
@@ -4236,7 +4248,6 @@ async def test_verifier_signer_and_utilities_full_coverage(clean_vault_setup):
         TraceVerifier,
         VerificationResult,
         VerificationService,
-        locate_certificate_file,
     )
 
     # 1. VerificationResult to_dict and safety floor checks

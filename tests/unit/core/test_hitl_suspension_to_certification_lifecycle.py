@@ -16,7 +16,6 @@ Verifies the end-to-end cryptographic and runtime invariants across:
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
@@ -118,8 +117,6 @@ async def test_full_lifecycle_suspension_to_certification_e2e(
     and issues a cryptographic certificate via CertificationService.issue_certification().
     """
     run_id = "run-e2e-suspension-to-cert-001"
-    runs_dir = Path(config.RUN_LOG_DIR)
-    vault_dir = runs_dir / run_id
 
     expected_scope = {
         "org_id": "org_clinical_governance",
@@ -159,11 +156,8 @@ async def test_full_lifecycle_suspension_to_certification_e2e(
         == RunLifecycleState.PAUSED_FOR_APPROVAL
     )
 
-    manifest_file = vault_dir / "execution_manifest.json"
-    assert manifest_file.exists(), "execution_manifest.json must be written upfront before pause"
-
-    manifest_bytes = manifest_file.read_text(encoding="utf-8")
-    raw_manifest_dict = json.loads(manifest_bytes)
+    provider_manifest = runner.run_store.get_manifest(run_id)
+    raw_manifest_dict = provider_manifest["execution_manifest"]
 
     # Invariant: Must NOT contain duplicate legacy field keys
     assert "scope" in raw_manifest_dict, "Canonical 'scope' must be serialized in manifest"
@@ -244,10 +238,7 @@ async def test_full_lifecycle_suspension_to_certification_e2e(
     # -----------------------------------------------------------------------
     # Step 5: Invariant Check on Post-Resume Monotonic Trace & Finalization
     # -----------------------------------------------------------------------
-    trace_path = vault_dir / "run.jsonl"
-    assert trace_path.exists()
-
-    events = CertificationService.parse_trace_strict(trace_path, run_id=run_id)
+    events = runner.run_store.get_events(run_id, offset=0, limit=10_000_000)
     assert len(events) >= 6
 
     # Verify strict contiguity and monotonicity of sequence numbers
@@ -256,13 +247,16 @@ async def test_full_lifecycle_suspension_to_certification_e2e(
 
     # Verify key lifecycle trace events
     event_names = [e.get("event") for e in events]
+    # Both lifecycle carriers are written before the provider closes trace
+    # writes for PAUSED_FOR_APPROVAL, so debugger state is reconstructible.
     assert "hitl_pause" in event_names
     assert "approval_created" in event_names
+    assert pending_request.status == "PENDING"
     assert "run_start" in event_names
     assert "run_end" in event_names
 
     # Verify authoritative EvaluatorFinalizationRecord was generated and signed
-    fin_record = CertificationService.extract_finalization_record(trace_path)
+    fin_record = CertificationService._finalization(events, run_id)
     assert fin_record is not None
     assert fin_record.run_id == run_id
     assert fin_record.outcome == "pass"
@@ -301,10 +295,7 @@ async def test_full_lifecycle_suspension_to_certification_e2e(
     assert issue_certification is not None
 
     # Verify verification certificate artifact written to vault sidecar and published reports
-    sidecar_file = vault_dir / "run_manifest.json"
-    assert sidecar_file.exists(), "Manifest sidecar must exist in run vault"
-
-    vc_data = json.loads(sidecar_file.read_text(encoding="utf-8"))
+    vc_data = runner.run_store.get_manifest(run_id)
     assert vc_data["compliance"]["status"] == "pass"
     assert vc_data["compliance"]["score"] == 1.0
     assert vc_data["execution_mode"] == "live"
@@ -329,14 +320,13 @@ async def test_full_lifecycle_suspension_to_certification_e2e(
     )
 
     # Audit 2: Authoritative certification package artifact verification
-    vault_dir / "execution_manifest.json"
     canonical_manifest = ExecutionManifest.from_dict(
         runner.run_store.get_manifest(run_id)["execution_manifest"]
     )
 
     cert_audit = TraceVerifier.verify_certification_artifact(
         package=vc_data["verification_package"],
-        raw_trace_bytes=(vault_dir / "run.jsonl").read_bytes(),
+        raw_trace_bytes=runner.run_store.get_trace_bytes(run_id),
         canonical_manifest=canonical_manifest,
         scenario_data=governance_scenario,
     )
@@ -360,8 +350,6 @@ async def test_lifecycle_fails_closed_on_unknown_serialized_field(
     ExecutionManifestUnknownFields and CertificationService.issue_certification refuses to certify.
     """
     run_id = "run-e2e-unknown-field-fail-closed"
-    runs_dir = Path(config.RUN_LOG_DIR)
-    vault_dir = runs_dir / run_id
 
     runner = DefaultRunner()
 
@@ -374,21 +362,10 @@ async def test_lifecycle_fails_closed_on_unknown_serialized_field(
         )
 
     suspension = exc_info.value
-    manifest_file = vault_dir / "execution_manifest.json"
-    assert manifest_file.exists()
-
-    # Inject an unknown/rogue serialized field into the manifest on disk and in provider sidecar
-    m_data = json.loads(manifest_file.read_text(encoding="utf-8"))
+    # Inject an unknown/rogue serialized field into the provider manifest.
+    provider_manifest = runner.run_store.get_manifest(run_id)
+    m_data = provider_manifest["execution_manifest"]
     m_data["untrusted_carrier_injection"] = "malicious_payload_or_stale_key"
-    manifest_file.write_text(json.dumps(m_data, indent=2), encoding="utf-8")
-
-    sidecar_file = vault_dir / "run_manifest.json"
-    if sidecar_file.exists():
-        sidecar_data = json.loads(sidecar_file.read_text(encoding="utf-8"))
-        sidecar_data.setdefault("execution_manifest", {})["untrusted_carrier_injection"] = (
-            "malicious_payload_or_stale_key"
-        )
-        sidecar_file.write_text(json.dumps(sidecar_data, indent=2), encoding="utf-8")
 
     # Invariant: ExecutionManifest.from_dict must reject unknown fields immediately
     with pytest.raises(ValueError, match="ExecutionManifestUnknownFields") as parse_err:
@@ -406,7 +383,10 @@ async def test_lifecycle_fails_closed_on_unknown_serialized_field(
 
     # Invariant: a corrupted immutable manifest blocks resumption before any
     # further execution can append evidence to the run.
-    with pytest.raises(RuntimeError, match="ResumptionManifestInvalid"):
+    with (
+        patch.object(runner.run_store, "get_manifest", return_value=provider_manifest),
+        pytest.raises(RuntimeError, match="ResumptionManifestInvalid"),
+    ):
         await runner.run(
             scenario=governance_scenario,
             run_id=run_id,
@@ -432,8 +412,6 @@ async def test_lifecycle_fails_closed_on_manifest_hash_mismatch(
     detects the hash divergence and fails closed.
     """
     run_id = "run-e2e-hash-mismatch-fail-closed"
-    runs_dir = Path(config.RUN_LOG_DIR)
-    vault_dir = runs_dir / run_id
 
     runner = DefaultRunner()
 
@@ -469,20 +447,14 @@ async def test_lifecycle_fails_closed_on_manifest_hash_mismatch(
             metadata={"execution_mode": "live", "execution_mode_declared": True},
         )
 
-    # Tamper with the physical manifest by changing a declared environment parameter
-    manifest_file = vault_dir / "execution_manifest.json"
-    m_data = json.loads(manifest_file.read_text(encoding="utf-8"))
+    # Tamper with the provider manifest by changing a declared environment parameter.
+    provider_manifest = runner.run_store.get_manifest(run_id)
+    m_data = provider_manifest["execution_manifest"]
     m_data.setdefault("metadata", {})["tampered_flag"] = True
-    manifest_file.write_text(json.dumps(m_data, indent=2), encoding="utf-8")
-
-    sidecar_file = vault_dir / "run_manifest.json"
-    if sidecar_file.exists():
-        sidecar_data = json.loads(sidecar_file.read_text(encoding="utf-8"))
-        sidecar_data.setdefault("execution_manifest", {}).setdefault("metadata", {})[
-            "tampered_flag"
-        ] = True
-        sidecar_file.write_text(json.dumps(sidecar_data, indent=2), encoding="utf-8")
 
     # Invariant: CertificationService must fail closed on ManifestHashMismatch
-    with pytest.raises(ValueError, match="ManifestHashMismatch"):
-        CertificationService.issue_certification(run_id=run_id)
+    with (
+        patch.object(runner.run_store, "get_manifest", return_value=provider_manifest),
+        pytest.raises(ValueError, match="ManifestHashMismatch"),
+    ):
+        CertificationService.issue_certification(run_id=run_id, run_store=runner.run_store)

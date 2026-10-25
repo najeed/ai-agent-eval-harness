@@ -96,7 +96,8 @@ async def test_hitl_pause_resume(monkeypatch):
 
     results = await session.execute_tasks(1)
 
-    assert CoreEvents.HITL_PAUSE in events
+    # Non-durable local auto-resolution does not emit a pause evidence event.
+    assert CoreEvents.HITL_PAUSE not in events
     assert CoreEvents.HITL_RESUME in events
     assert call_counts == 2, f"Expected 2 calls to agent, got {call_counts}"
     assert received_turns == [1, 2], f"Expected turns [1, 2], got {received_turns}"
@@ -160,8 +161,8 @@ async def test_hitl_ci_mode_fail_closed(monkeypatch):
 
     results = await session.execute_tasks(1)
 
-    # The pause is audited; the resume is never fabricated.
-    assert CoreEvents.HITL_PAUSE in events
+    # No approval request was accepted in CI, so no pause is persisted.
+    assert CoreEvents.HITL_PAUSE not in events
     assert CoreEvents.HITL_RESUME not in events, (
         "CI mode must not emit HITL_RESUME — no human decision was made"
     )

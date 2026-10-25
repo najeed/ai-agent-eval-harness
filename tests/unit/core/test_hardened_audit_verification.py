@@ -663,14 +663,12 @@ def test_verification_authority_split_and_manifest_tamper_detection():
     assert any("TraceBytesMissing" in f for f in missing_bytes_res["failures"])
 
 
-def test_certification_outcome_extraction_authoritative_precedence(tmp_path):
+def test_certification_outcome_extraction_authoritative_precedence():
     """R1 / S1: Authoritative failure decision is never bypassed by passed=True."""
-    import json
 
     from eval_runner.services.certification import CertificationService
 
     # Trace containing passed=True but authoritative failure decision="POLICY_BREACH"
-    trace_file = tmp_path / "run.jsonl"
     records = [
         {"event": "run_start", "_seq": 1},
         {
@@ -683,9 +681,7 @@ def test_certification_outcome_extraction_authoritative_precedence(tmp_path):
         },
         {"event": "run_end", "_seq": 3},
     ]
-    trace_file.write_text("\n".join(json.dumps(r) for r in records), encoding="utf-8")
-
-    status, score = CertificationService.extract_computed_run_outcome(tmp_path, trace_file)
+    status, score = CertificationService.extract_computed_run_outcome(events=records)
     assert status == "fail"
     assert score == 0.0
 

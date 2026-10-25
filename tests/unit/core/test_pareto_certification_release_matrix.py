@@ -43,9 +43,15 @@ from eval_runner.run_lifecycle import (
     transition_run_lifecycle,
 )
 from eval_runner.services.certification import (
-    execute_industrial_certification,
+    execute_industrial_certification as _execute_industrial_certification,
 )
 from eval_runner.verifier import VerificationAuthority
+
+
+def execute_industrial_certification(run_id: str, **kwargs: Any):
+    """Test adapter binding legacy matrix fixtures to their local provider."""
+    kwargs.setdefault("run_store", LocalFileRunStore(config.RUN_LOG_DIR))
+    return _execute_industrial_certification(run_id, **kwargs)
 
 
 @pytest.fixture

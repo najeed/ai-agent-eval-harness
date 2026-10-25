@@ -3,7 +3,7 @@ eval_runner.session_components
 Modular decomposed session components.
 """
 
-from .approval_manager import SessionApprovalManager
+from .approval_manager import ApprovalBoundaryRejected, SessionApprovalManager
 from .checkpoint_manager import SessionCheckpointManager
 from .metrics_calculator import SessionMetricsCalculator
 from .state_parity import SessionStateParityVerifier
@@ -15,6 +15,7 @@ __all__ = [
     "ToolExecutionCoordinator",
     "SessionCheckpointManager",
     "SessionApprovalManager",
+    "ApprovalBoundaryRejected",
     "SessionMetricsCalculator",
     "SessionStateParityVerifier",
 ]

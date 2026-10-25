@@ -64,19 +64,14 @@ def test_cli_run_attempts(capsys, tmp_path, monkeypatch):
 def test_cli_replay_valid(tmp_path, monkeypatch):
     # Test 'replay' with --run-id
     monkeypatch.chdir(tmp_path)
-    # Create vaulted trace file matching the run_id
-    run_dir = tmp_path / "test-run"
-    run_dir.mkdir()
-    trace_file = run_dir / "run.jsonl"
-    trace_file.write_text("{}", encoding="utf-8")
-
     with (
-        patch("eval_runner.config.RUN_LOG_DIR", tmp_path),
         patch("sys.argv", ["agentv", "replay", "--run-id", "test-run"]),
         patch("eval_runner.plugins.manager.load_plugins"),
         patch(
-            "eval_runner.handlers.analysis.trace_utils.load_events",
-            return_value=[{"event": "run_start", "run_id": "test"}],
+            "eval_runner.runtime_services.resolve_run_store",
+            return_value=MagicMock(
+                get_events=MagicMock(return_value=[{"event": "run_start", "run_id": "test"}])
+            ),
         ),
     ):
         with pytest.raises(SystemExit) as e:

@@ -47,33 +47,6 @@ def _ensure_path_safe(path: str | Path, description: str = "Path"):
     return True
 
 
-def _resolve_replay_trace(run_id: str) -> Path | None:
-    """
-    Tiered resolution for industrial run traces.
-    1. Primary: Vault directory (Mandatory for AgentV v1.6.0)
-    2. Fallback: Master Log consolidation
-    """
-    if not run_id:
-        return None
-
-    # Resolve paths
-    vault_path = (config.RUN_LOG_DIR / run_id / "run.jsonl").resolve()
-    master_path = (config.RUN_LOG_DIR / "run.jsonl").resolve()
-
-    # Integrity and Security Check
-    if not _ensure_path_safe(vault_path, "Vault Trace"):
-        return None
-    if not _ensure_path_safe(master_path, "Master Log"):
-        return None
-
-    if vault_path.exists():
-        return vault_path
-
-    if master_path.exists():
-        return master_path
-    return None
-
-
 def prepare_agent_env(args) -> dict:
     """Sets environment variables for agents and returns agent metadata."""
     protocol = getattr(args, "protocol", "http")
@@ -353,15 +326,13 @@ async def handle_replay(args):
             print("❌ Error: Run ID is mandatory for replay.")
             return 1
 
-        if not _ensure_path_safe(config.RUN_LOG_DIR / run_id, "Run Vault"):
-            return 1
-
-        # --- [TIERED RESOLUTION] ---
+        # Replay is provider-native. There is no vault/master-log recovery
+        # path: an owner that cannot return events cannot be replayed.
         events = resolve_run_store().get_events(run_id, offset=0, limit=10_000_000)
         if not events:
             print(
                 f"❌ [ERROR] Replay trace not found for Run ID '{run_id}'. "
-                "Vault and Master Log are missing or security check failed."
+                "RunStorageProvider returned no events."
             )
             return 1
 
@@ -397,9 +368,6 @@ async def handle_verify(args):
 
         if not run_id:
             print("      [CRITICAL] FAILED: Run ID is mandatory for verification.")
-            return 1
-
-        if not _ensure_path_safe(config.RUN_LOG_DIR / run_id, "Run Vault"):
             return 1
 
         from eval_runner.runtime_services import resolve_run_store
@@ -576,9 +544,6 @@ async def handle_certify(args):
         print("❌ Error: Run ID is mandatory for certification.")
         return 1
 
-    if not _ensure_path_safe(config.RUN_LOG_DIR / run_id, "Run Vault"):
-        return 1
-
     try:
         from eval_runner.runtime_services import resolve_run_store
 
@@ -601,16 +566,6 @@ async def handle_certify(args):
             behavioral_fingerprint_id=behavioral_fingerprint_id,
             run_store=resolve_run_store(),
         )
-
-        manifest = cert_res.get("manifest")
-        if manifest:
-            try:
-                cert_dir = Path(config.REPORTS_DIR) / "certificates"
-                cert_dir.mkdir(parents=True, exist_ok=True)
-                cert_file = cert_dir / f"{args.run_id}_vc.json"
-                cert_file.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
-            except Exception as exp_err:
-                logger.debug("Failed exporting certificate to reports: %s", exp_err)
 
         print("✅ Success: Verification Certificate generated.")
         print(f"    - Run ID: {args.run_id}")
@@ -737,6 +692,12 @@ async def handle_hitl_resume(args):
             resume_kwargs["run_store"] = run_store
             resume_kwargs["context"] = run_context
         backend.resume(**resume_kwargs)
+        completed_run = run_store.get_run(run_id, context=run_context or None) or {}
+        terminal_status = str(completed_run.get("status") or "").upper()
+        if terminal_status in {"FAILED", "ABORTED", "CANCELLED"}:
+            print(f"\n   [CLI] Resumed evaluation finished {terminal_status} for run '{run_id}'.")
+            return 1
+
         print(f"\n   [CLI] Resumed evaluation completed for run '{run_id}'.")
         return 0
 

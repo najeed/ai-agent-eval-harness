@@ -253,6 +253,23 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
         Intercepts human-in-the-loop approval requests to enforce stale token reuse,
         transaction ID mismatches, revocation, or approval race conditions.
         """
+        return self._intercept_approval(context, approval_data)
+
+    def on_approval_preflight(
+        self, context: Any, node_data: dict[str, Any] | None = None
+    ) -> dict[str, Any] | bool:
+        """Reject approval mutations before invoking an approval-capable agent.
+
+        A scenario-declared HITL gate can otherwise call the external agent
+        before ``on_approval_request`` runs.  That leaves the remote workflow
+        visibly paused even though AgentV correctly rejects the mutated
+        boundary.  Preflight makes the mutation a local, terminal finding.
+        """
+        return self._intercept_approval(context, node_data)
+
+    def _intercept_approval(
+        self, context: Any, approval_data: dict[str, Any] | None = None
+    ) -> dict[str, Any] | bool:
         node = self.active_node_data
         data = approval_data or {}
 
@@ -266,6 +283,8 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
             return {
                 "allowed": False,
                 "error": "InvalidSignature: approval token expired in 1970 (stale token blocked)",
+                "mutation_fault": "approval_stale",
+                "failure_category": "APPROVAL_SECURITY_REJECTED",
             }
 
         # 2. Approval Transaction Mismatch
@@ -278,6 +297,8 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
             return {
                 "allowed": False,
                 "error": "ApprovalMismatch: approval token belongs to different transaction object",
+                "mutation_fault": "approval_mismatch",
+                "failure_category": "APPROVAL_SECURITY_REJECTED",
             }
 
         # 3. Mid-Flight Revocation
@@ -287,6 +308,8 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
             return {
                 "allowed": False,
                 "error": "ApprovalRevoked: approval token was revoked midway through execution",
+                "mutation_fault": "approval_revocation",
+                "failure_category": "APPROVAL_SECURITY_REJECTED",
             }
 
         # 4. Approval Race Condition
@@ -296,6 +319,8 @@ class RuntimeMutationPlugin(BaseEvalPlugin):
             return {
                 "allowed": False,
                 "error": "ApprovalRaceCondition: approval collided with boundary timeout",
+                "mutation_fault": "approval_race",
+                "failure_category": "APPROVAL_SECURITY_REJECTED",
             }
 
         return True

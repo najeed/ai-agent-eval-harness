@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .. import calibrator, leaderboard_generator, reporter, taxonomy, trace_utils
+from .. import calibrator, leaderboard_generator, reporter, taxonomy
 from ..explainer import explain_events
 from ..trace_utils import reconstruct_results_from_events
 
@@ -20,14 +20,8 @@ async def handle_report(args):
     try:
         from eval_runner.runtime_services import resolve_run_store
 
-        from .evaluation import _ensure_path_safe, _resolve_replay_trace
-
         print(f"\n[Report] Generating stylized HTML for Run ID: {run_id}")
         events = _events_for_run(run_id, run_store=resolve_run_store())
-        if not events:
-            trace_path = _resolve_replay_trace(run_id)
-            if trace_path and _ensure_path_safe(trace_path, "Report Trace"):
-                events = trace_utils.load_events(trace_path)
         if not events:
             print(f"[ERROR] Run '{run_id}' was not found by the run provider.")
             return 1
@@ -58,14 +52,18 @@ async def handle_explain(args):
     if not run_id:
         print("[CRITICAL] Run ID is mandatory for explanation.")
         return 1
-    from eval_runner.runtime_services import resolve_run_store
+    try:
+        from eval_runner.runtime_services import resolve_run_store
 
-    events = _events_for_run(run_id, run_store=resolve_run_store())
-    if not events:
-        print(f"[ERROR] Run '{run_id}' was not found by the run provider.")
+        events = _events_for_run(run_id, run_store=resolve_run_store())
+        if not events:
+            print(f"[ERROR] Run '{run_id}' was not found by the run provider.")
+            return 1
+        print(explain_events(events))
+        return 0
+    except Exception as exc:
+        print(f"[ERROR] Explanation failed: {exc}")
         return 1
-    print(explain_events(events))
-    return 0
 
 
 async def handle_calibrate(args):
@@ -76,14 +74,8 @@ async def handle_calibrate(args):
     try:
         from eval_runner.runtime_services import resolve_run_store
 
-        from .evaluation import _ensure_path_safe, _resolve_replay_trace
-
         print(f"\n[Calibrate] Measuring judge agreement for Run ID: {run_id}")
         events = _events_for_run(run_id, run_store=resolve_run_store())
-        if not events:
-            trace_path = _resolve_replay_trace(run_id)
-            if trace_path and _ensure_path_safe(trace_path, "Calibration Trace"):
-                events = trace_utils.load_events(trace_path)
         if not events:
             return 1
         return (

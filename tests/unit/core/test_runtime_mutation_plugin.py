@@ -14,6 +14,7 @@ import pytest
 
 from eval_runner.mutator_plugin import RuntimeMutationPlugin
 from eval_runner.plugins import PluginManager
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.session_components.approval_manager import SessionApprovalManager
 from eval_runner.tool_sandbox import ToolSandbox
 
@@ -196,15 +197,18 @@ def test_rollback_failure_interception(sample_node):
     assert allowed is False
 
 
-def test_approval_interceptions_and_manager_integration(sample_node):
+def test_approval_interceptions_and_manager_integration(sample_node, tmp_path):
     """Verifies stale, mismatch, revocation, and race approval rejections in approval manager."""
     pm = PluginManager()
     plugin = RuntimeMutationPlugin()
     pm.plugins.append(plugin)
 
+    run_store = LocalFileRunStore(tmp_path / "runs")
+    run_store.create_run("run_test", "mutation-test")
     approval_mgr = SessionApprovalManager(
         run_id="run_test",
         plugin_manager=pm,
+        run_store=run_store,
     )
 
     # 1. Stale Token

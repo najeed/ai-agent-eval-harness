@@ -28,6 +28,27 @@ def violations() -> list[str]:
     direct_reference = re.compile(r"(?:from|import)\s+eval_runner\.reference\b")
     direct_resolver = re.compile(r"\bresolve_extension\(")
     console_resolver = re.compile(r"\bresolve_run_storage_provider\b")
+    # These are run-data recovery mechanisms that were deliberately removed
+    # from Core.  The reference provider may use files internally, but domain
+    # code must reach them only through RunStorageProvider operations.
+    provider_native_bans: dict[Path, re.Pattern[str]] = {
+        ROOT / "eval_runner" / "handlers" / "evaluation.py": re.compile(
+            r"\b(?:_resolve_replay_trace|config\.RUN_LOG_DIR|config\.REPORTS_DIR|"
+            r"resolve_trace_path|tail_file_generator)\b"
+        ),
+        ROOT / "eval_runner" / "session_components" / "approval_manager.py": re.compile(
+            r"\b(?:RUN_LOG_DIR|execution_manifest\.json|create_run_index|"
+            r"read_run_index|update_run_index_status)\b"
+        ),
+        ROOT / "eval_runner" / "services" / "certification.py": re.compile(
+            r"\b(?:trace_path|materialize_provider_trace|config\.RUN_LOG_DIR|"
+            r"config\.REPORTS_DIR|resolve_trace_path)\b"
+        ),
+        ROOT / "eval_runner" / "verifier.py": re.compile(
+            r"\b(?:trace_path|locate_certificate_file|resolve_trace_path|"
+            r"tail_file_generator|resolve_run_store)\b"
+        ),
+    }
     for path in _python_files(ROOT / "eval_runner" / "console"):
         for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
             if console_forbidden.search(line):
@@ -46,6 +67,10 @@ def violations() -> list[str]:
                 findings.append(f"{path.relative_to(ROOT)}:{number}: direct reference import")
             if direct_resolver.search(line):
                 findings.append(f"{path.relative_to(ROOT)}:{number}: direct resolver call")
+    for path, banned in provider_native_bans.items():
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if banned.search(line) and "provider-boundary: reject legacy input" not in line:
+                findings.append(f"{path.relative_to(ROOT)}:{number}: legacy run-data bypass")
     return findings
 
 

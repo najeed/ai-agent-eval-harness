@@ -40,11 +40,13 @@ def test_prepare_agent_env_socket_protocol():
     assert os.environ.get("AGENT_SOCKET_ADDR") == "127.0.0.1:9000"
 
 
-def test_resolve_replay_trace_security_jail(tmp_path):
-    """Verify security rejection when trace resolution breaches jail boundary."""
-    with patch("eval_runner.handlers.evaluation.utils.is_path_safe", return_value=False):
-        res = evaluation._resolve_replay_trace("out_of_bounds_run")
-        assert res is None
+@pytest.mark.asyncio
+async def test_replay_requires_provider_owned_events():
+    """Replay has no path-jail branch because it does not resolve paths."""
+    provider = MagicMock()
+    provider.get_events.return_value = []
+    with patch("eval_runner.runtime_services.resolve_run_store", return_value=provider):
+        assert await evaluation.handle_replay(MagicMock(run_id="out_of_bounds_run")) == 1
 
 
 # ---------------------------------------------------------------------------
@@ -169,7 +171,7 @@ async def test_handle_replay_missing_run_id_and_resolution_error():
 
     # Exception during trace resolution
     with patch(
-        "eval_runner.handlers.evaluation._resolve_replay_trace",
+        "eval_runner.runtime_services.resolve_run_store",
         side_effect=RuntimeError("Trace not found"),
     ):
         assert await evaluation.handle_replay(MagicMock(run_id="run_missing")) == 1
@@ -417,35 +419,13 @@ async def test_handle_verify_package_branches(tmp_path):
     assert await evaluation.handle_verify_package(args_fail) == 1
 
 
-def test_handler_resolve_replay_trace_and_manifest(tmp_path):
-    """Resolve replay trace and manifest."""
-    # 1. No run_id
-    assert evaluation._resolve_replay_trace("") is None
-    assert evaluation._resolve_replay_trace(None) is None
-
-    # 2. Vault path unsafe check
-    with patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=False):
-        assert evaluation._resolve_replay_trace("some-run-id") is None
-
-    # 3. Master path unsafe check
-    with patch("eval_runner.handlers.evaluation._ensure_path_safe", side_effect=[True, False]):
-        assert evaluation._resolve_replay_trace("some-run-id") is None
-
-    # 4. Neither vault nor master log exists
-    with (
-        patch("eval_runner.config.RUN_LOG_DIR", tmp_path),
-        patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=True),
-    ):
-        assert evaluation._resolve_replay_trace("nonexistent-run") is None
-
-    # 5. Master path fallback
-    with (
-        patch("eval_runner.config.RUN_LOG_DIR", tmp_path),
-        patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=True),
-    ):
-        master_file = tmp_path / "run.jsonl"
-        master_file.write_text('{"event": "start"}\n', encoding="utf-8")
-        assert evaluation._resolve_replay_trace("fallback-run") == master_file
+@pytest.mark.asyncio
+async def test_handler_replay_uses_provider_events_only():
+    provider = MagicMock()
+    provider.get_events.return_value = [{"event": "run_start", "run_id": "provider-run"}]
+    with patch("eval_runner.runtime_services.resolve_run_store", return_value=provider):
+        assert await evaluation.handle_replay(MagicMock(run_id="provider-run")) == 0
+    provider.get_events.assert_called_once_with("provider-run", offset=0, limit=10_000_000)
 
 
 def test_load_plugins_from_args_exception():
@@ -857,16 +837,17 @@ async def test_handle_evaluate_filters_callable_args():
 
 
 @pytest.mark.asyncio
-async def test_resolve_trace_path_vault_exists(tmp_path):
+async def test_replay_does_not_use_a_vault_path(tmp_path):
     run_id = "run-vault-present"
     vault_dir = tmp_path / "runs" / run_id
     vault_dir.mkdir(parents=True, exist_ok=True)
     vault_file = vault_dir / "run.jsonl"
     vault_file.write_text("{}", encoding="utf-8")
 
-    with patch("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs"):
-        resolved = evaluation._resolve_replay_trace(run_id)
-        assert resolved == vault_file.resolve()
+    provider = MagicMock()
+    provider.get_events.return_value = []
+    with patch("eval_runner.runtime_services.resolve_run_store", return_value=provider):
+        assert await evaluation.handle_replay(MagicMock(run_id=run_id)) == 1
 
 
 def test_prepare_agent_env_empty_cmd_and_socket():

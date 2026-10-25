@@ -348,6 +348,8 @@ export const LiveDebugger: React.FC = () => {
     if (!targetEvent) {
       targetEvent = events.find(e =>
         e.event === 'error' ||
+        String(e.status || '').toLowerCase() === 'failed' ||
+        Boolean(e.failure_class) ||
         e.category === 'PARITY_STATE_DIVERGENCE' ||
         e.message?.toLowerCase().includes('error') ||
         e.message?.toLowerCase().includes('fail')
@@ -565,7 +567,14 @@ export const LiveDebugger: React.FC = () => {
         fetchScenarioWithRetry(rid, 0, true);
         return;
       }
-      if (data.event === 'error' || data.event === 'stream_error') {
+      // ``error`` is also a persisted forensic event emitted by Core.  Only
+      // an unsequenced error frame is a transport-control error; treating a
+      // sequenced evidence record as control data discarded the finding and
+      // hid the Isolate Root Cause action for approval-boundary failures.
+      const hasEvidenceCursor =
+        Number.isSafeInteger(Number((data as any)._transport_cursor)) &&
+        Number((data as any)._transport_cursor) > 0;
+      if (data.event === 'stream_error' || (data.event === 'error' && !hasEvidenceCursor)) {
         const errMsg = data.message || data.error || 'Stream error occurred';
         console.warn('[LiveDebugger] Stream control error received:', errMsg);
         setStatus(prev => (prev === 'IDLE' ? 'ERROR' : prev));
@@ -635,6 +644,21 @@ export const LiveDebugger: React.FC = () => {
         setStatus('PAUSED_FOR_APPROVAL');
       }
 
+      // A failed execution node is authoritative evidence that the run is
+      // finalizing a failure.  The provider-owned run record remains RUNNING
+      // until final trace records have been committed, so exposing RUNNING
+      // here falsely suggests useful work is still progressing.
+      if (
+        data.event === 'execution_graph_node' &&
+        (String(data.status || '').toLowerCase() === 'failed' || Boolean(data.failure_class))
+      ) {
+        setStatus(previous =>
+          CANONICAL_TERMINAL_STATUSES.has(String(previous).toUpperCase())
+            ? previous
+            : 'FAILING'
+        );
+      }
+
       // Resume and dedupe exclusively with the opaque SSE cursor.
       const transportCursor = Number((data as any)._transport_cursor);
       if (!Number.isSafeInteger(transportCursor) || transportCursor <= 0) return;
@@ -682,6 +706,7 @@ export const LiveDebugger: React.FC = () => {
 
       if (data.event === 'run_end' || (data as any).name === 'run_end') {
         stopScenarioRetries();
+        if (data.status) setStatus(String(data.status).toUpperCase());
         fetchScenarioWithRetry(rid, 0, true);
       }
 
@@ -947,6 +972,10 @@ export const LiveDebugger: React.FC = () => {
 
   const hasError = events.some(e =>
     e.event === 'error' ||
+    e.is_root_cause === true ||
+    String(e.status || '').toLowerCase() === 'failed' ||
+    Boolean(e.failure_class) ||
+    e.category === 'APPROVAL_SECURITY_REJECTED' ||
     e.category === 'PARITY_STATE_DIVERGENCE' ||
     e.message?.toLowerCase().includes('error') ||
     e.message?.toLowerCase().includes('fail')
@@ -1033,7 +1062,13 @@ export const LiveDebugger: React.FC = () => {
           ) : (
             filteredEvents.map((evt, idx) => {
               const isSelected = selectedEvent === evt;
-              const isError = evt.event === 'error' || evt.category === 'PARITY_STATE_DIVERGENCE';
+              const isError =
+                evt.event === 'error' ||
+                evt.is_root_cause === true ||
+                String(evt.status || '').toLowerCase() === 'failed' ||
+                Boolean(evt.failure_class) ||
+                evt.category === 'APPROVAL_SECURITY_REJECTED' ||
+                evt.category === 'PARITY_STATE_DIVERGENCE';
               const isRootCauseIndex =
                 evt.is_root_cause === true ||
                 (analysisData &&
@@ -1082,7 +1117,7 @@ export const LiveDebugger: React.FC = () => {
                       </div>
                     </div>
                     <p className="font-mono text-[10px] truncate leading-tight">
-                      {evt.message || evt.task || evt.step || 'Event trigger'}
+                      {evt.failure_reason || evt.message || evt.task || evt.step || 'Event trigger'}
                     </p>
                   </div>
                 </button>
@@ -1205,8 +1240,8 @@ export const LiveDebugger: React.FC = () => {
       {/* Center - Visual Canvas */}
       <div className="flex-1 flex flex-col bg-navy-base relative min-w-0">
         {/* Header toolbar */}
-        <div className="min-h-[52px] border-b border-slate-900 bg-slate-950/40 px-5 py-2 flex items-center justify-between gap-4 shrink-0 text-xs">
-          <div className="flex items-center gap-3 min-w-0 flex-1 overflow-x-auto no-scrollbar py-0.5">
+        <div className="h-[52px] overflow-hidden border-b border-slate-900 bg-slate-950/40 px-4 py-1 flex items-center justify-between gap-3 shrink-0 text-xs">
+          <div className="flex flex-nowrap items-center gap-2 min-w-0 flex-1 overflow-x-auto overflow-y-hidden no-scrollbar py-0.5">
             {/* [B1] Topology provenance authority chip */}
             <div
               title={
@@ -1281,7 +1316,7 @@ export const LiveDebugger: React.FC = () => {
                     ? 'Executed layer: only authoritative execution_graph_node and execution_graph_edge evidence.'
                     : 'Divergence overlay: planned-vs-executed differences (SKIPPED planned nodes, UNPLANNED executions).'
               }
-              className="flex items-center bg-slate-950 border border-slate-800 rounded-lg p-0.5 font-mono text-[9px] font-bold uppercase tracking-wider cursor-help shrink-0"
+              className="order-first flex items-center bg-slate-950 border border-slate-800 rounded-lg p-0.5 font-mono text-[9px] font-bold uppercase tracking-wider cursor-help shrink-0"
             >
               <Layers className="w-3.5 h-3.5 text-slate-500 ml-1.5 mr-1" />
               {(['planned', 'executed', 'divergence'] as const).map(l => (
@@ -1354,18 +1389,22 @@ export const LiveDebugger: React.FC = () => {
             {hasError && (
               <button
                 onClick={handleIsolateRootCause}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-950/50 hover:bg-rose-900/60 border border-rose-800 hover:border-rose-600 rounded-lg text-rose-300 hover:text-rose-100 transition-colors font-bold uppercase tracking-wider text-[11px] whitespace-nowrap shrink-0 shadow-sm cursor-pointer"
+                aria-label="Isolate Root Cause"
+                title="Isolate Root Cause"
+                className="flex items-center gap-1.5 px-2.5 min-[1700px]:px-3 py-1.5 bg-rose-950/50 hover:bg-rose-900/60 border border-rose-800 hover:border-rose-600 rounded-lg text-rose-300 hover:text-rose-100 transition-colors font-bold uppercase tracking-wider text-[11px] whitespace-nowrap shrink-0 shadow-sm cursor-pointer"
               >
                 <AlertTriangle className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
-                <span>Isolate Root Cause</span>
+                <span className="hidden min-[1700px]:inline">Isolate Root Cause</span>
               </button>
             )}
             <button
               onClick={handleExplain}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-lg text-slate-300 hover:text-white transition-colors font-bold uppercase tracking-wider text-[11px] whitespace-nowrap shrink-0 shadow-sm cursor-pointer"
+              aria-label="Root Cause Analysis"
+              title="Root Cause Analysis"
+              className="flex items-center gap-1.5 px-2.5 min-[1700px]:px-3 py-1.5 bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-lg text-slate-300 hover:text-white transition-colors font-bold uppercase tracking-wider text-[11px] whitespace-nowrap shrink-0 shadow-sm cursor-pointer"
             >
               <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-              <span>Root Cause Analysis</span>
+              <span className="hidden min-[1700px]:inline">Root Cause Analysis</span>
             </button>
           </div>
         </div>

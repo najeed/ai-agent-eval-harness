@@ -22,12 +22,17 @@ import pytest
 from agentv_runtime.interfaces import ApprovalRequest
 from eval_runner.events import CoreEvents, EventEmitter
 from eval_runner.handlers.evaluation import handle_hitl_resume
+from eval_runner.mutator_plugin import RuntimeMutationPlugin
 from eval_runner.plugins import BaseEvalPlugin, PluginManager
 from eval_runner.reference.approval_store import (
     FileApprovalStore,
     reset_default_approval_store,
 )
-from eval_runner.session_components.approval_manager import SessionApprovalManager
+from eval_runner.reference.local_run_store import LocalFileRunStore
+from eval_runner.session_components.approval_manager import (
+    ApprovalBoundaryRejected,
+    SessionApprovalManager,
+)
 
 
 class DummyAuditPlugin(BaseEvalPlugin):
@@ -64,6 +69,12 @@ def clean_approval_environment(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     reset_default_approval_store()
 
 
+def _provider_for_run(tmp_path: Path, run_id: str) -> LocalFileRunStore:
+    store = LocalFileRunStore(tmp_path / "runs")
+    store.create_run(run_id, scenario_id="test-scenario")
+    return store
+
+
 class TestApprovalEventsAndHooksContracts:
     def test_core_events_constants(self):
         assert CoreEvents.APPROVAL_CREATED == "approval_created"
@@ -80,6 +91,25 @@ class TestApprovalEventsAndHooksContracts:
         )
         assert plugin.on_approval_created(None, req) is None
         assert plugin.on_approval_resolved(None, req) is None
+        assert plugin.on_approval_preflight(None, {"id": "node_1"}) is True
+
+    def test_approval_preflight_rejects_before_an_agent_can_pause(self):
+        plugin_manager = PluginManager()
+        mutation = RuntimeMutationPlugin()
+        mutation.on_step_start(None, "approval_node", {"approval_race": True})
+        plugin_manager.plugins.append(mutation)
+
+        result = plugin_manager.trigger_interceptor(
+            "on_approval_preflight", object(), {"id": "approval_node", "approval_race": True}
+        )
+
+        assert result is False
+        assert plugin_manager.last_rejection_details == {
+            "allowed": False,
+            "error": "ApprovalRaceCondition: approval collided with boundary timeout",
+            "mutation_fault": "approval_race",
+            "failure_category": "APPROVAL_SECURITY_REJECTED",
+        }
 
     def test_plugin_manager_trigger_hook_alias(self):
         mgr = PluginManager()
@@ -87,7 +117,32 @@ class TestApprovalEventsAndHooksContracts:
 
 
 class TestSessionApprovalManagerDispatch:
-    def test_create_durable_request_dispatches_hook_and_emits_event(self):
+    def test_mutation_rejection_is_structured_and_never_persists_a_pause(self, tmp_path: Path):
+        run_id = "run_approval_race_rejected"
+        provider = _provider_for_run(tmp_path, run_id)
+        plugin_manager = PluginManager()
+        mutation = RuntimeMutationPlugin()
+        mutation.on_step_start(None, "approval_node", {"approval_race": True})
+        plugin_manager.plugins.append(mutation)
+        approval_store = FileApprovalStore()
+        manager = SessionApprovalManager(
+            run_id=run_id,
+            approval_store=approval_store,
+            plugin_manager=plugin_manager,
+            run_store=provider,
+        )
+
+        with pytest.raises(ApprovalBoundaryRejected) as exc_info:
+            manager.create_durable_request(turn_index=1, action_payload={"action": "hitl_pause"})
+
+        rejection = exc_info.value
+        assert rejection.phase == "request"
+        assert rejection.details["mutation_fault"] == "approval_race"
+        assert rejection.details["failure_category"] == "APPROVAL_SECURITY_REJECTED"
+        assert approval_store.list_pending(run_id) == []
+        assert provider.get_run(run_id)["status"] != "PAUSED_FOR_APPROVAL"
+
+    def test_create_durable_request_dispatches_hook_and_emits_event(self, tmp_path: Path):
         bus = EventEmitter(run_id="run_test_dispatch", async_mode=False)
         emitted_events = []
         bus.subscribe(lambda e: emitted_events.append(e))
@@ -102,6 +157,7 @@ class TestSessionApprovalManagerDispatch:
             approval_store=store,
             plugin_manager=plugin_mgr,
             event_bus=bus,
+            run_store=_provider_for_run(tmp_path, "run_test_dispatch"),
         )
 
         req = manager.create_durable_request(
@@ -127,7 +183,7 @@ class TestSessionApprovalManagerDispatch:
         assert event.data["metadata"]["org_id"] == "tenant-corp"
         assert event.data["metadata"]["task_id"] == "task_42"
 
-    def test_resolve_durable_request_dispatches_hook_and_emits_event(self):
+    def test_resolve_durable_request_dispatches_hook_and_emits_event(self, tmp_path: Path):
         bus = EventEmitter(run_id="run_test_resolve", async_mode=False)
         emitted_events = []
         bus.subscribe(lambda e: emitted_events.append(e))
@@ -142,6 +198,7 @@ class TestSessionApprovalManagerDispatch:
             approval_store=store,
             plugin_manager=plugin_mgr,
             event_bus=bus,
+            run_store=_provider_for_run(tmp_path, "run_test_resolve"),
         )
 
         created = manager.create_durable_request(
@@ -178,7 +235,7 @@ class TestSessionApprovalManagerDispatch:
         assert res_evt.data["decided_by"] == "admin_user"
         assert res_evt.data["decision_reason"] == "Legitimate request"
 
-    def test_fail_safe_isolation_when_bus_emit_fails(self):
+    def test_fail_safe_isolation_when_bus_emit_fails(self, tmp_path: Path):
         failing_bus = MagicMock()
         failing_bus.emit.side_effect = RuntimeError("Broken event bus")
 
@@ -187,6 +244,7 @@ class TestSessionApprovalManagerDispatch:
             run_id="run_test_failsafe_bus",
             approval_store=store,
             event_bus=failing_bus,
+            run_store=_provider_for_run(tmp_path, "run_test_failsafe_bus"),
         )
 
         # create_durable_request must not raise
@@ -208,7 +266,7 @@ class TestSessionApprovalManagerDispatch:
         assert resolved is not None
         assert resolved.status == "REJECTED"
 
-    def test_fail_safe_isolation_when_plugin_trigger_fails(self):
+    def test_fail_safe_isolation_when_plugin_trigger_fails(self, tmp_path: Path):
         plugin_mgr = MagicMock()
         plugin_mgr.trigger.side_effect = RuntimeError("Crash inside plugin manager trigger")
 
@@ -217,6 +275,7 @@ class TestSessionApprovalManagerDispatch:
             run_id="run_test_failsafe_plugin",
             approval_store=store,
             plugin_manager=plugin_mgr,
+            run_store=_provider_for_run(tmp_path, "run_test_failsafe_plugin"),
         )
 
         # create_durable_request must not raise and must catch trigger exception

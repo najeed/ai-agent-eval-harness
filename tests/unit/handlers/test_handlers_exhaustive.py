@@ -36,8 +36,10 @@ async def test_handle_run_error_paths(mock_env_config):
 async def test_handle_replay_error_paths(mock_env_config):
     # evaluation.py 264-311 error handling
     args = MagicMock(run_id="invalid")
-    # _resolve_replay_trace returns None -> handled
-    with patch("eval_runner.handlers.evaluation._resolve_replay_trace", return_value=None):
+    # Provider returns no replayable evidence -> handled.
+    provider = MagicMock()
+    provider.get_events.return_value = []
+    with patch("eval_runner.runtime_services.resolve_run_store", return_value=provider):
         assert await evaluation.handle_replay(args) == 1
 
 

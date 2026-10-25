@@ -52,6 +52,7 @@ from .run_lifecycle import (  # noqa: E402
     transition_run_lifecycle,
 )
 from .session_components import (  # noqa: E402
+    ApprovalBoundaryRejected,
     SessionApprovalManager,
     SessionCheckpointManager,
     SessionMetricsCalculator,
@@ -1289,6 +1290,25 @@ class SessionManager:
         node_id = node["id"]
         # Trigger on_step_start interceptor hook
         self.plugin_manager.trigger_interceptor("on_step_start", self, node_id, node)
+        # Approval faults must be rejected before a scenario-declared gate or
+        # an approval-capable agent can create an external human-pause side
+        # effect.  The interpreter turns this structured boundary rejection
+        # into the authoritative failed graph-node evidence.
+        approval_preflight = self.plugin_manager.trigger_interceptor(
+            "on_approval_preflight", self, node
+        )
+        if approval_preflight is False or (
+            isinstance(approval_preflight, dict) and approval_preflight.get("allowed") is False
+        ):
+            details = getattr(self.plugin_manager, "last_rejection_details", None)
+            reason = getattr(self.plugin_manager, "last_rejection_reason", None)
+            if not isinstance(reason, str) or not reason:
+                reason = (
+                    approval_preflight.get("error")
+                    if isinstance(approval_preflight, dict)
+                    else None
+                ) or "Approval rejected by security policy"
+            raise ApprovalBoundaryRejected(reason, phase="preflight", details=details)
         task_description = node.get("task_description", "Processing node...")
         current_message = task_description
         execution_context = execution_context or {}
@@ -1513,6 +1533,37 @@ class SessionManager:
 
             except RunSuspendedForApproval:
                 raise
+            except ApprovalBoundaryRejected as exc:
+                # A mutation/policy rejection at the HITL boundary is a
+                # terminal security finding, never an unresolved approval.
+                # Mark the exact event as authoritative RCA evidence so the
+                # console can offer isolation even when no approval was
+                # created and the stream terminates immediately.
+                err_msg = f"Approval security boundary rejected request: {exc}"
+                rejection = dict(exc.details)
+                self.event_bus.emit(
+                    CoreEvents.ERROR,
+                    {
+                        "message": err_msg,
+                        "run_id": self.run_id,
+                        "node_id": node.get("id", "unknown"),
+                        "task_id": node.get("id", "unknown"),
+                        "turn": turn,
+                        "category": rejection.get("failure_category", "APPROVAL_SECURITY_REJECTED"),
+                        "failure_class": "APPROVAL_SECURITY_REJECTED",
+                        "approval_phase": exc.phase,
+                        "mutation_fault": rejection.get("mutation_fault"),
+                        "is_root_cause": True,
+                    },
+                )
+                task_results = await self._calculate_metrics(
+                    node, attempt_number, turn, conversation_history, sandbox, agent_actions
+                )
+                task_results["status"] = "failure"
+                task_results["triage_tag"] = "APPROVAL_SECURITY_REJECTED"
+                task_results["message"] = err_msg
+                node_success = False
+                break
             except Exception as e:
                 err_msg = f"Agent Node Error: {str(e)}"
                 self.event_bus.emit(
@@ -1903,12 +1954,19 @@ class SessionManager:
         elif overall == "verification_failed":
             task_results["triage_tag"] = "VERIFICATION_FAILED"
             fa = verdict.failed_assertion or {}
+            assertion_name = fa.get("id") or fa.get("metric") or fa.get("assertion") or "unnamed"
+            actual_value = fa.get("actual", fa.get("actual_after"))
             task_results["message"] = (
                 f"VERIFICATION_FAILED on node '{node_id}': assertion "
-                f"'{fa.get('metric') or fa.get('assertion') or 'unnamed'}' "
+                f"'{assertion_name}' "
                 f"(source={fa.get('source')}) did not pass. "
-                f"Expected: {fa.get('expected')} | Actual: {fa.get('actual')}"
+                f"Expected: {fa.get('expected')} | Actual: {actual_value}"
             )
+            # Keep the terminal reason visible in the interactive/CLI stream.
+            # The graph event already contains the full evidence, but emitting
+            # it here prevents a later consensus summary from looking like the
+            # cause of a state-verification failure.
+            print(f"      [Verification] ❌ {task_results['message']}")
         elif overall == "reconciliation_failed":
             task_results["triage_tag"] = "RECONCILIATION_FAILED"
             task_results["message"] = (
@@ -2531,7 +2589,9 @@ class SessionManager:
             except Exception as _chk_err:
                 logger.debug("Resumption approval store check failed: %s", _chk_err)
 
-        # Record the pause event for audit/forensics regardless of CI mode
+        # Calculate pause timing up front, but do not emit a pause until an
+        # approval is actually accepted.  A policy/mutation rejection here is
+        # a failure, not a paused run.
         node_start_ts = getattr(self, "_current_node_start_time", None)
         pre_pause_duration_ms = None
         if node_start_ts is not None:
@@ -2540,16 +2600,6 @@ class SessionManager:
             pre_pause_duration_ms = round((time.time() - turn_ctx.start_time) * 1000, 2)
 
         pause_start_ts = time.time()
-        self.event_bus.emit(
-            CoreEvents.HITL_PAUSE,
-            {
-                "task_id": task_id,
-                "prompt": prompt,
-                "pre_pause_duration_ms": pre_pause_duration_ms,
-                "pause_start_ts": pause_start_ts,
-            },
-        )
-
         # Check for explicit durable suspension requests first, even in CI
         if not is_scenario_gate and not (
             os.environ.get("AGENTV_CLI_HITL_SUSPEND") or os.environ.get("FORCE_HITL_SUSPEND")
@@ -2575,6 +2625,15 @@ class SessionManager:
             )
         ):
             # Interactive terminal: read from stdin directly
+            self.event_bus.emit(
+                CoreEvents.HITL_PAUSE,
+                {
+                    "task_id": task_id,
+                    "prompt": prompt,
+                    "pre_pause_duration_ms": pre_pause_duration_ms,
+                    "pause_start_ts": pause_start_ts,
+                },
+            )
             print(f"\n      [HITL] Human intervention required for task '{task_id}'")
             print(f"      Prompt: {prompt}")
             print("      Enter response (or 'exit' to abort): ", end="", flush=True)

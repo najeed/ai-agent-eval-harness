@@ -10,7 +10,6 @@ Covers:
   - Flight recorder fail-closed under AES_CERTIFICATION_MODE=1 without non-null signer
 """
 
-import json
 from datetime import UTC, datetime, timedelta
 
 import pytest
@@ -19,8 +18,8 @@ from eval_runner import config
 from eval_runner.console.app import create_app
 from eval_runner.console.auth_manager import Permission
 from eval_runner.flight_recorder import FlightRecorderPlugin
+from eval_runner.reference.legacy_verifier_paths import locate_certificate_file
 from eval_runner.reference.signing import NullSigningBackend
-from eval_runner.verifier import locate_certificate_file
 
 
 @pytest.fixture
@@ -93,14 +92,14 @@ def test_certify_requires_dedicated_certificate_authority(hardened_app, monkeypa
 def test_execute_industrial_certification_rejects_provisional_run(auth_client, tmp_path):
     """Test that a run with provisional=True or execution_mode=unknown is refused certification."""
     from eval_runner.console.routes.trust import execute_industrial_certification
+    from eval_runner.reference.local_run_store import LocalFileRunStore
 
     runs_dir = tmp_path / "runs"
     run_id = "run-provisional-101"
-    vault = runs_dir / run_id
-    vault.mkdir(parents=True, exist_ok=True)
+    run_store = LocalFileRunStore(runs_dir)
+    run_store.create_run(run_id, "provisional-scenario")
 
     now = datetime.now(UTC)
-    trace = vault / "run.jsonl"
     events = [
         {
             "event": "run_start",
@@ -113,10 +112,10 @@ def test_execute_industrial_certification_rejects_provisional_run(auth_client, t
             "data": {"status": "EXECUTION_COMPLETED", "passed": True},
         },
     ]
-    trace.write_text("\n".join(json.dumps(e) for e in events), encoding="utf-8")
+    run_store.append_events(run_id, events)
 
     with pytest.raises(ValueError, match=r"(is provisional|requires live evidence)"):
-        execute_industrial_certification(run_id=run_id)
+        execute_industrial_certification(run_id=run_id, run_store=run_store)
 
 
 def test_save_scenario_lifecycle_bypass_closed(auth_client, tmp_path):

@@ -139,6 +139,19 @@ class BaseEvalPlugin(ABC):  # noqa: B024
         """Hook called when a workflow DAG node or scenario step completes."""
         pass
 
+    def on_approval_preflight(  # noqa: B027
+        self,
+        context: Any,
+        node_data: dict[str, Any] | None = None,
+    ) -> dict[str, Any] | bool:
+        """Hook called before a node can invoke an approval-capable agent.
+
+        This is earlier than ``on_approval_request``.  It lets security
+        mutations reject a declared HITL gate before an external agent is
+        called and creates its own human-pause side effect.
+        """
+        return True
+
     def on_tool_request(  # noqa: B027
         self, context: Any, tool_name: str, arguments: dict[str, Any] | None = None
     ):
@@ -586,6 +599,9 @@ class PluginManager:
         """
         self.load_plugins()
         self.last_rejection_reason = None
+        # Preserve the structured rejection for security boundaries.  Callers
+        # must not have to reverse-engineer a root cause from display text.
+        self.last_rejection_details = None
         mutations = {"allowed": True}
         has_mutation = False
 
@@ -617,6 +633,7 @@ class PluginManager:
 
                     if result is False:
                         self.last_rejection_reason = "Blocked by plugin"
+                        self.last_rejection_details = {"allowed": False}
                         return False
 
                     if isinstance(result, dict):
@@ -624,6 +641,7 @@ class PluginManager:
                         mutations.update(result)
                         if result.get("allowed") is False:
                             self.last_rejection_reason = result.get("error", "Blocked by plugin")
+                            self.last_rejection_details = dict(result)
                             return False
 
                 except Exception as e:

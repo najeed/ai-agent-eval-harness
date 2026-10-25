@@ -260,8 +260,5 @@ def test_silent_failure_hardening_core(mock_config):
         with patch("eval_runner.loader.get_internal_spec_root", return_value=mock_config):
             loader.get_universal_registry()
 
-    # 2. Verifier missing artifacts logging
-    with patch("eval_runner.verifier.logger.error") as mock_log:
-        # verify_trace is now hardened to log errors if TP or MP are missing
-        assert verifier.TraceVerifier.verify_trace("non", "existent") is False
-        mock_log.assert_called()
+    # 2. Verifier rejects non-provider inputs without filesystem recovery.
+    assert verifier.TraceVerifier.verify_trace("non", "existent") is False

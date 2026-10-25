@@ -600,14 +600,33 @@ class WorkflowInterpreter:
         except RunSuspendedForApproval:
             raise
         except Exception as exc:  # noqa: BLE001 - engine boundary
-            result = {
-                "task_id": item.node_id,
-                "status": "failure",
-                "message": f"Interpreter executor error: {exc}",
-                "turns_taken": 0,
-                "used_tools": [],
-                "conversation_history": [],
-            }
+            # Session approval preflight deliberately raises its structured
+            # boundary exception before an external agent can enter HITL.  Do
+            # not flatten it into an opaque interpreter error: its category
+            # is the operator-visible root cause and drives failure routing.
+            details = getattr(exc, "details", None)
+            if exc.__class__.__name__ == "ApprovalBoundaryRejected" and isinstance(details, dict):
+                result = {
+                    "task_id": item.node_id,
+                    "status": "failure",
+                    "triage_tag": details.get("failure_category", "APPROVAL_SECURITY_REJECTED"),
+                    "message": f"Approval security boundary rejected request: {exc}",
+                    "turns_taken": 0,
+                    "used_tools": [],
+                    "conversation_history": [],
+                    "is_root_cause": True,
+                    "approval_phase": getattr(exc, "phase", "preflight"),
+                    "mutation_fault": details.get("mutation_fault"),
+                }
+            else:
+                result = {
+                    "task_id": item.node_id,
+                    "status": "failure",
+                    "message": f"Interpreter executor error: {exc}",
+                    "turns_taken": 0,
+                    "used_tools": [],
+                    "conversation_history": [],
+                }
         duration_ms = round((time.time() - start) * 1000, 2)
         record.duration_ms = duration_ms
         if isinstance(result, dict) and result.get("is_replayed"):
@@ -1038,6 +1057,12 @@ class WorkflowInterpreter:
                 payload["oracle_results"] = result["oracle_results"]
             if "node_verdict" in result and result["node_verdict"]:
                 payload["node_verdict"] = result["node_verdict"]
+            if result.get("is_root_cause") is True:
+                payload["is_root_cause"] = True
+            if result.get("approval_phase"):
+                payload["approval_phase"] = result["approval_phase"]
+            if result.get("mutation_fault"):
+                payload["mutation_fault"] = result["mutation_fault"]
         try:
             from .events import CoreEvents
 

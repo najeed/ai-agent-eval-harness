@@ -29,11 +29,13 @@ def test_prepare_agent_env_socket(monkeypatch):
     assert os.environ.get("AGENT_SOCKET_ADDR") == "127.0.0.1:9000"
 
 
-def test_resolve_replay_trace_security(monkeypatch):
-    """Verify security rejection for out-of-jail traces."""
-    with patch("eval_runner.utils.is_path_safe", return_value=False):
-        res = evaluation._resolve_replay_trace("malicious_id")
-        assert res is None
+@pytest.mark.asyncio
+async def test_replay_rejects_missing_provider_evidence():
+    """Replay reads only provider events and has no filesystem recovery path."""
+    provider = MagicMock()
+    provider.get_events.return_value = []
+    with patch("eval_runner.runtime_services.resolve_run_store", return_value=provider):
+        assert await evaluation.handle_replay(MagicMock(run_id="malicious_id")) == 1
 
 
 @pytest.mark.asyncio

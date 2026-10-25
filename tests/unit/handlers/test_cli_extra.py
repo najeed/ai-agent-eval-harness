@@ -8,7 +8,6 @@ Refactored to eliminate "Mock Namespaces" and use real argparse objects
 for high-fidelity verification.
 """
 
-import json  # noqa: E402
 from unittest.mock import AsyncMock, MagicMock, patch  # noqa: E402
 
 import pytest  # noqa: E402
@@ -43,27 +42,16 @@ async def test_handle_aes_validate_dir(tmp_path, monkeypatch):
 async def test_handle_replay_success(tmp_path, monkeypatch):
     """Test 'replay' command logic with real parser."""
     monkeypatch.chdir(tmp_path)
-    # Create vaulted trace file matching the run_id
-    run_dir = tmp_path / "test-run"
-    run_dir.mkdir()
-    trace_file = run_dir / "run.jsonl"
-    trace_file.write_text("{}", encoding="utf-8")
-
     args = parse_args(["replay", "--run-id", "test-run"])
+    store = MagicMock()
+    store.get_events.return_value = [
+        {"event": "run_start", "run_id": "1", "scenario": "s1"},
+        {"event": "run_end", "status": "success"},
+    ]
 
     with (
-        patch("eval_runner.config.RUN_LOG_DIR", tmp_path),
-        patch("eval_runner.handlers.analysis.trace_utils.load_events") as mock_load,
+        patch("eval_runner.runtime_services.resolve_run_store", return_value=store),
     ):
-        mock_load.return_value = [
-            {"event": "run_start", "run_id": "1", "scenario": "s1"},
-            {"event": "prompt", "role": "user", "content": "hi"},
-            {"event": "agent_response", "step": 1, "content": "hello"},
-            {"event": "tool_call", "tool": "search", "arguments": {}},
-            {"event": "tool_result", "tool": "search", "result": "found"},
-            {"event": "evaluation", "metric": "acc", "value": 1.0},
-            {"event": "run_end", "status": "success"},
-        ]
         result = await eval_runner.handlers.evaluation.handle_replay(args)
         assert result == 0
 
@@ -144,18 +132,10 @@ async def test_handle_auto_translate_success(tmp_path, monkeypatch):
 async def test_handle_calibrate_success(tmp_path, monkeypatch):
     """Test 'calibrate' with real parser."""
     monkeypatch.chdir(tmp_path)
-    trace_dir = tmp_path / "traces"
-    trace_dir.mkdir()
-    (trace_dir / "t1.jsonl").write_text(
-        json.dumps({"event": "evaluation", "metric": "m1", "value": 0.5})
-    )
-
     args = parse_args(["calibrate", "--run-id", "test-run"])
-
-    with patch(
-        "eval_runner.handlers.analysis.trace_utils.load_events",
-        return_value=[{"event": "evaluation", "metric": "m1", "value": 0.5}],
-    ):
+    store = MagicMock()
+    store.get_events.return_value = [{"event": "evaluation", "metric": "m1", "value": 0.5}]
+    with patch("eval_runner.runtime_services.resolve_run_store", return_value=store):
         await eval_runner.handlers.analysis.handle_calibrate(args)
 
 
@@ -163,16 +143,17 @@ async def test_handle_calibrate_success(tmp_path, monkeypatch):
 async def test_handle_calibrate_plot(tmp_path, monkeypatch):
     """Test 'calibrate --plot' with real parser and matplotlib mock."""
     monkeypatch.chdir(tmp_path)
-    trace_file = tmp_path / "t1.jsonl"
-    trace_file.write_text(json.dumps({"event": "evaluation", "metric": "xyz", "value": 1}))
-
     args = parse_args(["calibrate", "--run-id", "test-run", "--plot"])
 
     mock_plt = MagicMock()
     with (
         patch(
-            "eval_runner.handlers.analysis.trace_utils.load_events",
-            return_value=[{"event": "evaluation", "metric": "xyz", "value": 1}],
+            "eval_runner.runtime_services.resolve_run_store",
+            return_value=MagicMock(
+                get_events=MagicMock(
+                    return_value=[{"event": "evaluation", "metric": "xyz", "value": 1}]
+                )
+            ),
         ),
         patch.dict("sys.modules", {"matplotlib": MagicMock(), "matplotlib.pyplot": mock_plt}),
     ):

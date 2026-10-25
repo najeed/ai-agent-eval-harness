@@ -186,7 +186,13 @@ def test_pending_durable_approval_suspends_before_state_parity(tmp_path: Path):
     run_id = "run-pending-before-parity"
     runs_dir = tmp_path / "runs"
     store = LocalFileRunStore(runs_dir)
-    session = SessionManager(run_id=run_id, scenario={"id": "pending_gate"}, log_root=runs_dir)
+    store.create_run(run_id, "pending_gate")
+    session = SessionManager(
+        run_id=run_id,
+        scenario={"id": "pending_gate"},
+        log_root=runs_dir,
+        run_store=store,
+    )
     request = session.approval_manager.create_durable_request(
         turn_index=1,
         action_payload={"action": "hitl_pause"},

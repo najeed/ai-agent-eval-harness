@@ -7,12 +7,13 @@ from eval_runner.handlers import evaluation
 
 
 @pytest.mark.asyncio
-async def test_resolve_replay_trace_security(tmp_path):
-    """Exercises security failure in _resolve_replay_trace (line 54)."""
-    # First check passes (line 51), second fails (line 53)
-    with patch("eval_runner.utils.is_path_safe", side_effect=[True, False]):
-        res = evaluation._resolve_replay_trace("some-run")
-        assert res is None
+async def test_handle_replay_fails_closed_when_provider_is_unavailable():
+    """Replay is provider-native and must not recover a filesystem trace."""
+    with patch(
+        "eval_runner.runtime_services.resolve_run_store",
+        side_effect=RuntimeError("provider unavailable"),
+    ):
+        assert await evaluation.handle_replay(MagicMock(run_id="some-run")) == 1
 
 
 @pytest.mark.asyncio
@@ -142,9 +143,7 @@ async def test_handle_replay_logic(tmp_path):
     assert await evaluation.handle_replay(MagicMock(run_id=None)) == 1
 
     # Exception
-    with patch(
-        "eval_runner.handlers.evaluation._resolve_replay_trace", side_effect=Exception("Fail")
-    ):
+    with patch("eval_runner.runtime_services.resolve_run_store", side_effect=Exception("Fail")):
         assert await evaluation.handle_replay(MagicMock(run_id="r")) == 1
 
 
@@ -154,27 +153,23 @@ async def test_handle_verify_failures(tmp_path):
     # Missing run_id
     assert await evaluation.handle_verify(MagicMock(run_id=None)) == 1
 
-    # Security failure
-    with patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=False):
+    # Provider has neither a run nor canonical trace bytes.
+    provider = MagicMock()
+    provider.get_run.return_value = None
+    provider.get_trace_bytes.return_value = None
+    with patch("eval_runner.runtime_services.resolve_run_store", return_value=provider):
         assert await evaluation.handle_verify(MagicMock(run_id="r")) == 1
 
-    # Missing manifest
-    with patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=True):
-        with patch(
-            "pathlib.Path.exists", side_effect=[True, False]
-        ):  # trace exists, manifest doesn't
-            assert await evaluation.handle_verify(MagicMock(run_id="r")) == 1
-
-    # Verification failed (line 368)
+    # Provider-native verification failure.
+    provider.get_run.return_value = {"run_id": "r"}
     with (
-        patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=True),
-        patch("pathlib.Path.exists", return_value=True),
-        patch("eval_runner.verifier.TraceVerifier.verify_trace_async", return_value=False),
+        patch("eval_runner.runtime_services.resolve_run_store", return_value=provider),
+        patch("eval_runner.verifier.TraceVerifier.verify_run", return_value={"is_valid": False}),
     ):
         assert await evaluation.handle_verify(MagicMock(run_id="r")) == 1
 
     # Exception
-    with patch("eval_runner.handlers.evaluation._ensure_path_safe", side_effect=Exception("Fail")):
+    with patch("eval_runner.runtime_services.resolve_run_store", side_effect=Exception("Fail")):
         assert await evaluation.handle_verify(MagicMock(run_id="r")) == 1
 
 

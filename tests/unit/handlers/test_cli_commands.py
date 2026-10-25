@@ -50,10 +50,6 @@ async def test_handle_report_missing_trace(capsys, tmp_path, monkeypatch):
     monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
     monkeypatch.setenv("RUN_LOG_DIR", str(tmp_path))
 
-    # 2. Direct monkeypatch of the resolver function in the evaluation module
-    # (This ensures that any import from .evaluation sees the mocked version)
-    monkeypatch.setattr(evaluation, "_resolve_replay_trace", lambda x: None)
-
     args = MagicMock(run_id="missing-id", share=False)
     result = await analysis.handle_report(args)
     assert result == 1

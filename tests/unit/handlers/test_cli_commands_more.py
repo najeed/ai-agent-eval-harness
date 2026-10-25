@@ -188,26 +188,37 @@ async def test_handle_calibrate_basic(tmp_path, monkeypatch):
     args = parse_args(["calibrate", "--run-id", "ghost"])
     await handle_calibrate(args)
 
-    real_file = tmp_path / "real.jsonl"
-    real_file.write_text("{}", encoding="utf-8")
-
     args = parse_args(["calibrate", "--run-id", "real"])
 
-    with patch(
-        "eval_runner.handlers.analysis.trace_utils.load_events", side_effect=Exception("Read bad")
-    ):
+    failing_store = MagicMock()
+    failing_store.get_events.side_effect = Exception("Read bad")
+    with patch("eval_runner.runtime_services.resolve_run_store", return_value=failing_store):
+        await handle_calibrate(args)
+
+    empty_store = MagicMock()
+    empty_store.get_events.return_value = [{"event": "start"}]
+    with patch("eval_runner.runtime_services.resolve_run_store", return_value=empty_store):
         await handle_calibrate(args)
 
     with patch(
-        "eval_runner.handlers.analysis.trace_utils.load_events", return_value=[{"event": "start"}]
-    ):
-        await handle_calibrate(args)
-
-    with patch(
-        "eval_runner.handlers.analysis.trace_utils.load_events",
-        return_value=[
-            {"event": "evaluation", "metric": "luna_judge_score", "value": 0.9, "human_score": 0.9},
-            {"event": "evaluation", "metric": "luna_judge_score", "value": 0.8, "human_score": 0.8},
-        ],
+        "eval_runner.runtime_services.resolve_run_store",
+        return_value=MagicMock(
+            get_events=MagicMock(
+                return_value=[
+                    {
+                        "event": "evaluation",
+                        "metric": "luna_judge_score",
+                        "value": 0.9,
+                        "human_score": 0.9,
+                    },
+                    {
+                        "event": "evaluation",
+                        "metric": "luna_judge_score",
+                        "value": 0.8,
+                        "human_score": 0.8,
+                    },
+                ]
+            )
+        ),
     ):
         await handle_calibrate(args)

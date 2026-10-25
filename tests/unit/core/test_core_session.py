@@ -11,6 +11,7 @@ from eval_runner.execution_ir import (
     CompiledOracle,
     ExecutionIdentity,
 )
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.session import ExecutionMode, NodeVerdict, SessionManager, _InterpreterEventBridge
 from eval_runner.workflow_interpreter import WorkflowOutcome, WorkflowStatus
 
@@ -1716,7 +1717,9 @@ async def test_session_execute_tasks_cancellation_branch(base_scenario, tmp_path
 async def test_session_hitl_non_interactive_approval_and_rejection(
     base_scenario, tmp_path, monkeypatch
 ):
-    session = SessionManager("test_run", base_scenario, log_root=tmp_path)
+    run_store = LocalFileRunStore(tmp_path / "runs")
+    run_store.create_run("test_run", base_scenario["id"])
+    session = SessionManager("test_run", base_scenario, log_root=tmp_path, run_store=run_store)
     monkeypatch.setenv("FORCE_HITL_SUSPEND", "1")
     monkeypatch.delenv("CI", raising=False)
 

@@ -47,7 +47,7 @@ async def test_handle_certify_jail_enforcement(physical_jail, capsys, monkeypatc
     result = await handle_certify(args)
     assert result == 1
     captured = capsys.readouterr()
-    assert "Security Error" in captured.out
+    assert "Invalid or unsafe run_id" in captured.out
 
 
 @pytest.mark.asyncio
@@ -62,7 +62,7 @@ async def test_handle_verify_jail_enforcement(physical_jail, capsys, monkeypatch
     result = await handle_verify(args)
     assert result == 1
     captured = capsys.readouterr()
-    assert "Security Error" in captured.out
+    assert "../../secrets" in captured.out
 
 
 @pytest.mark.asyncio
@@ -90,4 +90,4 @@ async def test_handle_replay_jail_enforcement(physical_jail, capsys, monkeypatch
     result = await evaluation.handle_replay(args)
     assert result == 1
     captured = capsys.readouterr()
-    assert "Security Error" in captured.out
+    assert "../../secrets" in captured.out

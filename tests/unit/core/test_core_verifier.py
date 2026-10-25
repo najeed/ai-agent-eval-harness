@@ -26,6 +26,7 @@ from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
 from agentv_runtime.package import VerificationPackage
 from eval_runner import config
 from eval_runner.identity import IdentityService
+from eval_runner.reference.legacy_verifier_paths import locate_certificate_file
 from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.verifier import (
     BaseVerifier,
@@ -36,7 +37,6 @@ from eval_runner.verifier import (
     VerificationAuthority,
     VerificationResult,
     VerificationService,
-    locate_certificate_file,
     verification_service,
     verify_trace_certificate,
 )
@@ -2181,17 +2181,11 @@ def test_verify_trace_sealed_state_enforcement():
 
 
 def test_certification_service_fail_closed_validations(tmp_path):
-    """Verify CertificationService master log rejection and snapshot persistence fail-closed."""
+    """Verify CertificationService rejects calls without an owning provider."""
     from eval_runner.services.certification import CertificationService
 
-    master_log = tmp_path / "run.jsonl"
-    master_log.write_text('{"event": "start", "run_id": "run-master"}\n', encoding="utf-8")
-
-    with patch.object(config, "RUN_LOG_DIR", tmp_path):
-        with pytest.raises(ValueError, match="TracePathCertificationUnsupported"):
-            CertificationService.execute_industrial_certification(
-                run_id="run-master", trace_path=master_log
-            )
+    with pytest.raises(ValueError, match="RunStorageProviderBindingRequired"):
+        CertificationService.execute_industrial_certification(run_id="run-master")
 
     run_id = "run-snap-fail"
     scen_data = {"id": "scen-1", "version": "1.0.0"}
@@ -2311,7 +2305,7 @@ def test_get_certificate_success_returns_manifest(tmp_path):
         assert result == expected_manifest
 
 
-def test_verify_trace_discovers_staged_artifact(tmp_path, monkeypatch):
+def test_verify_trace_rejects_legacy_staged_artifact_ledger(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
     priv = ed25519.Ed25519PrivateKey.generate()
     pub = priv.public_key()
@@ -2353,7 +2347,9 @@ def test_verify_trace_discovers_staged_artifact(tmp_path, monkeypatch):
             verify_ledger=True,
             require_sealed=False,
         )
-        assert ok is True
+        # Artifact ledger verification is a provider contract; verifier must
+        # not discover files below a local provider's vault/staging directory.
+        assert ok is False
 
 
 def test_verify_trace_skips_terminal_finalization_carrier(tmp_path, monkeypatch):
@@ -3125,7 +3121,9 @@ def test_verify_certification_artifact_successful_authoritative_certification():
 
 def test_is_plain_execution_manifest_and_uncertified_run_handling(tmp_path, monkeypatch):
     """Execution manifests must be rejected as certificates and report UNVERIFIED."""
-    from eval_runner.verifier import _is_plain_execution_manifest
+    from eval_runner.reference.legacy_verifier_paths import (
+        is_plain_execution_manifest as _is_plain_execution_manifest,
+    )
 
     # 1. Non-existent file
     assert _is_plain_execution_manifest(tmp_path / "missing.json") is False

@@ -10,7 +10,6 @@ from __future__ import annotations
 import json
 import logging
 from collections.abc import Mapping
-from pathlib import Path
 from typing import Any
 
 from agentv_runtime.finalization import EvaluatorFinalizationRecord
@@ -20,181 +19,9 @@ from eval_runner.verifier import TraceVerifier
 
 logger = logging.getLogger(__name__)
 
-_UNSPECIFIED = object()
-
 
 class CertificationService:
     """Issue an immutable certificate from scoped, provider-owned evidence."""
-
-    @staticmethod
-    def count_assertion_and_evidence_nodes(trace_path: Path | str) -> int:
-        """Counts step_executed, assertion, oracle_results, and metrics in trace."""
-        p = Path(trace_path)
-        if not p.is_file():
-            return 0
-        try:
-            with open(p, encoding="utf-8") as f:
-                lines = f.readlines()
-        except Exception:
-            return 0
-
-        parsed_events: list[dict[str, Any]] = []
-        for line in lines:
-            line_str = line.strip()
-            if not line_str:
-                continue
-            try:
-                ev = json.loads(line_str)
-                if not isinstance(ev, dict):
-                    return 0
-                parsed_events.append(ev)
-            except Exception:
-                return 0
-
-        count = 0
-        for ev in parsed_events:
-            ev_name = ev.get("event")
-            data = ev.get("data") if isinstance(ev.get("data"), dict) else {}
-            if (
-                ev_name == "step_executed"
-                or "assertion" in ev
-                or "assertion" in data
-                or "oracle_results" in ev
-                or "oracle_results" in data
-                or "metrics" in ev
-                or "metrics" in data
-            ):
-                count += 1
-        return count
-
-    @classmethod
-    def parse_trace_strict(cls, trace_path: Path | str, run_id: str = "") -> list[dict[str, Any]]:
-        """Parses a trace file strictly, verifying all lines are JSON objects."""
-        p = Path(trace_path)
-        if not p.is_file():
-            raise FileNotFoundError(f"Trace file not found: {trace_path}")
-        with open(p, encoding="utf-8") as f:
-            lines = f.readlines()
-        events: list[dict[str, Any]] = []
-        for number, line in enumerate(lines, start=1):
-            line_str = line.strip()
-            if not line_str:
-                continue
-            try:
-                event = json.loads(line_str)
-            except json.JSONDecodeError as exc:
-                raise ValueError(f"MalformedTraceRecord:{number}") from exc
-            if not isinstance(event, dict):
-                raise ValueError(f"InvalidTraceRecord:{number}: expected object")
-            data = event.get("data") if isinstance(event.get("data"), dict) else {}
-            event_run_id = event.get("run_id") or data.get("run_id")
-            if event_run_id and run_id and str(event_run_id) != run_id:
-                raise ValueError(f"ForeignTraceRecord:{number}: run_id mismatch")
-            events.append(event)
-        return events
-
-    @staticmethod
-    def extract_finalization_record(trace_path: Path | str) -> EvaluatorFinalizationRecord | None:
-        """Extracts and verifies the EvaluatorFinalizationRecord from a trace."""
-        p = Path(trace_path)
-        if not p.is_file():
-            return None
-        try:
-            with open(p, encoding="utf-8") as f:
-                lines = f.readlines()
-        except Exception:
-            return None
-
-        events: list[dict[str, Any]] = []
-        for line in lines:
-            line_str = line.strip()
-            if not line_str:
-                continue
-            try:
-                ev = json.loads(line_str)
-                if isinstance(ev, dict):
-                    events.append(ev)
-            except Exception:
-                continue
-
-        for ev in reversed(events):
-            ev_name = ev.get("event")
-            data = ev.get("data") if isinstance(ev.get("data"), dict) else {}
-            payload: Any | None = None
-            if ev_name == "evaluator_finalization":
-                payload = data if data else ev
-            elif ev_name in {"run_end", "end"}:
-                if isinstance(data.get("finalization"), Mapping):
-                    payload = data["finalization"]
-                elif isinstance(ev.get("finalization"), Mapping):
-                    payload = ev["finalization"]
-            if not isinstance(payload, Mapping):
-                continue
-            evaluator_id = payload.get("evaluator_identity")
-            if evaluator_id:
-                pub = None
-                try:
-                    from eval_runner.identity import IdentityService
-
-                    pub = IdentityService.get_public_key(evaluator_id, auto_provision=False)
-                except Exception:
-                    pub = None
-                if pub is None:
-                    raise ValueError(
-                        "EvaluatorIdentityUntrusted: evaluator "
-                        f"identity '{evaluator_id}' is untrusted"
-                    )
-            try:
-                rec = EvaluatorFinalizationRecord.from_dict(
-                    payload, require_authoritative=True, trust_root=config.TRUST_ROOT
-                )
-                return rec
-            except ValueError as ve:
-                if "EvaluatorSignatureVerificationFailed" in str(ve):
-                    raise ValueError(f"EvaluatorSignatureInvalid: {ve}") from ve
-                raise
-            except Exception:
-                return None
-        return None
-
-    @classmethod
-    def materialize_provider_trace(cls, run_id: str, run_store: Any) -> tuple[Path, dict[str, Any]]:
-        """Materializes trace from provider into canonical location "
-        "without overwriting canonical trace."""
-        provider_events = run_store.get_events(run_id, offset=0, limit=10_000_000)
-        manifest = run_store.get_manifest(run_id) or {}
-        if not provider_events:
-            raise ValueError("IncompleteProviderStream: no trace events")
-
-        canonical_dir = Path(config.RUN_LOG_DIR) / run_id
-        canonical_trace = canonical_dir / "run.jsonl"
-        if canonical_trace.exists():
-            try:
-                canonical_events = []
-                with open(canonical_trace, encoding="utf-8") as f:
-                    for line in f:
-                        if line.strip():
-                            canonical_events.append(json.loads(line))
-                if canonical_events != provider_events:
-                    raise ValueError(
-                        "ProviderStreamDivergence: provider events diverge "
-                        f"from canonical trace at {canonical_trace}"
-                    )
-            except ValueError:
-                raise
-            except Exception as e:
-                raise ValueError(f"ProviderStreamDivergence: {e}") from e
-            return canonical_trace, manifest
-
-        has_start = any(ev.get("event") in {"start", "run_start"} for ev in provider_events)
-        if not has_start:
-            raise ValueError("IncompleteProviderStream: missing start event")
-
-        canonical_dir.mkdir(parents=True, exist_ok=True)
-        with open(canonical_trace, "w", encoding="utf-8") as f:
-            for ev in provider_events:
-                f.write(json.dumps(ev) + "\n")
-        return canonical_trace, manifest
 
     @staticmethod
     def parse_trace_bytes(trace_bytes: bytes, run_id: str) -> list[dict[str, Any]]:
@@ -282,43 +109,32 @@ class CertificationService:
         )
 
     @staticmethod
-    def read_run_truth_level(run_id: str, run_store: Any = None) -> tuple[str | None, bool]:
-        """Reads execution truth level for a run_id."""
+    def read_run_truth_level(
+        run_id: str,
+        *,
+        run_store: Any | None = None,
+        context: Mapping[str, Any] | None = None,
+    ) -> tuple[str | None, bool]:
+        """Read execution truth from the owning provider's exact trace bytes."""
         if not run_id or not isinstance(run_id, str) or any(x in run_id for x in ("..", "/", "\\")):
             return None, False
-
-        vault = Path(config.RUN_LOG_DIR) / run_id
-        trace_file = vault / "run.jsonl"
-
-        # Check provider or disk existence
-        has_dir = vault.is_dir()
-        if not has_dir and run_store is not None:
-            try:
-                run = run_store.get_run(run_id)
-                has_dir = run is not None
-            except Exception:
-                has_dir = False
-        if not has_dir:
+        if run_store is None:
             return None, False
-
         try:
-            with open(trace_file, encoding="utf-8") as f:
-                lines = f.readlines()
-        except OSError:
-            return "unknown", True
+            run = run_store.get_run(run_id, context=context)
+            trace_bytes = run_store.get_trace_bytes(run_id, context=context)
         except Exception:
             return None, False
+        if run is None:
+            return None, False
+        if trace_bytes is None:
+            return "unknown", True
+        try:
+            events = CertificationService.parse_trace_bytes(bytes(trace_bytes), run_id)
+        except ValueError:
+            return "unknown", True
 
-        for line in lines:
-            line_str = line.strip()
-            if not line_str:
-                continue
-            try:
-                ev = json.loads(line_str)
-            except Exception:
-                return "unknown", True
-            if not isinstance(ev, dict):
-                return "unknown", True
+        for ev in events:
             if ev.get("event") in ("run_start", "start"):
                 data = ev.get("data", {}) if isinstance(ev.get("data"), dict) else {}
                 meta = data.get("metadata") or ev.get("metadata") or {}
@@ -337,37 +153,11 @@ class CertificationService:
 
     @staticmethod
     def extract_computed_run_outcome(
-        vault_dir: Any = None,
-        target_trace: Any = None,
-        signing_backend: Any | None = None,
-        events: list[dict[str, Any]] | None = None,
+        *, events: list[dict[str, Any]] | None = None
     ) -> tuple[str, float]:
-        """Extracts computed run outcome (status, score)."""
-        if events is None:
-            if target_trace is None:
-                if vault_dir is None:
-                    return ("inconclusive", 0.0)
-                target_trace = Path(vault_dir) / "run.jsonl"
-            trace_path = Path(target_trace)
-            if not trace_path.is_file():
-                return ("inconclusive", 0.0)
-            try:
-                with open(trace_path, encoding="utf-8") as f:
-                    raw_lines = f.readlines()
-            except Exception:
-                return ("inconclusive", 0.0)
+        """Extract the computed outcome from provider-returned events."""
 
-            events = []
-            for line in raw_lines:
-                line_str = line.strip()
-                if not line_str:
-                    continue
-                try:
-                    ev = json.loads(line_str)
-                    if isinstance(ev, dict):
-                        events.append(ev)
-                except Exception:
-                    continue
+        events = events or []
 
         finalization_events: list[dict[str, Any]] = []
         terminal_events: list[dict[str, Any]] = []
@@ -472,10 +262,9 @@ class CertificationService:
         ttl: int | None = None,
         behavioral_fingerprint_id: str | None = None,
         scenario_data: Mapping[str, Any] | None = None,
-        trace_path: str | Path | None = None,
         artifact_store: Any | None = None,
         signing_backend: Any | None = None,
-        run_store: Any = _UNSPECIFIED,
+        run_store: Any = None,
         context: Mapping[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Atomically sign and seal provider-owned run evidence."""
@@ -483,16 +272,11 @@ class CertificationService:
         if not run_id or not isinstance(run_id, str) or any(x in run_id for x in ("..", "/", "\\")):
             raise ValueError(f"Invalid or unsafe run_id: {run_id}")
 
-        if trace_path is not None:
+        if run_store is None:
             raise ValueError(
-                "TracePathCertificationUnsupported: certification consumes "
-                "provider-owned trace bytes."
+                "RunStorageProviderBindingRequired: certification requires "
+                "the execution owner's provider."
             )
-
-        if run_store is _UNSPECIFIED or run_store is None:
-            from eval_runner.runtime_services import resolve_run_store
-
-            run_store = resolve_run_store()
 
         from eval_runner.run_lifecycle import (
             RunLifecycleState,
@@ -987,6 +771,11 @@ class CertificationService:
 
 def execute_industrial_certification(run_id: str, **kwargs: Any) -> dict[str, Any]:
     """Provider-native convenience entry point."""
+    if "trace_path" in kwargs:  # provider-boundary: reject legacy input
+        raise ValueError(
+            "TracePathCertificationUnsupported: certification requires the "
+            "execution owner's provider bytes."
+        )
     return CertificationService.execute_industrial_certification(run_id, **kwargs)
 
 

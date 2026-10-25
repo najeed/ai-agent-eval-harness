@@ -567,7 +567,9 @@ class TraceVerifier:
             "harness_version": config.VERSION,
             "timestamp": datetime.now().astimezone().isoformat(),
             "run_id": run_id,
-            "trace_file": f"{run_id}/run.jsonl",
+            # Schema-required opaque locator.  Core never resolves this as a
+            # path; the bound provider remains the sole trace authority.
+            "trace_file": "provider://trace",
             "trace_hash": trace_hex,
             "hash_algorithm": "sha3_256",
             "evidence_ledger": dict(evidence_ledger or {}),
@@ -1002,25 +1004,11 @@ class TraceVerifier:
             ):
                 return False
         if verify_ledger or kwargs.get("verify_ledger"):
-            ledger = manifest.get("evidence_ledger") or {}
-            vault = getattr(run_store, "log_dir", None)
-            if vault:
-                from eval_runner.forensics import compute_file_hash
-
-                run_vault = Path(vault) / run_id
-                for rel_path, expected_hash in ledger.items():
-                    art_file = run_vault / rel_path
-                    if not art_file.exists():
-                        staged_file = run_vault / ".staging" / rel_path
-                        if staged_file.exists():
-                            art_file = staged_file
-                        else:
-                            return False
-                    try:
-                        if compute_file_hash(art_file) != expected_hash:
-                            return False
-                    except Exception:
-                        return False
+            # A ledger cannot be validated by reaching into a local provider's
+            # vault. Providers that expose artifact-ledger verification must
+            # implement it as an explicit contract before this option can be
+            # supported.
+            return False
         scenario = (
             scenario_data
             or kwargs.get("scenario_data")
@@ -1040,8 +1028,8 @@ class TraceVerifier:
     @classmethod
     def verify_trace(
         cls,
-        trace_bytes: bytes | str | Path,
-        manifest: Mapping[str, Any] | str | Path,
+        trace_bytes: bytes,
+        manifest: Mapping[str, Any],
         *,
         run_store: Any = None,
         context: dict[str, Any] | None = None,
@@ -1053,33 +1041,10 @@ class TraceVerifier:
         Production callers must supply the execution owner's provider and its
         exact committed trace serialization.
         """
-        if isinstance(trace_bytes, (str, Path)) or isinstance(manifest, (str, Path)):
-            tb_path = Path(trace_bytes) if isinstance(trace_bytes, (str, Path)) else None
-            m_path = Path(manifest) if isinstance(manifest, (str, Path)) else None
-            if (tb_path and not tb_path.exists()) or (m_path and not m_path.exists()):
-                logger.error(
-                    "Missing trace or manifest file for verification: "
-                    "trace_path=%s, manifest_path=%s",
-                    tb_path,
-                    m_path,
-                )
-                return False
-            if tb_path and tb_path.is_file():
-                trace_bytes = tb_path.read_bytes()
-            if m_path and m_path.is_file():
-                try:
-                    manifest = json.loads(m_path.read_text(encoding="utf-8"))
-                except Exception:
-                    return False
-        if not isinstance(manifest, Mapping):
+        if not isinstance(trace_bytes, bytes) or not isinstance(manifest, Mapping):
             return False
         if run_store is None:
-            try:
-                from eval_runner.runtime_services import resolve_run_store
-
-                run_store = resolve_run_store()
-            except Exception:
-                return False
+            return False
         return cls.verify_trace_bytes(
             trace_bytes,
             manifest,
@@ -3195,87 +3160,3 @@ TraceVerifier.verify_package = VerificationAuthority.verify_package
 TraceVerifier.verify_package_artifacts = VerificationAuthority.verify_package_artifacts
 TraceVerifier.verify_package_signature_only = VerificationAuthority.verify_package_signature_only
 TraceVerifier.verify_certification_artifact = VerificationAuthority.verify_certification_artifact
-
-
-def _is_plain_execution_manifest(path: Path | str) -> bool:
-    """
-    Check if a candidate file is a plain pre-certification execution manifest
-    rather than a verification certificate.
-
-    Returns True ONLY if the file is valid JSON, represents an execution manifest
-    (e.g., manifest_id starting with 'man_', 'agent_config' present, or scenario_id+scenario_hash),
-    and lacks all certificate indicators (trace_hash, vc_version, signature, etc.).
-
-    If the file cannot be read, is not valid JSON, or contains certificate markers,
-    it returns False (so it is not rejected as an execution manifest).
-    """
-    try:
-        p = Path(path)
-        if not p.is_file():
-            return False
-        with open(p, encoding="utf-8") as f:
-            data = json.load(f)
-        if not isinstance(data, dict):
-            return False
-
-        cert_markers = (
-            "trace_hash",
-            "verification_package",
-            "provenance_chain",
-            "signature",
-            "signatures",
-            "vc_version",
-            "compliance",
-            "compliance_status",
-            "certificate_hash",
-        )
-        if any(k in data for k in cert_markers):
-            return False
-
-        exec_markers = (
-            "agent_config",
-            "runtime_config",
-            "producer_identity",
-            "attempt_statistics",
-            "pass_at_k",
-        )
-        manifest_id = str(data.get("manifest_id", ""))
-        has_exec_id = manifest_id.startswith("man_")
-        has_exec_pair = bool(data.get("scenario_id") and data.get("scenario_hash"))
-        has_exec_marker = any(k in data for k in exec_markers)
-
-        return bool(has_exec_id or has_exec_pair or has_exec_marker)
-    except Exception:
-        return False
-
-
-def locate_certificate_file(run_id: str) -> Path | None:
-    """
-    Authoritative canonical certificate locator across the AgentV ecosystem.
-    Searches:
-      1. Published reports vault: reports/certificates/<run_id>_vc.json
-      2. Per-run storage vault: runs/<run_id>/run_manifest.json, but only
-         when it is a VC certificate rather than an execution manifest.
-      3. Legacy vault certificates: runs/<run_id>/<run_id>_certificate.json
-         or runs/<run_id>/<run_id>_vc.json
-    Returns the resolved Path if it exists, or None.
-    """
-    if not run_id or not isinstance(run_id, str) or ".." in run_id:
-        return None
-
-    reports_dir = Path(config.REPORTS_DIR)
-    runs_dir = Path(config.RUN_LOG_DIR)
-
-    candidates = [
-        reports_dir / "certificates" / f"{run_id}_vc.json",
-        runs_dir / run_id / "run_manifest.json",
-        runs_dir / run_id / f"{run_id}_certificate.json",
-        runs_dir / run_id / f"{run_id}_vc.json",
-        reports_dir / "certificates" / f"{run_id}_certificate.json",
-    ]
-    for c in candidates:
-        if c.is_file():
-            if c.name == "run_manifest.json" and _is_plain_execution_manifest(c):
-                continue
-            return c.resolve()
-    return None

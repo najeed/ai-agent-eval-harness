@@ -28,26 +28,16 @@ async def test_ensure_path_safe_failure(mock_env_config, capsys):
 
 
 @pytest.mark.asyncio
-async def test_resolve_replay_trace_variants(mock_env_config):
-    # evaluation.py 43-64
-    assert evaluation._resolve_replay_trace("") is None
-
-    # Security check failure (relative traversal)
-    assert evaluation._resolve_replay_trace("../traversal") is None
-
-    # Vault hit
-    run_id = "run1"
-    vault_dir = mock_env_config / "runs" / run_id
-    vault_dir.mkdir()
-    trace_file = vault_dir / "run.jsonl"
-    trace_file.write_text("[]")
-    assert evaluation._resolve_replay_trace(run_id) == trace_file.resolve()
-
-    # Master hit
-    master_file = mock_env_config / "runs" / "run.jsonl"
-    master_file.write_text("[]")
-    trace_file.unlink()
-    assert evaluation._resolve_replay_trace(run_id) == master_file.resolve()
+async def test_replay_uses_provider_events_without_vault_or_master_log(mock_env_config, capsys):
+    provider = MagicMock()
+    provider.get_events.return_value = [
+        {"event": "run_start", "run_id": "run1", "scenario": "scenario-1"},
+        {"event": "run_end", "status": "COMPLETED"},
+    ]
+    with patch("eval_runner.runtime_services.resolve_run_store", return_value=provider):
+        assert await evaluation.handle_replay(MagicMock(run_id="run1")) == 0
+    provider.get_events.assert_called_once_with("run1", offset=0, limit=10_000_000)
+    assert "Reconstructing from Run ID: run1" in capsys.readouterr().out
 
 
 @pytest.mark.asyncio

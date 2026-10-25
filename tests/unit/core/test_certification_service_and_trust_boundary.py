@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import copy
 import json
-from pathlib import Path
 
 import pytest
 
@@ -277,94 +276,47 @@ def test_certification_rejects_path_evidence(provider, tmp_path):
         )
 
 
-def test_count_assertion_and_evidence_nodes_behaviors(tmp_path):
-    assert (
-        CertificationService.count_assertion_and_evidence_nodes(tmp_path / "nonexistent.jsonl") == 0
+def test_provider_evidence_graph_retains_assertion_and_oracle_nodes():
+    events = [
+        {"event": "run_start", "run_id": "run-evidence"},
+        {"event": "oracle_result", "run_id": "run-evidence", "oracle_id": "oracle-1"},
+        {"event": "assertion_result", "run_id": "run-evidence", "assertion_id": "assertion-1"},
+    ]
+    graph = build_evidence_graph_from_events(
+        [(event, json.dumps(event)) for event in events], required_oracle_ids=["oracle-1"]
     )
-
-    unreadable_dir = tmp_path / "as_dir"
-    unreadable_dir.mkdir()
-    assert CertificationService.count_assertion_and_evidence_nodes(unreadable_dir) == 0
-
-    bad_json = tmp_path / "bad.jsonl"
-    bad_json.write_text("invalid json line\n", encoding="utf-8")
-    assert CertificationService.count_assertion_and_evidence_nodes(bad_json) == 0
-
-    non_dict = tmp_path / "non_dict.jsonl"
-    non_dict.write_text("[1, 2, 3]\n", encoding="utf-8")
-    assert CertificationService.count_assertion_and_evidence_nodes(non_dict) == 0
-
-    valid_file = tmp_path / "valid.jsonl"
-    valid_content = "\n".join(
-        [
-            "",
-            json.dumps({"event": "step_executed"}),
-            json.dumps({"event": "other", "assertion": "check_1"}),
-            json.dumps({"event": "other", "data": {"assertion": "check_2"}}),
-            json.dumps({"event": "other", "oracle_results": ["res"]}),
-            json.dumps({"event": "other", "data": {"oracle_results": ["res2"]}}),
-            json.dumps({"event": "other", "metrics": {"m": 1}}),
-            json.dumps({"event": "other", "data": {"metrics": {"m": 2}}}),
-            json.dumps({"event": "unrelated", "data": {"status": "ok"}}),
-            "",
-        ]
-    )
-    valid_file.write_text(valid_content, encoding="utf-8")
-    assert CertificationService.count_assertion_and_evidence_nodes(valid_file) == 7
+    assert graph["total_nodes"] >= 1
+    assert graph["evidence_root_hash"].startswith("sha3_256:")
 
 
-def test_parse_trace_strict_behaviors(tmp_path):
-    with pytest.raises(FileNotFoundError, match="Trace file not found"):
-        CertificationService.parse_trace_strict(tmp_path / "missing.jsonl")
-
-    corrupt_file = tmp_path / "corrupt.jsonl"
-    corrupt_file.write_text('{"event": "start"}\n{bad json}\n', encoding="utf-8")
+def test_parse_provider_trace_bytes_strict_behaviors():
     with pytest.raises(ValueError, match="MalformedTraceRecord:2"):
-        CertificationService.parse_trace_strict(corrupt_file)
+        CertificationService.parse_trace_bytes(b'{"event": "start"}\n{bad json}\n', "run-1")
 
-    non_dict_file = tmp_path / "not_dict.jsonl"
-    non_dict_file.write_text('{"event": "start"}\n"a string"\n', encoding="utf-8")
     with pytest.raises(ValueError, match="InvalidTraceRecord:2"):
-        CertificationService.parse_trace_strict(non_dict_file)
+        CertificationService.parse_trace_bytes(b'{"event": "start"}\n"a string"\n', "run-1")
 
-    foreign_file = tmp_path / "foreign.jsonl"
-    foreign_file.write_text(
+    foreign_bytes = (
         json.dumps({"event": "run_start", "run_id": "run-expected"})
         + "\n"
         + json.dumps({"event": "step", "run_id": "run-foreign"})
-        + "\n",
-        encoding="utf-8",
+        + "\n"
     )
     with pytest.raises(ValueError, match="ForeignTraceRecord:2"):
-        CertificationService.parse_trace_strict(foreign_file, run_id="run-expected")
+        CertificationService.parse_trace_bytes(foreign_bytes.encode("utf-8"), "run-expected")
 
-    valid_file = tmp_path / "valid_strict.jsonl"
-    valid_file.write_text(
+    valid_bytes = (
         "\n"
         + json.dumps({"event": "run_start", "run_id": "run-1"})
         + "\n"
         + json.dumps({"event": "step", "data": {"run_id": "run-1"}})
-        + "\n",
-        encoding="utf-8",
+        + "\n"
     )
-    events = CertificationService.parse_trace_strict(valid_file, run_id="run-1")
+    events = CertificationService.parse_trace_bytes(valid_bytes.encode("utf-8"), "run-1")
     assert len(events) == 2
 
 
-def test_extract_finalization_record_behaviors(provider, tmp_path, monkeypatch):
-    assert CertificationService.extract_finalization_record(tmp_path / "missing.jsonl") is None
-
-    unreadable_dir = tmp_path / "finalization_dir"
-    unreadable_dir.mkdir()
-    assert CertificationService.extract_finalization_record(unreadable_dir) is None
-
-    no_fin_file = tmp_path / "no_fin.jsonl"
-    no_fin_file.write_text(
-        "\n{bad line}\n" + json.dumps({"event": "run_start"}) + "\n",
-        encoding="utf-8",
-    )
-    assert CertificationService.extract_finalization_record(no_fin_file) is None
-
+def test_extract_finalization_from_provider_events(provider, monkeypatch):
     IdentityService._provision_local_identity("eval_kernel")
     fin = EvaluatorFinalizationRecord(
         finalization_id="fin-test",
@@ -383,93 +335,55 @@ def test_extract_finalization_record_behaviors(provider, tmp_path, monkeypatch):
         finalized_at="2026-10-24T00:00:00Z",
     ).sign()
 
-    untrusted_fin_file = tmp_path / "untrusted_fin.jsonl"
     untrusted_payload = {**fin.to_dict(), "evaluator_identity": "untrusted_actor"}
-    untrusted_fin_file.write_text(
-        json.dumps({"event": "evaluator_finalization", "data": untrusted_payload}) + "\n",
-        encoding="utf-8",
-    )
-    with pytest.raises(ValueError, match="EvaluatorIdentityUntrusted"):
-        CertificationService.extract_finalization_record(untrusted_fin_file)
+    with pytest.raises(ValueError, match="mandatory authoritative EvaluatorFinalizationRecord"):
+        CertificationService._finalization(
+            [{"event": "evaluator_finalization", "data": untrusted_payload}], "run-test"
+        )
 
-    lookup_err_file = tmp_path / "lookup_err.jsonl"
-    lookup_err_file.write_text(
-        json.dumps({"event": "evaluator_finalization", "data": fin.to_dict()}) + "\n",
-        encoding="utf-8",
-    )
     orig_pub = IdentityService.get_public_key
     monkeypatch.setattr(
         IdentityService,
         "get_public_key",
         lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("KMS connection refused")),
     )
-    with pytest.raises(ValueError, match="EvaluatorIdentityUntrusted"):
-        CertificationService.extract_finalization_record(lookup_err_file)
+    with pytest.raises(ValueError, match="mandatory authoritative EvaluatorFinalizationRecord"):
+        CertificationService._finalization(
+            [{"event": "evaluator_finalization", "data": fin.to_dict()}], "run-test"
+        )
     monkeypatch.setattr(IdentityService, "get_public_key", orig_pub)
 
-    invalid_sig_file = tmp_path / "invalid_sig.jsonl"
     corrupt_fin = copy.deepcopy(fin.to_dict())
     corrupt_fin["evaluator_signature"] = "00" * 64
-    invalid_sig_file.write_text(
-        json.dumps({"event": "evaluator_finalization", "data": corrupt_fin}) + "\n",
-        encoding="utf-8",
-    )
-    with pytest.raises(ValueError, match="EvaluatorSignatureInvalid"):
-        CertificationService.extract_finalization_record(invalid_sig_file)
+    with pytest.raises(ValueError, match="mandatory authoritative EvaluatorFinalizationRecord"):
+        CertificationService._finalization(
+            [{"event": "evaluator_finalization", "data": corrupt_fin}], "run-test"
+        )
 
-    run_end_fin_file = tmp_path / "run_end_fin.jsonl"
-    run_end_fin_file.write_text(
-        json.dumps({"event": "run_end", "finalization": fin.to_dict()}) + "\n",
-        encoding="utf-8",
+    extracted = CertificationService._finalization(
+        [{"event": "run_end", "finalization": fin.to_dict()}], "run-test"
     )
-    extracted = CertificationService.extract_finalization_record(run_end_fin_file)
     assert extracted is not None
     assert extracted.finalization_id == "fin-test"
-
-    run_end_data_fin_file = tmp_path / "run_end_data_fin.jsonl"
-    run_end_data_fin_file.write_text(
-        json.dumps({"event": "run_end", "data": {"finalization": fin.to_dict()}}) + "\n",
-        encoding="utf-8",
+    extracted_data = CertificationService._finalization(
+        [{"event": "run_end", "data": {"finalization": fin.to_dict()}}], "run-test"
     )
-    extracted_data = CertificationService.extract_finalization_record(run_end_data_fin_file)
     assert extracted_data is not None
     assert extracted_data.finalization_id == "fin-test"
 
 
-def test_materialize_provider_trace_behaviors(provider, tmp_path, monkeypatch):
-    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "canonical_runs")
-    run_id = "materialize-test"
+def test_provider_returns_exact_canonical_trace_bytes(provider):
+    run_id = "provider-trace-bytes"
     provider.create_run(run_id, "scen-mat")
-
-    with pytest.raises(ValueError, match="IncompleteProviderStream: no trace events"):
-        CertificationService.materialize_provider_trace(run_id, provider)
-
-    provider.append_events(run_id, [{"event": "node_executed", "_seq": 1}])
-    with pytest.raises(ValueError, match="IncompleteProviderStream: missing start event"):
-        CertificationService.materialize_provider_trace(run_id, provider)
-
-    provider_2 = LocalFileRunStore(tmp_path / "provider_2")
-    run_id_2 = "materialize-success"
-    provider_2.create_run(run_id_2, "scen-mat-2")
-    events_2 = [
+    events = [
         {"event": "run_start", "_seq": 1, "execution_mode": "live"},
         {"event": "run_end", "_seq": 2},
     ]
-    provider_2.append_events(run_id_2, events_2)
-    path, manifest = CertificationService.materialize_provider_trace(run_id_2, provider_2)
-    assert path.is_file()
-    assert path.name == "run.jsonl"
+    provider.append_events(run_id, events)
 
-    cached_path, _ = CertificationService.materialize_provider_trace(run_id_2, provider_2)
-    assert cached_path == path
-
-    path.write_text(json.dumps({"event": "divergent", "_seq": 1}) + "\n", encoding="utf-8")
-    with pytest.raises(ValueError, match="ProviderStreamDivergence"):
-        CertificationService.materialize_provider_trace(run_id_2, provider_2)
-
-    path.write_text("{bad json}\n", encoding="utf-8")
-    with pytest.raises(ValueError):
-        CertificationService.materialize_provider_trace(run_id_2, provider_2)
+    trace_bytes = provider.get_trace_bytes(run_id)
+    assert trace_bytes is not None
+    assert CertificationService.parse_trace_bytes(trace_bytes, run_id) == events
 
 
 def test_parse_trace_bytes_behaviors():
@@ -547,68 +461,46 @@ def test_execution_truth_and_finalization_internal_helpers(provider):
         CertificationService._finalization(events_end_sub, "mismatched-run-id")
 
 
-def test_read_run_truth_level_behaviors(provider, tmp_path, monkeypatch):
+def test_read_run_truth_level_behaviors(provider):
     assert CertificationService.read_run_truth_level("") == (None, False)
     assert CertificationService.read_run_truth_level("path/traversal") == (None, False)
     assert CertificationService.read_run_truth_level("..\\windows\\traversal") == (None, False)
 
-    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "truth_runs")
-    assert CertificationService.read_run_truth_level("nonexistent") == (None, False)
     assert CertificationService.read_run_truth_level("nonexistent", run_store=provider) == (
         None,
         False,
     )
 
-    vault = tmp_path / "truth_runs" / "run-on-disk"
-    vault.mkdir(parents=True)
-    assert CertificationService.read_run_truth_level("run-on-disk") == ("unknown", True)
-
-    trace = vault / "run.jsonl"
-    trace.write_text("\n{corrupt}\n", encoding="utf-8")
-    assert CertificationService.read_run_truth_level("run-on-disk") == ("unknown", True)
-
-    trace.write_text('"not a dict"\n', encoding="utf-8")
-    assert CertificationService.read_run_truth_level("run-on-disk") == ("unknown", True)
-
-    trace.write_text(json.dumps({"event": "step"}) + "\n", encoding="utf-8")
-    assert CertificationService.read_run_truth_level("run-on-disk") == ("unknown", True)
-
-    trace.write_text(
-        json.dumps(
-            {"event": "run_start", "data": {"execution_mode": "simulated", "provisional": True}}
-        )
-        + "\n",
-        encoding="utf-8",
+    provider.create_run("run-unknown", "scenario-truth")
+    assert CertificationService.read_run_truth_level("run-unknown", run_store=provider) == (
+        "unknown",
+        True,
     )
-    assert CertificationService.read_run_truth_level("run-on-disk") == ("simulated", True)
 
-    trace.write_text(
-        json.dumps({"event": "run_start", "data": {"execution_mode": "live", "provisional": False}})
-        + "\n",
-        encoding="utf-8",
+    provider.create_run("run-simulated", "scenario-truth")
+    provider.append_events(
+        "run-simulated",
+        [{"event": "run_start", "data": {"execution_mode": "simulated", "provisional": True}}],
     )
-    assert CertificationService.read_run_truth_level("run-on-disk") == ("live", False)
+    assert CertificationService.read_run_truth_level("run-simulated", run_store=provider) == (
+        "simulated",
+        True,
+    )
+
+    provider.create_run("run-live", "scenario-truth")
+    provider.append_events(
+        "run-live",
+        [{"event": "run_start", "data": {"execution_mode": "live", "provisional": False}}],
+    )
+    assert CertificationService.read_run_truth_level("run-live", run_store=provider) == (
+        "live",
+        False,
+    )
 
 
-def test_extract_computed_run_outcome_behaviors(tmp_path):
+def test_extract_computed_run_outcome_behaviors():
     assert CertificationService.extract_computed_run_outcome() == ("inconclusive", 0.0)
-
-    vault = tmp_path / "outcome_vault"
-    assert CertificationService.extract_computed_run_outcome(vault_dir=vault) == (
-        "inconclusive",
-        0.0,
-    )
-
-    vault.mkdir(parents=True)
-    trace = vault / "run.jsonl"
-    trace.write_text("\n   \n", encoding="utf-8")
-    assert CertificationService.extract_computed_run_outcome(vault_dir=vault) == (
-        "inconclusive",
-        0.0,
-    )
-
-    trace.write_text("{bad line}\n", encoding="utf-8")
-    assert CertificationService.extract_computed_run_outcome(vault_dir=vault) == (
+    assert CertificationService.extract_computed_run_outcome(events=[]) == (
         "inconclusive",
         0.0,
     )
@@ -1040,33 +932,12 @@ def test_certification_commit_failure_and_sealed_state(provider, monkeypatch):
         )
 
 
-def test_count_assertion_and_evidence_nodes_io_error(tmp_path, monkeypatch):
-    test_file = tmp_path / "mock_io_error.jsonl"
-    test_file.write_text("{}", encoding="utf-8")
-    orig_open = open
-    monkeypatch.setattr(
-        "builtins.open",
-        lambda *a, **k: (_ for _ in ()).throw(OSError("Simulated read failure")),
-    )
-    assert CertificationService.count_assertion_and_evidence_nodes(test_file) == 0
-    monkeypatch.setattr("builtins.open", orig_open)
+def test_provider_trace_parser_fails_closed_on_malformed_bytes():
+    with pytest.raises(ValueError, match="MalformedTraceRecord:1"):
+        CertificationService.parse_trace_bytes(b"{not-json}\n", "run-parser-error")
 
 
-def test_extract_finalization_record_edge_cases(provider, tmp_path, monkeypatch):
-    test_file = tmp_path / "extract_edges.jsonl"
-    test_file.write_text("{}", encoding="utf-8")
-    orig_open = open
-    monkeypatch.setattr(
-        "builtins.open",
-        lambda *a, **k: (_ for _ in ()).throw(OSError("Simulated read failure")),
-    )
-    assert CertificationService.extract_finalization_record(test_file) is None
-    monkeypatch.setattr("builtins.open", orig_open)
-
-    non_dict_trace = tmp_path / "non_dict_fin.jsonl"
-    non_dict_trace.write_text('"not a dict"\n123\n', encoding="utf-8")
-    assert CertificationService.extract_finalization_record(non_dict_trace) is None
-
+def test_finalization_provider_event_edge_cases(provider, monkeypatch):
     IdentityService._provision_local_identity("eval_kernel")
     fin = EvaluatorFinalizationRecord(
         finalization_id="fin-edges",
@@ -1087,38 +958,35 @@ def test_extract_finalization_record_edge_cases(provider, tmp_path, monkeypatch)
 
     fin_no_id = copy.deepcopy(fin.to_dict())
     fin_no_id["evaluator_identity"] = ""
-    run_end_top = tmp_path / "run_end_top.jsonl"
-    run_end_top.write_text(
-        json.dumps({"event": "run_end", "finalization": fin_no_id}) + "\n",
-        encoding="utf-8",
-    )
-    with pytest.raises(ValueError, match="Missing mandatory finalization trust field"):
-        CertificationService.extract_finalization_record(run_end_top)
+    with pytest.raises(ValueError, match="mandatory authoritative EvaluatorFinalizationRecord"):
+        CertificationService._finalization(
+            [{"event": "run_end", "finalization": fin_no_id}], "run-edges"
+        )
 
-    fin_val_err = tmp_path / "fin_val_err.jsonl"
-    fin_val_err.write_text(
-        json.dumps({"event": "evaluator_finalization", "data": fin.to_dict()}) + "\n",
-        encoding="utf-8",
-    )
     orig_from_dict = EvaluatorFinalizationRecord.from_dict
     monkeypatch.setattr(
         EvaluatorFinalizationRecord,
         "from_dict",
         lambda *a, **k: (_ for _ in ()).throw(ValueError("GenericParseValueError")),
     )
-    with pytest.raises(ValueError, match="GenericParseValueError"):
-        CertificationService.extract_finalization_record(fin_val_err)
+    with pytest.raises(ValueError, match="mandatory authoritative EvaluatorFinalizationRecord"):
+        CertificationService._finalization(
+            [{"event": "evaluator_finalization", "data": fin.to_dict()}], "run-edges"
+        )
 
     monkeypatch.setattr(
         EvaluatorFinalizationRecord,
         "from_dict",
         lambda *a, **k: (_ for _ in ()).throw(TypeError("UnexpectedExceptionType")),
     )
-    assert CertificationService.extract_finalization_record(fin_val_err) is None
+    with pytest.raises(ValueError, match="mandatory authoritative EvaluatorFinalizationRecord"):
+        CertificationService._finalization(
+            [{"event": "evaluator_finalization", "data": fin.to_dict()}], "run-edges"
+        )
     monkeypatch.setattr(EvaluatorFinalizationRecord, "from_dict", orig_from_dict)
 
 
-def test_materialize_provider_trace_edge_cases(provider, tmp_path, monkeypatch):
+def test_provider_trace_bytes_do_not_depend_on_local_projection(provider):
     run_id = "mat-edges"
     provider.create_run(run_id, "scen-mat")
     events = [
@@ -1126,27 +994,9 @@ def test_materialize_provider_trace_edge_cases(provider, tmp_path, monkeypatch):
         {"event": "run_end", "_seq": 2},
     ]
     provider.append_events(run_id, events)
-    canonical_dir = Path(config.RUN_LOG_DIR) / run_id
-    canonical_dir.mkdir(parents=True, exist_ok=True)
-    canonical_trace = canonical_dir / "run.jsonl"
-    canonical_trace.write_text(
-        json.dumps(events[0]) + "\n\n" + json.dumps(events[1]) + "\n",
-        encoding="utf-8",
-    )
-    path, _ = CertificationService.materialize_provider_trace(run_id, provider)
-    assert path == canonical_trace
-
-    orig_open = open
-
-    def mock_open_mat(p, *a, **k):
-        if str(canonical_trace) in str(p):
-            raise OSError("Read failure on canonical trace")
-        return orig_open(p, *a, **k)
-
-    monkeypatch.setattr("builtins.open", mock_open_mat)
-    with pytest.raises(ValueError, match="ProviderStreamDivergence: Read failure"):
-        CertificationService.materialize_provider_trace(run_id, provider)
-    monkeypatch.setattr("builtins.open", orig_open)
+    trace_bytes = provider.get_trace_bytes(run_id)
+    assert trace_bytes is not None
+    assert CertificationService.parse_trace_bytes(trace_bytes, run_id) == events
 
 
 def test_finalization_helper_edge_cases(provider, monkeypatch):
@@ -1205,53 +1055,17 @@ def test_finalization_helper_edge_cases(provider, monkeypatch):
     monkeypatch.setattr(EvaluatorFinalizationRecord, "from_dict", orig_from_dict)
 
 
-def test_read_run_truth_level_edge_cases(provider, tmp_path, monkeypatch):
+def test_read_run_truth_level_edge_cases(provider):
     class ExplodingRunStore:
         def get_run(self, *a, **k):
             raise RuntimeError("Database error")
 
-    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "truth_runs_edges")
     assert CertificationService.read_run_truth_level(
         "run-db-err", run_store=ExplodingRunStore()
     ) == (None, False)
 
-    vault = tmp_path / "truth_runs_edges" / "run-type-err"
-    vault.mkdir(parents=True)
-    trace = vault / "run.jsonl"
-    trace.write_text("{}", encoding="utf-8")
-    orig_open = open
 
-    def mock_open_truth(p, *a, **k):
-        if str(trace) in str(p):
-            raise TypeError("Non-OS error during read")
-        return orig_open(p, *a, **k)
-
-    monkeypatch.setattr("builtins.open", mock_open_truth)
-    assert CertificationService.read_run_truth_level("run-type-err") == (None, False)
-    monkeypatch.setattr("builtins.open", orig_open)
-
-
-def test_extract_computed_run_outcome_edge_cases(provider, tmp_path, monkeypatch):
-    trace_file = tmp_path / "direct_trace.jsonl"
-    trace_file.write_text('{"event": "run_start"}\n"not_dict"\n', encoding="utf-8")
-    assert CertificationService.extract_computed_run_outcome(target_trace=trace_file) == (
-        "inconclusive",
-        0.0,
-    )
-
-    orig_open = open
-
-    def mock_open_fail(p, *a, **k):
-        if str(trace_file) in str(p):
-            raise OSError("Read failure")
-        return orig_open(p, *a, **k)
-
-    monkeypatch.setattr("builtins.open", mock_open_fail)
-    assert CertificationService.extract_computed_run_outcome(target_trace=trace_file) == (
-        "inconclusive",
-        0.0,
-    )
-    monkeypatch.setattr("builtins.open", orig_open)
+def test_extract_computed_run_outcome_edge_cases():
 
     IdentityService._provision_local_identity("eval_kernel")
     fin = EvaluatorFinalizationRecord(
@@ -1302,19 +1116,17 @@ def test_extract_computed_run_outcome_edge_cases(provider, tmp_path, monkeypatch
     )
 
 
-def test_execute_industrial_certification_unspecified_store_and_metadata(provider, monkeypatch):
+def test_execute_industrial_certification_requires_explicit_store_and_keeps_metadata(provider):
     run_id = "run-unspec-store"
     scenario = _seed_run(provider, run_id, agent_id="agent-unit-007", model="gemini-2.5-pro")
 
-    import eval_runner.runtime_services
+    with pytest.raises(ValueError, match="RunStorageProviderBindingRequired"):
+        execute_industrial_certification(run_id, scenario_data=scenario)
 
-    orig_resolve = eval_runner.runtime_services.resolve_run_store
-    monkeypatch.setattr(eval_runner.runtime_services, "resolve_run_store", lambda: provider)
-    res = execute_industrial_certification(run_id, scenario_data=scenario)
+    res = execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
     assert res["certified"] is True
     assert res["manifest"]["metadata"]["agent_id"] == "agent-unit-007"
     assert res["manifest"]["metadata"]["model"] == "gemini-2.5-pro"
-    monkeypatch.setattr(eval_runner.runtime_services, "resolve_run_store", orig_resolve)
 
 
 def test_execute_industrial_certification_direct_provenance_and_oracle_reconciliation(
@@ -1646,7 +1458,7 @@ def test_execute_industrial_certification_oracle_result_formats(provider):
     assert res["certified"] is True
 
 
-def test_finalization_split_data_and_ev_mappings(provider, tmp_path):
+def test_finalization_split_data_and_ev_mappings(provider):
     IdentityService._provision_local_identity("eval_kernel")
     fin = EvaluatorFinalizationRecord(
         finalization_id="fin-split",
@@ -1681,12 +1493,10 @@ def test_finalization_split_data_and_ev_mappings(provider, tmp_path):
     ):
         CertificationService._finalization(evs_no_fin_in_end, "run-no-fin")
 
-    run_end_none = tmp_path / "run_end_none.jsonl"
-    run_end_none.write_text(
-        json.dumps({"event": "run_end", "data": {"duration": 10}}) + "\n",
-        encoding="utf-8",
-    )
-    assert CertificationService.extract_finalization_record(run_end_none) is None
+    with pytest.raises(
+        ValueError, match="missing mandatory authoritative EvaluatorFinalizationRecord"
+    ):
+        CertificationService._finalization(evs_no_fin_in_end, "run-no-fin")
 
 
 def test_extract_computed_run_outcome_terminal_and_run_end_variations(provider):

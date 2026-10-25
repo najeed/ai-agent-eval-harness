@@ -213,9 +213,7 @@ async def test_handler_analysis_errors(mock_config):
     assert await analysis.handle_calibrate(args) == 1
 
     # Exceptions
-    with patch(
-        "eval_runner.handlers.evaluation._resolve_replay_trace", side_effect=Exception("Crash")
-    ):
+    with patch("eval_runner.runtime_services.resolve_run_store", side_effect=Exception("Crash")):
         assert await analysis.handle_report(MagicMock(run_id="r1")) == 1
         assert await analysis.handle_explain(MagicMock(run_id="r1")) == 1
         assert await analysis.handle_calibrate(MagicMock(run_id="r1")) == 1
@@ -280,10 +278,11 @@ async def test_handler_evaluation_expansion(mock_config, monkeypatch):
     assert evaluation._ensure_path_safe(mock_config / "safe") is True
     assert evaluation._ensure_path_safe("/unsafe") is False
 
-    # _resolve_replay_trace
-    assert evaluation._resolve_replay_trace("") is None
-    assert evaluation._resolve_replay_trace("../unsafe") is None
-    assert evaluation._resolve_replay_trace("ghost") is None
+    # Replay is provider-owned; an unavailable provider must fail closed.
+    with patch(
+        "eval_runner.runtime_services.resolve_run_store", side_effect=RuntimeError("offline")
+    ):
+        assert await evaluation.handle_replay(MagicMock(run_id="ghost")) == 1
 
     # prepare_agent_env
     args = MagicMock(protocol="local", agent_cmd="python")
@@ -391,7 +390,7 @@ async def test_identity_coverage_gap_fill(mock_config, monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_all_environment_handlers_exceptions():
+async def test_all_environment_handlers_exceptions(tmp_path):
 
     import eval_runner.handlers.environment as env
 
@@ -406,7 +405,7 @@ async def test_all_environment_handlers_exceptions():
         (
             env.handle_init,
             "eval_runner.scaffold.scaffold_benchmark",
-            MagicMock(dir="d", industry="i", protocol="p", standard=None),
+            MagicMock(dir=str(tmp_path / "benchmark"), industry="i", protocol="p", standard=None),
         ),
         (env.handle_install, "eval_runner.catalog.install_pack", MagicMock(pack="p")),
         (env.handle_registry_sync, "eval_runner.registry_sync.ensure_schema_sync", MagicMock()),

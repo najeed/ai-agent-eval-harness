@@ -24,20 +24,6 @@ logger = logging.getLogger(__name__)
 trust_bp = Blueprint("trust", __name__, url_prefix="/api")
 
 
-def _extract_computed_run_outcome(vault_dir: Path, target_trace: Path) -> tuple[str, float]:
-    """Compatibility wrapper delegating to CertificationService."""
-    from eval_runner.services.certification import CertificationService
-
-    return CertificationService.extract_computed_run_outcome(vault_dir, target_trace)
-
-
-def _read_run_truth_level(run_id: str) -> tuple[str | None, bool]:
-    """Compatibility wrapper delegating to CertificationService."""
-    from eval_runner.services.certification import CertificationService
-
-    return CertificationService.read_run_truth_level(run_id)
-
-
 @trust_bp.route("/v1/certify", methods=["POST"])
 @require_permission(Permission.CERTIFY_WRITE)
 def certify_run():
