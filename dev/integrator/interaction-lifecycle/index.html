@@ -145,8 +145,8 @@ The operator reviews the paused run and submits a decision (<code dir="auto">APP
 </li>
 <li><strong>Monotonic Event Sequence Continuation (<code dir="auto">is_resume=True</code>)</strong>:
 <ul>
-<li>The engine re-opens the existing run vault without overwriting <code dir="auto">run.jsonl</code>.</li>
-<li>Scans the stream to compute <code dir="auto">start_seq = max(_seq) + 1</code>, guaranteeing strictly monotonic sequence ordering.</li>
+<li>The engine reloads the existing run through its bound provider without overwriting evidence.</li>
+<li>Reads provider events to compute <code dir="auto">start_seq = max(_seq) + 1</code>, guaranteeing strictly monotonic sequence ordering.</li>
 <li>Emits <code dir="auto">approval_resolved</code> and <code dir="auto">hitl_resume</code> with reviewer identity, decision, and rationale.</li>
 <li>If approved, the agent turn loop resumes with operator feedback injected into context; if rejected, the turn loop aborts fail-closed with <code dir="auto">POLICY_DENIED</code>.</li>
 </ul>

@@ -346,10 +346,10 @@
 <li>When a run pauses for human operator approval (<code dir="auto">PAUSED_FOR_APPROVAL</code>) and later resumes via <code dir="auto">agentv resume</code> or the visual console:
 <ul>
 <li><code dir="auto">runner.py</code> validates that the run lifecycle is not in terminal states (<code dir="auto">FINALIZING</code>, <code dir="auto">SEALED</code>, <code dir="auto">INVALID</code>).</li>
-<li>The existing evidence vault (<code dir="auto">runs/&#x3C;run_id>/</code>) and event ledger (<code dir="auto">run.jsonl</code>) are preserved rather than overwritten or re-created.</li>
-<li><code dir="auto">flight_recorder.py</code> inspects the existing <code dir="auto">run.jsonl</code> to discover the highest existing sequence number (<code dir="auto">initial_seq = max(_seq)</code>) and initializes <code dir="auto">_sequence_numbers[run_id] = initial_seq</code>.</li>
+<li>The existing provider-owned run and event stream are preserved rather than overwritten or re-created.</li>
+<li><code dir="auto">flight_recorder.py</code> reads provider events to discover the highest existing sequence number (<code dir="auto">initial_seq = max(_seq)</code>) and initializes <code dir="auto">_sequence_numbers[run_id] = initial_seq</code>.</li>
 <li>Resumed events append monotonically with strictly increasing sequence numbers (<code dir="auto">_seq = initial_seq + 1, initial_seq + 2, ...</code>), preventing sequence collisions, duplicate IDs, or chronological gaps.</li>
-<li><strong>Contract Snapshot Lock</strong>: On resumption, <code dir="auto">runner.py</code> reloads and locks the original <code dir="auto">execution_manifest.json</code> and <code dir="auto">scenario_resolved.json</code> from the vault. Scenario and configuration snapshots cannot be altered post-launch.</li>
+<li><strong>Contract Snapshot Lock</strong>: On resumption, <code dir="auto">runner.py</code> reloads and locks the original execution manifest and scenario snapshot through the provider. Scenario and configuration snapshots cannot be altered post-launch.</li>
 </ul>
 </li>
 </ul>
@@ -357,9 +357,9 @@
 <li>
 <p><strong>Cryptographic Trace Sealing</strong>:</p>
 <ul>
-<li>Post-run execution of <code dir="auto">agentv certify</code> computes a SHA3-256 digest over the raw <code dir="auto">run.jsonl</code>.</li>
+<li>Post-run execution of <code dir="auto">agentv certify</code> computes a SHA3-256 digest over the provider’s exact committed trace bytes.</li>
 <li>The resulting hash is signed using Ed25519 (<code dir="auto">system_id</code> or enterprise KMS/HSM).</li>
-<li>Writes the <code dir="auto">.sealed</code> sentinel marker and emits <code dir="auto">trace_sealed</code>. Any modification to <code dir="auto">run.jsonl</code> breaks hash verification during <code dir="auto">agentv verify</code> or release gate checks (<code dir="auto">agentv gate</code>).</li>
+<li>Atomically commits the certificate and sealed lifecycle state through the provider, then emits <code dir="auto">trace_sealed</code>. Any trace-byte modification breaks hash verification during <code dir="auto">agentv verify</code> or release gate checks (<code dir="auto">agentv gate</code>).</li>
 </ul>
 </li>
 <li>

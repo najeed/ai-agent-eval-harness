@@ -29,7 +29,9 @@ Trust invariants:
 | `format` | const | ✔ | `"agentv_verification_package"` |
 | `package_version` | const | ✔ | `"2.0.0"`. Additive-only within 2.x. |
 | `run_id` | string | ✔ | Globally-unique run id (UUIDv7-suffixed). |
-| `tenant_id`, `workspace_id` | string | – | Multi-tenant labels from run manifest. |
+| `org_id` | string | – | Organization from the signed execution scope; empty only for a historical run without a complete scope contract. |
+| `tenant_id`, `workspace_id` | string | – | Tenant and workspace labels. |
+| `active_environment` | string | – | Environment from the signed execution scope; empty only for a historical run without a complete scope contract. |
 | `chain` | object | ✔ | Five-field provenance header. |
 | `manifest` | object | – | Persisted run manifest (certificate metadata). |
 | `scenario` | object | – | Resolved AES document executed. |
@@ -56,11 +58,11 @@ Trust invariants:
 }
 ```
 
-- `scenario_hash` — computed over the **resolved** scenario document actually executed (`compute_scenario_hash`). This is the revision identity; a path is never sufficient.
-- `resolved_config_hash` — reproducibility fingerprint bound at `run_start`: executor version + IR version + evaluator-registry fingerprint + plugin provenance + adapter/provider + environment + seed + fixture hashes.
-- `agent_target_id` — dispatch identifier for the agent endpoint/target used.
+- `scenario_hash` — computed over the **resolved** scenario document actually executed (`compute_scenario_hash`). This is the revision identity; a path is never sufficient. It may be `null` only when no resolved scenario document was persisted.
+- `resolved_config_hash` — reproducibility fingerprint bound at `run_start`: executor version + IR version + evaluator-registry fingerprint + plugin provenance + adapter/provider + environment + seed + fixture hashes. It may be `null`.
+- `agent_target_id` — dispatch identifier for the agent endpoint/target used. It may be `null`.
 - `execution_mode` ∈ {simulated, record_replay, live, hybrid, unknown}. **`simulated` and `unknown` packages are non-authoritative for compliance claims.**
-- `execution_mode_declared=false` ⇒ the mode was a silent default; consumers must treat the package as provisional.
+- `execution_mode_declared` is optional in the schema. When present, `false` means the mode was a silent default; consumers should treat the package as provisional. Producers use `false` for `unknown` mode.
 
 ## 4. Verdict Literals
 
@@ -200,5 +202,6 @@ Walkthrough notes:
 }
 ```
 
-Presence of this block forces `verified_outcome = EVIDENCE_INVALID` and
-`evidence_chain_valid = false` regardless of signature validity.
+Producer policy requires this block to accompany `verified_outcome = EVIDENCE_INVALID`
+and `evidence_chain_valid = false` regardless of signature validity. The JSON Schema
+describes the block but does not encode that cross-field conditional.

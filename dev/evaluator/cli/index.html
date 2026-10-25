@@ -120,9 +120,8 @@
 <li><code dir="auto">--seed</code>: Deterministic integer seed for reproducible environment initializations.</li>
 <li><code dir="auto">--format</code>: Dataset format (<code dir="auto">jsonl</code>, <code dir="auto">json</code>, <code dir="auto">yaml</code>).</li>
 <li><code dir="auto">--output</code>: File destination for aggregated JSON results (default: <code dir="auto">reports/latest_results.json</code>).</li>
-<li><code dir="auto">--run-log-dir</code>: Custom directory for raw run logs and telemetry traces (default: <code dir="auto">runs/</code>).</li>
-<li><code dir="auto">--per-run-logs</code>: Enable isolated per-scenario log directories.</li>
-<li><code dir="auto">--master-log</code>: Write consolidated master execution log.</li>
+<li><code dir="auto">--run-log-dir</code>: LocalFile reference-provider compatibility option. Production providers own their storage configuration and Core never reads this path.</li>
+<li><code dir="auto">--per-run-logs</code>, <code dir="auto">--master-log</code>: LocalFile compatibility options; they are not evidence sources for Core verification or console reads.</li>
 <li><code dir="auto">--plugin</code>, <code dir="auto">--plugins</code>: Register runtime plugins for the session (can be specified multiple times).</li>
 <li><code dir="auto">-f</code>, <code dir="auto">--force</code>: Overwrite existing run outputs without prompt.</li>
 <li><code dir="auto">-v</code>, <code dir="auto">--verbose</code>: Enable debug-level execution logs.</li>
@@ -140,7 +139,7 @@
 <li><code dir="auto">--seed</code>: Deterministic random seed.</li>
 <li><code dir="auto">--execution-mode</code>: Authoritative execution mode recorded in the immutable run trace: <code dir="auto">live</code> (real APIs), <code dir="auto">hybrid</code> (live model + sandboxed local tools), or <code dir="auto">simulated</code> (mocked environment).</li>
 <li><code dir="auto">--output</code>: Custom result summary destination.</li>
-<li><code dir="auto">--run-log-dir</code>: Custom run log directory.</li>
+<li><code dir="auto">--run-log-dir</code>: LocalFile reference-provider compatibility option; use provider configuration for non-local storage.</li>
 <li><code dir="auto">--plugin</code>: Load external runtime plugins.</li>
 <li><code dir="auto">-v</code>, <code dir="auto">--verbose</code>: Verbose execution output.</li>
 </ul>
