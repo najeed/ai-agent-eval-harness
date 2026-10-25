@@ -77,6 +77,10 @@ class TestPQCCLI(unittest.TestCase):
             tpath.write_text(json.dumps({"event": "start"}) + "\n")
             return rid, tpath
 
+        from eval_runner.reference.local_run_store import LocalFileRunStore
+
+        store = LocalFileRunStore(config.RUN_LOG_DIR)
+
         try:
             # --- CASE 1: PQC ENABLED + STRICT ON + SIGNING FAILURE = FAIL CLOSED ---
             # sign_trace raises RuntimeError before reaching self-verify
@@ -95,8 +99,8 @@ class TestPQCCLI(unittest.TestCase):
                 ),
             ):
                 with self.assertRaises(RuntimeError) as cm:
-                    verifier.TraceVerifier.sign_trace(
-                        str(tpath1), run_id=rid1, identity_id=identity_id
+                    verifier.TraceVerifier.sign_trace_bytes(
+                        tpath1.read_bytes(), run_id=rid1, run_store=store, identity_id=identity_id
                     )
                 self.assertIn("PQC_STRICT_MODE Violation", str(cm.exception))
 
@@ -116,8 +120,8 @@ class TestPQCCLI(unittest.TestCase):
                 ),
             ):
                 # Should NOT raise, should just log warning and continue with classical
-                manifest = verifier.TraceVerifier.sign_trace(
-                    str(tpath2), run_id=rid2, identity_id=identity_id
+                manifest = verifier.TraceVerifier.sign_trace_bytes(
+                    tpath2.read_bytes(), run_id=rid2, run_store=store, identity_id=identity_id
                 )
                 self.assertEqual(len(manifest["provenance_chain"]), 1)
                 self.assertEqual(manifest["provenance_chain"][0]["algorithm"], "ED25519")
@@ -137,8 +141,8 @@ class TestPQCCLI(unittest.TestCase):
                     return_value=mock_client_success,
                 ),
             ):
-                manifest = verifier.TraceVerifier.sign_trace(
-                    str(tpath3), run_id=rid3, identity_id=identity_id
+                manifest = verifier.TraceVerifier.sign_trace_bytes(
+                    tpath3.read_bytes(), run_id=rid3, run_store=store, identity_id=identity_id
                 )
                 self.assertEqual(len(manifest["provenance_chain"]), 2)
                 self.assertEqual(manifest["provenance_chain"][1]["algorithm"], "ML-DSA-65")
@@ -149,8 +153,8 @@ class TestPQCCLI(unittest.TestCase):
                 patch("eval_runner.config.PQC_ENABLED", False),
                 patch("eval_runner.config.PQC_STRICT_MODE", True),
             ):
-                manifest = verifier.TraceVerifier.sign_trace(
-                    str(tpath4), run_id=rid4, identity_id=identity_id
+                manifest = verifier.TraceVerifier.sign_trace_bytes(
+                    tpath4.read_bytes(), run_id=rid4, run_store=store, identity_id=identity_id
                 )
                 self.assertEqual(len(manifest["provenance_chain"]), 1)
                 self.assertEqual(manifest["provenance_chain"][0]["algorithm"], "ED25519")

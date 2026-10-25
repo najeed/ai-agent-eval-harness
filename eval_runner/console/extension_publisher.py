@@ -15,7 +15,7 @@ from pathlib import Path
 
 from agentv_runtime.extension_contract import RuntimeExtension
 from eval_runner import config, identity
-from eval_runner.reference.signing import LocalEd25519SigningBackend
+from eval_runner.runtime_services import LocalEd25519SigningBackend
 
 
 def _private_key_pem_bytes(identity_id: str) -> bytes:

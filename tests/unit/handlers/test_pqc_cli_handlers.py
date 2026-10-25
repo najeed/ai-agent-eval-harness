@@ -19,6 +19,7 @@ def _make_finalization_event(
     outcome: str = "pass",
     score: float = 1.0,
     run_dir: Any = None,
+    exec_manifest: Any = None,
 ) -> str:
     """
     Build a valid EvaluatorFinalizationRecord event
@@ -31,12 +32,12 @@ def _make_finalization_event(
     from agentv_runtime.finalization import EvaluatorFinalizationRecord
     from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
 
-    parsed = []
+    parsed: list[tuple[dict[str, Any], str]] = []
     for line in events:
-        line = line.strip()
-        if line:
+        raw_line = line.rstrip("\r\n")
+        if raw_line.strip():
             try:
-                parsed.append(json.loads(line))
+                parsed.append((json.loads(raw_line), raw_line))
             except Exception:
                 pass
 
@@ -47,12 +48,13 @@ def _make_finalization_event(
 
     scenario_data = {"id": scenario_id, "version": "1.0.0"}
     scen_hash = compute_scenario_hash(scenario_data)
-    exec_manifest = ExecutionManifest(
-        manifest_id=f"man_{run_id}",
-        scenario_id=scenario_id,
-        scenario_version="1.0.0",
-        scenario_hash=scen_hash,
-    )
+    if exec_manifest is None:
+        exec_manifest = ExecutionManifest(
+            manifest_id=f"man_{run_id}",
+            scenario_id=scenario_id,
+            scenario_version="1.0.0",
+            scenario_hash=scen_hash,
+        )
     exec_manifest_hash = exec_manifest.compute_manifest_hash()
     if run_dir is not None:
         (Path(run_dir) / "execution_manifest.json").write_text(
@@ -96,34 +98,58 @@ def pqc_env(tmp_path, monkeypatch):
     monkeypatch.setattr("eval_runner.config.REPORTS_DIR", reports_dir)
     monkeypatch.setattr("eval_runner.config.TRUST_ROOT", root / "trust")
 
+    from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
     run_id = "pqc_test_run"
-    run_dir = runs_dir / run_id
-    run_dir.mkdir(parents=True, exist_ok=True)
-    trace_path = run_dir / "run.jsonl"
-    start_ev = json.dumps(
+    store = LocalFileRunStore(log_dir=runs_dir)
+    store.create_run(run_id=run_id, scenario_id="test_scenario")
+
+    scenario_data = {"id": "test_scenario", "version": "1.0.0"}
+    scen_hash = compute_scenario_hash(scenario_data)
+    exec_manifest = ExecutionManifest(
+        manifest_id=f"man_{run_id}",
+        scenario_id="test_scenario",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+    )
+    store.save_run_manifest(
+        run_id,
         {
-            "event": "run_start",
-            "run_id": "pqc_test_run",
-            "scenario_id": "test_scenario",
-            "scenario_data": {"id": "test_scenario", "version": "1.0.0"},
-            "data": {"execution_mode": "live", "execution_mode_declared": True},
-        }
+            "execution_manifest": exec_manifest.to_dict(),
+            "scenario_data": scenario_data,
+        },
     )
-    assert_ev = json.dumps(
-        {"event": "assertion_evaluated", "assertion": "accuracy", "passed": True}
-    )
-    metrics_ev = json.dumps({"event": "summary_metrics", "metrics": {"success_rate": 1.0}})
-    end_ev = json.dumps({"event": "run_end", "outcome": "pass", "status": "pass", "score": 1.0})
+
+    start_ev = {
+        "event": "run_start",
+        "run_id": "pqc_test_run",
+        "scenario_id": "test_scenario",
+        "scenario_data": {"id": "test_scenario", "version": "1.0.0"},
+        "data": {"execution_mode": "live", "execution_mode_declared": True},
+    }
+    assert_ev = {"event": "assertion_evaluated", "assertion": "accuracy", "passed": True}
+    metrics_ev = {"event": "summary_metrics", "metrics": {"success_rate": 1.0}}
+    end_ev = {"event": "run_end", "outcome": "pass", "status": "pass", "score": 1.0}
 
     core_events = [start_ev, assert_ev, metrics_ev, end_ev]
-    fin_ev = _make_finalization_event(run_id, "test_scenario", core_events, run_dir=run_dir)
-    trace_path.write_text("\n".join(core_events + [fin_ev]) + "\n", encoding="utf-8")
+    store.append_events(run_id, core_events)
+
+    trace_file = runs_dir / run_id / "run.jsonl"
+    raw_lines = [
+        line for line in trace_file.read_text(encoding="utf-8").splitlines() if line.strip()
+    ]
+    fin_ev_str = _make_finalization_event(
+        run_id, "test_scenario", raw_lines, exec_manifest=exec_manifest
+    )
+    store.append_events(run_id, [json.loads(fin_ev_str)])
 
     return {
         "root": root,
         "run_id": run_id,
-        "trace_path": trace_path,
-        "run_dir": run_dir,
+        "store": store,
+        "trace_path": runs_dir / run_id / "run.jsonl",
+        "run_dir": runs_dir / run_id,
     }
 
 
@@ -136,6 +162,7 @@ async def test_handle_certify_pqc(pqc_env, monkeypatch):
     monkeypatch.setattr(IdentityService, "_pqc_client", mock_client)
     monkeypatch.setattr(config, "PQC_ENABLED", True)
     monkeypatch.setattr(config, "PQC_PROVIDER", "cyclecore")
+    IdentityService._provision_local_identity("test_id")
 
     # 2. Execute Certify
     args = Namespace(
@@ -155,10 +182,8 @@ async def test_handle_certify_pqc(pqc_env, monkeypatch):
     assert result == 0
 
     # 3. Verify Manifest
-    manifest_path = pqc_env["run_dir"] / "run_manifest.json"
-    assert manifest_path.exists()
-    with open(manifest_path) as f:
-        manifest = json.load(f)
+    manifest = pqc_env["store"].get_manifest(pqc_env["run_id"])
+    assert manifest is not None
 
     # Hybrid check: provenance_chain should have 2 entries (Classical + PQC)
     chain = manifest["provenance_chain"]
@@ -168,30 +193,77 @@ async def test_handle_certify_pqc(pqc_env, monkeypatch):
     assert chain[1]["signature"] == "pqc_signature_hex"
 
 
+def _create_signed_pqc_run(store, run_id: str, identity_id: str) -> dict[str, Any]:
+    from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
+
+    IdentityService._provision_local_identity(identity_id)
+    store.create_run(run_id=run_id, scenario_id="test_scenario")
+
+    scenario_data = {"id": "test_scenario", "version": "1.0.0"}
+    scen_hash = compute_scenario_hash(scenario_data)
+    exec_manifest = ExecutionManifest(
+        manifest_id=f"man_{run_id}",
+        scenario_id="test_scenario",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+    )
+
+    start_ev = {
+        "event": "run_start",
+        "run_id": run_id,
+        "scenario_id": "test_scenario",
+        "scenario_data": scenario_data,
+        "data": {"execution_mode": "live", "execution_mode_declared": True},
+    }
+    assert_ev = {"event": "assertion_evaluated", "assertion": "accuracy", "passed": True}
+    metrics_ev = {"event": "summary_metrics", "metrics": {"success_rate": 1.0}}
+    end_ev = {"event": "run_end", "outcome": "pass", "status": "pass", "score": 1.0}
+
+    core_events_str = [
+        json.dumps(start_ev),
+        json.dumps(assert_ev),
+        json.dumps(metrics_ev),
+        json.dumps(end_ev),
+    ]
+    fin_ev_str = _make_finalization_event(
+        run_id, "test_scenario", core_events_str, exec_manifest=exec_manifest
+    )
+    all_events = [start_ev, assert_ev, metrics_ev, end_ev, json.loads(fin_ev_str)]
+    store.append_events(run_id, all_events)
+
+    trace_bytes = store.get_trace_bytes(run_id)
+    assert trace_bytes is not None
+
+    manifest = TraceVerifier.sign_trace_bytes(
+        trace_bytes,
+        run_id=run_id,
+        run_store=store,
+        identity_id=identity_id,
+        provisional=True,
+    )
+    store.save_run_manifest(run_id, manifest)
+    store.update_run_status(run_id, "SEALED")
+    return manifest
+
+
 @pytest.mark.asyncio
 async def test_handle_verify_pqc(pqc_env, monkeypatch):
     """Verify handle_verify validates a hybrid manifest."""
-    # 1. Create a Hybrid Manifest
     identity_id = "test_verify_id"
-    IdentityService.get_private_key(identity_id)
-
     mock_client = MagicMock()
     mock_client.sign_digest.return_value = "pqc_sig"
     mock_client.verify_digest.return_value = True
     monkeypatch.setattr(IdentityService, "_pqc_client", mock_client)
     monkeypatch.setattr(config, "PQC_ENABLED", True)
 
-    TraceVerifier.sign_trace(
-        str(pqc_env["trace_path"]), run_id=pqc_env["run_id"], identity_id=identity_id
-    )
+    run_id = "pqc_verify_run"
+    store = pqc_env["store"]
+    _create_signed_pqc_run(store, run_id, identity_id)
 
-    # The transactional certification pipeline already consulted the PQC
-    # client during its self-verification stage. Reset so this test asserts
-    # only on the handler's own verification pass.
+    # Reset calls so this test asserts only on the handler's verification pass
     mock_client.verify_digest.reset_mock()
 
-    # 2. Execute Verify
-    args = Namespace(run_id=pqc_env["run_id"], pqc=True)
+    args = Namespace(run_id=run_id, pqc=True)
     result = await evaluation.handle_verify(args)
     assert result == 0
 
@@ -202,25 +274,20 @@ async def test_handle_verify_pqc(pqc_env, monkeypatch):
 @pytest.mark.asyncio
 async def test_handle_gate_pqc(pqc_env, monkeypatch):
     """Verify handle_gate validates hybrid signatures."""
-    # 1. Create Hybrid Manifest
     identity_id = "gate_id"
-    IdentityService.get_private_key(identity_id)
-
     mock_client = MagicMock()
     mock_client.sign_digest.return_value = "gate_pqc_sig"
     mock_client.verify_digest.return_value = True
     monkeypatch.setattr(IdentityService, "_pqc_client", mock_client)
     monkeypatch.setattr(config, "PQC_ENABLED", True)
 
-    TraceVerifier.sign_trace(
-        str(pqc_env["trace_path"]), run_id=pqc_env["run_id"], identity_id=identity_id
-    )
+    run_id = "pqc_gate_run"
+    store = pqc_env["store"]
+    _create_signed_pqc_run(store, run_id, identity_id)
 
-    # Reset pipeline self-verification calls (see test_handle_verify_pqc).
     mock_client.verify_digest.reset_mock()
 
-    # 2. Execute Gate
-    args = Namespace(run_id=pqc_env["run_id"], hash=None, verify_ledger=True, pqc=True)
+    args = Namespace(run_id=run_id, hash=None, verify_ledger=True, pqc=True)
     result = await evaluation.handle_gate(args)
     assert result == 0
 

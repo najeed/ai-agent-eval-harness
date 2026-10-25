@@ -241,7 +241,7 @@ To guarantee reproducible forensic audits:
 2. The `MutationService` derives isolated sub-seeds for every pipeline stage:
    $$\text{sub\_seed} = \text{hash}(\text{master\_seed} \parallel \text{scenario\_id} \parallel \text{step\_index}) \pmod{2^{31}-1}$$
 3. All random branching, character jitter, and combinatorial probabilities execute against `MutationContext.rng`, eliminating stochastic evaluation non-determinism.
-4. Every applied mutation writes an immutable `MutationRecord` to `runs/<run_id>/run.jsonl`, binding directly into the trace's SHA3-256 seal and Verification Certificate.
+4. Every applied mutation appends an immutable `MutationRecord` through the run's provider, binding directly into the exact trace-byte SHA3-256 seal and Verification Certificate.
 
 ---
 
@@ -424,7 +424,7 @@ To ensure regulatory audit defensibility, every evaluation run is bound to its e
 ┌───────────────────────────────────▼────────────────────────────────────┐
 │ Layer 4: In-Trace Mutation Audit Records                               │
 │   MutationRecord(id, vector, operation, tier, target, step, timestamp) │
-│   - Emitted directly to runs/<run_id>/run.jsonl                        │
+│   - Appended through the scoped RunStorageProvider                      │
 │   - Sequentially bound into trace seal and Ed25519 signature envelope   │
 └────────────────────────────────────────────────────────────────────────┘
 ```
@@ -469,7 +469,7 @@ To ensure regulatory audit defensibility, every evaluation run is bound to its e
       timestamp: str
       details: dict[str, Any]
   ```
-- This record is written directly into `runs/<run_id>/run.jsonl`.
+- This record is appended through the scoped `RunStorageProvider`.
 - The `FlightRecorderPlugin` incorporates the event into the tamper-evident hash chain and detached Ed25519 trace seal (`.trace_seal`), proving unequivocally which run executed which specific mutations.
 
 

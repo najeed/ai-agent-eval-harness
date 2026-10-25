@@ -4,7 +4,6 @@ from typing import Any
 
 import pytest
 
-from eval_runner import config
 from eval_runner.handlers import evaluation
 
 
@@ -15,40 +14,46 @@ def _make_finalization_event(
     outcome: str = "pass",
     score: float = 1.0,
     run_dir: Any = None,
+    exec_manifest: Any = None,
 ) -> str:
     """
     Build a valid EvaluatorFinalizationRecord event
     from a list of already-serialized JSONL lines.
     """
-    import hashlib
     from pathlib import Path
 
-    from agentv_runtime.evidence_graph import build_evidence_graph_from_events
+    from agentv_runtime.evidence_graph import (
+        build_evidence_graph_from_events,
+        compute_evidence_graph_root,
+    )
     from agentv_runtime.finalization import EvaluatorFinalizationRecord
     from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
 
-    parsed = []
+    raw_events = []
     for line in events:
         line = line.strip()
         if line:
             try:
-                parsed.append(json.loads(line))
+                raw_events.append((json.loads(line), line))
             except Exception:
                 pass
 
-    ev_graph = build_evidence_graph_from_events(parsed)
-    evidence_root = ev_graph.get(
-        "evidence_root_hash", f"sha3_256:{hashlib.sha3_256(b'empty').hexdigest()}"
+    ev_graph = build_evidence_graph_from_events(raw_events)
+    evidence_root = (
+        ev_graph.get("evidence_root_hash")
+        or ev_graph.get("root_hash")
+        or compute_evidence_graph_root(ev_graph)
     )
 
     scenario_data = {"id": scenario_id, "version": "1.0.0"}
     scen_hash = compute_scenario_hash(scenario_data)
-    exec_manifest = ExecutionManifest(
-        manifest_id=f"man_{run_id}",
-        scenario_id=scenario_id,
-        scenario_version="1.0.0",
-        scenario_hash=scen_hash,
-    )
+    if exec_manifest is None:
+        exec_manifest = ExecutionManifest(
+            manifest_id=f"man_{run_id}",
+            scenario_id=scenario_id,
+            scenario_version="1.0.0",
+            scenario_hash=scen_hash,
+        )
     exec_manifest_hash = exec_manifest.compute_manifest_hash()
     if run_dir is not None:
         (Path(run_dir) / "execution_manifest.json").write_text(
@@ -68,7 +73,7 @@ def _make_finalization_event(
         evidence_root_hash=evidence_root,
         outcome=outcome,
         score=score,
-        terminal_seq=1,
+        terminal_seq=raw_events[-1][0].get("_seq", len(raw_events)) if raw_events else 1,
     )
     rec = rec.sign()
     fin_dict = rec.to_dict()
@@ -103,29 +108,58 @@ def certify_env(tmp_path, monkeypatch):
     IdentityService._provision_local_identity("system_id")
 
     # Authoritative Eval Artifact
+    from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
     run_id = "test_certification_run"
-    run_dir = runs_dir / run_id
-    run_dir.mkdir(parents=True, exist_ok=True)
-    trace_path = run_dir / "run.jsonl"
-    start_ev = json.dumps(
+    store = LocalFileRunStore(log_dir=runs_dir)
+    store.create_run(run_id=run_id, scenario_id="test_scenario")
+
+    scenario_data = {"id": "test_scenario", "version": "1.0.0"}
+    scen_hash = compute_scenario_hash(scenario_data)
+    exec_manifest = ExecutionManifest(
+        manifest_id=f"man_{run_id}",
+        scenario_id="test_scenario",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+    )
+    store.save_run_manifest(
+        run_id,
         {
-            "event": "run_start",
-            "scenario_id": "test_scenario",
-            "scenario_data": {"id": "test_scenario", "version": "1.0.0"},
-            "data": {"execution_mode": "live", "execution_mode_declared": True},
-        }
+            "execution_manifest": exec_manifest.to_dict(),
+            "scenario_data": scenario_data,
+        },
     )
-    assert_ev = json.dumps(
-        {"event": "assertion_evaluated", "assertion": "accuracy", "passed": True}
-    )
-    metrics_ev = json.dumps({"event": "summary_metrics", "metrics": {"success_rate": 1.0}})
-    end_ev = json.dumps({"event": "run_end", "outcome": "pass", "status": "pass", "score": 1.0})
+
+    from agentv_runtime.canonical import canonical_json_dumps
+
+    start_ev = {
+        "_seq": 1,
+        "event": "run_start",
+        "scenario_id": "test_scenario",
+        "scenario_data": {"id": "test_scenario", "version": "1.0.0"},
+        "data": {"execution_mode": "live", "execution_mode_declared": True},
+    }
+    assert_ev = {"_seq": 2, "event": "assertion_evaluated", "assertion": "accuracy", "passed": True}
+    metrics_ev = {"_seq": 3, "event": "summary_metrics", "metrics": {"success_rate": 1.0}}
+    end_ev = {"_seq": 4, "event": "run_end", "outcome": "pass", "status": "pass", "score": 1.0}
 
     core_events = [start_ev, assert_ev, metrics_ev, end_ev]
-    fin_ev = _make_finalization_event(run_id, "test_scenario", core_events, run_dir=run_dir)
-    trace_path.write_text("\n".join(core_events + [fin_ev]) + "\n", encoding="utf-8")
+    core_events_str = [canonical_json_dumps(e) for e in core_events]
+    fin_ev_str = _make_finalization_event(
+        run_id, "test_scenario", core_events_str, exec_manifest=exec_manifest
+    )
+    fin_dict = json.loads(fin_ev_str)
+    fin_dict["_seq"] = 5
+    all_events = core_events + [fin_dict]
+    store.append_events(run_id, all_events)
 
-    return {"root": root, "run_id": run_id, "trace_path": trace_path}
+    return {
+        "root": root,
+        "run_id": run_id,
+        "store": store,
+        "trace_path": runs_dir / run_id / "run.jsonl",
+    }
 
 
 @pytest.mark.asyncio
@@ -154,11 +188,9 @@ async def test_handle_certify_with_fingerprint(certify_env, capsys):
 
     from jsonschema import validate
 
-    sidecar_path = certify_env["trace_path"].parent / "run_manifest.json"
-    with open(sidecar_path, encoding="utf-8") as f:
-        manifest = json.load(f)
-
-    assert manifest.get("behavioral_fingerprint_id") == fingerprint
+    sidecar = certify_env["store"].get_manifest(certify_env["run_id"])
+    assert sidecar is not None
+    assert sidecar.get("behavioral_fingerprint_id") == fingerprint
 
     # Schema validation of sidecar manifest
     project_root = Path(__file__).parent.parent.parent.parent
@@ -168,7 +200,7 @@ async def test_handle_certify_with_fingerprint(certify_env, capsys):
     with open(vc_schema_path, encoding="utf-8") as sf:
         schema = json.load(sf)
 
-    validate(instance=manifest, schema=schema)
+    validate(instance=sidecar, schema=schema)
 
 
 @pytest.mark.asyncio
@@ -179,7 +211,10 @@ async def test_handle_certify_missing_trace(certify_env, capsys):
     result = await evaluation.handle_certify(args)
     assert result == 1
     captured = capsys.readouterr()
-    assert "Error: Trace file not found" in captured.out
+    assert any(
+        msg in captured.out
+        for msg in ("ProviderOwnedEvidenceRequired", "not found", "Trace bytes not returned")
+    )
 
 
 @pytest.mark.asyncio
@@ -205,14 +240,12 @@ async def test_handle_certify_success(certify_env, capsys):
     assert "Success: Verification Certificate generated" in captured.out
     assert f"Run ID: {certify_env['run_id']}" in captured.out
 
-    # Physical State Verification
-    sidecar = certify_env["trace_path"].parent / "run_manifest.json"
-    vault = config.REPORTS_DIR / "certificates" / f"{certify_env['run_id']}_vc.json"
+    # Provider Manifest State Verification
+    manifest = certify_env["store"].get_manifest(certify_env["run_id"])
+    assert manifest is not None, "Provider manifest missing"
+    assert manifest.get("vc_version") == "3.0.0"
 
-    assert sidecar.exists(), "Sidecar manifest missing"
-    assert vault.exists(), "Vault certificate missing"
-
-    # Schema validation of generated VC in vault
+    # Schema validation of generated VC in manifest
     import json
     from pathlib import Path
 
@@ -225,10 +258,7 @@ async def test_handle_certify_success(certify_env, capsys):
     with open(vc_schema_path, encoding="utf-8") as sf:
         schema = json.load(sf)
 
-    with open(vault, encoding="utf-8") as vf:
-        vc_data = json.load(vf)
-
-    validate(instance=vc_data, schema=schema)
+    validate(instance=manifest, schema=schema)
 
 
 def test_sign_trace_unconditional_finalization_mandate(tmp_path, monkeypatch):
@@ -239,7 +269,7 @@ def test_sign_trace_unconditional_finalization_mandate(tmp_path, monkeypatch):
     Only explicit provisional=True permits non-certifying diagnostic signing.
     """
     from eval_runner.identity import IdentityService
-    from eval_runner.verifier import CertificationFailedError, TraceVerifier
+    from eval_runner.verifier import TraceVerifier
 
     root = tmp_path / "finalization_mandate_test"
     root.mkdir()
@@ -255,45 +285,44 @@ def test_sign_trace_unconditional_finalization_mandate(tmp_path, monkeypatch):
     monkeypatch.setattr("eval_runner.config.TRUST_ROOT", root / ".aes" / "keys")
     IdentityService._provision_local_identity("system_id")
 
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+    from eval_runner.services.certification import execute_industrial_certification
+
     run_id = "run-mandate-test"
-    run_dir = runs_dir / run_id
-    run_dir.mkdir()
-    trace_file = run_dir / "run.jsonl"
+    store = LocalFileRunStore(log_dir=runs_dir)
+    store.create_run(run_id=run_id, scenario_id="test_scenario")
     # Bare trace without EvaluatorFinalizationRecord
-    trace_file.write_text(
-        json.dumps({"event": "start", "run_id": run_id, "turn": 1})
-        + "\n"
-        + json.dumps({"event": "stop", "run_id": run_id, "turn": 2})
-        + "\n",
-        encoding="utf-8",
-    )
+    events = [
+        {
+            "event": "run_start",
+            "run_id": run_id,
+            "data": {"execution_mode": "live", "execution_mode_declared": True},
+        },
+        {"event": "run_end", "run_id": run_id, "status": "pass"},
+    ]
+    store.append_events(run_id, events)
+    trace_bytes = store.get_trace_bytes(run_id)
+    assert trace_bytes is not None
 
-    # 1. Non-provisional with default require_finalization -> FAILS
-    with pytest.raises(CertificationFailedError, match="MissingEvaluatorFinalization"):
-        TraceVerifier.sign_trace(
-            trace_path=str(trace_file),
+    # 1. Non-provisional certification requires EvaluatorFinalizationRecord -> FAILS
+    with pytest.raises(
+        ValueError,
+        match="(MissingEvaluatorFinalization|missing mandatory "
+        "authoritative EvaluatorFinalizationRecord)",
+    ):
+        execute_industrial_certification(
             run_id=run_id,
-            execution_mode="live",
-            provisional=False,
+            run_store=store,
+            scenario_data={"id": "test_scenario", "version": "1.0.0"},
         )
 
-    # 2. Non-provisional attempting caller discretion (require_finalization=False) -> STILL FAILS
-    with pytest.raises(CertificationFailedError, match="MissingEvaluatorFinalization"):
-        TraceVerifier.sign_trace(
-            trace_path=str(trace_file),
-            run_id=run_id,
-            execution_mode="live",
-            provisional=False,
-            require_finalization=False,
-        )
-
-    # 3. Explicit provisional=True (non-certifying diagnostic) -> ALLOWED
-    diag_res = TraceVerifier.sign_trace(
-        trace_path=str(trace_file),
+    # 2. Explicit provisional=True (non-certifying diagnostic) -> ALLOWED
+    diag_res = TraceVerifier.sign_trace_bytes(
+        trace_bytes,
         run_id=run_id,
+        run_store=store,
         execution_mode="live",
         provisional=True,
-        require_finalization=False,
     )
     assert diag_res is not None
     assert diag_res.get("provisional") is True

@@ -139,16 +139,16 @@ graph LR
         Jail --> Shims["Mounted Shims (database, stripe)"]
     end
     
-    subgraph Forensics Vault
-        Vault["runs/<run_id>/"] --> Trace["run.jsonl"]
-        Vault --> Manifest["run_manifest.json"]
-        Vault --> Pkg[".agentv-package.json"]
+    subgraph Run Storage Provider
+        Provider["Scoped run record"] --> Trace["exact committed trace bytes"]
+        Provider --> Manifest["provider-owned manifest"]
+        Provider --> Pkg["derived evidence package"]
     end
 ```
 
 1. **Persistent Key Store (`.aes/`)**: Holds bootstrap keys (`.aes/keys/bootstrap.key`), signing certificates, and local trust root anchors. Never modified by agent executions.
 2. **Sandbox Jail (`/workspace` / `vfs:/`)**: Ephemeral, state-aware container created per run. Tools execute within this jail, with automated rollback and isolation.
-3. **Forensics Vault (`runs/<run_id>/`)**: Authoritative, append-only records containing `run.jsonl`, execution manifests, and signed Verification Certificates.
+3. **Run Storage Provider**: Authoritative scoped records containing exact trace bytes, execution manifests, and signed Verification Certificates. `LocalFileRunStore` is one reference implementation, not an evidence-source contract.
 
 ---
 

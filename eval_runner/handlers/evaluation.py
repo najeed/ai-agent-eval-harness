@@ -70,10 +70,7 @@ def _resolve_replay_trace(run_id: str) -> Path | None:
         return vault_path
 
     if master_path.exists():
-        # Quick existence check in master log without loading all events
-        # We assume if it exists, the resolution is valid; the handler will filter.
         return master_path
-
     return None
 
 
@@ -101,15 +98,16 @@ def prepare_agent_env(args) -> dict:
 
 def load_plugins_from_args(args):
     """Authoritative plugin injection (v1.3.0 Standard)."""
-    from .. import plugins
+    from eval_runner.runtime_services import resolve_plugin_registry
 
+    registry = resolve_plugin_registry()
     plugin_list = getattr(args, "plugin", []) or []
     # Environment priority fallback
     env_plugins = os.getenv("AES_PLUGINS", "").split(",")
     for p in plugin_list + [ep for ep in env_plugins if ep.strip()]:
         if p.strip():
             try:
-                plugins.manager.load(p.strip())
+                registry.load(p.strip())
             except Exception as e:
                 print(f"   [CLI] Warning: Failed to load plugin {p}: {e}")
 
@@ -144,9 +142,13 @@ async def handle_evaluate(args):
     agent_metadata = prepare_agent_env(args)
 
     try:
-        # Lazy Import: Defer 'engine', 'loader', and 'plugins' to avoid running discovery
+        # Lazy Import: defer execution components until the batch begins.
         # or loading full execution runtimes until the batch evaluation actually begins.
-        from .. import engine, loader, plugins
+        from eval_runner.runtime_services import resolve_plugin_registry
+
+        from .. import engine, loader
+
+        plugin_registry = resolve_plugin_registry()
 
         path_input = args.path
         scenarios = loader.load_dataset(
@@ -192,7 +194,7 @@ async def handle_evaluate(args):
                     seed=base_seed,
                     metadata={
                         "args": clean_args,
-                        "plugin_provenance": plugins.manager.provenance_map,
+                        "plugin_provenance": plugin_registry.provenance_map,
                         **agent_metadata,
                     },
                 )
@@ -241,8 +243,12 @@ async def handle_run(args):
     agent_metadata = prepare_agent_env(args)
 
     try:
-        # Lazy Import: Defer 'engine', 'loader', and 'plugins' to command execution
-        from .. import engine, loader, plugins
+        # Lazy Import: defer execution components until command execution.
+        from eval_runner.runtime_services import resolve_plugin_registry
+
+        from .. import engine, loader
+
+        plugin_registry = resolve_plugin_registry()
 
         scenario_path = getattr(args, "scenario", None)
         loaded = loader.load_scenario(scenario_path)
@@ -270,7 +276,7 @@ async def handle_run(args):
                 seed=base_seed,
                 metadata={
                     "args": clean_args,
-                    "plugin_provenance": plugins.manager.provenance_map,
+                    "plugin_provenance": plugin_registry.provenance_map,
                     **agent_metadata,
                 },
             )
@@ -308,7 +314,9 @@ async def handle_record(args):
         from .. import trace_recorder
 
         prepare_agent_env(args)
-        await trace_recorder.record_interaction(args.agent)
+        from eval_runner.runtime_services import resolve_run_store
+
+        await trace_recorder.record_interaction(args.agent, run_store=resolve_run_store())
         return 0
     except Exception as e:
         print(f"❌ [ERROR] Recording FAILED: {e}")
@@ -337,7 +345,7 @@ async def handle_replay(args):
 
     try:
         # Lazy Import: Defer 'trace_utils' until replay is requested
-        from .. import trace_utils
+        from ..runtime_services import resolve_run_store
 
         run_id = args.run_id
 
@@ -345,26 +353,17 @@ async def handle_replay(args):
             print("❌ Error: Run ID is mandatory for replay.")
             return 1
 
+        if not _ensure_path_safe(config.RUN_LOG_DIR / run_id, "Run Vault"):
+            return 1
+
         # --- [TIERED RESOLUTION] ---
-        path = _resolve_replay_trace(run_id)
-        if not path:
+        events = resolve_run_store().get_events(run_id, offset=0, limit=10_000_000)
+        if not events:
             print(
                 f"❌ [ERROR] Replay trace not found for Run ID '{run_id}'. "
                 "Vault and Master Log are missing or security check failed."
             )
             return 1
-
-        events = trace_utils.load_events(path)
-        if path.name == "run.jsonl" and path.parent == config.RUN_LOG_DIR:
-            # Filtering based on Master Log resolution
-            events = [e for e in events if e.get("run_id") == run_id]
-            if not events:
-                print(f"❌ [ERROR] Run ID '{run_id}' not found in master log fallback.")
-                return 1
-            print(
-                f"❌ [ERROR] Vault directory not found for Run ID '{run_id}'. "
-                "Falling back to master log."
-            )
 
         print(f"\n[Replay] Reconstructing from Run ID: {run_id}")
 
@@ -400,34 +399,21 @@ async def handle_verify(args):
             print("      [CRITICAL] FAILED: Run ID is mandatory for verification.")
             return 1
 
-        run_log_dir = (config.RUN_LOG_DIR / run_id).resolve()
-        trace_path = run_log_dir / "run.jsonl"
-        manifest_path = run_log_dir / "run_manifest.json"
-
-        # [INDUSTRIAL HARDENING] Check security cage BEFORE existence to catch traversals early
-        if not _ensure_path_safe(trace_path, "Trace file"):
+        if not _ensure_path_safe(config.RUN_LOG_DIR / run_id, "Run Vault"):
             return 1
 
-        print(f"      [Identity] Resolving trace for {run_id} -> {trace_path}")
-        print(f"      [Identity] Resolving manifest for {run_id} -> {manifest_path}")
+        from eval_runner.runtime_services import resolve_run_store
 
-        if not trace_path.exists():
+        from .. import verifier
+
+        store = resolve_run_store()
+        run = store.get_run(run_id)
+        if run is None and store.get_trace_bytes(run_id) is None:
             print(f"      [CRITICAL] FAILED: Trace file for {run_id} missing after vault lookup.")
             return 1
 
-        if not manifest_path.exists():
-            print(
-                f"      [CRITICAL] FAILED: Manifest for {run_id} missing (Certification required)."
-            )
-            return 1
-
-        # Canonical Verification Call (Pillar 1)
-        # Lazy Import: Defer 'verifier' to avoid cryptography & trust-anchor overhead during startup
-        from .. import verifier
-
-        is_valid = await verifier.TraceVerifier.verify_trace_async(
-            str(trace_path), str(manifest_path)
-        )
+        result = verifier.TraceVerifier.verify_run(run_id, run_store=store)
+        is_valid = bool(result["is_valid"])
 
         if is_valid:
             print("      [OK] VERIFIED: Trace integrity matches manifest.")
@@ -472,7 +458,7 @@ async def handle_verify_package(args):
             pub_p = Path(pub_key_pem)
             if pub_p.exists():
                 pub_key_pem = pub_p.read_text(encoding="utf-8")
-        elif not isinstance(pub_key_pem, str):
+        else:
             pub_key_pem = None
 
         require_sig = getattr(args, "require_signature", False) is True
@@ -531,51 +517,19 @@ async def handle_gate(args):
         print("[GATE] FAILURE: Run ID is mandatory for gating.")
         return 1
 
-    # [INDUSTRIAL HARDENING] Immediate Resolution and Safety Check
-    # We resolve the vault path and check safety before existence to prevent leak-via-existence
-    vault_path = (config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json").resolve()
-    if not _ensure_path_safe(vault_path, "Verification Certificate"):
-        return 1
-    # 2. Check Standard Sidecar (Primary for v1-v5 Narrative)
-    sidecar_path = (config.RUN_LOG_DIR / run_id / "run_manifest.json").resolve()
-
-    if vault_path.exists():
-        vc_path = vault_path
-    elif sidecar_path.exists():
-        vc_path = sidecar_path
-    else:
-        print(f"[GATE] FAILURE: Manifest not found for Run ID '{run_id}' in Sidecar or Vault.")
-        return 1
-
-    if not _ensure_path_safe(vc_path, "Verification Certificate"):
-        return 1
-
-    if not vc_path.exists():
-        print(f"[GATE] FAILURE: Verification Certificate not found: {vc_path}")
-        return 1
-
     try:
-        # Lazy Import: Defer 'verifier' until cryptographic gating check
+        from eval_runner.runtime_services import resolve_run_store
+
         from .. import verifier
 
-        with open(vc_path, encoding="utf-8") as f:
-            manifest = json.load(f)
+        provider = resolve_run_store()
+        result = verifier.TraceVerifier.verify_run(run_id, run_store=provider)
+        manifest = provider.get_manifest(run_id) or {}
+        is_valid = bool(result["is_valid"])
 
-        # 1. Base Integrity Resolve
-        trace_name = manifest.get("trace_file", "run.jsonl")
-
-        # Identity-Aware Trace Resolution
-        trace_path = (config.RUN_LOG_DIR / run_id / trace_name).resolve()
-
-        if not trace_path.exists():
-            print(f"[GATE] FAILURE: Associated trace file missing: {trace_name} at {trace_path}")
+        if result.get("verification_status") in ("NOT_FOUND", "UNVERIFIED") or not manifest:
+            print(f"[GATE] FAILURE: Manifest not found for run: {run_id}")
             return 1
-
-        # Canonical Verification Call (Pillars 1 & 2)
-        # We now pass verify_ledger=True to ensure sidecar artifact integrity
-        is_valid = await verifier.TraceVerifier.verify_trace_async(
-            str(trace_path), str(vc_path), verify_ledger=getattr(args, "verify_ledger", True)
-        )
 
         if not is_valid:
             print(
@@ -591,11 +545,14 @@ async def handle_gate(args):
                 print(f"[GATE] FAILURE: Commit mismatch! Expected {args.hash}, found {actual_hash}")
                 return 1
 
-        print(f"[GATE] SUCCESS: Verification Certificate '{vc_path.name}' is valid and signed.")
+        print(
+            f"[GATE] SUCCESS: Provider-owned verification manifest "
+            f"for '{run_id}' is valid and signed."
+        )
         return 0
 
     except Exception as e:
-        print(f"[GATE] ERROR: Unexpected failure during gating: {e}")
+        print(f"[GATE] FAILURE: Unexpected failure during gating: {e}")
         return 1
 
 
@@ -619,18 +576,12 @@ async def handle_certify(args):
         print("❌ Error: Run ID is mandatory for certification.")
         return 1
 
-    # Resolve from mandatory industrial run log directory
-    trace_path = (config.RUN_LOG_DIR / run_id / "run.jsonl").resolve()
-
-    # [INDUSTRIAL HARDENING] Check security cage BEFORE existence
-    if not _ensure_path_safe(trace_path, "Trace file"):
-        return 1
-
-    if not trace_path.exists():
-        print(f"Error: Trace file not found for Run ID {run_id}")
+    if not _ensure_path_safe(config.RUN_LOG_DIR / run_id, "Run Vault"):
         return 1
 
     try:
+        from eval_runner.runtime_services import resolve_run_store
+
         from ..services.certification import execute_industrial_certification
 
         identity_id = args.identity if hasattr(args, "identity") and args.identity else "system_id"
@@ -648,15 +599,24 @@ async def handle_certify(args):
             policy_ref=policy_ref,
             ttl=ttl_days,
             behavioral_fingerprint_id=behavioral_fingerprint_id,
+            run_store=resolve_run_store(),
         )
 
-        manifest_path = trace_path.parent / "run_manifest.json"
+        manifest = cert_res.get("manifest")
+        if manifest:
+            try:
+                cert_dir = Path(config.REPORTS_DIR) / "certificates"
+                cert_dir.mkdir(parents=True, exist_ok=True)
+                cert_file = cert_dir / f"{args.run_id}_vc.json"
+                cert_file.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+            except Exception as exp_err:
+                logger.debug("Failed exporting certificate to reports: %s", exp_err)
 
         print("✅ Success: Verification Certificate generated.")
         print(f"    - Run ID: {args.run_id}")
         print(f"    - SHA3-256: {cert_res.get('manifest', {}).get('trace_hash')}")
         print(f"    - Status: {cert_res.get('status')}")
-        print(f"    - Manifest: {manifest_path}")
+        print("    - Manifest: published by the authoritative run provider")
 
         return 0
 
@@ -691,18 +651,15 @@ async def handle_hitl_resume(args):
         return 1
 
     try:
-        from ..reference.approval_store import (
-            FileApprovalStore,
-            SQLiteApprovalStore,
-            get_default_approval_store,
+        from agentv_runtime.scope import ScopeToken
+
+        from ..runtime_services import (
+            resolve_approval_store,
+            resolve_execution_backend,
+            resolve_run_store,
         )
 
-        if store_override == "sqlite":
-            store = SQLiteApprovalStore()
-        elif store_override == "file":
-            store = FileApprovalStore()
-        else:
-            store = get_default_approval_store()
+        store = resolve_approval_store(store_type=store_override)
 
         request = store.get_request(approval_token)
         if not request:
@@ -715,6 +672,14 @@ async def handle_hitl_resume(args):
                 f"not '{run_id}'."
             )
             return 1
+
+        run_context = dict(request.scope) or None
+        run_store = resolve_run_store()
+        if run_context and run_store.get_run(run_id) is not None:
+            if run_store.get_run(run_id, context=run_context) is None:
+                print("❌ Error: Run is not available from the approval request's provider scope.")
+                return 1
+        approval_scope = ScopeToken.from_tags(run_context) if run_context else None
 
         already_resolved = request.status in ("APPROVED", "REJECTED")
         if already_resolved:
@@ -731,13 +696,16 @@ async def handle_hitl_resume(args):
             # boundary exactly once. Replaying those hooks for a durable
             # APPROVED request can block retry/resume on unrelated plugin or
             # projection work and is not a state transition.
-            from .. import plugins
+            from eval_runner.runtime_services import resolve_plugin_registry
+
             from ..session_components.approval_manager import SessionApprovalManager
 
             SessionApprovalManager(
                 run_id=run_id,
                 approval_store=store,
-                plugin_manager=plugins.manager,
+                plugin_manager=resolve_plugin_registry(),
+                scope=approval_scope,
+                run_store=run_store,
             ).resolve_durable_request(
                 approval_token=approval_token,
                 decision=normalized_decision,
@@ -759,15 +727,16 @@ async def handle_hitl_resume(args):
         print(f"    - Reviewer: {reviewer}")
         print(f"   Resuming evaluation execution for run '{run_id}'...")
 
-        # Resume execution via InProcessExecutionBackend
-        from ..reference.inprocess_backend import get_execution_backend
-
-        backend = get_execution_backend()
-        backend.resume(
-            run_id=run_id,
-            resumption_token=approval_token,
-            background=False,
-        )
+        backend = resolve_execution_backend()
+        resume_kwargs = {
+            "run_id": run_id,
+            "resumption_token": approval_token,
+            "background": False,
+        }
+        if run_context:
+            resume_kwargs["run_store"] = run_store
+            resume_kwargs["context"] = run_context
+        backend.resume(**resume_kwargs)
         print(f"\n   [CLI] Resumed evaluation completed for run '{run_id}'.")
         return 0
 

@@ -7,6 +7,7 @@ import pytest
 
 from eval_runner import config
 from eval_runner.handlers import evaluation, scenarios
+from eval_runner.reference.local_run_store import LocalFileRunStore
 
 
 @pytest.fixture
@@ -121,21 +122,17 @@ async def test_handle_run_full_flow(mock_env_config):
 async def test_handle_replay_success(mock_env_config, capsys):
     # evaluation.py 264-311
     run_id = "run_r"
-    vault_dir = mock_env_config / "runs" / run_id
-    vault_dir.mkdir()
-    trace_file = vault_dir / "run.jsonl"
     events = [
         {"event": "run_start", "run_id": run_id, "scenario": "sc1"},
         {"event": "prompt", "role": "user", "content": "hello"},
         {"event": "agent_response", "content": "hi"},
         {"event": "run_end", "status": "success"},
     ]
-    with open(trace_file, "w") as f:
-        for e in events:
-            f.write(json.dumps(e) + "\n")
-
     args = MagicMock(run_id=run_id)
-    assert await evaluation.handle_replay(args) == 0
+    provider = MagicMock()
+    provider.get_events.return_value = events
+    with patch("eval_runner.runtime_services.resolve_run_store", return_value=provider):
+        assert await evaluation.handle_replay(args) == 0
     out = capsys.readouterr().out
     assert "Run Started" in out
     assert "[USER]: hello" in out
@@ -146,16 +143,13 @@ async def test_handle_replay_success(mock_env_config, capsys):
 async def test_handle_verify_success(mock_env_config, capsys):
     # evaluation.py 317-360
     run_id = "run_v"
-    run_dir = mock_env_config / "runs" / run_id
-    run_dir.mkdir()
-    (run_dir / "run.jsonl").write_text("[]")
-    (run_dir / "run_manifest.json").write_text("{}")
-
     args = MagicMock(run_id=run_id)
-    with patch(
-        "eval_runner.verifier.TraceVerifier.verify_trace_async", new_callable=AsyncMock
-    ) as mock_v:
-        mock_v.return_value = True
+    provider = LocalFileRunStore(mock_env_config / "provider-runs")
+    provider.create_run(run_id, "scenario")
+    with (
+        patch("eval_runner.runtime_services.resolve_run_store", return_value=provider),
+        patch("eval_runner.verifier.TraceVerifier.verify_run", return_value={"is_valid": True}),
+    ):
         assert await evaluation.handle_verify(args) == 0
 
 
@@ -163,19 +157,14 @@ async def test_handle_verify_success(mock_env_config, capsys):
 async def test_handle_gate_success(mock_env_config):
     # evaluation.py 369-439
     run_id = "run_g"
-    cert_dir = mock_env_config / "reports" / "certificates"
-    cert_file = cert_dir / f"{run_id}_vc.json"
-    cert_file.write_text(json.dumps({"trace_file": "run.jsonl", "metadata": {"git_hash": "abc"}}))
-
-    run_dir = mock_env_config / "runs" / run_id
-    run_dir.mkdir()
-    (run_dir / "run.jsonl").write_text("[]")
-
     args = MagicMock(run_id=run_id, hash="abc", verify_ledger=True)
-    with patch(
-        "eval_runner.verifier.TraceVerifier.verify_trace_async", new_callable=AsyncMock
-    ) as mock_v:
-        mock_v.return_value = True
+    provider = LocalFileRunStore(mock_env_config / "provider-runs")
+    provider.create_run(run_id, "scenario")
+    provider.save_run_manifest(run_id, {"metadata": {"git_hash": "abc"}})
+    with (
+        patch("eval_runner.runtime_services.resolve_run_store", return_value=provider),
+        patch("eval_runner.verifier.TraceVerifier.verify_run", return_value={"is_valid": True}),
+    ):
         assert await evaluation.handle_gate(args) == 0
 
 

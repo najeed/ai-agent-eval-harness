@@ -6,8 +6,7 @@ Covers: leaderboard, leaderboard HTML export, failure search, triage,
         compliance (single + summary), and forensic diff endpoints.
 """
 
-import json
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 from flask import Flask
@@ -31,8 +30,12 @@ def analyze_jail(tmp_path):
 
 @pytest.fixture
 def analyze_client(analyze_jail, monkeypatch):
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
     app = Flask(__name__)
     app.secret_key = "test-secret"
+    store = LocalFileRunStore(analyze_jail["runs"])
+    app.extensions["agentv_run_store"] = store
     app.register_blueprint(analyze_bp, url_prefix="/api")
 
     monkeypatch.setattr(config, "PROJECT_ROOT", analyze_jail["root"])
@@ -48,11 +51,25 @@ def analyze_client(analyze_jail, monkeypatch):
 # ---------------------------------------------------------------------------
 
 
+class FakeLeaderboardRunStore:
+    def __init__(self, fail: bool = False):
+        self.fail = fail
+
+    def list_runs(self, limit=10_000, context=None):
+        if self.fail:
+            raise RuntimeError("disk error")
+        return [{"run_id": "run-1", "agent": "agt-a", "score": 0.9, "result_status": "PASS"}]
+
+    def get_manifest(self, run_id, context=None):
+        return {"agent_name": "agt-a", "score": 0.9}
+
+    def get_events(self, run_id, offset=0, limit=10_000_000, context=None):
+        return [{"event": "run_end", "data": {"finalization": {"score": 0.9, "outcome": "PASS"}}}]
+
+
 def test_analyze_leaderboard_success(analyze_client):
-    rows = [{"agent": "agt-a", "pass_rate": 0.9}]
-    with patch(
-        "eval_runner.console.routes.analyze.LeaderboardGenerator.generate_data", return_value=rows
-    ):
+    fake_store = FakeLeaderboardRunStore()
+    with patch("eval_runner.console.routes.analyze._run_store", return_value=fake_store):
         res = analyze_client.get("/api/leaderboard")
     assert res.status_code == 200
     data = res.get_json()
@@ -61,10 +78,8 @@ def test_analyze_leaderboard_success(analyze_client):
 
 
 def test_analyze_leaderboard_exception(analyze_client):
-    with patch(
-        "eval_runner.console.routes.analyze.LeaderboardGenerator.generate_data",
-        side_effect=RuntimeError("disk error"),
-    ):
+    fake_store = FakeLeaderboardRunStore(fail=True)
+    with patch("eval_runner.console.routes.analyze._run_store", return_value=fake_store):
         res = analyze_client.get("/api/leaderboard")
     assert res.status_code == 500
     assert "disk error" in res.get_json()["error"]
@@ -72,27 +87,20 @@ def test_analyze_leaderboard_exception(analyze_client):
 
 def test_analyze_leaderboard_export_html_exception(analyze_client):
     with patch(
-        "eval_runner.console.routes.analyze.send_file",
+        "eval_runner.console.routes.analyze._provider_leaderboard_rows",
         side_effect=Exception("builder crash"),
     ):
         res = analyze_client.post("/api/leaderboard/export-html")
     assert res.status_code == 500
 
 
-def test_analyze_leaderboard_export_html_success(analyze_client, analyze_jail):
-    html_path = analyze_jail["root"] / "reports" / "leaderboard.html"
-    html_path.parent.mkdir(parents=True, exist_ok=True)
-    html_path.write_text("<html></html>", encoding="utf-8")
-
-    with patch("eval_runner.console.routes.analyze.config.PROJECT_ROOT", analyze_jail["root"]):
-        with patch("eval_runner.publication_suite.html_builder.HTMLBuilder") as mock_builder_class:
-            mock_builder = MagicMock()
-            mock_builder_class.return_value = mock_builder
-
-            res = analyze_client.post("/api/leaderboard/export-html")
-            assert res.status_code == 200
-            assert b"<html>" in res.data
-            mock_builder.build.assert_called_once()
+def test_analyze_leaderboard_export_html_success(analyze_client):
+    fake_store = FakeLeaderboardRunStore()
+    with patch("eval_runner.console.routes.analyze._run_store", return_value=fake_store):
+        res = analyze_client.post("/api/leaderboard/export-html")
+        assert res.status_code == 200
+        assert b"<!doctype html>" in res.data
+        assert b"agt-a" in res.data
 
 
 # ---------------------------------------------------------------------------
@@ -116,14 +124,26 @@ def test_analyze_search_failures_no_master_log(analyze_client):
 
 
 def test_analyze_search_failures_text_match(analyze_client, analyze_jail):
-    master_log = analyze_jail["runs"] / "run.jsonl"
-    line1 = json.dumps(
-        {"run_id": "r1", "event": "tool_call", "status": "FAIL", "content": "authentication error"}
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    store = LocalFileRunStore(analyze_jail["runs"])
+    store.create_run("r1", "test")
+    store.append_events(
+        "r1",
+        [
+            {
+                "run_id": "r1",
+                "event": "tool_call",
+                "status": "FAIL",
+                "content": "authentication error",
+            }
+        ],
     )
-    line2 = json.dumps(
-        {"run_id": "r2", "event": "metric_scored", "status": "PASS", "content": "ok"}
+    store.create_run("r2", "test")
+    store.append_events(
+        "r2",
+        [{"run_id": "r2", "event": "metric_scored", "status": "PASS", "content": "ok"}],
     )
-    master_log.write_text(f"{line1}\n{line2}\n", encoding="utf-8")
 
     res = analyze_client.get("/api/failures/search?q=authentication")
     assert res.status_code == 200
@@ -134,9 +154,14 @@ def test_analyze_search_failures_text_match(analyze_client, analyze_jail):
 
 
 def test_analyze_search_failures_regex_match(analyze_client, analyze_jail):
-    master_log = analyze_jail["runs"] / "run.jsonl"
-    line = json.dumps({"run_id": "r3", "event": "error", "status": "FAIL", "content": "timeout123"})
-    master_log.write_text(f"{line}\n", encoding="utf-8")
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    store = LocalFileRunStore(analyze_jail["runs"])
+    store.create_run("r3", "test")
+    store.append_events(
+        "r3",
+        [{"run_id": "r3", "event": "error", "status": "FAIL", "content": "timeout123"}],
+    )
 
     res = analyze_client.get("/api/failures/search?q=timeout%5Cd%2B")
     assert res.status_code == 200
@@ -146,9 +171,14 @@ def test_analyze_search_failures_regex_match(analyze_client, analyze_jail):
 
 
 def test_analyze_search_failures_invalid_regex_falls_back_to_text(analyze_client, analyze_jail):
-    master_log = analyze_jail["runs"] / "run.jsonl"
-    line = json.dumps({"run_id": "r4", "event": "tool_call", "status": "FAIL", "content": "crash"})
-    master_log.write_text(f"{line}\n", encoding="utf-8")
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    store = LocalFileRunStore(analyze_jail["runs"])
+    store.create_run("r4", "test")
+    store.append_events(
+        "r4",
+        [{"run_id": "r4", "event": "tool_call", "status": "FAIL", "content": "crash"}],
+    )
 
     res = analyze_client.get("/api/failures/search?q=%5B")
     assert res.status_code == 200
@@ -156,12 +186,16 @@ def test_analyze_search_failures_invalid_regex_falls_back_to_text(analyze_client
 
 
 def test_analyze_search_failures_pagination(analyze_client, analyze_jail):
-    master_log = analyze_jail["runs"] / "run.jsonl"
-    lines = [
-        json.dumps({"run_id": f"r{i}", "event": "crash", "status": "FAIL", "content": "crash"})
-        for i in range(5)
-    ]
-    master_log.write_text("\n".join(lines), encoding="utf-8")
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    store = LocalFileRunStore(analyze_jail["runs"])
+    for i in range(5):
+        run_id = f"r{i}"
+        store.create_run(run_id, "test")
+        store.append_events(
+            run_id,
+            [{"run_id": run_id, "event": "crash", "status": "FAIL", "content": "crash"}],
+        )
 
     res = analyze_client.get("/api/failures/search?q=crash&page=1&limit=3")
     data = res.get_json()
@@ -171,12 +205,13 @@ def test_analyze_search_failures_pagination(analyze_client, analyze_jail):
 
 
 def test_analyze_search_failures_skips_empty_and_bad_json(analyze_client, analyze_jail):
-    master_log = analyze_jail["runs"] / "run.jsonl"
-    master_log.write_text(
-        "\n\nnot-json\n"
-        + json.dumps({"run_id": "r1", "event": "err", "status": "x", "content": "crash"})
-        + "\n",
-        encoding="utf-8",
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    store = LocalFileRunStore(analyze_jail["runs"])
+    store.create_run("r1", "test")
+    store.append_events(
+        "r1",
+        [{"run_id": "r1", "event": "err", "status": "x", "content": "crash"}],
     )
     res = analyze_client.get("/api/failures/search?q=crash")
     assert res.status_code == 200
@@ -184,10 +219,10 @@ def test_analyze_search_failures_skips_empty_and_bad_json(analyze_client, analyz
 
 
 def test_analyze_search_failures_io_error(analyze_client, analyze_jail):
-    master_log = analyze_jail["runs"] / "run.jsonl"
-    master_log.write_text("{}", encoding="utf-8")
-
-    with patch("builtins.open", side_effect=OSError("disk fail")):
+    with patch(
+        "eval_runner.console.routes.analyze._run_store",
+        side_effect=OSError("disk fail"),
+    ):
         res = analyze_client.get("/api/failures/search?q=x")
     assert res.status_code == 500
 
@@ -204,13 +239,14 @@ def test_analyze_triage_not_found(analyze_client):
 
 
 def test_analyze_triage_success(analyze_client, analyze_jail):
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
     run_id = "triage_run_a"
-    run_dir = analyze_jail["runs"] / run_id
-    run_dir.mkdir()
-    trace = run_dir / "run.jsonl"
-    trace.write_text(
-        json.dumps({"run_id": run_id, "event": "tool_call", "task_id": "t1"}) + "\n",
-        encoding="utf-8",
+    store = LocalFileRunStore(analyze_jail["runs"])
+    store.create_run(run_id, "test")
+    store.append_events(
+        run_id,
+        [{"run_id": run_id, "event": "tool_call", "task_id": "t1"}],
     )
 
     mock_result = {"task_id": "t1", "triage_tag": "TOOL_FAILURE", "metrics": []}
@@ -222,16 +258,15 @@ def test_analyze_triage_success(analyze_client, analyze_jail):
         "index": 2,
     }
 
-    with patch("eval_runner.console.routes.analyze.load_events", return_value=[{}]):
+    with patch(
+        "eval_runner.console.routes.analyze.reconstruct_results_from_events",
+        return_value=[mock_result],
+    ):
         with patch(
-            "eval_runner.console.routes.analyze.reconstruct_results_from_events",
-            return_value=[mock_result],
+            "eval_runner.triage.TriageEngine.identify_root_cause",
+            return_value=mock_root_cause,
         ):
-            with patch(
-                "eval_runner.triage.TriageEngine.identify_root_cause",
-                return_value=mock_root_cause,
-            ):
-                res = analyze_client.post(f"/api/triage/{run_id}")
+            res = analyze_client.post(f"/api/triage/{run_id}")
 
     assert res.status_code == 200
     data = res.get_json()
@@ -240,13 +275,58 @@ def test_analyze_triage_success(analyze_client, analyze_jail):
     assert data["results"][0]["category"] == "TOOL_FAILURE"
 
 
-def test_analyze_triage_exception(analyze_client, analyze_jail):
-    run_id = "triage_err_b"
-    run_dir = analyze_jail["runs"] / run_id
-    run_dir.mkdir()
-    (run_dir / "run.jsonl").write_text("{}", encoding="utf-8")
+def test_analyze_triage_reports_authoritative_failed_graph_node(analyze_client, analyze_jail):
+    """Run-level events must not create an ``unknown`` triage task."""
+    from eval_runner.reference.local_run_store import LocalFileRunStore
 
-    with patch("eval_runner.console.routes.analyze.load_events", side_effect=RuntimeError("bad")):
+    run_id = "triage_graph_failure"
+    store = LocalFileRunStore(analyze_jail["runs"])
+    store.create_run(run_id, "test")
+    store.append_events(
+        run_id,
+        [
+            {"event": "run_start", "run_id": run_id},
+            {
+                "event": "execution_graph_node",
+                "scenario_node_id": "reset_authority",
+                "status": "completed",
+                "_seq": 2,
+            },
+            {
+                "event": "execution_graph_node",
+                "scenario_node_id": "verify_provider_notification",
+                "status": "failed",
+                "failure_class": "VERIFICATION_FAILED",
+                "failure_reason": "Provider notification was not delivered",
+                "_seq": 3,
+            },
+        ],
+    )
+
+    res = analyze_client.post(f"/api/triage/{run_id}")
+
+    assert res.status_code == 200
+    reports = res.get_json()["results"]
+    assert [report["task_id"] for report in reports] == [
+        "reset_authority",
+        "verify_provider_notification",
+    ]
+    assert reports[1]["triage_tag"] == "VERIFICATION_FAILED"
+    assert "unknown" not in {report["task_id"] for report in reports}
+
+
+def test_analyze_triage_exception(analyze_client, analyze_jail):
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    run_id = "triage_err_b"
+    store = LocalFileRunStore(analyze_jail["runs"])
+    store.create_run(run_id, "test")
+    store.append_events(run_id, [{"run_id": run_id, "event": "tool_call"}])
+
+    with patch(
+        "eval_runner.console.routes.analyze.reconstruct_results_from_events",
+        side_effect=RuntimeError("bad"),
+    ):
         res = analyze_client.post(f"/api/triage/{run_id}")
 
     assert res.status_code == 500
@@ -263,15 +343,14 @@ def test_analyze_compliance_single_not_found(analyze_client):
 
 
 def test_analyze_compliance_single_success(analyze_client, analyze_jail):
-    run_id = "comp_run_c"
-    (analyze_jail["runs"] / run_id).mkdir()
+    from eval_runner.reference.local_run_store import LocalFileRunStore
 
-    mock_status = {"quantum_safe": True, "algorithm": "ML-DSA-65"}
-    with patch(
-        "eval_runner.console.routes.analyze._compliance_svc.check_pqc_status",
-        return_value=mock_status,
-    ):
-        res = analyze_client.get(f"/api/compliance/{run_id}")
+    run_id = "comp_run_c"
+    store = LocalFileRunStore(analyze_jail["runs"])
+    store.create_run(run_id, "test")
+    store.save_run_manifest(run_id, {"run_id": run_id, "algorithm": "ML-DSA-65"})
+
+    res = analyze_client.get(f"/api/compliance/{run_id}")
 
     assert res.status_code == 200
     data = res.get_json()
@@ -280,11 +359,14 @@ def test_analyze_compliance_single_success(analyze_client, analyze_jail):
 
 
 def test_analyze_compliance_single_exception(analyze_client, analyze_jail):
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
     run_id = "comp_err_d"
-    (analyze_jail["runs"] / run_id).mkdir()
+    store = LocalFileRunStore(analyze_jail["runs"])
+    store.create_run(run_id, "test")
 
     with patch(
-        "eval_runner.console.routes.analyze._compliance_svc.check_pqc_status",
+        "eval_runner.console.routes.analyze._run_store",
         side_effect=RuntimeError("pqc exploded"),
     ):
         res = analyze_client.get(f"/api/compliance/{run_id}")
@@ -307,19 +389,15 @@ def test_analyze_compliance_summary_empty(analyze_client):
 
 
 def test_analyze_compliance_summary_with_runs(analyze_client, analyze_jail):
-    for run_id in ["run-safe-e", "run-classic-f"]:
-        run_dir = analyze_jail["runs"] / run_id
-        run_dir.mkdir()
-        (run_dir / "run_manifest.json").write_text(json.dumps({"run_id": run_id}), encoding="utf-8")
+    from eval_runner.reference.local_run_store import LocalFileRunStore
 
-    def mock_pqc(run_id):
-        return {"quantum_safe": "safe" in run_id}
+    store = LocalFileRunStore(analyze_jail["runs"])
+    store.create_run("run-safe-e", "test")
+    store.save_run_manifest("run-safe-e", {"run_id": "run-safe-e", "algorithm": "ML-DSA-65"})
+    store.create_run("run-classic-f", "test")
+    store.save_run_manifest("run-classic-f", {"run_id": "run-classic-f", "algorithm": "ED25519"})
 
-    with patch(
-        "eval_runner.console.routes.analyze._compliance_svc.check_pqc_status",
-        side_effect=mock_pqc,
-    ):
-        res = analyze_client.get("/api/compliance/summary")
+    res = analyze_client.get("/api/compliance/summary")
 
     assert res.status_code == 200
     data = res.get_json()
@@ -330,30 +408,24 @@ def test_analyze_compliance_summary_with_runs(analyze_client, analyze_jail):
 
 
 def test_analyze_compliance_summary_date_filter(analyze_client, analyze_jail):
-    for run_id in ["2026-07-run", "2025-12-run"]:
-        run_dir = analyze_jail["runs"] / run_id
-        run_dir.mkdir()
-        (run_dir / "run_manifest.json").write_text("{}", encoding="utf-8")
+    from eval_runner.reference.local_run_store import LocalFileRunStore
 
-    with patch(
-        "eval_runner.console.routes.analyze._compliance_svc.check_pqc_status",
-        return_value={"quantum_safe": True},
-    ):
-        res = analyze_client.get("/api/compliance/summary?range=2026-07")
+    store = LocalFileRunStore(analyze_jail["runs"])
+    store.create_run("2026-07-run", "test")
+    store.save_run_manifest("2026-07-run", {"run_id": "2026-07-run", "algorithm": "ML-DSA-65"})
+    store.create_run("2025-12-run", "test")
+    store.save_run_manifest("2025-12-run", {"run_id": "2025-12-run", "algorithm": "ML-DSA-65"})
+
+    res = analyze_client.get("/api/compliance/summary?range=2026-07")
 
     assert res.status_code == 200
     assert res.get_json()["total_certified"] == 1
 
 
 def test_analyze_compliance_summary_exception_skips_run(analyze_client, analyze_jail):
-    run_dir = analyze_jail["runs"] / "bad-run-g"
-    run_dir.mkdir()
-    (run_dir / "run_manifest.json").write_text("{}", encoding="utf-8")
-
-    with patch(
-        "eval_runner.console.routes.analyze._compliance_svc.check_pqc_status",
-        side_effect=RuntimeError("boom"),
-    ):
+    active_store = analyze_client.application.extensions["agentv_run_store"]
+    active_store.create_run("bad-run-g", "test")
+    with patch.object(active_store, "get_manifest", side_effect=RuntimeError("boom")):
         res = analyze_client.get("/api/compliance/summary")
 
     assert res.status_code == 200

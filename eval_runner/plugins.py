@@ -21,7 +21,13 @@ import time  # noqa: F401
 from pathlib import Path
 from typing import Any
 
-from . import config, discovery
+from agentv_runtime.discovery import (
+    discover_declared_plugin_instances,
+    discover_extension_entry_points,
+    set_extension,
+)
+
+from . import config
 
 logger = logging.getLogger(__name__)
 
@@ -198,6 +204,16 @@ class PluginManager:
         self.plugins.clear()
         self._loaded = False
 
+    def clone_for_session(self) -> "PluginManager":
+        """Create an isolated, session-scoped clone preserving discovered plugins."""
+        clone = PluginManager()
+        clone.plugins = list(self.plugins)
+        clone._plugins = clone.plugins
+        clone.provenance_map = dict(self.provenance_map)
+        clone._loaded = self._loaded
+        clone._last_load_time = self._last_load_time
+        return clone
+
     def load(self, path: str) -> dict[str, Any]:
         """
         Ad-hoc logic to load a single plugin from a path.
@@ -319,7 +335,7 @@ class PluginManager:
             and _external_plugin_discovery_enabled.get()
             and not os.getenv("AGENTV_DISABLE_EXTERNAL_PLUGINS")
         ):
-            for entry_point in importlib.metadata.entry_points(group="agentv_runtime.plugins"):
+            for entry_point in discover_extension_entry_points("plugins"):
                 try:
                     plugin_cls = entry_point.load()
                     if not any(isinstance(p, plugin_cls) for p in self.plugins):
@@ -360,32 +376,30 @@ class PluginManager:
                     print(f"{msg}: {ve}")
                     # In purity mode, we proceed but the warning is logged to the forensic trail
 
-                for plugin_def in registry_data.get("plugins", []):
-                    if not plugin_def.get("enabled", True):
-                        continue
-
-                    module_name = plugin_def.get("module")
-                    class_name = plugin_def.get("class")
-                    if not module_name or not class_name:
-                        print(
-                            f"   [PluginManager] Skipping malformed plugin definition: {plugin_def}"
-                        )
-                        continue
-
+                declarations = registry_data.get("plugins", [])
+                if not isinstance(declarations, list):
+                    raise ValueError("Plugin registry field 'plugins' must be a list")
+                for plugin_def in declarations:
                     try:
-                        module = importlib.import_module(module_name)
-                        plugin_cls = getattr(module, class_name)
-                        if not any(isinstance(p, plugin_cls) for p in self.plugins):
-                            instance = plugin_cls()
+                        discovered = discover_declared_plugin_instances(
+                            [plugin_def], BaseEvalPlugin
+                        )
+                        if not discovered:
+                            continue
+                        instance, plugin_def = discovered[0]
+                        class_name = instance.__class__.__name__
+                        if not any(isinstance(p, instance.__class__) for p in self.plugins):
                             self.plugins.append(instance)
                             # Forensic Provenance: Apply 'trusted' flag from registry
-                            is_trusted = plugin_def.get("trusted", False)
                             self._record_provenance(instance, origin="MEMBER")
-                            self.provenance_map[class_name]["trusted"] = is_trusted
+                            self.provenance_map[class_name]["trusted"] = bool(
+                                plugin_def.get("trusted", False)
+                            )
                     except (Exception, SystemExit) as e:
                         msg = (
                             f"   [PluginManager] Failed to load plugin "
-                            f"{module_name}.{class_name}: {e}"
+                            f"{plugin_def.get('module') if isinstance(plugin_def, dict) else '?'}: "
+                            f"{e}"
                         )
                         if STRICT_PLUGINS:
                             raise ValueError(msg) from e
@@ -396,6 +410,8 @@ class PluginManager:
                 raise ValueError(msg) from e
 
         # 3. Dynamic search in project-root 'plugins' directory
+        from . import discovery
+
         root_plugins = discovery.discover_plugins_in_directory(
             config.PROJECT_ROOT / "plugins", BaseEvalPlugin, package_prefix="plugins"
         )
@@ -773,4 +789,5 @@ class PluginManager:
 
 
 manager = PluginManager()
+set_extension("plugins", manager)
 atexit.register(manager.finalize)

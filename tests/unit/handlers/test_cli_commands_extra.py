@@ -40,7 +40,7 @@ async def test_handle_report_exceptions(tmp_path, monkeypatch):
     args = parse_args(["report", "--run-id", "real"])
     with patch("eval_runner.config.RUN_LOG_DIR", tmp_path):
         with patch(
-            "eval_runner.handlers.analysis.trace_utils.load_events",
+            "eval_runner.reference.local_run_store.LocalFileRunStore.get_events",
             side_effect=OSError("Read fail"),
         ):
             res2 = await handle_report(args)
@@ -70,7 +70,7 @@ async def test_handle_replay_exceptions(tmp_path, monkeypatch):
     with (
         patch("eval_runner.config.RUN_LOG_DIR", tmp_path),
         patch(
-            "eval_runner.handlers.analysis.trace_utils.load_events",
+            "eval_runner.reference.local_run_store.LocalFileRunStore.get_events",
             side_effect=OSError("Read fail"),
         ),
     ):

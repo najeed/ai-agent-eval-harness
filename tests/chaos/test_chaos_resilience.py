@@ -7,14 +7,13 @@ must NEVER silently convert into an evaluation success (PASS).
 
 from __future__ import annotations
 
-import json
-
 import aiohttp
 import pytest
 
 from eval_runner.adapters.common import BaseAdapter
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.tool_sandbox import ToolSandbox
-from eval_runner.verifier import TraceVerifier
+from eval_runner.verifier import CertificationFailedError, TraceVerifier
 
 
 @pytest.fixture
@@ -91,7 +90,8 @@ async def test_chaos_simulator_crash_fault_injection(chaos_scenario, tmp_path):
 
 def test_chaos_missing_trace_verification_failure(tmp_path, monkeypatch):
     """
-    Boundary Fault Injection: Missing trace file must raise FileNotFoundError.
+    Boundary Fault Injection: Missing trace file or provider trace ownership mismatch
+    must raise CertificationFailedError.
     """
     project_root = tmp_path / "project"
     run_log_dir = project_root / "runs"
@@ -100,14 +100,16 @@ def test_chaos_missing_trace_verification_failure(tmp_path, monkeypatch):
     monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", project_root)
     monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", run_log_dir)
 
-    missing_trace = run_log_dir / run_id / "missing_run.jsonl"
+    store = LocalFileRunStore(log_dir=run_log_dir)
+    store.create_run(run_id=run_id, scenario_id="chaos-scenario")
 
-    with pytest.raises(FileNotFoundError):
-        TraceVerifier.sign_trace(
-            trace_path=str(missing_trace),
+    with pytest.raises(CertificationFailedError, match="ProviderTraceOwnershipMismatch"):
+        TraceVerifier.sign_trace_bytes(
+            b'{"event": "unpersisted"}',
             identity_id="chaos_verifier",
             compliance_status="pass",
             run_id=run_id,
+            run_store=store,
         )
 
 
@@ -121,8 +123,6 @@ async def test_chaos_pipeline_fault_never_passes(chaos_scenario, tmp_path, monke
     project_root = tmp_path / "project"
     run_log_dir = project_root / "runs"
     run_id = "run-chaos-pipeline-fault-001"
-    run_dir = run_log_dir / run_id
-    run_dir.mkdir(parents=True, exist_ok=True)
 
     monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", project_root)
     monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", run_log_dir)
@@ -137,35 +137,39 @@ async def test_chaos_pipeline_fault_never_passes(chaos_scenario, tmp_path, monke
     # 1. Execute tool call producing initial trace event
     await sandbox.execute(tool_name="echo_shim", params={"data": "normal_ping"})
 
-    trace_file = run_dir / "run.jsonl"
-    init_event = json.dumps({"event": "start", "run_id": run_id})
-    trace_file.write_text(f"{init_event}\n", encoding="utf-8")
+    store = LocalFileRunStore(log_dir=run_log_dir)
+    store.create_run(run_id=run_id, scenario_id=chaos_scenario.get("id", "chaos"))
+    init_event = {"event": "start", "run_id": run_id}
+    store.append_events(run_id, [init_event])
+    trace_bytes = store.get_trace_bytes(run_id)
+    assert trace_bytes is not None
 
     # 2. Sign trace to issue initial manifest
-    TraceVerifier.sign_trace(
-        trace_path=str(trace_file),
+    manifest = TraceVerifier.sign_trace_bytes(
+        trace_bytes,
         identity_id="chaos_verifier",
         compliance_status="pass",
         run_id=run_id,
+        run_store=store,
     )
-    manifest_path = trace_file.parent / "run_manifest.json"
+    store.save_run_manifest(run_id, manifest)
+    store.update_run_status(run_id, "SEALED")
 
-    # 3. Inject Infrastructure Fault: Truncate / corrupt the trace file after signing
-    with open(trace_file, "a", encoding="utf-8") as f:
-        f.write('{"event": "infrastructure_crash_event_corrupted": true}\n')
+    # 3. Inject Infrastructure Fault: Truncate / corrupt the trace after signing
+    corrupted_bytes = trace_bytes + b'\n{"event": "infrastructure_crash_event_corrupted": true}\n'
 
     # 4. Verify pipeline output: TraceVerifier MUST detect the fault and return False (never PASS)
-    is_valid = TraceVerifier.verify_trace(trace_file, manifest_path)
+    is_valid = TraceVerifier.verify_trace(corrupted_bytes, manifest, run_store=store)
     assert is_valid is False, "Infrastructure fault allowed corrupted evaluation to return PASS!"
 
 
 def test_chaos_readonly_worm_filesystem_lock_failure(tmp_path):
     """
-    Boundary Fault Injection: Read-only WORM filesystem write lock failure during trace verification
+    Boundary Fault Injection: Verifying non-existent run or corrupted manifest
     must fail cleanly without swallowing errors.
     """
-    non_existent_path = tmp_path / "read_only_root" / "locked_manifest.json"
-    is_valid = TraceVerifier.verify_trace(tmp_path / "non_existent_trace.jsonl", non_existent_path)
+    store = LocalFileRunStore(log_dir=tmp_path / "runs")
+    is_valid = TraceVerifier.verify_trace(b"{}", {"run_id": "missing"}, run_store=store)
     assert is_valid is False
 
 
@@ -211,14 +215,17 @@ async def test_chaos_simulator_crash_never_passes_verification(
     with pytest.raises(RuntimeError, match="Simulated crash"):
         await sandbox.execute(tool_name="faulty_shim", params={})
 
-    # Write an unsigned trace (no manifest was ever created)
-    trace_file = run_dir / "run.jsonl"
-    trace_file.write_text('{"event": "start", "run_id": "' + run_id + '"}\n', encoding="utf-8")
-    manifest_path = run_dir / "run_manifest.json"
-    # manifest_path intentionally does NOT exist — signing never happened
+    # Write an unsigned trace via provider (no manifest was ever created)
+    store = LocalFileRunStore(log_dir=run_log_dir)
+    store.create_run(run_id=run_id, scenario_id="chaos")
+    store.append_events(run_id, [{"event": "start", "run_id": run_id}])
+    trace_bytes = store.get_trace_bytes(run_id)
+    assert trace_bytes is not None
+    manifest = store.get_manifest(run_id) or {}
+    # manifest intentionally has no certificate / signature — signing never happened
 
     # Verifier MUST return False: a crash-interrupted run can never PASS
-    is_valid = TraceVerifier.verify_trace(trace_file, manifest_path)
+    is_valid = TraceVerifier.verify_trace(trace_bytes, manifest, run_store=store)
     assert is_valid is False, (
         "INVARIANT VIOLATED: Simulator crash allowed unsigned trace to pass verification!"
     )

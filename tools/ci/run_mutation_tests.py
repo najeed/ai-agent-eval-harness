@@ -144,6 +144,17 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
         BASE_DIR / "eval_runner" / "tool_sandbox.py",
         ("tests/unit/core/test_tool_sandbox.py",),
         frozenset({"execute", "_execute_core", "get_bounded_state", "_sanitize_path", "fork"}),
+        scope_test_names={
+            "_execute_core": (
+                "test_sandbox_known_tool",
+                "test_sandbox_unknown_tool",
+                "test_sandbox_state_mutation",
+                "test_sandbox_execute_missing_branches",
+                "test_sandbox_state_changes_and_shared_state_edge_cases",
+                "test_tool_sandbox_execution_quiesce_and_policy_branches",
+            ),
+            "get_bounded_state": ("test_sandbox_get_bounded_state_projection",),
+        },
     ),
     CriticalMutationTarget(
         BASE_DIR / "eval_runner" / "flight_recorder.py",
@@ -158,7 +169,7 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
             }
         ),
         scope_test_names={
-            "finalize_run": ("test_flight_recorder_finalize_omits_non_string_signer_key_id",),
+            "finalize_run": ("test_finalize_transitions_bound_provider",),
         },
     ),
     CriticalMutationTarget(
@@ -189,6 +200,16 @@ CRITICAL_MUTATION_TARGETS: tuple[CriticalMutationTarget, ...] = (
                 "_handle_hitl",
             }
         ),
+        scope_test_names={
+            "restore_from_checkpoint": (
+                "test_session_turn_number_and_checkpoint_branches",
+                "test_session_restore_checkpoint_completed_nodes_and_tokens",
+            ),
+            "_raise_if_pending_durable_approval": (
+                "test_pending_durable_approval_suspends_before_state_parity",
+                "test_session_pending_durable_approval_and_lifecycle",
+            ),
+        },
     ),
     CriticalMutationTarget(
         BASE_DIR / "eval_runner" / "engine.py",
@@ -1702,7 +1723,7 @@ def run_mutation_sentinel() -> None:
         "--workers",
         type=int,
         default=1,
-        help="Number of concurrent worker threads for parallel module evaluation (default: 1).",
+        help="Number of concurrent mutant evaluations within each module (default: 1).",
     )
     parser.add_argument(
         "--target",

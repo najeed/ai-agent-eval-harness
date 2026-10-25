@@ -5,26 +5,24 @@ Unit tests for the generate_assets utility.
 Verifies file generation and timestamp shifting for demo traces.
 """
 
-from unittest.mock import patch
-
 from eval_runner.console import gen_demo_assets
 
 
 def test_generate_assets_success(tmp_path):
-    """Verifies that demo assets are physically created in the runs directory."""
+    """Verifies that demo assets are created through the run store provider."""
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
     runs_dir = tmp_path / "runs"
     runs_dir.mkdir()
+    run_store = LocalFileRunStore(runs_dir)
 
-    # Patch config.RUN_LOG_DIR to point to our temp runs dir
-    with patch("eval_runner.config.RUN_LOG_DIR", str(runs_dir)):
-        gen_demo_assets.generate_assets()
+    gen_demo_assets.generate_assets(run_store=run_store)
 
-    # Verify files created
-    files = list(runs_dir.glob("*.json"))
-    assert len(files) > 0
+    runs = run_store.list_runs()
+    assert len(runs) > 0
 
-    # Check one file content
-    first_file = files[0]
-    content = first_file.read_text()
-    assert "timestamp" in content
-    assert "event" in content
+    first_run = runs[0]
+    events = run_store.get_events(first_run["run_id"])
+    assert len(events) > 0
+    assert "timestamp" in events[0]
+    assert "event" in events[0]

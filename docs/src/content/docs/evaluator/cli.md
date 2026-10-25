@@ -50,9 +50,8 @@ agentv evaluate \
 - `--seed`: Deterministic integer seed for reproducible environment initializations.
 - `--format`: Dataset format (`jsonl`, `json`, `yaml`).
 - `--output`: File destination for aggregated JSON results (default: `reports/latest_results.json`).
-- `--run-log-dir`: Custom directory for raw run logs and telemetry traces (default: `runs/`).
-- `--per-run-logs`: Enable isolated per-scenario log directories.
-- `--master-log`: Write consolidated master execution log.
+- `--run-log-dir`: LocalFile reference-provider compatibility option. Production providers own their storage configuration and Core never reads this path.
+- `--per-run-logs`, `--master-log`: LocalFile compatibility options; they are not evidence sources for Core verification or console reads.
 - `--plugin`, `--plugins`: Register runtime plugins for the session (can be specified multiple times).
 - `-f`, `--force`: Overwrite existing run outputs without prompt.
 - `-v`, `--verbose`: Enable debug-level execution logs.
@@ -78,7 +77,7 @@ agentv run \
 - `--seed`: Deterministic random seed.
 - `--execution-mode`: Authoritative execution mode recorded in the immutable run trace: `live` (real APIs), `hybrid` (live model + sandboxed local tools), or `simulated` (mocked environment).
 - `--output`: Custom result summary destination.
-- `--run-log-dir`: Custom run log directory.
+- `--run-log-dir`: LocalFile reference-provider compatibility option; use provider configuration for non-local storage.
 - `--plugin`: Load external runtime plugins.
 - `-v`, `--verbose`: Verbose execution output.
 

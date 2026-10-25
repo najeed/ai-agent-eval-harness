@@ -82,14 +82,13 @@ If the claimed `finalization_hash` does not match the recomputed digest, the tra
 To verify a trace independently:
 
 ```bash
-# 1. Cryptographic integrity check (recalculates SHA3-256 over run.jsonl and checks .sealed)
+# 1. Cryptographic integrity check (uses the provider's exact committed trace bytes and sealed state)
 python -m eval_runner.cli verify --run-id <run_id>
 
 # 2. Release Gate check (verifies signature, VC schema, and ledger commitments)
 python -m eval_runner.cli gate --run-id <run_id> --verify-ledger
 
-# 3. Inspect raw terminal finalization record
-jq '.finalization' runs/<run_id>/run_manifest.json
+# 3. Inspect the provider-owned terminal finalization record through the run API or evidence package
 ```
 
-If any bit of `run.jsonl` was modified post-execution, `agentv verify` and `agentv gate` will reject the vault immediately with a non-zero exit code.
+If any committed trace byte is modified post-execution, `agentv verify` and `agentv gate` reject the provider evidence immediately with a non-zero exit code.

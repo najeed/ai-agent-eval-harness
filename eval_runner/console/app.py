@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 
-from eval_runner.plugins import manager
+from eval_runner.runtime_services import resolve_plugin_registry, resolve_run_store
 
 from .. import config
 from .auth import auth_bp
@@ -28,6 +28,7 @@ from .routes import (
 
 # Ensure environment variables are loaded before ANY other configuration usage (R6)
 load_dotenv()
+manager = resolve_plugin_registry()
 os.environ["PYTHONUTF8"] = "1"
 os.environ["PYTHONIOENCODING"] = "utf-8"
 
@@ -158,7 +159,7 @@ def _published_extension_spa_prefixes(
     return sorted(prefixes)
 
 
-def create_app():
+def create_app(*, run_store=None):
     # Eager Hydration: Ensure scenarios are loaded before the first request
     from eval_runner.catalog import ScenarioCatalog
 
@@ -197,6 +198,9 @@ def create_app():
     else:
         ui_path = v2_ui_dist
     app = Flask(__name__, static_folder=ui_path, static_url_path="/static")
+    # This is the console composition boundary.  Route modules consume the
+    # injected provider through ``console.providers.get_run_store``.
+    app.extensions["agentv_run_store"] = resolve_run_store(explicit=run_store)
 
     # Bootstrap key initialization for zero-config non-production environments
     has_api_key = bool(

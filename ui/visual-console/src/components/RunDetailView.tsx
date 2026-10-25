@@ -22,7 +22,7 @@ export interface RunDetailData {
   run_id: string;
   scenario: string;
   status: string; // Process status: RUNNING, EXECUTION_COMPLETED, EXECUTION_FAILED, STALLED
-  verdict?: 'VERIFIED' | 'VERIFIED_PROVISIONAL' | 'NOT_VERIFIED' | 'POLICY_BREACH' | 'UNVERIFIED';
+  verdict?: 'VERIFIED' | 'VERIFIED_PROVISIONAL' | 'NOT_VERIFIED' | 'POLICY_BREACH' | 'UNVERIFIED' | 'ATTESTED_FAIL';
   provisional?: boolean;
   execution_mode?: string | null;
   score?: number;
@@ -319,9 +319,10 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
   // Strict Authoritative Verdict Resolution: Never Fabricate or Infer from Field Existence
   const verdict = auditLoading
     ? 'VERIFYING'
-    : (auditResult?.verification_status || 'UNVERIFIED');
+    : (auditResult?.verification_status || run.verdict || 'UNVERIFIED');
   const isProvisional = auditResult?.provisional || verdict === 'VERIFIED_PROVISIONAL' || false;
-  const isVerified = verdict === 'VERIFIED' || verdict === 'VERIFIED_PROVISIONAL';
+  const isAttestedFail = verdict === 'ATTESTED_FAIL' || auditResult?.verification_status === 'ATTESTED_FAIL';
+  const isVerified = (verdict === 'VERIFIED' || verdict === 'VERIFIED_PROVISIONAL') && !isAttestedFail;
   const isBreach = verdict === 'POLICY_BREACH' || policyEvidence.state === 'FAIL';
   const isNotVerified = verdict === 'FAILED_VERIFICATION' || verdict === 'NOT_VERIFIED';
 
@@ -413,16 +414,18 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
 
   const whyLine: string = isVerified
     ? `PASS; ${crypto?.verified ? 'signature verified and evidence chain intact' : 'runtime verification decision: PASS'}.`
-    : isBreach
-      ? 'FAIL; authoritative policy_violation event in the certified trace.'
-      : failedAssertions.length > 0
-        ? `FAIL; ${failedAssertions.length} assertion(s) failed. First failure: ${failedAssertions[0].metric ?? failedAssertions[0].assertion ?? failedAssertions[0].name ?? 'unnamed'
-        } on node '${failedAssertions[0].node ?? failedAssertions[0].node_id ?? '?'}'.`
-        : crypto && crypto.errors?.length > 0
-          ? `NOT VERIFIED; ${crypto.errors[0]}`
-          : isNotVerified
-            ? 'NOT VERIFIED; runtime verification decision: FAIL.'
-            : 'INCONCLUSIVE; no authoritative verification result available for this run.';
+    : isAttestedFail
+      ? `ATTESTED FAIL; cryptographic signature verified and evidence chain intact, but evaluation outcome failed${failedAssertions.length > 0 ? ` (${failedAssertions.length} assertion(s) failed)` : ''}.`
+      : isBreach
+        ? 'FAIL; authoritative policy_violation event in the certified trace.'
+        : failedAssertions.length > 0
+          ? `FAIL; ${failedAssertions.length} assertion(s) failed. First failure: ${failedAssertions[0].metric ?? failedAssertions[0].assertion ?? failedAssertions[0].name ?? 'unnamed'
+          } on node '${failedAssertions[0].node ?? failedAssertions[0].node_id ?? '?'}'.`
+          : crypto && crypto.errors?.length > 0
+            ? `NOT VERIFIED; ${crypto.errors[0]}`
+            : isNotVerified
+              ? 'NOT VERIFIED; runtime verification decision: FAIL.'
+              : 'INCONCLUSIVE; no authoritative verification result available for this run.';
   const attestationGrade: string =
     evidencePackage?.evidence_chain_valid === true ? 'Cryptographically Attested' : 'Unattested';
 
@@ -471,7 +474,7 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
               {run.scenario}
             </h1>
             <p className="text-xs text-slate-400">
-              Verified against target: <span className="font-mono text-slate-300">{run.target || run.model || 'Unknown Target'}</span>
+              Verified against target: <span className="font-mono text-slate-300">{run.target || run.model || run.agent || evidencePackage?.chain?.agent_target_id || evidencePackage?.manifest?.execution_manifest?.agent_config?.configured_model_id || evidencePackage?.manifest?.execution_manifest?.agent_config?.model || evidencePackage?.manifest?.execution_manifest?.agent_config?.agent_name || auditResult?.signer_identity || 'Standard Agent Target'}</span>
             </p>
           </div>
 
@@ -482,17 +485,21 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
                 ? 'bg-emerald-950/50 border-emerald-500/40 text-emerald-300 shadow-emerald-500/10'
                 : isProvisional
                   ? 'bg-amber-950/50 border-amber-500/40 text-amber-300 shadow-amber-500/10'
-                  : isBreach
+                  : isAttestedFail
                     ? 'bg-rose-950/50 border-rose-500/40 text-rose-300 shadow-rose-500/10'
-                    : isNotVerified
-                      ? 'bg-rose-950/40 border-rose-500/30 text-rose-300'
-                      : 'bg-amber-950/50 border-amber-500/40 text-amber-300 shadow-amber-500/10'
+                    : isBreach
+                      ? 'bg-rose-950/50 border-rose-500/40 text-rose-300 shadow-rose-500/10'
+                      : isNotVerified
+                        ? 'bg-rose-950/40 border-rose-500/30 text-rose-300'
+                        : 'bg-amber-950/50 border-amber-500/40 text-amber-300 shadow-amber-500/10'
                 }`}
             >
               {auditLoading ? (
                 <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
               ) : isVerified && !isProvisional ? (
                 <ShieldCheck className="w-6 h-6 text-emerald-400" />
+              ) : isAttestedFail ? (
+                <AlertTriangle className="w-6 h-6 text-rose-400" />
               ) : isBreach || isNotVerified ? (
                 <AlertTriangle className="w-6 h-6 text-rose-400" />
               ) : (
@@ -503,7 +510,7 @@ export const RunDetailView: React.FC<RunDetailViewProps> = ({ run }) => {
                   Verification Verdict
                 </div>
                 <div className="text-sm font-black tracking-wide">
-                  {auditLoading ? 'Verifying...' : isProvisional ? 'VERIFIED (PROVISIONAL)' : verdict}
+                  {auditLoading ? 'Verifying...' : isProvisional ? 'VERIFIED (PROVISIONAL)' : isAttestedFail ? 'ATTESTED FAIL' : verdict}
                 </div>
               </div>
             </div>

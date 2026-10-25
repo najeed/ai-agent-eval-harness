@@ -20,6 +20,8 @@ class LocalEd25519SigningBackend(SigningBackend):
     against an Ed25519 PEM public key.
     """
 
+    requires_private_key_material = True
+
     def can_sign(self) -> bool:
         return True
 

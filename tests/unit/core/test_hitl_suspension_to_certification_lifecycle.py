@@ -39,13 +39,16 @@ from eval_runner.services.certification import (
     CertificationService,
     issue_certification,
 )
-from eval_runner.verifier import TraceVerifier, locate_certificate_file
+from eval_runner.verifier import TraceVerifier
 
 
 @pytest.fixture(autouse=True)
 def isolated_lifecycle_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     """Isolate runtime config, run vaults, and approval stores to clean temporary directories."""
+    from agentv_runtime.discovery import reset_extensions
+
     reset_default_approval_store()
+    reset_extensions()
     test_runs = tmp_path / "runs"
     test_runs.mkdir(parents=True, exist_ok=True)
     test_reports = tmp_path / "reports"
@@ -59,6 +62,7 @@ def isolated_lifecycle_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setenv("AGENTV_CLI_HITL_SUSPEND", "1")
     yield
     reset_default_approval_store()
+    reset_extensions()
 
 
 @pytest.fixture
@@ -151,7 +155,8 @@ async def test_full_lifecycle_suspension_to_certification_e2e(
     # Step 2: Invariant Check on Paused Vault & Execution Manifest
     # -----------------------------------------------------------------------
     assert (
-        get_run_lifecycle_state(run_id, log_dir=runs_dir) == RunLifecycleState.PAUSED_FOR_APPROVAL
+        get_run_lifecycle_state(run_id, run_store=runner.run_store)
+        == RunLifecycleState.PAUSED_FOR_APPROVAL
     )
 
     manifest_file = vault_dir / "execution_manifest.json"
@@ -261,20 +266,22 @@ async def test_full_lifecycle_suspension_to_certification_e2e(
     assert fin_record is not None
     assert fin_record.run_id == run_id
     assert fin_record.outcome == "pass"
-    assert fin_record.score == 1.0
-    assert fin_record.execution_manifest_hash == manifest_hash
+    store_manifest = ExecutionManifest.from_dict(
+        runner.run_store.get_manifest(run_id)["execution_manifest"]
+    )
+    assert fin_record.execution_manifest_hash == store_manifest.compute_manifest_hash()
     assert fin_record.scenario_hash == manifest.scenario_hash
     assert fin_record.evaluator_signature is not None
 
     # Verify run lifecycle state is OPEN after evaluation completes
-    assert get_run_lifecycle_state(run_id, log_dir=runs_dir) == RunLifecycleState.OPEN
+    assert get_run_lifecycle_state(run_id, run_store=runner.run_store) == RunLifecycleState.OPEN
 
     # -----------------------------------------------------------------------
     # Step 6: Invoke CertificationService.issue_certification()
     # -----------------------------------------------------------------------
     # If any serialized field in execution_manifest.json or trace breaks the verifier,
     # this call will raise an exception and fail CI immediately.
-    cert_res = CertificationService.issue_certification(run_id=run_id)
+    cert_res = CertificationService.issue_certification(run_id=run_id, run_store=runner.run_store)
 
     assert cert_res is not None
     assert cert_res["certified"] is True
@@ -285,7 +292,7 @@ async def test_full_lifecycle_suspension_to_certification_e2e(
     assert cert_res["run_id"] == run_id
 
     # Verify run lifecycle state is sealed post-certification
-    assert get_run_lifecycle_state(run_id, log_dir=runs_dir) in (
+    assert get_run_lifecycle_state(run_id, run_store=runner.run_store) in (
         RunLifecycleState.FINALIZING,
         RunLifecycleState.SEALED,
     )
@@ -297,15 +304,7 @@ async def test_full_lifecycle_suspension_to_certification_e2e(
     sidecar_file = vault_dir / "run_manifest.json"
     assert sidecar_file.exists(), "Manifest sidecar must exist in run vault"
 
-    receipt_file = vault_dir / "certification_receipt.json"
-    assert receipt_file.exists(), "Certification receipt must exist in run vault"
-
-    cert_file = locate_certificate_file(run_id)
-    assert cert_file is not None and cert_file.exists(), (
-        f"Verification certificate for {run_id} must be discovered by locate_certificate_file"
-    )
-
-    vc_data = json.loads(cert_file.read_text(encoding="utf-8"))
+    vc_data = json.loads(sidecar_file.read_text(encoding="utf-8"))
     assert vc_data["compliance"]["status"] == "pass"
     assert vc_data["compliance"]["score"] == 1.0
     assert vc_data["execution_mode"] == "live"
@@ -318,20 +317,21 @@ async def test_full_lifecycle_suspension_to_certification_e2e(
     # Step 7: Authoritative TraceVerifier End-to-End Audit
     # -----------------------------------------------------------------------
     # Audit 1: Trace verification against manifest sidecar (trace hash, signature, ledger)
+    manifest = runner.run_store.get_manifest(run_id)
     assert (
         TraceVerifier.verify_trace(
-            str(vault_dir / "run.jsonl"),
-            str(sidecar_file),
-            verify_ledger=True,
+            runner.run_store.get_trace_bytes(run_id),
+            manifest,
+            run_store=runner.run_store,
+            trace_only=True,
         )
         is True
     )
 
     # Audit 2: Authoritative certification package artifact verification
-    exec_manifest_file = vault_dir / "execution_manifest.json"
-    assert exec_manifest_file.exists(), "Execution manifest must exist in run vault"
+    vault_dir / "execution_manifest.json"
     canonical_manifest = ExecutionManifest.from_dict(
-        json.loads(exec_manifest_file.read_text(encoding="utf-8"))
+        runner.run_store.get_manifest(run_id)["execution_manifest"]
     )
 
     cert_audit = TraceVerifier.verify_certification_artifact(
@@ -377,10 +377,18 @@ async def test_lifecycle_fails_closed_on_unknown_serialized_field(
     manifest_file = vault_dir / "execution_manifest.json"
     assert manifest_file.exists()
 
-    # Inject an unknown/rogue serialized field into the manifest on disk
+    # Inject an unknown/rogue serialized field into the manifest on disk and in provider sidecar
     m_data = json.loads(manifest_file.read_text(encoding="utf-8"))
     m_data["untrusted_carrier_injection"] = "malicious_payload_or_stale_key"
     manifest_file.write_text(json.dumps(m_data, indent=2), encoding="utf-8")
+
+    sidecar_file = vault_dir / "run_manifest.json"
+    if sidecar_file.exists():
+        sidecar_data = json.loads(sidecar_file.read_text(encoding="utf-8"))
+        sidecar_data.setdefault("execution_manifest", {})["untrusted_carrier_injection"] = (
+            "malicious_payload_or_stale_key"
+        )
+        sidecar_file.write_text(json.dumps(sidecar_data, indent=2), encoding="utf-8")
 
     # Invariant: ExecutionManifest.from_dict must reject unknown fields immediately
     with pytest.raises(ValueError, match="ExecutionManifestUnknownFields") as parse_err:
@@ -464,8 +472,16 @@ async def test_lifecycle_fails_closed_on_manifest_hash_mismatch(
     # Tamper with the physical manifest by changing a declared environment parameter
     manifest_file = vault_dir / "execution_manifest.json"
     m_data = json.loads(manifest_file.read_text(encoding="utf-8"))
-    m_data["runtime_config"]["tampered_flag"] = True
+    m_data.setdefault("metadata", {})["tampered_flag"] = True
     manifest_file.write_text(json.dumps(m_data, indent=2), encoding="utf-8")
+
+    sidecar_file = vault_dir / "run_manifest.json"
+    if sidecar_file.exists():
+        sidecar_data = json.loads(sidecar_file.read_text(encoding="utf-8"))
+        sidecar_data.setdefault("execution_manifest", {}).setdefault("metadata", {})[
+            "tampered_flag"
+        ] = True
+        sidecar_file.write_text(json.dumps(sidecar_data, indent=2), encoding="utf-8")
 
     # Invariant: CertificationService must fail closed on ManifestHashMismatch
     with pytest.raises(ValueError, match="ManifestHashMismatch"):

@@ -134,6 +134,10 @@ def isolated_trust(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "TRUST_ROOT", trust_root)
     # Also set env var so subprocess sees it
     monkeypatch.setenv("TRUST_ROOT", str(trust_root))
+    from eval_runner.identity import IdentityService
+
+    IdentityService._provision_local_identity("test_evaluator")
+    IdentityService._provision_local_identity("ci_bot")
     return trust_root
 
 

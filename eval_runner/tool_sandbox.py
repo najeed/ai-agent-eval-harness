@@ -17,7 +17,6 @@ from pathlib import Path
 from typing import Any
 
 from eval_runner.interfaces.policy import PolicyEvaluator
-from eval_runner.reference.field_policy import BasicFieldPolicyEvaluator
 from eval_runner.utils.path_resolver import PathResolver
 
 from . import config
@@ -122,14 +121,10 @@ class AbstractSandbox(ABC):
         jail_root: Path | None = None,
         policy_evaluator: PolicyEvaluator | None = None,
     ):
-        from agentv_runtime.discovery import resolve_extension
+        from eval_runner.runtime_services import resolve_policy_evaluator
 
         self.scenario = scenario
-        self.policy_evaluator = resolve_extension(
-            "policy_evaluators",
-            explicit=policy_evaluator,
-            default_factory=BasicFieldPolicyEvaluator,
-        )
+        self.policy_evaluator = resolve_policy_evaluator(explicit=policy_evaluator)
         self.state = scenario.get("initial_state", {}).copy()
         topology = scenario.get("metadata", {}).get("agent_topology", {})
         self.shared_state = SharedStateRegistry(topology, event_bus=event_bus)

@@ -336,11 +336,13 @@ export const RunsReports: React.FC = () => {
                       // Server-authoritative verdict only, no inference.
                       const isProv = r.provisional || r.verdict === 'VERIFIED_PROVISIONAL';
                       const isVer = r.verdict === 'VERIFIED' || isProv;
-                      const isFailed = r.verdict === 'FAILED_VERIFICATION';
+                      const isFailed = r.verdict === 'FAILED_VERIFICATION' || r.verdict === 'ATTESTED_FAIL';
                       const verdictLabel = isProv
                         ? 'Verified (Provisional)'
                         : isVer
                           ? 'Verified'
+                          : r.verdict === 'ATTESTED_FAIL'
+                            ? 'Attested Fail'
                           : isFailed
                             ? 'Failed Verification'
                             : 'Unknown';

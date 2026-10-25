@@ -66,21 +66,47 @@ def load_events(path: Path | str) -> list[dict[Any, Any]]:
 
 
 def reconstruct_results_from_events(events: list) -> list:
-    """Helper to reconstruct results structure from JSONL events."""
+    """Reconstruct task results from authoritative, task-scoped trace events.
+
+    A run trace includes run-level events (``run_start``, strategy transitions,
+    and similar telemetry) that do not identify a workflow node.  They are
+    evidence about the run, not task results, and must not become a synthetic
+    ``unknown`` task in diagnostics.  Graph node events use
+    ``scenario_node_id`` rather than ``task_id``; that identifier is the
+    canonical task reference for compiled workflows.
+    """
     from .triage import TriageEngine
 
-    results_map = {}
-    for event in events:
-        task_id = event.get("task_id", "unknown")
-        ev_type = event.get("event")
-        if task_id not in results_map:
-            results_map[task_id] = {
+    results_map: dict[str, dict[str, Any]] = {}
+
+    def task_reference(event: dict[str, Any]) -> str | None:
+        """Return the canonical node reference carried by a trace event."""
+        for key in ("scenario_node_id", "task_id", "node_id"):
+            value = event.get(key)
+            if isinstance(value, str) and value.strip():
+                return value
+        return None
+
+    def result_for(task_id: str) -> dict[str, Any]:
+        return results_map.setdefault(
+            task_id,
+            {
                 "task_id": task_id,
                 "metrics": [],
                 "conversation_history": [],
+                "status": "success",
                 "triage_tag": "SUCCESS",
-            }
-        res = results_map[task_id]
+            },
+        )
+
+    for event in events:
+        if not isinstance(event, dict):
+            continue
+        task_id = task_reference(event)
+        if task_id is None:
+            continue
+        ev_type = event.get("event")
+        res = result_for(task_id)
         if ev_type == "evaluation":
             res["metrics"].append(
                 {
@@ -96,76 +122,25 @@ def reconstruct_results_from_events(events: list) -> list:
                 "action": event.get("tool"),
                 "status": event.get("status"),
             }
-            res["conversation_history"].append({"role": role, "content": content})
+            res["conversation_history"].append(
+                {"role": role, "content": content, "_seq": event.get("_seq")}
+            )
+        elif ev_type == "execution_graph_node":
+            status = str(event.get("status", "")).lower()
+            res["conversation_history"].append(event)
+            if status == "completed":
+                res["status"] = "success"
+                res["triage_tag"] = "SUCCESS"
+            elif status in {"failed", "failure", "error"}:
+                res["status"] = "failed"
+                res["triage_tag"] = str(event.get("failure_class") or "UNKNOWN_FAILURE").upper()
+            elif status:
+                res["status"] = status
+        elif ev_type == "hitl_pause":
+            res["conversation_history"].append(event)
+            if str(event.get("status", "")).upper() == "PAUSED_FOR_APPROVAL":
+                res["status"] = "paused_for_approval"
+                res["triage_tag"] = "PAUSED_FOR_APPROVAL"
     final_results = list(results_map.values())
     TriageEngine.apply_triage(final_results)
     return final_results
-
-
-def resolve_trace_path(run_id: str, allow_master_recovery: bool = True) -> Path | None:
-    """
-    Authoritative trace resolver for AgentV.
-    Resolves the canonical path to a run's trace log across vaults, direct files,
-    and master-log projection.
-    """
-    if not run_id or not isinstance(run_id, str):
-        return None
-    import re
-
-    from . import config
-    from .utils import is_path_safe
-
-    if not re.match(r"^[a-zA-Z0-9_\-]+$", run_id):
-        return None
-
-    base_dir = Path(config.RUN_LOG_DIR).resolve()
-    candidates = [
-        base_dir / run_id / "run.jsonl",
-        base_dir / run_id / f"{run_id}.jsonl",
-        base_dir / f"{run_id}.jsonl",
-        base_dir / run_id,
-    ]
-    for c in candidates:
-        if c.exists() and c.is_file() and is_path_safe(c, base_dir):
-            return c
-
-    # Fallback / Recovery from master log (Defect 3)
-    if allow_master_recovery:
-        master_log = base_dir / "run.jsonl"
-        if master_log.exists() and master_log.is_file() and is_path_safe(master_log, base_dir):
-            matching_lines: list[str] = []
-            try:
-                with open(master_log, encoding="utf-8") as f:
-                    for line in f:
-                        line_str = line.strip()
-                        if not line_str:
-                            continue
-                        try:
-                            ev = json.loads(line_str)
-                            if ev.get("run_id") == run_id:
-                                matching_lines.append(line_str)
-                        except Exception:
-                            continue
-            except Exception as read_err:
-                import logging
-
-                logging.getLogger(__name__).debug(
-                    "Error reading master log for recovery: %s", read_err
-                )
-
-            if matching_lines:
-                vault_dir = base_dir / run_id
-                vault_dir.mkdir(parents=True, exist_ok=True)
-                vault_trace = vault_dir / "run.jsonl"
-                try:
-                    with open(vault_trace, "w", encoding="utf-8") as out:
-                        out.write("\n".join(matching_lines) + "\n")
-                    return vault_trace
-                except Exception as write_err:
-                    import logging
-
-                    logging.getLogger(__name__).error(
-                        "Failed projecting master log trace: %s", write_err
-                    )
-
-    return None

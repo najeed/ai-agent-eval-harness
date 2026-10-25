@@ -1,4 +1,3 @@
-import json
 import logging
 
 from . import config
@@ -13,7 +12,13 @@ class ComplianceService:
     and forensic evidence manifests.
     """
 
-    def check_pqc_status(self, run_id: str) -> dict:
+    def check_pqc_status(
+        self,
+        run_id: str,
+        *,
+        run_store: object = None,
+        context: dict | None = None,
+    ) -> dict:
         """
         Evaluates the PQC status of a run based on its Verification Certificate (VC).
         Returns a structured status dictionary aligned with NIST AI-100-1 audit standards.
@@ -22,17 +27,18 @@ class ComplianceService:
         from . import forensics
         from .identity import IdentityService
 
-        run_dir = config.RUN_LOG_DIR / run_id
-        manifest_path = run_dir / "run_manifest.json"
+        if run_store is None:
+            from eval_runner.runtime_services import resolve_run_store
 
-        if not manifest_path.exists():
+            run_store = resolve_run_store()
+        if not hasattr(run_store, "get_manifest"):
+            raise ValueError("RunStorageProvider is required for compliance checks.")
+        manifest = run_store.get_manifest(run_id, context=context)
+        if not manifest:
             logger.warning(f"Compliance check failed: Manifest missing for {run_id}")
             return {"quantum_safe": False, "reason": "Manifest missing"}
 
         try:
-            with open(manifest_path, encoding="utf-8") as f:
-                manifest = json.load(f)
-
             chain = manifest.get("provenance_chain", [])
             # Search for ML-DSA-65 (Post-Quantum) signature node
             pqc_nodes = [node for node in chain if node.get("algorithm") == "ML-DSA-65"]
@@ -133,15 +139,25 @@ class ComplianceService:
         }
 
 
-def evaluate_compliance(run_id: str, metrics: dict | None = None) -> dict:
+def evaluate_compliance(
+    run_id: str,
+    metrics: dict | None = None,
+    *,
+    run_store: object = None,
+    context: dict | None = None,
+) -> dict:
     """
     Industrial Gatekeeping Utility.
     Enforces compliance policies with strict Tri-State Audit Invariants:
     'COMPLIANT' | 'NON_COMPLIANT' | 'NOT_EVALUATED'.
     """
+    if run_store is None:
+        from eval_runner.runtime_services import resolve_run_store
+
+        run_store = resolve_run_store()
     metrics = metrics or {}
     service = ComplianceService()
-    pqc_status = service.check_pqc_status(run_id)
+    pqc_status = service.check_pqc_status(run_id, run_store=run_store, context=context)
     metrics_eval = service._evaluate_metrics_pack(metrics)
 
     # --- [Tri-State Audit Invariant] ---

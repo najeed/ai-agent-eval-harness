@@ -366,7 +366,6 @@ All configurable parameters are centralized in `eval_runner/config.py`. You can 
 | `EVAL_TURN_THROTTLE`| `0.0` | Artificial delay (seconds) between agent turns |
 | `DEFAULT_ADAPTER_TIMEOUT`| `30` | Network timeout for agent adapters |
 | `PLUGIN_TIMEOUT` | `5.0` | Execution timeout for plugin hooks |
-| `REPORTS_DIR` | `reports` | Base directory for generated reports |
 
 ... and more.
 
@@ -384,10 +383,11 @@ The platform is built with a **Secure-by-Design** philosophy, complying with ent
 - **Mandatory Authentication**: Protection of all console and bridge routes via session authentication or `DASHBOARD_API_KEY`.
 
 ### 🗄️ Forensic Storage & Vaulting
-AgentV employs a **Strict Industrial Vault** methodology to protect run integrity:
-- **Individual Vaults**: By default, each execution is isolated in its own directory (`runs/<run_id>/run.jsonl`).
-- **Master Log**: A consolidated flight recorder at `runs/run.jsonl` tracks all system turns for aggregate analysis.
-- **Rotation**: The built-in rotation mechanism manages entire Vault Directories, purging historical subdirectories to maintain storage efficiency while preserving the most recent forensic artifacts. It is recommended to periodically clean up this directory via `agentv cleanup-runs`.
+AgentV keeps run evidence behind a **RunStorageProvider** boundary:
+- **Provider ownership**: Run records, manifests, events, exact signed trace bytes, lifecycle, and certification leases belong to the provider selected at runtime.
+- **Console isolation**: The console reads provider APIs only; it does not scan run directories, master logs, or report vaults.
+- **Reference provider**: `LocalFileRunStore` may use a local filesystem internally. Its directory layout and retention policy are implementation details, not portable environment configuration.
+- **Cleanup**: `agentv cleanup-runs` and console cleanup operate through scoped provider deletion.
 
 ### Troubleshooting
 

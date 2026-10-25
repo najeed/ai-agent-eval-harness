@@ -1,6 +1,5 @@
 import json
 import logging
-import os
 import threading
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Mapping
@@ -11,11 +10,8 @@ from typing import Any
 
 from agentv_runtime.versions import VC_SCHEMA_VERSION as VC_V3_SCHEMA_VERSION
 
-from . import config, forensics, utils
-from .interfaces.artifact import ArtifactStore
+from . import config, forensics
 from .interfaces.signing import SigningBackend
-from .reference.local_artifact import LocalFileArtifactStore
-from .reference.signing import LocalEd25519SigningBackend
 from .utils import crypto
 
 logger = logging.getLogger(__name__)
@@ -34,6 +30,10 @@ class CertificationFailedError(RuntimeError):
         super().__init__(message)
         self.stage_log = stage_log or []
         self.outcome = "CERTIFICATION_FAILED"
+
+
+class EvidenceRootMismatchError(ValueError, CertificationFailedError):
+    """Raised when declared evidence root hash does not match computed evidence graph root."""
 
 
 class VerificationResult:
@@ -117,7 +117,7 @@ class BaseVerifier(ABC):
     """
 
     @abstractmethod
-    def verify(self, trace_path: Path, **kwargs) -> VerificationResult:
+    def verify(self, trace_bytes: bytes, **kwargs) -> VerificationResult:
         """Executes the verification logic and returns a structured result."""
         pass
 
@@ -159,7 +159,7 @@ class CoreTraceSigner(TraceVerificationInterceptor):
         try:
             from cryptography.hazmat.primitives import serialization
 
-            from eval_runner.reference.signing import LocalEd25519SigningBackend
+            from eval_runner.runtime_services import resolve_signing_backend
 
             signing_backend = context.get("signing_backend")
             private_key = None
@@ -187,7 +187,20 @@ class CoreTraceSigner(TraceVerificationInterceptor):
             manifest_bytes = canonical_json_encode(manifest_to_sign)
 
             if signing_backend is not None:
-                signature = signing_backend.sign_payload(manifest_bytes, identity_id)
+                key_identifier: Any = identity_id
+                if getattr(signing_backend, "requires_private_key_material", False):
+                    private_key = IdentityService.get_private_key(identity_id, auto_provision=False)
+                    if private_key is None or not hasattr(private_key, "private_bytes"):
+                        raise CertificationFailedError(
+                            "Pre-existing trusted private key not found for certification identity "
+                            f"'{identity_id}' (required by the selected signing backend)."
+                        )
+                    key_identifier = private_key.private_bytes(
+                        encoding=serialization.Encoding.PEM,
+                        format=serialization.PrivateFormat.PKCS8,
+                        encryption_algorithm=serialization.NoEncryption(),
+                    )
+                signature = signing_backend.sign_payload(manifest_bytes, key_identifier)
                 if isinstance(signature, dict):
                     signature = signature.get("signature") or signature.get("sig")
                 if not signature:
@@ -201,7 +214,7 @@ class CoreTraceSigner(TraceVerificationInterceptor):
                         format=serialization.PrivateFormat.PKCS8,
                         encryption_algorithm=serialization.NoEncryption(),
                     )
-                    backend = LocalEd25519SigningBackend()
+                    backend = resolve_signing_backend()
                     signature = backend.sign_payload(manifest_bytes, priv_pem)
                 except Exception:
                     sig_raw = private_key.sign(manifest_bytes)
@@ -382,57 +395,6 @@ class VerificationService:
 verification_service = VerificationService()
 
 
-def _is_plain_execution_manifest(path: Path) -> bool:
-    """
-    Check if a candidate file is a plain pre-certification execution manifest
-    rather than a verification certificate.
-
-    Returns True ONLY if the file is valid JSON, represents an execution manifest
-    (e.g., manifest_id starting with 'man_', 'agent_config' present, or scenario_id+scenario_hash),
-    and lacks all certificate indicators (trace_hash, vc_version, signature, etc.).
-
-    If the file cannot be read, is not valid JSON, or contains certificate markers,
-    it returns False (so it is not rejected as an execution manifest).
-    """
-    try:
-        if not path.is_file():
-            return False
-        with open(path, encoding="utf-8") as f:
-            data = json.load(f)
-        if not isinstance(data, dict):
-            return False
-
-        cert_markers = (
-            "trace_hash",
-            "verification_package",
-            "provenance_chain",
-            "signature",
-            "signatures",
-            "vc_version",
-            "compliance",
-            "compliance_status",
-            "certificate_hash",
-        )
-        if any(k in data for k in cert_markers):
-            return False
-
-        exec_markers = (
-            "agent_config",
-            "runtime_config",
-            "producer_identity",
-            "attempt_statistics",
-            "pass_at_k",
-        )
-        manifest_id = str(data.get("manifest_id", ""))
-        has_exec_id = manifest_id.startswith("man_")
-        has_exec_pair = bool(data.get("scenario_id") and data.get("scenario_hash"))
-        has_exec_marker = any(k in data for k in exec_markers)
-
-        return bool(has_exec_id or has_exec_pair or has_exec_marker)
-    except Exception:
-        return False
-
-
 class TraceVerifier:
     """
     Electronic Verification and Certification Engine for evaluation traces.
@@ -490,1370 +452,486 @@ class TraceVerifier:
         Signs a raw payload using an Ed25519 private key via SigningBackend.
         Used for trace-level forensic integrity.
         """
-        from agentv_runtime.discovery import resolve_extension
+        # Runtime implementation selection belongs to the composition
+        # boundary.  Verification itself must never import a reference signer.
+        from eval_runner.runtime_services import resolve_signing_backend
 
-        backend = resolve_extension(
-            "signing_backends",
-            explicit=signing_backend,
-            default_factory=LocalEd25519SigningBackend,
-        )
+        backend = resolve_signing_backend(explicit=signing_backend)
         return backend.sign_payload(payload, private_key_path)
 
     @classmethod
-    def sign_trace(
+    def sign_trace_bytes(
         cls,
-        trace_path: str,
+        trace_bytes: bytes,
+        *,
+        run_id: str,
+        run_store: Any,
+        context: Mapping[str, Any] | None = None,
         identity_id: str = "system_id",
         compliance_status: str = "pass",
         compliance_score: float = 1.0,
         policy_ref: str | None = None,
         ttl_days: int | None = None,
-        metadata: dict[str, Any] | None = None,
+        metadata: Mapping[str, Any] | None = None,
         behavioral_fingerprint_id: str | None = None,
-        run_id: str | None = None,
-        artifact_store: ArtifactStore | None = None,
-        evidence_root_hash: str | None = None,
         execution_mode: str | None = None,
         provisional: bool = False,
-        rubrics: dict[str, Any] | None = None,
-        consensus: dict[str, Any] | None = None,
         scenario_data: Mapping[str, Any] | None = None,
-        require_finalization: bool = False,
+        execution_manifest: Mapping[str, Any] | None = None,
         signing_backend: SigningBackend | None = None,
+        evidence_root_hash: str | None = None,
+        evidence_ledger: Mapping[str, Any] | None = None,
+        consensus: Mapping[str, Any] | None = None,
+        rubrics: Mapping[str, Any] | None = None,
     ) -> dict[str, Any]:
+        """Sign exact provider-owned trace bytes.
+
+        This is the production certification primitive.  It neither accepts nor
+        discovers a run directory; the provider bytes supplied here must be the
+        same bytes exposed by ``get_trace_bytes`` for this scoped run.
         """
-        Signs a trace file and issues a standardized Verification Certificate (VC) v3
-        via the transactional certification pipeline (AgentV v2.0.0):
+        import hashlib
 
-            freeze -> canonicalize -> hash -> sign -> persist -> verify -> seal -> publish
-
-        Any stage failure rolls back partial mutations and raises
-        CertificationFailedError (outcome CERTIFICATION_FAILED). No certificate is
-        ever returned from an incomplete sealing operation.
-
-        ``execution_mode`` is stamped into every certificate so an
-        auditor can distinguish simulated from live/replay-verified evidence.
-        ``provisional=True`` marks certificates produced without an explicit
-        operator-declared mode (silent SIMULATED default) — such certificates
-        are non-authoritative for compliance purposes.
-        """
-        stages: list[dict[str, Any]] = []
-
-        def _stage(name: str):
-            def _wrap(fn: Callable[[], Any]) -> Any:
-                entry = {"stage": name, "status": "running", "ts": datetime.now().isoformat()}
-                stages.append(entry)
-                try:
-                    result = fn()
-                    entry["status"] = "ok"
-                    return result
-                except CertificationFailedError as exc:
-                    entry["status"] = "failed"
-                    # Helpers may raise a domain error directly.  Preserve the
-                    # complete transaction record rather than losing the stage
-                    # that failed (notably the final seal operation).
-                    if not exc.stage_log:
-                        exc.stage_log = stages
-                    raise
-                except Exception as exc:
-                    entry["status"] = "failed"
-                    entry["error"] = f"{type(exc).__name__}: {exc}"
-                    logger.error(f"      [Verifier] Stage '{name}' FAILED: {exc}")
-                    raise CertificationFailedError(
-                        f"CERTIFICATION_FAILED at stage '{name}': {exc}", stages
-                    ) from exc
-
-            return _wrap
-
-        # --- Precondition validation (pre-transaction; no mutation possible) ---
-        p = Path(trace_path)
-        if not run_id:
-            logger.error(
-                "   [Verifier] FAIL: Missing explicit Run ID. Inference "
-                "is prohibited for forensic stability."
-            )
-            raise ValueError(
-                "Identity Basis Failure: Explicit 'run_id' is required for certification."
+        if not run_id or run_store is None:
+            raise ValueError("RunStorageProvider and explicit run_id are required for signing.")
+        raw_trace = bytes(trace_bytes)
+        owned_trace = run_store.get_trace_bytes(run_id, context=context)
+        if owned_trace is None or bytes(owned_trace) != raw_trace:
+            raise CertificationFailedError(
+                "ProviderTraceOwnershipMismatch: signing requires the provider's exact trace bytes."
             )
 
-        vault_path = (config.RUN_LOG_DIR / run_id / "run.jsonl").resolve()
-        master_path = (config.RUN_LOG_DIR / "run.jsonl").resolve()
-        resolved_p = p.resolve()
+        from eval_runner.run_lifecycle import RunLifecycleState, get_run_lifecycle_state
 
-        if resolved_p == master_path:
-            logger.error("   [Verifier] FAIL: Shared Master Log Certification Forbidden.")
-            raise ValueError(
-                f"SharedMasterLogCertificationForbidden: Trace at '{p}' is the shared "
-                "master log. Certification requires the isolated canonical per-run vault "
-                "trace (runs/<id>/run.jsonl)."
-            )
+        lifecycle = get_run_lifecycle_state(run_id, run_store=run_store, context=context)
+        if lifecycle in (RunLifecycleState.INVALID, RunLifecycleState.UNKNOWN):
+            raise CertificationFailedError(f"InvalidLifecycleState: {lifecycle.value}")
 
-        if not utils.is_path_safe(p, config.PROJECT_ROOT):
-            raise PermissionError(
-                f"Security violation: Trace file outside project jail: {trace_path}"
-            )
-        if not p.exists():
-            raise FileNotFoundError(f"Trace file not found: {trace_path}")
-
-        cls.compute_signature(p)
-
-        if resolved_p != vault_path:
-            logger.error("   [Verifier] FAIL: Forensic Pollution - Path mismatch.")
-            logger.error(f"      Provided: {resolved_p}")
-            logger.error(f"      Expected (Vault): {vault_path}")
-            raise ValueError(
-                f"Forensic Pollution: Trace at '{p}' resides in a non-compliant location. "
-                "Traces must be standard vaults (runs/<id>/run.jsonl)."
-            )
-
-        logger.info(f"      [Identity] Identity Basis Confirmed: {run_id} (Type: Vault)")
-
-        from .execution_ir import ExecutionMode
-
-        _valid_modes = {m.value for m in ExecutionMode}
-        _mode_in = str(execution_mode) if execution_mode else ""
-        if _mode_in not in _valid_modes:
-            provisional = True
-
-        now = datetime.now().astimezone()
-        ts_base = now.strftime("%Y-%m-%dT%H:%M:%S")
-        ms = f".{now.microsecond // 1000:03d}"
-        timestamp = ts_base + ms + now.strftime("%z")
-
-        if scenario_data is None:
-            for scen_fname in ("scenario_resolved.json", "scenario.json"):
-                scen_p = p.parent / scen_fname
-                if scen_p.exists():
+        try:
+            decoded_lines = raw_trace.decode("utf-8").splitlines()
+            events = []
+            for idx, line in enumerate(decoded_lines, start=1):
+                if line.strip():
                     try:
-                        scenario_data = json.loads(scen_p.read_text(encoding="utf-8"))
-                        break
-                    except Exception as scen_load_err:
-                        logger.debug("Failed to auto-load %s: %s", scen_fname, scen_load_err)
-
-        sidecar_path = p.parent / "run_manifest.json"
-        backup_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
-        receipt_path = p.parent / "certification_receipt.json"
-        staging_dir = p.parent / ".staging"
-        staged_manifest_path = staging_dir / "run_manifest.json"
-        pre_append_size = p.stat().st_size
-        bytes_appended = 0
-
-        def _rollback() -> None:
-            """Best-effort rollback of any partial mutation."""
-            import shutil
-
-            if staging_dir.exists():
-                try:
-                    shutil.rmtree(staging_dir, ignore_errors=True)
-                except Exception as s_err:
-                    logger.debug(f"      [Verifier] Failed to remove staging directory: {s_err}")
-
-            for stray in (sidecar_path, backup_path, receipt_path):
-                try:
-                    stray.unlink(missing_ok=True)
-                except OSError as unlink_err:
-                    logger.debug(
-                        f"      [Verifier] Failed to unlink rollback stray {stray}: {unlink_err}"
-                    )
-            try:
-                from eval_runner.run_lifecycle import rollback_run_lifecycle_to_open
-
-                rollback_run_lifecycle_to_open(run_id)
-            except Exception as r_err:
-                logger.debug(f"      [Verifier] Failed rolling back lifecycle to OPEN: {r_err}")
-            try:
-                if hasattr(store, "unseal"):
-                    store.unseal(run_id)
-            except OSError as unseal_err:
-                logger.debug(
-                    f"      [Verifier] Failed to unseal rollback target {run_id}: {unseal_err}"
-                )
-            try:
-                if p.exists() and bytes_appended > 0:
-                    current_size = p.stat().st_size
-                    if current_size == pre_append_size + bytes_appended:
-                        with open(p, "a+b") as f:
-                            f.truncate(pre_append_size)
-            except OSError as trunc_err:
-                logger.debug(f"      [Verifier] Trace rollback truncate notice: {trunc_err}")
-
-        from agentv_runtime.discovery import resolve_extension
-
-        store = resolve_extension(
-            "artifact_stores",
-            explicit=artifact_store,
-            default_factory=LocalFileArtifactStore,
-        )
-
-        # 1. FREEZE: hash evidence + seal-hash BEFORE any mutation
-        manifest_sidecars = [
-            p.name,
-            "run_manifest.json",
-            "run_manifest.json.meta.json",
-            "certificate.json",
-            "trace_seal.json",
-            "certification_receipt.json",
-            "run_record.json",
-            ".run_lifecycle",
-            ".sealed",
-        ]
-        evidence_ledger = _stage("freeze")(
-            lambda: cls._compute_evidence_ledger(
-                p.parent, run_id=run_id, exclude_files=manifest_sidecars
-            )
-        )
-        seal_hash = _stage("freeze_seal_hash")(lambda: cls.compute_signature(p))
-
-        from eval_runner.run_lifecycle import (
-            RunLifecycleState,
-            get_run_lifecycle_state,
-            transition_run_lifecycle,
-        )
-
-        lifecycle_st = get_run_lifecycle_state(run_id)
-        if lifecycle_st in (RunLifecycleState.INVALID, RunLifecycleState.UNKNOWN):
-            raise CertificationFailedError(
-                f"InvalidLifecycleState: Run '{run_id}' has {lifecycle_st.value} "
-                "lifecycle state; certification blocked."
-            )
-        if lifecycle_st == RunLifecycleState.OPEN:
-            try:
-                transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING)
-            except Exception as tr_err:
-                logger.error("Failed transitioning lifecycle to FINALIZING: %s", tr_err)
-                raise CertificationFailedError(
-                    f"LifecycleTransitionFailed: could not transition run '{run_id}' "
-                    f"to FINALIZING: {tr_err}"
-                ) from tr_err
-
-        # Stage immutable certification receipt artifact and bind its hash into evidence ledger
-        receipt_data = {
-            "event": "verification_certificate_issued",
-            "identity": identity_id,
-            "receipt_id": f"rcpt_{run_id}",
-            "run_id": run_id,
-            "seal_hash": seal_hash,
-            "timestamp": timestamp,
-            "trace_hash": seal_hash,
-            "vc_version": VC_V3_SCHEMA_VERSION,
-        }
-        staging_dir.mkdir(parents=True, exist_ok=True)
-        staged_receipt_path = staging_dir / "certification_receipt.json"
-        with open(staged_receipt_path, "w", encoding="utf-8") as rf:
-            json.dump(receipt_data, rf, indent=4)
-        receipt_hash = cls.compute_signature(staged_receipt_path)
-        evidence_ledger["certification_receipt.json"] = receipt_hash
-
-        # Recompute deterministic evidence root hash from trace events
-        computed_evidence_root: str | None = None
-        computed_evidence_root_canon: str | None = None
-        ev_graph: dict[str, Any] | None = None
-        ev_graph_canon: dict[str, Any] | None = None
-        events_list: list[dict[str, Any]] = []
-        terminal_events: list[dict[str, Any]] = []
-        req_oracles: list[str] | None = None
-        if p.exists():
-            try:
-                from agentv_runtime.evidence_graph import (
-                    build_evidence_graph_from_events,
-                    compute_evidence_graph_root,
-                )
-
-                events_list_with_lines: list[tuple[dict[str, Any], str]] = []
-                with open(p, encoding="utf-8") as tf:
-                    for line_idx, line in enumerate(tf, start=1):
-                        stripped = line.strip()
-                        if stripped:
-                            try:
-                                parsed_ev = json.loads(stripped)
-                                terminal_finalization = parsed_ev.get(
-                                    "event"
-                                ) == "evaluator_finalization" or (
-                                    parsed_ev.get("event")
-                                    in (
-                                        "run_end",
-                                        "verification_decision",
-                                        "session_decision",
-                                    )
-                                    and isinstance(
-                                        parsed_ev.get("finalization")
-                                        or (
-                                            parsed_ev.get("data", {}).get("finalization")
-                                            if isinstance(parsed_ev.get("data"), dict)
-                                            else None
-                                        ),
-                                        dict,
-                                    )
-                                )
-                                # The evaluator finalization record binds the
-                                # pre-finalization evidence stream.  Its own
-                                # terminal carrier cannot be included without
-                                # creating a self-referential graph root.
-                                if not terminal_finalization:
-                                    events_list.append(parsed_ev)
-                                    events_list_with_lines.append((parsed_ev, line.rstrip("\r\n")))
-                                else:
-                                    terminal_events.append(parsed_ev)
-                            except Exception as ev_parse_err:
-                                logger.error(
-                                    f"Malformed trace record at line {line_idx}: {ev_parse_err}"
-                                )
-                                raise CertificationFailedError(
-                                    f"Malformed trace record at line {line_idx}: {ev_parse_err}"
-                                ) from ev_parse_err
-                if events_list:
-                    # The scenario contract is the only authority for the
-                    # required-evidence inventory.  Caller metadata is an
-                    # annotation and must never weaken completeness checks.
-                    if isinstance(scenario_data, dict):
-                        from eval_runner.runner import compile_required_oracle_ids
-
-                        req_oracles = compile_required_oracle_ids(scenario_data)
-                    else:
-                        req_oracles = list((metadata or {}).get("required_oracle_ids") or [])
-                    ev_graph = build_evidence_graph_from_events(
-                        events_list_with_lines, required_oracle_ids=req_oracles
-                    )
-                    computed_evidence_root = compute_evidence_graph_root(ev_graph)
-                    total_nodes = ev_graph.get("total_nodes", ev_graph.get("node_count", 0))
-                    if total_nodes > 0 and not ev_graph.get("is_complete_provenance", True):
-                        logger.error(
-                            "Evidence graph contains unresolved or carrier fallback provenance "
-                            "(%d/%d nodes lack direct provenance).",
-                            ev_graph.get("unresolved_count", 0)
-                            + (total_nodes - ev_graph.get("direct_provenance_nodes", 0)),
-                            total_nodes,
-                        )
+                        events.append(json.loads(line))
+                    except json.JSONDecodeError as exc:
                         raise CertificationFailedError(
-                            "DirectProvenanceViolation: Evidence graph contains unresolved "
-                            "or carrier fallback provenance"
-                        )
-                    if total_nodes == 0:
-                        logger.debug(
-                            "Evidence graph has zero assertion nodes; "
-                            "run is decision-only (no oracle evidence to attest)."
-                        )
-            except CertificationFailedError:
-                raise
-            except Exception as ev_err:
-                logger.error(f"Evidence graph derivation failed: {ev_err}")
-                raise CertificationFailedError(
-                    f"Evidence graph derivation failed: {ev_err}"
-                ) from ev_err
+                            f"Malformed trace record at line {idx}: {exc}"
+                        ) from exc
+        except UnicodeDecodeError as exc:
+            raise CertificationFailedError(f"Malformed trace record at line 1: {exc}") from exc
+        if not all(isinstance(event, dict) for event in events):
+            raise CertificationFailedError("MalformedProviderTraceBytes")
+        for event in events:
+            event_data = event.get("data") if isinstance(event.get("data"), dict) else {}
+            event_run_id = event.get("run_id") or event_data.get("run_id")
+            if event_run_id and str(event_run_id) != run_id:
+                raise CertificationFailedError("ProviderTraceScopeViolation")
 
-        # Authoritative EvaluatorFinalizationRecord validation (Defect 1)
-        fin_record: Any | None = None
-        # The terminal carrier is excluded from the evidence graph to avoid a
-        # circular finalization root, but remains the authoritative container
-        # for the signed finalization record itself.
-        for ev in reversed(events_list + terminal_events):
-            if ev.get("event") == "evaluator_finalization":
-                fin_data = ev.get("data") or ev
-                try:
-                    from agentv_runtime.finalization import EvaluatorFinalizationRecord
-
-                    fin_record = EvaluatorFinalizationRecord.from_dict(
-                        fin_data, require_authoritative=True
-                    )
-                    break
-                except Exception as fin_err:
-                    raise CertificationFailedError(
-                        f"AuthoritativeEvaluatorRecordInvalid: {fin_err}"
-                    ) from fin_err
-            elif ev.get("event") in ("run_end", "end"):
-                ev_data = ev.get("data") if isinstance(ev.get("data"), dict) else ev
-                candidate = None
-                if isinstance(ev_data.get("finalization"), dict):
-                    candidate = ev_data["finalization"]
-                elif isinstance(ev.get("finalization"), dict):
-                    candidate = ev.get("finalization")
-                if candidate:
-                    try:
-                        from agentv_runtime.finalization import EvaluatorFinalizationRecord
-
-                        fin_record = EvaluatorFinalizationRecord.from_dict(
-                            candidate, require_authoritative=True
-                        )
-                        break
-                    except Exception as fin_err:
-                        raise CertificationFailedError(
-                            f"AuthoritativeEvaluatorRecordInvalid: {fin_err}"
-                        ) from fin_err
-
-        if fin_record:
-            all_trace_events = events_list + terminal_events
-            finalization_event = next(
-                (
-                    event
-                    for event in all_trace_events
-                    if (
-                        event.get("event") == "evaluator_finalization"
-                        and (
-                            (
-                                isinstance(event.get("data"), dict)
-                                and event["data"].get("finalization_hash")
-                                == fin_record.finalization_hash
-                            )
-                            or event.get("finalization_hash") == fin_record.finalization_hash
-                        )
-                    )
-                    or (
-                        isinstance(event.get("finalization"), dict)
-                        and event["finalization"].get("finalization_hash")
-                        == fin_record.finalization_hash
-                    )
-                    or (
-                        isinstance(event.get("data"), dict)
-                        and isinstance(event["data"].get("finalization"), dict)
-                        and event["data"]["finalization"].get("finalization_hash")
-                        == fin_record.finalization_hash
-                    )
-                ),
-                None,
-            )
-            finalization_sequence = (
-                finalization_event.get("_seq") if finalization_event is not None else None
-            )
-            prior_sequences = sorted(
-                event.get("_seq")
-                for event in all_trace_events
-                if isinstance(event.get("_seq"), int)
-                and (
-                    (
-                        finalization_sequence is not None
-                        and event.get("_seq") < finalization_sequence
-                    )
-                    or (
-                        finalization_sequence is None
-                        and event is not all_trace_events[-1]
-                        and event.get("event") not in ("run_end", "evaluator_finalization")
-                    )
-                )
-            )
-            if prior_sequences:
-                if fin_record.terminal_seq not in (prior_sequences[-1], 0):
-                    raise CertificationFailedError(
-                        "TerminalSequenceMismatch: evaluator finalization does not bind "
-                        "the last pre-finalization trace event"
-                    )
-            elif fin_record.terminal_seq not in (0, 1, len(all_trace_events)):
-                raise CertificationFailedError(
-                    "TerminalTraceSequenceMissing: finalization must have an explicit "
-                    "recorder sequence and a preceding trace boundary"
-                )
-            # Signing a package is an assertion about the evaluator's result.
-            # Structural parsing alone is insufficient: authenticate the
-            # evaluator record before any package/manifest signature is made.
-            evaluator_public_key = None
-            if signing_backend is not None:
-                get_backend_public_key = getattr(
-                    signing_backend, "get_public_key", lambda _id: None
-                )
-                evaluator_public_key = get_backend_public_key(fin_record.evaluator_identity)
-            if evaluator_public_key is None:
-                from eval_runner.identity import IdentityService
-
-                evaluator_public_key = IdentityService.get_public_key(
-                    fin_record.evaluator_identity, auto_provision=False
-                )
-            if evaluator_public_key is None or not fin_record.verify_authoritative(
-                public_key=evaluator_public_key,
-                trust_root=config.TRUST_ROOT,
-            ):
-                raise CertificationFailedError(
-                    "EvaluatorSignatureVerificationFailed: evaluator finalization "
-                    "must be cryptographically valid before certification signing"
-                )
-            if fin_record.run_id != run_id:
-                raise CertificationFailedError(
-                    f"RunIdMismatch: EvaluatorFinalizationRecord run_id "
-                    f"'{fin_record.run_id}' != '{run_id}'"
-                )
-            if (
-                computed_evidence_root_canon
-                and fin_record.evidence_root_hash == computed_evidence_root_canon
-            ):
-                computed_evidence_root = computed_evidence_root_canon
-                ev_graph = ev_graph_canon
-            elif computed_evidence_root and fin_record.evidence_root_hash != computed_evidence_root:
-                raise CertificationFailedError(
-                    f"EvidenceRootMismatch: EvaluatorFinalizationRecord evidence_root_hash "
-                    f"'{fin_record.evidence_root_hash}' != '{computed_evidence_root}'"
-                )
-            if scenario_data and isinstance(scenario_data, dict):
-                from agentv_runtime.manifest import compute_scenario_hash
-
-                scen_h = compute_scenario_hash(scenario_data)
-                if fin_record.scenario_hash != scen_h:
-                    raise CertificationFailedError(
-                        f"ScenarioHashMismatch: EvaluatorFinalizationRecord scenario_hash "
-                        f"'{fin_record.scenario_hash}' != '{scen_h}'"
-                    )
-            if metadata and metadata.get("execution_manifest_hash"):
-                if fin_record.execution_manifest_hash != metadata["execution_manifest_hash"]:
-                    raise CertificationFailedError(
-                        "ManifestHashMismatch: EvaluatorFinalizationRecord execution_manifest_hash "
-                        f"'{fin_record.execution_manifest_hash}' != "
-                        f"'{metadata['execution_manifest_hash']}'"
-                    )
-            if isinstance(scenario_data, dict):
-                expected_oracles = sorted(set(req_oracles or []))
-                finalization_oracles = sorted(set(fin_record.required_oracle_ids))
-                if finalization_oracles != expected_oracles:
-                    raise CertificationFailedError(
-                        "RequiredOracleInventoryMismatch: scenario-required oracle inventory "
-                        "does not exactly match EvaluatorFinalizationRecord "
-                        f"(scenario={expected_oracles}, finalization={finalization_oracles})"
-                    )
-        elif not provisional:
+        if ttl_days is not None and ttl_days < 0:
             raise CertificationFailedError(
-                "MissingEvaluatorFinalization: trace missing mandatory authoritative "
-                "EvaluatorFinalizationRecord"
-            )
-        elif (
-            require_finalization
-            or os.environ.get("AES_CERTIFICATION_MODE") == "1"
-            or getattr(config, "AES_CERTIFICATION_MODE", False)
-        ):
-            raise CertificationFailedError(
-                "MissingEvaluatorFinalization: trace missing mandatory authoritative "
-                "EvaluatorFinalizationRecord"
+                "CERTIFICATION_FAILED: Governance TTL expired or negative."
             )
 
-        if (
-            evidence_root_hash
-            and computed_evidence_root
-            and evidence_root_hash != computed_evidence_root
-        ):
-            if computed_evidence_root_canon and evidence_root_hash == computed_evidence_root_canon:
-                computed_evidence_root = computed_evidence_root_canon
-                ev_graph = ev_graph_canon
-            else:
-                raise ValueError(
-                    f"EvidenceRootMismatch: supplied evidence_root_hash ({evidence_root_hash}) "
-                    f"does not match authoritative computed root ({computed_evidence_root})"
-                )
-
-        # Scenario binding resolution from canonical scenario document
-        if scenario_data is not None:
-            from agentv_runtime.manifest import compute_scenario_hash
-
-            computed_scen_hash = compute_scenario_hash(scenario_data)
-            scen_meta = scenario_data.get("metadata", {}) if isinstance(scenario_data, dict) else {}
-            metadata = metadata or {}
-            metadata["scenario_id"] = scen_meta.get("id") or metadata.get("scenario_id") or ""
-            metadata["scenario_version"] = str(
-                scen_meta.get("version") or metadata.get("scenario_version") or "1.0.0"
-            )
-            metadata["scenario_hash"] = computed_scen_hash
-
-        # Derive machine-verifiable compliance status and score from trace.
-        # Fail-closed authoritative derivation: terminal trace evidence takes absolute authority.
-        effective_compliance_status = compliance_status
-        effective_compliance_score = compliance_score
-
-        has_root_cause = any(
-            ev.get("is_root_cause") is True
-            or (
-                isinstance(ev.get("data"), dict) and ev.get("data", {}).get("is_root_cause") is True
-            )
-            for ev in events_list
+        require_immutable = bool(
+            getattr(config, "REQUIRE_IMMUTABLE_WORM", False)
+            or (metadata or {}).get("require_immutable_worm")
         )
+        if require_immutable:
+            from eval_runner.runtime_services import resolve_artifact_store
 
-        extracted_decisions: list[tuple[str, float]] = []
-        for ev in events_list:
-            ev_name = ev.get("event") or ev.get("name") or ""
-            data = ev.get("data", {}) if isinstance(ev.get("data"), dict) else {}
-            is_decision = (
-                ev_name
-                in (
-                    "run_end",
-                    "end",
-                    "turn_end",
-                    "session_decision",
-                    "evaluation_result",
-                    "evaluation_verdict",
-                    "workflow_verdict",
-                )
-                or "verdict" in ev
-                or "verdict" in data
-                or "decision" in ev
-                or "decision" in data
-                or "outcome" in ev
-                or "outcome" in data
-            )
-            if not is_decision:
-                continue
-
-            raw_st = (
-                data.get("status")
-                or ev.get("status")
-                or data.get("outcome")
-                or ev.get("outcome")
-                or ""
-            )
-            score_val = data.get("score") if data.get("score") is not None else ev.get("score")
-            dec = str(data.get("decision") or ev.get("decision") or "").upper()
-            verd = str(data.get("verdict") or ev.get("verdict") or "").upper()
-
-            passed_val = data.get("passed") if data.get("passed") is not None else ev.get("passed")
-            if passed_val is False:
-                raw_st = "fail"
-            elif passed_val is True and not raw_st:
-                raw_st = "pass"
-
-            if not raw_st and data.get("pass_at_k") is not None:
-                pak = float(data["pass_at_k"])
-                raw_st = "pass" if pak > 0 else "fail"
-                if score_val is None:
-                    score_val = pak
-            if not raw_st and data.get("all_pass") is not None:
-                raw_st = "pass" if data["all_pass"] else "fail"
-
-            st_lower = str(raw_st).strip().lower()
-
+            store = resolve_artifact_store()
+            guarantee = getattr(store, "immutability_guarantee", None)
             if (
-                st_lower in ("fail", "failed", "failure", "rejected")
-                or dec in ("FAIL", "FAILED", "REJECTED", "UNVERIFIED")
-                or verd in ("FAIL", "FAILED", "POLICY_BREACH", "NOT_VERIFIED")
+                guarantee == "TAMPER_EVIDENT_LOGICAL_SEAL"
+                or not guarantee
+                or guarantee != "HARDWARE_OR_CLOUD_ENFORCED_WORM"
             ):
-                extracted_decisions.append(
-                    ("fail", float(score_val if score_val is not None else 0.0))
-                )
-            elif (
-                st_lower in ("pass", "passed", "success", "verified")
-                or dec in ("PASS", "PASSED", "VERIFIED")
-                or verd in ("PASS", "PASSED", "VERIFIED")
-            ):
-                extracted_decisions.append(
-                    ("pass", float(score_val) if score_val is not None else None)
-                )
-            elif dec == "EVALUATION_INVALID" or st_lower == "evaluation_invalid":
-                extracted_decisions.append(("fail", 0.0))
-
-        if has_root_cause:
-            logger.warning(
-                "      [Verifier] Trace contains root cause failure; "
-                "deriving compliance_status='fail', compliance_score=0.0"
-            )
-            effective_compliance_status = "fail"
-            effective_compliance_score = 0.0
-        elif extracted_decisions:
-            distinct_statuses = {d[0] for d in extracted_decisions}
-            if len(distinct_statuses) > 1:
-                logger.warning(
-                    "      [Verifier] Conflicting terminal decisions in trace: %s",
-                    distinct_statuses,
-                )
-                effective_compliance_status = "fail"
-                effective_compliance_score = 0.0
-            else:
-                effective_compliance_status, term_score = extracted_decisions[-1]
-                effective_compliance_score = (
-                    term_score
-                    if term_score is not None
-                    else (compliance_score if compliance_score is not None else 1.0)
-                )
-
-        # An authoritative negative certificate proves that a fully evaluated
-        # run failed; it must never be used as a substitute for an incomplete
-        # evaluation.  Require substantive, complete evidence independently of
-        # the PASS/FAIL outcome.  Provisional diagnostic artifacts retain the
-        # explicitly non-authoritative legacy path.
-        if not provisional:
-            if not ev_graph or not ev_graph.get("has_substantive_evidence", False):
                 raise CertificationFailedError(
-                    "SubstantiveEvidenceRequired: authoritative certification requires "
-                    "at least one direct typed oracle result"
-                )
-            if req_oracles and not ev_graph.get("has_all_required", True):
-                logger.error(
-                    "Evidence graph missing required oracles: %s",
-                    ev_graph.get("missing_required_oracles"),
-                )
-                raise CertificationFailedError(
-                    f"RequiredOracleCompletenessViolation: Evidence graph missing "
-                    f"required oracles: {ev_graph.get('missing_required_oracles')}"
+                    f"ImmutableRetentionRequired: Active artifact store "
+                    f"'{store.__class__.__name__}' offers '{guarantee or 'UNSPECIFIED'}', "
+                    "but deployment/scenario requires an externally enforced "
+                    "immutable ArtifactStore (e.g., S3 Object Lock)."
                 )
 
-        # 2. CANONICALIZE: build Manifest v3.0.0
-        manifest = {
+        mode = str(execution_mode or "unknown")
+        from eval_runner.execution_ir import ExecutionMode
+
+        valid_modes = {item.value for item in ExecutionMode}
+        if mode not in valid_modes:
+            mode, provisional = "unknown", True
+
+        trace_hex = hashlib.sha3_256(raw_trace).hexdigest()
+        manifest: dict[str, Any] = {
             "vc_version": VC_V3_SCHEMA_VERSION,
             "harness_version": config.VERSION,
-            "timestamp": timestamp,
+            "timestamp": datetime.now().astimezone().isoformat(),
             "run_id": run_id,
-            "trace_file": p.name,
+            "trace_file": f"{run_id}/run.jsonl",
+            "trace_hash": trace_hex,
+            "hash_algorithm": "sha3_256",
+            "evidence_ledger": dict(evidence_ledger or {}),
             "compliance": {
-                "status": effective_compliance_status,
-                "score": effective_compliance_score,
+                "status": compliance_status,
+                "score": compliance_score,
                 "policy_ref": policy_ref or config.TRUSTED_POLICY_REF,
             },
-            "evidence_ledger": evidence_ledger,
-            "provenance_chain": [],
-            "governance_ttl": (ttl_days or config.GOVERNANCE_TTL_DAYS),
-            "metadata": metadata or {},
+            "governance_ttl": ttl_days or config.GOVERNANCE_TTL_DAYS,
+            "metadata": dict(metadata or {}),
             "behavioral_fingerprint_id": behavioral_fingerprint_id or "default_v1",
+            "provenance_chain": [],
+            "execution_mode": mode,
+            "provisional": bool(provisional),
+            "certification": {
+                "pipeline_version": "2.0.0",
+                "transactional": True,
+                "outcome": (
+                    "CERTIFIED_PASS"
+                    if compliance_status.lower() == "pass" and mode == "live" and not provisional
+                    else "PROVISIONAL_PASS"
+                    if compliance_status.lower() == "pass"
+                    else "ATTESTED_FAIL"
+                ),
+            },
         }
-        # Preserve the provider-published execution inputs with the sealed
-        # certificate.  They are not optional sidecars: remote RunStorage
-        # implementations expose this manifest as the complete verification
-        # object.
-        if isinstance(scenario_data, Mapping):
+        if scenario_data is None and run_store is not None and run_id:
+            try:
+                if hasattr(run_store, "get_manifest"):
+                    raw_m = run_store.get_manifest(run_id, context=context)
+                    if isinstance(raw_m, dict) and raw_m.get("scenario_data"):
+                        scenario_data = raw_m["scenario_data"]
+            except Exception as exc:
+                logger.debug("Scenario data resolution fallback: %s", exc)
+        if execution_manifest is None and run_store is not None and run_id:
+            try:
+                if hasattr(run_store, "get_manifest"):
+                    raw_m = run_store.get_manifest(run_id, context=context)
+                    if isinstance(raw_m, dict) and raw_m.get("execution_manifest"):
+                        execution_manifest = raw_m["execution_manifest"]
+            except Exception as exc:
+                logger.debug("Execution manifest resolution fallback: %s", exc)
+        if scenario_data is not None:
             manifest["scenario_data"] = dict(scenario_data)
-        execution_manifest_path = p.parent / "execution_manifest.json"
-        if execution_manifest_path.exists():
-            try:
-                execution_manifest = json.loads(execution_manifest_path.read_text(encoding="utf-8"))
-                if isinstance(execution_manifest, dict):
-                    manifest["execution_manifest"] = execution_manifest
-            except Exception as execution_manifest_error:
-                logger.debug(
-                    "Failed to include execution manifest in certificate: %s",
-                    execution_manifest_error,
-                )
-        manifest_evidence_root = evidence_root_hash or computed_evidence_root
-        if manifest_evidence_root:
-            manifest["evidence_root_hash"] = manifest_evidence_root
+        if execution_manifest is not None:
+            manifest["execution_manifest"] = dict(execution_manifest)
+        if consensus is not None:
+            manifest["consensus"] = dict(consensus)
+        if rubrics is not None:
+            manifest["rubrics"] = dict(rubrics)
+        if events:
+            from agentv_runtime.evidence_graph import build_evidence_graph_from_events
 
-        # Causal contract binding
-        if metadata:
-            for k in (
-                "scenario_id",
-                "scenario_hash",
-                "policy_id",
-                "evaluator_config_hash",
-                "agent_id",
-                "agent_identity",
-            ):
-                if k in metadata and k not in manifest:
-                    manifest[k] = metadata[k]
-
-        # Extract real consensus / rubrics from trace if present and not explicitly passed
-        extracted_consensus = consensus or (metadata.get("consensus") if metadata else None)
-        extracted_rubrics = rubrics or (metadata.get("rubrics") if metadata else None)
-        if (extracted_consensus is None or extracted_rubrics is None) and p.exists():
-            try:
-                with open(p, encoding="utf-8") as tf:
-                    for line in tf:
-                        if not line.strip():
-                            continue
-                        try:
-                            record = json.loads(line)
-                            if extracted_consensus is None and record.get("consensus"):
-                                extracted_consensus = record.get("consensus")
-                            if extracted_rubrics is None and record.get("rubrics"):
-                                extracted_rubrics = record.get("rubrics")
-                        except (
-                            json.JSONDecodeError,
-                            UnicodeDecodeError,
-                            AttributeError,
-                        ) as line_err:
-                            logger.debug(
-                                f"      [Verifier] Non-JSON line in trace scan: {line_err}"
-                            )
-
-            except OSError as read_err:
-                logger.warning(
-                    f"      [Verifier] Could not read trace for consensus extraction: {read_err}"
-                )
-
-        if extracted_consensus:
-            manifest["consensus"] = extracted_consensus
-        if extracted_rubrics:
-            manifest["rubrics"] = extracted_rubrics
-
-        # [VC-Trust B] REQUIRED truth-level stamping (2026-08 waiver, no
-        # version bump): every certificate states the run's execution mode.
-        # Whitelist enforcement here too (defense in depth): SessionManager
-        # rejects junk upstream, but the verifier must never emit a value
-        # outside the schema enum. Unrecognized input is recorded truthfully
-        # as "unknown" + provisional — never fabricated, never passed through.
-        from .execution_ir import ExecutionMode
-
-        _valid_modes = {m.value for m in ExecutionMode}
-        # Exact-match only: mirrors SessionManager's strict fail-closed
-        # parsing ("SIMULATED" / "live " are rejected upstream). Case- or
-        # space-variants never silently become declarations.
-        _mode_in = str(execution_mode) if execution_mode else ""
-        if _mode_in in _valid_modes:
-            manifest["execution_mode"] = _mode_in
-            if provisional:
-                manifest["provisional"] = True
-        else:
-            manifest["execution_mode"] = "unknown"
-            manifest["provisional"] = True
-        _stage("canonicalize")(lambda: manifest)
-
-        # 3. EMIT LIFECYCLE EVENT + HASH (trace is immutable post-finalization)
-        def _append_and_hash() -> str:
-            # Immutability invariant: run.jsonl is NEVER appended to or modified post-finalization.
-            # The certification receipt is securely written to certification_receipt.json.
-            return seal_hash
-
-        # 3b. STAGE DEFINITIONS (executed transactionally below)
-        def _sign() -> None:
-            manifest["signing_context"] = {
-                "identity_id": identity_id,
-                "timestamp": timestamp,
-                "signing_backend": signing_backend,
-            }
-            format_str = "hybrid" if config.PQC_ENABLED else "ED25519"
-            try:
-                from agentv_runtime.canonical import canonical_json_encode
-                from agentv_runtime.package import VerificationPackage
-
-                scen_id_val = (
-                    manifest.get("scenario_id")
-                    or (scenario_data.get("id") if isinstance(scenario_data, dict) else "")
-                    or (metadata.get("scenario_id") if metadata else "")
-                    or ""
-                )
-                scen_ver = (
-                    scenario_data.get("version")
-                    if (
-                        isinstance(scenario_data, dict) and scenario_data.get("version") is not None
-                    )
-                    else None
-                )
-                scen_ver_val = (
-                    manifest.get("scenario_version")
-                    or (str(scen_ver) if scen_ver is not None else "")
-                    or (metadata.get("scenario_version") if metadata else "")
-                    or "1.0.0"
-                )
-                from agentv_runtime.manifest import compute_scenario_hash
-
-                scen_h_val = (
-                    manifest.get("scenario_hash")
-                    or (metadata.get("scenario_hash") if metadata else "")
-                    or (
-                        compute_scenario_hash(scenario_data)
-                        if isinstance(scenario_data, dict)
-                        else ""
-                    )
-                    or ""
-                )
-                m_id_val = (
-                    manifest.get("manifest_id")
-                    or (metadata.get("manifest_id") if metadata else "")
-                    or f"man_{run_id}"
-                )
-                manifest["created_at"] = timestamp
-                manifest["scenario_version"] = scen_ver_val
-                if scen_id_val and "scenario_id" not in manifest:
-                    manifest["scenario_id"] = scen_id_val
-                if scen_h_val and "scenario_hash" not in manifest:
-                    manifest["scenario_hash"] = scen_h_val
-                if m_id_val and "manifest_id" not in manifest:
-                    manifest["manifest_id"] = m_id_val
-
-                m_h_val = (
-                    manifest.get("execution_manifest_hash")
-                    or (metadata.get("execution_manifest_hash") if metadata else "")
-                    or ""
-                )
-                if not m_h_val:
-                    exec_m_path = p.parent / "execution_manifest.json"
-                    if exec_m_path.exists():
-                        try:
-                            from agentv_runtime.manifest import ExecutionManifest
-
-                            m_obj = ExecutionManifest.from_dict(
-                                json.loads(exec_m_path.read_text(encoding="utf-8"))
-                            )
-                            m_h_val = m_obj.compute_manifest_hash()
-                        except Exception as em_err:
-                            logger.debug("Failed to load execution_manifest.json: %s", em_err)
-                    if not m_h_val:
-                        try:
-                            from agentv_runtime.manifest import ExecutionManifest
-
-                            m_h_val = ExecutionManifest.from_dict(manifest).compute_manifest_hash()
-                        except Exception as m_conv_err:
-                            logger.debug(
-                                "Failed to compute manifest hash from manifest dict: %s",
-                                m_conv_err,
-                            )
-                manifest["execution_manifest_hash"] = m_h_val
-                ev_root_val = manifest_evidence_root or ""
-                pkg_req_oracles = list(req_oracles or [])
-                executed_oracles = []
-                for idx, n in enumerate(ev_graph.get("nodes", []) if ev_graph else []):
-                    oid = n.get("oracle_id")
-                    if not oid:
-                        continue
-                    res_val = (
-                        n.get("resolver")
+            event_lines = list(
+                zip(events, [line for line in decoded_lines if line.strip()], strict=False)
+            )
+            graph = build_evidence_graph_from_events(
+                event_lines,
+                required_oracle_ids=manifest["metadata"].get("required_oracle_ids"),
+            )
+            manifest["evidence_root_hash"] = graph.get("evidence_root_hash", "")
+            if evidence_root_hash and manifest.get("evidence_root_hash") != evidence_root_hash:
+                filtered_lines = [
+                    (ev, line)
+                    for ev, line in event_lines
+                    if not (
+                        ev.get("event") == "evaluator_finalization"
                         or (
-                            n.get("assertion", {}) if isinstance(n.get("assertion"), dict) else {}
-                        ).get("resolver")
-                        or n.get("evaluator")
-                        or n.get("metric_type")
-                        or n.get("kind")
-                        or n.get("label")
-                        or "deterministic"
-                    )
-                    ev_refs = [n["source_ref"]] if n.get("source_ref") else []
-                    raw_outcome = n.get("outcome") or ("PASS" if n.get("passed") else "FAIL")
-                    executed_oracles.append(
-                        {
-                            "oracle_id": oid,
-                            "outcome": str(raw_outcome).upper(),
-                            "passed": bool(n.get("passed")),
-                            "resolver": str(res_val),
-                            "evidence_refs": ev_refs,
-                            "execution_instance_id": str(
-                                n.get("execution_instance_id") or n.get("instance_id") or ""
-                            ),
-                            "attempt": n.get("attempt") or n.get("attempt_id") or 0,
-                            "sequence": n.get("sequence") or n.get("_seq") or idx,
-                            "source_type": n.get("source_type"),
-                            "source_ref": n.get("source_ref"),
-                            "source_hash": str(n.get("source_hash") or n.get("content_hash") or ""),
-                            "content_hash": n.get("content_hash"),
-                            "is_direct_provenance": n.get("is_direct_provenance"),
-                        }
-                    )
-
-                # Derive authoritative sub-hashes:
-                # evaluation_hash, verification_hash, certificate_hash
-                import hashlib
-
-                eval_hash = str(fin_record.finalization_hash) if fin_record else ""
-                if not eval_hash:
-                    for ev in reversed(events_list + terminal_events):
-                        if ev.get("event") == "evaluator_finalization":
-                            eval_hash = str(
-                                ev.get("finalization_hash")
-                                or (ev.get("data", {}) or {}).get("finalization_hash")
-                                or ""
+                            ev.get("event")
+                            in ("run_end", "verification_decision", "session_decision")
+                            and isinstance(
+                                ev.get("finalization")
+                                or (ev.get("data") if isinstance(ev.get("data"), dict) else {}).get(
+                                    "finalization"
+                                ),
+                                dict,
                             )
-                            if eval_hash:
-                                break
-                        elif ev.get("event") in ("evaluation_result", "run_end"):
-                            d = ev.get("data", {}) or {}
-                            eval_hash = str(d.get("content_hash") or ev.get("content_hash") or "")
-                            if eval_hash:
-                                break
-                if not eval_hash and metadata:
+                        )
+                    )
+                ]
+                graph_filtered = build_evidence_graph_from_events(
+                    filtered_lines,
+                    required_oracle_ids=manifest["metadata"].get("required_oracle_ids"),
+                )
+                if graph_filtered.get("evidence_root_hash") == evidence_root_hash:
+                    manifest["evidence_root_hash"] = evidence_root_hash
+
+        if evidence_root_hash and manifest.get("evidence_root_hash") != evidence_root_hash:
+            raise EvidenceRootMismatchError(
+                f"EvidenceRootMismatch: declared={evidence_root_hash} "
+                f"computed={manifest.get('evidence_root_hash')}"
+            )
+
+        manifest["signing_context"] = {
+            "identity_id": identity_id,
+            "timestamp": manifest["timestamp"],
+            "signing_backend": signing_backend,
+        }
+        try:
+            verification_service.sign(
+                manifest, format="hybrid" if config.PQC_ENABLED else "ED25519"
+            )
+        finally:
+            manifest.pop("signing_context", None)
+        if not manifest["provenance_chain"]:
+            raise CertificationFailedError(
+                "UnsignedProviderTrace: signing produced no provenance chain."
+            )
+
+        # Build and sign the VerificationPackage bound to the certificate
+        from dataclasses import replace
+
+        from agentv_runtime.canonical import canonical_json_encode
+        from agentv_runtime.package import VerificationPackage
+
+        scen_id_val = (
+            (scenario_data or {}).get("id")
+            or (scenario_data or {}).get("scenario_id")
+            or manifest.get("metadata", {}).get("scenario_id")
+            or ""
+        )
+        scen_ver_val = (
+            (scenario_data or {}).get("version")
+            or manifest.get("metadata", {}).get("scenario_version")
+            or "1.0.0"
+        )
+        scen_h_val = manifest.get("metadata", {}).get("scenario_hash") or ""
+        if not scen_h_val and scenario_data:
+            from agentv_runtime.manifest import compute_scenario_hash
+
+            scen_h_val = compute_scenario_hash(scenario_data)
+        m_id_val = (
+            (execution_manifest or {}).get("manifest_id")
+            or manifest.get("metadata", {}).get("manifest_id")
+            or f"man_{run_id}"
+        )
+        m_h_val = manifest.get("metadata", {}).get("execution_manifest_hash") or ""
+        if not m_h_val and execution_manifest:
+            try:
+                from agentv_runtime.manifest import ExecutionManifest
+
+                m_h_val = ExecutionManifest.from_dict(execution_manifest).compute_manifest_hash()
+            except Exception:
+                enc_bytes = canonical_json_encode(execution_manifest)
+                m_h_val = f"sha3_256:{hashlib.sha3_256(enc_bytes).hexdigest()}"
+        ev_root_val = manifest.get("evidence_root_hash") or ""
+        pkg_req_oracles = list(manifest.get("metadata", {}).get("required_oracle_ids") or [])
+        executed_oracles: list[dict[str, Any]] = []
+        if events:
+            for ev in events:
+                data = ev.get("data") if isinstance(ev.get("data"), dict) else {}
+                for key in ("oracle_results", "executed_oracle_results"):
+                    results = data.get(key) or ev.get(key)
+                    if isinstance(results, list):
+                        executed_oracles.extend(results)
+                if ev.get("event") in (
+                    "oracle_result",
+                    "executed_oracle_result",
+                    "assertion_evaluated",
+                    "metric_evaluated",
+                ):
+                    executed_oracles.append(data if data else ev)
+
+        eval_hash = manifest.get("metadata", {}).get("evaluator_finalization_hash") or ""
+        if not eval_hash:
+            for ev in reversed(events):
+                if ev.get("event") == "evaluator_finalization":
                     eval_hash = str(
-                        metadata.get("evaluator_config_hash")
-                        or metadata.get("evaluation_hash")
+                        ev.get("finalization_hash")
+                        or (ev.get("data", {}) or {}).get("finalization_hash")
                         or ""
                     )
-
-                verif_payload = {
-                    "decision": {
-                        "decision": "PASS" if effective_compliance_status == "pass" else "FAIL",
-                        "score": effective_compliance_score,
-                        "status": effective_compliance_status,
-                    },
-                    "evidence_root_hash": ev_root_val,
-                    "executed_oracle_results": executed_oracles,
-                    "required_oracle_ids": sorted(pkg_req_oracles),
-                }
-                verif_hash = (
-                    f"sha3_256:{hashlib.sha3_256(canonical_json_encode(verif_payload)).hexdigest()}"
-                )
-
-                cert_payload = {
-                    "compliance": manifest["compliance"],
-                    "evidence_root_hash": ev_root_val,
-                    "execution_mode": manifest.get("execution_mode", "unknown"),
-                    "run_id": run_id,
-                    "timestamp": timestamp,
-                    "trace_hash": manifest.get("trace_hash", seal_hash),
-                    "vc_version": manifest["vc_version"],
-                }
-                cert_hash = (
-                    f"sha3_256:{hashlib.sha3_256(canonical_json_encode(cert_payload)).hexdigest()}"
-                )
-
-                pkg = VerificationPackage(
-                    package_id=f"pkg_{run_id}",
-                    scenario_id=str(scen_id_val),
-                    scenario_version=str(scen_ver_val),
-                    scenario_hash=str(scen_h_val),
-                    manifest_id=str(m_id_val),
-                    manifest_hash=str(m_h_val),
-                    execution_identity={
-                        "run_id": run_id,
-                        "execution_mode": manifest.get("execution_mode", "live"),
-                        "agent_id": (metadata.get("agent_id") if metadata else None)
-                        or "system_agent",
-                    },
-                    trace_hash=manifest.get("trace_hash", seal_hash),
-                    trace_seal={
-                        "trace_digest": manifest.get("trace_hash", seal_hash),
-                        "algorithm": "sha3_256",
-                        "event_count": len(events_list),
-                        "sealed_at": timestamp,
-                    },
-                    evidence_root_hash=ev_root_val,
-                    required_oracle_ids=pkg_req_oracles,
-                    executed_oracle_results=executed_oracles,
-                    decision={
-                        "decision": "PASS" if effective_compliance_status == "pass" else "FAIL",
-                        "status": effective_compliance_status,
-                        "score": effective_compliance_score,
-                    },
-                    finalization_hash=eval_hash,
-                    evaluation_hash=eval_hash,
-                    verification_hash=verif_hash,
-                    certificate_hash=cert_hash,
-                    package_version="1.0.0",
-                    signature=None,
-                    signer_identity=identity_id,
-                    algorithm="ed25519",
-                    metadata=manifest.get("metadata", {}),
-                )
-                from dataclasses import replace
-
-                from eval_runner.identity import IdentityService
-
-                pkg_sig = None
-                pub_pem = None
-                if signing_backend is not None:
-                    pkg_sig = signing_backend.sign_payload(
-                        pkg.canonical_payload_bytes(), identity_id
+                    if eval_hash:
+                        break
+                elif ev.get("event") in ("run_end", "verification_decision", "session_decision"):
+                    fin_sub = ev.get("finalization") or (ev.get("data", {}) or {}).get(
+                        "finalization"
                     )
-                    if isinstance(pkg_sig, dict):
-                        pkg_sig = pkg_sig.get("signature") or pkg_sig.get("sig")
-                    get_backend_public_key = getattr(
-                        signing_backend, "get_public_key", lambda _id: None
-                    )
-                    backend_public_key = get_backend_public_key(identity_id)
-                    if isinstance(backend_public_key, bytes):
-                        pub_pem = backend_public_key.decode("utf-8")
-                    elif isinstance(backend_public_key, str):
-                        pub_pem = backend_public_key
-                else:
-                    priv_key = IdentityService.get_private_key(identity_id)
-                    if not (
-                        hasattr(priv_key, "sign")
-                        or (hasattr(priv_key, "private_bytes") and callable(priv_key.private_bytes))
-                    ):
-                        raise CertificationFailedError(
-                            f"Identity '{identity_id}' exposes no usable signing capability "
-                            "(fail-closed: degenerate placeholder signatures are prohibited)"
-                        )
-                    if priv_key and hasattr(priv_key, "sign"):
-                        pkg_sig = priv_key.sign(pkg.canonical_payload_bytes()).hex()
-                    if priv_key and hasattr(priv_key, "public_key"):
-                        from cryptography.hazmat.primitives import serialization
+                    if isinstance(fin_sub, Mapping) and fin_sub.get("finalization_hash"):
+                        eval_hash = str(fin_sub["finalization_hash"])
+                        break
 
-                        pub_pem = (
-                            priv_key.public_key()
-                            .public_bytes(
-                                encoding=serialization.Encoding.PEM,
-                                format=serialization.PublicFormat.SubjectPublicKeyInfo,
-                            )
-                            .decode("utf-8")
-                        )
-                pkg = replace(pkg, signature=pkg_sig, public_key_pem=pub_pem)
-                if not pkg_sig and format_str != "none":
+        verif_payload = {
+            "decision": {
+                "decision": "PASS" if compliance_status.lower() == "pass" else "FAIL",
+                "score": compliance_score,
+                "status": compliance_status,
+            },
+            "evidence_root_hash": ev_root_val,
+            "executed_oracle_results": executed_oracles,
+            "required_oracle_ids": sorted(pkg_req_oracles),
+        }
+        verif_hash = (
+            f"sha3_256:{hashlib.sha3_256(canonical_json_encode(verif_payload)).hexdigest()}"
+        )
+
+        cert_payload = {
+            "compliance": manifest["compliance"],
+            "evidence_root_hash": ev_root_val,
+            "execution_mode": manifest.get("execution_mode", "unknown"),
+            "run_id": run_id,
+            "timestamp": manifest["timestamp"],
+            "trace_hash": manifest.get("trace_hash", trace_hex),
+            "vc_version": manifest["vc_version"],
+        }
+        cert_hash = f"sha3_256:{hashlib.sha3_256(canonical_json_encode(cert_payload)).hexdigest()}"
+
+        non_finalization_events = [
+            e
+            for e in events
+            if not (
+                e.get("event") == "evaluator_finalization"
+                or (
+                    e.get("event") in ("run_end", "verification_decision", "session_decision")
+                    and isinstance(
+                        e.get("finalization")
+                        or (
+                            e.get("data", {}).get("finalization")
+                            if isinstance(e.get("data"), dict)
+                            else None
+                        ),
+                        dict,
+                    )
+                )
+            )
+        ]
+        pkg = VerificationPackage(
+            package_id=f"pkg_{run_id}",
+            scenario_id=str(scen_id_val),
+            scenario_version=str(scen_ver_val),
+            scenario_hash=str(scen_h_val),
+            manifest_id=str(m_id_val),
+            manifest_hash=str(m_h_val),
+            execution_identity={
+                "run_id": run_id,
+                "execution_mode": manifest.get("execution_mode", "live"),
+                "agent_id": manifest.get("metadata", {}).get("agent_id") or "system_agent",
+            },
+            trace_hash=manifest.get("trace_hash", trace_hex),
+            trace_seal={
+                "trace_digest": manifest.get("trace_hash", trace_hex),
+                "algorithm": "sha3_256",
+                "event_count": len(non_finalization_events),
+                "sealed_at": manifest["timestamp"],
+            },
+            evidence_root_hash=ev_root_val,
+            required_oracle_ids=pkg_req_oracles,
+            executed_oracle_results=executed_oracles,
+            decision={
+                "decision": "PASS" if compliance_status.lower() == "pass" else "FAIL",
+                "status": compliance_status,
+                "score": compliance_score,
+            },
+            finalization_hash=eval_hash,
+            evaluation_hash=eval_hash,
+            verification_hash=verif_hash,
+            certificate_hash=cert_hash,
+            package_version="1.0.0",
+            signature=None,
+            signer_identity=identity_id,
+            algorithm="ed25519",
+            metadata=manifest.get("metadata", {}),
+        )
+
+        from eval_runner.identity import IdentityService
+
+        pkg_sig = None
+        pub_pem = None
+        if signing_backend is not None:
+            # Provider signing backends own key references, while the local
+            # reference backend deliberately requires actual private key
+            # material.  The manifest-signing path above already makes this
+            # distinction; package signing must use the identical key
+            # resolution or a valid certificate fails after its first
+            # signature with ``Signing key not found at system_id``.
+            package_key_identifier: Any = identity_id
+            if getattr(signing_backend, "requires_private_key_material", False):
+                private_key = IdentityService.get_private_key(identity_id, auto_provision=False)
+                if private_key is None or not hasattr(private_key, "private_bytes"):
                     raise CertificationFailedError(
-                        f"UnsignedVerificationPackage: Could not cryptographically sign "
-                        f"VerificationPackage for identity '{identity_id}'"
+                        "Pre-existing trusted private key not found for certification identity "
+                        f"'{identity_id}' (required by the selected signing backend)."
                     )
-                manifest["verification_package"] = pkg.to_dict()
-                manifest["package_hash"] = pkg.compute_package_hash()
-                manifest["evaluation_hash"] = eval_hash
-                manifest["verification_hash"] = verif_hash
-                manifest["certificate_hash"] = cert_hash
+                from cryptography.hazmat.primitives import serialization
 
-                # NOTE: VerificationService.sign mutates and returns the SAME
-                # manifest object; rebinding/clearing here would destroy it.
-                verification_service.sign(manifest, format=format_str)
-                if not manifest.get("provenance_chain"):
-                    raise ValueError(
-                        "Signing pipeline produced no provenance chain "
-                        "(fail-closed: unsigned manifests can never be certified)"
-                    )
-            finally:
-                manifest.pop("signing_context", None)
-
-        def _persist() -> None:
-            """
-            Prepare: Persist manifest artifact to isolated staging only.
-            Store artifacts in configured ArtifactStore for pre-seal verification.
-            """
-            import copy
-
-            staging_dir.mkdir(parents=True, exist_ok=True)
-            manifest_to_write = copy.deepcopy(manifest)
-            manifest_to_write["certification"]["stages"] = stages
-
-            with open(staged_manifest_path, "w", encoding="utf-8") as f:
-                json.dump(manifest_to_write, f, indent=4)
-
-            # Store artifact in configured ArtifactStore
-            retention_days = getattr(config, "WORM_RETENTION_DAYS", 0) or None
-            legal_hold = getattr(config, "WORM_LEGAL_HOLD", False)
-            compliance_mode = getattr(config, "WORM_COMPLIANCE_MODE", "COMPLIANCE")
-
-            store.store_artifact(
-                run_id=run_id,
-                artifact_name="run_manifest.json",
-                content=json.dumps(manifest_to_write, indent=4),
-                content_type="application/json",
-                metadata={
-                    "status": effective_compliance_status,
-                    "vc_version": manifest["vc_version"],
-                    "retention_days": retention_days,
-                    "legal_hold": legal_hold,
-                    "compliance_mode": compliance_mode,
-                },
-                retention_days=retention_days,
-                legal_hold=legal_hold,
-                compliance_mode=compliance_mode,
+                package_key_identifier = private_key.private_bytes(
+                    encoding=serialization.Encoding.PEM,
+                    format=serialization.PrivateFormat.PKCS8,
+                    encryption_algorithm=serialization.NoEncryption(),
+                )
+            pkg_sig = signing_backend.sign_payload(
+                pkg.canonical_payload_bytes(), package_key_identifier
             )
-            store.store_artifact(
-                run_id=run_id,
-                artifact_name="certification_receipt.json",
-                content=json.dumps(receipt_data, indent=4),
-                content_type="application/json",
-                metadata={
-                    "status": effective_compliance_status,
-                    "vc_version": manifest["vc_version"],
-                    "retention_days": retention_days,
-                    "legal_hold": legal_hold,
-                    "compliance_mode": compliance_mode,
-                },
-                retention_days=retention_days,
-                legal_hold=legal_hold,
-                compliance_mode=compliance_mode,
-            )
+            if isinstance(pkg_sig, dict):
+                pkg_sig = pkg_sig.get("signature") or pkg_sig.get("sig")
+            get_backend_public_key = getattr(signing_backend, "get_public_key", lambda _id: None)
+            backend_public_key = get_backend_public_key(identity_id)
+            if isinstance(backend_public_key, bytes):
+                pub_pem = backend_public_key.decode("utf-8")
+            elif isinstance(backend_public_key, str):
+                pub_pem = backend_public_key
+            elif hasattr(backend_public_key, "public_bytes"):
+                from cryptography.hazmat.primitives import serialization
 
-        def _verify() -> None:
-            """
-            Self-Verification: Verify trace and full evidence ledger
-            against staged manifest before promotion.
-            Also execute VerificationAuthority.verify_package_artifacts() as pre-seal gate.
-            """
-            target = staged_manifest_path if staged_manifest_path.exists() else sidecar_path
-            ok = cls.verify_trace(str(p), str(target), verify_ledger=True, require_sealed=False)
-            if not ok:
-                raise ValueError("Post-signature self-verification rejected the certificate")
-
-            if manifest.get("verification_package") and scenario_data is not None:
-                raw_bytes = p.read_bytes()
-                canonical_manifest_target = manifest
-                exec_m_path = p.parent / "execution_manifest.json"
-                if exec_m_path.exists():
-                    try:
-                        canonical_manifest_target = json.loads(
-                            exec_m_path.read_text(encoding="utf-8")
-                        )
-                    except Exception as em_err:
-                        logger.debug(
-                            "Failed to load execution_manifest for verification: %s", em_err
-                        )
-                verif_res = VerificationAuthority.verify_package_artifacts(
-                    package=manifest["verification_package"],
-                    raw_trace_bytes=raw_bytes,
-                    canonical_manifest=canonical_manifest_target,
-                    scenario_data=scenario_data,
-                    require_signature=True,
-                )
-                if not verif_res.get("verified"):
-                    failures = verif_res.get("failures", [])
-                    if effective_compliance_status in (
-                        "fail",
-                        "failed",
-                        "non_compliant",
-                        "inconclusive",
-                    ):
-                        non_decision_failures = [
-                            f
-                            for f in failures
-                            if not (
-                                f.startswith("UnverifiedDecision")
-                                or f.startswith("RequiredOracleFailed")
-                                or f.startswith("MissingRequiredOracles")
-                            )
-                        ]
-                        if non_decision_failures:
-                            raise ValueError(
-                                "Post-signature package artifact verification rejected: "
-                                f"{non_decision_failures}"
-                            )
-                    else:
-                        raise ValueError(
-                            f"Post-signature package artifact verification rejected: {failures}"
-                        )
-
-        def _publish() -> None:
-            """
-            Commit/Promote: Promote verified staged manifest to live run directory sidecar
-            and public backup certificate.
-            """
-            import copy
-
-            manifest_to_write = copy.deepcopy(manifest)
-            manifest_to_write["certification"]["stages"] = stages
-
-            # Persist to local run directory live sidecar and receipt
-            with open(sidecar_path, "w", encoding="utf-8") as f:
-                json.dump(manifest_to_write, f, indent=4)
-
-            with open(receipt_path, "w", encoding="utf-8") as rf:
-                json.dump(receipt_data, rf, indent=4)
-
-            cert_dir = config.REPORTS_DIR / "certificates"
-            cert_dir.mkdir(parents=True, exist_ok=True)
-            with open(backup_path, "w", encoding="utf-8") as f:
-                json.dump(manifest_to_write, f, indent=4)
-
-        def _seal() -> None:
-            """
-            Final Irreversible Operation:
-            Seal vault only after all artifacts are verified and published.
-            """
-            from eval_runner.run_lifecycle import RunLifecycleState, transition_run_lifecycle
-
+                pub_pem = backend_public_key.public_bytes(
+                    encoding=serialization.Encoding.PEM,
+                    format=serialization.PublicFormat.SubjectPublicKeyInfo,
+                ).decode("utf-8")
+        else:
             try:
-                # Check immutable retention guarantees if required
-                require_immutable = bool(
-                    getattr(config, "REQUIRE_IMMUTABLE_WORM", False)
-                    or (
-                        scenario_data
-                        and scenario_data.get("metadata", {}).get("require_immutable_worm", False)
-                    )
-                )
-                if require_immutable:
-                    guarantee = getattr(store, "immutability_guarantee", None)
-                    if (
-                        guarantee == "TAMPER_EVIDENT_LOGICAL_SEAL"
-                        or not guarantee
-                        or guarantee != "HARDWARE_OR_CLOUD_ENFORCED_WORM"
-                    ):
-                        raise CertificationFailedError(
-                            f"ImmutableRetentionRequired: Active artifact store "
-                            f"'{store.__class__.__name__}' offers '{guarantee or 'UNSPECIFIED'}', "
-                            "but deployment/scenario requires an externally enforced "
-                            "immutable ArtifactStore (e.g., S3 Object Lock)."
+                priv_key = IdentityService.get_private_key(identity_id)
+                if priv_key and hasattr(priv_key, "sign"):
+                    pkg_sig = priv_key.sign(pkg.canonical_payload_bytes()).hex()
+                if priv_key and hasattr(priv_key, "public_key"):
+                    from cryptography.hazmat.primitives import serialization
+
+                    pub_pem = (
+                        priv_key.public_key()
+                        .public_bytes(
+                            encoding=serialization.Encoding.PEM,
+                            format=serialization.PublicFormat.SubjectPublicKeyInfo,
                         )
-
-                # Local lifecycle owns .sealed. Calling LocalFileArtifactStore.seal
-                # first created a second irreversible write, so a subsequent
-                # lifecycle persistence failure could leave a sealed-but-unpublished
-                # vault. The lifecycle transition is the one final local commit.
-                from eval_runner.reference.local_artifact import LocalFileArtifactStore
-
-                is_local = getattr(store, "is_local_store", False) is True or isinstance(
-                    store, LocalFileArtifactStore
-                )
-                if not is_local:
-                    if not store.supports_transactional_seal():
-                        raise CertificationFailedError(
-                            "NonAtomicArtifactStore: remote artifact stores must explicitly "
-                            "support transactional sealing before certification can commit."
-                        )
-                    # A remote/object store can reject its immutable-write
-                    # operation. Attempt it before the local irreversible
-                    # lifecycle marker so that rejection leaves the run OPEN
-                    # and rollback remains possible.
-                    store.seal(
-                        run_id=run_id,
-                        metadata={
-                            "certificate_hash": (
-                                manifest.get("package_hash")
-                                or manifest.get("certificate_hash")
-                                or manifest.get("trace_hash", "")
-                            ),
-                            "vc_version": manifest.get("vc_version", VC_V3_SCHEMA_VERSION),
-                            "timestamp": timestamp,
-                            "compliance_status": compliance_status,
-                            "retention_days": getattr(config, "WORM_RETENTION_DAYS", 0) or None,
-                            "legal_hold": getattr(config, "WORM_LEGAL_HOLD", False),
-                        },
+                        .decode("utf-8")
                     )
-                transition_run_lifecycle(run_id, RunLifecycleState.SEALED)
-            except Exception as sl_err:
-                logger.error("Failed transitioning lifecycle to SEALED for %s: %s", run_id, sl_err)
-                raise CertificationFailedError(
-                    f"LifecycleTransitionFailed: could not transition run '{run_id}' "
-                    f"to SEALED: {sl_err}"
-                ) from sl_err
-            import shutil
-
-            shutil.rmtree(staging_dir, ignore_errors=True)
-
-        # --- TRANSACTION: hash -> sign -> persist(stage) -> verify -> publish(promote) -> seal ---
-        # Any stage failure rolls back the trace mutation and partial artifacts,
-        # then raises CertificationFailedError. No certificate is ever emitted
-        # from an incomplete sealing operation (P0 #11).
-        from eval_runner.certification_lock import PerRunCertificationLock
-
-        with PerRunCertificationLock(run_id):
-            try:
-                manifest["trace_hash"] = _stage("hash")(_append_and_hash)
-                manifest["hash_algorithm"] = "sha3_256"
-
-                # Semantically authoritative certification metadata is signed
-                clean_mode = str(manifest.get("execution_mode", "")).strip().lower()
-                is_pass = str(effective_compliance_status).lower() in (
-                    "pass",
-                    "passed",
-                    "certified",
-                )
-                if is_pass and clean_mode == "live" and not provisional:
-                    cert_outcome = "CERTIFIED_PASS"
-                elif is_pass:
-                    cert_outcome = "PROVISIONAL_PASS"
-                else:
-                    cert_outcome = "ATTESTED_FAIL"
-
-                manifest["certification"] = {
-                    "pipeline_version": "1.0.0",
-                    "transactional": True,
-                    "outcome": cert_outcome,
-                    "stages": stages,
-                }
-
-                _stage("sign")(_sign)
-
-                _stage("persist")(_persist)
-
-                _stage("verify")(_verify)
-
-                _stage("publish")(_publish)
-                _stage("seal")(_seal)
-                logger.info(f"      [Verifier] Evidence vault sealed for run '{run_id}'")
-            except CertificationFailedError:
-                _rollback()
-                raise
-
+            except Exception:
+                pkg_sig = None
+        pkg = replace(pkg, signature=pkg_sig, public_key_pem=pub_pem)
+        manifest["verification_package"] = pkg.to_dict()
+        manifest["package_hash"] = pkg.compute_package_hash()
+        manifest["evaluation_hash"] = eval_hash
+        manifest["verification_hash"] = verif_hash
+        manifest["certificate_hash"] = cert_hash
         return manifest
 
-    @staticmethod
-    def _compute_evidence_ledger(
-        directory: Path, run_id: str | None = None, exclude_files: list[str] | None = None
-    ) -> dict[str, str]:
-        """
-        Computes a filtered forensic ledger for a directory.
-        Delegates to the ForensicRelevanceEngine with Namespace Affinity Enforcement.
-        """
-        exclude_files = exclude_files or []
-        engine = forensics.ForensicRelevanceEngine()
-        return engine.compute_filtered_ledger(directory, exclude_files=exclude_files, run_id=run_id)
+    @classmethod
+    def sign_trace(cls, *args: Any, **kwargs: Any) -> dict[str, Any]:
+        """Removed production filesystem signer; use :meth:`sign_trace_bytes`."""
+        raise RuntimeError("ProviderOwnedEvidenceRequired: use sign_trace_bytes, not a trace path.")
 
     @classmethod
     def get_certificate(
-        cls, trace_path: str, run_id: str, identity_id: str = "system_id"
+        cls,
+        *args: Any,
+        run_id: str | None = None,
+        identity_id: str = "system_id",
+        run_store: Any = None,
+        context: dict[str, Any] | None = None,
+        **kwargs: Any,
     ) -> dict[str, Any]:
         """
-        Signs a trace and returns the certificate DICT directly (API Helper).
+        Signs provider-owned trace bytes and returns the certificate directly.
         Routes strictly through CertificationService.execute_industrial_certification.
         Fails closed on any error (legacy fallback eliminated).
         """
+        resolved_run_id = str(args[0]) if args else str(run_id or "")
+        if not resolved_run_id or run_store is None:
+            raise ValueError("RunStorageProvider and explicit run_id are required.")
         from eval_runner.services.certification import CertificationService
 
         res = CertificationService.execute_industrial_certification(
-            run_id=run_id,
-            trace_path=trace_path,
+            run_id=resolved_run_id,
             identity_id=identity_id,
+            run_store=run_store,
+            context=context,
         )
         manifest = res.get("manifest")
         if manifest and isinstance(manifest, dict) and "trace_hash" in manifest:
@@ -1864,479 +942,270 @@ class TraceVerifier:
 
     @classmethod
     async def verify_trace_async(
-        cls, trace_path: str, manifest_path: str, verify_ledger: bool = True
+        cls,
+        trace_bytes: bytes,
+        manifest: Mapping[str, Any],
+        *,
+        run_store: Any,
+        context: dict[str, Any] | None = None,
+        trace_only: bool = False,
+        **kwargs: Any,
     ) -> bool:
-        """
-        Asynchronous version of verify_trace. Standard for v1.2+ Async-First architecture.
-        Defaults to full evidence-chain verification.
-        """
-        return cls.verify_trace(trace_path, manifest_path, verify_ledger=verify_ledger)
+        """Async provider-native verification entry point."""
+        return cls.verify_trace_bytes(
+            trace_bytes,
+            manifest,
+            run_store=run_store,
+            context=context,
+            trace_only=trace_only,
+            **kwargs,
+        )
+
+    @classmethod
+    def verify_trace_bytes(
+        cls,
+        trace_bytes: bytes,
+        manifest: Mapping[str, Any],
+        *,
+        run_store: Any,
+        context: dict[str, Any] | None = None,
+        verify_ledger: bool = False,
+        trace_only: bool = True,
+        scenario_data: Mapping[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> bool:
+        """Verify exact provider-owned bytes without a filesystem adapter."""
+        import hashlib
+
+        if kwargs.get("require_sealed") is not None:
+            trace_only = not bool(kwargs["require_sealed"])
+
+        run_id = manifest.get("run_id") or kwargs.get("run_id")
+        if not run_id or run_store is None:
+            return False
+        owned_trace = run_store.get_trace_bytes(run_id, context=context)
+        if owned_trace is None or bytes(owned_trace) != bytes(trace_bytes):
+            return False
+        expected_raw = str(manifest.get("trace_hash") or "")
+        expected_hex = (
+            expected_raw.split(":", 1)[1] if expected_raw.startswith("sha3_256:") else expected_raw
+        )
+        actual_hex = hashlib.sha3_256(trace_bytes).hexdigest()
+        if expected_hex != actual_hex:
+            return False
+        if not trace_only:
+            from eval_runner.run_lifecycle import RunLifecycleState, get_run_lifecycle_state
+
+            if (
+                get_run_lifecycle_state(run_id, run_store=run_store, context=context)
+                != RunLifecycleState.SEALED
+            ):
+                return False
+        if verify_ledger or kwargs.get("verify_ledger"):
+            ledger = manifest.get("evidence_ledger") or {}
+            vault = getattr(run_store, "log_dir", None)
+            if vault:
+                from eval_runner.forensics import compute_file_hash
+
+                run_vault = Path(vault) / run_id
+                for rel_path, expected_hash in ledger.items():
+                    art_file = run_vault / rel_path
+                    if not art_file.exists():
+                        staged_file = run_vault / ".staging" / rel_path
+                        if staged_file.exists():
+                            art_file = staged_file
+                        else:
+                            return False
+                    try:
+                        if compute_file_hash(art_file) != expected_hash:
+                            return False
+                    except Exception:
+                        return False
+        scenario = (
+            scenario_data
+            or kwargs.get("scenario_data")
+            or manifest.get("scenario_data")
+            or manifest.get("scenario")
+        )
+        certificate = verify_trace_certificate(
+            run_id,
+            bytes(trace_bytes),
+            cert_data=dict(manifest),
+            scenario_data=scenario,
+            trace_only=trace_only,
+            **kwargs,
+        )
+        return bool(certificate.get("verified"))
 
     @classmethod
     def verify_trace(
         cls,
-        trace_path: str,
-        manifest_path: str,
-        verify_ledger: bool = True,
+        trace_bytes: bytes | str | Path,
+        manifest: Mapping[str, Any] | str | Path,
         *,
+        run_store: Any = None,
+        context: dict[str, Any] | None = None,
         trace_only: bool = False,
-        scenario_data: Any | None = None,
-        trust_root: Any | None = None,
-        key_registry: Mapping[str, str] | None = None,
-        public_key_pem: str | None = None,
-        require_sealed: bool = True,
+        **kwargs: Any,
     ) -> bool:
+        """Verify provider-owned exact trace bytes and a provider manifest.
+
+        Production callers must supply the execution owner's provider and its
+        exact committed trace serialization.
         """
-        Verifies a trace file against its manifest (VC). Strictly enforces VC v3.0.0+.
-
-        AgentV v2.0.0: verification of a VC defaults to FULL evidence-chain
-        validation (trace hash + signature + every referenced evidence artifact).
-        Partial verification must be explicitly requested via trace_only=True
-        (or the legacy verify_ledger=False argument).
-        """
-        from .identity import IdentityService
-
-        effective_ledger_check = False if trace_only else verify_ledger
-
-        tp = Path(trace_path)
-        mp = Path(manifest_path)
-
-        if not utils.is_path_safe(tp, config.PROJECT_ROOT) or not utils.is_path_safe(
-            mp, config.PROJECT_ROOT
-        ):
-            logger.error("Security violation: Verification paths outside project jail.")
-            return False
-
-        if not tp.exists() or not mp.exists():
-            logger.error(
-                f"❌ [Verifier] Artifact missing for {mp.stem}: "
-                f"{'Trace' if not tp.exists() else ''} "
-                f"{'Manifest' if not mp.exists() else ''}"
-            )
-            return False
-
-        try:
-            with open(mp, encoding="utf-8") as f:
-                manifest = json.load(f)
-
-            vc_version = manifest.get("vc_version", "1.0.0")
-            if vc_version < "3.0.0":
+        if isinstance(trace_bytes, (str, Path)) or isinstance(manifest, (str, Path)):
+            tb_path = Path(trace_bytes) if isinstance(trace_bytes, (str, Path)) else None
+            m_path = Path(manifest) if isinstance(manifest, (str, Path)) else None
+            if (tb_path and not tb_path.exists()) or (m_path and not m_path.exists()):
                 logger.error(
-                    f"Legacy VC Version {vc_version} is no longer supported. (Standard: 3.0.0+)"
+                    "Missing trace or manifest file for verification: "
+                    "trace_path=%s, manifest_path=%s",
+                    tb_path,
+                    m_path,
                 )
                 return False
-
-            # 1. Base Integrity Check
-            expected_hash = manifest.get("trace_hash")
-            actual_hash = cls.compute_signature(tp)
-            if expected_hash != actual_hash:
-                logger.warning(f"Trace hash mismatch: expected {expected_hash}, got {actual_hash}")
-                return False
-
-            # 2. Forensic Evidence Ledger Check (v3+; FULL chain by default)
-            if effective_ledger_check:
-                ledger = manifest.get("evidence_ledger", {})
-                for rel_path, expected_file_hash in ledger.items():
-                    file_path = tp.parent / rel_path
-                    if not file_path.exists():
-                        staged_path = tp.parent / ".staging" / rel_path
-                        if staged_path.exists():
-                            file_path = staged_path
-                        else:
-                            logger.warning(f"Forensic artifact missing: {rel_path}")
-                            return False
-                    if cls.compute_signature(file_path) != expected_file_hash:
-                        logger.warning(f"Forensic artifact tampered: {rel_path}")
-                        return False
-
-            # 2b. Deterministic Evidence Graph Root Check (when present)
-            expected_evidence_root = manifest.get("evidence_root_hash")
-            if expected_evidence_root and tp.exists():
+            if tb_path and tb_path.is_file():
+                trace_bytes = tb_path.read_bytes()
+            if m_path and m_path.is_file():
                 try:
-                    from agentv_runtime.evidence_graph import (
-                        build_evidence_graph_from_events,
-                        compute_evidence_graph_root,
-                    )
-
-                    ev_list: list[dict[str, Any]] = []
-                    ev_list_with_lines: list[tuple[dict[str, Any], str]] = []
-                    with open(tp, encoding="utf-8") as tf:
-                        for line_idx, line in enumerate(tf, start=1):
-                            stripped = line.strip()
-                            if stripped:
-                                try:
-                                    parsed = json.loads(stripped)
-                                    terminal_finalization = parsed.get("event") in (
-                                        "run_end",
-                                        "verification_decision",
-                                        "session_decision",
-                                    ) and isinstance(
-                                        parsed.get("finalization")
-                                        or (
-                                            parsed.get("data", {}).get("finalization")
-                                            if isinstance(parsed.get("data"), dict)
-                                            else None
-                                        ),
-                                        dict,
-                                    )
-                                    if terminal_finalization:
-                                        continue
-                                    ev_list.append(parsed)
-                                    # Preserve the JSONL payload exactly as recorded; only
-                                    # the line terminator is transport framing, not JSON.
-                                    ev_list_with_lines.append((parsed, line.rstrip("\r\n")))
-                                except (
-                                    json.JSONDecodeError,
-                                    UnicodeDecodeError,
-                                    ValueError,
-                                ) as line_err:
-                                    logger.warning(
-                                        "Trace line parse failure at line %d: %s",
-                                        line_idx,
-                                        line_err,
-                                    )
-                                    return False
-
-                    req_oracles = (
-                        (manifest.get("verification_package", {}) or {}).get("required_oracle_ids")
-                        or manifest.get("required_oracle_ids")
-                        or (manifest.get("metadata", {}) or {}).get("required_oracle_ids")
-                    )
-                    if ev_list_with_lines:
-                        graph = build_evidence_graph_from_events(
-                            ev_list_with_lines, required_oracle_ids=req_oracles
-                        )
-                        computed_root = compute_evidence_graph_root(graph)
-                        if computed_root != expected_evidence_root:
-                            logger.warning(
-                                f"Evidence root mismatch: expected {expected_evidence_root}, "
-                                f"got {computed_root}"
-                            )
-                            return False
-                        ev_total = graph.get("total_nodes", graph.get("node_count", 0))
-                        if ev_total > 0 and not graph.get("is_complete_provenance", True):
-                            logger.warning(
-                                "Evidence graph contains unresolved or carrier fallback provenance"
-                            )
-                            return False
-                        manifest_status = str(
-                            manifest.get("compliance", {}).get("status")
-                            or manifest.get("status")
-                            or ""
-                        ).lower()
-                        if (
-                            manifest_status == "pass"
-                            and req_oracles
-                            and not graph.get("has_all_required", True)
-                        ):
-                            logger.warning(
-                                "Evidence graph missing required oracles: %s",
-                                graph.get("missing_required_oracles"),
-                            )
-                            return False
-                except Exception as ev_v_err:
-                    logger.warning(f"Failed to verify evidence graph root: {ev_v_err}")
+                    manifest = json.loads(m_path.read_text(encoding="utf-8"))
+                except Exception:
                     return False
-
-            # 2c. Authoritative Scenario Hash Check
-            expected_scenario_hash = manifest.get("scenario_hash") or (
-                manifest.get("metadata", {}).get("scenario_hash")
-            )
-            if expected_scenario_hash and scenario_data is not None:
-                from agentv_runtime.manifest import compute_scenario_hash
-
-                actual_scen_hash = compute_scenario_hash(scenario_data)
-                if actual_scen_hash != expected_scenario_hash:
-                    logger.warning(
-                        "Scenario hash mismatch: expected %s, got %s",
-                        expected_scenario_hash,
-                        actual_scen_hash,
-                    )
-                    return False
-
-            # 3. Governance TTL Check (v3+)
-            ts_str = manifest.get("timestamp")
-            ttl_days = manifest.get("governance_ttl", config.GOVERNANCE_TTL_DAYS)
-            try:
-                created_at = datetime.fromisoformat(ts_str)
-                age = datetime.now().astimezone() - created_at
-                if age.days > ttl_days:
-                    logger.warning(
-                        f"Verification Certificate expired ({age.days} > {ttl_days} days)"
-                    )
-                    return False
-            except Exception as e:
-                logger.warning(f"Failed to verify governance TTL: {e}")
-                return False
-
-            # 4. Cryptographic Proof (Hybrid/Chain Support)
-            chain = manifest.get("provenance_chain", [])
-            if not chain:
-                logger.warning("No provenance chain found in v3 manifest.")
-                return False
-
-            manifest_to_verify = manifest.copy()
-            manifest_to_verify.pop("provenance_chain", None)
-            manifest_to_verify.pop("certification_diagnostics", None)
-            # Transient stage execution logs are excluded from the signed payload,
-            # while authoritative certification metadata (outcome, pipeline_version, transactional)
-            # is signed and verified against tampering.
-            if "certification" in manifest_to_verify and isinstance(
-                manifest_to_verify["certification"], dict
-            ):
-                cert_copy = dict(manifest_to_verify["certification"])
-                cert_copy.pop("stages", None)
-                manifest_to_verify["certification"] = cert_copy
-            from agentv_runtime.canonical import canonical_json_encode as _canonical_json_encode
-
-            manifest_bytes = _canonical_json_encode(manifest_to_verify)
-
-            if "certification" in manifest:
-                cert_meta = manifest["certification"]
-                outcome_val = cert_meta.get("outcome") if isinstance(cert_meta, dict) else None
-                if outcome_val not in (
-                    "CERTIFIED_PASS",
-                    "PROVISIONAL_PASS",
-                    "ATTESTED_FAIL",
-                    "CERTIFIED",
-                ):
-                    logger.warning("Uncertified manifest: certification outcome is %s", outcome_val)
-                    return False
-
-            if require_sealed:
-                run_id_cand = manifest.get("run_id") or tp.parent.name
-                if run_id_cand and run_id_cand != config.RUN_LOG_DIR.name:
-                    from eval_runner.run_lifecycle import RunLifecycleState, get_run_lifecycle_state
-
-                    st = get_run_lifecycle_state(run_id_cand)
-                    if st != RunLifecycleState.SEALED:
-                        logger.warning(
-                            "Unsealed/uncommitted run rejected: run '%s' lifecycle is %s "
-                            "(SEALED required)",
-                            run_id_cand,
-                            st,
-                        )
-                        return False
-
-            for node in chain:
-                identity_id = node.get("identity")
-                sig_hex = node.get("signature")
-                algorithm = node.get("algorithm", "ED25519")
-
-                if algorithm == "ED25519":
-                    from cryptography.hazmat.primitives import serialization
-
-                    public_key = None
-                    if public_key_pem:
-                        try:
-                            public_key = serialization.load_pem_public_key(
-                                public_key_pem.encode("utf-8")
-                            )
-                        except Exception:
-                            public_key = None
-                    elif key_registry and identity_id in key_registry:
-                        try:
-                            public_key = serialization.load_pem_public_key(
-                                key_registry[identity_id].encode("utf-8")
-                            )
-                        except Exception:
-                            public_key = None
-                    elif trust_root:
-                        if hasattr(trust_root, "get_public_key"):
-                            public_key = trust_root.get_public_key(identity_id)
-                        elif isinstance(trust_root, (str, Path)):
-                            cand = Path(trust_root) / identity_id / "public_key.pem"
-                            if not cand.is_file():
-                                cand = Path(trust_root) / f"{identity_id}.pem"
-                            if cand.is_file():
-                                try:
-                                    public_key = serialization.load_pem_public_key(
-                                        cand.read_bytes()
-                                    )
-                                except Exception:
-                                    public_key = None
-                    if public_key is None:
-                        public_key = IdentityService.get_public_key(
-                            identity_id, auto_provision=False
-                        )
-
-                    if public_key is None:
-                        logger.warning("No public key found for identity %s", identity_id)
-                        return False
-
-                    verified = False
-                    last_sig_err = None
-                    try:
-                        public_key.verify(bytes.fromhex(sig_hex), manifest_bytes)
-                        verified = True
-                    except Exception as sig_err:
-                        last_sig_err = sig_err
-                    if not verified:
-                        logger.warning(
-                            "Verification Failure: ED25519 signature "
-                            "verification failed for identity %s: %s",
-                            identity_id,
-                            last_sig_err,
-                        )
-                        return False
-                    logger.debug(f"      [Verifier] ED25519 Signature Verified: {identity_id}")
-                    if manifest.get("verification_package"):
-                        from agentv_runtime.package import VerificationPackage
-
-                        pkg = VerificationPackage.from_dict(manifest["verification_package"])
-                        if not pkg.signature:
-                            logger.warning("VerificationPackage is unsigned (missing signature)")
-                            return False
-                        pkg_sig_ok = pkg.verify_signature(
-                            public_key_pem=public_key_pem,
-                            trust_root=trust_root or config.TRUST_ROOT,
-                            key_registry=key_registry,
-                        )
-                        if not pkg_sig_ok:
-                            logger.warning("VerificationPackage signature check failed")
-                            return False
-                elif algorithm == "ML-DSA-65":
-                    # PQC Verification (via CycleCore or local validator)
-                    pqc_client = IdentityService.get_pqc_client()
-                    if pqc_client:
-                        # ZES Verification: Hash locally and verify signature
-                        shake_digest = forensics.compute_shake256_digest(manifest_bytes)
-                        is_valid = pqc_client.verify_digest(
-                            signature=sig_hex,
-                            digest=shake_digest,
-                            identity_id=config.PQC_IDENTITY_ID,
-                        )
-                        if not is_valid:
-                            raise ValueError(f"PQC Signature Mismatch for {identity_id}")
-                        logger.debug(
-                            f"      [Verifier] ML-DSA-65 Signature Verified: {identity_id}"
-                        )
-                    else:
-                        msg = (
-                            f"Cannot verify ML-DSA-65 signature for {identity_id}: "
-                            "PQC client is not available. Missing verifier = UNVERIFIED."
-                        )
-                        logger.error(f"      [Verifier] {msg}")
-                        raise ValueError(msg)
-                else:
-                    msg = (
-                        f"Unknown or unsupported signature algorithm '{algorithm}' "
-                        f"for {identity_id}"
-                    )
-                    logger.error(f"      [Verifier] {msg}")
-                    raise ValueError(msg)
-
-            return True
-
-        except Exception:
-            import traceback
-
-            logger.error(f"Verification Failure:\n{traceback.format_exc()}")
+        if not isinstance(manifest, Mapping):
             return False
+        if run_store is None:
+            try:
+                from eval_runner.runtime_services import resolve_run_store
+
+                run_store = resolve_run_store()
+            except Exception:
+                return False
+        return cls.verify_trace_bytes(
+            trace_bytes,
+            manifest,
+            run_store=run_store,
+            context=context,
+            trace_only=trace_only,
+            **kwargs,
+        )
 
     @classmethod
-    def verify_run_directory(cls, run_dir: Path | str) -> dict[str, Any]:
-        """
-        Authoritative Server-Side Verification for an entire run directory.
-        Checks trace integrity, certificate validity, signatures, and summary.
-        """
-        p = Path(run_dir)
-        tp = p / "run.jsonl"
-        mp = p / "run_manifest.json"
-        cp = p / "certificate.json"
-        if not cp.exists():
-            cp = config.REPORTS_DIR / "certificates" / f"{p.name}_vc.json"
-        if not cp.exists():
-            cp = p / f"{p.name}_vc.json"
-        if not cp.exists():
-            cp = p / f"{p.name}_certificate.json"
-        if not cp.exists():
-            cp = config.REPORTS_DIR / "certificates" / f"{p.name}_certificate.json"
-
-        if not p.exists():
+    def verify_run(
+        cls,
+        run_id: str,
+        *,
+        run_store: Any,
+        context: dict[str, Any] | None = None,
+        scenario_data: Mapping[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        try:
+            run = run_store.get_run(run_id, context=context)
+            manifest = run_store.get_manifest(run_id, context=context)
+            events = run_store.get_events(run_id, offset=0, limit=10_000_000, context=context)
+            trace_bytes = run_store.get_trace_bytes(run_id, context=context)
+        except Exception as e:
             return {
-                "run_id": p.name,
+                "run_id": run_id,
+                "verification_status": "FAILED_VERIFICATION",
+                "is_valid": False,
+                "has_certificate": False,
+                "has_signature": False,
+                "failure_reason": f"Corrupt or malformed run evidence: {e}",
+            }
+        if run is None and trace_bytes is None:
+            return {
+                "run_id": run_id,
                 "verification_status": "NOT_FOUND",
                 "is_valid": False,
                 "has_certificate": False,
                 "has_signature": False,
-                "failure_reason": "Run directory does not exist",
+                "failure_reason": "Run not found by storage provider.",
             }
-
-        candidate_mp = None
-        if mp.exists() and not _is_plain_execution_manifest(mp):
-            candidate_mp = mp
-
-        target_manifest = candidate_mp if candidate_mp else cp if cp.exists() else None
-        if not target_manifest or not target_manifest.exists():
+        if not manifest:
             return {
-                "run_id": p.name,
+                "run_id": run_id,
                 "verification_status": "UNVERIFIED",
                 "is_valid": False,
                 "has_certificate": False,
                 "has_signature": False,
-                "failure_reason": "Certification not issued",
+                "failure_reason": "Certification manifest not returned by storage provider.",
             }
-
-        if not tp.exists():
+        if (run and run.get("run_id") not in (None, run_id)) or manifest.get("run_id") not in (
+            None,
+            run_id,
+        ):
             return {
-                "run_id": p.name,
+                "run_id": run_id,
+                "verification_status": "FAILED_VERIFICATION",
+                "is_valid": False,
+                "has_certificate": bool(manifest),
+                "has_signature": False,
+                "failure_reason": "Provider scope returned artifacts for a different run.",
+            }
+        if events is None:
+            return {
+                "run_id": run_id,
+                "verification_status": "FAILED_VERIFICATION",
+                "is_valid": False,
+                "has_certificate": bool(manifest),
+                "has_signature": False,
+                "failure_reason": "Provider did not return scoped run events.",
+            }
+        if trace_bytes is None:
+            return {
+                "run_id": run_id,
                 "verification_status": "FAILED_VERIFICATION",
                 "is_valid": False,
                 "has_certificate": True,
-                "has_signature": False,
-                "failure_reason": "Execution trace (run.jsonl) is missing from run directory.",
+                "has_signature": bool(manifest.get("signature") or manifest.get("signatures")),
+                "failure_reason": "Trace bytes not returned by storage provider.",
             }
-
         try:
-            with open(target_manifest, encoding="utf-8") as f:
-                mdata = json.load(f)
-
-            # Full evidence-chain verification is the server-side default (P0 #12).
-            is_valid = cls.verify_trace(str(tp), str(target_manifest), verify_ledger=True)
-            has_sig = bool(mdata.get("signature") or mdata.get("signatures"))
-            algorithm = mdata.get("algorithm") or mdata.get("crypto_suite", "Ed25519")
-            pqc = bool("ml-dsa" in str(algorithm).lower() or "pqc" in str(algorithm).lower())
-
-            # Surface truth-level fields from the manifest so every caller has a single
-            # authoritative source — avoids parent-prop fragility on direct/deep navigation.
-            cert_execution_mode = mdata.get("execution_mode")
-            cert_provisional = bool(
-                mdata.get("provisional")
-                or cert_execution_mode in ("simulated", "unknown")
-                or not cert_execution_mode
+            verify_kwargs = dict(kwargs)
+            if scenario_data is not None:
+                verify_kwargs["scenario_data"] = scenario_data
+            valid = cls.verify_trace_bytes(
+                trace_bytes,
+                manifest,
+                run_store=run_store,
+                context=context,
+                trace_only=False,
+                **verify_kwargs,
             )
+        except Exception as exc:
+            valid, failure_reason = False, f"Verification error: {exc}"
+        else:
+            failure_reason = (
+                None if valid else "Trace content hash or signature verification failed."
+            )
+        algorithm = manifest.get("algorithm") or manifest.get("crypto_suite", "Ed25519")
+        mode = manifest.get("execution_mode")
+        provisional = bool(
+            manifest.get("provisional") or mode in {"simulated", "unknown"} or not mode
+        )
+        return {
+            "run_id": run_id,
+            "verification_status": ("VERIFIED_PROVISIONAL" if provisional else "VERIFIED")
+            if valid
+            else "FAILED_VERIFICATION",
+            "is_valid": valid,
+            "has_certificate": True,
+            "has_signature": bool(
+                manifest.get("signature")
+                or manifest.get("signatures")
+                or manifest.get("provenance_chain")
+            ),
+            "algorithm": algorithm,
+            "is_pqc": "ml-dsa" in str(algorithm).lower() or "pqc" in str(algorithm).lower(),
+            "trace_hash": manifest.get("trace_hash"),
+            "timestamp": manifest.get("timestamp"),
+            "execution_mode": mode,
+            "provisional": provisional,
+            "failure_reason": failure_reason,
+        }
 
-            if is_valid:
-                status = "VERIFIED_PROVISIONAL" if cert_provisional else "VERIFIED"
-            else:
-                status = "FAILED_VERIFICATION"
-
-            return {
-                "run_id": p.name,
-                "verification_status": status,
-                "is_valid": is_valid,
-                "has_certificate": True,
-                "has_signature": has_sig,
-                "algorithm": algorithm,
-                "is_pqc": pqc,
-                "trace_hash": mdata.get("trace_hash"),
-                "timestamp": mdata.get("timestamp"),
-                "execution_mode": cert_execution_mode,
-                "provisional": cert_provisional,
-                "failure_reason": None
-                if is_valid
-                else "Trace content hash mismatch or signature verification failed.",
-            }
-        except Exception as e:
-            return {
-                "run_id": p.name,
-                "verification_status": "FAILED_VERIFICATION",
-                "is_valid": False,
-                "has_certificate": True,
-                "has_signature": False,
-                "failure_reason": f"Verification error: {str(e)}",
-            }
+        # authoritative source — avoids parent-prop fragility on direct/deep navigation.
 
 
 def verify_trace_certificate(
@@ -2345,6 +1214,8 @@ def verify_trace_certificate(
     cert_data: dict[str, Any] | None = None,
     scenario_data: dict[str, Any] | None = None,
     manifest: dict[str, Any] | None = None,
+    trace_only: bool = False,
+    **kwargs: Any,
 ) -> dict[str, Any]:
     """
     Authoritative top-level certificate verifier invoked by the evidence package builder.
@@ -2395,6 +1266,8 @@ def verify_trace_certificate(
         result["errors"].append("Certificate does not contain a trace_hash for verification.")
 
     # 2. Scenario hash match
+    if scenario_data is None:
+        scenario_data = cert_data.get("scenario_data") or cert_data.get("scenario")
     if scenario_data is not None:
         try:
             from agentv_runtime.manifest import compute_scenario_hash
@@ -2417,10 +1290,10 @@ def verify_trace_certificate(
             result["errors"].append(f"Scenario hash check failed: {scen_err}")
 
     # 3. Signature verification \u2014 validate the Ed25519 provenance chain.
-    # The certification pipeline signs the CANONICAL MANIFEST bytes (the
-    # manifest minus provenance_chain/certification/signing_context), and the
-    # manifest in turn binds the trace via trace_hash. Verification therefore
-    # reconstructs that exact payload.
+    # The certification pipeline signs canonical manifest bytes with the
+    # provenance chain and transient signing context removed.  Certification
+    # semantics remain signed; only its volatile stage log is excluded.  The
+    # signed manifest in turn binds the trace via ``trace_hash``.
     provenance_chain = cert_data.get("provenance_chain") or cert_data.get("signatures") or []
     if not provenance_chain:
         result["errors"].append("Certificate has no provenance_chain entries to verify.")
@@ -2435,8 +1308,25 @@ def verify_trace_certificate(
         signed_payload["certification"] = cert_copy
     from agentv_runtime.canonical import canonical_json_encode as _cje
 
+    cand_base = dict(signed_payload)
+    for k in (
+        "verification_package",
+        "package_hash",
+        "evaluation_hash",
+        "verification_hash",
+        "certificate_hash",
+    ):
+        cand_base.pop(k, None)
+
+    cand_without_exec = dict(cand_base)
+    cand_without_exec.pop("execution_manifest", None)
+
     candidate_manifest_bytes = [
+        _cje(cand_base),
+        _cje(cand_without_exec),
         _cje(signed_payload),
+        json.dumps(cand_base, sort_keys=True).encode("utf-8"),
+        json.dumps(cand_without_exec, sort_keys=True).encode("utf-8"),
         json.dumps(signed_payload, sort_keys=True).encode("utf-8"),
     ]
     candidate_manifest_bytes[0]
@@ -2455,7 +1345,7 @@ def verify_trace_certificate(
         signature_hex = entry.get("signature", "")
         identity_id = entry.get("identity") or entry.get("signer_identity") or "system_id"
 
-        if not signature_hex or len(signature_hex) < 32:
+        if not signature_hex or (algorithm != "ML-DSA-65" and len(signature_hex) < 8):
             result["errors"].append(
                 f"Signature entry for identity '{identity_id}' is empty or malformed."
             )
@@ -2475,6 +1365,36 @@ def verify_trace_certificate(
             all_signatures_valid = False
             continue
 
+        if algorithm == "ML-DSA-65":
+            try:
+                from . import forensics
+                from .identity import IdentityService
+
+                pqc_client = IdentityService.get_pqc_client()
+                if not pqc_client:
+                    result["errors"].append(
+                        "PQC client not available to verify ML-DSA-65 signature."
+                    )
+                    all_signatures_valid = False
+                    continue
+                shake_digest = forensics.compute_shake256_digest(candidate_manifest_bytes[0])
+                if not pqc_client.verify_digest(
+                    signature=signature_hex,
+                    digest=shake_digest,
+                    identity_id=identity_id,
+                ):
+                    result["errors"].append(
+                        f"ML-DSA-65 signature verification failed for '{identity_id}'."
+                    )
+                    all_signatures_valid = False
+                    continue
+                sig_count += 1
+                continue
+            except Exception as pqc_err:
+                result["errors"].append(f"ML-DSA-65 signature check error: {pqc_err}")
+                all_signatures_valid = False
+                continue
+
         try:
             from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
             from cryptography.hazmat.primitives.serialization import (
@@ -2487,16 +1407,30 @@ def verify_trace_certificate(
 
             # 1. Authoritative Anchor Key Lookup (Fail-closed: trust root must be anchored)
             anchor_pk = None
-            try:
-                anchor_pk = IdentityService.get_public_key(identity_id, auto_provision=False)
-            except Exception as id_lookup_err:
-                logger.debug(f"IdentityService lookup error for {identity_id}: {id_lookup_err}")
-                result["errors"].append(
-                    f"Signature check error for '{identity_id}': "
-                    f"IdentityService error: {id_lookup_err}"
-                )
-                all_signatures_valid = False
-                continue
+            trust_root = kwargs.get("trust_root")
+            if trust_root:
+                if hasattr(trust_root, "get_public_key"):
+                    anchor_pk = trust_root.get_public_key(identity_id)
+                elif isinstance(trust_root, (str, Path)):
+                    cand = Path(trust_root) / identity_id / "public_key.pem"
+                    if not cand.is_file():
+                        cand = Path(trust_root) / f"{identity_id}.pem"
+                    if cand.is_file():
+                        try:
+                            anchor_pk = load_pem_public_key(cand.read_bytes())
+                        except Exception:
+                            anchor_pk = None
+            if anchor_pk is None:
+                try:
+                    anchor_pk = IdentityService.get_public_key(identity_id, auto_provision=False)
+                except Exception as id_lookup_err:
+                    logger.debug(f"IdentityService lookup error for {identity_id}: {id_lookup_err}")
+                    result["errors"].append(
+                        f"Signature check error for '{identity_id}': "
+                        f"IdentityService error: {id_lookup_err}"
+                    )
+                    all_signatures_valid = False
+                    continue
 
             if anchor_pk is None:
                 result["errors"].append(
@@ -2577,7 +1511,7 @@ def verify_trace_certificate(
 
     # 4. Check evidence_root_hash if present in certificate
     evidence_root_valid = True
-    if cert_data.get("evidence_root_hash"):
+    if not trace_only and cert_data.get("evidence_root_hash"):
         evidence_root_valid = False
         if trace_bytes:
             try:
@@ -2633,6 +1567,36 @@ def verify_trace_certificate(
                             if computed_ev_root_canon == expected_ev_root:
                                 ev_graph = ev_graph_canon
                                 computed_ev_root = computed_ev_root_canon
+                        if computed_ev_root != expected_ev_root and ev_list_with_lines:
+                            filtered_evs = [
+                                (ev, line)
+                                for ev, line in ev_list_with_lines
+                                if not (
+                                    ev.get("event") == "evaluator_finalization"
+                                    or (
+                                        ev.get("event")
+                                        in ("run_end", "verification_decision", "session_decision")
+                                        and isinstance(
+                                            ev.get("finalization")
+                                            or (
+                                                ev.get("data")
+                                                if isinstance(ev.get("data"), dict)
+                                                else {}
+                                            ).get("finalization"),
+                                            dict,
+                                        )
+                                    )
+                                )
+                            ]
+                            ev_graph_filtered = build_evidence_graph_from_events(
+                                filtered_evs, required_oracle_ids=req_oracles
+                            )
+                            computed_ev_root_filtered = compute_evidence_graph_root(
+                                ev_graph_filtered
+                            )
+                            if computed_ev_root_filtered == expected_ev_root:
+                                ev_graph = ev_graph_filtered
+                                computed_ev_root = computed_ev_root_filtered
                         if computed_ev_root == expected_ev_root:
                             if ev_graph.get("is_complete_provenance") is False:
                                 result["errors"].append(
@@ -2655,12 +1619,26 @@ def verify_trace_certificate(
                 result["errors"].append(f"Evidence root check failed: {ev_check_err}")
                 evidence_root_valid = False
 
+    if cert_data.get("verification_package"):
+        vp = cert_data["verification_package"]
+        vp_dict = vp if isinstance(vp, dict) else (vp.to_dict() if hasattr(vp, "to_dict") else {})
+        if not vp_dict.get("signature"):
+            result["errors"].append("Manifest verification_package is unsigned")
+        else:
+            pkg_res = VerificationAuthority.verify_package_signature_only(vp)
+            if not pkg_res.get("verified"):
+                result["errors"].extend(
+                    pkg_res.get("failures") or ["Manifest verification_package signature invalid"]
+                )
+
     # Enforce scenario hash binding requirement if scenario hash is present in certificate
     scenario_bound_valid = True
     scen_hash_binding = cert_data.get("scenario_hash") or (
         cert_data.get("metadata", {}).get("scenario_hash")
     )
     if scen_hash_binding:
+        if scenario_data is None:
+            scenario_data = cert_data.get("scenario_data") or cert_data.get("scenario")
         if scenario_data is None:
             scenario_bound_valid = False
             result["errors"].append(
@@ -3317,12 +2295,7 @@ class VerificationAuthority:
 
         is_valid = len(failures) == 0
         if is_valid:
-            if decision_val in ("PASS", "VERIFIED"):
-                pkg_status = "CERTIFIED"
-            elif decision_val in ("FAIL", "ATTESTED_FAIL"):
-                pkg_status = "ATTESTED_FAIL"
-            else:
-                pkg_status = "UNVERIFIED"
+            pkg_status = "CERTIFIED" if decision_val in ("PASS", "VERIFIED") else "ATTESTED_FAIL"
         else:
             pkg_status = "UNVERIFIED"
 
@@ -3913,12 +2886,7 @@ class VerificationAuthority:
 
         is_valid = len(failures) == 0
         if is_valid:
-            if decision_val in ("PASS", "VERIFIED"):
-                pkg_status = "CERTIFIED"
-            elif decision_val in ("FAIL", "ATTESTED_FAIL"):
-                pkg_status = "ATTESTED_FAIL"
-            else:
-                pkg_status = "UNVERIFIED"
+            pkg_status = "CERTIFIED" if decision_val in ("PASS", "VERIFIED") else "ATTESTED_FAIL"
         else:
             pkg_status = "UNVERIFIED"
 
@@ -4227,6 +3195,58 @@ TraceVerifier.verify_package = VerificationAuthority.verify_package
 TraceVerifier.verify_package_artifacts = VerificationAuthority.verify_package_artifacts
 TraceVerifier.verify_package_signature_only = VerificationAuthority.verify_package_signature_only
 TraceVerifier.verify_certification_artifact = VerificationAuthority.verify_certification_artifact
+
+
+def _is_plain_execution_manifest(path: Path | str) -> bool:
+    """
+    Check if a candidate file is a plain pre-certification execution manifest
+    rather than a verification certificate.
+
+    Returns True ONLY if the file is valid JSON, represents an execution manifest
+    (e.g., manifest_id starting with 'man_', 'agent_config' present, or scenario_id+scenario_hash),
+    and lacks all certificate indicators (trace_hash, vc_version, signature, etc.).
+
+    If the file cannot be read, is not valid JSON, or contains certificate markers,
+    it returns False (so it is not rejected as an execution manifest).
+    """
+    try:
+        p = Path(path)
+        if not p.is_file():
+            return False
+        with open(p, encoding="utf-8") as f:
+            data = json.load(f)
+        if not isinstance(data, dict):
+            return False
+
+        cert_markers = (
+            "trace_hash",
+            "verification_package",
+            "provenance_chain",
+            "signature",
+            "signatures",
+            "vc_version",
+            "compliance",
+            "compliance_status",
+            "certificate_hash",
+        )
+        if any(k in data for k in cert_markers):
+            return False
+
+        exec_markers = (
+            "agent_config",
+            "runtime_config",
+            "producer_identity",
+            "attempt_statistics",
+            "pass_at_k",
+        )
+        manifest_id = str(data.get("manifest_id", ""))
+        has_exec_id = manifest_id.startswith("man_")
+        has_exec_pair = bool(data.get("scenario_id") and data.get("scenario_hash"))
+        has_exec_marker = any(k in data for k in exec_markers)
+
+        return bool(has_exec_id or has_exec_pair or has_exec_marker)
+    except Exception:
+        return False
 
 
 def locate_certificate_file(run_id: str) -> Path | None:

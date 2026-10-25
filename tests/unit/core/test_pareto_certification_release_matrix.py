@@ -19,6 +19,7 @@ import json
 import os
 import time
 from collections.abc import Mapping
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
@@ -34,6 +35,7 @@ from agentv_runtime.package import VerificationPackage
 from eval_runner import config
 from eval_runner.certification_lock import PerRunCertificationLock
 from eval_runner.identity import IdentityService
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.run_lifecycle import (
     RunLifecycleState,
     TraceClosedError,
@@ -65,20 +67,28 @@ def matrix_env(tmp_path, monkeypatch):
     IdentityService._provision_local_identity("attacker_id")
     IdentityService._provision_local_identity("eval_kernel")
 
-    return {"root": root, "runs": runs, "reports": reports, "trust": trust}
+    return {
+        "root": root,
+        "runs": runs,
+        "reports": reports,
+        "trust": trust,
+        "provider": LocalFileRunStore(runs),
+    }
 
 
 def _build_test_run(
-    runs_dir: Path,
+    run_store: LocalFileRunStore | Path | str,
     run_id: str,
     events: list[dict[str, Any]],
     scenario_data: Mapping[str, Any],
     evaluator_finalization: EvaluatorFinalizationRecord | None = None,
     write_manifest: bool = True,
 ) -> tuple[Path, Path]:
-    vault = runs_dir / run_id
-    vault.mkdir(parents=True, exist_ok=True)
-    trace = vault / "run.jsonl"
+    if isinstance(run_store, (str, Path)):
+        runs_dir = Path(run_store)
+        run_store = LocalFileRunStore(runs_dir)
+    else:
+        runs_dir = Path(run_store.log_dir)
 
     scen_id = scenario_data.get("id") or scenario_data.get("scenario_id") or "scen_matrix"
     scen_ver = scenario_data.get("version") or scenario_data.get("scenario_version") or "1.0.0"
@@ -100,29 +110,40 @@ def _build_test_run(
         metadata={"required_oracle_ids": req_oracles} if req_oracles else {},
         runtime_config={"required_oracle_ids": req_oracles} if req_oracles else {},
     )
-    if write_manifest:
-        (vault / "execution_manifest.json").write_text(
-            json.dumps(exec_manifest.to_dict()), encoding="utf-8"
-        )
+    run_store.create_run(run_id, str(scen_id))
+    run_store.append_events(run_id, events)
 
-    final_events = list(events)
+    final_events: list[dict[str, Any]] = []
     if evaluator_finalization is not None:
         if write_manifest and evaluator_finalization.execution_manifest_hash == "sha3_256:dummy":
-            from dataclasses import replace
-
             evaluator_finalization = replace(
                 evaluator_finalization,
                 execution_manifest_hash=exec_manifest.compute_manifest_hash(),
             )
         if not evaluator_finalization.evaluator_signature:
+            exact_events = run_store.get_events(run_id, offset=0, limit=10_000_000)
+            exact_lines = run_store.get_trace_bytes(run_id).decode("utf-8").splitlines()
+            evidence_root = build_evidence_graph_from_events(
+                list(zip(exact_events, exact_lines, strict=True)),
+                required_oracle_ids=evaluator_finalization.required_oracle_ids,
+            )["evidence_root_hash"]
+            evaluator_finalization = replace(
+                evaluator_finalization, evidence_root_hash=evidence_root
+            )
             evaluator_finalization = evaluator_finalization.sign()
         fin_dict = evaluator_finalization.to_dict()
         final_events.append({"event": "evaluator_finalization", "data": fin_dict})
 
-    with open(trace, "w", encoding="utf-8") as f:
-        for ev in final_events:
-            f.write(json.dumps(ev) + "\n")
+    if final_events:
+        run_store.append_events(run_id, final_events)
+    if write_manifest:
+        run_store.save_run_manifest(
+            run_id,
+            {"execution_manifest": exec_manifest.to_dict(), "scenario_data": dict(scenario_data)},
+        )
 
+    vault = runs_dir / run_id
+    trace = vault / "run.jsonl"
     return vault, trace
 
 
@@ -140,12 +161,14 @@ def test_missing_evaluator_finalization_fails_closed(matrix_env):
         {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
     ]
     # No evaluator_finalization record attached
-    _build_test_run(matrix_env["runs"], run_id, events, scen_data, evaluator_finalization=None)
+    _build_test_run(matrix_env["provider"], run_id, events, scen_data, evaluator_finalization=None)
 
     with pytest.raises(
         ValueError, match="missing mandatory authoritative EvaluatorFinalizationRecord"
     ):
-        execute_industrial_certification(run_id=run_id, scenario_data=scen_data)
+        execute_industrial_certification(
+            run_id=run_id, scenario_data=scen_data, run_store=matrix_env["provider"]
+        )
 
 
 # ==============================================================================
@@ -178,10 +201,14 @@ def test_altered_scenario_hash_fails_closed(matrix_env):
         outcome="pass",
         score=1.0,
     )
-    _build_test_run(matrix_env["runs"], run_id, events, scen_data, evaluator_finalization=fin_rec)
+    _build_test_run(
+        matrix_env["provider"], run_id, events, scen_data, evaluator_finalization=fin_rec
+    )
 
     with pytest.raises(ValueError, match="ScenarioHashMismatch"):
-        execute_industrial_certification(run_id=run_id, scenario_data=scen_data)
+        execute_industrial_certification(
+            run_id=run_id, scenario_data=scen_data, run_store=matrix_env["provider"]
+        )
 
 
 # ==============================================================================
@@ -217,14 +244,12 @@ def test_tampered_finalization_hash_fails_closed(matrix_env):
     )
     # Sign legitimately first, then tamper the finalization_hash to simulate in-flight tampering
     fin_rec = fin_rec.sign()
-    from dataclasses import replace
-
     tampered_fin_rec = replace(
         fin_rec,
         finalization_hash="sha3_256:forged_hash_value_that_does_not_match_computed",
     )
-    vault, trace = _build_test_run(
-        matrix_env["runs"],
+    _build_test_run(
+        matrix_env["provider"],
         run_id,
         events,
         scen_data,
@@ -232,7 +257,9 @@ def test_tampered_finalization_hash_fails_closed(matrix_env):
     )
 
     with pytest.raises(ValueError, match="inconclusive outcome"):
-        execute_industrial_certification(run_id=run_id, scenario_data=scen_data)
+        execute_industrial_certification(
+            run_id=run_id, scenario_data=scen_data, run_store=matrix_env["provider"]
+        )
 
 
 # ==============================================================================
@@ -259,25 +286,10 @@ def test_missing_required_oracle_fails_closed(matrix_env):
     )
     ev_root = compute_evidence_graph_root(ev_graph)
 
-    exec_manifest = ExecutionManifest(
-        manifest_id=f"man_{run_id}",
-        scenario_id="scen_v4",
-        scenario_version="1.0.0",
-        scenario_hash=scen_hash,
-        metadata={"required_oracle_ids": ["oracle_1", "oracle_2_missing"]},
-        runtime_config={"required_oracle_ids": ["oracle_1", "oracle_2_missing"]},
-    )
-    vault = matrix_env["runs"] / run_id
-    vault.mkdir(parents=True, exist_ok=True)
-    (vault / "execution_manifest.json").write_text(
-        json.dumps(exec_manifest.to_dict()), encoding="utf-8"
-    )
-    m_hash = exec_manifest.compute_manifest_hash()
-
     fin_rec = EvaluatorFinalizationRecord(
         finalization_id=f"fin_{run_id}",
         run_id=run_id,
-        execution_manifest_hash=m_hash,
+        execution_manifest_hash="sha3_256:dummy",
         scenario_id="scen_v4",
         scenario_version="1.0.0",
         scenario_hash=scen_hash,
@@ -289,16 +301,18 @@ def test_missing_required_oracle_fails_closed(matrix_env):
         score=1.0,
     )
     _build_test_run(
-        matrix_env["runs"],
+        matrix_env["provider"],
         run_id,
         events,
         scen_data,
         evaluator_finalization=fin_rec,
-        write_manifest=False,
+        write_manifest=True,
     )
 
     with pytest.raises(ValueError, match="MissingRequiredOracles"):
-        execute_industrial_certification(run_id=run_id, scenario_data=scen_data)
+        execute_industrial_certification(
+            run_id=run_id, scenario_data=scen_data, run_store=matrix_env["provider"]
+        )
 
 
 # ==============================================================================
@@ -308,19 +322,21 @@ def test_missing_required_oracle_fails_closed(matrix_env):
 
 def test_trace_append_blocked_during_finalizing_or_sealed(matrix_env):
     run_id = "run-v5-lifecycle-guard"
+    run_store = LocalFileRunStore(matrix_env["runs"])
+    run_store.create_run(run_id, "lifecycle-guard")
 
     # Initially OPEN: writes permitted
-    assert_can_write_trace(run_id)
+    assert_can_write_trace(run_id, run_store=run_store)
 
     # Transition to FINALIZING: writes must be blocked
-    transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING)
+    transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING, run_store=run_store)
     with pytest.raises(TraceClosedError, match="trace writes prohibited"):
-        assert_can_write_trace(run_id)
+        assert_can_write_trace(run_id, run_store=run_store)
 
     # Transition to SEALED: writes remain blocked
-    transition_run_lifecycle(run_id, RunLifecycleState.SEALED)
+    transition_run_lifecycle(run_id, RunLifecycleState.SEALED, run_store=run_store)
     with pytest.raises(TraceClosedError, match="cryptographically immutable"):
-        assert_can_write_trace(run_id)
+        assert_can_write_trace(run_id, run_store=run_store)
 
 
 # ==============================================================================
@@ -333,6 +349,8 @@ def test_lock_fencing_active_pid_blocks_and_dead_pid_recovers(matrix_env):
     vault = matrix_env["runs"] / run_id
     vault.mkdir(parents=True, exist_ok=True)
     lock_file = vault / ".certification.lock"
+    run_store = LocalFileRunStore(matrix_env["runs"])
+    run_store.create_run(run_id, "fenced-lock")
 
     # Active PID lock blocks concurrent acquisition
     active_pid = os.getpid()
@@ -350,7 +368,7 @@ def test_lock_fencing_active_pid_blocks_and_dead_pid_recovers(matrix_env):
     )
 
     with pytest.raises(TimeoutError, match="CertificationLockConflict"):
-        with PerRunCertificationLock(run_id, timeout_seconds=0.1):
+        with PerRunCertificationLock(run_id, timeout_seconds=0.1, run_store=run_store):
             pass
 
     # Dead PID lock is safely reclaimed
@@ -368,7 +386,7 @@ def test_lock_fencing_active_pid_blocks_and_dead_pid_recovers(matrix_env):
         encoding="utf-8",
     )
 
-    with PerRunCertificationLock(run_id, timeout_seconds=1.0) as acquired_lock:
+    with PerRunCertificationLock(run_id, timeout_seconds=1.0, run_store=run_store) as acquired_lock:
         assert acquired_lock.fencing_token.startswith("fence_")
         assert lock_file.exists()
 
@@ -465,8 +483,6 @@ def test_verification_package_fails_on_altered_scenario_or_manifest(matrix_env):
     assert any("ScenarioHashMismatch" in f for f in tampered_scen_res["failures"])
 
     # Tampered manifest hash fails closed
-    from dataclasses import replace
-
     tampered_pkg = replace(pkg, manifest_hash="sha3_256:" + "f" * 64)
     tampered_manifest_res = VerificationAuthority.verify_package_artifacts(
         package=tampered_pkg,
@@ -685,8 +701,6 @@ def test_tampered_evaluator_signature_fails_closed(matrix_env):
         score=1.0,
     )
     fin_rec = fin_rec.sign()
-    from dataclasses import replace
-
     # Tamper the signature bytes
     corrupted_sig = "deadbeef" * 16
     tampered_fin = replace(fin_rec, evaluator_signature=corrupted_sig)
@@ -790,8 +804,6 @@ def test_failed_blocking_assertion_outside_required_inventory_blocks_positive_ce
         },
         {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
     ]
-    ev_graph = build_evidence_graph_from_events(events, required_oracle_ids=["required_check_1"])
-    ev_root = compute_evidence_graph_root(ev_graph)
 
     exec_manifest = ExecutionManifest(
         manifest_id=f"man_{run_id}",
@@ -813,11 +825,10 @@ def test_failed_blocking_assertion_outside_required_inventory_blocks_positive_ce
         evaluator_identity="eval_kernel",
         evaluator_config_hash="sha3_256:0000000000000000000000000000000000000000000000000000000000000000",
         required_oracle_ids=["required_check_1"],
-        evidence_root_hash=ev_root,
+        evidence_root_hash="",
         outcome="pass",
         score=1.0,
     )
-    fin_rec = fin_rec.sign()
 
     vault = matrix_env["runs"] / run_id
     vault.mkdir(parents=True, exist_ok=True)
@@ -895,8 +906,6 @@ def test_missing_execution_manifest_artifact_fails_closed(matrix_env):
         {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
         {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
     ]
-    ev_graph = build_evidence_graph_from_events(events)
-    ev_root = compute_evidence_graph_root(ev_graph)
 
     fin_rec = EvaluatorFinalizationRecord(
         finalization_id=f"fin_{run_id}",
@@ -908,11 +917,10 @@ def test_missing_execution_manifest_artifact_fails_closed(matrix_env):
         evaluator_identity="eval_kernel",
         evaluator_config_hash="sha3_256:0000000000000000000000000000000000000000000000000000000000000000",
         required_oracle_ids=[],
-        evidence_root_hash=ev_root,
+        evidence_root_hash="",
         outcome="pass",
         score=1.0,
     )
-    fin_rec = fin_rec.sign()
 
     vault, _ = _build_test_run(
         matrix_env["runs"],

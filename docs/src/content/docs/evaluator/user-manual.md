@@ -74,30 +74,17 @@ The **Visual Console** (launch with `agentv console`) provides a high-density in
 
 ## 📦 Forensic Storage & Vaulting
 
-AgentV uses a **Strict Vault Architecture** to isolate and protect forensic traces. This is controlled primarily by the `FlightRecorderPlugin` and ensures that all execution artifacts for a specific run are contained within a single directory.
-
-### Configuration Tiers
-
-| Option | Default | Purpose |
-| :--- | :--- | :--- |
-| `RUN_LOG_PER_RUN` | `true` | Creates a nested "Vault" directory (`runs/<run_id>/`) for every execution. |
-| `RUN_LOG_MASTER` | `true` | Appends all system events to a consolidated `runs/run.jsonl` file. |
+Run persistence is configured by the active `RunStorageProvider`, not by global
+`RUN_LOG_*` switches. Certification requires the provider to supply the exact
+canonical trace bytes it committed, scoped lifecycle state, and an atomic
+certification transaction.
 
 ### 🛠️ Debugging vs. Compliance Workflows
 
-The vault architecture can be tuned based on your current project lifecycle:
-
-#### **1. Debugging & Iteration (Zero Pollution)**
-When iterating rapidly on prompts or scenario designs, you can disable per-run vaulting to keep your `runs/` workspace clean.
-- **Configure**: Set `RUN_LOG_PER_RUN=false`.
-- **Benefit**: No new subdirectories are created. The workspace remains clean of "transient" vaults.
-- **Trace Access**: You can still replay or analyze the last run via the **Master Log Fallback**, as the engine will automatically extract the relevant events from the consolidated `run.jsonl`.
-
-#### **2. Compliance & Audit-Grade (Isolated Vaults)**
-In production verification or formal publication phases, per-run vaulting is **mandatory**.
-- **Configure**: Set `RUN_LOG_PER_RUN=true`.
-- **Benefit**: Each run is physically isolated in its own vault. This is required for cryptographic certification (`agentv certify`), as it enables high-fidelity hashing of the trace and its sidecar artifacts.
-- **Trace Access**: High-speed, prioritized resolution from the vault's local `run.jsonl`.
+The LocalFile reference provider may retain files for local development, but
+neither Core verification nor console reads fall back to those files or to a
+master log. Non-local providers expose the same evidence contract without a
+shared filesystem layout.
 
 ---
 

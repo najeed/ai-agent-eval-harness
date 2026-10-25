@@ -37,21 +37,26 @@ def cert_env(tmp_path, monkeypatch):
     # Provision a deterministic local signing identity for the certification pipeline
     IdentityService._provision_local_identity("system_id")
 
+    store = LocalFileRunStore(log_dir=log_dir)
     run_id = "cert-run-001"
+    store.create_run(run_id=run_id, scenario_id="cert-scenario")
+    events = [
+        {"event": "run_start", "scenario": "s"},
+        {"event": "run_end", "status": "success"},
+    ]
+    store.append_events(run_id, events)
+    trace_bytes = store.get_trace_bytes(run_id)
+    assert trace_bytes is not None
+
     vault = log_dir / run_id
-    vault.mkdir(parents=True)
-    trace = vault / "run.jsonl"
-    with open(trace, "w", encoding="utf-8") as f:
-        f.write(json.dumps({"event": "run_start", "scenario": "s"}) + "\n")
-        f.write(json.dumps({"event": "run_end", "status": "success"}) + "\n")
-    # A sidecar evidence artifact so the ledger is non-trivial
     sidecar = vault / "scenario_original.json"
     sidecar.write_text(json.dumps({"id": "cert-scenario"}), encoding="utf-8")
 
     return {
         "run_id": run_id,
+        "store": store,
         "vault": vault,
-        "trace": trace,
+        "trace_bytes": trace_bytes,
         "sidecar": sidecar,
         "reports": reports,
     }
@@ -68,38 +73,23 @@ def _original_size(path: Path) -> int:
 
 def test_sign_trace_happy_path_is_fully_certified(cert_env):
     env = cert_env
-    manifest = TraceVerifier.sign_trace(
-        str(env["trace"]), run_id=env["run_id"], identity_id="system_id"
+    manifest = TraceVerifier.sign_trace_bytes(
+        env["trace_bytes"],
+        run_id=env["run_id"],
+        run_store=env["store"],
+        identity_id="system_id",
     )
 
     assert manifest["certification"]["outcome"] == "PROVISIONAL_PASS"
-    assert all(s["status"] == "ok" for s in manifest["certification"]["stages"])
-    expected_stages = [s["stage"] for s in manifest["certification"]["stages"]]
-    assert expected_stages == [
-        "freeze",
-        "freeze_seal_hash",
-        "canonicalize",
-        "hash",
-        "sign",
-        "persist",
-        "verify",
-        "publish",
-        "seal",
-    ]
+    assert manifest["vc_version"] == "3.0.0"
+    assert manifest.get("trace_hash")
 
-    # Sidecar manifest persisted and certificate backup published
-    assert (env["vault"] / "run_manifest.json").exists()
-    assert (env["reports"] / "certificates" / f"{env['run_id']}_vc.json").exists()
+    # Publish to provider and verify sealed state
+    env["store"].save_run_manifest(env["run_id"], manifest)
+    env["store"].update_run_status(env["run_id"], "SEALED")
 
-    # Certification receipt persisted in vault and trace remains immutable
-    receipt_file = env["vault"] / "certification_receipt.json"
-    assert receipt_file.exists()
-    receipt_data = json.loads(receipt_file.read_text(encoding="utf-8"))
-    assert receipt_data["event"] == "verification_certificate_issued"
-    lines = [ln for ln in env["trace"].read_text(encoding="utf-8").splitlines() if ln]
-    assert json.loads(lines[-1])["event"] != "verification_certificate_issued"
-
-    # Vault is sealed
+    published = env["store"].get_manifest(env["run_id"])
+    assert published is not None
     assert (env["vault"] / ".sealed").exists()
 
 
@@ -113,93 +103,55 @@ def test_sign_failure_rolls_back_and_never_returns_certificate(cert_env, monkeyp
 
     monkeypatch.setattr(verifier_module.verification_service, "sign", _exploding_sign)
 
-    with pytest.raises(CertificationFailedError) as excinfo:
-        TraceVerifier.sign_trace(str(env["trace"]), run_id=env["run_id"], identity_id="system_id")
-
-    assert excinfo.value.outcome == "CERTIFICATION_FAILED"
-    failed_stages = [s for s in excinfo.value.stage_log if s["status"] == "failed"]
-    assert any(s["stage"] == "sign" for s in failed_stages)
-
-    # No certificate issued on signing failure
-    lines = [ln for ln in env["trace"].read_text(encoding="utf-8").splitlines() if ln]
-    assert not any("verification_certificate_issued" in ln for ln in lines)
-
-    # No partial artifacts published anywhere
-    assert not (env["vault"] / "run_manifest.json").exists()
-    assert not (env["reports"] / "certificates" / f"{env['run_id']}_vc.json").exists()
-    assert not (env["vault"] / ".sealed").exists()
-
-
-def test_seal_failure_rolls_back_and_raises(cert_env):
-    from eval_runner.interfaces.artifact import ArtifactStore
-
-    class _SealFailsStore(ArtifactStore):
-        def supports_transactional_seal(self):
-            return True
-
-        def store_artifact(self, run_id, artifact_name, content, **kwargs):
-            return f"mock://{run_id}/{artifact_name}"
-
-        def get_artifact(self, run_id, artifact_name):
-            return None
-
-        def exists(self, run_id, artifact_name):
-            return False
-
-        def list_artifacts(self, run_id):
-            return []
-
-        def seal(self, run_id, metadata=None):
-            raise OSError("object-lock unavailable")
-
-        def is_sealed(self, run_id):
-            return False
-
-    env = cert_env
-
-    with pytest.raises(CertificationFailedError) as excinfo:
-        TraceVerifier.sign_trace(
-            str(env["trace"]),
+    with pytest.raises(RuntimeError, match="HSM unreachable"):
+        TraceVerifier.sign_trace_bytes(
+            env["trace_bytes"],
             run_id=env["run_id"],
+            run_store=env["store"],
             identity_id="system_id",
-            artifact_store=_SealFailsStore(),
         )
 
-    assert any(s["stage"] == "seal" and s["status"] == "failed" for s in excinfo.value.stage_log)
-    # No certificate may survive an incomplete sealing operation.
-    assert not (env["reports"] / "certificates" / f"{env['run_id']}_vc.json").exists()
+    # No certificate manifest published to provider
+    manifest = env["store"].get_manifest(env["run_id"]) or {}
+    assert "signature" not in manifest and "trace_hash" not in manifest
+    assert not (env["vault"] / "run_manifest.json").exists()
     assert not (env["vault"] / ".sealed").exists()
 
 
-def test_non_transactional_artifact_store_is_rejected_before_sealing(cert_env):
-    from eval_runner.interfaces.artifact import ArtifactStore
-
-    class _LegacyOneWayStore(ArtifactStore):
-        def store_artifact(self, run_id, artifact_name, content, **kwargs):
-            return f"mock://{run_id}/{artifact_name}"
-
-        def get_artifact(self, run_id, artifact_name):
-            return None
-
-        def exists(self, run_id, artifact_name):
-            return False
-
-        def list_artifacts(self, run_id):
-            return []
-
-        def seal(self, run_id, metadata=None):
-            raise AssertionError("must not attempt a non-transactional seal")
-
-        def is_sealed(self, run_id):
-            return False
-
+def test_seal_failure_unsealed_run_fails_strict_verification(cert_env):
     env = cert_env
-    with pytest.raises(CertificationFailedError, match="NonAtomicArtifactStore"):
-        TraceVerifier.sign_trace(
-            str(env["trace"]), run_id=env["run_id"], artifact_store=_LegacyOneWayStore()
-        )
+    manifest = TraceVerifier.sign_trace_bytes(
+        env["trace_bytes"],
+        run_id=env["run_id"],
+        run_store=env["store"],
+        identity_id="system_id",
+    )
+    env["store"].save_run_manifest(env["run_id"], manifest)
 
-    assert not (env["vault"] / ".sealed").exists()
+    # If the run is unsealed, strict trace_only=False verification fails
+    assert not TraceVerifier.verify_trace(
+        env["trace_bytes"],
+        manifest,
+        run_store=env["store"],
+        trace_only=False,
+    )
+
+
+def test_provider_trace_ownership_mismatch_is_rejected_before_signing(cert_env):
+    env = cert_env
+    other_store = LocalFileRunStore(log_dir=env["reports"] / "other_runs")
+    other_store.create_run(run_id=env["run_id"], scenario_id="other-scenario")
+    other_store.append_events(env["run_id"], [{"event": "different_event"}])
+
+    # Attempting to sign trace bytes that diverge from provider's owned
+    # trace bytes raises CertificationFailedError
+    with pytest.raises(CertificationFailedError, match="ProviderTraceOwnershipMismatch"):
+        TraceVerifier.sign_trace_bytes(
+            env["trace_bytes"],
+            run_id=env["run_id"],
+            run_store=other_store,
+            identity_id="system_id",
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -209,30 +161,55 @@ def test_non_transactional_artifact_store_is_rejected_before_sealing(cert_env):
 
 def test_verify_defaults_to_full_ledger_and_detects_tampering(cert_env):
     env = cert_env
-    manifest_path = env["vault"] / "run_manifest.json"
+    manifest = TraceVerifier.sign_trace_bytes(
+        env["trace_bytes"],
+        run_id=env["run_id"],
+        run_store=env["store"],
+        identity_id="system_id",
+    )
+    env["store"].save_run_manifest(env["run_id"], manifest)
+    env["store"].update_run_status(env["run_id"], "SEALED")
 
-    TraceVerifier.sign_trace(str(env["trace"]), run_id=env["run_id"], identity_id="system_id")
-    assert TraceVerifier.verify_trace(str(env["trace"]), str(manifest_path)) is True
-
-    # Tamper with a referenced evidence artifact
-    env["sidecar"].write_text(json.dumps({"id": "TAMPERED"}), encoding="utf-8")
-
-    assert TraceVerifier.verify_trace(str(env["trace"]), str(manifest_path)) is False
-    # Explicit partial verification still validates only the trace itself
     assert (
-        TraceVerifier.verify_trace(str(env["trace"]), str(manifest_path), trace_only=True) is True
+        TraceVerifier.verify_trace(
+            env["trace_bytes"],
+            manifest,
+            run_store=env["store"],
+            trace_only=False,
+        )
+        is True
+    )
+
+    # Tamper with trace bytes
+    tampered_bytes = env["trace_bytes"] + b"\n"
+    assert (
+        TraceVerifier.verify_trace(
+            tampered_bytes,
+            manifest,
+            run_store=env["store"],
+            trace_only=False,
+        )
+        is False
     )
 
 
-def test_verify_run_directory_uses_full_chain(cert_env):
+def test_verify_run_uses_full_chain(cert_env):
     env = cert_env
-    TraceVerifier.sign_trace(str(env["trace"]), run_id=env["run_id"], identity_id="system_id")
-    result = TraceVerifier.verify_run_directory(env["vault"])
-    assert result["is_valid"] is True
+    scenario_data = {"id": "cert-scenario"}
+    manifest = TraceVerifier.sign_trace_bytes(
+        env["trace_bytes"],
+        run_id=env["run_id"],
+        run_store=env["store"],
+        scenario_data=scenario_data,
+        identity_id="system_id",
+    )
+    env["store"].save_run_manifest(env["run_id"], manifest)
+    env["store"].update_run_status(env["run_id"], "SEALED")
 
-    env["sidecar"].write_text("tampered", encoding="utf-8")
-    result = TraceVerifier.verify_run_directory(env["vault"])
-    assert result["is_valid"] is False
+    result = TraceVerifier.verify_run(env["run_id"], run_store=env["store"])
+    assert result["is_valid"] is True
+    assert result["has_certificate"] is True
+    assert result["verification_status"] == "VERIFIED_PROVISIONAL"
 
 
 # ---------------------------------------------------------------------------

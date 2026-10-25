@@ -1,36 +1,17 @@
-from eval_runner.events import CoreEvents, Event, unsubscribe
+from __future__ import annotations
+
+from eval_runner.events import CoreEvents, Event
 from eval_runner.flight_recorder import FlightRecorderPlugin
+from eval_runner.reference.local_run_store import LocalFileRunStore
 
 
-def test_flight_recorder_refresh_on_run_start(tmp_path, monkeypatch):
-    """Test that FlightRecorderPlugin refreshes its config when a RUN_START event occurs."""
-    initial_dir = tmp_path / "initial_dir"
-    new_dir = tmp_path / "new_dir"
-    default_dir = tmp_path / "default_dir"
+def test_recorder_does_not_reconfigure_storage_from_environment(tmp_path, monkeypatch):
+    store = LocalFileRunStore(tmp_path / "provider")
+    recorder = FlightRecorderPlugin(run_store=store)
+    monkeypatch.setenv("RUN_LOG_DIR", str(tmp_path / "ignored"))
+    monkeypatch.setenv("RUN_LOG_MASTER", "true")
 
-    initial_dir.mkdir(parents=True, exist_ok=True)
-    new_dir.mkdir(parents=True, exist_ok=True)
-    default_dir.mkdir(parents=True, exist_ok=True)
+    recorder.handle_event(Event(CoreEvents.RUN_START, {"run_id": "environment-isolation"}))
 
-    plugin = None
-    try:
-        monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", default_dir)
-        monkeypatch.setenv("RUN_LOG_DIR", str(initial_dir))
-        monkeypatch.setenv("RUN_LOG_ROTATE_COUNT", "0")
-        monkeypatch.setenv("RUN_LOG_PER_RUN", "true")
-        monkeypatch.setenv("RUN_LOG_MASTER", "true")
-
-        plugin = FlightRecorderPlugin()
-        assert str(plugin.log_dir) == str(initial_dir)
-
-        monkeypatch.setenv("RUN_LOG_DIR", str(new_dir))
-        event = Event(name=CoreEvents.RUN_START, data={"run_id": "test_refresh_run"})
-        plugin.handle_event(event)
-
-        assert str(plugin.log_dir) == str(new_dir)
-        assert str(plugin.master_log_path) == str(new_dir / "run.jsonl")
-    finally:
-        if plugin:
-            unsubscribe(plugin.handle_event)
-            plugin.close_execution_writes("test_refresh_run")
-            plugin.close_execution_writes(None)
+    assert store.get_events("environment-isolation", offset=0, limit=100)
+    assert not (tmp_path / "ignored").exists()

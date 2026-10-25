@@ -1,167 +1,138 @@
-"""
-handlers/analysis.py
+"""Post-run commands backed by the authoritative run provider."""
 
-Post-run utility handlers (reports, explainers, etc.)
-"""
+from __future__ import annotations
 
-import logging
-
-from .. import (
-    calibrator,
-    config,
-    explainer,
-    leaderboard_generator,
-    reporter,
-    taxonomy,
-    trace_utils,
-)
+from .. import calibrator, leaderboard_generator, reporter, taxonomy, trace_utils
+from ..explainer import explain_events
 from ..trace_utils import reconstruct_results_from_events
 
-logger = logging.getLogger(__name__)
+
+def _events_for_run(run_id: str, *, run_store, context: dict | None = None) -> list[dict]:
+    """Read a run through its explicit owner, never a vault path or resolver."""
+    return run_store.get_events(run_id, offset=0, limit=10_000_000, context=context)
 
 
 async def handle_report(args):
-    """
-    Handler for 'report' command.
-    Generates a stylized HTML report from an industrial run trace.
-    """
+    run_id = getattr(args, "run_id", None)
+    if not run_id:
+        print("[CRITICAL] Run ID is mandatory for reporting.")
+        return 1
     try:
+        from eval_runner.runtime_services import resolve_run_store
+
         from .evaluation import _ensure_path_safe, _resolve_replay_trace
 
-        run_id = args.run_id
-        if not run_id:
-            print("      [CRITICAL] FAILED: Run ID is mandatory for reporting.")
-            return 1
-
-        trace_path = _resolve_replay_trace(run_id)
-        if not trace_path or not _ensure_path_safe(trace_path, "Report Trace"):
-            return 1
-
-        master_path = (config.RUN_LOG_DIR / "run.jsonl").resolve()
-        events = trace_utils.load_events(trace_path)
-        if trace_path == master_path:
-            events = [e for e in events if e.get("run_id") == run_id]
-            if not events:
-                print(f"❌ [ERROR] Run ID '{run_id}' not found in master log fallback.")
-                return 1
-
         print(f"\n[Report] Generating stylized HTML for Run ID: {run_id}")
-
-        # Load and Reconstruction logic (Industry Standard)
-        run_start = next((e for e in events if e.get("event") == "run_start"), {})
-        metadata = run_start.get("metadata", {})
-
+        events = _events_for_run(run_id, run_store=resolve_run_store())
+        if not events:
+            trace_path = _resolve_replay_trace(run_id)
+            if trace_path and _ensure_path_safe(trace_path, "Report Trace"):
+                events = trace_utils.load_events(trace_path)
+        if not events:
+            print(f"[ERROR] Run '{run_id}' was not found by the run provider.")
+            return 1
+        start = next((event for event in events if event.get("event") == "run_start"), {})
+        metadata = start.get("metadata", {}) or {}
         scenario = {
             "metadata": {
-                "id": metadata.get("id") or run_start.get("scenario", "unknown"),
+                "id": metadata.get("id") or start.get("scenario", "unknown"),
                 "name": metadata.get("name", "Untitled Report"),
             },
             "description": metadata.get("description", ""),
         }
-        results = reconstruct_results_from_events(events)
-
-        html_path = reporter.generate_html_report(
+        output = reporter.generate_html_report(
             scenario,
-            results,
-            metadata={"trace_path": str(trace_path)},
-            standalone=getattr(args, "share", False),
+            reconstruct_results_from_events(events),
+            metadata={"run_id": run_id, "evidence_source": "provider"},
+            standalone=bool(getattr(args, "share", False)),
         )
-        print(f"[OK] HTML Report generated: {html_path}")
+        print(f"[OK] HTML Report generated: {output}")
         return 0
-    except Exception as e:
-        print(f"❌ [ERROR] Report generation FAILED: {e}")
+    except Exception as exc:
+        print(f"[ERROR] Report generation failed: {exc}")
         return 1
 
 
 async def handle_explain(args):
-    """Handler for 'explain' command."""
-    try:
-        from .evaluation import _ensure_path_safe, _resolve_replay_trace
-
-        run_id = args.run_id
-        if not run_id:
-            print("      [CRITICAL] FAILED: Run ID is mandatory for explanation.")
-            return 1
-
-        trace_path = _resolve_replay_trace(run_id)
-        if not trace_path or not _ensure_path_safe(trace_path, "Explanation Trace"):
-            return 1
-
-        print(f"\n[Explain] Diagnosing Run ID: {run_id}")
-        # explainer.explain_trace is the industrial standard method (explainer.py:L6)
-        explainer.explain_trace(trace_path)
-        return 0
-    except Exception as e:
-        print(f"❌ [ERROR] Explanation FAILED: {e}")
+    run_id = getattr(args, "run_id", None)
+    if not run_id:
+        print("[CRITICAL] Run ID is mandatory for explanation.")
         return 1
+    from eval_runner.runtime_services import resolve_run_store
+
+    events = _events_for_run(run_id, run_store=resolve_run_store())
+    if not events:
+        print(f"[ERROR] Run '{run_id}' was not found by the run provider.")
+        return 1
+    print(explain_events(events))
+    return 0
 
 
 async def handle_calibrate(args):
-    """Handler for 'calibrate' command."""
+    run_id = getattr(args, "run_id", None)
+    if not run_id:
+        print("[CRITICAL] Run ID is mandatory for calibration.")
+        return 1
     try:
+        from eval_runner.runtime_services import resolve_run_store
+
         from .evaluation import _ensure_path_safe, _resolve_replay_trace
 
-        run_id = args.run_id
-        if not run_id:
-            print("      [CRITICAL] FAILED: Run ID is mandatory for calibration.")
-            return 1
-
-        trace_path = _resolve_replay_trace(run_id)
-        if not trace_path or not _ensure_path_safe(trace_path, "Calibration Trace"):
-            return 1
-
         print(f"\n[Calibrate] Measuring judge agreement for Run ID: {run_id}")
-        # calibrator.run_calibration (calibrator.py:L11)
-        calibrator.run_calibration(str(trace_path), golden_path=getattr(args, "golden", None))
-        return 0
-    except Exception as e:
-        print(f"❌ [ERROR] Calibration FAILED: {e}")
+        events = _events_for_run(run_id, run_store=resolve_run_store())
+        if not events:
+            trace_path = _resolve_replay_trace(run_id)
+            if trace_path and _ensure_path_safe(trace_path, "Calibration Trace"):
+                events = trace_utils.load_events(trace_path)
+        if not events:
+            return 1
+        return (
+            calibrator.run_calibration_events(events, golden_path=getattr(args, "golden", None))
+            or 0
+        )
+    except Exception as exc:
+        print(f"❌ [ERROR] Calibration FAILED: {exc}")
         return 1
 
 
 async def handle_leaderboard(args):
-    """Handler for 'leaderboard' command."""
     try:
         leaderboard_generator.run_leaderboard(args.dir, args.output)
         return 0
-    except Exception as e:
-        print(f"❌ [ERROR] Leaderboard generation FAILED: {e}")
+    except Exception as exc:
+        print(f"[ERROR] Leaderboard generation failed: {exc}")
         return 1
 
 
 async def handle_taxonomy(args):
-    """Handler for 'taxonomy' command."""
     try:
         print("\n" + "=" * 40)
         print(f"{'AGENTV FAILURE TAXONOMY':^40}")
         print("=" * 40)
-        for cat in taxonomy.CATEGORIES:
-            print(f" - {cat.replace('_', ' ').title()}")
+        for category in taxonomy.CATEGORIES:
+            print(f" - {category.replace('_', ' ').title()}")
         print("-" * 40)
         print("Use these tags in results to categorize failures.")
         print("=" * 40)
         return 0
-    except Exception as e:
-        print(f"❌ [ERROR] Taxonomy display FAILED: {e}")
+    except Exception as exc:
+        print(f"[ERROR] Taxonomy display failed: {exc}")
         return 1
 
 
 async def handle_list_metrics(args):
-    """Handler for 'list-metrics' command."""
     try:
         from ..metrics import MetricRegistry
 
-        print("\nRegistered Evaluation Metrics:")
-        for metric in MetricRegistry.list_metrics():
-            print(f" - {metric}")
+        print("Registered Evaluation Metrics:")
+        print("\n".join(MetricRegistry.list_metrics()))
         return 0
-    except Exception as e:
-        print(f"❌ [ERROR] Failed to list metrics: {e}")
+    except Exception as exc:
+        print(f"[ERROR] Metric listing failed: {exc}")
         return 1
 
 
 async def handle_trend(args):
-    """Handler for 'trend' command."""
     try:
         from ..trend import RunTrendAnalyzer
 
@@ -197,7 +168,7 @@ async def handle_trend(args):
                 print("  🚨 REGRESSION DETECTED!")
             print("-" * 60)
 
-        if any_regression and args.exit_on_regression:
+        if any_regression and getattr(args, "exit_on_regression", False):
             print(
                 "\n❌ [Trend] Regression detected under specified threshold. Exiting with code 1."
             )

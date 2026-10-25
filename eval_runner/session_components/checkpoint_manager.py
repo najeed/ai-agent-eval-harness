@@ -6,7 +6,7 @@ Decomposed Session Component: SessionCheckpointManager
 from typing import Any
 
 from eval_runner.interfaces.checkpoint import CheckpointStore
-from eval_runner.reference.sqlite_checkpoint import SQLiteCheckpointStore
+from eval_runner.runtime_services import resolve_checkpoint_store
 
 
 class SessionCheckpointManager:
@@ -20,12 +20,7 @@ class SessionCheckpointManager:
     @property
     def store(self) -> CheckpointStore:
         if self._store is None:
-            from agentv_runtime.discovery import resolve_extension
-
-            self._store = resolve_extension(
-                "checkpoint_stores",
-                default_factory=SQLiteCheckpointStore,
-            )
+            self._store = resolve_checkpoint_store()
         return self._store
 
     def create_checkpoint(

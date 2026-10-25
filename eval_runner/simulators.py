@@ -1302,14 +1302,14 @@ def get_simulator_registry(plugin_manager=None) -> dict:
     """
     Returns a fresh registry of world shims (new instances).
     """
-    from eval_runner import plugins
+    from eval_runner.runtime_services import resolve_plugin_registry
 
     # Baseline: Populate with internal simulator classes for legacy discovery compatibility.
     # [Hardening] We use name-based keys to align with the registry-manager discovery pattern.
     registry = {k: v for k, v in _INTERNAL_SIMULATOR_CLASSES.items()}
 
     # Trigger plugin hook to allow external shims to register themselves
-    pm = plugin_manager or plugins.manager
+    pm = plugin_manager or resolve_plugin_registry()
     pm.trigger("on_register_simulators", registry)
 
     return registry

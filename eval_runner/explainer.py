@@ -15,6 +15,11 @@ def explain_trace(trace_path: Path) -> dict:
             "suggestion": "Check file permissions or JSON format.",
         }
 
+    return explain_events(events)
+
+
+def explain_events(events: list[dict]) -> dict:
+    """Identify failure patterns from authoritative run events."""
     # Access via the module reference for reliable dynamic patching
     rc = triage.TriageEngine.identify_root_cause(events)
 

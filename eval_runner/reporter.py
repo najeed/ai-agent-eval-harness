@@ -571,14 +571,9 @@ def generate_report(
 
     # Record summary in LeaderboardStore
     try:
-        from agentv_runtime.discovery import resolve_extension
-        from eval_runner.reference.local_leaderboard import LocalLeaderboardStore
+        from eval_runner.runtime_services import resolve_leaderboard_store
 
-        lb_store = resolve_extension(
-            "leaderboard_stores",
-            explicit=leaderboard_store,
-            default_factory=LocalLeaderboardStore,
-        )
+        lb_store = resolve_leaderboard_store(explicit=leaderboard_store)
         summary_record = {
             "scenario_id": scenario_identifier,
             "scenario_title": title,

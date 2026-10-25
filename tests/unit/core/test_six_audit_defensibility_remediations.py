@@ -27,6 +27,7 @@ from eval_runner import config, reporter
 from eval_runner.artifact_plugin import ArtifactPlugin
 from eval_runner.events import Event
 from eval_runner.flight_recorder import FlightRecorderPlugin
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.verifier import VerificationAuthority
 
 
@@ -76,7 +77,9 @@ def test_rem1_flight_recorder_fail_closed_in_certification_mode(tmp_path: Path):
 
     and forbid seal/certificate generation.
     """
-    recorder = FlightRecorderPlugin(log_dir=tmp_path, certification_mode=True)
+    recorder = FlightRecorderPlugin(
+        log_dir=tmp_path, run_store=LocalFileRunStore(tmp_path), certification_mode=True
+    )
     run_id = "cert-run-001"
 
     # Force write to raise an OSError
@@ -101,7 +104,7 @@ def test_rem1_flight_recorder_env_certification_mode(
 ):
     """EVAL_CERTIFICATION_MODE=true or EVAL_ATTESTATION_MODE=true activates fail-closed."""
     monkeypatch.setenv("EVAL_CERTIFICATION_MODE", "true")
-    recorder = FlightRecorderPlugin(log_dir=tmp_path)
+    recorder = FlightRecorderPlugin(log_dir=tmp_path, run_store=LocalFileRunStore(tmp_path))
     assert recorder.is_certification_mode() is True
 
     run_id = "cert-env-run"
@@ -121,7 +124,9 @@ def test_rem2_trace_seal_trust_envelope_tamper_detected(tmp_path: Path):
     priv_key, priv_pem, pub_pem = _generate_ed25519_pem_pair()
     backend = MockSigningBackend(priv_key, key_id="cert-key-001", identity="agentv-attestor-v1")
 
-    recorder = FlightRecorderPlugin(log_dir=tmp_path, signing_backend=backend)
+    recorder = FlightRecorderPlugin(
+        log_dir=tmp_path, run_store=LocalFileRunStore(tmp_path), signing_backend=backend
+    )
     run_id = "run-seal-001"
 
     event = Event("step_start", {"run_id": run_id, "step": 1})

@@ -1,496 +1,383 @@
-"""
-Branch coverage matrix for eval_runner/flight_recorder.py.
-
-Statement and branch coverage for FlightRecorderPlugin,
-file handles, cryptographic signing, vault rotation, and trace seals.
-"""
-
 from __future__ import annotations
 
 import json
-import os
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from eval_runner.events import Event
+from eval_runner.events import CoreEvents, Event
 from eval_runner.flight_recorder import FlightRecorderPlugin
+from eval_runner.reference.local_run_store import LocalFileRunStore
+from eval_runner.run_lifecycle import RunLifecycleState, transition_run_lifecycle
 
 
-def test_flight_recorder_init_signing_backends(tmp_path):
-    # 1. Custom signing backend provided
-    mock_backend = MagicMock()
-    fr_custom = FlightRecorderPlugin(log_dir=tmp_path / "logs", signing_backend=mock_backend)
-    assert fr_custom.signing_backend == mock_backend
+def test_resume_sequence_comes_from_provider_events(tmp_path):
+    store = LocalFileRunStore(tmp_path / "provider")
+    store.append_events("resume", [{"event": "prior", "_seq": 7}])
+    recorder = FlightRecorderPlugin(run_store=store)
 
-    # 2. Private key path in environment initializes LocalEd25519SigningBackend
-    with patch.dict(os.environ, {"FLIGHT_RECORDER_KEY_PATH": "dummy_key_path"}):
-        with patch("eval_runner.flight_recorder.LocalEd25519SigningBackend") as mock_ed:
-            FlightRecorderPlugin(log_dir=tmp_path / "logs")
-            assert mock_ed.called
+    recorder.handle_event(Event(CoreEvents.RUN_START, {"run_id": "resume", "is_resume": True}))
+    recorder.handle_event(Event("step", {"run_id": "resume"}))
+
+    assert store.get_events("resume", offset=0, limit=100)[-1]["_seq"] == 9
 
 
-def test_flight_recorder_require_signing_fail_closed(tmp_path):
-    fr = FlightRecorderPlugin(log_dir=tmp_path / "logs")
-    event = Event("test_event", {"run_id": "run-req-sign"})
+def test_recorder_rejects_lifecycle_closed_by_provider(tmp_path):
+    store = LocalFileRunStore(tmp_path / "provider")
+    store.create_run("sealed", scenario_id="scenario")
+    transition_run_lifecycle("sealed", RunLifecycleState.FINALIZING, run_store=store)
+    recorder = FlightRecorderPlugin(run_store=store)
 
-    with patch.dict(os.environ, {"EVAL_REQUIRE_SIGNING": "true"}):
-        with pytest.raises(RuntimeError, match="CryptographicSigningError: Signing is mandatory"):
-            fr.handle_event(event)
-
-
-def test_flight_recorder_signing_success_and_failure_modes(tmp_path):
-    # 1. Successful signing
-    mock_signer = MagicMock()
-    mock_signer.sign_payload.return_value = "sig_hex_123"
-    fr = FlightRecorderPlugin(log_dir=tmp_path / "logs", signing_backend=mock_signer)
-    event = Event("test_event", {"run_id": "run-sign-ok"})
-    fr.handle_event(event)
-    assert mock_signer.sign_payload.called
-
-    # 2. Signing failure with EVAL_SIGNING_FAIL_CLOSED=true
-    mock_failing_signer = MagicMock()
-    mock_failing_signer.sign_payload.side_effect = RuntimeError("Crypto hardware error")
-    fr_fail = FlightRecorderPlugin(log_dir=tmp_path / "logs", signing_backend=mock_failing_signer)
-    event_fail = Event("test_event", {"run_id": "run-sign-err"})
-
-    with patch.dict(os.environ, {"EVAL_SIGNING_FAIL_CLOSED": "true"}):
-        with pytest.raises(RuntimeError, match="Failed to sign trace event"):
-            fr_fail.handle_event(event_fail)
-
-    # 3. Signing failure with EVAL_SIGNING_FAIL_CLOSED=false (soft-fail with _sig_error)
-    with patch.dict(os.environ, {"EVAL_SIGNING_FAIL_CLOSED": "false"}):
-        fr_fail.handle_event(event_fail)
+    with pytest.raises(RuntimeError, match="cannot accept trace writes"):
+        recorder.handle_event(Event("step", {"run_id": "sealed"}))
 
 
-def test_flight_recorder_io_modes_and_persistence_fail_closed(tmp_path):
-    # 1. Writing directly to per_run_log_path when artifact_store is explicitly None
-    fr_no_art = FlightRecorderPlugin(log_dir=tmp_path / "logs")
-    fr_no_art.artifact_store = None
-    event = Event("test_event", {"run_id": "run-direct-io"})
-    fr_no_art.handle_event(event)
-    fr_no_art.flush()
-    fr_no_art.finalize_run("run-direct-io")
+def test_finalize_transitions_bound_provider(tmp_path):
+    store = LocalFileRunStore(tmp_path / "provider")
+    recorder = FlightRecorderPlugin(run_store=store)
+    recorder.handle_event(Event(CoreEvents.RUN_START, {"run_id": "finalize"}))
 
-    # 2. Any persistence failure is terminal; no environment opt-in exists.
-    fr_err = FlightRecorderPlugin(log_dir=tmp_path / "logs")
-    event_err = Event("test_event", {"run_id": "run-io-err"})
-    with patch.object(
-        fr_err.artifact_store, "store_artifact", side_effect=OSError("Disk write failed")
+    recorder.finalize_run("finalize")
+
+    assert store.get_run("finalize")["lifecycle"] == "FINALIZING"
+
+
+def test_init_log_dir_and_signing_backend_variants(tmp_path, monkeypatch):
+    # 1. log_dir provided sets up local run_store and artifact_store
+    rec1 = FlightRecorderPlugin(log_dir=tmp_path / "custom_log_dir")
+    assert rec1._default_run_store is not None
+    assert rec1.artifact_store is not None
+
+    # 2. resolve_run_store failure handled cleanly in init
+    with patch(
+        "eval_runner.runtime_services.resolve_run_store", side_effect=RuntimeError("no store")
     ):
-        with pytest.raises(
-            RuntimeError, match="TracePersistenceError: Failed to persist telemetry"
-        ):
-            fr_err.handle_event(event_err)
+        rec2 = FlightRecorderPlugin()
+        assert rec2._default_run_store is None
+
+    # 3. FLIGHT_RECORDER_KEY_PATH provided instantiates LocalEd25519SigningBackend
+    fake_key = tmp_path / "test.key"
+    fake_key.write_bytes(b"x" * 32)
+    monkeypatch.setenv("FLIGHT_RECORDER_KEY_PATH", str(fake_key))
+    with patch("eval_runner.flight_recorder.LocalEd25519SigningBackend"):
+        rec3 = FlightRecorderPlugin()
+        assert rec3.signing_backend is not None
 
 
-def test_flight_recorder_finalize_run_variations(tmp_path):
-    fr = FlightRecorderPlugin(log_dir=tmp_path / "logs")
-    run_id = "run-finalize-test"
-    event = Event("test_event", {"run_id": run_id})
-    fr.handle_event(event)
+def test_bind_and_release_run_provider_edge_cases(tmp_path):
+    store_a = LocalFileRunStore(tmp_path / "store-a")
+    store_b = LocalFileRunStore(tmp_path / "store-b")
+    rec = FlightRecorderPlugin()
 
-    # 1. Handle flush exceptions in finalize_run (shutdown race and general error)
-    fake_path = str(tmp_path / "logs" / run_id / "run.jsonl")
-    mock_handle = MagicMock()
-    mock_handle.flush.side_effect = ValueError("I/O on closed file")
-    fr._handles[fake_path] = mock_handle
-    fr.finalize_run(run_id)
+    # 1. Empty or unknown run_id or None run_store
+    rec.bind_run_provider("", store_a)
+    rec.bind_run_provider("unknown", store_a)
+    rec.bind_run_provider("r1", None)
+    assert "r1" not in rec._run_providers
 
-    mock_handle_gen = MagicMock()
-    mock_handle_gen.flush.side_effect = RuntimeError("Sync error")
-    fr._handles[fake_path] = mock_handle_gen
-    fr.finalize_run(run_id)
+    # 2. Valid binding and context update
+    rec.bind_run_provider("r1", store_a, context={"tenant": "t1"})
+    assert rec._run_providers["r1"][1] == {"tenant": "t1"}
+    rec.bind_run_provider("r1", store_a, context={"env": "prod"})
+    assert rec._run_providers["r1"][1] == {"tenant": "t1", "env": "prod"}
 
-    # 2. Finalize without specific run_id (closes all handles, handle=None branch)
-    fr._handles["global_path"] = MagicMock()
-    fr._handles["none_handle"] = None
-    fr.finalize_run(None)
+    # 3. Provider affinity violation
+    with pytest.raises(RuntimeError, match="RunStorageProviderAffinityViolation"):
+        rec.bind_run_provider("r1", store_b)
 
-    # 3. Artifact store fallback to disk when get_artifact raises or returns empty
-    mock_art_store = MagicMock()
-    mock_art_store.get_artifact.side_effect = Exception("Not in store")
-    fr_disk = FlightRecorderPlugin(log_dir=tmp_path / "logs", artifact_store=mock_art_store)
-    # Write a real file on disk
-    run_disk_dir = tmp_path / "logs" / "run-disk-fallback"
-    run_disk_dir.mkdir(parents=True, exist_ok=True)
-    (run_disk_dir / "run.jsonl").write_text('{"event":"disk"}\n', encoding="utf-8")
+    # 4. Release run provider
+    rec.release_run_provider("r1")
+    assert "r1" not in rec._run_providers
 
-    # Mock get_default_signer with create=True
-    mock_signer = MagicMock()
-    mock_signer.sign.return_value = b"signed_seal_bytes"
-    mock_signer.identity = "test-authority"
-    with patch("eval_runner.identity.get_default_signer", return_value=mock_signer, create=True):
-        fr_disk.finalize_run("run-disk-fallback")
-        assert mock_art_store.store_artifact.called
+    # 5. Classmethods bind_active_recorder and release_active_recorder
+    FlightRecorderPlugin.bind_active_recorder("r2", store_a, context={"c": 1})
+    rec_in_bus = next(
+        sub.__self__
+        for sub in __import__("eval_runner.events", fromlist=["EventEmitter"])
+        .EventEmitter.get_global()
+        ._subscribers
+        if isinstance(getattr(sub, "__self__", None), FlightRecorderPlugin)
+    )
+    assert "r2" in rec_in_bus._run_providers
 
-    # 4. Seal storing failure exception handling
-    mock_art_store.store_artifact.side_effect = Exception("Store seal error")
-    fr_disk.finalize_run("run-disk-fallback")
+    # release with non-matching store does not release
+    FlightRecorderPlugin.release_active_recorder("r2", run_store=store_b)
+    assert "r2" in rec_in_bus._run_providers
 
-    # 5. Signer is None in get_default_signer
-    mock_art_store.store_artifact.side_effect = None
-    with patch("eval_runner.identity.get_default_signer", return_value=None, create=True):
-        fr_disk.finalize_run("run-disk-fallback")
+    # release with matching store or None releases
+    FlightRecorderPlugin.release_active_recorder("r2", run_store=store_a)
+    assert "r2" not in rec_in_bus._run_providers
+
+    # release when binding is None safely continues
+    FlightRecorderPlugin.release_active_recorder("r_missing", run_store=store_a)
 
 
-def test_flight_recorder_finalize_omits_non_string_signer_key_id(tmp_path):
-    class NonStringKeySigner:
-        identity = "non-string-key-signer"
-        key_id = 7
+def test_handle_event_run_id_collisions_and_resumption_errors(tmp_path):
+    store = LocalFileRunStore(tmp_path / "store")
+    rec = FlightRecorderPlugin(run_store=store)
 
-        def get_key_id(self):
-            raise AssertionError("get_key_id must not run when key_id is declared")
-
-        def sign(self, payload: bytes) -> bytes:
-            return b"non-string-key-signature"
-
-    recorder = FlightRecorderPlugin(log_dir=tmp_path / "logs")
-    run_id = "non-string-key-run"
-    recorder.handle_event(Event("step", {"run_id": run_id}))
-    recorder.signing_backend = NonStringKeySigner()
-
-    recorder.finalize_run(run_id)
-
-    assert recorder.get_run_state(run_id) == "SEALED"
-    sealed = recorder.artifact_store.get_artifact(run_id, "trace_seal.json")
-    payload = json.loads(sealed.decode("utf-8") if isinstance(sealed, bytes) else sealed)
-    assert "key_id" not in payload
-
-
-def test_flight_recorder_after_evaluation_and_rotation(tmp_path):
-    fr = FlightRecorderPlugin(log_dir=tmp_path / "logs")
-    context = MagicMock()
-    context.run_id = "run-after-eval"
-
-    fr.after_evaluation(context, [])
-
-    # Finalize with None run_id
-    fr.finalize_run(None)
-
-    # Flush error handling
-    mock_bad_handle = MagicMock()
-    mock_bad_handle.flush.side_effect = OSError("Flush fail")
-    fr._handles["bad_h"] = mock_bad_handle
-    fr.flush()
-
-    # Vault rotation with count and cleanup
-    v1 = tmp_path / "logs" / "v1"
-    v2 = tmp_path / "logs" / "v2"
-    v3 = tmp_path / "logs" / "v3"
-    v1.mkdir(parents=True, exist_ok=True)
-    v2.mkdir(parents=True, exist_ok=True)
-    v3.mkdir(parents=True, exist_ok=True)
-    fr.log_rotate_count = 2
-    fr.rotate_logs(is_new_run=True)
-
-    # Vault rotation when targets <= effective_count
-    fr.log_rotate_count = 10
-    fr.rotate_logs(is_new_run=False)
-
-
-def test_flight_recorder_fail_closed_in_certification_mode(tmp_path):
-    """Persistence failure in certification mode transitions run to CERTIFICATION_FAILED
-
-    and unconditionally forbids seal or certificate generation.
-    """
-    recorder = FlightRecorderPlugin(log_dir=tmp_path / "logs", certification_mode=True)
-    run_id = "cert-run-001"
-
-    with patch("builtins.open", side_effect=OSError("Disk full / write failure")):
-        event = Event("model_call", {"run_id": run_id, "prompt": "test"})
-        with pytest.raises(RuntimeError, match="TracePersistenceError"):
-            recorder.handle_event(event)
-
-    assert recorder.get_run_state(run_id) == "CERTIFICATION_FAILED"
-    assert run_id in recorder._failed_runs
-
-    with pytest.raises(RuntimeError, match="TracePersistenceError"):
-        recorder.finalize_run(run_id)
-
-    seal_file = tmp_path / "logs" / run_id / "trace_seal.json"
-    assert not seal_file.exists()
-
-
-def test_flight_recorder_env_certification_mode(monkeypatch, tmp_path):
-    """EVAL_CERTIFICATION_MODE=true or EVAL_ATTESTATION_MODE=true activates fail-closed."""
-    monkeypatch.setenv("EVAL_CERTIFICATION_MODE", "true")
-    recorder = FlightRecorderPlugin(log_dir=tmp_path / "logs")
-    assert recorder.is_certification_mode() is True
-
-    run_id = "cert-env-run"
-    with patch("builtins.open", side_effect=OSError("Storage failure")):
-        event = Event("step_start", {"run_id": run_id})
-        with pytest.raises(RuntimeError, match="TracePersistenceError"):
-            recorder.handle_event(event)
-
-    assert recorder.get_run_state(run_id) == "CERTIFICATION_FAILED"
-
-
-def test_flight_recorder_run_start_collisions_and_unknown_run(tmp_path):
-    from eval_runner.events import CoreEvents
-
-    recorder = FlightRecorderPlugin(log_dir=tmp_path / "logs")
-
-    # 1. RUN_START with unknown run_id proceeds without collision check
-    ev_unknown = Event(CoreEvents.RUN_START, {"run_id": "unknown"})
-    recorder.handle_event(ev_unknown)
-
-    # 2. RUN_START with colliding existing run vault directory
-    run_id = "colliding_run"
-    colliding_dir = tmp_path / "logs" / run_id
-    colliding_dir.mkdir(parents=True, exist_ok=True)
-    ev_collide = Event(CoreEvents.RUN_START, {"run_id": run_id})
+    # 1. RUN_START when lifecycle is already FINALIZING/SEALED -> RunIdCollision
+    store.create_run("run-coll", "scenario")
+    transition_run_lifecycle("run-coll", RunLifecycleState.FINALIZING, run_store=store)
     with pytest.raises(RuntimeError, match="RunIdCollision"):
-        recorder.handle_event(ev_collide)
+        rec.handle_event(Event(CoreEvents.RUN_START, {"run_id": "run-coll", "is_resume": False}))
+
+    # 2. is_resume=True when lifecycle is in FINALIZING/SEALED -> ResumptionError
+    with pytest.raises(RuntimeError, match="ResumptionError"):
+        rec.handle_event(Event(CoreEvents.RUN_START, {"run_id": "run-coll", "is_resume": True}))
+
+    # 3. Event when run_state in ("FINALIZING", "SEALED") is rejected and returns early
+    rec._run_states["run-closed"] = "SEALED"
+    # Should not raise, just logs debug and returns early
+    rec.handle_event(Event("step", {"run_id": "run-closed"}))
 
 
-def test_flight_recorder_handle_event_rejected_states_and_write_assertions(tmp_path):
-    recorder = FlightRecorderPlugin(log_dir=tmp_path / "logs")
-    run_id = "state_rejection_run"
+def test_handle_event_unowned_and_signing_failures(tmp_path, monkeypatch):
+    store = LocalFileRunStore(tmp_path / "store")
+    rec = FlightRecorderPlugin(run_store=store)
 
-    # 1. Rejected write when run is in FINALIZING or SEALED state
-    recorder._run_states[run_id] = "FINALIZING"
-    ev = Event("step_event", {"run_id": run_id})
-    recorder.handle_event(ev)
-    assert not (tmp_path / "logs" / run_id / "run.jsonl").exists()
+    # 1. Unowned event (no run_id) raises TracePersistenceError
+    with pytest.raises(
+        RuntimeError, match="TracePersistenceError: trace event has no run ownership"
+    ):
+        rec.handle_event(Event("step", {"data": "no_run_id"}))
 
-    recorder._run_states[run_id] = "SEALED"
-    recorder.handle_event(ev)
-    assert not (tmp_path / "logs" / run_id / "run.jsonl").exists()
+    # 2. EVAL_REQUIRE_SIGNING=true with NullSigningBackend raises CryptographicSigningError
+    monkeypatch.setenv("EVAL_REQUIRE_SIGNING", "true")
+    with pytest.raises(RuntimeError, match="CryptographicSigningError: Signing is mandatory"):
+        rec.handle_event(Event("step", {"run_id": "run-sign-req"}))
+    monkeypatch.delenv("EVAL_REQUIRE_SIGNING")
 
-    # 2. Trace write assertion failure
-    recorder._run_states[run_id] = "RUNNING"
+    # 3. Signing failure under AUDIT_LEVEL=2 raises CryptographicSigningError
+    mock_signer = MagicMock()
+    mock_signer.can_sign.return_value = True
+    mock_signer.sign_payload.side_effect = RuntimeError("Signature calculation failed")
+    rec_fail_sign = FlightRecorderPlugin(run_store=store, signing_backend=mock_signer)
+    with pytest.raises(RuntimeError, match="CryptographicSigningError: Failed to sign trace event"):
+        rec_fail_sign.handle_event(Event("step", {"run_id": "run-sign-fail"}))
+
+
+def test_finalize_run_edge_cases_and_seals(tmp_path, monkeypatch):
+    store = LocalFileRunStore(tmp_path / "store")
+    store.create_run("run-failed-state", "scenario")
+    rec = FlightRecorderPlugin(run_store=store)
+
+    # 1. finalize_run without run_id returns early
+    rec.finalize_run(None)
+    rec.finalize_run("")
+
+    # 2. finalize_run on failed run raises TracePersistenceError
+    rec._failed_runs.add("run-failed-state")
+    with pytest.raises(
+        RuntimeError, match="CERTIFICATION_FAILED due to telemetry persistence failure"
+    ):
+        rec.finalize_run("run-failed-state")
+
+    # 3. AES_CERTIFICATION_MODE=1 with NullSigningBackend raises RuntimeError
+    rec._failed_runs.clear()
+    rec._run_states.clear()
+    monkeypatch.setenv("AES_CERTIFICATION_MODE", "1")
+    with pytest.raises(
+        RuntimeError, match="AES_CERTIFICATION_MODE=1 requires a non-null cryptographic signer"
+    ):
+        rec.finalize_run("run-failed-state")
+    monkeypatch.delenv("AES_CERTIFICATION_MODE")
+
+    # 4. finalize_run on already SEALED run sets state and returns
+    store.create_run("run-already-sealed", "scenario")
+    transition_run_lifecycle("run-already-sealed", RunLifecycleState.FINALIZING, run_store=store)
+    transition_run_lifecycle("run-already-sealed", RunLifecycleState.SEALED, run_store=store)
+    rec.finalize_run("run-already-sealed")
+    assert rec.get_run_state("run-already-sealed") == "SEALED"
+
+    # 5. finalize_run with non-null signer creates trace_seal.json
+    # with signer identity and signature
+    store.create_run("run-seal-art", "scenario")
+    mock_signer = MagicMock()
+    mock_signer.identity = "test-node"
+    mock_signer.key_id = "key-001"
+    mock_signer.sign.return_value = b"\xaa\xbb\xcc"
+
+    mock_art_store = MagicMock()
+    rec_art = FlightRecorderPlugin(
+        run_store=store,
+        signing_backend=mock_signer,
+        artifact_store=mock_art_store,
+    )
+    rec_art.finalize_run("run-seal-art")
+    mock_art_store.store_artifact.assert_called_once()
+    stored_json = json.loads(mock_art_store.store_artifact.call_args[1]["content"])
+    assert stored_json["signer_identity"] == "test-node"
+    assert stored_json["key_id"] == "key-001"
+    assert stored_json["signature"] == "aabbcc"
+
+    # 6. Artifact store finalize error in certification mode raises exception
+    mock_art_fail = MagicMock()
+    mock_art_fail.store_artifact.side_effect = OSError("Disk unmounted")
+    rec_art_fail = FlightRecorderPlugin(
+        run_store=store,
+        signing_backend=mock_signer,
+        artifact_store=mock_art_fail,
+        certification_mode=True,
+    )
+    store.create_run("run-cert-fail", "scenario")
+    with pytest.raises(OSError, match="Disk unmounted"):
+        rec_art_fail.finalize_run("run-cert-fail")
+    assert rec_art_fail.get_run_state("run-cert-fail") == "CERTIFICATION_FAILED"
+
+
+def test_freeze_run_and_utility_hooks(tmp_path):
+    store = LocalFileRunStore(tmp_path / "store")
+    rec = FlightRecorderPlugin(run_store=store)
+
+    # 1. freeze_run on empty / unknown run_id returns early
+    rec.freeze_run("")
+    rec.freeze_run("unknown")
+
+    # 2. freeze_run success
+    store.create_run("run-freeze", "scenario")
+    rec.freeze_run("run-freeze")
+    assert rec.get_run_state("run-freeze") == "FINALIZING"
+
+    # 3. freeze_run when transition_run_lifecycle fails raises TracePersistenceError
+    with patch(
+        "eval_runner.run_lifecycle.transition_run_lifecycle",
+        side_effect=RuntimeError("transition fail"),
+    ):
+        with pytest.raises(RuntimeError, match="failed to persist FINALIZING lifecycle transition"):
+            rec.freeze_run("run-freeze")
+
+    # 4. Utility hooks
+    assert rec.close_execution_writes("r") is None
+    rec.on_cleanup_runs()
+    rec.after_evaluation(MagicMock(run_id="r"), [])
+    assert rec.rotate_logs() is None
+    assert rec.flush() is None
+
+
+def test_flight_recorder_uncovered_branches(tmp_path, monkeypatch):
+    store = LocalFileRunStore(tmp_path / "store")
+    from eval_runner.events import EventEmitter
+
+    # 1. bind_run_provider with context=None
+    rec = FlightRecorderPlugin()
+    rec.bind_run_provider("r_no_ctx", store, context=None)
+    assert rec._run_providers["r_no_ctx"][1] is None
+
+    # 2. Non-recorder subscriber in EventEmitter._subscribers
+    def dummy_listener(_event):
+        pass
+
+    bus = EventEmitter.get_global()
+    bus._subscribers.append(dummy_listener)
+    try:
+        FlightRecorderPlugin.bind_active_recorder("r_dummy", store)
+        FlightRecorderPlugin.release_active_recorder("r_dummy", run_store=store)
+    finally:
+        if dummy_listener in bus._subscribers:
+            bus._subscribers.remove(dummy_listener)
+
+    # 3. _provider_for_run when _default_run_store is None caches resolved store
+    rec_lazy = FlightRecorderPlugin()
+    rec_lazy._default_run_store = None
+    with patch("eval_runner.runtime_services.resolve_run_store", return_value=store):
+        resolved_st, _ = rec_lazy._provider_for_run("r_lazy")
+        assert resolved_st is store
+        assert rec_lazy._default_run_store is store
+
+    # 4. RUN_START with run_id="unknown"
+    rec_unk = FlightRecorderPlugin(run_store=store)
+    with pytest.raises(
+        RuntimeError, match="TracePersistenceError: trace event has no run ownership"
+    ):
+        rec_unk.handle_event(Event(CoreEvents.RUN_START, {"data": {"foo": "bar"}}))
+
+    # 5. Event with run_id="unknown" when assert_can_write_trace fails
     with patch(
         "eval_runner.run_lifecycle.assert_can_write_trace",
-        side_effect=PermissionError("Lifecycle lock immutable"),
+        side_effect=RuntimeError("Lifecycle locked"),
     ):
-        with pytest.raises(
-            RuntimeError, match="TracePersistenceError: Run '.*' cannot accept trace writes"
-        ):
-            recorder.handle_event(ev)
+        with patch.object(rec_unk, "_provider_for_run", return_value=(store, None)):
+            # Calling directly with run_id="" or "unknown"
+            with pytest.raises(RuntimeError, match="TracePersistenceError"):
+                rec_unk.handle_event(Event("step", {"data": "val"}))
 
-    # 3. Handle event with unknown run_id writes to master log
-    ev_unknown = Event("global_event", {"data": "test"})
-    recorder.handle_event(ev_unknown)
+    # 6. Signing failure when EVAL_SIGNING_FAIL_CLOSED="false"
+    mock_signer = MagicMock()
+    mock_signer.can_sign.return_value = True
+    mock_signer.sign_payload.side_effect = RuntimeError("Non-fatal sign error")
+    rec_non_fatal = FlightRecorderPlugin(run_store=store, signing_backend=mock_signer)
+    monkeypatch.setenv("EVAL_SIGNING_FAIL_CLOSED", "false")
+    store.create_run("run-non-fatal", "scenario")
+    rec_non_fatal.handle_event(Event("step", {"run_id": "run-non-fatal"}))
+    events = store.get_events("run-non-fatal")
+    assert events[-1].get("_sig_error") == "Non-fatal sign error"
+    monkeypatch.delenv("EVAL_SIGNING_FAIL_CLOSED", raising=False)
 
+    # 7. run_store.append_events fails for known run_id
+    rec_append_fail = FlightRecorderPlugin(run_store=store)
+    store.create_run("run-append-fail", "scenario")
+    with patch.object(store, "append_events", side_effect=OSError("Disk write error")):
+        with pytest.raises(RuntimeError, match="Failed to persist telemetry event"):
+            rec_append_fail.handle_event(Event("step", {"run_id": "run-append-fail"}))
+        assert rec_append_fail.get_run_state("run-append-fail") == "CERTIFICATION_FAILED"
 
-def test_flight_recorder_sequence_scanning_and_error_handling(tmp_path):
-    recorder = FlightRecorderPlugin(log_dir=tmp_path / "logs")
-    run_id = "seq_scan_run"
-    run_dir = tmp_path / "logs" / run_id
-    run_dir.mkdir(parents=True, exist_ok=True)
-    target_trace = run_dir / "run.jsonl"
+    # 8. finalize_run when artifact_store is None
+    store.create_run("run-no-art", "scenario")
+    rec_no_art = FlightRecorderPlugin(run_store=store, artifact_store=None)
+    rec_no_art.artifact_store = None
+    rec_no_art.finalize_run("run-no-art")
+    assert rec_no_art.get_run_state("run-no-art") == "FINALIZING"
 
-    # Pre-populate trace with valid sequence, blank line, invalid JSON,
-    # non-int sequence, lower sequence, and higher sequence
-    target_trace.write_text(
-        '{"event": "start", "_seq": 3}\n'
-        "\n"
-        "not_json_line\n"
-        '{"event": "step", "_seq": "not_int"}\n'
-        '{"event": "step", "_seq": 1}\n'
-        '{"event": "step", "_seq": 7}\n',
-        encoding="utf-8",
-    )
+    # 9. finalize_run with signer having get_key_id(), no key_id, and sign_payload
+    store.create_run("run-sig-payload", "scenario")
+    mock_art = MagicMock()
 
-    ev = Event("new_step", {"run_id": run_id})
-    recorder.handle_event(ev)
-    assert recorder._sequence_numbers[run_id] == 8
+    class PayloadSigner:
+        identity = "payload-node"
 
-    # Sequence scan when opening target trace raises error
-    run_err = "seq_scan_err"
-    run_err_dir = tmp_path / "logs" / run_err
-    run_err_dir.mkdir(parents=True, exist_ok=True)
-    (run_err_dir / "run.jsonl").write_text('{"event": "start"}\n', encoding="utf-8")
-
-    real_open = open
-
-    def mock_open_scan(path, *args, **kwargs):
-        mode = args[0] if args else kwargs.get("mode", "r")
-        if mode == "r" and str(path).endswith("run.jsonl") and run_err in str(path):
-            raise OSError("Read scan disk error")
-        return real_open(path, *args, **kwargs)
-
-    with patch("builtins.open", side_effect=mock_open_scan):
-        recorder.handle_event(Event("err_step", {"run_id": run_err}))
-        assert recorder._sequence_numbers[run_err] == 1
-
-
-def test_flight_recorder_io_error_with_unknown_run_id(tmp_path):
-    recorder = FlightRecorderPlugin(log_dir=tmp_path / "logs")
-    recorder.artifact_store = None
-
-    real_open = open
-
-    def mock_open_err(path, *args, **kwargs):
-        mode = args[0] if args else kwargs.get("mode", "r")
-        if "a" in mode:
-            raise OSError("Disk failure")
-        return real_open(path, *args, **kwargs)
-
-    with patch("builtins.open", side_effect=mock_open_err):
-        with pytest.raises(
-            RuntimeError, match="TracePersistenceError: Failed to persist telemetry"
-        ):
-            recorder.handle_event(Event("anon_event", {"run_id": "unknown"}))
-
-
-def test_flight_recorder_finalize_run_lifecycle_and_sealing_exceptions(tmp_path):
-    from eval_runner.run_lifecycle import RunLifecycleState
-
-    recorder = FlightRecorderPlugin(log_dir=tmp_path / "logs", certification_mode=True)
-    run_id = "finalize_exc_run"
-
-    # Write one event
-    recorder.handle_event(Event("step", {"run_id": run_id}))
-
-    # 1. Lifecycle transition to FINALIZING fails
-    with patch(
-        "eval_runner.run_lifecycle.transition_run_lifecycle",
-        side_effect=RuntimeError("State transition rejected"),
-    ):
-        with pytest.raises(RuntimeError, match="failed to persist FINALIZING lifecycle transition"):
-            recorder.finalize_run(run_id)
-
-    assert recorder.get_run_state(run_id) == "CERTIFICATION_FAILED"
-
-    # Reset run state for further branch testing
-    recorder._failed_runs.discard(run_id)
-    recorder._run_states[run_id] = "RUNNING"
-
-    # 2. Certification mode with null signer raises RuntimeError
-    with patch("eval_runner.identity.get_default_signer", return_value=None):
-        with pytest.raises(RuntimeError, match="requires a non-null cryptographic signer"):
-            recorder.finalize_run(run_id)
-
-    # 3. Signer with get_key_id() method and existing non-null backend
-    recorder._failed_runs.discard(run_id)
-    recorder._run_states[run_id] = "RUNNING"
-
-    class CustomSigner:
-        identity = "custom_auth"
+        def can_sign(self):
+            return True
 
         def get_key_id(self):
-            return "key_id_999"
+            return "key-via-getter"
 
-        def sign(self, payload):
-            return b"custom_signature"
+        def sign_payload(self, payload):
+            return b"\x12\x34"
 
-    mock_signer = CustomSigner()
-    recorder.signing_backend = mock_signer
-    recorder.finalize_run(run_id)
-    assert recorder.get_run_state(run_id) == "SEALED"
+    rec_payload = FlightRecorderPlugin(
+        run_store=store, signing_backend=PayloadSigner(), artifact_store=mock_art
+    )
+    rec_payload.finalize_run("run-sig-payload")
+    mock_art.store_artifact.assert_called_once()
+    envelope = json.loads(mock_art.store_artifact.call_args[1]["content"])
+    assert envelope["signer_identity"] == "payload-node"
+    assert envelope["signature"] == "1234"
+    assert envelope["key_id"] == "key-via-getter"
 
-    # 4. Signer failure in certification mode
-    run_sign_fail = "run_sign_fail"
-    recorder._run_states[run_sign_fail] = "RUNNING"
-    failing_signer = MagicMock()
-    failing_signer.identity = "failing_auth"
-    failing_signer.key_id = "key_1"
-    failing_signer.sign.side_effect = RuntimeError("HSM unreachable")
+    # Also test signer where get_key_id returns None
+    class NoneKeyIdSigner(PayloadSigner):
+        def get_key_id(self):
+            return None
 
-    recorder.signing_backend = failing_signer
-    with pytest.raises(RuntimeError, match="Cryptographic trace seal signing failed"):
-        recorder.finalize_run(run_sign_fail)
-    assert recorder.get_run_state(run_sign_fail) == "CERTIFICATION_FAILED"
+    mock_art2 = MagicMock()
+    rec_no_key = FlightRecorderPlugin(
+        run_store=store, signing_backend=NoneKeyIdSigner(), artifact_store=mock_art2
+    )
+    store.create_run("run-sig-no-key", "scenario")
+    rec_no_key.finalize_run("run-sig-no-key")
+    env2 = json.loads(mock_art2.store_artifact.call_args[1]["content"])
+    assert "key_id" not in env2
 
-    # 5. Artifact store error in certification mode
-    run_art_fail = "run_art_fail"
-    recorder._run_states[run_art_fail] = "RUNNING"
-    recorder.signing_backend = mock_signer
-    with patch.object(
-        recorder.artifact_store, "store_artifact", side_effect=OSError("Store seal error")
-    ):
-        with pytest.raises(OSError, match="Store seal error"):
-            recorder.finalize_run(run_art_fail)
-        assert recorder.get_run_state(run_art_fail) == "CERTIFICATION_FAILED"
-
-    # 6. SEALED lifecycle transition failure
-    run_seal_fail = "run_seal_fail"
-    recorder._run_states[run_seal_fail] = "RUNNING"
-
-    def mock_transition(r_id, target_state, **kwargs):
-        if target_state == RunLifecycleState.SEALED:
-            raise RuntimeError("Cannot transition to SEALED")
-
-    with patch("eval_runner.run_lifecycle.transition_run_lifecycle", side_effect=mock_transition):
-        with pytest.raises(RuntimeError, match="failed to persist SEALED lifecycle transition"):
-            recorder.finalize_run(run_seal_fail)
-        assert recorder.get_run_state(run_seal_fail) == "CERTIFICATION_FAILED"
-
-    # 7. Non-certification mode soft failure for signer
-    run_soft = "run_soft_sign"
-    failing_signer.sign_payload.return_value = "hex_sig_payload"
-    recorder_soft = FlightRecorderPlugin(log_dir=tmp_path / "logs", certification_mode=False)
-    recorder_soft.handle_event(Event("step", {"run_id": run_soft}))
-    recorder_soft.signing_backend = failing_signer
-    recorder_soft.finalize_run(run_soft)
-
-    # 8. Non-certification mode soft failure for artifact store and skipping SEALED if failed
-    run_soft_art = "run_soft_art"
-    recorder_soft.handle_event(Event("step", {"run_id": run_soft_art}))
-    recorder_soft.signing_backend = mock_signer
-
-    def mock_store_soft(*args, **kwargs):
-        recorder_soft._run_states[run_soft_art] = "CERTIFICATION_FAILED"
-        raise OSError("Store seal error")
-
-    with patch.object(recorder_soft.artifact_store, "store_artifact", side_effect=mock_store_soft):
-        recorder_soft.finalize_run(run_soft_art)
-
-    # 9. Pre-failed run in finalize_run
-    run_prefailed = "run_prefailed"
-    recorder_soft._run_states[run_prefailed] = "CERTIFICATION_FAILED"
-    with pytest.raises(RuntimeError, match="cannot produce trace seal"):
-        recorder_soft.finalize_run(run_prefailed)
-
-
-def test_flight_recorder_freeze_run(tmp_path):
-    recorder = FlightRecorderPlugin(log_dir=tmp_path / "logs")
-
-    # 1. No-op for empty or unknown run_id
-    recorder.freeze_run(None)
-    recorder.freeze_run("unknown")
-
-    # 2. Normal freeze_run
-    run_id = "run_freeze_ok"
-    recorder.handle_event(Event("start", {"run_id": run_id}))
-    recorder.freeze_run(run_id)
-    assert recorder.get_run_state(run_id) == "SEALED"
-
-    # 3. Transition to FINALIZING failure in freeze_run
-    run_err = "run_freeze_err"
-    recorder._run_states[run_err] = "RUNNING"
-    with patch(
-        "eval_runner.run_lifecycle.transition_run_lifecycle",
-        side_effect=RuntimeError("Cannot finalize"),
-    ):
-        with pytest.raises(RuntimeError, match="failed to persist FINALIZING lifecycle transition"):
-            recorder.freeze_run(run_err)
-        assert recorder.get_run_state(run_err) == "CERTIFICATION_FAILED"
-
-
-def test_flight_recorder_close_execution_writes_variations(tmp_path):
-    recorder = FlightRecorderPlugin(log_dir=tmp_path / "logs")
-    run_id = "run_close_writes"
-
-    recorder.handle_event(Event("step", {"run_id": run_id}))
-
-    # 1. Close execution writes when handle entry is None
-    target_path = str(tmp_path / "logs" / run_id / "run.jsonl")
-    recorder._handles[target_path] = None
-    recorder.close_execution_writes(run_id)
-
-    # 2. Close execution writes with exception
-    mock_bad_handle = MagicMock()
-    mock_bad_handle.flush.side_effect = OSError("Flush failed on close")
-    recorder._handles[target_path] = mock_bad_handle
-    with pytest.raises(RuntimeError, match="TracePersistenceError: failed closing execution trace"):
-        recorder.close_execution_writes(run_id)
-    assert recorder.get_run_state(run_id) == "CERTIFICATION_FAILED"
-
-    # 3. Close execution writes with exception on unknown run_id
-    recorder._handles["unknown_path"] = mock_bad_handle
-    with pytest.raises(RuntimeError, match="TracePersistenceError: failed closing execution trace"):
-        recorder.close_execution_writes("unknown")
+    # 10. finalize_run artifact store error when certification_mode=False
+    store.create_run("run-art-ign", "scenario")
+    mock_art_ign = MagicMock()
+    mock_art_ign.store_artifact.side_effect = OSError("Ignoring artifact error")
+    rec_art_ign = FlightRecorderPlugin(
+        run_store=store,
+        signing_backend=PayloadSigner(),
+        artifact_store=mock_art_ign,
+        certification_mode=False,
+    )
+    rec_art_ign.finalize_run("run-art-ign")
+    assert rec_art_ign.get_run_state("run-art-ign") == "FINALIZING"

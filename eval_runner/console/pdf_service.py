@@ -9,36 +9,40 @@ to ensure GTK+ dependency errors on Windows do not crash the environment.
 """
 
 import logging
+import os
+import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-# Try importing WeasyPrint
+# Try importing WeasyPrint (on Windows, WeasyPrint CFFI requires external GTK/Pango C libraries which crash with 0xc0000139 if absent; use pure-Python ReportLab fallback)
 WEASYPRINT_AVAILABLE = False
-try:
-    import os
-    import sys
-
-    # Suppress verbose warnings printed by weasyprint during import
-    null_out = open(os.devnull, "w")
-    old_stdout = sys.stdout
-    old_stderr = sys.stderr
-    sys.stdout = null_out
-    sys.stderr = null_out
+if (
+    "weasyprint" in sys.modules
+    or sys.platform != "win32"
+    or os.environ.get("ENABLE_WEASYPRINT_WINDOWS") == "1"
+):
     try:
-        import weasyprint
+        # Suppress verbose warnings printed by weasyprint during import
+        null_out = open(os.devnull, "w")
+        old_stdout = sys.stdout
+        old_stderr = sys.stderr
+        sys.stdout = null_out
+        sys.stderr = null_out
+        try:
+            import weasyprint
 
-        WEASYPRINT_AVAILABLE = True
-    finally:
-        sys.stdout = old_stdout
-        sys.stderr = old_stderr
-        null_out.close()
-except (ImportError, OSError) as e:
-    logger.warning(
-        f"WeasyPrint or its GTK dependencies not available. "
-        f"Using ReportLab as fallback engine. Error: {e}"
-    )
+            WEASYPRINT_AVAILABLE = True
+        finally:
+            sys.stdout = old_stdout
+            sys.stderr = old_stderr
+            null_out.close()
+    except (ImportError, OSError) as e:
+        logger.warning(
+            f"WeasyPrint or its GTK dependencies not available. "
+            f"Using ReportLab as fallback engine. Error: {e}"
+        )
 
 # Try importing ReportLab
 REPORTLAB_AVAILABLE = False
@@ -69,6 +73,10 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
     # 1. Gather report data
     run_id = run_data.get("run_id", "unknown_run")
     scenario = run_data.get("scenario", "N/A")
+    org_id = run_data.get("org_id", "")
+    tenant_id = run_data.get("tenant_id", "")
+    workspace_id = run_data.get("workspace_id", "")
+    active_environment = run_data.get("active_environment", "")
     raw_status = str(
         run_data.get("status") or run_data.get("execution_status") or "UNKNOWN"
     ).upper()
@@ -170,6 +178,10 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
                 <table class="meta-table">
                     <tr><th>Run Identifier</th><td>{run_id}</td></tr>
                     <tr><th>Target Scenario</th><td>{scenario}</td></tr>
+                    <tr><th>Organization</th><td>{org_id}</td></tr>
+                    <tr><th>Tenant</th><td>{tenant_id}</td></tr>
+                    <tr><th>Workspace</th><td>{workspace_id}</td></tr>
+                    <tr><th>Environment</th><td>{active_environment}</td></tr>
                     <tr><th>Overall Verdict</th><td>{status}</td></tr>
                     <tr><th>Completion Epoch</th><td>{timestamp}</td></tr>
                 </table>
@@ -259,6 +271,10 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
             meta_data = [
                 ["Run Identifier", run_id],
                 ["Target Scenario", scenario],
+                ["Organization", org_id],
+                ["Tenant", tenant_id],
+                ["Workspace", workspace_id],
+                ["Environment", active_environment],
                 ["Overall Verdict", status],
                 ["Completion Epoch", timestamp],
             ]
@@ -348,6 +364,10 @@ def generate_run_pdf(run_data: dict, output_path: Path) -> bool:
             f.write("AgentV Enterprise Compliance Report\n")
             f.write(f"Run ID: {run_id}\n")
             f.write(f"Scenario: {scenario}\n")
+            f.write(f"Organization: {org_id}\n")
+            f.write(f"Tenant: {tenant_id}\n")
+            f.write(f"Workspace: {workspace_id}\n")
+            f.write(f"Environment: {active_environment}\n")
             f.write(f"Status: {status}\n")
             f.write(f"Timestamp: {timestamp}\n")
             f.write(f"PQC Status: {pqc_status}\n")

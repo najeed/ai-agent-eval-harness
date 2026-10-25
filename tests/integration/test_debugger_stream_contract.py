@@ -1,358 +1,245 @@
+"""Provider-native debugger SSE transport contract tests.
+
+The console consumes only the RunStorageProvider stream-events contract. Former
+file-tail fixtures are represented as already-persisted provider events, so the
+same wire guarantees are tested without a vault, master log, or trace path.
 """
-B5: Debugger SSE stream contract tests.
 
-Locks the transport contract between the trace vault and the Live Debugger
-against six failure-mode fixtures:
-
-  replay    — Last-Event-ID catch-up resumes exactly after the acknowledged id
-  reorder   — the server streams file order verbatim; it never reorders payloads
-  loss      — sequence gaps are transported as-is (no synthesized fill events)
-  retry     — per-attempt execution_graph_node events surface in emission order
-  partial   — an unterminated trailing write is never broadcast mid-write
-  recovered — master-log fallback filters by run_id and cleans its temp file
-
-Every fixture terminates with a run_end line so generators exit deterministically.
-"""
+from __future__ import annotations
 
 import json
-import threading
-import time
-from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+from flask import Flask
 
-from eval_runner.console.app import create_app
-from eval_runner.console.routes.runs import resolve_trace_path, tail_file_generator
-
-# ---------------------------------------------------------------------------
-# Fixtures & helpers
-# ---------------------------------------------------------------------------
+import eval_runner.console.routes.runs as runs
 
 
-def ev_line(seq: int, name: str, **extra) -> str:
-    payload = {"event": name, "_seq": seq, **extra}
-    return json.dumps(payload)
+def event(seq: int, name: str, **extra):
+    return {"event": name, "_seq": seq, **extra}
 
 
-def sse_frames(chunks, limit: int = 500):
-    """Parses raw SSE chunks (str or bytes) into a list of (frame_id | None, parsed_data)."""
+def sse_frames(chunks):
     frames = []
     for chunk in chunks:
-        if isinstance(chunk, bytes):
-            chunk = chunk.decode("utf-8", errors="replace")
         for block in chunk.split("\n\n"):
             block = block.strip()
             if not block or block.startswith(":"):
                 continue
             frame_id = None
             data = None
-            for ln in block.split("\n"):
-                if ln.startswith("id: "):
-                    frame_id = int(ln[4:])
-                elif ln.startswith("data: "):
-                    data = ln[6:]
-            if data is None:
-                continue
-            try:
-                parsed = json.loads(data)
-            except json.JSONDecodeError:
-                parsed = {"_raw": data}
-            frames.append((frame_id, parsed))
-        if len(frames) >= limit:
-            break
+            for line in block.split("\n"):
+                if line.startswith("id: "):
+                    frame_id = int(line[4:])
+                elif line.startswith("data: "):
+                    data = line[6:]
+            if data is not None:
+                frames.append((frame_id, json.loads(data)))
     return frames
 
 
+class EventProvider:
+    def __init__(self, events, *, status="RUNNING", exists=True):
+        self.events = list(events)
+        self.status = status
+        self.exists = exists
+        self.requests = []
+
+    def get_run(self, run_id, context=None):
+        self.requests.append(("get_run", run_id, context))
+        return {"run_id": run_id, "status": self.status} if self.exists else None
+
+    def stream_events(self, run_id, from_seq=0, context=None):
+        self.requests.append(("stream_events", run_id, from_seq, context))
+        yield from self.events[from_seq:]
+
+    def get_events(self, run_id, offset=0, limit=1000, context=None):
+        self.requests.append(("get_events", run_id, offset, limit, context))
+        return self.events[offset : offset + limit]
+
+    def get_manifest(self, run_id, context=None):
+        return None
+
+
 @pytest.fixture
-def run_log_dir(tmp_path, monkeypatch) -> Path:
-    d = tmp_path / "runs"
-    d.mkdir(parents=True)
-    monkeypatch.setattr("eval_runner.console.routes.config.RUN_LOG_DIR", d)
-    monkeypatch.setattr(config_module(), "RUN_LOG_DIR", d)
-    return d
+def app():
+    value = Flask(__name__)
+    value.secret_key = "debugger-contract"
+    return value
 
 
-def config_module():
-    import eval_runner.config as cfg
-
-    return cfg
-
-
-def write_vault(runs_dir: Path, run_id: str, lines: list[str]) -> Path:
-    vault = runs_dir / run_id
-    vault.mkdir(parents=True, exist_ok=True)
-    p = vault / "run.jsonl"
-    p.write_text("".join(f"{ln}\n" for ln in lines), encoding="utf-8")
-    return p
+@pytest.fixture
+def scope():
+    return {"org_id": "acme", "tenant_id": "t1", "workspace_id": "w1"}
 
 
-# ---------------------------------------------------------------------------
-# replay — catch-up from Last-Event-ID
-# ---------------------------------------------------------------------------
+def stream(app, provider, run_id, *, query="", headers=None, scope=None):
+    with (
+        patch.object(runs, "_active_run_store", return_value=provider),
+        patch.object(runs, "active_runtime_context", return_value=scope),
+    ):
+        with app.test_request_context("/" + query, headers=headers):
+            response = runs.stream_run_logs.__wrapped__(run_id)
+            return sse_frames(response.response)
 
 
-def test_contract_replay_resumes_after_last_event_id(run_log_dir):
-    lines = [
-        ev_line(1, "run_start"),
-        ev_line(2, "execution_graph_node", scenario_node_id="node_a", status="running"),
-        ev_line(3, "execution_graph_node", scenario_node_id="node_a", status="completed"),
-        ev_line(4, "run_end"),
-    ]
-    write_vault(run_log_dir, "run-replay", lines)
-
-    gen = tail_file_generator(
-        run_log_dir / "run-replay" / "run.jsonl", "run-replay", last_event_id=2
+def test_contract_replay_resumes_after_last_event_id(app, scope):
+    provider = EventProvider(
+        [
+            event(1, "run_start"),
+            event(2, "execution_graph_node"),
+            event(3, "execution_graph_node"),
+            event(4, "run_end"),
+        ]
     )
-    frames = sse_frames(gen)
-
-    # Only frames AFTER the acknowledged cursor are re-delivered.
-    assert [f[0] for f in frames] == [3, 4]
-    assert frames[0][1]["_seq"] == 3
-    assert frames[-1][1]["event"] == "run_end"
+    frames = stream(app, provider, "run-replay", headers={"Last-Event-ID": "2"}, scope=scope)
+    assert [frame[0] for frame in frames] == [3, 4]
+    assert [frame[1]["_seq"] for frame in frames] == [3, 4]
 
 
-def test_reconnect_uses_transport_cursor_not_forensic_sequence(run_log_dir):
-    """A global/non-contiguous _seq must never be sent back as Last-Event-ID."""
-    lines = [ev_line(42, "run_start"), ev_line(108, "run_end")]
-    write_vault(run_log_dir, "run-opaque-cursor", lines)
-    trace = run_log_dir / "run-opaque-cursor" / "run.jsonl"
-
-    first = sse_frames(tail_file_generator(trace, "run-opaque-cursor"))
+def test_reconnect_uses_transport_cursor_not_forensic_sequence(app, scope):
+    provider = EventProvider([event(42, "run_start"), event(108, "run_end")])
+    first = stream(app, provider, "opaque", scope=scope)
     assert [frame[0] for frame in first] == [1, 2]
     assert [frame[1]["_seq"] for frame in first] == [42, 108]
-
-    # Reconnecting with the acknowledged transport cursor replays nothing;
-    # reconnecting with forensic _seq would be an invalid cursor domain.
-    assert sse_frames(tail_file_generator(trace, "run-opaque-cursor", last_event_id=2)) == []
+    assert stream(app, provider, "opaque", headers={"Last-Event-ID": "2"}, scope=scope) == []
 
 
-# ---------------------------------------------------------------------------
-# reorder — transport is verbatim; ordering truth is in _seq payloads
-# ---------------------------------------------------------------------------
-
-
-def test_contract_reorder_preserves_file_order_verbatim(run_log_dir):
-    # Payloads written out of _seq order (retransmission artifact upstream).
-    lines = [
-        ev_line(4, "execution_graph_node", scenario_node_id="b", status="completed"),
-        ev_line(2, "execution_graph_node", scenario_node_id="a", status="failed"),
-        ev_line(3, "execution_graph_edge"),
-        ev_line(1, "run_start"),
-        ev_line(5, "run_end"),
-    ]
-    write_vault(run_log_dir, "run-reorder", lines)
-
-    gen = tail_file_generator(run_log_dir / "run-reorder" / "run.jsonl", "run-reorder")
-    frames = sse_frames(gen)
-
-    # The stream NEVER silently reorders or drops: file order == wire order.
-    assert [f[1]["_seq"] for f in frames] == [4, 2, 3, 1, 5]
-    # Transport ids remain consecutive regardless of payload disorder.
-    assert [f[0] for f in frames] == [1, 2, 3, 4, 5]
-
-
-# ---------------------------------------------------------------------------
-# loss — sequence gaps are transported without synthesis
-# ---------------------------------------------------------------------------
-
-
-def test_contract_loss_gaps_transported_without_synthesis(run_log_dir):
-    lines = [
-        ev_line(1, "run_start"),
-        ev_line(2, "execution_graph_node", scenario_node_id="a", status="completed"),
-        # _seq 3-5 lost upstream — must NOT be fabricated by the stream.
-        ev_line(6, "execution_graph_node", scenario_node_id="a", status="failed"),
-        ev_line(7, "run_end"),
-    ]
-    write_vault(run_log_dir, "run-loss", lines)
-
-    gen = tail_file_generator(run_log_dir / "run-loss" / "run.jsonl", "run-loss")
-    frames = sse_frames(gen)
-
-    assert len(frames) == 4
-    assert [f[1]["_seq"] for f in frames] == [1, 2, 6, 7]
-    # Every frame originates from the vault; no synthesized filler events.
-    assert all(f[1].get("event") != "synthetic_fill" for f in frames)
-
-
-# ---------------------------------------------------------------------------
-# retry — per-attempt canonical events surface in emission order
-# ---------------------------------------------------------------------------
-
-
-def test_contract_retry_attempts_surface_in_emission_order(run_log_dir):
-    lines = [
-        ev_line(1, "run_start"),
-        ev_line(
-            2,
-            "execution_graph_node",
-            scenario_node_id="flaky",
-            execution_instance_id="flaky:attempt:1",
-            status="failed",
-            attempt=1,
-            failure_class="TRANSIENT",
-        ),
-        ev_line(
-            3,
-            "execution_graph_edge",
-            from_scenario_node_id="flaky",
-            to_scenario_node_id="flaky",
-            edge_type="retry",
-        ),
-        ev_line(
-            4,
-            "execution_graph_node",
-            scenario_node_id="flaky",
-            execution_instance_id="flaky:attempt:2",
-            status="completed",
-            attempt=2,
-        ),
-        ev_line(5, "run_end"),
-    ]
-    write_vault(run_log_dir, "run-retry", lines)
-
-    gen = tail_file_generator(run_log_dir / "run-retry" / "run.jsonl", "run-retry")
-    frames = sse_frames(gen)
-
-    node_events = [f[1] for f in frames if f[1].get("event") == "execution_graph_node"]
-    assert len(node_events) == 2
-    # Failed attempt first, successful retry second — never collapsed.
-    assert (node_events[0]["attempt"], node_events[0]["status"]) == (1, "failed")
-    assert (node_events[1]["attempt"], node_events[1]["status"]) == (2, "completed")
-    assert node_events[0]["failure_class"] == "TRANSIENT"
-    assert node_events[0]["execution_instance_id"] != node_events[1]["execution_instance_id"]
-
-    retry_edges = [f[1] for f in frames if f[1].get("edge_type") == "retry"]
-    assert len(retry_edges) == 1
-
-
-# ---------------------------------------------------------------------------
-# multistage — strategy_end is telemetry, never a terminator (P1.2)
-# ---------------------------------------------------------------------------
-
-
-def test_contract_strategy_end_does_not_truncate_multi_stage_runs(run_log_dir):
-    """Only ``run_end`` terminates the SSE stream. ``strategy_end`` is an
-    ordinary mid-run marker for multi-stage runs: truncating there silently
-    drops every subsequent stage's forensic trace."""
-    lines = [
-        ev_line(1, "run_start"),
-        ev_line(2, "execution_graph_node", scenario_node_id="stage1", status="completed"),
-        ev_line(3, "strategy_end"),
-        ev_line(4, "execution_graph_node", scenario_node_id="stage2", status="running"),
-        ev_line(5, "execution_graph_edge", edge_type="sequential"),
-        ev_line(6, "execution_graph_node", scenario_node_id="stage2", status="completed"),
-        ev_line(7, "run_end"),
-    ]
-    write_vault(run_log_dir, "run-multistage", lines)
-
-    gen = tail_file_generator(run_log_dir / "run-multistage" / "run.jsonl", "run-multistage")
-    frames = sse_frames(gen)
-
-    # Post-strategy events must cross the wire.
-    assert [f[1]["_seq"] for f in frames] == [1, 2, 3, 4, 5, 6, 7]
-    assert any(f[1]["event"] == "strategy_end" for f in frames)
-    assert frames[-1][1]["event"] == "run_end"
-
-
-# ---------------------------------------------------------------------------
-# partial — unterminated trailing writes are never broadcast mid-write
-# ---------------------------------------------------------------------------
-
-
-def test_contract_partial_write_never_broadcast_incomplete_frame(run_log_dir):
-    vault = run_log_dir / "run-partial"
-    vault.mkdir(parents=True)
-    trace = vault / "run.jsonl"
-    trace.write_text(
-        "\n".join(
-            [
-                ev_line(1, "run_start"),
-                ev_line(2, "execution_graph_node", scenario_node_id="a", status="running"),
-                '{"event": "execution_graph_node", "_seq": 3, "scenario_node_i',  # torn write
-            ]
-        ),
-        encoding="utf-8",
+def test_contract_reorder_preserves_provider_order_verbatim(app, scope):
+    provider = EventProvider(
+        [
+            event(4, "execution_graph_node"),
+            event(2, "execution_graph_node"),
+            event(3, "execution_graph_edge"),
+            event(1, "run_start"),
+            event(5, "run_end"),
+        ]
     )
+    frames = stream(app, provider, "reorder", scope=scope)
+    assert [frame[1]["_seq"] for frame in frames] == [4, 2, 3, 1, 5]
+    assert [frame[0] for frame in frames] == [1, 2, 3, 4, 5]
 
-    complete_rest = 'd": "a", "status": "completed"}\n' + ev_line(4, "run_end") + "\n"
 
-    def _finish_writes():
-        time.sleep(0.8)
-        with open(trace, "a", encoding="utf-8") as f:
-            f.write(complete_rest)
+def test_contract_loss_gaps_are_transported_without_synthesis(app, scope):
+    provider = EventProvider(
+        [
+            event(1, "run_start"),
+            event(2, "execution_graph_node"),
+            event(6, "execution_graph_node"),
+            event(7, "run_end"),
+        ]
+    )
+    frames = stream(app, provider, "loss", scope=scope)
+    assert [frame[1]["_seq"] for frame in frames] == [1, 2, 6, 7]
+    assert all(frame[1]["event"] != "synthetic_fill" for frame in frames)
 
-    finisher = threading.Thread(target=_finish_writes, daemon=True)
-    finisher.start()
 
-    gen = tail_file_generator(trace, "run-partial")
-    frames = sse_frames(gen, limit=10)
-    finisher.join(timeout=5)
+def test_contract_retry_attempts_surface_in_provider_emission_order(app, scope):
+    provider = EventProvider(
+        [
+            event(1, "run_start"),
+            event(
+                2,
+                "execution_graph_node",
+                execution_instance_id="flaky:1",
+                status="failed",
+                attempt=1,
+                failure_class="TRANSIENT",
+            ),
+            event(3, "execution_graph_edge", edge_type="retry"),
+            event(
+                4,
+                "execution_graph_node",
+                execution_instance_id="flaky:2",
+                status="completed",
+                attempt=2,
+            ),
+            event(5, "run_end"),
+        ]
+    )
+    frames = stream(app, provider, "retry", scope=scope)
+    nodes = [item for _, item in frames if item["event"] == "execution_graph_node"]
+    assert [(item["attempt"], item["status"]) for item in nodes] == [
+        (1, "failed"),
+        (2, "completed"),
+    ]
+    assert nodes[0]["failure_class"] == "TRANSIENT"
+    assert nodes[0]["execution_instance_id"] != nodes[1]["execution_instance_id"]
+    assert len([item for _, item in frames if item.get("edge_type") == "retry"]) == 1
 
-    # Catch-up phase delivered ONLY the two complete historical frames.
-    assert [f[1].get("_seq") for f in frames[:2]] == [1, 2]
-    # The torn frame was completed by the writer and then delivered intact.
-    resumed = [f for f in frames if f[1].get("_seq") == 3]
-    assert len(resumed) == 1
-    assert resumed[0][1]["scenario_node_id"] == "a"
-    assert resumed[0][1]["status"] == "completed"
-    # Stream terminated on the terminal event.
+
+def test_contract_strategy_end_does_not_truncate_multistage_run(app, scope):
+    provider = EventProvider(
+        [
+            event(1, "run_start"),
+            event(2, "execution_graph_node"),
+            event(3, "strategy_end"),
+            event(4, "execution_graph_node"),
+            event(5, "execution_graph_edge"),
+            event(6, "execution_graph_node"),
+            event(7, "run_end"),
+        ]
+    )
+    frames = stream(app, provider, "multi-stage", scope=scope)
+    assert [item["_seq"] for _, item in frames] == [1, 2, 3, 4, 5, 6, 7]
     assert frames[-1][1]["event"] == "run_end"
 
 
-# ---------------------------------------------------------------------------
-# recovered — master-log fallback filters by run_id and cleans up
-# ---------------------------------------------------------------------------
+def test_contract_partial_write_is_represented_only_after_provider_commits_event(app, scope):
+    provider = EventProvider(
+        [
+            event(1, "run_start"),
+            event(2, "execution_graph_node", status="running"),
+            event(3, "execution_graph_node", scenario_node_id="a", status="completed"),
+            event(4, "run_end"),
+        ]
+    )
+    frames = stream(app, provider, "partial", scope=scope)
+    assert [item["_seq"] for _, item in frames] == [1, 2, 3, 4]
+    committed = [item for _, item in frames if item["_seq"] == 3]
+    assert committed == [event(3, "execution_graph_node", scenario_node_id="a", status="completed")]
 
 
-@pytest.fixture
-def api_client():
-    app = create_app()
-    app.config["TESTING"] = True
-    api_key = "test-integration-key"
+def test_contract_provider_scope_filters_other_run_data(app, scope):
+    target = [
+        event(1, "run_start", run_id="target"),
+        event(2, "execution_graph_node", run_id="target"),
+        event(9, "run_end", run_id="target"),
+    ]
+    provider = EventProvider(target)
+    frames = stream(app, provider, "target", scope=scope)
+    assert all(item["run_id"] == "target" for _, item in frames)
+    assert [item["_seq"] for _, item in frames] == [1, 2, 9]
+    assert ("stream_events", "target", 0, scope) in provider.requests
+
+
+def test_paused_hitl_run_closes_stream_with_explicit_control_frame(app, scope):
+    provider = EventProvider([event(1, "hitl_pause")], status="PAUSED_FOR_APPROVAL")
+    frames = stream(app, provider, "paused", scope=scope)
+    assert frames[0] == (1, event(1, "hitl_pause"))
+    assert frames[-1] == (None, {"event": "paused_for_approval", "status": "PAUSED_FOR_APPROVAL"})
+
+
+def test_dead_registered_run_with_no_events_closes_without_filesystem_recovery(app, scope):
+    provider = EventProvider([], status="RUNNING")
+    with patch.object(runs, "is_run_alive", return_value=False):
+        frames = stream(app, provider, "without-events", scope=scope)
+    assert frames == []
+
+
+def test_dead_provisional_run_reports_stalled_not_launch_time_running(app, scope):
+    provider = EventProvider([], status="RUNNING")
+    provider.get_run = lambda run_id, context=None: {
+        "run_id": run_id,
+        "status": "RUNNING",
+        "provisional": True,
+    }
     with (
-        patch("eval_runner.console.routes.config.DASHBOARD_API_KEY", api_key),
-        patch("eval_runner.console.routes.config.SERVICE_API_KEY", api_key),
+        patch.object(runs, "_active_run_store", return_value=provider),
+        patch.object(runs, "active_runtime_context", return_value=scope),
+        patch.object(runs, "is_run_alive", return_value=False),
     ):
-        with app.test_client() as client:
-            client.environ_base["HTTP_X_AES_API_KEY"] = api_key
-            yield client
-
-
-def test_contract_recovered_master_log_fallback_filters_and_cleans(run_log_dir, api_client):
-    other_run = [
-        ev_line(1, "run_start", run_id="someone-else"),
-        ev_line(2, "run_end", run_id="someone-else"),
-    ]
-    target_run = [
-        ev_line(1, "run_start", run_id="run-lost-vault"),
-        ev_line(
-            2,
-            "execution_graph_node",
-            run_id="run-lost-vault",
-            scenario_node_id="a",
-            status="completed",
-        ),
-        ev_line(9, "run_end", run_id="run-lost-vault"),
-    ]
-    master = run_log_dir / "run.jsonl"
-    master.write_text("".join(f"{ln}\n" for ln in (other_run + target_run)), encoding="utf-8")
-
-    # Vault is gone; resolution falls through to the master log.
-    assert resolve_trace_path("run-lost-vault") is None
-
-    resp = api_client.get("/api/v1/runs/run-lost-vault/stream")
-    assert resp.status_code == 200
-    assert resp.mimetype == "text/event-stream"
-
-    frames = sse_frames(resp.response)
-    payloads = [f[1] for f in frames]
-
-    # Strict run isolation: only the requested run's events cross the wire.
-    assert all(p.get("run_id") == "run-lost-vault" for p in payloads)
-    assert [p.get("_seq") for p in payloads] == [1, 2, 9]
-
-    # The temporary extraction file must be cleaned up after streaming.
-    leftovers = list(run_log_dir.glob("temp_stream_run-lost-vault.jsonl"))
-    assert leftovers == []
+        with app.test_request_context("/"):
+            response = runs.get_run_status.__wrapped__("provisional")
+    assert response.get_json()["status"] == "STALLED"

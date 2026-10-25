@@ -384,19 +384,29 @@ class TestHitlResumeChannelsDispatch:
         assert resolved_evts[0].data["decided_by"] == "ops_team"
 
     def test_console_resume_run_triggers_hook_and_emits_event(
-        self, monkeypatch: pytest.MonkeyPatch
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ):
         from flask import Flask
 
         from eval_runner import events, plugins
         from eval_runner.console.routes.runs import run_bp
+        from eval_runner.reference.local_run_store import LocalFileRunStore
 
         monkeypatch.setenv("AGENTV_TEST_AUTH_BYPASS", "1")
+        monkeypatch.setattr(
+            "eval_runner.console.routes.runs._run_is_in_active_context", lambda *a, **k: True
+        )
         app = Flask(__name__)
-        app.register_blueprint(run_bp)
+        run_store = LocalFileRunStore(tmp_path / "runs")
+        run_store.create_run("run_console_01", "approval-resume", context={})
+        app.extensions["agentv_run_store"] = run_store
+        app.register_blueprint(run_bp, url_prefix="/api")
         client = app.test_client()
 
-        store = FileApprovalStore()
+        store = FileApprovalStore(tmp_path / "approvals")
+        monkeypatch.setattr(
+            "eval_runner.runtime_services.resolve_approval_store", lambda **k: store
+        )
         req = ApprovalRequest(
             approval_token="tok_console_resume",
             run_id="run_console_01",
@@ -412,10 +422,10 @@ class TestHitlResumeChannelsDispatch:
         audit_plugin = DummyAuditPlugin()
         plugins.manager.plugins.append(audit_plugin)
 
-        with patch("eval_runner.reference.inprocess_backend.get_execution_backend") as mock_backend:
+        with patch("eval_runner.runtime_services.resolve_execution_backend") as mock_backend:
             mock_backend.return_value.resume.return_value = {"status": "SUCCESS"}
             resp = client.post(
-                "/v1/runs/run_console_01/resume",
+                "/api/v1/runs/run_console_01/resume",
                 json={
                     "approval_token": "tok_console_resume",
                     "decision": "APPROVED",
@@ -467,18 +477,30 @@ class TestHitlResumeChannelsDispatch:
             code = await handle_hitl_resume(args)
             assert code == 0
 
-    def test_console_resume_hook_exception_isolation(self, monkeypatch: pytest.MonkeyPatch):
+    def test_console_resume_hook_exception_isolation(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ):
         from flask import Flask
 
         from eval_runner import events
         from eval_runner.console.routes.runs import run_bp
+        from eval_runner.reference.local_run_store import LocalFileRunStore
 
         monkeypatch.setenv("AGENTV_TEST_AUTH_BYPASS", "1")
+        monkeypatch.setattr(
+            "eval_runner.console.routes.runs._run_is_in_active_context", lambda *a, **k: True
+        )
         app = Flask(__name__)
-        app.register_blueprint(run_bp)
+        run_store = LocalFileRunStore(tmp_path / "runs")
+        run_store.create_run("run_console_fail", "approval-resume", context={})
+        app.extensions["agentv_run_store"] = run_store
+        app.register_blueprint(run_bp, url_prefix="/api")
         client = app.test_client()
 
-        store = FileApprovalStore()
+        store = FileApprovalStore(tmp_path / "approvals")
+        monkeypatch.setattr(
+            "eval_runner.runtime_services.resolve_approval_store", lambda **k: store
+        )
         req = ApprovalRequest(
             approval_token="tok_console_fail",
             run_id="run_console_fail",
@@ -487,11 +509,11 @@ class TestHitlResumeChannelsDispatch:
         )
         store.create_request(req)
 
-        with patch("eval_runner.reference.inprocess_backend.get_execution_backend") as mock_backend:
+        with patch("eval_runner.runtime_services.resolve_execution_backend") as mock_backend:
             mock_backend.return_value.resume.return_value = {"status": "SUCCESS"}
             with patch.object(events, "emit", side_effect=RuntimeError("Console event bus error")):
                 resp = client.post(
-                    "/v1/runs/run_console_fail/resume",
+                    "/api/v1/runs/run_console_fail/resume",
                     json={
                         "approval_token": "tok_console_fail",
                         "decision": "APPROVED",

@@ -13,11 +13,9 @@ Invariants:
 from __future__ import annotations
 
 import logging
+from collections.abc import Mapping
 from enum import StrEnum
-from pathlib import Path
 from typing import Any
-
-from eval_runner import config
 
 logger = logging.getLogger(__name__)
 
@@ -85,40 +83,40 @@ _VALID_TRANSITIONS: dict[RunLifecycleState, set[RunLifecycleState]] = {
 }
 
 
-def get_run_lifecycle_state(run_id: str, log_dir: Path | None = None) -> RunLifecycleState:
+def _lifecycle_provider(run_store: Any | None) -> Any:
+    """Return the execution owner's authoritative storage provider."""
+    if run_store is None:
+        raise ValueError("RunStorageProvider is required for lifecycle operations.")
+    return run_store
+
+
+def get_run_lifecycle_state(
+    run_id: str,
+    *,
+    run_store: Any,
+    context: dict[str, Any] | None = None,
+) -> RunLifecycleState:
     """
     Returns the authoritative lifecycle state from the active storage provider.
 
-    ``log_dir`` is retained only as an explicit local-store scope for isolated tests.
+    The execution owner supplies ``run_store``.
     """
     if not run_id or run_id == "unknown":
         return RunLifecycleState.OPEN
 
-    if log_dir is not None:
-        from eval_runner.reference.local_run_store import LocalFileRunStore
-
-        record = LocalFileRunStore(log_dir).get_run(run_id)
-    else:
-        from eval_runner.storage_resolver import resolve_run_storage_provider
-
-        provider = resolve_run_storage_provider()
-        record = provider.get_run(run_id)
-        # Test and embedded runtimes may re-scope RUN_LOG_DIR after the default
-        # local provider was constructed. This remains provider access, not a
-        # direct lifecycle-file authority.
-        if record is None:
-            from eval_runner.reference.local_run_store import LocalFileRunStore
-
-            if (
-                isinstance(provider, LocalFileRunStore)
-                and provider.log_dir != config.RUN_LOG_DIR.resolve()
-            ):
-                record = LocalFileRunStore(config.RUN_LOG_DIR).get_run(run_id)
-    if record is None:
+    provider = _lifecycle_provider(run_store)
+    record = provider.get_run(run_id, context=context)
+    if record is None or not isinstance(record, Mapping):
         return RunLifecycleState.OPEN
     state = str(record.get("lifecycle") or record.get("status") or "OPEN").upper()
     if state in ("PENDING", "RUNNING", "STARTED", "QUEUED"):
         return RunLifecycleState.OPEN
+    # Execution completion is not a certificate seal.  Backends retain their
+    # user-facing terminal status (COMPLETED/FAILED/etc.) in the run record,
+    # while lifecycle consumers must treat that evidence as closed pending the
+    # provider-owned certification transaction.
+    if state in ("COMPLETED", "FAILED", "ABORTED", "CANCELLED"):
+        return RunLifecycleState.FINALIZING
     if state in RunLifecycleState._value2member_map_:
         return RunLifecycleState(state)
     return RunLifecycleState.INVALID
@@ -128,20 +126,21 @@ def transition_run_lifecycle(
     run_id: str,
     target_state: RunLifecycleState | str,
     metadata: dict[str, Any] | None = None,
-    log_dir: Path | None = None,
+    *,
+    run_store: Any,
+    context: dict[str, Any] | None = None,
 ) -> RunLifecycleState:
     """
     Transitions the run's lifecycle strictly forward: OPEN → FINALIZING → SEALED.
     Raises ValueError if an illegal or backward transition is attempted.
 
-    ``log_dir`` is supported only for isolated local-store tests; production
-    transitions always use the active storage provider.
+    The execution owner supplies ``run_store``.
     """
     if not run_id or run_id == "unknown":
         return RunLifecycleState.OPEN
 
     target = RunLifecycleState(target_state) if isinstance(target_state, str) else target_state
-    current = get_run_lifecycle_state(run_id, log_dir)
+    current = get_run_lifecycle_state(run_id, run_store=run_store, context=context)
 
     if current in (RunLifecycleState.INVALID, RunLifecycleState.UNKNOWN):
         raise ValueError(
@@ -155,33 +154,30 @@ def transition_run_lifecycle(
             f"from '{current.value}' to '{target.value}' (must be monotonic forward)."
         )
 
-    if log_dir is not None:
-        from eval_runner.reference.local_run_store import LocalFileRunStore
-
-        provider = LocalFileRunStore(log_dir)
-    else:
-        from eval_runner.storage_resolver import resolve_run_storage_provider
-
-        provider = resolve_run_storage_provider()
-    if not provider.update_run_status(run_id, target.value, metadata):
+    provider = _lifecycle_provider(run_store)
+    if not provider.update_run_status(run_id, target.value, metadata, context=context):
         raise RuntimeError(f"RunStorageProvider rejected lifecycle update for '{run_id}'.")
 
     return target
 
 
-def can_write_trace(run_id: str, log_dir: Path | None = None) -> tuple[bool, str]:
+def can_write_trace(
+    run_id: str,
+    *,
+    run_store: Any,
+    context: dict[str, Any] | None = None,
+) -> tuple[bool, str]:
     """
     Returns (can_write, reason) for a trace writer.
     Writes are rejected if the run is in FINALIZING, SEALED, or INVALID state,
     or if an exclusive certification lock is active.
 
-    ``log_dir`` is supported only for isolated local-store tests; production
-    checks query the active storage provider.
+    The execution owner supplies ``run_store``.
     """
     if not run_id or run_id == "unknown":
         return True, ""
 
-    state = get_run_lifecycle_state(run_id, log_dir)
+    state = get_run_lifecycle_state(run_id, run_store=run_store, context=context)
     if state == RunLifecycleState.PAUSED_FOR_APPROVAL:
         return (
             False,
@@ -204,20 +200,30 @@ def can_write_trace(run_id: str, log_dir: Path | None = None) -> tuple[bool, str
 
     from eval_runner.certification_lock import PerRunCertificationLock
 
-    if PerRunCertificationLock.is_locked(run_id):
+    if PerRunCertificationLock.is_locked(run_id, run_store=run_store, context=context):
         return False, f"Run '{run_id}' is locked for certification; concurrent writes prohibited."
 
     return True, ""
 
 
-def assert_can_write_trace(run_id: str, log_dir: Path | None = None) -> None:
+def assert_can_write_trace(
+    run_id: str,
+    *,
+    run_store: Any,
+    context: dict[str, Any] | None = None,
+) -> None:
     """Raises TraceClosedError if trace writing is currently prohibited on the run."""
-    allowed, reason = can_write_trace(run_id, log_dir)
+    allowed, reason = can_write_trace(run_id, run_store=run_store, context=context)
     if not allowed:
         raise TraceClosedError(reason)
 
 
-def rollback_run_lifecycle_to_open(run_id: str, log_dir: Path | None = None) -> RunLifecycleState:
+def rollback_run_lifecycle_to_open(
+    run_id: str,
+    *,
+    run_store: Any,
+    context: dict[str, Any] | None = None,
+) -> RunLifecycleState:
     """
     Rolls back run lifecycle from FINALIZING back to OPEN if certification failed prior to SEALED.
     SEALED runs are immutable and cannot be rolled back.
@@ -225,19 +231,12 @@ def rollback_run_lifecycle_to_open(run_id: str, log_dir: Path | None = None) -> 
     if not run_id or run_id == "unknown":
         return RunLifecycleState.OPEN
 
-    current = get_run_lifecycle_state(run_id, log_dir)
+    current = get_run_lifecycle_state(run_id, run_store=run_store, context=context)
     if current == RunLifecycleState.SEALED:
         raise ValueError(f"Cannot rollback lifecycle for SEALED run '{run_id}'.")
 
-    if log_dir is not None:
-        from eval_runner.reference.local_run_store import LocalFileRunStore
-
-        provider = LocalFileRunStore(log_dir)
-    else:
-        from eval_runner.storage_resolver import resolve_run_storage_provider
-
-        provider = resolve_run_storage_provider()
-    if not provider.update_run_status(run_id, RunLifecycleState.OPEN.value):
+    provider = _lifecycle_provider(run_store)
+    if not provider.update_run_status(run_id, RunLifecycleState.OPEN.value, context=context):
         raise RuntimeError(f"RunStorageProvider rejected lifecycle rollback for '{run_id}'.")
 
     return RunLifecycleState.OPEN

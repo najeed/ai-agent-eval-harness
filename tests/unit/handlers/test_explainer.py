@@ -1,7 +1,7 @@
 from pathlib import Path
 from unittest.mock import MagicMock
 
-from eval_runner.explainer import explain_trace
+from eval_runner.explainer import explain_events, explain_trace
 
 
 def test_explain_trace_valid(tmp_path, monkeypatch):
@@ -29,6 +29,23 @@ def test_explain_trace_valid(tmp_path, monkeypatch):
     assert result["confidence"] == 0.9
     assert "Policy" in result["root_cause"]
     assert "Review" in result["suggestion"]
+
+
+def test_explain_events_uses_authoritative_events(monkeypatch):
+    mock_engine = MagicMock()
+    mock_engine.identify_root_cause.return_value = {
+        "index": 0,
+        "confidence": 0.9,
+        "reason": "policy violation",
+        "suggestion": "Review safety policies.",
+    }
+    monkeypatch.setattr("eval_runner.explainer.triage.TriageEngine", mock_engine)
+    events = [{"event": "policy_rejected", "_seq": 1}]
+
+    result = explain_events(events)
+
+    assert result["root_cause"] == "policy violation"
+    mock_engine.identify_root_cause.assert_called_once_with(events)
 
 
 def test_explain_trace_load_error(tmp_path, monkeypatch):

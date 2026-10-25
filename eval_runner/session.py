@@ -114,9 +114,10 @@ class SessionManager:
         checkpoint_store: Any | None = None,
         policy_evaluator: Any | None = None,
         signing_backend: Any | None = None,
+        run_store: Any | None = None,
         scenario_contract: dict | None = None,
     ):
-        from .plugins import PluginManager
+        from .runtime_services import resolve_plugin_registry
 
         self.run_id = run_id
         self.cancellation_event = cancellation_event
@@ -125,6 +126,23 @@ class SessionManager:
         self.checkpoint_store = checkpoint_store
         self.policy_evaluator = policy_evaluator
         self.signing_backend = signing_backend
+        if run_store is None:
+            from eval_runner.runtime_services import compose_local_run_store
+
+            run_store = compose_local_run_store(log_root or config.RUN_LOG_DIR)
+        self.run_store = run_store
+        # Binding the process-global recorder is part of execution setup.  The
+        # context must exist before that binding so normal runner construction
+        # cannot read an uninitialized instance attribute.
+        self.metadata = dict(metadata or {})
+        if self.run_store is not None:
+            from .flight_recorder import FlightRecorderPlugin
+
+            FlightRecorderPlugin.bind_active_recorder(
+                self.run_id,
+                self.run_store,
+                self.metadata.get("runtime_context"),
+            )
         self.resumption_checkpoint = resumption_checkpoint
         if (
             not resumption_token
@@ -155,7 +173,6 @@ class SessionManager:
         self.scenario["run_id"] = run_id
 
         # [AgentV v1.6.0] Authoritative Metadata Propagation (Ensured mutable)
-        self.metadata = dict(metadata or {})
         # Centralized identifier (resolved and normalized in Loader)
         self.identifier = scenario.get("id") or scenario.get("metadata", {}).get("name", "unknown")
 
@@ -228,7 +245,14 @@ class SessionManager:
         if not self.metadata.get("isolate_events", False):
             self.event_bus.subscribe(lambda e: events.emit(e.name, e.data, e.span_context))
 
-        self.plugin_manager = PluginManager()
+        # Plugin discovery and registry ownership are runtime concerns.  A
+        # session consumes the canonical multi-load registry rather than
+        # constructing a second manager with an independent scan/provenance
+        # view, but isolates per-session plugins to avoid cross-run leakage.
+        registry = resolve_plugin_registry()
+        self.plugin_manager = (
+            registry.clone_for_session() if hasattr(registry, "clone_for_session") else registry
+        )
         self.log_root = log_root or config.RUN_LOG_DIR
         self.run_vault = self.log_root / run_id
         self.forensics = ForensicCollector(run_id, self.run_vault)
@@ -270,6 +294,7 @@ class SessionManager:
             plugin_manager=self.plugin_manager,
             event_bus=self.event_bus,
             scope=session_scope,
+            run_store=self.run_store,
         )
         self.tool_execution_coordinator = ToolExecutionCoordinator()
         self.metrics_calculator = SessionMetricsCalculator(session_manager=self)
@@ -326,11 +351,9 @@ class SessionManager:
             self.mutation_plugin = RuntimeMutationPlugin(self.scenario)
             self.plugin_manager.plugins.append(self.mutation_plugin)
 
-        # [Industrial Synchronization] Import ad-hoc plugins from global manager (CLI injection)
-        from . import plugins as global_plugins
-
-        for class_name, prov in global_plugins.manager.provenance_map.items():
-            if prov.get("origin") == "EXTERNAL":
+        # 1b. Re-load ad-hoc external plugins from provenance map
+        for class_name, prov in self.plugin_manager.provenance_map.items():
+            if prov.get("origin") == "EXTERNAL" and "path" in prov:
                 try:
                     self.plugin_manager.load(prov["path"])
                 except Exception as e:
@@ -2424,7 +2447,8 @@ class SessionManager:
         transition_run_lifecycle(
             self.run_id,
             RunLifecycleState.PAUSED_FOR_APPROVAL,
-            log_dir=self.log_root,
+            run_store=self.run_store,
+            context=self.metadata.get("runtime_context"),
         )
         raise RunSuspendedForApproval(
             run_id=self.run_id,
@@ -2464,9 +2488,9 @@ class SessionManager:
         # Check if already authoritatively approved via resumption token
         if getattr(self, "resumption_token", None):
             try:
-                from eval_runner.reference.approval_store import get_default_approval_store
+                from eval_runner.runtime_services import resolve_approval_store
 
-                res_req = get_default_approval_store().get_request(self.resumption_token)
+                res_req = resolve_approval_store().get_request(self.resumption_token)
                 if res_req and res_req.status == "APPROVED":
                     req_task = res_req.metadata.get("task_id") if res_req.metadata else None
                     if req_task == task_id or not req_task:
@@ -2644,7 +2668,8 @@ class SessionManager:
                 transition_run_lifecycle(
                     self.run_id,
                     RunLifecycleState.PAUSED_FOR_APPROVAL,
-                    log_dir=self.log_root,
+                    run_store=self.run_store,
+                    context=self.metadata.get("runtime_context"),
                 )
                 print(f"\n[HITL PAUSE] Run '{self.run_id}' PAUSED_FOR_APPROVAL at turn {turn}.")
                 print(f"    Approval Token: {durable_req.approval_token}")
@@ -2792,9 +2817,9 @@ class SessionManager:
         # If resumed with an approved request matching this node, gate is pre-approved
         if getattr(self, "resumption_token", None):
             try:
-                from eval_runner.reference.approval_store import get_default_approval_store
+                from eval_runner.runtime_services import resolve_approval_store
 
-                req = get_default_approval_store().get_request(self.resumption_token)
+                req = resolve_approval_store().get_request(self.resumption_token)
                 if req and req.status == "APPROVED":
                     req_node = req.metadata.get("task_id") if req.metadata else None
                     if req_node == node_id or not req_node:

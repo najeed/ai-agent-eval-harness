@@ -4,7 +4,6 @@ authoritative verification endpoints, evidence bundle determinism, SSE replay,
 and scenario preflight fingerprinting.
 """
 
-import json
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -24,6 +23,7 @@ from eval_runner.events import (
     ExecutionGraphNode,
     ExecutionNodeStatus,
 )
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.verifier import TraceVerifier
 
 # ---------------------------------------------------------------------------
@@ -66,82 +66,80 @@ def test_execution_graph_node_and_edge_serialization():
 
 
 def test_verify_run_directory_all_paths(tmp_path):
-    # 1. Non-existent directory
-    missing_dir = tmp_path / "missing_run"
-    res_404 = TraceVerifier.verify_run_directory(missing_dir)
+    store = LocalFileRunStore(tmp_path / "runs")
+
+    # 1. Non-existent run
+    res_404 = TraceVerifier.verify_run("missing_run", run_store=store)
     assert res_404["verification_status"] == "NOT_FOUND"
     assert res_404["is_valid"] is False
 
-    # 2. Run directory without manifest or certificate
-    empty_run = tmp_path / "empty_run"
-    empty_run.mkdir()
-    res_unverified = TraceVerifier.verify_run_directory(empty_run)
+    # 2. Run record without manifest or certificate
+    store.create_run("empty_run", "scenario-1")
+    res_unverified = TraceVerifier.verify_run("empty_run", run_store=store)
     assert res_unverified["verification_status"] == "UNVERIFIED"
     assert res_unverified["has_certificate"] is False
 
-    # 3. Manifest present, trace file missing
-    manifest_only = tmp_path / "manifest_only"
-    manifest_only.mkdir()
-    (manifest_only / "run_manifest.json").write_text("{}", encoding="utf-8")
-    res_missing_trace = TraceVerifier.verify_run_directory(manifest_only)
+    # 3. Manifest present, trace bytes missing
+    store.create_run("manifest_only", "scenario-1")
+    store.save_run_manifest("manifest_only", {"run_id": "manifest_only"})
+    res_missing_trace = TraceVerifier.verify_run("manifest_only", run_store=store)
     assert res_missing_trace["verification_status"] == "FAILED_VERIFICATION"
     assert res_missing_trace["has_certificate"] is True
-    assert "missing" in res_missing_trace["failure_reason"]
+    assert "Trace bytes" in res_missing_trace["failure_reason"]
 
     # 4. Manifest without execution_mode → VERIFIED_PROVISIONAL (provisional=True)
-    #    because absence of execution_mode is treated as unknown/unconfirmed.
-    valid_run = tmp_path / "valid_run"
-    valid_run.mkdir()
-    (valid_run / "run.jsonl").write_text('{"event": "run_start"}\n', encoding="utf-8")
+    store.create_run("valid_run", "scenario-1")
+    store.append_events("valid_run", [{"event": "run_start"}])
     manifest_data = {
         "run_id": "valid_run",
         "trace_hash": "dummy_hash",
         "hash_algorithm": "sha3_256",
         "signature": {"algorithm": "Ed25519", "key_id": "key_1"},
     }
-    (valid_run / "run_manifest.json").write_text(json.dumps(manifest_data), encoding="utf-8")
+    store.save_run_manifest("valid_run", manifest_data)
 
-    with patch.object(TraceVerifier, "verify_trace", return_value=True):
-        res = TraceVerifier.verify_run_directory(valid_run)
+    with patch.object(TraceVerifier, "verify_trace_bytes", return_value=True):
+        res = TraceVerifier.verify_run("valid_run", run_store=store)
         assert res["verification_status"] == "VERIFIED_PROVISIONAL"
         assert res["is_valid"] is True
         assert res["algorithm"] == "Ed25519"
-        # New P2 fields must be present
         assert "execution_mode" in res
         assert "provisional" in res
-        assert res["provisional"] is True  # no execution_mode in manifest
+        assert res["provisional"] is True
 
     # 5. Live-execution manifest → VERIFIED (provisional=False)
-    live_manifest = {**manifest_data, "execution_mode": "live"}
-    (valid_run / "run_manifest.json").write_text(json.dumps(live_manifest), encoding="utf-8")
+    live_manifest = {**manifest_data, "run_id": "live_run", "execution_mode": "live"}
+    store.save_run_manifest("live_run", live_manifest)
+    store.create_run("live_run", "scenario-1")
+    store.append_events("live_run", [{"event": "run_start"}])
 
-    with patch.object(TraceVerifier, "verify_trace", return_value=True):
-        res_live = TraceVerifier.verify_run_directory(valid_run)
+    with patch.object(TraceVerifier, "verify_trace_bytes", return_value=True):
+        res_live = TraceVerifier.verify_run("live_run", run_store=store)
         assert res_live["verification_status"] == "VERIFIED"
         assert res_live["provisional"] is False
         assert res_live["execution_mode"] == "live"
 
     # 6. Simulated-execution manifest → VERIFIED_PROVISIONAL (provisional=True)
-    sim_manifest = {**manifest_data, "execution_mode": "simulated"}
-    (valid_run / "run_manifest.json").write_text(json.dumps(sim_manifest), encoding="utf-8")
+    sim_manifest = {**manifest_data, "run_id": "sim_run", "execution_mode": "simulated"}
+    store.save_run_manifest("sim_run", sim_manifest)
+    store.create_run("sim_run", "scenario-1")
+    store.append_events("sim_run", [{"event": "run_start"}])
 
-    with patch.object(TraceVerifier, "verify_trace", return_value=True):
-        res_sim = TraceVerifier.verify_run_directory(valid_run)
+    with patch.object(TraceVerifier, "verify_trace_bytes", return_value=True):
+        res_sim = TraceVerifier.verify_run("sim_run", run_store=store)
         assert res_sim["verification_status"] == "VERIFIED_PROVISIONAL"
         assert res_sim["provisional"] is True
         assert res_sim["execution_mode"] == "simulated"
 
     # 7. Invalid signature / hash verification failure — status is FAILED regardless of mode
-    live_manifest = {**manifest_data, "execution_mode": "live"}
-    (valid_run / "run_manifest.json").write_text(json.dumps(live_manifest), encoding="utf-8")
-    with patch.object(TraceVerifier, "verify_trace", return_value=False):
-        res_tampered = TraceVerifier.verify_run_directory(valid_run)
+    with patch.object(TraceVerifier, "verify_trace_bytes", return_value=False):
+        res_tampered = TraceVerifier.verify_run("live_run", run_store=store)
         assert res_tampered["verification_status"] == "FAILED_VERIFICATION"
         assert res_tampered["is_valid"] is False
 
     # 8. Exception during verification
-    with patch.object(TraceVerifier, "verify_trace", side_effect=ValueError("Corrupt trace")):
-        res_err = TraceVerifier.verify_run_directory(valid_run)
+    with patch.object(TraceVerifier, "verify_trace_bytes", side_effect=ValueError("Corrupt trace")):
+        res_err = TraceVerifier.verify_run("live_run", run_store=store)
         assert res_err["verification_status"] == "FAILED_VERIFICATION"
         assert "Corrupt trace" in res_err["failure_reason"]
 
@@ -188,6 +186,8 @@ def test_run_verify_api_endpoint(tmp_path, monkeypatch):
     app = Flask(__name__)
     app.secret_key = "test-secret-key-eval"
     app.register_blueprint(run_bp, url_prefix="/api")
+    store = LocalFileRunStore(tmp_path / "runs")
+    app.extensions["agentv_run_store"] = store
     monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "runs")
     (tmp_path / "runs").mkdir(parents=True, exist_ok=True)
 
@@ -208,15 +208,14 @@ def test_run_verify_api_endpoint(tmp_path, monkeypatch):
         assert res.status_code == 404
 
         # 2. 200 with verification details
-        run_dir = tmp_path / "runs" / "r123"
-        run_dir.mkdir()
-        (run_dir / "run.jsonl").write_text("trace", encoding="utf-8")
-        (run_dir / "run_manifest.json").write_text('{"run_id": "r123"}', encoding="utf-8")
+        store.create_run("r123", "scenario-1")
+        store.append_events("r123", [{"event": "start"}])
+        store.save_run_manifest("r123", {"run_id": "r123", "vc_version": "3.0.0"})
 
         with patch.object(
             TraceVerifier,
-            "verify_run_directory",
-            return_value={"verification_status": "VERIFIED", "is_valid": True},
+            "verify_trace_bytes",
+            return_value=True,
         ):
             res_ok = client.get("/api/v1/runs/r123/verify")
             assert res_ok.status_code == 200

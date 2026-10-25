@@ -8,7 +8,6 @@ for AgentV OS Runtime and Control Plane seams.
 
 from __future__ import annotations
 
-import json
 import time
 from abc import ABC, abstractmethod
 from collections.abc import Generator, Iterable, Iterator, Mapping
@@ -103,6 +102,12 @@ class SigningBackend(ABC):
     OSS Reference: LocalEd25519SigningBackend
     Control Plane / Enterprise: KMSSigningBackend / VaultSigningBackend
     """
+
+    # KMS/HSM providers normally accept an opaque logical identity ID.  Local
+    # reference providers set this when they require exportable PEM/DER key
+    # material instead.  Core branches only on this contract capability, never
+    # on a concrete provider type.
+    requires_private_key_material: bool = False
 
     def can_sign(self) -> bool:
         """Indicates whether this signing backend is configured and capable of signing payloads."""
@@ -389,22 +394,15 @@ class RunStorageProvider(ABC):
         """Retrieves persisted trace events."""
         raise NotImplementedError
 
+    @abstractmethod
     def get_trace_bytes(self, run_id: str, context: dict[str, Any] | None = None) -> bytes | None:
         """Returns the provider's authoritative serialization of a run trace.
 
-        Providers which store event records rather than a byte stream may use the
-        canonical JSONL fallback.  A provider that preserves the original signed
-        serialization should override this method.  Callers must obtain trace
-        bytes through the provider; they must not read a parallel filesystem copy.
+        Returned bytes must be the exact canonical serialization committed and
+        signed for the run.  This deliberately has no event-object fallback:
+        reconstructing JSONL after the fact can change evidence bytes.
         """
-        events = self.get_events(run_id, offset=0, limit=10_000_000, context=context)
-        if not events:
-            return None
-        return b"".join(
-            json.dumps(event, default=str, separators=(",", ":")).encode("utf-8") + b"\n"
-            for event in events
-            if isinstance(event, dict)
-        )
+        raise NotImplementedError
 
     @abstractmethod
     def update_run_status(
@@ -461,6 +459,76 @@ class RunStorageProvider(ABC):
     ) -> Generator[dict[str, Any], None, None]:
         """Streams events starting at a sequence index."""
         raise NotImplementedError
+
+    # Certification leases are intentionally provider-owned.  They are
+    # concrete opt-in methods (rather than ABC additions) so an older provider
+    # fails closed at certification time with a precise compatibility error.
+    def acquire_certification_lease(
+        self,
+        run_id: str,
+        *,
+        owner_id: str,
+        fencing_token: str,
+        timeout_seconds: float,
+        context: dict[str, Any] | None = None,
+    ) -> bool:
+        raise NotImplementedError("Provider does not implement certification leases")
+
+    def verify_certification_lease(
+        self,
+        run_id: str,
+        *,
+        owner_id: str,
+        fencing_token: str,
+        context: dict[str, Any] | None = None,
+    ) -> bool:
+        raise NotImplementedError("Provider does not implement certification leases")
+
+    def renew_certification_lease(
+        self,
+        run_id: str,
+        *,
+        owner_id: str,
+        fencing_token: str,
+        timeout_seconds: float,
+        context: dict[str, Any] | None = None,
+    ) -> bool:
+        """Extend a fenced certification lease before it expires."""
+        raise NotImplementedError("Provider does not implement renewable certification leases")
+
+    def release_certification_lease(
+        self,
+        run_id: str,
+        *,
+        owner_id: str,
+        fencing_token: str,
+        context: dict[str, Any] | None = None,
+    ) -> bool:
+        raise NotImplementedError("Provider does not implement certification leases")
+
+    def is_certification_leased(
+        self, run_id: str, *, context: dict[str, Any] | None = None
+    ) -> bool:
+        raise NotImplementedError("Provider does not implement certification leases")
+
+    def commit_certification(
+        self,
+        run_id: str,
+        manifest: dict[str, Any],
+        *,
+        owner_id: str,
+        fencing_token: str,
+        context: dict[str, Any] | None = None,
+    ) -> bool:
+        """Atomically publish a signed manifest and irreversibly seal a run.
+
+        The provider must reject calls not protected by the supplied active
+        certification lease.  This is deliberately an opt-in compatibility
+        gate: a provider that has not implemented an atomic certification
+        transaction must fail closed rather than emulate one with independent
+        ``save_run_manifest`` and ``update_run_status`` calls.
+        """
+        raise NotImplementedError("Provider does not implement atomic certification commits")
 
 
 RunStore = RunStorageProvider

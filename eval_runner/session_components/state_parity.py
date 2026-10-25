@@ -21,7 +21,6 @@ from datetime import datetime
 from typing import Any
 
 from eval_runner.events import CoreEvents
-from eval_runner.reference.field_policy import BasicFieldPolicyEvaluator
 from eval_runner.state_authority import bound_state_snapshot, state_authority_registry
 from eval_runner.utils.path_resolver import PathResolver
 
@@ -268,12 +267,9 @@ class SessionStateParityVerifier:
                 )
                 return None, "__unobserved_source__"
 
-            from agentv_runtime.discovery import resolve_extension
+            from eval_runner.runtime_services import resolve_policy_evaluator
 
-            evaluator = resolve_extension(
-                "policy_evaluators",
-                default_factory=BasicFieldPolicyEvaluator,
-            )
+            evaluator = resolve_policy_evaluator()
             eval_res = evaluator.evaluate_policy(policy_spec, observed)
             if property_path == "violations":
                 return eval_res.violations, None

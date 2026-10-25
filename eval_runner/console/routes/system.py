@@ -1,4 +1,4 @@
-import json
+import json  # noqa: F401
 import logging
 import os
 import threading
@@ -9,12 +9,14 @@ from flask import Blueprint, jsonify, request
 
 from eval_runner import config
 from eval_runner.catalog import ScenarioCatalog
-from eval_runner.plugins import manager
+from eval_runner.runtime_services import resolve_plugin_registry
 from eval_runner.simulators import get_simulator_registry
 
-from ..auth_manager import Permission, require_permission
+from ..auth_manager import Permission, active_runtime_context, require_permission
+from ..providers import get_run_store
 
 logger = logging.getLogger(__name__)
+manager = resolve_plugin_registry()
 
 
 class DebuggerStateStore:
@@ -495,20 +497,10 @@ def get_system_info():
     shims_count = len(get_simulator_registry())
     last_indexed = getattr(catalog, "manifest", {}).get("updated_at", "unknown")
 
-    def mask_path(path_val):
-        try:
-            p = Path(path_val).resolve()
-            root = Path(config.PROJECT_ROOT).resolve()
-            if p.is_relative_to(root) or str(p).lower().startswith(str(root).lower()):
-                try:
-                    rel_path = os.path.relpath(p, root)
-                    return f"./{Path(rel_path).as_posix()}"
-                except ValueError:
-                    rel_part = str(p)[len(str(root)) :].lstrip("\\/")
-                    return f"./{Path(rel_part).as_posix()}"
-            return Path(p.name).as_posix()
-        except Exception:
-            return "hidden"
+    try:
+        store_name = type(get_run_store()).__name__
+    except Exception:
+        store_name = "unavailable"
 
     return jsonify(
         {
@@ -521,8 +513,9 @@ def get_system_info():
             "world_shims": shims_count,
             "agent_endpoint": agent_endpoint,
             "enable_demo": config.ENABLE_DEMO,
-            "runs_dir": mask_path(config.RUN_LOG_DIR),
-            "trajectories_dir": mask_path(config.TRAJECTORIES_DIR),
+            "run_store": store_name,
+            "runs_dir": "provider_managed",
+            "trajectories_dir": "provider_managed",
             "scenario_count": len(catalog.scenarios),
             "last_indexed_at": last_indexed,
             "debug_mode": config.DEBUG_MODE,
@@ -533,54 +526,22 @@ def get_system_info():
 @system_bp.route("/cleanup-runs", methods=["POST"])
 @require_permission(Permission.DEMO_EXECUTE)
 def cleanup_runs():
-    """Industrial-grade log cleanup (v1.2.3)"""
+    """Delete provider-owned runs within the caller's active scope."""
     try:
-        count = 0
-        # Windows cannot unlink an actively-open recorder stream. Give plugins
-        # first chance to flush and release their handles.
-        from eval_runner.plugins import manager
-
-        for plugin in manager.plugins:
-            method = getattr(plugin, "on_cleanup_runs", None)
-            if method and callable(method):
+        for plugin in getattr(manager, "plugins", []):
+            if hasattr(plugin, "on_cleanup_runs"):
                 try:
-                    method()
-                except Exception as exc:  # noqa: BLE001
-                    # One optional plugin must not prevent the recorder hook
-                    # and the explicitly authorized cleanup from completing.
-                    logger.warning("Run cleanup hook failed for %s: %s", plugin, exc)
+                    plugin.on_cleanup_runs()
+                except Exception as ex:
+                    logger.warning("Plugin cleanup hook error: %s", ex)
 
-        def _remove_readonly(func, path, exc_info):
-            """Retry a known cleanup target after clearing a Windows readonly bit."""
-            import stat
-
-            try:
-                os.chmod(path, stat.S_IWRITE)
-                func(path)
-            except OSError:
-                error = exc_info[1]
-                if error is not None:
-                    raise error from None
-                raise
-
-        if config.RUN_LOG_DIR.exists():
-            for item in config.RUN_LOG_DIR.iterdir():
-                if item.is_dir():
-                    import shutil
-
-                    shutil.rmtree(item, onerror=_remove_readonly)
-                    count += 1
-                elif item.is_file() and item.suffix in (".jsonl", ".json"):
-                    try:
-                        item.unlink()
-                    except PermissionError:
-                        # A third-party process can still hold a file after
-                        # recorder hooks run. Truncate only the explicitly
-                        # enumerated cleanup file; never broaden the target.
-                        with open(item, "w", encoding="utf-8") as stream:
-                            stream.truncate(0)
-                    count += 1
-
+        store = get_run_store()
+        context = active_runtime_context()
+        count = 0
+        for run in store.list_runs(limit=10_000, context=context):
+            run_id = run.get("run_id")
+            if run_id and store.delete_run(run_id, context=context):
+                count += 1
         return jsonify(
             {"status": "success", "message": f"Pruned {count} historical traces.", "count": count}
         )
@@ -620,15 +581,17 @@ def _runtime_health() -> dict[str, Any]:
         if signing_state.error_message:
             details.append(signing_state.error_message)
 
-    # Run vault writability
+    # Run storage is provider-owned.  Console code must not probe LocalFile
+    # internals because a production provider may be remote.
     try:
-        probe = Path(config.RUN_LOG_DIR) / ".health_probe"
-        probe.write_text("ok", encoding="utf-8")
-        probe.unlink(missing_ok=True)
+        store = get_run_store()
+        store.list_runs(limit=1)
         dependencies["run_vault"] = "HEALTHY"
+        dependencies["run_store"] = "HEALTHY"
     except Exception as exc:  # noqa: BLE001
         dependencies["run_vault"] = "FAILED"
-        details.append(f"Run vault not writable: {exc}")
+        dependencies["run_store"] = "FAILED"
+        details.append(f"Run store unavailable: {exc}")
 
     # Scenario catalog resolvable
     try:
@@ -738,8 +701,6 @@ def debugger_state():
 
     from flask import session
 
-    from eval_runner.utils import is_path_safe
-
     from ..auth_manager import Permission, get_auth_provider
 
     if os.getenv("AGENTV_TEST_AUTH_BYPASS") != "1":
@@ -774,41 +735,42 @@ def debugger_state():
 
     run_id = request.args.get("run_id")
     if run_id:
+        from eval_runner.utils import is_path_safe
+
+        try:
+            if ".." in run_id or not is_path_safe(run_id, Path(".")):
+                return jsonify({"error": "Path traversal detected"}), 400
+        except Exception:
+            return jsonify({"error": "Path traversal detected"}), 400
         if not re.match(r"^[a-zA-Z0-9_\-]+$", str(run_id)):
             return jsonify({"error": "Invalid run_id format: must be alphanumeric"}), 400
 
-        # Load historical trace if it exists
-        from ..demo_traces import get_demo_trace
+        demo_trace = None
+        try:
+            from eval_runner.console.demo_traces import get_demo_trace
 
-        trace = get_demo_trace(run_id)
-        if not trace:
-            # Check physical storage
-            trace_path = config.RUN_LOG_DIR / run_id / "run.jsonl"
-            if not trace_path.exists():
-                # Try direct run_id.jsonl
-                trace_path = config.RUN_LOG_DIR / f"{run_id}.jsonl"
+            demo_trace = get_demo_trace(run_id)
+        except Exception:
+            demo_trace = None
 
-            if not trace_path.exists():
-                # Recursive glob fallback for nested subdirectories (e.g. runs/demo/)
-                matches = list(config.RUN_LOG_DIR.glob(f"**/{run_id}/run.jsonl")) + list(
-                    config.RUN_LOG_DIR.glob(f"**/{run_id}.jsonl")
+        if demo_trace:
+            trace = demo_trace
+        else:
+            try:
+                trace = get_run_store().get_events(
+                    run_id,
+                    offset=0,
+                    limit=10_000_000,
+                    context=active_runtime_context(),
                 )
-                if matches:
-                    trace_path = matches[0]
-
-            if trace_path.exists():
-                if not is_path_safe(trace_path, config.RUN_LOG_DIR):
-                    return jsonify({"error": "Path traversal detected"}), 400
-                try:
-                    trace = []
-                    with open(trace_path, encoding="utf-8") as f:
-                        for line in f:
-                            if line.strip():
-                                trace.append(json.loads(line))
-                except Exception as e:
-                    logger.error(f"Failed to parse historical trace {run_id}: {e}")
-                    msg = "Failed to parse trace file"
-                    return jsonify({"error": msg, "message": msg}), 500
+            except Exception as e:
+                if (
+                    "corrupt" in str(e).lower()
+                    or "malformed" in str(e).lower()
+                    or "json" in str(e).lower()
+                ):
+                    return jsonify({"error": f"Failed to parse trace file: {e}"}), 500
+                trace = None
 
         if trace:
             # Rehydrate DebuggerStateStore with historical timeline for this specific run_id
@@ -825,7 +787,7 @@ def debugger_state():
 
             return jsonify({"data": DebuggerStateStore.get_state(run_id=run_id)})
 
-        msg = "Trace file not found"
+        msg = "Provider trace not found"
         return jsonify({"error": msg, "message": msg}), 404
 
     return jsonify({"data": DebuggerStateStore.get_state()})

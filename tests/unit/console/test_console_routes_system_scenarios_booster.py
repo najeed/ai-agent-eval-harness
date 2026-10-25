@@ -188,21 +188,17 @@ def test_system_route_info_agent_providers(client):
         catalog.scenarios = []
 
     # Test relpath ValueError branch (Lines 235-237) and general exception branch (Lines 239-240)
-    with patch("os.path.relpath", side_effect=ValueError("Cannot resolve relative path")):
-        res3 = client.get("/api/info")
-        assert res3.status_code == 200
-        assert res3.get_json()["runs_dir"] != "hidden"
-
-    with patch("os.path.relpath", side_effect=Exception("Critical resolution error")):
-        res4 = client.get("/api/info")
-        assert res4.status_code == 200
-        assert res4.get_json()["runs_dir"] == "hidden"
+    # Test provider_managed runs_dir in /api/info
+    res3 = client.get("/api/info")
+    assert res3.status_code == 200
+    assert res3.get_json()["runs_dir"] == "provider_managed"
 
 
 def test_system_route_cleanup_runs_exception(client):
-    """Test cleanup_runs error branch (Lines 281-282)"""
-    # Mock Path.exists globally on the class to avoid WindowsPath read-only attribute errors
-    with patch.object(Path, "exists", side_effect=Exception("Disk locked")):
+    """Test cleanup_runs error branch"""
+    with patch(
+        "eval_runner.console.routes.system.get_run_store", side_effect=Exception("Disk locked")
+    ):
         res = client.post("/api/cleanup-runs")
         assert res.status_code == 500
         assert "Disk locked" in res.get_json()["message"]
@@ -262,7 +258,7 @@ def test_system_route_debugger_state_not_found(client):
     """Test historical trace not found error response (Lines 349-350)"""
     res = client.get("/api/debugger/state?run_id=missing_run_id_for_debugger")
     assert res.status_code == 404
-    assert "Trace file not found" in res.get_json()["error"]
+    assert "Provider trace not found" in res.get_json()["error"]
 
 
 def test_system_route_ping(client):
@@ -307,14 +303,17 @@ def test_system_route_read_doc_no_extension_fallback(client, console_jail):
     assert res.get_json()["content"] == "my guide content"
 
 
-def test_system_route_cleanup_runs_files_and_plugins(client, console_jail):
-    runs_dir = console_jail["runs"]
-    # 1. Create a directory (should be deleted)
-    (runs_dir / "run_dir_1").mkdir(parents=True, exist_ok=True)
-    # 2. Create a jsonl file (should be link/deleted)
-    (runs_dir / "run_1.jsonl").write_text("{}", encoding="utf-8")
-    # 3. Create a non-json/jsonl file (should be skipped)
-    (runs_dir / "run_2.txt").write_text("{}", encoding="utf-8")
+def test_system_route_cleanup_runs_files_and_plugins(client):
+    class FakeCleanupStore:
+        def __init__(self):
+            self.deleted = []
+
+        def list_runs(self, limit=10_000, context=None):
+            return [{"run_id": "run_dir_1"}, {"run_id": "run_1"}]
+
+        def delete_run(self, run_id, context=None):
+            self.deleted.append(run_id)
+            return True
 
     class CrashingCleanupPlugin:
         def on_cleanup_runs(self):
@@ -324,32 +323,27 @@ def test_system_route_cleanup_runs_files_and_plugins(client, console_jail):
 
     plugin = CrashingCleanupPlugin()
     manager.plugins.append(plugin)
+    fake_store = FakeCleanupStore()
 
     try:
-        res = client.post("/api/cleanup-runs")
-        assert res.status_code == 200
-        assert res.get_json()["count"] >= 2
-        assert not (runs_dir / "run_dir_1").exists()
-        assert not (runs_dir / "run_1.jsonl").exists()
-        assert (runs_dir / "run_2.txt").exists()
+        with patch("eval_runner.console.routes.system.get_run_store", return_value=fake_store):
+            res = client.post("/api/cleanup-runs")
+            assert res.status_code == 200
+            assert res.get_json()["count"] == 2
+            assert fake_store.deleted == ["run_dir_1", "run_1"]
     finally:
         manager.plugins.remove(plugin)
 
 
-def test_system_route_debugger_state_glob_fallback_and_empty_line(client, console_jail):
-    runs_dir = console_jail["runs"]
-    # Place trace file inside a nested sub-directory to force glob fallback (Line 349)
-    nested_dir = runs_dir / "nested_folder" / "glob_run_id"
-    nested_dir.mkdir(parents=True, exist_ok=True)
+def test_system_route_debugger_state_glob_fallback_and_empty_line(client):
+    class FakeEventsStore:
+        def get_events(self, run_id, offset=0, limit=10_000_000, context=None):
+            return [{"event": "run_start", "data": {}}]
 
-    # Write empty lines along with a valid trace event to cover empty line checks (Line 356->355)
-    (nested_dir / "run.jsonl").write_text(
-        '\n\n{"event": "run_start", "data": {}}\n\n', encoding="utf-8"
-    )
-
-    res = client.get("/api/debugger/state?run_id=glob_run_id")
-    assert res.status_code == 200
-    assert len(res.get_json()["data"]["timeline"]) == 1
+    with patch("eval_runner.console.routes.system.get_run_store", return_value=FakeEventsStore()):
+        res = client.get("/api/debugger/state?run_id=glob_run_id")
+        assert res.status_code == 200
+        assert len(res.get_json()["data"]["timeline"]) == 1
 
 
 # ---------------------------------------------------------------------------
@@ -687,51 +681,15 @@ def test_system_route_read_doc_direct_match(client, console_jail):
     assert res.get_json()["content"] == "direct content"
 
 
-def test_system_cleanup_runs_error_handling(client, console_jail, monkeypatch):
-    import os
-    import shutil
+def test_system_cleanup_runs_error_handling(client):
+    class FailingListStore:
+        def list_runs(self, limit=10_000, context=None):
+            raise RuntimeError("Database connection lost")
 
-    # Readonly file in subdirectory triggering _remove_readonly
-    sub_dir = console_jail["runs"] / "sub_ro"
-    sub_dir.mkdir(parents=True, exist_ok=True)
-    ro_file = sub_dir / "readonly.txt"
-    ro_file.write_text("temp", encoding="utf-8")
-
-    real_rmtree = shutil.rmtree
-
-    def fake_rmtree(path, onerror=None):
-        if onerror:
-            try:
-                # Exercise normal retry where chmod clears readonly bit
-                onerror(os.unlink, str(ro_file), (OSError, OSError("readonly"), None))
-            except OSError:
-                pass
-            try:
-                # Exercise fallback raise when exc_info error is None
-                onerror(os.unlink, "nonexistent_target_to_raise", (None, None, None))
-            except OSError:
-                pass
-        real_rmtree(path)
-
-    monkeypatch.setattr(shutil, "rmtree", fake_rmtree)
-    res_ro = client.post("/api/cleanup-runs")
-    assert res_ro.status_code == 200
-
-    # PermissionError on top-level file unlink leading to file truncation
-    top_file = console_jail["runs"] / "locked_run.jsonl"
-    top_file.write_text("some historical content", encoding="utf-8")
-
-    orig_unlink = Path.unlink
-
-    def fake_unlink(self, *args, **kwargs):
-        if self.name == "locked_run.jsonl":
-            raise PermissionError("File locked by external process")
-        return orig_unlink(self, *args, **kwargs)
-
-    monkeypatch.setattr(Path, "unlink", fake_unlink)
-    res_lock = client.post("/api/cleanup-runs")
-    assert res_lock.status_code == 200
-    assert top_file.read_text(encoding="utf-8") == ""
+    with patch("eval_runner.console.routes.system.get_run_store", return_value=FailingListStore()):
+        res = client.post("/api/cleanup-runs")
+        assert res.status_code == 500
+        assert "Database connection lost" in res.get_json()["message"]
 
 
 def test_runtime_health_exhaustive_states(client):

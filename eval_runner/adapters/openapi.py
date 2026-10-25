@@ -170,6 +170,13 @@ class OpenAPIAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         )
 
     def on_discover_adapters(self, registry: Any) -> None:
+        # Package adapter discovery registers the canonical module-level
+        # OpenAPI adapter first.  Do not attempt a second registration via the
+        # plugin hook: core-protocol overwrite protection correctly rejects it
+        # and the wrapper already delegates to this implementation.
+        is_reg = getattr(registry, "is_registered", None)
+        if callable(is_reg) and is_reg("openapi") is True:
+            return
         registry.register(
             "openapi",
             self.execute_openapi_query,

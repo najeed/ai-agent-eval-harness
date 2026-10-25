@@ -4,22 +4,31 @@ Resolution of the active authoritative run storage provider (delegated to agentv
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from agentv_runtime.discovery import (
     reset_extensions,
-    resolve_extension,
     set_extension,
 )
 from agentv_runtime.interfaces import RunStorageProvider
-from eval_runner.reference.local_run_store import LocalFileRunStore
 
 
 def resolve_run_storage_provider() -> RunStorageProvider:
     """Return the active provider, discovering it once when none is configured."""
-    return resolve_extension(
-        "run_stores",
-        env_var="AGENTV_RUN_STORE_PROVIDER",
-        default_factory=LocalFileRunStore,
-    )
+    from eval_runner.runtime_services import resolve_run_store
+
+    return resolve_run_store()
+
+
+def compose_local_run_storage_provider(log_dir: Path) -> RunStorageProvider:
+    """Construct the OSS local adapter at the composition boundary only.
+
+    Kernel lifecycle code calls this solely for an explicitly supplied local
+    test/reference scope; it never imports a reference implementation.
+    """
+    from eval_runner.runtime_services import compose_local_run_store
+
+    return compose_local_run_store(log_dir)
 
 
 def set_active_run_storage_provider(provider: RunStorageProvider) -> None:
@@ -36,6 +45,7 @@ def reset_run_storage_provider() -> None:
 
 __all__ = [
     "resolve_run_storage_provider",
+    "compose_local_run_storage_provider",
     "set_active_run_storage_provider",
     "reset_run_storage_provider",
 ]

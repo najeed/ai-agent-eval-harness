@@ -67,6 +67,29 @@ def test_certify_rejects_path_traversal(auth_client):
     assert res_verify.status_code in (400, 403, 404)
 
 
+def test_certify_requires_dedicated_certificate_authority(hardened_app, monkeypatch):
+    """Issuing a certificate is distinct from mutating an execution run."""
+    monkeypatch.delenv("AGENTV_TEST_AUTH_BYPASS", raising=False)
+    with hardened_app.test_client() as client:
+        principal = {
+            "id": "compliance-auditor",
+            "org_id": "org-test",
+            "tenant_id": "org-test",
+            "workspace_id": "workspace-test",
+            "active_environment": "test",
+        }
+
+        with client.session_transaction() as session:
+            session["user"] = {**principal, "permissions": [Permission.CERTIFY_WRITE]}
+        assert client.post("/api/v1/certify", json={}).status_code == 400
+
+        with client.session_transaction() as session:
+            session["user"] = {**principal, "permissions": [Permission.RUNS_WRITE]}
+        response = client.post("/api/v1/certify", json={})
+        assert response.status_code == 403
+        assert "certify:write" in response.get_json()["error"]
+
+
 def test_execute_industrial_certification_rejects_provisional_run(auth_client, tmp_path):
     """Test that a run with provisional=True or execution_mode=unknown is refused certification."""
     from eval_runner.console.routes.trust import execute_industrial_certification
@@ -92,7 +115,7 @@ def test_execute_industrial_certification_rejects_provisional_run(auth_client, t
     ]
     trace.write_text("\n".join(json.dumps(e) for e in events), encoding="utf-8")
 
-    with pytest.raises(ValueError, match="is provisional"):
+    with pytest.raises(ValueError, match=r"(is provisional|requires live evidence)"):
         execute_industrial_certification(run_id=run_id)
 
 

@@ -59,9 +59,8 @@ class ScenarioCatalog:
         if getattr(self, "_attrs_initialized", False):
             return
 
-        from agentv_runtime.discovery import resolve_extension
         from eval_runner import config
-        from eval_runner.reference.local_catalog import LocalFileCatalogStore
+        from eval_runner.runtime_services import resolve_catalog_store
 
         # Industrial Hardening: Canonicalize root_dir (Resolves Windows C: vs c: issues)
         self.root_dir = Path(config.PROJECT_ROOT).resolve()
@@ -72,11 +71,7 @@ class ScenarioCatalog:
         else:
             self.index_path = self.root_dir / "scenarios" / "index.json"
 
-        self.store = resolve_extension(
-            "catalog_stores",
-            explicit=store,
-            default_factory=lambda: LocalFileCatalogStore(base_dir=self.root_dir),
-        )
+        self.store = resolve_catalog_store(explicit=store, base_dir=self.root_dir)
         self.scenarios: list[dict[str, Any]] = []
         self._disk_count = 0
         self._last_sync_check = 0

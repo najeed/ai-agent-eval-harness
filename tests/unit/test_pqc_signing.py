@@ -1,9 +1,8 @@
-import json
+import hashlib
 import sys
 import tempfile
 import unittest
 from datetime import datetime
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 # Mock cyclecore_pq before importing eval_runner
@@ -12,22 +11,18 @@ sys.modules["cyclecore_pq"] = mock_cyclecore
 sys.modules["cyclecore_pq.client"] = mock_cyclecore.client
 
 from eval_runner import config, identity, verifier  # noqa: E402
+from eval_runner.reference.local_run_store import LocalFileRunStore  # noqa: E402
 
 
 class TestPQCSigning(unittest.TestCase):
     def setUp(self):
-        # Create an isolated temporary directory for RUN_LOG_DIR
+        # The local reference provider owns its files internally; tests seed
+        # evidence through its public contract rather than a trace path.
         self.temp_dir = tempfile.TemporaryDirectory()
-        self._orig_run_log_dir = config.RUN_LOG_DIR
-        config.RUN_LOG_DIR = Path(self.temp_dir.name)
-
         self.run_id = "test_run_123"
-        self.vault_dir = config.RUN_LOG_DIR / self.run_id
-        self.vault_dir.mkdir(parents=True, exist_ok=True)
-        self.test_trace = self.vault_dir / "run.jsonl"
-
-        with open(self.test_trace, "w") as f:
-            f.write(json.dumps({"event": "test_start"}) + "\n")
+        self.run_store = LocalFileRunStore(self.temp_dir.name)
+        self.run_store.create_run(self.run_id, "pqc-signing")
+        self.run_store.append_events(self.run_id, [{"event": "test_start", "_seq": 1}])
 
         # Reset PQC config
         config.PQC_ENABLED = True
@@ -48,7 +43,6 @@ class TestPQCSigning(unittest.TestCase):
             import logging
 
             logging.getLogger(__name__).debug(f"Tempdir cleanup notice: {cleanup_err}")
-        config.RUN_LOG_DIR = self._orig_run_log_dir
 
     def test_hybrid_signing_flow(self):
         """Hybrid signing (ED25519 + PQC) produces a 2-entry provenance chain."""
@@ -65,8 +59,11 @@ class TestPQCSigning(unittest.TestCase):
         identity.IdentityService._pqc_client = mock_client
 
         # Execute signing with a real identity
-        manifest = verifier.TraceVerifier.sign_trace(
-            trace_path=str(self.test_trace), run_id=self.run_id, identity_id=identity_id
+        manifest = verifier.TraceVerifier.sign_trace_bytes(
+            self.run_store.get_trace_bytes(self.run_id),
+            run_id=self.run_id,
+            identity_id=identity_id,
+            run_store=self.run_store,
         )
 
         # Verify manifest structure
@@ -92,9 +89,12 @@ class TestPQCSigning(unittest.TestCase):
 
         # Create a mock manifest with valid hex and timestamp
         timestamp = datetime.now().astimezone().isoformat()
+        trace_bytes = self.run_store.get_trace_bytes(self.run_id)
+        trace_hash = hashlib.sha3_256(trace_bytes).hexdigest()
         manifest = {
+            "run_id": self.run_id,
             "vc_version": "3.0.0",
-            "trace_hash": "abcdef0123456789",
+            "trace_hash": trace_hash,
             "hash_algorithm": "sha3_256",
             "timestamp": timestamp,
             "provenance_chain": [
@@ -110,29 +110,26 @@ class TestPQCSigning(unittest.TestCase):
                 },
             ],
         }
-        manifest_path = self.vault_dir / "run_manifest.json"
-        with open(manifest_path, "w") as f:
-            json.dump(manifest, f)
+        self.run_store.save_run_manifest(self.run_id, manifest)
 
-        # Mock file hash to match manifest
-        with patch("eval_runner.verifier.TraceVerifier.compute_signature") as mock_hash:
-            mock_hash.return_value = "abcdef0123456789"
+        # Mock public key verification
+        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
-            # Mock public key verification
-            with patch("eval_runner.identity.IdentityService.get_public_key") as mock_get_pub:
-                mock_pub = MagicMock()
-                mock_get_pub.return_value = mock_pub
+        with patch("eval_runner.identity.IdentityService.get_public_key") as mock_get_pub:
+            mock_pub = MagicMock(spec=Ed25519PublicKey)
+            mock_get_pub.return_value = mock_pub
 
-                # Execute verification
-                success = verifier.TraceVerifier.verify_trace(
-                    trace_path=str(self.test_trace),
-                    manifest_path=str(manifest_path),
-                    require_sealed=False,
-                )
+            # Execute verification
+            success = verifier.TraceVerifier.verify_trace_bytes(
+                trace_bytes,
+                manifest,
+                run_store=self.run_store,
+                trace_only=True,
+            )
 
-                self.assertTrue(success)
-                mock_pub.verify.assert_called_once()
-                mock_client.verify_digest.assert_called_once()
+            self.assertTrue(success)
+            mock_pub.verify.assert_called_once()
+            mock_client.verify_digest.assert_called_once()
 
     def test_pqc_disabled_fallback(self):
         """When PQC is disabled, only a classical ED25519 signature is produced."""
@@ -144,8 +141,11 @@ class TestPQCSigning(unittest.TestCase):
         identity_id = "pqc_disabled_fallback_id"
         IdentityService._provision_local_identity(identity_id)
 
-        manifest = verifier.TraceVerifier.sign_trace(
-            trace_path=str(self.test_trace), run_id=self.run_id, identity_id=identity_id
+        manifest = verifier.TraceVerifier.sign_trace_bytes(
+            self.run_store.get_trace_bytes(self.run_id),
+            run_id=self.run_id,
+            identity_id=identity_id,
+            run_store=self.run_store,
         )
 
         # Should only have 1 signature

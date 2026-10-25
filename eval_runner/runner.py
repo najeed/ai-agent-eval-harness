@@ -19,7 +19,7 @@ from typing import Any  # noqa: E402
 
 from agentv_runtime.results import EvaluationResult  # noqa: E402
 
-from . import config, events, plugins  # noqa: E402
+from . import config, events  # noqa: E402
 from .context import EvaluationContext  # noqa: E402
 from .execution_ir import WorkflowStatus  # noqa: E402
 from .reproducibility import (  # noqa: E402
@@ -120,6 +120,7 @@ class BaseRunner(ABC):
         seed: int | None = None,
         metadata: dict | None = None,
         max_turns: int | None = None,
+        provider_submission: bool = False,
     ) -> EvaluationResult:
         pass
 
@@ -225,23 +226,13 @@ class DefaultRunner(BaseRunner):
         # launches may originate from the UI directory.
         (config.PROJECT_ROOT / ".aes").mkdir(exist_ok=True)
 
-        from agentv_runtime.discovery import resolve_extension
         from eval_runner.config_resolver import ConfigResolver
-        from eval_runner.reference.local_artifact import LocalFileArtifactStore
-        from eval_runner.reference.local_run_store import LocalFileRunStore
+        from eval_runner.runtime_services import resolve_artifact_store, resolve_run_store
 
-        self.run_store = (
-            run_store
-            if run_store is not None
-            else resolve_extension("run_stores", default_factory=LocalFileRunStore)
-        )
+        self.run_store = resolve_run_store(explicit=run_store)
         self.config_resolver = config_resolver or ConfigResolver
         self.resolved_config = self.config_resolver.resolve()
-        self.artifact_store = resolve_extension(
-            "artifact_stores",
-            explicit=artifact_store,
-            default_factory=LocalFileArtifactStore,
-        )
+        self.artifact_store = resolve_artifact_store(explicit=artifact_store)
         self.checkpoint_store = checkpoint_store
         self.policy_evaluator = policy_evaluator
         self.signing_backend = signing_backend
@@ -302,10 +293,16 @@ class DefaultRunner(BaseRunner):
         cancellation_event: Any | None = None,
         resumption_checkpoint: dict | None = None,
         resumption_token: str | None = None,
+        provider_submission: bool = False,
     ) -> EvaluationResult:
         import copy
 
         from .session import SessionManager
+
+        if self.run_store is None:
+            from eval_runner.runtime_services import resolve_run_store
+
+            self.run_store = resolve_run_store()
 
         scenario_identifier = (
             scenario.get("id")
@@ -369,6 +366,14 @@ class DefaultRunner(BaseRunner):
             new_meta["execution_mode_declared"] = execution_mode_declared
             object.__setattr__(ctx, "metadata", _freeze_dict(new_meta))
 
+        # Plugins are multi-load runtime services.  Load the canonical
+        # registry before binding the flight recorder so its listener exists
+        # before the first event of a fresh or resumed run.
+        from .runtime_services import resolve_plugin_registry
+
+        plugin_registry = resolve_plugin_registry()
+        plugin_registry.load_plugins()
+
         repro_contract = build_reproducibility_contract(
             scenario,
             resolved_config=self.resolved_config,
@@ -377,7 +382,7 @@ class DefaultRunner(BaseRunner):
             execution_mode=str(execution_mode),
             adapter_metadata=dict(ctx.metadata) if isinstance(ctx.metadata, Mapping) else {},
             evaluator_fingerprint=metric_registry_fingerprint(),
-            plugin_provenance=dict(getattr(plugins.manager, "provenance_map", {}) or {}),
+            plugin_provenance=dict(getattr(plugin_registry, "provenance_map", {}) or {}),
         )
 
         # Compile required oracles BEFORE execution from immutable scenario contract (P0-1 Fix)
@@ -688,7 +693,7 @@ class DefaultRunner(BaseRunner):
         manifest_metadata = {
             **(dict(ctx.metadata) if isinstance(ctx.metadata, Mapping) else {}),
             "preflight_fingerprint": canonical_preflight_fp,
-            "plugin_provenance": dict(getattr(plugins.manager, "provenance_map", {}) or {}),
+            "plugin_provenance": dict(getattr(plugin_registry, "provenance_map", {}) or {}),
             "evaluator_fingerprint": metric_registry_fingerprint(),
             "required_oracle_ids": req_oracles,
             "scenario_hash": scen_hash,
@@ -792,6 +797,8 @@ class DefaultRunner(BaseRunner):
             scenario_id=str(scenario_identifier),
             scenario_version=scen_ver,
             scenario_hash=scen_hash,
+            tenant_id=exec_manifest_scope.get("tenant_id", "default"),
+            workspace_id=exec_manifest_scope.get("workspace_id", "default"),
             agent_config=resolved_agent_config,
             runtime_config=resolved_runtime_config,
             environment=env_dict,
@@ -801,67 +808,108 @@ class DefaultRunner(BaseRunner):
         )
         exec_manifest_hash = exec_manifest.compute_manifest_hash()
 
-        run_vault_dir = Path(config.RUN_LOG_DIR).resolve() / effective_run_id
         is_resume = (resumption_checkpoint is not None) or bool(resumption_token)
-        manifest_file = run_vault_dir / "execution_manifest.json"
-        scenario_snapshot_file = run_vault_dir / "scenario_resolved.json"
+        run_context = dict(runtime_context) if isinstance(runtime_context, Mapping) else None
+        existing_run = self.run_store.get_run(effective_run_id, context=run_context)
 
-        if run_vault_dir.exists():
-            if not is_resume:
-                raise RuntimeError(
-                    f"RunIdCollision: evidence vault already exists for run '{effective_run_id}'"
-                )
+        if existing_run is not None:
             from eval_runner.run_lifecycle import (
                 RunLifecycleState,
                 get_run_lifecycle_state,
                 transition_run_lifecycle,
             )
 
-            lf_state = get_run_lifecycle_state(effective_run_id)
-            if lf_state in (RunLifecycleState.FINALIZING, RunLifecycleState.SEALED):
-                raise RuntimeError(
-                    f"ResumptionError: cannot resume run '{effective_run_id}' in terminal "
-                    f"lifecycle state '{lf_state.value}'"
+            if not is_resume:
+                if not provider_submission:
+                    raise RuntimeError(
+                        f"RunIdCollision: provider already owns run '{effective_run_id}'"
+                    )
+                lifecycle = get_run_lifecycle_state(
+                    effective_run_id,
+                    run_store=self.run_store,
+                    context=run_context,
                 )
-            transition_run_lifecycle(effective_run_id, RunLifecycleState.OPEN)
+                existing_manifest = (
+                    self.run_store.get_manifest(effective_run_id, context=run_context) or {}
+                )
+                existing_events = self.run_store.get_events(
+                    effective_run_id, offset=0, limit=1, context=run_context
+                )
+                existing_context = existing_run.get("context") or (
+                    existing_run.get("metadata") or {}
+                ).get("runtime_context")
+                if (
+                    lifecycle != RunLifecycleState.OPEN
+                    or existing_events
+                    or existing_manifest.get("execution_manifest")
+                    or (
+                        isinstance(existing_context, Mapping)
+                        and isinstance(run_context, Mapping)
+                        and any(existing_context.get(k) != v for k, v in run_context.items())
+                    )
+                ):
+                    raise RuntimeError(
+                        f"RunIdCollision: provider submission '{effective_run_id}' is not an empty "
+                        "OPEN record in the active scope"
+                    )
+            if is_resume:
+                lf_state = get_run_lifecycle_state(
+                    effective_run_id,
+                    run_store=self.run_store,
+                    context=run_context,
+                )
+                if lf_state in (RunLifecycleState.FINALIZING, RunLifecycleState.SEALED):
+                    raise RuntimeError(
+                        f"ResumptionError: cannot resume run '{effective_run_id}' in terminal "
+                        f"lifecycle state '{lf_state.value}'"
+                    )
+                transition_run_lifecycle(
+                    effective_run_id,
+                    RunLifecycleState.OPEN,
+                    run_store=self.run_store,
+                    context=run_context,
+                )
+        elif is_resume:
+            raise RuntimeError(
+                "ResumptionArtifactMissing: provider has no immutable execution record for resume."
+            )
 
         # On resumption, the authoritative manifest and scenario snapshot are
         # an inseparable immutable contract.  Reject before emitting new trace
         # events or executing work when either artifact is absent, malformed,
         # or inconsistent with the other.
         if is_resume:
-            if not manifest_file.is_file() or not scenario_snapshot_file.is_file():
+            provider_manifest = (
+                self.run_store.get_manifest(effective_run_id, context=run_context) or {}
+            )
+            loaded_m_data = provider_manifest.get("execution_manifest")
+            loaded_snapshot = provider_manifest.get("scenario_data")
+            if not isinstance(loaded_m_data, dict) or not isinstance(loaded_snapshot, dict):
                 raise RuntimeError(
-                    "ResumptionArtifactMissing: immutable execution_manifest.json and "
-                    "scenario_resolved.json are required to resume a run."
+                    "ResumptionArtifactMissing: provider execution_manifest and scenario_data "
+                    "are required to resume a run."
                 )
             try:
-                with open(manifest_file, encoding="utf-8") as mf:
-                    loaded_m_data = json.load(mf)
                 exec_manifest = ExecutionManifest.from_dict(loaded_m_data)
                 exec_manifest_hash = exec_manifest.compute_manifest_hash()
-            except (OSError, TypeError, ValueError, json.JSONDecodeError) as em_err:
+            except (TypeError, ValueError) as em_err:
                 raise RuntimeError(
-                    "ResumptionManifestInvalid: immutable execution_manifest.json "
-                    "cannot be verified for resume."
+                    "ResumptionManifestInvalid: provider execution_manifest cannot be "
+                    "verified for resume."
                 ) from em_err
 
             try:
-                with open(scenario_snapshot_file, encoding="utf-8") as sf:
-                    loaded_snapshot = json.load(sf)
-                if not isinstance(loaded_snapshot, dict):
-                    raise ValueError("scenario_resolved.json is not a JSON object")
                 scenario_snapshot = loaded_snapshot
-            except (OSError, TypeError, ValueError, json.JSONDecodeError) as sf_err:
+                snapshot_hash = compute_scenario_hash(scenario_snapshot)
+            except (TypeError, ValueError) as sf_err:
                 raise RuntimeError(
-                    "ResumptionSnapshotInvalid: immutable scenario_resolved.json "
-                    "cannot be verified for resume."
+                    "ResumptionSnapshotInvalid: provider scenario_data cannot be "
+                    "verified for resume."
                 ) from sf_err
 
-            snapshot_hash = compute_scenario_hash(scenario_snapshot)
             if snapshot_hash != exec_manifest.scenario_hash:
                 raise RuntimeError(
-                    "ResumptionScenarioHashMismatch: scenario_resolved.json does not match "
+                    "ResumptionScenarioHashMismatch: provider scenario_data does not match "
                     "the authoritative execution manifest."
                 )
 
@@ -881,7 +929,7 @@ class DefaultRunner(BaseRunner):
                 or snapshot_version != exec_manifest.scenario_version
             ):
                 raise RuntimeError(
-                    "ResumptionScenarioIdentityMismatch: scenario_resolved.json does not "
+                    "ResumptionScenarioIdentityMismatch: provider scenario_data does not "
                     "match the authoritative execution manifest."
                 )
 
@@ -921,7 +969,42 @@ class DefaultRunner(BaseRunner):
             object.__setattr__(ctx, "scenario_data", _freeze_dict(scenario_snapshot))
             object.__setattr__(ctx, "metadata", _freeze_dict(new_meta))
 
+        # Establish provider ownership before emitting RUN_START.  The
+        # recorder is allowed to append only to a provider-owned run; creating
+        # it afterwards caused the reference provider to create an ``unknown``
+        # placeholder record from the first event, masking the real scenario,
+        # agent, and execution truth in console summaries.
+        if not is_resume:
+            self.run_store.create_run(
+                run_id=effective_run_id,
+                scenario_id=str(scenario_identifier),
+                agent_id=str(agent_id),
+                metadata=dict(ctx.metadata) if ctx.metadata else {},
+                context=run_context,
+            )
+            initial_manifest: dict[str, Any] = {
+                "execution_manifest": exec_manifest.to_dict(),
+                "scenario_data": scenario_snapshot,
+            }
+            if exec_manifest.metadata and "config_revision" in exec_manifest.metadata:
+                initial_manifest["config_revision"] = exec_manifest.metadata["config_revision"]
+            self.run_store.save_run_manifest(
+                effective_run_id,
+                initial_manifest,
+                context=run_context,
+            )
+
         try:
+            # FlightRecorderPlugin subscribes once per process. Bind this run's
+            # injected provider before RUN_START so concurrent runs cannot
+            # overwrite each other's storage affinity.
+            from .flight_recorder import FlightRecorderPlugin
+
+            FlightRecorderPlugin.bind_active_recorder(
+                effective_run_id,
+                self.run_store,
+                dict(runtime_context) if isinstance(runtime_context, Mapping) else None,
+            )
             events.emit(
                 events.CoreEvents.RUN_START,
                 {
@@ -954,27 +1037,7 @@ class DefaultRunner(BaseRunner):
             # the certification artifact: finalization is signed against this
             # evaluator-built manifest.  A resume is different—the initial
             # authoritative manifest is immutable and was reloaded above.
-            if not is_resume:
-                run_vault_dir.mkdir(parents=True, exist_ok=True)
-                manifest_tmp = manifest_file.with_suffix(".json.tmp")
-                scenario_tmp = scenario_snapshot_file.with_suffix(".json.tmp")
-                with open(manifest_tmp, "w", encoding="utf-8") as mf:
-                    json.dump(exec_manifest.to_dict(), mf, indent=2)
-                with open(scenario_tmp, "w", encoding="utf-8") as sf:
-                    json.dump(scenario_snapshot, sf, indent=2)
-                manifest_tmp.replace(manifest_file)
-                scenario_tmp.replace(scenario_snapshot_file)
-
-            if self.run_store is not None:
-                self.run_store.create_run(
-                    run_id=effective_run_id,
-                    scenario_id=str(scenario_identifier),
-                    agent_id=(metadata or {}).get("agent_id"),
-                    metadata=dict(ctx.metadata) if ctx.metadata else {},
-                    context=(metadata or {}).get("runtime_context"),
-                )
-
-            plugins.manager.trigger("before_evaluation", ctx)
+            plugin_registry.trigger("before_evaluation", ctx)
 
             all_attempt_results = []
 
@@ -1028,6 +1091,7 @@ class DefaultRunner(BaseRunner):
                     checkpoint_store=self.checkpoint_store,
                     policy_evaluator=self.policy_evaluator,
                     signing_backend=self.signing_backend,
+                    run_store=self.run_store,
                 )
                 try:
                     attempt_results = await session.execute_tasks(k)
@@ -1045,7 +1109,10 @@ class DefaultRunner(BaseRunner):
                     transition_run_lifecycle(
                         effective_run_id,
                         RunLifecycleState.PAUSED_FOR_APPROVAL,
-                        log_dir=session.log_root,
+                        run_store=self.run_store,
+                        context=dict(runtime_context)
+                        if isinstance(runtime_context, Mapping)
+                        else None,
                     )
                     raise
 
@@ -1070,7 +1137,7 @@ class DefaultRunner(BaseRunner):
             try:
                 # Cross-attempt aggregation
                 if attempts > 1:
-                    plugins.manager.trigger("on_metrics_calculated", ctx, all_attempt_results)
+                    plugin_registry.trigger("on_metrics_calculated", ctx, all_attempt_results)
 
                 # [AgentV v2.0.0] Standardized statistics over ACTUALLY EXECUTED
                 # attempts (P0 #8). pass_at_k is the unbiased estimator; the raw
@@ -1452,7 +1519,9 @@ class DefaultRunner(BaseRunner):
                             )
 
                             bind_revision_to_evidence(failed_manifest, observed_revision_record)
-                        self.run_store.save_run_manifest(effective_run_id, failed_manifest)
+                        self.run_store.save_run_manifest(
+                            effective_run_id, failed_manifest, context=runtime_context
+                        )
                     except Exception as err:
                         logger.debug("Failed saving failed run manifest on signing error: %s", err)
                 return EvaluationResult(
@@ -1533,7 +1602,9 @@ class DefaultRunner(BaseRunner):
                         from eval_runner.services.config_revision import bind_revision_to_evidence
 
                         bind_revision_to_evidence(manifest_data, observed_revision_record)
-                    self.run_store.save_run_manifest(effective_run_id, manifest_data)
+                    self.run_store.save_run_manifest(
+                        effective_run_id, manifest_data, context=runtime_context
+                    )
                 except Exception as e:
                     logger.debug(f"Failed to save manifest to RunStore: {e}")
 
@@ -1716,6 +1787,7 @@ def run_scenario(
     cancellation_event: Any | None = None,
     resumption_checkpoint: dict | None = None,
     resumption_token: str | None = None,
+    provider_submission: bool = False,
     runner: BaseRunner | None = None,
     run_store: Any | None = None,
     config_resolver: Any | None = None,
@@ -1762,6 +1834,7 @@ def run_scenario(
                 cancellation_event=cancellation_event,
                 resumption_checkpoint=resumption_checkpoint,
                 resumption_token=resumption_token,
+                provider_submission=provider_submission,
             )
         finally:
             from .adapters import close_adapter_sessions

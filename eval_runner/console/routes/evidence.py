@@ -11,17 +11,14 @@ import hashlib
 import json
 import logging
 from datetime import UTC, datetime
-from pathlib import Path
 from typing import Any
 
 from flask import Blueprint, Response, jsonify, request
 
+from agentv_runtime.manifest import resolve_artifact_scope
 from agentv_runtime.versions import VERIFICATION_PACKAGE_VERSION
-from eval_runner import config
-from eval_runner.console.auth_manager import require_permission
-from eval_runner.console.routes.runs import _run_is_in_active_context, resolve_trace_path
-from eval_runner.utils import is_path_safe
-from eval_runner.verifier import locate_certificate_file
+from eval_runner.console.auth_manager import active_runtime_context, require_permission
+from eval_runner.console.routes.runs import _active_run_store, _run_is_in_active_context
 
 logger = logging.getLogger(__name__)
 
@@ -35,40 +32,30 @@ def compute_sha3_digest(content: bytes | str) -> str:
     return f"sha3_256:{hashlib.sha3_256(content).hexdigest()}"
 
 
-def build_verification_package(run_id: str) -> dict[str, Any] | None:
+def build_verification_package(
+    run_id: str, *, run_store: Any, context: dict[str, Any] | None = None
+) -> dict[str, Any] | None:
     """
     Constructs an immutable VerificationPackage bundling scenario, configuration,
     runtime events, verdicts, cryptographic proofs, and content-addressed hashes.
     """
-    runs_dir = Path(config.RUN_LOG_DIR)
-    reports_dir = Path(config.REPORTS_DIR)
-
-    trace_path = resolve_trace_path(run_id)
-    if not trace_path or not trace_path.exists():
+    run = run_store.get_run(run_id, context=context)
+    raw_trace_bytes = run_store.get_trace_bytes(run_id, context=context)
+    try:
+        manifest_data = run_store.get_manifest(run_id, context=context) or {}
+    except Exception:
+        manifest_data = {}
+    if run is None or raw_trace_bytes is None:
         return None
 
     # Load trace events
     events: list[dict[str, Any]] = []
-    scenario_resolved: dict[str, Any] = {}
-    manifest_data: dict[str, Any] = {}
-
-    vault_dir = runs_dir / run_id
-    if vault_dir.is_dir():
-        scen_file = vault_dir / "scenario_resolved.json"
-        if scen_file.exists() and is_path_safe(str(scen_file), str(runs_dir)):
-            try:
-                scenario_resolved = json.loads(scen_file.read_text(encoding="utf-8"))
-            except Exception as err:
-                logger.debug("Failed reading scenario_resolved.json for %s: %s", run_id, err)
-
-        manifest_file = vault_dir / "run_manifest.json"
-        if manifest_file.exists() and is_path_safe(str(manifest_file), str(runs_dir)):
-            try:
-                manifest_data = json.loads(manifest_file.read_text(encoding="utf-8"))
-            except Exception as err:
-                logger.debug("Failed reading run_manifest.json for %s: %s", run_id, err)
-
-    raw_trace_bytes = trace_path.read_bytes()
+    scenario_resolved = (
+        manifest_data.get("scenario_data")
+        or manifest_data.get("scenario")
+        or run.get("scenario_data")
+        or {}
+    )
     trace_hash = compute_sha3_digest(raw_trace_bytes)
 
     # Parse preserving per-line provenance: (event, raw_line) pairs plus
@@ -114,15 +101,7 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
     execution_status = data_block.get("status", "EXECUTION_COMPLETED")
 
     # Load certificate and signature chain
-    cert_data: dict[str, Any] = {}
-    cert_path = locate_certificate_file(run_id)
-    if cert_path and cert_path.exists():
-        jail = str(reports_dir) if "reports" in str(cert_path) else str(runs_dir)
-        if is_path_safe(str(cert_path), jail):
-            try:
-                cert_data = json.loads(cert_path.read_text(encoding="utf-8"))
-            except Exception as err:
-                logger.debug("Failed reading certificate for %s: %s", run_id, err)
+    cert_data = manifest_data
 
     signatures = cert_data.get("provenance_chain", cert_data.get("signatures", []))
 
@@ -163,25 +142,32 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
 
     # Authoritative Verdict — determined by real verification and finalization,
     # not artifact presence.
-    from eval_runner.services.certification import CertificationService
-
-    fin_record = None
-    computed_status, computed_score = None, None
-    if not corrupt_line_offsets and trace_path and trace_path.exists():
-        try:
-            fin_record = CertificationService.extract_finalization_record(trace_path)
-        except Exception as err:
-            logger.debug("Failed extracting finalization record for %s: %s", run_id, err)
-        try:
-            computed_status, computed_score = CertificationService.extract_computed_run_outcome(
-                vault_dir, trace_path
-            )
-        except Exception as err:
-            logger.debug("Failed extracting computed run outcome for %s: %s", run_id, err)
-    if fin_record is not None:
-        is_eval_pass = fin_record.outcome.lower() == "pass"
-    elif computed_status in ("pass", "fail"):
-        is_eval_pass = computed_status == "pass"
+    compliance = manifest_data.get("compliance") or {}
+    cert = manifest_data.get("certification") or {}
+    cert_outcome = str(cert.get("outcome") or "").lower()
+    computed_status = str(
+        cert_outcome or compliance.get("status") or manifest_data.get("status") or execution_status
+    ).lower()
+    computed_score = compliance.get("score", manifest_data.get("score"))
+    if cert_outcome == "attested_fail":
+        is_eval_pass = False
+    elif data_block.get("passed") is True or computed_status in {"pass", "passed", "certified"}:
+        is_eval_pass = True
+    elif data_block.get("passed") is False or computed_status in {
+        "fail",
+        "failed",
+        "execution_failed",
+        "attested_fail",
+        "attested_failed",
+    }:
+        is_eval_pass = False
+    elif (
+        crypto_verification.get("verified") is True
+        and crypto_verification.get("manifest_hash_match") is True
+        and computed_status
+        not in {"fail", "failed", "execution_failed", "attested_fail", "attested_failed"}
+    ):
+        is_eval_pass = True
     else:
         is_eval_pass = None
 
@@ -197,6 +183,12 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
         and crypto_verification.get("manifest_hash_match") is True
     ):
         verified_outcome = "VERIFIED"
+    elif (
+        is_eval_pass is False
+        and crypto_verification.get("verified") is True
+        and crypto_verification.get("manifest_hash_match") is True
+    ):
+        verified_outcome = "ATTESTED_FAIL"
     elif is_eval_pass is True:
         # Execution passed but signature did not verify — report truthfully
         verified_outcome = "UNVERIFIED"
@@ -206,7 +198,9 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
         # Authoritative finalization/computed outcomes unavailable
         verified_outcome = "INCONCLUSIVE"
 
-    evidence_chain_valid: bool = verified_outcome == "VERIFIED" and not corrupt_line_offsets
+    evidence_chain_valid: bool = (
+        verified_outcome in {"VERIFIED", "ATTESTED_FAIL"} and not corrupt_line_offsets
+    )
 
     assertions = data_block.get("assertions", [])
     if not assertions:
@@ -217,9 +211,7 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
                 assertions = ev_asserts
                 break
     # Score calculation strictly from authoritative finalization or computed outcome
-    if fin_record is not None:
-        score = float(fin_record.score)
-    elif computed_status not in (None, "inconclusive") and computed_score is not None:
+    if computed_status not in (None, "inconclusive") and computed_score is not None:
         score = float(computed_score)
     else:
         if assertions:
@@ -290,12 +282,25 @@ def build_verification_package(run_id: str) -> dict[str, Any] | None:
     }
 
     # Deterministic canonical core (excluding envelope timestamps)
+    artifact_scope = resolve_artifact_scope(manifest_data)
     canonical_payload = {
         "format": "agentv_verification_package",
         "package_version": VERIFICATION_PACKAGE_VERSION,
         "run_id": run_id,
-        "tenant_id": manifest_data.get("tenant_id", "default-tenant"),
-        "workspace_id": manifest_data.get("workspace_id", "default-workspace"),
+        "org_id": (artifact_scope["org_id"] or manifest_data.get("org_id") or "default-org"),
+        "tenant_id": (
+            artifact_scope["tenant_id"] or manifest_data.get("tenant_id") or "default-tenant"
+        ),
+        "workspace_id": (
+            artifact_scope["workspace_id"]
+            or manifest_data.get("workspace_id")
+            or "default-workspace"
+        ),
+        "active_environment": (
+            artifact_scope["active_environment"]
+            or manifest_data.get("active_environment")
+            or "production"
+        ),
         "chain": chain,
         "manifest": manifest_data,
         "scenario": scenario_resolved,
@@ -338,7 +343,9 @@ def get_verification_package(run_id: str):
     """Serve or export immutable .agentv-package.json Verification Package."""
     if not _run_is_in_active_context(run_id):
         return jsonify({"error": "Verification package not found for run", "run_id": run_id}), 404
-    package = build_verification_package(run_id)
+    package = build_verification_package(
+        run_id, run_store=_active_run_store(), context=active_runtime_context()
+    )
     if not package:
         return jsonify({"error": "Verification package not found for run", "run_id": run_id}), 404
 
@@ -358,28 +365,25 @@ def get_verification_package(run_id: str):
 @require_permission("runs:read")
 def list_verification_packages():
     """List summary records of all available verification packages."""
-    runs_dir = Path(config.RUN_LOG_DIR)
-    if not runs_dir.exists():
-        return jsonify({"packages": []})
-
     packages_summary = []
-    for path in runs_dir.iterdir():
-        if path.is_dir() and path.name.startswith("run-"):
-            rid = path.name
-            if not _run_is_in_active_context(rid):
-                continue
-            cert_file = locate_certificate_file(rid)
-            cert_exists = cert_file is not None and cert_file.exists()
-            manifest_exists = (path / "run_manifest.json").exists() or cert_exists
-            packages_summary.append(
-                {
-                    "run_id": rid,
-                    "has_certificate": cert_exists,
-                    "has_manifest": manifest_exists,
-                    "package_url": f"/api/v1/evidence/packages/{rid}",
-                    "download_url": f"/api/v1/evidence/packages/{rid}?download=true",
-                }
-            )
+    context = active_runtime_context()
+    store = _active_run_store()
+    for run in store.list_runs(limit=200, context=context):
+        rid = run.get("run_id")
+        if not rid or not _run_is_in_active_context(rid):
+            continue
+        manifest = store.get_manifest(rid, context=context) or {}
+        packages_summary.append(
+            {
+                "run_id": rid,
+                "has_certificate": bool(
+                    manifest.get("verification_package") or manifest.get("vc_version")
+                ),
+                "has_manifest": bool(manifest),
+                "package_url": f"/api/v1/evidence/packages/{rid}",
+                "download_url": f"/api/v1/evidence/packages/{rid}?download=true",
+            }
+        )
 
     return jsonify({"packages": packages_summary})
 

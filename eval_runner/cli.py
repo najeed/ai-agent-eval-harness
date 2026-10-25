@@ -895,9 +895,11 @@ def main():
         traceback.print_exc()
         sys.exit(1)
     finally:
-        plugins_module = sys.modules.get("eval_runner.plugins")
-        if plugins_module is not None:
-            plugins_module.manager.finalize()
+        # Plugin discovery and ownership are centralized in runtime discovery;
+        # the CLI must not reach into the legacy module registry directly.
+        from eval_runner.runtime_services import resolve_plugin_registry
+
+        resolve_plugin_registry().finalize()
 
 
 if __name__ == "__main__":

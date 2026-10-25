@@ -317,13 +317,9 @@ async def test_handler_evaluation_expansion(mock_config, monkeypatch):
         {"event": "agent_response", "content": "hello"},
         {"event": "run_end", "status": "pass"},
     ]
-    with (
-        patch(
-            "eval_runner.handlers.evaluation._resolve_replay_trace",
-            return_value=mock_config / "run.jsonl",
-        ),
-        patch("eval_runner.trace_utils.load_events", return_value=events),
-    ):
+    provider = MagicMock()
+    provider.get_events.return_value = events
+    with patch("eval_runner.runtime_services.resolve_run_store", return_value=provider):
         assert await evaluation.handle_replay(MagicMock(run_id="r1")) == 0
 
 

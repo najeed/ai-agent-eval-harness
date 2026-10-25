@@ -31,7 +31,7 @@ def run_with_failed_assertion(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
     run_dir = runs_dir / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
 
-    trace_path = run_dir / "run.jsonl"
+    run_dir / "run.jsonl"
     events: list[dict[str, Any]] = [
         {
             "_seq": 1,
@@ -83,10 +83,6 @@ def run_with_failed_assertion(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
         },
     ]
 
-    with open(trace_path, "w", encoding="utf-8") as f:
-        for ev in events:
-            f.write(json.dumps(ev) + "\n")
-
     manifest = {
         "run_id": run_id,
         "execution_mode": "live",
@@ -95,15 +91,26 @@ def run_with_failed_assertion(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
     }
     (run_dir / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
 
-    return run_id
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    run_store = LocalFileRunStore(runs_dir)
+    run_store.create_run(run_id, "scenario-rca")
+    run_store.append_events(run_id, events)
+    run_store.save_run_manifest(run_id, manifest)
+
+    return {"run_id": run_id, "run_store": run_store}
 
 
-def test_rca_evidence_contract_populates_verdict_assertions(run_with_failed_assertion: str):
+def test_rca_evidence_contract_populates_verdict_assertions(
+    run_with_failed_assertion: dict[str, Any],
+):
     """
     Contract guarantee: build_verification_package MUST populate
     verdict.assertions with the causal node, metric, expected, and actual values.
     """
-    package = build_verification_package(run_with_failed_assertion)
+    run_id = run_with_failed_assertion["run_id"]
+    run_store = run_with_failed_assertion["run_store"]
+    package = build_verification_package(run_id, run_store=run_store)
     assert package is not None, "Failed to build verification package"
 
     # 1. Verdict contract check

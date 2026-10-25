@@ -100,9 +100,13 @@ def console_jail(request):
 
 @pytest.fixture
 def client(console_jail, monkeypatch):
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
     app = Flask(__name__)
     app.secret_key = "test-secret"
     monkeypatch.setenv("AGENTV_TEST_AUTH_BYPASS", "1")
+    store = LocalFileRunStore(console_jail["runs"])
+    app.extensions["agentv_run_store"] = store
     app.register_blueprint(trust_bp)
 
     monkeypatch.setattr(config, "PROJECT_ROOT", console_jail["root"])
@@ -145,12 +149,17 @@ def test_certify_run_success(client, console_jail):
     (run_dir / "run.jsonl").write_text("\n".join(core_events + [fin_ev]) + "\n", encoding="utf-8")
 
     with (
-        patch("eval_runner.verifier.TraceVerifier.sign_trace") as mock_sign,
+        patch("eval_runner.verifier.TraceVerifier.sign_trace_bytes") as mock_sign,
         patch(
             "eval_runner.loader.load_scenario", return_value={"id": "scen_1", "version": "1.0.0"}
         ),
     ):
-        mock_sign.return_value = {"trace_hash": "fake_hash"}
+        mock_sign.return_value = {
+            "trace_hash": "fake_hash",
+            "compliance": {"status": "pass", "score": 1.0},
+            "execution_mode": "live",
+            "provisional": False,
+        }
         res = client.post(
             "/api/v1/certify",
             json={"run_id": run_id, "scenario_data": {"id": "scen_1", "version": "1.0.0"}},
@@ -196,12 +205,17 @@ def test_certify_run_fail_closed_computed_fail(client, console_jail):
     (run_dir / "run.jsonl").write_text("\n".join(core_events + [fin_ev]) + "\n", encoding="utf-8")
 
     with (
-        patch("eval_runner.verifier.TraceVerifier.sign_trace") as mock_sign,
+        patch("eval_runner.verifier.TraceVerifier.sign_trace_bytes") as mock_sign,
         patch(
             "eval_runner.loader.load_scenario", return_value={"id": "scen_1", "version": "1.0.0"}
         ),
     ):
-        mock_sign.return_value = {"trace_hash": "fake_hash"}
+        mock_sign.return_value = {
+            "trace_hash": "fake_hash",
+            "compliance": {"status": "fail", "score": 0.0},
+            "execution_mode": "live",
+            "provisional": False,
+        }
         # Attempt to override computed fail with pass
         res = client.post(
             "/api/v1/certify",
@@ -212,7 +226,7 @@ def test_certify_run_fail_closed_computed_fail(client, console_jail):
             },
         )
         assert res.status_code == 200
-        # Assert that sign_trace received fail
+        # Assert that sign_trace_bytes received fail
         assert mock_sign.call_args[1]["compliance_status"] == "fail"
 
 
@@ -291,6 +305,7 @@ def test_verify_run_public_non_compliant_score(client, console_jail):
 
 
 def test_verify_run_exception(client, console_jail):
+    """A filesystem-only vault is not evidence visible to the console."""
     run_id = "verify_error"
     run_dir = console_jail["runs"] / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
@@ -299,8 +314,8 @@ def test_verify_run_exception(client, console_jail):
     (run_dir / "run_manifest.json").write_text("bad data", encoding="utf-8")
 
     res = client.get(f"/api/v1/verify/{run_id}")
-    assert res.status_code == 500
-    assert res.get_json()["verified"] is False
+    assert res.status_code == 404
+    assert "error" in res.get_json()
 
 
 def test_get_identity_public_key_success(client):
@@ -366,7 +381,7 @@ def test_certify_run_generic_exception(client, console_jail):
 
     with (
         patch(
-            "eval_runner.verifier.TraceVerifier.sign_trace",
+            "eval_runner.verifier.TraceVerifier.sign_trace_bytes",
             side_effect=Exception("Critical Failure"),
         ),
         patch(
@@ -812,10 +827,8 @@ def test_public_verify_run_manifest_not_found(client, console_jail):
     run_dir = console_jail["runs"] / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     (run_dir / "run.jsonl").write_text("{}\n", encoding="utf-8")
-    with patch("eval_runner.console.routes.trust.locate_certificate_file", return_value=None):
-        res = client.get(f"/api/v1/verify/{run_id}")
-        assert res.status_code == 404
-        assert "Verification Failed: Trace or Certificate not found" in res.get_json()["error"]
+    res = client.get(f"/api/v1/verify/{run_id}")
+    assert res.status_code == 404
 
 
 def test_public_verify_run_provisional_and_package_empty_line(client, console_jail):

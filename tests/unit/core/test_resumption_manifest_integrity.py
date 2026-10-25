@@ -165,6 +165,9 @@ async def test_resumption_rejects_snapshot_that_does_not_match_manifest(tmp_path
     (run_vault / "scenario_resolved.json").write_text(
         json.dumps({**frozen_scenario, "tampered": True}), encoding="utf-8"
     )
+    (run_vault / "run_record.json").write_text(
+        json.dumps({"run_id": run_id, "status": "OPEN"}), encoding="utf-8"
+    )
 
     runner = DefaultRunner()
     with (
@@ -204,6 +207,7 @@ def test_inprocess_backend_resume_preserves_mode_and_contract(tmp_path):
     backend = InProcessExecutionBackend.get_instance()
     mock_store = MagicMock()
     backend._checkpoint_store = mock_store
+    backend._run_store = MagicMock()
     checkpoint = {
         "status": "PAUSED_FOR_APPROVAL",
         "session_state": {"approval_token": "tok_valid"},
@@ -214,8 +218,12 @@ def test_inprocess_backend_resume_preserves_mode_and_contract(tmp_path):
     with (
         patch.object(config, "RUN_LOG_DIR", tmp_path / "runs"),
         patch("eval_runner.reference.approval_store.get_default_approval_store") as mock_app_store,
+        patch("eval_runner.reference.inprocess_backend.transition_run_lifecycle"),
         patch.object(backend, "submit") as mock_submit,
     ):
+        from eval_runner.runtime_services import resolve_run_store
+
+        backend._run_store = resolve_run_store()
         mock_approval = MagicMock()
         mock_approval.run_id = run_id
         mock_approval.status = "APPROVED"

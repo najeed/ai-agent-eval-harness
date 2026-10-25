@@ -36,6 +36,8 @@ class OllamaProvider(LLMProvider):
         assert_airgap_safe_endpoint(self.host)
 
     async def generate(self, prompt: str, **kwargs) -> str:
+        timeout_seconds = config.OLLAMA_REQUEST_TIMEOUT_SECONDS
+
         async def _call():
             async with aiohttp.ClientSession() as session:
                 try:
@@ -50,17 +52,56 @@ class OllamaProvider(LLMProvider):
                                 "seed": kwargs.get("seed"),
                             },
                         },
-                        timeout=aiohttp.ClientTimeout(total=30),
+                        timeout=aiohttp.ClientTimeout(total=timeout_seconds),
                     ) as response:
                         if response.status == 200:
                             data = await response.json()
                             return data.get("response", "").strip()
-                        else:
-                            raise Exception(f"Ollama error: {response.status}")
+                        error_body = await response.text()
+                        if response.status == 404:
+                            raise LLMModelNotFoundError(
+                                f"Ollama model '{self.model}' was not found at {self.host}: "
+                                f"{error_body}",
+                                provider="ollama",
+                                status_code=response.status,
+                            )
+                        raise LLMInvalidRequestError(
+                            f"Ollama request for model '{self.model}' at {self.host} failed "
+                            f"with HTTP {response.status}: {error_body or response.reason}",
+                            provider="ollama",
+                            status_code=response.status,
+                        )
+                except LLMError:
+                    raise
+                except TimeoutError as exc:
+                    raise LLMTransientError(
+                        f"Ollama request timed out after {timeout_seconds:g}s for model "
+                        f"'{self.model}' at {self.host}",
+                        provider="ollama",
+                        status_code=504,
+                        raw_error=exc,
+                    ) from exc
+                except aiohttp.ClientConnectionError as exc:
+                    raise LLMTransientError(
+                        f"Ollama connection failed for model '{self.model}' at {self.host}: {exc}",
+                        provider="ollama",
+                        status_code=503,
+                        raw_error=exc,
+                    ) from exc
+                except aiohttp.ClientError as exc:
+                    raise LLMTransientError(
+                        f"Ollama HTTP client error for model '{self.model}' at {self.host}: {exc}",
+                        provider="ollama",
+                        status_code=503,
+                        raw_error=exc,
+                    ) from exc
                 except Exception as e:
-                    if "Ollama error:" in str(e):
-                        raise
-                    raise Exception(f"Ollama connection failed: {e}") from e
+                    raise LLMError(
+                        f"Ollama request failed unexpectedly for model '{self.model}' "
+                        f"at {self.host}: {type(e).__name__}: {e}",
+                        provider="ollama",
+                        raw_error=e,
+                    ) from e
 
         return await execute_with_resilience(_call, provider="ollama")
 

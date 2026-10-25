@@ -26,6 +26,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+import eval_runner.hitl.pending as hitl_pending
 from agentv_runtime.interfaces import (
     ApprovalLedger,
     ApprovalRequest,
@@ -417,3 +418,457 @@ def test_core_retains_no_enterprise_imports():
         assert not has_enterprise_import, (
             f"Module '{mod_name}' contains illegal Enterprise package imports."
         )
+
+
+def test_session_approval_manager_property_and_list_pending(tmp_path: Path):
+    store = FileApprovalStore(base_dir=tmp_path / "approvals")
+    with patch(
+        "eval_runner.session_components.approval_manager.resolve_approval_store", return_value=store
+    ):
+        mgr = SessionApprovalManager(run_id="run_prop_01")
+        assert mgr.approval_store is store
+
+
+def test_request_approval_plugin_interceptor_rejections_and_state_failure(tmp_path: Path):
+    registry = hitl_pending.PendingApprovalRegistry()
+    mock_plugin = MagicMock()
+
+    # 1. Interceptor returns False
+    mock_plugin.trigger_interceptor.return_value = False
+    mock_plugin.last_rejection_reason = "Policy violation"
+    mgr = SessionApprovalManager(
+        run_id="run_plug_01", registry=registry, plugin_manager=mock_plugin
+    )
+    with pytest.raises(PermissionError, match="Policy violation"):
+        mgr.request_approval("t1", "tool_x", {})
+
+    # 2. Interceptor returns allowed: False with error string
+    mock_plugin.trigger_interceptor.return_value = {"allowed": False, "error": "Custom rule fail"}
+    mock_plugin.last_rejection_reason = None
+    with pytest.raises(PermissionError, match="Custom rule fail"):
+        mgr.request_approval("t1", "tool_x", {})
+
+    # 3. Interceptor returns allowed: False with default message
+    mock_plugin.trigger_interceptor.return_value = {"allowed": False}
+    with pytest.raises(PermissionError, match="Approval rejected by security policy"):
+        mgr.request_approval("t1", "tool_x", {})
+
+    # 4. State provider raises exception -> checkpoint still created
+    mock_plugin.trigger_interceptor.return_value = True
+    chk = DummyCheckpointManager()
+
+    def fail_state():
+        raise RuntimeError("state provider crash")
+
+    mgr_state = SessionApprovalManager(
+        run_id="run_state_01",
+        registry=registry,
+        checkpoint_manager=chk,
+        state_provider=fail_state,
+        plugin_manager=mock_plugin,
+    )
+    appr = mgr_state.request_approval("t1", "tool_x", {"param": 1})
+    assert appr.run_id == "run_state_01"
+    assert len(chk.checkpoints) == 1
+
+    # 5. List and resolve pending approvals
+    assert len(mgr_state.list_pending_approvals()) == 1
+    assert mgr_state.resolve_approval(appr.id, "approve", response="OK", resolved_by="admin")
+    assert len(mgr_state.list_pending_approvals()) == 0
+
+
+def test_create_durable_request_scope_sources(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "runs")
+    (tmp_path / "runs").mkdir(parents=True, exist_ok=True)
+    store = FileApprovalStore(base_dir=tmp_path / "approvals")
+
+    valid_context = {
+        "org_id": "org_1",
+        "tenant_id": "t1",
+        "workspace_id": "ws_1",
+        "active_environment": "staging",
+    }
+    scope_token = ScopeToken.from_tags(valid_context)
+
+    # 1. Candidate scope via meta["scope_token"]
+    mgr1 = SessionApprovalManager(run_id="run_sc_01", approval_store=store)
+    req1 = mgr1.create_durable_request(
+        turn_index=1,
+        metadata={"scope_token": scope_token},
+    )
+    assert req1.scope_digest == scope_token.digest
+
+    # 2. Candidate scope via run_index.read_run_index
+    from eval_runner.run_index import create_run_index
+
+    ctx2 = dict(valid_context, tenant_id="t2")
+    create_run_index(run_id="run_sc_02", context=ctx2, scenario_id="sc_02", root=tmp_path / "runs")
+    mgr2 = SessionApprovalManager(run_id="run_sc_02", approval_store=store)
+    req2 = mgr2.create_durable_request(turn_index=1)
+    assert req2.scope["tenant_id"] == "t2"
+
+    # 3. Candidate scope via state_provider metadata and scenario_data
+    def provider_with_scope():
+        return {"scenario_data": {"runtime_context": dict(valid_context, tenant_id="t3")}}
+
+    mgr3 = SessionApprovalManager(
+        run_id="run_sc_03", approval_store=store, state_provider=provider_with_scope
+    )
+    req3 = mgr3.create_durable_request(turn_index=1)
+    assert req3.scope["tenant_id"] == "t3"
+
+    # 4. Candidate scope via injected run_store.get_manifest
+    mock_run_store = MagicMock()
+    mock_run_store.get_manifest.return_value = {"context": dict(valid_context, tenant_id="t4")}
+    mgr4 = SessionApprovalManager(
+        run_id="run_sc_04", approval_store=store, run_store=mock_run_store
+    )
+    req4 = mgr4.create_durable_request(turn_index=1)
+    assert req4.scope["tenant_id"] == "t4"
+
+    # 5. Raw context as ScopeToken directly in meta["runtime_context"]
+    mgr5 = SessionApprovalManager(run_id="run_sc_05", approval_store=store)
+    req5 = mgr5.create_durable_request(turn_index=1, metadata={"runtime_context": scope_token})
+    assert req5.scope_digest == scope_token.digest
+
+    # 6. Policy query raises exception
+    mock_policy = MagicMock()
+    mock_policy.is_scope_mandatory.side_effect = RuntimeError("Policy check failure")
+    with patch("agentv_runtime.scope.get_active_scope_policy", return_value=mock_policy):
+        mgr6 = SessionApprovalManager(run_id="run_sc_06", approval_store=store)
+        req6 = mgr6.create_durable_request(turn_index=1)
+        assert req6.status == "PENDING"
+
+
+def test_create_durable_request_plugin_interceptor_rejection(tmp_path: Path):
+    store = FileApprovalStore(base_dir=tmp_path / "approvals")
+    mock_plugin = MagicMock()
+    mock_plugin.trigger_interceptor.return_value = False
+    mock_plugin.last_rejection_reason = "Durable policy reject"
+
+    mgr = SessionApprovalManager(
+        run_id="run_durable_reject", approval_store=store, plugin_manager=mock_plugin
+    )
+    with pytest.raises(PermissionError, match="Durable policy reject"):
+        mgr.create_durable_request(turn_index=1)
+
+    mock_plugin.trigger_interceptor.return_value = {
+        "allowed": False,
+        "error": "Custom durable error",
+    }
+    mock_plugin.last_rejection_reason = None
+    with pytest.raises(PermissionError, match="Custom durable error"):
+        mgr.create_durable_request(turn_index=1)
+
+
+def test_create_durable_request_manifest_and_run_index_mismatch(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "runs")
+    run_dir = tmp_path / "runs" / "run_mismatch_01"
+    run_dir.mkdir(parents=True, exist_ok=True)
+    store = FileApprovalStore(base_dir=tmp_path / "approvals")
+
+    valid_context = {
+        "org_id": "org_1",
+        "tenant_id": "t1",
+        "workspace_id": "ws_1",
+        "active_environment": "staging",
+    }
+    token_b = ScopeToken.from_tags(dict(valid_context, tenant_id="b"))
+
+    # 1. Execution manifest on disk with mismatched scope digest
+    manifest_path = run_dir / "execution_manifest.json"
+    manifest_path.write_text(
+        json.dumps({"manifest_id": "m1", "scope_digest": "digest_a"}), encoding="utf-8"
+    )
+
+    mgr = SessionApprovalManager(run_id="run_mismatch_01", approval_store=store, scope=token_b)
+    with pytest.raises(
+        ScopeMismatchError, match="Scope digest mismatch between execution manifest"
+    ):
+        mgr.create_durable_request(turn_index=1)
+
+    # 2. Matching execution manifest is updated cleanly
+    manifest_path.write_text(
+        json.dumps({"manifest_id": "m1", "scope_digest": token_b.digest}), encoding="utf-8"
+    )
+    req = mgr.create_durable_request(turn_index=1)
+    assert req.manifest_id == "m1"
+
+    # 3. Pre-existing run index record with mismatched digest
+    from eval_runner.run_index import create_run_index
+
+    ctx_a = dict(valid_context, tenant_id="a")
+    create_run_index(
+        run_id="run_mismatch_02", context=ctx_a, scenario_id="sc_mismatch", root=tmp_path / "runs"
+    )
+    mgr2 = SessionApprovalManager(run_id="run_mismatch_02", approval_store=store, scope=token_b)
+    with pytest.raises(ScopeMismatchError, match="Scope digest mismatch between run index"):
+        mgr2.create_durable_request(turn_index=1)
+
+    # 4. Pre-existing run index record with matching digest updates status
+    create_run_index(
+        run_id="run_match_idx",
+        context=dict(valid_context, tenant_id="b"),
+        scenario_id="sc_match",
+        root=tmp_path / "runs",
+    )
+    mgr_match = SessionApprovalManager(run_id="run_match_idx", approval_store=store, scope=token_b)
+    req_match = mgr_match.create_durable_request(turn_index=1)
+    assert req_match.status == "PENDING"
+
+
+def test_create_durable_request_fallbacks_and_fault_tolerance(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "runs")
+    store = FileApprovalStore(base_dir=tmp_path / "approvals")
+
+    # 1. State provider returns scenario_id and checkpoint state
+    def provider_with_scenario():
+        return {"scenario_data": {"id": "scenario_42"}, "extra_state": True}
+
+    chk = DummyCheckpointManager()
+    mock_plugin = MagicMock()
+    mock_plugin.trigger_interceptor.return_value = True
+    mock_plugin.trigger.side_effect = RuntimeError(
+        "Plugin trigger error"
+    )  # on_approval_created fails
+
+    mock_bus = MagicMock()
+    mock_bus.emit.side_effect = RuntimeError("Event bus emit error")
+
+    mgr = SessionApprovalManager(
+        run_id="run_fault_01",
+        approval_store=store,
+        checkpoint_manager=chk,
+        state_provider=provider_with_scenario,
+        plugin_manager=mock_plugin,
+        event_bus=mock_bus,
+    )
+
+    req = mgr.create_durable_request(
+        turn_index=2,
+        action_payload={"tool": "exec", "cmd": "ls"},
+        idempotency_key="custom_idemp_key",
+    )
+    assert req.idempotency_key == "custom_idemp_key"
+    assert len(chk.checkpoints) == 1
+    assert chk.checkpoints["chk_0001"]["state"]["extra_state"] is True
+
+    # 2. Checkpoint state provider error is tolerated
+    def crash_state():
+        raise RuntimeError("Checkpoint state extraction error")
+
+    mgr_crash = SessionApprovalManager(
+        run_id="run_fault_02",
+        approval_store=store,
+        checkpoint_manager=chk,
+        state_provider=crash_state,
+    )
+    req_crash = mgr_crash.create_durable_request(turn_index=1)
+    assert req_crash.status == "PENDING"
+
+    # 3. Execution manifest write error and run index creation error are caught
+    with patch("pathlib.Path.replace", side_effect=OSError("Disk write error")):
+        mgr_disk_err = SessionApprovalManager(run_id="run_disk_err", approval_store=store)
+        req_disk_err = mgr_disk_err.create_durable_request(turn_index=1)
+        assert req_disk_err.status == "PENDING"
+
+
+def test_resolve_durable_request_approval_lifecycle_and_hooks(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "runs")
+    store = FileApprovalStore(base_dir=tmp_path / "approvals")
+    token_scope = ScopeToken.from_tags({"tenant": "prod"})
+
+    mock_run_store = MagicMock()
+    mock_plugin = MagicMock()
+    mock_plugin.trigger_interceptor.return_value = True
+    mock_plugin.trigger.side_effect = RuntimeError("on_approval_resolved failed")
+    mock_bus = MagicMock()
+    mock_bus.emit.side_effect = RuntimeError("emit failed")
+
+    mgr = SessionApprovalManager(
+        run_id="run_resolve_01",
+        approval_store=store,
+        scope=token_scope,
+        run_store=mock_run_store,
+        plugin_manager=mock_plugin,
+        event_bus=mock_bus,
+    )
+
+    req = mgr.create_durable_request(turn_index=1)
+
+    # 1. Interceptor rejection on resolution
+    mock_plugin.trigger_interceptor.return_value = {
+        "allowed": False,
+        "error": "Resolution forbidden",
+    }
+    with pytest.raises(PermissionError, match="Resolution forbidden"):
+        mgr.resolve_durable_request(req.approval_token, decision="APPROVED")
+
+    # 2. Successful approval resolution with bound recorder & lifecycle transition
+    mock_plugin.trigger_interceptor.return_value = True
+    with (
+        patch("eval_runner.flight_recorder.FlightRecorderPlugin.bind_active_recorder") as mock_bind,
+        patch("eval_runner.run_lifecycle.transition_run_lifecycle") as mock_trans,
+    ):
+        resolved = mgr.resolve_durable_request(
+            req.approval_token,
+            decision="APPROVED",
+            decided_by="admin",
+            decision_reason="Verified valid",
+        )
+        assert resolved.status == "APPROVED"
+        mock_bind.assert_called_once_with(
+            "run_resolve_01", mock_run_store, context={"tenant": "prod"}
+        )
+        mock_trans.assert_called_once()
+
+    # 3. get_durable_request and list_durable_pending with and without explicit scope
+    assert mgr.get_durable_request(req.approval_token) is not None
+    assert mgr.get_durable_request(req.approval_token, scope=token_scope) is not None
+    assert len(mgr.list_durable_pending()) == 0  # It was approved, no longer pending
+
+    # 4. Resolve rejection leaves run closed without recorder binding
+    req_rej = mgr.create_durable_request(turn_index=2)
+    mock_plugin.trigger.side_effect = None
+    mock_bus.emit.side_effect = None
+    resolved_rej = mgr.resolve_durable_request(req_rej.approval_token, decision="REJECTED")
+    assert resolved_rej.status == "REJECTED"
+
+
+def test_approval_manager_uncovered_branches(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "runs")
+    (tmp_path / "runs").mkdir(parents=True, exist_ok=True)
+    store = FileApprovalStore(base_dir=tmp_path / "approvals")
+    valid_context = {
+        "org_id": "org_1",
+        "tenant_id": "t1",
+        "workspace_id": "ws_1",
+        "active_environment": "staging",
+    }
+    scope_token = ScopeToken.from_tags(valid_context)
+
+    # 1. request_approval without plugin_manager, without checkpoint_manager (67->84, 84->105)
+    registry = hitl_pending.PendingApprovalRegistry()
+    mgr_basic = SessionApprovalManager(run_id="run_basic_01", registry=registry)
+    appr1 = mgr_basic.request_approval("task_1", "my_tool", {"a": 1})
+    assert appr1.run_id == "run_basic_01"
+
+    # 2. request_approval with checkpoint_manager but state_provider is None (91->96)
+    chk = DummyCheckpointManager()
+    mgr_chk_only = SessionApprovalManager(
+        run_id="run_chk_only", registry=registry, checkpoint_manager=chk
+    )
+    appr2 = mgr_chk_only.request_approval("task_2", "my_tool", {"b": 2})
+    assert appr2.run_id == "run_chk_only"
+
+    # 3. state_provider raises exception during scope extraction (174->185)
+    def fail_scope_st():
+        raise RuntimeError("state provider crash on scope")
+
+    mgr_st_fail = SessionApprovalManager(
+        run_id="run_st_fail",
+        approval_store=store,
+        state_provider=fail_scope_st,
+    )
+    req_st_fail = mgr_st_fail.create_durable_request(turn_index=1)
+    assert req_st_fail.status == "PENDING"
+
+    # 4. run_store.get_manifest raises exception and returns empty context (188->193, 190-191)
+    mock_rs = MagicMock()
+    mock_rs.get_manifest.side_effect = RuntimeError("run store get_manifest failed")
+    mgr_rs_fail = SessionApprovalManager(
+        run_id="run_rs_fail", approval_store=store, run_store=mock_rs
+    )
+    req_rs_fail = mgr_rs_fail.create_durable_request(turn_index=1)
+    assert req_rs_fail.status == "PENDING"
+
+    mock_rs.get_manifest.side_effect = None
+    mock_rs.get_manifest.return_value = {}  # No context
+    mgr_rs_empty = SessionApprovalManager(
+        run_id="run_rs_empty", approval_store=store, run_store=mock_rs
+    )
+    req_rs_empty = mgr_rs_empty.create_durable_request(turn_index=1)
+    assert req_rs_empty.status == "PENDING"
+
+    # 5. Patch get_active_scope_policy on approval_manager module where it was imported (202-203)
+    mock_pol = MagicMock()
+    mock_pol.is_scope_mandatory.side_effect = RuntimeError("is_scope_mandatory crash")
+    with patch(
+        "eval_runner.session_components.approval_manager.get_active_scope_policy",
+        return_value=mock_pol,
+    ):
+        mgr_pol_err = SessionApprovalManager(run_id="run_pol_err", approval_store=store)
+        req_pol_err = mgr_pol_err.create_durable_request(turn_index=1)
+        assert req_pol_err.status == "PENDING"
+
+    # 6. is_scope_mandatory is True AND candidate_scope is valid (206->212)
+    mock_pol_mandatory = MagicMock()
+    mock_pol_mandatory.is_scope_mandatory.return_value = True
+    with patch(
+        "eval_runner.session_components.approval_manager.get_active_scope_policy",
+        return_value=mock_pol_mandatory,
+    ):
+        mgr_mand_ok = SessionApprovalManager(
+            run_id="run_mand_ok", approval_store=store, scope=scope_token
+        )
+        req_mand_ok = mgr_mand_ok.create_durable_request(turn_index=1)
+        assert req_mand_ok.scope_digest == scope_token.digest
+
+    # 7. execution_manifest on disk has no manifest_id (281) and corrupt JSON (288-289)
+    run_dir_281 = tmp_path / "runs" / "run_281"
+    run_dir_281.mkdir(parents=True, exist_ok=True)
+    man_281 = run_dir_281 / "execution_manifest.json"
+    man_281.write_text(
+        json.dumps({"scope_digest": scope_token.digest}), encoding="utf-8"
+    )  # no manifest_id
+    mgr_281 = SessionApprovalManager(run_id="run_281", approval_store=store, scope=scope_token)
+    req_281 = mgr_281.create_durable_request(turn_index=1, manifest_id="man_explicit_281")
+    assert req_281.manifest_id == "man_explicit_281"
+
+    # Corrupt execution_manifest.json (288-289)
+    run_dir_corrupt = tmp_path / "runs" / "run_corrupt"
+    run_dir_corrupt.mkdir(parents=True, exist_ok=True)
+    (run_dir_corrupt / "execution_manifest.json").write_text("{bad-json", encoding="utf-8")
+    mgr_corrupt = SessionApprovalManager(run_id="run_corrupt", approval_store=store)
+    req_corrupt = mgr_corrupt.create_durable_request(turn_index=1)
+    assert req_corrupt.status == "PENDING"
+
+    # 8. state_provider returns non-dict and create_run_index raises
+    def non_dict_st():
+        return "not-a-dict"
+
+    mgr_non_dict = SessionApprovalManager(
+        run_id="run_non_dict",
+        approval_store=store,
+        checkpoint_manager=chk,
+        state_provider=non_dict_st,
+    )
+    with patch(
+        "eval_runner.run_index.create_run_index", side_effect=RuntimeError("create_run_index error")
+    ):
+        req_non_dict = mgr_non_dict.create_durable_request(turn_index=1)
+        assert req_non_dict.status == "PENDING"
+
+    # 9. resolve_durable_request without plugin_manager
+    mgr_no_plugin = SessionApprovalManager(run_id="run_no_plug", approval_store=store)
+    req_no_plug = mgr_no_plugin.create_durable_request(turn_index=1)
+    res_no_plug = mgr_no_plugin.resolve_durable_request(
+        req_no_plug.approval_token, decision="REJECTED"
+    )
+    assert res_no_plug.status == "REJECTED"
+
+    # 10. resolve_durable_request with plugin_manager when token is not found
+    mock_plug = MagicMock()
+    mock_plug.trigger_interceptor.return_value = True
+    mgr_plug_missing = SessionApprovalManager(
+        run_id="run_plug_miss", approval_store=store, plugin_manager=mock_plug
+    )
+    # Store does not have non-existent-token
+    with pytest.raises(KeyError):
+        mgr_plug_missing.resolve_durable_request("non-existent-token", decision="APPROVED")

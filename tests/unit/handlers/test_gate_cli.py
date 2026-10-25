@@ -31,21 +31,35 @@ def gate_env(tmp_path, monkeypatch):
     monkeypatch.setattr("eval_runner.config.TRUST_ROOT", trust_root)
     monkeypatch.setattr("eval_runner.config.ALLOW_SYSTEM_IDENTITY_PROVISIONING", True)
 
+    from eval_runner.identity import IdentityService
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    IdentityService._provision_local_identity("system_id")
+
     # Authoritative Eval Artifact
+    store = LocalFileRunStore(log_dir=runs_dir)
     run_id = "test_gate_run"
-    run_dir = runs_dir / run_id
-    run_dir.mkdir()
-    trace_path = run_dir / "run.jsonl"
-    trace_path.write_text('{"event": "run_start"}\n')
+    store.create_run(run_id=run_id, scenario_id="gate-scenario", metadata={"git_hash": "abc"})
+    store.append_events(run_id, [{"event": "run_start", "run_id": run_id}])
+    trace_bytes = store.get_trace_bytes(run_id)
+    assert trace_bytes is not None
 
     # Generate Physical Manifest using real logic
-    TraceVerifier.sign_trace(str(trace_path), metadata={"git_hash": "abc"}, run_id=run_id)
+    manifest = TraceVerifier.sign_trace_bytes(
+        trace_bytes,
+        run_id=run_id,
+        run_store=store,
+        metadata={"git_hash": "abc"},
+    )
+    manifest_path = store.save_run_manifest(run_id, manifest)
+    store.update_run_status(run_id, "SEALED")
 
     return {
         "root": root,
         "run_id": run_id,
-        "trace_path": str(trace_path),
-        "manifest_path": str(run_dir / "run_manifest.json"),
+        "store": store,
+        "trace_path": str(runs_dir / run_id / "run.jsonl"),
+        "manifest_path": str(manifest_path),
     }
 
 
@@ -114,17 +128,25 @@ async def test_handle_gate_asymmetric_success(gate_env, capsys, monkeypatch):
 
     identity_id = "test_tester"
 
-    # 2. Provision identity and sign distinct run trace
-    from pathlib import Path
-
+    IdentityService._provision_local_identity(identity_id)
+    store = gate_env["store"]
     run_id_asym = "test_gate_asym_run"
-    run_dir_asym = Path(gate_env["trace_path"]).parent.parent / run_id_asym
-    run_dir_asym.mkdir(parents=True, exist_ok=True)
-    trace_path_asym = run_dir_asym / "run.jsonl"
-    trace_path_asym.write_text('{"event": "run_start"}\n', encoding="utf-8")
+    store.create_run(
+        run_id=run_id_asym, scenario_id="gate-asym-scenario", metadata={"git_hash": "abc"}
+    )
+    store.append_events(run_id_asym, [{"event": "run_start", "run_id": run_id_asym}])
+    trace_bytes_asym = store.get_trace_bytes(run_id_asym)
+    assert trace_bytes_asym is not None
 
-    IdentityService.get_private_key(identity_id)
-    TraceVerifier.sign_trace(str(trace_path_asym), identity_id=identity_id, run_id=run_id_asym)
+    manifest_asym = TraceVerifier.sign_trace_bytes(
+        trace_bytes_asym,
+        run_id=run_id_asym,
+        run_store=store,
+        identity_id=identity_id,
+        metadata={"git_hash": "abc"},
+    )
+    store.save_run_manifest(run_id_asym, manifest_asym)
+    store.update_run_status(run_id_asym, "SEALED")
 
     # 3. Handle gate with public key from IdentityService
     pub_key_path = trust_root / identity_id / "public_key.pem"

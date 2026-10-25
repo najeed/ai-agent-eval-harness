@@ -98,7 +98,7 @@ Triggers an asynchronous evaluation run using the industrial namespace.
     - *Note*: `path` acts as an alias. It first resolves against the **Scenario ID** in the catalog index. If no match is found, it expects a project-relative path. Use `agentv list` to verify IDs.
     - `max_turns` (int, optional): Maximum conversation depth (Default: 10).
 - **Response**: `{"status": "started", "run_id": "eval_20240412_..."}`
-- **Note**: Initiates a background thread. Results are streamed to `runs/<run_id>/run.jsonl`. Enforces strict vault affinity.
+- **Note**: Initiates a background thread. Results are persisted and streamed by the bound `RunStorageProvider` within the run's immutable scope.
 
 #### `POST /api/v1/mutate`
 Programmatic scenario mutation for variance testing across the 3D Mutation Taxonomy.

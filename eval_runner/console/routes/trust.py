@@ -7,41 +7,39 @@ from typing import Any
 
 from flask import Blueprint, jsonify, request
 
-from agentv_runtime.discovery import resolve_extension
 from eval_runner import config, identity
 from eval_runner.console.extension_publisher import (
     _private_key_pem_bytes,
     _public_key_pem_bytes,
 )
-from eval_runner.reference.signing import LocalEd25519SigningBackend
-from eval_runner.services.certification import (
-    CertificationService,
-    execute_industrial_certification,
-)
+from eval_runner.services.certification import execute_industrial_certification
 from eval_runner.utils import crypto
-from eval_runner.utils.safe_path import is_path_safe
-from eval_runner.verifier import TraceVerifier, locate_certificate_file
+from eval_runner.verifier import TraceVerifier
 
-from ..auth_manager import Permission, require_permission
-from .runs import resolve_trace_path
+from ..auth_manager import Permission, active_runtime_context, require_permission
+from ..providers import get_run_store
 
 logger = logging.getLogger(__name__)
 
 trust_bp = Blueprint("trust", __name__, url_prefix="/api")
 
 
-def _read_run_truth_level(run_id: str) -> tuple[str | None, bool]:
-    """Compatibility wrapper delegating to CertificationService."""
-    return CertificationService.read_run_truth_level(run_id)
-
-
 def _extract_computed_run_outcome(vault_dir: Path, target_trace: Path) -> tuple[str, float]:
     """Compatibility wrapper delegating to CertificationService."""
+    from eval_runner.services.certification import CertificationService
+
     return CertificationService.extract_computed_run_outcome(vault_dir, target_trace)
 
 
+def _read_run_truth_level(run_id: str) -> tuple[str | None, bool]:
+    """Compatibility wrapper delegating to CertificationService."""
+    from eval_runner.services.certification import CertificationService
+
+    return CertificationService.read_run_truth_level(run_id)
+
+
 @trust_bp.route("/v1/certify", methods=["POST"])
-@require_permission(Permission.RUNS_WRITE)
+@require_permission(Permission.CERTIFY_WRITE)
 def certify_run():
     """REST wrapper for the industrial certification service."""
     data = request.json or {}
@@ -59,7 +57,18 @@ def certify_run():
     server_identity = getattr(config, "AES_CERTIFICATION_IDENTITY", "system_id")
 
     try:
-        signing_backend = resolve_extension("signing_backends", default_factory=lambda: None)
+        from eval_runner.runtime_services import resolve_signing_backend
+
+        signing_backend = resolve_signing_backend()
+        run_store = get_run_store()
+        context = active_runtime_context()
+        # Classify provider ownership before invoking certification.  A
+        # signing backend may also raise FileNotFoundError (for example when
+        # an identity key is absent); treating every such exception as a
+        # missing run incorrectly turns a cryptographic configuration failure
+        # into a 404.
+        if run_store.get_run(run_id, context=context) is None:
+            return jsonify({"error": f"Run vault not found for {run_id}"}), 404
         result = execute_industrial_certification(
             run_id=run_id,
             identity_id=server_identity,
@@ -68,10 +77,14 @@ def certify_run():
             score=float(data["score"]) if data.get("score") is not None else None,
             policy_ref=data.get("policy_ref"),
             ttl=data.get("ttl"),
+            scenario_data=data.get("scenario_data"),
+            run_store=run_store,
+            context=context,
         )
         return jsonify(result)
     except FileNotFoundError as e:
-        return jsonify({"error": str(e)}), 404
+        logger.error("Certification signing material unavailable for run %s: %s", run_id, e)
+        return jsonify({"error": f"Internal certification failure: {e}"}), 500
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     except Exception as e:
@@ -96,22 +109,24 @@ def public_verify_run(run_id):
     ):
         return jsonify({"error": "Invalid or unsafe run_id"}), 400
 
-    trace_path = resolve_trace_path(run_id)
-    if (
-        not trace_path
-        or not is_path_safe(trace_path, config.RUN_LOG_DIR)
-        or not trace_path.exists()
-    ):
-        return jsonify({"error": "Verification Failed: Trace or Certificate not found."}), 404
-
-    manifest_path = locate_certificate_file(run_id)
-    if not manifest_path or not manifest_path.exists():
-        return jsonify({"error": "Verification Failed: Trace or Certificate not found."}), 404
-
     try:
+        run_store = get_run_store()
+        context = active_runtime_context()
+        trace_bytes = run_store.get_trace_bytes(run_id, context=context)
+        manifest = run_store.get_manifest(run_id, context=context)
+        if trace_bytes is None or manifest is None:
+            run_rec = run_store.get_run(run_id, context=context)
+            if run_rec and run_rec.get("corrupted"):
+                return jsonify({"error": "Corrupt manifest", "verified": False}), 500
+            return jsonify({"error": "Verification Failed: Trace or Certificate not found."}), 404
+
         from eval_runner.run_lifecycle import RunLifecycleState, get_run_lifecycle_state
 
-        lifecycle_state = get_run_lifecycle_state(run_id)
+        lifecycle_state = get_run_lifecycle_state(
+            run_id,
+            run_store=run_store,
+            context=context,
+        )
         if lifecycle_state != RunLifecycleState.SEALED:
             return (
                 jsonify(
@@ -127,17 +142,23 @@ def public_verify_run(run_id):
                 400,
             )
 
-        # 1. Authoritative verification check via TraceVerifier
-        is_valid = TraceVerifier.verify_trace(str(trace_path), str(manifest_path))
+        canonical_m = manifest.get("execution_manifest") or manifest
+        scen_data = manifest.get("scenario_data") or manifest.get("scenario")
 
-        with open(manifest_path, encoding="utf-8") as f:
-            manifest = json.load(f)
+        # 1. Authoritative verification check via provider-owned artifacts.
+        is_valid = TraceVerifier.verify_trace(
+            trace_bytes,
+            manifest,
+            run_store=run_store,
+            context=context,
+            scenario_data=scen_data,
+        )
 
         # 2. Independent Package Artifacts Verification if package is present
         if is_valid and manifest.get("verification_package"):
             from eval_runner.verifier import VerificationAuthority
 
-            raw_bytes = trace_path.read_bytes()
+            raw_bytes = trace_bytes
             events_data: list[dict[str, Any]] = []
             try:
                 for line in raw_bytes.decode("utf-8").splitlines():
@@ -147,23 +168,8 @@ def public_verify_run(run_id):
             except Exception as ev_err:
                 logger.debug("Failed parsing trace events in public_verify_run: %s", ev_err)
 
-            exec_m_path = trace_path.parent / "execution_manifest.json"
-            canonical_m = manifest
-            if exec_m_path.exists():
-                try:
-                    canonical_m = json.loads(exec_m_path.read_text(encoding="utf-8"))
-                except Exception as em_err:
-                    logger.debug("Failed reading execution manifest: %s", em_err)
-
-            scen_data = None
-            scen_resolved_p = trace_path.parent / "scenario_resolved.json"
-            if not scen_resolved_p.exists():
-                scen_resolved_p = trace_path.parent / "scenario.json"
-            if scen_resolved_p.exists():
-                try:
-                    scen_data = json.loads(scen_resolved_p.read_text(encoding="utf-8"))
-                except Exception as s_err:
-                    logger.debug("Failed reading scenario artifact: %s", s_err)
+            canonical_m = manifest.get("execution_manifest") or manifest
+            scen_data = manifest.get("scenario_data") or manifest.get("scenario")
 
             pkg_res = VerificationAuthority.verify_package_artifacts(
                 package=manifest["verification_package"],
@@ -256,16 +262,16 @@ def get_verified_run_manifest(run_id):
     ):
         return jsonify({"error": "Invalid or unsafe run_id"}), 400
 
-    manifest_path = locate_certificate_file(run_id)
-    if not manifest_path or not manifest_path.exists():
-        return jsonify({"error": "Manifest not found for run."}), 404
-
     try:
-        with open(manifest_path, encoding="utf-8") as f:
-            manifest = json.load(f)
+        run = get_run_store().get_run(run_id, context=active_runtime_context())
+        if run and run.get("corrupted"):
+            return jsonify({"error": "Failed to load manifest: corrupt file"}), 500
+        manifest = get_run_store().get_manifest(run_id, context=active_runtime_context())
+        if manifest is None:
+            return jsonify({"error": "Manifest not found for run."}), 404
         return jsonify(manifest), 200
     except Exception as e:
-        return jsonify({"error": f"Failed to load manifest: {str(e)}"}), 500
+        return jsonify({"error": f"Failed to load manifest: {e}"}), 500
 
 
 @trust_bp.route("/v1/identity/<identity_id>/public_key", methods=["GET"])
@@ -357,7 +363,9 @@ def sign_extension_manifest():
     try:
         pem = _private_key_pem_bytes(identity_id)
         canonical = _canonical_manifest_bytes(manifest)
-        signer = resolve_extension("signing_backends", default_factory=LocalEd25519SigningBackend)
+        from eval_runner.runtime_services import resolve_signing_backend
+
+        signer = resolve_signing_backend()
         signature_hex = signer.sign_payload(canonical, pem)
     except Exception as e:
         logger.error(f"[Extensions] Signing failed for '{identity_id}': {e}")
@@ -614,7 +622,9 @@ def verify_extension_publisher():
             }
         )
 
-    signer = resolve_extension("signing_backends", default_factory=LocalEd25519SigningBackend)
+    from eval_runner.runtime_services import resolve_signing_backend
+
+    signer = resolve_signing_backend()
     valid = signer.verify_signature(_canonical_manifest_bytes(manifest), signature_hex, pub_pem)
 
     # [Trust hardening] The BACKEND owns tier classification. A signed

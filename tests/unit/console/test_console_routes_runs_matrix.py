@@ -1,191 +1,142 @@
-"""
-Branch coverage matrix for eval_runner/console/routes/runs.py.
-
-Statement and branch coverage for RunStorageProvider,
-stream endpoints, authoritative verdicts, polling, tail generators,
-and verification endpoints.
-"""
+"""Provider-native branch matrix for console run routes."""
 
 from __future__ import annotations
 
-import json
 from unittest.mock import MagicMock, patch
 
 import pytest
 from flask import Flask
 
-from eval_runner import config
-from eval_runner.console.routes.runs import (
-    _authoritative_verdict,
-    run_bp,
-    tail_file_generator,
-)
+import eval_runner.console.routes.runs as runs
+from eval_runner.services.run_summary import RunSummaryService
 
 
 @pytest.fixture
-def client(tmp_path):
-    app = Flask(__name__)
-    app.config["TESTING"] = True
-    app.register_blueprint(run_bp)
+def app():
+    value = Flask(__name__)
+    value.config["TESTING"] = True
+    return value
 
-    # Set temporary directories
+
+@pytest.fixture
+def scope():
+    return {"org_id": "acme", "tenant_id": "t1", "workspace_id": "w1"}
+
+
+@pytest.fixture
+def provider():
+    store = MagicMock()
+    store.get_run.return_value = None
+    store.get_events.return_value = []
+    store.get_manifest.return_value = None
+    store.get_trace_bytes.return_value = None
+    store.search_runs.return_value = []
+    store.list_runs.return_value = []
+    store.stream_events.return_value = iter(())
+    return store
+
+
+def invoke(app, handler, *args, path="/", headers=None):
+    with app.test_request_context(path, headers=headers):
+        return handler.__wrapped__(*args)
+
+
+def test_list_runs_endpoint_queries_active_provider(app, provider, scope):
+    provider.search_runs.return_value = [
+        {"run_id": "run-v1", "scenario_id": "sc1", "status": "COMPLETED"}
+    ]
+    provider.get_run.return_value = {"run_id": "run-v1"}
     with (
-        patch.object(config, "RUN_LOG_DIR", tmp_path / "runs"),
-        patch.object(config, "REPORTS_DIR", tmp_path / "reports"),
+        patch.object(runs, "_active_run_store", return_value=provider),
+        patch.object(runs, "active_runtime_context", return_value=scope),
     ):
-        config.RUN_LOG_DIR.mkdir(parents=True, exist_ok=True)
-        config.REPORTS_DIR.mkdir(parents=True, exist_ok=True)
-        (config.REPORTS_DIR / "certificates").mkdir(parents=True, exist_ok=True)
-
-        with app.test_client() as c:
-            yield c
+        response = invoke(app, runs.list_runs, path="/?q=sc1")
+    assert response.get_json()["runs"][0]["run_id"] == "run-v1"
+    provider.search_runs.assert_called_once_with(query="sc1", limit=200, context=scope)
 
 
-def test_list_runs_endpoint_queries_active_provider(client, tmp_path):
-    runs_dir = tmp_path / "runs"
-    runs_dir.mkdir(parents=True, exist_ok=True)
-
-    # Create run vault
-    vault_dir = runs_dir / "run-v1"
-    vault_dir.mkdir(parents=True, exist_ok=True)
-    v_file = vault_dir / "run.jsonl"
-    start_ev = json.dumps({"event": "run_start", "run_id": "run-v1", "scenario": "sc1"}) + "\n"
-    end_ev = json.dumps({"event": "run_end", "data": {"passed": True, "duration": 1.2}}) + "\n"
-    v_file.write_text(start_ev + end_ev, encoding="utf-8")
-
-    res = client.get("/runs?q=sc1")
-    assert res.status_code == 200
-    data = res.get_json()
-    assert any(r["run_id"] == "run-v1" for r in data.get("runs", []))
-
-
-def test_authoritative_verdict_edge_cases(tmp_path):
-    # 1. Empty run_id
-    assert _authoritative_verdict("") == "NOT_EXECUTED"
-
-    # 2. Corrupt or unparseable manifest -> ERROR
-    runs_dir = tmp_path / "runs"
-    runs_dir.mkdir(parents=True, exist_ok=True)
-    run_vault = runs_dir / "run-corrupt-manifest"
-    run_vault.mkdir(parents=True, exist_ok=True)
-    (run_vault / "run.jsonl").write_text('{"event":"start"}\n', encoding="utf-8")
-    (run_vault / "run_manifest.json").write_text("corrupted_json_content", encoding="utf-8")
-
-    with patch.object(config, "RUN_LOG_DIR", runs_dir):
-        assert _authoritative_verdict("run-corrupt-manifest") == "FAILED_VERIFICATION"
-
-
-def test_stream_runs_list_branches(client, tmp_path):
-    runs_dir = tmp_path / "runs"
-    rep_dir = tmp_path / "reports" / "certificates"
-    runs_dir.mkdir(parents=True, exist_ok=True)
-    rep_dir.mkdir(parents=True, exist_ok=True)
-
-    # 1. Verified run yielding CERTIFIED
-    run_cert = runs_dir / "run-cert"
-    run_cert.mkdir(parents=True, exist_ok=True)
-    trace_file = run_cert / "run.jsonl"
-    trace_file.write_text('{"event":"run_end"}\n', encoding="utf-8")
-
-    import eval_runner.utils.crypto as crypto
-
-    real_hash = crypto.file_hash(trace_file)
-    (run_cert / "run_manifest.json").write_text(
-        json.dumps({"trace_hash": f"sha3_256:{real_hash}"}), encoding="utf-8"
-    )
-
-    # 2. Zero-size trace file
-    run_zero = runs_dir / "run-zero"
-    run_zero.mkdir(parents=True, exist_ok=True)
-    (run_zero / "run.jsonl").write_text("", encoding="utf-8")
-
-    # 3. Active running run (<300s without run_end)
-    run_active = runs_dir / "run-active"
-    run_active.mkdir(parents=True, exist_ok=True)
-    (run_active / "run.jsonl").write_text(
-        json.dumps({"event": "step", "_ts_iso": "2026-08-30T18:00:00Z"}) + "\n",
-        encoding="utf-8",
-    )
-
-    # Trigger stream-list endpoint
-    res = client.get("/v1/runs/stream-list")
-    assert res.status_code == 200
-    # Read stream chunks
-    data = res.get_data(as_text=True)
-    assert "data:" in data
-
-
-def test_get_run_status_scenario_fallbacks_and_backend(client, tmp_path):
-    runs_dir = tmp_path / "runs"
-    runs_dir.mkdir(parents=True, exist_ok=True)
-
-    # 1. scenario_original.json fallback when scenario_resolved.json is missing
-    run_orig = runs_dir / "run-orig"
-    run_orig.mkdir(parents=True, exist_ok=True)
-    (run_orig / "run.jsonl").write_text('{"event":"run_end"}\n', encoding="utf-8")
-    (run_orig / "scenario_original.json").write_text(
-        json.dumps({"id": "orig_scenario_data"}), encoding="utf-8"
-    )
-
-    res_orig = client.get("/v1/runs/run-orig")
-    assert res_orig.status_code == 200
-    assert res_orig.get_json()["scenario"] == {"id": "orig_scenario_data"}
-
-    # 2. InProcessExecutionBackend status query exception fallback
+def test_authoritative_verdict_provider_edge_cases(provider):
+    assert RunSummaryService.get_authoritative_verdict("", run_store=provider) == "NOT_EXECUTED"
+    provider.get_run.return_value = {"run_id": "corrupt"}
+    provider.get_manifest.return_value = {"trace_hash": "bad"}
+    provider.get_trace_bytes.return_value = b"bad canonical bytes"
     with patch(
-        "eval_runner.reference.inprocess_backend.InProcessExecutionBackend.get_instance"
-    ) as mock_inst:
-        mock_backend = MagicMock()
-        mock_backend.status.side_effect = Exception("Backend in-memory query failed")
-        mock_inst.return_value = mock_backend
-
-        res_404 = client.get("/v1/runs/non-existent-run-id")
-        assert res_404.status_code == 404
+        "eval_runner.services.run_summary.TraceVerifier.verify_trace_bytes", side_effect=ValueError
+    ):
+        assert RunSummaryService.get_authoritative_verdict("corrupt", run_store=provider) == "ERROR"
 
 
-def test_tail_file_generator_and_stream_logs(client, tmp_path):
-    runs_dir = tmp_path / "runs"
-    runs_dir.mkdir(parents=True, exist_ok=True)
+def test_stream_runs_list_uses_provider_records(app, provider, scope):
+    provider.list_runs.return_value = [
+        {"run_id": "run-cert", "status": "SEALED"},
+        {"run_id": "run-zero", "status": "OPEN"},
+        {"run_id": "run-active", "status": "RUNNING"},
+    ]
+    provider.get_run.side_effect = lambda run_id, context=None: {"run_id": run_id, "status": "OPEN"}
+    with (
+        patch.object(runs, "_active_run_store", return_value=provider),
+        patch.object(runs, "active_runtime_context", return_value=scope),
+        patch.object(runs.time, "sleep"),
+    ):
+        response = invoke(app, runs.stream_runs_list)
+        payload = "".join(response.response)
+    assert "run-cert" in payload and "run-zero" in payload and "run-active" in payload
+    provider.list_runs.assert_called_once_with(limit=200, context=scope)
 
-    run_dir = runs_dir / "run-tail-test"
-    run_dir.mkdir(parents=True, exist_ok=True)
-    log_file = run_dir / "run.jsonl"
-    log_file.write_text(
-        '{"event": "step1"}\n{"event": "step2"}\n{"event": "run_end"}\n',
-        encoding="utf-8",
+
+def test_get_run_status_reads_provider_scenario_and_missing_run(app, provider, scope):
+    provider.get_run.return_value = {"run_id": "run-orig", "status": "COMPLETED"}
+    provider.get_manifest.return_value = {"scenario_data": {"id": "provider-scenario"}}
+    with (
+        patch.object(runs, "_active_run_store", return_value=provider),
+        patch.object(runs, "active_runtime_context", return_value=scope),
+    ):
+        response = invoke(app, runs.get_run_status, "run-orig")
+    assert response.get_json()["scenario"] == {"id": "provider-scenario"}
+
+    provider.get_run.return_value = None
+    with (
+        patch.object(runs, "_active_run_store", return_value=provider),
+        patch.object(runs, "active_runtime_context", return_value=scope),
+    ):
+        missing, status = invoke(app, runs.get_run_status, "missing")
+    assert status == 404
+    assert missing.get_json()["error"] == "Not found"
+
+
+def test_stream_logs_uses_provider_events_and_transport_cursor(app, provider, scope):
+    provider.get_run.return_value = {"run_id": "run-stream", "status": "RUNNING"}
+    provider.stream_events.return_value = iter(
+        [
+            {"event": "step1", "_seq": 5},
+            {"event": "step2", "_seq": 9},
+            {"event": "run_end", "_seq": 11},
+        ]
     )
-
-    # 1. stream endpoint with invalid last_event_id string
-    res = client.get("/v1/runs/run-tail-test/stream?last_event_id=not_an_int")
-    assert res.status_code == 200
-    stream_content = res.get_data(as_text=True)
-    assert "data: " in stream_content
-
-    # 2. Direct tail_file_generator test with incomplete line seek rewind
-    partial_file = run_dir / "partial.jsonl"
-    partial_file.write_text('{"event": "line1"}\nunterminated_line', encoding="utf-8")
-
-    gen = tail_file_generator(partial_file, "run-tail-test")
-    # Take first item from generator
-    item = next(gen)
-    assert "line1" in item
+    with (
+        patch.object(runs, "_active_run_store", return_value=provider),
+        patch.object(runs, "active_runtime_context", return_value=scope),
+    ):
+        response = invoke(
+            app, runs.stream_run_logs, "run-stream", path="/?last_event_id=not_an_int"
+        )
+        payload = "".join(response.response)
+    assert "id: 1" in payload and "id: 3" in payload
+    assert '"_seq": 5' in payload and '"_seq": 11' in payload
+    provider.stream_events.assert_called_once_with("run-stream", from_seq=0, context=scope)
 
 
-def test_verify_run_endpoint(client, tmp_path):
-    runs_dir = tmp_path / "runs"
-    runs_dir.mkdir(parents=True, exist_ok=True)
-
-    # 1. Non-existent run directory (404)
-    res_404 = client.get("/v1/runs/unknown-run-404/verify")
-    assert res_404.status_code == 404
-
-    # 2. Existing run directory verified
-    run_dir = runs_dir / "run-verify-ok"
-    run_dir.mkdir(parents=True, exist_ok=True)
-    (run_dir / "run.jsonl").write_text('{"event":"run_end"}\n', encoding="utf-8")
-
-    with patch("eval_runner.verifier.TraceVerifier.verify_run_directory") as mock_v:
-        mock_v.return_value = {"verification_status": "VERIFIED", "passed": True}
-        res_ok = client.get("/v1/runs/run-verify-ok/verify")
-        assert res_ok.status_code == 200
-        assert res_ok.get_json()["verification_status"] == "VERIFIED"
+def test_verify_run_endpoint_uses_provider_exact_bytes(app, provider, scope):
+    provider.get_run.return_value = {"run_id": "run-verify-ok"}
+    provider.get_manifest.return_value = {"trace_hash": "digest"}
+    provider.get_trace_bytes.return_value = b'{"event":"run_end"}\n'
+    with (
+        patch.object(runs, "_active_run_store", return_value=provider),
+        patch.object(runs, "active_runtime_context", return_value=scope),
+        patch("eval_runner.verifier.TraceVerifier.verify_trace_bytes", return_value=True) as verify,
+    ):
+        response = invoke(app, runs.verify_run, "run-verify-ok")
+    assert response.get_json()["verification_status"] == "VERIFIED"
+    verify.assert_called_once_with(
+        b'{"event":"run_end"}\n', {"trace_hash": "digest"}, run_store=provider, context=scope
+    )

@@ -70,13 +70,15 @@ To ensure non-repudiation, the execution manifest participates in an atomic four
 3. **Promote (`_promote`)**: Verified artifacts are promoted atomically to the authoritative public vault.
 4. **Seal (`_seal`)**: Irreversible detached signature is applied. Any failure during stages 1–3 triggers an automatic rollback (`_rollback`), ensuring no corrupt or unverified manifests are ever published.
 
-### Architectural Manifest Discrimination (`_is_plain_execution_manifest`)
+### Provider-Native Certification State
 
-To preserve zero-trust audit integrity, the verification subsystem (`eval_runner.verifier.TraceVerifier`) explicitly discriminates between two distinct lifecycle artifacts:
-- **Plain Execution Manifest (`run_manifest.json` pre-certification)**: Contains operational execution metadata (`manifest_id` starting with `man_`, `agent_config`, `runtime_config`, `pass_at_k`), generated at run initiation.
-- **Verification Certificate (`run_manifest.json` post-certification)**: Contains the cryptographic trust envelope (`vc_version: "3.0.0"`, `trace_hash`, `verification_package`, detached Ed25519 / ML-DSA `signature`, and `sealed_at` timestamp).
+The run provider owns both the execution manifest and the certification
+publication. Verification reads `get_manifest(run_id)` and the exact bytes from
+`get_trace_bytes(run_id)` in the same immutable scope; it does not infer a
+certificate from an on-disk manifest name or a report location.
 
-When `TraceVerifier.verify_run_directory()` inspects an uncertified execution vault containing only a plain execution manifest, it identifies the manifest via `_is_plain_execution_manifest()` and truthfully reports:
+Before `commit_certification(...)` succeeds, the provider reports an
+uncertified run truthfully:
 ```json
 {
   "verification_status": "UNVERIFIED",
@@ -84,14 +86,15 @@ When `TraceVerifier.verify_run_directory()` inspects an uncertified execution va
   "failure_reason": "Certification not issued"
 }
 ```
-This architectural gate guarantees that pre-certification execution manifests are never mistaken for issued cryptographic certificates.
+This provider contract guarantees that pre-certification execution metadata is
+never mistaken for an issued cryptographic certificate.
 
 ### Resumption Manifest & Contract Snapshot Preservation
 
 When an evaluation run is suspended for human approval (`PAUSED_FOR_APPROVAL`) and subsequently resumed via `agentv hitl-resume`:
-1. **Authoritative Manifest Restoration**: `DefaultRunner.run(is_resume=True)` reloads the existing `ExecutionManifest` directly from the physical vault rather than generating a new one. It re-establishes the exact canonical `exec_manifest_hash`, `scen_hash`, and authoritative `execution_mode`.
-2. **Contract Snapshot Guarding**: `SessionManager` guards `scenario_resolved.json`, ensuring the pre-execution scenario contract snapshot is strictly preserved and not overwritten by intermediate working-copy state mutations during resumption.
-3. **Monotonic Event Continuation**: `FlightRecorder` restores the highest monotonic event sequence number (`_seq`) from existing `run.jsonl` bytes, appending resumed execution events seamlessly without overwriting historical turns.
+1. **Authoritative Manifest Restoration**: `DefaultRunner.run(is_resume=True)` reloads the existing `ExecutionManifest` through the run provider rather than generating a new one. It re-establishes the exact canonical `exec_manifest_hash`, `scen_hash`, and authoritative `execution_mode`.
+2. **Contract Snapshot Guarding**: `SessionManager` preserves the provider-owned scenario contract snapshot and does not overwrite it with intermediate working-copy state mutations during resumption.
+3. **Monotonic Event Continuation**: `FlightRecorder` restores the highest monotonic event sequence number from provider events, appending resumed execution events without overwriting historical evidence.
 
 ---
 

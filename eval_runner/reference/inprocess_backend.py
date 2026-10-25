@@ -10,14 +10,11 @@ from __future__ import annotations
 
 import hashlib
 import hmac
-import json
 import logging
 import threading
 from collections.abc import Callable
-from pathlib import Path
 from typing import Any
 
-from eval_runner import config
 from eval_runner.interfaces.backend import ExecutionBackend
 from eval_runner.reference.sqlite_checkpoint import SQLiteCheckpointStore
 from eval_runner.run_lifecycle import (
@@ -115,6 +112,10 @@ class InProcessExecutionBackend(ExecutionBackend):
         self._signing_backend = signing_backend
         self._config_resolver = config_resolver
         self._run_store = run_store
+        # Provider ownership is per execution, not per backend singleton.  A
+        # backend can outlive multiple runs and must not re-resolve a global
+        # provider while resuming one that was submitted under another scope.
+        self._run_providers: dict[str, tuple[Any, dict[str, Any] | None]] = {}
         self._lock = threading.Lock()
 
     def set_dependency_graph(
@@ -147,6 +148,50 @@ class InProcessExecutionBackend(ExecutionBackend):
             if run_store is not None:
                 self._run_store = run_store
 
+    @staticmethod
+    def _terminal_status(results: Any, cancelled: bool) -> str:
+        """Map the runner's authoritative outcome to a durable run status."""
+        if cancelled:
+            return "ABORTED"
+
+        metadata = getattr(results, "metadata", None)
+        if isinstance(metadata, dict):
+            outcome = str(metadata.get("outcome") or "").lower()
+            if outcome == "pass":
+                return "COMPLETED"
+            if outcome in {"fail", "failure", "evaluation_invalid"}:
+                return "FAILED"
+
+        if isinstance(results, dict):
+            status = str(results.get("status") or "").upper()
+            if status in {"FAILED", "FAILURE", "VERIFICATION_FAILED", "CERTIFICATION_FAILED"}:
+                return "FAILED"
+            if results.get("passed") is False:
+                return "FAILED"
+
+        successful = getattr(results, "successful_attempts", None)
+        total = getattr(results, "total_attempts", None)
+        if isinstance(successful, int) and isinstance(total, int) and total > 0:
+            return "COMPLETED" if successful == total else "FAILED"
+        return "COMPLETED"
+
+    def _update_durable_status(self, run_id: str, status: str) -> None:
+        """Keep the injected RunStore's projection aligned with backend completion."""
+        with self._lock:
+            provider, context = self._run_providers.get(run_id, (self._run_store, None))
+        if provider is None or not hasattr(provider, "update_run_status"):
+            return
+        try:
+            if not provider.update_run_status(run_id, status, context=context):
+                logger.warning("RunStore rejected terminal status %s for run %s", status, run_id)
+        except Exception as store_err:
+            logger.warning(
+                "Failed persisting terminal status %s for run %s: %s",
+                status,
+                run_id,
+                store_err,
+            )
+
     @property
     def checkpoint_store(self):
         if self._checkpoint_store is None:
@@ -170,7 +215,26 @@ class InProcessExecutionBackend(ExecutionBackend):
         import eval_runner.runner as runner_module
 
         cancel_ev = cancellation_event or threading.Event()
+        requested_run_store = kwargs.pop("run_store", None)
+        metadata = kwargs.get("metadata") or {}
+        requested_context = kwargs.pop("context", None) or metadata.get("runtime_context")
         with self._lock:
+            existing_provider = self._run_providers.get(run_id)
+            run_store = requested_run_store or (existing_provider[0] if existing_provider else None)
+            if run_store is None:
+                run_store = self._run_store
+            if run_store is None:
+                # This is the ownership boundary for an unconfigured backend.
+                # Never repeat this lookup from resume/finalization paths.
+                from eval_runner.storage_resolver import resolve_run_storage_provider
+
+                run_store = resolve_run_storage_provider()
+            if existing_provider is not None and existing_provider[0] is not run_store:
+                raise RuntimeError(f"RunStorageProviderAffinityViolation: {run_id}")
+            context = dict(existing_provider[1] or {}) if existing_provider else {}
+            if requested_context:
+                context.update(requested_context)
+            self._run_providers[run_id] = (run_store, context or None)
             existing_token = (
                 self._active_runs.get(run_id, {}).get("resumption_token")
                 if run_id in self._active_runs
@@ -195,7 +259,7 @@ class InProcessExecutionBackend(ExecutionBackend):
                 policy_evaluator=self._policy_evaluator,
                 signing_backend=self._signing_backend,
                 config_resolver=self._config_resolver,
-                run_store=self._run_store,
+                run_store=run_store,
             )
 
         def _execute():
@@ -213,7 +277,7 @@ class InProcessExecutionBackend(ExecutionBackend):
                         policy_evaluator=self._policy_evaluator,
                         signing_backend=self._signing_backend,
                         config_resolver=self._config_resolver,
-                        run_store=self._run_store,
+                        run_store=run_store,
                         execution_backend=self,
                         **kwargs,
                     )
@@ -230,7 +294,7 @@ class InProcessExecutionBackend(ExecutionBackend):
                         policy_evaluator=self._policy_evaluator,
                         signing_backend=self._signing_backend,
                         config_resolver=self._config_resolver,
-                        run_store=self._run_store,
+                        run_store=run_store,
                         execution_backend=self,
                         **kwargs,
                     )
@@ -246,25 +310,21 @@ class InProcessExecutionBackend(ExecutionBackend):
                         policy_evaluator=self._policy_evaluator,
                         signing_backend=self._signing_backend,
                         config_resolver=self._config_resolver,
-                        run_store=self._run_store,
+                        run_store=run_store,
                         execution_backend=self,
                         **kwargs,
                     )
 
+                terminal_status = self._terminal_status(results, cancel_ev.is_set())
                 with self._lock:
                     if run_id in self._active_runs:
-                        if cancel_ev.is_set():
-                            self._active_runs[run_id]["status"] = "ABORTED"
-                        else:
-                            self._active_runs[run_id]["status"] = "COMPLETED"
+                        self._active_runs[run_id]["status"] = terminal_status
                         self._active_runs[run_id]["results"] = results
+                self._update_durable_status(run_id, terminal_status)
                 try:
                     from eval_runner.run_index import update_run_index_status
 
-                    if cancel_ev.is_set():
-                        update_run_index_status(run_id, "ABORTED")
-                    else:
-                        update_run_index_status(run_id, "COMPLETED")
+                    update_run_index_status(run_id, terminal_status)
                 except Exception as idx_err:
                     logger.debug("Failed updating run index on completion: %s", idx_err)
                 return results
@@ -294,13 +354,13 @@ class InProcessExecutionBackend(ExecutionBackend):
                     if run_id in self._active_runs:
                         self._active_runs[run_id]["status"] = "FAILED"
                         self._active_runs[run_id]["error"] = str(e)
+                self._update_durable_status(run_id, "FAILED")
                 try:
-                    from eval_runner import config
                     from eval_runner.run_index import read_run_index, update_run_index_status
 
                     update_run_index_status(run_id, "FAILED")
-                    manifest_path = config.RUN_LOG_DIR / run_id / "run_manifest.json"
-                    if not manifest_path.exists():
+                    existing_manifest = run_store.get_manifest(run_id, context=context or None)
+                    if not existing_manifest:
                         idx_rec = read_run_index(run_id) or {}
                         failed_manifest = {
                             "run_id": run_id,
@@ -314,14 +374,12 @@ class InProcessExecutionBackend(ExecutionBackend):
                             "attempts": kwargs.get("attempts", 1),
                             "pass_at_k": 0.0,
                             "results": [],
-                            "context": idx_rec.get("context", {}),
+                            "context": context or idx_rec.get("context", {}),
                         }
-                        if self._run_store and hasattr(self._run_store, "save_run_manifest"):
-                            self._run_store.save_run_manifest(run_id, failed_manifest)
-                        else:
-                            from eval_runner.reference.local_run_store import LocalFileRunStore
-
-                            LocalFileRunStore().save_run_manifest(run_id, failed_manifest)
+                        if hasattr(run_store, "save_run_manifest"):
+                            run_store.save_run_manifest(
+                                run_id, failed_manifest, context=context or None
+                            )
                 except Exception as save_err:
                     logger.debug("Failed saving failed manifest in inprocess_backend: %s", save_err)
                 if not background:
@@ -400,6 +458,14 @@ class InProcessExecutionBackend(ExecutionBackend):
                     checkpoint.get("session_state") or {}
                 ).get("status", "PAUSED")
 
+            # Never mutate lifecycle state for a run whose execution contract
+            # cannot be recovered. This preserves the fail-closed boundary for
+            # unknown IDs before any durable write is attempted.
+            if current_entry is None and not checkpoint:
+                raise RuntimeError(
+                    f"Cannot resume run '{run_id}': execution state is unavailable (fail-closed)."
+                )
+
             approval_states = {"WAITING_FOR_APPROVAL", "AWAITING_APPROVAL", "PAUSED_FOR_APPROVAL"}
             if current_status in approval_states and not resumption_token:
                 raise PermissionError(
@@ -432,9 +498,9 @@ class InProcessExecutionBackend(ExecutionBackend):
                 raise PermissionError(
                     f"Cannot resume run '{run_id}': approval-gated checkpoint requires a token."
                 )
-            from eval_runner.reference.approval_store import get_default_approval_store
+            from eval_runner.runtime_services import resolve_approval_store
 
-            approval = get_default_approval_store().get_request(resumption_token)
+            approval = resolve_approval_store().get_request(resumption_token)
             if not approval or approval.run_id != run_id or approval.status != "APPROVED":
                 raise PermissionError(
                     f"Cannot resume run '{run_id}': approval has not been authoritatively approved."
@@ -471,7 +537,40 @@ class InProcessExecutionBackend(ExecutionBackend):
         # RunStore at PAUSED_FOR_APPROVAL and rejects every resumed event.
         # This is deliberately after approval validation, so an unapproved
         # token can never reopen a paused evidence stream.
-        transition_run_lifecycle(run_id, RunLifecycleState.OPEN)
+        requested_run_store = kwargs.pop("run_store", None)
+        requested_context = kwargs.get("context") or (kwargs.get("metadata") or {}).get(
+            "runtime_context"
+        )
+        with self._lock:
+            bound_provider = self._run_providers.get(run_id)
+        provider = requested_run_store or (bound_provider[0] if bound_provider else self._run_store)
+        if provider is None:
+            raise RuntimeError(
+                f"Cannot resume run '{run_id}': Provider ownership is unavailable (fail-closed)."
+            )
+        if bound_provider is not None and bound_provider[0] is not provider:
+            raise RuntimeError(f"RunStorageProviderAffinityViolation: {run_id}")
+        context = dict(bound_provider[1] or {}) if bound_provider else {}
+        if requested_context:
+            context.update(requested_context)
+        with self._lock:
+            self._run_providers[run_id] = (provider, context or None)
+
+        if force_recovery:
+            # Explicit recovery is the sole exception to the monotonic normal
+            # lifecycle: a terminal record cannot be reopened through
+            # ``transition_run_lifecycle`` because FAILED is intentionally
+            # treated as invalid for ordinary trace writes.  Preserve the
+            # backend contract's opt-in recovery semantics without weakening
+            # the approval-gated path above.
+            if not provider.update_run_status(
+                run_id, RunLifecycleState.OPEN.value, context=context or None
+            ):
+                raise RuntimeError(f"RunStorageProvider rejected recovery for '{run_id}'.")
+        else:
+            transition_run_lifecycle(
+                run_id, RunLifecycleState.OPEN, run_store=provider, context=context or None
+            )
 
         with self._lock:
             if run_id in self._active_runs:
@@ -480,14 +579,8 @@ class InProcessExecutionBackend(ExecutionBackend):
                 if not checkpoint and not kwargs.get("force_submit", False):
                     return self._active_runs[run_id]
 
-        vault_dir = Path(config.RUN_LOG_DIR) / run_id
-        resolved_file = vault_dir / "scenario_resolved.json"
-        scenario_data = None
-        if resolved_file.exists():
-            try:
-                scenario_data = json.loads(resolved_file.read_text(encoding="utf-8"))
-            except Exception as sf_err:
-                logger.debug("Failed reading scenario_resolved.json on resume: %s", sf_err)
+        provider_manifest = provider.get_manifest(run_id, context=context or None) or {}
+        scenario_data = provider_manifest.get("scenario_data")
 
         if not scenario_data:
             scenario_data = (checkpoint.get("scenario_data") if checkpoint else None) or (
@@ -517,13 +610,11 @@ class InProcessExecutionBackend(ExecutionBackend):
                 if not orig_mode:
                     orig_meta = self._active_runs[run_id].get("kwargs", {}).get("metadata") or {}
                     orig_mode = orig_meta.get("execution_mode")
-            if not orig_mode and (vault_dir / "execution_manifest.json").exists():
-                try:
-                    with open(vault_dir / "execution_manifest.json", encoding="utf-8") as mf:
-                        em_json = json.load(mf)
-                    orig_mode = em_json.get("runtime_config", {}).get("execution_mode")
-                except Exception as em_err:
-                    logger.debug("Failed reading execution manifest on resume: %s", em_err)
+            if not orig_mode:
+                execution_manifest = provider_manifest.get("execution_manifest") or {}
+                runtime_config = execution_manifest.get("runtime_config")
+                if isinstance(runtime_config, dict):
+                    orig_mode = runtime_config.get("execution_mode")
         if orig_mode:
             resumed_metadata["execution_mode"] = orig_mode
             resumed_metadata["execution_mode_declared"] = True
@@ -532,6 +623,9 @@ class InProcessExecutionBackend(ExecutionBackend):
         kwargs["metadata"] = resumed_metadata
 
         background = kwargs.pop("background", False)
+        kwargs["run_store"] = provider
+        if context:
+            kwargs["context"] = context
         return self.submit(
             run_id=run_id,
             scenario_data=scenario_data,

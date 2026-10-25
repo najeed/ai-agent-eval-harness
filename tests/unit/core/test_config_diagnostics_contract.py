@@ -430,6 +430,7 @@ def test_async_evaluation_scoped_execution_and_authorized_reads(tmp_path, monkey
     import time
 
     from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+    from eval_runner.reference.local_run_store import LocalFileRunStore
 
     monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
 
@@ -460,9 +461,8 @@ def test_async_evaluation_scoped_execution_and_authorized_reads(tmp_path, monkey
     def successful_async_runner(*args, **kwargs):
         # Runner transitions to RUNNING
         update_run_index_status(run_id, "RUNNING", root=tmp_path)
-        vault_dir = tmp_path / run_id
-        vault_dir.mkdir(parents=True, exist_ok=True)
-        # Write completed manifest with scope
+        # Publish terminal evidence through the same explicit provider that
+        # owns the asynchronous execution.
         manifest_payload = {
             "run_id": run_id,
             "scenario_id": "async-scen-1",
@@ -470,16 +470,21 @@ def test_async_evaluation_scoped_execution_and_authorized_reads(tmp_path, monkey
             "context": context,
             "pass_at_k": 1.0,
         }
-        (vault_dir / "run_manifest.json").write_text(
-            json.dumps(manifest_payload, sort_keys=True), encoding="utf-8"
-        )
+        run_store.save_run_manifest(run_id, manifest_payload, context=context)
         return {"status": "SUCCESS"}
 
-    backend = InProcessExecutionBackend(runner_callable=successful_async_runner)
+    run_store = LocalFileRunStore(tmp_path)
+    run_store.create_run(run_id, "async-scen-1", context=context)
+    backend = InProcessExecutionBackend(
+        runner_callable=successful_async_runner,
+        run_store=run_store,
+    )
     backend.submit(
         run_id=run_id,
         scenario_data={"id": "async-scen-1"},
         background=True,
+        run_store=run_store,
+        context=context,
     )
 
     # 4. Wait for background thread to complete

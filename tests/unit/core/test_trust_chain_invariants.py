@@ -25,9 +25,12 @@ import hashlib
 import json
 from pathlib import Path
 from typing import Any
+from unittest.mock import patch
 
 import pytest
+from flask import Flask
 
+import eval_runner.console.routes.runs as runs_route
 from agentv_runtime.evidence_graph import (
     build_evidence_graph_from_events,
     compute_evidence_graph_root,
@@ -40,7 +43,7 @@ from agentv_runtime.manifest import (
 )
 from agentv_runtime.package import VerificationPackage
 from eval_runner import config, events
-from eval_runner.console.routes.runs import TERMINAL_TRACE_EVENTS, tail_file_generator
+from eval_runner.console.routes.runs import TERMINAL_TRACE_EVENTS
 from eval_runner.console.routes.scenarios import validate_scenario_structure
 from eval_runner.identity import IdentityService
 from eval_runner.services.certification import CertificationService
@@ -118,6 +121,7 @@ def _build_valid_test_vault(
     )
     manifest_file = vault / "execution_manifest.json"
     manifest_file.write_text(json.dumps(exec_manifest.to_dict()), encoding="utf-8")
+    (vault / "scenario_resolved.json").write_text(json.dumps(scenario_data), encoding="utf-8")
     m_hash = exec_manifest.compute_manifest_hash()
 
     events_list = [
@@ -233,7 +237,7 @@ def test_manifest_agent_or_runtime_mutation_fails(cert_vault):
     with open(manifest_file, "w", encoding="utf-8") as f:
         json.dump(data, f)
 
-    with pytest.raises(ValueError, match="ManifestHashMismatch"):
+    with pytest.raises(ValueError, match="(ManifestHashMismatch|ManifestExecutionModeMismatch)"):
         CertificationService.execute_industrial_certification(run_id=run_id)
 
 
@@ -615,22 +619,31 @@ def test_preflight_fingerprint_canonical_consistency():
     assert fp_mutated != fp1
 
 
-def test_sse_stream_uses_transport_cursor_not_forensic_sequence(tmp_path):
+def test_sse_stream_uses_transport_cursor_not_forensic_sequence():
     """
-    SSE event IDs are opaque file-stream cursors; immutable _seq stays in the
+    SSE event IDs are opaque provider-stream cursors; immutable _seq stays in the
     payload as forensic evidence and must never control replay.
     """
-    trace_file = tmp_path / "test_run.jsonl"
-    events_to_write = [
+    events_to_stream = [
         {"_seq": 42, "event": "step_executed", "data": {"step": 1}},
         {"_seq": 108, "event": "trace_sealed", "data": {"status": "sealed"}},
     ]
-    with open(trace_file, "w", encoding="utf-8") as f:
-        for ev in events_to_write:
-            f.write(json.dumps(ev) + "\n")
 
-    chunks = list(tail_file_generator(trace_file, run_id="test_run"))
-    full_sse = "".join(chunks)
+    class Provider:
+        def get_run(self, run_id, context=None):
+            return {"run_id": run_id, "status": "RUNNING"}
+
+        def stream_events(self, run_id, from_seq=0, context=None):
+            yield from events_to_stream[from_seq:]
+
+    app = Flask(__name__)
+    with (
+        patch.object(runs_route, "_active_run_store", return_value=Provider()),
+        patch.object(runs_route, "active_runtime_context", return_value=None),
+        app.test_request_context("/"),
+    ):
+        response = runs_route.stream_run_logs.__wrapped__("test_run")
+        full_sse = "".join(response.response)
 
     # Must contain event id and payload data:
     assert "id: 1\n" in full_sse

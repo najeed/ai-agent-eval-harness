@@ -10,6 +10,7 @@ import pytest
 from jsonschema import validate
 
 from eval_runner import config
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.verifier import TraceVerifier
 
 
@@ -19,15 +20,20 @@ def _sign_tmp_trace(tmp_path, monkeypatch, **kwargs) -> dict:
     trace = vault / "run.jsonl"
     trace.write_text('{"event": "run_start"}\n', encoding="utf-8")
     monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "runs")
+    run_store = LocalFileRunStore(tmp_path / "runs")
+    run_store.create_run("vc-truth-run", "vc-truth-scenario")
 
     from tests.conftest import append_authoritative_finalization
 
     append_authoritative_finalization(trace, "vc-truth-run", vault)
 
-    return TraceVerifier.sign_trace(
-        str(trace),
+    trace_bytes = run_store.get_trace_bytes("vc-truth-run") or trace.read_bytes()
+
+    return TraceVerifier.sign_trace_bytes(
+        trace_bytes,
         run_id="vc-truth-run",
         identity_id="test-identity",
+        run_store=run_store,
         **kwargs,
     )
 

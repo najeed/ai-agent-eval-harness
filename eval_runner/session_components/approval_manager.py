@@ -16,7 +16,7 @@ from agentv_runtime.interfaces import (
 )
 from agentv_runtime.scope import ScopeToken, get_active_scope_policy
 from eval_runner import config
-from eval_runner.reference.approval_store import get_default_approval_store
+from eval_runner.runtime_services import resolve_approval_store
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +34,7 @@ class SessionApprovalManager:
         approval_store: ApprovalStore | None = None,
         event_bus: Any | None = None,
         scope: ScopeToken | None = None,
+        run_store: Any | None = None,
     ):
         self.run_id = run_id
         self.registry = registry or hitl_pending.global_registry
@@ -43,11 +44,12 @@ class SessionApprovalManager:
         self._approval_store = approval_store
         self.event_bus = event_bus
         self.scope = scope
+        self.run_store = run_store
 
     @property
     def approval_store(self) -> ApprovalStore:
         if self._approval_store is None:
-            self._approval_store = get_default_approval_store()
+            self._approval_store = resolve_approval_store()
         return self._approval_store
 
     def request_approval(
@@ -180,16 +182,13 @@ class SessionApprovalManager:
                         )
                 except Exception as exc:
                     logger.debug("Failed checking state_provider for scope: %s", exc)
-            if not raw_ctx:
+            if not raw_ctx and self.run_store is not None:
                 try:
-                    from eval_runner.reference.local_run_store import LocalFileRunStore
-
-                    run_store = LocalFileRunStore()
-                    m = run_store.get_manifest(self.run_id)
+                    m = self.run_store.get_manifest(self.run_id, context=raw_ctx)
                     if m and isinstance(m.get("context"), Mapping):
                         raw_ctx = m["context"]
                 except Exception as exc:
-                    logger.debug("Failed checking run_store for scope: %s", exc)
+                    logger.debug("Failed checking injected run_store for scope: %s", exc)
 
             if isinstance(raw_ctx, ScopeToken):
                 candidate_scope = raw_ctx
@@ -292,14 +291,25 @@ class SessionApprovalManager:
             resolved_manifest_id = resolved_manifest_id or f"man_{self.run_id}"
             try:
                 run_vault.mkdir(parents=True, exist_ok=True)
-                em_data = {
-                    "manifest_id": resolved_manifest_id,
-                    "run_id": self.run_id,
-                    "status": "PAUSED_FOR_APPROVAL",
-                    "scope": scope,
-                    "scope_digest": scope_digest,
-                    "created_at": created_at.isoformat(),
-                }
+                em_data = {}
+                if self.run_store is not None:
+                    try:
+                        store_m = self.run_store.get_manifest(self.run_id)
+                        if store_m and isinstance(store_m.get("execution_manifest"), Mapping):
+                            em_data = dict(store_m["execution_manifest"])
+                    except Exception as exc:
+                        logger.debug("Failed checking run_store for execution_manifest: %s", exc)
+                em_data.update(
+                    {
+                        "manifest_id": resolved_manifest_id
+                        or em_data.get("manifest_id", f"man_{self.run_id}"),
+                        "run_id": self.run_id,
+                        "status": "PAUSED_FOR_APPROVAL",
+                        "scope": scope,
+                        "scope_digest": scope_digest,
+                        "created_at": created_at.isoformat(),
+                    }
+                )
                 tmp_emf = exec_manifest_path.with_suffix(f".{secrets.token_hex(4)}.tmp")
                 with open(tmp_emf, "w", encoding="utf-8") as emf:
                     json.dump(em_data, emf, indent=2)
@@ -471,6 +481,26 @@ class SessionApprovalManager:
             scope=active_scope,
         )
 
+        # Approval resolution is part of the run's evidence stream.  Reopen
+        # only an approved run, through its bound provider, before emitting
+        # that event; a paused provider correctly rejects ordinary trace
+        # writes.  Rejected decisions remain durably recorded in the approval
+        # ledger and leave the execution trace closed.
+        if str(resolved.status).upper() == "APPROVED" and self.run_store is not None:
+            from eval_runner.flight_recorder import FlightRecorderPlugin
+            from eval_runner.run_lifecycle import RunLifecycleState, transition_run_lifecycle
+
+            run_context = dict(active_scope.tags) if active_scope is not None else None
+            FlightRecorderPlugin.bind_active_recorder(
+                self.run_id, self.run_store, context=run_context
+            )
+            transition_run_lifecycle(
+                self.run_id,
+                RunLifecycleState.OPEN,
+                run_store=self.run_store,
+                context=run_context,
+            )
+
         # Trigger on_approval_resolved hook (best-effort, fail-safe)
         if self.plugin_manager:
             try:
@@ -481,7 +511,9 @@ class SessionApprovalManager:
                     exc,
                 )
 
-        # Emit CoreEvents.APPROVAL_RESOLVED event (best-effort, fail-safe)
+        # A rejected request leaves the run paused/closed.  Its authoritative
+        # approval-ledger record is retained, but it must not cause a trace
+        # append that would violate the paused lifecycle.
         try:
             from eval_runner.events import CoreEvents, EventEmitter
 

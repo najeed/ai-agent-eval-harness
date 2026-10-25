@@ -109,6 +109,28 @@ def test_generate_run_pdf_text_fallback_only(run_data, tmp_path):
     assert "run-abc" in content
 
 
+def test_generate_run_pdf_text_fallback_includes_execution_scope(run_data, tmp_path):
+    output_path = tmp_path / "report.pdf"
+    run_data.update(
+        {
+            "org_id": "northstar-health",
+            "tenant_id": "northstar-health",
+            "workspace_id": "utilization-management",
+            "active_environment": "Staging",
+        }
+    )
+
+    with patch("eval_runner.console.pdf_service.WEASYPRINT_AVAILABLE", False):
+        with patch("eval_runner.console.pdf_service.REPORTLAB_AVAILABLE", False):
+            assert generate_run_pdf(run_data, output_path) is True
+
+    content = output_path.with_suffix(".txt").read_text(encoding="utf-8")
+    assert "Organization: northstar-health" in content
+    assert "Tenant: northstar-health" in content
+    assert "Workspace: utilization-management" in content
+    assert "Environment: Staging" in content
+
+
 def test_generate_run_pdf_all_engines_fail(run_data, tmp_path):
     output_path = tmp_path / "sub" / "report.pdf"
     output_path.parent.mkdir()

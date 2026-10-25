@@ -142,8 +142,8 @@ For critical actions requiring explicit operator oversight:
      --reason "Valid underwriting exemption granted"
    ```
 4. **Monotonic Event Sequence Continuation (`is_resume=True`)**:
-   - The engine re-opens the existing run vault without overwriting `run.jsonl`.
-   - Scans the stream to compute `start_seq = max(_seq) + 1`, guaranteeing strictly monotonic sequence ordering.
+   - The engine reloads the existing run through its bound provider without overwriting evidence.
+   - Reads provider events to compute `start_seq = max(_seq) + 1`, guaranteeing strictly monotonic sequence ordering.
    - Emits `approval_resolved` and `hitl_resume` with reviewer identity, decision, and rationale.
    - If approved, the agent turn loop resumes with operator feedback injected into context; if rejected, the turn loop aborts fail-closed with `POLICY_DENIED`.
 

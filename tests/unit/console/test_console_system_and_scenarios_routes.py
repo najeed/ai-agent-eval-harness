@@ -42,9 +42,11 @@ def console_jail(request):
 @pytest.fixture
 def client(console_jail, monkeypatch):
     from eval_runner.console.routes.scenarios import scenario_bp
+    from eval_runner.reference.local_run_store import LocalFileRunStore
 
     app = Flask(__name__)
     app.secret_key = "test-secret"
+    app.extensions["agentv_run_store"] = LocalFileRunStore(console_jail["runs"])
     app.register_blueprint(system_bp, url_prefix="/api")
     app.register_blueprint(scenario_bp, url_prefix="/api")
 
@@ -157,18 +159,17 @@ def test_debugger_state_demo_trace_hydration_bypass(client):
     assert "timeline" in body["data"]
 
 
-def test_debugger_state_nested_glob_and_empty_line_handling(client, console_jail):
-    """Verify trace parsing tolerates empty lines and discovers traces via nested glob."""
-    runs_dir = console_jail["runs"]
-    nested_dir = runs_dir / "nested_folder" / "glob_run_id"
-    nested_dir.mkdir(parents=True, exist_ok=True)
-    (nested_dir / "run.jsonl").write_text(
-        '\n\n{"event": "run_start", "data": {}}\n\n', encoding="utf-8"
-    )
+def test_debugger_state_nested_glob_and_empty_line_handling(client):
+    """Verify trace parsing via provider get_events."""
 
-    res = client.get("/api/debugger/state?run_id=glob_run_id")
-    assert res.status_code == 200
-    assert len(res.get_json()["data"]["timeline"]) == 1
+    class FakeEventsStore:
+        def get_events(self, run_id, offset=0, limit=10_000_000, context=None):
+            return [{"event": "run_start", "data": {}}]
+
+    with patch("eval_runner.console.routes.system.get_run_store", return_value=FakeEventsStore()):
+        res = client.get("/api/debugger/state?run_id=glob_run_id")
+        assert res.status_code == 200
+        assert len(res.get_json()["data"]["timeline"]) == 1
 
 
 def test_debugger_state_corrupt_trace_error_reporting(client, console_jail):
@@ -187,7 +188,7 @@ def test_debugger_state_missing_trace_404(client):
     """Verify 404 response when requesting non-existent run ID trace."""
     res = client.get("/api/debugger/state?run_id=missing_run_id_for_debugger")
     assert res.status_code == 404
-    assert "Trace file not found" in res.get_json()["error"]
+    assert "Provider trace not found" in res.get_json()["error"]
 
 
 # ---------------------------------------------------------------------------
@@ -414,12 +415,19 @@ def test_system_ping(client):
 # ---------------------------------------------------------------------------
 
 
-def test_cleanup_runs_files_and_plugin_notification(client, console_jail):
-    """Verify cleanup_runs removes stale run artifacts and triggers plugin hooks."""
-    runs_dir = console_jail["runs"]
-    (runs_dir / "run_dir_1").mkdir(parents=True, exist_ok=True)
-    (runs_dir / "run_1.jsonl").write_text("{}", encoding="utf-8")
-    (runs_dir / "run_2.txt").write_text("{}", encoding="utf-8")
+def test_cleanup_runs_files_and_plugin_notification(client):
+    """Verify cleanup_runs removes stale runs via provider and triggers plugin hooks."""
+
+    class FakeCleanupStore:
+        def __init__(self):
+            self.deleted = []
+
+        def list_runs(self, limit=10_000, context=None):
+            return [{"run_id": "run_dir_1"}, {"run_id": "run_1"}]
+
+        def delete_run(self, run_id, context=None):
+            self.deleted.append(run_id)
+            return True
 
     class CrashingCleanupPlugin:
         def on_cleanup_runs(self):
@@ -429,29 +437,36 @@ def test_cleanup_runs_files_and_plugin_notification(client, console_jail):
 
     plugin = CrashingCleanupPlugin()
     manager.plugins.append(plugin)
+    fake_store = FakeCleanupStore()
 
     try:
-        res = client.post("/api/cleanup-runs")
-        assert res.status_code == 200
-        assert res.get_json()["count"] >= 2
-        assert not (runs_dir / "run_dir_1").exists()
-        assert not (runs_dir / "run_1.jsonl").exists()
-        assert (runs_dir / "run_2.txt").exists()
+        with patch("eval_runner.console.routes.system.get_run_store", return_value=fake_store):
+            res = client.post("/api/cleanup-runs")
+            assert res.status_code == 200
+            assert res.get_json()["count"] >= 2
+            assert fake_store.deleted == ["run_dir_1", "run_1"]
     finally:
         manager.plugins.remove(plugin)
 
 
-def test_cleanup_runs_missing_directory_returns_zero(client, monkeypatch):
-    """Verify cleanup_runs returns count 0 when RUN_LOG_DIR is non-existent."""
-    monkeypatch.setattr(config, "RUN_LOG_DIR", Path("/nonexistent_dir_xyz_aes"))
-    res = client.post("/api/cleanup-runs")
-    assert res.status_code == 200
-    assert res.get_json()["count"] == 0
+def test_cleanup_runs_missing_directory_returns_zero(client):
+    """Verify cleanup_runs returns count 0 when no runs exist."""
+
+    class EmptyStore:
+        def list_runs(self, limit=10_000, context=None):
+            return []
+
+    with patch("eval_runner.console.routes.system.get_run_store", return_value=EmptyStore()):
+        res = client.post("/api/cleanup-runs")
+        assert res.status_code == 200
+        assert res.get_json()["count"] == 0
 
 
 def test_cleanup_runs_exception_returns_500(client):
-    """Verify cleanup_runs returns 500 on filesystem error."""
-    with patch.object(Path, "exists", side_effect=Exception("Disk locked")):
+    """Verify cleanup_runs returns 500 on store error."""
+    with patch(
+        "eval_runner.console.routes.system.get_run_store", side_effect=Exception("Disk locked")
+    ):
         res = client.post("/api/cleanup-runs")
         assert res.status_code == 500
         assert "Disk locked" in res.get_json()["message"]

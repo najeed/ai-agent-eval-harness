@@ -182,7 +182,7 @@ The **Scenario Library** (`/scenarios`) enables exploration across thousands of 
 - **Authoritative Assertions Hydration**: Aggregates canonical `execution_graph_node.oracle_results` across all trace events, mapping observed values to actual outputs with zero synthetic stubs.
 - **Truthful Uncertified Run Resolution**: When viewing uncertified runs, the UI truthfully reports `UNVERIFIED` status and `Certification not issued`, preventing misleading assertions of compliance.
 - **Truthful Enterprise PDF Generation**:
-  - The PDF generation engine (`eval_runner/console/pdf_service.py` via ReportLab) extracts all execution metrics, timestamps, and pass/fail states directly from authentic `summary.json` and `run_manifest.json` artifacts.
+  - The PDF generation engine (`eval_runner/console/pdf_service.py` via ReportLab) derives execution metrics, timestamps, and pass/fail states from provider-owned run records, manifests, and events.
   - Zero manufactured or hardcoded placeholder strings; unverified runs explicitly reflect `UNVERIFIED` badges.
 
 ### Metrics Leaderboard (`/leaderboard`):
@@ -197,8 +197,8 @@ The **Scenario Library** (`/scenarios`) enables exploration across thousands of 
 The **Trust Center** (`/trust`) provides cryptographic transparency for non-repudiable audit logs:
 
 - **Server-Authoritative Verification**:
-  - The UI verifies runs by querying `/api/v1/runs/<run_id>/verify`, which triggers `TraceVerifier.verify_run_directory()`.
-  - Mathematical proof verification of trace hash (`sha3_256`), evidence ledger files, seal hash anchor, and Ed25519 / Post-Quantum (PQC) signatures.
+  - The UI verifies runs by querying `/api/v1/runs/<run_id>/verify`, which verifies the provider's exact trace bytes against its provider-owned manifest.
+  - Mathematical proof verification of the trace hash (`sha3_256`), certification envelope, seal state, and Ed25519 / Post-Quantum (PQC) signatures.
 - **Downloadable Verification Packages (`.agentv-package.json`)**:
   - Download self-contained, tamper-proof packages conforming to NIST SP 800-218 and EU AI Act specifications.
 
@@ -206,16 +206,16 @@ The **Trust Center** (`/trust`) provides cryptographic transparency for non-repu
 
 ## 7. 🔌 Micro-Frontend Extension Architecture & Zero-Trust Isolation
 
-The Visual Console decouples open-core OSS functionality from enterprise control plane extensions via a dynamic, sandboxed architecture:
+The Visual Console decouples core runtime functionality from modular UI extensions via a dynamic, sandboxed architecture:
 
 ```mermaid
 graph LR
-    API["GET /api/nav"] --> Gate["ControlPlaneExtensionGate"]
-    Gate --> Loader["RemoteComponentLoader<br/>(SRI Verification)"]
-    Loader --> Iframe["Sandboxed Iframe Boundary<br/>(postMessage Protocol)"]
+    API["GET /api/nav"] --> Discovery["Dynamic Route Matching"]
+    Discovery --> Loader["RemoteComponentLoader<br/>(SRI Verification)"]
+    Loader --> Iframe["Sandboxed Boundary<br/>(postMessage Protocol / ESM)"]
 ```
 
-- **Dynamic Module Discovery**: Navigation routes and enterprise tools are discovered dynamically via `GET /api/nav`.
+- **Dynamic Module Discovery**: Navigation routes and pluggable extension modules are discovered dynamically via `GET /api/nav`.
 - **Subresource Integrity (SRI) Enforcement**:
   - Remote modules must declare valid SRI digests.
   - Supported algorithms: FIPS 202 SHA-3 (`sha3-256-`, `sha3-384-`, `sha3-512-`) and standard W3C fallback (`sha384-`, `sha256-`).

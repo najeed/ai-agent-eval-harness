@@ -125,7 +125,7 @@ tmp_test/
 /workspace/
 /.test_staging/
 /.agentv/
-.mutation_testing.lock
+*.lock
 
 # --- Dependencies ---
 node_modules/

@@ -93,6 +93,18 @@ async def calculate_luna_judge_score(
 
     # Fallback to Jaccard Similarity (Only if not required)
     print("      [Metrics] [Luna-Judge] Executing Jaccard Fallback...")
+    # Message-target assertions are commonly regexes.  A successful direct
+    # regex match is deterministic evidence and must not be downgraded to
+    # whitespace-token overlap merely because the optional LLM judge is down.
+    try:
+        import re
+
+        if re.search(expected_outcome, agent_summary, flags=re.IGNORECASE):
+            print("      [Metrics] [Luna-Judge] Fallback regex match: 1.00")
+            return 1.0
+    except re.error:
+        pass
+
     from .utils import calculate_jaccard
 
     score = calculate_jaccard(expected_outcome, agent_summary)

@@ -30,6 +30,10 @@ from eval_runner.reference.approval_store import (
     reset_default_approval_store,
 )
 from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+from eval_runner.reference.local_run_store import (
+    LocalFileRunStore,
+    TraceCorruptionError,
+)
 from eval_runner.reference.sqlite_checkpoint import SQLiteCheckpointStore
 from eval_runner.run_lifecycle import (
     RunLifecycleState,
@@ -89,33 +93,32 @@ def test_lifecycle_paused_for_approval_state_transitions(tmp_path: Path):
     runs_dir = tmp_path / "runs"
     vault_dir = runs_dir / run_id
     vault_dir.mkdir(parents=True, exist_ok=True)
+    store = LocalFileRunStore(runs_dir)
 
     # 1. Start OPEN
-    transition_run_lifecycle(run_id, RunLifecycleState.OPEN, log_dir=runs_dir)
-    assert get_run_lifecycle_state(run_id, log_dir=runs_dir) == RunLifecycleState.OPEN
-    allowed, _ = can_write_trace(run_id, log_dir=runs_dir)
+    transition_run_lifecycle(run_id, RunLifecycleState.OPEN, run_store=store)
+    assert get_run_lifecycle_state(run_id, run_store=store) == RunLifecycleState.OPEN
+    allowed, _ = can_write_trace(run_id, run_store=store)
     assert allowed is True
 
     # 2. Transition OPEN -> PAUSED_FOR_APPROVAL
-    transition_run_lifecycle(run_id, RunLifecycleState.PAUSED_FOR_APPROVAL, log_dir=runs_dir)
-    assert (
-        get_run_lifecycle_state(run_id, log_dir=runs_dir) == RunLifecycleState.PAUSED_FOR_APPROVAL
-    )
-    allowed, reason = can_write_trace(run_id, log_dir=runs_dir)
+    transition_run_lifecycle(run_id, RunLifecycleState.PAUSED_FOR_APPROVAL, run_store=store)
+    assert get_run_lifecycle_state(run_id, run_store=store) == RunLifecycleState.PAUSED_FOR_APPROVAL
+    allowed, reason = can_write_trace(run_id, run_store=store)
     assert allowed is False
     assert "PAUSED_FOR_APPROVAL" in reason
 
     # 3. Transition PAUSED_FOR_APPROVAL -> OPEN (Resumption)
-    transition_run_lifecycle(run_id, RunLifecycleState.OPEN, log_dir=runs_dir)
-    assert get_run_lifecycle_state(run_id, log_dir=runs_dir) == RunLifecycleState.OPEN
-    allowed, _ = can_write_trace(run_id, log_dir=runs_dir)
+    transition_run_lifecycle(run_id, RunLifecycleState.OPEN, run_store=store)
+    assert get_run_lifecycle_state(run_id, run_store=store) == RunLifecycleState.OPEN
+    allowed, _ = can_write_trace(run_id, run_store=store)
     assert allowed is True
 
     # 4. Finalizing and Sealed
-    transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING, log_dir=runs_dir)
-    assert get_run_lifecycle_state(run_id, log_dir=runs_dir) == RunLifecycleState.FINALIZING
-    transition_run_lifecycle(run_id, RunLifecycleState.SEALED, log_dir=runs_dir)
-    assert get_run_lifecycle_state(run_id, log_dir=runs_dir) == RunLifecycleState.SEALED
+    transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING, run_store=store)
+    assert get_run_lifecycle_state(run_id, run_store=store) == RunLifecycleState.FINALIZING
+    transition_run_lifecycle(run_id, RunLifecycleState.SEALED, run_store=store)
+    assert get_run_lifecycle_state(run_id, run_store=store) == RunLifecycleState.SEALED
 
 
 @pytest.mark.asyncio
@@ -127,7 +130,8 @@ async def test_p0_1_session_durable_suspension_emits_and_preserves_state(
     runs_dir = tmp_path / "runs"
     vault_dir = runs_dir / run_id
     vault_dir.mkdir(parents=True, exist_ok=True)
-    transition_run_lifecycle(run_id, RunLifecycleState.OPEN, log_dir=runs_dir)
+    store = LocalFileRunStore(runs_dir)
+    transition_run_lifecycle(run_id, RunLifecycleState.OPEN, run_store=store)
 
     scenario = {
         "id": "scen_hitl",
@@ -175,14 +179,13 @@ async def test_p0_1_session_durable_suspension_emits_and_preserves_state(
     assert err.prompt == "Admin signature required for wire transfer"
     assert len(emitted_events) == 1
     assert emitted_events[0]["status"] == "PAUSED_FOR_APPROVAL"
-    assert (
-        get_run_lifecycle_state(run_id, log_dir=runs_dir) == RunLifecycleState.PAUSED_FOR_APPROVAL
-    )
+    assert get_run_lifecycle_state(run_id, run_store=store) == RunLifecycleState.PAUSED_FOR_APPROVAL
 
 
 def test_pending_durable_approval_suspends_before_state_parity(tmp_path: Path):
     run_id = "run-pending-before-parity"
     runs_dir = tmp_path / "runs"
+    store = LocalFileRunStore(runs_dir)
     session = SessionManager(run_id=run_id, scenario={"id": "pending_gate"}, log_root=runs_dir)
     request = session.approval_manager.create_durable_request(
         turn_index=1,
@@ -195,9 +198,7 @@ def test_pending_durable_approval_suspends_before_state_parity(tmp_path: Path):
         session._raise_if_pending_durable_approval()
 
     assert exc_info.value.approval_token == request.approval_token
-    assert (
-        get_run_lifecycle_state(run_id, log_dir=runs_dir) == RunLifecycleState.PAUSED_FOR_APPROVAL
-    )
+    assert get_run_lifecycle_state(run_id, run_store=store) == RunLifecycleState.PAUSED_FOR_APPROVAL
 
 
 # ---------------------------------------------------------------------------
@@ -212,7 +213,10 @@ async def test_p0_2_flight_recorder_monotonic_resumption_sequence(tmp_path: Path
     runs_root.mkdir(parents=True, exist_ok=True)
     log_dir = runs_root / run_id
 
-    recorder = FlightRecorder(log_dir=runs_root)
+    store = LocalFileRunStore(runs_root)
+    store.create_run(run_id, "scen_1")
+    recorder = FlightRecorder(run_store=store)
+    recorder.bind_run_provider(run_id, store)
 
     # Initial session writes RUN_START and 2 steps
     recorder.handle_event(Event(CoreEvents.RUN_START, {"run_id": run_id, "scenario": "scen_1"}))
@@ -229,7 +233,8 @@ async def test_p0_2_flight_recorder_monotonic_resumption_sequence(tmp_path: Path
 
     # Process stops (simulate pause), recorder instance is recreated
     del recorder
-    recorder_resumed = FlightRecorder(log_dir=runs_root)
+    recorder_resumed = FlightRecorder(run_store=store)
+    recorder_resumed.bind_run_provider(run_id, store)
 
     # Resume session with is_resume=True
     recorder_resumed.handle_event(
@@ -293,8 +298,9 @@ async def test_p0_2_runner_resumption_preserves_manifest_and_completes(
     (vault_dir / "scenario_resolved.json").write_text(json.dumps(scenario), encoding="utf-8")
 
     # Pre-set lifecycle OPEN then PAUSED_FOR_APPROVAL
-    transition_run_lifecycle(run_id, RunLifecycleState.OPEN, log_dir=runs_dir)
-    transition_run_lifecycle(run_id, RunLifecycleState.PAUSED_FOR_APPROVAL, log_dir=runs_dir)
+    store = LocalFileRunStore(runs_dir)
+    transition_run_lifecycle(run_id, RunLifecycleState.OPEN, run_store=store)
+    transition_run_lifecycle(run_id, RunLifecycleState.PAUSED_FOR_APPROVAL, run_store=store)
 
     # Setup approval store with approved request
     approval_store = FileApprovalStore(base_dir=tmp_path / ".agentv" / "approvals")
@@ -310,7 +316,7 @@ async def test_p0_2_runner_resumption_preserves_manifest_and_completes(
         )
     )
 
-    runner = DefaultRunner()
+    runner = DefaultRunner(run_store=store)
 
     patch_store = patch(
         "eval_runner.reference.approval_store.get_default_approval_store",
@@ -333,10 +339,12 @@ async def test_p0_2_runner_resumption_preserves_manifest_and_completes(
     assert manifest_path.exists()
     assert json.loads(manifest_path.read_text()) == manifest_data
     # Verify lifecycle is reopened during execution
-    assert get_run_lifecycle_state(run_id, log_dir=runs_dir) == RunLifecycleState.OPEN
+    assert get_run_lifecycle_state(run_id, run_store=store) == RunLifecycleState.OPEN
     # Explicit plugin finalization transitions to FINALIZING/SEALED
-    FlightRecorder(log_dir=runs_dir).finalize_run(run_id)
-    assert get_run_lifecycle_state(run_id, log_dir=runs_dir) in (
+    recorder = FlightRecorder(run_store=store)
+    recorder.bind_run_provider(run_id, store)
+    recorder.finalize_run(run_id)
+    assert get_run_lifecycle_state(run_id, run_store=store) in (
         RunLifecycleState.FINALIZING,
         RunLifecycleState.SEALED,
     )
@@ -344,13 +352,16 @@ async def test_p0_2_runner_resumption_preserves_manifest_and_completes(
 
 def test_p0_2_runner_fresh_run_rejects_existing_vault(tmp_path: Path):
     run_id = "run-existing-vault"
-    vault_dir = tmp_path / "runs" / run_id
+    runs_dir = tmp_path / "runs"
+    vault_dir = runs_dir / run_id
     vault_dir.mkdir(parents=True, exist_ok=True)
+    (vault_dir / "run.jsonl").write_text('{"event": "run_start"}\n', encoding="utf-8")
+    store = LocalFileRunStore(runs_dir)
 
     scenario = {"id": "scen_existing", "workflow": []}
-    runner = DefaultRunner()
+    runner = DefaultRunner(run_store=store)
 
-    with pytest.raises(RuntimeError, match="RunIdCollision: evidence vault already exists"):
+    with pytest.raises(RuntimeError, match="RunIdCollision"):
         run_scenario(
             scenario=scenario,
             runner=runner,
@@ -363,12 +374,13 @@ def test_p0_2_runner_resumption_fails_closed_on_terminal_state(tmp_path: Path):
     runs_dir = tmp_path / "runs"
     vault_dir = runs_dir / run_id
     vault_dir.mkdir(parents=True, exist_ok=True)
-    transition_run_lifecycle(run_id, RunLifecycleState.OPEN, log_dir=runs_dir)
-    transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING, log_dir=runs_dir)
-    transition_run_lifecycle(run_id, RunLifecycleState.SEALED, log_dir=runs_dir)
+    store = LocalFileRunStore(runs_dir)
+    transition_run_lifecycle(run_id, RunLifecycleState.OPEN, run_store=store)
+    transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING, run_store=store)
+    transition_run_lifecycle(run_id, RunLifecycleState.SEALED, run_store=store)
 
     scenario = {"id": "scen_sealed", "workflow": []}
-    runner = DefaultRunner()
+    runner = DefaultRunner(run_store=store)
 
     with pytest.raises(
         RuntimeError,
@@ -401,9 +413,14 @@ async def test_p0_3_and_p0_4_cold_restart_hitl_bridge(tmp_path: Path):
         "workflow": [
             {
                 "id": "step_1",
-                "tool": "authorize_disbursement",
+                "tool": "noop",
                 "params": {"amount": 50000},
-                "success_criteria": [{"type": "string_match", "value": "Disbursed"}],
+                "success_criteria": [
+                    {
+                        "metric": "generic_accuracy",
+                        "threshold": 1.0,
+                    }
+                ],
             }
         ],
     }
@@ -452,7 +469,9 @@ async def test_p0_3_and_p0_4_cold_restart_hitl_bridge(tmp_path: Path):
     )
 
     # Initialize a cold backend with zero in-memory state
-    backend = InProcessExecutionBackend(checkpoint_store=chk_store)
+    backend = InProcessExecutionBackend(
+        checkpoint_store=chk_store, run_store=LocalFileRunStore(Path(config.RUN_LOG_DIR))
+    )
     assert run_id not in backend._active_runs
 
     status = backend.status(run_id)
@@ -516,7 +535,8 @@ async def test_p0_5_session_enforces_scenario_declared_manual_approval_gate(
     runs_dir = tmp_path / "runs"
     vault_dir = runs_dir / run_id
     vault_dir.mkdir(parents=True, exist_ok=True)
-    transition_run_lifecycle(run_id, RunLifecycleState.OPEN, log_dir=runs_dir)
+    store = LocalFileRunStore(runs_dir)
+    transition_run_lifecycle(run_id, RunLifecycleState.OPEN, run_store=store)
 
     scenario = {
         "id": "scen_gate_test",
@@ -638,46 +658,47 @@ def test_sqlite_checkpoint_store_load_normalizes_numeric_checkpoint_identifier(t
 def test_p0_run_lifecycle_edge_branches(tmp_path: Path):
     runs_dir = tmp_path / "runs"
     runs_dir.mkdir(parents=True, exist_ok=True)
+    store = LocalFileRunStore(runs_dir)
 
     # Empty / unknown run_id rollback returns OPEN
-    assert rollback_run_lifecycle_to_open("", log_dir=runs_dir) == RunLifecycleState.OPEN
-    assert rollback_run_lifecycle_to_open("unknown", log_dir=runs_dir) == RunLifecycleState.OPEN
+    assert rollback_run_lifecycle_to_open("", run_store=store) == RunLifecycleState.OPEN
+    assert rollback_run_lifecycle_to_open("unknown", run_store=store) == RunLifecycleState.OPEN
 
     # Rollback on sealed run raises ValueError
     run_id = "run-sealed-edge"
     vault_dir = runs_dir / run_id
     vault_dir.mkdir(parents=True, exist_ok=True)
-    transition_run_lifecycle(run_id, RunLifecycleState.OPEN, log_dir=runs_dir)
-    transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING, log_dir=runs_dir)
-    transition_run_lifecycle(run_id, RunLifecycleState.SEALED, log_dir=runs_dir)
+    transition_run_lifecycle(run_id, RunLifecycleState.OPEN, run_store=store)
+    transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING, run_store=store)
+    transition_run_lifecycle(run_id, RunLifecycleState.SEALED, run_store=store)
 
     with pytest.raises(ValueError, match="Cannot rollback lifecycle for SEALED run"):
-        rollback_run_lifecycle_to_open(run_id, log_dir=runs_dir)
+        rollback_run_lifecycle_to_open(run_id, run_store=store)
 
     # Rollback on finalizing run resets to OPEN
     run_fin = "run-fin-edge"
     vault_fin = runs_dir / run_fin
     vault_fin.mkdir(parents=True, exist_ok=True)
-    transition_run_lifecycle(run_fin, RunLifecycleState.OPEN, log_dir=runs_dir)
-    transition_run_lifecycle(run_fin, RunLifecycleState.FINALIZING, log_dir=runs_dir)
-    assert rollback_run_lifecycle_to_open(run_fin, log_dir=runs_dir) == RunLifecycleState.OPEN
+    transition_run_lifecycle(run_fin, RunLifecycleState.OPEN, run_store=store)
+    transition_run_lifecycle(run_fin, RunLifecycleState.FINALIZING, run_store=store)
+    assert rollback_run_lifecycle_to_open(run_fin, run_store=store) == RunLifecycleState.OPEN
 
     # Rollback when unlink raises OSError still returns OPEN
-    transition_run_lifecycle(run_fin, RunLifecycleState.FINALIZING, log_dir=runs_dir)
+    transition_run_lifecycle(run_fin, RunLifecycleState.FINALIZING, run_store=store)
     with patch.object(Path, "unlink", side_effect=OSError("Unlink permission error")):
-        assert rollback_run_lifecycle_to_open(run_fin, log_dir=runs_dir) == RunLifecycleState.OPEN
+        assert rollback_run_lifecycle_to_open(run_fin, run_store=store) == RunLifecycleState.OPEN
 
     # transition_run_lifecycle re-raises OSError on marker write failure
     with patch.object(Path, "replace", side_effect=OSError("Write disk full")):
         with pytest.raises(OSError, match="Write disk full"):
-            transition_run_lifecycle("run-disk-err", RunLifecycleState.OPEN, log_dir=runs_dir)
+            transition_run_lifecycle("run-disk-err", RunLifecycleState.OPEN, run_store=store)
 
     # can_write_trace with UNKNOWN state returns False
     with patch(
         "eval_runner.run_lifecycle.get_run_lifecycle_state",
         return_value=RunLifecycleState.UNKNOWN,
     ):
-        allowed, reason = can_write_trace("run-unknown", log_dir=runs_dir)
+        allowed, reason = can_write_trace("run-unknown", run_store=store)
         assert allowed is False
         assert "UNKNOWN" in reason
 
@@ -685,25 +706,27 @@ def test_p0_run_lifecycle_edge_branches(tmp_path: Path):
     run_paused = "run-assert-paused"
     vault_paused = runs_dir / run_paused
     vault_paused.mkdir(parents=True, exist_ok=True)
-    transition_run_lifecycle(run_paused, RunLifecycleState.OPEN, log_dir=runs_dir)
-    transition_run_lifecycle(run_paused, RunLifecycleState.PAUSED_FOR_APPROVAL, log_dir=runs_dir)
+    transition_run_lifecycle(run_paused, RunLifecycleState.OPEN, run_store=store)
+    transition_run_lifecycle(run_paused, RunLifecycleState.PAUSED_FOR_APPROVAL, run_store=store)
     with pytest.raises(TraceClosedError, match="PAUSED_FOR_APPROVAL"):
-        assert_can_write_trace(run_paused, log_dir=runs_dir)
+        assert_can_write_trace(run_paused, run_store=store)
 
 
 def test_p0_flight_recorder_resumption_failure_branches(tmp_path: Path):
     runs_dir = tmp_path / "runs"
     runs_dir.mkdir(parents=True, exist_ok=True)
+    store = LocalFileRunStore(runs_dir)
     run_id = "run-fr-fail-closed"
     vault_dir = runs_dir / run_id
     vault_dir.mkdir(parents=True, exist_ok=True)
 
     # Sealed run rejection on resumption
-    transition_run_lifecycle(run_id, RunLifecycleState.OPEN, log_dir=runs_dir)
-    transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING, log_dir=runs_dir)
-    transition_run_lifecycle(run_id, RunLifecycleState.SEALED, log_dir=runs_dir)
+    transition_run_lifecycle(run_id, RunLifecycleState.OPEN, run_store=store)
+    transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING, run_store=store)
+    transition_run_lifecycle(run_id, RunLifecycleState.SEALED, run_store=store)
 
-    recorder = FlightRecorder(log_dir=runs_dir)
+    recorder = FlightRecorder(run_store=store)
+    recorder.bind_run_provider(run_id, store)
     with pytest.raises(RuntimeError, match="ResumptionError"):
         recorder.handle_event(
             Event(
@@ -716,21 +739,19 @@ def test_p0_flight_recorder_resumption_failure_branches(tmp_path: Path):
     run_corrupt = "run-fr-corrupt"
     vault_corrupt = runs_dir / run_corrupt
     vault_corrupt.mkdir(parents=True, exist_ok=True)
-    transition_run_lifecycle(run_corrupt, RunLifecycleState.OPEN, log_dir=runs_dir)
+    transition_run_lifecycle(run_corrupt, RunLifecycleState.OPEN, run_store=store)
     trace_file = vault_corrupt / "run.jsonl"
     trace_file.write_text('{"_seq": 5}\n{bad_json\n{"_seq": 12}\n', encoding="utf-8")
 
-    recorder2 = FlightRecorder(log_dir=runs_dir)
-    recorder2.handle_event(
-        Event(
-            CoreEvents.RUN_START,
-            {"run_id": run_corrupt, "scenario": "scen_test", "is_resume": True},
+    recorder2 = FlightRecorder(run_store=store)
+    recorder2.bind_run_provider(run_corrupt, store)
+    with pytest.raises(TraceCorruptionError, match="MalformedTraceRecord"):
+        recorder2.handle_event(
+            Event(
+                CoreEvents.RUN_START,
+                {"run_id": run_corrupt, "scenario": "scen_test", "is_resume": True},
+            )
         )
-    )
-    # The next event sequence should be 13 (initialized to max parsed 12)
-    recorder2.handle_event(Event(CoreEvents.STEP_START, {"run_id": run_corrupt, "step": 1}))
-    lines = [json.loads(line) for line in trace_file.read_text().splitlines() if "event" in line]
-    assert lines[-1]["_seq"] == 14
 
 
 @pytest.mark.asyncio
@@ -769,12 +790,13 @@ async def test_p0_runner_catches_suspension_and_marks_lifecycle(tmp_path: Path):
     run_id = "run-runner-susp-catch"
     runs_dir = tmp_path / "runs"
     runs_dir.mkdir(parents=True, exist_ok=True)
+    store = LocalFileRunStore(runs_dir)
 
     scenario = {
         "id": "scen_susp",
         "workflow": [{"id": "task_1", "tool": "noop"}],
     }
-    runner = DefaultRunner()
+    runner = DefaultRunner(run_store=store)
 
     susp_exc = RunSuspendedForApproval(
         run_id=run_id,
@@ -787,9 +809,7 @@ async def test_p0_runner_catches_suspension_and_marks_lifecycle(tmp_path: Path):
             await runner.run(scenario=scenario, run_id=run_id)
 
     assert exc_info.value.approval_token == "tok-runner-susp-001"
-    assert (
-        get_run_lifecycle_state(run_id, log_dir=runs_dir) == RunLifecycleState.PAUSED_FOR_APPROVAL
-    )
+    assert get_run_lifecycle_state(run_id, run_store=store) == RunLifecycleState.PAUSED_FOR_APPROVAL
 
 
 @pytest.mark.asyncio
@@ -798,7 +818,8 @@ async def test_p0_session_hitl_resumption_and_gate_branches(tmp_path: Path):
     runs_dir = tmp_path / "runs"
     vault_dir = runs_dir / run_id
     vault_dir.mkdir(parents=True, exist_ok=True)
-    transition_run_lifecycle(run_id, RunLifecycleState.OPEN, log_dir=runs_dir)
+    store = LocalFileRunStore(runs_dir)
+    transition_run_lifecycle(run_id, RunLifecycleState.OPEN, run_store=store)
 
     scenario = {
         "id": "scen_branches",

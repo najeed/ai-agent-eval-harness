@@ -9,25 +9,86 @@ Analyze group API endpoints:
   - Forensic diff
 """
 
-import json
+import html
 import logging
+from io import BytesIO
 
 from flask import Blueprint, jsonify, request, send_file
 
-from eval_runner import config
-from eval_runner.compliance import ComplianceService
 from eval_runner.forensics import list_diff
-from eval_runner.leaderboard_generator import LeaderboardGenerator
-from eval_runner.trace_utils import load_events, reconstruct_results_from_events
+from eval_runner.trace_utils import reconstruct_results_from_events
 
-from ..auth_manager import Permission, require_permission
+from ..auth_manager import Permission, active_runtime_context, require_permission
+from ..providers import get_run_store
 from .runs import _run_is_in_active_context
 
 logger = logging.getLogger(__name__)
 
 analyze_bp = Blueprint("analyze", __name__)
 
-_compliance_svc = ComplianceService()
+
+def _run_store():
+    return get_run_store()
+
+
+def _provider_leaderboard_rows() -> list[dict]:
+    """Aggregate leaderboard rows from provider records and events only."""
+    store = _run_store()
+    context = active_runtime_context()
+    rows: list[dict] = []
+    for run in store.list_runs(limit=10_000, context=context):
+        run_id = str(run.get("run_id") or "")
+        if not run_id or not _run_is_in_active_context(run_id, context):
+            continue
+        manifest = store.get_manifest(run_id, context=context) or {}
+        events = store.get_events(run_id, offset=0, limit=10_000_000, context=context)
+        execution_manifest = manifest.get("execution_manifest") or {}
+        agent_config = execution_manifest.get("agent_config") or {}
+        agent = (
+            run.get("agent")
+            or run.get("agent_id")
+            or manifest.get("agent_name")
+            or agent_config.get("agent_name")
+            or agent_config.get("agent_id")
+            or "unknown"
+        )
+        finalization = next(
+            (
+                (event.get("data") or {}).get("finalization", {})
+                for event in reversed(events)
+                if event.get("event") in {"run_end", "end"} and isinstance(event.get("data"), dict)
+            ),
+            {},
+        )
+        score = run.get("score")
+        if score is None:
+            score = manifest.get("score", finalization.get("score"))
+        if score is None:
+            continue
+        try:
+            pass_rate = float(score)
+        except (TypeError, ValueError):
+            continue
+        if pass_rate <= 1:
+            pass_rate *= 100
+        outcome = str(run.get("result_status") or finalization.get("outcome") or "").upper()
+        successful = 0 if outcome in {"FAIL", "FAILED", "ATTESTED_FAIL"} else 1
+        certified = bool(manifest.get("signature") or manifest.get("provenance_chain"))
+        rows.append(
+            {
+                "run_id": run_id,
+                "agent": str(agent),
+                "agent_display": f"🏅 {agent}" if certified else str(agent),
+                "pass_rate": round(pass_rate, 1),
+                "successful_tasks": successful,
+                "total_tasks": 1,
+                "tasks": f"{successful}/1",
+                "certified": certified,
+                "metrics": {},
+                "trace_file": "provider://trace",
+            }
+        )
+    return sorted(rows, key=lambda row: row["pass_rate"], reverse=True)
 
 
 # ---------------------------------------------------------------------------
@@ -43,9 +104,8 @@ def get_leaderboard():
     Each row includes agent name, pass rate, task counts, certified flag,
     and per-metric averages for the 4 metric family drill-down.
     """
-    runs_dir = str(config.RUN_LOG_DIR)
     try:
-        rows = LeaderboardGenerator.generate_data(runs_dir)
+        rows = _provider_leaderboard_rows()
         return jsonify({"leaderboard": rows, "total": len(rows)})
     except Exception as e:
         logger.error(f"[Leaderboard] Failed to generate leaderboard: {e}")
@@ -56,21 +116,29 @@ def get_leaderboard():
 @require_permission(Permission.RUNS_READ)
 def export_leaderboard_html():
     """
-    Generates a self-contained HTML leaderboard artifact via html_builder.py
-    and returns it as a downloadable file.
+    Generates a self-contained HTML leaderboard from provider-owned rows.
     """
     try:
-        from eval_runner.publication_suite.html_builder import HTMLBuilder as HtmlBuilder
-
-        runs_dir = str(config.RUN_LOG_DIR)
-        output_path = config.PROJECT_ROOT / "reports" / "leaderboard.html"
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-
-        builder = HtmlBuilder(runs_dir=runs_dir, output_path=str(output_path))
-        builder.build()
+        rows = _provider_leaderboard_rows()
+        body = "".join(
+            "<tr>"
+            f"<td>{html.escape(row['agent'])}</td>"
+            f"<td>{row['pass_rate']:.1f}%</td>"
+            f"<td>{html.escape(row['tasks'])}</td>"
+            f"<td>{'yes' if row['certified'] else 'no'}</td>"
+            "</tr>"
+            for row in rows
+        )
+        document = (
+            "<!doctype html><html><head><meta charset='utf-8'><title>AgentV Leaderboard</title>"
+            "</head><body><h1>AgentV Leaderboard</h1>"
+            "<table><thead><tr><th>Agent</th><th>Pass rate</th><th>Tasks</th>"
+            "<th>Certified</th></tr></thead><tbody>"
+            f"{body}</tbody></table></body></html>"
+        )
 
         return send_file(
-            str(output_path),
+            BytesIO(document.encode("utf-8")),
             mimetype="text/html",
             as_attachment=True,
             download_name="agentv_leaderboard.html",
@@ -89,7 +157,7 @@ def export_leaderboard_html():
 @require_permission(Permission.RUNS_READ)
 def search_failures():
     """
-    Searches the master run.jsonl log for events matching a query.
+    Searches provider-owned run events for entries matching a query.
     Supports regex (auto-detected by presence of metacharacters) and
     multi-term AND text search, mirroring failure_corpus.search() behavior.
 
@@ -104,10 +172,6 @@ def search_failures():
 
     page = max(1, int(request.args.get("page", 1)))
     limit = min(200, max(1, int(request.args.get("limit", 50))))
-
-    master_log = config.RUN_LOG_DIR / "run.jsonl"
-    if not master_log.exists():
-        return jsonify({"matches": [], "total": 0, "mode": "text", "query": q})
 
     import re
 
@@ -124,40 +188,38 @@ def search_failures():
 
     matches = []
     try:
-        with open(master_log, encoding="utf-8") as f:
-            for line in f:
-                if not line.strip():
-                    continue
-                try:
-                    data = json.loads(line)
-                    search_space = (
-                        f"{data.get('event', '')} {data.get('status', '')} "
-                        f"{data.get('triage_tag', '')} {data.get('metric', '')} "
-                        f"{str(data.get('content', ''))}"
-                    )
-                    found = False
-                    if regex_pattern:
-                        found = bool(regex_pattern.search(search_space))
-                    else:
-                        terms = q.lower().split()
-                        found = all(t in search_space.lower() for t in terms)
+        for run in _run_store().list_runs(limit=10_000, context=active_runtime_context()):
+            run_id = str(run.get("run_id") or "")
+            for data in _run_store().get_events(
+                run_id, offset=0, limit=10_000_000, context=active_runtime_context()
+            ):
+                search_space = (
+                    f"{data.get('event', '')} {data.get('status', '')} "
+                    f"{data.get('triage_tag', '')} {data.get('metric', '')} "
+                    f"{str(data.get('content', ''))}"
+                )
+                found = False
+                if regex_pattern:
+                    found = bool(regex_pattern.search(search_space))
+                else:
+                    terms = q.lower().split()
+                    found = all(t in search_space.lower() for t in terms)
 
-                    if found:
-                        matches.append(
-                            {
-                                "timestamp": data.get("timestamp"),
-                                "run_id": data.get("run_id"),
-                                "event": data.get("event"),
-                                "status": data.get("status"),
-                                "triage_tag": data.get("triage_tag"),
-                                "metric": data.get("metric"),
-                                "content": str(data.get("content", ""))[:500],
-                                "task_id": data.get("task_id"),
-                            }
-                        )
-                except json.JSONDecodeError:
-                    continue
+                if found:
+                    matches.append(
+                        {
+                            "timestamp": data.get("timestamp"),
+                            "run_id": data.get("run_id"),
+                            "event": data.get("event"),
+                            "status": data.get("status"),
+                            "triage_tag": data.get("triage_tag"),
+                            "metric": data.get("metric"),
+                            "content": str(data.get("content", ""))[:500],
+                            "task_id": data.get("task_id"),
+                        }
+                    )
     except Exception as e:
+        logger.error(f"[Failure Search] Failed: {e}")
         return jsonify({"error": str(e)}), 500
 
     total = len(matches)
@@ -188,19 +250,20 @@ def run_triage(run_id: str):
     """
     Runs the Triage Engine against a completed run's event trace.
     Uses trace_utils.reconstruct_results_from_events() as the canonical bridge
-    between raw run.jsonl events and the TriageEngine's expected input shape.
+    between provider events and the TriageEngine's expected input shape.
 
     Returns a list of per-task triage reports with category, confidence,
     explanation, suggestion, and root-cause turn index.
     """
     if not _run_is_in_active_context(run_id):
         return jsonify({"error": "Run not found"}), 404
-    trace_path = config.RUN_LOG_DIR / run_id / "run.jsonl"
-    if not trace_path.exists():
+    events = _run_store().get_events(
+        run_id, offset=0, limit=10_000_000, context=active_runtime_context()
+    )
+    if not events:
         return jsonify({"error": f"Run '{run_id}' not found"}), 404
 
     try:
-        events = load_events(trace_path)
         # reconstruct_results_from_events internally calls TriageEngine.apply_triage()
         results = reconstruct_results_from_events(events)
 
@@ -239,13 +302,18 @@ def get_compliance(run_id: str):
     """Returns PQC compliance status for a single run's manifest."""
     if not _run_is_in_active_context(run_id):
         return jsonify({"error": "Run not found"}), 404
-    run_dir = config.RUN_LOG_DIR / run_id
-    if not run_dir.exists():
-        return jsonify({"error": f"Run '{run_id}' not found"}), 404
-
     try:
-        status = _compliance_svc.check_pqc_status(run_id)
-        return jsonify({"run_id": run_id, **status})
+        manifest = _run_store().get_manifest(run_id, context=active_runtime_context())
+        if not manifest:
+            return jsonify({"error": f"Run '{run_id}' not found"}), 404
+
+        algorithm = str(manifest.get("algorithm") or manifest.get("crypto_suite") or "")
+        return jsonify(
+            {
+                "run_id": run_id,
+                "quantum_safe": "ml-dsa" in algorithm.lower() or "pqc" in algorithm.lower(),
+            }
+        )
     except Exception as e:
         logger.error(f"[Compliance] Failed for run {run_id}: {e}")
         return jsonify({"error": str(e)}), 500
@@ -262,24 +330,24 @@ def get_compliance_summary():
       range — optional ISO date filter prefix, e.g. '2026-07' matches July 2026
     """
     date_range = request.args.get("range", "").strip()
-    runs_dir = config.RUN_LOG_DIR
-
     total_certified = 0
     quantum_safe = 0
     classical_only = 0
     details = []
 
-    for manifest_path in runs_dir.glob("*/run_manifest.json"):
-        run_id = manifest_path.parent.name
+    for run in _run_store().list_runs(limit=10_000, context=active_runtime_context()):
+        run_id = str(run.get("run_id") or "")
         if not _run_is_in_active_context(run_id):
             continue
         if date_range and not run_id.startswith(date_range):
             continue
 
         try:
-            status = _compliance_svc.check_pqc_status(run_id)
+            manifest = _run_store().get_manifest(run_id, context=active_runtime_context()) or {}
+            algorithm = str(manifest.get("algorithm") or manifest.get("crypto_suite") or "")
+            status = {"quantum_safe": "ml-dsa" in algorithm.lower() or "pqc" in algorithm.lower()}
             total_certified += 1
-            if status.get("quantum_safe"):
+            if status["quantum_safe"]:
                 quantum_safe += 1
             else:
                 classical_only += 1

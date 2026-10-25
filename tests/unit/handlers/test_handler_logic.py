@@ -107,7 +107,9 @@ async def test_evaluation_coverage_pure(mock_config):
     vault.mkdir()
     (vault / "run.jsonl").write_text(json.dumps({"event": "run_start", "run_id": run_id}) + "\n")
     assert await evaluation.handle_replay(MockArgs(tmp_path, run_id=run_id)) == 0
-    (tmp_path / "run.jsonl").write_text(json.dumps({"event": "run_start", "run_id": "m1"}) + "\n")
+    vault_m1 = tmp_path / "m1"
+    vault_m1.mkdir()
+    (vault_m1 / "run.jsonl").write_text(json.dumps({"event": "run_start", "run_id": "m1"}) + "\n")
     assert await evaluation.handle_replay(MockArgs(tmp_path, run_id="m1")) == 0
     assert await evaluation.handle_replay(MockArgs(tmp_path, run_id="MISSING")) == 1
 
@@ -132,7 +134,10 @@ async def test_trust_protocols_pure(mock_config):
     (run_dir / "run_manifest.json").write_text(json.dumps(manifest))
 
     # 1. Verify
-    with patch("eval_runner.verifier.TraceVerifier.verify_trace_async", return_value=True):
+    with patch(
+        "eval_runner.verifier.TraceVerifier.verify_run",
+        return_value={"is_valid": True, "verification_status": "VERIFIED"},
+    ):
         assert await evaluation.handle_verify(MockArgs(tmp_path, run_id=run_id)) == 0
 
     # 2. Gate (Success, Integrity Fail)
@@ -140,10 +145,16 @@ async def test_trust_protocols_pure(mock_config):
     cert_dir.mkdir(parents=True)
     vc_path = cert_dir / f"{run_id}_vc.json"
     vc_path.write_text(json.dumps(manifest))
-    with patch("eval_runner.verifier.TraceVerifier.verify_trace_async", return_value=True):
-        assert await evaluation.handle_gate(MockArgs(tmp_path, run_id=run_id)) == 0
-        with patch("eval_runner.verifier.TraceVerifier.verify_trace_async", return_value=False):
-            assert await evaluation.handle_gate(MockArgs(tmp_path, run_id=run_id)) == 1
+    with patch(
+        "eval_runner.verifier.TraceVerifier.verify_run",
+        return_value={"is_valid": True, "verification_status": "VERIFIED"},
+    ):
+        assert await evaluation.handle_gate(MockArgs(tmp_path, run_id=run_id, hash=None)) == 0
+    with patch(
+        "eval_runner.verifier.TraceVerifier.verify_run",
+        return_value={"is_valid": False, "verification_status": "FAILED"},
+    ):
+        assert await evaluation.handle_gate(MockArgs(tmp_path, run_id=run_id, hash=None)) == 1
 
     # 3. Certify
     with patch(

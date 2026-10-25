@@ -16,8 +16,6 @@ import sys  # noqa: E402
 from collections.abc import Callable  # noqa: E402
 from typing import Any  # noqa: E402
 
-from eval_runner import plugins  # noqa: E402
-
 from . import config  # noqa: E402
 from .context import AdapterInvocationContext  # noqa: E402
 
@@ -217,6 +215,11 @@ class AgentAdapterRegistry:
         cls._adapters[protocol] = adapter_func
 
     @classmethod
+    def is_registered(cls, protocol: str) -> bool:
+        """Return whether a protocol already has an authoritative adapter."""
+        return protocol.lower().strip() in cls._adapters
+
+    @classmethod
     def get_available_protocols(cls, eager: bool = True) -> list[str]:
         """Returns sorted list of all active registered protocol adapters."""
         if eager:
@@ -315,9 +318,8 @@ class AgentAdapterRegistry:
             if key in policy:
                 cls._active_whitelists[cat] = set(policy[key])
 
+        from agentv_runtime.discovery import scan_package_for_adapters
         from eval_runner import adapters
-
-        from . import discovery
 
         # 1. Authoritative Protocol Registration (Baseline)
         cls.register("http", adapters.http_adapter)
@@ -326,12 +328,12 @@ class AgentAdapterRegistry:
         cls.register("socket", adapters.socket_adapter)
 
         # 2. Ecosystem Discovery (Dynamic)
-        discovery.scan_package_for_adapters(adapters, cls.register)
+        scan_package_for_adapters(adapters, cls.register)
 
         # 3. Trigger Plugin Discovery
-        from eval_runner import plugins
+        from eval_runner.runtime_services import resolve_plugin_registry
 
-        plugins.manager.trigger("on_discover_adapters", cls)
+        resolve_plugin_registry().trigger("on_discover_adapters", cls)
 
         cls._discovered = True
 
@@ -465,13 +467,16 @@ async def run_evaluation(
         attempts = MAX_ENGINE_ATTEMPTS
 
     # Load internal plugins if not already loaded (like FlightRecorder and ReportingPlugin)
+    from eval_runner.runtime_services import resolve_plugin_registry
+
     from .flight_recorder import FlightRecorderPlugin
     from .otel_bridge import OTelTelemetryBridge
     from .reporting_plugin import ReportingPlugin
 
-    plugins.manager.register(FlightRecorderPlugin(), origin="CORE")
-    plugins.manager.register(ReportingPlugin(), origin="CORE")
-    plugins.manager.register(OTelTelemetryBridge(), origin="CORE")
+    plugin_registry = resolve_plugin_registry()
+    plugin_registry.register(FlightRecorderPlugin(), origin="CORE")
+    plugin_registry.register(ReportingPlugin(), origin="CORE")
+    plugin_registry.register(OTelTelemetryBridge(), origin="CORE")
 
     runner = DefaultRunner()
     results = await runner.run(

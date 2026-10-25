@@ -5,11 +5,15 @@ Canonical extension discovery engine for AgentV OS.
 
 from __future__ import annotations
 
+import importlib
 import importlib.metadata
+import inspect
 import logging
 import os
+import pkgutil
 import threading
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any, TypeVar
 
 T = TypeVar("T")
@@ -104,6 +108,118 @@ def resolve_extension(  # noqa: UP047
         return default_factory()
 
 
+def discover_extension_entry_points(family: str) -> list[Any]:
+    """Return entry points from the one canonical AgentV extension namespace."""
+    try:
+        return list(importlib.metadata.entry_points(group=f"{ENTRY_POINT_NAMESPACE}.{family}"))
+    except Exception as exc:
+        logger.warning("Failed to enumerate entry points for '%s': %s", family, exc)
+        return []
+
+
+def discover_plugin_instances(
+    directory: str | Path, base_class: type[Any], *, package_prefix: str = ""
+) -> list[Any]:
+    """Load every plugin implementation from a project directory.
+
+    Plugins are intentionally multi-load; unlike ``resolve_extension`` this
+    returns every matching instance and is the single discovery operation for
+    entry-point and project plugin registries.
+    """
+    root = Path(directory)
+    if not root.is_dir():
+        return []
+    instances: list[Any] = []
+    for source in root.glob("*.py"):
+        if source.name == "__init__.py":
+            continue
+        module_name = f"{package_prefix}.{source.stem}" if package_prefix else source.stem
+        try:
+            module = importlib.import_module(module_name)
+            for _, candidate in inspect.getmembers(module, inspect.isclass):
+                if (
+                    candidate is not base_class
+                    and issubclass(candidate, base_class)
+                    and candidate.__module__ == module.__name__
+                ):
+                    instances.append(candidate())
+        except Exception as exc:
+            logger.warning("Failed to load project plugin '%s': %s", module_name, exc)
+    return instances
+
+
+def discover_declared_plugin_instances(
+    declarations: list[dict[str, Any]],
+    base_class: type[Any],
+) -> list[tuple[Any, dict[str, Any]]]:
+    """Instantiate every enabled plugin declared by a runtime registry.
+
+    This is deliberately multi-load (unlike ``resolve_extension``).  Policy
+    validation and trust decisions remain with the caller, while module/class
+    discovery is centralized here for entry-point, project, and declarative
+    plugin sources.
+    """
+    instances: list[tuple[Any, dict[str, Any]]] = []
+    for declaration in declarations:
+        if not isinstance(declaration, dict) or not declaration.get("enabled", True):
+            continue
+        module_name = declaration.get("module")
+        class_name = declaration.get("class")
+        if not isinstance(module_name, str) or not isinstance(class_name, str):
+            raise ValueError(f"Malformed plugin declaration: {declaration!r}")
+        module = importlib.import_module(module_name)
+        plugin_class = getattr(module, class_name)
+        if not inspect.isclass(plugin_class) or not issubclass(plugin_class, base_class):
+            raise TypeError(
+                f"Declared plugin {module_name}.{class_name} does not implement contract"
+            )
+        instances.append((plugin_class(), declaration))
+    return instances
+
+
+def discover_classes_in_package(
+    package: Any, base_class: type[Any], *, instantiate: bool = False, recursive: bool = True
+) -> dict[str, Any]:
+    """Discover matching classes in a package through the canonical scanner."""
+    result: dict[str, Any] = {}
+    iterator = (
+        pkgutil.walk_packages(package.__path__, f"{package.__name__}.")
+        if recursive
+        else pkgutil.iter_modules(package.__path__, f"{package.__name__}.")
+    )
+    for item in iterator:
+        try:
+            module = importlib.import_module(item.name)
+            for _, candidate in inspect.getmembers(module, inspect.isclass):
+                if (
+                    candidate is not base_class
+                    and issubclass(candidate, base_class)
+                    and candidate.__module__ == module.__name__
+                ):
+                    result[item.name.rsplit(".", 1)[-1]] = candidate() if instantiate else candidate
+                    break
+        except Exception as exc:
+            logger.warning("Failed to load package module '%s': %s", item.name, exc)
+    return result
+
+
+def scan_package_for_adapters(package: Any, registry_func: Callable[[str, Any], None]) -> None:
+    """Discover every adapter callable in a package and register it.
+
+    Adapter discovery is multi-load and therefore belongs beside plugin
+    discovery, not the singular-provider resolver.
+    """
+    for _, module_name, _ in pkgutil.iter_modules(package.__path__):
+        full_module_name = f"{package.__name__}.{module_name}"
+        try:
+            module = importlib.import_module(full_module_name)
+            adapter = getattr(module, "adapter", None)
+            if callable(adapter):
+                registry_func(module_name, adapter)
+        except Exception as exc:
+            logger.warning("Failed to load adapter module '%s': %s", full_module_name, exc)
+
+
 def set_extension(family: str, instance: Any) -> None:
     """Injects or overrides an extension instance in the process registry."""
     with _registry_lock:
@@ -111,6 +227,12 @@ def set_extension(family: str, instance: Any) -> None:
             _extension_registry.pop(family, None)
         else:
             _extension_registry[family] = instance
+
+
+def get_registered_extension(family: str) -> Any | None:
+    """Return a previously registered multi-load registry without resolving a provider."""
+    with _registry_lock:
+        return _extension_registry.get(family)
 
 
 def reset_extensions(family: str | None = None) -> None:
@@ -124,7 +246,13 @@ def reset_extensions(family: str | None = None) -> None:
 
 __all__ = [
     "ENTRY_POINT_NAMESPACE",
+    "discover_extension_entry_points",
+    "discover_plugin_instances",
+    "discover_declared_plugin_instances",
+    "discover_classes_in_package",
+    "scan_package_for_adapters",
     "resolve_extension",
+    "get_registered_extension",
     "set_extension",
     "reset_extensions",
 ]

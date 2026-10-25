@@ -239,16 +239,32 @@ class EnterpriseTaggedScopePolicy:
         return None
 
 
+_active_scope_policy: ScopePolicy | None = None
+
+
+def set_active_scope_policy(policy: ScopePolicy | None) -> None:
+    """Set an explicit scope-policy override for embedding applications and tests."""
+    global _active_scope_policy
+    _active_scope_policy = policy
+
+
 def get_active_scope_policy() -> ScopePolicy:
-    """Resolve the active ScopePolicy from extension discovery or fallback to OSS default."""
+    """Resolve scope governance from the canonical authorization backend.
+
+    Scope evaluation is part of authorization, not a parallel extension family.
+    Authorization providers may expose either ``get_scope_policy()`` or a
+    ``scope_policy`` attribute; local runtime uses the OSS policy fallback.
+    """
     import os
 
+    if _active_scope_policy is not None:
+        return _active_scope_policy
     if os.environ.get("AGENTV_REQUIRE_ENTERPRISE_CONTEXT") == "1":
         return EnterpriseTaggedScopePolicy()
 
     from agentv_runtime.discovery import resolve_extension
 
-    return resolve_extension(
-        "scope_policies",
-        default_factory=LocalOrSingleTenantScopePolicy,
-    )
+    backend = resolve_extension("authorization_backends", default_factory=lambda: None)
+    provider = getattr(backend, "get_scope_policy", None)
+    policy = provider() if callable(provider) else getattr(backend, "scope_policy", None)
+    return policy if policy is not None else LocalOrSingleTenantScopePolicy()

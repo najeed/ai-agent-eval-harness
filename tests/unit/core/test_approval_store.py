@@ -669,7 +669,8 @@ class TestSessionApprovalManagerLegacyAndGates:
 
 class TestInProcessBackendResumptionGuard:
     def test_resume_accepts_paused_for_approval(self):
-        backend = InProcessExecutionBackend()
+        run_store = MagicMock()
+        backend = InProcessExecutionBackend(run_store=run_store)
         run_id = "run_paused_hitl_01"
         approved = ApprovalRequest(
             approval_token="tok_test_resume",
@@ -712,7 +713,9 @@ class TestInProcessBackendResumptionGuard:
             res = backend.resume(run_id=run_id, resumption_token="tok_test_resume")
         assert res == {"status": "resumed_from_checkpoint"}
         assert submit.call_args.kwargs["resumption_token"] == "tok_test_resume"
-        reopen.assert_called_once_with(run_id, RunLifecycleState.OPEN)
+        reopen.assert_called_once_with(
+            run_id, RunLifecycleState.OPEN, run_store=run_store, context=None
+        )
 
         # 2. Resuming with checkpoint invokes submit
         mock_checkpoint_store = MagicMock()
@@ -721,7 +724,9 @@ class TestInProcessBackendResumptionGuard:
             "scenario_data": {"id": "scen_chk", "metadata": {"name": "Test Checkpoint"}},
             "session_state": {"approval_token": "tok_chk_123"},
         }
-        backend_chk = InProcessExecutionBackend(checkpoint_store=mock_checkpoint_store)
+        backend_chk = InProcessExecutionBackend(
+            checkpoint_store=mock_checkpoint_store, run_store=run_store
+        )
         with (
             patch(
                 "eval_runner.reference.approval_store.get_default_approval_store",
@@ -740,7 +745,7 @@ class TestInProcessBackendResumptionGuard:
                 mock_submit.assert_called_once()
                 assert mock_submit.call_args[1]["resumption_token"] == "tok_chk_123"
                 reopen_checkpoint.assert_called_once_with(
-                    "run_cold_restart", RunLifecycleState.OPEN
+                    "run_cold_restart", RunLifecycleState.OPEN, run_store=run_store, context=None
                 )
 
 
@@ -880,10 +885,7 @@ class TestHitlResumeCliHandler:
                 "eval_runner.session_components.approval_manager.SessionApprovalManager",
                 side_effect=AssertionError("resolution hooks must not be replayed"),
             ),
-            patch(
-                "eval_runner.reference.inprocess_backend.get_execution_backend",
-                return_value=backend,
-            ),
+            patch("eval_runner.runtime_services.resolve_execution_backend", return_value=backend),
         ):
             args = argparse.Namespace(
                 run_id="run_already_approved",
@@ -974,7 +976,7 @@ class TestHitlResumeCliHandler:
                 return_value=store,
             ),
             patch(
-                "eval_runner.reference.inprocess_backend.get_execution_backend",
+                "eval_runner.runtime_services.resolve_execution_backend",
                 return_value=mock_backend,
             ),
         ):

@@ -164,7 +164,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               <span>First-time setup?</span>
             </div>
             <p className="leading-relaxed text-[10px] text-slate-500">
-              On fresh OSS installs, check the terminal startup log for the generated bootstrap key, or view{' '}
+              On fresh installs, check the terminal startup log for the generated bootstrap key, or view{' '}
               <code className="px-1 py-0.5 rounded bg-slate-800 font-mono text-cyan-300">.aes/keys/bootstrap.key</code>.
             </p>
           </div>

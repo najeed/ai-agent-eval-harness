@@ -174,12 +174,20 @@ def test_evidence_packages_contract(api_jail, api_client):
     _validate_payload("evidence-packages.schema.json", payload)
 
 
-def test_certificate_contract(api_jail, api_client):
+def test_certificate_contract(api_jail, api_client, monkeypatch):
     """GET /api/v1/certificates/<run_id> — Public Trust Protocol passthrough."""
-    cert_path = api_jail["reports"] / "certificates" / "run-cert1_vc.json"
-    cert_path.write_text(
-        json.dumps({"run_id": "run-cert1", "trace_hash": "sha3_256:" + "ab" * 32}),
-        encoding="utf-8",
+    from unittest.mock import MagicMock
+
+    mock_store = MagicMock()
+    manifest_data = {
+        "run_id": "run-cert1",
+        "trace_hash": "sha3_256:" + "ab" * 32,
+    }
+    mock_store.get_run.return_value = {"run_id": "run-cert1"}
+    mock_store.get_manifest.return_value = manifest_data
+    monkeypatch.setattr(
+        "eval_runner.console.routes.runs._active_run_store",
+        lambda: mock_store,
     )
     res = api_client.get("/api/v1/certificates/run-cert1")
     assert res.status_code == 200

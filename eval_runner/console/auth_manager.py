@@ -5,13 +5,13 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 
 from agentv_runtime.scope import (
-    EnterpriseTaggedScopePolicy,
-    LocalOrSingleTenantScopePolicy,
     ScopePolicy,
     ScopeToken,
+    get_active_scope_policy as _get_runtime_scope_policy,
+    set_active_scope_policy as _set_runtime_scope_policy,
 )
 from eval_runner.interfaces.auth import AuthorizationBackend, AuthPrincipal
-from eval_runner.reference.auth import SimpleAPIKeyAuthBackend
+from eval_runner.runtime_services import resolve_authorization_backend
 
 
 class Permission:
@@ -70,30 +70,15 @@ class Permission:
 CONTEXT_VERSION = "2"
 CONTEXT_FIELDS = ("org_id", "tenant_id", "workspace_id", "active_environment")
 
-_active_scope_policy: ScopePolicy | None = None
-
 
 def get_active_scope_policy() -> ScopePolicy:
-    """
-    Return the active scope policy via discovery engine,
-    defaulting to LocalOrSingleTenantScopePolicy.
-    """
-    if _active_scope_policy is not None:
-        return _active_scope_policy
-    if os.environ.get("AGENTV_REQUIRE_ENTERPRISE_CONTEXT") == "1":
-        return EnterpriseTaggedScopePolicy()
-    from agentv_runtime.discovery import resolve_extension
-
-    return resolve_extension(
-        "scope_policies",
-        default_factory=LocalOrSingleTenantScopePolicy,
-    )
+    """Return scope governance supplied by the active authorization backend."""
+    return _get_runtime_scope_policy()
 
 
 def set_active_scope_policy(policy: ScopePolicy | None) -> None:
-    """Explicitly override the active scope policy (for tests or enterprise plugins)."""
-    global _active_scope_policy
-    _active_scope_policy = policy
+    """Explicitly override scope governance for tests or embedding applications."""
+    _set_runtime_scope_policy(policy)
 
 
 def normalize_entitlements(user: dict) -> dict:
@@ -230,7 +215,7 @@ class StaticKeyProvider(AuthManager):
         # principal claims, even when it happens to use the reference backend
         # implementation.
         self._uses_configured_backend = backend is not None
-        self.backend = backend or SimpleAPIKeyAuthBackend(master_key=key)
+        self.backend = backend or resolve_authorization_backend(master_key=key)
         self._register_demo_principals()
         self._jwks_client = None
         self._jwks_url_cached = None
@@ -248,7 +233,7 @@ class StaticKeyProvider(AuthManager):
         fixture_path = os.getenv("AGENTV_DEMO_IDENTITIES_FILE", "").strip()
         if not getattr(config, "ENABLE_DEMO", False) or not fixture_path:
             return
-        if not isinstance(self.backend, SimpleAPIKeyAuthBackend):
+        if not callable(getattr(self.backend, "register_key", None)):
             return
 
         try:
@@ -516,16 +501,12 @@ def get_auth_provider() -> AuthManager:
     # Industrial Hardening: Prefer dedicated SERVICE_API_KEY for programmatic access
     backend = _configured_authorization_backend
     if backend is None:
-        from agentv_runtime.discovery import resolve_extension
-
-        backend = resolve_extension(
-            "authorization_backends",
-            default_factory=lambda: None,
+        factory_spec = os.getenv(_AUTHORIZATION_BACKEND_FACTORY_ENV, "").strip()
+        backend = (
+            _load_configured_authorization_backend(factory_spec)
+            if factory_spec
+            else resolve_authorization_backend(master_key=config.SERVICE_API_KEY)
         )
-        if backend is None:
-            factory_spec = os.getenv(_AUTHORIZATION_BACKEND_FACTORY_ENV, "").strip()
-            if factory_spec:
-                backend = _load_configured_authorization_backend(factory_spec)
     return StaticKeyProvider(config.SERVICE_API_KEY, backend=backend)
 
 
@@ -569,10 +550,13 @@ def require_permission(permission_node: str):
 
             from flask import jsonify, request, session
 
-            # [TEST HARNESS SEAM] Explicit opt-in bypass for deterministic test
-            # suites. Never set in production: authorization remains deny-by-
-            # default (no implicit localhost/demo trust).
             if os.getenv("AGENTV_TEST_AUTH_BYPASS") == "1":
+                from flask import g
+
+                from agentv_runtime.scope import ScopeToken
+
+                if getattr(g, "runtime_scope", None) is None:
+                    g.runtime_scope = ScopeToken.from_tags({}, is_system=True)
                 return f(*args, **kwargs)
 
             # [INDUSTRIAL DIAGNOSTIC]: Log all permission checks for forensic auditing

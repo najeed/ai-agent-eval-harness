@@ -1,711 +1,319 @@
-"""
-tests/unit/services/test_run_summary_service.py
-Unit tests for RunSummaryService in eval_runner.services.run_summary.
-"""
+"""Provider-native tests for :mod:`eval_runner.services.run_summary`."""
 
-from __future__ import annotations
-
-import json
-import time
-from datetime import datetime
-from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from eval_runner.services.run_summary import RunSummaryService
 
 
-def test_get_authoritative_verdict_branches(tmp_path, monkeypatch):
+def _store(*, run=None, manifest=None, events=None, trace=b'{"event":"run_end"}\n'):
+    provider = MagicMock()
+    provider.get_run.return_value = run
+    provider.get_manifest.return_value = manifest
+    provider.get_events.return_value = events or []
+    provider.get_trace_bytes.return_value = trace
+    return provider
+
+
+def test_verdict_is_not_executed_when_provider_has_no_run_or_trace():
+    provider = _store(run=None, trace=None)
+    assert (
+        RunSummaryService.get_authoritative_verdict("missing", run_store=provider) == "NOT_EXECUTED"
+    )
+
+
+def test_verdict_uses_provider_owned_bytes_and_manifest():
+    provider = _store(
+        run={"run_id": "run-1"},
+        manifest={"trace_hash": "hash", "signature": "signature", "execution_mode": "live"},
+        events=[{"event": "run_start", "data": {"execution_mode": "live"}}],
+    )
+    with patch(
+        "eval_runner.services.run_summary.TraceVerifier.verify_trace_bytes", return_value=True
+    ) as verify:
+        assert (
+            RunSummaryService.get_authoritative_verdict("run-1", run_store=provider) == "VERIFIED"
+        )
+    verify.assert_called_once_with(
+        b'{"event":"run_end"}\n',
+        provider.get_manifest.return_value,
+        run_store=provider,
+        context=None,
+        trace_only=False,
+    )
+
+
+def test_summary_uses_provider_events_without_trace_path_recovery():
+    provider = _store(
+        run={"run_id": "run-1", "scenario_id": "scenario", "status": "COMPLETED"},
+        manifest={"execution_mode": "live", "score": 1.0},
+        events=[
+            {
+                "event": "run_start",
+                "timestamp": "2026-01-01T00:00:00Z",
+                "data": {"execution_mode": "live"},
+            },
+            {"event": "run_end", "data": {"outcome": "PASS"}},
+        ],
+    )
+    with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="UNKNOWN"):
+        summary = RunSummaryService.compute_summary("run-1", run_store=provider)
+    assert summary["status"] == "PASSED"
+    assert summary["trace_integrity"] == "COMPLETE"
+    assert summary["scenario"] == "scenario"
+
+
+def test_terminal_state_edge_cases():
+    # 1. No terminal event
+    assert RunSummaryService._terminal_state([]) == ("RUNNING", "RUNNING", "PARTIAL")
+
+    # 2. certification_failed
+    assert RunSummaryService._terminal_state([{"event": "certification_failed"}]) == (
+        "FAILED",
+        "FAILED",
+        "COMPLETE",
+    )
+
+    # 3. Outcome / decision variants
+    assert RunSummaryService._terminal_state(
+        [{"event": "session_decision", "outcome": "SUCCESS"}]
+    ) == (
+        "PASSED",
+        "COMPLETED",
+        "COMPLETE",
+    )
+    assert RunSummaryService._terminal_state(
+        [{"event": "workflow_verdict", "verdict": "ERROR"}]
+    ) == (
+        "FAILED",
+        "FAILED",
+        "COMPLETE",
+    )
+
+    # 4. run_end with no recognized outcome -> ("PASSED", "COMPLETED", "PARTIAL")
+    assert RunSummaryService._terminal_state(
+        [{"event": "run_end", "data": {"status": "OTHER"}}]
+    ) == (
+        "PASSED",
+        "COMPLETED",
+        "PARTIAL",
+    )
+
+    # 5. Non-run_end terminal event with unrecognized outcome -> ("INVALID", "INVALID", "INVALID")
+    assert RunSummaryService._terminal_state(
+        [{"event": "workflow_verdict", "data": {"verdict": "UNKNOWN"}}]
+    ) == (
+        "INVALID",
+        "INVALID",
+        "INVALID",
+    )
+
+
+def test_truth_level_hierarchies():
+    # 1. Nested execution_manifest metadata/runtime_config
+    manifest = {
+        "execution_manifest": {
+            "runtime_config": {"execution_mode": "hybrid"},
+            "metadata": {"execution_mode": "live"},
+        },
+        "provisional": True,
+    }
+    mode, provisional = RunSummaryService._truth_level([], manifest)
+    assert mode == "hybrid"
+    assert provisional is True
+
+    # 2. Non-dict execution_manifest and metadata
+    manifest_invalid = {
+        "execution_manifest": "not-a-dict",
+    }
+    mode, provisional = RunSummaryService._truth_level([], manifest_invalid)
+    assert mode == "unknown"
+    assert provisional is True
+
+    # 3. Events iteration with other events before run_start
+    events = [
+        {"event": "some_other_event"},
+        {
+            "event": "run_start",
+            "data": {"execution_mode": "live", "metadata": {"provisional": False}},
+            "metadata": {},
+        },
+    ]
+    mode, provisional = RunSummaryService._truth_level(events, {})
+    assert mode == "live"
+    assert provisional is False
+
+
+def test_get_authoritative_verdict_all_branches():
     # 1. Empty run_id
-    assert RunSummaryService.get_authoritative_verdict("") == "NOT_EXECUTED"
+    assert RunSummaryService.get_authoritative_verdict("", run_store=MagicMock()) == "NOT_EXECUTED"
 
-    # 2. Non-existent trace path
-    monkeypatch.setattr(
-        "eval_runner.services.run_summary.resolve_trace_path",
-        lambda *args, **kwargs: None,
+    # 2. Missing manifest or trace_bytes
+    provider = _store(run={"run_id": "r1"}, manifest=None, trace=None)
+    assert RunSummaryService.get_authoritative_verdict("r1", run_store=provider) == "UNKNOWN"
+
+    provider = _store(run={"run_id": "r1"}, manifest={"a": 1}, trace=None)
+    assert RunSummaryService.get_authoritative_verdict("r1", run_store=provider) == "UNKNOWN"
+
+    # 3. TraceVerifier returns False
+    provider = _store(run={"run_id": "r1"}, manifest={"a": 1}, trace=b"data")
+    with patch(
+        "eval_runner.services.run_summary.TraceVerifier.verify_trace_bytes", return_value=False
+    ):
+        assert (
+            RunSummaryService.get_authoritative_verdict("r1", run_store=provider)
+            == "FAILED_VERIFICATION"
+        )
+
+    # 4. TraceVerifier raises Exception
+    with patch(
+        "eval_runner.services.run_summary.TraceVerifier.verify_trace_bytes",
+        side_effect=RuntimeError("Cryptographic error"),
+    ):
+        assert RunSummaryService.get_authoritative_verdict("r1", run_store=provider) == "ERROR"
+
+    # 5. Verified provisional (simulated or provisional flag)
+    provider = _store(
+        run={"run_id": "r1"},
+        manifest={"execution_mode": "simulated", "status": "passed"},
+        trace=b"data",
     )
-    assert RunSummaryService.get_authoritative_verdict("run_no_trace") == "NOT_EXECUTED"
+    with patch(
+        "eval_runner.services.run_summary.TraceVerifier.verify_trace_bytes", return_value=True
+    ):
+        assert (
+            RunSummaryService.get_authoritative_verdict("r1", run_store=provider)
+            == "VERIFIED_PROVISIONAL"
+        )
 
-    # 3. Trace exists, but locate_certificate_file returns None
-    trace_file = tmp_path / "run.jsonl"
-    trace_file.write_text('{"event": "task_completed"}\n', encoding="utf-8")
-    monkeypatch.setattr(
-        "eval_runner.services.run_summary.resolve_trace_path",
-        lambda *args, **kwargs: trace_file,
+    # 6. Attested fail
+    provider = _store(
+        run={"run_id": "r1"},
+        manifest={
+            "execution_mode": "live",
+            "certification": {"outcome": "FAILED"},
+        },
+        trace=b"data",
     )
-    with patch("eval_runner.verifier.locate_certificate_file", return_value=None):
-        assert RunSummaryService.get_authoritative_verdict("run_no_cert") == "UNKNOWN"
-
-    # 4. Manifest exists, but TraceVerifier returns False
-    manifest_file = tmp_path / "manifest.json"
-    manifest_file.write_text('{"provisional": false}\n', encoding="utf-8")
-    with (
-        patch("eval_runner.verifier.locate_certificate_file", return_value=manifest_file),
-        patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=False),
+    with patch(
+        "eval_runner.services.run_summary.TraceVerifier.verify_trace_bytes", return_value=True
     ):
-        assert RunSummaryService.get_authoritative_verdict("run_bad_cert") == "FAILED_VERIFICATION"
-
-    # 5. Manifest exists, TraceVerifier returns True, provisional is True
-    manifest_prov = tmp_path / "manifest_prov.json"
-    manifest_prov.write_text('{"provisional": true}\n', encoding="utf-8")
-    with (
-        patch("eval_runner.verifier.locate_certificate_file", return_value=manifest_prov),
-        patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True),
-    ):
-        assert RunSummaryService.get_authoritative_verdict("run_prov") == "VERIFIED_PROVISIONAL"
-
-    # 6. Manifest exists, TraceVerifier returns True, authoritative (not provisional)
-    manifest_auth = tmp_path / "manifest_auth.json"
-    manifest_auth.write_text('{"provisional": false, "execution_mode": "live"}\n', encoding="utf-8")
-    with (
-        patch("eval_runner.verifier.locate_certificate_file", return_value=manifest_auth),
-        patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True),
-    ):
-        assert RunSummaryService.get_authoritative_verdict("run_auth") == "VERIFIED"
-
-    # 7. TraceVerifier raises Exception -> ERROR
-    def failing_verify(*args, **kwargs):
-        raise RuntimeError("Ledger cryptographic parsing exploded")
-
-    with (
-        patch("eval_runner.verifier.locate_certificate_file", return_value=manifest_auth),
-        patch("eval_runner.verifier.TraceVerifier.verify_trace", failing_verify),
-    ):
-        assert RunSummaryService.get_authoritative_verdict("run_err") == "ERROR"
+        assert (
+            RunSummaryService.get_authoritative_verdict("r1", run_store=provider) == "ATTESTED_FAIL"
+        )
 
 
-def test_compute_summary_certified_and_provisional(tmp_path, monkeypatch):
-    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
-    monkeypatch.setattr("eval_runner.config.REPORTS_DIR", tmp_path / "reports")
+def test_compute_summary_all_verdicts_scores_and_fallbacks():
+    # 1. run is None
+    provider = _store(run=None)
+    provider.get_run.return_value = None
+    summary = RunSummaryService.compute_summary("missing-run", run_store=provider)
+    assert summary["status"] == "NOT_EXECUTED"
 
-    # 1. VERIFIED -> CERTIFIED
+    # 2. VERIFIED verdict -> status="CERTIFIED", lifecycle="SEALED"
+    provider = _store(
+        run={"run_id": "r-cert"},
+        manifest={"execution_mode": "live", "score": None},
+        events=[{"event": "run_end", "data": {"passed": True}}],
+    )
     with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="VERIFIED"):
-        summary = RunSummaryService.compute_summary("run_1", cached_entry={"scenario": "scen_1"})
-        assert summary["status"] == "CERTIFIED"
-        assert summary["lifecycle"] == "SEALED"
-        assert summary["verification_status"] == "VERIFIED"
+        summary = RunSummaryService.compute_summary("r-cert", run_store=provider)
+    assert summary["status"] == "CERTIFIED"
+    assert summary["lifecycle"] == "SEALED"
+    assert summary["score"] == 1.0
 
-    # 2. VERIFIED_PROVISIONAL -> PROVISIONAL
+    # 3. VERIFIED_PROVISIONAL verdict -> status="PROVISIONAL"
     with patch.object(
         RunSummaryService, "get_authoritative_verdict", return_value="VERIFIED_PROVISIONAL"
     ):
-        summary = RunSummaryService.compute_summary("run_2", cached_entry={"scenario": "scen_2"})
-        assert summary["status"] == "PROVISIONAL"
-        assert summary["lifecycle"] == "SEALED"
+        summary = RunSummaryService.compute_summary("r-cert", run_store=provider)
+    assert summary["status"] == "PROVISIONAL"
+    assert summary["lifecycle"] == "SEALED"
 
+    # 4. ATTESTED_FAIL verdict -> status="ATTESTED_FAIL"
+    with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="ATTESTED_FAIL"):
+        summary = RunSummaryService.compute_summary("r-cert", run_store=provider)
+    assert summary["status"] == "ATTESTED_FAIL"
+    assert summary["lifecycle"] == "SEALED"
 
-def test_compute_summary_artifact_present_and_missing_trace(tmp_path, monkeypatch):
-    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
-    reports_dir = tmp_path / "reports"
-    monkeypatch.setattr("eval_runner.config.REPORTS_DIR", reports_dir)
-
-    cert_dir = reports_dir / "certificates"
-    cert_dir.mkdir(parents=True, exist_ok=True)
-    (cert_dir / "run_art_vc.json").write_text(
-        json.dumps({"vc_version": "3.0.0", "trace_hash": "sha3_256:test"}),
-        encoding="utf-8",
-    )
-
-    # 1. Certificate exists on disk, but verdict is UNKNOWN -> ARTIFACT_PRESENT
+    # 5. Empty events -> status = lifecycle = run.get("status")
+    provider = _store(run={"run_id": "r-empty", "status": "PAUSED"}, events=[])
     with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="UNKNOWN"):
-        summary = RunSummaryService.compute_summary("run_art")
-        assert summary["status"] == "ARTIFACT_PRESENT"
-        assert summary["lifecycle"] == "COMPLETED"
+        summary = RunSummaryService.compute_summary("r-empty", run_store=provider)
+    assert summary["status"] == "PAUSED"
+    assert summary["score"] is None
 
-    # 2. No certificate, no trace, recent timestamp -> RUNNING
-    with (
-        patch.object(RunSummaryService, "get_authoritative_verdict", return_value="NOT_EXECUTED"),
-        patch(
-            "eval_runner.services.run_summary.resolve_trace_path",
-            return_value=None,
-        ),
-    ):
-        recent_ts = datetime.fromtimestamp(time.time() - 10).isoformat()
-        summary_recent = RunSummaryService.compute_summary(
-            "run_recent", cached_entry={"timestamp": recent_ts}
-        )
-        assert summary_recent["status"] == "RUNNING"
-
-        # 3. No certificate, no trace, stale timestamp -> STALLED
-        old_ts = datetime.fromtimestamp(time.time() - 500).isoformat()
-        summary_stale = RunSummaryService.compute_summary(
-            "run_stale", cached_entry={"timestamp": old_ts}
-        )
-        assert summary_stale["status"] == "STALLED"
-
-
-def test_compute_summary_trace_states(tmp_path, monkeypatch):
-    run_dir = tmp_path / "runs" / "run_states"
-    run_dir.mkdir(parents=True, exist_ok=True)
-    trace_path = run_dir / "run.jsonl"
-    trace_path.write_text('{"event": "task"}\n', encoding="utf-8")
-    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
-    monkeypatch.setattr("eval_runner.config.REPORTS_DIR", tmp_path / "reports")
-    monkeypatch.setattr(
-        "eval_runner.services.run_summary.resolve_trace_path",
-        lambda *args, **kwargs: trace_path,
+    # 6. Failed run with default score 0.0
+    provider = _store(
+        run={"run_id": "r-fail"},
+        manifest={},
+        events=[{"event": "run_end", "data": {"passed": False}}],
     )
     with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="UNKNOWN"):
-        # 1. Sealed file indicator
-        (run_dir / ".sealed").write_text("sealed", encoding="utf-8")
-        with patch("eval_runner.verifier.locate_certificate_file", return_value=trace_path):
-            summary_sealed = RunSummaryService.compute_summary("run_states")
-            assert summary_sealed["status"] == "SEALED"
-            assert summary_sealed["lifecycle"] == "SEALED"
-
-        (run_dir / ".sealed").unlink()
-
-        # Cached indexes are not authoritative execution truth.
-        summary_pass = RunSummaryService.compute_summary(
-            "run_states", cached_entry={"result_status": "PASS"}
-        )
-        assert summary_pass["status"] == "RUNNING"
-        assert summary_pass["lifecycle"] == "RUNNING"
-
-        # Nor may cached FAIL override the parsed trace.
-        summary_fail = RunSummaryService.compute_summary(
-            "run_states", cached_entry={"result_status": "FAIL"}
-        )
-        assert summary_fail["status"] == "RUNNING"
-        assert summary_fail["lifecycle"] == "RUNNING"
-
-        # A non-terminal error is not a final verdict.
-        trace_path.write_text('{"event": "error", "message": "boom"}\n', encoding="utf-8")
-        summary_err = RunSummaryService.compute_summary("run_states")
-        assert summary_err["status"] == "RUNNING"
-
-        # Terminal outcome is typed and parsed, not inferred from a marker.
-        trace_path.write_text('{"event": "run_end", "data": {"passed": true}}\n', encoding="utf-8")
-        summary_end = RunSummaryService.compute_summary("run_states")
-        assert summary_end["status"] == "PASSED"
-
-        # 6. Trace reading error
-        def failing_open(*args, **kwargs):
-            raise OSError("I/O failure reading trace")
-
-        with patch("builtins.open", failing_open):
-            summary_io = RunSummaryService.compute_summary("run_states")
-            assert summary_io["status"] == "INVALID"
-            assert summary_io["trace_integrity"] == "INVALID"
-
-        # 7. Large traces are parsed in full; a prior failed retry does not
-        # override the terminal PASS.
-        large_bytes = (
-            b'{"event":"assertion_evaluated","data":{"passed":false}}\n'
-            + b" " * (33 * 1024)
-            + b'{"event":"run_end","data":{"passed":true}}\n'
-        )
-        trace_path.write_bytes(large_bytes)
-        summary_large = RunSummaryService.compute_summary("run_states")
-        assert summary_large["status"] == "PASSED"
-
-        # 8. Trace empty (size == 0)
-        trace_path.write_bytes(b"")
-        summary_empty = RunSummaryService.compute_summary("run_states")
-        assert summary_empty["status"] == "RUNNING"
-
-        # 9. Trace active, no end, mtime recent vs stalled
-        trace_path.write_text('{"event": "step_1"}\n', encoding="utf-8")
-        summary_active = RunSummaryService.compute_summary("run_states")
-        assert summary_active["status"] == "RUNNING"
-
-        # 9b. Stalled active trace (mtime > 300s ago)
-        with patch("os.path.getmtime", return_value=time.time() - 400):
-            summary_stalled = RunSummaryService.compute_summary("run_states")
-            assert summary_stalled["status"] == "STALLED"
-
-        # 10. A failed terminal outcome remains failed.
-        trace_path.write_text(
-            '{"event": "error", "message": "fail"}\n'
-            '{"event": "run_end", "data": {"passed": false}}\n',
-            encoding="utf-8",
-        )
-        summary_end_err = RunSummaryService.compute_summary("run_states")
-        assert summary_end_err["status"] == "FAILED"
-
-
-def test_run_summary_additional_branches(tmp_path, monkeypatch):
-    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
-    monkeypatch.setattr("eval_runner.config.REPORTS_DIR", tmp_path / "reports")
-
-    # 1. Provisional check exception in get_authoritative_verdict
-    manifest_bad = tmp_path / "manifest_bad.json"
-    manifest_bad.write_text("invalid json {", encoding="utf-8")
-    with (
-        patch("eval_runner.verifier.locate_certificate_file", return_value=manifest_bad),
-        patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True),
-        patch(
-            "eval_runner.services.run_summary.resolve_trace_path",
-            return_value=manifest_bad,
-        ),
-    ):
-        verdict = RunSummaryService.get_authoritative_verdict("run_bad_json_man")
-        assert verdict == "VERIFIED"
-
-    # 2. cached_exec_mode present and path/fragment_path present
-    rel_path = tmp_path / "runs" / "custom" / "run.jsonl"
-    rel_path.parent.mkdir(parents=True, exist_ok=True)
-    rel_path.write_text('{"event": "run_end"}\n', encoding="utf-8")
-
-    cached_entry = {
-        "execution_mode": "simulated",
-        "path": "custom/run.jsonl",
-        "_fragment_path": "frag.jsonl",
-    }
-    with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="UNKNOWN"):
-        s = RunSummaryService.compute_summary("run_custom", cached_entry=cached_entry)
-        assert s["execution_mode"] == "simulated"
-        assert s["provisional"] is True
-        assert s["_fragment_path"] == "frag.jsonl"
-        assert s["path"] == "custom/run.jsonl"
-
-    # 3. Invalid timestamp parsing with no trace
-    with (
-        patch.object(RunSummaryService, "get_authoritative_verdict", return_value="NOT_EXECUTED"),
-        patch("eval_runner.services.run_summary.resolve_trace_path", return_value=None),
-    ):
-        s_bad_ts = RunSummaryService.compute_summary(
-            "run_bad_ts", cached_entry={"timestamp": "not-a-timestamp"}
-        )
-        assert s_bad_ts["status"] == "STALLED"
-
-
-def test_parsed_terminal_state_framed_log_and_edge_outcomes(tmp_path, monkeypatch):
-    run_dir = tmp_path / "runs" / "framed_run"
-    run_dir.mkdir(parents=True, exist_ok=True)
-    trace_file = run_dir / "run.jsonl"
-
-    # Mock json.loads so that a line parses to a non-dict list, covering 95->90
-    import json as json_mod
-
-    orig_loads = json_mod.loads
-
-    def mock_loads(s):
-        if "non_dict_candidate" in s:
-            return ["not", "a", "dict"]
-        return orig_loads(s)
-
-    monkeypatch.setattr(json_mod, "loads", mock_loads)
-
-    # 1. Framed log with non-dict candidate and certification_failed terminal event
-    trace_file.write_text(
-        "Framed log prefix without json\n"
-        '[DEBUG] {"non_dict_candidate": 1}\n'
-        '[INFO] {"event": "certification_failed", "error": "Signature rejected"}\n',
-        encoding="utf-8",
-    )
-    st, lc, integ = RunSummaryService._parsed_terminal_state(trace_file, "framed_run")
-    assert st == "FAILED"
-    assert lc == "FAILED"
-    assert integ == "COMPLETE"
-
-    # 2. Framed log with unrecognized outcome on non-run_end terminal event
-    trace_file.write_text(
-        "Framed log prefix\n"
-        '[WARN] {"event": "workflow_verdict", "data": {"verdict": "INDECISIVE"}}\n',
-        encoding="utf-8",
-    )
-    st2, lc2, integ2 = RunSummaryService._parsed_terminal_state(trace_file, "framed_run")
-    assert st2 == "INVALID"
-    assert lc2 == "INVALID"
-    assert integ2 == "INVALID"
-
-
-def test_compute_summary_path_and_timestamp_edge_cases(tmp_path, monkeypatch):
-    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
-    monkeypatch.setattr("eval_runner.config.REPORTS_DIR", tmp_path / "reports")
-
-    # 1. cached path does not exist on disk (falls back to resolve_trace_path)
-    with (
-        patch.object(RunSummaryService, "get_authoritative_verdict", return_value="NOT_EXECUTED"),
-        patch("eval_runner.services.run_summary.resolve_trace_path", return_value=None),
-    ):
-        s_no_path = RunSummaryService.compute_summary(
-            "run_missing_cand",
-            cached_entry={"path": "does_not_exist/run.jsonl"},
-        )
-        assert s_no_path["status"] == "NOT_EXECUTED"
-
-    # 2. Trace exists: identifier absent -> extracted; timestamp provided
-    run_dir = tmp_path / "runs" / "run_hydrate"
-    run_dir.mkdir(parents=True, exist_ok=True)
-    trace_file = run_dir / "run.jsonl"
-    trace_file.write_text(
-        '{"timestamp": "2026-10-09T01:00:00Z", "metadata": {"identifier": "RunIdentifier-01"}}\n'
-        '{"event": "run_end", "data": {"passed": true}}\n',
-        encoding="utf-8",
-    )
-    with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="UNKNOWN"):
-        s_hydrate_id = RunSummaryService.compute_summary(
-            "run_hydrate",
-            cached_entry={"timestamp": "2026-10-09T01:00:00Z", "path": "run_hydrate/run.jsonl"},
-        )
-        assert s_hydrate_id["identifier"] == "RunIdentifier-01"
-
-        # 3. Trace exists: timestamp absent -> extracted; identifier provided
-        s_hydrate_ts = RunSummaryService.compute_summary(
-            "run_hydrate",
-            cached_entry={"identifier": "CustomID", "path": "run_hydrate/run.jsonl"},
-        )
-        assert s_hydrate_ts["timestamp"] == "2026-10-09T01:00:00Z"
-
-        # 4. Exception opening trace for first line extraction
-        with patch("builtins.open", side_effect=OSError("Disk read failure")):
-            s_open_err = RunSummaryService.compute_summary(
-                "run_hydrate",
-                cached_entry={"path": "run_hydrate/run.jsonl"},
-            )
-            assert s_open_err["status"] == "INVALID"
-
-
-def test_compute_summary_score_extraction_hierarchy(tmp_path, monkeypatch):
-    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
-    reports_dir = tmp_path / "reports"
-    monkeypatch.setattr("eval_runner.config.REPORTS_DIR", reports_dir)
-
-    cert_dir = reports_dir / "certificates"
-    cert_dir.mkdir(parents=True, exist_ok=True)
-    run_dir = tmp_path / "runs" / "run_score"
-    run_dir.mkdir(parents=True, exist_ok=True)
-    trace_file = run_dir / "run.jsonl"
-    trace_file.write_text('{"event": "run_end", "data": {"passed": true}}\n', encoding="utf-8")
-
-    # 1. Score in certificate root
-    cert_file = cert_dir / "run_score_vc.json"
-    cert_file.write_text(json.dumps({"score": 0.88, "vc_version": "3.0.0"}), encoding="utf-8")
-    with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="UNKNOWN"):
-        s1 = RunSummaryService.compute_summary(
-            "run_score", cached_entry={"path": "run_score/run.jsonl"}
-        )
-        assert s1["score"] == 0.88
-
-    # 2. Score in certificate decision block
-    cert_file.write_text(
-        json.dumps({"decision": {"score": 0.77}, "vc_version": "3.0.0"}), encoding="utf-8"
-    )
-    with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="UNKNOWN"):
-        s2 = RunSummaryService.compute_summary(
-            "run_score", cached_entry={"path": "run_score/run.jsonl"}
-        )
-        assert s2["score"] == 0.77
-
-    # 2b. Certificate decision block without score (covers branch 273->279)
-    cert_file.write_text(
-        json.dumps({"decision": {"other_key": "val"}, "vc_version": "3.0.0"}), encoding="utf-8"
-    )
-    with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="UNKNOWN"):
-        s2b = RunSummaryService.compute_summary(
-            "run_score", cached_entry={"path": "run_score/run.jsonl"}
-        )
-        assert s2b["score"] == 1.0  # Derived from passed status
-
-    # 3. Corrupt certificate JSON triggers exception log
-    cert_file.write_text("corrupted certificate {", encoding="utf-8")
-    with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="UNKNOWN"):
-        s3 = RunSummaryService.compute_summary(
-            "run_score", cached_entry={"path": "run_score/run.jsonl"}
-        )
-        assert s3["score"] == 1.0  # Derived from passed status
-
-    cert_file.unlink()
-
-    # 4. Package manifest root score via verification_package.json
-    pkg_file = run_dir / "verification_package.json"
-    pkg_file.write_text(json.dumps({"score": 0.92}), encoding="utf-8")
-    with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="UNKNOWN"):
-        s4 = RunSummaryService.compute_summary(
-            "run_score", cached_entry={"path": "run_score/run.jsonl"}
-        )
-        assert s4["score"] == 0.92
-
-    # 5. Package manifest decision block score via verification_package.json
-    pkg_file.write_text(json.dumps({"decision": {"score": 0.65}}), encoding="utf-8")
-    with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="UNKNOWN"):
-        s5 = RunSummaryService.compute_summary(
-            "run_score", cached_entry={"path": "run_score/run.jsonl"}
-        )
-        assert s5["score"] == 0.65
-
-    # 5b. Package manifest decision without score (covers branch 291->297)
-    pkg_file.write_text(json.dumps({"decision": {"other": 1}}), encoding="utf-8")
-    with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="UNKNOWN"):
-        s5b = RunSummaryService.compute_summary(
-            "run_score", cached_entry={"path": "run_score/run.jsonl"}
-        )
-        assert s5b["score"] == 1.0
-
-    # 5c. Package manifest without score and without decision dict (covers branch 289->297)
-    pkg_file.write_text(json.dumps({"other": 2}), encoding="utf-8")
-    with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="UNKNOWN"):
-        s5c = RunSummaryService.compute_summary(
-            "run_score", cached_entry={"path": "run_score/run.jsonl"}
-        )
-        assert s5c["score"] == 1.0
-
-    # 6. Corrupt package manifest triggers exception log
-    pkg_file.write_text("corrupt manifest {", encoding="utf-8")
-    with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="UNKNOWN"):
-        s6 = RunSummaryService.compute_summary(
-            "run_score", cached_entry={"path": "run_score/run.jsonl"}
-        )
-        assert s6["score"] == 1.0
-
-    pkg_file.unlink()
-
-    # 7. Fallback to run_manifest.json when verification_package.json does not exist
-    run_man_file = run_dir / "run_manifest.json"
-    run_man_file.write_text(
-        json.dumps({"manifest_id": "man_run_score", "score": 0.85, "agent_config": {}}),
-        encoding="utf-8",
-    )
-    with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="UNKNOWN"):
-        s7 = RunSummaryService.compute_summary(
-            "run_score", cached_entry={"path": "run_score/run.jsonl"}
-        )
-        assert s7["score"] == 0.85
-
-    run_man_file.unlink()
-
-    # 7. Score derivation when status is unmapped
-    with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="UNKNOWN"):
-        s_fail = RunSummaryService.compute_summary(
-            "run_score_fail", cached_entry={"result_status": "FAIL"}
-        )
-        assert s_fail["score"] == 0.0
-
-
-def test_compute_summary_duration_edge_cases(tmp_path, monkeypatch):
-    run_dir = tmp_path / "runs" / "run_dur"
-    run_dir.mkdir(parents=True, exist_ok=True)
-    trace_file = run_dir / "run.jsonl"
-    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
-    monkeypatch.setattr("eval_runner.config.REPORTS_DIR", tmp_path / "reports")
-
-    # 1. run_end carrying explicit duration with blank lines in trace
-    trace_file.write_text(
-        "\n\n"
-        '{"timestamp": "2026-10-09T00:00:00Z", "event": "start"}\n'
-        "Not a JSON line\n"
-        '{"timestamp": "2026-10-09T00:00:15Z", "event": "run_end", '
-        '"data": {"passed": true, "duration": 14.5}}\n',
-        encoding="utf-8",
-    )
-    with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="UNKNOWN"):
-        s_dur = RunSummaryService.compute_summary(
-            "run_dur", cached_entry={"path": "run_dur/run.jsonl"}
-        )
-        assert s_dur["duration_seconds"] == 14.5
-
-    # 2. Trace without explicit duration derives from timestamps
-    trace_file.write_text(
-        '{"timestamp": "2026-10-09T00:00:00Z", "event": "start"}\n'
-        '{"timestamp": "2026-10-09T00:00:10Z", "event": "run_end", "data": {"passed": true}}\n',
-        encoding="utf-8",
-    )
-    with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="UNKNOWN"):
-        s_dur2 = RunSummaryService.compute_summary(
-            "run_dur", cached_entry={"path": "run_dur/run.jsonl"}
-        )
-        assert s_dur2["duration_seconds"] == 10.0
-
-    # 3. Inverted timestamps (dt1 < dt0) leaves duration_seconds None
-    trace_file.write_text(
-        '{"timestamp": "2026-10-09T00:00:20Z", "event": "start"}\n'
-        '{"timestamp": "2026-10-09T00:00:10Z", "event": "run_end", "data": {"passed": true}}\n',
-        encoding="utf-8",
-    )
-    with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="UNKNOWN"):
-        s_dur_inv = RunSummaryService.compute_summary(
-            "run_dur", cached_entry={"path": "run_dur/run.jsonl"}
-        )
-        assert s_dur_inv["duration_seconds"] is None
-
-
-def test_run_summary_service_attested_fail_verdict_and_status(tmp_path: Path, monkeypatch):
-    """
-    A valid verification with a negative outcome resolves to ATTESTED_FAIL
-    and never CERTIFIED.
-    """
-    run_id = "run_attested_fail"
-    run_dir = tmp_path / run_id
-    run_dir.mkdir(parents=True)
-    trace_file = run_dir / "run.jsonl"
-    cert_file = run_dir / "certificate.json"
-
-    trace_file.write_text('{"event": "start"}\n{"event": "run_end"}\n', encoding="utf-8")
-    cert_file.write_text(
-        json.dumps(
-            {
-                "run_id": run_id,
-                "execution_mode": "live",
-                "provisional": False,
-                "compliance": {"status": "FAIL"},
-            }
-        ),
-        encoding="utf-8",
-    )
-
-    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
-
-    with (
-        patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True),
-        patch("eval_runner.verifier.locate_certificate_file", return_value=cert_file),
-    ):
-        verdict = RunSummaryService.get_authoritative_verdict(run_id)
-        assert verdict == "ATTESTED_FAIL"
-
-        summary = RunSummaryService.compute_summary(
-            run_id, cached_entry={"path": f"{run_id}/run.jsonl"}
-        )
-        assert summary["status"] == "ATTESTED_FAIL"
-        assert summary["status"] != "CERTIFIED"
-        assert summary["lifecycle"] == "SEALED"
-
-
-def test_compute_summary_derives_governance_pause_diagnostics(tmp_path, monkeypatch):
-    """Test that PAUSED_FOR_APPROVAL status derives GOVERNANCE_PAUSE diagnostic reason."""
-    run_id = "run-paused-diagnostics"
-    run_dir = tmp_path / run_id
-    run_dir.mkdir(parents=True)
-    trace_file = run_dir / "run.jsonl"
-    trace_file.write_text(
-        json.dumps({"event": "run_start", "run_id": run_id, "timestamp": "2026-10-19T00:00:00Z"})
-        + "\n",
-        encoding="utf-8",
-    )
-    em_file = run_dir / "execution_manifest.json"
-    em_file.write_text(
-        json.dumps({"status": "PAUSED_FOR_APPROVAL", "run_id": run_id}),
-        encoding="utf-8",
-    )
-
-    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
-
-    summary = RunSummaryService.compute_summary(run_id)
-    assert summary["score_category"] == "GOVERNANCE_PAUSE"
-    assert "Run paused for human approval (HITL)" in summary["score_reason"]
-    assert any("Run paused for human approval (HITL)" in r for r in summary["failure_reasons"])
-
-
-def test_compute_summary_derives_failed_oracle_diagnostics(tmp_path, monkeypatch):
-    """Test that failed oracle results in package manifest derive ORACLE_DEFECT diagnostics."""
-    run_id = "run-oracle-failure-diagnostics"
-    run_dir = tmp_path / run_id
-    run_dir.mkdir(parents=True)
-    trace_file = run_dir / "run.jsonl"
-    trace_file.write_text(
-        json.dumps({"event": "run_start", "run_id": run_id})
-        + "\n"
-        + json.dumps(
-            {"event": "run_end", "run_id": run_id, "data": {"status": "FAILED", "score": 0.0}}
-        )
-        + "\n",
-        encoding="utf-8",
-    )
-    manifest_file = run_dir / "run_manifest.json"
-    manifest_file.write_text(
-        json.dumps(
-            {
-                "run_id": run_id,
-                "score": 0.0,
-                "verification_package": {
-                    "executed_oracle_results": [
-                        {
-                            "oracle_id": "physician_adverse_review:sc:generic_accuracy",
-                            "outcome": "FAIL",
-                            "passed": False,
-                            "resolver": "threshold_evaluator",
-                        }
-                    ],
-                    "decision": {"decision": "FAIL", "reason": "Threshold not met"},
-                },
-            }
-        ),
-        encoding="utf-8",
-    )
-
-    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
-
-    summary = RunSummaryService.compute_summary(run_id)
+        summary = RunSummaryService.compute_summary("r-fail", run_store=provider)
+    assert summary["status"] == "FAILED"
     assert summary["score"] == 0.0
-    assert summary["score_category"] == "ORACLE_DEFECT"
-    assert "physician_adverse_review:sc:generic_accuracy" in summary["score_reason"]
-    assert len(summary["failed_oracles"]) == 1
-    assert (
-        summary["failed_oracles"][0]["oracle_id"] == "physician_adverse_review:sc:generic_accuracy"
-    )
-    assert summary["failed_oracles"][0]["outcome"] == "FAIL"
 
-
-def test_compute_summary_derives_policy_breach_root_cause_diagnostics(tmp_path, monkeypatch):
-    """Test that trace root-cause events derive POLICY_BREACH diagnostics."""
-    run_id = "run-policy-breach-diagnostics"
-    run_dir = tmp_path / run_id
-    run_dir.mkdir(parents=True)
-    trace_file = run_dir / "run.jsonl"
-    trace_file.write_text(
-        json.dumps({"event": "run_start", "run_id": run_id})
-        + "\n"
-        + json.dumps(
+    # 7. Failed oracles and root cause events (with message and without message)
+    provider = _store(
+        run={"run_id": "r-oracles"},
+        manifest={
+            "verification_package": {
+                "executed_oracle_results": [
+                    {"oracle_id": "o1", "outcome": "FAIL"},
+                    {"oracle_id": "o2", "passed": True},
+                ]
+            }
+        },
+        events=[
+            {"event": "run_start", "_ts_iso": "2026-02-01T00:00:00Z"},
+            {"event": "error_event", "is_root_cause": True, "error": "Disk failure"},
             {
-                "event": "guardrail_violation",
+                "event": "empty_root_cause",
                 "is_root_cause": True,
-                "message": "Clinical review breached conservative therapy protocol",
-            }
-        )
-        + "\n"
-        + json.dumps(
-            {"event": "run_end", "run_id": run_id, "data": {"status": "FAILED", "score": 0.0}}
-        )
-        + "\n",
-        encoding="utf-8",
+            },  # branch 226->217: message is empty
+        ],
     )
+    with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="UNKNOWN"):
+        summary = RunSummaryService.compute_summary("r-oracles", run_store=provider)
+    assert summary["score_category"] == "ORACLE_DEFECT"
+    assert "Oracle 'o1' failed." in summary["failure_reasons"]
+    assert "Root cause: Disk failure" in summary["failure_reasons"]
+    assert summary["timestamp"] == "2026-02-01T00:00:00Z"
 
-    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
+    # 8. Non-dict runtime_config and metadata in execution_manifest (lines 70, 73)
+    manifest_non_dict_children = {
+        "execution_manifest": {
+            "runtime_config": "not-a-dict",
+            "metadata": 123,
+        }
+    }
+    mode, prov = RunSummaryService._truth_level([], manifest_non_dict_children)
+    assert mode == "unknown"
+    assert prov is True
 
-    summary = RunSummaryService.compute_summary(run_id)
-    assert summary["score"] == 0.0
-    assert summary["score_category"] == "POLICY_BREACH"
-    assert any("breached conservative therapy protocol" in r for r in summary["failure_reasons"])
-
-
-def test_compute_summary_derives_verified_pass_score_diagnostics(tmp_path, monkeypatch):
-    """Test that passing certified runs derive VERIFIED_PASS diagnostics."""
-    run_id = "run-verified-pass-diagnostics"
-    run_dir = tmp_path / run_id
-    run_dir.mkdir(parents=True)
-    trace_file = run_dir / "run.jsonl"
-    trace_file.write_text(
-        json.dumps({"event": "run_start", "run_id": run_id})
-        + "\n"
-        + json.dumps(
-            {"event": "run_end", "run_id": run_id, "data": {"status": "COMPLETED", "score": 1.0}}
-        )
-        + "\n",
-        encoding="utf-8",
+    # 8. Manifest fallback chains for scenario, identifier, target, model, agent
+    provider = _store(
+        run={"run_id": "r-fallbacks"},
+        manifest={
+            "trace_hash": "thash",
+            "signature": "sig",
+            "execution_manifest": {
+                "scenario_id": "sc-nested",
+                "agent_config": {
+                    "agent_id": "ag-id-1",
+                    "agent_name": "ag-name-1",
+                    "configured_model_id": "m-id-1",
+                    "model": "m-1",
+                },
+            },
+        },
+        events=[{"event": "run_start", "data": {"timestamp": "2026-03-01T10:00:00Z"}}],
     )
-    (run_dir / ".sealed").touch()
-    cert_file = tmp_path / f"{run_id}_vc.json"
-    cert_file.write_text(
-        json.dumps(
-            {
-                "score": 1.0,
-                "execution_mode": "live",
-                "provisional": False,
-                "compliance": {"status": "PASS", "score": 1.0},
-            }
-        ),
-        encoding="utf-8",
-    )
-
-    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
-
-    with (
-        patch("eval_runner.verifier.TraceVerifier.verify_trace", return_value=True),
-        patch("eval_runner.verifier.locate_certificate_file", return_value=cert_file),
-    ):
-        summary = RunSummaryService.compute_summary(run_id)
-        assert summary["score"] == 1.0
-        assert summary["score_category"] == "VERIFIED_PASS"
-        assert (
-            "all governance policies and evaluation criteria satisfied" in summary["score_reason"]
-        )
+    with patch.object(RunSummaryService, "get_authoritative_verdict", return_value="UNKNOWN"):
+        summary = RunSummaryService.compute_summary("r-fallbacks", run_store=provider)
+    assert summary["scenario"] == "sc-nested"
+    assert summary["identifier"] == "ag-id-1"
+    assert summary["target"] == "m-id-1"
+    assert summary["model"] == "m-id-1"
+    assert summary["agent"] == "ag-name-1"
+    assert summary["has_certificate"] is True

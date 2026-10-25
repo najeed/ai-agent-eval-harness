@@ -8,11 +8,13 @@ from types import SimpleNamespace
 
 import pytest
 
+from agentv_runtime.canonical import canonical_json_encode
 from eval_runner.events import CoreEvents, Event
 from eval_runner.flight_recorder import FlightRecorderPlugin
 from eval_runner.reference.local_run_store import LocalFileRunStore, RunManifestImmutableError
 from eval_runner.run_lifecycle import (
     RunLifecycleState,
+    assert_can_write_trace,
     get_run_lifecycle_state,
     transition_run_lifecycle,
 )
@@ -81,25 +83,71 @@ def test_local_provider_enforces_context_streaming_and_sealed_manifest(tmp_path)
         store.save_run_manifest("run-1", {"status": "FAILED"})
 
 
+def test_local_provider_returns_exact_canonical_committed_trace_bytes(tmp_path):
+    """Provider trace bytes are the bytes appended and later signed, not a reconstruction."""
+    store = LocalFileRunStore(tmp_path)
+    store.create_run("run-canonical", "scenario")
+    event = {"z": 1, "event": "run_start", "a": "stable"}
+
+    store.append_events("run-canonical", [event])
+
+    assert store.get_trace_bytes("run-canonical") == canonical_json_encode(event) + b"\n"
+
+
+def test_local_provider_recovers_journaled_certification_commit_after_interruption(tmp_path):
+    """A durable commit decision recovers forward instead of exposing a partial seal."""
+    store = LocalFileRunStore(tmp_path)
+    run_id = "run-recovery"
+    store.create_run(run_id, "scenario")
+    vault = store._get_run_vault(run_id)
+    original = store.get_run(run_id)
+    manifest = {"run_id": run_id, "trace_hash": "sha3_256:recovery"}
+    sealed_record = {
+        **original,
+        "status": "SEALED",
+        "lifecycle": "SEALED",
+    }
+    store._write_json_durable(
+        store._commit_journal_path(vault),
+        {
+            "version": 1,
+            "run_id": run_id,
+            "manifest": manifest,
+            "sealed_record": sealed_record,
+            "manifest_digest": "ignored-by-recovery",
+        },
+    )
+
+    assert store.get_manifest(run_id) == manifest
+    assert store.get_run(run_id)["lifecycle"] == "SEALED"
+    assert (vault / ".sealed").exists()
+    assert not store._commit_journal_path(vault).exists()
+
+
 def test_lifecycle_uses_injected_provider_not_filesystem(tmp_path):
     provider = LocalFileRunStore(tmp_path)
     provider.create_run("run-1", "scenario-1")
     set_active_run_storage_provider(provider)
 
     assert (
-        transition_run_lifecycle("run-1", RunLifecycleState.FINALIZING)
+        transition_run_lifecycle("run-1", RunLifecycleState.FINALIZING, run_store=provider)
         == RunLifecycleState.FINALIZING
     )
-    assert get_run_lifecycle_state("run-1") == RunLifecycleState.FINALIZING
+    assert get_run_lifecycle_state("run-1", run_store=provider) == RunLifecycleState.FINALIZING
     assert provider.get_run("run-1")["status"] == "FINALIZING"
 
 
-def test_flight_recorder_appends_to_active_provider(tmp_path, monkeypatch):
+def test_flight_recorder_appends_to_explicit_provider(tmp_path, monkeypatch):
     monkeypatch.setenv("RUN_LOG_MASTER", "false")
     monkeypatch.setenv("RUN_LOG_PER_RUN", "true")
-    provider = LocalFileRunStore(tmp_path)
-    set_active_run_storage_provider(provider)
-    recorder = FlightRecorderPlugin(log_dir=tmp_path)
+    provider = LocalFileRunStore(tmp_path / "provider-a")
+    global_provider = LocalFileRunStore(tmp_path / "provider-b")
+    # A process-global resolver deliberately points at B.  The recorder has
+    # already been bound to A by its execution owner and must not drift.
+    set_active_run_storage_provider(global_provider)
+    # A recorder is process-global, so ownership must be supplied by its
+    # execution owner; it must not inspect the globally selected provider.
+    recorder = FlightRecorderPlugin(log_dir=tmp_path, run_store=provider)
 
     recorder.handle_event(
         Event(CoreEvents.RUN_START, {"run_id": "run-1", "scenario": "scenario-1"})
@@ -110,6 +158,222 @@ def test_flight_recorder_appends_to_active_provider(tmp_path, monkeypatch):
         CoreEvents.RUN_START,
         "tool_call",
     ]
+    assert global_provider.get_run("run-1") is None
+
+
+def test_provider_contexts_are_isolated_for_the_same_run_identifier(tmp_path):
+    """Scope checks belong to the provider, not to a console or global resolver."""
+    store = LocalFileRunStore(tmp_path)
+    context_a = {"org_id": "a", "workspace_id": "one"}
+    context_b = {"org_id": "b", "workspace_id": "two"}
+    store.create_run("shared-id", "scenario-a", context=context_a)
+    store.append_events(
+        "shared-id", [{"event": "run_start", "run_id": "shared-id"}], context=context_a
+    )
+
+    assert store.get_run("shared-id", context=context_a) is not None
+    assert store.get_events("shared-id", context=context_a)
+    assert store.get_run("shared-id", context=context_b) is None
+    assert store.get_events("shared-id", context=context_b) == []
+    assert store.get_trace_bytes("shared-id", context=context_b) is None
+
+
+def test_unbound_flight_recorder_fails_closed_when_event_is_recorded(tmp_path, monkeypatch):
+    """A process-global recorder cannot infer run ownership from global state."""
+    monkeypatch.setenv("RUN_LOG_MASTER", "false")
+    monkeypatch.setenv("RUN_LOG_PER_RUN", "true")
+    recorder = FlightRecorderPlugin(log_dir=tmp_path)
+    provider = LocalFileRunStore(tmp_path / "active-provider")
+    set_active_run_storage_provider(provider)
+
+    with pytest.raises(RuntimeError, match="RunStorageProviderBindingRequired"):
+        recorder.handle_event(
+            Event(CoreEvents.RUN_START, {"run_id": "late-bound-run", "scenario": "scenario-1"})
+        )
+    assert provider.get_events("late-bound-run") == []
+
+
+def test_inprocess_resume_uses_owned_provider_and_never_re_resolves_global(tmp_path):
+    from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+
+    provider_a = LocalFileRunStore(tmp_path / "provider-a")
+    provider_b = LocalFileRunStore(tmp_path / "provider-b")
+    run_id = "backend-provider-affinity"
+    provider_a.create_run(run_id, "scenario-a")
+    transition_run_lifecycle(run_id, RunLifecycleState.PAUSED_FOR_APPROVAL, run_store=provider_a)
+    backend = InProcessExecutionBackend(run_store=provider_a)
+    backend._active_runs[run_id] = {"status": "PAUSED", "scenario_data": {"id": "scenario-a"}}
+    set_active_run_storage_provider(provider_b)
+
+    backend.resume(run_id)
+
+    assert get_run_lifecycle_state(run_id, run_store=provider_a) == RunLifecycleState.OPEN
+    assert provider_b.get_run(run_id) is None
+
+
+def test_inprocess_resume_without_owned_provider_fails_closed(tmp_path):
+    from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+
+    provider_b = LocalFileRunStore(tmp_path / "provider-b")
+    set_active_run_storage_provider(provider_b)
+    backend = InProcessExecutionBackend()
+    backend._active_runs["unowned-run"] = {
+        "status": "PAUSED",
+        "scenario_data": {"id": "scenario-a"},
+    }
+
+    with pytest.raises(RuntimeError, match="Provider ownership is unavailable"):
+        backend.resume("unowned-run")
+    assert provider_b.get_run("unowned-run") is None
+
+
+def test_execution_scoped_provider_affinity_ignores_global_resolver(tmp_path, monkeypatch):
+    """Telemetry, HITL lifecycle, and certification preflight stay on injected provider A."""
+    monkeypatch.setenv("RUN_LOG_MASTER", "false")
+    monkeypatch.setenv("RUN_LOG_PER_RUN", "true")
+    provider_a = LocalFileRunStore(tmp_path / "provider-a")
+    provider_b = LocalFileRunStore(tmp_path / "provider-b")
+    run_id = "provider-affinity-run"
+    context = {"org_id": "acme", "tenant_id": "tenant-a"}
+    set_active_run_storage_provider(provider_b)
+
+    recorder = FlightRecorderPlugin(log_dir=tmp_path / "provider-a", run_store=provider_a)
+    recorder.bind_run_provider(run_id, provider_a, context)
+    recorder.handle_event(Event(CoreEvents.RUN_START, {"run_id": run_id, "scenario": "scenario-a"}))
+    recorder.handle_event(Event("tool_call", {"run_id": run_id, "tool": "lookup"}))
+
+    assert [event["event"] for event in provider_a.get_events(run_id, context=context)] == [
+        CoreEvents.RUN_START,
+        "tool_call",
+    ]
+    assert provider_b.get_events(run_id, context=context) == []
+
+    transition_run_lifecycle(
+        run_id,
+        RunLifecycleState.PAUSED_FOR_APPROVAL,
+        run_store=provider_a,
+        context=context,
+    )
+    assert (
+        get_run_lifecycle_state(run_id, run_store=provider_a, context=context)
+        == RunLifecycleState.PAUSED_FOR_APPROVAL
+    )
+    with pytest.raises(Exception, match="PAUSED_FOR_APPROVAL"):
+        assert_can_write_trace(run_id, run_store=provider_a, context=context)
+    assert provider_b.get_run(run_id, context=context) is None
+
+    # Certification must carry its supplied provider into sealed preflight
+    # rather than materializing a path or reading the global provider.
+    from eval_runner.services.certification import CertificationService
+
+    observed: dict[str, object] = {}
+
+    def lifecycle_probe(observed_run_id, *args, **kwargs):
+        observed["run_id"] = observed_run_id
+        observed["run_store"] = kwargs.get("run_store")
+        observed["context"] = kwargs.get("context")
+        return RunLifecycleState.SEALED
+
+    monkeypatch.setattr("eval_runner.run_lifecycle.get_run_lifecycle_state", lifecycle_probe)
+
+    with pytest.raises(ValueError, match="SealedRunCertificateInvalid"):
+        CertificationService.execute_industrial_certification(
+            run_id, run_store=provider_a, context=context
+        )
+    assert observed == {
+        "run_id": run_id,
+        "run_store": provider_a,
+        "context": context,
+    }
+
+
+def test_default_runner_constructs_session_with_scoped_provider_affinity(tmp_path, monkeypatch):
+    """DefaultRunner must reach SessionManager with the injected provider and scope."""
+    from eval_runner.runner import DefaultRunner
+    from eval_runner.session import SessionManager
+
+    monkeypatch.setenv("RUN_LOG_MASTER", "false")
+    monkeypatch.setenv("RUN_LOG_PER_RUN", "true")
+    provider_a = LocalFileRunStore(tmp_path / "provider-a")
+    provider_b = LocalFileRunStore(tmp_path / "provider-b")
+    set_active_run_storage_provider(provider_b)
+    run_id = "runner-session-provider-affinity"
+    context = {
+        "org_id": "acme",
+        "tenant_id": "tenant-a",
+        "workspace_id": "workspace-a",
+        "active_environment": "test",
+    }
+    recorder = FlightRecorderPlugin(log_dir=tmp_path / "provider-a", run_store=provider_a)
+    observed: dict[str, object] = {}
+    original_init = SessionManager.__init__
+
+    class StopAfterSessionConstruction(Exception):
+        pass
+
+    def recording_init(self, *args, **kwargs):
+        original_init(self, *args, **kwargs)
+        observed["run_store"] = self.run_store
+        observed["context"] = self.metadata.get("runtime_context")
+        observed["recorder_binding"] = recorder._provider_for_run(self.run_id)
+        raise StopAfterSessionConstruction()
+
+    monkeypatch.setattr(SessionManager, "__init__", recording_init)
+
+    async def exercise_runner():
+        runner = DefaultRunner(run_store=provider_a)
+        with pytest.raises(StopAfterSessionConstruction):
+            await runner.run(
+                {"id": "scoped-session", "workflow": {"nodes": [], "edges": []}},
+                run_id=run_id,
+                metadata={"runtime_context": context},
+            )
+
+    import asyncio
+
+    asyncio.run(exercise_runner())
+    assert observed["run_store"] is provider_a
+    assert observed["context"] == context
+    assert observed["recorder_binding"] == (provider_a, context)
+    assert provider_b.get_run(run_id, context=context) is None
+
+
+def test_recorder_provider_binding_preserves_context_until_certification_releases_it(
+    tmp_path, monkeypatch
+):
+    monkeypatch.setenv("RUN_LOG_MASTER", "false")
+    monkeypatch.setenv("RUN_LOG_PER_RUN", "true")
+    provider = LocalFileRunStore(tmp_path)
+    run_id = "terminal-provider-binding"
+    context = {"org_id": "acme", "tenant_id": "tenant-a"}
+    provider.create_run(run_id, "scenario", context=context)
+    recorder = FlightRecorderPlugin(log_dir=tmp_path, run_store=provider)
+
+    recorder.bind_run_provider(run_id, provider, context)
+    recorder.bind_run_provider(run_id, provider, None)
+    assert recorder._provider_for_run(run_id) == (provider, context)
+
+    monkeypatch.setattr(
+        "eval_runner.run_lifecycle.get_run_lifecycle_state",
+        lambda *_args, **_kwargs: RunLifecycleState.SEALED,
+    )
+    recorder.finalize_run(run_id)
+    # Recorder finalization cannot own the irreversible seal.  Certification
+    # releases the binding only after its provider commit succeeds.
+    assert recorder._provider_for_run(run_id) == (provider, context)
+
+
+def test_certification_release_does_not_drop_another_provider_binding(tmp_path):
+    provider_a = LocalFileRunStore(tmp_path / "provider-a")
+    provider_b = LocalFileRunStore(tmp_path / "provider-b")
+    recorder = FlightRecorderPlugin(log_dir=tmp_path / "provider-a", run_store=provider_a)
+    recorder.bind_run_provider("run-a", provider_a, {"org_id": "a"})
+    recorder.bind_run_provider("run-b", provider_b, {"org_id": "b"})
+
+    FlightRecorderPlugin.release_active_recorder("run-a", provider_a)
+
+    assert "run-a" not in recorder._run_providers
+    assert recorder._provider_for_run("run-b") == (provider_b, {"org_id": "b"})
 
 
 def test_scenario_name_parsing_helpers():

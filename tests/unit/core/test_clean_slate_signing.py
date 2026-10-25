@@ -12,6 +12,7 @@ from agentv_runtime.interfaces import SigningBackend
 from eval_runner import config
 from eval_runner.events import CoreEvents, Event
 from eval_runner.flight_recorder import FlightRecorderPlugin
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.reference.signing import (
     LocalEd25519SigningBackend,
     NullSigningBackend,
@@ -75,12 +76,16 @@ def test_flight_recorder_signs_with_external_kms_backend(tmp_path: Path, monkeyp
     reset_extensions("run_stores")
     try:
         kms = MockExternalKmsSigningBackend(key_id="test-kms")
+        run_store = LocalFileRunStore(tmp_path)
         recorder = FlightRecorderPlugin(
             signing_backend=kms,
+            run_store=run_store,
             log_dir=tmp_path,
         )
 
         run_id = "run-kms-test-001"
+        run_store.create_run(run_id, "scen")
+        recorder.bind_run_provider(run_id, run_store)
         recorder.handle_event(
             Event(name=CoreEvents.RUN_START, data={"run_id": run_id, "scenario": "scen"})
         )
@@ -111,12 +116,16 @@ def test_flight_recorder_skips_signing_when_can_sign_false(tmp_path: Path, monke
     reset_extensions("run_stores")
     try:
         null_backend = NullSigningBackend()
+        run_store = LocalFileRunStore(tmp_path)
         recorder = FlightRecorderPlugin(
             signing_backend=null_backend,
+            run_store=run_store,
             log_dir=tmp_path,
         )
 
         run_id = "run-null-sign-001"
+        run_store.create_run(run_id, "scen")
+        recorder.bind_run_provider(run_id, run_store)
         recorder.handle_event(
             Event(name=CoreEvents.RUN_START, data={"run_id": run_id, "scenario": "scen"})
         )

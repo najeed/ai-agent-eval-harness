@@ -38,8 +38,12 @@ def console_jail(request):
 
 @pytest.fixture
 def client(console_jail, monkeypatch):
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
     app = Flask(__name__)
     app.secret_key = "test-secret"
+    store = LocalFileRunStore(console_jail["runs"])
+    app.extensions["agentv_run_store"] = store
     app.register_blueprint(system_bp, url_prefix="/api")
     app.register_blueprint(scenario_bp, url_prefix="/api")
     app.register_blueprint(run_bp, url_prefix="/api")
@@ -90,15 +94,24 @@ def test_get_system_info_providers(client):
             assert res.get_json()["agent_endpoint"] == "Claude (Anthropic)"
 
 
-def test_cleanup_runs(client, console_jail):
-    run_dir = console_jail["runs"] / "old_run"
-    run_dir.mkdir(parents=True, exist_ok=True)
-    (console_jail["runs"] / "run.jsonl").write_text("log", encoding="utf-8")
+def test_cleanup_runs(client):
+    class FakeCleanupStore:
+        def __init__(self):
+            self.deleted = []
 
-    res = client.post("/api/cleanup-runs")
-    assert res.status_code == 200
-    assert not run_dir.exists()
-    assert not (console_jail["runs"] / "run.jsonl").exists()
+        def list_runs(self, limit=10_000, context=None):
+            return [{"run_id": "old_run_1"}, {"run_id": "old_run_2"}]
+
+        def delete_run(self, run_id, context=None):
+            self.deleted.append(run_id)
+            return True
+
+    fake_store = FakeCleanupStore()
+    with patch("eval_runner.console.routes.system.get_run_store", return_value=fake_store):
+        res = client.post("/api/cleanup-runs")
+        assert res.status_code == 200
+        assert res.get_json()["count"] == 2
+        assert fake_store.deleted == ["old_run_1", "old_run_2"]
 
 
 def test_save_scenario_validation(client):
@@ -126,7 +139,7 @@ def test_evaluate_scenario_absolute_path(client, console_jail):
 
 
 def test_async_evaluation_registration_does_not_reserve_evidence_vault(client, console_jail):
-    """Accepted async work can execute while status and stream authorize from the index."""
+    """Console dispatch gives execution the same active store used at acceptance."""
     from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
 
     scenario_path = console_jail["root"] / "async.json"
@@ -135,37 +148,48 @@ def test_async_evaluation_registration_does_not_reserve_evidence_vault(client, c
     release = threading.Event()
     executed = threading.Event()
 
-    def runner_callable(_scenario, *, run_id, **_kwargs):
+    class ActiveRunStore:
+        # The run routes fall back to the index for this deliberately minimal
+        # provider.  The assertion below covers the dispatch ownership handoff.
+        def get_run(self, *_args, **_kwargs):
+            return None
+
+    active_store = ActiveRunStore()
+
+    def runner_callable(_scenario, *, run_id, **kwargs):
         # This is the runner's collision boundary: acceptance must not have
         # created an evidence-vault directory for this ID.
         assert not (config.RUN_LOG_DIR / run_id).exists()
+        assert kwargs["run_store"] is active_store
         started.set()
         assert release.wait(timeout=3)
         executed.set()
         return {"run_id": run_id}
 
     backend = InProcessExecutionBackend(runner_callable=runner_callable)
-    with (
-        patch(
-            "eval_runner.reference.inprocess_backend.InProcessExecutionBackend.get_instance",
-            return_value=backend,
-        ),
-        patch("eval_runner.loader.load_scenario", return_value={"id": "async-scenario"}),
-    ):
-        response = client.post("/api/v1/evaluate", json={"path": str(scenario_path)})
-        assert response.status_code == 200
-        run_id = response.get_json()["run_id"]
-        assert started.wait(timeout=3)
-
-        status = client.get(f"/api/v1/runs/{run_id}")
-        assert status.status_code == 200
-        assert status.get_json()["status"] == "RUNNING"
-        stream = client.get(f"/api/v1/runs/{run_id}/stream")
-        assert stream.status_code == 200
-        assert b"Waiting for trace data" in stream.data
-
-        release.set()
-        backend._threads[run_id].join(timeout=3)
+    orig_store = client.application.extensions.get("agentv_run_store")
+    client.application.extensions["agentv_run_store"] = active_store
+    try:
+        with (
+            patch(
+                "eval_runner.reference.inprocess_backend.InProcessExecutionBackend.get_instance",
+                return_value=backend,
+            ),
+            patch(
+                "eval_runner.storage_resolver.resolve_run_storage_provider",
+                return_value=active_store,
+            ),
+            patch("eval_runner.loader.load_scenario", return_value={"id": "async-scenario"}),
+        ):
+            response = client.post("/api/v1/evaluate", json={"path": str(scenario_path)})
+            assert response.status_code == 200
+            run_id = response.get_json()["run_id"]
+            assert started.wait(timeout=3)
+            assert backend._run_store is active_store
+            release.set()
+            backend._threads[run_id].join(timeout=3)
+    finally:
+        client.application.extensions["agentv_run_store"] = orig_store
 
     assert executed.is_set()
 
@@ -543,8 +567,9 @@ def test_runtime_health_and_ollama_status_branches(client, monkeypatch, tmp_path
     assert res_status_fail.get_json()["dependencies"]["signing"] == "FAILED"
     monkeypatch.delenv("FLIGHT_RECORDER_KEY_PATH", raising=False)
 
-    # Runtime health with run vault write failure
-    with patch("pathlib.Path.write_text", side_effect=OSError("Read-only filesystem")):
+    # Runtime health with run vault failure
+    with patch("eval_runner.console.routes.system.get_run_store") as mock_store:
+        mock_store.return_value.list_runs.side_effect = OSError("Read-only filesystem")
         res_unreachable = client.get("/api/status")
         assert res_unreachable.status_code == 200
         assert res_unreachable.get_json()["status"] == "UNREACHABLE"

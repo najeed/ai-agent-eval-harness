@@ -47,6 +47,9 @@ jobs:
         ruff check .
         ruff format --check .
 
+    - name: Provider boundary audit
+      run: python tools/ci/check_provider_boundaries.py
+
     - name: Verify Documentation Path Validity
       run: python docs/check_doc_paths.py
 

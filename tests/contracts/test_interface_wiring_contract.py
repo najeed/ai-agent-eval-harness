@@ -210,7 +210,7 @@ def test_signing_backend_ed25519_lifecycle(tmp_path):
     assert backend.verify_signature(tampered, sig, pub_pem) is False
 
 
-def test_flight_recorder_fail_closed_on_absence(monkeypatch):
+def test_flight_recorder_fail_closed_on_absence(monkeypatch, tmp_path):
     """
     Contract Test: FlightRecorderPlugin fails closed with RuntimeError when
     EVAL_REQUIRE_SIGNING=true and no key or SigningBackend is provided.
@@ -218,7 +218,7 @@ def test_flight_recorder_fail_closed_on_absence(monkeypatch):
     monkeypatch.setenv("EVAL_REQUIRE_SIGNING", "true")
     monkeypatch.delenv("FLIGHT_RECORDER_KEY_PATH", raising=False)
 
-    recorder = FlightRecorderPlugin()
+    recorder = FlightRecorderPlugin(run_store=LocalFileRunStore(tmp_path / "provider"))
     event = Event("test_event", {"run_id": "run-fail-closed-001", "data": "test"})
 
     with pytest.raises(RuntimeError) as exc_info:
@@ -248,7 +248,10 @@ def test_flight_recorder_signing_backend_wiring(tmp_path, monkeypatch):
     mock_backend = MagicMock(spec=SigningBackend)
     mock_backend.sign_payload.return_value = "mock_sig_hex_1234"
 
-    recorder = FlightRecorderPlugin(signing_backend=mock_backend)
+    recorder = FlightRecorderPlugin(
+        signing_backend=mock_backend,
+        run_store=LocalFileRunStore(tmp_path / "provider"),
+    )
     event = Event("custom_eval", {"run_id": "run-sign-wire-001", "score": 0.99})
 
     recorder.handle_event(event)
@@ -378,76 +381,149 @@ def test_declarative_authorization_backend_factory_is_used_by_console_factory(mo
 
 def test_flight_recorder_artifact_store_wiring(tmp_path, monkeypatch):
     """
-    Contract Test: FlightRecorderPlugin actively invokes ArtifactStore.store_artifact
-    for trace writes and run finalization.
+    Contract Test: FlightRecorderPlugin delegates each trace write exclusively to
+    RunStorageProvider.  ArtifactStore may publish a later trace seal, but must
+    never be a second writer for ``run.jsonl``.
     """
     from eval_runner import config
 
     monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path)
     mock_store = MagicMock(spec=LocalFileArtifactStore)
-    recorder = FlightRecorderPlugin(artifact_store=mock_store, log_dir=tmp_path)
+    mock_run_store = MagicMock()
+    monkeypatch.setattr(
+        "eval_runner.run_lifecycle.assert_can_write_trace",
+        lambda *args, **kwargs: None,
+    )
+    recorder = FlightRecorderPlugin(
+        artifact_store=mock_store, run_store=mock_run_store, log_dir=tmp_path
+    )
 
     event = Event("agent_action", {"run_id": "run-art-wire-001", "action": "test"})
     recorder.handle_event(event)
 
-    # Assert store_artifact was actively called for the trace write
-    assert mock_store.store_artifact.called
-    call_args = mock_store.store_artifact.call_args[1]
-    assert call_args["run_id"] == "run-art-wire-001"
-    assert call_args["artifact_name"] == "run.jsonl"
-    assert call_args["append"] is True
-
-    # Finalize run also seals via artifact_store
-    recorder.finalize_run("run-art-wire-001")
-    assert mock_store.store_artifact.call_count >= 2
+    mock_run_store.append_events.assert_called_once()
+    run_id, events = mock_run_store.append_events.call_args.args
+    assert run_id == "run-art-wire-001"
+    assert len(events) == 1
+    assert events[0]["event"] == "agent_action"
+    mock_store.store_artifact.assert_not_called()
 
 
 def test_verifier_artifact_store_wiring(tmp_path, monkeypatch):
     """
-    Contract Test: TraceVerifier.sign_trace invokes ArtifactStore.store_artifact
-    to persist the sidecar manifest and commits the authoritative local
-    lifecycle seal only after publication.
+    Contract Test: Certification operates exclusively on RunStorageProvider.
+    ArtifactStore is never used to persist manifests or lifecycle seals,
+    guaranteeing RunStorageProvider is the sole authority.
     """
+
+    from agentv_runtime.evidence_graph import build_evidence_graph_from_events
+    from agentv_runtime.finalization import EvaluatorFinalizationRecord
+    from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
     from eval_runner import config
     from eval_runner.identity import IdentityService
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+    from eval_runner.run_lifecycle import RunLifecycleState, get_run_lifecycle_state
+    from eval_runner.services.certification import CertificationService
 
-    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path)
+    run_root = tmp_path / "runs"
+    run_root.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr(config, "RUN_LOG_DIR", run_root)
     monkeypatch.setattr(config, "REPORTS_DIR", tmp_path / "reports")
     trust_root = tmp_path / ".aes" / "keys"
     monkeypatch.setattr(config, "TRUST_ROOT", trust_root)
     IdentityService._provision_local_identity("system_id")
-
-    run_dir = tmp_path / "run-ver-art-001"
-    run_dir.mkdir()
-    trace_path = run_dir / "run.jsonl"
-    trace_path.write_text(
-        '{"event":"run_start","run_id":"run-ver-art-001"}\n'
-        '{"event":"run_end","run_id":"run-ver-art-001"}\n',
-        encoding="utf-8",
-    )
+    IdentityService._provision_local_identity("test_evaluator")
 
     mock_store = MagicMock(spec=LocalFileArtifactStore)
-    manifest = TraceVerifier.sign_trace(
-        str(trace_path),
-        run_id="run-ver-art-001",
+    mock_store.is_local_store = True
+
+    run_id = "run-ver-art-001"
+    run_store = LocalFileRunStore(run_root)
+    run_store.create_run(run_id, "artifact-wiring")
+
+    scenario_data = {"id": "artifact-wiring", "version": "1.0.0", "required_oracles": ["oracle_1"]}
+    scen_hash = compute_scenario_hash(scenario_data)
+    exec_manifest = ExecutionManifest(
+        manifest_id=f"man_{run_id}",
+        scenario_id="artifact-wiring",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+        metadata={"required_oracle_ids": ["oracle_1"]},
+        runtime_config={"required_oracle_ids": ["oracle_1"]},
+    )
+    run_store.save_run_manifest(
+        run_id,
+        {
+            "execution_manifest": exec_manifest.to_dict(),
+            "scenario_data": scenario_data,
+        },
+    )
+
+    start_ev = {
+        "event": "run_start",
+        "run_id": run_id,
+        "scenario_id": "artifact-wiring",
+        "scenario_data": scenario_data,
+        "data": {"execution_mode": "live", "execution_mode_declared": True},
+        "_seq": 1,
+    }
+    assert_ev = {
+        "event": "oracle_result",
+        "run_id": run_id,
+        "oracle_id": "oracle_1",
+        "assertion_id": "assert_1",
+        "passed": True,
+        "outcome": "PASS",
+        "_seq": 2,
+    }
+    end_ev = {
+        "event": "run_end",
+        "run_id": run_id,
+        "outcome": "pass",
+        "status": "pass",
+        "score": 1.0,
+        "_seq": 3,
+    }
+    run_store.append_events(run_id, [start_ev, assert_ev, end_ev])
+    lines = run_store.get_trace_bytes(run_id).decode("utf-8").splitlines()
+    raw_events = [(start_ev, lines[0]), (assert_ev, lines[1]), (end_ev, lines[2])]
+    ev_graph = build_evidence_graph_from_events(raw_events, required_oracle_ids=["oracle_1"])
+    evidence_root = ev_graph.get("evidence_root_hash")
+    rec = EvaluatorFinalizationRecord(
+        finalization_id=f"fin_{run_id}",
+        run_id=run_id,
+        execution_manifest_hash=exec_manifest.compute_manifest_hash(),
+        scenario_id="artifact-wiring",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+        evaluator_identity="test_evaluator",
+        evaluator_config_hash="sha3_256:abc123",
+        required_oracle_ids=["oracle_1"],
+        evidence_root_hash=evidence_root,
+        outcome="pass",
+        score=1.0,
+        terminal_seq=3,
+    ).sign()
+    fin_ev = {"event": "evaluator_finalization", "data": rec.to_dict(), "_seq": 4}
+    run_store.append_events(run_id, [fin_ev])
+
+    res = CertificationService.execute_industrial_certification(
+        run_id=run_id,
+        identity_id="system_id",
+        run_store=run_store,
         artifact_store=mock_store,
     )
 
-    assert mock_store.store_artifact.called
-    stored_artifacts = [
-        call[1]["artifact_name"] for call in mock_store.store_artifact.call_args_list
-    ]
-    assert "run_manifest.json" in stored_artifacts
-    assert "certification_receipt.json" in stored_artifacts
+    # ArtifactStore is never written to for manifests or seals (RunStore sole authority)
+    mock_store.store_artifact.assert_not_called()
+    mock_store.seal.assert_not_called()
 
-    # Local-file stores are sealed by the authoritative lifecycle transition;
-    # invoking their separate ``seal`` method would create a second irreversible
-    # write before that final transaction commit.
-    from eval_runner.run_lifecycle import RunLifecycleState, get_run_lifecycle_state
-
-    assert get_run_lifecycle_state("run-ver-art-001") is RunLifecycleState.SEALED
-    assert not mock_store.seal.called
-    assert manifest["certification"]["outcome"] == "PROVISIONAL_PASS"
+    # Authoritative manifest and lifecycle seal are committed strictly to RunStore
+    manifest = run_store.get_manifest(run_id)
+    assert manifest is not None
+    assert manifest["certification"]["outcome"] == "CERTIFIED_PASS"
+    assert get_run_lifecycle_state(run_id, run_store=run_store) is RunLifecycleState.SEALED
+    assert res.get("certified") is True
 
 
 # ==============================================================================
@@ -1038,12 +1114,9 @@ def test_flight_recorder_resolves_pluggable_artifact_store_by_default(monkeypatc
         plugin = FlightRecorderPlugin()
         assert plugin.artifact_store is custom_instance
 
-        # Explicit log_dir override binds isolated LocalFileArtifactStore without mutating registry
+        # Legacy log_dir no longer controls storage composition.
         isolated_plugin = FlightRecorderPlugin(log_dir=tmp_path)
-        from eval_runner.reference.local_artifact import LocalFileArtifactStore
-
-        assert isinstance(isolated_plugin.artifact_store, LocalFileArtifactStore)
-        assert isolated_plugin.artifact_store.base_dir == tmp_path
+        assert isolated_plugin.artifact_store is custom_instance
     finally:
         reset_extensions()
 

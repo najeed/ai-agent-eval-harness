@@ -1,1700 +1,2152 @@
-"""
-tests/unit/core/test_certification_service_and_trust_boundary.py
+"""Provider-native certification and trust-boundary contracts.
 
-Comprehensive test suite verifying the authoritative CertificationService domain service
-and hardened trust boundary contracts:
-1. Inconclusive evaluation outcome fails closed (cannot be overridden by caller).
-2. Prior run_manifest.json is never used as source of truth (no circular trust).
-3. Failed evaluation outcome produces a failure attestation, never a compliance pass.
-4. Provisional/simulated execution modes fail closed against authoritative certification.
-5. Verification independently verifies cryptographic validity and evaluation verdict.
+These tests deliberately seed evidence through ``RunStorageProvider`` only.
+The local implementation is a reference provider; its internal filesystem is
+never read or used as an alternate certification authority.
 """
 
 from __future__ import annotations
 
+import copy
 import json
-from collections.abc import Mapping
 from pathlib import Path
-from typing import Any
 
 import pytest
-from flask import Flask
 
+from agentv_runtime.evidence_graph import build_evidence_graph_from_events
 from agentv_runtime.finalization import EvaluatorFinalizationRecord
-from agentv_runtime.manifest import compute_scenario_hash
+from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
 from eval_runner import config
-from eval_runner.console.routes.trust import trust_bp
 from eval_runner.identity import IdentityService
 from eval_runner.reference.local_run_store import LocalFileRunStore
+from eval_runner.run_lifecycle import RunLifecycleState, get_run_lifecycle_state
 from eval_runner.services.certification import (
     CertificationService,
     execute_industrial_certification,
+    issue_certification,
 )
+from eval_runner.verifier import TraceVerifier
 
 
 @pytest.fixture
-def cert_vault(tmp_path, monkeypatch):
+def provider(tmp_path, monkeypatch):
+    """A local provider with explicitly provisioned certification identities."""
     root = tmp_path / "project"
-    runs = root / "runs"
-    reports = root / "reports"
-    trust = root / ".aes" / "keys"
-    runs.mkdir(parents=True, exist_ok=True)
-    reports.mkdir(parents=True, exist_ok=True)
-    trust.mkdir(parents=True, exist_ok=True)
-
+    trust_root = root / ".aes" / "keys"
+    trust_root.mkdir(parents=True)
     monkeypatch.setattr(config, "PROJECT_ROOT", root)
-    monkeypatch.setattr(config, "RUN_LOG_DIR", runs)
-    monkeypatch.setattr(config, "REPORTS_DIR", reports)
-    monkeypatch.setattr(config, "TRUST_ROOT", trust)
-
-    IdentityService._provision_local_identity("system_id")
-    IdentityService._provision_local_identity("test_signer")
-    IdentityService._provision_local_identity("eval_kernel")
-
-    return {"root": root, "runs": runs, "reports": reports, "trust": trust}
+    monkeypatch.setattr(config, "TRUST_ROOT", trust_root)
+    for identity in ("system_id", "eval_kernel"):
+        IdentityService._provision_local_identity(identity)
+    return LocalFileRunStore(tmp_path / "provider-runs")
 
 
-def _create_trace(
-    runs_dir: Path,
+def _seed_run(
+    provider: LocalFileRunStore,
     run_id: str,
-    events: list[dict],
-    auto_finalize: bool = True,
-    scenario_data: Mapping[str, Any] | None = None,
-) -> tuple[Path, Path]:
-    vault = runs_dir / run_id
-    vault.mkdir(parents=True, exist_ok=True)
-    trace = vault / "run.jsonl"
-
-    final_events = list(events)
-    has_finalization = any(e.get("event") == "evaluator_finalization" for e in final_events)
-    for sequence, event in enumerate(final_events, start=1):
-        event.setdefault("_seq", sequence)
-
-    terminal_count = sum(
-        1 for e in final_events if e.get("event") in ("session_decision", "evaluation_result")
+    *,
+    outcome: str = "pass",
+    mode: str = "live",
+    append_finalization: bool = True,
+    corrupt_finalization: bool = False,
+    terminal_seq: int = 3,
+    evidence_root_hash: str | None = None,
+    required_oracles: list[str] | None = None,
+    manifest_required_oracles: list[str] | None = None,
+    finalization_required_oracles: list[str] | None = None,
+    scenario_override: dict | None = None,
+    agent_id: str | None = None,
+    model: str | None = None,
+):
+    """Publish a complete provider-owned evidence stream for one run."""
+    req_oracles = required_oracles if required_oracles is not None else ["oracle-1"]
+    scenario = (
+        scenario_override
+        if scenario_override is not None
+        else {
+            "id": f"scenario-{run_id}",
+            "version": "1.0.0",
+            "required_oracles": req_oracles,
+        }
     )
-    if auto_finalize and not has_finalization and terminal_count == 1:
-        scen_id = "scen_1"
-        scen_hash = None
-        if scenario_data:
-            scen_id = scenario_data.get("id") or scenario_data.get("scenario_id") or scen_id
-            scen_hash = compute_scenario_hash(scenario_data)
-        else:
-            for e in final_events:
-                if e.get("event") in ("run_start", "start"):
-                    scen_id = e.get("scenario_id") or scen_id
-                    scen_hash = e.get("scenario_hash")
-            if not scen_hash:
-                scen_hash = compute_scenario_hash({"id": scen_id, "version": "1.0.0"})
-
-        from agentv_runtime.evidence_graph import (
-            build_evidence_graph_from_events,
-            compute_evidence_graph_root,
-        )
-        from agentv_runtime.manifest import ExecutionManifest
-
-        exec_manifest = ExecutionManifest(
-            manifest_id=f"man_{run_id}",
-            scenario_id=scen_id,
-            scenario_version="1.0.0",
-            scenario_hash=scen_hash,
-        )
-        exec_manifest_path = vault / "execution_manifest.json"
-        exec_manifest_path.write_text(json.dumps(exec_manifest.to_dict()), encoding="utf-8")
-        m_hash = exec_manifest.compute_manifest_hash()
-
-        ev_graph = build_evidence_graph_from_events(final_events)
-        ev_root = compute_evidence_graph_root(ev_graph)
-
-        term_ev = next(
-            e
-            for e in reversed(final_events)
-            if e.get("event") in ("session_decision", "evaluation_result")
-        )
-        data = term_ev.get("data", {}) if isinstance(term_ev.get("data"), dict) else term_ev
-        dec_str = str(data.get("decision") or data.get("status") or "").upper()
-        outcome = "pass" if dec_str == "PASS" else "fail"
-        score = float(
-            data.get("score")
-            if data.get("score") is not None
-            else (1.0 if outcome == "pass" else 0.0)
-        )
-
-        fin_rec = EvaluatorFinalizationRecord(
-            finalization_id=f"fin_{run_id}",
-            run_id=run_id,
-            execution_manifest_hash=m_hash,
-            scenario_id=scen_id,
-            scenario_version="1.0.0",
-            scenario_hash=scen_hash,
-            evaluator_identity="eval_kernel",
-            evaluator_config_hash="sha3_256:0000000000000000000000000000000000000000000000000000000000000000",
-            required_oracle_ids=[],
-            evidence_root_hash=ev_root,
-            outcome=outcome,
-            score=score,
-            terminal_seq=len(final_events),
-        )
-        fin_rec = fin_rec.sign()
-        fin_dict = fin_rec.to_dict()
-        final_events.append(
-            {
-                "event": "evaluator_finalization",
-                "data": fin_dict,
-                "_seq": len(final_events) + 1,
-            }
-        )
-
-    with open(trace, "w", encoding="utf-8") as f:
-        for ev in final_events:
-            f.write(json.dumps(ev) + "\n")
-    return vault, trace
-
-
-def test_inconclusive_run_cannot_be_certified(cert_vault):
-    """Missing or ambiguous terminal evaluation outcome must hard-fail certification."""
-    run_id = "run-inconclusive-001"
-    events = [
-        {"event": "run_start", "execution_mode": "live", "data": {"execution_mode_declared": True}},
-        {"event": "step_executed", "data": {"step": 1}},
-    ]
-    _create_trace(cert_vault["runs"], run_id, events)
-
-    # Calling execute_industrial_certification without terminal outcome must raise ValueError
-    with pytest.raises(ValueError, match="inconclusive outcome"):
-        CertificationService.execute_industrial_certification(run_id=run_id)
-
-
-def test_inconclusive_run_cannot_be_certified_with_caller_status_override(cert_vault):
-    """Caller supplying status='pass' cannot bypass fail-closed inconclusive outcome check."""
-    run_id = "run-inconclusive-override"
-    events = [
-        {"event": "run_start", "execution_mode": "live", "data": {"execution_mode_declared": True}},
-        {"event": "step_executed", "data": {"step": 1}},
-    ]
-    _create_trace(cert_vault["runs"], run_id, events)
-
-    with pytest.raises(ValueError, match="inconclusive outcome"):
-        execute_industrial_certification(run_id=run_id, status="pass", score=1.0)
-
-
-def test_previous_run_manifest_cannot_circularly_influence_certification(cert_vault):
-    """A prior run_manifest.json with fake PASS status must NOT influence new certification."""
-    run_id = "run-no-circular-trust"
-    scen_data = {"id": "scen_fail", "version": "1.0.0"}
-    # Raw trace indicates an authoritative FAIL
-    events = [
-        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_fail"},
-        {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": False},
-        {"event": "session_decision", "data": {"decision": "FAIL", "score": 0.2}},
-    ]
-    vault, trace = _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
-
-    # Write a malicious / stale manifest in the vault claiming "certified" and score 1.0
-    stale_manifest = vault / "run_manifest.json"
-    stale_manifest.write_text(
-        json.dumps(
-            {
-                "compliance_status": "pass",
-                "compliance_score": 1.0,
-                "status": "certified",
-            }
-        ),
-        encoding="utf-8",
+    scenario_hash = compute_scenario_hash(scenario)
+    manifest_oracles = (
+        manifest_required_oracles if manifest_required_oracles is not None else req_oracles
     )
-
-    # Certification must derive outcome from the trace, recognizing FAIL
-    res = CertificationService.execute_industrial_certification(
-        run_id=run_id,
-        scenario_data=scen_data,
+    finalization_oracles = (
+        finalization_required_oracles if finalization_required_oracles is not None else req_oracles
     )
-    assert res["certified"] is False
-    assert res["status"] == "attested_failed"
-    assert res["compliance_status"] == "fail"
-    assert res["score"] == 0.2
-
-
-def test_failed_evaluation_cannot_produce_pass_certificate(cert_vault):
-    """Even if caller asks for status='pass', a failed evaluation fails closed."""
-    run_id = "run-fail-closed-test"
-    scen_data = {"id": "scen_fail2", "version": "1.0.0"}
-    events = [
-        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_fail2"},
-        {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": False},
-        {"event": "evaluation_result", "data": {"status": "FAIL", "score": 0.0}},
-    ]
-    _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
-
-    res = execute_industrial_certification(
-        run_id=run_id,
-        status="pass",
-        score=1.0,
-        scenario_data=scen_data,
+    execution_manifest = ExecutionManifest(
+        manifest_id=f"manifest-{run_id}",
+        scenario_id=scenario["id"],
+        scenario_version=scenario["version"],
+        scenario_hash=scenario_hash,
+        metadata={"required_oracle_ids": manifest_oracles},
+        runtime_config={"required_oracle_ids": manifest_oracles, "execution_mode": mode},
     )
-    assert res["certified"] is False
-    assert res["status"] == "attested_failed"
-    assert res["compliance_status"] == "fail"
-    assert res["score"] == 0.0
-
-
-def test_provisional_simulated_mode_rejected_for_authoritative_certification(cert_vault):
-    """Simulated or undeclared provisional runs cannot issue authoritative certificates."""
-    run_id = "run-simulated-provisional"
-    scen_data = {"id": "scen_sim", "version": "1.0.0"}
+    provider.create_run(run_id, scenario["id"])
+    start_ev = {"event": "run_start", "_seq": 1, "execution_mode": mode}
+    if agent_id:
+        start_ev["agent_id"] = agent_id
+    if model:
+        start_ev["model"] = model
     events = [
+        start_ev,
         {
-            "event": "run_start",
-            "execution_mode": "simulated",
-            "scenario_id": "scen_sim",
-            "data": {"provisional": True},
+            "event": "oracle_result",
+            "_seq": 2,
+            "oracle_id": "oracle-1",
+            "assertion_id": "assertion-1",
+            "passed": outcome == "pass",
+            "outcome": outcome.upper(),
+            "resolver": "fixture",
         },
-        {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": True},
-        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
-    ]
-    _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
-
-    with pytest.raises(ValueError, match="is provisional"):
-        execute_industrial_certification(run_id=run_id, scenario_data=scen_data)
-
-
-def test_passing_authoritative_run_certified_successfully(cert_vault):
-    """Passing live run is properly certified with genuine signature."""
-    run_id = "run-passing-live"
-    scen_data = {"id": "scen_pass", "version": "1.0.0"}
-    events = [
         {
-            "event": "run_start",
-            "execution_mode": "live",
-            "scenario_id": "scen_pass",
-            "data": {"execution_mode_declared": True},
+            "event": "session_decision",
+            "_seq": 3,
+            "decision": outcome.upper(),
+            "score": 1.0 if outcome == "pass" else 0.0,
         },
-        {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": True},
-        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
     ]
-    _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
-
-    res = execute_industrial_certification(
+    provider.append_events(run_id, events)
+    exact_lines = provider.get_trace_bytes(run_id).decode("utf-8").splitlines()
+    graph = build_evidence_graph_from_events(
+        [(event, line) for event, line in zip(events, exact_lines, strict=True)],
+        required_oracle_ids=manifest_oracles,
+    )
+    effective_root = (
+        evidence_root_hash if evidence_root_hash is not None else graph["evidence_root_hash"]
+    )
+    finalization = EvaluatorFinalizationRecord(
+        finalization_id=f"finalization-{run_id}",
         run_id=run_id,
-        identity_id="system_id",
-        policy_ref="NIST-AI-100",
-        scenario_data=scen_data,
-    )
-    assert res["certified"] is True
-    assert res["status"] == "certified"
-    assert res["compliance_status"] == "pass"
-    assert res["score"] == 1.0
-    assert "trace_hash" in res["manifest"]
-
-
-def test_public_verification_endpoint_semantics(cert_vault):
-    """GET /v1/verify/<run_id> independently reports cryptographic and evaluation compliance."""
-    app = Flask(__name__)
-    app.register_blueprint(trust_bp)
-
-    client = app.test_client()
-
-    run_id = "run-verify-endpoint"
-    scen_data = {"id": "scen_verify", "version": "1.0.0"}
-    events = [
-        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_verify"},
-        {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": True},
-        {"event": "session_decision", "data": {"decision": "PASS", "score": 0.98}},
-    ]
-    _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
-
-    execute_industrial_certification(
-        run_id=run_id,
-        identity_id="system_id",
-        scenario_data=scen_data,
-    )
-
-    res = client.get(f"/api/v1/verify/{run_id}")
-    assert res.status_code == 200
-    data = res.get_json()
-    assert data["verified"] is True
-    assert data["cryptographically_valid"] is True
-    assert data["evaluation_passed"] is True
-    assert data["certificate_authoritative"] is True
-
-
-def test_invalid_evaluator_signature_blocks_certification_signing(cert_vault):
-    """A package must never be signed over an unauthenticated evaluator result."""
-    run_id = "run-invalid-evaluator-signature"
-    scenario = {"id": "scen_invalid_signature", "version": "1.0.0"}
-    _, trace = _create_trace(
-        cert_vault["runs"],
-        run_id,
-        [
-            {"event": "run_start", "execution_mode": "live", "scenario_id": scenario["id"]},
-            {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": True},
-            {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
-        ],
-        scenario_data=scenario,
-    )
-    records = [json.loads(line) for line in trace.read_text(encoding="utf-8").splitlines()]
-    records[-1]["data"]["evaluator_signature"] = "00"
-    trace.write_text("\n".join(json.dumps(record) for record in records) + "\n", encoding="utf-8")
-
-    with pytest.raises(ValueError, match="inconclusive outcome"):
-        execute_industrial_certification(
-            run_id=run_id,
-            identity_id="system_id",
-            scenario_data=scenario,
+        scenario_id=scenario["id"],
+        scenario_version=scenario["version"],
+        scenario_hash=scenario_hash,
+        execution_manifest_hash=execution_manifest.compute_manifest_hash(),
+        evaluator_config_hash="sha3_256:evaluator-config",
+        evaluator_identity="eval_kernel",
+        required_oracle_ids=finalization_oracles,
+        evidence_root_hash=effective_root,
+        outcome=outcome,
+        score=1.0 if outcome == "pass" else 0.0,
+        terminal_seq=terminal_seq,
+        finalized_at="2026-10-24T00:00:00Z",
+    ).sign()
+    if corrupt_finalization:
+        finalization = EvaluatorFinalizationRecord.from_dict(
+            {**finalization.to_dict(), "score": 0.5}, require_authoritative=False
         )
-
-
-def test_terminal_sequence_mismatch_blocks_certification(cert_vault):
-    """The signed finalization boundary must be the last pre-finalization event."""
-    run_id = "run-terminal-sequence-mismatch"
-    scenario = {"id": "scen_terminal_sequence", "version": "1.0.0"}
-    _, trace = _create_trace(
-        cert_vault["runs"],
-        run_id,
-        [
-            {"event": "run_start", "execution_mode": "live", "scenario_id": scenario["id"]},
-            {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": True},
-            {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
-        ],
-        scenario_data=scenario,
-    )
-    records = [json.loads(line) for line in trace.read_text(encoding="utf-8").splitlines()]
-    finalization = records[-1]["data"]
-    finalization["terminal_seq"] = 1
-    records[-1]["data"] = (
-        EvaluatorFinalizationRecord.from_dict(finalization, require_authoritative=False)
-        .sign()
-        .to_dict()
-    )
-    trace.write_text("\n".join(json.dumps(record) for record in records) + "\n", encoding="utf-8")
-
-    with pytest.raises(Exception, match="TerminalSequenceMismatch"):
-        execute_industrial_certification(
-            run_id=run_id,
-            identity_id="system_id",
-            scenario_data=scenario,
+    if append_finalization:
+        provider.append_events(
+            run_id,
+            [{"event": "evaluator_finalization", "_seq": 4, "data": finalization.to_dict()}],
         )
-
-
-def test_live_certification_rejects_mandatory_shim_state_evidence(cert_vault):
-    """Declaring live mode cannot turn simulator evidence into real-world proof."""
-    run_id = "run-live-shim-evidence"
-    scenario = {"id": "scen_live_shim", "version": "1.0.0"}
-    _create_trace(
-        cert_vault["runs"],
-        run_id,
-        [
-            {"event": "run_start", "execution_mode": "live", "scenario_id": scenario["id"]},
-            {
-                "event": "assertion_evaluated",
-                "assertion": {"target": "shim:billing.invoice.status", "expected": "paid"},
-                "passed": True,
-                "outcome": "PASS",
-            },
-            {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
-        ],
-        scenario_data=scenario,
-    )
-
-    with pytest.raises(ValueError, match="SimulatedStateEvidenceProhibited"):
-        execute_industrial_certification(
-            run_id=run_id,
-            identity_id="system_id",
-            scenario_data=scenario,
-        )
-
-
-def test_certification_uses_non_exportable_signing_backend_end_to_end(cert_vault, monkeypatch):
-    """Evaluator, package, and manifest signing work without PEM-key export."""
-    from cryptography.hazmat.primitives import serialization
-    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
-
-    class NonExportableBackend:
-        def __init__(self):
-            self.__key = Ed25519PrivateKey.generate()
-
-        def can_sign(self):
-            return True
-
-        def sign_payload(self, payload, key_identifier, **_kwargs):
-            return self.__key.sign(payload).hex()
-
-        def get_public_key(self, _key_identifier):
-            return self.__key.public_key()
-
-        def public_key_pem(self):
-            return self.__key.public_key().public_bytes(
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PublicFormat.SubjectPublicKeyInfo,
-            )
-
-    run_id = "run-non-exportable-backend"
-    scenario = {"id": "scen_non_exportable", "version": "1.0.0"}
-    _, trace = _create_trace(
-        cert_vault["runs"],
-        run_id,
-        [
-            {"event": "run_start", "execution_mode": "live", "scenario_id": scenario["id"]},
-            {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": True},
-            {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
-        ],
-        scenario_data=scenario,
-    )
-    backend = NonExportableBackend()
-    for identity in ("kms-evaluator", "kms-certifier"):
-        trusted_key = cert_vault["trust"] / identity
-        trusted_key.mkdir()
-        (trusted_key / "public_key.pem").write_bytes(backend.public_key_pem())
-    records = [json.loads(line) for line in trace.read_text(encoding="utf-8").splitlines()]
-    finalization = records[-1]["data"]
-    finalization["evaluator_identity"] = "kms-evaluator"
-    records[-1]["data"] = (
-        EvaluatorFinalizationRecord.from_dict(finalization, require_authoritative=False)
-        .sign(backend)
-        .to_dict()
-    )
-    trace.write_text("\n".join(json.dumps(record) for record in records) + "\n", encoding="utf-8")
-
-    monkeypatch.setattr(
-        IdentityService,
-        "get_private_key",
-        staticmethod(lambda *_args, **_kwargs: (_ for _ in ()).throw(AssertionError("PEM export"))),
-    )
-    result = execute_industrial_certification(
-        run_id=run_id,
-        identity_id="kms-certifier",
-        scenario_data=scenario,
-        signing_backend=backend,
-    )
-
-    assert result["certified"] is True
-    assert result["verification_package"]["signer_identity"] == "kms-certifier"
-
-
-def test_certification_uses_provider_events_and_manifest_as_source(cert_vault):
-    """Certification can be sourced from the RunStorageProvider, not a vault read."""
-    run_id = "run-provider-certification"
-    scenario = {"id": "scen_provider_certification", "version": "1.0.0"}
-    vault, _trace = _create_trace(
-        cert_vault["runs"],
-        run_id,
-        [
-            {"event": "run_start", "execution_mode": "live", "scenario_id": scenario["id"]},
-            {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": True},
-            {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
-        ],
-        scenario_data=scenario,
-    )
-    provider = LocalFileRunStore(cert_vault["runs"])
-    # Provider-backed traces use the contract's compact event serialization.
-    # Rebuild the fixture finalization over that exact representation.
-    provider_events = provider.get_events(run_id, limit=10_000_000)
-    from agentv_runtime.evidence_graph import build_evidence_graph_from_events
-
-    provider_root = build_evidence_graph_from_events(
-        [(event, json.dumps(event, separators=(",", ":"))) for event in provider_events[:-1]]
-    )["evidence_root_hash"]
-    provider_events[-1]["data"]["evidence_root_hash"] = provider_root
-    provider_events[-1]["data"] = (
-        EvaluatorFinalizationRecord.from_dict(
-            provider_events[-1]["data"], require_authoritative=False
-        )
-        .sign()
-        .to_dict()
-    )
-    (vault / "run.jsonl").write_text(
-        "".join(json.dumps(event, separators=(",", ":")) + "\n" for event in provider_events),
-        encoding="utf-8",
-    )
-    execution_manifest = json.loads((vault / "execution_manifest.json").read_text(encoding="utf-8"))
     provider.save_run_manifest(
         run_id,
-        {"execution_manifest": execution_manifest, "scenario_data": scenario},
+        {
+            "run_id": run_id,
+            "execution_manifest": execution_manifest.to_dict(),
+            "scenario_data": scenario,
+        },
     )
-    events = provider.get_events(run_id, limit=10_000_000)
-    assert events
+    return scenario
+
+
+def test_certification_signs_provider_owned_exact_trace_bytes(provider):
+    run_id = "provider-certification-pass"
+    scenario = _seed_run(provider, run_id)
+
+    result = execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+
+    manifest = provider.get_manifest(run_id)
+    assert result["certified"] is True
+    assert get_run_lifecycle_state(run_id, run_store=provider) is RunLifecycleState.SEALED
+    assert TraceVerifier.verify_trace(
+        provider.get_trace_bytes(run_id), manifest, run_store=provider
+    )
+
+
+def test_failed_evaluation_is_attested_but_never_certified(provider):
+    run_id = "provider-certification-fail"
+    scenario = _seed_run(provider, run_id, outcome="fail")
 
     result = execute_industrial_certification(
-        run_id=run_id,
-        identity_id="system_id",
-        scenario_data=scenario,
+        run_id,
         run_store=provider,
+        scenario_data=scenario,
+        status="pass",
+        score=1.0,
     )
 
-    assert result["certified"] is True
-    assert provider.get_manifest(run_id)["verification_package"]
+    assert result["status"] == "attested_failed"
+    assert result["certified"] is False
+    assert result["manifest"]["compliance"]["status"] == "fail"
 
 
-def test_invalid_run_ids_rejected(cert_vault):
-    """Verify invalid and path-traversal run IDs are rejected with ValueError."""
-    for bad_id in ("", 123, "../escape", "run/nested", "run\\slashes"):
-        with pytest.raises(ValueError, match="Invalid or unsafe run_id"):
-            execute_industrial_certification(run_id=bad_id)  # type: ignore
+def test_provisional_execution_fails_closed(provider):
+    run_id = "provider-certification-provisional"
+    scenario = _seed_run(provider, run_id, mode="simulated")
+
+    with pytest.raises(ValueError, match="ProviderTruthLevelNotLive"):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+
+    assert get_run_lifecycle_state(run_id, run_store=provider) is RunLifecycleState.OPEN
 
 
-def test_metadata_binding_with_corrupt_lines_and_attributes(cert_vault):
-    """Verify metadata extraction extracts bound scenario and agent identity attributes."""
-    run_id = "run-meta-binding"
-    scen_data = {"id": "scen_1", "version": "1.0.0"}
-    events = [
-        {
-            "event": "run_start",
-            "execution_mode": "live",
-            "scenario_id": "scen_1",
-            "agent_id": "ag_1",
-        },
-        {"event": "assertion_evaluated", "assertion": "oracle_check", "passed": True},
-        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
-    ]
-    vault, trace = _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
+def test_missing_finalization_fails_closed(provider):
+    run_id = "provider-certification-no-finalization"
+    scenario = _seed_run(provider, run_id, append_finalization=False)
 
-    # Prepend empty lines to verify blank line resilience in trace parser
-    original_text = trace.read_text(encoding="utf-8")
-    trace.write_text("\n\n" + original_text, encoding="utf-8")
+    with pytest.raises(ValueError, match="mandatory authoritative EvaluatorFinalizationRecord"):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
 
-    res = execute_industrial_certification(
-        run_id=run_id,
-        identity_id="system_id",
-        scenario_data=scen_data,
+
+def test_invalid_finalization_signature_fails_closed(provider):
+    run_id = "provider-certification-bad-finalization"
+    scenario = _seed_run(provider, run_id, corrupt_finalization=True)
+
+    with pytest.raises(ValueError, match="mandatory authoritative EvaluatorFinalizationRecord"):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+
+
+def test_terminal_sequence_mismatch_fails_closed(provider):
+    run_id = "provider-certification-terminal-seq"
+    scenario = _seed_run(provider, run_id, terminal_seq=1)
+
+    with pytest.raises(ValueError, match="TerminalSequenceMismatch"):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+
+
+def test_sealed_retry_is_read_only_and_returns_published_certificate(provider, monkeypatch):
+    run_id = "provider-certification-idempotent"
+    scenario = _seed_run(provider, run_id)
+    first = execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+    published = copy.deepcopy(provider.get_manifest(run_id))
+
+    monkeypatch.setattr(
+        TraceVerifier,
+        "sign_trace_bytes",
+        staticmethod(lambda *_args, **_kwargs: pytest.fail("sealed run was re-signed")),
     )
-    assert res["certified"] is True
-    assert res["manifest"]["metadata"]["scenario_id"] == "scen_1"
-    assert res["manifest"]["metadata"]["agent_id"] == "ag_1"
+    retry = execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+
+    assert first["package_hash"] == retry["package_hash"]
+    assert provider.get_manifest(run_id) == published
 
 
-def test_count_assertion_and_evidence_nodes_branches(tmp_path):
-    # 1. Nonexistent trace
-    nonexistent = tmp_path / "nonexistent.jsonl"
-    assert CertificationService.count_assertion_and_evidence_nodes(nonexistent) == 0
+def test_certification_never_uses_a_different_provider(provider, tmp_path):
+    run_id = "provider-affinity"
+    scenario = _seed_run(provider, run_id)
+    other = LocalFileRunStore(tmp_path / "other-provider")
+    other.create_run(run_id, scenario["id"])
 
-    # 2. A malformed physical stream is not partially interpreted.
-    trace_file = tmp_path / "test_trace.jsonl"
-    lines = [
-        "",
-        "   ",
-        "corrupt-non-json-line",
-        json.dumps({"event": "step_executed"}),
-        json.dumps({"event": "other", "assertion": "a1"}),
-        json.dumps({"event": "custom_event", "data": {"oracle_results": [{"passed": True}]}}),
-        json.dumps({"event": "custom_event2", "metrics": [{"score": 1.0}]}),
-        json.dumps({"event": "unrelated_event", "data": {"unrelated": 123}}),
-    ]
-    trace_file.write_text("\n".join(lines), encoding="utf-8")
-    assert CertificationService.count_assertion_and_evidence_nodes(trace_file) == 0
+    with pytest.raises(
+        (ValueError, FileNotFoundError),
+        match="ProviderOwnedEvidenceRequired|inconclusive|ExecutionManifestMissing",
+    ):
+        execute_industrial_certification(run_id, run_store=other, scenario_data=scenario)
+
+    assert get_run_lifecycle_state(run_id, run_store=provider) is RunLifecycleState.OPEN
 
 
-def test_extract_finalization_record_branches(tmp_path):
-    # 1. Nonexistent trace returns None
-    assert CertificationService.extract_finalization_record(tmp_path / "none.jsonl") is None
+def test_provider_event_and_exact_byte_divergence_fails_closed(provider, monkeypatch):
+    run_id = "provider-byte-divergence"
+    scenario = _seed_run(provider, run_id)
+    original = provider.get_events(run_id, limit=10_000_000)
+    monkeypatch.setattr(
+        provider,
+        "get_events",
+        lambda *_args, **_kwargs: [*original, {"event": "forged", "_seq": 999}],
+    )
 
-    # 2. Trace with run_end carrying finalization payload
-    priv = IdentityService.get_private_key("system_id")
-    rec = EvaluatorFinalizationRecord(
-        finalization_id="fin_embedded",
-        run_id="run_embedded",
-        execution_manifest_hash="sha3_256:1111",
-        scenario_id="scen_emb",
+    with pytest.raises(ValueError, match="ProviderEventByteDivergence"):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+
+
+def test_certification_rejects_path_evidence(provider, tmp_path):
+    run_id = "provider-path-evidence-rejected"
+    scenario = _seed_run(provider, run_id)
+
+    with pytest.raises(ValueError, match="TracePathCertificationUnsupported"):
+        execute_industrial_certification(
+            run_id,
+            run_store=provider,
+            scenario_data=scenario,
+            trace_path=tmp_path / "run.jsonl",
+        )
+
+
+def test_count_assertion_and_evidence_nodes_behaviors(tmp_path):
+    assert (
+        CertificationService.count_assertion_and_evidence_nodes(tmp_path / "nonexistent.jsonl") == 0
+    )
+
+    unreadable_dir = tmp_path / "as_dir"
+    unreadable_dir.mkdir()
+    assert CertificationService.count_assertion_and_evidence_nodes(unreadable_dir) == 0
+
+    bad_json = tmp_path / "bad.jsonl"
+    bad_json.write_text("invalid json line\n", encoding="utf-8")
+    assert CertificationService.count_assertion_and_evidence_nodes(bad_json) == 0
+
+    non_dict = tmp_path / "non_dict.jsonl"
+    non_dict.write_text("[1, 2, 3]\n", encoding="utf-8")
+    assert CertificationService.count_assertion_and_evidence_nodes(non_dict) == 0
+
+    valid_file = tmp_path / "valid.jsonl"
+    valid_content = "\n".join(
+        [
+            "",
+            json.dumps({"event": "step_executed"}),
+            json.dumps({"event": "other", "assertion": "check_1"}),
+            json.dumps({"event": "other", "data": {"assertion": "check_2"}}),
+            json.dumps({"event": "other", "oracle_results": ["res"]}),
+            json.dumps({"event": "other", "data": {"oracle_results": ["res2"]}}),
+            json.dumps({"event": "other", "metrics": {"m": 1}}),
+            json.dumps({"event": "other", "data": {"metrics": {"m": 2}}}),
+            json.dumps({"event": "unrelated", "data": {"status": "ok"}}),
+            "",
+        ]
+    )
+    valid_file.write_text(valid_content, encoding="utf-8")
+    assert CertificationService.count_assertion_and_evidence_nodes(valid_file) == 7
+
+
+def test_parse_trace_strict_behaviors(tmp_path):
+    with pytest.raises(FileNotFoundError, match="Trace file not found"):
+        CertificationService.parse_trace_strict(tmp_path / "missing.jsonl")
+
+    corrupt_file = tmp_path / "corrupt.jsonl"
+    corrupt_file.write_text('{"event": "start"}\n{bad json}\n', encoding="utf-8")
+    with pytest.raises(ValueError, match="MalformedTraceRecord:2"):
+        CertificationService.parse_trace_strict(corrupt_file)
+
+    non_dict_file = tmp_path / "not_dict.jsonl"
+    non_dict_file.write_text('{"event": "start"}\n"a string"\n', encoding="utf-8")
+    with pytest.raises(ValueError, match="InvalidTraceRecord:2"):
+        CertificationService.parse_trace_strict(non_dict_file)
+
+    foreign_file = tmp_path / "foreign.jsonl"
+    foreign_file.write_text(
+        json.dumps({"event": "run_start", "run_id": "run-expected"})
+        + "\n"
+        + json.dumps({"event": "step", "run_id": "run-foreign"})
+        + "\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="ForeignTraceRecord:2"):
+        CertificationService.parse_trace_strict(foreign_file, run_id="run-expected")
+
+    valid_file = tmp_path / "valid_strict.jsonl"
+    valid_file.write_text(
+        "\n"
+        + json.dumps({"event": "run_start", "run_id": "run-1"})
+        + "\n"
+        + json.dumps({"event": "step", "data": {"run_id": "run-1"}})
+        + "\n",
+        encoding="utf-8",
+    )
+    events = CertificationService.parse_trace_strict(valid_file, run_id="run-1")
+    assert len(events) == 2
+
+
+def test_extract_finalization_record_behaviors(provider, tmp_path, monkeypatch):
+    assert CertificationService.extract_finalization_record(tmp_path / "missing.jsonl") is None
+
+    unreadable_dir = tmp_path / "finalization_dir"
+    unreadable_dir.mkdir()
+    assert CertificationService.extract_finalization_record(unreadable_dir) is None
+
+    no_fin_file = tmp_path / "no_fin.jsonl"
+    no_fin_file.write_text(
+        "\n{bad line}\n" + json.dumps({"event": "run_start"}) + "\n",
+        encoding="utf-8",
+    )
+    assert CertificationService.extract_finalization_record(no_fin_file) is None
+
+    IdentityService._provision_local_identity("eval_kernel")
+    fin = EvaluatorFinalizationRecord(
+        finalization_id="fin-test",
+        run_id="run-test",
+        scenario_id="scen-1",
         scenario_version="1.0.0",
-        scenario_hash="sha3_256:2222",
-        evaluator_identity="system_id",
-        evaluator_config_hash="sha3_256:3333",
-        required_oracle_ids=[],
-        evidence_root_hash="sha3_256:4444",
+        scenario_hash="sha3_256:dummy",
+        execution_manifest_hash="sha3_256:dummy",
+        evaluator_config_hash="sha3_256:dummy",
+        evaluator_identity="eval_kernel",
+        required_oracle_ids=["o1"],
+        evidence_root_hash="sha3_256:dummy",
         outcome="pass",
         score=1.0,
         terminal_seq=1,
-    ).sign(priv)
-
-    trace_file = tmp_path / "emb_trace.jsonl"
-    lines = [
-        "",
-        json.dumps({"event": "run_start", "scenario_id": "scen_emb"}),
-        json.dumps({"event": "run_end", "data": {"finalization": rec.to_dict()}}),
-    ]
-    trace_file.write_text("\n".join(lines), encoding="utf-8")
-    extracted = CertificationService.extract_finalization_record(trace_file)
-    assert extracted is not None
-    assert extracted.finalization_id == "fin_embedded"
-
-    # 3. Hash mismatch in finalization raises ValueError
-    corrupt_rec_dict = rec.to_dict()
-    corrupt_rec_dict["finalization_hash"] = "sha3_256:" + "0" * 64
-    trace_bad = tmp_path / "bad_trace.jsonl"
-    trace_bad.write_text(
-        json.dumps({"event": "evaluator_finalization", "data": corrupt_rec_dict}),
-        encoding="utf-8",
-    )
-    with pytest.raises(ValueError, match="FinalizationHashMismatch"):
-        CertificationService.extract_finalization_record(trace_bad)
-
-
-def test_certification_scenario_id_mismatch(cert_vault):
-    run_id = "run-scen-id-mismatch"
-    scen_data = {"id": "scen_expected", "version": "1.0.0"}
-    events = [
-        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_expected"},
-        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
-        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
-    ]
-    _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
-
-    # Calling certification with scenario_data having different id raises ScenarioIdMismatch
-    mismatched_scen = {"id": "scen_different", "version": "1.0.0"}
-    with pytest.raises(ValueError, match="ScenarioIdMismatch"):
-        execute_industrial_certification(
-            run_id=run_id,
-            identity_id="system_id",
-            scenario_data=mismatched_scen,
-        )
-
-
-def test_certification_corrupt_manifest_file(cert_vault):
-    run_id = "run-corrupt-manifest"
-    scen_data = {"id": "scen_manifest", "version": "1.0.0"}
-    events = [
-        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_manifest"},
-        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
-        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
-    ]
-    vault, _ = _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
-
-    # Overwrite execution_manifest.json with corrupt non-JSON content
-    manifest_file = vault / "execution_manifest.json"
-    manifest_file.write_text("not-a-valid-json", encoding="utf-8")
-
-    with pytest.raises(ValueError, match="Expecting value|Invalid execution manifest"):
-        execute_industrial_certification(
-            run_id=run_id,
-            identity_id="system_id",
-            scenario_data=scen_data,
-        )
-
-
-def test_certification_manifest_non_value_error(cert_vault, monkeypatch):
-    """Verify behavior when execution_manifest processing raises non-ValueError."""
-    run_id = "run-manifest-type-error"
-    scen_data = {"id": "scen_manifest", "version": "1.0.0"}
-    events = [
-        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_manifest"},
-        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
-        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
-    ]
-    _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
-
-    from agentv_runtime.manifest import ExecutionManifest
-
-    def _raise_type_error(*args, **kwargs):
-        raise TypeError("Corrupt manifest schema data type")
-
-    monkeypatch.setattr(ExecutionManifest, "from_dict", _raise_type_error)
-
-    with pytest.raises(ValueError, match="Invalid execution manifest in"):
-        execute_industrial_certification(
-            run_id=run_id,
-            identity_id="system_id",
-            scenario_data=scen_data,
-        )
-
-
-def test_certification_unresolvable_scenario(cert_vault):
-    run_id = "run-unresolvable-scen"
-    events = [
-        {
-            "event": "run_start",
-            "execution_mode": "live",
-            "scenario_id": "scen_unknown_never_exists",
-        },
-        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
-        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
-    ]
-    _create_trace(
-        cert_vault["runs"],
-        run_id,
-        events,
-        scenario_data={"id": "scen_unknown_never_exists", "version": "1.0.0"},
-    )
-
-    # Do not pass scenario_data, forcing resolution from disk which fails
-    with pytest.raises(ValueError, match="cannot resolve authoritative scenario definition"):
-        execute_industrial_certification(
-            run_id=run_id,
-            identity_id="system_id",
-            scenario_data=None,
-        )
-
-
-def test_read_run_truth_level_edge_cases(cert_vault, monkeypatch):
-    """Verify edge cases and resilience in read_run_truth_level."""
-    assert CertificationService.read_run_truth_level("") == (None, False)
-    assert CertificationService.read_run_truth_level("../unsafe_run") == (None, False)
-    assert CertificationService.read_run_truth_level("nonexistent_run_dir") == (None, False)
-
-    # Sub-case: run_start with no execution_mode declared
-    run_no_mode = "run-no-mode"
-    v_no_mode = cert_vault["runs"] / run_no_mode
-    v_no_mode.mkdir(parents=True, exist_ok=True)
-    (v_no_mode / "run.jsonl").write_text(
-        json.dumps({"event": "run_start", "data": {}}) + "\n", encoding="utf-8"
-    )
-    mode_nm, prov_nm = CertificationService.read_run_truth_level(run_no_mode)
-    assert mode_nm == "unknown"
-    assert prov_nm is True
-
-    run_id = "run-truth-corrupt"
-    vault = cert_vault["runs"] / run_id
-    vault.mkdir(parents=True, exist_ok=True)
-    trace = vault / "run.jsonl"
-    with open(trace, "w", encoding="utf-8") as f:
-        f.write("not-valid-json\n")
-        f.write(json.dumps({"event": "heartbeat", "data": {}}) + "\n")
-        f.write(json.dumps({"event": "step", "data": {}}) + "\n")
-
-    mode, is_prov = CertificationService.read_run_truth_level(run_id)
-    assert mode == "unknown"
-    assert is_prov is True
-
-    def _raise_open(*args, **kwargs):
-        raise OSError("Permission denied")
-
-    monkeypatch.setattr("builtins.open", _raise_open)
-    mode_err, prov_err = CertificationService.read_run_truth_level(run_id)
-    assert mode_err == "unknown"
-    assert prov_err is True
-
-
-def test_count_assertion_and_evidence_nodes_exception_fallback(tmp_path, monkeypatch):
-    """Verify count_assertion_and_evidence_nodes handles read errors cleanly."""
-    target_trace = tmp_path / "dummy_trace.jsonl"
-    target_trace.write_text("dummy", encoding="utf-8")
-
-    def _raise_open(*args, **kwargs):
-        raise OSError("Disk failure")
-
-    monkeypatch.setattr("builtins.open", _raise_open)
-    count = CertificationService.count_assertion_and_evidence_nodes(target_trace)
-    assert count == 0
-
-
-def test_extract_finalization_record_edge_cases(cert_vault, monkeypatch):
-    """Verify edge cases for extract_finalization_record."""
-    run_id = "run-fin-toplevel"
-    vault = cert_vault["runs"] / run_id
-    vault.mkdir(parents=True, exist_ok=True)
-    trace = vault / "run.jsonl"
-
-    fin_rec = EvaluatorFinalizationRecord(
-        finalization_id="fin_toplevel",
-        run_id=run_id,
-        execution_manifest_hash="sha3_256:" + "1" * 64,
-        scenario_id="scen_1",
-        scenario_version="1.0.0",
-        scenario_hash="sha3_256:" + "2" * 64,
-        evaluator_identity="eval_kernel",
-        evaluator_config_hash="sha3_256:" + "3" * 64,
-        required_oracle_ids=[],
-        evidence_root_hash="sha3_256:" + "4" * 64,
-        outcome="pass",
-        score=1.0,
+        finalized_at="2026-10-24T00:00:00Z",
     ).sign()
 
-    # ev["data"] is dict without finalization; ev["finalization"] has the finalization payload
+    untrusted_fin_file = tmp_path / "untrusted_fin.jsonl"
+    untrusted_payload = {**fin.to_dict(), "evaluator_identity": "untrusted_actor"}
+    untrusted_fin_file.write_text(
+        json.dumps({"event": "evaluator_finalization", "data": untrusted_payload}) + "\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="EvaluatorIdentityUntrusted"):
+        CertificationService.extract_finalization_record(untrusted_fin_file)
+
+    lookup_err_file = tmp_path / "lookup_err.jsonl"
+    lookup_err_file.write_text(
+        json.dumps({"event": "evaluator_finalization", "data": fin.to_dict()}) + "\n",
+        encoding="utf-8",
+    )
+    orig_pub = IdentityService.get_public_key
+    monkeypatch.setattr(
+        IdentityService,
+        "get_public_key",
+        lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("KMS connection refused")),
+    )
+    with pytest.raises(ValueError, match="EvaluatorIdentityUntrusted"):
+        CertificationService.extract_finalization_record(lookup_err_file)
+    monkeypatch.setattr(IdentityService, "get_public_key", orig_pub)
+
+    invalid_sig_file = tmp_path / "invalid_sig.jsonl"
+    corrupt_fin = copy.deepcopy(fin.to_dict())
+    corrupt_fin["evaluator_signature"] = "00" * 64
+    invalid_sig_file.write_text(
+        json.dumps({"event": "evaluator_finalization", "data": corrupt_fin}) + "\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="EvaluatorSignatureInvalid"):
+        CertificationService.extract_finalization_record(invalid_sig_file)
+
+    run_end_fin_file = tmp_path / "run_end_fin.jsonl"
+    run_end_fin_file.write_text(
+        json.dumps({"event": "run_end", "finalization": fin.to_dict()}) + "\n",
+        encoding="utf-8",
+    )
+    extracted = CertificationService.extract_finalization_record(run_end_fin_file)
+    assert extracted is not None
+    assert extracted.finalization_id == "fin-test"
+
+    run_end_data_fin_file = tmp_path / "run_end_data_fin.jsonl"
+    run_end_data_fin_file.write_text(
+        json.dumps({"event": "run_end", "data": {"finalization": fin.to_dict()}}) + "\n",
+        encoding="utf-8",
+    )
+    extracted_data = CertificationService.extract_finalization_record(run_end_data_fin_file)
+    assert extracted_data is not None
+    assert extracted_data.finalization_id == "fin-test"
+
+
+def test_materialize_provider_trace_behaviors(provider, tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "canonical_runs")
+    run_id = "materialize-test"
+    provider.create_run(run_id, "scen-mat")
+
+    with pytest.raises(ValueError, match="IncompleteProviderStream: no trace events"):
+        CertificationService.materialize_provider_trace(run_id, provider)
+
+    provider.append_events(run_id, [{"event": "node_executed", "_seq": 1}])
+    with pytest.raises(ValueError, match="IncompleteProviderStream: missing start event"):
+        CertificationService.materialize_provider_trace(run_id, provider)
+
+    provider_2 = LocalFileRunStore(tmp_path / "provider_2")
+    run_id_2 = "materialize-success"
+    provider_2.create_run(run_id_2, "scen-mat-2")
+    events_2 = [
+        {"event": "run_start", "_seq": 1, "execution_mode": "live"},
+        {"event": "run_end", "_seq": 2},
+    ]
+    provider_2.append_events(run_id_2, events_2)
+    path, manifest = CertificationService.materialize_provider_trace(run_id_2, provider_2)
+    assert path.is_file()
+    assert path.name == "run.jsonl"
+
+    cached_path, _ = CertificationService.materialize_provider_trace(run_id_2, provider_2)
+    assert cached_path == path
+
+    path.write_text(json.dumps({"event": "divergent", "_seq": 1}) + "\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="ProviderStreamDivergence"):
+        CertificationService.materialize_provider_trace(run_id_2, provider_2)
+
+    path.write_text("{bad json}\n", encoding="utf-8")
+    with pytest.raises(ValueError):
+        CertificationService.materialize_provider_trace(run_id_2, provider_2)
+
+
+def test_parse_trace_bytes_behaviors():
+    with pytest.raises(ValueError, match="MalformedProviderTraceBytes"):
+        CertificationService.parse_trace_bytes(b"\xff\xfe\x00\x00", "run-1")
+
+    with pytest.raises(ValueError, match="MalformedTraceRecord:1"):
+        CertificationService.parse_trace_bytes(b"{not json}\n", "run-1")
+
+    with pytest.raises(ValueError, match="InvalidTraceRecord:1"):
+        CertificationService.parse_trace_bytes(b'"just a string"\n', "run-1")
+
+    with pytest.raises(ValueError, match="ForeignTraceRecord:1"):
+        CertificationService.parse_trace_bytes(
+            json.dumps({"event": "step", "run_id": "other"}).encode("utf-8"),
+            "run-1",
+        )
+
+    with pytest.raises(ValueError, match="IncompleteProviderStream: no trace events"):
+        CertificationService.parse_trace_bytes(b"\n   \n", "run-1")
+
+    valid_bytes = (
+        b"\n" + json.dumps({"event": "run_start", "run_id": "run-1"}).encode("utf-8") + b"\n"
+    )
+    evs = CertificationService.parse_trace_bytes(valid_bytes, "run-1")
+    assert len(evs) == 1
+
+
+def test_execution_truth_and_finalization_internal_helpers(provider):
+    with pytest.raises(ValueError, match="IncompleteProviderStream: missing run_start event"):
+        CertificationService._execution_truth([{"event": "step"}])
+
+    mode, prov = CertificationService._execution_truth(
+        [{"event": "start", "execution_mode": "hybrid", "provisional": False}]
+    )
+    assert mode == "hybrid"
+    assert prov is True
+
+    IdentityService._provision_local_identity("eval_kernel")
+    fin = EvaluatorFinalizationRecord(
+        finalization_id="fin-hlp",
+        run_id="run-hlp",
+        scenario_id="scen-1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:dummy",
+        execution_manifest_hash="sha3_256:dummy",
+        evaluator_config_hash="sha3_256:dummy",
+        evaluator_identity="eval_kernel",
+        required_oracle_ids=["o1"],
+        evidence_root_hash="sha3_256:dummy",
+        outcome="pass",
+        score=1.0,
+        terminal_seq=1,
+        finalized_at="2026-10-24T00:00:00Z",
+    ).sign()
+
+    events_end_sub = [
+        {"event": "run_start"},
+        {"event": "run_end", "finalization": fin.to_dict()},
+    ]
+    res_fin = CertificationService._finalization(events_end_sub, "run-hlp")
+    assert res_fin.finalization_id == "fin-hlp"
+
+    events_untrusted = [
+        {"event": "run_start"},
+        {
+            "event": "evaluator_finalization",
+            "data": {**fin.to_dict(), "evaluator_identity": "unknown"},
+        },
+    ]
+    with pytest.raises(ValueError, match="mandatory authoritative EvaluatorFinalizationRecord"):
+        CertificationService._finalization(events_untrusted, "run-hlp")
+
+    with pytest.raises(ValueError, match="FinalizationRunIdMismatch"):
+        CertificationService._finalization(events_end_sub, "mismatched-run-id")
+
+
+def test_read_run_truth_level_behaviors(provider, tmp_path, monkeypatch):
+    assert CertificationService.read_run_truth_level("") == (None, False)
+    assert CertificationService.read_run_truth_level("path/traversal") == (None, False)
+    assert CertificationService.read_run_truth_level("..\\windows\\traversal") == (None, False)
+
+    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "truth_runs")
+    assert CertificationService.read_run_truth_level("nonexistent") == (None, False)
+    assert CertificationService.read_run_truth_level("nonexistent", run_store=provider) == (
+        None,
+        False,
+    )
+
+    vault = tmp_path / "truth_runs" / "run-on-disk"
+    vault.mkdir(parents=True)
+    assert CertificationService.read_run_truth_level("run-on-disk") == ("unknown", True)
+
+    trace = vault / "run.jsonl"
+    trace.write_text("\n{corrupt}\n", encoding="utf-8")
+    assert CertificationService.read_run_truth_level("run-on-disk") == ("unknown", True)
+
+    trace.write_text('"not a dict"\n', encoding="utf-8")
+    assert CertificationService.read_run_truth_level("run-on-disk") == ("unknown", True)
+
+    trace.write_text(json.dumps({"event": "step"}) + "\n", encoding="utf-8")
+    assert CertificationService.read_run_truth_level("run-on-disk") == ("unknown", True)
+
     trace.write_text(
         json.dumps(
-            {"event": "run_end", "data": {"status": "ok"}, "finalization": fin_rec.to_dict()}
+            {"event": "run_start", "data": {"execution_mode": "simulated", "provisional": True}}
         )
         + "\n",
         encoding="utf-8",
     )
-    extracted = CertificationService.extract_finalization_record(trace)
-    assert extracted is not None
-    assert extracted.finalization_id == "fin_toplevel"
+    assert CertificationService.read_run_truth_level("run-on-disk") == ("simulated", True)
 
-    # Sub-case B: Hash mismatch in finalization record
-    fin_dict_bad_hash = fin_rec.to_dict()
-    fin_dict_bad_hash["finalization_hash"] = "sha3_256:" + "0" * 64
-    trace_bad_hash = vault / "bad_hash.jsonl"
-    trace_bad_hash.write_text(
-        json.dumps({"event": "evaluator_finalization", "data": fin_dict_bad_hash}) + "\n",
+    trace.write_text(
+        json.dumps({"event": "run_start", "data": {"execution_mode": "live", "provisional": False}})
+        + "\n",
         encoding="utf-8",
     )
-    with pytest.raises(ValueError, match="FinalizationHashMismatch"):
-        CertificationService.extract_finalization_record(trace_bad_hash)
+    assert CertificationService.read_run_truth_level("run-on-disk") == ("live", False)
 
-    # Sub-case C: Evaluator identity not authorized in external trust root
-    fin_untrusted = EvaluatorFinalizationRecord(
-        finalization_id="fin_untrusted",
-        run_id=run_id,
-        execution_manifest_hash="sha3_256:" + "1" * 64,
-        scenario_id="scen_1",
-        scenario_version="1.0.0",
-        scenario_hash="sha3_256:" + "2" * 64,
-        evaluator_identity="unauthorized_evaluator",
-        evaluator_config_hash="sha3_256:" + "3" * 64,
-        required_oracle_ids=[],
-        evidence_root_hash="sha3_256:" + "4" * 64,
-        outcome="pass",
-        score=1.0,
+
+def test_extract_computed_run_outcome_behaviors(tmp_path):
+    assert CertificationService.extract_computed_run_outcome() == ("inconclusive", 0.0)
+
+    vault = tmp_path / "outcome_vault"
+    assert CertificationService.extract_computed_run_outcome(vault_dir=vault) == (
+        "inconclusive",
+        0.0,
     )
-    fin_untrusted_dict = fin_untrusted.to_dict()
-    fin_untrusted_dict["finalization_hash"] = fin_untrusted.compute_finalization_hash()
-    fin_untrusted_dict["evaluator_signature"] = "dummy_sig"
 
-    trace_untrusted = vault / "untrusted.jsonl"
-    trace_untrusted.write_text(
-        json.dumps({"event": "evaluator_finalization", "data": fin_untrusted_dict}) + "\n",
-        encoding="utf-8",
-    )
-    with pytest.raises(ValueError, match="EvaluatorIdentityUntrusted"):
-        CertificationService.extract_finalization_record(trace_untrusted)
-
-    # Sub-case D: Evaluator signature invalid
-    fin_bad_sig = fin_rec.to_dict()
-    fin_bad_sig["evaluator_signature"] = (
-        "aW52YWxpZF9zaWduYXR1cmVfYnl0ZXNfZm9yX2VkMjU1MTlfMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw"
-    )
-    trace_bad_sig = vault / "bad_sig.jsonl"
-    trace_bad_sig.write_text(
-        json.dumps({"event": "evaluator_finalization", "data": fin_bad_sig}) + "\n",
-        encoding="utf-8",
-    )
-    with pytest.raises(ValueError, match="EvaluatorSignatureInvalid"):
-        CertificationService.extract_finalization_record(trace_bad_sig)
-
-    # Sub-case E: Non-ValueError exception returns None
-    def _raise_io(*args, **kwargs):
-        raise OSError("Read failed")
-
-    monkeypatch.setattr("builtins.open", _raise_io)
-    assert CertificationService.extract_finalization_record(trace) is None
-
-
-def test_extract_computed_run_outcome_edge_cases(cert_vault):
-    """Verify extract_computed_run_outcome boundary conditions and defenses."""
-    run_id = "run-outcome-edges"
-    vault = cert_vault["runs"] / run_id
-    vault.mkdir(parents=True, exist_ok=True)
+    vault.mkdir(parents=True)
     trace = vault / "run.jsonl"
+    trace.write_text("\n   \n", encoding="utf-8")
+    assert CertificationService.extract_computed_run_outcome(vault_dir=vault) == (
+        "inconclusive",
+        0.0,
+    )
 
-    fin_rec = EvaluatorFinalizationRecord(
-        finalization_id="fin_outcome",
-        run_id=run_id,
-        execution_manifest_hash="sha3_256:" + "1" * 64,
-        scenario_id="scen_1",
+    trace.write_text("{bad line}\n", encoding="utf-8")
+    assert CertificationService.extract_computed_run_outcome(vault_dir=vault) == (
+        "inconclusive",
+        0.0,
+    )
+
+    ev_post_fin = [
+        {"event": "evaluator_finalization", "data": {"status": "pass"}},
+        {"event": "post_event"},
+    ]
+    assert CertificationService.extract_computed_run_outcome(events=ev_post_fin) == (
+        "inconclusive",
+        0.0,
+    )
+
+    ev_multi_fin = [
+        {"event": "evaluator_finalization", "data": {"status": "pass"}},
+        {"event": "evaluator_finalization", "data": {"status": "pass"}},
+    ]
+    assert CertificationService.extract_computed_run_outcome(events=ev_multi_fin) == (
+        "inconclusive",
+        0.0,
+    )
+
+    ev_bad_fin_payload = [{"event": "evaluator_finalization", "data": "not a mapping"}]
+    assert CertificationService.extract_computed_run_outcome(events=ev_bad_fin_payload) == (
+        "inconclusive",
+        0.0,
+    )
+
+    IdentityService._provision_local_identity("eval_kernel")
+    fin = EvaluatorFinalizationRecord(
+        finalization_id="fin-outcome",
+        run_id="run-outcome",
+        scenario_id="scen-1",
         scenario_version="1.0.0",
-        scenario_hash="sha3_256:" + "2" * 64,
+        scenario_hash="sha3_256:dummy",
+        execution_manifest_hash="sha3_256:dummy",
+        evaluator_config_hash="sha3_256:dummy",
         evaluator_identity="eval_kernel",
-        evaluator_config_hash="sha3_256:" + "3" * 64,
-        required_oracle_ids=[],
-        evidence_root_hash="sha3_256:" + "4" * 64,
+        required_oracle_ids=["o1"],
+        evidence_root_hash="sha3_256:dummy",
         outcome="pass",
         score=1.0,
+        terminal_seq=1,
+        finalized_at="2026-10-24T00:00:00Z",
     ).sign()
 
-    # Sub-case A: Non-finalization event appended after finalization marker
-    with open(trace, "w", encoding="utf-8") as f:
-        f.write(json.dumps({"event": "evaluator_finalization", "data": fin_rec.to_dict()}) + "\n")
-        f.write(json.dumps({"event": "tamper_post_final", "data": {}}) + "\n")
-
-    status, score = CertificationService.extract_computed_run_outcome(vault, trace)
-    assert status == "inconclusive"
-    assert score == 0.0
-
-    # Sub-case B: Finalization in ev["finalization"] with ev["data"] having no finalization
-    trace_run_end_top = vault / "run_end_top.jsonl"
-    with open(trace_run_end_top, "w", encoding="utf-8") as f:
-        f.write(
-            json.dumps(
-                {"event": "run_end", "data": {"status": "ok"}, "finalization": fin_rec.to_dict()}
-            )
-            + "\n"
-        )
-    s_top, sc_top = CertificationService.extract_computed_run_outcome(vault, trace_run_end_top)
-    assert s_top == "pass"
-    assert sc_top == 1.0
-
-    # Sub-case B2: Finalization in ev["data"]["finalization"]
-    trace_run_end_data = vault / "run_end_data.jsonl"
-    with open(trace_run_end_data, "w", encoding="utf-8") as f:
-        f.write(
-            json.dumps({"event": "run_end", "data": {"finalization": fin_rec.to_dict()}}) + "\n"
-        )
-    s_data, sc_data = CertificationService.extract_computed_run_outcome(vault, trace_run_end_data)
-    assert s_data == "pass"
-    assert sc_data == 1.0
-
-    # Sub-case C: Duplicate finalization records in trace
-    trace_multi_fin = vault / "multi_fin.jsonl"
-    with open(trace_multi_fin, "w", encoding="utf-8") as f:
-        f.write(json.dumps({"event": "evaluator_finalization", "data": fin_rec.to_dict()}) + "\n")
-        f.write(json.dumps({"event": "evaluator_finalization", "data": fin_rec.to_dict()}) + "\n")
-    s_multi, _ = CertificationService.extract_computed_run_outcome(vault, trace_multi_fin)
-    assert s_multi == "inconclusive"
-
-    # Sub-case D: Multiple terminal events without finalization
-    trace_multi_term = vault / "multi_term.jsonl"
-    with open(trace_multi_term, "w", encoding="utf-8") as f:
-        f.write(json.dumps({"event": "session_decision", "data": {"status": "pass"}}) + "\n")
-        f.write(json.dumps({"event": "session_decision", "data": {"status": "pass"}}) + "\n")
-    s_term, _ = CertificationService.extract_computed_run_outcome(vault, trace_multi_term)
-    assert s_term == "inconclusive"
-
-    # Sub-case E: Untrusted evaluator in finalization
-    fin_unauth = fin_rec.to_dict()
-    fin_unauth["evaluator_identity"] = "untrusted_evaluator"
-    fin_unauth["finalization_hash"] = EvaluatorFinalizationRecord.from_dict(
-        fin_unauth, require_authoritative=False
-    ).compute_finalization_hash()
-    trace_unauth = vault / "unauth.jsonl"
-    trace_unauth.write_text(
-        json.dumps({"event": "evaluator_finalization", "data": fin_unauth}) + "\n",
-        encoding="utf-8",
-    )
-    s_ua, _ = CertificationService.extract_computed_run_outcome(vault, trace_unauth)
-    assert s_ua == "inconclusive"
-
-    # Sub-case F: Malformed finalization payload causing exception in from_dict
-    trace_malformed_fin = vault / "malformed_fin.jsonl"
-    trace_malformed_fin.write_text(
-        json.dumps({"event": "evaluator_finalization", "data": {"not_valid": True}}) + "\n",
-        encoding="utf-8",
-    )
-    s_mal, _ = CertificationService.extract_computed_run_outcome(vault, trace_malformed_fin)
-    assert s_mal == "inconclusive"
-
-    # Sub-case G: Status evaluation_invalid
-    trace_invalid = vault / "invalid.jsonl"
-    trace_invalid.write_text(
-        json.dumps({"event": "session_decision", "data": {"status": "evaluation_invalid"}}) + "\n",
-        encoding="utf-8",
-    )
-    s_inv, sc_inv = CertificationService.extract_computed_run_outcome(vault, trace_invalid)
-    assert s_inv == "fail"
-    assert sc_inv == 0.0
-
-    # Sub-case H: Contradictory decisions between prior event and finalization
-    trace_contradict = vault / "contradict.jsonl"
-    with open(trace_contradict, "w", encoding="utf-8") as f:
-        f.write(json.dumps({"event": "session_decision", "data": {"status": "fail"}}) + "\n")
-        f.write(json.dumps({"event": "evaluator_finalization", "data": fin_rec.to_dict()}) + "\n")
-    s_con, _ = CertificationService.extract_computed_run_outcome(vault, trace_contradict)
-    assert s_con == "inconclusive"
-
-    # Sub-case I: IO error / nonexistent file
-    s_err, _ = CertificationService.extract_computed_run_outcome(vault, vault / "nonexistent.jsonl")
-    assert s_err == "inconclusive"
-
-
-def test_execute_industrial_certification_boundary_branches(cert_vault, monkeypatch):
-    """Verify execution certification boundary branches and validations."""
-    with pytest.raises(FileNotFoundError, match="Run vault not found"):
-        execute_industrial_certification("nonexistent_run_404")
-
-    run_id_no_fin = "run-no-fin"
-    events_no_fin = [
-        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_1"},
-        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
-        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
+    ev_fin_conflicting = [
+        {"event": "evaluator_finalization", "data": fin.to_dict()},
+        {"event": "session_decision", "data": {"status": "fail"}},
     ]
-    _create_trace(
-        cert_vault["runs"],
-        run_id_no_fin,
-        events_no_fin,
-        auto_finalize=False,
-        scenario_data={"id": "scen_1", "version": "1.0.0"},
+    assert CertificationService.extract_computed_run_outcome(events=ev_fin_conflicting) == (
+        "inconclusive",
+        0.0,
     )
+
+    ev_fin_ok = [{"event": "evaluator_finalization", "data": fin.to_dict()}]
+    assert CertificationService.extract_computed_run_outcome(events=ev_fin_ok) == ("pass", 1.0)
+
+    ev_eval_invalid = [{"event": "step", "status": "evaluation_invalid"}]
+    assert CertificationService.extract_computed_run_outcome(events=ev_eval_invalid) == (
+        "fail",
+        0.0,
+    )
+
+    ev_multi_terminal = [
+        {"event": "session_decision", "status": "pass"},
+        {"event": "evaluation_result", "status": "pass"},
+    ]
+    assert CertificationService.extract_computed_run_outcome(events=ev_multi_terminal) == (
+        "inconclusive",
+        0.0,
+    )
+
+    ev_term_invalid = [{"event": "session_decision", "data": {"status": "evaluation_invalid"}}]
+    assert CertificationService.extract_computed_run_outcome(events=ev_term_invalid) == (
+        "fail",
+        0.0,
+    )
+
+    ev_term_policy_breach = [
+        {"event": "session_decision", "data": {"status": "policy_breach", "score": 0.2}}
+    ]
+    assert CertificationService.extract_computed_run_outcome(events=ev_term_policy_breach) == (
+        "fail",
+        0.2,
+    )
+
+    ev_term_pass = [{"event": "session_decision", "data": {"status": "pass", "score": 0.95}}]
+    assert CertificationService.extract_computed_run_outcome(events=ev_term_pass) == ("pass", 0.95)
+
+    ev_term_fail_default = [{"event": "session_decision", "data": {"status": "fail"}}]
+    assert CertificationService.extract_computed_run_outcome(events=ev_term_fail_default) == (
+        "fail",
+        0.0,
+    )
+
+    ev_empty_outcome = [{"event": "step_executed"}]
+    assert CertificationService.extract_computed_run_outcome(events=ev_empty_outcome) == (
+        "inconclusive",
+        0.0,
+    )
+
+
+def test_execute_industrial_certification_boundary_and_validation_errors(provider, monkeypatch):
+    with pytest.raises(ValueError, match="Invalid or unsafe run_id"):
+        execute_industrial_certification("")
+    with pytest.raises(ValueError, match="Invalid or unsafe run_id"):
+        execute_industrial_certification("bad/run/id")
+
+    with pytest.raises(FileNotFoundError, match="Run vault not found"):
+        execute_industrial_certification("nonexistent-vault-run", run_store=provider)
+
+    run_id_inv = "run-invalid-state"
+    scenario = _seed_run(provider, run_id_inv)
+    vault_dir = provider._get_run_vault(run_id_inv)
+    monkeypatch.setattr(
+        provider, "get_run", lambda *a, **k: {"run_id": run_id_inv, "status": "INVALID_STATE"}
+    )
+    with pytest.raises(ValueError, match="InvalidLifecycleState"):
+        execute_industrial_certification(run_id_inv, run_store=provider, scenario_data=scenario)
+    monkeypatch.undo()
+
+    run_id_no_bytes = "run-no-bytes"
+    scenario_no_b = _seed_run(provider, run_id_no_bytes)
+    (vault_dir.parent / run_id_no_bytes / "run.jsonl").unlink()
+    with pytest.raises(ValueError, match="ProviderOwnedEvidenceRequired"):
+        execute_industrial_certification(
+            run_id_no_bytes, run_store=provider, scenario_data=scenario_no_b
+        )
+
+    run_id_scope = "run-scope-violation"
+    scen_scope = _seed_run(provider, run_id_scope)
+    monkeypatch.setattr(provider, "get_manifest", lambda *a, **k: {"run_id": "other-run-id"})
+    with pytest.raises(ValueError, match="ProviderScopeViolation"):
+        execute_industrial_certification(run_id_scope, run_store=provider, scenario_data=scen_scope)
+
+
+def test_certification_convenience_wrappers(provider):
+    run_id = "run-convenience-test"
+    scenario = _seed_run(provider, run_id)
+    res_top = issue_certification(run_id, run_store=provider, scenario_data=scenario)
+    assert res_top["certified"] is True
+    assert res_top["status"] == "certified"
+
+    res_cls = CertificationService.issue_certification(
+        run_id, run_store=provider, scenario_data=scenario
+    )
+    assert res_cls["certified"] is True
+
+
+def test_certification_assertion_targets_and_prohibitions(provider):
+    run_id_map = "run-shim-mapping"
+    scen_map = _seed_run(provider, run_id_map)
+    provider.append_events(
+        run_id_map,
+        [{"event": "assertion_evaluated", "_seq": 99, "assertion": {"target": "shim:mock_db"}}],
+    )
+    with pytest.raises(ValueError, match="SimulatedStateEvidenceProhibited"):
+        execute_industrial_certification(run_id_map, run_store=provider, scenario_data=scen_map)
+
+    run_id_str = "run-shim-str"
+    scen_str = _seed_run(provider, run_id_str)
+    provider.append_events(
+        run_id_str,
+        [{"event": "assertion_evaluated", "_seq": 99, "assertion": "shim:virtual_vfs"}],
+    )
+    with pytest.raises(ValueError, match="SimulatedStateEvidenceProhibited"):
+        execute_industrial_certification(run_id_str, run_store=provider, scenario_data=scen_str)
+
+
+def test_certification_evidence_graph_and_provenance_validation(provider, monkeypatch):
+    run_id_mismatch = "run-ev-root-mismatch"
+    scen_mismatch = _seed_run(
+        provider, run_id_mismatch, evidence_root_hash="sha3_256:mismatched_root"
+    )
+    with pytest.raises(ValueError, match="EvidenceRootMismatch"):
+        execute_industrial_certification(
+            run_id_mismatch, run_store=provider, scenario_data=scen_mismatch
+        )
+
+    run_id_empty = "run-decision-only"
+    scenario = {
+        "id": f"scenario-{run_id_empty}",
+        "version": "1.0.0",
+        "required_oracles": [],
+    }
+    scenario_hash = compute_scenario_hash(scenario)
+    execution_manifest = ExecutionManifest(
+        manifest_id=f"manifest-{run_id_empty}",
+        scenario_id=scenario["id"],
+        scenario_version=scenario["version"],
+        scenario_hash=scenario_hash,
+        metadata={"required_oracle_ids": []},
+        runtime_config={"required_oracle_ids": [], "execution_mode": "live"},
+    )
+    provider.create_run(run_id_empty, scenario["id"])
+    provider.save_run_manifest(
+        run_id_empty,
+        {
+            "run_id": run_id_empty,
+            "execution_manifest": execution_manifest.to_dict(),
+            "scenario_data": scenario,
+        },
+    )
+    events = [
+        {"event": "run_start", "_seq": 1, "execution_mode": "live"},
+        {"event": "session_decision", "_seq": 2, "decision": "PASS", "score": 1.0},
+    ]
+    provider.append_events(run_id_empty, events)
+    exact_lines = provider.get_trace_bytes(run_id_empty).decode("utf-8").splitlines()
+    raw_pairs = [(ev, line) for ev, line in zip(events, exact_lines, strict=True)]
+    computed_graph = build_evidence_graph_from_events(raw_pairs, required_oracle_ids=[])
+    fin = EvaluatorFinalizationRecord(
+        finalization_id=f"fin-{run_id_empty}",
+        run_id=run_id_empty,
+        scenario_id=scenario["id"],
+        scenario_version=scenario["version"],
+        scenario_hash=scenario_hash,
+        execution_manifest_hash=execution_manifest.compute_manifest_hash(),
+        evaluator_config_hash="sha3_256:cfg",
+        evaluator_identity="eval_kernel",
+        required_oracle_ids=[],
+        evidence_root_hash=computed_graph["evidence_root_hash"],
+        outcome="pass",
+        score=1.0,
+        terminal_seq=2,
+        finalized_at="2026-10-24T00:00:00Z",
+    ).sign()
+    provider.append_events(
+        run_id_empty,
+        [{"event": "evaluator_finalization", "_seq": 3, "data": fin.to_dict()}],
+    )
+    with pytest.raises(ValueError, match="DecisionOnlyTrace"):
+        execute_industrial_certification(run_id_empty, run_store=provider, scenario_data=scenario)
+
+
+def test_certification_scenario_resolution_and_validation(provider, monkeypatch):
+    run_id = "run-scen-res"
+    _seed_run(provider, run_id)
+
+    with pytest.raises(ValueError, match="ScenarioIdMismatch"):
+        execute_industrial_certification(
+            run_id,
+            run_store=provider,
+            scenario_data={"id": "mismatched-scenario-id", "version": "1.0.0"},
+        )
+
+    run_id_no_scen = "run-no-scen-arg"
+    _seed_run(provider, run_id_no_scen)
+    res = execute_industrial_certification(run_id_no_scen, run_store=provider, scenario_data=None)
+    assert res["certified"] is True
+
+    run_id_unres = "run-unresolvable-scen"
+    _seed_run(provider, run_id_unres)
+    man = provider.get_manifest(run_id_unres)
+    orig_get_manifest = provider.get_manifest
+    monkeypatch.setattr(
+        provider,
+        "get_manifest",
+        lambda rid, *a, **k: (
+            {
+                "run_id": run_id_unres,
+                "execution_manifest": man["execution_manifest"],
+            }
+            if rid == run_id_unres
+            else orig_get_manifest(rid, *a, **k)
+        ),
+    )
+    monkeypatch.setattr("eval_runner.loader.load_scenario", lambda *a, **k: None)
+    with pytest.raises(ValueError, match="cannot resolve authoritative scenario definition"):
+        execute_industrial_certification(run_id_unres, run_store=provider, scenario_data=None)
+
+    run_id_bad_hash = "run-bad-scen-hash"
+    bad_hash_scen = _seed_run(provider, run_id_bad_hash)
+    bad_hash_scen = copy.deepcopy(bad_hash_scen)
+    bad_hash_scen["description"] = "tampered scenario definition"
+    with pytest.raises(ValueError, match="ScenarioHashMismatch"):
+        execute_industrial_certification(
+            run_id_bad_hash, run_store=provider, scenario_data=bad_hash_scen
+        )
+
+
+def test_certification_manifest_field_validation(provider, monkeypatch):
+    run_id = "run-man-val"
+    scenario = _seed_run(provider, run_id)
+    man = provider.get_manifest(run_id)
+
+    monkeypatch.setattr(provider, "get_manifest", lambda *a, **k: {"run_id": run_id})
+    with pytest.raises(ValueError, match="ExecutionManifestMissing"):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+
+    monkeypatch.setattr(
+        provider,
+        "get_manifest",
+        lambda *a, **k: {"run_id": run_id, "execution_manifest": {"scope": 12345}},
+    )
+    with pytest.raises(ValueError, match="Invalid provider execution manifest"):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+
+    scen_id_man = copy.deepcopy(man)
+    scen_id_man["execution_manifest"]["scenario_id"] = "different-scen"
+    monkeypatch.setattr(provider, "get_manifest", lambda *a, **k: scen_id_man)
+    with pytest.raises(ValueError, match="ManifestScenarioIdMismatch"):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+
+    scen_ver_man = copy.deepcopy(man)
+    scen_ver_man["execution_manifest"]["scenario_version"] = "9.9.9"
+    monkeypatch.setattr(provider, "get_manifest", lambda *a, **k: scen_ver_man)
+    with pytest.raises(ValueError, match="ManifestScenarioVersionMismatch"):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+
+    scen_h_man = copy.deepcopy(man)
+    scen_h_man["execution_manifest"]["scenario_hash"] = "sha3_256:different"
+    monkeypatch.setattr(provider, "get_manifest", lambda *a, **k: scen_h_man)
+    with pytest.raises(ValueError, match="ManifestScenarioHashMismatch"):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+
+    mode_man = copy.deepcopy(man)
+    mode_man["execution_manifest"]["runtime_config"]["execution_mode"] = "hybrid"
+    monkeypatch.setattr(provider, "get_manifest", lambda *a, **k: mode_man)
+    with pytest.raises(ValueError, match="ManifestExecutionModeMismatch"):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+
+    cfg_h_man = copy.deepcopy(man)
+    cfg_h_man["execution_manifest"]["runtime_config"]["evaluator_config_hash"] = "sha3_256:bad"
+    monkeypatch.setattr(provider, "get_manifest", lambda *a, **k: cfg_h_man)
+    with pytest.raises(ValueError, match="ManifestEvaluatorConfigHashMismatch"):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+
+    man_mismatch = copy.deepcopy(man)
+    man_mismatch["execution_manifest"]["manifest_id"] = "manifest-altered-id"
+    monkeypatch.setattr(provider, "get_manifest", lambda *a, **k: man_mismatch)
+    with pytest.raises(ValueError, match="ManifestHashMismatch"):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+
+
+def test_certification_oracle_inventory_and_reconciliation(provider, monkeypatch):
+    run_id = "run-oracle-inv"
+    scenario = _seed_run(
+        provider,
+        run_id,
+        manifest_required_oracles=["oracle-1"],
+        finalization_required_oracles=["oracle-1", "oracle-extra"],
+    )
+    with pytest.raises(ValueError, match="ManifestRequiredOracleMismatch"):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+
+    run_id_req = "run-req-oracle-mismatch"
+    scen_with_steps = {
+        "id": f"scenario-{run_id_req}",
+        "version": "1.0.0",
+        "steps": [{"assertions": [{"oracle_id": "oracle-1"}, {"oracle_id": "oracle-extra"}]}],
+    }
+    scen_diff = _seed_run(
+        provider,
+        run_id_req,
+        scenario_override=scen_with_steps,
+        manifest_required_oracles=["oracle-1"],
+        finalization_required_oracles=["oracle-1"],
+    )
+    with pytest.raises(ValueError, match="RequiredOracleInventoryMismatch"):
+        execute_industrial_certification(run_id_req, run_store=provider, scenario_data=scen_diff)
+
+    run_id_block = "run-blocking-mismatch"
+    scen_block = _seed_run(provider, run_id_block, append_finalization=False)
+    provider.append_events(
+        run_id_block,
+        [
+            {
+                "event": "assertion_evaluated",
+                "_seq": 4,
+                "assertion": "security_check",
+                "passed": False,
+            }
+        ],
+    )
+    exact_lines = provider.get_trace_bytes(run_id_block).decode("utf-8").splitlines()
+    all_events = provider.get_events(run_id_block)
+    graph = build_evidence_graph_from_events(
+        [(ev, line) for ev, line in zip(all_events, exact_lines, strict=True)],
+        required_oracle_ids=["oracle-1"],
+    )
+    manifest = provider.get_manifest(run_id_block)
+    fin_rec = EvaluatorFinalizationRecord(
+        finalization_id=f"finalization-{run_id_block}",
+        run_id=run_id_block,
+        scenario_id=scen_block["id"],
+        scenario_version=scen_block["version"],
+        scenario_hash=compute_scenario_hash(scen_block),
+        execution_manifest_hash=ExecutionManifest.from_dict(
+            manifest["execution_manifest"]
+        ).compute_manifest_hash(),
+        evaluator_config_hash="sha3_256:evaluator-config",
+        evaluator_identity="eval_kernel",
+        required_oracle_ids=["oracle-1"],
+        evidence_root_hash=graph["evidence_root_hash"],
+        outcome="pass",
+        score=1.0,
+        terminal_seq=4,
+        finalized_at="2026-10-24T00:00:00Z",
+    ).sign()
+    provider.append_events(
+        run_id_block,
+        [{"event": "evaluator_finalization", "_seq": 5, "data": fin_rec.to_dict()}],
+    )
+    with pytest.raises(ValueError, match="BlockingAssertionOutcomeMismatch"):
+        execute_industrial_certification(run_id_block, run_store=provider, scenario_data=scen_block)
+
+
+def test_certification_commit_failure_and_sealed_state(provider, monkeypatch):
+    run_id = "run-commit-fail"
+    scenario = _seed_run(provider, run_id)
+    orig_commit = provider.commit_certification
+    monkeypatch.setattr(provider, "commit_certification", lambda *a, **k: False)
+    with pytest.raises(
+        RuntimeError, match="RunStorageProvider rejected atomic certification commit"
+    ):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+    assert get_run_lifecycle_state(run_id, run_store=provider) is RunLifecycleState.OPEN
+    monkeypatch.setattr(provider, "commit_certification", orig_commit)
+
+    run_id_sealed = "run-sealed-invalid"
+    scen_sealed = _seed_run(provider, run_id_sealed)
+    execute_industrial_certification(run_id_sealed, run_store=provider, scenario_data=scen_sealed)
+    monkeypatch.setattr(TraceVerifier, "verify_trace", lambda *a, **k: False)
+    with pytest.raises(ValueError, match="SealedRunCertificateInvalid"):
+        execute_industrial_certification(
+            run_id_sealed, run_store=provider, scenario_data=scen_sealed
+        )
+
+
+def test_count_assertion_and_evidence_nodes_io_error(tmp_path, monkeypatch):
+    test_file = tmp_path / "mock_io_error.jsonl"
+    test_file.write_text("{}", encoding="utf-8")
+    orig_open = open
+    monkeypatch.setattr(
+        "builtins.open",
+        lambda *a, **k: (_ for _ in ()).throw(OSError("Simulated read failure")),
+    )
+    assert CertificationService.count_assertion_and_evidence_nodes(test_file) == 0
+    monkeypatch.setattr("builtins.open", orig_open)
+
+
+def test_extract_finalization_record_edge_cases(provider, tmp_path, monkeypatch):
+    test_file = tmp_path / "extract_edges.jsonl"
+    test_file.write_text("{}", encoding="utf-8")
+    orig_open = open
+    monkeypatch.setattr(
+        "builtins.open",
+        lambda *a, **k: (_ for _ in ()).throw(OSError("Simulated read failure")),
+    )
+    assert CertificationService.extract_finalization_record(test_file) is None
+    monkeypatch.setattr("builtins.open", orig_open)
+
+    non_dict_trace = tmp_path / "non_dict_fin.jsonl"
+    non_dict_trace.write_text('"not a dict"\n123\n', encoding="utf-8")
+    assert CertificationService.extract_finalization_record(non_dict_trace) is None
+
+    IdentityService._provision_local_identity("eval_kernel")
+    fin = EvaluatorFinalizationRecord(
+        finalization_id="fin-edges",
+        run_id="run-edges",
+        scenario_id="scen-1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:dummy",
+        execution_manifest_hash="sha3_256:dummy",
+        evaluator_config_hash="sha3_256:dummy",
+        evaluator_identity="eval_kernel",
+        required_oracle_ids=["o1"],
+        evidence_root_hash="sha3_256:dummy",
+        outcome="pass",
+        score=1.0,
+        terminal_seq=1,
+        finalized_at="2026-10-24T00:00:00Z",
+    ).sign()
+
+    fin_no_id = copy.deepcopy(fin.to_dict())
+    fin_no_id["evaluator_identity"] = ""
+    run_end_top = tmp_path / "run_end_top.jsonl"
+    run_end_top.write_text(
+        json.dumps({"event": "run_end", "finalization": fin_no_id}) + "\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="Missing mandatory finalization trust field"):
+        CertificationService.extract_finalization_record(run_end_top)
+
+    fin_val_err = tmp_path / "fin_val_err.jsonl"
+    fin_val_err.write_text(
+        json.dumps({"event": "evaluator_finalization", "data": fin.to_dict()}) + "\n",
+        encoding="utf-8",
+    )
+    orig_from_dict = EvaluatorFinalizationRecord.from_dict
+    monkeypatch.setattr(
+        EvaluatorFinalizationRecord,
+        "from_dict",
+        lambda *a, **k: (_ for _ in ()).throw(ValueError("GenericParseValueError")),
+    )
+    with pytest.raises(ValueError, match="GenericParseValueError"):
+        CertificationService.extract_finalization_record(fin_val_err)
+
+    monkeypatch.setattr(
+        EvaluatorFinalizationRecord,
+        "from_dict",
+        lambda *a, **k: (_ for _ in ()).throw(TypeError("UnexpectedExceptionType")),
+    )
+    assert CertificationService.extract_finalization_record(fin_val_err) is None
+    monkeypatch.setattr(EvaluatorFinalizationRecord, "from_dict", orig_from_dict)
+
+
+def test_materialize_provider_trace_edge_cases(provider, tmp_path, monkeypatch):
+    run_id = "mat-edges"
+    provider.create_run(run_id, "scen-mat")
+    events = [
+        {"event": "run_start", "_seq": 1, "execution_mode": "live"},
+        {"event": "run_end", "_seq": 2},
+    ]
+    provider.append_events(run_id, events)
+    canonical_dir = Path(config.RUN_LOG_DIR) / run_id
+    canonical_dir.mkdir(parents=True, exist_ok=True)
+    canonical_trace = canonical_dir / "run.jsonl"
+    canonical_trace.write_text(
+        json.dumps(events[0]) + "\n\n" + json.dumps(events[1]) + "\n",
+        encoding="utf-8",
+    )
+    path, _ = CertificationService.materialize_provider_trace(run_id, provider)
+    assert path == canonical_trace
+
+    orig_open = open
+
+    def mock_open_mat(p, *a, **k):
+        if str(canonical_trace) in str(p):
+            raise OSError("Read failure on canonical trace")
+        return orig_open(p, *a, **k)
+
+    monkeypatch.setattr("builtins.open", mock_open_mat)
+    with pytest.raises(ValueError, match="ProviderStreamDivergence: Read failure"):
+        CertificationService.materialize_provider_trace(run_id, provider)
+    monkeypatch.setattr("builtins.open", orig_open)
+
+
+def test_finalization_helper_edge_cases(provider, monkeypatch):
+    IdentityService._provision_local_identity("eval_kernel")
+    fin = EvaluatorFinalizationRecord(
+        finalization_id="fin-hlp-edges",
+        run_id="run-hlp-edges",
+        scenario_id="scen-1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:dummy",
+        execution_manifest_hash="sha3_256:dummy",
+        evaluator_config_hash="sha3_256:dummy",
+        evaluator_identity="eval_kernel",
+        required_oracle_ids=["o1"],
+        evidence_root_hash="sha3_256:dummy",
+        outcome="pass",
+        score=1.0,
+        terminal_seq=1,
+        finalized_at="2026-10-24T00:00:00Z",
+    ).sign()
+
+    evs_top = [
+        {"event": "run_start"},
+        {"event": "run_end", "finalization": fin.to_dict()},
+    ]
+    res = CertificationService._finalization(evs_top, "run-hlp-edges")
+    assert res.finalization_id == "fin-hlp-edges"
+
+    fin_no_id = copy.deepcopy(fin.to_dict())
+    fin_no_id["evaluator_identity"] = ""
+    evs_no_id = [
+        {"event": "run_start"},
+        {"event": "evaluator_finalization", "data": fin_no_id},
+    ]
+    with pytest.raises(ValueError, match="mandatory authoritative EvaluatorFinalizationRecord"):
+        CertificationService._finalization(evs_no_id, "run-hlp-edges")
+
+    orig_pub = IdentityService.get_public_key
+    monkeypatch.setattr(
+        IdentityService,
+        "get_public_key",
+        lambda *a, **k: (_ for _ in ()).throw(RuntimeError("KMS connection refused")),
+    )
+    with pytest.raises(ValueError, match="mandatory authoritative EvaluatorFinalizationRecord"):
+        CertificationService._finalization(evs_top, "run-hlp-edges")
+    monkeypatch.setattr(IdentityService, "get_public_key", orig_pub)
+
+    orig_from_dict = EvaluatorFinalizationRecord.from_dict
+    monkeypatch.setattr(
+        EvaluatorFinalizationRecord,
+        "from_dict",
+        lambda *a, **k: (_ for _ in ()).throw(ValueError("FinalizationRunIdMismatch")),
+    )
+    with pytest.raises(ValueError, match="FinalizationRunIdMismatch"):
+        CertificationService._finalization(evs_top, "run-hlp-edges")
+    monkeypatch.setattr(EvaluatorFinalizationRecord, "from_dict", orig_from_dict)
+
+
+def test_read_run_truth_level_edge_cases(provider, tmp_path, monkeypatch):
+    class ExplodingRunStore:
+        def get_run(self, *a, **k):
+            raise RuntimeError("Database error")
+
+    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "truth_runs_edges")
+    assert CertificationService.read_run_truth_level(
+        "run-db-err", run_store=ExplodingRunStore()
+    ) == (None, False)
+
+    vault = tmp_path / "truth_runs_edges" / "run-type-err"
+    vault.mkdir(parents=True)
+    trace = vault / "run.jsonl"
+    trace.write_text("{}", encoding="utf-8")
+    orig_open = open
+
+    def mock_open_truth(p, *a, **k):
+        if str(trace) in str(p):
+            raise TypeError("Non-OS error during read")
+        return orig_open(p, *a, **k)
+
+    monkeypatch.setattr("builtins.open", mock_open_truth)
+    assert CertificationService.read_run_truth_level("run-type-err") == (None, False)
+    monkeypatch.setattr("builtins.open", orig_open)
+
+
+def test_extract_computed_run_outcome_edge_cases(provider, tmp_path, monkeypatch):
+    trace_file = tmp_path / "direct_trace.jsonl"
+    trace_file.write_text('{"event": "run_start"}\n"not_dict"\n', encoding="utf-8")
+    assert CertificationService.extract_computed_run_outcome(target_trace=trace_file) == (
+        "inconclusive",
+        0.0,
+    )
+
+    orig_open = open
+
+    def mock_open_fail(p, *a, **k):
+        if str(trace_file) in str(p):
+            raise OSError("Read failure")
+        return orig_open(p, *a, **k)
+
+    monkeypatch.setattr("builtins.open", mock_open_fail)
+    assert CertificationService.extract_computed_run_outcome(target_trace=trace_file) == (
+        "inconclusive",
+        0.0,
+    )
+    monkeypatch.setattr("builtins.open", orig_open)
+
+    IdentityService._provision_local_identity("eval_kernel")
+    fin = EvaluatorFinalizationRecord(
+        finalization_id="fin-out-edges",
+        run_id="run-out-edges",
+        scenario_id="scen-1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:dummy",
+        execution_manifest_hash="sha3_256:dummy",
+        evaluator_config_hash="sha3_256:dummy",
+        evaluator_identity="eval_kernel",
+        required_oracle_ids=["o1"],
+        evidence_root_hash="sha3_256:dummy",
+        outcome="pass",
+        score=1.0,
+        terminal_seq=1,
+        finalized_at="2026-10-24T00:00:00Z",
+    ).sign()
+
+    ev_multi = [
+        {"event": "evaluator_finalization", "data": fin.to_dict()},
+        {"event": "evaluator_finalization", "data": fin.to_dict()},
+    ]
+    assert CertificationService.extract_computed_run_outcome(events=ev_multi) == (
+        "inconclusive",
+        0.0,
+    )
+
+    ev_bad_payload = [{"event": "run_end", "finalization": 12345}]
+    assert CertificationService.extract_computed_run_outcome(events=ev_bad_payload) == (
+        "inconclusive",
+        0.0,
+    )
+
+    ev_conflict = [
+        {"event": "evaluator_finalization", "data": fin.to_dict()},
+        {"event": "session_decision", "data": {"status": "fail"}},
+    ]
+    assert CertificationService.extract_computed_run_outcome(events=ev_conflict) == (
+        "inconclusive",
+        0.0,
+    )
+
+    ev_invalid_terminal = [{"event": "session_decision", "data": {"status": "evaluation_invalid"}}]
+    assert CertificationService.extract_computed_run_outcome(events=ev_invalid_terminal) == (
+        "fail",
+        0.0,
+    )
+
+
+def test_execute_industrial_certification_unspecified_store_and_metadata(provider, monkeypatch):
+    run_id = "run-unspec-store"
+    scenario = _seed_run(provider, run_id, agent_id="agent-unit-007", model="gemini-2.5-pro")
+
+    import eval_runner.runtime_services
+
+    orig_resolve = eval_runner.runtime_services.resolve_run_store
+    monkeypatch.setattr(eval_runner.runtime_services, "resolve_run_store", lambda: provider)
+    res = execute_industrial_certification(run_id, scenario_data=scenario)
+    assert res["certified"] is True
+    assert res["manifest"]["metadata"]["agent_id"] == "agent-unit-007"
+    assert res["manifest"]["metadata"]["model"] == "gemini-2.5-pro"
+    monkeypatch.setattr(eval_runner.runtime_services, "resolve_run_store", orig_resolve)
+
+
+def test_execute_industrial_certification_direct_provenance_and_oracle_reconciliation(
+    provider, monkeypatch
+):
+    run_id = "run-prov-violation"
+    scenario = _seed_run(provider, run_id)
+    events = provider.get_events(run_id)
+    fin_rec = next(e["data"] for e in events if e.get("event") == "evaluator_finalization")
+    ev_root = fin_rec["evidence_root_hash"]
+
+    import agentv_runtime.evidence_graph
+
+    orig_build = agentv_runtime.evidence_graph.build_evidence_graph_from_events
+    monkeypatch.setattr(
+        agentv_runtime.evidence_graph,
+        "build_evidence_graph_from_events",
+        lambda *a, **k: {
+            "evidence_root_hash": ev_root,
+            "is_complete_provenance": False,
+            "total_nodes": 5,
+        },
+    )
+    with pytest.raises(ValueError, match="DirectProvenanceViolation"):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+    monkeypatch.setattr(
+        agentv_runtime.evidence_graph, "build_evidence_graph_from_events", orig_build
+    )
+
+    run_id_unknown_field = "run-unknown-manifest-field"
+    scen_unknown = _seed_run(provider, run_id_unknown_field)
+    man = provider.get_manifest(run_id_unknown_field)
+    bad_manifest = copy.deepcopy(man)
+    bad_manifest["execution_manifest"]["unrecognized_field_xyz"] = True
+    monkeypatch.setattr(provider, "get_manifest", lambda *a, **k: bad_manifest)
+    with pytest.raises(ValueError, match="ExecutionManifestUnknownFields"):
+        execute_industrial_certification(
+            run_id_unknown_field, run_store=provider, scenario_data=scen_unknown
+        )
+
+
+def test_execute_industrial_certification_scenario_resolution_sources(provider, monkeypatch):
+    run_id_data = "run-scen-data-field"
+    scenario = {
+        "id": f"scenario-{run_id_data}",
+        "version": "1.0.0",
+        "required_oracles": ["oracle-1"],
+    }
+    scen_hash = compute_scenario_hash(scenario)
+    execution_manifest = ExecutionManifest(
+        manifest_id=f"manifest-{run_id_data}",
+        scenario_id=scenario["id"],
+        scenario_version=scenario["version"],
+        scenario_hash=scen_hash,
+        metadata={"required_oracle_ids": ["oracle-1"]},
+        runtime_config={"required_oracle_ids": ["oracle-1"], "execution_mode": "live"},
+    )
+    provider.create_run(run_id_data, scenario["id"])
+    provider.save_run_manifest(
+        run_id_data,
+        {
+            "run_id": run_id_data,
+            "execution_manifest": execution_manifest.to_dict(),
+        },
+    )
+    events = [
+        {
+            "event": "run_start",
+            "_seq": 1,
+            "execution_mode": "live",
+            "data": {"scenario_data": scenario},
+        },
+        {
+            "event": "oracle_result",
+            "_seq": 2,
+            "oracle_id": "oracle-1",
+            "passed": True,
+            "outcome": "PASS",
+        },
+        {"event": "session_decision", "_seq": 3, "decision": "PASS", "score": 1.0},
+    ]
+    provider.append_events(run_id_data, events)
+    exact_lines = provider.get_trace_bytes(run_id_data).decode("utf-8").splitlines()
+    graph = build_evidence_graph_from_events(
+        [(ev, line) for ev, line in zip(events, exact_lines, strict=True)],
+        required_oracle_ids=["oracle-1"],
+    )
+    fin = EvaluatorFinalizationRecord(
+        finalization_id=f"fin-{run_id_data}",
+        run_id=run_id_data,
+        scenario_id=scenario["id"],
+        scenario_version=scenario["version"],
+        scenario_hash=scen_hash,
+        execution_manifest_hash=execution_manifest.compute_manifest_hash(),
+        evaluator_config_hash="sha3_256:cfg",
+        evaluator_identity="eval_kernel",
+        required_oracle_ids=["oracle-1"],
+        evidence_root_hash=graph["evidence_root_hash"],
+        outcome="pass",
+        score=1.0,
+        terminal_seq=3,
+        finalized_at="2026-10-24T00:00:00Z",
+    ).sign()
+    provider.append_events(
+        run_id_data,
+        [{"event": "evaluator_finalization", "_seq": 4, "data": fin.to_dict()}],
+    )
+    res = execute_industrial_certification(run_id_data, run_store=provider, scenario_data=None)
+    assert res["certified"] is True
+
+    run_id_loader = "run-scen-loader-list"
+    scenario_loader = {
+        "id": f"scenario-{run_id_loader}",
+        "version": "1.0.0",
+        "required_oracles": ["oracle-1"],
+    }
+    scen_hash_l = compute_scenario_hash(scenario_loader)
+    exec_man_l = ExecutionManifest(
+        manifest_id=f"manifest-{run_id_loader}",
+        scenario_id=scenario_loader["id"],
+        scenario_version=scenario_loader["version"],
+        scenario_hash=scen_hash_l,
+        metadata={"required_oracle_ids": ["oracle-1"]},
+        runtime_config={"required_oracle_ids": ["oracle-1"], "execution_mode": "live"},
+    )
+    provider.create_run(run_id_loader, scenario_loader["id"])
+    provider.save_run_manifest(
+        run_id_loader,
+        {
+            "run_id": run_id_loader,
+            "execution_manifest": exec_man_l.to_dict(),
+        },
+    )
+    events_l = [
+        {"event": "run_start", "_seq": 1, "execution_mode": "live"},
+        {
+            "event": "oracle_result",
+            "_seq": 2,
+            "oracle_id": "oracle-1",
+            "passed": True,
+            "outcome": "PASS",
+        },
+        {"event": "session_decision", "_seq": 3, "decision": "PASS", "score": 1.0},
+    ]
+    provider.append_events(run_id_loader, events_l)
+    exact_lines_l = provider.get_trace_bytes(run_id_loader).decode("utf-8").splitlines()
+    graph_l = build_evidence_graph_from_events(
+        [(ev, line) for ev, line in zip(events_l, exact_lines_l, strict=True)],
+        required_oracle_ids=["oracle-1"],
+    )
+    fin_l = EvaluatorFinalizationRecord(
+        finalization_id=f"fin-{run_id_loader}",
+        run_id=run_id_loader,
+        scenario_id=scenario_loader["id"],
+        scenario_version=scenario_loader["version"],
+        scenario_hash=scen_hash_l,
+        execution_manifest_hash=exec_man_l.compute_manifest_hash(),
+        evaluator_config_hash="sha3_256:cfg",
+        evaluator_identity="eval_kernel",
+        required_oracle_ids=["oracle-1"],
+        evidence_root_hash=graph_l["evidence_root_hash"],
+        outcome="pass",
+        score=1.0,
+        terminal_seq=3,
+        finalized_at="2026-10-24T00:00:00Z",
+    ).sign()
+    provider.append_events(
+        run_id_loader,
+        [{"event": "evaluator_finalization", "_seq": 4, "data": fin_l.to_dict()}],
+    )
+    monkeypatch.setattr("eval_runner.loader.load_scenario", lambda *a, **k: [scenario_loader])
+    res_l = execute_industrial_certification(run_id_loader, run_store=provider, scenario_data=None)
+    assert res_l["certified"] is True
+
+
+def test_execute_industrial_certification_missing_required_oracles(provider):
+    run_id = "run-missing-oracles"
+    scenario = {
+        "id": f"scenario-{run_id}",
+        "version": "1.0.0",
+        "required_oracles": ["oracle-1", "oracle-unexecuted"],
+    }
+    scen_hash = compute_scenario_hash(scenario)
+    exec_man = ExecutionManifest(
+        manifest_id=f"manifest-{run_id}",
+        scenario_id=scenario["id"],
+        scenario_version=scenario["version"],
+        scenario_hash=scen_hash,
+        metadata={"required_oracle_ids": ["oracle-1", "oracle-unexecuted"]},
+        runtime_config={
+            "required_oracle_ids": ["oracle-1", "oracle-unexecuted"],
+            "execution_mode": "live",
+        },
+    )
+    provider.create_run(run_id, scenario["id"])
+    provider.save_run_manifest(
+        run_id,
+        {
+            "run_id": run_id,
+            "execution_manifest": exec_man.to_dict(),
+            "scenario_data": scenario,
+        },
+    )
+    events = [
+        {"event": "run_start", "_seq": 1, "execution_mode": "live"},
+        {
+            "event": "oracle_result",
+            "_seq": 2,
+            "oracle_id": "oracle-1",
+            "passed": True,
+            "outcome": "PASS",
+        },
+        {"event": "session_decision", "_seq": 3, "decision": "PASS", "score": 1.0},
+    ]
+    provider.append_events(run_id, events)
+    exact_lines = provider.get_trace_bytes(run_id).decode("utf-8").splitlines()
+    graph = build_evidence_graph_from_events(
+        [(ev, line) for ev, line in zip(events, exact_lines, strict=True)],
+        required_oracle_ids=["oracle-1", "oracle-unexecuted"],
+    )
+    fin = EvaluatorFinalizationRecord(
+        finalization_id=f"fin-{run_id}",
+        run_id=run_id,
+        scenario_id=scenario["id"],
+        scenario_version=scenario["version"],
+        scenario_hash=scen_hash,
+        execution_manifest_hash=exec_man.compute_manifest_hash(),
+        evaluator_config_hash="sha3_256:cfg",
+        evaluator_identity="eval_kernel",
+        required_oracle_ids=["oracle-1", "oracle-unexecuted"],
+        evidence_root_hash=graph["evidence_root_hash"],
+        outcome="pass",
+        score=1.0,
+        terminal_seq=3,
+        finalized_at="2026-10-24T00:00:00Z",
+    ).sign()
+    provider.append_events(
+        run_id,
+        [{"event": "evaluator_finalization", "_seq": 4, "data": fin.to_dict()}],
+    )
+    with pytest.raises(ValueError, match="MissingRequiredOracles"):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+
+
+def test_execute_industrial_certification_oracle_result_formats(provider):
+    run_id = "run-oracle-formats"
+    scenario = {
+        "id": f"scenario-{run_id}",
+        "version": "1.0.0",
+        "required_oracles": ["o-res", "m-res", "a-res"],
+    }
+    scen_hash = compute_scenario_hash(scenario)
+    exec_man = ExecutionManifest(
+        manifest_id=f"manifest-{run_id}",
+        scenario_id=scenario["id"],
+        scenario_version=scenario["version"],
+        scenario_hash=scen_hash,
+        metadata={"required_oracle_ids": ["o-res", "m-res", "a-res"]},
+        runtime_config={
+            "required_oracle_ids": ["o-res", "m-res", "a-res"],
+            "execution_mode": "live",
+        },
+    )
+    provider.create_run(run_id, scenario["id"])
+    provider.save_run_manifest(
+        run_id,
+        {
+            "run_id": run_id,
+            "execution_manifest": exec_man.to_dict(),
+            "scenario_data": scenario,
+        },
+    )
+    events = [
+        {"event": "run_start", "_seq": 1, "execution_mode": "live"},
+        {
+            "event": "oracle_result",
+            "_seq": 2,
+            "oracle_id": "o-res",
+            "passed": True,
+            "outcome": "PASS",
+            "data": {
+                "oracle_results": [{"oracle_id": "o-res"}],
+                "executed_oracle_results": [{"metric": "m-res"}, {"assertion": "a-res"}],
+            },
+        },
+        {
+            "event": "oracle_result",
+            "_seq": 3,
+            "metric": "m-res",
+            "passed": True,
+            "outcome": "PASS",
+        },
+        {
+            "event": "oracle_result",
+            "_seq": 4,
+            "assertion": "a-res",
+            "passed": True,
+            "outcome": "PASS",
+        },
+        {"event": "session_decision", "_seq": 5, "decision": "PASS", "score": 1.0},
+    ]
+    provider.append_events(run_id, events)
+    exact_lines = provider.get_trace_bytes(run_id).decode("utf-8").splitlines()
+    graph = build_evidence_graph_from_events(
+        [(ev, line) for ev, line in zip(events, exact_lines, strict=True)],
+        required_oracle_ids=["o-res", "m-res", "a-res"],
+    )
+    fin = EvaluatorFinalizationRecord(
+        finalization_id=f"fin-{run_id}",
+        run_id=run_id,
+        scenario_id=scenario["id"],
+        scenario_version=scenario["version"],
+        scenario_hash=scen_hash,
+        execution_manifest_hash=exec_man.compute_manifest_hash(),
+        evaluator_config_hash="sha3_256:cfg",
+        evaluator_identity="eval_kernel",
+        required_oracle_ids=["o-res", "m-res", "a-res"],
+        evidence_root_hash=graph["evidence_root_hash"],
+        outcome="pass",
+        score=1.0,
+        terminal_seq=5,
+        finalized_at="2026-10-24T00:00:00Z",
+    ).sign()
+    provider.append_events(
+        run_id,
+        [{"event": "evaluator_finalization", "_seq": 6, "data": fin.to_dict()}],
+    )
+    res = execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+    assert res["certified"] is True
+
+
+def test_finalization_split_data_and_ev_mappings(provider, tmp_path):
+    IdentityService._provision_local_identity("eval_kernel")
+    fin = EvaluatorFinalizationRecord(
+        finalization_id="fin-split",
+        run_id="run-split",
+        scenario_id="scen-1",
+        scenario_version="1.0.0",
+        scenario_hash="sha3_256:dummy",
+        execution_manifest_hash="sha3_256:dummy",
+        evaluator_config_hash="sha3_256:dummy",
+        evaluator_identity="eval_kernel",
+        required_oracle_ids=["o1"],
+        evidence_root_hash="sha3_256:dummy",
+        outcome="pass",
+        score=1.0,
+        terminal_seq=1,
+        finalized_at="2026-10-24T00:00:00Z",
+    ).sign()
+
+    evs_split = [
+        {"event": "run_start"},
+        {"event": "run_end", "data": {"duration": 10}, "finalization": fin.to_dict()},
+    ]
+    res_split = CertificationService._finalization(evs_split, "run-split")
+    assert res_split.finalization_id == "fin-split"
+
+    evs_no_fin_in_end = [
+        {"event": "run_start"},
+        {"event": "run_end", "data": {"duration": 10}},
+    ]
     with pytest.raises(
         ValueError, match="missing mandatory authoritative EvaluatorFinalizationRecord"
     ):
-        execute_industrial_certification(
-            run_id_no_fin, scenario_data={"id": "scen_1", "version": "1.0.0"}
-        )
+        CertificationService._finalization(evs_no_fin_in_end, "run-no-fin")
 
-    run_id_mismatch = "run-mismatch-id"
-    scen_data = {"id": "scen_1", "version": "1.0.0"}
-    vault_mismatch, _ = _create_trace(
-        cert_vault["runs"],
-        run_id_mismatch,
-        events_no_fin,
-        auto_finalize=True,
-        scenario_data=scen_data,
+    run_end_none = tmp_path / "run_end_none.jsonl"
+    run_end_none.write_text(
+        json.dumps({"event": "run_end", "data": {"duration": 10}}) + "\n",
+        encoding="utf-8",
     )
-    m_path = vault_mismatch / "execution_manifest.json"
-    from agentv_runtime.manifest import ExecutionManifest
+    assert CertificationService.extract_finalization_record(run_end_none) is None
 
-    m_obj = ExecutionManifest.from_dict(json.loads(m_path.read_text(encoding="utf-8")))
-    m_hash = m_obj.compute_manifest_hash()
 
-    from agentv_runtime.evidence_graph import (
-        build_evidence_graph_from_events,
-        compute_evidence_graph_root,
-    )
-
-    ev_graph = build_evidence_graph_from_events(events_no_fin)
-    ev_root = compute_evidence_graph_root(ev_graph)
-
-    fin_wrong_run = EvaluatorFinalizationRecord(
-        finalization_id="fin_wrong",
-        run_id="DIFFERENT_RUN_ID",
-        execution_manifest_hash=m_hash,
-        scenario_id="scen_1",
+def test_extract_computed_run_outcome_terminal_and_run_end_variations(provider):
+    IdentityService._provision_local_identity("eval_kernel")
+    fin = EvaluatorFinalizationRecord(
+        finalization_id="fin-run-end-var",
+        run_id="run-var",
+        scenario_id="scen-1",
         scenario_version="1.0.0",
-        scenario_hash=compute_scenario_hash(scen_data),
+        scenario_hash="sha3_256:dummy",
+        execution_manifest_hash="sha3_256:dummy",
+        evaluator_config_hash="sha3_256:dummy",
         evaluator_identity="eval_kernel",
-        evaluator_config_hash="sha3_256:" + "0" * 64,
-        required_oracle_ids=[],
-        evidence_root_hash=ev_root,
+        required_oracle_ids=["o1"],
+        evidence_root_hash="sha3_256:dummy",
         outcome="pass",
         score=1.0,
+        terminal_seq=1,
+        finalized_at="2026-10-24T00:00:00Z",
     ).sign()
 
-    trace_mismatch = vault_mismatch / "run.jsonl"
-    with open(trace_mismatch, "w", encoding="utf-8") as f:
-        for ev in events_no_fin:
-            f.write(json.dumps(ev) + "\n")
-        f.write(
-            json.dumps({"event": "evaluator_finalization", "data": fin_wrong_run.to_dict()}) + "\n"
-        )
+    ev_data = [{"event": "run_end", "data": {"finalization": fin.to_dict()}}]
+    assert CertificationService.extract_computed_run_outcome(events=ev_data) == ("pass", 1.0)
 
-    with pytest.raises(ValueError, match="ForeignTraceRecord"):
-        execute_industrial_certification(run_id_mismatch, scenario_data=scen_data)
+    ev_top = [{"event": "run_end", "finalization": fin.to_dict()}]
+    assert CertificationService.extract_computed_run_outcome(events=ev_top) == ("pass", 1.0)
 
-    run_id_embedded = "run-embedded-scen"
-    events_embedded = [
-        {
-            "event": "run_start",
-            "execution_mode": "live",
-            "scenario_id": "scen_embedded",
-            "scenario_data": {"id": "scen_embedded", "version": "1.0.0"},
-        },
-        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
-        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
+    ev_conflict_preceding = [
+        {"event": "session_decision", "data": {"status": "fail"}},
+        {"event": "evaluator_finalization", "data": fin.to_dict()},
     ]
-    _create_trace(
-        cert_vault["runs"],
-        run_id_embedded,
-        events_embedded,
-        auto_finalize=True,
-        scenario_data={"id": "scen_embedded", "version": "1.0.0"},
+    assert CertificationService.extract_computed_run_outcome(events=ev_conflict_preceding) == (
+        "inconclusive",
+        0.0,
     )
-    res_emb = execute_industrial_certification(run_id_embedded, scenario_data=None)
-    assert res_emb["status"] == "certified"
 
-    run_id_ev_mismatch = "run-ev-root-mismatch"
-    vault_ev, _ = _create_trace(
-        cert_vault["runs"],
-        run_id_ev_mismatch,
-        events_no_fin,
-        auto_finalize=True,
-        scenario_data=scen_data,
+
+def test_execute_industrial_certification_post_finalization_noise(provider):
+    run_id = "run-post-fin-noise"
+    scenario = _seed_run(provider, run_id)
+    provider.append_events(run_id, [{"event": "post_noise", "_seq": 99}])
+    with pytest.raises(ValueError, match="has inconclusive outcome"):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+
+
+def test_execute_industrial_certification_terminal_seq_zero(provider):
+    run_id = "run-terminal-seq-zero"
+    scenario = _seed_run(provider, run_id, terminal_seq=0)
+    res = execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+    assert res["certified"] is True
+
+
+def test_execute_industrial_certification_scenario_in_event_root(provider):
+    run_id = "run-scen-ev-root"
+    scenario = {
+        "id": f"scenario-{run_id}",
+        "version": "1.0.0",
+        "required_oracles": ["oracle-1"],
+    }
+    scen_hash = compute_scenario_hash(scenario)
+    exec_man = ExecutionManifest(
+        manifest_id=f"manifest-{run_id}",
+        scenario_id=scenario["id"],
+        scenario_version=scenario["version"],
+        scenario_hash=scen_hash,
+        metadata={"required_oracle_ids": ["oracle-1"]},
+        runtime_config={"required_oracle_ids": ["oracle-1"], "execution_mode": "live"},
     )
-    fin_bad_ev = EvaluatorFinalizationRecord(
-        finalization_id="fin_bad_ev",
-        run_id=run_id_ev_mismatch,
-        execution_manifest_hash=m_hash,
-        scenario_id="scen_1",
-        scenario_version="1.0.0",
-        scenario_hash=compute_scenario_hash(scen_data),
+    provider.create_run(run_id, scenario["id"])
+    provider.save_run_manifest(run_id, {"run_id": run_id, "execution_manifest": exec_man.to_dict()})
+    events = [
+        {"event": "run_start", "_seq": 1, "execution_mode": "live", "scenario_data": scenario},
+        {
+            "event": "oracle_result",
+            "_seq": 2,
+            "oracle_id": "oracle-1",
+            "passed": True,
+            "outcome": "PASS",
+        },
+        {"event": "session_decision", "_seq": 3, "decision": "PASS", "score": 1.0},
+    ]
+    provider.append_events(run_id, events)
+    exact_lines = provider.get_trace_bytes(run_id).decode("utf-8").splitlines()
+    graph = build_evidence_graph_from_events(
+        [(ev, raw_line) for ev, raw_line in zip(events, exact_lines, strict=True)],
+        required_oracle_ids=["oracle-1"],
+    )
+    fin = EvaluatorFinalizationRecord(
+        finalization_id=f"fin-{run_id}",
+        run_id=run_id,
+        scenario_id=scenario["id"],
+        scenario_version=scenario["version"],
+        scenario_hash=scen_hash,
+        execution_manifest_hash=exec_man.compute_manifest_hash(),
+        evaluator_config_hash="sha3_256:cfg",
         evaluator_identity="eval_kernel",
-        evaluator_config_hash="sha3_256:" + "0" * 64,
-        required_oracle_ids=[],
-        evidence_root_hash="sha3_256:" + "f" * 64,
+        required_oracle_ids=["oracle-1"],
+        evidence_root_hash=graph["evidence_root_hash"],
         outcome="pass",
         score=1.0,
+        terminal_seq=3,
+        finalized_at="2026-10-24T00:00:00Z",
     ).sign()
-    trace_bad_ev = vault_ev / "run.jsonl"
-    with open(trace_bad_ev, "w", encoding="utf-8") as f:
-        for ev in events_no_fin:
-            f.write(json.dumps(ev) + "\n")
-        f.write(
-            json.dumps({"event": "evaluator_finalization", "data": fin_bad_ev.to_dict()}) + "\n"
-        )
+    provider.append_events(
+        run_id, [{"event": "evaluator_finalization", "_seq": 4, "data": fin.to_dict()}]
+    )
+    res = execute_industrial_certification(run_id, run_store=provider, scenario_data=None)
+    assert res["certified"] is True
 
-    with pytest.raises(ValueError, match="EvidenceRootMismatch"):
-        execute_industrial_certification(run_id_ev_mismatch, scenario_data=scen_data)
 
-    from agentv_runtime import evidence_graph
+def test_execute_industrial_certification_loader_mapping_and_exception(provider, monkeypatch):
+    run_id_map = "run-scen-loader-map"
+    scenario = {
+        "id": f"scenario-{run_id_map}",
+        "version": "1.0.0",
+        "required_oracles": ["oracle-1"],
+    }
+    scen_hash = compute_scenario_hash(scenario)
+    exec_man = ExecutionManifest(
+        manifest_id=f"manifest-{run_id_map}",
+        scenario_id=scenario["id"],
+        scenario_version=scenario["version"],
+        scenario_hash=scen_hash,
+        metadata={"required_oracle_ids": ["oracle-1"]},
+        runtime_config={"required_oracle_ids": ["oracle-1"], "execution_mode": "live"},
+    )
+    provider.create_run(run_id_map, scenario["id"])
+    provider.save_run_manifest(
+        run_id_map, {"run_id": run_id_map, "execution_manifest": exec_man.to_dict()}
+    )
+    events = [
+        {"event": "run_start", "_seq": 1, "execution_mode": "live"},
+        {
+            "event": "oracle_result",
+            "_seq": 2,
+            "oracle_id": "oracle-1",
+            "passed": True,
+            "outcome": "PASS",
+        },
+        {"event": "session_decision", "_seq": 3, "decision": "PASS", "score": 1.0},
+    ]
+    provider.append_events(run_id_map, events)
+    exact_lines = provider.get_trace_bytes(run_id_map).decode("utf-8").splitlines()
+    graph = build_evidence_graph_from_events(
+        [(ev, raw_line) for ev, raw_line in zip(events, exact_lines, strict=True)],
+        required_oracle_ids=["oracle-1"],
+    )
+    fin = EvaluatorFinalizationRecord(
+        finalization_id=f"fin-{run_id_map}",
+        run_id=run_id_map,
+        scenario_id=scenario["id"],
+        scenario_version=scenario["version"],
+        scenario_hash=scen_hash,
+        execution_manifest_hash=exec_man.compute_manifest_hash(),
+        evaluator_config_hash="sha3_256:cfg",
+        evaluator_identity="eval_kernel",
+        required_oracle_ids=["oracle-1"],
+        evidence_root_hash=graph["evidence_root_hash"],
+        outcome="pass",
+        score=1.0,
+        terminal_seq=3,
+        finalized_at="2026-10-24T00:00:00Z",
+    ).sign()
+    provider.append_events(
+        run_id_map, [{"event": "evaluator_finalization", "_seq": 4, "data": fin.to_dict()}]
+    )
 
-    orig_build = evidence_graph.build_evidence_graph_from_events
+    monkeypatch.setattr("eval_runner.loader.load_scenario", lambda *a, **k: scenario)
+    res = execute_industrial_certification(run_id_map, run_store=provider, scenario_data=None)
+    assert res["certified"] is True
 
-    def _mock_build_evidence_graph(*args, **kwargs):
-        g = orig_build(*args, **kwargs)
-        g["is_complete_provenance"] = False
-        return g
+    run_id_list = "run-scen-loader-list"
+    exec_man_list = ExecutionManifest(
+        manifest_id=f"manifest-{run_id_list}",
+        scenario_id=scenario["id"],
+        scenario_version=scenario["version"],
+        scenario_hash=scen_hash,
+        metadata={"required_oracle_ids": ["oracle-1"]},
+        runtime_config={"required_oracle_ids": ["oracle-1"], "execution_mode": "live"},
+    )
+    provider.create_run(run_id_list, scenario["id"])
+    provider.save_run_manifest(
+        run_id_list, {"run_id": run_id_list, "execution_manifest": exec_man_list.to_dict()}
+    )
+    events_list = [
+        {"event": "run_start", "_seq": 1, "execution_mode": "live"},
+        {
+            "event": "oracle_result",
+            "_seq": 2,
+            "oracle_id": "oracle-1",
+            "passed": True,
+            "outcome": "PASS",
+        },
+        {"event": "session_decision", "_seq": 3, "decision": "PASS", "score": 1.0},
+    ]
+    provider.append_events(run_id_list, events_list)
+    exact_lines_list = provider.get_trace_bytes(run_id_list).decode("utf-8").splitlines()
+    graph_list = build_evidence_graph_from_events(
+        [(ev, raw_line) for ev, raw_line in zip(events_list, exact_lines_list, strict=True)],
+        required_oracle_ids=["oracle-1"],
+    )
+    fin_list = EvaluatorFinalizationRecord(
+        finalization_id=f"fin-{run_id_list}",
+        run_id=run_id_list,
+        scenario_id=scenario["id"],
+        scenario_version=scenario["version"],
+        scenario_hash=scen_hash,
+        execution_manifest_hash=exec_man_list.compute_manifest_hash(),
+        evaluator_config_hash="sha3_256:cfg",
+        evaluator_identity="eval_kernel",
+        required_oracle_ids=["oracle-1"],
+        evidence_root_hash=graph_list["evidence_root_hash"],
+        outcome="pass",
+        score=1.0,
+        terminal_seq=3,
+        finalized_at="2026-10-24T00:00:00Z",
+    ).sign()
+    provider.append_events(
+        run_id_list, [{"event": "evaluator_finalization", "_seq": 4, "data": fin_list.to_dict()}]
+    )
+    monkeypatch.setattr("eval_runner.loader.load_scenario", lambda *a, **k: [scenario])
+    res_list = execute_industrial_certification(run_id_list, run_store=provider, scenario_data=None)
+    assert res_list["certified"] is True
+
+    run_id_fail = "run-scen-loader-fail"
+    exec_man_fail = ExecutionManifest(
+        manifest_id=f"manifest-{run_id_fail}",
+        scenario_id=scenario["id"],
+        scenario_version=scenario["version"],
+        scenario_hash=scen_hash,
+        metadata={"required_oracle_ids": ["oracle-1"]},
+        runtime_config={"required_oracle_ids": ["oracle-1"], "execution_mode": "live"},
+    )
+    provider.create_run(run_id_fail, scenario["id"])
+    provider.save_run_manifest(
+        run_id_fail, {"run_id": run_id_fail, "execution_manifest": exec_man_fail.to_dict()}
+    )
+    events_fail = [
+        {"event": "run_start", "_seq": 1, "execution_mode": "live"},
+        {
+            "event": "oracle_result",
+            "_seq": 2,
+            "oracle_id": "oracle-1",
+            "passed": True,
+            "outcome": "PASS",
+        },
+        {"event": "session_decision", "_seq": 3, "decision": "PASS", "score": 1.0},
+    ]
+    provider.append_events(run_id_fail, events_fail)
+    exact_lines_fail = provider.get_trace_bytes(run_id_fail).decode("utf-8").splitlines()
+    graph_fail = build_evidence_graph_from_events(
+        [(ev, raw_line) for ev, raw_line in zip(events_fail, exact_lines_fail, strict=True)],
+        required_oracle_ids=["oracle-1"],
+    )
+    fin_fail = EvaluatorFinalizationRecord(
+        finalization_id=f"fin-{run_id_fail}",
+        run_id=run_id_fail,
+        scenario_id=scenario["id"],
+        scenario_version=scenario["version"],
+        scenario_hash=scen_hash,
+        execution_manifest_hash=exec_man_fail.compute_manifest_hash(),
+        evaluator_config_hash="sha3_256:cfg",
+        evaluator_identity="eval_kernel",
+        required_oracle_ids=["oracle-1"],
+        evidence_root_hash=graph_fail["evidence_root_hash"],
+        outcome="pass",
+        score=1.0,
+        terminal_seq=3,
+        finalized_at="2026-10-24T00:00:00Z",
+    ).sign()
+    provider.append_events(
+        run_id_fail, [{"event": "evaluator_finalization", "_seq": 4, "data": fin_fail.to_dict()}]
+    )
 
     monkeypatch.setattr(
-        evidence_graph, "build_evidence_graph_from_events", _mock_build_evidence_graph
+        "eval_runner.loader.load_scenario",
+        lambda *a, **k: (_ for _ in ()).throw(RuntimeError("Loader failure")),
     )
-    run_id_prov = "run-prov-violation"
-    _create_trace(
-        cert_vault["runs"],
-        run_id_prov,
-        events_no_fin,
-        auto_finalize=True,
-        scenario_data=scen_data,
-    )
-    with pytest.raises(ValueError, match="DirectProvenanceViolation"):
-        execute_industrial_certification(run_id_prov, scenario_data=scen_data)
-    monkeypatch.setattr(evidence_graph, "build_evidence_graph_from_events", orig_build)
-
-    from eval_runner import loader
-
-    monkeypatch.setattr(loader, "load_scenario", lambda sid: {"id": sid, "version": "1.0.0"})
-
-    run_id_load = "run-load-scen"
-    _create_trace(
-        cert_vault["runs"],
-        run_id_load,
-        events_no_fin,
-        auto_finalize=True,
-        scenario_data=scen_data,
-    )
-    res_loaded = execute_industrial_certification(run_id_load, scenario_data=None)
-    assert res_loaded["status"] == "certified"
-
-    monkeypatch.setattr(loader, "load_scenario", lambda sid: [{"id": sid, "version": "1.0.0"}])
-    run_id_load_list = "run-load-scen-list"
-    _create_trace(
-        cert_vault["runs"],
-        run_id_load_list,
-        events_no_fin,
-        auto_finalize=True,
-        scenario_data=scen_data,
-    )
-    res_loaded_list = execute_industrial_certification(run_id_load_list, scenario_data=None)
-    assert res_loaded_list["status"] == "certified"
-
-    run_id_no_m = "run-no-manifest"
-    vault_no_m, _ = _create_trace(
-        cert_vault["runs"],
-        run_id_no_m,
-        events_no_fin,
-        auto_finalize=True,
-        scenario_data=scen_data,
-    )
-    (vault_no_m / "execution_manifest.json").unlink()
-    with pytest.raises(ValueError, match="ExecutionManifestMissing"):
-        execute_industrial_certification(run_id_no_m, scenario_data=scen_data)
-
-    run_id_m_mismatch = "run-manifest-mismatch"
-    vault_mm, _ = _create_trace(
-        cert_vault["runs"],
-        run_id_m_mismatch,
-        events_no_fin,
-        auto_finalize=True,
-        scenario_data=scen_data,
-    )
-    fin_bad_m = EvaluatorFinalizationRecord(
-        finalization_id="fin_bad_m",
-        run_id=run_id_m_mismatch,
-        execution_manifest_hash="sha3_256:" + "0" * 64,
-        scenario_id="scen_1",
-        scenario_version="1.0.0",
-        scenario_hash=compute_scenario_hash(scen_data),
-        evaluator_identity="eval_kernel",
-        evaluator_config_hash="sha3_256:" + "0" * 64,
-        required_oracle_ids=[],
-        evidence_root_hash=ev_root,
-        outcome="pass",
-        score=1.0,
-    ).sign()
-    trace_mm = vault_mm / "run.jsonl"
-    with open(trace_mm, "w", encoding="utf-8") as f:
-        for ev in events_no_fin:
-            f.write(json.dumps(ev) + "\n")
-        f.write(json.dumps({"event": "evaluator_finalization", "data": fin_bad_m.to_dict()}) + "\n")
-
-    with pytest.raises(ValueError, match="ManifestHashMismatch"):
-        execute_industrial_certification(run_id_m_mismatch, scenario_data=scen_data)
-
-    run_id_scen_hash_mismatch = "run-scen-hash-mismatch"
-    _create_trace(
-        cert_vault["runs"],
-        run_id_scen_hash_mismatch,
-        events_no_fin,
-        auto_finalize=True,
-        scenario_data=scen_data,
-    )
-    scen_tampered = dict(scen_data)
-    scen_tampered["description"] = "tampered content that changes hash"
-    with pytest.raises(ValueError, match="ScenarioHashMismatch"):
-        execute_industrial_certification(run_id_scen_hash_mismatch, scenario_data=scen_tampered)
-
-
-def test_certification_metadata_binding_read_and_parse_error(cert_vault, monkeypatch):
-    """Verify resilience when metadata binding encounters unparseable trace lines or read errors."""
-    run_id = "run-meta-resilience"
-    events = [
-        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_1"},
-        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
-        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
-    ]
-    vault, _ = _create_trace(
-        cert_vault["runs"],
-        run_id,
-        events,
-        auto_finalize=True,
-        scenario_data={"id": "scen_1", "version": "1.0.0"},
-    )
-    trace = vault / "run.jsonl"
-    lines = trace.read_text(encoding="utf-8").splitlines()
-    lines.insert(1, "corrupt-non-json-line")
-    trace.write_text("\n".join(lines) + "\n", encoding="utf-8")
-
-    from eval_runner.reference.local_run_store import TraceCorruptionError
-
-    with pytest.raises((TraceCorruptionError, ValueError)):
-        execute_industrial_certification(run_id, scenario_data={"id": "scen_1", "version": "1.0.0"})
-
-    run_id_read_err = "run-meta-read-err"
-    _create_trace(
-        cert_vault["runs"],
-        run_id_read_err,
-        events,
-        auto_finalize=True,
-        scenario_data={"id": "scen_1", "version": "1.0.0"},
-    )
-    original_open = open
-    trace_err_path = (cert_vault["runs"] / run_id_read_err / "run.jsonl").resolve()
-
-    import inspect
-
-    def _mock_open(file, *args, **kwargs):
-        try:
-            if Path(file).resolve() == trace_err_path:
-                frame = inspect.currentframe().f_back
-                if frame and frame.f_code.co_name == "execute_industrial_certification":
-                    raise OSError("Metadata read failed")
-        except (ValueError, OSError) as e:
-            if str(e) == "Metadata read failed":
-                raise
-        return original_open(file, *args, **kwargs)
-
-    monkeypatch.setattr("builtins.open", _mock_open)
-    with pytest.raises(ValueError, match="EvidenceRootMismatch"):
-        execute_industrial_certification(
-            run_id_read_err, scenario_data={"id": "scen_1", "version": "1.0.0"}
-        )
-
-
-def test_parse_trace_strict_non_dict_record(tmp_path):
-    trace = tmp_path / "non_dict.jsonl"
-    trace.write_text('"a string record"\n', encoding="utf-8")
-    with pytest.raises(ValueError, match="InvalidTraceRecord:1: expected object"):
-        CertificationService.parse_trace_strict(trace)
-
-
-def test_count_assertion_and_evidence_nodes_various_structures(tmp_path):
-    trace = tmp_path / "evidence_count.jsonl"
-    events = [
-        {"event": "step_executed", "outcome": "PASS"},
-        {"event": "custom_event_1", "assertion": "custom_assert"},
-        {"event": "custom_event_2", "oracle_results": [{"passed": True}]},
-        {"event": "custom_event_3", "metrics": [{"score": 1.0}]},
-        {"event": "step_data_1", "data": {"assertion": "nested_assert"}},
-        {"event": "step_data_2", "data": {"oracle_results": [{"passed": True}]}},
-        {"event": "step_data_3", "data": {"metrics": [{"score": 1.0}]}},
-        {"event": "other_event", "data": {"unrelated": 123}},
-        {"event": "other_non_dict_data", "unrelated": 456},
-    ]
-    trace.write_text("\n".join(json.dumps(e) for e in events) + "\n", encoding="utf-8")
-    count = CertificationService.count_assertion_and_evidence_nodes(trace)
-    assert count == 7
-
-
-def test_execute_industrial_certification_trace_path_variations(cert_vault):
-    run_id_shared = "run-tp-shared"
-    scen_data = {"id": "scen_tp", "version": "1.0.0"}
-    events = [
-        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_tp"},
-        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
-        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
-    ]
-    _create_trace(cert_vault["runs"], run_id_shared, events, scenario_data=scen_data)
-
-    master_log = cert_vault["runs"] / "run.jsonl"
-    master_log.write_text('{"event": "start"}\n', encoding="utf-8")
-    with pytest.raises(ValueError, match="SharedMasterLogCertificationForbidden"):
-        execute_industrial_certification(
-            run_id_shared, trace_path=master_log, scenario_data=scen_data
-        )
-
-    run_id_rel = "run-tp-rel"
-    _create_trace(cert_vault["runs"], run_id_rel, events, scenario_data=scen_data)
-    rel_path = f"{run_id_rel}/run.jsonl"
-    res_rel = execute_industrial_certification(
-        run_id_rel, trace_path=rel_path, scenario_data=scen_data
-    )
-    assert res_rel["status"] == "certified"
-
-    run_id_404 = "run-tp-404"
-    with pytest.raises(FileNotFoundError, match="Run vault not found"):
-        execute_industrial_certification(
-            run_id_404, trace_path="nonexistent_vault/run.jsonl", scenario_data=scen_data
-        )
-
-
-def test_execute_industrial_certification_finalization_run_id_mismatch(cert_vault):
-    run_id = "run-fin-mismatch"
-    scen_data = {"id": "scen_fin_m", "version": "1.0.0"}
-    events = [
-        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_fin_m"},
-        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
-        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
-    ]
-    vault, _ = _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
-
-    from agentv_runtime.evidence_graph import (
-        build_evidence_graph_from_events,
-        compute_evidence_graph_root,
-    )
-    from agentv_runtime.manifest import ExecutionManifest
-
-    m_path = vault / "execution_manifest.json"
-    m_obj = ExecutionManifest.from_dict(json.loads(m_path.read_text(encoding="utf-8")))
-    m_hash = m_obj.compute_manifest_hash()
-
-    ev_graph = build_evidence_graph_from_events(events)
-    ev_root = compute_evidence_graph_root(ev_graph)
-
-    fin_rec = EvaluatorFinalizationRecord(
-        finalization_id="fin_id_mismatch",
-        run_id="OTHER_RUN_ID",
-        execution_manifest_hash=m_hash,
-        scenario_id="scen_fin_m",
-        scenario_version="1.0.0",
-        scenario_hash=compute_scenario_hash(scen_data),
-        evaluator_identity="eval_kernel",
-        evaluator_config_hash="sha3_256:" + "0" * 64,
-        required_oracle_ids=[],
-        evidence_root_hash=ev_root,
-        outcome="pass",
-        score=1.0,
-    ).sign()
-
-    trace_file = vault / "run.jsonl"
-    with open(trace_file, "w", encoding="utf-8") as f:
-        for ev in events:
-            f.write(json.dumps(ev) + "\n")
-        f.write(
-            json.dumps(
-                {
-                    "event": "run_end",
-                    "run_id": run_id,
-                    "data": {"finalization": fin_rec.to_dict()},
-                }
-            )
-            + "\n"
-        )
-
-    with pytest.raises(ValueError, match="FinalizationRunIdMismatch"):
-        execute_industrial_certification(run_id, scenario_data=scen_data)
-
-
-def test_execute_industrial_certification_scenario_resolved_and_snapshot_error(cert_vault):
-    from unittest.mock import patch
-
-    run_id = "run-scen-snapshot-test"
-    scen_data = {"id": "scen_snap", "version": "1.0.0"}
-    events = [
-        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_snap"},
-        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
-        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
-    ]
-    vault, _ = _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
-
-    snap_path = vault / "scenario_resolved.json"
-    snap_path.write_text(json.dumps(scen_data, indent=2), encoding="utf-8")
-
-    res = execute_industrial_certification(run_id, scenario_data=None)
-    assert res["status"] == "certified"
-
-    from eval_runner import loader
-
-    snap_path.unlink()
-    run_id_fallback = "run-scen-snap-fallback"
-    vault_fb, _ = _create_trace(
-        cert_vault["runs"], run_id_fallback, events, scenario_data=scen_data
-    )
-    snap_fb = vault_fb / "scenario_resolved.json"
-    snap_fb.write_text("invalid json content", encoding="utf-8")
-    with patch.object(loader, "load_scenario", return_value=scen_data):
-        res_fb = execute_industrial_certification(run_id_fallback, scenario_data=None)
-        assert res_fb["status"] == "certified"
-
-    run_id_nondict = "run-scen-snap-nondict"
-    vault_nd, _ = _create_trace(cert_vault["runs"], run_id_nondict, events, scenario_data=scen_data)
-    snap_nd = vault_nd / "scenario_resolved.json"
-    snap_nd.write_text("[1, 2, 3]", encoding="utf-8")
-    with patch.object(loader, "load_scenario", return_value=scen_data):
-        res_nd = execute_industrial_certification(run_id_nondict, scenario_data=None)
-        assert res_nd["status"] == "certified"
-
-    run_id2 = "run-scen-snap-fail"
-    vault2, _ = _create_trace(cert_vault["runs"], run_id2, events, scenario_data=scen_data)
-    (vault2 / "scenario_resolved.json").unlink(missing_ok=True)
-
-    orig_write = Path.write_text
-
-    def _mock_write(self, *args, **kwargs):
-        if "scenario_resolved.json" in str(self):
-            raise OSError("Disk write protected")
-        return orig_write(self, *args, **kwargs)
-
-    with patch.object(Path, "write_text", _mock_write):
-        with pytest.raises(ValueError, match="FailedToPersistScenarioSnapshot"):
-            execute_industrial_certification(run_id2, scenario_data=scen_data)
-
-
-def test_execute_industrial_certification_empty_scenario_loader(cert_vault, monkeypatch):
-    run_id = "run-empty-scen-loader"
-    events = [
-        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_empty"},
-        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
-        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
-    ]
-    _create_trace(
-        cert_vault["runs"],
-        run_id,
-        events,
-        auto_finalize=True,
-        scenario_data={"id": "scen_empty", "version": "1.0.0"},
-    )
-    (cert_vault["runs"] / run_id / "scenario_resolved.json").unlink(missing_ok=True)
-
-    from eval_runner import loader
-
-    monkeypatch.setattr(loader, "load_scenario", lambda sid: [])
     with pytest.raises(ValueError, match="cannot resolve authoritative scenario definition"):
-        execute_industrial_certification(run_id, scenario_data=None)
+        execute_industrial_certification(run_id_fail, run_store=provider, scenario_data=None)
 
 
-def test_read_run_truth_level_non_start_events_and_no_start(cert_vault):
-    run_id = "run-truth-no-start"
-    vault = cert_vault["runs"] / run_id
-    vault.mkdir(parents=True, exist_ok=True)
-    trace = vault / "run.jsonl"
-    with open(trace, "w", encoding="utf-8") as f:
-        f.write(json.dumps({"event": "heartbeat", "data": {}}) + "\n")
-        f.write(json.dumps({"event": "step_executed", "data": {}}) + "\n")
-
-    mode, is_prov = CertificationService.read_run_truth_level(run_id)
-    assert mode == "unknown"
-    assert is_prov is True
-
-
-def test_extract_finalization_record_corrupt_line_and_non_dict_run_end(cert_vault, monkeypatch):
-    run_id = "run-fin-rec-branches"
-    vault = cert_vault["runs"] / run_id
-    vault.mkdir(parents=True, exist_ok=True)
-    trace = vault / "run.jsonl"
-    with open(trace, "w", encoding="utf-8") as f:
-        f.write("corrupt non json line\n")
-        f.write(
-            json.dumps(
-                {
-                    "event": "run_end",
-                    "data": {"finalization": "not_a_dict"},
-                    "finalization": 123,
-                }
-            )
-            + "\n"
-        )
-
-    monkeypatch.setattr(CertificationService, "parse_trace_strict", lambda *a, **kw: [])
-    rec = CertificationService.extract_finalization_record(trace)
-    assert rec is None
-
-
-def test_extract_computed_run_outcome_branches(cert_vault, monkeypatch):
-    run_id = "run-outcome-branches"
-    vault = cert_vault["runs"] / run_id
-    vault.mkdir(parents=True, exist_ok=True)
-    trace = vault / "run.jsonl"
-    with open(trace, "w", encoding="utf-8") as f:
-        f.write("corrupt non json line\n")
-        f.write(
-            json.dumps(
-                {
-                    "event": "run_end",
-                    "data": {"finalization": "not_dict"},
-                    "finalization": 123,
-                }
-            )
-            + "\n"
-        )
-        f.write(json.dumps({"event": "custom_empty", "data": {"foo": "bar"}}) + "\n")
-        f.write(
-            json.dumps({"event": "session_decision", "data": {"status": "evaluation_invalid"}})
-            + "\n"
-        )
-
-    monkeypatch.setattr(CertificationService, "parse_trace_strict", lambda *a, **kw: [])
-    status, score = CertificationService.extract_computed_run_outcome(vault, trace)
-    assert status == "fail"
-    assert score == 0.0
-
-
-def test_execute_industrial_certification_unwritten_manifest_fallback(cert_vault, monkeypatch):
-    from eval_runner.verifier import TraceVerifier
-
-    run_id = "run-manifest-fallback-write"
-    scen_data = {"id": "scen_mf", "version": "1.0.0"}
-    events = [
-        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_mf"},
-        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
-        {
-            "event": "session_decision",
-            "data": {"decision": "PASS", "score": 1.0, "finalization": {"dummy": True}},
-        },
-    ]
-    vault, _ = _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
-
-    original_sign = TraceVerifier.sign_trace
-
-    def _mock_sign(*args, **kwargs):
-        manifest = original_sign(*args, **kwargs)
-        manifest_path = vault / "run_manifest.json"
-        if manifest_path.exists():
-            manifest_path.unlink()
-        return manifest
-
-    monkeypatch.setattr(TraceVerifier, "sign_trace", _mock_sign)
-    res = execute_industrial_certification(run_id, scenario_data=scen_data)
-    assert res["status"] == "certified"
-    assert (vault / "run_manifest.json").exists()
-
-
-def test_execute_industrial_certification_manifest_semantic_mismatches(cert_vault):
-    run_id = "run-manifest-semantic-test"
-    scen_data = {"id": "scen_sem", "version": "1.0.0"}
-    events = [
-        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_sem"},
-        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": True},
-        {"event": "session_decision", "data": {"decision": "PASS", "score": 1.0}},
-    ]
-    vault, _ = _create_trace(cert_vault["runs"], run_id, events, scenario_data=scen_data)
-    manifest_path = vault / "execution_manifest.json"
-    original_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-
-    from agentv_runtime.evidence_graph import (
-        build_evidence_graph_from_events,
-        compute_evidence_graph_root,
-    )
-    from agentv_runtime.manifest import ExecutionManifest
-
-    def _update_fin_and_manifest(m_dict, fin_kwargs_override=None):
-        m_obj = ExecutionManifest.from_dict(m_dict)
-        manifest_path.write_text(json.dumps(m_obj.to_dict()), encoding="utf-8")
-        m_hash = m_obj.compute_manifest_hash()
-
-        ev_graph = build_evidence_graph_from_events(events)
-        ev_root = compute_evidence_graph_root(ev_graph)
-
-        fin_kwargs = {
-            "finalization_id": f"fin_{run_id}",
-            "run_id": run_id,
-            "execution_manifest_hash": m_hash,
-            "scenario_id": "scen_sem",
-            "scenario_version": "1.0.0",
-            "scenario_hash": compute_scenario_hash(scen_data),
-            "evaluator_identity": "eval_kernel",
-            "evaluator_config_hash": "sha3_256:" + "0" * 64,
-            "required_oracle_ids": [],
-            "evidence_root_hash": ev_root,
-            "outcome": "pass",
-            "score": 1.0,
-        }
-        if fin_kwargs_override:
-            fin_kwargs.update(fin_kwargs_override)
-        fin = EvaluatorFinalizationRecord(**fin_kwargs).sign()
-
-        trace_file = vault / "run.jsonl"
-        with open(trace_file, "w", encoding="utf-8") as f:
-            for ev in events:
-                f.write(json.dumps(ev) + "\n")
-            f.write(json.dumps({"event": "evaluator_finalization", "data": fin.to_dict()}) + "\n")
-
-    m0 = dict(original_manifest)
-    m0["scenario_id"] = "scen_mismatch"
-    _update_fin_and_manifest(m0)
-    with pytest.raises(ValueError, match="ManifestScenarioIdMismatch"):
-        execute_industrial_certification(run_id, scenario_data=scen_data)
-
-    m1 = dict(original_manifest)
-    m1["scenario_version"] = "2.0.0"
-    _update_fin_and_manifest(m1)
-    with pytest.raises(ValueError, match="ManifestScenarioVersionMismatch"):
-        execute_industrial_certification(run_id, scenario_data=scen_data)
-
-    m2 = dict(original_manifest)
-    m2["scenario_hash"] = "sha3_256:" + "a" * 64
-    _update_fin_and_manifest(m2)
-    with pytest.raises(ValueError, match="ManifestScenarioHashMismatch"):
-        execute_industrial_certification(run_id, scenario_data=scen_data)
-
-    m3 = dict(original_manifest)
-    m3["runtime_config"] = {"execution_mode": "hybrid"}
-    _update_fin_and_manifest(m3)
-    with pytest.raises(ValueError, match="ManifestExecutionModeMismatch"):
-        execute_industrial_certification(run_id, scenario_data=scen_data)
-
-    m4 = dict(original_manifest)
-    m4["runtime_config"] = {
-        "execution_mode": "live",
-        "evaluator_config_hash": "sha3_256:" + "b" * 64,
+def test_execute_industrial_certification_extended_trace_and_oracle_edge_cases(provider):
+    run_id = "run-trace-oracle-edges"
+    scenario = {
+        "id": "scenario-trace-oracle-edges",
+        "version": "1.0.0",
+        "required_oracles": ["oracle-1"],
     }
-    _update_fin_and_manifest(m4)
-    with pytest.raises(ValueError, match="ManifestEvaluatorConfigHashMismatch"):
-        execute_industrial_certification(run_id, scenario_data=scen_data)
+    scen_hash = compute_scenario_hash(scenario)
+    exec_man = ExecutionManifest(
+        manifest_id=f"manifest-{run_id}",
+        scenario_id=scenario["id"],
+        scenario_version=scenario["version"],
+        scenario_hash=scen_hash,
+        metadata={"required_oracle_ids": ["oracle-1"]},
+        runtime_config={"required_oracle_ids": ["oracle-1"], "execution_mode": "live"},
+    )
+    provider.create_run(run_id, scenario["id"])
+    provider.save_run_manifest(run_id, {"run_id": run_id, "execution_manifest": exec_man.to_dict()})
 
-    m5 = dict(original_manifest)
-    m5["metadata"] = {"required_oracle_ids": ["oracle_extra"]}
-    _update_fin_and_manifest(m5, {"required_oracle_ids": ["oracle_extra"]})
-    with pytest.raises(ValueError, match="RequiredOracleInventoryMismatch"):
-        execute_industrial_certification(run_id, scenario_data=scen_data)
+    events = [
+        {"event": "run_start", "_seq": 1, "execution_mode": "live"},
+        {
+            "event": "oracle_result",
+            "_seq": 2,
+            "oracle_id": "oracle-1",
+            "passed": True,
+            "outcome": "PASS",
+        },
+        {
+            "event": "step",
+            "_seq": 3,
+            "data": {"oracle_results": [123, {}]},
+        },
+        {
+            "event": "oracle_result",
+            "_seq": 4,
+            "data": {},
+        },
+        {"event": "session_decision", "_seq": 5, "decision": "PASS", "score": 1.0},
+    ]
+    provider.append_events(run_id, events)
 
-    m6 = dict(original_manifest)
-    m6["metadata"] = {"required_oracle_ids": ["oracle_manifest_only"]}
-    _update_fin_and_manifest(m6, {"required_oracle_ids": ["oracle_fin_only"]})
-    with pytest.raises(ValueError, match="ManifestRequiredOracleMismatch"):
-        execute_industrial_certification(run_id, scenario_data=scen_data)
+    # Insert empty lines into trace file on disk to test whitespace line filtering
+    trace_path = provider._resolve_trace_file(run_id)
+    with open(trace_path, "a", encoding="utf-8") as f:
+        f.write("\n   \n\n")
+
+    exact_lines = [
+        line_item
+        for line_item in provider.get_trace_bytes(run_id).decode("utf-8").splitlines()
+        if line_item.strip()
+    ]
+    graph = build_evidence_graph_from_events(
+        [(ev, raw_line) for ev, raw_line in zip(events, exact_lines, strict=True)],
+        required_oracle_ids=["oracle-1"],
+    )
+    fin = EvaluatorFinalizationRecord(
+        finalization_id=f"fin-{run_id}",
+        run_id=run_id,
+        scenario_id=scenario["id"],
+        scenario_version=scenario["version"],
+        scenario_hash=scen_hash,
+        execution_manifest_hash=exec_man.compute_manifest_hash(),
+        evaluator_config_hash="sha3_256:cfg",
+        evaluator_identity="eval_kernel",
+        required_oracle_ids=["oracle-1"],
+        evidence_root_hash=graph["evidence_root_hash"],
+        outcome="pass",
+        score=1.0,
+        terminal_seq=5,
+        finalized_at="2026-10-24T00:00:00Z",
+    ).sign()
+
+    provider.append_events(
+        run_id, [{"event": "evaluator_finalization", "_seq": 6, "data": fin.to_dict()}]
+    )
+
+    res = execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+    assert res["certified"] is True
 
 
-def test_certification_pipeline_does_not_overwrite_canonical_trace(tmp_path: Path, monkeypatch):
-    """materialize_provider_trace must validate against canonical trace without overwriting it."""
-    from unittest.mock import MagicMock
+def test_execute_industrial_certification_sealed_state_exception_branch(provider, monkeypatch):
+    run_id = "run-sealed-ex-branch"
+    scenario = _seed_run(provider, run_id)
+    orig_commit = provider.commit_certification
 
-    run_id = "run-materialize-safe"
-    staging_root = tmp_path / run_id
-    staging_root.mkdir(parents=True, exist_ok=True)
-    canonical_trace = staging_root / "run.jsonl"
-    canonical_trace.write_text('{"event": "start", "_seq": 1}\n', encoding="utf-8")
+    def commit_then_raise(*a, **k):
+        orig_commit(*a, **k)
+        raise RuntimeError("Post-commit failure")
 
-    monkeypatch.setattr(config, "RUN_LOG_DIR", str(tmp_path))
-
-    mock_store = MagicMock()
-    mock_store.get_events.return_value = [{"event": "start", "_seq": 1}]
-    mock_store.get_manifest.return_value = {"run_id": run_id}
-
-    path, manifest = CertificationService.materialize_provider_trace(run_id, mock_store)
-    assert path == canonical_trace
-    assert canonical_trace.read_text(encoding="utf-8") == '{"event": "start", "_seq": 1}\n'
-
-    # If provider stream diverges from canonical trace, must raise ValueError
-    mock_store.get_events.return_value = [{"event": "different_event", "_seq": 1}]
-    with pytest.raises(ValueError, match="ProviderStreamDivergence"):
-        CertificationService.materialize_provider_trace(run_id, mock_store)
+    monkeypatch.setattr(provider, "commit_certification", commit_then_raise)
+    with pytest.raises(RuntimeError, match="Post-commit failure"):
+        execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+    assert get_run_lifecycle_state(run_id, run_store=provider) is RunLifecycleState.SEALED
+    monkeypatch.setattr(provider, "commit_certification", orig_commit)
 
 
-def test_certification_pipeline_rejects_incomplete_provider_stream(tmp_path: Path, monkeypatch):
-    """materialize_provider_trace rejects incomplete or sanitized provider streams."""
-    from unittest.mock import MagicMock
+def test_certification_provider_contract_suite(provider, monkeypatch):
+    """Provider contract suite for certification guarantees.
 
-    run_id = "run-incomplete-stream"
-    monkeypatch.setattr(config, "RUN_LOG_DIR", str(tmp_path))
+    Verifies:
+    1. provider==verified==signed==package byte equality across boundaries.
+    2. Sealed retry: idempotent return without re-certifying or mutating.
+    3. No-unseal: appending events to a sealed run raises PermissionError (WORM retention).
+    4. Pre-seal rollback: failure before commit rolls lifecycle state back to OPEN.
+    """
+    import hashlib
 
-    mock_store = MagicMock()
-    mock_store.get_events.return_value = [{"event": "intermediate_step"}]
-    mock_store.get_manifest.return_value = {"run_id": run_id}
+    # 1. Byte Equality & Authoritative Certification
+    run_id = "contract-byte-equality-run"
+    scenario = _seed_run(provider, run_id, outcome="pass", mode="live")
 
-    with pytest.raises(ValueError, match="IncompleteProviderStream"):
-        CertificationService.materialize_provider_trace(run_id, mock_store)
+    provider_trace_bytes = provider.get_trace_bytes(run_id)
+    assert provider_trace_bytes is not None
+    assert len(provider_trace_bytes) > 0
+
+    res = execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+    assert res["certified"] is True
+    manifest = res["manifest"]
+    pkg = res["verification_package"]
+
+    # Byte equality checks:
+    expected_hash = hashlib.sha3_256(provider_trace_bytes).hexdigest()
+    assert manifest["trace_hash"] == expected_hash
+    assert pkg["trace_hash"] == expected_hash
+    assert pkg["trace_seal"]["trace_digest"] == expected_hash
+
+    assert (
+        TraceVerifier.verify_trace(
+            provider_trace_bytes,
+            manifest,
+            run_store=provider,
+            scenario_data=scenario,
+        )
+        is True
+    )
+
+    from eval_runner.verifier import VerificationAuthority
+
+    events = [
+        json.loads(line)
+        for line in provider_trace_bytes.decode("utf-8").splitlines()
+        if line.strip()
+    ]
+    pkg_verif = VerificationAuthority.verify_package_artifacts(
+        package=pkg,
+        raw_trace_bytes=provider_trace_bytes,
+        raw_trace_events=events,
+        canonical_manifest=manifest.get("execution_manifest") or manifest,
+        scenario_data=scenario,
+    )
+    assert pkg_verif["verified"] is True
+    assert pkg_verif["failures"] == []
+
+    # 2. Sealed Retry (Idempotence)
+    assert get_run_lifecycle_state(run_id, run_store=provider) is RunLifecycleState.SEALED
+    res_retry = execute_industrial_certification(run_id, run_store=provider, scenario_data=scenario)
+    assert res_retry["certified"] is True
+    assert res_retry["manifest"]["trace_hash"] == manifest["trace_hash"]
+    assert res_retry["package_hash"] == res["package_hash"]
+
+    # 3. No-Unseal: Appending events to a sealed run raises PermissionError
+    with pytest.raises(PermissionError):
+        provider.append_events(run_id, [{"event": "tamper_attempt", "_seq": 999}])
+
+    # 4. Pre-Seal Rollback
+    rollback_run_id = "contract-rollback-run"
+    rb_scenario = _seed_run(provider, rollback_run_id, outcome="pass", mode="live")
+    assert get_run_lifecycle_state(rollback_run_id, run_store=provider) is RunLifecycleState.OPEN
+
+    def aborting_commit(*a, **k):
+        raise RuntimeError("Simulated pre-commit error")
+
+    monkeypatch.setattr(provider, "commit_certification", aborting_commit)
+    with pytest.raises(RuntimeError, match="Simulated pre-commit error"):
+        execute_industrial_certification(
+            rollback_run_id, run_store=provider, scenario_data=rb_scenario
+        )
+
+    # Lifecycle state must be rolled back to OPEN
+    assert get_run_lifecycle_state(rollback_run_id, run_store=provider) is RunLifecycleState.OPEN

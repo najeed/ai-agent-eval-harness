@@ -1,28 +1,26 @@
 import json
 import logging
-import os
 import tempfile
 import threading
 import time
 from io import BytesIO
 from pathlib import Path
+from typing import Any
 
 from flask import Blueprint, Response, jsonify, request, send_file
 
-from eval_runner import config
-from eval_runner.explainer import explain_trace
+from agentv_runtime.manifest import resolve_artifact_scope
+from eval_runner.explainer import explain_events
 from eval_runner.metrics import MetricRegistry
-from eval_runner.run_index import read_run_index
-from eval_runner.services.certification import CertificationService
-from eval_runner.services.run_summary import RunSummaryService
-from eval_runner.storage_resolver import resolve_run_storage_provider
 
 from ..auth_manager import (
     Permission,
     active_runtime_context,
+    active_runtime_scope,
     require_permission,
     require_sse_permission,
 )
+from ..providers import get_run_store
 
 logger = logging.getLogger(__name__)
 
@@ -36,12 +34,6 @@ def list_metrics():
     return jsonify({"metrics": MetricRegistry.list_metrics()})
 
 
-def resolve_trace_path(run_id: str) -> Path | None:
-    from eval_runner.trace_utils import resolve_trace_path as _rtp
-
-    return _rtp(run_id, allow_master_recovery=False)
-
-
 def _run_is_in_active_context(run_id: str, context: dict[str, str] | None = None) -> bool:
     """Hide a run when the authoritative provider denies the active scope."""
     if context is None:
@@ -51,26 +43,120 @@ def _run_is_in_active_context(run_id: str, context: dict[str, str] | None = None
     return _active_run_store().get_run(run_id, context=context) is not None
 
 
-def _summary_from_provider(run: dict) -> dict:
-    """Use provider-native summaries for remote stores; local stores retain forensic enrichment."""
-    if run.get("vault_path"):
-        return RunSummaryService.compute_summary(run["run_id"], cached_entry=run)
+def _finalization_from_events(events: list[dict[str, Any]] | None) -> dict[str, Any]:
+    """Return the signed finalization payload from its canonical trace carrier."""
+    for event in reversed(events or []):
+        event_name = event.get("event")
+        event_data = event.get("data") if isinstance(event.get("data"), dict) else event
+        if event_name == "evaluator_finalization" and isinstance(event_data, dict):
+            return event_data
+        if event_name in {"run_end", "end"}:
+            finalization = event_data.get("finalization")
+            if isinstance(finalization, dict):
+                return finalization
+            finalization = event.get("finalization")
+            if isinstance(finalization, dict):
+                return finalization
+    return {}
+
+
+def _summary_from_provider(run: dict, events: list[dict[str, Any]] | None = None) -> dict:
+    """Build a console summary exclusively from provider-owned metadata."""
     manifest = run.get("manifest") or {}
+    execution_manifest = manifest.get("execution_manifest") or {}
+    if not isinstance(execution_manifest, dict):
+        execution_manifest = {}
+    runtime_config = execution_manifest.get("runtime_config") or {}
+    if not isinstance(runtime_config, dict):
+        runtime_config = {}
+    agent_config = execution_manifest.get("agent_config") or {}
+    if not isinstance(agent_config, dict):
+        agent_config = {}
+    compliance = manifest.get("compliance") or {}
+    package = manifest.get("verification_package") or {}
+    finalization = _finalization_from_events(events)
+    oracle_results = package.get("executed_oracle_results") or []
+    failed_oracles = [
+        result
+        for result in oracle_results
+        if isinstance(result, dict)
+        and (result.get("passed") is False or str(result.get("outcome", "")).upper() == "FAIL")
+    ]
+    failure_reasons = [
+        f"Oracle failed: {result.get('oracle_id', 'unknown')}" for result in failed_oracles
+    ]
+    execution_mode = (
+        run.get("execution_mode")
+        or manifest.get("execution_mode")
+        or runtime_config.get("execution_mode")
+        or execution_manifest.get("metadata", {}).get("execution_mode")
+    )
+    provisional = bool(run.get("provisional") or manifest.get("provisional"))
+    # The execution manifest is the authoritative source when an older run
+    # record predates its display metadata.  Unknown/simulated modes remain
+    # conservative and provisional.
+    if str(execution_mode or "unknown").lower() not in {"live", "hybrid"}:
+        provisional = True
+    scenario = next(
+        (
+            value
+            for value in (
+                run.get("scenario"),
+                run.get("scenario_id"),
+                manifest.get("scenario_id"),
+                execution_manifest.get("scenario_id"),
+            )
+            if value and str(value).strip().lower() != "unknown"
+        ),
+        "unknown",
+    )
     status = str(run.get("status") or manifest.get("status") or "OPEN").upper()
+    score = run.get("score")
+    if score is None:
+        score = manifest.get("score", compliance.get("score"))
+    if score is None:
+        score = finalization.get("score")
     return {
         **run,
-        "scenario": run.get("scenario") or run.get("scenario_id"),
+        "scenario": scenario,
         "timestamp": run.get("created_at") or run.get("timestamp"),
         "status": status,
         "lifecycle": run.get("lifecycle") or status,
         "verification_status": run.get("verification_status", "UNKNOWN"),
         "trace_integrity": run.get("trace_integrity", "PROVIDER_MANAGED"),
-        "execution_mode": run.get("execution_mode") or manifest.get("execution_mode"),
-        "provisional": bool(run.get("provisional", False)),
-        "score_reason": run.get("score_reason"),
-        "score_category": run.get("score_category"),
-        "failure_reasons": run.get("failure_reasons", []),
-        "failed_oracles": run.get("failed_oracles", []),
+        "has_certificate": bool(
+            manifest.get("verification_package")
+            or manifest.get("vc_version")
+            or manifest.get("certificate")
+        ),
+        "identifier": (
+            run.get("identifier")
+            or run.get("agent_id")
+            or agent_config.get("agent_id")
+            or agent_config.get("agent_name")
+        ),
+        "execution_mode": execution_mode,
+        "provisional": provisional,
+        "score": score,
+        "score_reason": run.get("score_reason")
+        or (failure_reasons[0] if failure_reasons else None),
+        "score_category": run.get("score_category")
+        or ("ORACLE_DEFECT" if failed_oracles else None),
+        "failure_reasons": run.get("failure_reasons") or failure_reasons,
+        "failed_oracles": run.get("failed_oracles") or failed_oracles,
+        "target": (
+            run.get("target")
+            or agent_config.get("configured_model_id")
+            or agent_config.get("model")
+            or agent_config.get("agent_name")
+            or agent_config.get("agent_id")
+        ),
+        "model": (
+            run.get("model") or agent_config.get("configured_model_id") or agent_config.get("model")
+        ),
+        "agent": (
+            run.get("agent") or agent_config.get("agent_name") or agent_config.get("agent_id")
+        ),
     }
 
 
@@ -80,85 +166,30 @@ def explain_run(run_id):
     """Roadmap: Forensic RCA as a service."""
     if not _run_is_in_active_context(run_id):
         return jsonify({"error": "Not found"}), 404
-    trace_path = resolve_trace_path(run_id)
-    temp_path = None
-
-    if not trace_path:
-        # Fallback: extract from master log runs/run.jsonl
-        master_log = config.RUN_LOG_DIR / "run.jsonl"
-        if master_log.exists():
-            filtered_lines = []
-            try:
-                with open(master_log, encoding="utf-8") as f:
-                    for line in f:
-                        line_str = line.strip()
-                        if line_str:
-                            try:
-                                ev = json.loads(line_str)
-                                if ev.get("run_id") == run_id:
-                                    filtered_lines.append(line_str)
-                            except Exception as e:
-                                logger.debug(f"Parsing run line warning: {e}")
-            except Exception as e:
-                logger.warning(f"Error scanning master log: {e}")
-
-            if filtered_lines:
-                import uuid
-
-                temp_path = config.RUN_LOG_DIR / f"temp_explain_{run_id}_{uuid.uuid4().hex}.jsonl"
-                try:
-                    with open(temp_path, "w", encoding="utf-8") as out:
-                        out.write("\n".join(filtered_lines))
-                    trace_path = temp_path
-                except Exception as e:
-                    if temp_path.exists():
-                        temp_path.unlink()
-                    return jsonify({"error": str(e)}), 500
-
-    if not trace_path:
-        events = _active_run_store().get_events(
-            run_id, offset=0, limit=10_000_000, context=active_runtime_context()
-        )
-        if events:
-            import uuid
-
-            temp_path = config.RUN_LOG_DIR / f"temp_explain_{run_id}_{uuid.uuid4().hex}.jsonl"
-            try:
-                with open(temp_path, "w", encoding="utf-8") as out:
-                    for ev in events:
-                        out.write(json.dumps(ev, default=str, separators=(",", ":")) + "\n")
-                trace_path = temp_path
-            except Exception as e:
-                if temp_path.exists():
-                    temp_path.unlink()
-                return jsonify({"error": str(e)}), 500
-
-    if not trace_path:
+    events = _active_run_store().get_events(
+        run_id, offset=0, limit=10_000_000, context=active_runtime_context()
+    )
+    if not events:
         return jsonify({"error": "Trace not found"}), 404
 
     try:
-        # Invoke the core forensic explainer (RCA Engine)
-        analysis = explain_trace(trace_path)
-        if temp_path and temp_path.exists():
-            temp_path.unlink()
+        analysis = explain_events(events)
 
         return jsonify(
             {
                 "run_id": run_id,
                 "status": "explained",
                 "analysis": analysis,
-                "sourced_from_master": temp_path is not None,
+                "sourced_from_master": False,
             }
         )
     except Exception as e:
-        if temp_path and temp_path.exists():
-            temp_path.unlink()
         return jsonify({"error": str(e)}), 500
 
 
 def _active_run_store():
-    """Resolve the process-wide authoritative run storage provider."""
-    return resolve_run_storage_provider()
+    """Return the provider injected by the console app factory."""
+    return get_run_store()
 
 
 @run_bp.route("/runs", methods=["GET"])
@@ -172,23 +203,29 @@ def list_runs():
     treated as proof; unverifiable runs report UNKNOWN.
     """
     query = request.args.get("q", "")
-    runs = _active_run_store().search_runs(query=query, limit=200, context=active_runtime_context())
+    store = _active_run_store()
+    context = active_runtime_context()
+    runs = store.search_runs(query=query, limit=200, context=context)
     enriched = []
+    from eval_runner.services.run_summary import RunSummaryService
+
     for run in runs[:200]:
         rid = run.get("run_id") or ""
         if not _run_is_in_active_context(rid):
             continue
-        summary = _summary_from_provider(run)
+        try:
+            manifest = store.get_manifest(rid, context=context) or run.get("manifest") or {}
+        except Exception:
+            manifest = run.get("manifest") or {}
+        summary = _summary_from_provider({**run, "manifest": manifest})
+        if summary["has_certificate"]:
+            summary["verification_status"] = RunSummaryService.get_authoritative_verdict(
+                rid,
+                run_store=store,
+                context=context,
+            )
         enriched.append(summary)
     return jsonify({"runs": enriched})
-
-
-def _authoritative_verdict(run_id: str) -> str:
-    """
-    Authoritative verification computation. Full literal set:
-        VERIFIED | VERIFIED_PROVISIONAL | FAILED_VERIFICATION | NOT_EXECUTED | ERROR | UNKNOWN
-    """
-    return RunSummaryService.get_authoritative_verdict(run_id)
 
 
 @run_bp.route("/v1/runs/stream-list", methods=["GET"])
@@ -196,9 +233,12 @@ def _authoritative_verdict(run_id: str) -> str:
 def stream_runs_list():
     """Streams the run list incrementally in chunks every 1 second (SSE)."""
     request_context = active_runtime_context()
+    store = _active_run_store()
 
     def generate():
-        runs = _active_run_store().list_runs(limit=200, context=request_context)
+        runs = store.list_runs(limit=200, context=request_context)
+        from eval_runner.services.run_summary import RunSummaryService
+
         chunk_size = 10  # Yield 10 runs at a time
         for i in range(0, len(runs), chunk_size):
             chunk = runs[i : i + chunk_size]
@@ -209,7 +249,16 @@ def stream_runs_list():
                     run_id, request_context
                 ):
                     continue
-                summary = _summary_from_provider(run)
+                manifest = (
+                    store.get_manifest(run_id, context=request_context) or run.get("manifest") or {}
+                )
+                summary = _summary_from_provider({**run, "manifest": manifest})
+                if summary["has_certificate"]:
+                    summary["verification_status"] = RunSummaryService.get_authoritative_verdict(
+                        run_id,
+                        run_store=store,
+                        context=request_context,
+                    )
                 resolved_chunk.append(
                     {
                         "run_id": run_id,
@@ -240,25 +289,36 @@ def stream_runs_list():
 def download_run_report_pdf(run_id: str):
     if not _run_is_in_active_context(run_id):
         return jsonify({"error": "Not found"}), 404
-    """Generate a human-readable PDF report without mutating the sealed run vault."""
-    trace_path = resolve_trace_path(run_id)
-    if trace_path is None or not trace_path.exists():
-        run = _active_run_store().get_run(run_id, context=active_runtime_context())
-        if run is None:
-            return jsonify({"error": "Run not found"}), 404
-        summary = _summary_from_provider(run)
-    else:
-        summary = RunSummaryService.compute_summary(run_id)
+    """Generate a human-readable PDF report from provider-owned run data."""
+    store = _active_run_store()
+    context = active_runtime_context()
+    run = store.get_run(run_id, context=context)
+    if run is None:
+        return jsonify({"error": "Run not found"}), 404
+    manifest_data = store.get_manifest(run_id, context=context) or run.get("manifest") or {}
+    summary = _summary_from_provider({**run, "manifest": manifest_data})
 
     from eval_runner.console.pdf_service import generate_run_pdf
+
+    execution_manifest: dict[str, Any] = {}
+    candidate = manifest_data.get("execution_manifest")
+    if isinstance(candidate, dict):
+        execution_manifest = candidate
 
     report_data = {
         **summary,
         "run_id": run_id,
+        "scenario": (
+            execution_manifest.get("scenario_id")
+            or summary.get("scenario")
+            or summary.get("scenario_id")
+            or run_id
+        ),
         "passed": summary["status"] in {"CERTIFIED", "SEALED", "PASSED"},
         "has_certificate": summary["has_certificate"],
         "is_certified": summary["status"] == "CERTIFIED",
         "verification_status": summary["verification_status"],
+        **resolve_artifact_scope(manifest_data),
     }
 
     # The report is a derived presentation artifact.  It must never be written
@@ -292,10 +352,18 @@ def get_run_status(run_id):
     store = _active_run_store()
     context = active_runtime_context()
     run = store.get_run(run_id, context=context)
-    if run is not None and not run.get("vault_path"):
+    if run is not None:
         events = store.get_events(run_id, offset=0, limit=10_000_000, context=context)
         manifest = store.get_manifest(run_id, context=context) or run.get("manifest") or {}
-        summary = _summary_from_provider(run)
+        summary = _summary_from_provider({**run, "manifest": manifest}, events=events)
+        # Detail inspection is an explicit verification read.  Use the
+        # provider-native verifier instead of treating a stored certificate as
+        # proof; list views remain conservative until inspected.
+        from eval_runner.services.run_summary import RunSummaryService
+
+        summary["verification_status"] = RunSummaryService.get_authoritative_verdict(
+            run_id, run_store=store, context=context
+        )
         event_count = len(events)
         terminal_events = {
             "run_end",
@@ -306,7 +374,30 @@ def get_run_status(run_id):
         }
         terminal = any(event.get("event") in terminal_events for event in events)
         raw_status = str(run.get("status") or manifest.get("status") or "OPEN").upper()
-        if terminal and raw_status in {"OPEN", "RUNNING"}:
+        # A provisional index is only an accepted-work authorization record.
+        # Once it has neither provider events nor a live in-process writer,
+        # reporting its launch-time RUNNING value is false.  Match the stream
+        # contract's terminal ``trace_unavailable`` determination instead.
+        mtime_val = None
+        try:
+            mtime_val = float(run.get("updated_at") or run.get("created_at") or 0)
+        except (ValueError, TypeError):
+            mtime_val = None
+        if (
+            bool(run.get("provisional"))
+            and not events
+            and not is_run_alive(run_id)
+            and raw_status in {"OPEN", "RUNNING"}
+        ):
+            status = "STALLED"
+        elif (
+            not terminal
+            and mtime_val
+            and (time.time() - mtime_val > 300)
+            and not is_run_alive(run_id)
+        ):
+            status = "STALLED"
+        elif terminal and raw_status in {"OPEN", "RUNNING"}:
             status = "COMPLETED"
         elif raw_status == "OPEN" and events:
             status = "RUNNING"
@@ -319,14 +410,26 @@ def get_run_status(run_id):
                 "status": status,
                 "size": event_count,
                 "mtime": run.get("updated_at") or run.get("created_at"),
-                "has_certificate": bool(manifest.get("verification_package")),
+                "has_certificate": bool(
+                    manifest.get("verification_package")
+                    or manifest.get("vc_version")
+                    or manifest.get("certificate")
+                ),
                 "sourced_from_master": False,
                 "scenario": scenario,
                 "execution_mode": summary.get("execution_mode") or manifest.get("execution_mode"),
                 "provisional": bool(summary.get("provisional", manifest.get("provisional", False))),
                 "verification_status": summary.get("verification_status", "PROVIDER_MANAGED"),
+                "verdict": summary.get("verification_status", "PROVIDER_MANAGED"),
+                "target": summary.get("target") or run.get("target"),
+                "model": summary.get("model") or run.get("model"),
+                "agent": summary.get("agent") or run.get("agent"),
                 "duration_seconds": summary.get("duration_seconds"),
-                "score": summary.get("score") or (manifest.get("compliance") or {}).get("score"),
+                "score": (
+                    summary["score"]
+                    if summary.get("score") is not None
+                    else (manifest.get("compliance") or {}).get("score")
+                ),
                 "score_reason": summary.get("score_reason"),
                 "score_category": summary.get("score_category"),
                 "failure_reasons": summary.get("failure_reasons", []),
@@ -337,204 +440,6 @@ def get_run_status(run_id):
             }
         )
 
-    index_record = read_run_index(run_id)
-    vault_trace = resolve_trace_path(run_id)
-    scenario_data = None
-
-    if vault_trace:
-        is_finished = False
-        size = 0
-        mtime = 0
-        try:
-            size = os.path.getsize(vault_trace)
-            mtime = os.path.getmtime(vault_trace)
-            window = 128 * 1024
-            with open(vault_trace, "rb") as f:
-                if size <= window:
-                    raw_bytes = f.read()
-                else:
-                    f.seek(size - window)
-                    raw_bytes = f.read()
-
-            tail_text = raw_bytes.decode("utf-8", errors="replace")
-            for line in tail_text.splitlines():
-                line = line.strip()
-                if not line:
-                    continue
-                if not line.startswith("{"):
-                    idx = line.find("{")
-                    if idx != -1:
-                        line = line[idx:]
-                try:
-                    ev = json.loads(line)
-                except Exception:
-                    continue
-                event_type = ev.get("event")
-                if event_type in ("run_end", "session_decision", "evaluation_result"):
-                    is_finished = True
-                    data = ev.get("data", {}) or {}
-                    raw_status = data.get("status") or ev.get("status") or ""
-                    if str(raw_status).lower() in ("fail", "failed", "failure", "error"):
-                        pass
-                elif event_type in ("verification_certificate_issued", "trace_sealed"):
-                    is_finished = True
-        except Exception as e:
-            logger.warning(f"Error parsing run trace for status of {run_id}: {e}")
-
-        summary = RunSummaryService.compute_summary(run_id)
-        status = "COMPLETED" if summary["status"] == "PASSED" else summary["status"]
-
-        resolved_scen_path = config.RUN_LOG_DIR / run_id / "scenario_resolved.json"
-        orig_scen_path = config.RUN_LOG_DIR / run_id / "scenario_original.json"
-        for path_cand in [resolved_scen_path, orig_scen_path]:
-            if path_cand.exists():
-                try:
-                    with open(path_cand, encoding="utf-8") as f_scen:
-                        scenario_data = json.load(f_scen)
-                        break
-                except Exception as e:
-                    logger.debug(f"Error parsing resolved scenario: {e}")
-
-        return jsonify(
-            {
-                "run_id": run_id,
-                "status": status,
-                "size": size,
-                "mtime": mtime,
-                "has_certificate": summary["has_certificate"],
-                "sourced_from_master": False,
-                "scenario": scenario_data,
-                "execution_mode": summary["execution_mode"],
-                "provisional": summary["provisional"],
-                "verification_status": summary["verification_status"],
-                "duration_seconds": summary.get("duration_seconds"),
-                "score": summary.get("score"),
-                "score_reason": summary.get("score_reason"),
-                "score_category": summary.get("score_category"),
-                "failure_reasons": summary.get("failure_reasons", []),
-                "failed_oracles": summary.get("failed_oracles", []),
-                "timestamp": summary.get("timestamp"),
-                "start_time": summary.get("timestamp"),
-                "identifier": summary.get("identifier") or summary.get("timestamp"),
-            }
-        )
-
-    # Fallback: scan master log runs/run.jsonl for presence of this run_id
-    master_log = config.RUN_LOG_DIR / "run.jsonl"
-    if master_log.exists():
-        is_finished = False
-        has_events = False
-        try:
-            with open(master_log, encoding="utf-8") as f:
-                for line in f:
-                    if f'"{run_id}"' in line:
-                        try:
-                            ev = json.loads(line.strip())
-                            if ev.get("run_id") == run_id:
-                                has_events = True
-                                if ev.get("event") in [
-                                    "run_end",
-                                    "verification_certificate_issued",
-                                ]:
-                                    is_finished = True
-                        except Exception as e:
-                            logger.debug(f"Parsing run line warning: {e}")
-        except Exception as e:
-            logger.warning(f"Error checking run status in master log: {e}")
-
-        if has_events:
-            status = "COMPLETED" if is_finished else "RUNNING"
-            if not is_finished and not is_run_alive(run_id):
-                status = "STALLED"
-
-            scenario = None
-            if run_id.startswith("run-"):
-                parts = run_id.split("-")
-                if len(parts) > 2:
-                    scenario = "-".join(parts[1:-1])
-                else:
-                    scenario = parts[1]
-            else:
-                scenario = run_id
-
-            scenario_data = None
-            if scenario:
-                from eval_runner.catalog import ScenarioCatalog
-
-                catalog = ScenarioCatalog.get_instance()
-                scen_rec = catalog.get_scenario(scenario)
-                if scen_rec:
-                    abs_path = catalog.get_absolute_path(scen_rec["id"])
-                    if abs_path and abs_path.exists():
-                        try:
-                            with open(abs_path, encoding="utf-8") as f_scen:
-                                scenario_data = json.load(f_scen)
-                        except Exception as e:
-                            logger.debug(f"Error parsing scenario from catalog: {e}")
-
-            cert_path = config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json"
-            # O1 fix: same truth-level enrichment as the vault branch.
-            em_ml, prov_ml = CertificationService.read_run_truth_level(run_id)
-            return jsonify(
-                {
-                    "run_id": run_id,
-                    "status": status,
-                    "size": os.path.getsize(master_log),
-                    "mtime": os.path.getmtime(master_log),
-                    "has_certificate": cert_path.exists(),
-                    "sourced_from_master": True,
-                    "scenario": scenario_data,
-                    "execution_mode": em_ml,
-                    "provisional": prov_ml,
-                    "verification_status": _authoritative_verdict(run_id),
-                }
-            )
-
-    # Durable acceptance record survives restarts and provides an immediate,
-    # stable representation before any trace artifact exists.
-    if index_record is not None:
-        return jsonify(
-            {
-                "run_id": run_id,
-                "status": index_record.get("status", "PENDING"),
-                "size": 0,
-                "mtime": 0,
-                "has_certificate": False,
-                "sourced_from_master": False,
-                "scenario": None,
-                "provisional": True,
-                "verification_status": "NOT_EXECUTED",
-                "timestamp": index_record.get("created_at"),
-                "start_time": index_record.get("created_at"),
-                "identifier": index_record.get("scenario_id"),
-            }
-        )
-
-    # Check active execution backend in-memory state before returning 404
-    try:
-        from agentv_runtime.discovery import resolve_extension
-        from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
-
-        backend = resolve_extension(
-            "execution_backends",
-            default_factory=InProcessExecutionBackend.get_instance,
-        )
-        st = backend.status(run_id)
-        if st and st.get("status") != "UNKNOWN":
-            return jsonify(
-                {
-                    "run_id": run_id,
-                    "status": st.get("status"),
-                    "size": 0,
-                    "mtime": 0,
-                    "has_certificate": False,
-                    "sourced_from_master": False,
-                    "scenario": st.get("scenario_data"),
-                }
-            )
-    except Exception as e:
-        logger.debug(f"Backend status query error: {e}")
-
     return jsonify({"error": "Run not found"}), 404
 
 
@@ -544,11 +449,11 @@ def cancel_run(run_id):
     if not _run_is_in_active_context(run_id):
         return jsonify({"error": "Not found"}), 404
     """Cancels an active execution run via ExecutionBackend."""
-    from eval_runner.reference.inprocess_backend import get_execution_backend
+    from eval_runner.runtime_services import resolve_execution_backend
 
     data = request.json or {}
     reason = data.get("reason", "Cancelled via Console API")
-    backend = get_execution_backend()
+    backend = resolve_execution_backend()
     success = backend.cancel(run_id, reason=reason)
     if not success:
         return (
@@ -569,8 +474,7 @@ def resume_run(run_id):
     if not _run_is_in_active_context(run_id):
         return jsonify({"error": "Not found"}), 404
     """Resumes a paused or checkpointed evaluation run via ExecutionBackend."""
-    from eval_runner.reference.approval_store import get_default_approval_store
-    from eval_runner.reference.inprocess_backend import get_execution_backend
+    from eval_runner.runtime_services import resolve_approval_store, resolve_execution_backend
     from eval_runner.session_components.approval_manager import SessionApprovalManager
 
     data = request.json or {}
@@ -586,7 +490,7 @@ def resume_run(run_id):
     if not resumption_token:
         return jsonify({"error": "A durable approval token is required to resume a run"}), 400
 
-    store = get_default_approval_store()
+    store = resolve_approval_store()
     req = store.get_request(resumption_token)
     if not req:
         return jsonify({"error": "Approval token was not found"}), 404
@@ -605,12 +509,20 @@ def resume_run(run_id):
         # Keep all durable approval resolutions on the runtime's generic
         # approval boundary.  This ensures the same interceptor checks apply
         # to Console, CLI, and in-session resumption paths.
-        from eval_runner import plugins
+        from agentv_runtime.scope import ScopeToken
+        from eval_runner.runtime_services import resolve_plugin_registry
 
+        run_context = active_runtime_context()
+        run_store = _active_run_store()
+        scope = active_runtime_scope() or (
+            ScopeToken.from_tags(run_context) if run_context else None
+        )
         SessionApprovalManager(
             run_id=run_id,
             approval_store=store,
-            plugin_manager=plugins.manager,
+            plugin_manager=resolve_plugin_registry(),
+            scope=scope,
+            run_store=run_store,
         ).resolve_durable_request(
             approval_token=resumption_token,
             decision=decision,
@@ -631,8 +543,21 @@ def resume_run(run_id):
             }
         )
 
-    backend = get_execution_backend()
-    resumed = backend.resume(run_id, resumption_token=resumption_token, background=True)
+    backend = resolve_execution_backend()
+    try:
+        resumed = backend.resume(
+            run_id,
+            resumption_token=resumption_token,
+            background=True,
+            run_store=run_store,
+            context=run_context,
+        )
+    except Exception as exc:
+        msg = str(exc).lower()
+        if "unavailable" in msg or "missing" in msg or "not found" in msg or "checkpoint" in msg:
+            resumed = None
+        else:
+            raise
     if resumed is None:
         return (
             jsonify(
@@ -650,20 +575,23 @@ def resume_run(run_id):
 def get_verification_certificate(run_id):
     if not _run_is_in_active_context(run_id):
         return jsonify({"error": "Not found"}), 404
-    """Public Trust Protocol endpoint."""
-    from eval_runner.verifier import locate_certificate_file
 
-    cert_path = locate_certificate_file(run_id)
-    if cert_path and cert_path.exists():
-        try:
-            with open(cert_path, encoding="utf-8") as f:
-                return jsonify(json.load(f))
-        except (json.JSONDecodeError, OSError) as e:
-            logger.error(f"Corrupt certificate file {cert_path}: {e}")
-            if cert_path.name.endswith("run_manifest.json"):
-                return jsonify({"error": "Corrupt manifest found"}), 500
-            return jsonify({"error": "Corrupt certificate found"}), 500
-    return jsonify({"error": "Certificate not found"}), 404
+    store = _active_run_store()
+    context = active_runtime_context()
+    run = store.get_run(run_id, context=context)
+    if run is None:
+        return jsonify({"error": "Certificate not found"}), 404
+    if run.get("corrupted"):
+        return jsonify({"error": "Corrupt manifest found"}), 500
+    try:
+        manifest = store.get_manifest(run_id, context=context)
+    except ValueError as e:
+        if "corrupt" in str(e).lower():
+            return jsonify({"error": "Corrupt manifest found"}), 500
+        raise
+    if not manifest:
+        return jsonify({"error": "Certificate not found"}), 404
+    return jsonify(manifest)
 
 
 def is_run_alive(run_id: str) -> bool:
@@ -710,157 +638,6 @@ def _extract_canonical_event_info(line: str, fallback_seq: int) -> tuple[int, bo
     return fallback_seq, is_term
 
 
-def tail_file_generator(
-    log_path: Path, run_id: str, last_event_id: int = 0, target_run_id: str | None = None
-):
-    # 1. Wait for log creation with a 10s safety threshold
-    timeout = 10.0
-    start_time = time.time()
-    while not log_path.exists():
-        if time.time() - start_time > timeout:
-            yield 'data: {"event": "timeout", "message": "Execution log file not found"}\n\n'
-            return
-        time.sleep(0.5)
-
-    # Resolve starting inode safely
-    try:
-        last_inode = log_path.stat().st_ino
-    except OSError:
-        last_inode = None
-
-    # Track overall stream lifetime to prevent dead socket accumulation (Tab Safety)
-    stream_start = time.time()
-    max_lifetime_seconds = 3600  # 1-hour hard stop to reclaim sockets
-    seq_id = 0
-
-    # 2. Open and Stream with Catch-up Replay
-    try:
-        f = open(log_path, encoding="utf-8")
-    except OSError as e:
-        logger.warning(f"[Streaming] Failed to open {log_path} for tailing: {e}")
-        yield f"event: error\ndata: {json.dumps({'error': str(e)})}\n\n"
-        return
-
-    with f:
-        # Step A: Stream historical events, skipping events received before last_event_id.
-        # Contract: an unterminated trailing line (mid-write) is NEVER broadcast.
-        # We rewind to its start offset so the tail loop re-reads it once the
-        # writer has flushed the complete JSONL frame.
-        matched_any = False
-        while True:
-            try:
-                pos = f.tell()
-            except OSError:
-                pos = None
-            line = f.readline()
-            if not line:
-                break
-            if not line.endswith("\n"):
-                if pos is not None:
-                    f.seek(pos)
-                break
-            stripped = line.strip()
-            if stripped:
-                if target_run_id:
-                    try:
-                        ev = json.loads(stripped)
-                        if ev.get("run_id") != target_run_id:
-                            continue
-                    except Exception:
-                        continue
-                matched_any = True
-                seq_id += 1
-                _, is_term = _extract_canonical_event_info(stripped, seq_id)
-                if seq_id > last_event_id:
-                    yield f"id: {seq_id}\ndata: {stripped}\n\n"
-                if is_term:
-                    return
-
-        # If target_run_id specified, but no events exist and process is dead, return not_found
-        if target_run_id and not matched_any and not is_run_alive(target_run_id):
-            payload = json.dumps(
-                {
-                    "event": "not_found",
-                    "message": "Execution log file not found. Waiting for trace data.",
-                }
-            )
-            yield f"data: {payload}\n\n"
-            return
-
-        # Step B: Enter tail loop
-        idle_cycles = 0
-        while True:
-            # Safeguard: Terminate long-running zombie streams
-            if time.time() - stream_start > max_lifetime_seconds:
-                yield (
-                    'data: {"event": "error", '
-                    '"message": "Stream exceeded max connection lifetime"}\n\n'
-                )
-                break
-
-            # Safeguard: Check if the file was deleted or rotated
-            if not log_path.exists():
-                yield 'data: {"event": "error", "message": "Log file deleted"}\n\n'
-                break
-
-            if last_inode:
-                try:
-                    current_inode = log_path.stat().st_ino
-                    if current_inode != last_inode:
-                        yield 'data: {"event": "error", "message": "Log file rotated"}\n\n'
-                        break
-                except OSError:
-                    # Ignore transient file access errors
-                    pass
-
-            try:
-                pos = f.tell()
-            except OSError:
-                pos = None
-            line = f.readline()
-            if not line:
-                time.sleep(0.1)
-                idle_cycles += 1
-
-                # Send heartbeat every 15 seconds to prevent gateway drops
-                if idle_cycles >= 150:
-                    yield ": heartbeat\n\n"
-                    idle_cycles = 0
-
-                    # Zombie Check: Verify if the thread is still active
-                    if not is_run_alive(run_id):
-                        yield (
-                            'data: {"event": "run_end", "status": "aborted", '
-                            '"error": "Process thread terminated abruptly"}\n\n'
-                        )
-                        break
-                continue
-
-            # Contract: a line not yet terminated by its writer is never
-            # broadcast. Rewind so the complete frame can be re-read intact.
-            if pos is not None and not line.endswith("\n"):
-                f.seek(pos)
-                time.sleep(0.1)
-                continue
-
-            idle_cycles = 0
-            stripped = line.strip()
-            if stripped:
-                if target_run_id:
-                    try:
-                        ev = json.loads(stripped)
-                        if ev.get("run_id") != target_run_id:
-                            continue
-                    except Exception:
-                        continue
-                seq_id += 1
-                _, is_term = _extract_canonical_event_info(stripped, seq_id)
-                if seq_id > last_event_id:
-                    yield f"id: {seq_id}\ndata: {stripped}\n\n"
-                if is_term:
-                    break
-
-
 @run_bp.route("/v1/runs/<path:run_id>/stream", methods=["GET"])
 @require_sse_permission(Permission.RUNS_READ)
 def stream_run_logs(run_id):
@@ -880,10 +657,6 @@ def stream_run_logs(run_id):
 
     provider = _active_run_store()
     run_record = provider.get_run(run_id, context=req_context)
-    log_path = resolve_trace_path(run_id)
-    has_trace = bool(
-        (run_record and run_record.get("has_trace")) or (log_path and log_path.exists())
-    )
 
     def provider_events():
         next_offset = last_event_id
@@ -893,13 +666,25 @@ def stream_run_logs(run_id):
                 provider.stream_events(run_id, from_seq=next_offset, context=req_context),
                 start=next_offset + 1,
             ):
-                event_id = int(event.get("_seq", index))
-                next_offset = max(next_offset + 1, event_id)
+                # SSE replay cursors are transport positions, never forensic
+                # ``_seq`` values.  A trace may legitimately have non-contiguous
+                # evidence sequence numbers; using those as Last-Event-ID
+                # silently skips replay frames and fabricates client-side gaps.
+                event_id = index
+                next_offset = event_id
                 emitted = True
                 yield f"id: {event_id}\ndata: {json.dumps(event)}\n\n"
                 if event.get("event") in TERMINAL_TRACE_EVENTS:
                     return
             record = provider.get_run(run_id, context=req_context) or {}
+            if str(record.get("status", "")).upper() == "PAUSED_FOR_APPROVAL":
+                # HITL suspension is a durable, non-terminal lifecycle state.
+                # It is nevertheless terminal for this *live execution stream*:
+                # no worker remains to write events until a reviewer resumes it.
+                # Emit an explicit control frame so EventSource does not treat
+                # the normal close as a transient transport failure and retry.
+                yield ('data: {"event":"paused_for_approval","status":"PAUSED_FOR_APPROVAL"}\n\n')
+                return
             terminal_states = {
                 "SEALED",
                 "FAILED",
@@ -917,7 +702,7 @@ def stream_run_logs(run_id):
                 yield ": heartbeat\n\n"
             time.sleep(1.0)
 
-    if has_trace:
+    if run_record is not None:
         return Response(
             provider_events(),
             mimetype="text/event-stream",
@@ -928,39 +713,27 @@ def stream_run_logs(run_id):
             },
         )
 
-    master_log = config.RUN_LOG_DIR / "run.jsonl"
-    if master_log.exists():
-        has_master_events = False
-        try:
-            with open(master_log, encoding="utf-8") as mf:
-                for line in mf:
-                    if f'"{run_id}"' in line:
-                        has_master_events = True
-                        break
-        except Exception as exc:
-            logger.debug(f"Failed scanning master log for run '{run_id}': {exc}")
-        if has_master_events:
-            return Response(
-                tail_file_generator(
-                    master_log, run_id, target_run_id=run_id, last_event_id=last_event_id
-                ),
-                mimetype="text/event-stream",
-                headers={
-                    "Cache-Control": "no-cache",
-                    "X-Accel-Buffering": "no",
-                    "Connection": "keep-alive",
-                },
-            )
-
     def stream_not_found():
         import json as _json
 
-        payload = _json.dumps(
-            {
-                "event": "not_found",
-                "message": "Execution log file not found. Waiting for trace data.",
-            }
-        )
+        if run_record is None or is_run_alive(run_id):
+            payload = _json.dumps(
+                {
+                    "event": "not_found",
+                    "message": "Execution log file not found. Waiting for trace data.",
+                }
+            )
+        else:
+            # A registered run with no provider trace and no live writer
+            # cannot make progress by reconnecting.
+            # This is a persistence failure, not a transient SSE condition.
+            payload = _json.dumps(
+                {
+                    "event": "trace_unavailable",
+                    "status": "STALLED",
+                    "message": "Run has no durable trace and no active execution writer.",
+                }
+            )
         yield f"data: {payload}\n\n"
 
     return Response(stream_not_found(), mimetype="text/event-stream")
@@ -974,7 +747,71 @@ def verify_run(run_id):
         return jsonify({"error": "Not found"}), 404
     from eval_runner.verifier import TraceVerifier
 
-    run_dir = config.RUN_LOG_DIR / run_id
-    res = TraceVerifier.verify_run_directory(run_dir)
-    status_code = 404 if res.get("verification_status") == "NOT_FOUND" else 200
-    return jsonify(res), status_code
+    store = _active_run_store()
+    context = active_runtime_context()
+    manifest = store.get_manifest(run_id, context=context)
+    trace_bytes = store.get_trace_bytes(run_id, context=context)
+    if not manifest or trace_bytes is None:
+        return jsonify({"verification_status": "NOT_FOUND"}), 404
+    verified = TraceVerifier.verify_trace_bytes(
+        trace_bytes,
+        manifest,
+        run_store=store,
+        context=context,
+    )
+    if not verified:
+        verification_status = "FAILED_VERIFICATION"
+    else:
+        cert = manifest.get("certification") or {}
+        compliance = manifest.get("compliance") or {}
+        outcome = str(
+            cert.get("outcome")
+            or compliance.get("status")
+            or manifest.get("compliance_status")
+            or manifest.get("status")
+            or ""
+        ).lower()
+        is_attested_fail = outcome in {
+            "fail",
+            "failed",
+            "attested_fail",
+            "attested_failed",
+            "execution_failed",
+        }
+        mode = str(manifest.get("execution_mode") or "").lower()
+        provisional = bool(manifest.get("provisional") or mode == "simulated")
+        if is_attested_fail:
+            verification_status = "ATTESTED_FAIL"
+        elif provisional:
+            verification_status = "VERIFIED_PROVISIONAL"
+        else:
+            verification_status = "VERIFIED"
+    provenance = manifest.get("provenance_chain") or manifest.get("signatures") or []
+    if not isinstance(provenance, list):
+        provenance = []
+    signer = provenance[-1] if provenance and isinstance(provenance[-1], dict) else {}
+    has_certificate = bool(
+        manifest.get("vc_version")
+        or manifest.get("verification_package")
+        or manifest.get("certificate")
+        or provenance
+    )
+    return jsonify(
+        {
+            "verification_status": verification_status,
+            "verdict": verification_status,
+            "provisional": verification_status == "VERIFIED_PROVISIONAL",
+            # The console reads these only as the result of the provider-native
+            # verification above, never as a certificate-presence inference.
+            "is_valid": verified,
+            "cryptographically_valid": verified,
+            "has_certificate": has_certificate,
+            "algorithm": signer.get("algorithm"),
+            "signer_identity": signer.get("identity") or signer.get("key_id"),
+            **(
+                {"failure_reason": "Trace or certificate verification failed."}
+                if not verified
+                else {}
+            ),
+        }
+    )

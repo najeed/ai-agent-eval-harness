@@ -102,6 +102,27 @@ async def test_sandbox_state_mutation(tmp_path):
 
 
 @pytest.mark.asyncio
+async def test_sandbox_get_bounded_state_projection(tmp_path):
+    """Only requested state paths may be returned as independent evidence."""
+    scenario = {
+        "id": "bounded-state",
+        "initial_state": {"account": {"balance": 100}, "internal": "not-requested"},
+    }
+    sandbox = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
+
+    with pytest.raises(ValueError, match="non-empty bounded projection"):
+        await sandbox.get_bounded_state([])
+
+    bounded = await sandbox.get_bounded_state(
+        ["account.balance", "world.account.balance", "missing.path"]
+    )
+
+    assert bounded == {"account": {"balance": 100}, "world": {"account": {"balance": 100}}}
+    bounded["account"]["balance"] = 0
+    assert sandbox.state["account"]["balance"] == 100
+
+
+@pytest.mark.asyncio
 async def test_sandbox_lifecycle(tmp_path):
     """Verify setup/teardown with a controlled tmp directory."""
     scenario = {

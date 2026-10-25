@@ -1,24 +1,24 @@
 import asyncio
-import json
 from datetime import datetime
 from pathlib import Path
 
 import aiohttp
 
 
-async def record_interaction(agent_url: str):
+async def record_interaction(agent_url: str, *, run_store=None, context: dict | None = None):
     """Simple loop to record interactions with an agent."""
     print("\n[Trace Recorder] AgentV - Trace Recorder")
     print(f"Target Agent: {agent_url}\n")
     print("Type 'exit' or 'quit' to stop recording.\n")
 
-    run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
     runs_root = Path("runs")
-    run_dir = runs_root / run_id
-    run_dir.mkdir(parents=True, exist_ok=True)
-    log_file = run_dir / "run.jsonl"
-    legacy_file = runs_root / f"run-{run_id}.jsonl"
+    if run_store is None:
+        from eval_runner.runtime_services import compose_local_run_store
 
+        run_store = compose_local_run_store(runs_root)
+
+    run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+    run_store.create_run(run_id, scenario_id="recorded_session", context=context)
     events = []
 
     # 1. Emit run_start
@@ -83,17 +83,20 @@ async def record_interaction(agent_url: str):
                     print(f"  ❌ Error: Failed to contact agent: {e}")
 
     finally:
-        # Save to canonical vault layout runs/<run_id>/run.jsonl
+        # Persist through the authoritative run provider.
         from eval_runner.run_lifecycle import assert_can_write_trace
 
-        from .trace_utils import AESJsonEncoder
+        assert_can_write_trace(run_id, run_store=run_store, context=context)
+        run_store.append_events(run_id, events, context=context)
 
-        assert_can_write_trace(run_id)
-        with open(log_file, "w", encoding="utf-8") as f:
-            for e in events:
-                f.write(json.dumps(e, cls=AESJsonEncoder) + "\n")
-
+        # Legacy mirror for older CLI / testing expectations
+        legacy_file = runs_root / f"run-{run_id}.jsonl"
         try:
+            import json
+
+            from .trace_utils import AESJsonEncoder
+
+            legacy_file.parent.mkdir(parents=True, exist_ok=True)
             with open(legacy_file, "w", encoding="utf-8") as f:
                 for e in events:
                     f.write(json.dumps(e, cls=AESJsonEncoder) + "\n")
@@ -104,8 +107,7 @@ async def record_interaction(agent_url: str):
                 "Could not mirror trace to legacy path: %s", exc
             )
 
-        print(f"\n✅ Recording saved to: {log_file}")
-        print(f"Tip: You can replay this with 'agentv replay --path {log_file}'")
+        print(f"\nRecording saved for run: {run_id}")
 
 
 if __name__ == "__main__":
@@ -113,4 +115,8 @@ if __name__ == "__main__":
     import sys
 
     url = sys.argv[1] if len(sys.argv) > 1 else "http://localhost:5001/execute_task"
-    asyncio.run(record_interaction(url))
+    from eval_runner.runtime_services import resolve_run_store
+
+    # This executable is a composition boundary; the recorder itself accepts
+    # only explicit ownership and never resolves a provider.
+    asyncio.run(record_interaction(url, run_store=resolve_run_store()))

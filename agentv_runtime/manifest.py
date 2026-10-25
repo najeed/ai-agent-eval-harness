@@ -23,6 +23,39 @@ from typing import Any
 
 from agentv_runtime.canonical import canonical_json_encode
 
+_ARTIFACT_SCOPE_FIELDS = (
+    "org_id",
+    "tenant_id",
+    "workspace_id",
+    "active_environment",
+)
+
+
+def resolve_artifact_scope(manifest: Mapping[str, Any] | None) -> dict[str, str]:
+    """Return the complete signed execution scope carried by a run manifest."""
+    empty_scope = {field: "" for field in _ARTIFACT_SCOPE_FIELDS}
+    if not isinstance(manifest, Mapping):
+        return empty_scope
+
+    candidates: list[Mapping[str, Any]] = [manifest]
+    execution_manifest = manifest.get("execution_manifest")
+    if isinstance(execution_manifest, Mapping):
+        candidates.append(execution_manifest)
+    metadata = manifest.get("metadata")
+    if isinstance(metadata, Mapping):
+        nested_manifest = metadata.get("execution_manifest")
+        if isinstance(nested_manifest, Mapping):
+            candidates.append(nested_manifest)
+
+    for candidate in candidates:
+        scope = candidate.get("scope")
+        if not isinstance(scope, Mapping):
+            continue
+        resolved = {field: str(scope.get(field) or "") for field in _ARTIFACT_SCOPE_FIELDS}
+        if all(resolved.values()):
+            return resolved
+    return empty_scope
+
 
 def _to_json_compatible(obj: Any) -> Any:
     """Recursively converts objects to canonical JSON-compatible primitives,
@@ -343,4 +376,5 @@ __all__ = [
     "ManifestBuilder",
     "compute_preflight_fingerprint",
     "compute_scenario_hash",
+    "resolve_artifact_scope",
 ]

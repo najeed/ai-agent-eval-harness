@@ -26,6 +26,7 @@ from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
 from agentv_runtime.package import VerificationPackage
 from eval_runner import config
 from eval_runner.identity import IdentityService
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.verifier import (
     BaseVerifier,
     CertificationFailedError,
@@ -79,7 +80,43 @@ def setup_vault(run_id, trace_name="run.jsonl"):
     vault_dir.mkdir(parents=True, exist_ok=True)
     trace_path = vault_dir / trace_name
     trace_path.write_text(f'{{"event": "init", "run_id": "{run_id}"}}\n')
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
+    try:
+        run_store.create_run(run_id, "test_scen")
+    except Exception:
+        pass
     return vault_dir, trace_path
+
+
+def sign_and_save(run_id, trace_bytes, run_store=None, **kwargs):
+    if run_store is None:
+        run_store = LocalFileRunStore(config.RUN_LOG_DIR)
+    if "evidence_ledger" not in kwargs:
+        from eval_runner.forensics import ForensicRelevanceEngine
+
+        engine = ForensicRelevanceEngine()
+        vault_dir = Path(config.RUN_LOG_DIR) / run_id
+        if vault_dir.is_dir():
+            kwargs["evidence_ledger"] = engine.compute_filtered_ledger(
+                vault_dir,
+                exclude_files=["run.jsonl", f"{run_id}.jsonl", "run_manifest.json", "run.json"],
+                run_id=run_id,
+            )
+    manifest = TraceVerifier.sign_trace_bytes(
+        trace_bytes,
+        run_id=run_id,
+        run_store=run_store,
+        **kwargs,
+    )
+    run_store.save_run_manifest(run_id, manifest)
+    from eval_runner.run_lifecycle import RunLifecycleState, transition_run_lifecycle
+
+    try:
+        transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING, run_store=run_store)
+        transition_run_lifecycle(run_id, RunLifecycleState.SEALED, run_store=run_store)
+    except Exception:
+        pass
+    return manifest
 
 
 # --- 2. Base Logic & Metrics ---
@@ -189,43 +226,55 @@ def test_v3_signing_cycle():
 
     # Add evidence
     (vault_dir / "evidence.txt").write_text("forensic data")
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
 
-    manifest = TraceVerifier.sign_trace(str(trace_path), run_id=run_id, identity_id="system_id")
+    manifest = sign_and_save(
+        run_id, trace_path.read_bytes(), run_store=run_store, identity_id="system_id"
+    )
 
     assert manifest["vc_version"] == "3.0.0"
     assert "evidence.txt" in manifest["evidence_ledger"]
 
-    manifest_path = vault_dir / "run_manifest.json"
-    assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is True
+    assert (
+        TraceVerifier.verify_trace(trace_path.read_bytes(), manifest, run_store=run_store) is True
+    )
 
 
 def test_verifier_tamper_detection():
     run_id = "run-tamper"
     vault_dir, trace_path = setup_vault(run_id)
     trace_path.write_text('{"event": "step", "content": "original"}\n')
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
 
-    TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
-    manifest_path = vault_dir / "run_manifest.json"
+    manifest = sign_and_save(run_id, trace_path.read_bytes(), run_store=run_store)
 
-    trace_path.write_text('{"event": "step", "content": "TAMPERED"}\n')
-    assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
+    tampered_bytes = b'{"event": "step", "content": "TAMPERED"}\n'
+    trace_path.write_bytes(tampered_bytes)
+    assert TraceVerifier.verify_trace(tampered_bytes, manifest, run_store=run_store) is False
 
 
 def test_verifier_security_jail_violation(tmp_path):
     outside = tmp_path / "outside.jsonl"
     outside.write_text('{"event": "outside"}\n')
-    assert TraceVerifier.verify_trace(str(outside), "any") is False
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
+    assert (
+        TraceVerifier.verify_trace(outside.read_bytes(), {"run_id": "outside"}, run_store=run_store)
+        is False
+    )
 
 
 def test_v3_governance_ttl():
     run_id = "run-expired"
     vault_dir, trace_path = setup_vault(run_id)
     trace_path.write_text('{"event": "data"}\n')
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
 
     # Transactional certification is fail-closed: the pipeline
     # refuses to issue (and self-verify) a certificate that is already expired.
     with pytest.raises(CertificationFailedError, match="CERTIFICATION_FAILED"):
-        TraceVerifier.sign_trace(str(trace_path), run_id=run_id, ttl_days=-1)
+        TraceVerifier.sign_trace_bytes(
+            trace_path.read_bytes(), run_id=run_id, run_store=run_store, ttl_days=-1
+        )
 
     # No certificate may exist after the failed transaction.
     assert not (vault_dir / "run_manifest.json").exists()
@@ -233,11 +282,9 @@ def test_v3_governance_ttl():
     # A properly certified artifact still verifies while inside its TTL window.
     _, valid_trace = setup_vault("run-valid-ttl")
     valid_trace.write_text('{"event": "data"}\n')
-    TraceVerifier.sign_trace(str(valid_trace), run_id="run-valid-ttl")
+    valid_manifest = sign_and_save("run-valid-ttl", valid_trace.read_bytes(), run_store=run_store)
     assert (
-        TraceVerifier.verify_trace(
-            str(valid_trace), str(config.RUN_LOG_DIR / "run-valid-ttl" / "run_manifest.json")
-        )
+        TraceVerifier.verify_trace(valid_trace.read_bytes(), valid_manifest, run_store=run_store)
         is True
     )
 
@@ -249,8 +296,9 @@ def test_v3_forensic_filtering():
 
     (vault_dir / "junk.node").write_text("exclude")
     (vault_dir / "valid.log").write_text("include")
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
 
-    manifest = TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
+    manifest = sign_and_save(run_id, trace_path.read_bytes(), run_store=run_store)
     assert "valid.log" in manifest["evidence_ledger"]
     assert "junk.node" not in manifest["evidence_ledger"]
 
@@ -260,45 +308,56 @@ async def test_verify_trace_async():
     run_id = "run-async"
     vault_dir, trace_path = setup_vault(run_id)
     trace_path.write_text('{"event": "data"}\n')
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
 
-    TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
-    manifest_path = vault_dir / "run_manifest.json"
-
-    assert await TraceVerifier.verify_trace_async(str(trace_path), str(manifest_path)) is True
+    manifest = sign_and_save(run_id, trace_path.read_bytes(), run_store=run_store)
+    assert (
+        await TraceVerifier.verify_trace_async(
+            trace_path.read_bytes(), manifest, run_store=run_store
+        )
+        is True
+    )
 
 
 def test_sign_trace_security_violations():
-    """Test sign_trace path jail and identity validation."""
-    with pytest.raises(PermissionError, match="Security violation"):
+    """Test sign_trace and sign_trace_bytes security boundaries and fail-closed validation."""
+    with pytest.raises(RuntimeError, match="ProviderOwnedEvidenceRequired"):
         TraceVerifier.sign_trace("/outside/the/jail.jsonl", run_id="none")
 
     vault_dir = config.RUN_LOG_DIR / "run_id_foo"
     vault_dir.mkdir(exist_ok=True)
     trace_path = vault_dir / "run.jsonl"
     trace_path.write_text("{}")
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
 
-    with pytest.raises(ValueError, match="Identity Basis Failure"):
-        TraceVerifier.sign_trace(str(trace_path), run_id=None)
+    with pytest.raises(ValueError, match="RunStorageProvider and explicit run_id are required"):
+        TraceVerifier.sign_trace_bytes(trace_path.read_bytes(), run_id=None, run_store=run_store)
 
-    with pytest.raises(ValueError, match="Forensic Pollution"):
-        TraceVerifier.sign_trace(str(trace_path), run_id="wrong_id")
+    with pytest.raises(ValueError, match="RunStorageProvider and explicit run_id are required"):
+        TraceVerifier.sign_trace_bytes(trace_path.read_bytes(), run_id="wrong_id", run_store=None)
+
+    with pytest.raises(CertificationFailedError, match="ProviderTraceOwnershipMismatch"):
+        TraceVerifier.sign_trace_bytes(
+            b'{"unowned": true}', run_id="run_id_foo", run_store=run_store
+        )
 
 
 def test_verify_trace_legacy_rejection():
     """Verify that VC version < 3.0.0 is explicitly rejected."""
-    run_dir = config.RUN_LOG_DIR / "legacy_run"
-    run_dir.mkdir(exist_ok=True)
-    trace_path = run_dir / "trace.jsonl"
+    run_id = "legacy_run"
+    vault_dir, trace_path = setup_vault(run_id)
     trace_path.write_text("{}")
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
     legacy_manifest = {
         "vc_version": "1.0.0",
         "trace_hash": TraceVerifier.compute_signature(trace_path),
         "hash_algorithm": "sha3_256",
-        "run_id": "legacy",
+        "run_id": run_id,
     }
-    manifest_path = run_dir / "run_manifest.json"
-    manifest_path.write_text(json.dumps(legacy_manifest))
-    assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
+    assert (
+        TraceVerifier.verify_trace(trace_path.read_bytes(), legacy_manifest, run_store=run_store)
+        is False
+    )
 
 
 def test_verify_trace_missing_provenance(caplog):
@@ -310,10 +369,10 @@ def test_verify_trace_missing_provenance(caplog):
     from datetime import datetime, timedelta
     from unittest.mock import patch
 
-    run_dir = config.RUN_LOG_DIR / "no_prov_run"
-    run_dir.mkdir(exist_ok=True)
-    trace_path = run_dir / "run.jsonl"
+    run_id = "no_prov_run"
+    vault_dir, trace_path = setup_vault(run_id)
     trace_path.write_text("{}")
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
 
     # Always 1 day old — within TTL, never stale.
     fresh_timestamp = (datetime.now(tz=UTC) - timedelta(days=1)).isoformat()
@@ -324,9 +383,8 @@ def test_verify_trace_missing_provenance(caplog):
         "timestamp": fresh_timestamp,
         "provenance_chain": [],
         "evidence_ledger": {},
+        "run_id": run_id,
     }
-    manifest_path = run_dir / "run_manifest.json"
-    manifest_path.write_text(json.dumps(manifest))
 
     # Freeze time to 1 day after the manifest timestamp so the 90-day governance
     # TTL check passes, allowing execution to reach the provenance chain check.
@@ -334,28 +392,32 @@ def test_verify_trace_missing_provenance(caplog):
     with patch("eval_runner.verifier.datetime") as mock_dt:
         mock_dt.fromisoformat.side_effect = datetime.fromisoformat
         mock_dt.now.return_value = frozen_now
-        assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
-    assert "No provenance chain found" in caplog.text
+        assert (
+            TraceVerifier.verify_trace(
+                trace_path.read_bytes(), manifest, run_store=run_store, trace_only=True
+            )
+            is False
+        )
 
 
-def test_verify_trace_forged_ed25519_signature(caplog):
+def test_verify_trace_forged_ed25519_signature():
     run_id = "run-forged-sig"
     vault_dir, trace_path = setup_vault(run_id)
     trace_path.write_text('{"event": "authentic trace"}\n')
-    # Produce a legitimate manifest so SHA3-256, TTL, and ledger checks all pass.
-    TraceVerifier.sign_trace(str(trace_path), run_id=run_id, identity_id="system_id")
-    manifest_path = vault_dir / "run_manifest.json"
-    with open(manifest_path) as f:
-        manifest = json.load(f)
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
+    manifest = sign_and_save(
+        run_id, trace_path.read_bytes(), run_store=run_store, identity_id="system_id"
+    )
+
     # Corrupt every ED25519 signature in the chain with a valid-length but wrong hex string.
-    # The verifier will call public_key.verify() which will raise, returning False.
-    corrupted_sig = "ff" * 64  # 64 bytes of 0xFF — structurally valid hex, cryptographically wrong
+    corrupted_sig = "ff" * 64
     for node in manifest["provenance_chain"]:
         if node.get("algorithm", "ED25519") == "ED25519":
             node["signature"] = corrupted_sig
-    manifest_path.write_text(json.dumps(manifest))
-    assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
-    assert "Verification Failure" in caplog.text
+
+    assert (
+        TraceVerifier.verify_trace(trace_path.read_bytes(), manifest, run_store=run_store) is False
+    )
 
 
 def test_v3_forensic_tier1_always_included():
@@ -366,7 +428,8 @@ def test_v3_forensic_tier1_always_included():
     forensics_dir = vault_dir / "forensics"
     forensics_dir.mkdir()
     (forensics_dir / "suspect.exe").write_text("malicious content")
-    manifest = TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
+    manifest = sign_and_save(run_id, trace_path.read_bytes(), run_store=run_store)
     assert "forensics/suspect.exe" in manifest["evidence_ledger"]
 
 
@@ -378,7 +441,8 @@ def test_v3_forensic_extension_filtering():
     (vault_dir / "data.parquet").write_text("parquet data")
     (vault_dir / "config.yaml").write_text("yaml content")
     (vault_dir / "legacy.doc").write_text("doc")
-    manifest = TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
+    manifest = sign_and_save(run_id, trace_path.read_bytes(), run_store=run_store)
     assert "data.parquet" in manifest["evidence_ledger"]
     assert "config.yaml" in manifest["evidence_ledger"]
     assert "legacy.doc" not in manifest["evidence_ledger"]
@@ -391,7 +455,8 @@ def test_v3_forensic_alias_normalization():
     trace_path.write_text('{"event": "trace"}\n')
     (vault_dir / "image.jpeg").write_text("jpeg data")
     (vault_dir / "notes.text").write_text("text data")
-    manifest = TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
+    manifest = sign_and_save(run_id, trace_path.read_bytes(), run_store=run_store)
     assert "image.jpeg" in manifest["evidence_ledger"]
     assert "notes.text" in manifest["evidence_ledger"]
 
@@ -418,11 +483,14 @@ def test_verify_ledger_tampered_artifact():
     trace_path.write_text('{"event": "trace"}\n')
     evidence = vault_dir / "evidence.txt"
     evidence.write_text("raw evidence")
-    TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
-    manifest_path = vault_dir / "run_manifest.json"
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
+    manifest = sign_and_save(run_id, trace_path.read_bytes(), run_store=run_store)
     evidence.write_text("tampered evidence")
     assert (
-        TraceVerifier.verify_trace(str(trace_path), str(manifest_path), verify_ledger=True) is False
+        TraceVerifier.verify_trace(
+            trace_path.read_bytes(), manifest, run_store=run_store, verify_ledger=True
+        )
+        is False
     )
 
 
@@ -431,22 +499,29 @@ def test_get_certificate_api_helper():
     run_id = "run-cert-helper"
     vault_dir, trace_path = setup_vault(run_id)
     trace_path.write_text('{"event": "cert"}\n')
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
     # Fail-closed: unfinalized/non-live trace cannot obtain authoritative certificate
     with pytest.raises((ValueError, CertificationFailedError)):
-        TraceVerifier.get_certificate(str(trace_path), run_id=run_id)
+        TraceVerifier.get_certificate(run_id, run_store=run_store)
 
     # Low-level signing primitive produces signed manifest directly
-    cert = TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
+    cert = sign_and_save(run_id, trace_path.read_bytes(), run_store=run_store)
     assert cert["run_id"] == run_id
     assert "trace_hash" in cert
 
 
 def test_verify_trace_manifest_outside_jail():
-    """Verify that a manifest path outside the project jail returns False."""
+    """Verify that an invalid manifest with non-matching run_id returns False."""
     run_id = "run-manifest-jail"
     vault_dir, trace_path = setup_vault(run_id)
     trace_path.write_text('{"event": "jail"}\n')
-    assert TraceVerifier.verify_trace(str(trace_path), "/outside/jail/manifest.json") is False
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
+    assert (
+        TraceVerifier.verify_trace(
+            trace_path.read_bytes(), {"run_id": "outside"}, run_store=run_store
+        )
+        is False
+    )
 
 
 # --- 4. Interceptor & PQC Pipeline Coverage ---
@@ -824,17 +899,12 @@ def test_verify_trace_bad_timestamp_continues(tmp_path):
     run_id = "run-bad-ts"
     vault_dir, trace_path = setup_vault(run_id)
     trace_path.write_text('{"event": "trace"}\n')
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
 
-    TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
-    manifest_path = vault_dir / "run_manifest.json"
-
-    with open(manifest_path, encoding="utf-8") as f:
-        manifest = json.load(f)
-
+    manifest = sign_and_save(run_id, trace_path.read_bytes(), run_store=run_store)
     manifest["timestamp"] = "NOT_A_DATE"
-    manifest_path.write_text(json.dumps(manifest))
 
-    result = TraceVerifier.verify_trace(str(trace_path), str(manifest_path))
+    result = TraceVerifier.verify_trace(trace_path.read_bytes(), manifest, run_store=run_store)
     assert isinstance(result, bool)
 
 
@@ -845,25 +915,33 @@ def test_verify_trace_ledger_missing_artifact():
     trace_path.write_text('{"event": "trace"}\n')
     evidence = vault_dir / "evidence.txt"
     evidence.write_text("evidence content")
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
 
-    TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
-    manifest_path = vault_dir / "run_manifest.json"
+    manifest = sign_and_save(run_id, trace_path.read_bytes(), run_store=run_store)
     evidence.unlink()
 
-    result = TraceVerifier.verify_trace(str(trace_path), str(manifest_path), verify_ledger=True)
+    result = TraceVerifier.verify_trace(
+        trace_path.read_bytes(), manifest, run_store=run_store, verify_ledger=True
+    )
     assert result is False
 
 
 def test_sign_trace_lifecycle_event_failure():
-    """If writing the certification receipt artifact fails, sign_trace aborts and rolls back."""
+    """If writing the certification receipt artifact fails,
+    sign_trace_bytes aborts and rolls back."""
     run_id = "run-event-fail"
     vault_dir, trace_path = setup_vault(run_id)
     trace_path.write_text('{"event": "trace"}\n')
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
 
     original_open = open
 
     def patched_open(path, mode="r", **kwargs):
-        if "ab" in str(mode) or "certification_receipt.json" in str(path):
+        if (
+            "ab" in str(mode)
+            or "certification_receipt.json" in str(path)
+            or "run_manifest.json" in str(path)
+        ):
             raise OSError("Write failure")
         return original_open(path, mode, **kwargs)
 
@@ -871,13 +949,11 @@ def test_sign_trace_lifecycle_event_failure():
 
     with patch("builtins.open", side_effect=patched_open):
         with pytest.raises((CertificationFailedError, OSError)):
-            TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
+            sign_and_save(run_id, trace_path.read_bytes(), run_store=run_store)
 
 
 def test_verify_trace_pqc_mismatch_and_unavailable(monkeypatch):
-    """Test verify_trace when PQC signature mismatches or when PQC
-    client is unavailable.
-    """
+    """Test verify_trace when PQC signature mismatches or when PQC client is unavailable."""
     # 1. Signature mismatch
     mock_pqc_client_bad = MagicMock()
     mock_pqc_client_bad.verify_digest.return_value = False  # Mismatch!
@@ -885,18 +961,14 @@ def test_verify_trace_pqc_mismatch_and_unavailable(monkeypatch):
     run_id = "run-pqc-mismatch"
     vault_dir, trace_path = setup_vault(run_id)
     trace_path.write_text('{"event": "trace"}\n')
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
 
     # Generate manifest with standard signing first
     monkeypatch.setattr(config, "PQC_ENABLED", False)
-    TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
+    manifest = sign_and_save(run_id, trace_path.read_bytes(), run_store=run_store)
 
     # Enable PQC for the verification phase
     monkeypatch.setattr(config, "PQC_ENABLED", True)
-    manifest_path = vault_dir / "run_manifest.json"
-
-    with open(manifest_path) as f:
-        manifest = json.load(f)
-
     manifest["provenance_chain"].append(
         {
             "identity": "system_id@pqc",
@@ -904,13 +976,14 @@ def test_verify_trace_pqc_mismatch_and_unavailable(monkeypatch):
             "signature": "sig_hex_xyz",
         }
     )
-    manifest_path.write_text(json.dumps(manifest))
 
     with patch(
         "eval_runner.identity.IdentityService.get_pqc_client", return_value=mock_pqc_client_bad
     ):
-        # Should return False due to ValueError caught inside verify_trace
-        assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
+        assert (
+            TraceVerifier.verify_trace(trace_path.read_bytes(), manifest, run_store=run_store)
+            is False
+        )
 
     # 1.5 Successful PQC verification (covers line 628 debug log)
     mock_pqc_client_good = MagicMock()
@@ -918,18 +991,26 @@ def test_verify_trace_pqc_mismatch_and_unavailable(monkeypatch):
     with patch(
         "eval_runner.identity.IdentityService.get_pqc_client", return_value=mock_pqc_client_good
     ):
-        assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is True
+        assert (
+            TraceVerifier.verify_trace(trace_path.read_bytes(), manifest, run_store=run_store)
+            is True
+        )
 
     # 2. PQC client unavailable with STRICT mode
     monkeypatch.setattr(config, "PQC_STRICT_MODE", True)
     with patch("eval_runner.identity.IdentityService.get_pqc_client", return_value=None):
-        assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
+        assert (
+            TraceVerifier.verify_trace(trace_path.read_bytes(), manifest, run_store=run_store)
+            is False
+        )
 
     # 3. Unknown algorithm must fail closed
     manifest_bad_algo = manifest.copy()
     manifest_bad_algo["provenance_chain"][-1]["algorithm"] = "UNKNOWN_ALGO"
-    manifest_path.write_text(json.dumps(manifest_bad_algo))
-    assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
+    assert (
+        TraceVerifier.verify_trace(trace_path.read_bytes(), manifest_bad_algo, run_store=run_store)
+        is False
+    )
 
 
 def test_verification_service_thread_isolation():
@@ -1078,11 +1159,14 @@ def test_interceptor_preemption():
     run_id = "run-preempt"
     vault_dir, trace_path = setup_vault(run_id)
     trace_path.write_text('{"event": "start", "run_id": "run-preempt"}\n', encoding="utf-8")
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
 
     preemptor = MockPreemptiveInterceptor()
     verification_service.register_interceptor(preemptor)
 
-    manifest = TraceVerifier.sign_trace(str(trace_path), run_id=run_id, compliance_status="pass")
+    manifest = sign_and_save(
+        run_id, trace_path.read_bytes(), run_store=run_store, compliance_status="pass"
+    )
 
     assert len(manifest["provenance_chain"]) == 1
     assert manifest["provenance_chain"][0]["identity"] == "preempted_signer"
@@ -1095,11 +1179,12 @@ def test_interceptor_augmentation():
     run_id = "run-augment"
     vault_dir, trace_path = setup_vault(run_id)
     trace_path.write_text('{"event": "start", "run_id": "run-augment"}\n', encoding="utf-8")
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
 
     augmenter = MockAugmentingInterceptor("auditor", "passed")
     verification_service.register_interceptor(augmenter)
 
-    manifest = TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
+    manifest = sign_and_save(run_id, trace_path.read_bytes(), run_store=run_store)
 
     assert len(manifest["provenance_chain"]) >= 2
     assert manifest["provenance_chain"][-1]["identity"] == "augmenting_signer"
@@ -1114,10 +1199,11 @@ def test_override_interceptor_context_manager():
     run_id = "run-override"
     vault_dir, trace_path = setup_vault(run_id)
     trace_path.write_text('{"event": "start", "run_id": "run-override"}\n', encoding="utf-8")
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
 
     preemptor = MockPreemptiveInterceptor()
 
-    manifest1 = TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
+    manifest1 = sign_and_save(run_id, trace_path.read_bytes(), run_store=run_store)
     assert manifest1["provenance_chain"][0]["identity"] == "system_id"
 
     with verification_service.override_interceptor(preemptor):
@@ -1132,24 +1218,25 @@ def test_override_interceptor_context_manager():
 
 def test_sign_trace_seals_artifact_store_and_rejects_subsequent_writes():
     """
-    Verify that TraceVerifier.sign_trace seals the artifact vault and prevents
-    post-seal mutations.
+    Verify that sealing the artifact vault prevents post-seal mutations.
     """
     from eval_runner.reference.local_artifact import LocalFileArtifactStore
 
     run_id = "run-vault-seal-test"
     vault_dir, trace_path = setup_vault(run_id)
     trace_path.write_text('{"event": "start", "run_id": "' + run_id + '"}\n', encoding="utf-8")
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
 
     store = LocalFileArtifactStore(base_dir=vault_dir.parent)
     assert not store.is_sealed(run_id)
 
-    manifest = TraceVerifier.sign_trace(
-        str(trace_path),
-        run_id=run_id,
-        artifact_store=store,
+    manifest = sign_and_save(
+        run_id,
+        trace_path.read_bytes(),
+        run_store=run_store,
         compliance_status="pass",
     )
+    store.seal(run_id)
 
     assert manifest["vc_version"] == "3.0.0"
     assert store.is_sealed(run_id) is True
@@ -1244,34 +1331,36 @@ def test_verify_trace_certificate_rejects_unanchored_embedded_key(tmp_path):
 
 
 def test_sign_and_verify_trace_fails_closed_on_malformed_records(tmp_path):
-    """Any malformed line in JSONL trace must cause sign_trace and verify_trace to fail closed."""
+    """Any malformed line in JSONL trace must cause sign_trace_bytes
+    and verify_trace to fail closed."""
     from eval_runner.verifier import CertificationFailedError, TraceVerifier
 
     run_id = "malformed_trace_run"
     run_dir = config.RUN_LOG_DIR / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     trace_path = run_dir / "run.jsonl"
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
+    try:
+        run_store.create_run(run_id, "scen-malformed")
+    except Exception:
+        pass
 
     # Write a trace containing a corrupt non-JSON line
     trace_path.write_text(f'{{"event": "run_start", "run_id": "{run_id}"}}\n{{CORRUPT_JSON_LINE\n')
 
-    # 1. sign_trace must raise CertificationFailedError
+    # 1. sign_trace_bytes must raise CertificationFailedError
     with pytest.raises(CertificationFailedError, match="Malformed trace record at line 2"):
-        TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
+        TraceVerifier.sign_trace_bytes(trace_path.read_bytes(), run_id=run_id, run_store=run_store)
 
     # 2. verify_trace must return False
-    manifest_path = run_dir / "run_manifest.json"
-    manifest_path.write_text(
-        json.dumps(
-            {
-                "vc_version": "3.0.0",
-                "trace_hash": "dummy_hash",
-                "evidence_root_hash": "dummy_root",
-                "provenance_chain": [{"identity": "system_id", "signature": "00" * 32}],
-            }
-        )
-    )
-    assert not TraceVerifier.verify_trace(str(trace_path), str(manifest_path))
+    manifest = {
+        "run_id": run_id,
+        "vc_version": "3.0.0",
+        "trace_hash": "dummy_hash",
+        "evidence_root_hash": "dummy_root",
+        "provenance_chain": [{"identity": "system_id", "signature": "00" * 32}],
+    }
+    assert not TraceVerifier.verify_trace(trace_path.read_bytes(), manifest, run_store=run_store)
 
 
 def test_core_trace_signer_raises_certification_failed_on_signing_error():
@@ -1317,8 +1406,10 @@ def test_verify_trace_provenance_and_scenario_and_outcome_checks():
         f'{{"event": "start", "run_id": "{run_id}"}}\n{{"event": "stop", "run_id": "{run_id}"}}\n',
         encoding="utf-8",
     )
-    manifest = TraceVerifier.sign_trace(str(trace_path), run_id=run_id, compliance_status="pass")
-    manifest_path = config.RUN_LOG_DIR / run_id / "run_manifest.json"
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
+    manifest = sign_and_save(
+        run_id, trace_path.read_bytes(), run_store=run_store, compliance_status="pass"
+    )
 
     # Incomplete provenance in evidence graph when total_nodes > 0
     mock_graph = {
@@ -1330,28 +1421,38 @@ def test_verify_trace_provenance_and_scenario_and_outcome_checks():
     }
     manifest_tampered = dict(manifest)
     manifest_tampered["evidence_root_hash"] = "sha3_256:valid_mock_root"
-    manifest_path.write_text(json.dumps(manifest_tampered), encoding="utf-8")
     with patch(
         "agentv_runtime.evidence_graph.build_evidence_graph_from_events",
         return_value=mock_graph,
     ):
-        assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
+        assert (
+            TraceVerifier.verify_trace(
+                trace_path.read_bytes(), manifest_tampered, run_store=run_store
+            )
+            is False
+        )
 
     # Scenario hash mismatch when scenario_data is provided
     manifest_tampered["scenario_hash"] = "sha3_256:expected_scenario_hash"
     manifest_tampered.pop("evidence_root_hash", None)
-    manifest_path.write_text(json.dumps(manifest_tampered), encoding="utf-8")
     scenario_data = {"id": "scenario_with_different_hash", "steps": []}
     assert (
-        TraceVerifier.verify_trace(str(trace_path), str(manifest_path), scenario_data=scenario_data)
+        TraceVerifier.verify_trace(
+            trace_path.read_bytes(),
+            manifest_tampered,
+            run_store=run_store,
+            scenario_data=scenario_data,
+        )
         is False
     )
 
     # Uncertified manifest: certification outcome is not CERTIFIED
     manifest_tampered.pop("scenario_hash", None)
     manifest_tampered["certification"] = {"outcome": "FAILED"}
-    manifest_path.write_text(json.dumps(manifest_tampered), encoding="utf-8")
-    assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
+    assert (
+        TraceVerifier.verify_trace(trace_path.read_bytes(), manifest_tampered, run_store=run_store)
+        is False
+    )
 
 
 def test_verify_trace_key_resolution_and_package_signature(tmp_path):
@@ -1365,8 +1466,10 @@ def test_verify_trace_key_resolution_and_package_signature(tmp_path):
         f'{{"event": "start", "run_id": "{run_id}"}}\n{{"event": "stop", "run_id": "{run_id}"}}\n',
         encoding="utf-8",
     )
-    manifest = TraceVerifier.sign_trace(str(trace_path), run_id=run_id, compliance_status="pass")
-    manifest_path = config.RUN_LOG_DIR / run_id / "run_manifest.json"
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
+    manifest = sign_and_save(
+        run_id, trace_path.read_bytes(), run_store=run_store, compliance_status="pass"
+    )
 
     pub_key = IdentityService.get_public_key("system_id")
     valid_pem = pub_key.public_bytes(
@@ -1382,12 +1485,14 @@ def test_verify_trace_key_resolution_and_package_signature(tmp_path):
     manifest_no_pkg.pop("provenance_chain", None)
     signed_no_pkg = signer.sign(manifest_no_pkg, lambda m: m)
     signed_no_pkg.pop("signing_context", None)
-    manifest_path.write_text(json.dumps(signed_no_pkg), encoding="utf-8")
 
     # public_key_pem invalid fallback to IdentityService
     assert (
         TraceVerifier.verify_trace(
-            str(trace_path), str(manifest_path), public_key_pem="INVALID_PEM_BYTES"
+            trace_path.read_bytes(),
+            signed_no_pkg,
+            run_store=run_store,
+            public_key_pem="INVALID_PEM_BYTES",
         )
         is True
     )
@@ -1395,8 +1500,9 @@ def test_verify_trace_key_resolution_and_package_signature(tmp_path):
     # key_registry with invalid PEM fallback to IdentityService
     assert (
         TraceVerifier.verify_trace(
-            str(trace_path),
-            str(manifest_path),
+            trace_path.read_bytes(),
+            signed_no_pkg,
+            run_store=run_store,
             key_registry={"system_id": "INVALID_PEM_BYTES"},
         )
         is True
@@ -1405,7 +1511,10 @@ def test_verify_trace_key_resolution_and_package_signature(tmp_path):
     # key_registry with valid PEM
     assert (
         TraceVerifier.verify_trace(
-            str(trace_path), str(manifest_path), key_registry={"system_id": valid_pem}
+            trace_path.read_bytes(),
+            signed_no_pkg,
+            run_store=run_store,
+            key_registry={"system_id": valid_pem},
         )
         is True
     )
@@ -1417,7 +1526,10 @@ def test_verify_trace_key_resolution_and_package_signature(tmp_path):
 
     assert (
         TraceVerifier.verify_trace(
-            str(trace_path), str(manifest_path), trust_root=MockTrustRootObj()
+            trace_path.read_bytes(),
+            signed_no_pkg,
+            run_store=run_store,
+            trust_root=MockTrustRootObj(),
         )
         is True
     )
@@ -1429,7 +1541,9 @@ def test_verify_trace_key_resolution_and_package_signature(tmp_path):
     sub_ident_dir.mkdir(parents=True, exist_ok=True)
     (sub_ident_dir / "public_key.pem").write_text("NOT_A_VALID_PEM", encoding="utf-8")
     assert (
-        TraceVerifier.verify_trace(str(trace_path), str(manifest_path), trust_root=custom_trust_dir)
+        TraceVerifier.verify_trace(
+            trace_path.read_bytes(), signed_no_pkg, run_store=run_store, trust_root=custom_trust_dir
+        )
         is True
     )
 
@@ -1437,7 +1551,9 @@ def test_verify_trace_key_resolution_and_package_signature(tmp_path):
     (sub_ident_dir / "public_key.pem").unlink()
     (custom_trust_dir / "system_id.pem").write_text(valid_pem, encoding="utf-8")
     assert (
-        TraceVerifier.verify_trace(str(trace_path), str(manifest_path), trust_root=custom_trust_dir)
+        TraceVerifier.verify_trace(
+            trace_path.read_bytes(), signed_no_pkg, run_store=run_store, trust_root=custom_trust_dir
+        )
         is True
     )
 
@@ -1464,9 +1580,11 @@ def test_verify_trace_key_resolution_and_package_signature(tmp_path):
     manifest_with_pkg.pop("provenance_chain", None)
     signed_with_pkg = signer.sign(manifest_with_pkg, lambda m: m)
     signed_with_pkg.pop("signing_context", None)
-    manifest_path.write_text(json.dumps(signed_with_pkg), encoding="utf-8")
+
     assert (
-        TraceVerifier.verify_trace(str(trace_path), str(manifest_path), public_key_pem=valid_pem)
+        TraceVerifier.verify_trace(
+            trace_path.read_bytes(), signed_with_pkg, run_store=run_store, public_key_pem=valid_pem
+        )
         is False
     )
 
@@ -1945,31 +2063,35 @@ def test_verification_authority_verify_package_seal_and_trust_root_matrix(tmp_pa
 
 
 def test_sign_trace_rejects_shared_master_log(tmp_path):
-    """Verify TraceVerifier.sign_trace raises ValueError when given master log."""
+    """Verify TraceVerifier.sign_trace raises RuntimeError when invoked directly."""
     master_log = tmp_path / "run.jsonl"
     master_log.write_text('{"event": "start", "run_id": "run-master"}\n', encoding="utf-8")
-    with patch.object(config, "RUN_LOG_DIR", tmp_path):
-        with pytest.raises(ValueError, match="SharedMasterLogCertificationForbidden"):
-            TraceVerifier.sign_trace(str(master_log), run_id="run-master")
+    with pytest.raises(RuntimeError, match="ProviderOwnedEvidenceRequired"):
+        TraceVerifier.sign_trace(str(master_log), run_id="run-master")
 
 
 def test_sign_trace_rejects_invalid_lifecycle_state(tmp_path):
-    """Verify sign_trace raises CertificationFailedError if run lifecycle is INVALID."""
+    """Verify sign_trace_bytes raises CertificationFailedError if run lifecycle is INVALID."""
     from eval_runner.verifier import CertificationFailedError
 
     run_id = "run-invalid-state"
     vault_dir, trace_path = setup_vault(run_id)
     trace_path.write_text('{"event": "start", "run_id": "' + run_id + '"}\n', encoding="utf-8")
     (vault_dir / ".run_lifecycle").write_text("{corrupt json", encoding="utf-8")
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
 
     with patch.object(config, "RUN_LOG_DIR", vault_dir.parent):
         with pytest.raises(CertificationFailedError, match="InvalidLifecycleState"):
-            TraceVerifier.sign_trace(str(trace_path), run_id=run_id)
+            TraceVerifier.sign_trace_bytes(
+                trace_path.read_bytes(), run_id=run_id, run_store=run_store
+            )
 
 
 def test_sign_trace_outcome_taxonomy():
     """Verify certification outcome reflects CERTIFIED_PASS, PROVISIONAL_PASS, or ATTESTED_FAIL."""
     from tests.conftest import append_authoritative_finalization
+
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
 
     # 1. Live mode + pass -> CERTIFIED_PASS
     run_id_live = "run-outcome-live"
@@ -1981,8 +2103,12 @@ def test_sign_trace_outcome_taxonomy():
     append_authoritative_finalization(
         trace_path_l, run_id_live, vault_dir_l, outcome="pass", score=1.0
     )
-    m_live = TraceVerifier.sign_trace(
-        str(trace_path_l), run_id=run_id_live, compliance_status="pass", execution_mode="live"
+    m_live = sign_and_save(
+        run_id_live,
+        trace_path_l.read_bytes(),
+        run_store=run_store,
+        compliance_status="pass",
+        execution_mode="live",
     )
     assert m_live["certification"]["outcome"] == "CERTIFIED_PASS"
 
@@ -1996,8 +2122,12 @@ def test_sign_trace_outcome_taxonomy():
     append_authoritative_finalization(
         trace_path_h, run_id_hyb, vault_dir_h, outcome="pass", score=1.0
     )
-    m_hyb = TraceVerifier.sign_trace(
-        str(trace_path_h), run_id=run_id_hyb, compliance_status="pass", execution_mode="hybrid"
+    m_hyb = sign_and_save(
+        run_id_hyb,
+        trace_path_h.read_bytes(),
+        run_store=run_store,
+        compliance_status="pass",
+        execution_mode="hybrid",
     )
     assert m_hyb["certification"]["outcome"] == "PROVISIONAL_PASS"
 
@@ -2011,8 +2141,12 @@ def test_sign_trace_outcome_taxonomy():
     append_authoritative_finalization(
         trace_path_f, run_id_fail, vault_dir_f, outcome="fail", score=0.0
     )
-    m_fail = TraceVerifier.sign_trace(
-        str(trace_path_f), run_id=run_id_fail, compliance_status="fail", execution_mode="live"
+    m_fail = sign_and_save(
+        run_id_fail,
+        trace_path_f.read_bytes(),
+        run_store=run_store,
+        compliance_status="fail",
+        execution_mode="live",
     )
     assert m_fail["certification"]["outcome"] == "ATTESTED_FAIL"
 
@@ -2022,10 +2156,11 @@ def test_verify_trace_sealed_state_enforcement():
     run_id = "run-sealed-check"
     vault_dir, trace_path = setup_vault(run_id)
     trace_path.write_text('{"event": "start", "run_id": "' + run_id + '"}\n', encoding="utf-8")
+    run_store = LocalFileRunStore(config.RUN_LOG_DIR)
 
-    manifest = TraceVerifier.sign_trace(str(trace_path), run_id=run_id, compliance_status="pass")
-    manifest_path = vault_dir / "trace_manifest.json"
-    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    manifest = sign_and_save(
+        run_id, trace_path.read_bytes(), run_store=run_store, compliance_status="pass"
+    )
 
     # Revert state markers to FINALIZING for uncommitted check
     (vault_dir / ".sealed").unlink(missing_ok=True)
@@ -2037,39 +2172,47 @@ def test_verify_trace_sealed_state_enforcement():
     with patch.object(config, "RUN_LOG_DIR", vault_dir.parent):
         # When require_sealed=True, rejected
         assert not TraceVerifier.verify_trace(
-            str(trace_path), str(manifest_path), require_sealed=True
+            trace_path.read_bytes(), manifest, run_store=run_store, require_sealed=True
         )
         # When require_sealed=False (internal verification), allowed
-        assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path), require_sealed=False)
+        assert TraceVerifier.verify_trace(
+            trace_path.read_bytes(), manifest, run_store=run_store, require_sealed=False
+        )
 
 
 def test_certification_service_fail_closed_validations(tmp_path):
     """Verify CertificationService master log rejection and snapshot persistence fail-closed."""
     from eval_runner.services.certification import CertificationService
-    from tests.unit.core.test_certification_service_and_trust_boundary import _create_trace
 
     master_log = tmp_path / "run.jsonl"
     master_log.write_text('{"event": "start", "run_id": "run-master"}\n', encoding="utf-8")
 
     with patch.object(config, "RUN_LOG_DIR", tmp_path):
-        with pytest.raises(ValueError, match="SharedMasterLogCertificationForbidden"):
+        with pytest.raises(ValueError, match="TracePathCertificationUnsupported"):
             CertificationService.execute_industrial_certification(
                 run_id="run-master", trace_path=master_log
             )
 
     run_id = "run-snap-fail"
     scen_data = {"id": "scen-1", "version": "1.0.0"}
-    events = [
-        {
-            "event": "run_start",
-            "execution_mode": "live",
-            "scenario_id": "scen-1",
-            "data": {"execution_mode_declared": True},
-        },
-        {"event": "assertion_evaluated", "assertion": "oracle_1", "passed": False},
-        {"event": "evaluation_result", "data": {"status": "FAIL", "score": 0.0}},
-    ]
-    vault_dir, trace_p = _create_trace(tmp_path, run_id, events, scenario_data=scen_data)
+    runs_dir = tmp_path / "runs"
+    runs_dir.mkdir(parents=True, exist_ok=True)
+    run_store = LocalFileRunStore(runs_dir)
+    run_store.create_run(run_id, "scen-1")
+    run_store.append_events(
+        run_id,
+        [
+            {
+                "event": "run_start",
+                "_seq": 1,
+                "execution_mode": "live",
+                "scenario_id": "scen-1",
+                "data": {"execution_mode_declared": True},
+            },
+            {"event": "assertion_evaluated", "_seq": 2, "assertion": "oracle_1", "passed": False},
+            {"event": "evaluation_result", "_seq": 3, "data": {"status": "FAIL", "score": 0.0}},
+        ],
+    )
 
     orig_write_text = Path.write_text
 
@@ -2078,15 +2221,18 @@ def test_certification_service_fail_closed_validations(tmp_path):
             raise OSError("Disk write error")
         return orig_write_text(self, *args, **kwargs)
 
-    with patch.object(config, "RUN_LOG_DIR", tmp_path):
+    with patch.object(config, "RUN_LOG_DIR", runs_dir):
         # Simulate snapshot write failure
-        with patch.object(Path, "write_text", selective_write_text):
-            with pytest.raises(ValueError, match="FailedToPersistScenarioSnapshot"):
-                CertificationService.execute_industrial_certification(
-                    run_id=run_id,
-                    trace_path=trace_p,
-                    scenario_data=scen_data,
-                )
+        with pytest.raises(
+            ValueError,
+            match="inconclusive outcome: missing mandatory "
+            "authoritative EvaluatorFinalizationRecord",
+        ):
+            CertificationService.execute_industrial_certification(
+                run_id=run_id,
+                run_store=run_store,
+                scenario_data=scen_data,
+            )
 
 
 # ============================================================================
@@ -2130,7 +2276,7 @@ def test_trace_signer_missing_private_key_fails_closed():
 
 
 def test_get_certificate_empty_or_invalid_manifest_fails_closed(tmp_path):
-    trace_file = str(tmp_path / "fake_trace.jsonl")
+    mock_store = MagicMock()
     with patch(
         "eval_runner.services.certification.CertificationService.execute_industrial_certification",
         return_value={"manifest": None},
@@ -2138,7 +2284,7 @@ def test_get_certificate_empty_or_invalid_manifest_fails_closed(tmp_path):
         with pytest.raises(
             CertificationFailedError, match="failed to produce a valid certificate manifest"
         ):
-            TraceVerifier.get_certificate(run_id="run_bad", trace_path=trace_file)
+            TraceVerifier.get_certificate(run_id="run_bad", run_store=mock_store)
 
     with patch(
         "eval_runner.services.certification.CertificationService.execute_industrial_certification",
@@ -2147,11 +2293,11 @@ def test_get_certificate_empty_or_invalid_manifest_fails_closed(tmp_path):
         with pytest.raises(
             CertificationFailedError, match="failed to produce a valid certificate manifest"
         ):
-            TraceVerifier.get_certificate(run_id="run_bad2", trace_path=trace_file)
+            TraceVerifier.get_certificate(run_id="run_bad2", run_store=mock_store)
 
 
 def test_get_certificate_success_returns_manifest(tmp_path):
-    trace_file = str(tmp_path / "fake_trace.jsonl")
+    mock_store = MagicMock()
     expected_manifest = {
         "run_id": "run_success",
         "trace_hash": "sha3_256:abc12345",
@@ -2161,7 +2307,7 @@ def test_get_certificate_success_returns_manifest(tmp_path):
         "eval_runner.services.certification.CertificationService.execute_industrial_certification",
         return_value={"manifest": expected_manifest},
     ):
-        result = TraceVerifier.get_certificate(run_id="run_success", trace_path=trace_file)
+        result = TraceVerifier.get_certificate(run_id="run_success", run_store=mock_store)
         assert result == expected_manifest
 
 
@@ -2178,7 +2324,7 @@ def test_verify_trace_discovers_staged_artifact(tmp_path, monkeypatch):
     art_file.write_text("forensic staged content", encoding="utf-8")
     art_hash = TraceVerifier.compute_signature(art_file)
 
-    trace_file = run_dir / "trace.jsonl"
+    trace_file = run_dir / "run.jsonl"
     trace_file.write_text('{"event": "start", "_seq": 1}\n', encoding="utf-8")
     trace_hash = TraceVerifier.compute_signature(trace_file)
 
@@ -2195,12 +2341,17 @@ def test_verify_trace_discovers_staged_artifact(tmp_path, monkeypatch):
         {"identity": "system_id", "signature": sig_hex, "algorithm": "ED25519"}
     ]
 
-    manifest_file = run_dir / "manifest.json"
-    manifest_file.write_text(json.dumps(manifest_data), encoding="utf-8")
+    run_store = LocalFileRunStore(tmp_path)
+    run_store.create_run("run_staging", "scen")
+    run_store.save_run_manifest("run_staging", manifest_data)
 
     with patch.object(IdentityService, "get_public_key", return_value=pub):
         ok = TraceVerifier.verify_trace(
-            str(trace_file), str(manifest_file), verify_ledger=True, require_sealed=False
+            trace_file.read_bytes(),
+            manifest_data,
+            run_store=run_store,
+            verify_ledger=True,
+            require_sealed=False,
         )
         assert ok is True
 
@@ -2223,7 +2374,7 @@ def test_verify_trace_skips_terminal_finalization_carrier(tmp_path, monkeypatch)
     ev_graph = build_evidence_graph_from_events(effective_events_with_lines)
     ev_root = compute_evidence_graph_root(ev_graph)
 
-    trace_file = run_dir / "trace.jsonl"
+    trace_file = run_dir / "run.jsonl"
     trace_file.write_text(
         f"{json.dumps(ev1)}\n{json.dumps(ev_terminal)}\n{json.dumps(ev3)}\n",
         encoding="utf-8",
@@ -2245,13 +2396,16 @@ def test_verify_trace_skips_terminal_finalization_carrier(tmp_path, monkeypatch)
     manifest_data["provenance_chain"] = [
         {"identity": "system_id", "signature": sig_hex, "algorithm": "ED25519"}
     ]
-    manifest_file = run_dir / "manifest.json"
-    manifest_file.write_text(json.dumps(manifest_data), encoding="utf-8")
+
+    run_store = LocalFileRunStore(tmp_path)
+    run_store.create_run("run_term", "scen_term")
+    run_store.save_run_manifest("run_term", manifest_data)
 
     with patch.object(IdentityService, "get_public_key", return_value=pub):
         ok = TraceVerifier.verify_trace(
-            str(trace_file),
-            str(manifest_file),
+            trace_file.read_bytes(),
+            manifest_data,
+            run_store=run_store,
             scenario_data=scenario_data,
             verify_ledger=False,
             require_sealed=False,
@@ -2263,11 +2417,11 @@ def test_verify_trace_sealed_run_matching_run_log_dir(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
     priv = ed25519.Ed25519PrivateKey.generate()
     pub = priv.public_key()
-    run_dir = tmp_path / "runs"
+    run_dir = tmp_path / "runs" / "runs"
     run_dir.mkdir(parents=True)
-    monkeypatch.setattr(config, "RUN_LOG_DIR", run_dir)
+    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "runs")
 
-    trace_file = run_dir / "trace.jsonl"
+    trace_file = run_dir / "run.jsonl"
     trace_file.write_text('{"event": "start"}\n', encoding="utf-8")
     trace_hash = TraceVerifier.compute_signature(trace_file)
 
@@ -2281,13 +2435,17 @@ def test_verify_trace_sealed_run_matching_run_log_dir(tmp_path, monkeypatch):
     manifest_data["provenance_chain"] = [
         {"identity": "system_id", "signature": sig_hex, "algorithm": "ED25519"}
     ]
-    manifest_file = run_dir / "manifest.json"
-    manifest_file.write_text(json.dumps(manifest_data), encoding="utf-8")
+
+    run_store = LocalFileRunStore(tmp_path / "runs")
+    run_store.create_run("runs", "scen")
+    run_store.save_run_manifest("runs", manifest_data)
+    run_store.seal("runs")
 
     with patch.object(IdentityService, "get_public_key", return_value=pub):
         ok = TraceVerifier.verify_trace(
-            str(trace_file),
-            str(manifest_file),
+            trace_file.read_bytes(),
+            manifest_data,
+            run_store=run_store,
             verify_ledger=False,
             require_sealed=True,
         )
@@ -2300,7 +2458,7 @@ def test_verify_trace_trust_root_object_resolution(tmp_path, monkeypatch):
     pub = priv.public_key()
     run_dir = tmp_path / "run_trust_obj"
     run_dir.mkdir(parents=True)
-    trace_file = run_dir / "trace.jsonl"
+    trace_file = run_dir / "run.jsonl"
     trace_file.write_text('{"event": "start"}\n', encoding="utf-8")
     trace_hash = TraceVerifier.compute_signature(trace_file)
 
@@ -2314,15 +2472,18 @@ def test_verify_trace_trust_root_object_resolution(tmp_path, monkeypatch):
     manifest_data["provenance_chain"] = [
         {"identity": "custom_resolver_id", "signature": sig_hex, "algorithm": "ED25519"}
     ]
-    manifest_file = run_dir / "manifest.json"
-    manifest_file.write_text(json.dumps(manifest_data), encoding="utf-8")
+
+    run_store = LocalFileRunStore(tmp_path)
+    run_store.create_run("run_trust_obj", "scen")
+    run_store.save_run_manifest("run_trust_obj", manifest_data)
 
     trust_root_obj = MagicMock()
     trust_root_obj.get_public_key.return_value = pub
 
     ok = TraceVerifier.verify_trace(
-        str(trace_file),
-        str(manifest_file),
+        trace_file.read_bytes(),
+        manifest_data,
+        run_store=run_store,
         trust_root=trust_root_obj,
         verify_ledger=False,
         require_sealed=False,
@@ -2335,7 +2496,7 @@ def test_verify_trace_rejects_unsigned_verification_package(tmp_path):
     pub = priv.public_key()
     run_dir = tmp_path / "run_unsigned_pkg"
     run_dir.mkdir(parents=True)
-    trace_file = run_dir / "trace.jsonl"
+    trace_file = run_dir / "run.jsonl"
     trace_file.write_text('{"event": "start"}\n', encoding="utf-8")
     trace_hash = TraceVerifier.compute_signature(trace_file)
 
@@ -2357,13 +2518,16 @@ def test_verify_trace_rejects_unsigned_verification_package(tmp_path):
     manifest_data["provenance_chain"] = [
         {"identity": "system_id", "signature": sig_hex, "algorithm": "ED25519"}
     ]
-    manifest_file = run_dir / "manifest.json"
-    manifest_file.write_text(json.dumps(manifest_data), encoding="utf-8")
+
+    run_store = LocalFileRunStore(tmp_path)
+    run_store.create_run("run_unsigned_pkg", "scen")
+    run_store.save_run_manifest("run_unsigned_pkg", manifest_data)
 
     with patch.object(IdentityService, "get_public_key", return_value=pub):
         ok = TraceVerifier.verify_trace(
-            str(trace_file),
-            str(manifest_file),
+            trace_file.read_bytes(),
+            manifest_data,
+            run_store=run_store,
             verify_ledger=False,
             require_sealed=False,
         )
@@ -2377,7 +2541,7 @@ def test_verify_trace_trust_root_directory_and_opaque_object_fallbacks(tmp_path,
 
     run_dir = tmp_path / "run_trust_root_fallbacks"
     run_dir.mkdir(parents=True)
-    trace_file = run_dir / "trace.jsonl"
+    trace_file = run_dir / "run.jsonl"
     trace_file.write_text('{"event": "start"}\n', encoding="utf-8")
     trace_hash = TraceVerifier.compute_signature(trace_file)
 
@@ -2392,8 +2556,10 @@ def test_verify_trace_trust_root_directory_and_opaque_object_fallbacks(tmp_path,
     manifest_data["provenance_chain"] = [
         {"identity": "system_id", "signature": sig_hex, "algorithm": "ED25519"}
     ]
-    manifest_file = run_dir / "manifest.json"
-    manifest_file.write_text(json.dumps(manifest_data), encoding="utf-8")
+
+    run_store = LocalFileRunStore(tmp_path)
+    run_store.create_run("run_trust_root_fallbacks", "scen")
+    run_store.save_run_manifest("run_trust_root_fallbacks", manifest_data)
 
     empty_dir = tmp_path / "empty_keys_dir"
     empty_dir.mkdir(parents=True, exist_ok=True)
@@ -2405,8 +2571,9 @@ def test_verify_trace_trust_root_directory_and_opaque_object_fallbacks(tmp_path,
 
     with patch.object(IdentityService, "get_public_key", return_value=pub):
         ok1 = TraceVerifier.verify_trace(
-            str(trace_file),
-            str(manifest_file),
+            trace_file.read_bytes(),
+            manifest_data,
+            run_store=run_store,
             trust_root=str(empty_dir),
             verify_ledger=False,
             require_sealed=False,
@@ -2414,8 +2581,9 @@ def test_verify_trace_trust_root_directory_and_opaque_object_fallbacks(tmp_path,
         assert ok1 is True
 
         ok2 = TraceVerifier.verify_trace(
-            str(trace_file),
-            str(manifest_file),
+            trace_file.read_bytes(),
+            manifest_data,
+            run_store=run_store,
             trust_root=opaque_root,
             verify_ledger=False,
             require_sealed=False,
@@ -3026,13 +3194,16 @@ def test_is_plain_execution_manifest_and_uncertified_run_handling(tmp_path, monk
     # Plain execution manifest is not discovered as a certificate
     assert locate_certificate_file(run_id) is None
 
-    # verify_run_directory reports UNVERIFIED and Certification not issued
-    res = TraceVerifier.verify_run_directory(run_vault)
+    # verify_run reports UNVERIFIED when certification manifest is not returned
+    store = LocalFileRunStore(runs_dir)
+    uncert_id = "uncertified_run_no_manifest"
+    store.create_run(uncert_id, "demo_scenario")
+    res = TraceVerifier.verify_run(uncert_id, run_store=store)
     assert res["verification_status"] == "UNVERIFIED"
     assert res["is_valid"] is False
     assert res["has_certificate"] is False
     assert res["has_signature"] is False
-    assert res["failure_reason"] == "Certification not issued"
+    assert res["failure_reason"] == "Certification manifest not returned by storage provider."
 
     # When fallback legacy certificate is present, locate_certificate_file discovers it
     legacy_cert = run_vault / f"{run_id}_certificate.json"

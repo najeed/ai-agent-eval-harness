@@ -135,7 +135,7 @@ async def test_ollama_list_models_error(mock_session):
 async def test_ollama_generate_error(mock_session):
     mock_session.post.return_value.__aenter__.return_value.status = 500
     p = OllamaProvider()
-    with pytest.raises(Exception, match="Ollama error: 500"):
+    with pytest.raises(Exception, match=r"(?:HTTP 500|Status 500)"):
         await p.generate("hi")
 
 

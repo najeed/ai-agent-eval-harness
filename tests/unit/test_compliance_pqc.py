@@ -155,6 +155,73 @@ class TestCompliancePQC(unittest.TestCase):
                 self.assertTrue(result["compliant"])
                 self.assertTrue(result["pqc_status"]["quantum_safe"])
 
+            # Test branch: status != NOT_EVALUATED and pass == False -> NON_COMPLIANT
+            mock_failed_eval = {"status": "EVALUATED", "pass": False}
+            with patch(
+                "eval_runner.compliance.ComplianceService._evaluate_metrics_pack",
+                return_value=mock_failed_eval,
+            ):
+                result = evaluate_compliance(self.run_id, {"latency": 100})
+                self.assertEqual(result["status"], "NON_COMPLIANT")
+                self.assertFalse(result["compliant"])
+                self.assertIn("One or more compliance requirements failed", result["message"])
+
+    def test_check_pqc_status_run_store_missing_get_manifest(self):
+        class InvalidRunStore:
+            pass
+
+        with self.assertRaises(ValueError) as ctx:
+            self.compliance_service.check_pqc_status(self.run_id, run_store=InvalidRunStore())
+        self.assertIn("RunStorageProvider is required", str(ctx.exception))
+
+    def test_check_pqc_status_invalid_signature(self):
+        manifest = {
+            "timestamp": "2026-05-14T12:00:00",
+            "provenance_chain": [
+                {
+                    "algorithm": "ML-DSA-65",
+                    "identity": "system_id@pqc",
+                    "signature": "invalid_sig_hex",
+                },
+            ],
+        }
+        with open(self.manifest_path, "w") as f:
+            json.dump(manifest, f)
+
+        from unittest.mock import MagicMock
+
+        from eval_runner.identity import IdentityService
+
+        mock_pqc = MagicMock()
+        mock_pqc.verify_digest.return_value = False
+        with patch.object(IdentityService, "get_pqc_client", return_value=mock_pqc):
+            status = self.compliance_service.check_pqc_status(self.run_id)
+            self.assertFalse(status["quantum_safe"])
+            self.assertEqual(status["algorithm"], "ML-DSA-65")
+            self.assertIn("PQC signature verification failed", status["reason"])
+
+    def test_check_pqc_status_exception_handling(self):
+        class CorruptedManifestStore:
+            def get_manifest(self, *a, **k):
+                return {"provenance_chain": None}  # raises TypeError when iterating
+
+        status = self.compliance_service.check_pqc_status(
+            self.run_id, run_store=CorruptedManifestStore()
+        )
+        self.assertFalse(status["quantum_safe"])
+        self.assertIn("reason", status)
+
+    def test_evaluate_compliance_with_explicit_run_store(self):
+        class DummyStore:
+            def get_manifest(self, *a, **k):
+                return {"provenance_chain": []}
+
+        from eval_runner.compliance import evaluate_compliance
+
+        result = evaluate_compliance("run-explicit", run_store=DummyStore())
+        self.assertFalse(result["compliant"])
+        self.assertEqual(result["status"], "NOT_EVALUATED")
+
 
 if __name__ == "__main__":
     unittest.main()

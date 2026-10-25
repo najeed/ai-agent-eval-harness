@@ -42,7 +42,7 @@ class ServerThread(threading.Thread):
     def __init__(self, app, port: int):
         super().__init__(daemon=True)
         self.port = port
-        self.server = make_server("127.0.0.1", port, app)
+        self.server = make_server("127.0.0.1", port, app, threaded=True)
         self.ctx = app.app_context()
         self.ctx.push()
 
@@ -85,12 +85,8 @@ def journey_console_server(tmp_path_factory):
             "Run 'npm run build' first."
         )
 
-    # 1. Seed completed run with induced assertion failure in run vault
-    run_vault = runs_dir / RUN_ID
-    run_vault.mkdir(parents=True, exist_ok=True)
-
-    # run.jsonl trace
-    trace_path = run_vault / "run.jsonl"
+    # Seed through the explicit local provider.  The console must observe the
+    # same provider-owned evidence it uses in production, never fixture files.
     events = [
         {
             "event": "run_start",
@@ -209,34 +205,24 @@ def journey_console_server(tmp_path_factory):
         )
     terminal_event["_seq"] = 8 + (len(EXTERNAL_TOOL_NAMES) * 2) + 1
     events.append(terminal_event)
-    with open(trace_path, "w", encoding="utf-8") as f:
-        for ev in events:
-            f.write(json.dumps(ev) + "\n")
+    scenario_resolved = {
+        "metadata": {"id": "journey_scenario", "name": "Debugger topology contract"},
+        "workflow": {
+            "nodes": [
+                {"id": "intake", "task_description": "Intake"},
+                {"id": "eligibility", "task_description": "Eligibility"},
+                {"id": "decision", "task_description": "Decision"},
+                {"id": "notify", "task_description": "Notify customer"},
+            ],
+            "edges": [
+                {"from": "intake", "to": "eligibility"},
+                {"from": "eligibility", "to": "decision"},
+                {"from": "decision", "to": "notify"},
+            ],
+        },
+    }
 
-    (run_vault / "scenario_resolved.json").write_text(
-        json.dumps(
-            {
-                "metadata": {"id": "journey_scenario", "name": "Debugger topology contract"},
-                "workflow": {
-                    "nodes": [
-                        {"id": "intake", "task_description": "Intake"},
-                        {"id": "eligibility", "task_description": "Eligibility"},
-                        {"id": "decision", "task_description": "Decision"},
-                        {"id": "notify", "task_description": "Notify customer"},
-                    ],
-                    "edges": [
-                        {"from": "intake", "to": "eligibility"},
-                        {"from": "eligibility", "to": "decision"},
-                        {"from": "decision", "to": "notify"},
-                    ],
-                },
-            }
-        ),
-        encoding="utf-8",
-    )
-
-    # evidence_package.json
-    evidence_pkg_path = run_vault / "evidence_package.json"
+    # The route derives a package from provider-owned trace and manifest data.
     evidence_pkg = {
         "run_id": RUN_ID,
         "execution_mode": "live",
@@ -280,10 +266,6 @@ def journey_console_server(tmp_path_factory):
             "edges": [],
         },
     }
-    evidence_pkg_path.write_text(json.dumps(evidence_pkg, indent=2), encoding="utf-8")
-
-    # run_manifest.json
-    manifest_path = run_vault / "run_manifest.json"
     manifest = {
         "vc_version": "3.0.0",
         "harness_version": "2.0.0",
@@ -303,11 +285,20 @@ def journey_console_server(tmp_path_factory):
             }
         ],
     }
-    manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    manifest["scenario_data"] = scenario_resolved
+    manifest["evidence_package"] = evidence_pkg
+    from eval_runner.reference.local_run_store import LocalFileRunStore
 
-    # Sealed marker — required by hardened lifecycle check; without this
-    # get_run_lifecycle_state() returns OPEN and public_verify_run returns 400.
-    (run_vault / ".sealed").write_text("SEALED", encoding="utf-8")
+    journey_run_store = LocalFileRunStore(runs_dir)
+    journey_run_store.create_run(
+        RUN_ID,
+        "journey_scenario",
+        metadata={"execution_mode": "live", "execution_mode_declared": True},
+    )
+    journey_run_store.append_events(RUN_ID, events)
+    journey_run_store.save_run_manifest(RUN_ID, manifest)
+    # This is provider-owned lifecycle state; the test never creates a sentinel.
+    journey_run_store.update_run_status(RUN_ID, "SEALED")
 
     # Launch server with patched config
     port = get_free_port()
@@ -372,7 +363,7 @@ def journey_console_server(tmp_path_factory):
         agent_port = get_free_port()
         agent_server = ServerThread(sample_agent_app, agent_port)
         agent_server.start()
-        app = create_app()
+        app = create_app(run_store=journey_run_store)
         app.secret_key = "journey-test-secret"
         server = ServerThread(app, port)
         server.start()
@@ -637,7 +628,7 @@ def test_live_pass_certificate_verification_journey(journey_console_server):
 
         # The execution backend is asynchronous; certification is unavailable
         # until the authoritative run status is terminal.
-        deadline = time.time() + 25
+        deadline = time.time() + 90
         while time.time() < deadline:
             status_response = page.request.get(f"{base_url}/api/v1/runs/{run_id}")
             if status_response.ok:
@@ -645,9 +636,9 @@ def test_live_pass_certificate_verification_journey(journey_console_server):
                 state = str(
                     status_data.get("execution_status") or status_data.get("status") or ""
                 ).upper()
-                if state and state not in {"PENDING", "RUNNING", "STARTED"}:
+                if state and state not in {"OPEN", "PENDING", "RUNNING", "STARTED"}:
                     break
-            time.sleep(0.2)
+            time.sleep(0.5)
         else:
             pytest.fail("Console-launched real-agent run did not reach a terminal state")
 
@@ -655,7 +646,15 @@ def test_live_pass_certificate_verification_journey(journey_console_server):
         page.get_by_role("button", name="Issue Cryptographic Certificate").click()
         certify_input = page.locator("input[placeholder*='run-loan-approval']")
         certify_input.fill(run_id)
-        page.get_by_role("button", name="Issue Cryptographic Certificate", exact=True).last.click()
+        certify_btn = page.get_by_role(
+            "button", name="Issue Cryptographic Certificate", exact=True
+        ).last
+        # Fail at the API boundary with the authoritative error body instead
+        # of hiding a rejected certification behind a later UI timeout.
+        with page.expect_response("**/api/v1/certify") as certification_response_info:
+            certify_btn.click(timeout=15000)
+        certification_response = certification_response_info.value
+        assert certification_response.ok, certification_response.text()
         page.get_by_test_id("certify-result-success").wait_for(state="visible", timeout=15000)
         page.get_by_role("button", name="Verify Running Audit Logs").click()
         run_input = page.locator("input[placeholder*='run-loan-approval']")

@@ -42,7 +42,16 @@ def test_public_certificate_endpoint_v3(client, tmp_path, monkeypatch):
     monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "runs")
 
     # 2. Sign the trace
-    TraceVerifier.sign_trace(trace_path=str(trace_path), identity_id=identity_id, run_id=run_id)
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    run_store = LocalFileRunStore(tmp_path / "runs")
+    manifest = TraceVerifier.sign_trace_bytes(
+        trace_path.read_bytes(),
+        run_id=run_id,
+        run_store=run_store,
+        identity_id=identity_id,
+    )
+    run_store.save_run_manifest(run_id, manifest)
 
     # 3. Test API Retrieval (New /v1/ Path)
     response = client.get(f"/v1/certificates/{run_id}")

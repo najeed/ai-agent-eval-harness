@@ -15,7 +15,9 @@ if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
 from eval_runner.artifact_plugin import ArtifactPlugin  # noqa: E402
-from eval_runner.plugins import manager  # noqa: E402
+from eval_runner.runtime_services import resolve_plugin_registry  # noqa: E402
+
+manager = resolve_plugin_registry()
 
 
 class Bundler:

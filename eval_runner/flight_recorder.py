@@ -5,34 +5,31 @@ A built-in plugin that subscribes to EventEmitter to record run traces.
 This decouples logging from the core engine loop.
 """
 
-import hashlib
 import json
 import logging
 import os
 import sys
 import threading
-from datetime import UTC, datetime
-from pathlib import Path
+from datetime import datetime
 from typing import Any
 
 from eval_runner.interfaces.artifact import ArtifactStore
 from eval_runner.interfaces.signing import SigningBackend
-from eval_runner.reference.local_artifact import LocalFileArtifactStore
-from eval_runner.reference.signing import (
+from eval_runner.runtime_services import (
     LocalEd25519SigningBackend,
     NullSigningBackend,
+    resolve_artifact_store,
+    resolve_signing_backend,
 )
 
-from . import config
 from .events import CoreEvents, Event
 from .plugins import BaseEvalPlugin
-from .utils import rmtree_resilient
 
 logger = logging.getLogger(__name__)
 
 
 class FlightRecorderPlugin(BaseEvalPlugin):
-    """Subscribes to all core events and writes them to run.jsonl files."""
+    """Subscribes to core events and appends them to the bound run provider."""
 
     _subscribed = False
 
@@ -40,33 +37,30 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         self,
         signing_backend: SigningBackend | None = None,
         artifact_store: ArtifactStore | None = None,
-        log_dir: Path | str | None = None,
+        run_store: Any | None = None,
+        log_dir: Any | None = None,
         certification_mode: bool = False,
     ):
-        import eval_runner.config as config
+        has_explicit_run_store = run_store is not None
+        if run_store is None and log_dir is not None:
+            from eval_runner.runtime_services import compose_local_run_store
 
-        self.log_dir = (
-            Path(log_dir)
-            if log_dir is not None
-            else Path(os.getenv("RUN_LOG_DIR", str(config.RUN_LOG_DIR)))
-        )
-        self.per_run = os.getenv("RUN_LOG_PER_RUN", "true").lower() == "true"
-        # The master log is an optional diagnostic projection.  It is never
-        # consulted as run evidence; RunStorageProvider owns all lifecycle and
-        # certification reads.
-        self.master = os.getenv("RUN_LOG_MASTER", "true").lower() == "true"
+            run_store = compose_local_run_store(log_dir)
+        elif run_store is None:
+            try:
+                from eval_runner.runtime_services import resolve_run_store
 
-        self._enforce_safety_floor()
-
-        self.master_log_path = self.log_dir / "run.jsonl"
-        self.log_rotate_count = int(os.getenv("RUN_LOG_ROTATE_COUNT", "0"))
-
-        # State-aware handles for Windows stability
-        self._handles = {}
-        self._lock = threading.Lock()
+                run_store = resolve_run_store()
+            except Exception as exc:
+                logger.debug("Failed resolving run store in init: %s", exc)
+                run_store = None
+        self._lock = threading.RLock()
         self._run_states: dict[str, str] = {}
+        self._run_providers: dict[str, tuple[Any, dict[str, Any] | None]] = {}
         self._failed_runs: set[str] = set()
         self._certification_mode = certification_mode
+        self._default_run_store = run_store
+        self._has_explicit_default_run_store = has_explicit_run_store
 
         # [Iteration 4: Compliance DNA]
         self._sequence_numbers = {}  # Per-run sequence counters
@@ -74,29 +68,24 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         self._audit_level = int(os.getenv("AUDIT_LEVEL", "2"))
 
         # Interface Wiring: ArtifactStore & SigningBackend
-        from agentv_runtime.discovery import resolve_extension
-
         if artifact_store is not None:
-            self.artifact_store = artifact_store
+            self.artifact_store = resolve_artifact_store(explicit=artifact_store)
         elif log_dir is not None:
-            # Explicit vault scope requested by caller; bind isolated store
-            self.artifact_store = LocalFileArtifactStore(base_dir=self.log_dir)
-        else:
-            self.artifact_store = resolve_extension(
-                "artifact_stores",
-                default_factory=LocalFileArtifactStore,
-            )
+            from eval_runner.runtime_services import compose_local_artifact_store
 
-        if signing_backend is not None:
-            self.signing_backend = signing_backend
+            self.artifact_store = resolve_artifact_store(
+                default_factory=lambda: compose_local_artifact_store(log_dir)
+            )
         else:
-            resolved_backend = resolve_extension("signing_backends", default_factory=lambda: None)
-            if resolved_backend is not None:
-                self.signing_backend = resolved_backend
-            elif self._private_key_path:
-                self.signing_backend = LocalEd25519SigningBackend()
-            else:
-                self.signing_backend = NullSigningBackend()
+            self.artifact_store = resolve_artifact_store()
+
+        self.signing_backend = (
+            resolve_signing_backend(explicit=signing_backend)
+            if signing_backend is not None or os.getenv("AGENTV_SIGNING_BACKEND")
+            else LocalEd25519SigningBackend()
+            if self._private_key_path
+            else NullSigningBackend()
+        )
 
         # [Event Duplication Remediation]
         # Only subscribe to the global event bus once (Singleton Pattern)
@@ -123,21 +112,81 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             or os.getenv("EVAL_ATTESTATION_MODE", "").lower() in ("true", "1", "yes")
         )
 
-    def _enforce_safety_floor(self):
-        """
-        [Forensic Safety Floor] (AgentV v1.6.0)
-        Prevents "Black Hole" configurations where no telemetry is recorded.
-        If both logging paths are disabled, forces Vaulted isolation.
-        """
-        if not self.per_run and not self.master:
-            sys.stderr.write(
-                "⚠️  [FlightRecorder] [WARNING] Industrial Safety Override: Zero-Logging detected.\n"
-            )
-            sys.stderr.write(
-                "⚠️  [FlightRecorder] Reclaiming Isolated Vault "
-                "(RUN_LOG_PER_RUN=true) for compliance.\n"
-            )
-            self.per_run = True
+    def bind_run_provider(
+        self, run_id: str, run_store: Any, context: dict[str, Any] | None = None
+    ) -> None:
+        if not run_id or run_id == "unknown" or run_store is None:
+            return
+        with self._lock:
+            existing = self._run_providers.get(run_id)
+            if existing is not None and existing[0] is not run_store:
+                raise RuntimeError(f"RunStorageProviderAffinityViolation: {run_id}")
+            existing_context = existing[1] if existing is not None else None
+            merged_context = dict(existing_context or {})
+            if context:
+                merged_context.update(context)
+            self._run_providers[run_id] = (run_store, merged_context or None)
+
+    def release_run_provider(self, run_id: str) -> None:
+        """Discard execution-scoped provider references after terminal sealing."""
+        with self._lock:
+            self._run_providers.pop(run_id, None)
+
+    @classmethod
+    def bind_active_recorder(
+        cls, run_id: str, run_store: Any, context: dict[str, Any] | None = None
+    ) -> None:
+        from .events import EventEmitter
+
+        for subscriber in EventEmitter.get_global()._subscribers:
+            recorder = getattr(subscriber, "__self__", None)
+            if isinstance(recorder, cls):
+                recorder.bind_run_provider(run_id, run_store, context)
+
+    @classmethod
+    def release_active_recorder(cls, run_id: str, run_store: Any | None = None) -> None:
+        """Release a terminal run's binding without disturbing another provider's run."""
+        from .events import EventEmitter
+
+        for subscriber in EventEmitter.get_global()._subscribers:
+            recorder = getattr(subscriber, "__self__", None)
+            if not isinstance(recorder, cls):
+                continue
+            # Certification may run in a different process from evaluation
+            # (for example, a console worker after a restart).  There is then
+            # no process-local binding to release; provider ownership has
+            # already been enforced by the certification transaction.
+            with recorder._lock:
+                binding = recorder._run_providers.get(run_id)
+            if binding is None:
+                continue
+            bound_store, _ = binding
+            if run_store is None or bound_store is run_store:
+                recorder.release_run_provider(run_id)
+
+    def _provider_for_run(self, run_id: str) -> tuple[Any, dict[str, Any] | None]:
+        with self._lock:
+            bound = self._run_providers.get(run_id)
+            if bound is not None:
+                return bound
+            if self._has_explicit_default_run_store and self._default_run_store is not None:
+                return self._default_run_store, None
+            default_run_store = self._default_run_store
+        if default_run_store is None:
+            try:
+                from eval_runner.runtime_services import resolve_run_store
+
+                default_run_store = resolve_run_store()
+                with self._lock:
+                    self._default_run_store = default_run_store
+                    self._has_explicit_default_run_store = True
+            except Exception:
+                default_run_store = None
+        if self._has_explicit_default_run_store and default_run_store is not None:
+            return default_run_store, None
+        raise RuntimeError(
+            f"RunStorageProviderBindingRequired: recorder has no provider binding for '{run_id}'."
+        )
 
     def handle_event(self, event: Event):
         """Callback for EventEmitter."""
@@ -153,40 +202,19 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         # collision, even if its lifecycle marker has not yet been written.
         if event.name == CoreEvents.RUN_START:
             with self._lock:
-                # [Refresher] Re-read environment variables for dynamic runtime configuration
-
-                # Preserve an explicitly injected recorder vault (notably test
-                # and embedded runtimes).  Only an explicit environment value
-                # may reconfigure a live recorder at RUN_START.
-                configured_log_dir = os.getenv("RUN_LOG_DIR")
-                if configured_log_dir:
-                    self.log_dir = Path(configured_log_dir)
-                    if isinstance(self.artifact_store, LocalFileArtifactStore):
-                        self.artifact_store.base_dir = self.log_dir
-                self.per_run = os.getenv("RUN_LOG_PER_RUN", "true").lower() == "true"
-                self.master = os.getenv("RUN_LOG_MASTER", "true").lower() == "true"
-
-                self._enforce_safety_floor()
-
-                self.log_rotate_count = int(os.getenv("RUN_LOG_ROTATE_COUNT", "0"))
-                self.master_log_path = self.log_dir / "run.jsonl"
-
                 if run_id and run_id != "unknown":
                     from eval_runner.run_lifecycle import (
                         RunLifecycleState,
                         get_run_lifecycle_state,
                     )
 
-                    run_vault_dir = self.log_dir / run_id
-                    trace_path = run_vault_dir / "run.jsonl"
-                    lifecycle_state = get_run_lifecycle_state(run_id, log_dir=self.log_dir)
+                    run_store, run_context = self._provider_for_run(run_id)
+                    lifecycle_state = get_run_lifecycle_state(
+                        run_id, run_store=run_store, context=run_context
+                    )
                     is_resume = bool(data.get("is_resume"))
                     if not is_resume:
-                        if (
-                            run_vault_dir.exists()
-                            or trace_path.exists()
-                            or lifecycle_state != RunLifecycleState.OPEN
-                        ):
+                        if lifecycle_state != RunLifecycleState.OPEN:
                             raise RuntimeError(
                                 f"RunIdCollision: run '{run_id}' already has persistent "
                                 "trace or lifecycle state; refusing to overwrite evidence."
@@ -194,12 +222,6 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                         self._run_states[run_id] = "RUNNING"
                         self._failed_runs.discard(run_id)
                         self._sequence_numbers[run_id] = 0
-                        if self.log_rotate_count > 0:
-                            self.rotate_logs(is_new_run=True)
-                        # A run-local trace is mandatory evidence.  Create it
-                        # before dispatching the RUN_START event so HITL and
-                        # other early events can never be master-log-only.
-                        run_vault_dir.mkdir(parents=True, exist_ok=True)
                     else:
                         if lifecycle_state in (
                             RunLifecycleState.FINALIZING,
@@ -213,32 +235,19 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                             )
                         self._run_states[run_id] = "RUNNING"
                         self._failed_runs.discard(run_id)
-                        # Monotonic sequencing: initialize sequence number from existing trace
-                        initial_seq = 0
-                        if trace_path.exists():
-                            try:
-                                with open(trace_path, encoding="utf-8") as tf:
-                                    for line in tf:
-                                        s = line.strip()
-                                        if s:
-                                            try:
-                                                entry = json.loads(s)
-                                                s_num = entry.get("_seq")
-                                                if isinstance(s_num, int) and s_num > initial_seq:
-                                                    initial_seq = s_num
-                                            except Exception as json_err:
-                                                logger.debug(
-                                                    "Trace scan parse error: %s",
-                                                    json_err,
-                                                )
-                            except Exception as te:
-                                logger.debug(
-                                    "Error reading trace for sequence initialization: %s", te
+                        # Provider events are the sole durable source when a
+                        # process resumes.  Do not inspect a local trace.
+                        initial_seq = max(
+                            (
+                                int(event.get("_seq", 0))
+                                for event in run_store.get_events(
+                                    run_id, offset=0, limit=10_000_000, context=run_context
                                 )
+                                if isinstance(event, dict)
+                            ),
+                            default=0,
+                        )
                         self._sequence_numbers[run_id] = initial_seq
-
-            if self.log_rotate_count > 0 and bool(data.get("is_resume")):
-                self.rotate_logs(is_new_run=True)
 
         with self._lock:
             run_state = self._run_states.get(run_id, "RUNNING")
@@ -252,8 +261,12 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             from eval_runner.run_lifecycle import assert_can_write_trace
 
             try:
-                assert_can_write_trace(run_id, log_dir=self.log_dir)
+                run_store, run_context = self._provider_for_run(run_id)
+                assert_can_write_trace(run_id, run_store=run_store, context=run_context)
             except Exception as w_err:
+                with self._lock:
+                    self._run_states[run_id] = "CERTIFICATION_FAILED"
+                    self._failed_runs.add(run_id)
                 raise RuntimeError(
                     f"TracePersistenceError: Run '{run_id}' cannot accept trace writes: {w_err}"
                 ) from w_err
@@ -263,39 +276,21 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             if run_id not in self._sequence_numbers:
                 initial_seq = 0
                 if run_id and run_id != "unknown":
-                    run_vault_dir = self.log_dir / run_id
-                    target_trace = run_vault_dir / "run.jsonl"
-                    if target_trace.exists():
-                        try:
-                            with open(target_trace, encoding="utf-8") as tf:
-                                for line in tf:
-                                    s = line.strip()
-                                    if s:
-                                        try:
-                                            entry = json.loads(s)
-                                            s_num = entry.get("_seq")
-                                            if isinstance(s_num, int) and s_num > initial_seq:
-                                                initial_seq = s_num
-                                        except Exception as line_parse_err:
-                                            logger.debug(
-                                                "Failed parsing trace line during sequence scan: "
-                                                f"{line_parse_err}"
-                                            )
-                        except Exception as trace_read_err:
-                            logger.debug(
-                                "Failed reading target trace during sequence scan: "
-                                f"{trace_read_err}"
+                    run_store, run_context = self._provider_for_run(run_id)
+                    initial_seq = max(
+                        (
+                            int(event.get("_seq", 0))
+                            for event in run_store.get_events(
+                                run_id, offset=0, limit=10_000_000, context=run_context
                             )
+                            if isinstance(event, dict)
+                        ),
+                        default=0,
+                    )
                 self._sequence_numbers[run_id] = initial_seq
             self._sequence_numbers[run_id] += 1
             data["_seq"] = self._sequence_numbers[run_id]
             data["_ts_iso"] = datetime.now().astimezone().isoformat()
-
-        # Resolve paths dynamically to support parallel runs in the same process
-        per_run_log_path = None
-        if run_id and run_id != "unknown":
-            run_vault_dir = self.log_dir / run_id
-            per_run_log_path = run_vault_dir / "run.jsonl"
 
         # [Fail-Closed on Absence]
         require_signing = os.getenv("EVAL_REQUIRE_SIGNING", "false").lower() == "true"
@@ -338,51 +333,13 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                     )
                     raise RuntimeError(err) from e
 
-        # The RunStorageProvider is the sole authoritative per-run trace
-        # persistence contract.  The master log remains diagnostic only.
-        content = json.dumps(data, default=str, separators=(",", ":")) + "\n"
-
-        def _write_buffered(path, content):
-            # [WinHardening] Persistent handles with thread safety
-            path_str = str(path)
-            with self._lock:
-                if path_str not in self._handles:
-                    # Ensure parent directory exists (Defensive for industrial stability)
-                    Path(path).parent.mkdir(parents=True, exist_ok=True)
-                    self._handles[path_str] = open(path, "a", encoding="utf-8", buffering=1)
-                self._handles[path_str].write(content)
-
         try:
-            if self.master:
-                _write_buffered(self.master_log_path, content)
-
-            if per_run_log_path and run_id and run_id != "unknown":
-                if self.artifact_store is not None:
-                    self.artifact_store.store_artifact(
-                        run_id=run_id,
-                        artifact_name="run.jsonl",
-                        content=content,
-                        content_type="application/x-ndjson",
-                        metadata={"event": data.get("event"), "seq": data.get("_seq")},
-                        append=True,
-                    )
-                from eval_runner.reference.local_run_store import LocalFileRunStore
-                from eval_runner.storage_resolver import resolve_run_storage_provider
-
-                run_store = resolve_run_storage_provider()
-                run_store_dir = getattr(run_store, "log_dir", getattr(run_store, "base_dir", None))
-                art_store_dir = getattr(
-                    self.artifact_store, "base_dir", getattr(self.artifact_store, "log_dir", None)
-                )
-                is_same_local = (
-                    type(self.artifact_store) is LocalFileArtifactStore
-                    and type(run_store) is LocalFileRunStore
-                    and art_store_dir is not None
-                    and run_store_dir is not None
-                    and Path(art_store_dir).resolve() == Path(run_store_dir).resolve()
-                )
-                if not is_same_local:
-                    run_store.append_events(run_id, [data])
+            if not run_id or run_id == "unknown":
+                raise RuntimeError("TracePersistenceError: trace event has no run ownership")
+            run_store, run_context = self._provider_for_run(run_id)
+            # Only the bound provider serializes canonical trace bytes.  The
+            # recorder never maintains an alternate filesystem/master-log copy.
+            run_store.append_events(run_id, [data], context=run_context)
         except Exception as e:
             sys.stderr.write(f"   [FlightRecorder] [ERROR] File I/O Error: {e}\n")
             with self._lock:
@@ -397,110 +354,65 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             ) from e
 
     def finalize_run(self, run_id: str | None = None):
+        """Close recorder writes without publishing a certificate seal.
+
+        The provider-native certification transaction is the sole authority
+        allowed to transition a certifiable run to ``SEALED``.  Recorder
+        finalization can only place an open run in ``FINALIZING`` and retains
+        its provider binding for certification.
         """
-        Explicitly closes file handles, seals telemetry, and transitions lifecycle state.
-        Critical for resolving Windows file-lock races and preventing TOCTOU mutations.
-        If run_id is provided, only closes handles associated with that run.
-        """
+        if not run_id:
+            return
+
         with self._lock:
-            if run_id and run_id != "unknown":
-                from eval_runner.run_lifecycle import RunLifecycleState, get_run_lifecycle_state
+            if (
+                run_id in self._failed_runs
+                or self._run_states.get(run_id) == "CERTIFICATION_FAILED"
+            ):
+                self._run_states[run_id] = "CERTIFICATION_FAILED"
+                raise RuntimeError(
+                    f"TracePersistenceError: Run '{run_id}' transitioned to "
+                    "CERTIFICATION_FAILED due to telemetry persistence failure; "
+                    "cannot produce trace seal, certificate, or verification package."
+                )
 
-                # Finalization is safely idempotent after an authoritative seal;
-                # it must never attempt an illegal backward transition.
-                if (
-                    get_run_lifecycle_state(run_id, log_dir=self.log_dir)
-                    == RunLifecycleState.SEALED
-                ):
-                    self._run_states[run_id] = "SEALED"
-                    return
-                if (
-                    run_id in self._failed_runs
-                    or self._run_states.get(run_id) == "CERTIFICATION_FAILED"
-                ):
-                    self._run_states[run_id] = "CERTIFICATION_FAILED"
-                    raise RuntimeError(
-                        f"TracePersistenceError: Run '{run_id}' transitioned to "
-                        "CERTIFICATION_FAILED due to telemetry persistence failure; "
-                        "cannot produce trace seal, certificate, or verification package."
-                    )
-                self._run_states[run_id] = "FINALIZING"
-                try:
-                    from eval_runner.run_lifecycle import (
-                        RunLifecycleState,
-                        transition_run_lifecycle,
-                    )
+        if self.is_certification_mode(run_id) and isinstance(
+            self.signing_backend, NullSigningBackend
+        ):
+            raise RuntimeError("AES_CERTIFICATION_MODE=1 requires a non-null cryptographic signer")
 
-                    transition_run_lifecycle(
-                        run_id, RunLifecycleState.FINALIZING, log_dir=self.log_dir
-                    )
-                except Exception as lc_err:
-                    self._run_states[run_id] = "CERTIFICATION_FAILED"
-                    self._failed_runs.add(run_id)
-                    raise RuntimeError(
-                        f"TracePersistenceError: failed to persist FINALIZING lifecycle "
-                        f"transition for run '{run_id}': {lc_err}"
-                    ) from lc_err
+        from eval_runner.run_lifecycle import (
+            RunLifecycleState,
+            get_run_lifecycle_state,
+            transition_run_lifecycle,
+        )
 
-            # Determine which handles to close
-            if run_id and run_id != "unknown":
-                # Find handles associated with this run
-                run_vault_dir = self.log_dir / run_id
-                target_path = str(run_vault_dir / "run.jsonl")
-                paths_to_close = [target_path] if target_path in self._handles else []
-            else:
-                # Close ALL handles (Legacy/Global cleanup)
-                paths_to_close = list(self._handles.keys())
+        run_store, context = self._provider_for_run(run_id)
+        state = get_run_lifecycle_state(run_id, run_store=run_store, context=context)
+        if state == RunLifecycleState.SEALED:
+            with self._lock:
+                self._run_states[run_id] = "SEALED"
+            return
+        if state in {RunLifecycleState.OPEN, RunLifecycleState.PAUSED_FOR_APPROVAL}:
+            transition_run_lifecycle(
+                run_id,
+                RunLifecycleState.FINALIZING,
+                run_store=run_store,
+                context=context,
+            )
+        with self._lock:
+            self._run_states[run_id] = "FINALIZING"
 
-            for path_str in paths_to_close:
-                handle = self._handles.pop(path_str, None)
-                if not handle:
-                    continue
-                try:
-                    handle.flush()
-                    # [Staff Note] Force physical sync to prevent metadata corruption on crash
-                    os.fsync(handle.fileno())
-                    handle.close()
-                except (AttributeError, ImportError, ValueError) as shut_e:
-                    # Guard against shutdown races where os or handles are already cleared
-                    # but log for forensic visibility in debug mode
-                    sys.stderr.write(
-                        f"   [FlightRecorder] [DEBUG] Shutdown race in finalize: {shut_e}\n"
-                    )
-                except Exception as e:
-                    sys.stderr.write(
-                        f"   [FlightRecorder] [WARNING] Finalization error on {path_str}: {e}\n"
-                    )
-
-        if run_id and run_id != "unknown" and self.artifact_store:
+        if self.artifact_store and run_id and run_id != "unknown":
             try:
-                trace_content = ""
-                try:
-                    raw_art = self.artifact_store.get_artifact(run_id, "run.jsonl")
-                    if raw_art:
-                        trace_content = (
-                            raw_art.decode("utf-8") if isinstance(raw_art, bytes) else str(raw_art)
-                        )
-                except Exception as art_err:
-                    logger.debug(f"Artifact store get trace notice: {art_err}")
+                import hashlib
+                from datetime import UTC, datetime
 
-                if not trace_content:
-                    run_vault_dir = self.log_dir / run_id
-                    target_path = run_vault_dir / "run.jsonl"
-                    if target_path.exists():
-                        trace_content = target_path.read_text(encoding="utf-8")
+                from agentv_runtime.canonical import canonical_json_encode
 
-                trace_bytes = (
-                    trace_content.encode("utf-8")
-                    if isinstance(trace_content, str)
-                    else bytes(trace_content)
-                )
+                trace_bytes = run_store.get_trace_bytes(run_id, context=context) or b""
                 trace_digest = f"sha3_256:{hashlib.sha3_256(trace_bytes).hexdigest()}"
-                line_count = (
-                    len([line for line in trace_content.strip().split("\n") if line.strip()])
-                    if trace_content
-                    else 0
-                )
+                line_count = len([line for line in trace_bytes.split(b"\n") if line.strip()])
 
                 seal_envelope = {
                     "status": "finalized",
@@ -511,49 +423,24 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                     "algorithm": "sha3_256",
                 }
 
-                try:
-                    signer = self.signing_backend
-                    if not signer or isinstance(signer, NullSigningBackend):
-                        from eval_runner.identity import get_default_signer
+                signer = self.signing_backend
+                if signer and not isinstance(signer, NullSigningBackend):
+                    signer_id = str(getattr(signer, "identity", None) or "local-node")
+                    seal_envelope["signer_identity"] = signer_id
+                    key_id_val = getattr(signer, "key_id", None)
+                    if not key_id_val and hasattr(signer, "get_key_id"):
+                        key_id_val = signer.get_key_id()
+                    if key_id_val and isinstance(key_id_val, str):
+                        seal_envelope["key_id"] = key_id_val
 
-                        signer = get_default_signer()
-
-                    if self.is_certification_mode(run_id):
-                        if not signer or isinstance(signer, NullSigningBackend):
-                            raise RuntimeError(
-                                "AES_CERTIFICATION_MODE=1 requires a non-null cryptographic "
-                                "signer for trace seal finalization"
-                            )
-
-                    if signer and not isinstance(signer, NullSigningBackend):
-                        signer_id = str(getattr(signer, "identity", None) or "local-node")
-                        seal_envelope["signer_identity"] = signer_id
-                        key_id_val = getattr(signer, "key_id", None)
-                        if not key_id_val and hasattr(signer, "get_key_id"):
-                            key_id_val = signer.get_key_id()
-                        if key_id_val and isinstance(key_id_val, str):
-                            seal_envelope["key_id"] = key_id_val
-
-                        # Sign exact canonical RFC 8785 envelope payload (Defect 2)
-                        from agentv_runtime.canonical import canonical_json_encode
-
-                        seal_bytes = canonical_json_encode(seal_envelope)
-                        if hasattr(signer, "sign"):
-                            raw_sig = signer.sign(seal_bytes)
-                        else:
-                            raw_sig = signer.sign_payload(seal_bytes)
-                        seal_envelope["signature"] = (
-                            raw_sig.hex() if isinstance(raw_sig, bytes) else str(raw_sig)
-                        )
-                except Exception as sign_e:
-                    logger.error(f"Trace seal signing notice/failure: {sign_e}")
-                    if self.is_certification_mode(run_id):
-                        with self._lock:
-                            self._run_states[run_id] = "CERTIFICATION_FAILED"
-                            self._failed_runs.add(run_id)
-                        raise RuntimeError(
-                            f"Cryptographic trace seal signing failed: {sign_e}"
-                        ) from sign_e
+                    seal_bytes = canonical_json_encode(seal_envelope)
+                    if hasattr(signer, "sign"):
+                        raw_sig = signer.sign(seal_bytes)
+                    else:
+                        raw_sig = signer.sign_payload(seal_bytes)
+                    seal_envelope["signature"] = (
+                        raw_sig.hex() if isinstance(raw_sig, bytes) else str(raw_sig)
+                    )
 
                 self.artifact_store.store_artifact(
                     run_id=run_id,
@@ -561,8 +448,6 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                     content=json.dumps(seal_envelope, indent=2),
                     content_type="application/json",
                     overwrite=True,
-                    retention_days=getattr(config, "WORM_RETENTION_DAYS", 0) or None,
-                    legal_hold=getattr(config, "WORM_LEGAL_HOLD", False),
                 )
             except Exception as e:
                 logger.debug(f"Artifact store finalize seal error: {e}")
@@ -571,29 +456,6 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                         self._run_states[run_id] = "CERTIFICATION_FAILED"
                         self._failed_runs.add(run_id)
                     raise
-
-        # Transition state to SEALED only if run did not fail
-        if run_id:
-            with self._lock:
-                if self._run_states.get(run_id) != "CERTIFICATION_FAILED":
-                    try:
-                        from eval_runner.run_lifecycle import (
-                            RunLifecycleState,
-                            transition_run_lifecycle,
-                        )
-
-                        transition_run_lifecycle(
-                            run_id, RunLifecycleState.SEALED, log_dir=self.log_dir
-                        )
-                    except Exception as lc_err:
-                        self._run_states[run_id] = "CERTIFICATION_FAILED"
-                        self._failed_runs.add(run_id)
-                        raise RuntimeError(
-                            f"TracePersistenceError: failed to persist SEALED lifecycle "
-                            f"transition for run '{run_id}': {lc_err}"
-                        ) from lc_err
-                    self._run_states[run_id] = "SEALED"
-            self._sequence_numbers.pop(run_id, None)
 
     def freeze_run(self, run_id: str) -> None:
         """Explicitly freezes a run in preparation for verification/certification."""
@@ -607,7 +469,12 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                     transition_run_lifecycle,
                 )
 
-                transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING, log_dir=self.log_dir)
+                transition_run_lifecycle(
+                    run_id,
+                    RunLifecycleState.FINALIZING,
+                    run_store=self._provider_for_run(run_id)[0],
+                    context=self._provider_for_run(run_id)[1],
+                )
             except Exception as lc_err:
                 self._run_states[run_id] = "CERTIFICATION_FAILED"
                 self._failed_runs.add(run_id)
@@ -618,45 +485,8 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         self.finalize_run(run_id=run_id)
 
     def close_execution_writes(self, run_id: str | None = None) -> None:
-        """Flush and close a run's trace without changing its certification lifecycle.
-
-        Evaluation owns the end of execution I/O.  Certification alone owns the
-        irreversible ``FINALIZING -> SEALED`` transition; closing a file must not
-        pre-empt that transaction by sealing the run.
-        """
-        with self._lock:
-            if run_id and run_id != "unknown":
-                run_vault_dir = self.log_dir / run_id
-                target_path = str(run_vault_dir / "run.jsonl")
-                # A recorder can additionally hold the configured master stream
-                # (or a legacy flat stream in an embedded runtime).  Close only
-                # handles attributable to this completed evaluation; do not rely
-                # solely on the current per_run flag, which may be environment
-                # configured after the handle was opened.
-                paths_to_close = [
-                    path_str
-                    for path_str in self._handles
-                    if path_str == target_path or Path(path_str).parent == run_vault_dir
-                ]
-            else:
-                paths_to_close = list(self._handles.keys())
-
-            for path_str in paths_to_close:
-                handle = self._handles.pop(path_str, None)
-                if not handle:
-                    continue
-                try:
-                    handle.flush()
-                    os.fsync(handle.fileno())
-                    handle.close()
-                except Exception as exc:
-                    if run_id and run_id != "unknown":
-                        self._run_states[run_id] = "CERTIFICATION_FAILED"
-                        self._failed_runs.add(run_id)
-                    raise RuntimeError(
-                        "TracePersistenceError: failed closing execution trace "
-                        f"for run '{run_id}': {exc}"
-                    ) from exc
+        """Compatibility hook; providers own stream flushing and durability."""
+        return None
 
     def on_cleanup_runs(self) -> None:
         """Release recorder handles before a console cleanup deletes vaults."""
@@ -679,49 +509,12 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         self.close_execution_writes(run_id=getattr(context, "run_id", None))
 
     def rotate_logs(self, is_new_run: bool = False):
-        """
-        Industrial-Grade Vault Rotation.
-        Keeps only the latest N run subdirectories (vaults) based on disk state.
-        This ignores root-level flat files, enforcing the vaulted methodology.
-        """
-        try:
-            # 1. Collect only Vault Directories
-            vaults = [d for d in self.log_dir.iterdir() if d.is_dir()]
-
-            # 2. Sort by modification time (Latest first)
-            targets = sorted(vaults, key=lambda x: x.stat().st_mtime, reverse=True)
-
-            # [Retention Policy Enforcement]
-            # If we are starting a new run, we keep N-1 existing runs to make room.
-            effective_count = self.log_rotate_count
-            if is_new_run:
-                effective_count = max(0, self.log_rotate_count - 1)
-
-            if len(targets) > effective_count:
-                for old_vault in targets[effective_count:]:
-                    try:
-                        # Industrial-grade resilient purge of the entire vault directory
-                        rmtree_resilient(old_vault)
-                    except Exception as e:
-                        sys.stderr.write(
-                            "[FlightRecorder] [WARNING] Error rotating log vault "
-                            f"{old_vault.name}: {e}\n"
-                        )
-        except Exception as e:
-            # Robust defensive catch for IO/Permission errors during scan
-            sys.stderr.write(
-                f"   [FlightRecorder] [ERROR] Scan failure during vault rotation: {e}\n"
-            )
+        """Deprecated: retention is a provider responsibility."""
+        return None
 
     def flush(self):
-        """Explicit flush trigger."""
-        with self._lock:
-            for handle in self._handles.values():
-                try:
-                    handle.flush()
-                    os.fsync(handle.fileno())
-                except Exception as e:
-                    sys.stderr.write(f"   [FlightRecorder] [WARNING] Flush error: {e}\n")
+        """Compatibility hook; providers own stream flushing and durability."""
+        return None
 
     # Note: methods like before_evaluation are still available if needed
     # but handle_event covers most needs for the Flight Recorder.

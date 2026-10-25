@@ -117,6 +117,37 @@ class TestZeroTouchExternalPluginCompatibility:
         lb_store.record_run_summary({"run_id": "run_ent_01", "score": 99.0})
         assert len(lb_store.get_leaderboard()) == 1
 
+    def test_external_run_store_commits_certification_under_a_fenced_lease(self):
+        """The external provider implements the generic atomic commit contract."""
+        store = EnterpriseRunStore()
+        context = {"tenant_id": "enterprise-a", "org_id": "acme"}
+        store.create_run("run-ent-cert", "scen-ent", context=context)
+        assert store.acquire_certification_lease(
+            "run-ent-cert",
+            owner_id="worker-a",
+            fencing_token="fence-a",
+            timeout_seconds=0.1,
+            context=context,
+        )
+        manifest = {"run_id": "run-ent-cert", "trace_hash": "sha3_256:abc"}
+        assert store.commit_certification(
+            "run-ent-cert",
+            manifest,
+            owner_id="worker-a",
+            fencing_token="fence-a",
+            context=context,
+        )
+        run = store.get_run("run-ent-cert", context=context)
+        assert run["lifecycle"] == "SEALED"
+        assert store.get_manifest("run-ent-cert", context=context) == manifest
+        assert not store.commit_certification(
+            "run-ent-cert",
+            {"run_id": "run-ent-cert", "trace_hash": "sha3_256:other"},
+            owner_id="worker-a",
+            fencing_token="fence-a",
+            context=context,
+        )
+
     @pytest.mark.asyncio
     async def test_end_to_end_runner_execution_with_external_plugin_injection(self):
         """

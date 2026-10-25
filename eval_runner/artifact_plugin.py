@@ -121,7 +121,7 @@ class ArtifactPlugin(BaseEvalPlugin):
 
         if generate_manifest:
             # Add signature to manifest
-            from eval_runner.reference.signing import LocalEd25519SigningBackend
+            from eval_runner.runtime_services import LocalEd25519SigningBackend
 
             private_key = self._get_signing_key()
             manifest["signer_identity"] = getattr(self, "signer_identity", "system_id")

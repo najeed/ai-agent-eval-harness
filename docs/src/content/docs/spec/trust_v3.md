@@ -28,8 +28,8 @@ To ensure forensic performance and prevent bloat, artifacts are gathered via the
 To ensure audit-grade forensic stability, the protocol enforces strict identity resolution rules:
 
 - **Zero-Inference Policy**: The `run_id` MUST be explicitly provided during certification. Speculative inference from parent directory names is prohibited unless reconciled against an vault.
-- **Vault Affinity**: Verification is ONLY permitted for traces residing in an industrial vault (`/runs/<run_id>/run.jsonl`) or the master log (`/runs/run.jsonl`). Traces found in shared temporary or non-compliant directories are considered corrupted.
-- **Path Portability**: All evidence ledgers MUST use site-relative paths to the vault root, ensuring manifests are portable across distinct storage backends.
+- **Provider Affinity**: Verification is permitted only against the execution owner's scoped provider record: its exact committed trace bytes and its manifest. Filesystem paths and master logs are not verification inputs.
+- **Provider Portability**: Evidence references MUST use provider-neutral identities or URIs; a LocalFile provider may map those to paths internally without exposing paths to Core.
 
 # 4. Cryptographic Requirements & Evidence Graph
 - **Algorithm**: Ed25519 (Asymmetric) / SHA3-256 (Hashing) / ML-DSA-65 (NIST FIPS 204 PQC).

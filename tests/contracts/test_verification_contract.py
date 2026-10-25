@@ -7,10 +7,30 @@ VerificationResult WSM scoring model, and SHA3-256 fingerprint stability.
 Any structural change to these guarantees requires a MAJOR semver bump.
 """
 
-from __future__ import annotations
+from unittest.mock import MagicMock
 
 import eval_runner.config as config
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.verifier import VC_V3_SCHEMA_VERSION, TraceVerifier, VerificationResult
+
+
+def _provider_for(runs_dir, run_id):
+    store = LocalFileRunStore(runs_dir)
+    store.create_run(run_id, "contract-scenario")
+    return store
+
+
+def _sign_provider_trace(store, run_id, event, identity_id):
+    store.append_events(run_id, [event])
+    backend = MagicMock()
+    backend.sign_payload.return_value = "ab" * 64
+    return TraceVerifier.sign_trace_bytes(
+        store.get_trace_bytes(run_id),
+        run_id=run_id,
+        run_store=store,
+        identity_id=identity_id,
+        signing_backend=backend,
+    )
 
 
 class TestVerificationContract:
@@ -108,15 +128,10 @@ class TestVerificationContract:
         monkeypatch.setattr(config, "RUN_LOG_DIR", runs_dir)
 
         run_id = "contract_verify_001"
-        run_dir = runs_dir / run_id
-        run_dir.mkdir(parents=True)
-        trace = run_dir / "run.jsonl"
-        trace.write_text('{"event": "tool_call"}\n{"event": "agent_response"}\n', encoding="utf-8")
+        run_store = _provider_for(runs_dir, run_id)
 
-        manifest = TraceVerifier.sign_trace(
-            trace_path=str(trace),
-            identity_id="contract_test_signer",
-            run_id=run_id,
+        manifest = _sign_provider_trace(
+            run_store, run_id, {"event": "tool_call"}, "contract_test_signer"
         )
 
         assert manifest is not None, "sign_trace() returned None — certification failed."
@@ -135,15 +150,10 @@ class TestVerificationContract:
         monkeypatch.setattr(config, "RUN_LOG_DIR", runs_dir)
 
         run_id = "contract_schema_001"
-        run_dir = runs_dir / run_id
-        run_dir.mkdir(parents=True)
-        trace = run_dir / "run.jsonl"
-        trace.write_text('{"event": "start"}\n', encoding="utf-8")
+        run_store = _provider_for(runs_dir, run_id)
 
-        manifest = TraceVerifier.sign_trace(
-            trace_path=str(trace),
-            identity_id="schema_contract_signer",
-            run_id=run_id,
+        manifest = _sign_provider_trace(
+            run_store, run_id, {"event": "start"}, "schema_contract_signer"
         )
 
         assert manifest.get("vc_version") == VC_V3_SCHEMA_VERSION, (
@@ -159,20 +169,15 @@ class TestVerificationContract:
         monkeypatch.setattr(config, "RUN_LOG_DIR", runs_dir)
 
         run_id = "contract_fp_001"
-        run_dir = runs_dir / run_id
-        run_dir.mkdir(parents=True)
-        trace = run_dir / "run.jsonl"
-        trace.write_text('{"event": "validation"}\n', encoding="utf-8")
+        run_store = _provider_for(runs_dir, run_id)
 
-        manifest = TraceVerifier.sign_trace(
-            trace_path=str(trace),
-            identity_id="fp_contract_signer",
-            run_id=run_id,
+        manifest = _sign_provider_trace(
+            run_store, run_id, {"event": "validation"}, "fp_contract_signer"
         )
 
         th = manifest.get("trace_hash", "")
-        assert len(th) == 64, f"trace_hash is not 64 chars (SHA3-256): '{th}'"
-        assert all(c in "0123456789abcdef" for c in th), f"trace_hash is not lowercase hex: '{th}'"
+        assert len(th) == 64
+        assert all(c in "0123456789abcdef" for c in th)
         assert manifest.get("hash_algorithm") == "sha3_256"
 
     def test_sign_trace_fingerprint_stability(self, tmp_path, monkeypatch):

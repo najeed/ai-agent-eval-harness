@@ -73,10 +73,8 @@ class TestLocalFileArtifactStoreWORM:
         store.seal(run_id=run_id, metadata={"legal_hold": True})
         assert store.is_sealed(run_id) is True
 
-        with pytest.raises(PermissionError) as exc_info:
-            store.unseal(run_id)
-        assert "WORMImmutabilityViolation" in str(exc_info.value)
-        assert "active legal hold" in str(exc_info.value)
+        with pytest.raises(PermissionError, match="SealedEvidenceImmutabilityViolation"):
+            store.unseal(run_id, run_store=MagicMock())
         assert store.is_sealed(run_id) is True
 
     def test_unseal_fails_closed_prior_to_retention_expiry(self, tmp_path: Path) -> None:
@@ -86,10 +84,8 @@ class TestLocalFileArtifactStoreWORM:
         future_date = (datetime.now(UTC) + timedelta(days=30)).isoformat()
         store.seal(run_id=run_id, metadata={"retention_until": future_date})
 
-        with pytest.raises(PermissionError) as exc_info:
-            store.unseal(run_id)
-        assert "WORMImmutabilityViolation" in str(exc_info.value)
-        assert "prior to retention expiry" in str(exc_info.value)
+        with pytest.raises(PermissionError, match="SealedEvidenceImmutabilityViolation"):
+            store.unseal(run_id, run_store=MagicMock())
         assert store.is_sealed(run_id) is True
 
     def test_unseal_permitted_after_retention_expired(self, tmp_path: Path) -> None:
@@ -99,11 +95,9 @@ class TestLocalFileArtifactStoreWORM:
         past_date = (datetime.now(UTC) - timedelta(days=1)).isoformat()
         store.seal(run_id=run_id, metadata={"retention_until": past_date, "legal_hold": False})
 
-        with patch.object(config, "is_production", return_value=False):
-            store.unseal(run_id)
-            # .sealed should be removed
-            sealed_file = tmp_path / run_id / ".sealed"
-            assert not sealed_file.exists()
+        with pytest.raises(PermissionError, match="SealedEvidenceImmutabilityViolation"):
+            store.unseal(run_id, run_store=MagicMock())
+        assert (tmp_path / run_id / ".sealed").exists()
 
     def test_unseal_production_violation(self, tmp_path: Path) -> None:
         store = LocalFileArtifactStore(base_dir=tmp_path)
@@ -117,9 +111,8 @@ class TestLocalFileArtifactStoreWORM:
                 "eval_runner.run_lifecycle.get_run_lifecycle_state",
                 return_value=RunLifecycleState.SEALED,
             ):
-                with pytest.raises(PermissionError) as exc_info:
-                    store.unseal(run_id)
-                assert "ProductionImmutabilityViolation" in str(exc_info.value)
+                with pytest.raises(PermissionError, match="SealedEvidenceImmutabilityViolation"):
+                    store.unseal(run_id, run_store=MagicMock())
 
     def test_unseal_with_invalid_retention_date_unseals_cleanly(self, tmp_path: Path) -> None:
         store = LocalFileArtifactStore(base_dir=tmp_path)
@@ -128,15 +121,25 @@ class TestLocalFileArtifactStoreWORM:
             run_id=run_id, metadata={"retention_until": "not-a-valid-date", "legal_hold": False}
         )
 
-        with patch.object(config, "is_production", return_value=False):
-            store.unseal(run_id)
-            sealed_file = tmp_path / run_id / ".sealed"
-            assert not sealed_file.exists()
+        with pytest.raises(PermissionError, match="SealedEvidenceImmutabilityViolation"):
+            store.unseal(run_id, run_store=MagicMock())
+        assert (tmp_path / run_id / ".sealed").exists()
 
     def test_unseal_non_existent_run_is_safe_noop(self, tmp_path: Path) -> None:
         store = LocalFileArtifactStore(base_dir=tmp_path)
         # Should not raise
-        store.unseal("non-existent-run-id")
+        store.unseal("non-existent-run-id", run_store=MagicMock())
+
+    def test_unseal_never_removes_a_committed_seal_marker(self, tmp_path: Path) -> None:
+        """A post-seal lifecycle failure cannot make evidence rollback legal."""
+        store = LocalFileArtifactStore(base_dir=tmp_path)
+        run_id = "run-irreversible-seal"
+        store.seal(run_id)
+
+        with pytest.raises(PermissionError, match="SealedEvidenceImmutabilityViolation"):
+            store.unseal(run_id, run_store=MagicMock(), context={"org_id": "acme"})
+
+        assert store.is_sealed(run_id)
 
 
 class TestPluginOnArtifactCreatedDispatch:
@@ -278,14 +281,16 @@ class TestImmutableWORMEnforcement:
         monkeypatch.setattr(config, "TRUST_ROOT", trust_root)
 
         IdentityService._provision_local_identity("system_id")
-        store = LocalFileArtifactStore(base_dir=run_log_dir)
+        from eval_runner.reference.local_run_store import LocalFileRunStore
+
+        run_store = LocalFileRunStore(run_log_dir)
 
         with patch.object(config, "REQUIRE_IMMUTABLE_WORM", True):
             with pytest.raises(CertificationFailedError) as exc_info:
-                TraceVerifier.sign_trace(
-                    trace_path=str(trace_file),
+                TraceVerifier.sign_trace_bytes(
+                    trace_file.read_bytes(),
                     run_id=run_id,
-                    artifact_store=store,
+                    run_store=run_store,
                 )
             assert "ImmutableRetentionRequired" in str(exc_info.value)
             assert "TAMPER_EVIDENT_LOGICAL_SEAL" in str(exc_info.value)

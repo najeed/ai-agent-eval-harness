@@ -574,14 +574,18 @@ def test_duplicate_entitlement_tuple_fails_closed(client):
 
 def test_cross_tenant_run_read_is_non_enumerating(client, app, tmp_path, monkeypatch):
     """A verified tenant cannot learn whether another tenant's run exists."""
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    monkeypatch.delenv("AGENTV_TEST_AUTH_BYPASS", raising=False)
     app.register_blueprint(run_bp)
+    store = LocalFileRunStore(log_dir=tmp_path)
+    app.extensions["agentv_run_store"] = store
     run_dir = tmp_path / "cross-tenant-run"
     run_dir.mkdir()
     (run_dir / "run_manifest.json").write_text(
         '{"metadata":{"runtime_context":{"org_id":"other-org","tenant_id":"other-tenant","workspace_id":"other-workspace","active_environment":"production"}}}',
         encoding="utf-8",
     )
-    monkeypatch.setattr("eval_runner.console.routes.runs.config.RUN_LOG_DIR", tmp_path)
     with client.session_transaction() as sess:
         sess["user"] = {
             "id": "operator",

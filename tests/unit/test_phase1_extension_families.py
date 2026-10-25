@@ -116,7 +116,9 @@ def test_basic_field_policy_evaluator():
 
 
 def test_inprocess_execution_backend_lifecycle():
-    backend = InProcessExecutionBackend()
+    from unittest.mock import MagicMock
+
+    backend = InProcessExecutionBackend(run_store=MagicMock())
     assert backend.status("unknown") == {"status": "UNKNOWN"}
 
     # Mock submission state

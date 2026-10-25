@@ -7,7 +7,12 @@ from dataclasses import FrozenInstanceError
 
 import pytest
 
-from agentv_runtime.manifest import ExecutionManifest, ManifestBuilder, compute_scenario_hash
+from agentv_runtime.manifest import (
+    ExecutionManifest,
+    ManifestBuilder,
+    compute_scenario_hash,
+    resolve_artifact_scope,
+)
 
 
 def test_compute_scenario_hash_deterministic():
@@ -76,6 +81,34 @@ def test_execution_manifest_rejects_unknown_physical_fields():
     manifest["unbound_execution_override"] = "unsafe"
     with pytest.raises(ValueError, match="ExecutionManifestUnknownFields"):
         ExecutionManifest.from_dict(manifest)
+
+
+def test_resolve_artifact_scope_requires_complete_signed_execution_scope():
+    manifest = {
+        "tenant_id": "default",
+        "workspace_id": "default",
+        "execution_manifest": {
+            "scope": {
+                "org_id": "northstar-health",
+                "tenant_id": "northstar-health",
+                "workspace_id": "utilization-management",
+                "active_environment": "Staging",
+            }
+        },
+    }
+
+    assert resolve_artifact_scope(manifest) == {
+        "org_id": "northstar-health",
+        "tenant_id": "northstar-health",
+        "workspace_id": "utilization-management",
+        "active_environment": "Staging",
+    }
+    assert resolve_artifact_scope({"tenant_id": "default"}) == {
+        "org_id": "",
+        "tenant_id": "",
+        "workspace_id": "",
+        "active_environment": "",
+    }
 
 
 def test_execution_manifest_rich_provenance_support():

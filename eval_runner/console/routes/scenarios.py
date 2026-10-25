@@ -24,6 +24,7 @@ from eval_runner.catalog import ScenarioCatalog
 from eval_runner.run_index import create_run_index, update_run_index_status
 
 from ..auth_manager import Permission, active_runtime_context, require_permission
+from ..providers import get_run_store
 
 logger = logging.getLogger(__name__)
 
@@ -1019,7 +1020,12 @@ def check_execution_readiness():
         from eval_runner.services.run_summary import RunSummaryService
 
         post_run_evidence_complete = (
-            RunSummaryService.get_authoritative_verdict(run_id) == "VERIFIED"
+            RunSummaryService.get_authoritative_verdict(
+                run_id,
+                run_store=get_run_store(),
+                context=active_runtime_context(),
+            )
+            == "VERIFIED"
         )
 
     if not can_execute:
@@ -1408,7 +1414,7 @@ def evaluate_scenario():
     """
 
     from agentv_runtime.manifest import ManifestBuilder
-    from eval_runner.reference.inprocess_backend import InProcessExecutionBackend
+    from eval_runner.runtime_services import resolve_execution_backend
 
     data = request.json or {}
     scope = _execution_scope_for_request(data)
@@ -1555,6 +1561,27 @@ def evaluate_scenario():
         execution_mode=exec_mode,
     )
 
+    # Materialize the accepted run in the active provider before dispatch.
+    # The index authorizes a run; the provider owns its lifecycle and trace.
+    # Dispatching before this succeeds lets a HITL pause be acknowledged with
+    # no durable record to transition.
+    run_store = get_run_store()
+    materialize_submission = getattr(run_store, "materialize_submission", None)
+    if callable(materialize_submission):
+        materialize_submission(
+            run_id=run_id,
+            scenario_id=str(scen.get("id") or identifier),
+            agent_id=str(agent_config.get("agent_name") or "default_agent"),
+            metadata={
+                "agent_name": str(agent_config.get("agent_name") or "default_agent"),
+                "protocol": agent_config.get("protocol"),
+                "model": agent_config.get("model"),
+                "execution_mode": exec_mode,
+                "runtime_context": dict(scope),
+            },
+            context=scope,
+        )
+
     # Publish durable verified scope before returning or dispatching. Every
     # run-facing route can now authorize an accepted asynchronous run even
     # before the runner writes its full execution artifacts.
@@ -1563,16 +1590,24 @@ def evaluate_scenario():
         context=scope,
         scenario_id=str(scen.get("id") or identifier),
     )
-    from agentv_runtime.discovery import resolve_extension
-
-    backend = resolve_extension(
-        "execution_backends",
-        default_factory=InProcessExecutionBackend.get_instance,
-    )
+    backend = resolve_execution_backend()
+    # The accepted-run projection and the executing runner must use the same
+    # authoritative provider.  Leaving this injection out permits the backend
+    # to resolve a different/default store after dispatch, splitting a single
+    # run between the Control Plane lifecycle record and local trace files.
+    set_dependency_graph = getattr(backend, "set_dependency_graph", None)
+    if callable(set_dependency_graph):
+        set_dependency_graph(run_store=run_store)
     backend.submit(
         run_id=run_id,
         scenario_data=scen,
         background=True,
+        run_store=run_store,
+        context=scope,
+        # This is an internal handoff, not a caller-controlled collision
+        # override.  ``Runner.run`` validates that the provider record is an
+        # empty OPEN submission in this exact scope before accepting it.
+        provider_submission=True,
         max_turns=data.get("max_turns", 10),
         metadata={
             **data.get("metadata", {}),

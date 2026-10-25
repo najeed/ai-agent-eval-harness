@@ -10,8 +10,8 @@ from pathlib import Path
 import jsonschema
 import pytest
 
-from eval_runner import config
 from eval_runner.console.routes.evidence import build_verification_package
+from eval_runner.reference.local_run_store import LocalFileRunStore
 
 SCHEMA_PATH = (
     Path(__file__).resolve().parents[3] / "spec" / "agentv-package" / "agentv-package.schema.json"
@@ -19,49 +19,50 @@ SCHEMA_PATH = (
 
 
 @pytest.fixture
-def package_vault(tmp_path, monkeypatch):
-    runs = tmp_path / "runs"
-    vault = runs / "pkg-contract-run"
-    vault.mkdir(parents=True)
-
-    (vault / "run.jsonl").write_text(
-        "\n".join(
-            [
-                json.dumps(
-                    {
-                        "event": "run_start",
-                        "run_id": "pkg-contract-run",
-                        "scenario": "sample",
-                        "identifier": "target-abc",
-                        "execution_mode": "live",
-                        "execution_mode_declared": True,
-                        "reproducibility_fingerprint": "sha3_256:" + "a" * 64,
-                    }
-                ),
-                json.dumps(
-                    {
-                        "event": "run_end",
-                        "run_id": "pkg-contract-run",
-                        "data": {"passed": False, "status": "EXECUTION_FAILED"},
-                    }
-                ),
-            ]
-        )
-        + "\n",
-        encoding="utf-8",
+def package_vault(tmp_path):
+    run_id = "pkg-contract-run"
+    store = LocalFileRunStore(tmp_path / "runs")
+    scenario = {"id": "sample", "aes_version": 1.4}
+    store.create_run(run_id, "sample", metadata={"scenario_data": scenario})
+    store.append_events(
+        run_id,
+        [
+            {
+                "event": "run_start",
+                "run_id": run_id,
+                "scenario": "sample",
+                "identifier": "target-abc",
+                "execution_mode": "live",
+                "execution_mode_declared": True,
+                "reproducibility_fingerprint": "sha3_256:" + "a" * 64,
+            },
+            {
+                "event": "run_end",
+                "run_id": run_id,
+                "data": {"passed": False, "status": "EXECUTION_FAILED"},
+            },
+        ],
     )
-
-    (vault / "scenario_resolved.json").write_text(
-        json.dumps({"id": "sample", "aes_version": 1.4}), encoding="utf-8"
+    store.save_run_manifest(
+        run_id,
+        {
+            "scenario_data": scenario,
+            "execution_manifest": {
+                "scope": {
+                    "org_id": "northstar-health",
+                    "tenant_id": "northstar-health",
+                    "workspace_id": "utilization-management",
+                    "active_environment": "Staging",
+                }
+            },
+        },
     )
-
-    monkeypatch.setattr(config, "RUN_LOG_DIR", runs)
-    monkeypatch.setattr(config, "REPORTS_DIR", tmp_path / "reports")
-    return "pkg-contract-run"
+    return run_id, store
 
 
 def test_package_validates_against_spec_schema(package_vault):
-    pkg = build_verification_package(package_vault)
+    run_id, store = package_vault
+    pkg = build_verification_package(run_id, run_store=store)
     assert pkg is not None
 
     schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
@@ -71,10 +72,11 @@ def test_package_validates_against_spec_schema(package_vault):
 def test_chain_header_binds_five_fields(package_vault):
     from agentv_runtime.manifest import compute_scenario_hash
 
-    pkg = build_verification_package(package_vault)
+    run_id, store = package_vault
+    pkg = build_verification_package(run_id, run_store=store)
     chain = pkg["chain"]
 
-    assert chain["run_id"] == package_vault
+    assert chain["run_id"] == run_id
     assert chain["scenario_hash"] == compute_scenario_hash({"id": "sample", "aes_version": 1.4})
     assert chain["resolved_config_hash"] == "sha3_256:" + "a" * 64
     assert chain["agent_target_id"] == "target-abc"
@@ -82,19 +84,25 @@ def test_chain_header_binds_five_fields(package_vault):
     assert chain["execution_mode_declared"] is True
 
 
-def test_undeclared_mode_stamps_unknown_provisional(tmp_path, monkeypatch):
-    """A trace with no declared mode yields truthful unknown + provisional."""
-    runs = tmp_path / "runs"
-    vault = runs / "legacy-run"
-    vault.mkdir(parents=True)
-    (vault / "run.jsonl").write_text(
-        json.dumps({"event": "run_end", "data": {"passed": False}}) + "\n",
-        encoding="utf-8",
-    )
-    monkeypatch.setattr(config, "RUN_LOG_DIR", runs)
-    monkeypatch.setattr(config, "REPORTS_DIR", tmp_path / "reports")
+def test_package_signed_execution_scope_not_default_envelope(package_vault):
+    """A Northstar run must never export fabricated ``default-*`` scope values."""
+    run_id, store = package_vault
+    pkg = build_verification_package(run_id, run_store=store)
 
-    pkg = build_verification_package("legacy-run")
+    assert pkg["org_id"] == "northstar-health"
+    assert pkg["tenant_id"] == "northstar-health"
+    assert pkg["workspace_id"] == "utilization-management"
+    assert pkg["active_environment"] == "Staging"
+
+
+def test_undeclared_mode_stamps_unknown_provisional(tmp_path):
+    """A trace with no declared mode yields truthful unknown + provisional."""
+    store = LocalFileRunStore(tmp_path / "runs")
+    store.create_run("legacy-run", "legacy")
+    store.append_events("legacy-run", [{"event": "run_end", "data": {"passed": False}}])
+    store.save_run_manifest("legacy-run", {"status": "OPEN"})
+
+    pkg = build_verification_package("legacy-run", run_store=store)
     assert pkg["chain"]["execution_mode"] == "unknown"
     assert pkg["chain"]["execution_mode_declared"] is False
 

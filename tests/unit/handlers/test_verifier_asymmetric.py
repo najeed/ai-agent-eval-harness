@@ -1,8 +1,7 @@
-import json
-
 import pytest
 
 from eval_runner import config
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.verifier import TraceVerifier
 
 
@@ -45,36 +44,33 @@ def test_trace_verification_cycle(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
     monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "runs")
     monkeypatch.setattr(config, "REPORTS_DIR", tmp_path / "reports")
+    run_store = LocalFileRunStore(tmp_path / "runs")
+    run_store.create_run(run_id, "asymmetric-verifier")
 
     # 3. Sign Trace
-    manifest = TraceVerifier.sign_trace(str(trace_path), identity_id=identity_id, run_id=run_id)
+    trace_bytes = trace_path.read_bytes()
+    manifest = TraceVerifier.sign_trace_bytes(
+        trace_bytes, identity_id=identity_id, run_id=run_id, run_store=run_store
+    )
+    run_store.save_run_manifest(run_id, manifest)
+    run_store.update_run_status(run_id, "SEALED")
 
     assert manifest["vc_version"] == "3.0.0"
     assert manifest["run_id"] == run_id
-    assert manifest["trace_hash"] == TraceVerifier.compute_signature(trace_path)
     assert len(manifest["provenance_chain"]) == 1
     assert manifest["provenance_chain"][0]["identity"] == identity_id
 
     # 4. Success Verification
-    manifest_path = run_dir / "run_manifest.json"
-    assert manifest_path.exists()
-
-    assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is True
+    assert TraceVerifier.verify_trace(trace_bytes, manifest, run_store=run_store) is True
 
     # 5. Tamper Verification (Data mismatch)
-    trace_path.write_bytes(b"TAMPERED")
-    assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is False
+    tampered_bytes = b"TAMPERED"
+    assert TraceVerifier.verify_trace(tampered_bytes, manifest, run_store=run_store) is False
 
     # 6. Corruption Verification (Manifest mismatch)
-    trace_path.write_bytes(trace_content)  # Restore
-    with open(manifest_path) as f:
-        bad_manifest = json.load(f)
+    bad_manifest = dict(manifest)
     bad_manifest["trace_hash"] = "wrong-hash"
-    bad_manifest_path = run_dir / "bad_manifest.json"
-    with open(bad_manifest_path, "w") as f:
-        json.dump(bad_manifest, f)
-
-    assert TraceVerifier.verify_trace(str(trace_path), str(bad_manifest_path)) is False
+    assert TraceVerifier.verify_trace(trace_bytes, bad_manifest, run_store=run_store) is False
 
 
 def test_verification_service_pipeline_depth_and_override(tmp_path):

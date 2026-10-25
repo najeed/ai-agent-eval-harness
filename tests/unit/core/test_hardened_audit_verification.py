@@ -13,7 +13,7 @@ trust boundary guarantees:
 
 import hashlib
 import json
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 from cryptography.hazmat.primitives import serialization
@@ -30,6 +30,7 @@ from agentv_runtime.package import VerificationPackage
 from eval_runner.console.routes.scenarios import scenario_bp
 from eval_runner.events import Event
 from eval_runner.flight_recorder import FlightRecorderPlugin
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.verifier import VerificationAuthority
 
 
@@ -153,8 +154,11 @@ def test_flight_recorder_cryptographic_trace_seal(tmp_path, monkeypatch):
     from eval_runner import config
 
     monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path)
-    fr = FlightRecorderPlugin(log_dir=tmp_path)
     run_id = "run-crypto-seal-01"
+    run_store = LocalFileRunStore(tmp_path)
+    run_store.create_run(run_id, "crypto-seal")
+    fr = FlightRecorderPlugin(run_store=run_store)
+    fr.bind_run_provider(run_id, run_store)
 
     # Log some events
     from eval_runner.events import CoreEvents, Event
@@ -755,7 +759,6 @@ def test_verify_package_artifacts_scenario_mismatch_detected():
 
 def test_verify_trace_certificate_incomplete_provenance_fails(tmp_path):
     """Verify verify_trace_certificate fails if is_complete_provenance is False."""
-    import json
     from unittest.mock import patch
 
     from eval_runner import config
@@ -765,17 +768,13 @@ def test_verify_trace_certificate_incomplete_provenance_fails(tmp_path):
     trace_file.write_text('{"event": "start", "_seq": 1}\n', encoding="utf-8")
     actual_hash = TraceVerifier.compute_signature(trace_file)
 
-    manifest_file = tmp_path / "test_manifest.json"
     manifest_data = {
         "vc_version": "3.0.0",
         "trace_hash": actual_hash,
         "evidence_root_hash": "sha3_256:fake_root",
-        "trace_path": str(trace_file),
         "timestamp": "2026-09-01T00:00:00+00:00",
         "signature": "fake_sig",
     }
-    manifest_file.write_text(json.dumps(manifest_data), encoding="utf-8")
-
     with (
         patch.object(config, "PROJECT_ROOT", tmp_path),
         patch(
@@ -788,8 +787,7 @@ def test_verify_trace_certificate_incomplete_provenance_fails(tmp_path):
         ),
     ):
         is_valid = TraceVerifier.verify_trace(
-            trace_path=str(trace_file),
-            manifest_path=str(manifest_file),
+            trace_file.read_bytes(), manifest_data, run_store=MagicMock()
         )
         assert is_valid is False
 
@@ -899,8 +897,11 @@ def test_trace_seal_trust_envelope_tamper_detected(tmp_path, monkeypatch):
             return priv.sign(payload).hex()
 
     backend = _MockSigner()
-    recorder = FlightRecorderPlugin(log_dir=tmp_path, signing_backend=backend)
     run_id = "run-seal-tamper-001"
+    run_store = LocalFileRunStore(tmp_path)
+    run_store.create_run(run_id, "s1")
+    recorder = FlightRecorderPlugin(run_store=run_store, signing_backend=backend)
+    recorder.bind_run_provider(run_id, run_store)
 
     event = Event("step_start", {"run_id": run_id, "step": 1})
     recorder.handle_event(event)

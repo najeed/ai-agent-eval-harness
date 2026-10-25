@@ -687,7 +687,11 @@ class TestInProcessExecutionBackend:
         assert res is not None
 
         st = backend.status(run_id)
-        assert st["status"] == "COMPLETED"
+        # This fixture violates the minimum-oracle rule, so the runner returns
+        # a normal failed verdict rather than raising. The backend must expose
+        # that failed terminal state instead of treating any normal return as
+        # completion.
+        assert st["status"] == "FAILED"
 
         # Unknown status
         assert backend.status("non_existent_run_id")["status"] == "UNKNOWN"
@@ -722,6 +726,41 @@ class TestInProcessExecutionBackend:
         st = backend.status(run_id)
         assert st["status"] == "FAILED"
         assert "Injected runner execution crash" in st["error"]
+
+    def test_inprocess_backend_persists_normal_verification_failure_to_run_store(self):
+        """A normal failed verdict must replace the prior HITL pause in the RunStore."""
+        from agentv_runtime.results import EvaluationResult
+
+        class CapturingRunStore:
+            def __init__(self):
+                self.status = "PAUSED_FOR_APPROVAL"
+                self.updates = []
+
+            def update_run_status(self, run_id, status, details=None, context=None):
+                self.updates.append((run_id, status))
+                self.status = status
+                return True
+
+        run_id = "run-verification-failed-after-approval"
+        store = CapturingRunStore()
+        failed_verdict = EvaluationResult(
+            run_id=run_id,
+            scenario_id="verification-failure",
+            pass_at_k=0.0,
+            successful_attempts=0,
+            total_attempts=1,
+            metadata={"outcome": "fail"},
+        )
+        backend = InProcessExecutionBackend(
+            run_store=store,
+            runner_callable=lambda *args, **kwargs: failed_verdict,
+        )
+
+        backend.submit(run_id=run_id, scenario_data={"id": "verification-failure"})
+
+        assert store.updates == [(run_id, "FAILED")]
+        assert store.status == "FAILED"
+        assert backend.status(run_id)["status"] == "FAILED"
 
     def test_inprocess_backend_init_dependency_injection(self):
         mock_runner = MagicMock()
@@ -836,8 +875,10 @@ class TestInProcessExecutionBackend:
 
         monkeypatch.setattr(runner, "run_scenario", lambda *a, **kw: {"status": "resumed_ok"})
 
-        backend = InProcessExecutionBackend()
         run_id = "run-resume-val-001"
+        run_store = LocalFileRunStore(tmp_path / "runs")
+        run_store.create_run(run_id, "s1")
+        backend = InProcessExecutionBackend(run_store=run_store)
 
         # 1. Approval-gated status without resumption_token raises PermissionError
         backend._active_runs[run_id] = {
@@ -934,6 +975,7 @@ class TestInProcessExecutionBackend:
 
         # 9. Approval without checkpoint_id and without payload
         run_id_no_chk = "run-resume-no-chk-001"
+        run_store.create_run(run_id_no_chk, "s_no_chk")
         valid_no_chk = ApprovalRequest(
             approval_token="tok_no_chk",
             run_id=run_id_no_chk,
@@ -962,12 +1004,11 @@ class TestInProcessExecutionBackend:
 
         monkeypatch.setattr(runner, "run_scenario", lambda *a, **kw: {"status": "ok"})
 
-        vault_dir = tmp_path / "runs" / "run-recovery-001"
-        vault_dir.mkdir(parents=True, exist_ok=True)
-        monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "runs")
-
-        backend = InProcessExecutionBackend()
         run_id = "run-recovery-001"
+        run_store = LocalFileRunStore(tmp_path / "runs")
+        run_store.create_run(run_id, "recovered_scen")
+        vault_dir = tmp_path / "runs" / run_id
+        backend = InProcessExecutionBackend(run_store=run_store)
 
         # Corrupt scenario_resolved.json
         (vault_dir / "scenario_resolved.json").write_text("invalid json {", encoding="utf-8")
@@ -1385,21 +1426,17 @@ class TestLocalFileArtifactStore:
         store.seal(run_id)
         assert store.is_sealed(run_id)
 
-        # In dev mode, unseal succeeds
+        # Evidence seals are irreversible in every environment.
         monkeypatch.delenv("AGENTV_ENV", raising=False)
-        store.unseal(run_id)
-        assert not store.is_sealed(run_id)
+        with pytest.raises(PermissionError, match="SealedEvidenceImmutabilityViolation"):
+            store.unseal(run_id, run_store=MagicMock())
+        assert store.is_sealed(run_id)
 
-        # In production mode when run is SEALED, unseal raises PermissionError
-        from eval_runner.run_lifecycle import RunLifecycleState, transition_run_lifecycle
-
-        monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path)
-        transition_run_lifecycle(run_id, RunLifecycleState.FINALIZING)
-        transition_run_lifecycle(run_id, RunLifecycleState.SEALED)
-        store.seal(run_id)
+        # The same invariant holds regardless of deployment mode or lifecycle
+        # replication timing.
         monkeypatch.setenv("AGENTV_ENV", "production")
-        with pytest.raises(PermissionError, match="ProductionImmutabilityViolation"):
-            store.unseal(run_id)
+        with pytest.raises(PermissionError, match="SealedEvidenceImmutabilityViolation"):
+            store.unseal(run_id, run_store=MagicMock())
 
 
 # ==============================================================================

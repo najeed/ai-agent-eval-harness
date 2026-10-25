@@ -71,7 +71,14 @@ export const LiveDebugger: React.FC = () => {
       if (ctl.timer) clearTimeout(ctl.timer);
       if (ctl.scenarioTimer) clearTimeout(ctl.scenarioTimer);
       if (ctl.es) ctl.es.close();
-      streamCtlRef.current = { es: null, timer: null, scenarioTimer: null, run: null, attempt: 0 };
+      streamCtlRef.current = {
+        es: null,
+        timer: null,
+        scenarioTimer: null,
+        scenarioEpoch: ctl.scenarioEpoch + 1,
+        run: null,
+        attempt: 0,
+      };
       cursorRef.current = 0;
       contiguousCursorRef.current = 0;
       seenTransportCursorsRef.current.clear();
@@ -136,14 +143,18 @@ export const LiveDebugger: React.FC = () => {
     es: EventSource | null;
     timer: ReturnType<typeof setTimeout> | null;
     scenarioTimer: ReturnType<typeof setTimeout> | null;
+    scenarioEpoch: number;
     run: string | null;
     attempt: number;
   }
-  const streamCtlRef = useRef<StreamCtl>({ es: null, timer: null, scenarioTimer: null, run: null, attempt: 0 });
+  const streamCtlRef = useRef<StreamCtl>({ es: null, timer: null, scenarioTimer: null, scenarioEpoch: 0, run: null, attempt: 0 });
   // SSE IDs are opaque transport cursors; forensic _seq never controls replay.
   const seenTransportCursorsRef = useRef<Set<number>>(new Set());
   const seenSeqsRef = useRef<Set<number>>(new Set());
   const forensicHighestRef = useRef<number>(0);
+  // A persisted HITL pause is authoritative runtime evidence.  Keep it in a
+  // ref because EventSource.onerror closes over the initial React state.
+  const hitlPauseSeenRef = useRef<boolean>(false);
   const cursorRef = useRef<number>(0);
   const contiguousCursorRef = useRef<number>(0);
   const explainReqIdRef = useRef<number>(0);
@@ -201,7 +212,9 @@ export const LiveDebugger: React.FC = () => {
   // Coupled to run lifecycle: continues retrying while run is nonterminal,
   // then performs one mandatory terminal refresh to ensure late-resolved scenarios hydrate.
   const fetchScenarioWithRetry = async (rid: string, attempt = 0, isTerminalRefresh = false) => {
-    const staleAfterFetch = () => streamCtlRef.current.run !== rid;
+    const scenarioEpoch = streamCtlRef.current.scenarioEpoch;
+    const staleAfterFetch = () =>
+      streamCtlRef.current.run !== rid || streamCtlRef.current.scenarioEpoch !== scenarioEpoch;
     try {
       const res = await fetch(`/api/v1/runs/${rid}`);
       if (!staleAfterFetch() && res.ok) {
@@ -229,6 +242,18 @@ export const LiveDebugger: React.FC = () => {
       ctl.scenarioTimer = setTimeout(() => {
         if (streamCtlRef.current.run === rid) fetchScenarioWithRetry(rid, attempt + 1, false);
       }, delay);
+    }
+  };
+
+  // A terminal stream may have a scenario-fetch retry in flight.  Invalidate
+  // both its timer and its async continuation so it cannot later recreate an
+  // infinite RUNNING poll after the EventSource has finished.
+  const stopScenarioRetries = () => {
+    const ctl = streamCtlRef.current;
+    ctl.scenarioEpoch += 1;
+    if (ctl.scenarioTimer) {
+      clearTimeout(ctl.scenarioTimer);
+      ctl.scenarioTimer = null;
     }
   };
 
@@ -421,6 +446,12 @@ export const LiveDebugger: React.FC = () => {
     seenTransportCursorsRef.current.clear();
     seenSeqsRef.current.clear();
     forensicHighestRef.current = 0;
+    hitlPauseSeenRef.current = false;
+    streamCtlRef.current.scenarioEpoch += 1;
+    if (streamCtlRef.current.scenarioTimer) {
+      clearTimeout(streamCtlRef.current.scenarioTimer);
+      streamCtlRef.current.scenarioTimer = null;
+    }
     setStreamGaps([]);
     setReconnectCount(0);
     streamCtlRef.current.attempt = 0;
@@ -506,6 +537,7 @@ export const LiveDebugger: React.FC = () => {
       // These do not require an opaque transport cursor and must NEVER be dropped,
       // but are NOT treated as certifying evidentiary trace records.
       if (data.event === 'timeout') {
+        stopScenarioRetries();
         setStatus('STALLED');
         setConnectionStatus('FINISHED');
         if (streamCtlRef.current.es === source) {
@@ -517,6 +549,20 @@ export const LiveDebugger: React.FC = () => {
       if (data.event === 'not_found') {
         console.info('[LiveDebugger] Trace not ready yet:', data.message);
         setConnectionStatus('CONNECTING');
+        return;
+      }
+      if (data.event === 'trace_unavailable') {
+        stopScenarioRetries();
+        // The server has proved that this registered run has neither durable
+        // evidence nor a live writer.  This is a terminal persistence failure,
+        // not a transport fault that retrying can repair.
+        setStatus(String((data as any).status || 'STALLED').toUpperCase());
+        setConnectionStatus('FINISHED');
+        if (streamCtlRef.current.es === source) {
+          source.close();
+          streamCtlRef.current.es = null;
+        }
+        fetchScenarioWithRetry(rid, 0, true);
         return;
       }
       if (data.event === 'error' || data.event === 'stream_error') {
@@ -541,6 +587,20 @@ export const LiveDebugger: React.FC = () => {
         return;
       }
       if (data.event === 'stream_end' || data.event === 'end') {
+        stopScenarioRetries();
+        setConnectionStatus('FINISHED');
+        if (streamCtlRef.current.es === source) {
+          source.close();
+          streamCtlRef.current.es = null;
+        }
+        fetchScenarioWithRetry(rid, 0, true);
+        return;
+      }
+      if (data.event === 'paused_for_approval') {
+        stopScenarioRetries();
+        // A durable HITL pause has no active writer. Closing this stream is
+        // expected and must not be treated as a transient SSE failure.
+        setStatus('PAUSED_FOR_APPROVAL');
         setConnectionStatus('FINISHED');
         if (streamCtlRef.current.es === source) {
           source.close();
@@ -554,6 +614,7 @@ export const LiveDebugger: React.FC = () => {
         (!Number.isSafeInteger(Number((data as any)._transport_cursor)) ||
           Number((data as any)._transport_cursor) <= 0)
       ) {
+        stopScenarioRetries();
         // Synthetic terminal notification (e.g. process thread terminated abruptly / aborted)
         setStatus(data.status ? String(data.status).toUpperCase() : 'ABORTED');
         setConnectionStatus('FINISHED');
@@ -563,6 +624,15 @@ export const LiveDebugger: React.FC = () => {
         }
         fetchScenarioWithRetry(rid, 0, true);
         return;
+      }
+
+      // A HITL pause is a terminal state for this EventSource.  Record it
+      // before validating the transport cursor: legacy persisted traces can
+      // legitimately omit that cursor, and retrying after this event only
+      // replays the same terminal stream.
+      if (data.event === 'hitl_pause') {
+        hitlPauseSeenRef.current = true;
+        setStatus('PAUSED_FOR_APPROVAL');
       }
 
       // Resume and dedupe exclusively with the opaque SSE cursor.
@@ -592,7 +662,6 @@ export const LiveDebugger: React.FC = () => {
         if (seq > forensicHighestRef.current) forensicHighestRef.current = seq;
       }
 
-
       // Hydrate scenario topology directly from canonical event envelope if present
       if (data.event === 'run_start' || (data as any).name === 'run_start') {
         const inlineScenario = (data as any).scenario_data || (data as any).scenario_obj;
@@ -612,6 +681,7 @@ export const LiveDebugger: React.FC = () => {
       }
 
       if (data.event === 'run_end' || (data as any).name === 'run_end') {
+        stopScenarioRetries();
         fetchScenarioWithRetry(rid, 0, true);
       }
 
@@ -631,6 +701,17 @@ export const LiveDebugger: React.FC = () => {
       source.close();
       streamCtlRef.current.es = null;
 
+      if (hitlPauseSeenRef.current) {
+        // The trace itself proves a durable HITL pause.  Do not let an older
+        // or stale run-index status (for example RUNNING) turn the expected
+        // stream close into an infinite reconnect loop.
+        stopScenarioRetries();
+        setStatus('PAUSED_FOR_APPROVAL');
+        setConnectionStatus('FINISHED');
+        fetchScenarioWithRetry(rid, 0, true);
+        return;
+      }
+
       fetch(`/api/v1/runs/${rid}`)
         .then(res => {
           if (!res.ok) throw new Error(`Status check returned ${res.status}`);
@@ -644,6 +725,13 @@ export const LiveDebugger: React.FC = () => {
 
           if (CANONICAL_TERMINAL_STATUSES.has(runStatus)) {
             // Explicit terminal state: the run is over; no retries are scheduled.
+            stopScenarioRetries();
+            setConnectionStatus('FINISHED');
+            fetchScenarioWithRetry(rid, 0, true);
+          } else if (String(runStatus).toUpperCase() === 'PAUSED_FOR_APPROVAL') {
+            // Compatibility with a server that closes a paused stream without
+            // the explicit paused_for_approval control frame.
+            stopScenarioRetries();
             setConnectionStatus('FINISHED');
             fetchScenarioWithRetry(rid, 0, true);
           } else {
@@ -1718,5 +1806,3 @@ export const LiveDebugger: React.FC = () => {
     </div>
   );
 };
-
-

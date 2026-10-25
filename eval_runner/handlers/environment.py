@@ -191,11 +191,12 @@ async def handle_registry_search(args):
 async def handle_plugin_list(args):
     """Handler for 'plugin list' command."""
     try:
-        from .. import plugins
+        from eval_runner.runtime_services import resolve_plugin_registry
 
-        plugins.manager.load_plugins()
+        registry = resolve_plugin_registry()
+        registry.load_plugins()
         print("\nLoaded Plugins:")
-        for p in plugins.manager.plugins:
+        for p in registry.plugins:
             print(f" - {p.__class__.__name__}")
         return 0
     except Exception as e:
@@ -205,10 +206,10 @@ async def handle_plugin_list(args):
 
 async def handle_plugin_register(args):
     """Handler for 'plugin register' command."""
-    from ..plugins import manager
+    from eval_runner.runtime_services import resolve_plugin_registry
 
     try:
-        manager.register_persistent(args.path)
+        resolve_plugin_registry().register_persistent(args.path)
         print(f"✅ Registered plugin: {args.path}")
         return 0
     except Exception as e:
@@ -218,10 +219,10 @@ async def handle_plugin_register(args):
 
 async def handle_plugin_unregister(args):
     """Handler for 'plugin unregister' command."""
-    from ..plugins import manager
+    from eval_runner.runtime_services import resolve_plugin_registry
 
     try:
-        manager.unregister_persistent(args.name)
+        resolve_plugin_registry().unregister_persistent(args.name)
         print(f"✅ Unregistered plugin: {args.name}")
         return 0
     except Exception as e:

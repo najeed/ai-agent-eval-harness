@@ -20,6 +20,7 @@ from agentv_runtime.config import ResolvedRuntimeConfig
 from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
 from eval_runner.events import CoreEvents
 from eval_runner.execution_ir import WorkflowStatus
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.runner import DefaultRunner, run_scenario
 
 
@@ -31,7 +32,7 @@ async def test_runner_finalization_binds_the_physical_execution_manifest(tmp_pat
         "id": "scenario-manifest-binding",
         "workflow": {"nodes": [{"id": "n1", "success_criteria": [{"metric": "m1"}]}]},
     }
-    runner = DefaultRunner(run_store=None)
+    runner = DefaultRunner(run_store=LocalFileRunStore(tmp_path))
     vault = tmp_path / run_id
     vault.mkdir()
     stale_manifest = ExecutionManifest(
@@ -68,9 +69,9 @@ async def test_runner_finalization_binds_the_physical_execution_manifest(tmp_pat
         ]
         await runner.run(scenario=scenario, attempts=1, run_id=run_id)
 
-    execution_manifest = ExecutionManifest.from_dict(
-        json.loads((vault / "execution_manifest.json").read_text(encoding="utf-8"))
-    )
+    manifest_dict = runner.run_store.get_manifest(run_id)
+    assert manifest_dict is not None
+    execution_manifest = ExecutionManifest.from_dict(manifest_dict["execution_manifest"])
     finalization = next(
         record["finalization"]
         for record in (
@@ -80,8 +81,7 @@ async def test_runner_finalization_binds_the_physical_execution_manifest(tmp_pat
         if record.get("finalization")
     )
     assert finalization["execution_manifest_hash"] == execution_manifest.compute_manifest_hash()
-    scenario_snapshot = json.loads((vault / "scenario_resolved.json").read_text(encoding="utf-8"))
-    assert compute_scenario_hash(scenario_snapshot) == execution_manifest.scenario_hash
+    assert compute_scenario_hash(manifest_dict["scenario_data"]) == execution_manifest.scenario_hash
     assert finalization["scenario_id"] == execution_manifest.scenario_id
     assert finalization["scenario_version"] == execution_manifest.scenario_version
     assert finalization["scenario_hash"] == execution_manifest.scenario_hash
@@ -181,7 +181,8 @@ async def test_runner_error_handling_in_post_processing():
     }
 
     mock_run_store = MagicMock()
-    mock_run_store.save_run_manifest.side_effect = RuntimeError("Manifest save error")
+    mock_run_store.get_run.return_value = None
+    mock_run_store.save_run_manifest.side_effect = [None, RuntimeError("Manifest save error")]
     runner = DefaultRunner(run_store=mock_run_store)
 
     # Patch compute_attempt_statistics to throw an exception
@@ -428,7 +429,7 @@ async def test_default_runner_manifest_persistence_failure(tmp_path, monkeypatch
         original_dump = json.dump
 
         def _failing_dump(obj, fp, *args, **kwargs):
-            if "execution_manifest.json" in getattr(fp, "name", ""):
+            if "manifest" in getattr(fp, "name", ""):
                 raise OSError("Simulated disk error writing manifest")
             return original_dump(obj, fp, *args, **kwargs)
 
@@ -931,14 +932,10 @@ async def test_default_runner_run_scenario_rich_provenance(tmp_path, monkeypatch
     )
     assert res is not None
 
-    manifest_p = tmp_path / "runs" / res.run_id / "execution_manifest.json"
-    assert manifest_p.exists()
-    import json
-
-    data = json.loads(manifest_p.read_text(encoding="utf-8"))
-    snapshot_p = tmp_path / "runs" / res.run_id / "scenario_resolved.json"
-    assert snapshot_p.exists()
-    assert json.loads(snapshot_p.read_text(encoding="utf-8")) == scenario
+    manifest_dict = runner.run_store.get_manifest(res.run_id)
+    assert manifest_dict is not None
+    data = manifest_dict["execution_manifest"]
+    assert manifest_dict["scenario_data"] == scenario
 
     agent_cfg = data["agent_config"]
     assert agent_cfg["source_commit"] == "commit_123"
@@ -1356,26 +1353,23 @@ async def test_runner_callable_metadata_and_non_dict_metadata(tmp_path, monkeypa
 
 @pytest.mark.asyncio
 async def test_runner_vault_collision_and_resumption_lifecycle(tmp_path, monkeypatch):
-    """Verify vault directory collision and resumption lifecycle transitions."""
-    import json
-
+    """Verify provider collision and provider-owned resumption lifecycle transitions."""
+    from eval_runner.reference.local_run_store import LocalFileRunStore
     from eval_runner.run_lifecycle import RunLifecycleState, transition_run_lifecycle
 
-    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs")
-    runner = DefaultRunner()
+    store = LocalFileRunStore(tmp_path / "runs")
+    runner = DefaultRunner(run_store=store)
     scenario = {"id": "vault_scen", "workflow": {"nodes": [{"id": "n1"}]}}
 
-    # 1. Existing vault without resumption raises RunIdCollision
-    existing_vault = tmp_path / "runs" / "collision_test_run"
-    existing_vault.mkdir(parents=True, exist_ok=True)
+    # 1. Existing provider record without resumption raises RunIdCollision.
+    store.create_run("collision_test_run", "vault_scen")
     with pytest.raises(RuntimeError, match="RunIdCollision"):
         await runner.run(scenario, run_id="collision_test_run")
 
-    # 2. Existing vault in terminal sealed state raises ResumptionError
-    sealed_vault = tmp_path / "runs" / "sealed_test_run"
-    sealed_vault.mkdir(parents=True, exist_ok=True)
-    transition_run_lifecycle("sealed_test_run", RunLifecycleState.FINALIZING)
-    transition_run_lifecycle("sealed_test_run", RunLifecycleState.SEALED)
+    # 2. A provider-owned sealed record rejects resumption.
+    store.create_run("sealed_test_run", "vault_scen")
+    transition_run_lifecycle("sealed_test_run", RunLifecycleState.FINALIZING, run_store=store)
+    transition_run_lifecycle("sealed_test_run", RunLifecycleState.SEALED, run_store=store)
     with pytest.raises(RuntimeError, match="ResumptionError"):
         await runner.run(
             scenario,
@@ -1383,15 +1377,15 @@ async def test_runner_vault_collision_and_resumption_lifecycle(tmp_path, monkeyp
             resumption_token="test_resume_token",
         )
 
-    # 3. Successful resumption reloads manifest and scenario snapshot
-    resume_vault = tmp_path / "runs" / "active_resume_run"
-    resume_vault.mkdir(parents=True, exist_ok=True)
-    transition_run_lifecycle("active_resume_run", RunLifecycleState.PAUSED_FOR_APPROVAL)
-
-    manifest_file = resume_vault / "execution_manifest.json"
-    manifest_file.write_text(
-        json.dumps(
-            {
+    # 3. Successful resumption reloads the provider-owned manifest and snapshot.
+    store.create_run("active_resume_run", "vault_scen")
+    transition_run_lifecycle(
+        "active_resume_run", RunLifecycleState.PAUSED_FOR_APPROVAL, run_store=store
+    )
+    store.save_run_manifest(
+        "active_resume_run",
+        {
+            "execution_manifest": {
                 "manifest_id": "man_active_resume_run",
                 "scenario_id": "vault_scen",
                 "scenario_version": "1.0.0",
@@ -1400,12 +1394,10 @@ async def test_runner_vault_collision_and_resumption_lifecycle(tmp_path, monkeyp
                 "runtime_config": {"execution_mode": "hybrid"},
                 "environment": {},
                 "metadata": {"execution_mode": "hybrid"},
-            }
-        ),
-        encoding="utf-8",
+            },
+            "scenario_data": scenario,
+        },
     )
-    snapshot_file = resume_vault / "scenario_resolved.json"
-    snapshot_file.write_text(json.dumps(scenario), encoding="utf-8")
 
     with patch(
         "eval_runner.session.SessionManager.execute_tasks",
@@ -1432,15 +1424,18 @@ async def test_runner_resumption_rejects_corrupt_manifest_and_snapshot(tmp_path,
 
     corrupt_vault = tmp_path / "runs" / "corrupt_resume_run"
     corrupt_vault.mkdir(parents=True, exist_ok=True)
-    transition_run_lifecycle("corrupt_resume_run", RunLifecycleState.OPEN)
+    (corrupt_vault / "run.jsonl").write_text('{"event": "run_start"}\n', encoding="utf-8")
+    transition_run_lifecycle(
+        "corrupt_resume_run", RunLifecycleState.OPEN, run_store=runner.run_store
+    )
 
     manifest_file = corrupt_vault / "execution_manifest.json"
-    manifest_file.write_text("{ corrupt json ", encoding="utf-8")
+    manifest_file.write_text(json.dumps({"manifest_id": 12345}), encoding="utf-8")
     snapshot_file = corrupt_vault / "scenario_resolved.json"
-    snapshot_file.write_text("{ corrupt json ", encoding="utf-8")
+    snapshot_file.write_text(json.dumps(scenario), encoding="utf-8")
 
     with patch("eval_runner.session.SessionManager") as session_constructor:
-        with pytest.raises(RuntimeError, match="ResumptionManifestInvalid"):
+        with pytest.raises(RuntimeError, match=r"Resumption(ManifestInvalid|ScenarioHashMismatch)"):
             await runner.run(
                 scenario,
                 run_id="corrupt_resume_run",
@@ -1562,7 +1557,8 @@ async def test_runner_save_manifest_run_store_exception_logged(tmp_path, monkeyp
     scenario = {"id": "run_store_fail_scen", "workflow": {"nodes": [{"id": "n1"}]}}
 
     mock_run_store = MagicMock()
-    mock_run_store.save_run_manifest.side_effect = OSError("Simulated disk write failure")
+    mock_run_store.get_run.return_value = None
+    mock_run_store.save_run_manifest.side_effect = [None, OSError("Simulated disk write failure")]
     runner.run_store = mock_run_store
 
     with patch(
@@ -1608,7 +1604,10 @@ async def test_runner_metadata_non_mapping_and_manifest_mode_branches(tmp_path, 
     # 2. Resumption where manifest has no execution_mode (branch 743->756)
     vault = tmp_path / "runs" / "no_mode_resume_run"
     vault.mkdir(parents=True, exist_ok=True)
-    transition_run_lifecycle("no_mode_resume_run", RunLifecycleState.OPEN)
+    (vault / "run.jsonl").write_text('{"event": "run_start"}\n', encoding="utf-8")
+    transition_run_lifecycle(
+        "no_mode_resume_run", RunLifecycleState.OPEN, run_store=runner.run_store
+    )
 
     mf = vault / "execution_manifest.json"
     mf.write_text(
@@ -1636,7 +1635,10 @@ async def test_runner_metadata_non_mapping_and_manifest_mode_branches(tmp_path, 
     # 3. Resumption where manifest mode is set but ctx.metadata is not Mapping (branch 746->756)
     vault3 = tmp_path / "runs" / "no_meta_resume_run"
     vault3.mkdir(parents=True, exist_ok=True)
-    transition_run_lifecycle("no_meta_resume_run", RunLifecycleState.OPEN)
+    (vault3 / "run.jsonl").write_text('{"event": "run_start"}\n', encoding="utf-8")
+    transition_run_lifecycle(
+        "no_meta_resume_run", RunLifecycleState.OPEN, run_store=runner.run_store
+    )
 
     mf3 = vault3 / "execution_manifest.json"
     mf3.write_text(

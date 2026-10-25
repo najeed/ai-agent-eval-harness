@@ -16,15 +16,19 @@ GET /api/v1/runs/{run_id}/verify HTTP/1.1
 Host: localhost:5000
 ```
 
-### Verification Evaluation Logic:
-The backend executes `TraceVerifier.verify_run_directory()`, performing a 5-point cryptographic check:
+### Verification Evaluation Logic
+
+The backend reads the run's manifest and the provider's exact committed trace
+bytes through `RunStorageProvider`. It never discovers a run directory or
+reconstructs evidence bytes from event objects. The verifier performs a
+provider-native cryptographic check:
 
 ```mermaid
 graph TD
-    V1["1. Read run.jsonl byte stream & compute SHA3-256"] --> V2["2. Validate trace_hash against run_manifest.json"]
-    V2 --> V3["3. Recompute historical seal_hash against trace anchor"]
-    V3 --> V4["4. Validate every artifact in evidence_ledger against disk"]
-    V4 --> V5["5. Verify Ed25519 / PQC (ML-DSA) signature using IdentityService public key"]
+    V1["1. Read exact provider trace bytes"] --> V2["2. Validate trace_hash against provider manifest"]
+    V2 --> V3["3. Validate canonical certification envelope"]
+    V3 --> V4["4. Verify provenance and required evidence bindings"]
+    V4 --> V5["5. Verify Ed25519 / PQC (ML-DSA) signature using the trust root"]
     V5 --> PASS["Verification Status: VERIFIED"]
 ```
 
@@ -44,10 +48,11 @@ graph TD
 }
 ```
 
-### Architectural Manifest Discrimination (`_is_plain_execution_manifest`)
-To prevent pre-certification execution manifests from masquerading as authoritative Verification Certificates:
-- The verification subsystem discriminates between plain execution manifests (prefixed with `man_`, capturing runtime metadata such as `agent_config`, `pass_at_k`) and post-certification **Verification Certificates** (`vc_version: "3.0.0"`, `trace_hash`, `provenance_chain`).
-- When a run directory contains only a plain execution manifest (i.e. certification was not performed or failed), `TraceVerifier` explicitly returns:
+### Certification Availability
+
+Certification is determined from the provider-owned manifest, never from a
+filename, report vault, or directory layout. A manifest without a committed
+certificate is not verification evidence and the endpoint returns:
 ```json
 {
   "run_id": "run_uncertified_02",
@@ -118,7 +123,7 @@ result = VerificationAuthority.verify_package_artifacts(
 Audit execution traces and portable package bundles directly on disk without launching the web server:
 
 ```bash
-# Verify execution run directory and sidecars on disk:
+# Verify a provider-owned run by ID:
 agentv verify --run-id run_fintech_2026_01 --pqc
 
 # Verify self-contained offline .agentv-package.json bundle:

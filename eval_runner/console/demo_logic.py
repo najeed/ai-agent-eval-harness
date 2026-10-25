@@ -1,9 +1,7 @@
-import json
 from datetime import UTC, datetime, timedelta
 
 from flask import jsonify, request
 
-from .. import config
 from .demo_traces import DEMO_IDS
 
 
@@ -12,14 +10,22 @@ def _ts(offset_s=0):
 
 
 def _write_trace(run_id: str, events: list) -> None:
+    """Persist demo evidence through the authoritative run provider."""
     try:
-        trace_dir = config.RUN_LOG_DIR / "demo"
-        trace_dir.mkdir(parents=True, exist_ok=True)
-        with open(trace_dir / f"{run_id}.jsonl", "w", encoding="utf-8") as f:
-            for ev in events:
-                f.write(json.dumps(ev) + "\n")
+        from eval_runner.runtime_services import resolve_run_store
+
+        provider = resolve_run_store()
+        provider.create_run(run_id, scenario_id="demo", status="OPEN")
+        provider.append_events(run_id, events)
+        terminal = next(
+            (event for event in reversed(events) if event.get("event") == "run_end"), None
+        )
+        if terminal is not None:
+            provider.update_run_status(
+                run_id, "COMPLETED" if terminal.get("status") == "success" else "FAILED"
+            )
     except Exception as exc:
-        print(f"[DemoLogic] Warning: trace write failed: {exc}", flush=True)
+        print(f"[DemoLogic] Warning: provider trace write failed: {exc}", flush=True)
 
 
 def run_demo_loan_agent(prompt: str, hardened: bool = False) -> dict:

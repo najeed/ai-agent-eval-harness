@@ -20,16 +20,17 @@ Every AES v1.4 scenario adheres to a strict schema with `"additionalProperties":
 
 | Attribute | Type | Requirement | Purpose |
 | :--- | :--- | :--- | :--- |
-| `aes_version` | `number` | **Required** | Specifies schema logic version. Must be `1.4`. |
+| `$schema` | `string` | Optional | Optional JSON Schema identifier. |
+| `aes_version` | `number` | **Required** | Specifies schema logic version. Must be exactly `1.4`. |
 | `metadata` | `object` | **Required** | Identification, compliance frameworks, topologies, and policies. |
 | `workflow` | `object` | **Required** | The execution DAG: tasks, transitions, dependencies, and state hygiene. |
 | `evaluation` | `object` | **Required** | Consensus grading panel, IJA threshold, and oracle strategies. |
 | `tools` | `object` | *Optional* | Deterministic tool mocks, output schemas, and nested state mutations. |
 | `initial_state` | `object` | *Optional* | World Genesis state seeded into the sandbox before turn 1. |
-| `environmental_snapshot` | `object` | *Optional* | Sanitized point-in-time snapshot of the infrastructure registry. |
+| `environmental_snapshot` | `object` | *Optional* | Scenario-supplied environment snapshot. |
 | `enabled_shims` | `array` | *Optional* | Explicit whitelist of world simulators to activate (e.g. `["jira", "sql"]`). |
 | `failure_policy` | `string` | *Optional* | DAG execution policy: `fail_fast`, `continue_independent`, `compensate_then_fail`, `best_effort`. |
-| `cleanup_workspace` | `boolean` | *Optional* | `true` (default) purges workspace on teardown; `false` preserves disk state for forensics. |
+| `cleanup_workspace` | `boolean` | *Optional* | Requests workspace cleanup. The AES schema defines no default. |
 | `description` | `string` | *Optional* | High-level scenario synopsis for catalogs and reporting. |
 | `industry` | `string` | *Optional* | Target vertical (e.g. `Healthcare`, `Fintech`, `Telecom`). |
 | `use_case` | `string` | *Optional* | Specific domain problem (e.g. `KYC Verification`, `SIM Swap Fraud`). |
@@ -54,20 +55,20 @@ Understanding the separation between persistent configuration, cryptographic ide
 
 ### Property Table
 
-| Property | Type | Default | Purpose |
+| Property | Type | Requirement | Purpose |
 | :--- | :--- | :--- | :--- |
-| `id` | String | `fintech-audit-001` | Machine-readable unique identifier for the scenario. |
-| `name` | String | "Loan Approval Audit" | Human-readable title used in reports. |
-| `compliance_level` | Enum | `Standard`, `Gold`, `Regulatory_Audit` | Sets the strictness of the forensic chain (see below). |
-| `standards_registry`| Array | `["GDPR", "PCI_DSS_V4"]` | Maps the test to real-world legal frameworks (GDPR, PCI, HIPAA). |
-| `description` | String | "Evaluates loan logic..." | Detailed business context for cataloging. |
-| `complexity` | Enum | `low`, `medium`, `high` | Qualitative difficulty assessment. |
-| `agent` | Object | `{ "protocol": "http" }` | Explicit agent routing override. |
+| `id` | string | **Required** | Machine-readable scenario identifier. |
+| `name` | string | **Required** | Human-readable scenario name. |
+| `compliance_level` | enum | **Required** | `Standard`, `Gold`, or `Regulatory_Audit`. |
+| `standards_registry`| array | Optional | Registered standards identifiers. |
+| `description` | string | Optional | Metadata description. |
+| `complexity` | enum | Optional | `low`, `medium`, or `high`. |
+| `agent` | object | Optional | May contain string `protocol` and string `endpoint`. |
 
-| `agent_topology` | Object | `{ "underwriter": { "writes": ["db:*"] } }` | Defines agent permissions and resource namespaces. |
-| `policies` | Object | `{ "101": { "name": "No PII" } }` | Behavioral constraints and enforcement rules. |
-| `provisioning_hash` | String | SHA3-256 | Cryptographic anchor for the infrastructure state. |
-| `capabilities` | Array | `["pii_scanner", "gpu"]` | Infrastructure requirements for the runner environment. |
+| `agent_topology` | object | Optional | Agent map; each agent may define string arrays `reads` and `writes`. |
+| `policies` | object | Optional | Policy object; its members are unconstrained by this schema. |
+| `provisioning_hash` | string | Optional | SHA3-256 hash of resolved shim resources. |
+| `capabilities` | array of strings | Optional | Required routing capabilities. |
 
 
 1.  **`id` / `name`**: 
@@ -78,7 +79,7 @@ Understanding the separation between persistent configuration, cryptographic ide
     - **Config**: Enum: `Standard`, `Gold`, `Regulatory_Audit`.
 3.  **`standards_registry`**:
     - **Purpose**: This is the most powerful part of the metadata. It maps your test to real-world laws.
-    - **Config**: An array of strings like `["GDPR", "PCI_DSS_V4", "BASEL_III"]`. By listing these, you trigger specialized forensic checks in the harness. As of v1.4.0, the registry supports **60+ industrial standards**, including ISO 42001, NIST AI-RMF, and HIPAA.
+    - **Config**: An array of registered identifiers such as `["GDPR", "PCI_DSS_V4", "BASEL_III"]`. The schema allows 64 identifiers; the complete list appears in the schema reference below.
 4.  **`agent_topology`**:
     - **Purpose**: Defines what the agent is *allowed* to touch.
     - **Config**: A map of agent names to their `reads` and `writes` (e.g., `agent_1: { "writes": ["ledger_db"] }`). This implements **Permissions-Based Access Control (PBAC)**, ensuring that agents are isolated within their specific resource namespaces.
@@ -93,18 +94,22 @@ Understanding the separation between persistent configuration, cryptographic ide
     - **Config**: A dictionary of objects (e.g., `{"leakage_prevention": {"id": "RULE_101"}}`).
 8.  **`provisioning_hash`**:
     - **Purpose**: A SHA3-256 fingerprint of the **Shim Resources**. It ensures the audit trail is tied to a specific infrastructure state.
-    - **Config**: String (auto-populated by the harness during `agentv certify`). This serves as the **Cryptographic Anchor**, mathematically binding the evaluation trace to the exact versions of tools and simulators used during the run.
+    - **Config**: String. The schema identifies it as the SHA3-256 hash of the resolved shim resources used for the run.
 9.  **`capabilities`**:
     - **Purpose**: Infrastructure requirements.
     - **Config**: Array of strings (e.g., `["gpu", "vpc_access"]`). If the runner doesn't have these, the test won't run. This triggers **Discovery-Override** logic, allowing the harness to dynamically route the scenario to an environment that satisfies these prerequisites.
 
 ### Routing Priority: Discovery vs. Pinning
+This is runtime guidance, not a JSON Schema rule. The schema only constrains the shape of `metadata.agent` and `metadata.capabilities`.
+
 To maintain scalability in industrial clusters, AgentV uses a three-tier routing hierarchy:
 1.  **CLI Override** (`--agent http://...`): Highest priority. Explicitly points the harness to a specific endpoint.
 2.  **Discovery (Capabilities)**: The industrial standard. If `capabilities` (e.g., `["gpu", "vault"]`) are defined, the harness performs a **Discovery-Override**, even if a manual agent is pinned in the metadata.
 3.  **Static Pinning (`metadata.agent`)**: The fallback layer. Used during development to hard-link a scenario to a specific agent without registry resolution.
 
 ### Differential Compliance: Use Cases
+The following descriptions are product guidance. The schema itself constrains `compliance_level` only to the three values shown.
+
 `compliance_level` takes the following values:
 
 | Level | Focus | Primary Use Case |
@@ -113,24 +118,11 @@ To maintain scalability in industrial clusters, AgentV uses a three-tier routing
 | **Gold** | Process Integrity | **Staging & Integration**: "Did the agent follow the internal protocol?" (Full tool-logs and trace captures). |
 | **Regulatory_Audit** | Non-Repudiation | **Production Certification**: "Can we legally prove the agent was compliant and the evidence is untampered?" (Signed Merkle roots, Vaulting). |
 
-### Proposed Compliance Architecture
-When you list `GDPR` in the `standards_registry`, the harness doesn't just "label" the test. It triggers **Capability Mapping**. For example, a `CompliancePlugin` sees `GDPR` and automatically injects the `PII_Scanner` sidecar. This sidecar intercepts all tool outputs and redacts sensitive data before it reaches the forensic log.
+### Standards Registry Is Declarative
+`standards_registry` is an enum-constrained metadata field. The JSON Schema does not prescribe automatic capability injection, redaction, routing, or compliance-plugin behavior. Treat those as separately versioned runtime policies, not as AES-schema guarantees.
 
-Listing `GDPR` in the `standards_registry` is currently a metadata label. We have **proposed** the `CompliancePlugin` extension to transform these into active triggers:
-- **Automatic Injection**: Detection of `GDPR` would automatically inject the `pii_scanner` capability from the routing manifest.
-- **In-Flight Redaction**: A compliance-aware sidecar would intercept tool outputs and redact sensitive data (PII) before it is committed to the forensic ledger.
-
-### Governance Resolution Protocol
-When conflicts arise between high-level frameworks (`standards_registry`) and explicit scenario `policies`, AgentV applies the **Maximum Restriction Matrix** to determine the safe path:
-
-1.  **Specific Over General**: Local `policies` always take precedence over general framework defaults.
-2.  **The Restrictiveness Calculation**:
-    - **Scalar Minimization**: The lowest numeric value wins (e.g., a 30s timeout override takes precedence over a 60s framework default).
-    - **Boolean Intersection**: Enabled constraints (`true`) take precedence over disabled ones.
-    - **Namespace Shrinkage**: The most specific resource scope wins (e.g., `writes: ["db:audit_log"]` over `writes: ["db:*"]`).
-
-> [!IMPORTANT]
-> If a conflict is logically irreconcilable (e.g., Framework requires data vaulting while Policy requires raw cloud export), the harness will trigger a **Governance Fault** and mark the run as **Inconclusive**.
+### What the Schema Does and Does Not Govern
+The schema validates field structure and listed enum values. It does not define policy-precedence rules, a compliance conflict algorithm, or a run verdict for conflicting policies. Those decisions belong to the active policy evaluator and must not be inferred from an AES document alone.
 
 ### 🏗️ Walkthrough Part 1: Initial Setup
 We are building a **Fintech Underwriting persistence Audit**. We start with the Metadata.
@@ -142,7 +134,7 @@ We are building a **Fintech Underwriting persistence Audit**. We start with the 
     "id": "fintech_persistence_010",
     "name": "Underwriter Recovery & Persistence Test",
     "compliance_level": "Regulatory_Audit",
-    "standards_registry": ["PCI_DSS_V4", "SOC2_T2"],
+    "standards_registry": ["PCI_DSS_V4", "SOC_2"],
     "agent_topology": {
       "loan_agent": {
         "reads": ["ledger_db:*", "kyc_vault:*"],
@@ -165,7 +157,7 @@ We are building a **Fintech Underwriting persistence Audit**. We start with the 
 
 ## Lesson 2: Deterministic Tools & Multi-Level State Mutations (The Tools Block)
 
-The `tools` manifest defines deterministic mock responses, execution outputs, and atomic state mutations executed within the `ToolSandbox`.
+The root `tools` field is an optional object. AES v1.4 deliberately leaves its inner structure unconstrained so tool providers can publish their own contracts. The example below illustrates one commonly used tool shape; it is not independently enforced by `aes.schema.json`.
 
 ### Multi-Level Dotted State Mutation
 The runtime uses recursive path resolution (`_set_state_path`) to support deep hierarchical state mutations. Dotted path segments (e.g. `"risk.assessment.rating"`) mutate nested dictionaries rather than creating flat keys:
@@ -206,7 +198,7 @@ When this tool executes, `sandbox.state` is mutated to:
   }
 }
 ```
-This guarantees exact alignment with `PathResolver.resolve(state, "risk.assessment.rating")`, `state_hygiene` pre-checks, and `StateParityVerifier`.
+Use the tool contract selected by the active runtime when authoring tool payloads. The AES schema validates only that `tools` is an object.
 
 ---
 
@@ -220,7 +212,7 @@ The `failure_policy` root field dictates how the `WorkflowInterpreter` handles e
 
 | Failure Policy | Execution Behavior |
 | :--- | :--- |
-| **`fail_fast`** *(Default)* | Terminates the workflow immediately upon the first unhandled node failure or timeout. |
+| **`fail_fast`** | Terminates the workflow immediately upon the first unhandled node failure or timeout. |
 | **`continue_independent`** | Independent parallel branches proceed to completion even if a sibling branch fails. |
 | **`compensate_then_fail`** | Executes rollback/compensation edges (Saga pattern) before failing the workflow. |
 | **`best_effort`** | Attempts all reachable nodes regardless of upstream errors to maximize metric collection. |
@@ -229,14 +221,14 @@ The `failure_policy` root field dictates how the `WorkflowInterpreter` handles e
 
 | Property | Type | Context | Purpose |
 | :--- | :--- | :--- | :--- |
-| `nodes` | Array | Root | The sequence of tasks the agent must perform. |
-| `node.id` | String | Node | Unique identifier for the step (e.g., `verify_id`). |
-| `node.task_description` | String | Node | The prompt sent to the agent for this specific step. |
-| `node.required_tools` | Array | Node | The allowed tools (shims) for this step. |
-| `node.success_criteria` | Array | Node | Quantitative metrics for task success. |
-| `node.state_hygiene` | Object | Node | Pre-condition assertions on the environment state before execution. |
-| `node.expected_outcome` | Object | Node | Ground truth used to grade the agent's response. |
-| `edges` | Array | Root | Conditional transitions between nodes (success/failure/error/timeout). |
+| `nodes` | array | Workflow | **Required.** Each node requires `id` and `task_description`. |
+| `node.id` | string | Node | **Required.** Unique identifier for the step. |
+| `node.task_description` | string | Node | **Required.** Task instruction. |
+| `node.required_tools` | array of strings | Node | Optional required shim tools. |
+| `node.success_criteria` | array | Node | Optional; each item requires string `metric` and numeric `threshold`. |
+| `node.state_hygiene` | object | Node | Optional object; members are unconstrained by this schema. |
+| `node.expected_outcome` | array | Node | Optional assertions; each item requires `target` and `expected`. |
+| `edges` | array | Workflow | **Required.** Each edge requires `from` and `to`; `condition` is optional. |
 
 ### 🏗️ Walkthrough Part 2: Defining the Graph
 
@@ -252,21 +244,17 @@ The `failure_policy` root field dictates how the `WorkflowInterpreter` handles e
           { "path": "kyc_vault.status", "expected": "online", "op": "eq" }
         ]
       },
-      "expected_outcome": {
-        "type": "typed_value",
-        "data_type": "string",
-        "value": "VALID"
-      }
+      "expected_outcome": [
+        {"target": "message", "expected": "VALID", "mode": "exact"}
+      ]
     },
     {
       "id": "persist_decision",
       "task_description": "Write the 'APPROVED' status to the primary ledger log.",
       "required_tools": ["ledger_write"],
-      "expected_outcome": {
-        "type": "typed_value",
-        "data_type": "boolean",
-        "value": true
-      }
+      "expected_outcome": [
+        {"target": "shim:ledger", "property": "approved", "expected": true}
+      ]
     }
   ],
   "edges": [
@@ -282,12 +270,12 @@ The `failure_policy` root field dictates how the `WorkflowInterpreter` handles e
 This block configures multi-judge consensus grading, ensuring high-assurance evaluation without single-model bias.
 
 ### Property Table
-| Property | Type | Default | Purpose |
+| Property | Type | Schema requirement | Purpose |
 | :--- | :--- | :--- | :--- |
-| `strategy` | Enum | `Majority_Vote` | How to resolve disagreements (`Majority_Vote`, `Weighted_Average`, `Absolute_Unanimity`). |
-| `min_judges` | Integer | 1 | Minimum number of LLM judges required for a valid certification. |
-| `judge_panel` | Array | `["default"]` | List of models (e.g., `["gpt-5.6", "claude-opus-5", "gemini-3.7-flash"]`). |
-| `ija_threshold` | Float | 0.8 | Minimum agreement ratio (0.0 to 1.0) before flagging run as "Inconclusive". |
+| `consensus.strategy` | enum | Required when `consensus` is present | `Majority_Vote`, `Weighted_Average`, or `Absolute_Unanimity`. |
+| `consensus.min_judges` | integer | Required when `consensus` is present; minimum `1` | Number of judges required by the consensus configuration. |
+| `consensus.judge_panel` | array of strings | Optional | Judge identifiers. |
+| `ija_threshold` | number | Optional; inclusive range `0` through `1` | Inter-judge agreement threshold. |
 
 ### 🏗️ Walkthrough Part 3: Setting the Jury
 
@@ -307,14 +295,44 @@ This block configures multi-judge consensus grading, ensuring high-assurance eva
 ## Lesson 5: Verification Reconciliation & Lifecycle (Forensics)
 
 ### Lifecycle Control: `cleanup_workspace`
-* **`true` (Default)**: During `sandbox.teardown()`, the engine deletes all ephemeral filesystem assets, mock databases, and temporary directories to prevent disk leakage.
-* **`false` (Debug / Forensics)**: Preserves the sandbox directory intact on disk under `workspace/` so engineers can inspect output artifacts and state side-effects.
+* **`true`**: Requests workspace cleanup.
+* **`false`**: Requests that cleanup not be enabled by this AES field.
+
+The AES schema defines no default and does not prescribe the runtime cleanup implementation. Runtime configuration may supply additional behavior.
+
+#### Current runtime behavior
+
+`ToolSandbox.teardown()` implements this field as a workspace-directory cleanup switch:
+
+1. It checks `metadata.cleanup_workspace` first. If that key is absent, it checks the schema-defined root `cleanup_workspace` field.
+2. If neither field is present, the effective value is `false`, so the run workspace is preserved.
+3. If the effective value is `true`, it recursively removes only `workspace/<run_id>/` through `rmtree_resilient()`.
+
+This switch does not control all teardown. Registered resources and cached simulators are cleaned up regardless. The terminal jail is separate: `metadata.cleanup_terminal_jail` controls it when present; otherwise `CLEANUP_TERMINAL_JAIL` defaults to `true`.
 
 ### Forensic Vaulting
 1. **T_end**: Execution completes.
 2. **Snapshot**: `ForensicCollector` captures a point-in-time image of execution traces, logs, and database states.
 3. **Vaulting**: Moved to immutable `runs/<run_id>/forensics/` store.
 4. **Certification**: Verification Certificate (VC) issued with ED25519 signature and Merkle commitment.
+
+---
+
+## Schema Reference: Registered Standards
+
+The following is the complete enum accepted by `metadata.standards_registry` in `definitions/metadata.json`:
+
+```text
+3GPP_5G, BASEL_III, CCPA, CIS_BENCHMARKS, COBIT, COSO_ERM, DCAT, DICOM,
+DUBLIN_CORE, ESG_GRI, ESG_ISSB, ESG_SASB, EU_AI_ACT, FEDRAMP, FIPS_140_3,
+FISMA, GDPR, GLBA, HIPAA, HITECH, HL7_FHIR_V4, ICD_10, ICD_11, IEC_61850,
+IEC_62351, IEC_62443, IEEE_1547, IETF_RFC, ISA_95, ISO_11179, ISO_14001,
+ISO_19790, ISO_20022, ISO_23894, ISO_27001, ISO_27701, ISO_31000, ISO_42001,
+ISO_45001, ISO_50001, ISO_9001, ISO_9594, LGPD, MIFID_II, NERC_CIP,
+NIST_AI_RMF, NIST_CSF, OAUTH_2, OECD_AI_PRINCIPLES, OIDC, OPC_UA,
+PCI_DSS_V4, PIPEDA, PSD2, SAML_V2, SOC_2, SOX, SWIFT_MT103,
+UNESCO_AI_ETHICS, W3C_OWL, W3C_RDF, W3C_XML, X_509, std-1
+```
 
 ---
 
@@ -387,11 +405,15 @@ A complete, production-grade AES v1.4 scenario:
         "success_criteria": [
           { "metric": "tool_execution_accuracy", "threshold": 1.0 }
         ],
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "string",
-          "value": "APPROVED"
-        }
+        "expected_outcome": [
+          {"target": "message", "expected": "APPROVED", "mode": "exact"},
+          {
+            "target": "shim:loan_ledger",
+            "property": "decision",
+            "expected": "APPROVED",
+            "mode": "exact"
+          }
+        ]
       }
     ],
     "edges": []

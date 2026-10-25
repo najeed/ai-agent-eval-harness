@@ -104,15 +104,15 @@ An evaluation session transitions through five distinct phases:
 2. **Monotonic Resumption Continuation Invariant (`is_resume=True`)**:
    - When a run pauses for human operator approval (`PAUSED_FOR_APPROVAL`) and later resumes via `agentv resume` or the visual console:
      - `runner.py` validates that the run lifecycle is not in terminal states (`FINALIZING`, `SEALED`, `INVALID`).
-     - The existing evidence vault (`runs/<run_id>/`) and event ledger (`run.jsonl`) are preserved rather than overwritten or re-created.
-     - `flight_recorder.py` inspects the existing `run.jsonl` to discover the highest existing sequence number (`initial_seq = max(_seq)`) and initializes `_sequence_numbers[run_id] = initial_seq`.
+     - The existing provider-owned run and event stream are preserved rather than overwritten or re-created.
+     - `flight_recorder.py` reads provider events to discover the highest existing sequence number (`initial_seq = max(_seq)`) and initializes `_sequence_numbers[run_id] = initial_seq`.
      - Resumed events append monotonically with strictly increasing sequence numbers (`_seq = initial_seq + 1, initial_seq + 2, ...`), preventing sequence collisions, duplicate IDs, or chronological gaps.
-     - **Contract Snapshot Lock**: On resumption, `runner.py` reloads and locks the original `execution_manifest.json` and `scenario_resolved.json` from the vault. Scenario and configuration snapshots cannot be altered post-launch.
+     - **Contract Snapshot Lock**: On resumption, `runner.py` reloads and locks the original execution manifest and scenario snapshot through the provider. Scenario and configuration snapshots cannot be altered post-launch.
 
 3. **Cryptographic Trace Sealing**:
-   - Post-run execution of `agentv certify` computes a SHA3-256 digest over the raw `run.jsonl`.
+   - Post-run execution of `agentv certify` computes a SHA3-256 digest over the provider's exact committed trace bytes.
    - The resulting hash is signed using Ed25519 (`system_id` or enterprise KMS/HSM).
-   - Writes the `.sealed` sentinel marker and emits `trace_sealed`. Any modification to `run.jsonl` breaks hash verification during `agentv verify` or release gate checks (`agentv gate`).
+   - Atomically commits the certificate and sealed lifecycle state through the provider, then emits `trace_sealed`. Any trace-byte modification breaks hash verification during `agentv verify` or release gate checks (`agentv gate`).
 
 4. **Execution Truth Levels**:
    - Traces lacking explicit `execution_mode: "live"` or `"hybrid"` are stamped `provisional: true`.

@@ -302,12 +302,13 @@ class ForensicRelevanceEngine:
 
         # Apply Storage Safety (Size Cap) for Tier 3 only
         try:
-            current_size = path.stat().st_size
-            if current_size > self.max_size:
-                logger.debug(
-                    f"[Forensics] Excluding oversized artifact ({current_size}b): {path.name}"
-                )
-                return False
+            if path.is_file():
+                current_size = path.stat().st_size
+                if current_size > self.max_size:
+                    logger.debug(
+                        f"[Forensics] Excluding oversized artifact ({current_size}b): {path.name}"
+                    )
+                    return False
         except (FileNotFoundError, PermissionError):
             return False
 

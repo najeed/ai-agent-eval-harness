@@ -30,11 +30,19 @@
       "type": "string",
       "description": "Globally-unique run identifier (UUIDv7-suffixed since the collision fix)."
     },
+    "org_id": {
+      "type": "string",
+      "description": "Organization from the signed execution scope; empty only when the historical run has no complete scope contract."
+    },
     "tenant_id": {
       "type": "string"
     },
     "workspace_id": {
       "type": "string"
+    },
+    "active_environment": {
+      "type": "string",
+      "description": "Active environment from the signed execution scope; empty only when the historical run has no complete scope contract."
     },
     "chain": {
       "type": "object",

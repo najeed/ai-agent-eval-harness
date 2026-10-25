@@ -8,37 +8,12 @@ import json
 from pathlib import Path
 
 
-def run_calibration(path: str, golden_path: str | None = None, plot: bool = False):
+def run_calibration_events(events: list[dict], golden_path: str | None = None, plot: bool = False):
     """
     Industrial Calibration Cycle (v1.2.3).
     Analyzes judge-human agreement metrics and suggests optimized success thresholds.
     """
-    print(f"\n[Calibration] Loading trace from: {path}")
-    trace_path = Path(path)
-    if not trace_path.exists():
-        print(f"[ERROR] Trace file not found: {path}")
-        return
-
-    # 1. Load Trace Events
-    events = []
-    if trace_path.is_dir():
-        # Aggregated Loading (Industrial Calibration Standard)
-        for fpath in sorted(trace_path.rglob("*.jsonl")):
-            with open(fpath, encoding="utf-8") as f:
-                for line in f:
-                    if line.strip():
-                        try:
-                            events.append(json.loads(line))
-                        except json.JSONDecodeError:
-                            continue
-    else:
-        with open(trace_path, encoding="utf-8") as f:
-            for line in f:
-                if line.strip():
-                    try:
-                        events.append(json.loads(line))
-                    except json.JSONDecodeError:
-                        continue
+    print("\n[Calibration] Loading provider-owned events")
 
     # 2. Extract Golden Labels (Ground Truth)
     golden_labels = {}
@@ -176,7 +151,7 @@ def run_calibration(path: str, golden_path: str | None = None, plot: bool = Fals
             plt.legend()
             plt.grid(True, alpha=0.3)
 
-            plot_path = trace_path.parent / "calibration_plot.png"
+            plot_path = Path("calibration_plot.png")
             plt.savefig(plot_path)
             print(f"[OK] Calibration plot saved to {plot_path}")
             plt.close()
@@ -184,6 +159,23 @@ def run_calibration(path: str, golden_path: str | None = None, plot: bool = Fals
             print("[WARNING] matplotlib/numpy missing. Plotting skipped.")
         except Exception as e:
             print(f"[ERROR] Failed to generate plot: {e}")
+
+
+def run_calibration(path: str, golden_path: str | None = None, plot: bool = False):
+    """Offline trace-import helper; lifecycle callers use ``run_calibration_events``."""
+    trace_path = Path(path)
+    if not trace_path.exists():
+        print(f"[ERROR] Trace file not found: {path}")
+        return None
+    sources = sorted(trace_path.rglob("*.jsonl")) if trace_path.is_dir() else [trace_path]
+    events: list[dict] = []
+    for source in sources:
+        for line in source.read_text(encoding="utf-8").splitlines():
+            try:
+                events.append(json.loads(line))
+            except json.JSONDecodeError:
+                continue
+    return run_calibration_events(events, golden_path=golden_path, plot=plot)
 
 
 if __name__ == "__main__":

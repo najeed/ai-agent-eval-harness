@@ -254,10 +254,9 @@ def get_default_signer():
     """
     Resolves the default SigningBackend based on environment configuration.
     """
-    from agentv_runtime.discovery import resolve_extension
-    from eval_runner.reference.signing import LocalEd25519SigningBackend, NullSigningBackend
+    from eval_runner.runtime_services import NullSigningBackend, resolve_signing_backend
 
     key_path = os.getenv("FLIGHT_RECORDER_KEY_PATH")
     if key_path:
-        return resolve_extension("signing_backends", default_factory=LocalEd25519SigningBackend)
+        return resolve_signing_backend()
     return NullSigningBackend()

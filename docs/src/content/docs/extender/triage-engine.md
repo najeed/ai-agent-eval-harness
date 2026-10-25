@@ -61,8 +61,8 @@ Every classification is documented in a **Causal Chain**, allowing auditors to t
 To maintain industrial-grade stability, all triage operations must be anchored to an identity:
 
 - **Zero-Inference Resolution**: The Triage Engine requires an explicit `run_id` to initialize diagnostics. Speculative inference from parent directories is prohibited to prevent forensic cross-contamination.
-- **Vault Affinity**: Diagnostics are only performed on traces within valid industrial vaults (`runs/<run_id>/run.jsonl`) or the master log. Traces in shared temporary space are ineligible for audit-grade triage.
-- **Manifest Persistence**: Root cause classifications are persisted directly into the `run_manifest.json` as signed evidence, creating an immutable link between the diagnostic outcome and the forensic identity.
+- **Provider Affinity**: Diagnostics read the execution owner's scoped provider events and manifest. Local paths and master logs are not diagnostic inputs.
+- **Manifest Persistence**: Root cause classifications are committed through the provider's manifest contract as signed evidence, creating an immutable link between the diagnostic outcome and the forensic identity.
 
 ## 5. Forensic Data Sinks
 

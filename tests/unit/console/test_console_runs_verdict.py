@@ -1,166 +1,81 @@
-"""
-/api/runs returns a server-authoritative verification verdict per run.
+"""Provider-only run-list verdict presentation contracts."""
 
-  VERIFIED              — certificate/manifest trace_hash == SHA3-256(current trace)
-  FAILED_VERIFICATION   — hash mismatch (trace mutated after certification)
-  UNKNOWN               — no certificate, unreadable manifest, or absent hash
-
-The server never infers verdicts from certificate PRESENCE or execution
-status alone.
-"""
-
-import json
-import tempfile
-from pathlib import Path
-from unittest.mock import patch
+from __future__ import annotations
 
 import pytest
 from flask import Flask
 
-from eval_runner import config
 from eval_runner.console.routes.runs import run_bp
-from eval_runner.utils import crypto, rmtree_resilient
 
 
-@pytest.fixture(scope="module")
-def verdict_jail(request):
-    worker_id = getattr(request.config, "workerinput", {}).get("workerid", "master")
-    tmp_root = Path(tempfile.gettempdir()) / f"aes_runs_verdict_jail_{worker_id}"
-    root = tmp_root / "root"
-    runs = root / "runs"
-    reports = root / "reports"
-    keys = root / "keys"
+class FakeRunStore:
+    def __init__(self, runs):
+        self.runs = {item["run_id"]: dict(item) for item in runs}
 
-    if tmp_root.exists():
-        rmtree_resilient(tmp_root)
+    def search_runs(self, query="", filters=None, limit=100, offset=0, context=None):
+        rows = [row for row in self.runs.values() if query in row["run_id"]]
+        return rows[offset : offset + limit]
 
-    (reports / "certificates").mkdir(parents=True)
-    runs.mkdir(parents=True)
-    keys.mkdir(parents=True)
-    from eval_runner.identity import IdentityService
+    def get_run(self, run_id, context=None):
+        return self.runs.get(run_id)
 
-    old_trust_root = config.TRUST_ROOT
-    config.TRUST_ROOT = keys
-    try:
-        IdentityService._provision_local_identity("system_id")
-        IdentityService._provision_local_identity("test_signer")
-        yield {"root": root, "runs": runs, "reports": reports, "keys": keys}
-    finally:
-        config.TRUST_ROOT = old_trust_root
-        if tmp_root.exists():
-            rmtree_resilient(tmp_root)
+    def get_manifest(self, run_id, context=None):
+        return self.runs.get(run_id, {}).get("manifest")
+
+    def get_events(self, run_id, offset=0, limit=1000, context=None):
+        return []
 
 
 @pytest.fixture
-def client(verdict_jail, monkeypatch):
+def client(monkeypatch):
     app = Flask(__name__)
+    app.extensions["agentv_run_store"] = FakeRunStore(
+        [
+            {"run_id": "verified", "status": "SEALED", "verification_status": "VERIFIED"},
+            {
+                "run_id": "tampered",
+                "status": "SEALED",
+                "verification_status": "FAILED_VERIFICATION",
+            },
+            {"run_id": "uncertified", "status": "OPEN", "verification_status": "UNKNOWN"},
+            {
+                "run_id": "provisional",
+                "status": "SEALED",
+                "verification_status": "VERIFIED_PROVISIONAL",
+                "provisional": True,
+            },
+        ]
+    )
     app.register_blueprint(run_bp, url_prefix="/api")
-
-    monkeypatch.setattr(config, "PROJECT_ROOT", verdict_jail["root"])
-    monkeypatch.setattr(config, "RUN_LOG_DIR", verdict_jail["runs"])
-    monkeypatch.setattr(config, "REPORTS_DIR", verdict_jail["reports"])
-    monkeypatch.setattr(config, "TRUST_ROOT", verdict_jail["keys"])
-
-    with patch("eval_runner.console.auth_manager.require_permission", lambda _: lambda f: f):
-        yield app.test_client()
-
-
-def _make_vault(runs_dir: Path, run_id: str, trace_text: str = '{"event": "run_start"}\n'):
-    vault = runs_dir / run_id
-    vault.mkdir(parents=True, exist_ok=True)
-    trace = vault / "run.jsonl"
-    trace.write_text(trace_text, encoding="utf-8")
-    return vault, trace
-
-
-def _write_manifest(
-    trace_path: Path,
-    trace_hash: str | None = None,
-    execution_mode: str = "live",
-    provisional: bool = False,
-):
-    from eval_runner.verifier import TraceVerifier
-    from tests.conftest import append_authoritative_finalization
-
-    if not provisional and execution_mode in ("live", "hybrid"):
-        append_authoritative_finalization(trace_path, trace_path.parent.name, trace_path.parent)
-
-    TraceVerifier.sign_trace(
-        str(trace_path),
-        identity_id="test_signer",
-        run_id=trace_path.parent.name,
-        execution_mode=execution_mode,
-        provisional=provisional,
+    monkeypatch.setattr(
+        "eval_runner.console.auth_manager.require_permission", lambda _: lambda f: f
     )
+    return app.test_client()
 
 
-def test_list_runs_reports_verified_for_matching_hash(verdict_jail, client):
-    _, trace = _make_vault(verdict_jail["runs"], "run-verdict-ok")
-    _write_manifest(trace)
-
-    res = client.get("/api/runs")
-    assert res.status_code == 200
-    row = next(r for r in res.get_json()["runs"] if r["run_id"] == "run-verdict-ok")
-    assert row["verification_status"] == "VERIFIED"
-
-
-def test_list_runs_reports_failed_verification_on_tamper(verdict_jail, client):
-    vault, trace = _make_vault(verdict_jail["runs"], "run-verdict-tampered")
-    _write_manifest(trace)
-    # Mutate the trace AFTER certification.
-    with open(trace, "a", encoding="utf-8") as f:
-        f.write('{"event": "injected"}\n')
-
-    res = client.get("/api/runs")
-    row = next(r for r in res.get_json()["runs"] if r["run_id"] == "run-verdict-tampered")
-    assert row["verification_status"] == "FAILED_VERIFICATION"
+@pytest.mark.parametrize(
+    ("run_id", "expected"),
+    [
+        ("verified", "VERIFIED"),
+        ("tampered", "FAILED_VERIFICATION"),
+        ("uncertified", "UNKNOWN"),
+        ("provisional", "VERIFIED_PROVISIONAL"),
+    ],
+)
+def test_list_runs_presents_provider_verdict(client, run_id, expected):
+    response = client.get("/api/runs")
+    assert response.status_code == 200
+    rows = {row["run_id"]: row for row in response.get_json()["runs"]}
+    assert rows[run_id]["verification_status"] == expected
 
 
-def test_list_runs_reports_unknown_without_certificate(verdict_jail, client):
-    _make_vault(verdict_jail["runs"], "run-verdict-nocert")
-
-    res = client.get("/api/runs")
-    row = next(r for r in res.get_json()["runs"] if r["run_id"] == "run-verdict-nocert")
-    assert row["verification_status"] == "UNKNOWN"
-
-
-def test_list_runs_unknown_when_manifest_lacks_trace_hash(verdict_jail, client):
-    _, trace = _make_vault(verdict_jail["runs"], "run-verdict-emptyhash")
-    (trace.parent / "run_manifest.json").write_text(
-        json.dumps({"vc_version": "3.0.0"}), encoding="utf-8"
-    )
-
-    res = client.get("/api/runs")
-    row = next(r for r in res.get_json()["runs"] if r["run_id"] == "run-verdict-emptyhash")
-    assert row["verification_status"] == "FAILED_VERIFICATION"
-
-
-def test_verdict_accepts_prefixed_hash_form(verdict_jail, client):
-    _, trace = _make_vault(verdict_jail["runs"], "run-verdict-prefixed")
-    _write_manifest(trace)
-
-    res = client.get("/api/runs")
-    row = next(r for r in res.get_json()["runs"] if r["run_id"] == "run-verdict-prefixed")
-    assert row["verification_status"] == "VERIFIED"
-
-
-def test_missing_trace_is_unknown_even_with_certificate(verdict_jail, client):
-    # Manifest exists but the trace file was deleted -> cannot verify.
-    vault, trace = _make_vault(verdict_jail["runs"], "run-verdict-gone")
-    _write_manifest(trace, crypto.file_hash(trace))
-    trace.unlink()
-
-    res = client.get("/api/runs")
-    rows = {r["run_id"]: r for r in res.get_json()["runs"]}
-    if "run-verdict-gone" in rows:
-        assert rows["run-verdict-gone"]["verification_status"] == "UNKNOWN"
-
-
-def test_list_runs_reports_verified_provisional_for_simulated_mode(verdict_jail, client):
-    _, trace = _make_vault(verdict_jail["runs"], "run-verdict-sim")
-    _write_manifest(trace, execution_mode="simulated", provisional=True)
-
-    res = client.get("/api/runs")
-    assert res.status_code == 200
-    row = next(r for r in res.get_json()["runs"] if r["run_id"] == "run-verdict-sim")
-    assert row["verification_status"] == "VERIFIED_PROVISIONAL"
+def test_list_runs_does_not_read_a_vault_or_master_log(client, tmp_path, monkeypatch):
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path / "decoy-runs")
+    response = client.get("/api/runs")
+    assert response.status_code == 200
+    assert {row["run_id"] for row in response.get_json()["runs"]} == {
+        "verified",
+        "tampered",
+        "uncertified",
+        "provisional",
+    }

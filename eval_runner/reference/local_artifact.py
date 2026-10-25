@@ -106,54 +106,34 @@ class LocalFileArtifactStore(ArtifactStore):
         with open(seal_marker, "w", encoding="utf-8") as f:
             json.dump(seal_data, f, indent=2)
 
-    def unseal(self, run_id: str) -> None:
-        """
-        Rollback helper: unseals a vault if rollback is required during transactional recovery.
-        In production, permanently sealed runs cannot be unsealed.
-        Under active legal hold or unexpired WORM retention, unsealing is strictly prohibited.
-        """
-        from eval_runner.run_lifecycle import RunLifecycleState, get_run_lifecycle_state
+    def unseal(
+        self,
+        run_id: str,
+        *,
+        run_store: Any,
+        context: dict[str, Any] | None = None,
+    ) -> None:
+        """Fail closed: an evidence seal is irreversible.
 
-        is_prod = config.is_production()
-        if is_prod and get_run_lifecycle_state(run_id) == RunLifecycleState.SEALED:
-            raise PermissionError(
-                f"ProductionImmutabilityViolation: Cannot unseal permanently "
-                f"sealed run '{run_id}' in production."
-            )
-
+        Certification rollback may clean up only its uncommitted staging state.
+        It must never remove a committed seal marker, even if a subsequent
+        lifecycle status update failed.  In particular, lifecycle state is
+        not evidence of whether ``seal()`` committed: the marker is.
+        ``run_store`` and ``context`` remain explicit for API ownership and
+        future providers that support a distinct pre-seal reservation phase.
+        """
         try:
             run_dir = self._get_run_dir(run_id, create=False)
             if run_dir.exists():
                 seal_marker = run_dir / ".sealed"
                 if seal_marker.exists():
-                    try:
-                        with open(seal_marker, encoding="utf-8") as sf:
-                            seal_data = json.load(sf)
-                    except Exception:
-                        seal_data = {}
-                    if seal_data.get("legal_hold"):
-                        raise PermissionError(
-                            f"WORMImmutabilityViolation: Cannot unseal run "
-                            f"'{run_id}' under active legal hold."
-                        )
-                    retention_until_str = seal_data.get("retention_until")
-                    if retention_until_str:
-                        from datetime import datetime
-
-                        try:
-                            retention_until = datetime.fromisoformat(retention_until_str)
-                            if datetime.now(UTC) < retention_until:
-                                raise PermissionError(
-                                    f"WORMImmutabilityViolation: Cannot unseal run "
-                                    f"'{run_id}' prior to retention expiry ({retention_until_str})."
-                                )
-                        except (ValueError, TypeError):
-                            pass
-                    seal_marker.unlink(missing_ok=True)
+                    raise PermissionError(
+                        f"SealedEvidenceImmutabilityViolation: Cannot unseal sealed run '{run_id}'."
+                    )
         except PermissionError:
             raise
-        except OSError as unlink_err:
-            logger.debug("Failed to unseal run directory for %s: %s", run_id, unlink_err)
+        except OSError as lookup_err:
+            logger.debug("Failed to inspect seal state for %s: %s", run_id, lookup_err)
 
     def store_artifact(
         self,

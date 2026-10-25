@@ -4,12 +4,11 @@ Verifies trace recording, flight recorder plugins (vault rotation, fallback),
 trace utilities (JSON/JSONL), and result reconstruction.
 """
 
-import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from eval_runner import cli, trace_recorder, trace_utils
+from eval_runner import trace_recorder, trace_utils
 from eval_runner.events import CoreEvents, Event
 from eval_runner.flight_recorder import FlightRecorderPlugin as FlightRecorder
 
@@ -39,26 +38,35 @@ async def test_record_interaction_masking(tmp_path, monkeypatch):
 # --- 2. Flight Recorder (Vault & Rotation) ---
 
 
-def test_flight_recorder_lifecycle(tmp_path):
-    fr = FlightRecorder()
-    fr.log_dir = tmp_path
+def test_flight_recorder_lifecycle(tmp_path, monkeypatch):
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    store = LocalFileRunStore(tmp_path)
+    fr = FlightRecorder(run_store=store)
 
     # 1. Start Run
     fr.handle_event(Event(name=CoreEvents.RUN_START, data={"run_id": "r1"}))
-    assert fr.master_log_path.exists()
+    events = store.get_events("r1")
+    assert len(events) == 1
+    assert events[0]["event"] == "run_start"
 
     # 2. Finalize
-    fr.finalize_run()
-
-    # 3. Rotate (Smoke)
-    fr.rotate_logs()
+    fr.finalize_run("r1")
 
 
-def test_flight_recorder_error_handling(tmp_path, capsys):
-    fr = FlightRecorder()
-    fr.log_dir = tmp_path
+def test_flight_recorder_error_handling(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", tmp_path)
+    from eval_runner.reference.local_run_store import LocalFileRunStore
 
-    with patch("builtins.open", side_effect=OSError("Access Denied")):
+    store = LocalFileRunStore(tmp_path)
+    fr = FlightRecorder(run_store=store)
+
+    with patch.object(
+        store,
+        "append_events",
+        side_effect=OSError("Access Denied"),
+    ):
         with pytest.raises(RuntimeError, match="TracePersistenceError"):
             fr.handle_event(Event(name=CoreEvents.RUN_START, data={"run_id": "r1"}))
 
@@ -76,27 +84,6 @@ def test_load_events_and_reconstruct():
     results = trace_utils.reconstruct_results_from_events(events)
     assert len(results) == 1
     assert results[0]["metrics"][0]["score"] == 1.0
-
-
-def test_replay_vault_fallback(tmp_path, monkeypatch, capsys):
-    """Verify fallback from Vault to Master Log."""
-    monkeypatch.chdir(tmp_path)
-    run_id = "fallback-run"
-
-    # Setup Master Log
-    master_log = tmp_path / "run.jsonl"
-    master_log.write_text(
-        json.dumps({"event": "run_start", "run_id": run_id, "scenario": "s1"}) + "\n"
-    )
-
-    with patch("eval_runner.config.RUN_LOG_DIR", tmp_path):
-        with patch("sys.argv", ["agentv", "replay", "--run-id", run_id]):
-            with pytest.raises(SystemExit) as e:
-                cli.main()
-            assert e.value.code == 0
-            out = capsys.readouterr().out
-            assert "Falling back to master log" in out
-            assert "--- Run Started: fallback-run" in out
 
 
 # === Ported edge-case coverage ===
@@ -161,6 +148,23 @@ def test_load_events_formats(tmp_path):
     f3.write_text('{"event": "start"}')
     assert len(load_events(f3)) == 1
 
+    # JSONL with blank lines
+    f3_blank = tmp_path / "f3_blank.jsonl"
+    f3_blank.write_text('{"event": "start"}\n\n   \n{"event": "stop"}\n\n')
+    assert len(load_events(f3_blank)) == 2
+
+    # Array starting with [ but json.loads returns non-list
+    f_non_list = tmp_path / "f_non_list.json"
+    f_non_list.write_text("[custom_data]")
+    with patch("eval_runner.trace_utils.json.loads", return_value={"event": "single_obj"}):
+        res_non_list = load_events(f_non_list)
+        assert res_non_list == [{"event": "single_obj"}]
+
+    # Starts with [ but not valid JSON array -> JSONDecodeError caught, falls back to JSONL
+    f_invalid_bracket = tmp_path / "f_invalid_bracket.jsonl"
+    f_invalid_bracket.write_text('[invalid json array\n{"event": "recovered_line"}')
+    assert load_events(f_invalid_bracket) == [{"event": "recovered_line"}]
+
     # Empty file
     f4 = tmp_path / "f4.json"
     f4.write_text("   ")
@@ -179,6 +183,27 @@ def test_load_events_formats(tmp_path):
         load_events(f6)
 
 
+def test_reconstruct_results_non_dict_events_and_hitl_pause():
+    from eval_runner.trace_utils import reconstruct_results_from_events
+
+    events = [
+        "not-a-dict",  # line 104
+        None,
+        42,
+        {"task_id": "T1", "event": "prompt", "content": "hello"},
+        {"task_id": "T1", "event": "execution_graph_node", "status": "running"},
+        {"task_id": "T1", "event": "execution_graph_node", "status": ""},
+        {"task_id": "T1", "event": "hitl_pause", "status": "PAUSED_FOR_APPROVAL"},
+        {"task_id": "T2", "event": "hitl_pause", "status": "SOMETHING_ELSE"},
+        {"task_id": "T3", "event": "unhandled_event_type"},
+    ]
+    results = reconstruct_results_from_events(events)
+    assert len(results) == 3
+    r1 = next(r for r in results if r["task_id"] == "T1")
+    assert r1["status"] == "paused_for_approval"
+    assert r1["triage_tag"] == "PAUSED_FOR_APPROVAL"
+
+
 def test_reconstruct_results_full(tmp_path):
     """Test reconstruction with evaluation, agent, and tool events."""
     from eval_runner.trace_utils import reconstruct_results_from_events
@@ -195,6 +220,43 @@ def test_reconstruct_results_full(tmp_path):
     assert res["metrics"][0]["score"] == 0.9
     assert res["conversation_history"][0]["role"] == "agent"
     assert res["conversation_history"][1]["role"] == "user"
+
+
+def test_reconstruct_results_uses_graph_node_id_and_ignores_run_events():
+    """Diagnostics must retain the failed compiled node, never invent ``unknown``."""
+    from eval_runner.trace_utils import reconstruct_results_from_events
+
+    results = reconstruct_results_from_events(
+        [
+            {"event": "run_start", "run_id": "r1"},
+            {
+                "event": "execution_graph_node",
+                "scenario_node_id": "reset_authority",
+                "status": "completed",
+                "_seq": 2,
+            },
+            {
+                "event": "execution_graph_node",
+                "scenario_node_id": "verify_provider_notification",
+                "status": "failed",
+                "failure_class": "VERIFICATION_FAILED",
+                "failure_reason": "Provider notification was not delivered",
+                "_seq": 3,
+            },
+        ]
+    )
+
+    assert [result["task_id"] for result in results] == [
+        "reset_authority",
+        "verify_provider_notification",
+    ]
+    failed = results[1]
+    assert failed["status"] == "failed"
+    assert failed["triage_tag"] == "VERIFICATION_FAILED"
+    assert (
+        failed["conversation_history"][0]["failure_reason"]
+        == "Provider notification was not delivered"
+    )
 
 
 @pytest.mark.asyncio

@@ -38,7 +38,7 @@ def test_get_debugger_state_invalid_run(client, auth_headers):
     resp = client.get("/api/debugger/state?run_id=invalid-id", headers=auth_headers)
     assert resp.status_code == 404
     data = resp.get_json()
-    assert "Trace file not found" in data["message"]
+    assert "Provider trace not found" in data["message"]
 
 
 def test_list_scenarios_filtering(client, monkeypatch, tmp_path, auth_headers):

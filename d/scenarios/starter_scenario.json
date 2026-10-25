@@ -1,0 +1,35 @@
+{
+    "aes_version": 1.4,
+    "metadata": {
+        "id": "scenario-8f732882",
+        "compliance_level": "Standard",
+        "capabilities": []
+    },
+    "description": "A basic starter scenario focusing on interaction.",
+    "industry": "i",
+    "workflow": {
+        "nodes": [
+            {
+                "id": "node_1",
+                "task_description": "Initial interaction test.",
+                "expected_outcome": [
+                    {
+                        "target": "message",
+                        "expected": "Successful execution.",
+                        "mode": "exact"
+                    }
+                ]
+            }
+        ],
+        "edges": []
+    },
+    "evaluation": {
+        "consensus": {
+            "strategy": "Majority_Vote",
+            "min_judges": 1,
+            "judge_panel": [
+                "Luna-1"
+            ]
+        }
+    }
+}

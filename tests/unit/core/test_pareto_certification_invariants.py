@@ -36,6 +36,7 @@ from eval_runner.certification_lock import PerRunCertificationLock
 from eval_runner.compliance import evaluate_compliance
 from eval_runner.console.routes.trust import trust_bp
 from eval_runner.identity import IdentityService
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.services.certification import (
     CertificationService,
     execute_industrial_certification,
@@ -257,18 +258,26 @@ def test_invariant_3_verification_fails_on_scenario_mismatch(cert_env):
     res = execute_industrial_certification(run_id=run_id, scenario_data=scen_original)
     assert res["certified"] is True
 
-    manifest_path = vault / "run_manifest.json"
+    vault / "run_manifest.json"
+
+    store = LocalFileRunStore(cert_env["runs"])
+    trace_bytes = store.get_trace_bytes(run_id)
+    manifest = store.get_manifest(run_id)
 
     # Verifying with original scenario succeeds
     assert (
-        TraceVerifier.verify_trace(str(trace), str(manifest_path), scenario_data=scen_original)
+        TraceVerifier.verify_trace(
+            trace_bytes, manifest, run_store=store, scenario_data=scen_original
+        )
         is True
     )
 
     # Verifying with modified scenario definition FAILS
     scen_modified = {"id": "scen_v", "version": "1.0.0", "val": 999}
     assert (
-        TraceVerifier.verify_trace(str(trace), str(manifest_path), scenario_data=scen_modified)
+        TraceVerifier.verify_trace(
+            trace_bytes, manifest, run_store=store, scenario_data=scen_modified
+        )
         is False
     )
 
@@ -301,28 +310,58 @@ def test_invariant_4_event_appended_after_finalization_blocks_certification(cert
     scen_data = {"id": "scen_fin", "version": "1.0.0"}
     scen_hash = compute_scenario_hash(scen_data)
 
+    vault = cert_env["runs"] / run_id
+    vault.mkdir(parents=True, exist_ok=True)
+    from agentv_runtime.evidence_graph import (
+        build_evidence_graph_from_events,
+        compute_evidence_graph_root,
+    )
+    from agentv_runtime.manifest import ExecutionManifest
+
+    exec_manifest = ExecutionManifest(
+        manifest_id=f"man_{run_id}",
+        scenario_id="scen_fin",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+    )
+    (vault / "execution_manifest.json").write_text(
+        json.dumps(exec_manifest.to_dict()), encoding="utf-8"
+    )
+    m_hash = exec_manifest.compute_manifest_hash()
+
+    events_before = [
+        {"_seq": 1, "event": "run_start", "execution_mode": "live", "scenario_id": "scen_fin"},
+        {"_seq": 2, "event": "assertion_evaluated", "assertion": "check_1", "passed": True},
+    ]
+    ev_graph = build_evidence_graph_from_events(events_before)
+    ev_root = ev_graph.get("evidence_root_hash") or compute_evidence_graph_root(ev_graph)
+
     fin_rec = EvaluatorFinalizationRecord(
         finalization_id="fin_123",
         run_id=run_id,
-        execution_manifest_hash="sha3_256:dummy",
+        execution_manifest_hash=m_hash,
         scenario_id="scen_fin",
         scenario_version="1.0.0",
         scenario_hash=scen_hash,
         evaluator_identity="eval_kernel",
-        evaluator_config_hash="cfg_hash",
-        required_oracle_ids=["check_1"],
-        evidence_root_hash="sha256:abc",
+        evaluator_config_hash="sha3_256:0000000000000000000000000000000000000000000000000000000000000000",
+        required_oracle_ids=[],
+        evidence_root_hash=ev_root,
         outcome="pass",
         score=1.0,
+        terminal_seq=2,
     )
     fin_rec = fin_rec.sign()
     fin_dict = fin_rec.to_dict()
 
     events = [
-        {"event": "run_start", "execution_mode": "live", "scenario_id": "scen_fin"},
-        {"event": "assertion_evaluated", "assertion": "check_1", "passed": True},
-        {"event": "evaluator_finalization", "data": fin_dict},
-        {"event": "session_decision", "data": {"decision": "FAIL"}},  # Appended after finalization!
+        *events_before,
+        {"_seq": 3, "event": "evaluator_finalization", "data": fin_dict},
+        {
+            "_seq": 4,
+            "event": "session_decision",
+            "data": {"decision": "FAIL"},
+        },  # Appended after finalization!
     ]
     _create_trace(cert_env["runs"], run_id, events)
 
@@ -366,7 +405,9 @@ def test_invariant_5_claimed_pqc_proof_unavailable_fails_verification(cert_env, 
     monkeypatch.setattr(config, "PQC_STRICT_MODE", False)
 
     # Verification MUST fail
-    is_valid = TraceVerifier.verify_trace(str(trace), str(manifest_path))
+    store = LocalFileRunStore(cert_env["runs"])
+    trace_bytes = store.get_trace_bytes(run_id)
+    is_valid = TraceVerifier.verify_trace(trace_bytes, manifest, run_store=store)
     assert is_valid is False
 
 
@@ -445,9 +486,12 @@ def test_invariant_7_certified_implies_non_provisional_and_verified(cert_env):
     assert "provisional" not in res["manifest"] or res["manifest"]["provisional"] is False
 
     # TraceVerifier confirms valid cryptographic proof
-    manifest_path = vault / "run_manifest.json"
+    store = LocalFileRunStore(cert_env["runs"])
+    trace_bytes = store.get_trace_bytes(run_id)
+    manifest = store.get_manifest(run_id)
     assert (
-        TraceVerifier.verify_trace(str(trace), str(manifest_path), scenario_data=scen_data) is True
+        TraceVerifier.verify_trace(trace_bytes, manifest, run_store=store, scenario_data=scen_data)
+        is True
     )
 
 
@@ -475,9 +519,11 @@ def test_invariant_8_deterministic_certificate_reconstruction(cert_env):
     assert manifest1["metadata"]["scenario_hash"] == scen_hash1
 
     # Verify signature passes
-    manifest_path = vault / "run_manifest.json"
+    store = LocalFileRunStore(cert_env["runs"])
+    trace_bytes = store.get_trace_bytes(run_id)
     assert (
-        TraceVerifier.verify_trace(str(trace), str(manifest_path), scenario_data=scen_data) is True
+        TraceVerifier.verify_trace(trace_bytes, manifest1, run_store=store, scenario_data=scen_data)
+        is True
     )
 
 
@@ -502,7 +548,9 @@ def test_operational_stale_lock_recovery_with_dead_pid(cert_env):
     lock_path.write_text(json.dumps(lock_payload), encoding="utf-8")
 
     # PerRunCertificationLock should detect dead owner and safely acquire
-    with PerRunCertificationLock(run_id, timeout_seconds=1.0):
+    run_store = LocalFileRunStore(cert_env["runs"])
+    run_store.create_run(run_id, "stale-lock")
+    with PerRunCertificationLock(run_id, timeout_seconds=1.0, run_store=run_store):
         assert lock_path.exists()
     assert not lock_path.exists()
 
@@ -520,7 +568,8 @@ def test_operational_behavioral_compliance_fails_closed_in_oss(cert_env):
         run_id=run_id, scenario_data={"id": "scen_comp", "version": "1.0.0"}
     )
 
-    res = evaluate_compliance(run_id, metrics={"safety_score": 0.99})
+    store = LocalFileRunStore(cert_env["runs"])
+    res = evaluate_compliance(run_id, metrics={"safety_score": 0.99}, run_store=store)
     assert res["status"] == "NOT_EVALUATED"
     assert res["compliant"] is False
     assert res["behavioral_metrics"] == "not_evaluated_in_oss"

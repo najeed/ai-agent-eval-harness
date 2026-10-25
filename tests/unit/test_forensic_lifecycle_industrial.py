@@ -39,40 +39,32 @@ def vault_setup(tmp_path, monkeypatch):
 def test_forensic_seal_hash_integrity(vault_setup):
     """
     [AgentV v1.5.0] Verification Integrity Test.
-    Ensures that appending the certificate event with a Seal Hash
-    does not invalidate the final manifest hash.
+    Ensures that signing trace bytes with an explicit provider produces a valid manifest hash.
     """
     run_id, vault_dir, trace_path = vault_setup
+    from eval_runner.identity import IdentityService
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    IdentityService._provision_local_identity("test_auditor")
+    store = LocalFileRunStore(vault_dir.parent)
+    store.create_run(run_id, "forensic-test")
+    trace_bytes = trace_path.read_bytes()
 
     # 1. Sign the trace
-    manifest = TraceVerifier.sign_trace(str(trace_path), run_id=run_id, identity_id="test_auditor")
+    manifest = TraceVerifier.sign_trace_bytes(
+        trace_bytes, run_id=run_id, identity_id="test_auditor", run_store=store
+    )
+    store.save_run_manifest(run_id, manifest)
+    store.update_run_status(run_id, "SEALED")
 
-    # 2. Check the receipt and trace content
-    trace_content = trace_path.read_bytes()
-    trace_lines = trace_content.splitlines()
-    last_line = json.loads(trace_lines[-1])
-    assert last_line["event"] == "start"
-
-    receipt_file = vault_dir / "certification_receipt.json"
-    assert receipt_file.exists()
-    receipt_data = json.loads(receipt_file.read_text(encoding="utf-8"))
-    assert receipt_data["event"] == "verification_certificate_issued"
-    assert "seal_hash" in receipt_data
-
-    # 3. Verify the seal_hash matches the trace BEFORE any mutation
+    # 2. Verify that the trace content hash matches the manifest
     from eval_runner.utils import crypto
 
-    initial_content = b'{"event": "start"}\n'
-    expected_seal = crypto.checksum(initial_content)
-    assert receipt_data["seal_hash"] == expected_seal
+    actual_hash = crypto.checksum(trace_bytes)
+    assert manifest["trace_hash"] == actual_hash
 
-    # 4. Verify that the physical file hash matches the manifest
-    actual_physical_hash = crypto.checksum(trace_content)
-    assert manifest["trace_hash"] == actual_physical_hash
-
-    # 5. Run the authoritative verifier
-    manifest_path = vault_dir / "run_manifest.json"
-    assert TraceVerifier.verify_trace(str(trace_path), str(manifest_path)) is True
+    # 3. Run the authoritative verifier
+    assert TraceVerifier.verify_trace(trace_bytes, manifest, run_store=store) is True
 
 
 def test_forensic_shim_relevance_strict():

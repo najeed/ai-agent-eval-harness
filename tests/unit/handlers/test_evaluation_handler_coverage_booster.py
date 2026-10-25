@@ -182,87 +182,74 @@ async def test_handle_verify_failures(tmp_path):
 async def test_handle_gate_failures(tmp_path):
     """Exercises gate failures (lines 384-385, 391, 398, 404, 407-408, 421-422,
     441-442, 447-449)."""
-    import pathlib
-
-    # Path.exists resolver helper to avoid StopIteration under xdist
-    orig_exists = pathlib.Path.exists
-
-    def make_exists_mock(sequence):
-        seq = list(sequence)
-
-        def _mock(self):
-            p_str = str(self)
-            if any(k in p_str for k in ("_vc.json", "run_manifest.json", "t.json", "run.jsonl")):
-                if seq:
-                    return seq.pop(0)
-            return orig_exists(self)
-
-        return _mock
-
     # Missing run_id
     assert await evaluation.handle_gate(MagicMock(run_id=None)) == 1
 
-    # Security fail 1
-    with patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=False):
-        assert await evaluation.handle_gate(MagicMock(run_id="r")) == 1
-
-    # Sidecar exists (line 398)
-    with (
-        patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=True),
-        patch("pathlib.Path.exists", make_exists_mock([False, True, True, True])),
-    ):  # vault NO, sidecar YES, safe YES, vc YES
-        with patch("builtins.open", MagicMock()):
-            with patch("json.load", return_value={"trace_file": "t.json"}):
-                with patch(
-                    "eval_runner.verifier.TraceVerifier.verify_trace_async", return_value=True
-                ):
-                    assert await evaluation.handle_gate(MagicMock(run_id="r", hash=None)) == 0
-
-    # Security fail 2 (line 404)
-    # We need vault_path.exists() to be True so vc_path is set.
-    with (
-        patch("eval_runner.handlers.evaluation._ensure_path_safe", side_effect=[True, False]),
-        patch("pathlib.Path.exists", make_exists_mock([True, True])),
-    ):  # vault exists
-        assert await evaluation.handle_gate(MagicMock(run_id="r")) == 1
-
-    # VC Path not exists (line 407)
-    # We need vault_path.exists() to be True, then later vc_path.exists() to be False
-    with (
-        patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=True),
-        patch("pathlib.Path.exists", make_exists_mock([True, False])),
-    ):  # vault exists, vc NOT exists
-        assert await evaluation.handle_gate(MagicMock(run_id="r")) == 1
-
-    # Trace missing (line 421)
-    with (
-        patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=True),
-        patch("pathlib.Path.exists", make_exists_mock([True, True, False])),
-    ):  # vault YES, safe YES, trace NO
-        with patch("builtins.open", MagicMock()):
-            with patch("json.load", return_value={"trace_file": "t.json"}):
-                assert await evaluation.handle_gate(MagicMock(run_id="r")) == 1
-
-    # Hash mismatch (line 441)
-    with (
-        patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=True),
-        patch("pathlib.Path.exists", return_value=True),
+    # Manifest not found or UNVERIFIED
+    with patch(
+        "eval_runner.verifier.TraceVerifier.verify_run",
+        return_value={"is_valid": False, "verification_status": "NOT_FOUND"},
     ):
-        with patch("builtins.open", MagicMock()):
-            with patch("json.load", return_value={"metadata": {"git_hash": "abc"}}):
-                with patch(
-                    "eval_runner.verifier.TraceVerifier.verify_trace_async", return_value=True
-                ):
-                    assert await evaluation.handle_gate(MagicMock(run_id="r", hash="def")) == 1
+        assert await evaluation.handle_gate(MagicMock(run_id="r", hash=None)) == 1
 
-    # Unexpected Exception (line 447)
-    # Triggered by json.load or open
+    # Verification failed (is_valid = False)
     with (
-        patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=True),
-        patch("pathlib.Path.exists", return_value=True),
+        patch(
+            "eval_runner.verifier.TraceVerifier.verify_run",
+            return_value={"is_valid": False, "verification_status": "FAILED"},
+        ),
+        patch(
+            "eval_runner.reference.local_run_store.LocalFileRunStore.get_manifest",
+            return_value={"metadata": {}},
+        ),
     ):
-        with patch("builtins.open", side_effect=Exception("Catch me")):
-            assert await evaluation.handle_gate(MagicMock(run_id="r")) == 1
+        assert await evaluation.handle_gate(MagicMock(run_id="r", hash=None)) == 1
+
+    # Verification success (no hash required)
+    with (
+        patch(
+            "eval_runner.verifier.TraceVerifier.verify_run",
+            return_value={"is_valid": True, "verification_status": "VERIFIED"},
+        ),
+        patch(
+            "eval_runner.reference.local_run_store.LocalFileRunStore.get_manifest",
+            return_value={"metadata": {"git_hash": "abc"}},
+        ),
+    ):
+        assert await evaluation.handle_gate(MagicMock(run_id="r", hash=None)) == 0
+
+    # Commit hash mismatch
+    with (
+        patch(
+            "eval_runner.verifier.TraceVerifier.verify_run",
+            return_value={"is_valid": True, "verification_status": "VERIFIED"},
+        ),
+        patch(
+            "eval_runner.reference.local_run_store.LocalFileRunStore.get_manifest",
+            return_value={"metadata": {"git_hash": "abc"}},
+        ),
+    ):
+        assert await evaluation.handle_gate(MagicMock(run_id="r", hash="def")) == 1
+
+    # Commit hash match
+    with (
+        patch(
+            "eval_runner.verifier.TraceVerifier.verify_run",
+            return_value={"is_valid": True, "verification_status": "VERIFIED"},
+        ),
+        patch(
+            "eval_runner.reference.local_run_store.LocalFileRunStore.get_manifest",
+            return_value={"metadata": {"git_hash": "abc"}},
+        ),
+    ):
+        assert await evaluation.handle_gate(MagicMock(run_id="r", hash="abc")) == 0
+
+    # Unexpected Exception
+    with patch(
+        "eval_runner.verifier.TraceVerifier.verify_run",
+        side_effect=Exception("Catch me"),
+    ):
+        assert await evaluation.handle_gate(MagicMock(run_id="r", hash=None)) == 1
 
 
 @pytest.mark.asyncio

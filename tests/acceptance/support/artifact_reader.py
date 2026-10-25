@@ -82,6 +82,17 @@ def load_run_artifacts(
     manifest_path = vault_dir / "run_manifest.json"
     sealed_path = vault_dir / ".sealed"
     certificate_path = reports_dir / "certificates" / f"{run_id}_vc.json"
+    if not certificate_path.exists() and manifest_path.exists():
+        try:
+            m_data = json.loads(manifest_path.read_text(encoding="utf-8"))
+            if (
+                m_data.get("vc_version")
+                or m_data.get("verification_package")
+                or m_data.get("compliance")
+            ):
+                certificate_path = manifest_path
+        except Exception:
+            pass
 
     trace_reader = TraceReader(trace_path)
     return RunArtifacts(

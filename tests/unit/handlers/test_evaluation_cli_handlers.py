@@ -6,12 +6,12 @@ playground, and certify handlers in eval_runner/handlers/evaluation.py.
 
 import json
 import os
-from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from eval_runner.handlers import evaluation
+from eval_runner.run_lifecycle import RunSuspendedForApproval
 
 
 @pytest.fixture
@@ -214,38 +214,22 @@ async def test_handle_verify_security_and_failure_cases():
 @pytest.mark.asyncio
 async def test_handle_gate_security_and_mismatch_branches():
     """Verify CI/CD gate handler validation and verification checks."""
-    import pathlib
-
-    orig_exists = pathlib.Path.exists
-
-    def make_exists_mock(sequence):
-        seq = list(sequence)
-
-        def _mock(self):
-            p_str = str(self)
-            if any(k in p_str for k in ("_vc.json", "run_manifest.json", "t.json", "run.jsonl")):
-                if seq:
-                    return seq.pop(0)
-            return orig_exists(self)
-
-        return _mock
-
     # Missing run_id
     assert await evaluation.handle_gate(MagicMock(run_id=None)) == 1
 
-    # Security fail
-    with patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=False):
-        assert await evaluation.handle_gate(MagicMock(run_id="run_gate")) == 1
+    mock_store = MagicMock()
+    mock_store.get_manifest.return_value = {"metadata": {"git_hash": "commit_123"}}
 
-    # Sidecar exists and verified successfully
     with (
-        patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=True),
-        patch("pathlib.Path.exists", make_exists_mock([False, True, True, True])),
-        patch("builtins.open", MagicMock()),
-        patch("json.load", return_value={"trace_file": "t.json"}),
-        patch("eval_runner.verifier.TraceVerifier.verify_trace_async", return_value=True),
+        patch("eval_runner.runtime_services.resolve_run_store", return_value=mock_store),
+        patch(
+            "eval_runner.verifier.TraceVerifier.verify_run",
+            return_value={"is_valid": True, "verification_status": "VERIFIED"},
+        ),
     ):
         assert await evaluation.handle_gate(MagicMock(run_id="run_gate", hash=None)) == 0
+        assert await evaluation.handle_gate(MagicMock(run_id="run_gate", hash="commit_123")) == 0
+        assert await evaluation.handle_gate(MagicMock(run_id="run_gate", hash="wrong_hash")) == 1
 
 
 # ---------------------------------------------------------------------------
@@ -562,8 +546,10 @@ async def test_handler_replay_all_events(tmp_path):
     # 1. No run_id
     assert await evaluation.handle_replay(MagicMock(run_id=None)) == 1
 
-    # 2. Missing trace
-    with patch("eval_runner.handlers.evaluation._resolve_replay_trace", return_value=None):
+    # 2. Missing trace / no events
+    mock_empty_store = MagicMock()
+    mock_empty_store.get_events.return_value = []
+    with patch("eval_runner.runtime_services.resolve_run_store", return_value=mock_empty_store):
         assert await evaluation.handle_replay(MagicMock(run_id="nonexistent-run")) == 1
 
     # 3. Successful event replay printing all event types
@@ -571,45 +557,76 @@ async def test_handler_replay_all_events(tmp_path):
         {"event": "run_start", "run_id": "r1", "scenario": "scen_1"},
         {"event": "prompt", "role": "user", "content": "Hello!"},
         {"event": "agent_response", "content": "Hi there!"},
+        {"event": "custom_audit_marker", "content": "Ignored in standard replay"},
         {"event": "run_end", "status": "COMPLETED"},
     ]
-    trace_file = tmp_path / "run.jsonl"
-    trace_file.write_text("{}", encoding="utf-8")
-
-    with (
-        patch("eval_runner.handlers.evaluation._resolve_replay_trace", return_value=trace_file),
-        patch("eval_runner.trace_utils.load_events", return_value=events),
-    ):
+    mock_store = MagicMock()
+    mock_store.get_events.return_value = events
+    with patch("eval_runner.runtime_services.resolve_run_store", return_value=mock_store):
         assert await evaluation.handle_replay(MagicMock(run_id="r1")) == 0
+
+    # Unsafe replay path
+    with patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=False):
+        assert await evaluation.handle_replay(MagicMock(run_id="r1")) == 1
+
+    # Exception during event retrieval
+    mock_err_store = MagicMock()
+    mock_err_store.get_events.side_effect = RuntimeError("Store retrieval error")
+    with patch("eval_runner.runtime_services.resolve_run_store", return_value=mock_err_store):
+        assert await evaluation.handle_replay(MagicMock(run_id="r1")) == 1
 
 
 @pytest.mark.asyncio
 async def test_handler_verify_branches(tmp_path):
     run_id = "run-verify-branches"
-    run_dir = tmp_path / "runs" / run_id
-    run_dir.mkdir(parents=True, exist_ok=True)
-    trace_file = run_dir / "run.jsonl"
-    manifest_file = run_dir / "run_manifest.json"
-
-    # 1. Missing trace file
     args = MagicMock(run_id=run_id, verify_ledger=False)
-    with patch("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs"):
+    mock_store = MagicMock()
+    mock_store.get_run.return_value = {"run_id": run_id}
+    mock_store.get_trace_bytes.return_value = b'{"event":"run_start"}\n'
+
+    # Missing run id
+    assert await evaluation.handle_verify(MagicMock(run_id="")) == 1
+
+    # Unsafe path rejection
+    with patch("eval_runner.handlers.evaluation._ensure_path_safe", return_value=False):
         assert await evaluation.handle_verify(args) == 1
 
-        # Create files
-        trace_file.write_text("{}", encoding="utf-8")
-        manifest_file.write_text("{}", encoding="utf-8")
+    # Run and trace missing from storage provider
+    mock_missing_store = MagicMock()
+    mock_missing_store.get_run.return_value = None
+    mock_missing_store.get_trace_bytes.return_value = None
+    with patch("eval_runner.runtime_services.resolve_run_store", return_value=mock_missing_store):
+        assert await evaluation.handle_verify(args) == 1
 
-        # 2. TraceVerifier returns True
-        with patch("eval_runner.verifier.TraceVerifier.verify_trace_async", return_value=True):
-            assert await evaluation.handle_verify(args) == 0
+    # Verification failed
+    with (
+        patch("eval_runner.runtime_services.resolve_run_store", return_value=mock_store),
+        patch(
+            "eval_runner.verifier.TraceVerifier.verify_run",
+            return_value={"is_valid": False, "verification_status": "FAILED_VERIFICATION"},
+        ),
+    ):
+        assert await evaluation.handle_verify(args) == 1
 
-        # 3. TraceVerifier exception
-        with patch(
-            "eval_runner.verifier.TraceVerifier.verify_trace_async",
+    # TraceVerifier returns True (verified)
+    with (
+        patch("eval_runner.runtime_services.resolve_run_store", return_value=mock_store),
+        patch(
+            "eval_runner.verifier.TraceVerifier.verify_run",
+            return_value={"is_valid": True, "verification_status": "VERIFIED"},
+        ),
+    ):
+        assert await evaluation.handle_verify(args) == 0
+
+    # TraceVerifier exception
+    with (
+        patch("eval_runner.runtime_services.resolve_run_store", return_value=mock_store),
+        patch(
+            "eval_runner.verifier.TraceVerifier.verify_run",
             side_effect=RuntimeError("Verification error"),
-        ):
-            assert await evaluation.handle_verify(args) == 1
+        ),
+    ):
+        assert await evaluation.handle_verify(args) == 1
 
 
 @pytest.mark.asyncio
@@ -666,38 +683,89 @@ async def test_handler_verify_package_all_branches(tmp_path):
     ):
         assert await evaluation.handle_verify_package(args_good) == 1
 
+    # 5. public_key_pem as non-file string, scenario path resolution, and failure list reporting
+    scen_file = tmp_path / "scenario.json"
+    scen_file.write_text(json.dumps({"id": "scen-bound"}), encoding="utf-8")
+    args_custom = MagicMock(
+        package_path=str(pkg_file),
+        raw_trace_path=str(trace_file),
+        public_key_pem="raw-inline-pem-key-not-on-disk",
+        scenario_path=str(scen_file),
+        require_signature=False,
+    )
+    with patch(
+        "eval_runner.verifier.VerificationAuthority.verify_package",
+        return_value={
+            "verified": False,
+            "status": "ATTESTED_FAIL",
+            "failures": ["Mismatched signature"],
+        },
+    ):
+        assert await evaluation.handle_verify_package(args_custom) == 1
+
+    # 6. public_key_pem non-string / integer fallback and non-existent scenario path
+    args_non_str_key = MagicMock(
+        package_path=str(pkg_file),
+        raw_trace_path=str(trace_file),
+        public_key_pem=12345,
+        scenario_path=str(tmp_path / "nonexistent_scenario.json"),
+        require_signature=False,
+    )
+    with patch(
+        "eval_runner.verifier.VerificationAuthority.verify_package",
+        return_value={"verified": True, "package_id": "p1"},
+    ):
+        assert await evaluation.handle_verify_package(args_non_str_key) == 0
+
 
 @pytest.mark.asyncio
 async def test_handler_gate_branches(tmp_path):
     run_id = "run-gate-test"
+    args = MagicMock(run_id=run_id, hash="commit_123", verify_ledger=False)
+
+    # 1. Missing manifest
+    mock_empty_store = MagicMock()
+    mock_empty_store.get_manifest.return_value = None
     with (
-        patch("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs"),
-        patch("eval_runner.config.REPORTS_DIR", tmp_path / "reports"),
+        patch("eval_runner.runtime_services.resolve_run_store", return_value=mock_empty_store),
+        patch(
+            "eval_runner.verifier.TraceVerifier.verify_run",
+            return_value={"is_valid": False, "verification_status": "NOT_FOUND"},
+        ),
     ):
-        run_dir = tmp_path / "runs" / run_id
-        run_dir.mkdir(parents=True, exist_ok=True)
-        (run_dir / "run.jsonl").write_text("{}", encoding="utf-8")
-        (run_dir / "run_manifest.json").write_text(
-            json.dumps({"manifest": {}, "metadata": {"git_hash": "commit_123"}}), encoding="utf-8"
-        )
+        assert await evaluation.handle_gate(args) == 1
 
-        args = MagicMock(run_id=run_id, hash="commit_123", verify_ledger=False)
+    # 2. Verification failure (manifest found but invalid)
+    mock_store = MagicMock()
+    mock_store.get_manifest.return_value = {"metadata": {"git_hash": "commit_123"}}
+    with (
+        patch("eval_runner.runtime_services.resolve_run_store", return_value=mock_store),
+        patch(
+            "eval_runner.verifier.TraceVerifier.verify_run",
+            return_value={"is_valid": False, "verification_status": "FAILED_VERIFICATION"},
+        ),
+    ):
+        assert await evaluation.handle_gate(args) == 1
 
-        # 1. Unsafe path check
-        with patch("eval_runner.handlers.evaluation._ensure_path_safe", side_effect=[True, False]):
-            assert await evaluation.handle_gate(args) == 1
+    # 3. Verification exception
+    with (
+        patch("eval_runner.runtime_services.resolve_run_store", return_value=mock_store),
+        patch(
+            "eval_runner.verifier.TraceVerifier.verify_run",
+            side_effect=RuntimeError("Gating crash"),
+        ),
+    ):
+        assert await evaluation.handle_gate(args) == 1
 
-        # 2. vc_path.exists() is False
-        with patch.object(Path, "exists", side_effect=[False, True, False]):
-            assert await evaluation.handle_gate(args) == 1
-
-        # 3. Verification failure
-        with patch("eval_runner.verifier.TraceVerifier.verify_trace_async", return_value=False):
-            assert await evaluation.handle_gate(args) == 1
-
-        # 4. Successful gate verification
-        with patch("eval_runner.verifier.TraceVerifier.verify_trace_async", return_value=True):
-            assert await evaluation.handle_gate(args) == 0
+    # 4. Successful gate verification
+    with (
+        patch("eval_runner.runtime_services.resolve_run_store", return_value=mock_store),
+        patch(
+            "eval_runner.verifier.TraceVerifier.verify_run",
+            return_value={"is_valid": True, "verification_status": "VERIFIED"},
+        ),
+    ):
+        assert await evaluation.handle_gate(args) == 0
 
 
 @pytest.mark.asyncio
@@ -734,6 +802,29 @@ async def test_handler_certify_unsafe_and_exception(tmp_path):
         res_exc = await evaluation.handle_certify(args)
         assert res_exc == 1
 
+    # Certification outcome with empty manifest
+    with (
+        patch("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs"),
+        patch(
+            "eval_runner.services.certification.execute_industrial_certification",
+            return_value={"status": "certified", "manifest": {}},
+        ),
+    ):
+        res_no_man = await evaluation.handle_certify(args)
+        assert res_no_man == 0
+
+    # Certification outcome with manifest export failure
+    with (
+        patch("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs"),
+        patch(
+            "eval_runner.services.certification.execute_industrial_certification",
+            return_value={"status": "certified", "manifest": {"trace_hash": "sha3_256:abc"}},
+        ),
+        patch("pathlib.Path.write_text", side_effect=OSError("Disk full")),
+    ):
+        res_exp_err = await evaluation.handle_certify(args)
+        assert res_exp_err == 0
+
 
 @pytest.mark.asyncio
 async def test_handle_evaluate_filters_callable_args():
@@ -763,3 +854,249 @@ async def test_handle_evaluate_filters_callable_args():
         assert "func" not in passed_args
         assert "other_callback" not in passed_args
         assert passed_args.get("clean_value") == "hello"
+
+
+@pytest.mark.asyncio
+async def test_resolve_trace_path_vault_exists(tmp_path):
+    run_id = "run-vault-present"
+    vault_dir = tmp_path / "runs" / run_id
+    vault_dir.mkdir(parents=True, exist_ok=True)
+    vault_file = vault_dir / "run.jsonl"
+    vault_file.write_text("{}", encoding="utf-8")
+
+    with patch("eval_runner.config.RUN_LOG_DIR", tmp_path / "runs"):
+        resolved = evaluation._resolve_replay_trace(run_id)
+        assert resolved == vault_file.resolve()
+
+
+def test_prepare_agent_env_empty_cmd_and_socket():
+    args_local_empty = MagicMock(protocol="local", agent_cmd=None)
+    env_local = evaluation.prepare_agent_env(args_local_empty)
+    assert env_local["protocol"] == "local"
+
+    args_socket_empty = MagicMock(protocol="socket", agent_socket=None)
+    env_socket = evaluation.prepare_agent_env(args_socket_empty)
+    assert env_socket["protocol"] == "socket"
+
+
+def test_load_plugins_from_args_whitespace_entries():
+    args = MagicMock(plugin=["", "   ", "plugin_valid"])
+    mock_reg = MagicMock()
+    with patch("eval_runner.runtime_services.resolve_plugin_registry", return_value=mock_reg):
+        evaluation.load_plugins_from_args(args)
+        mock_reg.load.assert_called_once_with("plugin_valid")
+
+
+@pytest.mark.asyncio
+async def test_handle_evaluate_adapter_close_exception():
+    args = MagicMock(path="scenarios/test", format="json", attempts=1)
+    with (
+        patch("eval_runner.loader.load_dataset", return_value=[{"id": "s1"}]),
+        patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock) as mock_run,
+        patch(
+            "eval_runner.adapters.common.SessionManager.close_all",
+            side_effect=RuntimeError("Session close fail"),
+        ),
+    ):
+        mock_run.return_value = {"status": "completed"}
+        res = await evaluation.handle_evaluate(args)
+        assert res == 0
+
+
+@pytest.mark.asyncio
+async def test_handle_run_suspended_for_approval_and_adapter_close_exception():
+    args = MagicMock(
+        scenario="scen_hitl",
+        run_log_dir=None,
+        per_run_logs=None,
+        master_log=None,
+        runs=1,
+    )
+    susp_exc = RunSuspendedForApproval("run-susp-1", "task-1", "tok-abc")
+
+    # Interrupted by approval suspension
+    with (
+        patch("eval_runner.loader.load_scenario", return_value={"id": "scen_hitl"}),
+        patch("eval_runner.handlers.evaluation.prepare_agent_env"),
+        patch("eval_runner.handlers.evaluation.load_plugins_from_args"),
+        patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock, side_effect=susp_exc),
+    ):
+        res_susp = await evaluation.handle_run(args)
+        assert res_susp == 0
+
+    # Finally block with close_all exception
+    with (
+        patch("eval_runner.loader.load_scenario", return_value={"id": "scen_hitl"}),
+        patch("eval_runner.handlers.evaluation.prepare_agent_env"),
+        patch("eval_runner.handlers.evaluation.load_plugins_from_args"),
+        patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock, return_value={}),
+        patch(
+            "eval_runner.adapters.common.SessionManager.close_all",
+            new_callable=AsyncMock,
+            side_effect=RuntimeError("Adapter cleanup failure"),
+        ),
+    ):
+        res_cleanup = await evaluation.handle_run(args)
+        assert res_cleanup == 0
+
+
+@pytest.mark.asyncio
+async def test_handle_hitl_resume_all_branches():
+    # 1. Missing run_id
+    assert await evaluation.handle_hitl_resume(MagicMock(run_id=None)) == 1
+
+    # 2. Missing approval_token
+    assert await evaluation.handle_hitl_resume(MagicMock(run_id="r1", approval_token=None)) == 1
+
+    # 3. Invalid decision
+    assert (
+        await evaluation.handle_hitl_resume(
+            MagicMock(run_id="r1", approval_token="tok1", decision="MAYBE")
+        )
+        == 1
+    )
+
+    # 4. Request not found in store
+    mock_store = MagicMock()
+    mock_store.get_request.return_value = None
+    with patch("eval_runner.runtime_services.resolve_approval_store", return_value=mock_store):
+        assert (
+            await evaluation.handle_hitl_resume(
+                MagicMock(run_id="r1", approval_token="tok1", decision="APPROVED")
+            )
+            == 1
+        )
+
+    # 5. Request run_id mismatch
+    mismatched_req = MagicMock(run_id="different_run")
+    mock_store.get_request.return_value = mismatched_req
+    with patch("eval_runner.runtime_services.resolve_approval_store", return_value=mock_store):
+        assert (
+            await evaluation.handle_hitl_resume(
+                MagicMock(run_id="r1", approval_token="tok1", decision="APPROVED")
+            )
+            == 1
+        )
+
+    # 6. Provider scope mismatch
+    scoped_req = MagicMock(run_id="r1", scope={"tenant": "t1"}, status="PENDING")
+    mock_store.get_request.return_value = scoped_req
+    mock_run_store = MagicMock()
+    mock_run_store.get_run.side_effect = lambda run_id, context=None: (
+        {"run_id": run_id} if context is None else None
+    )
+    with (
+        patch("eval_runner.runtime_services.resolve_approval_store", return_value=mock_store),
+        patch("eval_runner.runtime_services.resolve_run_store", return_value=mock_run_store),
+    ):
+        assert (
+            await evaluation.handle_hitl_resume(
+                MagicMock(run_id="r1", approval_token="tok1", decision="APPROVED")
+            )
+            == 1
+        )
+
+    # 7. Already resolved as REJECTED
+    rejected_req = MagicMock(run_id="r1", scope={}, status="REJECTED", decided_by="auditor")
+    mock_store.get_request.return_value = rejected_req
+    mock_run_store_ok = MagicMock()
+    mock_run_store_ok.get_run.return_value = {"run_id": "r1"}
+    with (
+        patch("eval_runner.runtime_services.resolve_approval_store", return_value=mock_store),
+        patch("eval_runner.runtime_services.resolve_run_store", return_value=mock_run_store_ok),
+    ):
+        assert (
+            await evaluation.handle_hitl_resume(
+                MagicMock(run_id="r1", approval_token="tok1", decision="APPROVED")
+            )
+            == 0
+        )
+
+    # 8. Pending request resolved as REJECTED with reason
+    pending_req = MagicMock(run_id="r1", scope={}, status="PENDING")
+    mock_store.get_request.return_value = pending_req
+    mock_mgr = MagicMock()
+    with (
+        patch("eval_runner.runtime_services.resolve_approval_store", return_value=mock_store),
+        patch("eval_runner.runtime_services.resolve_run_store", return_value=mock_run_store_ok),
+        patch(
+            "eval_runner.session_components.approval_manager.SessionApprovalManager",
+            return_value=mock_mgr,
+        ),
+    ):
+        args_reject = MagicMock(
+            run_id="r1",
+            approval_token="tok1",
+            decision="REJECTED",
+            reviewer="auditor",
+            reason="Security denial",
+        )
+        assert await evaluation.handle_hitl_resume(args_reject) == 0
+        mock_mgr.resolve_durable_request.assert_called_once()
+
+    # Pending request resolved as REJECTED without reason
+    with (
+        patch("eval_runner.runtime_services.resolve_approval_store", return_value=mock_store),
+        patch("eval_runner.runtime_services.resolve_run_store", return_value=mock_run_store_ok),
+        patch(
+            "eval_runner.session_components.approval_manager.SessionApprovalManager",
+            return_value=mock_mgr,
+        ),
+    ):
+        args_reject_no_reason = MagicMock(
+            run_id="r1",
+            approval_token="tok1",
+            decision="REJECTED",
+            reviewer="auditor",
+            reason=None,
+        )
+        assert await evaluation.handle_hitl_resume(args_reject_no_reason) == 0
+
+    # Already resolved as APPROVED
+    approved_req = MagicMock(run_id="r1", scope={}, status="APPROVED", decided_by="auditor")
+    mock_store.get_request.return_value = approved_req
+    mock_backend_res = MagicMock()
+    with (
+        patch("eval_runner.runtime_services.resolve_approval_store", return_value=mock_store),
+        patch("eval_runner.runtime_services.resolve_run_store", return_value=mock_run_store_ok),
+        patch(
+            "eval_runner.runtime_services.resolve_execution_backend", return_value=mock_backend_res
+        ),
+    ):
+        assert (
+            await evaluation.handle_hitl_resume(
+                MagicMock(run_id="r1", approval_token="tok1", decision="APPROVED")
+            )
+            == 0
+        )
+        mock_backend_res.resume.assert_called_once()
+
+    # 9. Pending request resolved as APPROVED with context and backend resume
+    pending_scoped_req = MagicMock(run_id="r1", scope={"tenant": "t1"}, status="PENDING")
+    mock_store.get_request.return_value = pending_scoped_req
+    mock_backend = MagicMock()
+    with (
+        patch("eval_runner.runtime_services.resolve_approval_store", return_value=mock_store),
+        patch("eval_runner.runtime_services.resolve_run_store", return_value=mock_run_store_ok),
+        patch(
+            "eval_runner.session_components.approval_manager.SessionApprovalManager",
+            return_value=mock_mgr,
+        ),
+        patch("eval_runner.runtime_services.resolve_execution_backend", return_value=mock_backend),
+    ):
+        args_approve = MagicMock(
+            run_id="r1", approval_token="tok1", decision="APPROVED", reviewer="auditor", reason=None
+        )
+        assert await evaluation.handle_hitl_resume(args_approve) == 0
+        mock_backend.resume.assert_called_once()
+
+    # 10. General exception handling
+    mock_err_store = MagicMock()
+    mock_err_store.get_request.side_effect = RuntimeError("Fatal store error")
+    with patch("eval_runner.runtime_services.resolve_approval_store", return_value=mock_err_store):
+        assert (
+            await evaluation.handle_hitl_resume(
+                MagicMock(run_id="r1", approval_token="tok1", decision="APPROVED")
+            )
+            == 1
+        )

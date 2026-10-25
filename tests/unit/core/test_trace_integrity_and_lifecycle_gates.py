@@ -25,10 +25,12 @@ from agentv_runtime.package import VerificationPackage
 from eval_runner import config
 from eval_runner.certification_lock import PerRunCertificationLock
 from eval_runner.identity import IdentityService
+from eval_runner.reference.local_run_store import LocalFileRunStore
 from eval_runner.run_lifecycle import (
     RunLifecycleState,
     get_run_lifecycle_state,
 )
+from eval_runner.services.certification import CertificationService
 from eval_runner.verifier import (
     CertificationFailedError,
     TraceVerifier,
@@ -127,13 +129,15 @@ def test_trace_stream_split_chain_violation_rejection():
 
 
 def test_fail_closed_lifecycle_transition_in_certification_lock(tmp_path):
-    """Lifecycle transition failure in PerRunCertificationLock must close fd and unlink lock."""
+    """Lifecycle transition failure in PerRunCertificationLock must fail closed."""
     run_id = "run-fail-lock-01"
     run_dir = tmp_path / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
 
     with patch.object(config, "RUN_LOG_DIR", tmp_path):
-        lock = PerRunCertificationLock(run_id=run_id)
+        run_store = LocalFileRunStore(tmp_path)
+        run_store.create_run(run_id, "lifecycle-gate")
+        lock = PerRunCertificationLock(run_id=run_id, run_store=run_store)
         with patch(
             "eval_runner.run_lifecycle.transition_run_lifecycle",
             side_effect=RuntimeError("Simulated lifecycle store failure"),
@@ -141,20 +145,72 @@ def test_fail_closed_lifecycle_transition_in_certification_lock(tmp_path):
             with pytest.raises(RuntimeError, match="Simulated lifecycle store failure"):
                 lock.acquire()
 
-        assert lock._fd is None
-        assert not lock.lock_file.exists()
+        assert not lock._acquired
+        assert not PerRunCertificationLock.is_locked(run_id, run_store=run_store)
+
+
+def _seed_live_certified_run(tmp_path, run_id: str):
+    from agentv_runtime.evidence_graph import build_evidence_graph_from_events
+    from agentv_runtime.finalization import EvaluatorFinalizationRecord
+    from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
+
+    run_store = LocalFileRunStore(tmp_path)
+    run_store.create_run(run_id, "lifecycle-gate")
+    scen_data = {"id": f"scen_{run_id}", "version": "1.0.0", "required_oracles": ["oracle_1"]}
+    scen_hash = compute_scenario_hash(scen_data)
+    exec_manifest = ExecutionManifest(
+        manifest_id=f"man_{run_id}",
+        scenario_id=f"scen_{run_id}",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+        metadata={"required_oracle_ids": ["oracle_1"]},
+        runtime_config={"required_oracle_ids": ["oracle_1"]},
+    )
+    m_hash = exec_manifest.compute_manifest_hash()
+    start_ev = {"event": "run_start", "_seq": 1, "execution_mode": "live"}
+    assert_ev = {
+        "event": "oracle_result",
+        "_seq": 2,
+        "oracle_id": "oracle_1",
+        "assertion_id": "assert_1",
+        "passed": True,
+        "outcome": "PASS",
+    }
+    run_store.append_events(run_id, [start_ev, assert_ev])
+    lines = run_store.get_trace_bytes(run_id).decode("utf-8").splitlines()
+    raw_events = [(start_ev, lines[0]), (assert_ev, lines[1])]
+    ev_graph = build_evidence_graph_from_events(raw_events, required_oracle_ids=["oracle_1"])
+    evidence_root = ev_graph.get("evidence_root_hash")
+    fin_rec = EvaluatorFinalizationRecord(
+        finalization_id=f"fin_{run_id}",
+        run_id=run_id,
+        scenario_id=f"scen_{run_id}",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+        execution_manifest_hash=m_hash,
+        evaluator_config_hash="sha3_256:eval",
+        evaluator_identity="system_id",
+        required_oracle_ids=["oracle_1"],
+        evidence_root_hash=evidence_root,
+        outcome="pass",
+        score=1.0,
+        terminal_seq=2,
+        finalized_at="2026-09-01T00:00:00Z",
+    ).sign()
+    run_store.append_events(
+        run_id, [{"event": "evaluator_finalization", "_seq": 3, **fin_rec.to_dict()}]
+    )
+    run_store.save_run_manifest(
+        run_id,
+        {"execution_manifest": exec_manifest.to_dict(), "scenario_data": scen_data},
+    )
+    return run_store, scen_data
 
 
 def test_fail_closed_lifecycle_transition_in_sign_trace(tmp_path):
-    """sign_trace must fail closed and rollback if transitioning to FINALIZING fails."""
+    """Certification must fail closed and rollback if transitioning to FINALIZING fails."""
     run_id = "run-fail-sign-01"
-    run_dir = tmp_path / run_id
-    run_dir.mkdir(parents=True, exist_ok=True)
-    trace_file = run_dir / "run.jsonl"
-    trace_file.write_text(
-        '{"event": "run_start", "_seq": 1}\n{"event": "run_end", "_seq": 2, "decision": "PASS"}\n',
-        encoding="utf-8",
-    )
+    run_store, scen_data = _seed_live_certified_run(tmp_path, run_id)
 
     with (
         patch.object(config, "PROJECT_ROOT", tmp_path),
@@ -164,11 +220,14 @@ def test_fail_closed_lifecycle_transition_in_sign_trace(tmp_path):
             side_effect=RuntimeError("Lifecycle backend offline"),
         ),
     ):
-        with pytest.raises(CertificationFailedError, match="LifecycleTransitionFailed"):
-            TraceVerifier.sign_trace(
-                trace_path=str(trace_file),
+        with pytest.raises(RuntimeError, match="Lifecycle backend offline"):
+            CertificationService.execute_industrial_certification(
                 run_id=run_id,
+                run_store=run_store,
+                scenario_data=scen_data,
             )
+        assert get_run_lifecycle_state(run_id, run_store=run_store) == RunLifecycleState.OPEN
+        assert not PerRunCertificationLock.is_locked(run_id, run_store=run_store)
 
 
 def test_unsigned_verification_package_rejected_in_verify_trace(tmp_path):
@@ -229,15 +288,24 @@ def test_unsigned_verification_package_rejected_in_verify_trace(tmp_path):
     manifest_file = run_dir / "run_manifest.json"
     manifest_file.write_text(json.dumps(manifest_data), encoding="utf-8")
 
+    run_store = LocalFileRunStore(tmp_path)
+    run_store.create_run(run_id, "s1")
+    run_store.append_events(
+        run_id,
+        [{"event": "run_start", "_seq": 1}, {"event": "run_end", "_seq": 2, "decision": "PASS"}],
+    )
+    run_store.save_run_manifest(run_id, manifest_data)
+    run_store.update_run_status(run_id, "SEALED")
+
     with (
         patch.object(config, "PROJECT_ROOT", tmp_path),
         patch.object(config, "RUN_LOG_DIR", tmp_path),
         patch("eval_runner.identity.IdentityService.get_public_key", return_value=pub_key),
     ):
         is_valid = TraceVerifier.verify_trace(
-            trace_path=str(trace_file),
-            manifest_path=str(manifest_file),
-            verify_ledger=False,
+            trace_content.encode("utf-8"),
+            manifest_data,
+            run_store=run_store,
         )
         assert is_valid is False
 
@@ -272,7 +340,9 @@ def test_run_manifest_existence_does_not_mark_run_as_sealed(tmp_path):
     manifest_file.write_text('{"manifest_id": "m1"}', encoding="utf-8")
 
     with patch.object(config, "RUN_LOG_DIR", tmp_path):
-        state = get_run_lifecycle_state(run_id)
+        run_store = LocalFileRunStore(tmp_path)
+        run_store.create_run(run_id, "lifecycle-gate")
+        state = get_run_lifecycle_state(run_id, run_store=run_store)
         assert state == RunLifecycleState.OPEN
         assert state != RunLifecycleState.SEALED
 
@@ -367,31 +437,23 @@ def test_compute_preflight_fingerprint_all_fields_and_permutations():
 def test_verifier_sign_trace_fail_closed_on_sealed_transition(tmp_path):
     """sign_trace must fail closed if transitioning to SEALED fails."""
     run_id = "run-fail-sealed-01"
-    run_dir = tmp_path / run_id
-    run_dir.mkdir(parents=True, exist_ok=True)
-    trace_file = run_dir / "run.jsonl"
-    trace_file.write_text(
-        '{"event": "run_start", "_seq": 1}\n{"event": "run_end", "_seq": 2, "decision": "PASS"}\n',
-        encoding="utf-8",
-    )
-
-    from eval_runner.run_lifecycle import transition_run_lifecycle as original_transition
-
-    def mock_transition(rid, state, metadata=None):
-        if state == RunLifecycleState.SEALED:
-            raise RuntimeError("Database connection severed during SEALED transition")
-        return original_transition(rid, state, metadata)
+    run_store, scen_data = _seed_live_certified_run(tmp_path, run_id)
 
     with (
         patch.object(config, "PROJECT_ROOT", tmp_path),
         patch.object(config, "RUN_LOG_DIR", tmp_path),
-        patch("eval_runner.run_lifecycle.transition_run_lifecycle", side_effect=mock_transition),
+        patch.object(run_store, "commit_certification", return_value=False),
     ):
-        with pytest.raises(CertificationFailedError, match="LifecycleTransitionFailed"):
-            TraceVerifier.sign_trace(
-                trace_path=str(trace_file),
+        with pytest.raises(
+            RuntimeError, match="RunStorageProvider rejected atomic certification commit"
+        ):
+            CertificationService.execute_industrial_certification(
                 run_id=run_id,
+                run_store=run_store,
+                scenario_data=scen_data,
             )
+        assert get_run_lifecycle_state(run_id, run_store=run_store) == RunLifecycleState.OPEN
+        assert not PerRunCertificationLock.is_locked(run_id, run_store=run_store)
 
 
 def test_verifier_sign_trace_fail_closed_on_unusable_signing_capability(tmp_path):
@@ -399,11 +461,12 @@ def test_verifier_sign_trace_fail_closed_on_unusable_signing_capability(tmp_path
     run_id = "run-fail-capability-01"
     run_dir = tmp_path / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
-    trace_file = run_dir / "run.jsonl"
-    trace_file.write_text(
-        '{"event": "run_start", "_seq": 1}\n{"event": "run_end", "_seq": 2, "decision": "PASS"}\n',
-        encoding="utf-8",
-    )
+    run_store = LocalFileRunStore(tmp_path)
+    run_store.create_run(run_id, "lifecycle-gate")
+    event1 = {"event": "run_start", "_seq": 1}
+    event2 = {"event": "run_end", "_seq": 2, "decision": "PASS"}
+    run_store.append_events(run_id, [event1, event2])
+    trace_bytes = run_store.get_trace_bytes(run_id)
 
     class DummyNonSigningKey:
         pass
@@ -417,9 +480,10 @@ def test_verifier_sign_trace_fail_closed_on_unusable_signing_capability(tmp_path
         ),
     ):
         with pytest.raises(CertificationFailedError, match="exposes no usable signing capability"):
-            TraceVerifier.sign_trace(
-                trace_path=str(trace_file),
+            TraceVerifier.sign_trace_bytes(
+                trace_bytes,
                 run_id=run_id,
+                run_store=run_store,
             )
 
 
@@ -520,27 +584,29 @@ def test_verify_package_trace_hash_mismatch_and_stream_events_fallback():
 
 def test_certification_lock_os_error_resilience(tmp_path):
     """
-    Certification lock acquire must survive OSErrors during fd close
-    and file unlink on transition failure.
+    Certification lock acquire must survive OSErrors during lease release
+    on transition failure.
     """
     run_id = "run-os-err-lock-01"
     run_dir = tmp_path / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
 
     with patch.object(config, "RUN_LOG_DIR", tmp_path):
-        lock = PerRunCertificationLock(run_id=run_id)
+        run_store = LocalFileRunStore(tmp_path)
+        run_store.create_run(run_id, "lifecycle-gate")
+        lock = PerRunCertificationLock(run_id=run_id, run_store=run_store)
         with (
             patch(
                 "eval_runner.run_lifecycle.transition_run_lifecycle",
                 side_effect=RuntimeError("Lifecycle crash"),
             ),
-            patch("os.close", side_effect=OSError("EBADF")),
-            patch("pathlib.Path.unlink", side_effect=OSError("EPERM")),
+            patch.object(run_store, "release_certification_lease", side_effect=OSError("EPERM")),
         ):
             with pytest.raises(RuntimeError, match="Lifecycle crash"):
                 lock.acquire()
 
-        assert lock._fd is None
+        assert not lock._acquired
+        assert run_id not in PerRunCertificationLock._active_locks
 
 
 def test_resolve_execution_configs_comprehensive():
@@ -576,15 +642,16 @@ def test_resolve_execution_configs_comprehensive():
     assert rc["custom_rt_opt"] == "enabled"
 
 
-def test_run_lifecycle_sealed_fallback(tmp_path):
-    """Fallback marker check in get_run_lifecycle_state: if .sealed exists, state is SEALED."""
+def test_run_lifecycle_sealed_provider_state(tmp_path):
+    """The explicit provider exposes a durable SEALED lifecycle state."""
     run_id = "run-sealed-fallback"
     run_dir = tmp_path / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
-    (run_dir / ".sealed").touch()
-
     with patch.object(config, "RUN_LOG_DIR", tmp_path):
-        state = get_run_lifecycle_state(run_id)
+        run_store = LocalFileRunStore(tmp_path)
+        run_store.create_run(run_id, "lifecycle-gate")
+        run_store.update_run_status(run_id, RunLifecycleState.SEALED.value)
+        state = get_run_lifecycle_state(run_id, run_store=run_store)
         assert state == RunLifecycleState.SEALED
 
 
@@ -778,8 +845,10 @@ def test_run_lifecycle_os_error_handling(tmp_path):
     marker_file.write_text("ACTIVE", encoding="utf-8")
 
     with patch.object(config, "RUN_LOG_DIR", tmp_path):
+        run_store = LocalFileRunStore(tmp_path)
+        run_store.create_run(run_id, "lifecycle-gate")
         with patch("pathlib.Path.read_text", side_effect=OSError("Disk read error")):
-            state = get_run_lifecycle_state(run_id)
+            state = get_run_lifecycle_state(run_id, run_store=run_store)
             assert state == RunLifecycleState.INVALID
 
 
@@ -956,18 +1025,23 @@ def test_run_lifecycle_comprehensive_coverage(tmp_path):
     )
 
     with patch.object(config, "RUN_LOG_DIR", tmp_path):
+        run_store = LocalFileRunStore(tmp_path)
         # 1. get_run_lifecycle_state with None or 'unknown'
-        assert get_run_lifecycle_state("") == RunLifecycleState.OPEN
-        assert get_run_lifecycle_state("unknown") == RunLifecycleState.OPEN
+        assert get_run_lifecycle_state("", run_store=run_store) == RunLifecycleState.OPEN
+        assert get_run_lifecycle_state("unknown", run_store=run_store) == RunLifecycleState.OPEN
 
         # 2. transition_run_lifecycle with None or 'unknown'
-        assert transition_run_lifecycle("", RunLifecycleState.FINALIZING) == RunLifecycleState.OPEN
         assert (
-            transition_run_lifecycle("unknown", RunLifecycleState.SEALED) == RunLifecycleState.OPEN
+            transition_run_lifecycle("", RunLifecycleState.FINALIZING, run_store=run_store)
+            == RunLifecycleState.OPEN
+        )
+        assert (
+            transition_run_lifecycle("unknown", RunLifecycleState.SEALED, run_store=run_store)
+            == RunLifecycleState.OPEN
         )
 
         # 3. can_write_trace with None or 'unknown'
-        can_w, r = can_write_trace("")
+        can_w, r = can_write_trace("", run_store=run_store)
         assert can_w is True
         assert r == ""
 
@@ -975,34 +1049,36 @@ def test_run_lifecycle_comprehensive_coverage(tmp_path):
         run_id = "run-raw-state-test"
         run_dir = tmp_path / run_id
         run_dir.mkdir(parents=True, exist_ok=True)
+        run_store.create_run(run_id, "lifecycle-gate")
         (run_dir / ".run_lifecycle").write_text("FINALIZING", encoding="utf-8")
-        assert get_run_lifecycle_state(run_id) == RunLifecycleState.FINALIZING
+        assert get_run_lifecycle_state(run_id, run_store=run_store) == RunLifecycleState.FINALIZING
 
         # 5. Illegal transition backwards (e.g. FINALIZING -> OPEN) raises ValueError
         with pytest.raises(ValueError, match="IllegalLifecycleTransition"):
-            transition_run_lifecycle(run_id, RunLifecycleState.OPEN)
+            transition_run_lifecycle(run_id, RunLifecycleState.OPEN, run_store=run_store)
 
         # 6. can_write_trace and assert_can_write_trace in FINALIZING state
-        can_w2, reason2 = can_write_trace(run_id)
+        can_w2, reason2 = can_write_trace(run_id, run_store=run_store)
         assert can_w2 is False
         assert "FINALIZING" in reason2
         with pytest.raises(TraceClosedError, match="FINALIZING"):
-            assert_can_write_trace(run_id)
+            assert_can_write_trace(run_id, run_store=run_store)
 
         # 7. Transition to SEALED
-        transition_run_lifecycle(run_id, RunLifecycleState.SEALED)
-        assert get_run_lifecycle_state(run_id) == RunLifecycleState.SEALED
-        can_w3, reason3 = can_write_trace(run_id)
+        transition_run_lifecycle(run_id, RunLifecycleState.SEALED, run_store=run_store)
+        assert get_run_lifecycle_state(run_id, run_store=run_store) == RunLifecycleState.SEALED
+        can_w3, reason3 = can_write_trace(run_id, run_store=run_store)
         assert can_w3 is False
         assert "SEALED" in reason3
         with pytest.raises(TraceClosedError, match="SEALED"):
-            assert_can_write_trace(run_id)
+            assert_can_write_trace(run_id, run_store=run_store)
 
         # 8. Handling OSError when writing .sealed marker
         run_id2 = "run-sealed-oserror"
         run_dir2 = tmp_path / run_id2
         run_dir2.mkdir(parents=True, exist_ok=True)
-        transition_run_lifecycle(run_id2, RunLifecycleState.FINALIZING)
+        run_store.create_run(run_id2, "lifecycle-gate")
+        transition_run_lifecycle(run_id2, RunLifecycleState.FINALIZING, run_store=run_store)
         orig_path_open = Path.open
 
         def mock_path_open(self, *args, **kwargs):
@@ -1011,66 +1087,77 @@ def test_run_lifecycle_comprehensive_coverage(tmp_path):
             return orig_path_open(self, *args, **kwargs)
 
         with patch("pathlib.Path.open", side_effect=mock_path_open, autospec=True):
-            transition_run_lifecycle(run_id2, RunLifecycleState.SEALED)
+            transition_run_lifecycle(run_id2, RunLifecycleState.SEALED, run_store=run_store)
 
         # 9. Active certification lock blocks trace writing
         run_id3 = "run-locked-test"
         with patch(
             "eval_runner.certification_lock.PerRunCertificationLock.is_locked", return_value=True
         ):
-            can_w4, reason4 = can_write_trace(run_id3)
+            run_store.create_run(run_id3, "lifecycle-gate")
+            can_w4, reason4 = can_write_trace(run_id3, run_store=run_store)
             assert can_w4 is False
             assert "locked for certification" in reason4
             with pytest.raises(TraceClosedError, match="locked for certification"):
-                assert_can_write_trace(run_id3)
+                assert_can_write_trace(run_id3, run_store=run_store)
 
         # 10. Open run that is not locked can write trace
         run_id4 = "run-open-clean"
-        can_w5, reason5 = can_write_trace(run_id4)
+        run_store.create_run(run_id4, "lifecycle-gate")
+        can_w5, reason5 = can_write_trace(run_id4, run_store=run_store)
         assert can_w5 is True
         assert reason5 == ""
-        assert_can_write_trace(run_id4)
+        assert_can_write_trace(run_id4, run_store=run_store)
 
         # 11. Corrupt/empty/invalid marker files fail closed to RunLifecycleState.INVALID
         run_corrupt = "run-corrupt-marker"
         corrupt_dir = tmp_path / run_corrupt
         corrupt_dir.mkdir(parents=True, exist_ok=True)
         (corrupt_dir / ".run_lifecycle").write_text("{not: valid json!", encoding="utf-8")
-        assert get_run_lifecycle_state(run_corrupt) == RunLifecycleState.INVALID
+        assert (
+            get_run_lifecycle_state(run_corrupt, run_store=run_store) == RunLifecycleState.INVALID
+        )
 
         run_empty = "run-empty-marker"
         empty_dir = tmp_path / run_empty
         empty_dir.mkdir(parents=True, exist_ok=True)
         (empty_dir / ".run_lifecycle").write_text("   ", encoding="utf-8")
-        assert get_run_lifecycle_state(run_empty) == RunLifecycleState.INVALID
+        assert get_run_lifecycle_state(run_empty, run_store=run_store) == RunLifecycleState.INVALID
 
         run_nondict = "run-nondict-marker"
         nondict_dir = tmp_path / run_nondict
         nondict_dir.mkdir(parents=True, exist_ok=True)
         (nondict_dir / ".run_lifecycle").write_text('["item1", "item2"]', encoding="utf-8")
-        assert get_run_lifecycle_state(run_nondict) == RunLifecycleState.INVALID
+        assert (
+            get_run_lifecycle_state(run_nondict, run_store=run_store) == RunLifecycleState.INVALID
+        )
 
         run_badstate = "run-badstate-marker"
         badstate_dir = tmp_path / run_badstate
         badstate_dir.mkdir(parents=True, exist_ok=True)
         (badstate_dir / ".run_lifecycle").write_text('{"state": "NON_EXISTENT"}', encoding="utf-8")
-        assert get_run_lifecycle_state(run_badstate) == RunLifecycleState.INVALID
+        assert (
+            get_run_lifecycle_state(run_badstate, run_store=run_store) == RunLifecycleState.INVALID
+        )
 
         run_dir_marker = "run-dir-marker"
         dir_marker_dir = tmp_path / run_dir_marker
         (dir_marker_dir / ".run_lifecycle").mkdir(parents=True, exist_ok=True)
-        assert get_run_lifecycle_state(run_dir_marker) == RunLifecycleState.INVALID
+        assert (
+            get_run_lifecycle_state(run_dir_marker, run_store=run_store)
+            == RunLifecycleState.INVALID
+        )
 
         # 12. Cannot transition out of INVALID state
         with pytest.raises(ValueError, match="IllegalLifecycleTransition.*corrupted/untrusted"):
-            transition_run_lifecycle(run_corrupt, RunLifecycleState.FINALIZING)
+            transition_run_lifecycle(run_corrupt, RunLifecycleState.FINALIZING, run_store=run_store)
 
         # 13. Cannot write trace when in INVALID state
-        can_w_inv, reason_inv = can_write_trace(run_corrupt)
+        can_w_inv, reason_inv = can_write_trace(run_corrupt, run_store=run_store)
         assert can_w_inv is False
         assert "INVALID" in reason_inv
         with pytest.raises(TraceClosedError, match="INVALID"):
-            assert_can_write_trace(run_corrupt)
+            assert_can_write_trace(run_corrupt, run_store=run_store)
 
 
 def test_identity_env_and_default_signer(monkeypatch, tmp_path):
@@ -1119,7 +1206,14 @@ async def test_runner_sanitizes_callable_metadata(tmp_path, monkeypatch):
 
     scenario = {
         "id": "scen_callable_test",
-        "workflow": {"nodes": []},
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "node_1",
+                    "success_criteria": [{"metric": "generic_accuracy"}],
+                }
+            ]
+        },
         "success_criteria": {"mode": "all"},
     }
 
@@ -1144,11 +1238,11 @@ async def test_runner_sanitizes_callable_metadata(tmp_path, monkeypatch):
         metadata=metadata,
     )
     assert results is not None
-    # Verify manifest was written and has no callables
-    manifest_path = tmp_path / "runs" / "run-callable-sanitize-test" / "execution_manifest.json"
-    assert manifest_path.exists()
-    manifest_data = json.loads(manifest_path.read_text(encoding="utf-8"))
-    assert "func" not in manifest_data["metadata"]["args"]
-    assert "extra_callable" not in manifest_data["metadata"]
-    assert manifest_data["metadata"]["args"]["path"] == "industries/telecom/scenarios"
-    assert manifest_data["metadata"]["clean_meta"] == "valid_value"
+    # Verify manifest was written and has no callables via run store
+    manifest_data = runner.run_store.get_manifest("run-callable-sanitize-test")
+    assert manifest_data is not None
+    exec_meta = manifest_data.get("execution_manifest", manifest_data).get("metadata", {})
+    assert "func" not in exec_meta.get("args", {})
+    assert "extra_callable" not in exec_meta
+    assert exec_meta.get("args", {}).get("path") == "industries/telecom/scenarios"
+    assert exec_meta.get("clean_meta") == "valid_value"

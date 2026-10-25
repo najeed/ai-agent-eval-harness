@@ -21,12 +21,17 @@ from eval_runner.console.routes.evidence import (
 
 @pytest.fixture
 def client(tmp_path, monkeypatch):
-    monkeypatch.setattr(config, "RUN_LOG_DIR", str(tmp_path / "runs"))
-    monkeypatch.setattr(config, "REPORTS_DIR", str(tmp_path / "reports"))
-    (tmp_path / "runs").mkdir(parents=True, exist_ok=True)
-    (tmp_path / "reports").mkdir(parents=True, exist_ok=True)
+    runs_dir = tmp_path / "runs"
+    reports_dir = tmp_path / "reports"
+    runs_dir.mkdir(parents=True, exist_ok=True)
+    reports_dir.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr(config, "RUN_LOG_DIR", runs_dir)
+    monkeypatch.setattr(config, "REPORTS_DIR", reports_dir)
 
-    app = create_app()
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    store = LocalFileRunStore(log_dir=runs_dir)
+    app = create_app(run_store=store)
     app.config["TESTING"] = True
     with app.test_client() as c:
         with c.session_transaction() as sess:
@@ -54,7 +59,10 @@ def crypto_client(tmp_path, monkeypatch):
 
     IdentityService._provision_local_identity("system_id")
 
-    app = create_app()
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    store = LocalFileRunStore(log_dir=runs_dir)
+    app = create_app(run_store=store)
     app.config["TESTING"] = True
     with app.test_client() as c:
         with c.session_transaction() as sess:
@@ -82,24 +90,44 @@ def test_get_verification_package_success_with_cert_and_provenance(crypto_client
     produced by the transactional certification pipeline — not merely the
     presence of signature-shaped JSON.
     """
-    runs_dir = tmp_path / "runs"
-    tmp_path / "reports"
+    import hashlib
+
+    from agentv_runtime.evidence_graph import build_evidence_graph_from_events
+    from agentv_runtime.finalization import EvaluatorFinalizationRecord
+    from agentv_runtime.manifest import ExecutionManifest, compute_scenario_hash
+    from eval_runner.identity import IdentityService
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+    from eval_runner.verifier import TraceVerifier
+
+    IdentityService._provision_local_identity("test_evaluator")
+
+    runs_dir = Path(config.RUN_LOG_DIR)
     run_id = f"run-test-{int(datetime.now(UTC).timestamp())}"
-    run_vault = runs_dir / run_id
-    run_vault.mkdir(parents=True, exist_ok=True)
+    store = LocalFileRunStore(log_dir=runs_dir)
+    store.create_run(run_id, scenario_id="sec_eval")
 
     now = datetime.now(UTC)
 
-    # Write a sequence-addressable trace.  Every evidence-bearing event must
-    # retain its own exact raw-line provenance; terminal carriers may not act
-    # as a substitute for that evidence.
-    trace_file = run_vault / "run.jsonl"
-    events = [
+    scenario_data = {"id": "sec_eval", "title": "Security Eval", "version": "1.0.0"}
+    scen_hash = compute_scenario_hash(scenario_data)
+    exec_manifest = ExecutionManifest(
+        manifest_id=f"man_{run_id}",
+        scenario_id="sec_eval",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+    )
+
+    core_events = [
         {
             "event": "run_start",
             "_seq": 1,
+            "run_id": run_id,
             "timestamp": now.isoformat(),
-            "data": {"scenario": "sec_eval"},
+            "data": {
+                "scenario": "sec_eval",
+                "execution_mode": "live",
+                "execution_mode_declared": True,
+            },
         },
         {
             "event": "assertion_evaluated",
@@ -110,25 +138,45 @@ def test_get_verification_package_success_with_cert_and_provenance(crypto_client
         {
             "event": "run_end",
             "_seq": 3,
+            "outcome": "pass",
             "timestamp": (now + timedelta(seconds=10)).isoformat(),
             "data": {"status": "EXECUTION_COMPLETED", "passed": True, "score": 1.0},
         },
     ]
-    raw_lines = "\n".join(json.dumps(e) for e in events) + "\n"
-    trace_file.write_text(raw_lines, encoding="utf-8")
 
-    # Scenario document becomes part of the certified evidence ledger
-    (run_vault / "scenario_resolved.json").write_text(
-        json.dumps({"id": "sec_eval", "title": "Security Eval"}), encoding="utf-8"
+    ev_graph = build_evidence_graph_from_events(core_events)
+    evidence_root = ev_graph.get(
+        "evidence_root_hash", f"sha3_256:{hashlib.sha3_256(b'empty').hexdigest()}"
     )
+    fin_rec = EvaluatorFinalizationRecord(
+        finalization_id=f"fin_{run_id}",
+        run_id=run_id,
+        execution_manifest_hash=exec_manifest.compute_manifest_hash(),
+        scenario_id="sec_eval",
+        scenario_version="1.0.0",
+        scenario_hash=scen_hash,
+        evaluator_identity="test_evaluator",
+        evaluator_config_hash="sha3_256:abc123",
+        required_oracle_ids=[],
+        evidence_root_hash=evidence_root,
+        outcome="pass",
+        score=1.0,
+        terminal_seq=3,
+    ).sign()
+    fin_ev = {"event": "evaluator_finalization", "data": fin_rec.to_dict()}
+    store.append_events(run_id, [*core_events, fin_ev])
 
-    # Produce a REAL, cryptographically verifiable certificate
-    from eval_runner.verifier import TraceVerifier
-    from tests.conftest import append_authoritative_finalization
-
-    append_authoritative_finalization(trace_file, run_id, run_vault)
-    manifest = TraceVerifier.sign_trace(str(trace_file), run_id=run_id, execution_mode="live")
-    assert manifest["certification"]["outcome"] in ("CERTIFIED", "CERTIFIED_PASS")
+    trace_bytes = store.get_trace_bytes(run_id)
+    manifest = TraceVerifier.sign_trace_bytes(
+        trace_bytes,
+        run_id=run_id,
+        run_store=store,
+        execution_mode="live",
+        scenario_data=scenario_data,
+        execution_manifest=exec_manifest.to_dict(),
+    )
+    store.save_run_manifest(run_id, manifest)
+    store.update_run_status(run_id, "SEALED")
 
     # Query API
     res = crypto_client.get(f"/api/v1/evidence/packages/{run_id}")
@@ -151,7 +199,8 @@ def test_get_verification_package_success_with_cert_and_provenance(crypto_client
     assert pkg["package_hash"].startswith("sha3_256:")
 
     # Tampering with certified evidence must flip the verdict truthfully
-    trace_file.write_text(raw_lines + '{"event":"tampered"}\n', encoding="utf-8")
+    run_vault = runs_dir / run_id
+    (run_vault / "run.jsonl").write_bytes(trace_bytes + b'{"event":"tampered"}\n')
     res2 = crypto_client.get(f"/api/v1/evidence/packages/{run_id}")
     pkg2 = res2.get_json()
     assert pkg2["verdict"]["verified_outcome"] == "UNVERIFIED"
@@ -161,13 +210,14 @@ def test_get_verification_package_success_with_cert_and_provenance(crypto_client
 def test_get_verification_package_policy_breach_and_vault_cert(client, tmp_path):
     runs_dir = tmp_path / "runs"
     run_id = f"run-breach-{int(datetime.now(UTC).timestamp())}"
-    run_vault = runs_dir / run_id
-    run_vault.mkdir(parents=True, exist_ok=True)
+
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    store = LocalFileRunStore(log_dir=runs_dir)
+    store.create_run(run_id, scenario_id="test_scenario")
 
     now = datetime.now(UTC)
 
-    # Write trace events with policy violation
-    trace_file = run_vault / "run.jsonl"
     events = [
         {"event": "run_start", "timestamp": now.isoformat(), "data": {}},
         {
@@ -181,12 +231,15 @@ def test_get_verification_package_policy_breach_and_vault_cert(client, tmp_path)
             "data": {"status": "EXECUTION_COMPLETED", "passed": False},
         },
     ]
-    trace_file.write_text("\n".join(json.dumps(e) for e in events), encoding="utf-8")
+    store.append_events(run_id, events)
 
-    # Vault certificate
-    (run_vault / f"{run_id}_certificate.json").write_text(
-        json.dumps({"provenance_chain": ["prov_root"]}),
-        encoding="utf-8",
+    store.save_run_manifest(
+        run_id,
+        {
+            "provenance_chain": ["prov_root"],
+            "signatures": ["prov_root"],
+            "compliance": {"status": "fail"},
+        },
     )
 
     res = client.get(f"/api/v1/evidence/packages/{run_id}")
@@ -199,16 +252,17 @@ def test_get_verification_package_policy_breach_and_vault_cert(client, tmp_path)
 def test_corrupt_files_in_vault(client, tmp_path):
     runs_dir = tmp_path / "runs"
     run_id = f"run-corrupt-{int(datetime.now(UTC).timestamp())}"
+
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    store = LocalFileRunStore(log_dir=runs_dir)
+    store.create_run(run_id, scenario_id="test_scenario")
+    store.append_events(run_id, [{"event": "run_start", "data": {}}])
+
     run_vault = runs_dir / run_id
-    run_vault.mkdir(parents=True, exist_ok=True)
-
-    trace_file = run_vault / f"{run_id}.jsonl"
-    trace_file.write_text(json.dumps({"event": "run_start", "data": {}}) + "\n", encoding="utf-8")
-
     # Corrupt json files
     (run_vault / "scenario_resolved.json").write_text("NOT_JSON", encoding="utf-8")
     (run_vault / "run_manifest.json").write_text("NOT_JSON", encoding="utf-8")
-    (run_vault / f"{run_id}_certificate.json").write_text("NOT_JSON", encoding="utf-8")
 
     res = client.get(f"/api/v1/evidence/packages/{run_id}")
     assert res.status_code == 200
@@ -220,11 +274,12 @@ def test_corrupt_files_in_vault(client, tmp_path):
 def test_download_verification_package(client, tmp_path):
     runs_dir = tmp_path / "runs"
     run_id = f"run-download-{int(datetime.now(UTC).timestamp())}"
-    run_vault = runs_dir / run_id
-    run_vault.mkdir(parents=True, exist_ok=True)
 
-    trace_file = run_vault / f"{run_id}.jsonl"
-    trace_file.write_text(json.dumps({"event": "run_start", "data": {}}) + "\n", encoding="utf-8")
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    store = LocalFileRunStore(log_dir=runs_dir)
+    store.create_run(run_id, scenario_id="test_scenario")
+    store.append_events(run_id, [{"event": "run_start", "data": {}}])
 
     res = client.get(f"/api/v1/evidence/packages/{run_id}?download=true")
     assert res.status_code == 200
@@ -234,9 +289,21 @@ def test_download_verification_package(client, tmp_path):
 
 def test_list_verification_packages(client, tmp_path):
     runs_dir = tmp_path / "runs"
-    (runs_dir / "run-001").mkdir(parents=True, exist_ok=True)
-    (runs_dir / "run-002").mkdir(parents=True, exist_ok=True)
+
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    store = LocalFileRunStore(log_dir=runs_dir)
+    store.create_run("run-001", scenario_id="scen-1")
+    store.create_run("run-002", scenario_id="scen-2")
+    store.save_run_manifest("run-001", {"vc_version": "3.0.0"})
+    store.save_run_manifest("run-002", {"vc_version": "3.0.0"})
     (runs_dir / "ignored_file.txt").write_text("hello", encoding="utf-8")
+
+    res = client.get("/api/v1/evidence/packages")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert "packages" in data
+    assert len(data["packages"]) >= 2
 
     res = client.get("/api/v1/evidence/packages")
     assert res.status_code == 200
@@ -258,12 +325,14 @@ def test_list_verification_packages_empty_dir(client, tmp_path, monkeypatch):
 def test_verification_package_determinism_and_unsigned_outcome(client, tmp_path):
     runs_dir = tmp_path / "runs"
     run_id = f"run-unsigned-{int(datetime.now(UTC).timestamp())}"
-    run_vault = runs_dir / run_id
-    run_vault.mkdir(parents=True, exist_ok=True)
+
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    store = LocalFileRunStore(log_dir=runs_dir)
+    store.create_run(run_id, scenario_id="test_scenario")
 
     now = datetime.now(UTC)
 
-    trace_file = run_vault / "run.jsonl"
     events = [
         {"event": "run_start", "timestamp": now.isoformat(), "data": {}},
         {
@@ -272,7 +341,7 @@ def test_verification_package_determinism_and_unsigned_outcome(client, tmp_path)
             "data": {"status": "EXECUTION_COMPLETED", "passed": True, "score": 0.85},
         },
     ]
-    trace_file.write_text("\n".join(json.dumps(e) for e in events), encoding="utf-8")
+    store.append_events(run_id, events)
 
     res1 = client.get(f"/api/v1/evidence/packages/{run_id}")
     assert res1.status_code == 200
@@ -292,7 +361,12 @@ def test_verification_package_determinism_and_unsigned_outcome(client, tmp_path)
 def test_verification_package_direct_fragment_without_vault(client, tmp_path):
     runs_dir = tmp_path / "runs"
     run_id = f"run-direct-frag-{int(datetime.now(UTC).timestamp())}"
-    trace_file = runs_dir / f"{run_id}.jsonl"
+
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    store = LocalFileRunStore(log_dir=runs_dir)
+    store.create_run(run_id, scenario_id="test_scenario")
+
     now = datetime.now(UTC)
     events = [
         {"event": "run_start", "timestamp": now.isoformat(), "data": {}},
@@ -302,7 +376,7 @@ def test_verification_package_direct_fragment_without_vault(client, tmp_path):
             "data": {"status": "EXECUTION_COMPLETED", "passed": False},
         },
     ]
-    trace_file.write_text("\n".join(json.dumps(e) for e in events), encoding="utf-8")
+    store.append_events(run_id, events)
 
     res = client.get(f"/api/v1/evidence/packages/{run_id}")
     assert res.status_code == 200
@@ -312,14 +386,17 @@ def test_verification_package_direct_fragment_without_vault(client, tmp_path):
 
 
 def test_verification_package_score_default_verified(crypto_client, tmp_path):
-    runs_dir = tmp_path / "runs"
+    runs_dir = Path(config.RUN_LOG_DIR)
     run_id = f"run-default-verified-{int(datetime.now(UTC).timestamp())}"
-    run_vault = runs_dir / run_id
-    run_vault.mkdir(parents=True, exist_ok=True)
+
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+    from eval_runner.verifier import TraceVerifier
+
+    store = LocalFileRunStore(log_dir=runs_dir)
+    store.create_run(run_id, scenario_id="test_scenario")
 
     now = datetime.now(UTC)
 
-    trace_file = run_vault / "run.jsonl"
     events = [
         {"event": "run_start", "timestamp": now.isoformat(), "data": {}},
         {
@@ -328,11 +405,18 @@ def test_verification_package_score_default_verified(crypto_client, tmp_path):
             "data": {"status": "EXECUTION_COMPLETED", "verified": True},
         },
     ]
-    trace_file.write_text("\n".join(json.dumps(e) for e in events), encoding="utf-8")
+    store.append_events(run_id, events)
+    trace_bytes = store.get_trace_bytes(run_id)
 
-    from eval_runner.verifier import TraceVerifier
-
-    TraceVerifier.sign_trace(str(trace_file), run_id=run_id)
+    manifest = TraceVerifier.sign_trace_bytes(
+        trace_bytes,
+        run_id=run_id,
+        run_store=store,
+        compliance_status="pass",
+        compliance_score=1.0,
+    )
+    store.save_run_manifest(run_id, manifest)
+    store.update_run_status(run_id, "SEALED")
 
     res = crypto_client.get(f"/api/v1/evidence/packages/{run_id}")
     assert res.status_code == 200
@@ -346,34 +430,31 @@ def test_fake_certificate_signature_yields_unverified(client, tmp_path):
     P0-4 negative lock: signature-SHAPED JSON without a verifiable chain must
     never produce VERIFIED. Presence of signatures is not proof.
     """
-    runs_dir = tmp_path / "runs"
-    reports_dir = tmp_path / "reports"
+    runs_dir = Path(config.RUN_LOG_DIR)
     run_id = f"run-fake-cert-{int(datetime.now(UTC).timestamp())}"
-    run_vault = runs_dir / run_id
-    run_vault.mkdir(parents=True, exist_ok=True)
+
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    store = LocalFileRunStore(log_dir=runs_dir)
+    store.create_run(run_id, scenario_id="test_scenario")
 
     now = datetime.now(UTC)
-    (run_vault / "run.jsonl").write_text(
-        "\n".join(
-            json.dumps(e)
-            for e in [
-                {"event": "run_start", "timestamp": now.isoformat(), "data": {}},
-                {
-                    "event": "run_end",
-                    "timestamp": (now + timedelta(seconds=5)).isoformat(),
-                    "data": {"status": "EXECUTION_COMPLETED", "passed": True},
-                },
-            ]
-        ),
-        encoding="utf-8",
-    )
+    events = [
+        {"event": "run_start", "timestamp": now.isoformat(), "data": {}},
+        {
+            "event": "run_end",
+            "timestamp": (now + timedelta(seconds=5)).isoformat(),
+            "data": {"status": "EXECUTION_COMPLETED", "passed": True},
+        },
+    ]
+    store.append_events(run_id, events)
 
-    cert_dir = reports_dir / "certificates"
-    cert_dir.mkdir(parents=True, exist_ok=True)
-    (cert_dir / f"{run_id}_certificate.json").write_text(
-        json.dumps({"signatures": ["sig_test"], "provenance_chain": ["p1"]}),
-        encoding="utf-8",
-    )
+    manifest = {
+        "signatures": ["sig_test"],
+        "provenance_chain": ["p1"],
+        "compliance": {"status": "pass"},
+    }
+    store.save_run_manifest(run_id, manifest)
 
     res = client.get(f"/api/v1/evidence/packages/{run_id}")
     assert res.status_code == 200
@@ -382,16 +463,17 @@ def test_fake_certificate_signature_yields_unverified(client, tmp_path):
     assert pkg["evidence_chain_valid"] is False
 
 
-def test_package_corruption_policy_blocks_certification(crypto_client):
+def test_package_corruption_policy_blocks_certification(crypto_client, tmp_path):
     """[E3] Unparseable trace content -> EVIDENCE_INVALID + exact byte offsets."""
     import json as _json
-    from datetime import UTC, datetime, timedelta
 
+    runs_dir = tmp_path / "runs"
     run_id = f"run-corrupt-{int(datetime.now(UTC).timestamp())}"
-    from eval_runner import config as _cfg
 
-    run_vault = _cfg.RUN_LOG_DIR / run_id
-    run_vault.mkdir(parents=True, exist_ok=True)
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    store = LocalFileRunStore(log_dir=runs_dir)
+    store.create_run(run_id, scenario_id="test_scenario")
 
     now = datetime.now(UTC)
     good1 = _json.dumps({"event": "run_start", "timestamp": now.isoformat(), "_seq": 1})
@@ -405,7 +487,7 @@ def test_package_corruption_policy_blocks_certification(crypto_client):
         }
     )
     # Layout: line1(offset 0) | line2 corrupt | line3
-    trace = run_vault / "run.jsonl"
+    trace = runs_dir / run_id / "run.jsonl"
     line1 = (good1 + "\n").encode()
     line2 = (corrupt_fragment + "\n").encode()
     line3 = (good2 + "\n").encode()
@@ -485,20 +567,18 @@ def test_evidence_package_unfinalized_run_reports_inconclusive(client, tmp_path:
     Verifies that an unfinalized run without finalization
     or computed outcome reports INCONCLUSIVE.
     """
-    runs_dir = tmp_path / "runs"
+    runs_dir = Path(config.RUN_LOG_DIR)
     run_id = f"run-inconclusive-{int(datetime.now(UTC).timestamp())}"
-    run_vault = runs_dir / run_id
-    run_vault.mkdir(parents=True, exist_ok=True)
+
+    from eval_runner.reference.local_run_store import LocalFileRunStore
+
+    store = LocalFileRunStore(log_dir=runs_dir)
+    store.create_run(run_id, scenario_id="test_scenario")
 
     now = datetime.now(UTC)
-    # Trace contains only non-terminal intermediate events;
-    # no finalization record, no computed outcome
-    (run_vault / "run.jsonl").write_text(
-        json.dumps(
-            {"event": "node_execution", "timestamp": now.isoformat(), "data": {"passed": True}}
-        )
-        + "\n",
-        encoding="utf-8",
+    store.append_events(
+        run_id,
+        [{"event": "node_execution", "timestamp": now.isoformat(), "data": {"passed": True}}],
     )
 
     res = client.get(f"/api/v1/evidence/packages/{run_id}")
@@ -512,21 +592,21 @@ def test_evidence_routes_exhaustive_edge_cases(client, tmp_path: Path, monkeypat
     from unittest.mock import patch
 
     import eval_runner.console.routes.evidence as ev_module
-    from eval_runner.services.certification import CertificationService
+    from eval_runner.reference.local_run_store import LocalFileRunStore
 
     runs_dir = Path(config.RUN_LOG_DIR)
     run_id = f"run-edge-{int(datetime.now(UTC).timestamp())}"
-    run_vault = runs_dir / run_id
-    run_vault.mkdir(parents=True, exist_ok=True)
-    trace_file = run_vault / "run.jsonl"
-    trace_file.write_text("{}\n", encoding="utf-8")
+
+    store = LocalFileRunStore(log_dir=runs_dir)
+    store.create_run(run_id, scenario_id="test_scenario")
+    store.append_events(run_id, [{}])
 
     # Active context denial on get and list
     monkeypatch.setattr(ev_module, "_run_is_in_active_context", lambda rid: False)
     res_get_denied = client.get(f"/api/v1/evidence/packages/{run_id}")
     assert res_get_denied.status_code == 404
 
-    (run_vault / "run_manifest.json").write_text("{}", encoding="utf-8")
+    store.save_run_manifest(run_id, {})
     res_list = client.get("/api/v1/evidence/packages")
     assert res_list.status_code == 200
     assert len(res_list.get_json()["packages"]) == 0
@@ -545,120 +625,70 @@ def test_evidence_routes_exhaustive_edge_cases(client, tmp_path: Path, monkeypat
     assert res_verify_bad_b64.status_code == 400
     assert "Invalid base64 trace payload" in res_verify_bad_b64.get_json()["error"]
 
-    # Path unsafe on certificate
-    from eval_runner.utils import is_path_safe as real_is_path_safe
-
-    cert_file = run_vault / "verification_certificate.json"
-    cert_file.write_text("{}", encoding="utf-8")
-    monkeypatch.setattr(ev_module, "locate_certificate_file", lambda rid: cert_file)
-    monkeypatch.setattr(ev_module, "is_path_safe", lambda p, j: False)
-    pkg_unsafe_path = ev_module.build_verification_package(run_id)
-    assert pkg_unsafe_path is not None
-    assert pkg_unsafe_path["cryptographic_verification"]["verified"] is False
-    monkeypatch.setattr(ev_module, "is_path_safe", real_is_path_safe)
-
-    # Corrupt JSON in certificate, scenario, and manifest files
-    cert_file.write_text("not-a-json", encoding="utf-8")
-    scen_file = run_vault / "scenario_resolved.json"
-    scen_file.write_text("not-a-json", encoding="utf-8")
-    manifest_file = run_vault / "run_manifest.json"
-    manifest_file.write_text("not-a-json", encoding="utf-8")
-    pkg_corrupt_files = ev_module.build_verification_package(run_id)
-    assert pkg_corrupt_files is not None
-
     # verify_trace_certificate ImportError and generic Exception handling
-    trace_file.write_text("{}\n", encoding="utf-8")
-    cert_file.write_text(json.dumps({"signature": "sig"}), encoding="utf-8")
-    monkeypatch.setattr(ev_module, "locate_certificate_file", lambda rid: cert_file)
-
-    with patch(
-        "eval_runner.verifier.verify_trace_certificate", side_effect=ImportError("no verifier")
-    ):
-        pkg_imp_err = ev_module.build_verification_package(run_id)
-        assert any(
-            "not available" in e for e in pkg_imp_err["cryptographic_verification"]["errors"]
-        )
-
-    with patch(
-        "eval_runner.verifier.verify_trace_certificate", side_effect=RuntimeError("verify crash")
-    ):
-        pkg_err = ev_module.build_verification_package(run_id)
-        assert any("verify crash" in e for e in pkg_err["cryptographic_verification"]["errors"])
-
-    # extract_finalization_record and extract_computed_run_outcome exceptions
-    with patch.object(
-        CertificationService, "extract_finalization_record", side_effect=RuntimeError("fin err")
-    ):
-        with patch.object(
-            CertificationService,
-            "extract_computed_run_outcome",
-            side_effect=RuntimeError("outcome err"),
+    (runs_dir / run_id / "run.jsonl").write_text("{}\n", encoding="utf-8")
+    with patch.object(store, "get_manifest", return_value={"signature": "sig"}):
+        with patch(
+            "eval_runner.verifier.verify_trace_certificate", side_effect=ImportError("no verifier")
         ):
-            pkg_fin_err = ev_module.build_verification_package(run_id)
-            assert pkg_fin_err is not None
+            pkg_imp_err = ev_module.build_verification_package(run_id, run_store=store)
+            assert any(
+                "not available" in e for e in pkg_imp_err["cryptographic_verification"]["errors"]
+            )
+
+        with patch(
+            "eval_runner.verifier.verify_trace_certificate",
+            side_effect=RuntimeError("verify crash"),
+        ):
+            pkg_err = ev_module.build_verification_package(run_id, run_store=store)
+            assert any("verify crash" in e for e in pkg_err["cryptographic_verification"]["errors"])
 
     # Event-level assertions resolution and run_end assertions bypass
-    trace_file.write_text(
+    (runs_dir / run_id / "run.jsonl").write_text(
         json.dumps({"event": "node_execution", "data": {"assertions": [{"passed": True}]}})
         + "\n"
         + json.dumps({"event": "run_end", "data": {}})
         + "\n",
         encoding="utf-8",
     )
-    with patch.object(CertificationService, "extract_finalization_record", return_value=None):
-        with patch.object(
-            CertificationService, "extract_computed_run_outcome", return_value=(None, None)
-        ):
-            pkg_event_asserts = ev_module.build_verification_package(run_id)
-            assert len(pkg_event_asserts["verdict"]["assertions"]) == 1
+    pkg_event_asserts = ev_module.build_verification_package(run_id, run_store=store)
+    assert len(pkg_event_asserts["verdict"]["assertions"]) == 1
 
     # Direct run_end assertions presence
-    trace_file.write_text(
+    (runs_dir / run_id / "run.jsonl").write_text(
         json.dumps({"event": "run_end", "data": {"assertions": [{"passed": True}]}}) + "\n",
         encoding="utf-8",
     )
-    with patch.object(CertificationService, "extract_finalization_record", return_value=None):
-        with patch.object(
-            CertificationService, "extract_computed_run_outcome", return_value=(None, None)
-        ):
-            pkg_direct_asserts = ev_module.build_verification_package(run_id)
-            assert len(pkg_direct_asserts["verdict"]["assertions"]) == 1
+    pkg_direct_asserts = ev_module.build_verification_package(run_id, run_store=store)
+    assert len(pkg_direct_asserts["verdict"]["assertions"]) == 1
 
     # Manifest data_block score fallback
-    trace_file.write_text(
+    (runs_dir / run_id / "run.jsonl").write_text(
         json.dumps({"event": "run_end", "data": {"score": 0.88}}) + "\n",
         encoding="utf-8",
     )
-    with patch.object(CertificationService, "extract_finalization_record", return_value=None):
-        with patch.object(
-            CertificationService, "extract_computed_run_outcome", return_value=(None, None)
-        ):
-            pkg_data_score = ev_module.build_verification_package(run_id)
-            assert pkg_data_score["verdict"]["score"] == 0.88
+    pkg_data_score = ev_module.build_verification_package(run_id, run_store=store)
+    assert pkg_data_score["verdict"]["score"] == 0.88
 
     # VERIFIED outcome score fallback to 1.0
-    trace_file.write_text(
+    (runs_dir / run_id / "run.jsonl").write_text(
         json.dumps({"event": "run_end", "data": {}}) + "\n",
         encoding="utf-8",
     )
-    with patch.object(CertificationService, "extract_finalization_record", return_value=None):
-        with patch.object(
-            CertificationService, "extract_computed_run_outcome", return_value=("pass", None)
+    with patch.object(store, "get_manifest", return_value={"signature": "sig"}):
+        with patch(
+            "eval_runner.verifier.verify_trace_certificate",
+            return_value={
+                "verified": True,
+                "manifest_hash_match": True,
+                "signer_identity": "signer",
+            },
         ):
-            with patch(
-                "eval_runner.verifier.verify_trace_certificate",
-                return_value={
-                    "verified": True,
-                    "manifest_hash_match": True,
-                    "signer_identity": "signer",
-                },
-            ):
-                pkg_verified_score = ev_module.build_verification_package(run_id)
-                assert pkg_verified_score["verdict"]["verified_outcome"] == "VERIFIED"
-                assert pkg_verified_score["verdict"]["score"] == 1.0
+            pkg_verified_score = ev_module.build_verification_package(run_id, run_store=store)
+            assert pkg_verified_score["verdict"]["verified_outcome"] == "VERIFIED"
+            assert pkg_verified_score["verdict"]["score"] == 1.0
 
     # Nonexistent RUN_LOG_DIR in list_verification_packages
-    monkeypatch.setattr(config, "RUN_LOG_DIR", str(tmp_path / "nonexistent_runs_dir"))
+    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "nonexistent_runs_dir")
     res_nonexistent = client.get("/api/v1/evidence/packages")
     assert res_nonexistent.status_code == 200
-    assert res_nonexistent.get_json() == {"packages": []}
