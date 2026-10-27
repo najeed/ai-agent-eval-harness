@@ -9,12 +9,12 @@
 pytest==9.1.1
 pytest-cov>=7.1.0
 pytest-deduplicate>=0.1.6
-pytest-asyncio>=1.4.0
+pytest-asyncio>=1.4.1
 pytest-aiohttp>=1.1.1
 pytest-xdist>=3.8.0
-hypothesis>=6.170.9
+hypothesis>=6.170.12
 mutmut>=3.8.0
-vcrpy>=8.4.0
+vcrpy>=9.2.0
 pytest-benchmark>=5.3.0
 python-multipart>=0.0.32
 playwright>=1.64.1
@@ -24,7 +24,7 @@ pygments>=2.21.0
 pyasn1>=0.6.4
 
 # --- Code Quality & Security ---
-ruff==0.17.2
+ruff==0.17.3
 black>=26.10.1
 flake8>=7.4.1
 isort>=9.0.2
